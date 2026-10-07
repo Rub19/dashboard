@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.65 — 2026-10-08
+
+**Scan de Sécurité Discord Interactif & Diagnostic Serveur**
+
+- Nouvel écran de scan de sécurité complet accessible depuis la barre latérale et la vue d'ensemble du serveur.
+- Rapport exhaustif avec score global sur 100, jauge visuelle et répartition par catégorie (Keeper, Rôles, Salons, Discord, Bots, Réglages).
+- Filtres interactifs par catégorie avec détection des vulnérabilités anti-nuke et 2FA, accompagnés de liens de résolution directe.
+- Scan automatique programmable avec sélection de salon cible et cadence quotidienne ou hebdomadaire.
+- Accordéon déroulant des points solides validés et vérifications de sécurité positives sur le serveur.
+
 ## v1.55.64 — 2026-10-07
 
 **Bouton Thème Intuitif & Support Multilingue Discord (FR, EN, ES, DE)**

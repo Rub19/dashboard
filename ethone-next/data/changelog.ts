@@ -46573,4 +46573,61 @@ CHANGELOG_BY_LANG.en.unshift(v12871_en);
 CHANGELOG_BY_LANG.es.unshift(v12871_es);
 CHANGELOG_BY_LANG.de.unshift(v12871_de);
 
+const v12872_fr: ChangelogEntry = {
+  version: "v1.55.65",
+  date: "2026-10-08",
+  title: "Nouveau Module : Scan de Sécurité Discord Interactif",
+  items: [
+    "Nouvel écran complet de scan de sécurité accessible depuis la barre latérale et la vue d'ensemble du serveur",
+    "Rapport détaillé avec score global sur 100, jauge visuelle et répartition par catégorie (Keeper, Rôles, Salons, Discord, Bots, Réglages)",
+    "Filtres interactifs par catégorie, détection des vulnérabilités anti-nuke et 2FA, avec raccourcis de configuration directe",
+    "Scan automatique programmable avec choix de salon cible et fréquence quotidienne ou hebdomadaire",
+    "Section accordéon des points solides et conformités sécuritaires vérifiées sur le serveur",
+  ],
+};
+
+const v12872_en: ChangelogEntry = {
+  version: "v1.55.65",
+  date: "2026-10-08",
+  title: "New Feature: Interactive Discord Security Scan",
+  items: [
+    "New full security scan screen accessible from the sidebar and server overview dashboard",
+    "Detailed report with overall score out of 100, visual gauge, and category breakdown (Keeper, Roles, Channels, Discord, Bots, Settings)",
+    "Interactive category filters, detection of anti-nuke and 2FA issues with direct remediation links",
+    "Scheduled automatic scan with target channel selection and daily or weekly frequency",
+    "Collapsible accordion of solid points and verified security checks across the server",
+  ],
+};
+
+const v12872_es: ChangelogEntry = {
+  version: "v1.55.65",
+  date: "2026-10-08",
+  title: "Nueva Función: Escaneo de Seguridad Discord Interactivo",
+  items: [
+    "Nueva pantalla completa de escaneo de seguridad accesible desde la barra lateral y el resumen del servidor",
+    "Informe detallado con puntuación global sobre 100, indicador visual y desglose por categorías (Keeper, Roles, Canales, Discord, Bots, Ajustes)",
+    "Filtros interactivos por categoría, detección de vulnerabilidades anti-nuke y 2FA con enlaces directos de configuración",
+    "Escaneo automático programable con selector de canal y frecuencia diaria o semanal",
+    "Sección desplegable de puntos sólidos y controles de seguridad verificados",
+  ],
+};
+
+const v12872_de: ChangelogEntry = {
+  version: "v1.55.65",
+  date: "2026-10-08",
+  title: "Neues Feature: Interaktiver Discord-Sicherheitsscan",
+  items: [
+    "Neuer vollständiger Sicherheitsscan-Bildschirm, zugänglich über die Seitenleiste und die Serverübersicht",
+    "Detaillierter Bericht mit Gesamtpunktzahl von 100, visueller Anzeige und Kategorieaufschlüsselung (Keeper, Rollen, Kanäle, Discord, Bots, Einstellungen)",
+    "Interaktive Kategoriefilter, Erkennung von Anti-Nuke- und 2FA-Sicherheitslücken mit direkten Konfigurationslinks",
+    "Programmierbarer automatischer Scan mit Zielkanalauswahl und täglicher oder wöchentlicher Frequenz",
+    "Aufklappbarer Bereich für solide Sicherheitspunkte und geprüfte Servereinstellungen",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12872_fr);
+CHANGELOG_BY_LANG.en.unshift(v12872_en);
+CHANGELOG_BY_LANG.es.unshift(v12872_es);
+CHANGELOG_BY_LANG.de.unshift(v12872_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

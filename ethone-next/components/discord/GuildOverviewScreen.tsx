@@ -34,6 +34,7 @@ interface GuildOverviewScreenProps {
   activeModuleCount?: number;
   totalModuleCount?: number;
   onOpenSetup?: () => void;
+  onOpenScan?: () => void;
   onSelectCategory?: (categoryId: string) => void;
   onAllModules?: () => void;
 }
@@ -118,6 +119,7 @@ export default function GuildOverviewScreen({
   activeModuleCount,
   totalModuleCount,
   onOpenSetup,
+  onOpenScan,
   onSelectCategory,
   onAllModules,
 }: GuildOverviewScreenProps) {
@@ -365,7 +367,13 @@ export default function GuildOverviewScreen({
                 <span className="text-[var(--text-muted)]">{i18n("dSecurityScan", "Scan de sécurité")}</span>
                 <button
                   type="button"
-                  onClick={() => router.push(`/discord/server/health?guildId=${guild.id}`)}
+                  onClick={() => {
+                    if (onOpenScan) {
+                      onOpenScan();
+                    } else {
+                      router.push(`/discord?guildId=${guild.id}&view=scan`);
+                    }
+                  }}
                   className="font-semibold text-emerald-400 hover:underline cursor-pointer"
                 >
                   {i18n("dRunScan", "Lancer un scan →")}

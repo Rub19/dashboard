@@ -25,6 +25,7 @@ import {
   Upload,
   Copy,
   Check,
+  Scan,
 } from "@/components/icons/ph";
 import ClientImage from "@/components/ClientImage";
 import DiscordLanguageDropdown from "./DiscordLanguageDropdown";
@@ -46,7 +47,7 @@ import {
 } from "./consoleMotion";
 import type { NavigatorCategory, NavigatorModule } from "./ModuleNavigator";
 
-export type HubView = "home" | "modules" | "module" | "setup";
+export type HubView = "home" | "modules" | "module" | "setup" | "scan";
 
 interface HubSidebarProps {
   guildName: string;
@@ -73,6 +74,7 @@ interface HubSidebarProps {
   onImportConfig?: () => void;
   onCopyGuildId?: () => void;
   copiedId?: boolean;
+  onOpenScan?: () => void;
 }
 
 const SUPPORT_DISCORD_URL = "https://discord.gg/WvEcyBuP45";
@@ -120,6 +122,7 @@ export default function HubSidebar({
   onClose,
   onOpenIntro,
   onOpenSetup,
+  onOpenScan,
   onExportConfig,
   onImportConfig,
   onCopyGuildId,
@@ -175,6 +178,7 @@ export default function HubSidebar({
 
   const isOverviewActive = view === "home" && !activeId;
   const isSetupActive = view === "setup";
+  const isScanActive = view === "scan";
 
   return (
     <>
@@ -409,18 +413,32 @@ export default function HubSidebar({
               <button
                 type="button"
                 onClick={() => router.push(`/discord/security?guildId=${selectedGuildId}`)}
-                className="w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors cursor-pointer text-left"
+                className="w-full flex items-center justify-between rounded px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors cursor-pointer text-left"
               >
-                <ShieldAlert className="h-3.5 w-3.5 shrink-0" />
-                <span>{i18n("dProtections", "Protections")}</span>
+                <div className="flex items-center gap-2.5">
+                  <ShieldAlert className="h-3.5 w-3.5 shrink-0" />
+                  <span>{i18n("dProtections", "Protections")}</span>
+                </div>
+                <span className="font-mono text-[10px] text-[var(--text-muted)]">1/30</span>
               </button>
 
               <button
                 type="button"
-                onClick={() => router.push(`/discord/server/health?guildId=${selectedGuildId}`)}
-                className="w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors cursor-pointer text-left"
+                onClick={() => {
+                  if (onOpenScan) {
+                    onOpenScan();
+                  } else {
+                    router.push(`/discord?guildId=${selectedGuildId}&view=scan`);
+                  }
+                }}
+                className={cn(
+                  "w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-xs transition-colors cursor-pointer text-left",
+                  isScanActive
+                    ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold"
+                    : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
+                )}
               >
-                <Sparkles className="h-3.5 w-3.5 shrink-0" />
+                <Scan className="h-3.5 w-3.5 shrink-0" />
                 <span>{i18n("dSecurityScan", "Scan de sécurité")}</span>
               </button>
 
@@ -521,6 +539,20 @@ export default function HubSidebar({
                 <span>{i18n("dAccess", "Accès")}</span>
               </button>
             </div>
+          </div>
+        </div>
+
+        <div className="px-2 pt-2 pb-1 space-y-1.5 text-xs text-[var(--text-muted)] shrink-0">
+          <div className="flex items-center justify-between text-[11px]">
+            <span>{i18n("dActiveProtections", "Protections actives")}</span>
+            <span className="font-mono text-[10px] text-[var(--text-primary)]">1/30</span>
+          </div>
+          <div className="h-1 w-full rounded-full bg-[var(--panel-border)] overflow-hidden">
+            <div className="h-full bg-emerald-500 rounded-full" style={{ width: "3.3%" }} />
+          </div>
+          <div className="flex items-center gap-1.5 text-[10px] text-amber-400">
+            <span className="h-1.5 w-1.5 rounded-full bg-amber-400 shrink-0" />
+            <span>{i18n("dMissingLogChannel", "1 sans salon de log")}</span>
           </div>
         </div>
 

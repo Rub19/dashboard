@@ -71,6 +71,7 @@ import ModuleNavigator, { type NavigatorCategory, type NavigatorModule } from "@
 import HubSidebar, { type HubView } from "@/components/discord/HubSidebar";
 import GuildOverviewScreen from "@/components/discord/GuildOverviewScreen";
 import GuildAssistedSetup from "@/components/discord/GuildAssistedSetup";
+import GuildSecurityScan from "@/components/discord/GuildSecurityScan";
 import { motion, AnimatePresence } from "framer-motion";
 import { EASE_SNAP } from "@/lib/ease";
 import { useMotionPref } from "@/lib/hooks/useMotionPref";
@@ -586,6 +587,7 @@ export default function DiscordDashboardPage() {
   const [activeModule, setActiveModule] = useState<ModuleType | null>(null);
   const [showAllModules, setShowAllModules] = useState(false);
   const [showSetup, setShowSetup] = useState(false);
+  const [showScan, setShowScan] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const { reduced: motionReduced } = useMotionPref();
   const contentRef = useRef<HTMLDivElement | null>(null);
@@ -679,6 +681,7 @@ export default function DiscordDashboardPage() {
   const handleSelectModule = useCallback(
     (id: string) => {
       setMenuOpen(false);
+      setShowScan(false);
       if (INLINE_MODULE_IDS.has(id)) {
         setActiveModule(id as ModuleType);
       } else {
@@ -691,23 +694,33 @@ export default function DiscordDashboardPage() {
     setActiveModule(null);
     setShowAllModules(false);
     setShowSetup(false);
+    setShowScan(false);
     setMenuOpen(false);
   }, []);
   const goAllModules = useCallback(() => {
     setActiveModule(null);
     setShowAllModules(true);
     setShowSetup(false);
+    setShowScan(false);
     setMenuOpen(false);
   }, []);
   const goSetup = useCallback(() => {
     setActiveModule(null);
     setShowAllModules(false);
     setShowSetup(true);
+    setShowScan(false);
+    setMenuOpen(false);
+  }, []);
+  const goScan = useCallback(() => {
+    setActiveModule(null);
+    setShowAllModules(false);
+    setShowSetup(false);
+    setShowScan(true);
     setMenuOpen(false);
   }, []);
   useEffect(() => {
     contentRef.current?.scrollTo({ top: 0 });
-  }, [activeModule, showAllModules, showSetup]);
+  }, [activeModule, showAllModules, showSetup, showScan]);
   // Chaque carte a un lien « Ouvrir la page complète » distinct de son clic principal (voir NAV_MODULES_BASE) :
   // il doit pointer vers le serveur affiché ici, pas vers celui que la page de destination devinerait sans indice.
   const navModules = useMemo(
@@ -726,6 +739,8 @@ export default function DiscordDashboardPage() {
       id = sp.get("guildId");
       if (sp.get("view") === "setup") {
         setShowSetup(true);
+      } else if (sp.get("view") === "scan" || sp.get("tab") === "scan") {
+        setShowScan(true);
       }
     } catch {}
     try {
@@ -770,6 +785,10 @@ export default function DiscordDashboardPage() {
 
   const changeGuild = useCallback(() => {
     setPickedId(null);
+    setShowScan(false);
+    setShowSetup(false);
+    setShowAllModules(false);
+    setActiveModule(null);
     try {
       sessionStorage.removeItem(PICKED_STORAGE_KEY);
     } catch {}
@@ -1231,7 +1250,7 @@ export default function DiscordDashboardPage() {
 
   const userName = isDiscordConnected ? profile?.user?.displayName || profile?.user?.username : undefined;
   const activeMeta = activeModule ? MODULES.find((m) => m.id === activeModule) ?? null : null;
-  const view: HubView = showSetup ? "setup" : activeModule ? "module" : showAllModules ? "modules" : "home";
+  const view: HubView = showScan ? "scan" : showSetup ? "setup" : activeModule ? "module" : showAllModules ? "modules" : "home";
   const inviteHref = `${BOT_INVITE_URL}&guild_id=${selectedGuild.id}`;
 
   return (
@@ -1248,6 +1267,7 @@ export default function DiscordDashboardPage() {
           onChangeGuild={changeGuild}
           onOpenIntro={() => openOnboarding(0)}
           onOpenSetup={goSetup}
+          onOpenScan={goScan}
           onExportConfig={handleExportConfig}
           onImportConfig={() => fileInputRef.current?.click()}
           onCopyGuildId={handleCopyId}
@@ -1286,7 +1306,9 @@ export default function DiscordDashboardPage() {
                 </button>
                 <ChevronRight className="h-3.5 w-3.5 text-[var(--text-muted)] shrink-0" />
                 <span className="font-medium text-[var(--text-primary)]">
-                  {view === "setup"
+                  {view === "scan"
+                    ? i18n("dSecurityScan", "Scan de sécurité")
+                    : view === "setup"
                     ? i18n("dAssistedSetup", "Configuration assistée")
                     : activeMeta
                     ? activeMeta.title
@@ -1370,7 +1392,19 @@ export default function DiscordDashboardPage() {
                   activeModuleCount={activeModuleCount}
                   totalModuleCount={totalModuleCount}
                   onOpenSetup={goSetup}
+                  onOpenScan={goScan}
                   onAllModules={goAllModules}
+                />
+              )}
+
+              {view === "scan" && (
+                <GuildSecurityScan
+                  guild={selectedGuild}
+                  onOpenProtections={() => {
+                    setShowScan(false);
+                    router.push(`/discord/security?guildId=${selectedGuild.id}`);
+                  }}
+                  onBack={goHome}
                 />
               )}
 

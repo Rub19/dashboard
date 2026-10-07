@@ -38,6 +38,18 @@ jest.mock("@/components/ToastProvider", () => ({
   }),
 }));
 
+jest.mock("@/lib/profile/account-profile", () => ({
+  useAccountProfile: () => ({
+    profile: {
+      displayName: "rub19",
+      username: "rub19",
+      avatarUrl: "https://example.com/avatar.png",
+    },
+    loaded: true,
+    signedIn: true,
+  }),
+}));
+
 import type { DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
 
 describe("BotInstallView", () => {
@@ -69,7 +81,7 @@ describe("BotInstallView", () => {
     expect(screen.getByText("Place son rôle tout en haut")).toBeTruthy();
     expect(screen.getByText("Reviens ici")).toBeTruthy();
     expect(screen.getByText("Etho absent")).toBeTruthy();
-    expect(screen.getByText("Tout est enregistré")).toBeTruthy();
+    expect(screen.queryByText("Tout est enregistré")).toBeNull();
     expect(
       screen.getByText("La détection peut prendre quelques secondes après l'ajout du bot.")
     ).toBeTruthy();

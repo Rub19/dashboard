@@ -45929,4 +45929,61 @@ CHANGELOG_BY_LANG.en.unshift(v12859_en);
 CHANGELOG_BY_LANG.es.unshift(v12859_es);
 CHANGELOG_BY_LANG.de.unshift(v12859_de);
 
+const v12860_fr: ChangelogEntry = {
+  version: "v1.55.51",
+  date: "2026-10-07",
+  title: "Design System Épuré Etho, Blocs Rectangulaires & Parité Thème",
+  items: [
+    "Interface d'onboarding et de sélection de serveurs harmonisée aux tokens de thème dynamique ETHONE",
+    "Remplacement des arrondis par des blocs rectangulaires et carrés nets sans fioritures",
+    "Affichage de la photo de profil du compte ETHONE dans la barre latérale",
+    "Bouton fixe Retour à ETHONE en bas à droite pour une navigation fluide",
+    "Nettoyage des mentions superflues et intégration du bouton Passer l'attente",
+  ],
+};
+
+const v12860_en: ChangelogEntry = {
+  version: "v1.55.51",
+  date: "2026-10-07",
+  title: "Clean Etho Design System, Rectangular Blocks & Theme Parity",
+  items: [
+    "Onboarding and server picker interface aligned with dynamic ETHONE theme tokens",
+    "Sharp rectangular and square blocks replacing bubbly rounded borders",
+    "Display of the ETHONE account profile picture in the sidebar footer",
+    "Fixed Retour à ETHONE bottom-right button for smooth navigation",
+    "Cleaned placeholder badges and added skip button for bot installation",
+  ],
+};
+
+const v12860_es: ChangelogEntry = {
+  version: "v1.55.51",
+  date: "2026-10-07",
+  title: "Diseño depurado de Etho, bloques rectangulares y soporte de temas",
+  items: [
+    "Interfaz de bienvenida y selección de servidores adaptada a los temas de ETHONE",
+    "Bloques rectangulares y cuadrados definidos",
+    "Foto de perfil de la cuenta ETHONE en la barra lateral",
+    "Botón fijo de retorno a ETHONE en la esquina inferior derecha",
+    "Eliminación de textos superfluos y botón para omitir espera",
+  ],
+};
+
+const v12860_de: ChangelogEntry = {
+  version: "v1.55.51",
+  date: "2026-10-07",
+  title: "Klares Etho Design-System, rechteckige Blöcke & Theme-Parität",
+  items: [
+    "Onboarding und Server-Auswahl an dynamische ETHONE-Themes angepasst",
+    "Klare rechteckige und quadratische Blöcke",
+    "ETHONE-Profilbild in der Seitenleiste unten",
+    "Fester Zurück zu ETHONE-Button unten rechts",
+    "Bereinigung überflüssiger Badges und Überspringen-Option bei der Bot-Installation",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12860_fr);
+CHANGELOG_BY_LANG.en.unshift(v12860_en);
+CHANGELOG_BY_LANG.es.unshift(v12860_es);
+CHANGELOG_BY_LANG.de.unshift(v12860_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

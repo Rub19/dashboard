@@ -2,9 +2,9 @@
 
 import { type ReactNode } from "react";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ArrowLeft } from "@/components/icons/ph";
-import BotStatusStrip from "@/components/discord/BotStatusStrip";
 import { WindowManagerProvider } from "@/components/WindowManagerProvider";
 import PresenceProvider from "@/components/PresenceProvider";
 import { ShortcutsProvider } from "@/components/ShortcutsProvider";
@@ -45,9 +45,6 @@ export default function Shell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   // Le Bot Discord s'ouvre en plein écran par-dessus le dashboard : ni sidebar, ni barre du haut, ni barre du bas.
   const discordFullscreen = pathname === "/discord" || (pathname?.startsWith("/discord/") ?? false);
-  // Le Centre de contrôle du bot affiche déjà sa propre télémétrie (ping/uptime/serveurs/membres) :
-  // la bande globale ferait doublon avec les mêmes chiffres juste en dessous.
-  const hideStatusStrip = pathname?.startsWith("/discord/bot") ?? false;
 
   if (discordFullscreen) {
     return (
@@ -64,43 +61,23 @@ export default function Shell({ children }: { children: ReactNode }) {
                   <CosmicBackground />
                   <RefreshSpinner />
                   <VisualHaptics />
-                  <header className="relative z-10 flex h-16 shrink-0 items-center gap-4 border-b border-[var(--panel-border)]/60 px-4 pt-1 sm:px-6">
-                    {/* Vraie navigation (et non <Link>) : depuis le plein écran du bot, la navigation client vers « / »
-                        pouvait ne rien faire, et sur discord.ethone.dev « / » redirige vers la vitrine /bot. */}
-                    {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-                    <a
-                      href="/"
-                      onClick={(e) => {
-                        try {
-                          sessionStorage.removeItem("ethone:discord:picked");
-                        } catch {
-                          // stockage indisponible : le choix du serveur sera simplement conservé
-                        }
-                        if (window.location.hostname === "discord.ethone.dev") {
-                          e.preventDefault();
-                          window.location.assign("https://ethone.dev/");
-                        }
-                      }}
-                      className="group inline-flex h-11 items-center gap-2.5 rounded-full border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-5 text-sm font-semibold text-[var(--text-primary)] transition-all hover:border-[var(--accent-primary)]/50 hover:bg-[var(--accent-primary)]/10 active:scale-95"
-                    >
-                      <ArrowLeft className="h-5 w-5 transition-transform duration-300 [transition-timing-function:var(--ease-snap)] group-hover:-translate-x-0.5" />
-                      Retour à ETHONE
-                    </a>
-                    <span aria-hidden className="hidden h-6 w-px bg-[var(--panel-border)] sm:block" />
-                    <div className="flex items-center gap-2.5">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src="/branding/etho-avatar.gif" alt="" className="h-8 w-8 rounded-full object-cover" />
-                      <div className="leading-tight">
-                        <p className="text-sm font-bold text-[var(--text-primary)]">Etho</p>
-                        <p className="hidden text-xs text-[var(--text-muted)] sm:block">Console du bot</p>
-                      </div>
-                    </div>
-                    {!hideStatusStrip && (
-                      <div className="ml-auto">
-                        <BotStatusStrip />
-                      </div>
-                    )}
-                  </header>
+                  <Link
+                    href="/"
+                    onClick={(e) => {
+                      try {
+                        sessionStorage.removeItem("ethone:discord:picked");
+                      } catch {
+                      }
+                      if (typeof window !== "undefined" && window.location.hostname === "discord.ethone.dev") {
+                        e.preventDefault();
+                        window.location.assign("https://ethone.dev/");
+                      }
+                    }}
+                    className="fixed bottom-4 right-4 z-50 flex items-center gap-2 border border-[var(--panel-border)] bg-[var(--surface-raised)]/95 backdrop-blur-md px-3.5 py-2 text-xs font-semibold text-[var(--text-primary)] hover:border-[var(--accent-primary)] hover:text-[var(--accent-primary)] shadow-lg transition-all rounded-sm cursor-pointer"
+                  >
+                    <ArrowLeft className="h-4 w-4" />
+                    <span>Retour à ETHONE</span>
+                  </Link>
                   <PrivacyShield>
                     <main
                       data-v8-main

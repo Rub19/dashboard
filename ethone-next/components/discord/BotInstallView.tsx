@@ -14,13 +14,13 @@ import {
   Home,
   Settings,
   LogOut,
-  CheckCircle2,
 } from "@/components/icons/ph";
 import ClientImage from "@/components/ClientImage";
 import FlagIcon from "@/components/FlagIcon";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
 import { useSettings } from "@/components/SettingsProvider";
 import { useToast } from "@/components/ToastProvider";
+import { useAccountProfile } from "@/lib/profile/account-profile";
 import { fetchBotPresence, clearBotPresenceCache } from "@/lib/hooks/useBotGuildIds";
 import { cn } from "@/lib/utils";
 import type { DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
@@ -61,6 +61,7 @@ export default function BotInstallView({
   const { setOpen: openCommandPalette } = useCommandPalette();
   const { settings, update: updateSettings } = useSettings();
   const { success, info, error: showError } = useToast();
+  const { profile: ethoneProfile } = useAccountProfile();
 
   const [isChecking, setIsChecking] = useState(false);
 
@@ -113,46 +114,44 @@ export default function BotInstallView({
   }, [checkPresence]);
 
   const initials = useMemo(() => getGuildInitials(guild.name), [guild.name]);
-  const userInitials = useMemo(
-    () => (userName || "rub19").slice(0, 2).toUpperCase(),
-    [userName]
-  );
+  const currentDisplayName = ethoneProfile?.displayName || ethoneProfile?.username || userName || "rub19";
+  const currentAvatarUrl = ethoneProfile?.avatarUrl || userAvatar || null;
 
   return (
-    <div className="min-h-[calc(100dvh-4rem)] w-full bg-[#050907] text-[#e6f4ed] flex flex-col md:flex-row antialiased">
-      <aside className="w-full md:w-64 shrink-0 border-b md:border-b-0 md:border-r border-[#122118] bg-[#070e0a]/95 backdrop-blur-xl flex flex-col justify-between p-4 md:sticky md:top-0 md:h-[calc(100dvh-4rem)]">
+    <div className="min-h-[calc(100dvh-4rem)] w-full bg-[var(--background)] text-[var(--text-primary)] flex flex-col md:flex-row antialiased">
+      <aside className="w-full md:w-64 shrink-0 border-b md:border-b-0 md:border-r border-[var(--panel-border)] bg-[var(--surface-raised)]/95 flex flex-col justify-between p-4 md:sticky md:top-0 md:h-[calc(100dvh-4rem)]">
         <div className="space-y-4">
           <div className="flex items-center px-2 pt-1">
             <div className="flex items-center gap-2.5">
-              <div className="relative flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/10 border border-emerald-500/30">
-                <ShieldCheck className="h-4 w-4 text-emerald-400" />
+              <div className="relative flex h-8 w-8 items-center justify-center rounded-sm bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/30">
+                <ShieldCheck className="h-4 w-4 text-[var(--accent-primary)]" />
               </div>
-              <span className="font-bold text-sm tracking-tight text-white">
-                Etho Protect
+              <span className="font-bold text-base tracking-tight text-[var(--text-primary)]">
+                Etho
               </span>
             </div>
           </div>
 
-          <div className="flex items-center gap-2.5 rounded-xl border border-[#16271e] bg-[#09120e] p-2.5">
+          <div className="flex items-center gap-2.5 rounded-sm border border-[var(--panel-border)] bg-[var(--surface-raised)] p-2.5">
             {guild.iconUrl ? (
               <ClientImage
                 src={guild.iconUrl}
                 alt={guild.name}
                 width={36}
                 height={36}
-                className="h-9 w-9 rounded-lg object-cover border border-[#1f3427] shrink-0"
+                className="h-9 w-9 rounded-sm object-cover border border-[var(--panel-border)] shrink-0"
               />
             ) : (
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#122319] text-emerald-400 font-bold text-xs border border-[#1f3427]">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm bg-[var(--surface-raised)] text-[var(--accent-primary)] font-bold text-xs border border-[var(--panel-border)]">
                 {initials}
               </div>
             )}
             <div className="min-w-0 flex-1">
-              <span className="block truncate text-xs font-semibold text-white">
+              <span className="block truncate text-xs font-semibold text-[var(--text-primary)]">
                 {guild.name}
               </span>
-              <span className="flex items-center gap-1.5 text-[11px] text-[#799987]">
-                <span className="h-1.5 w-1.5 rounded-full bg-zinc-500" />
+              <span className="flex items-center gap-1.5 text-[11px] text-[var(--text-muted)]">
+                <span className="h-1.5 w-1.5 rounded-sm bg-zinc-500" />
                 <span>{botName} absent</span>
               </span>
             </div>
@@ -161,24 +160,24 @@ export default function BotInstallView({
           <button
             type="button"
             onClick={() => openCommandPalette(true)}
-            className="w-full flex items-center justify-between rounded-xl border border-[#17271e] bg-[#0b1410] px-3 py-2 text-xs text-[#71917f] hover:border-emerald-500/40 hover:text-emerald-300 transition-all cursor-pointer"
+            className="w-full flex items-center justify-between rounded-sm border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-2 text-xs text-[var(--text-muted)] hover:border-[var(--accent-primary)]/40 hover:text-[var(--text-primary)] transition-all cursor-pointer"
           >
             <div className="flex items-center gap-2">
               <Search className="h-3.5 w-3.5" />
               <span>Rechercher un réglage...</span>
             </div>
-            <kbd className="rounded border border-[#1e3427] bg-[#101e16] px-1.5 py-0.5 text-[10px] font-mono text-[#8faea0]">
+            <kbd className="rounded-sm border border-[var(--panel-border)] bg-[var(--background)] px-1.5 py-0.5 text-[10px] font-mono text-[var(--text-muted)]">
               Ctrl K
             </kbd>
           </button>
         </div>
 
-        <div className="space-y-4 pt-4 border-t border-[#122118]">
+        <div className="space-y-4 pt-4 border-t border-[var(--panel-border)]">
           <div className="space-y-1 text-xs">
             <button
               type="button"
               onClick={onBack}
-              className="w-full flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-[#739281] hover:bg-[#0d1812] hover:text-[#d3e9dc] transition-colors cursor-pointer"
+              className="w-full flex items-center gap-2 rounded-sm px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
             >
               <Home className="h-3.5 w-3.5" />
               <span>Mes serveurs</span>
@@ -187,7 +186,7 @@ export default function BotInstallView({
               href={DOCS_URL}
               target="_blank"
               rel="noreferrer"
-              className="flex items-center justify-between rounded-lg px-2.5 py-1.5 text-[#739281] hover:bg-[#0d1812] hover:text-[#d3e9dc] transition-colors"
+              className="flex items-center justify-between rounded-sm px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors"
             >
               <div className="flex items-center gap-2">
                 <FileText className="h-3.5 w-3.5" />
@@ -199,7 +198,7 @@ export default function BotInstallView({
               href={SUPPORT_DISCORD_URL}
               target="_blank"
               rel="noreferrer"
-              className="flex items-center justify-between rounded-lg px-2.5 py-1.5 text-[#739281] hover:bg-[#0d1812] hover:text-[#d3e9dc] transition-colors"
+              className="flex items-center justify-between rounded-sm px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors"
             >
               <div className="flex items-center gap-2">
                 <Headphones className="h-3.5 w-3.5" />
@@ -209,30 +208,30 @@ export default function BotInstallView({
             </a>
           </div>
 
-          <div className="flex items-center justify-between rounded-xl border border-[#16271e] bg-[#09120e] p-2">
+          <div className="flex items-center justify-between rounded-sm border border-[var(--panel-border)] bg-[var(--surface-raised)] p-2">
             <div className="flex items-center gap-2 min-w-0">
-              {userAvatar ? (
+              {currentAvatarUrl ? (
                 <ClientImage
-                  src={userAvatar}
-                  alt={userName}
+                  src={currentAvatarUrl}
+                  alt={currentDisplayName}
                   width={28}
                   height={28}
-                  className="h-7 w-7 rounded-full object-cover border border-emerald-500/30"
+                  className="h-7 w-7 rounded-sm object-cover border border-[var(--panel-border)]"
                 />
               ) : (
-                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-600/20 text-emerald-400 font-bold text-xs border border-emerald-500/30">
-                  {userInitials}
+                <div className="flex h-7 w-7 items-center justify-center rounded-sm bg-[var(--surface-raised)] text-[var(--accent-primary)] font-bold text-xs border border-[var(--panel-border)]">
+                  {currentDisplayName.slice(0, 2).toUpperCase()}
                 </div>
               )}
-              <span className="truncate text-xs font-bold text-[#e6f4ed]">
-                {userName}
+              <span className="truncate text-xs font-bold text-[var(--text-primary)]">
+                {currentDisplayName}
               </span>
             </div>
 
             <div className="flex items-center gap-1 shrink-0">
               <Link
                 href="/discord/settings"
-                className="p-1 text-[#738f80] hover:text-[#d3e9dc] rounded hover:bg-[#121f18] transition-colors"
+                className="p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] rounded-sm hover:bg-[var(--surface-raised)] transition-colors"
                 title="Paramètres"
               >
                 <Settings className="h-3.5 w-3.5" />
@@ -244,7 +243,7 @@ export default function BotInstallView({
                   const nextLang = settings.language === "fr" ? "en" : "fr";
                   updateSettings({ language: nextLang });
                 }}
-                className="p-1 rounded hover:bg-[#121f18] transition-colors cursor-pointer"
+                className="p-1 rounded-sm hover:bg-[var(--surface-raised)] transition-colors cursor-pointer"
                 title="Changer de langue"
               >
                 <FlagIcon code={settings.language || "fr"} className="h-3.5 w-5" />
@@ -252,7 +251,7 @@ export default function BotInstallView({
 
               <Link
                 href="/login"
-                className="p-1 text-[#738f80] hover:text-rose-400 rounded hover:bg-[#121f18] transition-colors"
+                className="p-1 text-[var(--text-muted)] hover:text-rose-400 rounded-sm hover:bg-[var(--surface-raised)] transition-colors"
                 title="Déconnexion"
               >
                 <LogOut className="h-3.5 w-3.5" />
@@ -263,42 +262,37 @@ export default function BotInstallView({
       </aside>
 
       <main className="flex-1 min-w-0 flex flex-col overflow-y-auto">
-        <header className="flex h-14 shrink-0 items-center justify-between gap-3 border-b border-[#122118] px-4 sm:px-8 bg-[#070e0a]/40">
-          <div className="flex items-center gap-2 text-xs text-zinc-400">
+        <header className="flex h-14 shrink-0 items-center justify-between gap-3 border-b border-[var(--panel-border)] px-4 sm:px-8 bg-[var(--surface-raised)]/40">
+          <div className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
             <button
               type="button"
               onClick={onBack}
-              className="text-zinc-400 hover:text-white transition-colors cursor-pointer font-medium"
+              className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer font-medium"
             >
               {guild.name}
             </button>
-            <ChevronRight className="h-3 w-3 text-zinc-600" />
-            <span className="text-white font-medium">Installation</span>
-          </div>
-
-          <div className="flex items-center gap-1.5 text-xs text-zinc-400">
-            <CheckCircle2 className="h-3.5 w-3.5 text-zinc-500" />
-            <span>Tout est enregistré</span>
+            <ChevronRight className="h-3 w-3 text-[var(--text-muted)]" />
+            <span className="text-[var(--text-primary)] font-medium">Installation</span>
           </div>
         </header>
 
         <div className="flex-1 min-w-0 p-4 sm:p-8 lg:p-12 flex flex-col justify-center items-center">
           <div className="w-full max-w-2xl space-y-8">
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white text-center">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[var(--text-primary)] text-center">
               Installer {botName} sur {guild.name}
             </h1>
 
-            <div className="rounded-2xl border border-[#16271e] bg-[#09120e] shadow-2xl divide-y divide-[#132219] overflow-hidden">
+            <div className="rounded-sm border border-[var(--panel-border)] bg-[var(--surface-raised)] shadow-2xl divide-y divide-[var(--panel-border)] overflow-hidden">
               <div className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-start gap-4 min-w-0">
-                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-white/15 bg-white/5 text-xs font-semibold text-white/90">
+                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-sm border border-[var(--panel-border)] bg-[var(--background)] text-xs font-semibold text-[var(--text-primary)]">
                     1
                   </div>
                   <div className="min-w-0">
-                    <h3 className="text-sm font-semibold text-white">
+                    <h3 className="text-sm font-semibold text-[var(--text-primary)]">
                       Ajoute {botName} au serveur
                     </h3>
-                    <p className="mt-0.5 text-xs text-[#71917f] leading-relaxed">
+                    <p className="mt-0.5 text-xs text-[var(--text-muted)] leading-relaxed">
                       Discord s&apos;ouvre dans un nouvel onglet. Garde toutes les permissions demandées.
                     </p>
                   </div>
@@ -308,7 +302,7 @@ export default function BotInstallView({
                   href={inviteHref}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg bg-[#22c55e] px-4 py-2 text-xs font-bold text-black hover:bg-[#16a34a] transition-all shadow-md shadow-emerald-500/20"
+                  className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-sm bg-[var(--accent-primary)] px-4 py-2 text-xs font-bold text-[var(--accent-contrast)] hover:opacity-90 transition-all shadow-md"
                 >
                   <span>Ajouter {botName}</span>
                   <ExternalLink className="h-3.5 w-3.5" />
@@ -316,14 +310,14 @@ export default function BotInstallView({
               </div>
 
               <div className="p-5 flex items-start gap-4">
-                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-white/15 bg-white/5 text-xs font-semibold text-white/90">
+                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-sm border border-[var(--panel-border)] bg-[var(--background)] text-xs font-semibold text-[var(--text-primary)]">
                   2
                 </div>
                 <div className="min-w-0">
-                  <h3 className="text-sm font-semibold text-white">
+                  <h3 className="text-sm font-semibold text-[var(--text-primary)]">
                     Place son rôle tout en haut
                   </h3>
-                  <p className="mt-0.5 text-xs text-[#71917f] leading-relaxed">
+                  <p className="mt-0.5 text-xs text-[var(--text-muted)] leading-relaxed">
                     Paramètres du serveur, Rôles : glisse le rôle {botName} au-dessus des autres pour qu&apos;il puisse sanctionner et restaurer.
                   </p>
                 </div>
@@ -331,14 +325,14 @@ export default function BotInstallView({
 
               <div className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-start gap-4 min-w-0">
-                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-white/15 bg-white/5 text-xs font-semibold text-white/90">
+                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-sm border border-[var(--panel-border)] bg-[var(--background)] text-xs font-semibold text-[var(--text-primary)]">
                     3
                   </div>
                   <div className="min-w-0">
-                    <h3 className="text-sm font-semibold text-white">
+                    <h3 className="text-sm font-semibold text-[var(--text-primary)]">
                       Reviens ici
                     </h3>
-                    <p className="mt-0.5 text-xs text-[#71917f] leading-relaxed">
+                    <p className="mt-0.5 text-xs text-[var(--text-muted)] leading-relaxed">
                       La configuration s&apos;ouvre dès que {botName} est détecté.
                     </p>
                   </div>
@@ -349,12 +343,12 @@ export default function BotInstallView({
                     type="button"
                     onClick={() => checkPresence(true)}
                     disabled={isChecking}
-                    className="inline-flex items-center gap-1.5 rounded-lg border border-[#1e3427] bg-[#0c1611] px-3.5 py-2 text-xs font-semibold text-[#c4ded0] hover:border-emerald-500/40 hover:bg-[#122319] hover:text-white transition-all disabled:opacity-50 cursor-pointer"
+                    className="inline-flex items-center gap-1.5 rounded-sm border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3.5 py-2 text-xs font-semibold text-[var(--text-primary)] hover:border-[var(--accent-primary)] hover:text-[var(--accent-primary)] transition-all disabled:opacity-50 cursor-pointer"
                   >
                     <RefreshCw
                       className={cn(
                         "h-3.5 w-3.5",
-                        isChecking && "animate-spin text-emerald-400"
+                        isChecking && "animate-spin text-[var(--accent-primary)]"
                       )}
                     />
                     <span>{isChecking ? "Vérification..." : "Vérifier"}</span>
@@ -363,7 +357,7 @@ export default function BotInstallView({
                   <button
                     type="button"
                     onClick={() => onSkip(guild)}
-                    className="inline-flex items-center gap-1.5 rounded-lg border border-[#1e3427] bg-[#0c1611]/60 px-3 py-2 text-xs font-semibold text-[#799987] hover:border-[#2f4f3c] hover:bg-[#101e16] hover:text-[#c4ded0] transition-all cursor-pointer"
+                    className="inline-flex items-center gap-1.5 rounded-sm border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-2 text-xs font-semibold text-[var(--text-muted)] hover:border-[var(--accent-primary)] hover:text-[var(--text-primary)] transition-all cursor-pointer"
                     title="Passer l'attente et accéder directement à la configuration"
                   >
                     <SkipForward className="h-3.5 w-3.5" />
@@ -373,7 +367,7 @@ export default function BotInstallView({
               </div>
             </div>
 
-            <div className="rounded-xl border border-[#16271e] bg-[#08120d] px-4 py-3 text-center text-xs text-[#71917f]">
+            <div className="rounded-sm border border-[var(--panel-border)] bg-[var(--surface-raised)] px-4 py-3 text-center text-xs text-[var(--text-muted)]">
               <span>La détection peut prendre quelques secondes après l&apos;ajout du bot.</span>
             </div>
           </div>

@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.51 — 2026-10-07
+
+**Design System Épuré Etho, Blocs Rectangulaires & Parité Thème**
+
+- Interface d'onboarding et de sélection de serveurs harmonisée aux tokens de thème dynamique ETHONE.
+- Remplacement des arrondis par des blocs rectangulaires et carrés nets sans fioritures.
+- Affichage de la photo de profil du compte ETHONE dans la barre latérale.
+- Bouton fixe Retour à ETHONE en bas à droite pour une navigation fluide.
+- Nettoyage des mentions superflues et intégration du bouton Passer l'attente.
+
 ## v1.55.50 — 2026-10-07
 
 **Console Discord : Écran d'Installation Bot Style Keeper Protect & Auto-Détection**

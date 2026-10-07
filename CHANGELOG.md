@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.59 — 2026-10-07
+
+**Motion Design Fluide de la Console Discord et Synchronisation Avatar Bot**
+
+- Animations fluides et transitions cinétiques sur la page de sélection des serveurs et d'installation du bot.
+- Synchronisation automatique de l'avatar Discord en direct depuis la session bot authentifiée (`useBotSessionUser`).
+- Micro-interactions par ressort dynamique sur les boutons d'action (Gérer, Installer, Vérifier, Passer l'attente).
+- Indicateur d'étapes interactif avec validation visuelle dynamique lors de l'ajout du bot.
+
 ## v1.55.58 — 2026-10-07
 
 **Pleine Hauteur et Épuration de la Vue d'Installation Bot**

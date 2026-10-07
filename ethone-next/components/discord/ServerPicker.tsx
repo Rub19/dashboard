@@ -30,9 +30,22 @@ import { useAuth } from "@/components/AuthProvider";
 import { useAccountProfile } from "@/lib/profile/account-profile";
 import { cn } from "@/lib/utils";
 import { choreography, revealUp } from "@/lib/motion-variants";
-import { EASE_SNAP, SPRING_PILL } from "@/lib/ease";
+import { EASE_SNAP, SPRING_PILL, SPRING_PRESS } from "@/lib/ease";
 import { useMotionPref } from "@/lib/hooks/useMotionPref";
 import { getStoredDiscordUser, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
+import { useBotSessionUser } from "@/lib/hooks/useBotSessionUser";
+import {
+  useConsoleIntro,
+  consoleSidebar,
+  consoleSidebarItem,
+  consoleBrandMark,
+  consoleHeader,
+  consoleStage,
+  consoleReveal,
+  consoleFadeUp,
+  consoleList,
+  consoleRow,
+} from "./consoleMotion";
 
 interface ServerPickerProps {
   guilds: DiscordGuild[];
@@ -127,6 +140,7 @@ export default function ServerPicker({
   onPick,
 }: ServerPickerProps) {
   const { reduced } = useMotionPref();
+  const playIntro = useConsoleIntro();
   const { setOpen: openCommandPalette } = useCommandPalette();
   const { profile: ethoneProfile } = useAccountProfile();
   const router = useRouter();
@@ -204,6 +218,7 @@ export default function ServerPicker({
   const showSearch = guilds.length > 6;
 
   const storedUser = useMemo(() => getStoredDiscordUser(), []);
+  const botUser = useBotSessionUser();
   const currentDisplayName =
     userName ||
     storedUser?.globalName ||
@@ -213,6 +228,7 @@ export default function ServerPicker({
     ethoneProfile?.username ||
     "rub19";
   const currentAvatarUrl =
+    botUser?.avatarUrl ||
     userAvatar ||
     storedUser?.avatarUrl ||
     storedUser?.avatarUrlSmall ||
@@ -419,13 +435,23 @@ export default function ServerPicker({
 
   return (
     <div className="h-dvh min-h-dvh w-full bg-[var(--background)] text-[var(--text-primary)] flex flex-col md:flex-row antialiased overflow-hidden">
-      <aside className="w-full md:w-64 shrink-0 border-b md:border-b-0 md:border-r border-[var(--panel-border)] bg-[var(--surface-raised)]/95 flex flex-col justify-between p-4 md:h-dvh md:max-h-dvh">
+      <motion.aside
+        variants={consoleSidebar}
+        initial={!reduced && playIntro ? "initial" : false}
+        animate="animate"
+        className="w-full md:w-64 shrink-0 border-b md:border-b-0 md:border-r border-[var(--panel-border)] bg-[var(--surface-raised)]/95 flex flex-col justify-between p-4 md:h-dvh md:max-h-dvh"
+      >
         <div className="space-y-4">
           <div className="flex items-center justify-between px-2 pt-1">
             <div className="flex items-center gap-2.5">
-              <div className="relative flex h-8 w-8 items-center justify-center rounded-sm bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/30">
+              <motion.div
+                variants={consoleBrandMark}
+                whileHover={reduced ? undefined : { scale: 1.06 }}
+                transition={SPRING_PRESS}
+                className="relative flex h-8 w-8 items-center justify-center rounded-sm bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/30 cursor-pointer"
+              >
                 <ShieldCheck className="h-4 w-4 text-[var(--accent-primary)]" />
-              </div>
+              </motion.div>
               <span className="font-bold text-base tracking-tight text-[var(--text-primary)]">Etho</span>
             </div>
             <button
@@ -438,7 +464,8 @@ export default function ServerPicker({
             </button>
           </div>
 
-          <button
+          <motion.button
+            variants={consoleSidebarItem}
             type="button"
             onClick={() => openCommandPalette(true)}
             className="w-full flex items-center justify-between rounded-sm border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-2 text-xs text-[var(--text-muted)] hover:border-[var(--accent-primary)]/40 hover:text-[var(--text-primary)] transition-all cursor-pointer"
@@ -450,9 +477,9 @@ export default function ServerPicker({
             <kbd className="rounded-sm border border-[var(--panel-border)] bg-[var(--background)] px-1.5 py-0.5 text-[10px] font-mono text-[var(--text-muted)]">
               Ctrl K
             </kbd>
-          </button>
+          </motion.button>
 
-          <div className="space-y-1 text-xs">
+          <motion.div variants={consoleSidebarItem} className="space-y-1 text-xs">
             <button
               type="button"
               className="w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-[var(--text-primary)] hover:bg-[var(--surface-hover,var(--surface-raised))] transition-colors cursor-pointer font-medium text-left"
@@ -484,10 +511,10 @@ export default function ServerPicker({
               </div>
               <ExternalLink className="h-3.5 w-3.5 opacity-60" />
             </a>
-          </div>
+          </motion.div>
         </div>
 
-        <div className="pt-3 border-t border-[var(--panel-border)]">
+        <motion.div variants={consoleSidebarItem} className="pt-3 border-t border-[var(--panel-border)]">
           <div className="flex items-center justify-between p-1.5">
             <div className="flex items-center gap-2.5 min-w-0">
               {currentAvatarUrl ? (
@@ -549,12 +576,17 @@ export default function ServerPicker({
               </button>
             </div>
           </div>
-        </div>
-      </aside>
+        </motion.div>
+      </motion.aside>
 
       <main className="flex-1 min-w-0 p-4 md:p-8 lg:p-10 overflow-y-auto h-full md:h-dvh">
         <div className="max-w-4xl mx-auto space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[var(--panel-border)] pb-4">
+          <motion.div
+            variants={consoleHeader}
+            initial={reduced ? false : "initial"}
+            animate="animate"
+            className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[var(--panel-border)] pb-4"
+          >
             <div className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
               <span className="font-semibold text-[var(--text-primary)]">Etho</span>
               <ChevronRight className="h-3 w-3" />
@@ -570,19 +602,24 @@ export default function ServerPicker({
                 <span>Vue classique</span>
               </button>
             </div>
-          </div>
+          </motion.div>
 
-          <div className="space-y-6">
-            <div>
+          <motion.div
+            variants={consoleStage}
+            initial={reduced ? false : "initial"}
+            animate="animate"
+            className="space-y-6"
+          >
+            <motion.div variants={consoleReveal}>
               <h1 className="text-2xl font-black tracking-tight text-[var(--text-primary)] sm:text-3xl">
                 Bonjour {currentDisplayName}
               </h1>
               <p className="mt-1 text-xs sm:text-sm text-[var(--text-muted)]">
                 Gérez vos serveurs ou configurez Etho en quelques clics.
               </p>
-            </div>
+            </motion.div>
 
-            <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+            <motion.div variants={consoleFadeUp} className="flex flex-col sm:flex-row sm:items-center gap-3">
               <div className="relative flex-1">
                 <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--text-muted)]" />
                 <input
@@ -596,7 +633,7 @@ export default function ServerPicker({
                   <button
                     type="button"
                     onClick={() => setQuery("")}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"
                   >
                     <X className="h-3.5 w-3.5" />
                   </button>
@@ -626,10 +663,10 @@ export default function ServerPicker({
                   </button>
                 </div>
               )}
-            </div>
+            </motion.div>
 
             {!isConnected && (
-              <div className="rounded-sm border border-[var(--accent-primary)]/30 bg-[var(--surface-raised)] p-5 text-center space-y-3">
+              <motion.div variants={consoleFadeUp} className="rounded-sm border border-[var(--accent-primary)]/30 bg-[var(--surface-raised)] p-5 text-center space-y-3">
                 <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-sm bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/30">
                   <DiscordIcon className="h-5 w-5" />
                 </div>
@@ -648,19 +685,23 @@ export default function ServerPicker({
                   <DiscordIcon className="h-4 w-4" />
                   <span>Lier mon compte Discord</span>
                 </button>
-              </div>
+              </motion.div>
             )}
 
             {filteredInstalled.length > 0 && (
-              <div className="space-y-2.5">
+              <motion.div variants={consoleFadeUp} className="space-y-2.5">
                 <div className="flex items-center justify-between text-xs text-[var(--text-muted)] font-medium px-1">
                   <span>Avec Etho · {filteredInstalled.length}</span>
                 </div>
-                <div className="space-y-1.5">
+                <motion.div variants={consoleList} className="space-y-1.5">
                   {filteredInstalled.map((guild) => (
-                    <div
+                    <motion.div
                       key={guild.id}
-                      className="group flex items-center justify-between rounded-sm border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-4 py-3 hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-raised)] transition-all"
+                      variants={consoleRow}
+                      whileHover={reduced ? undefined : { y: -1, scale: 1.004 }}
+                      whileTap={reduced ? undefined : { scale: 0.995 }}
+                      transition={SPRING_PRESS}
+                      className="group flex items-center justify-between rounded-sm border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-4 py-3 hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-raised)] transition-colors"
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         {guild.iconUrl ? (
@@ -683,21 +724,24 @@ export default function ServerPicker({
                         </div>
                       </div>
 
-                      <button
+                      <motion.button
                         type="button"
                         onClick={() => onPick(guild)}
-                        className="flex items-center gap-1.5 rounded-sm border border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/10 px-3 py-1.5 text-xs font-bold text-[var(--accent-primary)] hover:bg-[var(--accent-primary)] hover:text-[var(--accent-contrast)] transition-all cursor-pointer"
+                        whileHover={reduced ? undefined : { scale: 1.04 }}
+                        whileTap={reduced ? undefined : { scale: 0.96 }}
+                        transition={SPRING_PRESS}
+                        className="flex items-center gap-1.5 rounded-sm border border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/10 px-3 py-1.5 text-xs font-bold text-[var(--accent-primary)] hover:bg-[var(--accent-primary)] hover:text-[var(--accent-contrast)] transition-colors cursor-pointer"
                       >
                         <Check className="h-3.5 w-3.5" />
                         <span>Gérer</span>
-                      </button>
-                    </div>
+                      </motion.button>
+                    </motion.div>
                   ))}
-                </div>
-              </div>
+                </motion.div>
+              </motion.div>
             )}
 
-            <div className="space-y-2.5">
+            <motion.div variants={consoleFadeUp} className="space-y-2.5">
               <div className="flex items-center justify-between text-xs text-[var(--text-muted)] font-medium px-1">
                 <span>Sans Etho · {filteredUninstalled.length}</span>
               </div>
@@ -710,12 +754,16 @@ export default function ServerPicker({
                 </div>
               )}
 
-              <div className="space-y-1.5">
+              <motion.div variants={consoleList} className="space-y-1.5">
                 {filteredUninstalled.map((guild) => (
-                  <div
+                  <motion.div
                     key={guild.id}
+                    variants={consoleRow}
+                    whileHover={reduced ? undefined : { y: -1, scale: 1.004 }}
+                    whileTap={reduced ? undefined : { scale: 0.995 }}
+                    transition={SPRING_PRESS}
                     onClick={() => onPick(guild)}
-                    className="group flex items-center justify-between rounded-sm border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-4 py-3 hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-raised)] transition-all cursor-pointer"
+                    className="group flex items-center justify-between rounded-sm border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-4 py-3 hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-raised)] transition-colors cursor-pointer"
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       {guild.iconUrl ? (
@@ -738,22 +786,25 @@ export default function ServerPicker({
                       </div>
                     </div>
 
-                    <button
+                    <motion.button
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
                         onPick(guild);
                       }}
-                      className="flex items-center gap-1.5 rounded-sm border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-1.5 text-xs font-semibold text-[var(--text-muted)] hover:border-[var(--accent-primary)]/40 hover:text-[var(--text-primary)] transition-all cursor-pointer"
+                      whileHover={reduced ? undefined : { scale: 1.04 }}
+                      whileTap={reduced ? undefined : { scale: 0.96 }}
+                      transition={SPRING_PRESS}
+                      className="flex items-center gap-1.5 rounded-sm border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-1.5 text-xs font-semibold text-[var(--text-muted)] hover:border-[var(--accent-primary)]/40 hover:text-[var(--text-primary)] transition-colors cursor-pointer"
                     >
                       <Plus className="h-3.5 w-3.5" />
                       <span>Installer</span>
-                    </button>
-                  </div>
+                    </motion.button>
+                  </motion.div>
                 ))}
-              </div>
-            </div>
-          </div>
+              </motion.div>
+            </motion.div>
+          </motion.div>
         </div>
       </main>
     </div>

@@ -46225,6 +46225,54 @@ const v12865_de: ChangelogEntry = {
   ],
 };
 
+const v12866_fr: ChangelogEntry = {
+  version: "v1.55.59",
+  date: "2026-10-07",
+  title: "Motion Design Fluide de la Console Discord et Synchronisation Avatar Bot",
+  items: [
+    "Animations fluides et transitions cinétiques sur la page de sélection des serveurs et d'installation",
+    "Synchronisation automatique de l'avatar Discord en direct depuis la session bot authentifiée",
+    "Micro-interactions par ressort dynamique sur les boutons d'action (Gérer, Installer, Vérifier)",
+    "Indicateur d'étapes interactif avec validation visuelle dynamique lors de l'ajout du bot",
+  ],
+};
+
+const v12866_en: ChangelogEntry = {
+  version: "v1.55.59",
+  date: "2026-10-07",
+  title: "Fluid Discord Console Motion Design and Live Bot Avatar Sync",
+  items: [
+    "Smooth motion choreography and kinetic transitions on server picker and installation pages",
+    "Automatic live Discord avatar synchronization from the active authenticated bot session",
+    "Dynamic spring-based micro-interactions on action buttons (Manage, Install, Verify)",
+    "Interactive step indicators with instant visual validation upon bot addition",
+  ],
+};
+
+const v12866_es: ChangelogEntry = {
+  version: "v1.55.59",
+  date: "2026-10-07",
+  title: "Diseño de Movimiento Fluido en la Consola Discord y Sincronización del Avatar",
+  items: [
+    "Animaciones fluidas y transiciones cinéticas en las vistas de selección e instalación del bot",
+    "Sincronización en vivo del avatar de Discord desde la sesión autenticada del bot",
+    "Microinteracciones con amortiguación elástica en los botones de acción (Gestionar, Instalar, Verificar)",
+    "Indicador de pasos interactivo con validación visual dinámica al añadir el bot",
+  ],
+};
+
+const v12866_de: ChangelogEntry = {
+  version: "v1.55.59",
+  date: "2026-10-07",
+  title: "Flüssiges Motion Design der Discord-Konsole und Live-Bot-Avatar-Synchronisation",
+  items: [
+    "Fließende Bewegungschoreografie auf der Serverauswahl- und Installationsseite",
+    "Automatische Live-Synchronisation des Discord-Avatars aus der aktiven Bot-Sitzung",
+    "Dynamische Feder-Mikrointeraktionen auf Aktionsschaltflächen (Verwalten, Installieren, Überprüfen)",
+    "Interaktive Schrittanzeige mit dynamischer visueller Bestätigung beim Hinzufügen des Bots",
+  ],
+};
+
 CHANGELOG_BY_LANG.fr.unshift(v12860_fr);
 CHANGELOG_BY_LANG.en.unshift(v12860_en);
 CHANGELOG_BY_LANG.es.unshift(v12860_es);
@@ -46254,5 +46302,10 @@ CHANGELOG_BY_LANG.fr.unshift(v12865_fr);
 CHANGELOG_BY_LANG.en.unshift(v12865_en);
 CHANGELOG_BY_LANG.es.unshift(v12865_es);
 CHANGELOG_BY_LANG.de.unshift(v12865_de);
+
+CHANGELOG_BY_LANG.fr.unshift(v12866_fr);
+CHANGELOG_BY_LANG.en.unshift(v12866_en);
+CHANGELOG_BY_LANG.es.unshift(v12866_es);
+CHANGELOG_BY_LANG.de.unshift(v12866_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

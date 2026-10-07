@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.63 — 2026-10-07
+
+**Configurateur Rapide — Bannière & Assistant 4 Étapes**
+
+- Bannière « Configure Etho en une minute » intégrée sur la vue d'ensemble du serveur avec accès direct au configurateur.
+- Assistant interactif en 4 étapes : type de serveur (communauté ouverte, entre amis, vocaux), niveau de sévérité, salon d'alertes et vérification.
+- Application et activation réelles des protections et modules selon les spécificités du serveur configuré.
+- Mise à jour dynamique du compteur de protections actives et persistance de la configuration en temps réel.
+
 ## v1.55.62 — 2026-10-07
 
 **Sélecteur de Serveurs — Style Épuré pour les Serveurs Protégés**

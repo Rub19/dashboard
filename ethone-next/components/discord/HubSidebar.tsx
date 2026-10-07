@@ -44,7 +44,7 @@ import {
 } from "./consoleMotion";
 import type { NavigatorCategory, NavigatorModule } from "./ModuleNavigator";
 
-export type HubView = "home" | "modules" | "module";
+export type HubView = "home" | "modules" | "module" | "setup";
 
 interface HubSidebarProps {
   guildName: string;
@@ -173,6 +173,7 @@ export default function HubSidebar({
   const initials = useMemo(() => getGuildInitials(guildName), [guildName]);
 
   const isOverviewActive = view === "home" && !activeId;
+  const isSetupActive = view === "setup";
 
   return (
     <>
@@ -424,8 +425,19 @@ export default function HubSidebar({
 
               <button
                 type="button"
-                onClick={() => router.push(`/discord/setup?guildId=${selectedGuildId}`)}
-                className="w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors cursor-pointer text-left"
+                onClick={() => {
+                  if (onOpenSetup) {
+                    onOpenSetup();
+                  } else {
+                    router.push(`/discord/setup?guildId=${selectedGuildId}`);
+                  }
+                }}
+                className={cn(
+                  "w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-xs transition-colors cursor-pointer text-left",
+                  isSetupActive
+                    ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold"
+                    : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
+                )}
               >
                 <Sliders className="h-3.5 w-3.5 shrink-0" />
                 <span>Configuration assistée</span>

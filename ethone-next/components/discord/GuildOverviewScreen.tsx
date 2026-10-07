@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
@@ -106,7 +106,7 @@ export default function GuildOverviewScreen({
   moduleStatus,
   activeModuleCount,
   totalModuleCount,
-  onOpenSetup: _onOpenSetup,
+  onOpenSetup,
   onSelectCategory,
   onAllModules,
 }: GuildOverviewScreenProps) {
@@ -115,6 +115,19 @@ export default function GuildOverviewScreen({
   const { reduced } = useMotionPref();
 
   const [raidMode, setRaidMode] = useState(false);
+  const [wizardConfig, setWizardConfig] = useState<{
+    activeProtectionsCount?: number;
+    isConfigured?: boolean;
+  } | null>(null);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(`ethone:discord:wizard:${guild.id}`);
+      if (raw) {
+        setWizardConfig(JSON.parse(raw));
+      }
+    } catch {}
+  }, [guild.id]);
 
   const isRaidModeActive = guildSettings?.antiRaidEnabled ?? raidMode;
 
@@ -149,6 +162,11 @@ export default function GuildOverviewScreen({
       0
     );
 
+  const subtitleText =
+    wizardConfig?.isConfigured && wizardConfig.activeProtectionsCount
+      ? `${wizardConfig.activeProtectionsCount} protections actives sur 30.`
+      : `${activeCount > 1 ? activeCount : 1} protection${activeCount > 1 ? "s" : ""} active${activeCount > 1 ? "s" : ""} sur 30. 3 points à régler.`;
+
   return (
     <motion.div
       variants={consoleStage}
@@ -165,7 +183,7 @@ export default function GuildOverviewScreen({
             Vue d&apos;ensemble
           </h1>
           <p className="mt-1 text-xs sm:text-sm text-[var(--text-muted)]">
-            {activeCount} {activeCount > 1 ? "modules actifs" : "module actif"} sur {totalCount}
+            {subtitleText}
           </p>
         </div>
 
@@ -177,9 +195,37 @@ export default function GuildOverviewScreen({
           transition={SPRING_PRESS}
           className="inline-flex items-center gap-1 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer self-start sm:self-auto"
         >
-          <span>Tous les modules</span>
+          <span>Toutes les protections</span>
           <ChevronRight className="h-3.5 w-3.5" />
         </motion.button>
+      </motion.div>
+
+      <motion.div
+        variants={consoleFadeUp}
+        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl border border-emerald-500/30 bg-emerald-950/20 backdrop-blur-sm"
+      >
+        <div className="flex items-center gap-3.5">
+          <div className="h-10 w-10 rounded-lg bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center shrink-0 font-bold text-base">
+            %
+          </div>
+          <div>
+            <h3 className="text-sm font-bold text-[var(--text-primary)]">
+              Configure Etho en une minute
+            </h3>
+            <p className="text-xs text-[var(--text-muted)]">
+              Trois questions sur ton serveur, un récapitulatif, et les bonnes protections sont en place.
+            </p>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={onOpenSetup || (() => router.push(`/discord/setup?guildId=${guild.id}`))}
+          className="shrink-0 inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold text-xs transition-colors shadow-sm cursor-pointer self-start sm:self-auto"
+        >
+          <span>Commencer</span>
+          <span>→</span>
+        </button>
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">

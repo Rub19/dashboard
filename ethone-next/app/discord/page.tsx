@@ -22,10 +22,6 @@ import {
   Users,
   AlertTriangle,
   Sparkles,
-  Copy,
-  Check,
-  Download,
-  Upload,
   Sliders,
   RefreshCw,
   Plus,
@@ -61,7 +57,6 @@ import {
 } from "@/components/icons/ph";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
-import DiscordIcon from "@/components/DiscordIcon";
 import { cn, formatApiError } from "@/lib/utils";
 import { useDiscordOnboarding } from "@/lib/hooks/useDiscordOnboarding";
 import DiscordOnboardingModal from "@/components/discord/onboarding/DiscordOnboardingModal";
@@ -75,6 +70,7 @@ import BotInstallView from "@/components/discord/BotInstallView";
 import ModuleNavigator, { type NavigatorCategory, type NavigatorModule } from "@/components/discord/ModuleNavigator";
 import HubSidebar, { type HubView } from "@/components/discord/HubSidebar";
 import GuildOverviewScreen from "@/components/discord/GuildOverviewScreen";
+import GuildAssistedSetup from "@/components/discord/GuildAssistedSetup";
 import { motion, AnimatePresence } from "framer-motion";
 import { EASE_SNAP } from "@/lib/ease";
 import { useMotionPref } from "@/lib/hooks/useMotionPref";
@@ -586,8 +582,8 @@ export default function DiscordDashboardPage() {
   const [lastGuildId, setLastGuildId] = useState<string | null>(null);
   const [hydrated, setHydrated] = useState(false);
   const [activeModule, setActiveModule] = useState<ModuleType | null>(null);
-  // Vue « Tous les modules » (grille complète avec interrupteurs) ; un module ouvert a toujours la priorité.
   const [showAllModules, setShowAllModules] = useState(false);
+  const [showSetup, setShowSetup] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const { reduced: motionReduced } = useMotionPref();
   const contentRef = useRef<HTMLDivElement | null>(null);
@@ -692,17 +688,24 @@ export default function DiscordDashboardPage() {
   const goHome = useCallback(() => {
     setActiveModule(null);
     setShowAllModules(false);
+    setShowSetup(false);
     setMenuOpen(false);
   }, []);
   const goAllModules = useCallback(() => {
     setActiveModule(null);
     setShowAllModules(true);
+    setShowSetup(false);
     setMenuOpen(false);
   }, []);
-  // Chaque changement de vue repart du haut de la colonne de contenu (qui a son propre défilement).
+  const goSetup = useCallback(() => {
+    setActiveModule(null);
+    setShowAllModules(false);
+    setShowSetup(true);
+    setMenuOpen(false);
+  }, []);
   useEffect(() => {
     contentRef.current?.scrollTo({ top: 0 });
-  }, [activeModule, showAllModules]);
+  }, [activeModule, showAllModules, showSetup]);
   // Chaque carte a un lien « Ouvrir la page complète » distinct de son clic principal (voir NAV_MODULES_BASE) :
   // il doit pointer vers le serveur affiché ici, pas vers celui que la page de destination devinerait sans indice.
   const navModules = useMemo(
@@ -717,7 +720,11 @@ export default function DiscordDashboardPage() {
   useEffect(() => {
     let id: string | null = null;
     try {
-      id = new URLSearchParams(window.location.search).get("guildId");
+      const sp = new URLSearchParams(window.location.search);
+      id = sp.get("guildId");
+      if (sp.get("view") === "setup") {
+        setShowSetup(true);
+      }
     } catch {}
     try {
       if (!id) id = sessionStorage.getItem(PICKED_STORAGE_KEY);
@@ -1222,7 +1229,7 @@ export default function DiscordDashboardPage() {
 
   const userName = isDiscordConnected ? profile?.user?.displayName || profile?.user?.username : undefined;
   const activeMeta = activeModule ? MODULES.find((m) => m.id === activeModule) ?? null : null;
-  const view: HubView = activeModule ? "module" : showAllModules ? "modules" : "home";
+  const view: HubView = showSetup ? "setup" : activeModule ? "module" : showAllModules ? "modules" : "home";
   const inviteHref = `${BOT_INVITE_URL}&guild_id=${selectedGuild.id}`;
 
   return (
@@ -1238,7 +1245,7 @@ export default function DiscordDashboardPage() {
           onSelectGuild={pickGuild}
           onChangeGuild={changeGuild}
           onOpenIntro={() => openOnboarding(0)}
-          onOpenSetup={() => router.push(`/discord/setup?guildId=${selectedGuild.id}`)}
+          onOpenSetup={goSetup}
           onExportConfig={handleExportConfig}
           onImportConfig={() => fileInputRef.current?.click()}
           onCopyGuildId={handleCopyId}
@@ -1277,7 +1284,13 @@ export default function DiscordDashboardPage() {
                 </button>
                 <ChevronRight className="h-3.5 w-3.5 text-[var(--text-muted)] shrink-0" />
                 <span className="font-medium text-[var(--text-primary)]">
-                  {activeMeta ? activeMeta.title : "Vue d'ensemble"}
+                  {view === "setup"
+                    ? "Configuration assistée"
+                    : activeMeta
+                    ? activeMeta.title
+                    : showAllModules
+                    ? "Tous les modules"
+                    : "Vue d'ensemble"}
                 </span>
               </div>
             </div>
@@ -1354,8 +1367,25 @@ export default function DiscordDashboardPage() {
                   moduleStatus={moduleStatus}
                   activeModuleCount={activeModuleCount}
                   totalModuleCount={totalModuleCount}
-                  onOpenSetup={() => openOnboarding(0)}
+                  onOpenSetup={goSetup}
                   onAllModules={goAllModules}
+                />
+              )}
+
+              {view === "setup" && (
+                <GuildAssistedSetup
+                  guild={selectedGuild}
+                  onCancel={goHome}
+                  onManualSetup={goAllModules}
+                  onFinish={(cfg) => {
+                    setGuildSettings((p) => ({
+                      ...p,
+                      antiRaidEnabled: true,
+                      antiSpamEnabled: true,
+                      logChannelId: cfg.channelId || undefined,
+                    }));
+                    goHome();
+                  }}
                 />
               )}
 

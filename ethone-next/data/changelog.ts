@@ -46462,9 +46462,62 @@ CHANGELOG_BY_LANG.en.unshift(v12868_en);
 CHANGELOG_BY_LANG.es.unshift(v12868_es);
 CHANGELOG_BY_LANG.de.unshift(v12868_de);
 
+const v12870_fr: ChangelogEntry = {
+  version: "v1.55.63",
+  date: "2026-10-07",
+  title: "Configurateur Rapide — Bannière & Assistant 4 Étapes",
+  items: [
+    "Bannière « Configure Etho en une minute » intégrée sur la vue d'ensemble du serveur",
+    "Assistant en 4 étapes : type de serveur (communauté, amis, vocaux), sévérité, salon d'alertes et récapitulatif",
+    "Application et activation réelles des protections et modules selon le type de serveur",
+    "Affichage dynamique du nombre de protections actives sur la vue d'ensemble",
+  ],
+};
+
+const v12870_en: ChangelogEntry = {
+  version: "v1.55.63",
+  date: "2026-10-07",
+  title: "Quick Configurator — Banner & 4-Step Wizard",
+  items: [
+    "One-minute setup banner on the guild overview dashboard",
+    "4-step guided wizard: server type, severity, alert channel and review",
+    "Real activation and persistence of security protections and modules",
+    "Dynamic active protections counter on guild overview",
+  ],
+};
+
+const v12870_es: ChangelogEntry = {
+  version: "v1.55.63",
+  date: "2026-10-07",
+  title: "Configurador Rápido — Banner y Asistente en 4 Pasos",
+  items: [
+    "Banner de configuración en un minuto en la vista general del servidor",
+    "Asistente en 4 pasos: tipo de servidor, severidad, canal de alertas y revisión",
+    "Activación y persistencia real de protecciones y módulos de seguridad",
+    "Contador dinámico de protecciones activas en la vista general",
+  ],
+};
+
+const v12870_de: ChangelogEntry = {
+  version: "v1.55.63",
+  date: "2026-10-07",
+  title: "Schnellkonfigurator — Banner & 4-Schritte-Assistent",
+  items: [
+    "Ein-Minuten-Setup-Banner in der Server-Übersicht",
+    "4-Schritte-Assistent: Servertyp, Härtegrad, Benachrichtigungskanal und Überprüfung",
+    "Echte Aktivierung und Speicherung der Schutzfunktionen und Module",
+    "Dynamische Anzeige aktiver Schutzfunktionen in der Server-Übersicht",
+  ],
+};
+
 CHANGELOG_BY_LANG.fr.unshift(v12869_fr);
 CHANGELOG_BY_LANG.en.unshift(v12869_en);
 CHANGELOG_BY_LANG.es.unshift(v12869_es);
 CHANGELOG_BY_LANG.de.unshift(v12869_de);
+
+CHANGELOG_BY_LANG.fr.unshift(v12870_fr);
+CHANGELOG_BY_LANG.en.unshift(v12870_en);
+CHANGELOG_BY_LANG.es.unshift(v12870_es);
+CHANGELOG_BY_LANG.de.unshift(v12870_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

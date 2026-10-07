@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.49 — 2026-10-07
+
+**Refonte de la Console Discord : Hub Serveurs Style Keeper Protect & Sécurité**
+
+- Refonte intégrale de l'écran de sélection de serveurs Discord (/discord) au format 3 colonnes Keeper Protect adapté à l'univers émeraude Etho.
+- Partitionnement dynamique entre serveurs gérés (« Avec Etho ») et non configurés (« Sans Etho ») avec installation 1-clic.
+- Bascule instantanée vers la vue classique centrée conservée à 100% via le bouton dédié.
+- Barre latérale avec accès rapide aux réglages (Ctrl K), serveurs, documentation et support 24/7.
+
 ## v1.55.48 — 2026-10-07
 
 **Refonte du Hub Bot Etho Protect & Interface de Gestion des Serveurs**

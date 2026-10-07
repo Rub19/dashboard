@@ -45823,4 +45823,57 @@ CHANGELOG_BY_LANG.en.unshift(v12857_en);
 CHANGELOG_BY_LANG.es.unshift(v12857_es);
 CHANGELOG_BY_LANG.de.unshift(v12857_de);
 
+const v12858_fr: ChangelogEntry = {
+  version: "v1.55.49",
+  date: "2026-10-07",
+  title: "Refonte de la Console Discord : Hub Serveurs Style Keeper Protect & Sécurité",
+  items: [
+    "Refonte intégrale de l'écran de sélection de serveurs Discord (/discord) au format 3 colonnes Keeper Protect adapté à l'univers émeraude Etho.",
+    "Partitionnement dynamique entre serveurs gérés (« Avec Etho ») et non configurés (« Sans Etho ») avec installation 1-clic.",
+    "Bascule instantanée vers la vue classique centrée conservée à 100% via le bouton dédié.",
+    "Barre latérale avec accès rapide aux réglages (Ctrl K), serveurs, documentation et support 24/7.",
+  ],
+};
+
+const v12858_en: ChangelogEntry = {
+  version: "v1.55.49",
+  date: "2026-10-07",
+  title: "Discord Console Redesign: Keeper Protect Style Server Hub & Security",
+  items: [
+    "Full redesign of the Discord server selection screen (/discord) into the 3-column Keeper Protect layout adapted to Etho emerald theme.",
+    "Dynamic partitioning between managed servers ('With Etho') and unconfigured servers ('Without Etho') with 1-click install.",
+    "Instant reversible toggle back to preserved classic centered view.",
+    "Integrated sidebar with quick settings access (Ctrl K), servers, docs, and 24/7 support.",
+  ],
+};
+
+const v12858_es: ChangelogEntry = {
+  version: "v1.55.49",
+  date: "2026-10-07",
+  title: "Rediseño de la Consola Discord: Hub de Servidores Estilo Keeper Protect",
+  items: [
+    "Rediseño completo de la pantalla de selección de servidores Discord (/discord) al estilo Keeper Protect con diseño esmeralda.",
+    "Separación dinámica entre servidores administrados ('Con Etho') y no configurados ('Sin Etho') con instalación en 1 clic.",
+    "Alternancia instantánea a la vista clásica conservada.",
+    "Barra lateral con acceso rápido a ajustes (Ctrl K), documentación y soporte.",
+  ],
+};
+
+const v12858_de: ChangelogEntry = {
+  version: "v1.55.49",
+  date: "2026-10-07",
+  title: "Neugestaltung der Discord-Konsole: Server-Hub im Keeper Protect-Stil",
+  items: [
+    "Komplette Neugestaltung der Discord-Serverauswahl (/discord) im 3-Spalten-Layout von Keeper Protect im Etho-Smaragddesign.",
+    "Dynamische Aufteilung zwischen verwalteten ('Mit Etho') und nicht konfigurierten ('Ohne Etho') Servern.",
+    "Nahtlose Umschaltung zurück zur erhaltenen klassischen Ansicht.",
+    "Seitenleiste mit Schnellzugriff (Strg K), Dokumentation und 24/7-Support.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12858_fr);
+CHANGELOG_BY_LANG.en.unshift(v12858_en);
+CHANGELOG_BY_LANG.es.unshift(v12858_es);
+CHANGELOG_BY_LANG.de.unshift(v12858_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

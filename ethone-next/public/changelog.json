@@ -1,5 +1,16 @@
 [
   {
+    "version": "v1.55.49",
+    "date": "2026-10-07",
+    "title": "Refonte de la Console Discord : Hub Serveurs Style Keeper Protect & Sécurité",
+    "items": [
+      "Refonte intégrale de l'écran de sélection de serveurs Discord (/discord) au format 3 colonnes Keeper Protect adapté à l'univers émeraude Etho.",
+      "Partitionnement dynamique entre serveurs gérés (« Avec Etho ») et non configurés (« Sans Etho ») avec installation 1-clic.",
+      "Bascule instantanée vers la vue classique centrée conservée à 100% via le bouton dédié.",
+      "Barre latérale avec accès rapide aux réglages (Ctrl K), serveurs, documentation et support 24/7."
+    ]
+  },
+  {
     "version": "v1.55.48",
     "date": "2026-10-07",
     "title": "Refonte du Hub Bot Etho Protect & Interface de Gestion des Serveurs",
@@ -531,15 +542,6 @@
       "Bot : les cartes de bienvenue et de départ par défaut sont animées (lueurs, particules, halo autour de l'avatar).",
       "Nouveau module Émojis du serveur : glissez vos images ou GIF, prévisualisez-les comme dans Discord et ajoutez-les au serveur en un clic ; quotas, recherche, copie du code et suppression.",
       "Brain écrit maintenant les statistiques en toutes lettres (éliminations, morts, assistances)."
-    ]
-  },
-  {
-    "version": "v1.54.1",
-    "date": "2026-10-04",
-    "title": "Brain connaît ta météo et tes parties, connexion GitHub",
-    "items": [
-      "Brain répond avec la météo de ta ville réglée dans ETHONE et tes dernières parties Valorant ou League of Legends (résultat, score, carte, agent ou champion, K/D/A).",
-      "Connexions : GitHub et les autres services officiels utilisent toujours l'application ETHONE, un ancien identifiant personnalisé resté dans le navigateur ne fait plus échouer la connexion."
     ]
   }
 ]

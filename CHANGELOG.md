@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.54 — 2026-10-07
+
+**Barre Latérale Inférieure Fidèle : Contrôles Thème, Langue & Déconnexion**
+
+- Refonte fidèle de la barre latérale inférieure selon la capture de référence visuelle sans boîte englobante superflue.
+- Bouton interactif de bascule de thème clair et sombre synchronisé avec les réglages utilisateur.
+- Bouton de changement de langue interactif avec drapeau (FR / EN).
+- Bouton de déconnexion fonctionnel avec redirection sécurisée vers la page de connexion.
+- Parité d'expérience complète entre le sélecteur de serveurs, l'onboarding et le tableau de bord de configuration.
+
 ## v1.55.53 — 2026-10-07
 
 **Indicateur d'Enregistrement Cloud Épuré Style Screen 2**

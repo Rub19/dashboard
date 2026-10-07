@@ -9,17 +9,23 @@ import {
   Check,
   Plus,
   ExternalLink,
-  FileText,
-  Headphones,
   X,
   Eye,
   LayoutDashboard,
   ChevronRight,
+  Home,
+  BookOpen,
+  Sun,
+  Moon,
+  LogOut,
 } from "@/components/icons/ph";
 import { useDiscordOAuth, canManageGuild, getStoredDiscordGuilds, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
 import { useBotGuildIds } from "@/lib/hooks/useBotGuildIds";
 import { useAccountProfile } from "@/lib/profile/account-profile";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
+import { useSettings } from "@/components/SettingsProvider";
+import { useAuth } from "@/components/AuthProvider";
+import FlagIcon from "@/components/FlagIcon";
 import ClientImage from "@/components/ClientImage";
 import BotLanding from "@/components/botsite/BotLanding";
 import BotInstallView from "@/components/discord/BotInstallView";
@@ -53,6 +59,28 @@ function CloudCheckIcon({ className = "h-4 w-4" }: { className?: string }) {
   );
 }
 
+function LifeBuoyIcon({ className = "h-4 w-4" }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <circle cx="12" cy="12" r="10" />
+      <circle cx="12" cy="12" r="4" />
+      <line x1="4.93" y1="4.93" x2="9.17" y2="9.17" />
+      <line x1="14.83" y1="14.83" x2="19.07" y2="19.07" />
+      <line x1="14.83" y1="9.17" x2="19.07" y2="4.93" />
+      <line x1="4.93" y1="19.07" x2="9.17" y2="14.83" />
+    </svg>
+  );
+}
+
 export default function EthoProtectDashboard() {
   const router = useRouter();
   const { setOpen: openCommandPalette } = useCommandPalette();
@@ -75,6 +103,29 @@ export default function EthoProtectDashboard() {
       localStorage.setItem("ethone:bot_view_mode", mode);
     }
   }, []);
+
+  const { settings, update: updateSettings } = useSettings();
+  const { signOut } = useAuth();
+
+  const toggleTheme = useCallback(() => {
+    const nextDark = !settings.darkMode;
+    updateSettings({
+      darkMode: nextDark,
+      theme: nextDark ? "obsidian" : "arctic",
+    });
+  }, [settings.darkMode, updateSettings]);
+
+  const toggleLanguage = useCallback(() => {
+    const nextLang = settings.language === "fr" ? "en" : "fr";
+    updateSettings({ language: nextLang });
+  }, [settings.language, updateSettings]);
+
+  const handleLogout = useCallback(async () => {
+    try {
+      await signOut();
+    } catch {}
+    router.push("/login");
+  }, [signOut, router]);
 
   const storedGuilds = useMemo(() => getStoredDiscordGuilds(), []);
 
@@ -228,74 +279,95 @@ export default function EthoProtectDashboard() {
             </kbd>
           </button>
 
-          <nav className="space-y-1">
-            <div className="flex items-center justify-between rounded-sm bg-[var(--accent-primary)]/15 border border-[var(--accent-primary)]/40 px-3 py-2 text-xs font-semibold text-[var(--accent-primary)]">
-              <div className="flex items-center gap-2.5">
-                <Server className="h-4 w-4 text-[var(--accent-primary)]" />
-                <span>Mes serveurs</span>
-              </div>
-              <span className="rounded-sm bg-[var(--accent-primary)]/20 px-2 py-0.5 text-[10px] font-mono font-bold text-[var(--accent-primary)]">
-                {installedGuilds.length}
-              </span>
-            </div>
-          </nav>
-
-          <div className="pt-2 border-t border-[var(--panel-border)] space-y-1 text-xs">
+          <div className="space-y-1 text-xs">
+            <button
+              type="button"
+              onClick={() => {
+                setSearchQuery("");
+                setViewModeWithStorage("dashboard");
+              }}
+              className="w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-[var(--text-primary)] hover:bg-[var(--surface-hover,var(--surface-raised))] transition-colors cursor-pointer font-medium text-left"
+            >
+              <Home className="h-4 w-4" />
+              <span>Mes serveurs</span>
+            </button>
             <a
               href={DOCS_URL}
               target="_blank"
               rel="noreferrer"
-              className="flex items-center justify-between rounded-sm px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors"
+              className="flex items-center justify-between rounded px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors"
             >
-              <div className="flex items-center gap-2">
-                <FileText className="h-3.5 w-3.5" />
+              <div className="flex items-center gap-2.5">
+                <BookOpen className="h-4 w-4" />
                 <span>Documentation</span>
               </div>
-              <ExternalLink className="h-3 w-3 opacity-60" />
+              <ExternalLink className="h-3.5 w-3.5 opacity-60" />
             </a>
             <a
               href={SUPPORT_DISCORD_URL}
               target="_blank"
               rel="noreferrer"
-              className="flex items-center justify-between rounded-sm px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors"
+              className="flex items-center justify-between rounded px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors"
             >
-              <div className="flex items-center gap-2">
-                <Headphones className="h-3.5 w-3.5" />
+              <div className="flex items-center gap-2.5">
+                <LifeBuoyIcon className="h-4 w-4" />
                 <span>Support</span>
               </div>
-              <ExternalLink className="h-3 w-3 opacity-60" />
+              <ExternalLink className="h-3.5 w-3.5 opacity-60" />
             </a>
           </div>
         </div>
 
-        <div className="pt-4 border-t border-[var(--panel-border)] space-y-2">
-          <div className="flex items-center justify-between rounded-sm border border-[var(--panel-border)] bg-[var(--surface-raised)] p-2">
+        <div className="pt-3 border-t border-[var(--panel-border)]">
+          <div className="flex items-center justify-between p-1.5">
             <div className="flex items-center gap-2.5 min-w-0">
               {userAvatar ? (
                 <ClientImage
                   src={userAvatar}
                   alt={displayName}
-                  width={28}
-                  height={28}
-                  className="h-7 w-7 rounded-sm object-cover border border-[var(--panel-border)]"
+                  width={30}
+                  height={30}
+                  className="h-7 w-7 rounded-full object-cover border border-[var(--panel-border)] shrink-0"
                 />
               ) : (
-                <div className="flex h-7 w-7 items-center justify-center rounded-sm bg-[var(--surface-raised)] text-[var(--accent-primary)] font-bold text-xs border border-[var(--panel-border)]">
+                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--surface-raised)] text-[var(--accent-primary)] font-bold text-xs border border-[var(--panel-border)] shrink-0">
                   {displayName.slice(0, 2).toUpperCase()}
                 </div>
               )}
               <span className="truncate text-xs font-bold text-[var(--text-primary)]">{displayName}</span>
             </div>
 
-            <button
-              type="button"
-              onClick={() => setViewModeWithStorage("legacy")}
-              className="hidden md:flex items-center gap-1 rounded-sm border border-[var(--panel-border)] bg-[var(--surface-raised)] px-2 py-1 text-[10px] text-[var(--text-muted)] hover:border-[var(--accent-primary)]/40 hover:text-[var(--text-primary)] transition-all cursor-pointer"
-              title="Voir l'ancienne vitrine"
-            >
-              <Eye className="h-3 w-3" />
-              <span>Vitrine</span>
-            </button>
+            <div className="flex items-center gap-1 shrink-0">
+              <button
+                type="button"
+                onClick={toggleTheme}
+                className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] rounded hover:bg-[var(--surface-hover,var(--surface-raised))] transition-colors cursor-pointer"
+                title={settings.darkMode ? "Activer le mode clair" : "Activer le mode sombre"}
+                aria-label="Basculer le thème"
+              >
+                {settings.darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              </button>
+
+              <button
+                type="button"
+                onClick={toggleLanguage}
+                className="p-1 rounded hover:bg-[var(--surface-hover,var(--surface-raised))] transition-colors cursor-pointer"
+                title="Changer de langue"
+                aria-label="Changer de langue"
+              >
+                <FlagIcon code={settings.language === "fr" ? "fr" : "gb"} className="h-3.5 w-5 rounded-xs" />
+              </button>
+
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="p-1.5 text-[var(--text-muted)] hover:text-rose-400 rounded hover:bg-[var(--surface-hover,var(--surface-raised))] transition-colors cursor-pointer"
+                title="Déconnexion"
+                aria-label="Déconnexion"
+              >
+                <LogOut className="h-4 w-4" />
+              </button>
+            </div>
           </div>
         </div>
       </aside>

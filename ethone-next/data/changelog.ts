@@ -45981,6 +45981,63 @@ const v12860_de: ChangelogEntry = {
   ],
 };
 
+const v12861_fr: ChangelogEntry = {
+  version: "v1.55.54",
+  date: "2026-10-07",
+  title: "Barre Latérale Inférieure Fidèle : Contrôles Thème, Langue & Déconnexion",
+  items: [
+    "Barre latérale inférieure redessinée selon la référence visuelle sans conteneur superflu",
+    "Bouton interactif de bascule de thème clair et sombre synchronisé avec les réglages",
+    "Bouton de sélection de langue rapide avec drapeau interactif (FR / EN)",
+    "Bouton de déconnexion fonctionnel avec redirection sécurisée vers la page de connexion",
+    "Alignement parfait entre le sélecteur de serveurs, l'onboarding et le tableau de bord de configuration",
+  ],
+};
+
+const v12861_en: ChangelogEntry = {
+  version: "v1.55.54",
+  date: "2026-10-07",
+  title: "Faithful Bottom Sidebar: Theme, Language & Logout Controls",
+  items: [
+    "Redesigned bottom sidebar matching the visual reference without unnecessary containers",
+    "Interactive light and dark theme toggle synchronized with user settings",
+    "Quick language toggle button with interactive flag (FR / EN)",
+    "Functional logout button with secure redirection to login page",
+    "Seamless consistency between server picker, bot onboarding, and configuration dashboard",
+  ],
+};
+
+const v12861_es: ChangelogEntry = {
+  version: "v1.55.54",
+  date: "2026-10-07",
+  title: "Barra Lateral Inferior Fiel: Controles de Tema, Idioma y Cierre de Sesión",
+  items: [
+    "Barra lateral inferior rediseñada siguiendo la referencia visual sin marcos adicionales",
+    "Botón interactivo de cambio de tema claro y oscuro sincronizado con los ajustes",
+    "Botón de cambio rápido de idioma con bandera interactiva (FR / EN)",
+    "Botón de cierre de sesión funcional con redirección segura a la página de login",
+    "Consistencia completa entre el selector de servidores, el onboarding y el panel de configuración",
+  ],
+};
+
+const v12861_de: ChangelogEntry = {
+  version: "v1.55.54",
+  date: "2026-10-07",
+  title: "Originalgetreue Untere Seitenleiste: Theme-, Sprach- & Abmelde-Steuerung",
+  items: [
+    "Neu gestaltete untere Seitenleiste gemäß visueller Referenz ohne überflüssige Boxen",
+    "Interaktiver Umschalter für helles und dunkles Theme synchronisiert mit den Einstellungen",
+    "Schneller Sprachumschalter mit interaktiver Flagge (FR / EN)",
+    "Funktionaler Abmelde-Button mit sicherer Weiterleitung zur Anmeldeseite",
+    "Volle Konsistenz zwischen Server-Auswahl, Bot-Onboarding und Konfigurations-Dashboard",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12861_fr);
+CHANGELOG_BY_LANG.en.unshift(v12861_en);
+CHANGELOG_BY_LANG.es.unshift(v12861_es);
+CHANGELOG_BY_LANG.de.unshift(v12861_de);
+
 CHANGELOG_BY_LANG.fr.unshift(v12860_fr);
 CHANGELOG_BY_LANG.en.unshift(v12860_en);
 CHANGELOG_BY_LANG.es.unshift(v12860_es);

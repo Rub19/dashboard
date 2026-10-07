@@ -3,6 +3,20 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import BotInstallView from "./BotInstallView";
 import * as botGuildIdsModule from "@/lib/hooks/useBotGuildIds";
 
+jest.mock("next/navigation", () => ({
+  useRouter: () => ({
+    push: jest.fn(),
+    replace: jest.fn(),
+    prefetch: jest.fn(),
+  }),
+}));
+
+jest.mock("@/components/AuthProvider", () => ({
+  useAuth: () => ({
+    signOut: jest.fn(async () => {}),
+  }),
+}));
+
 jest.mock("next/link", () => {
   return function MockLink({ href, children, ...rest }: any) {
     return (

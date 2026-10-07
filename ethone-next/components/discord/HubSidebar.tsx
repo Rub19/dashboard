@@ -27,7 +27,7 @@ import {
   Check,
 } from "@/components/icons/ph";
 import ClientImage from "@/components/ClientImage";
-import FlagIcon from "@/components/FlagIcon";
+import DiscordLanguageDropdown from "./DiscordLanguageDropdown";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
 import { useSettings } from "@/components/SettingsProvider";
 import { useAuth } from "@/components/AuthProvider";
@@ -36,6 +36,8 @@ import { useBotSessionUser } from "@/lib/hooks/useBotSessionUser";
 import { getStoredDiscordUser, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
 import { cn } from "@/lib/utils";
 import { useMotionPref } from "@/lib/hooks/useMotionPref";
+import { useI18n } from "@/lib/hooks/useI18n";
+import { resolveTheme } from "@/lib/theme-engine";
 import { SPRING_PRESS } from "@/lib/ease";
 import {
   consoleSidebar,
@@ -124,6 +126,7 @@ export default function HubSidebar({
   copiedId = false,
 }: HubSidebarProps) {
   const router = useRouter();
+  const i18n = useI18n();
   const { setOpen: openCommandPalette } = useCommandPalette();
   const { settings, update: updateSettings } = useSettings();
   const { signOut } = useAuth();
@@ -133,18 +136,16 @@ export default function HubSidebar({
   const { reduced } = useMotionPref();
   const [serverMenuOpen, setServerMenuOpen] = useState(false);
 
+  const isDark = settings.darkMode && resolveTheme(settings.theme).dark !== false;
+
   const toggleTheme = useCallback(() => {
-    const nextDark = !settings.darkMode;
+    const nextDark = !isDark;
     updateSettings({
       darkMode: nextDark,
       theme: nextDark ? "obsidian" : "arctic",
+      colorScheme: nextDark ? "dark" : "light",
     });
-  }, [settings.darkMode, updateSettings]);
-
-  const toggleLanguage = useCallback(() => {
-    const nextLang = settings.language === "fr" ? "en" : "fr";
-    updateSettings({ language: nextLang });
-  }, [settings.language, updateSettings]);
+  }, [isDark, updateSettings]);
 
   const handleLogout = useCallback(async () => {
     try {
@@ -240,7 +241,7 @@ export default function HubSidebar({
                 </span>
                 <span className="flex items-center gap-1 text-[11px] text-[var(--text-muted)]">
                   <Crown className="h-3 w-3 text-amber-400 shrink-0" />
-                  <span className="truncate">Owner Etho</span>
+                  <span className="truncate">{i18n("dOwnerEtho", "Owner Etho")}</span>
                 </span>
               </div>
             </div>
@@ -285,7 +286,7 @@ export default function HubSidebar({
                           className="w-full flex items-center gap-2 rounded px-2.5 py-1.5 text-left text-[var(--text-primary)] hover:bg-white/[0.06] transition-colors cursor-pointer"
                         >
                           <Home className="h-3.5 w-3.5 text-[var(--text-muted)]" />
-                          <span>Changer de serveur</span>
+                          <span>{i18n("dSwitchServer", "Changer de serveur")}</span>
                         </button>
                       )}
                       {onOpenIntro && (
@@ -299,7 +300,7 @@ export default function HubSidebar({
                           className="w-full flex items-center gap-2 rounded px-2.5 py-1.5 text-left text-[var(--text-primary)] hover:bg-white/[0.06] transition-colors cursor-pointer"
                         >
                           <Sparkles className="h-3.5 w-3.5 text-[var(--text-muted)]" />
-                          <span>Découvrir le bot</span>
+                          <span>{i18n("dRestartTour", "Découvrir le bot")}</span>
                         </button>
                       )}
                       {onOpenSetup && (
@@ -313,7 +314,7 @@ export default function HubSidebar({
                           className="w-full flex items-center gap-2 rounded px-2.5 py-1.5 text-left text-[var(--text-primary)] hover:bg-white/[0.06] transition-colors cursor-pointer"
                         >
                           <Sliders className="h-3.5 w-3.5 text-[var(--text-muted)]" />
-                          <span>Setup assisté</span>
+                          <span>{i18n("dAssistedSetup", "Configuration assistée")}</span>
                         </button>
                       )}
                       {onExportConfig && (
@@ -327,7 +328,7 @@ export default function HubSidebar({
                           className="w-full flex items-center gap-2 rounded px-2.5 py-1.5 text-left text-[var(--text-primary)] hover:bg-white/[0.06] transition-colors cursor-pointer"
                         >
                           <Download className="h-3.5 w-3.5 text-[var(--text-muted)]" />
-                          <span>Exporter la configuration</span>
+                          <span>{i18n("dExportConfig", "Exporter la configuration")}</span>
                         </button>
                       )}
                       {onImportConfig && (
@@ -341,7 +342,7 @@ export default function HubSidebar({
                           className="w-full flex items-center gap-2 rounded px-2.5 py-1.5 text-left text-[var(--text-primary)] hover:bg-white/[0.06] transition-colors cursor-pointer"
                         >
                           <Upload className="h-3.5 w-3.5 text-[var(--text-muted)]" />
-                          <span>Importer une configuration</span>
+                          <span>{i18n("dImportConfig", "Importer une configuration")}</span>
                         </button>
                       )}
                       {onCopyGuildId && (
@@ -359,7 +360,7 @@ export default function HubSidebar({
                           ) : (
                             <Copy className="h-3.5 w-3.5 text-[var(--text-muted)]" />
                           )}
-                          <span>Copier l&apos;ID du serveur</span>
+                          <span>{copiedId ? i18n("dIdCopied", "Identifiant copié !") : i18n("dCopyId", "Copier l'identifiant")}</span>
                         </button>
                       )}
                     </motion.div>
@@ -377,7 +378,7 @@ export default function HubSidebar({
           >
             <div className="flex items-center gap-2">
               <Search className="h-3.5 w-3.5" />
-              <span>Rechercher un réglage...</span>
+              <span>{i18n("dSearchPlaceholder", "Rechercher un réglage... Ctrl K").replace(" Ctrl K", "")}</span>
             </div>
             <kbd className="rounded-sm border border-[var(--panel-border)] bg-[var(--background)] px-1.5 py-0.5 text-[10px] font-mono text-[var(--text-muted)]">
               Ctrl K
@@ -396,13 +397,13 @@ export default function HubSidebar({
               )}
             >
               <ShieldCheck className="h-4 w-4 shrink-0" />
-              <span>Vue d&apos;ensemble</span>
+              <span>{i18n("dOverview", "Vue d'ensemble")}</span>
             </button>
           </div>
 
           <div className="space-y-1 pt-2">
             <span className="block px-2 text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
-              Protection
+              {i18n("dProtection", "Protection")}
             </span>
             <div className="space-y-0.5 text-xs">
               <button
@@ -411,7 +412,7 @@ export default function HubSidebar({
                 className="w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors cursor-pointer text-left"
               >
                 <ShieldAlert className="h-3.5 w-3.5 shrink-0" />
-                <span>Protections</span>
+                <span>{i18n("dProtections", "Protections")}</span>
               </button>
 
               <button
@@ -420,7 +421,7 @@ export default function HubSidebar({
                 className="w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors cursor-pointer text-left"
               >
                 <Sparkles className="h-3.5 w-3.5 shrink-0" />
-                <span>Scan de sécurité</span>
+                <span>{i18n("dSecurityScan", "Scan de sécurité")}</span>
               </button>
 
               <button
@@ -440,14 +441,14 @@ export default function HubSidebar({
                 )}
               >
                 <Sliders className="h-3.5 w-3.5 shrink-0" />
-                <span>Configuration assistée</span>
+                <span>{i18n("dAssistedSetup", "Configuration assistée")}</span>
               </button>
             </div>
           </div>
 
           <div className="space-y-1 pt-2">
             <span className="block px-2 text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
-              Membres
+              {i18n("dMembers", "Membres")}
             </span>
             <div className="space-y-0.5 text-xs">
               <button
@@ -456,7 +457,7 @@ export default function HubSidebar({
                 className="w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors cursor-pointer text-left"
               >
                 <Users className="h-3.5 w-3.5 shrink-0" />
-                <span>Whitelist</span>
+                <span>{i18n("dWhitelist", "Whitelist")}</span>
               </button>
 
               <button
@@ -465,7 +466,7 @@ export default function HubSidebar({
                 className="w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors cursor-pointer text-left"
               >
                 <ShieldAlert className="h-3.5 w-3.5 shrink-0" />
-                <span>Blacklist</span>
+                <span>{i18n("dBlacklist", "Blacklist")}</span>
               </button>
 
               <button
@@ -474,14 +475,14 @@ export default function HubSidebar({
                 className="w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors cursor-pointer text-left"
               >
                 <Crown className="h-3.5 w-3.5 shrink-0" />
-                <span>Rôles et membres</span>
+                <span>{i18n("dRolesAndMembers", "Rôles et membres")}</span>
               </button>
             </div>
           </div>
 
           <div className="space-y-1 pt-2">
             <span className="block px-2 text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
-              Serveur
+              {i18n("dServer", "Serveur")}
             </span>
             <div className="space-y-0.5 text-xs">
               <button
@@ -490,7 +491,7 @@ export default function HubSidebar({
                 className="w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors cursor-pointer text-left"
               >
                 <FileText className="h-3.5 w-3.5 shrink-0" />
-                <span>Logs</span>
+                <span>{i18n("dLogs", "Logs")}</span>
               </button>
 
               <button
@@ -499,7 +500,7 @@ export default function HubSidebar({
                 className="w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors cursor-pointer text-left"
               >
                 <Sliders className="h-3.5 w-3.5 shrink-0" />
-                <span>Outils</span>
+                <span>{i18n("dTools", "Outils")}</span>
               </button>
 
               <button
@@ -508,7 +509,7 @@ export default function HubSidebar({
                 className="w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors cursor-pointer text-left"
               >
                 <Settings2 className="h-3.5 w-3.5 shrink-0" />
-                <span>Réglages</span>
+                <span>{i18n("dSettings", "Réglages")}</span>
               </button>
 
               <button
@@ -517,7 +518,7 @@ export default function HubSidebar({
                 className="w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors cursor-pointer text-left"
               >
                 <Key className="h-3.5 w-3.5 shrink-0" />
-                <span>Accès</span>
+                <span>{i18n("dAccess", "Accès")}</span>
               </button>
             </div>
           </div>
@@ -531,7 +532,7 @@ export default function HubSidebar({
               className="w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-[var(--text-primary)] hover:bg-[var(--surface-hover,var(--surface-raised))] transition-colors cursor-pointer font-medium text-left"
             >
               <Home className="h-4 w-4" />
-              <span>Mes serveurs</span>
+              <span>{i18n("dMyServers", "Mes serveurs")}</span>
             </button>
             <a
               href={DOCS_URL}
@@ -541,7 +542,7 @@ export default function HubSidebar({
             >
               <div className="flex items-center gap-2.5">
                 <BookOpen className="h-4 w-4" />
-                <span>Documentation</span>
+                <span>{i18n("dDocumentation", "Documentation")}</span>
               </div>
               <ExternalLink className="h-3.5 w-3.5 opacity-60" />
             </a>
@@ -553,7 +554,7 @@ export default function HubSidebar({
             >
               <div className="flex items-center gap-2.5">
                 <LifeBuoyIcon className="h-4 w-4" />
-                <span>Support</span>
+                <span>{i18n("dSupport", "Support")}</span>
               </div>
               <ExternalLink className="h-3.5 w-3.5 opacity-60" />
             </a>
@@ -596,28 +597,20 @@ export default function HubSidebar({
                   type="button"
                   onClick={toggleTheme}
                   className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] rounded hover:bg-[var(--surface-hover,var(--surface-raised))] transition-colors cursor-pointer"
-                  title={settings.darkMode ? "Activer le mode clair" : "Activer le mode sombre"}
-                  aria-label="Basculer le thème"
+                  title={i18n(isDark ? "dThemeToggleLight" : "dThemeToggleDark", isDark ? "Activer le mode clair" : "Activer le mode sombre")}
+                  aria-label={i18n(isDark ? "dThemeToggleLight" : "dThemeToggleDark", isDark ? "Activer le mode clair" : "Activer le mode sombre")}
                 >
-                  {settings.darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                  {isDark ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4 text-amber-400" />}
                 </button>
 
-                <button
-                  type="button"
-                  onClick={toggleLanguage}
-                  className="p-1 rounded hover:bg-[var(--surface-hover,var(--surface-raised))] transition-colors cursor-pointer"
-                  title="Changer de langue"
-                  aria-label="Changer de langue"
-                >
-                  <FlagIcon code={settings.language === "fr" ? "en" : "fr"} className="h-3.5 w-5 rounded-xs" />
-                </button>
+                <DiscordLanguageDropdown align="right" />
 
                 <button
                   type="button"
                   onClick={handleLogout}
                   className="p-1.5 text-[var(--text-muted)] hover:text-rose-400 rounded hover:bg-[var(--surface-hover,var(--surface-raised))] transition-colors cursor-pointer"
-                  title="Déconnexion"
-                  aria-label="Déconnexion"
+                  title={i18n("dLogout", "Déconnexion")}
+                  aria-label={i18n("dLogout", "Déconnexion")}
                 >
                   <LogOut className="h-4 w-4" />
                 </button>

@@ -75,6 +75,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { EASE_SNAP } from "@/lib/ease";
 import { useMotionPref } from "@/lib/hooks/useMotionPref";
 import { fetchBotPresence } from "@/lib/hooks/useBotGuildIds";
+import { useI18n } from "@/lib/hooks/useI18n";
 
 function CloudCheckIcon({ className = "h-4 w-4" }: { className?: string }) {
   return (
@@ -555,6 +556,7 @@ const DEFAULT_SETTINGS: GuildSettings = {
 };
 
 export default function DiscordDashboardPage() {
+  const i18n = useI18n();
   const { success, info, error: showError, toggle } = useToast();
   const { profile, loading: discordLoading, connect } = useDiscordOAuth();
   const {
@@ -1285,12 +1287,12 @@ export default function DiscordDashboardPage() {
                 <ChevronRight className="h-3.5 w-3.5 text-[var(--text-muted)] shrink-0" />
                 <span className="font-medium text-[var(--text-primary)]">
                   {view === "setup"
-                    ? "Configuration assistée"
+                    ? i18n("dAssistedSetup", "Configuration assistée")
                     : activeMeta
                     ? activeMeta.title
                     : showAllModules
-                    ? "Tous les modules"
-                    : "Vue d'ensemble"}
+                    ? i18n("dAllModules", "Tous les modules")
+                    : i18n("dOverview", "Vue d'ensemble")}
                 </span>
               </div>
             </div>
@@ -1305,7 +1307,7 @@ export default function DiscordDashboardPage() {
               >
                 <CloudCheckIcon className={cn("h-4 w-4 shrink-0", isSaving ? "animate-pulse text-amber-400" : "text-emerald-400")} />
                 <span className="font-normal">
-                  {isSaving ? "Sauvegarde..." : "Tout est enregistré"}
+                  {isSaving ? i18n("dSaving", "Sauvegarde...") : i18n("dAllSaved", "Tout est enregistré")}
                 </span>
               </button>
             </div>

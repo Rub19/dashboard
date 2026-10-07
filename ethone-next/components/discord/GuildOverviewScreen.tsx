@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
@@ -11,6 +11,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useToast } from "@/components/ToastProvider";
 import { useMotionPref } from "@/lib/hooks/useMotionPref";
+import { useI18n } from "@/lib/hooks/useI18n";
 import { SPRING_PRESS } from "@/lib/ease";
 import {
   consoleCard,
@@ -37,39 +38,49 @@ interface GuildOverviewScreenProps {
   onAllModules?: () => void;
 }
 
-const DEFAULT_CATEGORIES = [
+const CATEGORY_DEFINITIONS = [
   {
     id: "protect",
-    label: "Sécurité & modération",
-    hint: "Anti-raid, anti-spam, permissions et sauvegardes.",
+    labelKey: "dCatSecurity",
+    hintKey: "dCatSecurityHint",
+    defaultLabel: "Sécurité & modération",
+    defaultHint: "Anti-raid, anti-spam, permissions et sauvegardes.",
     modules: ["security", "secureroles", "moderation", "automodnative", "logs", "backups"],
     href: "/discord/security",
   },
   {
     id: "community",
-    label: "Communauté & rôles",
-    hint: "Accueil des membres, attribution de rôles et sondages.",
+    labelKey: "dCatCommunity",
+    hintKey: "dCatCommunityHint",
+    defaultLabel: "Communauté & rôles",
+    defaultHint: "Accueil des membres, attribution de rôles et sondages.",
     modules: ["welcome", "roles", "statroles", "leveling", "invites", "suggestions", "polls", "forms", "starboard", "highlights", "birthdays"],
     href: "/discord/welcome",
   },
   {
     id: "fun",
-    label: "Animation & médias",
-    hint: "Musique, jeux, giveaways et événements.",
+    labelKey: "dCatEntertainment",
+    hintKey: "dCatEntertainmentHint",
+    defaultLabel: "Animation & médias",
+    defaultHint: "Musique, jeux, giveaways et événements.",
     modules: ["streamers", "games", "music", "giveaways", "economy", "counting", "events", "calendar", "voice"],
     href: "/discord/music",
   },
   {
     id: "tools",
-    label: "Outils du quotidien",
-    hint: "Tickets de support, commandes personnalisées et rappels.",
+    labelKey: "dCatDaily",
+    hintKey: "dCatDailyHint",
+    defaultLabel: "Outils du quotidien",
+    defaultHint: "Tickets de support, commandes personnalisées et rappels.",
     modules: ["tickets", "commands", "tags", "reminders", "sticky", "afk", "serverstats"],
     href: "/discord/tickets",
   },
   {
     id: "manage",
-    label: "Gestion & intelligence",
-    hint: "Vue globale, paramètres du serveur et intelligence artificielle.",
+    labelKey: "dCatManagement",
+    hintKey: "dCatManagementHint",
+    defaultLabel: "Gestion & intelligence",
+    defaultHint: "Vue globale, paramètres du serveur et intelligence artificielle.",
     modules: ["overview", "server", "settings", "analytics", "stats", "ai", "bot"],
     href: "/discord/overview",
   },
@@ -85,7 +96,7 @@ function SegmentBar({ active, total }: { active: number; total: number }) {
             key={i}
             className={cn(
               "h-1.5 w-1.5 sm:w-2 rounded-full transition-colors duration-300",
-              i < active ? "bg-emerald-400" : "bg-zinc-700/60"
+              i < active ? "bg-emerald-400" : "bg-[var(--panel-border)]"
             )}
           />
         ))}
@@ -111,6 +122,7 @@ export default function GuildOverviewScreen({
   onAllModules,
 }: GuildOverviewScreenProps) {
   const router = useRouter();
+  const i18n = useI18n();
   const { success, info } = useToast();
   const { reduced } = useMotionPref();
 
@@ -150,22 +162,36 @@ export default function GuildOverviewScreen({
     });
   }, [onToggleRaidMode, success, info]);
 
+  const categories = useMemo(
+    () =>
+      CATEGORY_DEFINITIONS.map((cat) => ({
+        ...cat,
+        label: i18n(cat.labelKey, cat.defaultLabel),
+        hint: i18n(cat.hintKey, cat.defaultHint),
+      })),
+    [i18n]
+  );
+
   const totalCount =
     totalModuleCount ??
-    DEFAULT_CATEGORIES.reduce((acc, cat) => acc + cat.modules.length, 0);
+    categories.reduce((acc, cat) => acc + cat.modules.length, 0);
 
   const activeCount =
     activeModuleCount ??
-    DEFAULT_CATEGORIES.reduce(
+    categories.reduce(
       (acc, cat) =>
         acc + cat.modules.filter((id) => Boolean(moduleStatus?.[id])).length,
       0
     );
 
-  const subtitleText =
+  const countToUse =
     wizardConfig?.isConfigured && wizardConfig.activeProtectionsCount
-      ? `${wizardConfig.activeProtectionsCount} protections actives sur 30.`
-      : `${activeCount > 1 ? activeCount : 1} protection${activeCount > 1 ? "s" : ""} active${activeCount > 1 ? "s" : ""} sur 30. 3 points à régler.`;
+      ? wizardConfig.activeProtectionsCount
+      : activeCount > 1
+      ? activeCount
+      : 1;
+
+  const subtitleText = `${countToUse} ${i18n("dProtectionsActive", "protections actives sur 30.")}`;
 
   return (
     <motion.div
@@ -180,7 +206,7 @@ export default function GuildOverviewScreen({
       >
         <div>
           <h1 className="text-2xl font-black tracking-tight text-[var(--text-primary)] sm:text-3xl">
-            Vue d&apos;ensemble
+            {i18n("dOverview", "Vue d'ensemble")}
           </h1>
           <p className="mt-1 text-xs sm:text-sm text-[var(--text-muted)]">
             {subtitleText}
@@ -195,14 +221,14 @@ export default function GuildOverviewScreen({
           transition={SPRING_PRESS}
           className="inline-flex items-center gap-1 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer self-start sm:self-auto"
         >
-          <span>Toutes les protections</span>
+          <span>{i18n("dAllProtections", "Toutes les protections >")}</span>
           <ChevronRight className="h-3.5 w-3.5" />
         </motion.button>
       </motion.div>
 
       <motion.div
         variants={consoleFadeUp}
-        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl border border-emerald-500/30 bg-emerald-950/20 backdrop-blur-sm"
+        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 backdrop-blur-sm"
       >
         <div className="flex items-center gap-3.5">
           <div className="h-10 w-10 rounded-lg bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center shrink-0 font-bold text-base">
@@ -210,10 +236,10 @@ export default function GuildOverviewScreen({
           </div>
           <div>
             <h3 className="text-sm font-bold text-[var(--text-primary)]">
-              Configure Etho en une minute
+              {i18n("dBannerTitle", "Configure Etho en une minute")}
             </h3>
             <p className="text-xs text-[var(--text-muted)]">
-              Trois questions sur ton serveur, un récapitulatif, et les bonnes protections sont en place.
+              {i18n("dBannerSubtitle", "Trois questions sur ton serveur, un récapitulatif, et les bonnes protections sont en place.")}
             </p>
           </div>
         </div>
@@ -223,8 +249,7 @@ export default function GuildOverviewScreen({
           onClick={onOpenSetup || (() => router.push(`/discord/setup?guildId=${guild.id}`))}
           className="shrink-0 inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold text-xs transition-colors shadow-sm cursor-pointer self-start sm:self-auto"
         >
-          <span>Commencer</span>
-          <span>→</span>
+          <span>{i18n("dBannerButton", "Commencer →")}</span>
         </button>
       </motion.div>
 
@@ -233,7 +258,7 @@ export default function GuildOverviewScreen({
           <motion.div variants={consoleFadeUp} className="space-y-3">
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-bold text-[var(--text-primary)]">
-                Couverture des modules
+                {i18n("dModuleCoverage", "Couverture des modules")}
               </h2>
               <span className="font-mono text-xs tabular-nums text-[var(--text-muted)] font-semibold">
                 {activeCount}/{totalCount}
@@ -241,7 +266,7 @@ export default function GuildOverviewScreen({
             </div>
 
             <div className="space-y-1 rounded-sm border border-[var(--panel-border)] bg-[var(--surface-raised)] divide-y divide-[var(--panel-border)] overflow-hidden">
-              {DEFAULT_CATEGORIES.map((cat) => {
+              {categories.map((cat) => {
                 const categoryActive = cat.modules.filter((id) =>
                   Boolean(moduleStatus?.[id])
                 ).length;
@@ -290,7 +315,7 @@ export default function GuildOverviewScreen({
                 <div className="flex items-center gap-2">
                   <Radio className="h-4 w-4 text-emerald-400" />
                   <h3 className="text-sm font-bold text-[var(--text-primary)]">
-                    Mode raid
+                    {i18n("dRaidMode", "Mode raid")}
                   </h3>
                 </div>
 
@@ -298,7 +323,7 @@ export default function GuildOverviewScreen({
                   type="button"
                   role="switch"
                   aria-checked={isRaidModeActive}
-                  aria-label="Activer ou désactiver le mode raid"
+                  aria-label={i18n("dRaidMode", "Mode raid")}
                   onClick={handleToggleRaid}
                   className={cn(
                     "relative h-5 w-10 shrink-0 cursor-pointer rounded-sm border border-[var(--panel-border)] outline-none transition-colors duration-300",
@@ -316,34 +341,34 @@ export default function GuildOverviewScreen({
 
               <p className="mt-1 text-xs text-[var(--text-muted)]">
                 {isRaidModeActive
-                  ? "Actif. Le serveur bloque temporairement les arrivées suspectes."
-                  : "Inactif. Etho active tout seul s'il détecte une attaque."}
+                  ? i18n("dRaidModeActive", "Actif. Le serveur bloque temporairement les arrivées suspectes.")
+                  : i18n("dRaidModeInactive", "Inactif. Etho active tout seul s'il détecte une attaque.")}
               </p>
             </div>
 
             <div className="pt-3 border-t border-[var(--panel-border)] space-y-2.5 text-xs">
               <div className="flex items-center justify-between">
-                <span className="text-[var(--text-muted)]">Préfixe</span>
+                <span className="text-[var(--text-muted)]">{i18n("dPrefix", "Préfixe")}</span>
                 <span className="font-mono font-bold text-[var(--text-primary)]">
                   {guildSettings?.prefix || "!"}
                 </span>
               </div>
 
               <div className="flex items-center justify-between">
-                <span className="text-[var(--text-muted)]">Ton accès</span>
+                <span className="text-[var(--text-muted)]">{i18n("dYourAccess", "Ton accès")}</span>
                 <span className="font-semibold text-amber-400">
-                  {guild.owner ? "👑 Propriétaire" : "Administrateur"}
+                  {guild.owner ? i18n("dOwner", "👑 Propriétaire") : i18n("dAdmin", "Administrateur")}
                 </span>
               </div>
 
               <div className="flex items-center justify-between">
-                <span className="text-[var(--text-muted)]">Scan de sécurité</span>
+                <span className="text-[var(--text-muted)]">{i18n("dSecurityScan", "Scan de sécurité")}</span>
                 <button
                   type="button"
                   onClick={() => router.push(`/discord/server/health?guildId=${guild.id}`)}
                   className="font-semibold text-emerald-400 hover:underline cursor-pointer"
                 >
-                  Lancer un scan →
+                  {i18n("dRunScan", "Lancer un scan →")}
                 </button>
               </div>
             </div>
@@ -355,14 +380,14 @@ export default function GuildOverviewScreen({
           >
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-bold text-[var(--text-primary)]">
-                Activité récente
+                {i18n("dRecentActivity", "Activité récente")}
               </h3>
               <button
                 type="button"
                 onClick={() => router.push(`/discord/logs?guildId=${guild.id}`)}
                 className="text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
               >
-                Logs
+                {i18n("dLogs", "Logs")}
               </button>
             </div>
 
@@ -371,7 +396,7 @@ export default function GuildOverviewScreen({
                 <FileText className="h-4 w-4" />
               </div>
               <p className="text-xs text-[var(--text-muted)]">
-                Aucun incident récent. Etho veille.
+                {i18n("dNoIncidents", "Aucun incident récent. Etho veille.")}
               </p>
             </div>
           </motion.div>

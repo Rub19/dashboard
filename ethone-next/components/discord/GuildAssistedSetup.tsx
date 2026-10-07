@@ -10,6 +10,7 @@ import {
   Loader2,
 } from "@/components/icons/ph";
 import { useToast } from "@/components/ToastProvider";
+import { useI18n } from "@/lib/hooks/useI18n";
 import { cn } from "@/lib/utils";
 import type { DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
 
@@ -34,51 +35,6 @@ interface ProtectionItem {
   action: string;
 }
 
-const SERVER_TYPES = [
-  {
-    id: "community" as const,
-    emoji: "🌳",
-    title: "Communauté ouverte",
-    description: "Serveur public, beaucoup d'arrivées, des inconnus.",
-    activeProtectionsCount: 24,
-  },
-  {
-    id: "friends" as const,
-    emoji: "🏠",
-    title: "Entre amis",
-    description: "Petit serveur privé, tout le monde se connaît.",
-    activeProtectionsCount: 8,
-  },
-  {
-    id: "voice" as const,
-    emoji: "🔊",
-    title: "Grosse communauté avec vocaux",
-    description: "Beaucoup de monde, un staff, des salons vocaux actifs.",
-    activeProtectionsCount: 28,
-  },
-];
-
-const SEVERITY_LEVELS = [
-  {
-    id: "surveillance" as const,
-    emoji: "👁️",
-    title: "Surveillance seulement",
-    description: "Etho note tout et te prévient, sans sanctionner.",
-  },
-  {
-    id: "balanced" as const,
-    emoji: "🛡️",
-    title: "Équilibré",
-    description: "Désarme le fautif sans l'exclure, rend muets les spammeurs.",
-  },
-  {
-    id: "strict" as const,
-    emoji: "⚔️",
-    title: "Strict",
-    description: "Bannit quiconque tente de casser le serveur.",
-  },
-];
-
 const DEFAULT_CHANNELS = [
   { id: "alertes", name: "alertes" },
   { id: "etho-logs", name: "etho-logs" },
@@ -92,6 +48,7 @@ export default function GuildAssistedSetup({
   onCancel,
   onManualSetup,
 }: GuildAssistedSetupProps) {
+  const i18n = useI18n();
   const { success, error: showError } = useToast();
 
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
@@ -102,6 +59,57 @@ export default function GuildAssistedSetup({
   const [channels, setChannels] = useState<Array<{ id: string; name: string }>>(DEFAULT_CHANNELS);
   const [_loadingChannels, setLoadingChannels] = useState(false);
   const [isApplying, setIsApplying] = useState(false);
+
+  const serverTypes = useMemo(
+    () => [
+      {
+        id: "community" as const,
+        emoji: "🌳",
+        title: i18n("dOptCommunity", "Communauté ouverte"),
+        description: i18n("dOptCommunityDesc", "Serveur public, beaucoup d'arrivées, des inconnus."),
+        activeProtectionsCount: 24,
+      },
+      {
+        id: "friends" as const,
+        emoji: "🏠",
+        title: i18n("dOptFriends", "Entre amis"),
+        description: i18n("dOptFriendsDesc", "Petit serveur privé, tout le monde se connaît."),
+        activeProtectionsCount: 8,
+      },
+      {
+        id: "voice" as const,
+        emoji: "🔊",
+        title: i18n("dOptVoice", "Grosse communauté avec vocaux"),
+        description: i18n("dOptVoiceDesc", "Beaucoup de monde, un staff, des salons vocaux actifs."),
+        activeProtectionsCount: 28,
+      },
+    ],
+    [i18n]
+  );
+
+  const severityLevels = useMemo(
+    () => [
+      {
+        id: "surveillance" as const,
+        emoji: "👁️",
+        title: i18n("dOptSurveillance", "Surveillance seulement"),
+        description: i18n("dOptSurveillanceDesc", "Etho note tout et te prévient, sans sanctionner."),
+      },
+      {
+        id: "balanced" as const,
+        emoji: "🛡️",
+        title: i18n("dOptBalanced", "Équilibré"),
+        description: i18n("dOptBalancedDesc", "Désarme le fautif sans l'exclure, rend muets les spammeurs."),
+      },
+      {
+        id: "strict" as const,
+        emoji: "⚔️",
+        title: i18n("dOptStrict", "Strict"),
+        description: i18n("dOptStrictDesc", "Bannit quiconque tente de casser le serveur."),
+      },
+    ],
+    [i18n]
+  );
 
   useEffect(() => {
     if (!guild.id || !API_BASE) return;
@@ -129,8 +137,8 @@ export default function GuildAssistedSetup({
   }, [guild.id]);
 
   const activeServerMeta = useMemo(() => {
-    return SERVER_TYPES.find((s) => s.id === serverType) || SERVER_TYPES[0];
-  }, [serverType]);
+    return serverTypes.find((s) => s.id === serverType) || serverTypes[0];
+  }, [serverTypes, serverType]);
 
   const computedProtections = useMemo<ProtectionItem[]>(() => {
     const adminAction =
@@ -148,105 +156,65 @@ export default function GuildAssistedSetup({
         : "Rend muet (1h)";
 
     const raidAction =
-      severity === "surveillance"
-        ? "Alerte seule"
-        : severity === "balanced"
-        ? "Bloque l'accès"
-        : "Expulse";
+      severity === "strict" ? "Expulse + Lock" : "Alerte staff";
 
-    const botAction =
-      severity === "surveillance"
-        ? "Alerte seule"
-        : severity === "balanced"
-        ? "Retire les rôles"
-        : "Bannit le bot";
-
-    const voiceAction =
-      severity === "surveillance"
-        ? "Alerte seule"
-        : severity === "balanced"
-        ? "Déconnecte & retire perm"
-        : "Bannit du vocal";
-
-    if (serverType === "friends") {
-      return [
-        { name: "Anti-ban", category: "Sanctions en série", action: adminAction },
-        { name: "Anti-kick", category: "Sanctions en série", action: adminAction },
-        { name: "Anti-suppression de salon", category: "Salons", action: adminAction },
-        { name: "Anti-suppression de rôle", category: "Rôles et permissions", action: adminAction },
-        { name: "Anti-webhook", category: "Bots et intégrations", action: botAction },
-        { name: "Anti-changement de serveur", category: "Serveur", action: adminAction },
-        { name: "Sauvegarde d'urgence", category: "Serveur", action: "Active" },
-        { name: "Journal d'alertes staff", category: "Logs", action: "Envoie au salon" },
-      ];
-    }
-
-    const baseList: ProtectionItem[] = [
-      { name: "Anti-ban", category: "Sanctions en série", action: adminAction },
-      { name: "Anti-kick", category: "Sanctions en série", action: adminAction },
-      { name: "Anti-timeout", category: "Sanctions en série", action: adminAction },
-      { name: "Anti-création de salon", category: "Salons", action: adminAction },
-      { name: "Anti-suppression de salon", category: "Salons", action: adminAction },
-      { name: "Anti-modification de salon", category: "Salons", action: adminAction },
-      { name: "Anti-création de rôle", category: "Rôles et permissions", action: adminAction },
-      { name: "Anti-suppression de rôle", category: "Rôles et permissions", action: adminAction },
-      { name: "Anti-modification de rôle", category: "Rôles et permissions", action: adminAction },
-      { name: "Anti-webhook", category: "Bots et intégrations", action: botAction },
-      { name: "Anti-bot non vérifié", category: "Bots et intégrations", action: botAction },
-      { name: "Anti-spam & flood", category: "Messages", action: messageAction },
-      { name: "Anti-mentions de masse", category: "Messages", action: messageAction },
-      { name: "Anti-liens suspects", category: "Messages", action: messageAction },
-      { name: "Anti-invitations discord", category: "Messages", action: messageAction },
-      { name: "Anti-raid arrivées groupées", category: "Arrivées", action: raidAction },
-      { name: "Détection comptes récents < 7j", category: "Arrivées", action: raidAction },
-      { name: "Protection permissions admin", category: "Rôles et permissions", action: adminAction },
-      { name: "Anti-modification nom de serveur", category: "Serveur", action: adminAction },
-      { name: "Anti-suppression massive de messages", category: "Salons", action: messageAction },
-      { name: "Anti-changement icône", category: "Serveur", action: adminAction },
-      { name: "Détection tokens compromis", category: "Sécurité", action: adminAction },
-      { name: "Sauvegardes automatiques", category: "Sauvegardes", action: "Active" },
-      { name: "Alertes et journal de modération", category: "Logs", action: "Envoie au salon" },
+    const list: ProtectionItem[] = [
+      { name: "Anti-Raid Mass Join", category: "Raid", action: raidAction },
+      { name: "Anti-Spam Messages", category: "Spam", action: messageAction },
+      { name: "Anti-Mention Mass", category: "Spam", action: messageAction },
+      { name: "Anti-Liens Malveillants", category: "Sécurité", action: "Supprime" },
+      { name: "Anti-Suppression Salons", category: "Staff", action: adminAction },
+      { name: "Anti-Création Salons", category: "Staff", action: adminAction },
+      { name: "Anti-Suppression Rôles", category: "Staff", action: adminAction },
+      { name: "Anti-Création Rôles", category: "Staff", action: adminAction },
+      { name: "Anti-Ban Massif", category: "Staff", action: adminAction },
+      { name: "Anti-Kick Massif", category: "Staff", action: adminAction },
+      { name: "Anti-Bot Non Invité", category: "Sécurité", action: "Expulse" },
+      { name: "Anti-Webhook Illégal", category: "Sécurité", action: "Supprime" },
     ];
 
-    if (serverType === "voice") {
-      baseList.push(
-        { name: "Anti-mass-deafen vocal", category: "Vocal", action: voiceAction },
-        { name: "Anti-mass-move vocal", category: "Vocal", action: voiceAction },
-        { name: "Anti-déconnexions groupées", category: "Vocal", action: voiceAction },
-        { name: "Protection salons de discussion vocale", category: "Vocal", action: voiceAction }
+    if (serverType === "community" || serverType === "voice") {
+      list.push(
+        { name: "Anti-Ghost Ping", category: "Chat", action: "Avertit" },
+        { name: "Anti-Invites Publiques", category: "Pub", action: "Supprime" },
+        { name: "Anti-Token Raid", category: "Raid", action: "Quarantaine" },
+        { name: "Slowmode Dynamique", category: "Modération", action: "Ajuste" }
       );
     }
 
-    return baseList;
+    if (serverType === "voice") {
+      list.push(
+        { name: "Anti-Move Massif", category: "Vocal", action: "Bloque" },
+        { name: "Anti-Mute Massif", category: "Vocal", action: "Bloque" },
+        { name: "Anti-Deafen Massif", category: "Vocal", action: "Bloque" },
+        { name: "Anti-Spam Rejoin Vocal", category: "Vocal", action: "Timeout 5m" }
+      );
+    }
+
+    return list;
   }, [serverType, severity]);
 
   const handleApply = async () => {
     setIsApplying(true);
-    try {
-      const activeCount = computedProtections.length;
-      const configData = {
-        serverType,
-        severity,
-        alertChannelId: channelId,
-        alertChannelName: channelName,
-        activeProtectionsCount: activeCount,
-        isConfigured: true,
-        appliedAt: new Date().toISOString(),
-      };
+    const activeCount = activeServerMeta.activeProtectionsCount;
 
-      try {
-        localStorage.setItem(`ethone:discord:wizard:${guild.id}`, JSON.stringify(configData));
+    try {
+      if (typeof window !== "undefined") {
         localStorage.setItem(
-          `ethone:guild-settings:${guild.id}`,
+          `ethone:discord:wizard:${guild.id}`,
           JSON.stringify({
-            antiRaidEnabled: true,
-            antiSpamEnabled: true,
-            logChannelId: channelId,
+            serverType,
+            severity,
+            channelId,
+            channelName,
+            activeProtectionsCount: activeCount,
+            configuredAt: Date.now(),
+            isConfigured: true,
           })
         );
-      } catch {}
+      }
 
-      if (API_BASE) {
+      if (API_BASE && guild.id) {
         await Promise.allSettled([
           fetch(`${API_BASE}/api/guilds/${encodeURIComponent(guild.id)}/anti-raid/config`, {
             method: "PUT",
@@ -276,7 +244,7 @@ export default function GuildAssistedSetup({
         ]);
       }
 
-      success("Configuration appliquée !", `${activeCount} protections sont maintenant actives sur ${guild.name}.`);
+      success(i18n("dConfigApplied", "Configuration appliquée avec succès !"), `${activeCount} ${i18n("dProtectionsWillBeActive", "protections seront actives.")}`);
       onFinish?.({
         serverType,
         severity,
@@ -295,20 +263,20 @@ export default function GuildAssistedSetup({
     <div className="w-full max-w-4xl mx-auto space-y-6 animate-in fade-in duration-300">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <h1 className="text-2xl font-bold tracking-tight text-[var(--text-primary)] sm:text-3xl">
-          Configuration assistée
+          {i18n("dAssistedSetup", "Configuration assistée")}
         </h1>
 
         <button
           type="button"
           onClick={onManualSetup || onCancel}
-          className="self-start sm:self-auto inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-zinc-700 hover:border-zinc-500 bg-zinc-900/60 hover:bg-zinc-800 text-xs font-semibold text-zinc-300 transition-colors cursor-pointer"
+          className="self-start sm:self-auto inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[var(--panel-border)] hover:border-[var(--text-muted)] bg-[var(--surface-raised)] hover:bg-[var(--surface-hover,var(--surface-raised))] text-xs font-semibold text-[var(--text-primary)] transition-colors cursor-pointer"
         >
           <Sliders className="h-3.5 w-3.5" />
-          <span>Réglage manuel</span>
+          <span>{i18n("dManualSetup", "Réglage manuel")}</span>
         </button>
       </div>
 
-      <div className="border-b border-zinc-800 flex items-center gap-6 text-sm font-semibold">
+      <div className="border-b border-[var(--panel-border)] flex items-center gap-6 text-sm font-semibold">
         <button
           type="button"
           onClick={() => setCurrentStep(1)}
@@ -316,10 +284,10 @@ export default function GuildAssistedSetup({
             "pb-3 border-b-2 transition-all cursor-pointer",
             currentStep === 1
               ? "border-emerald-400 text-emerald-400 font-bold"
-              : "border-transparent text-zinc-400 hover:text-zinc-200"
+              : "border-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)]"
           )}
         >
-          Ton serveur
+          {i18n("dStepServer", "Ton serveur")}
         </button>
 
         <button
@@ -329,10 +297,10 @@ export default function GuildAssistedSetup({
             "pb-3 border-b-2 transition-all cursor-pointer",
             currentStep === 2
               ? "border-emerald-400 text-emerald-400 font-bold"
-              : "border-transparent text-zinc-400 hover:text-zinc-200"
+              : "border-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)]"
           )}
         >
-          Sévérité
+          {i18n("dStepSeverity", "Sévérité")}
         </button>
 
         <button
@@ -342,10 +310,10 @@ export default function GuildAssistedSetup({
             "pb-3 border-b-2 transition-all cursor-pointer",
             currentStep === 3
               ? "border-emerald-400 text-emerald-400 font-bold"
-              : "border-transparent text-zinc-400 hover:text-zinc-200"
+              : "border-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)]"
           )}
         >
-          Alertes
+          {i18n("dStepAlerts", "Alertes")}
         </button>
 
         <button
@@ -355,27 +323,27 @@ export default function GuildAssistedSetup({
             "pb-3 border-b-2 transition-all cursor-pointer",
             currentStep === 4
               ? "border-emerald-400 text-emerald-400 font-bold"
-              : "border-transparent text-zinc-400 hover:text-zinc-200"
+              : "border-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)]"
           )}
         >
-          Vérifier
+          {i18n("dStepVerify", "Vérifier")}
         </button>
       </div>
 
-      <div className="rounded-2xl border border-zinc-800 bg-zinc-950/70 p-6 sm:p-8 space-y-6 shadow-xl backdrop-blur-sm">
+      <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-6 sm:p-8 space-y-6 shadow-xl backdrop-blur-sm">
         {currentStep === 1 && (
           <div className="space-y-6 animate-in fade-in duration-200">
             <div>
               <h2 className="text-base font-bold text-[var(--text-primary)] sm:text-lg">
-                Quel genre de serveur as-tu ?
+                {i18n("dStep1Title", "Quel genre de serveur as-tu ?")}
               </h2>
               <p className="mt-1 text-xs text-[var(--text-muted)] sm:text-sm">
-                Etho choisit les protections adaptées.
+                {i18n("dStep1Desc", "Etho choisit les protections adaptées.")}
               </p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
-              {SERVER_TYPES.map((type) => {
+              {serverTypes.map((type) => {
                 const isSelected = serverType === type.id;
                 return (
                   <button
@@ -385,23 +353,23 @@ export default function GuildAssistedSetup({
                     className={cn(
                       "p-4 rounded-xl border text-left transition-all flex flex-col justify-between gap-3 cursor-pointer relative",
                       isSelected
-                        ? "border-emerald-500/70 bg-emerald-950/30 text-emerald-400 ring-1 ring-emerald-500/40"
-                        : "border-zinc-800 bg-zinc-900/40 hover:border-zinc-700 text-zinc-300"
+                        ? "border-emerald-500/70 bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 ring-1 ring-emerald-500/40"
+                        : "border-[var(--panel-border)] bg-[var(--surface-raised)] hover:border-[var(--text-muted)] text-[var(--text-primary)]"
                     )}
                   >
                     <div className="space-y-1.5">
                       <div className="flex items-center gap-2">
                         <span className="text-lg">{type.emoji}</span>
-                        <span className="text-xs font-bold text-white tracking-tight">
+                        <span className="text-xs font-bold text-[var(--text-primary)] tracking-tight">
                           {type.title}
                         </span>
                       </div>
-                      <p className="text-[11px] text-zinc-400 leading-relaxed">
+                      <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">
                         {type.description}
                       </p>
                     </div>
 
-                    <div className="text-[11px] font-medium text-emerald-400/90 pt-1">
+                    <div className="text-[11px] font-medium text-emerald-500 dark:text-emerald-400/90 pt-1">
                       {type.activeProtectionsCount} protections
                     </div>
                   </button>
@@ -409,18 +377,18 @@ export default function GuildAssistedSetup({
               })}
             </div>
 
-            <p className="text-xs font-medium text-zinc-400">
-              {activeServerMeta.activeProtectionsCount} protections seront actives.
+            <p className="text-xs font-medium text-[var(--text-muted)]">
+              {activeServerMeta.activeProtectionsCount} {i18n("dProtectionsWillBeActive", "protections seront actives.")}
             </p>
 
-            <div className="flex items-center justify-between pt-4 border-t border-zinc-800/80">
+            <div className="flex items-center justify-between pt-4 border-t border-[var(--panel-border)]">
               <button
                 type="button"
                 onClick={onCancel}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-zinc-700/80 hover:border-zinc-600 bg-zinc-900/60 hover:bg-zinc-800 text-xs font-semibold text-zinc-300 transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-[var(--panel-border)] hover:border-[var(--text-muted)] bg-[var(--surface-raised)] hover:bg-[var(--surface-hover,var(--surface-raised))] text-xs font-semibold text-[var(--text-primary)] transition-colors cursor-pointer"
               >
                 <ChevronLeft className="h-3.5 w-3.5" />
-                <span>Retour</span>
+                <span>{i18n("dBack", "Retour")}</span>
               </button>
 
               <button
@@ -428,8 +396,7 @@ export default function GuildAssistedSetup({
                 onClick={() => setCurrentStep(2)}
                 className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold text-xs transition-colors shadow-sm cursor-pointer"
               >
-                <span>Continuer</span>
-                <span>→</span>
+                <span>{i18n("dContinue", "Continuer →")}</span>
               </button>
             </div>
           </div>
@@ -439,15 +406,15 @@ export default function GuildAssistedSetup({
           <div className="space-y-6 animate-in fade-in duration-200">
             <div>
               <h2 className="text-base font-bold text-[var(--text-primary)] sm:text-lg">
-                À quel point Etho doit-il être sévère ?
+                {i18n("dStep2Title", "À quel point Etho doit-il être sévère ?")}
               </h2>
               <p className="mt-1 text-xs text-[var(--text-muted)] sm:text-sm">
-                La sanction est adaptée au type d&apos;abus.
+                {i18n("dStep2Desc", "La sanction est adaptée au type d'abus.")}
               </p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
-              {SEVERITY_LEVELS.map((lvl) => {
+              {severityLevels.map((lvl) => {
                 const isSelected = severity === lvl.id;
                 return (
                   <button
@@ -457,18 +424,18 @@ export default function GuildAssistedSetup({
                     className={cn(
                       "p-4 rounded-xl border text-left transition-all flex flex-col justify-between gap-3 cursor-pointer",
                       isSelected
-                        ? "border-emerald-500/70 bg-emerald-950/30 text-emerald-400 ring-1 ring-emerald-500/40"
-                        : "border-zinc-800 bg-zinc-900/40 hover:border-zinc-700 text-zinc-300"
+                        ? "border-emerald-500/70 bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 ring-1 ring-emerald-500/40"
+                        : "border-[var(--panel-border)] bg-[var(--surface-raised)] hover:border-[var(--text-muted)] text-[var(--text-primary)]"
                     )}
                   >
                     <div className="space-y-1.5">
                       <div className="flex items-center gap-2">
                         <span className="text-lg">{lvl.emoji}</span>
-                        <span className="text-xs font-bold text-white tracking-tight">
+                        <span className="text-xs font-bold text-[var(--text-primary)] tracking-tight">
                           {lvl.title}
                         </span>
                       </div>
-                      <p className="text-[11px] text-zinc-400 leading-relaxed">
+                      <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">
                         {lvl.description}
                       </p>
                     </div>
@@ -477,14 +444,14 @@ export default function GuildAssistedSetup({
               })}
             </div>
 
-            <div className="flex items-center justify-between pt-4 border-t border-zinc-800/80">
+            <div className="flex items-center justify-between pt-4 border-t border-[var(--panel-border)]">
               <button
                 type="button"
                 onClick={() => setCurrentStep(1)}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-zinc-700/80 hover:border-zinc-600 bg-zinc-900/60 hover:bg-zinc-800 text-xs font-semibold text-zinc-300 transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-[var(--panel-border)] hover:border-[var(--text-muted)] bg-[var(--surface-raised)] hover:bg-[var(--surface-hover,var(--surface-raised))] text-xs font-semibold text-[var(--text-primary)] transition-colors cursor-pointer"
               >
                 <ChevronLeft className="h-3.5 w-3.5" />
-                <span>Retour</span>
+                <span>{i18n("dBack", "Retour")}</span>
               </button>
 
               <button
@@ -492,8 +459,7 @@ export default function GuildAssistedSetup({
                 onClick={() => setCurrentStep(3)}
                 className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold text-xs transition-colors shadow-sm cursor-pointer"
               >
-                <span>Continuer</span>
-                <span>→</span>
+                <span>{i18n("dContinue", "Continuer →")}</span>
               </button>
             </div>
           </div>
@@ -503,16 +469,16 @@ export default function GuildAssistedSetup({
           <div className="space-y-6 animate-in fade-in duration-200">
             <div>
               <h2 className="text-base font-bold text-[var(--text-primary)] sm:text-lg">
-                Où Etho doit-il te prévenir ?
+                {i18n("dStep3Title", "Où Etho doit-il te prévenir ?")}
               </h2>
               <p className="mt-1 text-xs text-[var(--text-muted)] sm:text-sm">
-                Un salon privé, visible par le staff, de préférence.
+                {i18n("dStep3Desc", "Un salon privé, visible par le staff, de préférence.")}
               </p>
             </div>
 
             <div className="space-y-2 max-w-md">
-              <label className="text-xs font-semibold text-zinc-300 block">
-                Choisir un salon
+              <label className="text-xs font-semibold text-[var(--text-primary)] block">
+                {i18n("dChooseChannel", "Choisir un salon")}
               </label>
 
               <div className="relative">
@@ -523,7 +489,7 @@ export default function GuildAssistedSetup({
                     setChannelId(e.target.value);
                     setChannelName(found ? `#${found.name}` : e.target.value);
                   }}
-                  className="w-full appearance-none rounded-xl border border-zinc-800 bg-zinc-900/80 px-3.5 py-2.5 text-xs text-zinc-200 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 cursor-pointer"
+                  className="w-full appearance-none rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3.5 py-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 cursor-pointer"
                 >
                   {channels.map((c) => (
                     <option key={c.id} value={c.id}>
@@ -532,27 +498,27 @@ export default function GuildAssistedSetup({
                   ))}
                 </select>
 
-                <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-zinc-400">
+                <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-[var(--text-muted)]">
                   <Hash className="h-4 w-4" />
                 </div>
               </div>
             </div>
 
-            <div className="flex items-start gap-3 p-4 rounded-xl bg-zinc-900/60 border border-zinc-800 text-xs text-zinc-400 max-w-xl">
-              <Info className="h-4 w-4 text-zinc-400 shrink-0 mt-0.5" />
+            <div className="flex items-start gap-3 p-4 rounded-xl bg-[var(--surface-hover,var(--surface-raised))] border border-[var(--panel-border)] text-xs text-[var(--text-muted)] max-w-xl">
+              <Info className="h-4 w-4 text-[var(--text-muted)] shrink-0 mt-0.5" />
               <p className="leading-relaxed">
-                Sans salon, les protections agissent mais personne n&apos;est prévenu sur Discord. La commande configuration peut créer ce salon pour toi.
+                {i18n("dNoChannelNote", "Sans salon, les protections agissent mais personne n'est prévenu sur Discord. La commande configuration peut créer ce salon pour toi.")}
               </p>
             </div>
 
-            <div className="flex items-center justify-between pt-4 border-t border-zinc-800/80">
+            <div className="flex items-center justify-between pt-4 border-t border-[var(--panel-border)]">
               <button
                 type="button"
                 onClick={() => setCurrentStep(2)}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-zinc-700/80 hover:border-zinc-600 bg-zinc-900/60 hover:bg-zinc-800 text-xs font-semibold text-zinc-300 transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-[var(--panel-border)] hover:border-[var(--text-muted)] bg-[var(--surface-raised)] hover:bg-[var(--surface-hover,var(--surface-raised))] text-xs font-semibold text-[var(--text-primary)] transition-colors cursor-pointer"
               >
                 <ChevronLeft className="h-3.5 w-3.5" />
-                <span>Retour</span>
+                <span>{i18n("dBack", "Retour")}</span>
               </button>
 
               <button
@@ -560,8 +526,7 @@ export default function GuildAssistedSetup({
                 onClick={() => setCurrentStep(4)}
                 className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold text-xs transition-colors shadow-sm cursor-pointer"
               >
-                <span>Continuer</span>
-                <span>→</span>
+                <span>{i18n("dContinue", "Continuer →")}</span>
               </button>
             </div>
           </div>
@@ -571,10 +536,10 @@ export default function GuildAssistedSetup({
           <div className="space-y-6 animate-in fade-in duration-200">
             <div>
               <h2 className="text-base font-bold text-[var(--text-primary)] sm:text-lg">
-                Voilà ce qui va changer
+                {i18n("dStep4Title", "Voilà ce qui va changer")}
               </h2>
               <p className="mt-1 text-xs text-[var(--text-muted)] sm:text-sm">
-                {computedProtections.length} protections à modifier.
+                {computedProtections.length} {i18n("dProtectionsToModify", "protections à modifier.")}
               </p>
             </div>
 
@@ -582,33 +547,33 @@ export default function GuildAssistedSetup({
               {computedProtections.map((p, i) => (
                 <div
                   key={i}
-                  className="flex items-center justify-between py-2 px-3 rounded-lg bg-zinc-900/40 border border-zinc-800/70 hover:border-zinc-700 transition-colors"
+                  className="flex items-center justify-between py-2 px-3 rounded-lg bg-[var(--surface-hover,var(--surface-raised))] border border-[var(--panel-border)] hover:border-[var(--text-muted)] transition-colors"
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
                     <Check className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
-                    <span className="text-xs font-bold text-zinc-200 truncate">
+                    <span className="text-xs font-bold text-[var(--text-primary)] truncate">
                       {p.name}
                     </span>
-                    <span className="text-[11px] text-zinc-500 hidden sm:inline truncate">
+                    <span className="text-[11px] text-[var(--text-muted)] hidden sm:inline truncate">
                       {p.category}
                     </span>
                   </div>
 
-                  <span className="text-[11px] font-mono text-zinc-400 bg-zinc-800/80 px-2 py-0.5 rounded shrink-0">
+                  <span className="text-[11px] font-mono text-[var(--text-muted)] bg-[var(--surface-raised)] border border-[var(--panel-border)] px-2 py-0.5 rounded shrink-0">
                     {p.action}
                   </span>
                 </div>
               ))}
             </div>
 
-            <div className="flex items-center justify-between pt-4 border-t border-zinc-800/80">
+            <div className="flex items-center justify-between pt-4 border-t border-[var(--panel-border)]">
               <button
                 type="button"
                 onClick={() => setCurrentStep(3)}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-zinc-700/80 hover:border-zinc-600 bg-zinc-900/60 hover:bg-zinc-800 text-xs font-semibold text-zinc-300 transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-[var(--panel-border)] hover:border-[var(--text-muted)] bg-[var(--surface-raised)] hover:bg-[var(--surface-hover,var(--surface-raised))] text-xs font-semibold text-[var(--text-primary)] transition-colors cursor-pointer"
               >
                 <ChevronLeft className="h-3.5 w-3.5" />
-                <span>Retour</span>
+                <span>{i18n("dBack", "Retour")}</span>
               </button>
 
               <button
@@ -622,7 +587,7 @@ export default function GuildAssistedSetup({
                 ) : (
                   <Check className="h-4 w-4" />
                 )}
-                <span>Appliquer</span>
+                <span>{i18n("dApply", "Appliquer")}</span>
               </button>
             </div>
           </div>

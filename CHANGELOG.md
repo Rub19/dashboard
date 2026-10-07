@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.64 — 2026-10-07
+
+**Bouton Thème Intuitif & Support Multilingue Discord (FR, EN, ES, DE)**
+
+- Bouton de bascule de thème repensé avec icône intuitive (Lune en mode sombre, Soleil en mode clair) et synchronisation colorScheme.
+- Suppression des classes sombres codées en dur pour un mode clair étincelant sur tout le hub Discord et l'assistant de configuration.
+- Sélecteur de langue avec menu déroulant élégant supportant 4 langues : Français, Anglais, Espagnol et Allemand.
+- Traductions dynamiques de l'ensemble de la console Discord dans les 4 langues (navigation latérale, vue d'ensemble, assistant et installation).
+
 ## v1.55.63 — 2026-10-07
 
 **Configurateur Rapide — Bannière & Assistant 4 Étapes**

@@ -14,15 +14,18 @@ import {
   BookOpen,
   Sun,
   Moon,
+  Search,
 } from "@/components/icons/ph";
 import ClientImage from "@/components/ClientImage";
-import FlagIcon from "@/components/FlagIcon";
+import DiscordLanguageDropdown from "./DiscordLanguageDropdown";
 import { useSettings } from "@/components/SettingsProvider";
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ToastProvider";
+import { useI18n } from "@/lib/hooks/useI18n";
 import { useAccountProfile } from "@/lib/profile/account-profile";
 import { fetchBotPresence, clearBotPresenceCache } from "@/lib/hooks/useBotGuildIds";
 import { cn } from "@/lib/utils";
+import { resolveTheme } from "@/lib/theme-engine";
 import { getStoredDiscordUser, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
 import { useBotSessionUser } from "@/lib/hooks/useBotSessionUser";
 import { motion } from "framer-motion";
@@ -115,23 +118,22 @@ export default function BotInstallView({
   botName = "Etho",
 }: BotInstallViewProps) {
   const router = useRouter();
+  const i18n = useI18n();
   const { signOut } = useAuth();
   const { settings, update: updateSettings } = useSettings();
   const { success, info, error: showError } = useToast();
   const { profile: ethoneProfile } = useAccountProfile();
 
+  const isDark = settings.darkMode && resolveTheme(settings.theme).dark !== false;
+
   const toggleTheme = useCallback(() => {
-    const nextDark = !settings.darkMode;
+    const nextDark = !isDark;
     updateSettings({
       darkMode: nextDark,
       theme: nextDark ? "obsidian" : "arctic",
+      colorScheme: nextDark ? "dark" : "light",
     });
-  }, [settings.darkMode, updateSettings]);
-
-  const toggleLanguage = useCallback(() => {
-    const nextLang = settings.language === "fr" ? "en" : "fr";
-    updateSettings({ language: nextLang });
-  }, [settings.language, updateSettings]);
+  }, [isDark, updateSettings]);
 
   const handleLogout = useCallback(async () => {
     try {
@@ -179,20 +181,20 @@ export default function BotInstallView({
           if (manual || reduced) {
             onBotDetected(guild);
           } else {
-            detectTimerRef.current = setTimeout(() => onBotDetected(guild), 400);
+            setTimeout(() => onBotDetected(guild), 700);
           }
           return true;
         } else if (manual) {
           info(
-            "Bot non détecté pour l'instant",
-            `${botName} n'est pas encore présent sur "${guild.name}". Vérifiez l'invitation Discord ou cliquez sur « Passer l'attente ».`
+            "Bot non détecté",
+            `${botName} n'a pas encore rejoint "${guild.name}". Assure-toi de valider l'invitation Discord.`
           );
         }
       } catch {
         if (manual) {
           showError(
-            "Vérification impossible",
-            "Impossible de contacter le service de détection. Vous pouvez passer l'attente."
+            "Erreur de détection",
+            "Impossible de joindre l'API Discord. Réessaie dans quelques instants."
           );
         }
       } finally {
@@ -200,29 +202,44 @@ export default function BotInstallView({
       }
       return false;
     },
-    [guild, botName, success, info, showError, onBotDetected, reduced]
+    [guild, botName, onBotDetected, success, info, showError, reduced]
   );
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      if (!detectedRef.current) checkPresence(false);
-    }, 3500);
-    return () => clearInterval(timer);
+    let cancelled = false;
+    let delay = 3000;
+    let attempts = 0;
+    const maxAttempts = 40;
+
+    const poll = async () => {
+      if (cancelled || detectedRef.current || attempts >= maxAttempts) return;
+      attempts += 1;
+      const found = await checkPresence(false);
+      if (found || cancelled) return;
+      if (attempts > 5) delay = 5000;
+      if (attempts > 15) delay = 8000;
+      detectTimerRef.current = setTimeout(poll, delay);
+    };
+
+    detectTimerRef.current = setTimeout(poll, 2500);
+
+    return () => {
+      cancelled = true;
+      if (detectTimerRef.current) clearTimeout(detectTimerRef.current);
+    };
   }, [checkPresence]);
 
-
-  const initials = useMemo(() => getGuildInitials(guild.name), [guild.name]);
   const storedUser = useMemo(() => getStoredDiscordUser(), []);
   const botUser = useBotSessionUser();
   const currentDisplayName =
-    (userName && userName !== "rub19" ? userName : undefined) ||
+    userName ||
     storedUser?.globalName ||
     storedUser?.displayName ||
     storedUser?.username ||
     ethoneProfile?.displayName ||
     ethoneProfile?.username ||
-    userName ||
     "rub19";
+
   const currentAvatarUrl =
     botUser?.avatarUrl ||
     userAvatar ||
@@ -230,6 +247,8 @@ export default function BotInstallView({
     storedUser?.avatarUrlSmall ||
     ethoneProfile?.avatarUrl ||
     null;
+
+  const initials = useMemo(() => getGuildInitials(guild.name), [guild.name]);
 
   return (
     <div className="h-dvh min-h-dvh w-full bg-[var(--background)] text-[var(--text-primary)] flex flex-col md:flex-row antialiased overflow-hidden">
@@ -240,52 +259,61 @@ export default function BotInstallView({
         className="w-full md:w-64 shrink-0 border-b md:border-b-0 md:border-r border-[var(--panel-border)] bg-[var(--surface-raised)]/95 flex flex-col justify-between p-4 md:h-dvh md:max-h-dvh"
       >
         <div className="space-y-4">
-          <div className="flex items-center px-2 pt-1">
-            <div className="flex items-center gap-2.5">
-              <motion.div
-                variants={consoleBrandMark}
-                whileHover={reduced ? undefined : { scale: 1.06 }}
-                transition={SPRING_PRESS}
-                className="relative flex h-8 w-8 items-center justify-center rounded-sm bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/30 cursor-pointer"
-              >
-                <ShieldCheck className="h-4 w-4 text-[var(--accent-primary)]" />
-              </motion.div>
-              <span className="font-bold text-base tracking-tight text-[var(--text-primary)]">
-                Etho
-              </span>
-            </div>
+          <div className="flex items-center gap-2.5 px-2 pt-1">
+            <motion.div
+              variants={consoleBrandMark}
+              whileHover={reduced ? undefined : { scale: 1.06 }}
+              transition={SPRING_PRESS}
+              className="relative flex h-8 w-8 items-center justify-center rounded-sm bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/30 cursor-pointer"
+            >
+              <ShieldCheck className="h-4 w-4 text-[var(--accent-primary)]" />
+            </motion.div>
+            <span className="font-bold text-base tracking-tight text-[var(--text-primary)]">
+              Etho
+            </span>
           </div>
 
           <motion.div
             variants={consoleSidebarItem}
-            className="flex items-center gap-2.5 rounded-sm border border-[var(--panel-border)] bg-[var(--surface-raised)] p-2.5"
+            className="rounded-sm border border-[var(--panel-border)] bg-[var(--surface-raised)] p-2.5 space-y-2"
           >
-            {guild.iconUrl ? (
-              <ClientImage
-                src={guild.iconUrl}
-                alt={guild.name}
-                width={36}
-                height={36}
-                className="h-9 w-9 rounded-sm object-cover border border-[var(--panel-border)] shrink-0"
-              />
-            ) : (
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm bg-[var(--surface-raised)] text-[var(--accent-primary)] font-bold text-xs border border-[var(--panel-border)]">
-                {initials}
+            <div className="flex items-center gap-2.5 min-w-0">
+              {guild.icon ? (
+                <ClientImage
+                  src={`https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png?size=64`}
+                  alt={guild.name}
+                  width={32}
+                  height={32}
+                  className="h-8 w-8 rounded-sm object-cover shrink-0"
+                />
+              ) : (
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-sm bg-[var(--panel-border)] font-bold text-xs text-[var(--text-primary)]">
+                  {initials}
+                </div>
+              )}
+              <div className="min-w-0 flex-1">
+                <span className="block truncate text-xs font-bold text-[var(--text-primary)]">
+                  {guild.name}
+                </span>
+                <span className="block text-[10px] text-[var(--text-muted)]">
+                  Etho absent
+                </span>
               </div>
-            )}
-            <div className="min-w-0 flex-1">
-              <span className="block truncate text-xs font-semibold text-[var(--text-primary)]">
-                {guild.name}
-              </span>
-              <span className="flex items-center gap-1.5 text-[11px] text-[var(--text-muted)]">
-                <span className="h-1.5 w-1.5 rounded-sm bg-zinc-500" />
-                <span>{botName} absent</span>
-              </span>
+            </div>
+          </motion.div>
+
+          <motion.div
+            variants={consoleSidebarItem}
+            className="w-full flex items-center justify-between rounded-sm border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-2 text-xs text-[var(--text-muted)] select-none opacity-60"
+          >
+            <div className="flex items-center gap-2">
+              <Search className="h-3.5 w-3.5" />
+              <span>{i18n("dSearchPlaceholder", "Rechercher un réglage... Ctrl K")}</span>
             </div>
           </motion.div>
         </div>
 
-        <div className="space-y-4 pt-4 border-t border-[var(--panel-border)]">
+        <div className="space-y-3 pt-4 border-t border-[var(--panel-border)]">
           <motion.div variants={consoleSidebarItem} className="space-y-1 text-xs">
             <button
               type="button"
@@ -293,7 +321,7 @@ export default function BotInstallView({
               className="w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-[var(--text-primary)] hover:bg-[var(--surface-hover,var(--surface-raised))] transition-colors cursor-pointer font-medium text-left"
             >
               <Home className="h-4 w-4" />
-              <span>Mes serveurs</span>
+              <span>{i18n("dMyServers", "Mes serveurs")}</span>
             </button>
             <a
               href={DOCS_URL}
@@ -303,7 +331,7 @@ export default function BotInstallView({
             >
               <div className="flex items-center gap-2.5">
                 <BookOpen className="h-4 w-4" />
-                <span>Documentation</span>
+                <span>{i18n("dDocumentation", "Documentation")}</span>
               </div>
               <ExternalLink className="h-3.5 w-3.5 opacity-60" />
             </a>
@@ -315,36 +343,28 @@ export default function BotInstallView({
             >
               <div className="flex items-center gap-2.5">
                 <LifeBuoyIcon className="h-4 w-4" />
-                <span>Support</span>
+                <span>{i18n("dSupport", "Support")}</span>
               </div>
               <ExternalLink className="h-3.5 w-3.5 opacity-60" />
             </a>
           </motion.div>
 
-          <motion.div variants={consoleSidebarItem} className="pt-3 border-t border-[var(--panel-border)]">
-            <div className="flex items-center justify-between p-1.5">
-              <div className="flex items-center gap-2.5 min-w-0">
+          <motion.div
+            variants={consoleSidebarItem}
+            className="pt-2 border-t border-[var(--panel-border)]"
+          >
+            <div className="flex items-center justify-between gap-2 px-1">
+              <div className="flex items-center gap-2 min-w-0">
                 {currentAvatarUrl ? (
                   <ClientImage
-                    candidates={[
-                      currentAvatarUrl,
-                      storedUser?.avatarUrl,
-                      storedUser?.avatarUrlSmall,
-                      ethoneProfile?.avatarUrl,
-                    ].filter(Boolean) as string[]}
                     src={currentAvatarUrl}
                     alt={currentDisplayName}
-                    width={30}
-                    height={30}
-                    fallback={
-                      <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--surface-raised)] text-[var(--accent-primary)] font-bold text-xs border border-[var(--panel-border)] shrink-0">
-                        {currentDisplayName.slice(0, 2).toUpperCase()}
-                      </div>
-                    }
-                    className="h-7 w-7 rounded-full object-cover border border-[var(--panel-border)] shrink-0"
+                    width={28}
+                    height={28}
+                    className="h-7 w-7 rounded-sm object-cover shrink-0 border border-[var(--panel-border)]"
                   />
                 ) : (
-                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--surface-raised)] text-[var(--accent-primary)] font-bold text-xs border border-[var(--panel-border)] shrink-0">
+                  <div className="h-7 w-7 rounded-sm bg-[var(--panel-border)] flex items-center justify-center font-bold text-xs text-[var(--text-primary)] shrink-0">
                     {currentDisplayName.slice(0, 2).toUpperCase()}
                   </div>
                 )}
@@ -358,28 +378,20 @@ export default function BotInstallView({
                   type="button"
                   onClick={toggleTheme}
                   className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] rounded hover:bg-[var(--surface-hover,var(--surface-raised))] transition-colors cursor-pointer"
-                  title={settings.darkMode ? "Activer le mode clair" : "Activer le mode sombre"}
-                  aria-label="Basculer le thème"
+                  title={i18n(isDark ? "dThemeToggleLight" : "dThemeToggleDark", isDark ? "Activer le mode clair" : "Activer le mode sombre")}
+                  aria-label={i18n(isDark ? "dThemeToggleLight" : "dThemeToggleDark", isDark ? "Activer le mode clair" : "Activer le mode sombre")}
                 >
-                  {settings.darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                  {isDark ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4 text-amber-400" />}
                 </button>
 
-                <button
-                  type="button"
-                  onClick={toggleLanguage}
-                  className="p-1 rounded hover:bg-[var(--surface-hover,var(--surface-raised))] transition-colors cursor-pointer"
-                  title="Changer de langue"
-                  aria-label="Changer de langue"
-                >
-                  <FlagIcon code={settings.language === "fr" ? "en" : "fr"} className="h-3.5 w-5 rounded-xs" />
-                </button>
+                <DiscordLanguageDropdown align="right" />
 
                 <button
                   type="button"
                   onClick={handleLogout}
                   className="p-1.5 text-[var(--text-muted)] hover:text-rose-400 rounded hover:bg-[var(--surface-hover,var(--surface-raised))] transition-colors cursor-pointer"
-                  title="Déconnexion"
-                  aria-label="Déconnexion"
+                  title={i18n("dLogout", "Déconnexion")}
+                  aria-label={i18n("dLogout", "Déconnexion")}
                 >
                   <LogOut className="h-4 w-4" />
                 </button>
@@ -410,7 +422,7 @@ export default function BotInstallView({
 
           <div className="flex items-center gap-2 text-xs text-[var(--text-muted)] select-none">
             <CloudCheckIcon className="h-4 w-4 shrink-0 text-[var(--text-muted)]" />
-            <span className="font-normal text-[var(--text-muted)]">Tout est enregistré</span>
+            <span className="font-normal text-[var(--text-muted)]">{i18n("dAllSaved", "Tout est enregistré")}</span>
           </div>
         </motion.header>
 
@@ -425,7 +437,7 @@ export default function BotInstallView({
               variants={consoleReveal}
               className="text-2xl sm:text-3xl font-bold tracking-tight text-[var(--text-primary)] text-center"
             >
-              Installer {botName} sur {guild.name}
+              {i18n("dInstallEthoOn", "Installer Etho sur")} {guild.name}
             </motion.h1>
 
             <motion.div
@@ -446,10 +458,10 @@ export default function BotInstallView({
                   </div>
                   <div className="min-w-0">
                     <h3 className="text-sm font-semibold text-[var(--text-primary)]">
-                      Ajoute {botName} au serveur
+                      {i18n("dStepAddBot", "Ajoute Etho au serveur")}
                     </h3>
                     <p className="mt-0.5 text-xs text-[var(--text-muted)] leading-relaxed">
-                      Discord s&apos;ouvre dans un nouvel onglet. Garde toutes les permissions demandées.
+                      {i18n("dStepAddBotDesc", "Discord s'ouvre dans un nouvel onglet. Garde toutes les permissions demandées.")}
                     </p>
                   </div>
                 </div>
@@ -464,7 +476,7 @@ export default function BotInstallView({
                   transition={SPRING_PRESS}
                   className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-sm bg-[var(--accent-primary)] px-4 py-2 text-xs font-bold text-[var(--accent-contrast)] hover:opacity-90 transition-all shadow-md"
                 >
-                  <span>Ajouter {botName}</span>
+                  <span>{i18n("dAddEtho", "Ajouter Etho ↗")}</span>
                   <ExternalLink className="h-3.5 w-3.5" />
                 </motion.a>
               </motion.div>
@@ -475,10 +487,10 @@ export default function BotInstallView({
                 </div>
                 <div className="min-w-0">
                   <h3 className="text-sm font-semibold text-[var(--text-primary)]">
-                    Place son rôle tout en haut
+                    {i18n("dStepPlaceRole", "Place son rôle tout en haut")}
                   </h3>
                   <p className="mt-0.5 text-xs text-[var(--text-muted)] leading-relaxed">
-                    Paramètres du serveur, Rôles : glisse le rôle {botName} au-dessus des autres pour qu&apos;il puisse sanctionner et restaurer.
+                    {i18n("dStepPlaceRoleDesc", "Paramètres du serveur, Rôles : glisse le rôle Etho au-dessus des autres pour qu'il puisse sanctionner et restaurer.")}
                   </p>
                 </div>
               </motion.div>
@@ -497,10 +509,10 @@ export default function BotInstallView({
                   </div>
                   <div className="min-w-0">
                     <h3 className="text-sm font-semibold text-[var(--text-primary)]">
-                      Reviens ici
+                      {i18n("dStepComeBack", "Reviens ici")}
                     </h3>
                     <p className="mt-0.5 text-xs text-[var(--text-muted)] leading-relaxed">
-                      La configuration s&apos;ouvre dès que {botName} est détecté.
+                      {i18n("dStepComeBackDesc", "La configuration s'ouvre dès qu'Etho est détecté.")}
                     </p>
                   </div>
                 </div>
@@ -521,7 +533,7 @@ export default function BotInstallView({
                         isChecking && "animate-spin text-[var(--accent-primary)]"
                       )}
                     />
-                    <span>{isChecking ? "Vérification..." : "Vérifier"}</span>
+                    <span>{isChecking ? i18n("dSaving", "Vérification...") : i18n("dCheck", "Vérifier")}</span>
                   </motion.button>
 
                   <motion.button
@@ -531,10 +543,10 @@ export default function BotInstallView({
                     whileTap={reduced ? undefined : { scale: 0.97 }}
                     transition={SPRING_PRESS}
                     className="inline-flex items-center gap-1.5 rounded-sm border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-2 text-xs font-semibold text-[var(--text-muted)] hover:border-[var(--accent-primary)] hover:text-[var(--text-primary)] transition-all cursor-pointer"
-                    title="Passer l'attente et accéder directement à la configuration"
+                    title={i18n("dSkipWait", "Passer l'attente")}
                   >
                     <SkipForward className="h-3.5 w-3.5" />
-                    <span>Passer l&apos;attente</span>
+                    <span>{i18n("dSkipWait", "Passer l'attente")}</span>
                   </motion.button>
                 </div>
               </motion.div>
@@ -544,7 +556,7 @@ export default function BotInstallView({
               variants={consoleFadeUp}
               className="rounded-sm border border-[var(--panel-border)] bg-[var(--surface-raised)] px-4 py-3 text-center text-xs text-[var(--text-muted)]"
             >
-              <span>La détection peut prendre quelques secondes après l&apos;ajout du bot.</span>
+              <span>{i18n("dDetectionDelay", "La détection peut prendre quelques secondes après l'ajout du bot.")}</span>
             </motion.div>
           </div>
         </motion.div>

@@ -46520,4 +46520,57 @@ CHANGELOG_BY_LANG.en.unshift(v12870_en);
 CHANGELOG_BY_LANG.es.unshift(v12870_es);
 CHANGELOG_BY_LANG.de.unshift(v12870_de);
 
+const v12871_fr: ChangelogEntry = {
+  version: "v1.55.64",
+  date: "2026-10-07",
+  title: "Bouton Thème Intuitif & Support Multilingue Discord (FR, EN, ES, DE)",
+  items: [
+    "Bouton de thème repensé avec icône intuitive (Lune en mode sombre, Soleil en mode clair) et adaptation des contrastes",
+    "Élimination des classes sombres codées en dur pour un mode clair éclatant sur l'ensemble du hub Discord et l'assistant",
+    "Sélecteur de langue avec menu déroulant élégant supportant 4 langues : Français, Anglais, Espagnol et Allemand",
+    "Traductions complètes et dynamiques du hub Discord dans les 4 langues (navigation, vue d'ensemble, configurateur et installation)",
+  ],
+};
+
+const v12871_en: ChangelogEntry = {
+  version: "v1.55.64",
+  date: "2026-10-07",
+  title: "Intuitive Theme Toggle & Discord Multilingual Support (FR, EN, ES, DE)",
+  items: [
+    "Redesigned theme toggle with intuitive icon indicator (Moon in dark mode, Sun in light mode) and color scheme alignment",
+    "Removed hardcoded dark classes for a crisp, bright light theme across the Discord Hub and configuration wizard",
+    "Language switcher with modern dropdown supporting 4 languages: French, English, Spanish, and German",
+    "Full dynamic translations for Discord Hub components across all 4 languages (sidebar, overview, wizard, and install view)",
+  ],
+};
+
+const v12871_es: ChangelogEntry = {
+  version: "v1.55.64",
+  date: "2026-10-07",
+  title: "Selector de Tema Intuitivo y Soporte Multilingüe Discord (FR, EN, ES, DE)",
+  items: [
+    "Botón de tema rediseñado con icono intuitivo (Luna en modo oscuro, Sol en modo claro) y adaptación de contrastes",
+    "Eliminadas clases oscuras fijas para un modo claro limpio en todo el hub de Discord y el asistente de configuración",
+    "Selector de idioma con menú desplegable compatible con 4 idiomas: francés, inglés, español y alemán",
+    "Traducciones completas y dinámicas del hub de Discord en los 4 idiomas (barra lateral, resumen, configurador e instalación)",
+  ],
+};
+
+const v12871_de: ChangelogEntry = {
+  version: "v1.55.64",
+  date: "2026-10-07",
+  title: "Intuitiver Theme-Schalter & Mehrsprachige Discord-Unterstützung (FR, EN, ES, DE)",
+  items: [
+    "Überarbeiteter Theme-Umschalter mit intuitiver Icon-Anzeige (Mond im Dunkelmodus, Sonne im Hellmodus) und Kontrastanpassung",
+    "Beseitigung fest codierter dunkler Klassen für ein klares, helles Design im gesamten Discord Hub und Setup-Assistenten",
+    "Sprachauswahl mit modernem Popover für 4 Sprachen: Französisch, Englisch, Spanisch und Deutsch",
+    "Vollständige dynamische Übersetzungen des Discord Hubs in allen 4 Sprachen (Sidebar, Übersicht, Assistent und Installation)",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12871_fr);
+CHANGELOG_BY_LANG.en.unshift(v12871_en);
+CHANGELOG_BY_LANG.es.unshift(v12871_es);
+CHANGELOG_BY_LANG.de.unshift(v12871_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

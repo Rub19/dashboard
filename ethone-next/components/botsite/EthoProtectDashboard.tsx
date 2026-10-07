@@ -25,7 +25,9 @@ import { useAccountProfile } from "@/lib/profile/account-profile";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
 import { useSettings } from "@/components/SettingsProvider";
 import { useAuth } from "@/components/AuthProvider";
-import FlagIcon from "@/components/FlagIcon";
+import { useI18n } from "@/lib/hooks/useI18n";
+import { resolveTheme } from "@/lib/theme-engine";
+import DiscordLanguageDropdown from "@/components/discord/DiscordLanguageDropdown";
 import ClientImage from "@/components/ClientImage";
 import BotLanding from "@/components/botsite/BotLanding";
 import BotInstallView from "@/components/discord/BotInstallView";
@@ -107,18 +109,17 @@ export default function EthoProtectDashboard() {
   const { settings, update: updateSettings } = useSettings();
   const { signOut } = useAuth();
 
+  const i18n = useI18n();
+  const isDark = settings.darkMode && resolveTheme(settings.theme).dark !== false;
+
   const toggleTheme = useCallback(() => {
-    const nextDark = !settings.darkMode;
+    const nextDark = !isDark;
     updateSettings({
       darkMode: nextDark,
       theme: nextDark ? "obsidian" : "arctic",
+      colorScheme: nextDark ? "dark" : "light",
     });
-  }, [settings.darkMode, updateSettings]);
-
-  const toggleLanguage = useCallback(() => {
-    const nextLang = settings.language === "fr" ? "en" : "fr";
-    updateSettings({ language: nextLang });
-  }, [settings.language, updateSettings]);
+  }, [isDark, updateSettings]);
 
   const handleLogout = useCallback(async () => {
     try {
@@ -364,28 +365,20 @@ export default function EthoProtectDashboard() {
                 type="button"
                 onClick={toggleTheme}
                 className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] rounded hover:bg-[var(--surface-hover,var(--surface-raised))] transition-colors cursor-pointer"
-                title={settings.darkMode ? "Activer le mode clair" : "Activer le mode sombre"}
-                aria-label="Basculer le thème"
+                title={i18n(isDark ? "dThemeToggleLight" : "dThemeToggleDark", isDark ? "Activer le mode clair" : "Activer le mode sombre")}
+                aria-label={i18n(isDark ? "dThemeToggleLight" : "dThemeToggleDark", isDark ? "Activer le mode clair" : "Activer le mode sombre")}
               >
-                {settings.darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                {isDark ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4 text-amber-400" />}
               </button>
 
-              <button
-                type="button"
-                onClick={toggleLanguage}
-                className="p-1 rounded hover:bg-[var(--surface-hover,var(--surface-raised))] transition-colors cursor-pointer"
-                title="Changer de langue"
-                aria-label="Changer de langue"
-              >
-                <FlagIcon code={settings.language === "fr" ? "en" : "fr"} className="h-3.5 w-5 rounded-xs" />
-              </button>
+              <DiscordLanguageDropdown align="right" />
 
               <button
                 type="button"
                 onClick={handleLogout}
                 className="p-1.5 text-[var(--text-muted)] hover:text-rose-400 rounded hover:bg-[var(--surface-hover,var(--surface-raised))] transition-colors cursor-pointer"
-                title="Déconnexion"
-                aria-label="Déconnexion"
+                title={i18n("dLogout", "Déconnexion")}
+                aria-label={i18n("dLogout", "Déconnexion")}
               >
                 <LogOut className="h-4 w-4" />
               </button>

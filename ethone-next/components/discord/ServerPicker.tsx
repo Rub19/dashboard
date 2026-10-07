@@ -23,10 +23,12 @@ import {
 import DiscordIcon from "@/components/DiscordIcon";
 import LightBorder from "@/components/ui/LightBorder";
 import ClientImage from "@/components/ClientImage";
-import FlagIcon from "@/components/FlagIcon";
+import DiscordLanguageDropdown from "./DiscordLanguageDropdown";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
 import { useSettings } from "@/components/SettingsProvider";
 import { useAuth } from "@/components/AuthProvider";
+import { useI18n } from "@/lib/hooks/useI18n";
+import { resolveTheme } from "@/lib/theme-engine";
 import { useAccountProfile } from "@/lib/profile/account-profile";
 import { cn } from "@/lib/utils";
 import { choreography, revealUp } from "@/lib/motion-variants";
@@ -167,18 +169,17 @@ export default function ServerPicker({
   const { settings, update: updateSettings } = useSettings();
   const { signOut } = useAuth();
 
+  const i18n = useI18n();
+  const isDark = settings.darkMode && resolveTheme(settings.theme).dark !== false;
+
   const toggleTheme = useCallback(() => {
-    const nextDark = !settings.darkMode;
+    const nextDark = !isDark;
     updateSettings({
       darkMode: nextDark,
       theme: nextDark ? "obsidian" : "arctic",
+      colorScheme: nextDark ? "dark" : "light",
     });
-  }, [settings.darkMode, updateSettings]);
-
-  const toggleLanguage = useCallback(() => {
-    const nextLang = settings.language === "fr" ? "en" : "fr";
-    updateSettings({ language: nextLang });
-  }, [settings.language, updateSettings]);
+  }, [isDark, updateSettings]);
 
   const handleLogout = useCallback(async () => {
     try {
@@ -501,7 +502,7 @@ export default function ServerPicker({
           >
             <div className="flex items-center gap-2">
               <Search className="h-3.5 w-3.5" />
-              <span>Rechercher réglage...</span>
+              <span>{i18n("dSearchPlaceholder", "Rechercher réglage... Ctrl K")}</span>
             </div>
             <kbd className="rounded-sm border border-[var(--panel-border)] bg-[var(--background)] px-1.5 py-0.5 text-[10px] font-mono text-[var(--text-muted)]">
               Ctrl K
@@ -514,7 +515,7 @@ export default function ServerPicker({
               className="w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-[var(--text-primary)] hover:bg-[var(--surface-hover,var(--surface-raised))] transition-colors cursor-pointer font-medium text-left"
             >
               <Home className="h-4 w-4" />
-              <span>Mes serveurs</span>
+              <span>{i18n("dMyServers", "Mes serveurs")}</span>
             </button>
             <a
               href={DOCS_URL}
@@ -524,7 +525,7 @@ export default function ServerPicker({
             >
               <div className="flex items-center gap-2.5">
                 <BookOpen className="h-4 w-4" />
-                <span>Documentation</span>
+                <span>{i18n("dDocumentation", "Documentation")}</span>
               </div>
               <ExternalLink className="h-3.5 w-3.5 opacity-60" />
             </a>
@@ -536,7 +537,7 @@ export default function ServerPicker({
             >
               <div className="flex items-center gap-2.5">
                 <LifeBuoyIcon className="h-4 w-4" />
-                <span>Support</span>
+                <span>{i18n("dSupport", "Support")}</span>
               </div>
               <ExternalLink className="h-3.5 w-3.5 opacity-60" />
             </a>
@@ -578,28 +579,20 @@ export default function ServerPicker({
                 type="button"
                 onClick={toggleTheme}
                 className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] rounded hover:bg-[var(--surface-hover,var(--surface-raised))] transition-colors cursor-pointer"
-                title={settings.darkMode ? "Activer le mode clair" : "Activer le mode sombre"}
-                aria-label="Basculer le thème"
+                title={i18n(isDark ? "dThemeToggleLight" : "dThemeToggleDark", isDark ? "Activer le mode clair" : "Activer le mode sombre")}
+                aria-label={i18n(isDark ? "dThemeToggleLight" : "dThemeToggleDark", isDark ? "Activer le mode clair" : "Activer le mode sombre")}
               >
-                {settings.darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                {isDark ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4 text-amber-400" />}
               </button>
 
-              <button
-                type="button"
-                onClick={toggleLanguage}
-                className="p-1 rounded hover:bg-[var(--surface-hover,var(--surface-raised))] transition-colors cursor-pointer"
-                title="Changer de langue"
-                aria-label="Changer de langue"
-              >
-                <FlagIcon code={settings.language === "fr" ? "en" : "fr"} className="h-3.5 w-5 rounded-xs" />
-              </button>
+              <DiscordLanguageDropdown align="right" />
 
               <button
                 type="button"
                 onClick={handleLogout}
                 className="p-1.5 text-[var(--text-muted)] hover:text-rose-400 rounded hover:bg-[var(--surface-hover,var(--surface-raised))] transition-colors cursor-pointer"
-                title="Déconnexion"
-                aria-label="Déconnexion"
+                title={i18n("dLogout", "Déconnexion")}
+                aria-label={i18n("dLogout", "Déconnexion")}
               >
                 <LogOut className="h-4 w-4" />
               </button>
@@ -619,12 +612,12 @@ export default function ServerPicker({
             <div className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
               <span className="font-semibold text-[var(--text-primary)]">Etho</span>
               <ChevronRight className="h-3 w-3" />
-              <span className="text-[var(--accent-primary)] font-medium">Mes serveurs</span>
+              <span className="text-[var(--accent-primary)] font-medium">{i18n("dMyServers", "Mes serveurs")}</span>
             </div>
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-1.5 text-xs text-emerald-400 font-medium">
                 <ShieldCheck className="h-3.5 w-3.5" />
-                <span>Tout est enregistré</span>
+                <span>{i18n("dAllSaved", "Tout est enregistré")}</span>
               </div>
               <button
                 type="button"

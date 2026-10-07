@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 test.describe("Discord Bot Install Flow", () => {
-  test("shows installation screen for an uninstalled guild on /bot and navigates to install screen", async ({ page }) => {
+  test("shows installation screen for an uninstalled guild on /bot and allows skip", async ({ page }) => {
     const mockGuilds = [
       {
         id: "mock-uninstalled-1",
@@ -28,6 +28,17 @@ test.describe("Discord Bot Install Flow", () => {
     await expect(installButton).toBeVisible();
 
     await installButton.click();
+
+    await expect(page.locator("text=Installer Etho sur Serveur Test Sans Bot")).toBeVisible({ timeout: 5000 });
+    await expect(page.locator("text=Ajoute Etho au serveur")).toBeVisible();
+    await expect(page.locator("text=Place son rôle tout en haut")).toBeVisible();
+    await expect(page.locator("text=Reviens ici")).toBeVisible();
+    await expect(page.locator("button:has-text('Vérifier')")).toBeVisible();
+
+    const skipButton = page.locator("button:has-text('Passer l\\'attente')");
+    await expect(skipButton).toBeVisible();
+    await skipButton.click();
+
     await page.waitForURL((url) => url.pathname.includes("/discord") || url.pathname.includes("/login"), { timeout: 5000 });
     expect(page.url()).toContain("mock-uninstalled-1");
   });

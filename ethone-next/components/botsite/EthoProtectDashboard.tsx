@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -30,6 +30,7 @@ import { useCommandPalette } from "@/components/CommandPaletteProvider";
 import FlagIcon from "@/components/FlagIcon";
 import ClientImage from "@/components/ClientImage";
 import BotLanding from "@/components/botsite/BotLanding";
+import BotInstallView from "@/components/discord/BotInstallView";
 import { cn } from "@/lib/utils";
 
 const SUPPORT_DISCORD_URL = "https://discord.gg/WvEcyBuP45";
@@ -52,6 +53,7 @@ export default function EthoProtectDashboard() {
   const { settings, update: updateSettings } = useSettings();
 
   const [searchQuery, setSearchQuery] = useState("");
+  const [installingGuild, setInstallingGuild] = useState<DiscordGuild | null>(null);
   const [activeNav, setActiveNav] = useState<"servers" | "premium">("servers");
   const [isPrivateBotModalOpen, setIsPrivateBotModalOpen] = useState(false);
   const [viewMode, setViewMode] = useState<"dashboard" | "legacy">(() => {
@@ -121,6 +123,37 @@ export default function EthoProtectDashboard() {
   const userAvatar = useMemo(() => {
     return discordProfile?.user?.avatarUrlSmall || discordProfile?.user?.avatarUrl || identity.avatarUrl || null;
   }, [discordProfile?.user, identity.avatarUrl]);
+
+  useEffect(() => {
+    try {
+      const gId = new URLSearchParams(window.location.search).get("guildId");
+      if (gId && userGuilds.length > 0) {
+        const found = userGuilds.find((g) => g.id === gId);
+        if (found && !installedGuildIdsSet.has(found.id)) {
+          setInstallingGuild(found);
+        }
+      }
+    } catch {}
+  }, [userGuilds, installedGuildIdsSet]);
+
+  if (installingGuild) {
+    return (
+      <BotInstallView
+        guild={installingGuild}
+        onBack={() => setInstallingGuild(null)}
+        onBotDetected={(g) => {
+          setInstallingGuild(null);
+          router.push(`/discord?guildId=${g.id}`);
+        }}
+        onSkip={(g) => {
+          setInstallingGuild(null);
+          router.push(`/discord?guildId=${g.id}`);
+        }}
+        userName={displayName}
+        userAvatar={userAvatar}
+      />
+    );
+  }
 
   if (viewMode === "legacy") {
     return (
@@ -425,7 +458,7 @@ export default function EthoProtectDashboard() {
                   {filteredUninstalled.map((guild) => (
                     <div
                       key={guild.id}
-                      onClick={() => router.push(`/discord?guildId=${guild.id}`)}
+                      onClick={() => setInstallingGuild(guild)}
                       className="group flex items-center justify-between rounded-xl border border-[#16241c] bg-[#09110d] px-4 py-3 hover:border-[#22392c] hover:bg-[#0c1611] transition-all cursor-pointer"
                     >
                       <div className="flex items-center gap-3 min-w-0">
@@ -453,7 +486,7 @@ export default function EthoProtectDashboard() {
                         type="button"
                         onClick={(e) => {
                           e.stopPropagation();
-                          router.push(`/discord?guildId=${guild.id}`);
+                          setInstallingGuild(guild);
                         }}
                         className="flex items-center gap-1 rounded-lg border border-[#1b2b22] px-3 py-1.5 text-xs font-semibold text-[#8ba395] hover:border-emerald-500/40 hover:bg-emerald-500/10 hover:text-emerald-400 transition-all cursor-pointer"
                       >

@@ -568,9 +568,18 @@ export default function DiscordDashboardPage() {
     prefersReducedMotion,
   } = useDiscordOnboarding();
 
-  // Serveur choisi dans le sélecteur (id). Le tableau de bord ne s'affiche qu'une fois un serveur choisi.
   const [pickedId, setPickedId] = useState<string | null>(null);
-  const [skippedInstallGuildIds, setSkippedInstallGuildIds] = useState<Set<string>>(new Set());
+  const [skippedInstallGuildIds, setSkippedInstallGuildIds] = useState<Set<string>>(() => {
+    if (typeof window === "undefined") return new Set();
+    try {
+      const raw = sessionStorage.getItem("ethone:discord:skipped_install_guilds");
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) return new Set(parsed.map(String));
+      }
+    } catch {}
+    return new Set();
+  });
   const [lastGuildId, setLastGuildId] = useState<string | null>(null);
   const [hydrated, setHydrated] = useState(false);
   const [activeModule, setActiveModule] = useState<ModuleType | null>(null);
@@ -732,6 +741,15 @@ export default function DiscordDashboardPage() {
 
   const pickGuild = useCallback((guild: DiscordGuild) => {
     setPickedId(guild.id);
+    setSkippedInstallGuildIds((prev) => {
+      if (!prev.has(guild.id)) return prev;
+      const next = new Set(prev);
+      next.delete(guild.id);
+      try {
+        sessionStorage.setItem("ethone:discord:skipped_install_guilds", JSON.stringify(Array.from(next)));
+      } catch {}
+      return next;
+    });
     try {
       sessionStorage.setItem(PICKED_STORAGE_KEY, guild.id);
       localStorage.setItem(LAST_GUILD_STORAGE_KEY, guild.id);
@@ -1155,6 +1173,15 @@ export default function DiscordDashboardPage() {
           onBack={changeGuild}
           onBotDetected={(g) => {
             setBotGuildIds((prev) => new Set(prev).add(g.id));
+            setSkippedInstallGuildIds((prev) => {
+              if (!prev.has(g.id)) return prev;
+              const next = new Set(prev);
+              next.delete(g.id);
+              try {
+                sessionStorage.setItem("ethone:discord:skipped_install_guilds", JSON.stringify(Array.from(next)));
+              } catch {}
+              return next;
+            });
             try {
               const stored = localStorage.getItem("ethone:discord:bot_guild_ids");
               const parsed = stored ? JSON.parse(stored) : [];
@@ -1167,7 +1194,13 @@ export default function DiscordDashboardPage() {
             } catch {}
           }}
           onSkip={(g) => {
-            setSkippedInstallGuildIds((prev) => new Set(prev).add(g.id));
+            setSkippedInstallGuildIds((prev) => {
+              const next = new Set(prev).add(g.id);
+              try {
+                sessionStorage.setItem("ethone:discord:skipped_install_guilds", JSON.stringify(Array.from(next)));
+              } catch {}
+              return next;
+            });
           }}
           userName={
             isDiscordConnected

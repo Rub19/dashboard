@@ -310,7 +310,7 @@ export default function BotInstallView({
                   title="Changer de langue"
                   aria-label="Changer de langue"
                 >
-                  <FlagIcon code={settings.language === "fr" ? "fr" : "gb"} className="h-3.5 w-5 rounded-xs" />
+                  <FlagIcon code={settings.language === "fr" ? "en" : "fr"} className="h-3.5 w-5 rounded-xs" />
                 </button>
 
                 <button

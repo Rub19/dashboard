@@ -27,6 +27,7 @@ export default function FlagIcon({ code, className = "h-4 w-6" }: FlagIconProps)
           <rect x="40" y="0" width="20" height="40" fill="#EF4135" />
         </svg>
       );
+    case "gb":
     case "en":
       return (
         <svg viewBox="0 0 60 40" className={base} aria-hidden="true">

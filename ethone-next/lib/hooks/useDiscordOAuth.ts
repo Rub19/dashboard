@@ -307,7 +307,27 @@ export function getStoredDiscordUser(): DiscordUser | null {
     const stored = localStorage.getItem("ethone:discord:profile");
     if (stored) {
       const parsed = JSON.parse(stored);
-      if (parsed?.user) return parsed.user;
+      const u = parsed?.user || (parsed?.id ? parsed : null);
+      if (u?.id) {
+        const avatarUrl =
+          u.avatarUrl ||
+          u.avatar_url ||
+          (u.avatar
+            ? `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.${String(u.avatar).startsWith("a_") ? "gif" : "png"}?size=256`
+            : "");
+        return {
+          id: u.id,
+          username: u.username || "",
+          globalName: u.globalName || u.global_name || u.username || "",
+          displayName: u.displayName || u.display_name || u.global_name || u.username || "",
+          avatarUrl,
+          avatarUrlSmall: u.avatarUrlSmall || avatarUrl,
+          bannerUrl: u.bannerUrl || u.banner_url || "",
+          email: u.email || "",
+          verified: !!u.verified,
+          premiumType: u.premiumType ?? u.premium_type ?? 0,
+        };
+      }
     }
   } catch {}
   return null;

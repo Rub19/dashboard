@@ -46081,19 +46081,72 @@ const v12862_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12862_fr);
-CHANGELOG_BY_LANG.en.unshift(v12862_en);
-CHANGELOG_BY_LANG.es.unshift(v12862_es);
-CHANGELOG_BY_LANG.de.unshift(v12862_de);
+const v12863_fr: ChangelogEntry = {
+  version: "v1.55.56",
+  date: "2026-10-07",
+  title: "Barre Latérale Pleine Hauteur : Affichage Continu Jusqu'au Bas de l'Écran",
+  items: [
+    "Suppression du décrochage de 64px (4rem) sous la barre latérale sur l'ensemble des vues de la console",
+    "Extension pleine hauteur de l'aside de 0 à 100% de la fenêtre d'affichage (distance au bas nulle)",
+    "Conteneur de défilement indépendant pour la grille de serveurs garantissant la fixité de la barre latérale",
+    "Rendu robuste de l'avatar Discord avec pastille d'initiales en solution de repli immédiate",
+  ],
+};
+
+const v12863_en: ChangelogEntry = {
+  version: "v1.55.56",
+  date: "2026-10-07",
+  title: "Full-Height Sidebar: Seamless Display Reaching Viewport Bottom",
+  items: [
+    "Removed 64px (4rem) deduction below the sidebar across all bot console views",
+    "Full-height aside extension spanning 0 to 100% of the viewport (zero distance to bottom)",
+    "Independent scroll container for the server grid ensuring pinned sidebar layout",
+    "Robust Discord avatar rendering with immediate fallback badge on asset load delays",
+  ],
+};
+
+const v12863_es: ChangelogEntry = {
+  version: "v1.55.56",
+  date: "2026-10-07",
+  title: "Barra Lateral de Altura Completa: Extensión Continua Hasta el Fondo",
+  items: [
+    "Eliminación de la deducción de 64px (4rem) debajo de la barra lateral en todas las vistas de consola",
+    "Extensión completa del aside abarcando de 0 a 100% de la ventana de visualización",
+    "Contenedor de desplazamiento independiente para la cuadrícula manteniendo la barra fija",
+    "Visualización robusta del avatar de Discord con insignia de respaldo inmediata",
+  ],
+};
+
+const v12863_de: ChangelogEntry = {
+  version: "v1.55.56",
+  date: "2026-10-07",
+  title: "Volle Höhe der Seitenleiste: Nahtlose Anzeige bis zum Bildschirmrand",
+  items: [
+    "Entfernung des 64px (4rem) Abstands unterhalb der Seitenleiste in allen Bot-Konsolenansichten",
+    "Vollständige Streckung des asides über die gesamte Viewport-Höhe (Abstand zum unteren Rand 0)",
+    "Unabhängiger Bildlaufbereich für das Server-Raster mit fixierter Seitenleiste",
+    "Robuste Anzeige des Discord-Avatars mit sofortigem Fallback-Badge bei Ladeverzögerungen",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12860_fr);
+CHANGELOG_BY_LANG.en.unshift(v12860_en);
+CHANGELOG_BY_LANG.es.unshift(v12860_es);
+CHANGELOG_BY_LANG.de.unshift(v12860_de);
 
 CHANGELOG_BY_LANG.fr.unshift(v12861_fr);
 CHANGELOG_BY_LANG.en.unshift(v12861_en);
 CHANGELOG_BY_LANG.es.unshift(v12861_es);
 CHANGELOG_BY_LANG.de.unshift(v12861_de);
 
-CHANGELOG_BY_LANG.fr.unshift(v12860_fr);
-CHANGELOG_BY_LANG.en.unshift(v12860_en);
-CHANGELOG_BY_LANG.es.unshift(v12860_es);
-CHANGELOG_BY_LANG.de.unshift(v12860_de);
+CHANGELOG_BY_LANG.fr.unshift(v12862_fr);
+CHANGELOG_BY_LANG.en.unshift(v12862_en);
+CHANGELOG_BY_LANG.es.unshift(v12862_es);
+CHANGELOG_BY_LANG.de.unshift(v12862_de);
+
+CHANGELOG_BY_LANG.fr.unshift(v12863_fr);
+CHANGELOG_BY_LANG.en.unshift(v12863_en);
+CHANGELOG_BY_LANG.es.unshift(v12863_es);
+CHANGELOG_BY_LANG.de.unshift(v12863_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

@@ -80,12 +80,12 @@ export default function Shell({ children }: { children: ReactNode }) {
                     <main
                       data-v8-main
                       id="main-content"
-                      className="relative z-0 flex min-h-0 min-w-0 flex-1 flex-col outline-none overflow-y-auto overflow-x-hidden bg-transparent [overscroll-behavior:contain]"
+                      className="relative z-0 flex h-full min-h-0 min-w-0 flex-1 flex-col outline-none overflow-y-auto md:overflow-hidden bg-transparent [overscroll-behavior:contain]"
                       tabIndex={-1}
                     >
                       <ActivityJournalProvider>
                         <PageTransition>
-                          <div className="min-h-0 w-full flex-1 overflow-y-auto overflow-x-hidden [overscroll-behavior:contain]">{children}</div>
+                          <div className="h-full min-h-0 w-full flex-1 flex flex-col overflow-y-auto md:overflow-hidden">{children}</div>
                         </PageTransition>
                         <AutomationRuntime />
                       </ActivityJournalProvider>

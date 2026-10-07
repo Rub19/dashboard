@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.56 — 2026-10-07
+
+**Barre Latérale Pleine Hauteur : Affichage Continu Jusqu'au Bas de l'Écran**
+
+- Suppression du décrochage de 64px (4rem) sous la barre latérale sur l'ensemble des vues de la console bot.
+- Extension pleine hauteur de l'aside de 0 à 100% de la fenêtre d'affichage (distance au bas nulle).
+- Conteneur de défilement indépendant pour la grille de serveurs garantissant la fixité de la barre latérale.
+- Rendu robuste de l'avatar Discord avec pastille d'initiales en solution de repli immédiate.
+
 ## v1.55.55 — 2026-10-07
 
 **Photo de Profil Discord : Affichage Prioritaire dans la Barre Inférieure**

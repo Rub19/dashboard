@@ -226,7 +226,7 @@ export default function ServerPicker({
 
   if (viewMode === "classic") {
     return (
-      <div className="relative flex min-h-[calc(100dvh-4rem)] w-full items-center justify-center overflow-x-clip px-4 py-10 bg-[var(--background)]">
+      <div className="relative flex min-h-dvh w-full items-center justify-center overflow-x-clip px-4 py-10 bg-[var(--background)]">
         <div className="fixed top-6 right-6 z-50">
           <button
             type="button"
@@ -418,8 +418,8 @@ export default function ServerPicker({
   }
 
   return (
-    <div className="min-h-[calc(100dvh-4rem)] w-full bg-[var(--background)] text-[var(--text-primary)] flex flex-col md:flex-row antialiased">
-      <aside className="w-full md:w-64 shrink-0 border-b md:border-b-0 md:border-r border-[var(--panel-border)] bg-[var(--surface-raised)]/95 flex flex-col justify-between p-4 md:sticky md:top-0 md:h-[calc(100dvh-4rem)]">
+    <div className="h-full min-h-dvh md:min-h-0 w-full bg-[var(--background)] text-[var(--text-primary)] flex flex-col md:flex-row antialiased overflow-hidden">
+      <aside className="w-full md:w-64 shrink-0 border-b md:border-b-0 md:border-r border-[var(--panel-border)] bg-[var(--surface-raised)]/95 flex flex-col justify-between p-4 md:h-full md:max-h-full">
         <div className="space-y-4">
           <div className="flex items-center justify-between px-2 pt-1">
             <div className="flex items-center gap-2.5">
@@ -496,6 +496,11 @@ export default function ServerPicker({
                   alt={currentDisplayName}
                   width={30}
                   height={30}
+                  fallback={
+                    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--surface-raised)] text-[var(--accent-primary)] font-bold text-xs border border-[var(--panel-border)] shrink-0">
+                      {currentDisplayName.slice(0, 2).toUpperCase()}
+                    </div>
+                  }
                   className="h-7 w-7 rounded-full object-cover border border-[var(--panel-border)] shrink-0"
                 />
               ) : (

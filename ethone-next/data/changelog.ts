@@ -46273,6 +46273,54 @@ const v12866_de: ChangelogEntry = {
   ],
 };
 
+const v12867_fr: ChangelogEntry = {
+  version: "v1.55.60",
+  date: "2026-10-07",
+  title: "Refonte de la Vue d'Ensemble Serveur — Style Keeper Protect",
+  items: [
+    "Tableau de bord de vue d'ensemble avec métriques en direct, 8 catégories de couverture et alertes de sécurité",
+    "Barre latérale unifiée avec état du serveur, switch raid, scan en temps réel et navigation avancée",
+    "En-tête épuré avec fil d'ariane et indicateur de synchronisation automatique en temps réel",
+    "Actions rapides pour activer l'anti-nuke, inspecter les rôles et configurer les salons de logs",
+  ],
+};
+
+const v12867_en: ChangelogEntry = {
+  version: "v1.55.60",
+  date: "2026-10-07",
+  title: "Server Overview Redesign — Keeper Protect Style",
+  items: [
+    "Overview dashboard featuring live metrics, 8 coverage categories and active security alerts",
+    "Unified sidebar with server badge, raid toggle, real-time scanning and fast navigation",
+    "Clean header with breadcrumb navigation and auto-save cloud sync indicator",
+    "Quick actions to enable anti-nuke shields, inspect role hierarchy and assign log channels",
+  ],
+};
+
+const v12867_es: ChangelogEntry = {
+  version: "v1.55.60",
+  date: "2026-10-07",
+  title: "Rediseño de la Vista General del Servidor — Estilo Keeper Protect",
+  items: [
+    "Panel de vista general con métricas en vivo, 8 categorías de cobertura y alertas de seguridad",
+    "Barra lateral unificada con insignia del servidor, interruptor raid y escaneo en tiempo real",
+    "Encabezado limpio con ruta de navegación e indicador de sincronización automática en la nube",
+    "Acciones rápidas para activar anti-nuke, revisar jerarquía de roles y configurar canales de registro",
+  ],
+};
+
+const v12867_de: ChangelogEntry = {
+  version: "v1.55.60",
+  date: "2026-10-07",
+  title: "Neugestaltung der Serverübersicht — Keeper Protect Stil",
+  items: [
+    "Übersichtsdashboard mit Live-Metriken, 8 Abdeckungskategorien und Sicherheitswarnungen",
+    "Einheitliche Seitenleiste mit Server-Badge, Raid-Schalter, Echtzeit-Scan und schneller Navigation",
+    "Aufgeräumte Kopfzeile mit Breadcrumbs und Cloud-Synchronisierungsanzeige",
+    "Schnellaktionen zur Aktivierung des Anti-Nuke-Schutzes, Rollenüberprüfung und Log-Kanal-Zuweisung",
+  ],
+};
+
 CHANGELOG_BY_LANG.fr.unshift(v12860_fr);
 CHANGELOG_BY_LANG.en.unshift(v12860_en);
 CHANGELOG_BY_LANG.es.unshift(v12860_es);
@@ -46307,5 +46355,10 @@ CHANGELOG_BY_LANG.fr.unshift(v12866_fr);
 CHANGELOG_BY_LANG.en.unshift(v12866_en);
 CHANGELOG_BY_LANG.es.unshift(v12866_es);
 CHANGELOG_BY_LANG.de.unshift(v12866_de);
+
+CHANGELOG_BY_LANG.fr.unshift(v12867_fr);
+CHANGELOG_BY_LANG.en.unshift(v12867_en);
+CHANGELOG_BY_LANG.es.unshift(v12867_es);
+CHANGELOG_BY_LANG.de.unshift(v12867_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

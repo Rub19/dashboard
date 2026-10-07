@@ -5,7 +5,6 @@ import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  ShieldCheck,
   ShieldAlert,
   Bomb,
   Shield,
@@ -35,7 +34,6 @@ import {
   Crown,
   Settings2,
   Radio,
-  Save,
   Zap,
   Music2,
   Play,
@@ -60,8 +58,6 @@ import {
   Eye,
   LayoutDashboard,
   Menu,
-  MoreHorizontal,
-  ChevronDown,
 } from "@/components/icons/ph";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
@@ -78,12 +74,29 @@ import ServerPicker from "@/components/discord/ServerPicker";
 import BotInstallView from "@/components/discord/BotInstallView";
 import ModuleNavigator, { type NavigatorCategory, type NavigatorModule } from "@/components/discord/ModuleNavigator";
 import HubSidebar, { type HubView } from "@/components/discord/HubSidebar";
-import ServerOverview from "@/components/discord/ServerOverview";
+import GuildOverviewScreen from "@/components/discord/GuildOverviewScreen";
 import { motion, AnimatePresence } from "framer-motion";
-import { choreography, revealUp, staggerItem } from "@/lib/motion-variants";
 import { EASE_SNAP } from "@/lib/ease";
 import { useMotionPref } from "@/lib/hooks/useMotionPref";
 import { fetchBotPresence } from "@/lib/hooks/useBotGuildIds";
+
+function CloudCheckIcon({ className = "h-4 w-4" }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" />
+      <path d="m9 13 2 2 4-4" />
+    </svg>
+  );
+}
 
 const BOT_CLIENT_ID = "1545139931154878464";
 const PICKED_STORAGE_KEY = "ethone:discord:picked";
@@ -210,16 +223,6 @@ const MODULE_ICONS = {
   streamers: ethoneIcon("mod-events"),
   games: ethoneIcon("games"),
 };
-
-/** Cartes de l'accueil : les pages les plus utilisées, chacune ouvre la vraie page du module pour le serveur choisi. */
-const HOME_CARDS: Array<{ id: ModuleType; title: string; description: string; cta: string }> = [
-  { id: "security", title: "Sécurité & Anti-Raid", description: "Anti-raid, anti-spam et verrouillage d'urgence pour protéger ton serveur.", cta: "Ouvrir la sécurité" },
-  { id: "moderation", title: "Modération & Sanctions", description: "Avertissements, mutes et bans : retrouve l'historique des cas et gère les sanctions.", cta: "Voir les cas" },
-  { id: "tickets", title: "Tickets", description: "Un support clair pour tes membres, avec panneaux, catégories et transcriptions.", cta: "Configurer les tickets" },
-  { id: "welcome", title: "Bienvenue & Onboarding", description: "Accueille les nouveaux membres avec un message, des rôles automatiques et une vérification.", cta: "Configurer l'accueil" },
-  { id: "music", title: "Musique", description: "Lecteur du serveur, file d'attente et contrôle de la lecture en direct.", cta: "Ouvrir la musique" },
-  { id: "ai", title: "Assistant IA", description: "Un assistant qui répond à tes membres et t'aide à modérer, réglable salon par salon.", cta: "Configurer l'IA" },
-];
 
 const MODULES: BotModule[] = [
   {
@@ -587,7 +590,6 @@ export default function DiscordDashboardPage() {
   const [showAllModules, setShowAllModules] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const { reduced: motionReduced } = useMotionPref();
-  const [moreOpen, setMoreOpen] = useState(false);
   const contentRef = useRef<HTMLDivElement | null>(null);
   const [onlyManageable, setOnlyManageable] = useState(true);
   // IDs of the servers the bot is actually in — used to sort those first and
@@ -1221,13 +1223,12 @@ export default function DiscordDashboardPage() {
   const userName = isDiscordConnected ? profile?.user?.displayName || profile?.user?.username : undefined;
   const activeMeta = activeModule ? MODULES.find((m) => m.id === activeModule) ?? null : null;
   const view: HubView = activeModule ? "module" : showAllModules ? "modules" : "home";
-  const menuItemCls =
-    "flex h-9 w-full cursor-pointer items-center gap-2.5 rounded-lg px-2.5 text-left text-sm text-[var(--text-muted)] transition-colors hover:bg-white/[0.06] hover:text-[var(--text-primary)]";
   const inviteHref = `${BOT_INVITE_URL}&guild_id=${selectedGuild.id}`;
 
   return (
     <>
       <div className="relative flex h-full min-h-0 w-full">
+        <input type="file" ref={fileInputRef} onChange={handleImportConfig} accept=".json" className="hidden" />
         <HubSidebar
           guildName={selectedGuild.name}
           guildIconUrl={selectedGuild.iconUrl}
@@ -1236,6 +1237,12 @@ export default function DiscordDashboardPage() {
           botGuildIds={botGuildIds}
           onSelectGuild={pickGuild}
           onChangeGuild={changeGuild}
+          onOpenIntro={() => openOnboarding(0)}
+          onOpenSetup={() => router.push(`/discord/setup?guildId=${selectedGuild.id}`)}
+          onExportConfig={handleExportConfig}
+          onImportConfig={() => fileInputRef.current?.click()}
+          onCopyGuildId={handleCopyId}
+          copiedId={copiedId}
           botInviteUrl={BOT_INVITE_URL}
           modules={navModules}
           categories={MODULE_CATEGORIES}
@@ -1250,112 +1257,44 @@ export default function DiscordDashboardPage() {
         />
 
         <div className="flex min-w-0 flex-1 flex-col">
-          <header className="flex h-14 shrink-0 items-center justify-between gap-3 border-b border-[var(--panel-border)] px-4 sm:px-6">
+          <header className="flex h-14 shrink-0 items-center justify-between gap-3 border-b border-[var(--panel-border)] px-4 sm:px-8 bg-[var(--surface-raised)]/40">
             <div className="flex min-w-0 items-center gap-2">
               <button
                 type="button"
                 onClick={() => setMenuOpen(true)}
-                className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-lg text-[var(--text-muted)] transition-[color,background-color,border-color,transform] hover:bg-white/[0.06] hover:text-[var(--text-primary)] lg:hidden active:scale-[0.97]"
+                className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-[var(--text-muted)] transition-colors hover:bg-white/[0.06] hover:text-[var(--text-primary)] lg:hidden"
                 aria-label="Ouvrir le menu des modules"
               >
                 <Menu className="h-4 w-4" />
               </button>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/branding/etho-avatar.gif" alt="Etho" className="h-7 w-7 shrink-0 rounded-full" />
-              <button
-                type="button"
-                onClick={changeGuild}
-                className="inline-flex h-9 min-w-0 cursor-pointer items-center gap-2 rounded-lg px-2 text-sm font-semibold text-[var(--text-primary)] transition-[color,background-color,border-color,transform] hover:bg-white/[0.06] active:scale-[0.97]"
-                title="Changer de serveur"
-                aria-label={`Serveur ${selectedGuild.name} : changer de serveur`}
-              >
-                <span className="flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded-md bg-[var(--surface-raised)] text-xs font-bold">
-                  {selectedGuild.iconUrl ? (
-                    <img src={selectedGuild.iconUrl} alt="" className="h-full w-full object-cover" />
-                  ) : (
-                    selectedGuild.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()
-                  )}
+              <div className="flex items-center gap-2 text-xs sm:text-sm text-[var(--text-muted)]">
+                <button
+                  type="button"
+                  onClick={changeGuild}
+                  className="truncate max-w-[200px] font-medium text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)] cursor-pointer"
+                >
+                  {selectedGuild.name}
+                </button>
+                <ChevronRight className="h-3.5 w-3.5 text-[var(--text-muted)] shrink-0" />
+                <span className="font-medium text-[var(--text-primary)]">
+                  {activeMeta ? activeMeta.title : "Vue d'ensemble"}
                 </span>
-                <span className="min-w-0 truncate">{selectedGuild.name}</span>
-                <ChevronDown className="h-3.5 w-3.5 shrink-0 text-[var(--text-muted)]" />
-              </button>
-              {selectedGuild.owner ? (
-                <span className="hidden shrink-0 items-center gap-1 rounded-full border border-[var(--panel-border)] px-2.5 py-0.5 text-xs font-semibold text-amber-300 sm:inline-flex">
-                  <Crown className="h-3 w-3" />
-                  Propriétaire
-                </span>
-              ) : canManageGuild(selectedGuild) ? (
-                <span className="hidden shrink-0 items-center gap-1 rounded-full border border-[var(--panel-border)] px-2.5 py-0.5 text-xs font-semibold text-[var(--accent-primary)] sm:inline-flex">
-                  <ShieldCheck className="h-3 w-3" />
-                  Gérer
-                </span>
-              ) : null}
+              </div>
             </div>
 
-            <div className="flex shrink-0 items-center gap-2">
-              <input type="file" ref={fileInputRef} onChange={handleImportConfig} accept=".json" className="hidden" />
+            <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={handleSaveSettings}
                 disabled={isSaving}
-                className="btn-sheen relative inline-flex h-9 shrink-0 cursor-pointer items-center gap-2 rounded-[var(--inset-radius)] bg-[var(--accent-primary)] px-4 text-sm font-semibold text-[var(--accent-contrast)] transition-[filter,transform] duration-200 hover:brightness-110 active:scale-95 disabled:opacity-50"
+                className="flex items-center gap-2 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer select-none"
+                title="Cliquez pour forcer la synchronisation"
               >
-                <Save className={cn("h-3.5 w-3.5", isSaving && "animate-pulse")} />
-                {isSaving ? "Sauvegarde..." : "Enregistrer"}
+                <CloudCheckIcon className={cn("h-4 w-4 shrink-0", isSaving ? "animate-pulse text-amber-400" : "text-emerald-400")} />
+                <span className="font-normal">
+                  {isSaving ? "Sauvegarde..." : "Tout est enregistré"}
+                </span>
               </button>
-              <div className="relative" onKeyDown={(e) => e.key === "Escape" && setMoreOpen(false)}>
-                <button
-                  type="button"
-                  onClick={() => setMoreOpen((v) => !v)}
-                  aria-haspopup="menu"
-                  aria-expanded={moreOpen}
-                  aria-label="Plus d'actions"
-                  title="Plus d'actions"
-                  className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border border-[var(--panel-border)] text-[var(--text-muted)] transition-colors hover:border-[var(--input-border-hover)] hover:text-[var(--text-primary)]"
-                >
-                  <MoreHorizontal className="h-4 w-4" />
-                </button>
-                {moreOpen && <div className="fixed inset-0 z-40" onClick={() => setMoreOpen(false)} aria-hidden="true" />}
-                <AnimatePresence>
-                {moreOpen && (
-                    <motion.div
-                      role="menu"
-                      initial={motionReduced ? false : { opacity: 0, y: -6, scale: 0.97 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={motionReduced ? undefined : { opacity: 0, y: -4, scale: 0.98, transition: { duration: 0.12 } }}
-                      transition={{ duration: 0.2, ease: EASE_SNAP }}
-                      className="absolute right-0 top-full z-50 mt-2 w-64 origin-top-right rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] p-1.5 shadow-[0_24px_60px_-24px_rgb(0_0_0/0.7)]"
-                    >
-                      <button type="button" role="menuitem" className={menuItemCls} onClick={() => { setMoreOpen(false); openOnboarding(0); }} title="Revoir l'introduction d'Etho">
-                        <Sparkles className="h-4 w-4" />
-                        Découvrir le Bot
-                      </button>
-                      <Link href="/discord/setup" role="menuitem" className={menuItemCls} onClick={() => setMoreOpen(false)} title="Lancer le setup assisté du serveur">
-                        <Sliders className="h-4 w-4" />
-                        Setup Assisté
-                      </Link>
-                      <button type="button" role="menuitem" className={menuItemCls} onClick={() => { setMoreOpen(false); handleExportConfig(); }} title="Télécharger la configuration actuelle en JSON">
-                        <Download className="h-4 w-4" />
-                        Exporter la configuration
-                      </button>
-                      <button type="button" role="menuitem" className={menuItemCls} onClick={() => { setMoreOpen(false); fileInputRef.current?.click(); }} title="Restaurer ou charger un fichier de configuration JSON">
-                        <Upload className="h-4 w-4" />
-                        Importer une configuration
-                      </button>
-                      <button type="button" role="menuitem" className={menuItemCls} onClick={() => { setMoreOpen(false); handleCopyId(); }} title={`Copier l'identifiant du serveur (${selectedGuild.id})`}>
-                        {copiedId ? <Check className="h-4 w-4 text-[var(--success)]" /> : <Copy className="h-4 w-4" />}
-                        Copier l&apos;ID du serveur
-                      </button>
-                      {botAbsent && (
-                        <a href={inviteHref} target="_blank" rel="noopener noreferrer" role="menuitem" className={menuItemCls} onClick={() => setMoreOpen(false)}>
-                          <DiscordIcon className="h-4 w-4" />
-                          Inviter le bot
-                        </a>
-                      )}
-                    </motion.div>
-                )}
-                </AnimatePresence>
-              </div>
             </div>
           </header>
 
@@ -1399,97 +1338,11 @@ export default function DiscordDashboardPage() {
                 transition={{ duration: 0.4, ease: EASE_SNAP }}
               >
               {view === "home" && (
-                <motion.div variants={choreography} initial={motionReduced ? "animate" : "initial"} animate="animate">
-                  <motion.h1 variants={revealUp} className="text-3xl font-bold tracking-tight text-[var(--text-primary)] sm:text-[2.1rem]">
-                    {userName ? (
-                      <>
-                        Bienvenue{" "}
-                        <span className="bg-clip-text text-transparent" style={{ backgroundImage: "linear-gradient(100deg, var(--text-primary), var(--accent-primary) 140%)" }}>
-                          {userName}
-                        </span>
-                        ,
-                      </>
-                    ) : (
-                      "Bienvenue,"
-                    )}
-                  </motion.h1>
-                  <motion.p variants={revealUp} className="mt-1.5 text-sm text-[var(--text-muted)]">Retrouve les pages les plus utilisées ci-dessous.</motion.p>
-
-                  <ServerOverview guildId={selectedGuild.id} activeModules={activeModuleCount} totalModules={totalModuleCount} />
-
-                  <motion.div variants={choreography} className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                    {HOME_CARDS.map((c) => {
-                      const Icon = MODULE_ICONS[c.id];
-                      return (
-                        <motion.div
-                          key={c.id}
-                          variants={staggerItem}
-                          onPointerMove={(e) => {
-                            const r = e.currentTarget.getBoundingClientRect();
-                            e.currentTarget.style.setProperty("--mx", `${e.clientX - r.left}px`);
-                            e.currentTarget.style.setProperty("--my", `${e.clientY - r.top}px`);
-                          }}
-                          className="group relative flex flex-col gap-3 overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-5 transition-[border-color,transform] duration-300 [transition-timing-function:var(--ease-snap)] hover:border-[var(--text-primary)]/15"
-                        >
-                          <div
-                            aria-hidden
-                            className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-                            style={{ background: "radial-gradient(300px circle at var(--mx, 50%) var(--my, 0%), color-mix(in srgb, var(--accent-primary) 9%, transparent), transparent 70%)" }}
-                          />
-                          <div className="relative flex items-center gap-3">
-                            <span className={cn("flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] transition-transform duration-500 [transition-timing-function:var(--ease-snap)] group-hover:-rotate-6 group-hover:scale-110", MODULE_TINTS[c.id])}>
-                              <Icon className="h-5 w-5" />
-                            </span>
-                            <h2 className="min-w-0 text-base font-semibold text-[var(--text-primary)]">{c.title}</h2>
-                          </div>
-                          <p className="relative text-sm leading-relaxed text-[var(--text-muted)]">{c.description}</p>
-                          <Link
-                            href={`${MODULE_PAGES[c.id]}?guildId=${selectedGuild.id}`}
-                            className="relative mt-auto inline-flex h-9 w-fit items-center gap-1.5 rounded-[var(--inset-radius)] bg-[var(--text-primary)]/[0.07] px-3.5 text-sm font-semibold text-[var(--text-primary)] outline-none transition-[background-color,transform] duration-200 hover:bg-[var(--text-primary)]/[0.12] active:scale-95 focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
-                          >
-                            {c.cta}
-                            <ChevronRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5" />
-                          </Link>
-                        </motion.div>
-                      );
-                    })}
-                  </motion.div>
-
-                  {liveMusicState?.currentTrack && (
-                    <motion.div variants={revealUp} className="mt-4 flex items-center gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-3">
-                      <img src={liveMusicState.currentTrack.thumbnail} alt="" className="h-10 w-10 shrink-0 rounded-xl object-cover" />
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-semibold text-[var(--text-primary)]">{liveMusicState.currentTrack.title}</p>
-                        <p className="truncate text-xs text-[var(--text-muted)]">
-                          {liveMusicState.status === "PLAYING" ? "En lecture" : "En pause"} · {liveMusicState.currentTrack.artist}
-                          {liveMusicState.voiceChannel ? ` · ${liveMusicState.voiceChannel.name}` : ""}
-                          {typeof liveMusicState.queueLength === "number" ? ` · file : ${liveMusicState.queueLength}` : ""}
-                        </p>
-                      </div>
-                      <div className="flex shrink-0 items-center gap-1">
-                        <button type="button" onClick={handleMusicPrev} className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-xl text-[var(--text-muted)] transition-[color,background-color,border-color,transform] hover:bg-white/[0.07] hover:text-[var(--text-primary)] active:scale-[0.97]" title="Précédent" aria-label="Piste précédente">
-                          <SkipBack className="h-4 w-4" />
-                        </button>
-                        <button type="button" onClick={handleMusicPlayPause} className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-xl bg-white/[0.07] text-[var(--text-primary)] transition-[color,background-color,border-color,transform] hover:bg-white/[0.13] active:scale-[0.97]" title={liveMusicState.status === "PLAYING" ? "Pause" : "Lecture"} aria-label={liveMusicState.status === "PLAYING" ? "Pause" : "Lecture"}>
-                          {liveMusicState.status === "PLAYING" ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-                        </button>
-                        <button type="button" onClick={handleMusicSkip} className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-xl text-[var(--text-muted)] transition-[color,background-color,border-color,transform] hover:bg-white/[0.07] hover:text-[var(--text-primary)] active:scale-[0.97]" title="Suivant" aria-label="Piste suivante">
-                          <SkipForward className="h-4 w-4" />
-                        </button>
-                        <Link href={`/discord/music?guildId=${selectedGuild.id}`} className={cn(secondaryBtn, "ml-1")}>
-                          <Music2 className="h-3.5 w-3.5" />
-                          <span className="hidden sm:inline">Music Center</span>
-                        </Link>
-                      </div>
-                    </motion.div>
-                  )}
-
-                  <motion.footer variants={revealUp} className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-[var(--panel-border)] pt-4 text-xs text-[var(--text-muted)]">
-                    <a href="https://discord.gg/WvEcyBuP45" target="_blank" rel="noopener noreferrer" className="underline decoration-transparent underline-offset-4 transition-[color,text-decoration-color] hover:text-[var(--text-primary)] hover:decoration-[var(--text-primary)]/30">Support</a>
-                    <a href={inviteHref} target="_blank" rel="noopener noreferrer" className="underline decoration-transparent underline-offset-4 transition-[color,text-decoration-color] hover:text-[var(--text-primary)] hover:decoration-[var(--text-primary)]/30">Inviter le bot</a>
-                    <Link href="/discord/setup" className="underline decoration-transparent underline-offset-4 transition-[color,text-decoration-color] hover:text-[var(--text-primary)] hover:decoration-[var(--text-primary)]/30">Setup assisté</Link>
-                  </motion.footer>
-                </motion.div>
+                <GuildOverviewScreen
+                  guild={selectedGuild}
+                  userName={userName}
+                  onOpenSetup={() => openOnboarding(0)}
+                />
               )}
 
               {view === "modules" && (
@@ -2347,6 +2200,13 @@ export default function DiscordDashboardPage() {
                           </div>
                           {liveMusicState?.currentTrack && (
                             <div className="flex items-center gap-1">
+                              <button
+                                onClick={handleMusicPrev}
+                                aria-label="Piste précédente"
+                                className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-xl text-[var(--text-muted)] transition-[color,background-color,border-color,transform] hover:bg-white/[0.07] hover:text-[var(--text-primary)] active:scale-[0.97]"
+                              >
+                                <SkipBack className="h-3.5 w-3.5" />
+                              </button>
                               <button
                                 onClick={handleMusicPlayPause}
                                 aria-label={liveMusicState.status === "PLAYING" ? "Pause" : "Lecture"}

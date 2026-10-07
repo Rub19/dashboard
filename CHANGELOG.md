@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.60 — 2026-10-07
+
+**Refonte de la Vue d'Ensemble Serveur — Style Keeper Protect**
+
+- Tableau de bord de vue d'ensemble avec métriques en direct, 8 catégories de couverture et alertes de sécurité.
+- Barre latérale unifiée avec état du serveur, switch raid, scan en temps réel et navigation avancée.
+- En-tête épuré avec fil d'ariane et indicateur de synchronisation automatique en temps réel.
+- Actions rapides pour activer l'anti-nuke, inspecter les rôles et configurer les salons de logs.
+
 ## v1.55.59 — 2026-10-07
 
 **Motion Design Fluide de la Console Discord et Synchronisation Avatar Bot**

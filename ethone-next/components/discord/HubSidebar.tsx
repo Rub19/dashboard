@@ -1,13 +1,50 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useState, useMemo, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, ChevronDown, ExternalLink, Home, LayoutGrid, Plus, Search, Server, X } from "@/components/icons/ph";
+import {
+  ShieldCheck,
+  ShieldAlert,
+  AlertTriangle,
+  Search,
+  Home,
+  BookOpen,
+  ExternalLink,
+  Sun,
+  Moon,
+  LogOut,
+  Star,
+  Users,
+  Settings2,
+  FileText,
+  Sliders,
+  Crown,
+  Key,
+  MoreHorizontal,
+  Sparkles,
+  Download,
+  Upload,
+  Copy,
+  Check,
+} from "@/components/icons/ph";
+import ClientImage from "@/components/ClientImage";
+import FlagIcon from "@/components/FlagIcon";
+import { useCommandPalette } from "@/components/CommandPaletteProvider";
+import { useSettings } from "@/components/SettingsProvider";
+import { useAuth } from "@/components/AuthProvider";
+import { useAccountProfile } from "@/lib/profile/account-profile";
+import { useBotSessionUser } from "@/lib/hooks/useBotSessionUser";
+import { getStoredDiscordUser, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
 import { cn } from "@/lib/utils";
-import { EASE_SNAP, SPRING_PILL } from "@/lib/ease";
 import { useMotionPref } from "@/lib/hooks/useMotionPref";
-import { fold, type NavigatorCategory, type NavigatorModule } from "@/components/discord/ModuleNavigator";
-import type { DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
+import { SPRING_PRESS } from "@/lib/ease";
+import {
+  consoleSidebar,
+  consoleSidebarItem,
+  consoleBrandMark,
+} from "./consoleMotion";
+import type { NavigatorCategory, NavigatorModule } from "./ModuleNavigator";
 
 export type HubView = "home" | "modules" | "module";
 
@@ -20,218 +57,124 @@ interface HubSidebarProps {
   onSelectGuild?: (guild: DiscordGuild) => void;
   onChangeGuild?: () => void;
   botInviteUrl?: string;
-  modules: NavigatorModule[];
-  categories: NavigatorCategory[];
-  view: HubView;
-  /** Module dont la configuration est ouverte (ligne surlignée). */
-  activeId: string;
-  /** Interrupteur réel de chaque module : pastille verte si activé, grise si désactivé, absente si inconnu. */
-  status: Record<string, boolean>;
-  onHome: () => void;
-  onAllModules: () => void;
-  onSelect: (id: string) => void;
-  /** Tiroir mobile (< lg) : ouvert / fermeture. Sur grand écran la barre est toujours visible. */
-  open: boolean;
-  onClose: () => void;
+  modules?: NavigatorModule[];
+  categories?: NavigatorCategory[];
+  view?: HubView;
+  activeId?: string;
+  status?: Record<string, boolean>;
+  onHome?: () => void;
+  onAllModules?: () => void;
+  onSelect?: (id: string) => void;
+  open?: boolean;
+  onClose?: () => void;
+  onOpenIntro?: () => void;
+  onOpenSetup?: () => void;
+  onExportConfig?: () => void;
+  onImportConfig?: () => void;
+  onCopyGuildId?: () => void;
+  copiedId?: boolean;
 }
 
-/**
- * Ligne de navigation : tuile d'icône teintée, libellé, état. L'élément actif reçoit un fond et un filet d'accent
- * qui glissent d'une ligne à l'autre ; au survol la ligne avance légèrement.
- */
-function NavRow({ active, onClick, title, children }: { active: boolean; onClick: () => void; title?: string; children: ReactNode }) {
+const SUPPORT_DISCORD_URL = "https://discord.gg/WvEcyBuP45";
+const DOCS_URL = "https://ethone.dev/discord";
+
+function LifeBuoyIcon({ className = "h-4 w-4" }: { className?: string }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      title={title}
-      aria-current={active ? "page" : undefined}
-      className={cn(
-        "group relative flex h-10 w-full cursor-pointer items-center gap-2.5 rounded-[var(--inset-radius)] pl-1.5 pr-2.5 text-left text-[13.5px] outline-none transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50",
-        active ? "font-medium text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-      )}
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
     >
-      {active ? (
-        <motion.span
-          layoutId="hub-active"
-          transition={SPRING_PILL}
-          className="absolute inset-0 rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.07] shadow-[inset_0_1px_0_rgb(255_255_255/0.04)]"
-        >
-          <span className="absolute inset-y-2.5 -left-px w-[3px] rounded-full bg-[var(--accent-primary)]" />
-        </motion.span>
-      ) : (
-        <span aria-hidden className="absolute inset-0 rounded-[var(--inset-radius)] bg-[var(--text-primary)]/[0.04] opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
-      )}
-      <span className="relative flex min-w-0 flex-1 items-center gap-2.5 transition-transform duration-300 [transition-timing-function:var(--ease-snap)] group-hover:translate-x-0.5">
-        {children}
-      </span>
-    </button>
+      <circle cx="12" cy="12" r="10" />
+      <circle cx="12" cy="12" r="4" />
+      <line x1="4.93" y1="4.93" x2="9.17" y2="9.17" />
+      <line x1="14.83" y1="14.83" x2="19.07" y2="19.07" />
+      <line x1="14.83" y1="9.17" x2="19.07" y2="4.93" />
+      <line x1="4.93" y1="19.07" x2="9.17" y2="14.83" />
+    </svg>
   );
 }
 
-/** Tuile carrée qui porte l'icône dans la teinte du module (fond = sa couleur à 12 %). */
-function IconTile({ children, tint, active }: { children: ReactNode; tint?: string; active?: boolean }) {
-  return (
-    <span
-      className={cn(
-        "grid h-7 w-7 shrink-0 place-items-center rounded-[calc(var(--inset-radius)-3px)] transition-transform duration-300 [transition-timing-function:var(--ease-snap)] group-hover:scale-110",
-        tint ?? "text-[var(--text-muted)]",
-        active ? "bg-current/15" : "bg-current/10"
-      )}
-    >
-      {children}
-    </span>
-  );
-}
-
-/** Couleur stable dérivée du nom, pour les serveurs sans icône. */
-function guildTint(name: string): string {
-  let h = 0;
-  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) % 360;
-  return `hsl(${h} 55% 42%)`;
-}
-
-function guildInitials(name: string): string {
-  const words = name.replace(/[^\p{L}\p{N}\s]/gu, " ").trim().split(/\s+/).filter(Boolean);
-  const letters = words.length > 1 ? words[0][0] + words[1][0] : (words[0] || name).slice(0, 2);
-  return letters.toUpperCase();
-}
-
-function SidebarGuildAvatar({ guild, size = 26 }: { guild: { id: string; name: string; icon?: string | null; iconUrl?: string | null }; size?: number }) {
-  const [failed, setFailed] = useState(false);
-  const src = guild.iconUrl || (guild.icon ? `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png?size=64` : null);
-  const style = { width: size, height: size };
-  if (src && !failed) {
-    // eslint-disable-next-line @next/next/no-img-element
-    return <img src={src} alt="" style={style} className="shrink-0 rounded-[calc(var(--inset-radius)-3px)] object-cover" onError={() => setFailed(true)} />;
+function getGuildInitials(name: string) {
+  const words = name.trim().split(/\s+/);
+  if (words.length >= 2 && words[0] && words[1]) {
+    return (words[0][0] + words[1][0]).toUpperCase();
   }
-  return (
-    <span
-      style={{ ...style, background: guildTint(guild.name), fontSize: Math.max(9, Math.round(size * 0.38)) }}
-      className="flex shrink-0 items-center justify-center rounded-[calc(var(--inset-radius)-3px)] font-bold text-white shadow-inner"
-      aria-hidden
-    >
-      {guildInitials(guild.name)}
-    </span>
-  );
+  return name.slice(0, 2).toUpperCase() || "SV";
 }
 
-/** Barre latérale du hub Discord : serveur, recherche, Accueil, « Tous les modules », modules par catégorie, bilan d'activation. */
 export default function HubSidebar({
   guildName,
   guildIconUrl,
-  guilds,
-  selectedGuildId,
-  botGuildIds,
-  onSelectGuild,
+  selectedGuildId = "",
   onChangeGuild,
-  botInviteUrl,
-  modules,
-  categories,
-  view,
-  activeId,
-  status,
+  view = "home",
+  activeId = "",
   onHome,
-  onAllModules,
-  onSelect,
-  open,
+  open = false,
   onClose,
+  onOpenIntro,
+  onOpenSetup,
+  onExportConfig,
+  onImportConfig,
+  onCopyGuildId,
+  copiedId = false,
 }: HubSidebarProps) {
+  const router = useRouter();
+  const { setOpen: openCommandPalette } = useCommandPalette();
+  const { settings, update: updateSettings } = useSettings();
+  const { signOut } = useAuth();
+  const { profile: ethoneProfile } = useAccountProfile();
+  const botUser = useBotSessionUser();
+  const storedUser = useMemo(() => getStoredDiscordUser(), []);
   const { reduced } = useMotionPref();
-  const [query, setQuery] = useState("");
-  const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const [serverMenuOpen, setServerMenuOpen] = useState(false);
-  const [serverQuery, setServerQuery] = useState("");
-  const [serverCursor, setServerCursor] = useState(0);
-  const serverMenuRef = useRef<HTMLDivElement>(null);
-  const searchRef = useRef<HTMLInputElement>(null);
-  const q = fold(query.trim());
-  const byId = new Map(modules.map((m) => [m.id, m]));
-  const sections = categories
-    .map((c) => ({
-      ...c,
-      items: c.modules.map((id) => byId.get(id)).filter((m): m is NavigatorModule => Boolean(m) && (!q || fold(`${m!.title} ${m!.id}`).includes(q))),
-    }))
-    .filter((c) => c.items.length > 0);
-  const known = modules.filter((m) => typeof status[m.id] === "boolean");
-  const enabled = known.filter((m) => status[m.id]).length;
 
-  // Filtrage des serveurs dans le popover de changement de serveur
-  const filteredGuildList = useMemo(() => {
-    if (!guilds || guilds.length === 0) return [];
-    const sq = serverQuery.trim().toLowerCase();
-    if (!sq) return guilds;
-    return guilds.filter((g) => g.name.toLowerCase().includes(sq));
-  }, [guilds, serverQuery]);
-
-  // Fermeture du menu serveur lors du clic extérieur ou navigation au clavier (Échap, ↑, ↓, Entrée)
-  useEffect(() => {
-    if (!serverMenuOpen) return;
-    const onMouseDown = (e: MouseEvent) => {
-      if (serverMenuRef.current && !serverMenuRef.current.contains(e.target as Node)) {
-        setServerMenuOpen(false);
-      }
-    };
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setServerMenuOpen(false);
-      } else if (e.key === "ArrowDown") {
-        e.preventDefault();
-        setServerCursor((c) => Math.min(filteredGuildList.length - 1, c + 1));
-      } else if (e.key === "ArrowUp") {
-        e.preventDefault();
-        setServerCursor((c) => Math.max(0, c - 1));
-      } else if (e.key === "Enter" && filteredGuildList[serverCursor]) {
-        e.preventDefault();
-        const chosen = filteredGuildList[serverCursor];
-        setServerMenuOpen(false);
-        if (onSelectGuild) onSelectGuild(chosen);
-        onClose();
-      }
-    };
-    document.addEventListener("mousedown", onMouseDown);
-    document.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.removeEventListener("mousedown", onMouseDown);
-      document.removeEventListener("keydown", onKeyDown);
-    };
-  }, [serverMenuOpen, filteredGuildList, serverCursor, onSelectGuild, onClose]);
-
-  // Réinitialisation de la recherche et positionnement du curseur à l'ouverture du menu
-  useEffect(() => {
-    if (serverMenuOpen) {
-      setServerQuery("");
-      const idx = guilds?.findIndex((g) => g.id === selectedGuildId) ?? -1;
-      setServerCursor(idx >= 0 ? idx : 0);
-    }
-  }, [serverMenuOpen, selectedGuildId, guilds]);
-
-  // Si le filtrage réduit la liste sous le curseur actif, borner le curseur
-  useEffect(() => {
-    if (filteredGuildList.length > 0 && serverCursor >= filteredGuildList.length) {
-      setServerCursor(0);
-    }
-  }, [filteredGuildList.length, serverCursor]);
-
-  // « / » place le curseur dans la recherche (hors champs de saisie).
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      const t = e.target as HTMLElement | null;
-      if (e.key !== "/" || e.metaKey || e.ctrlKey || e.altKey) return;
-      if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
-      e.preventDefault();
-      searchRef.current?.focus();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, []);
-
-  const toggleSection = (id: string) =>
-    setCollapsed((prev) => {
-      const next = new Set(prev);
-      if (!next.delete(id)) next.add(id);
-      return next;
+  const toggleTheme = useCallback(() => {
+    const nextDark = !settings.darkMode;
+    updateSettings({
+      darkMode: nextDark,
+      theme: nextDark ? "obsidian" : "arctic",
     });
+  }, [settings.darkMode, updateSettings]);
+
+  const toggleLanguage = useCallback(() => {
+    const nextLang = settings.language === "fr" ? "en" : "fr";
+    updateSettings({ language: nextLang });
+  }, [settings.language, updateSettings]);
+
+  const handleLogout = useCallback(async () => {
+    try {
+      await signOut();
+    } catch {}
+    router.push("/login");
+  }, [signOut, router]);
+
+  const currentDisplayName =
+    botUser?.globalName ||
+    botUser?.username ||
+    storedUser?.globalName ||
+    storedUser?.displayName ||
+    storedUser?.username ||
+    ethoneProfile?.displayName ||
+    ethoneProfile?.username ||
+    "rub19";
+
+  const currentAvatarUrl =
+    botUser?.avatarUrl ||
+    storedUser?.avatarUrl ||
+    storedUser?.avatarUrlSmall ||
+    ethoneProfile?.avatarUrl ||
+    null;
+
+  const initials = useMemo(() => getGuildInitials(guildName), [guildName]);
+
+  const isOverviewActive = view === "home" && !activeId;
 
   return (
     <>
@@ -243,339 +186,462 @@ export default function HubSidebar({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="absolute inset-0 z-30 bg-black/60 backdrop-blur-[2px] lg:hidden"
+            className="fixed inset-0 z-40 bg-black/60 backdrop-blur-xs md:hidden"
             onClick={onClose}
             aria-hidden="true"
           />
         )}
       </AnimatePresence>
-      <aside
-        aria-label="Navigation du bot"
+
+      <motion.aside
+        variants={consoleSidebar}
+        initial={false}
+        animate="animate"
         className={cn(
-          "absolute inset-y-0 left-0 z-40 flex w-[17.5rem] shrink-0 flex-col border-r border-[var(--panel-border)] bg-[var(--background)] transition-transform duration-300 [transition-timing-function:var(--ease-snap)] lg:static lg:z-auto lg:translate-x-0 lg:bg-[var(--text-primary)]/[0.015]",
-          open ? "translate-x-0" : "-translate-x-full"
+          "fixed inset-y-0 left-0 z-50 w-64 shrink-0 border-r border-[var(--panel-border)] bg-[var(--surface-raised)]/95 flex flex-col justify-between p-4 h-dvh max-h-dvh transition-transform duration-300 md:static md:translate-x-0",
+          open ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         )}
       >
-        {/* Serveur & Menu de changement de serveur */}
-        <div ref={serverMenuRef} className="relative px-2.5 pb-2.5 pt-3">
-          <div className="flex items-center gap-1.5">
-            <button
-              type="button"
-              onClick={() => setServerMenuOpen((v) => !v)}
-              aria-haspopup="menu"
-              aria-expanded={serverMenuOpen}
-              className={cn(
-                "group flex min-w-0 flex-1 cursor-pointer items-center gap-2.5 rounded-[var(--inset-radius)] p-1.5 text-left transition-[background-color,box-shadow] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50",
-                serverMenuOpen
-                  ? "bg-[var(--text-primary)]/[0.08] shadow-[0_0_0_1px_var(--panel-border)]"
-                  : "hover:bg-[var(--text-primary)]/[0.05]"
-              )}
-              title="Changer de serveur Discord"
-              aria-label={`Serveur ${guildName} : ouvrir les options et changer de serveur`}
+        <div className="space-y-3 overflow-y-auto pr-0.5 [scrollbar-width:none]">
+          <div className="flex items-center gap-2.5 px-2 pt-1 pb-1">
+            <motion.div
+              variants={consoleBrandMark}
+              whileHover={reduced ? undefined : { scale: 1.06 }}
+              transition={SPRING_PRESS}
+              className="relative flex h-8 w-8 items-center justify-center rounded-sm bg-emerald-500/10 border border-emerald-500/30 cursor-pointer"
             >
-              <span className="relative shrink-0">
-                <span
-                  className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-[var(--inset-radius)] bg-[var(--surface-raised)] bg-cover bg-center text-xs font-bold text-white ring-1 ring-[var(--panel-border)] transition-transform duration-200 group-hover:scale-[1.03]"
-                  style={guildIconUrl ? { backgroundImage: `url(${guildIconUrl})` } : { background: guildTint(guildName) }}
-                  aria-hidden="true"
-                >
-                  {guildIconUrl ? null : guildInitials(guildName)}
-                </span>
-              </span>
-              <span className="min-w-0 flex-1">
-                <span className="block truncate text-sm font-semibold text-[var(--text-primary)]" title={guildName}>
+              <ShieldCheck className="h-4 w-4 text-emerald-400" />
+            </motion.div>
+            <span className="font-bold text-base tracking-tight text-[var(--text-primary)]">
+              Etho Protect
+            </span>
+          </div>
+
+          <motion.div
+            variants={consoleSidebarItem}
+            className="flex items-center justify-between gap-2 rounded-sm border border-[var(--panel-border)] bg-[var(--surface-raised)] p-2.5"
+          >
+            <div className="flex items-center gap-2.5 min-w-0">
+              {guildIconUrl ? (
+                <ClientImage
+                  src={guildIconUrl}
+                  alt={guildName}
+                  width={36}
+                  height={36}
+                  className="h-9 w-9 rounded-sm object-cover border border-[var(--panel-border)] shrink-0"
+                />
+              ) : (
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm bg-[var(--surface-raised)] text-[var(--accent-primary)] font-bold text-xs border border-[var(--panel-border)]">
+                  {initials}
+                </div>
+              )}
+              <div className="min-w-0 flex-1">
+                <span className="block truncate text-xs font-semibold text-[var(--text-primary)]">
                   {guildName}
                 </span>
                 <span className="flex items-center gap-1 text-[11px] text-[var(--text-muted)]">
-                  <span>Console Etho</span>
-                  <span className="opacity-40">•</span>
-                  <span className="font-medium text-[var(--accent-primary)] group-hover:underline">Changer</span>
+                  <Crown className="h-3 w-3 text-amber-400 shrink-0" />
+                  <span className="truncate">Owner Etho</span>
                 </span>
-              </span>
-              <ChevronDown
-                className={cn(
-                  "h-4 w-4 shrink-0 text-[var(--text-muted)] transition-transform duration-300 [transition-timing-function:var(--ease-snap)] group-hover:text-[var(--text-primary)]",
-                  serverMenuOpen && "rotate-180"
+              </div>
+            </div>
+
+            <div className="relative shrink-0">
+              <button
+                type="button"
+                onClick={() => setServerMenuOpen((v) => !v)}
+                aria-expanded={serverMenuOpen}
+                aria-haspopup="menu"
+                className="p-1 rounded text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover,var(--surface-raised))] transition-colors cursor-pointer"
+                title="Options du serveur"
+                aria-label="Options du serveur"
+              >
+                <MoreHorizontal className="h-4 w-4" />
+              </button>
+
+              <AnimatePresence>
+                {serverMenuOpen && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-40"
+                      onClick={() => setServerMenuOpen(false)}
+                      aria-hidden="true"
+                    />
+                    <motion.div
+                      role="menu"
+                      initial={{ opacity: 0, scale: 0.95, y: -4 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.95, y: -4 }}
+                      transition={{ duration: 0.15 }}
+                      className="absolute right-0 top-full mt-1.5 w-56 z-50 rounded border border-[var(--panel-border)] bg-[var(--surface-raised)] p-1 shadow-2xl space-y-0.5 text-xs font-medium"
+                    >
+                      {onChangeGuild && (
+                        <button
+                          type="button"
+                          role="menuitem"
+                          onClick={() => {
+                            setServerMenuOpen(false);
+                            onChangeGuild();
+                          }}
+                          className="w-full flex items-center gap-2 rounded px-2.5 py-1.5 text-left text-[var(--text-primary)] hover:bg-white/[0.06] transition-colors cursor-pointer"
+                        >
+                          <Home className="h-3.5 w-3.5 text-[var(--text-muted)]" />
+                          <span>Changer de serveur</span>
+                        </button>
+                      )}
+                      {onOpenIntro && (
+                        <button
+                          type="button"
+                          role="menuitem"
+                          onClick={() => {
+                            setServerMenuOpen(false);
+                            onOpenIntro();
+                          }}
+                          className="w-full flex items-center gap-2 rounded px-2.5 py-1.5 text-left text-[var(--text-primary)] hover:bg-white/[0.06] transition-colors cursor-pointer"
+                        >
+                          <Sparkles className="h-3.5 w-3.5 text-[var(--text-muted)]" />
+                          <span>Découvrir le bot</span>
+                        </button>
+                      )}
+                      {onOpenSetup && (
+                        <button
+                          type="button"
+                          role="menuitem"
+                          onClick={() => {
+                            setServerMenuOpen(false);
+                            onOpenSetup();
+                          }}
+                          className="w-full flex items-center gap-2 rounded px-2.5 py-1.5 text-left text-[var(--text-primary)] hover:bg-white/[0.06] transition-colors cursor-pointer"
+                        >
+                          <Sliders className="h-3.5 w-3.5 text-[var(--text-muted)]" />
+                          <span>Setup assisté</span>
+                        </button>
+                      )}
+                      {onExportConfig && (
+                        <button
+                          type="button"
+                          role="menuitem"
+                          onClick={() => {
+                            setServerMenuOpen(false);
+                            onExportConfig();
+                          }}
+                          className="w-full flex items-center gap-2 rounded px-2.5 py-1.5 text-left text-[var(--text-primary)] hover:bg-white/[0.06] transition-colors cursor-pointer"
+                        >
+                          <Download className="h-3.5 w-3.5 text-[var(--text-muted)]" />
+                          <span>Exporter la configuration</span>
+                        </button>
+                      )}
+                      {onImportConfig && (
+                        <button
+                          type="button"
+                          role="menuitem"
+                          onClick={() => {
+                            setServerMenuOpen(false);
+                            onImportConfig();
+                          }}
+                          className="w-full flex items-center gap-2 rounded px-2.5 py-1.5 text-left text-[var(--text-primary)] hover:bg-white/[0.06] transition-colors cursor-pointer"
+                        >
+                          <Upload className="h-3.5 w-3.5 text-[var(--text-muted)]" />
+                          <span>Importer une configuration</span>
+                        </button>
+                      )}
+                      {onCopyGuildId && (
+                        <button
+                          type="button"
+                          role="menuitem"
+                          onClick={() => {
+                            setServerMenuOpen(false);
+                            onCopyGuildId();
+                          }}
+                          className="w-full flex items-center gap-2 rounded px-2.5 py-1.5 text-left text-[var(--text-primary)] hover:bg-white/[0.06] transition-colors cursor-pointer"
+                        >
+                          {copiedId ? (
+                            <Check className="h-3.5 w-3.5 text-emerald-400" />
+                          ) : (
+                            <Copy className="h-3.5 w-3.5 text-[var(--text-muted)]" />
+                          )}
+                          <span>Copier l&apos;ID du serveur</span>
+                        </button>
+                      )}
+                    </motion.div>
+                  </>
                 )}
-              />
+              </AnimatePresence>
+            </div>
+          </motion.div>
+
+          <motion.button
+            variants={consoleSidebarItem}
+            type="button"
+            onClick={() => openCommandPalette(true)}
+            className="w-full flex items-center justify-between rounded-sm border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-2 text-xs text-[var(--text-muted)] hover:border-[var(--accent-primary)]/40 hover:text-[var(--text-primary)] transition-all cursor-pointer"
+          >
+            <div className="flex items-center gap-2">
+              <Search className="h-3.5 w-3.5" />
+              <span>Rechercher un régla...</span>
+            </div>
+            <kbd className="rounded-sm border border-[var(--panel-border)] bg-[var(--background)] px-1.5 py-0.5 text-[10px] font-mono text-[var(--text-muted)]">
+              Ctrl K
+            </kbd>
+          </motion.button>
+
+          <div className="space-y-0.5 text-xs">
+            <button
+              type="button"
+              onClick={onHome}
+              className={cn(
+                "w-full flex items-center gap-2.5 rounded px-2.5 py-2 font-semibold transition-colors cursor-pointer text-left",
+                isOverviewActive
+                  ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400"
+                  : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
+              )}
+            >
+              <ShieldCheck className="h-4 w-4 shrink-0" />
+              <span>Vue d&apos;ensemble</span>
             </button>
 
             <button
               type="button"
-              onClick={onClose}
-              aria-label="Fermer le menu"
-              className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-[var(--inset-radius)] text-[var(--text-muted)] hover:bg-[var(--text-primary)]/[0.05] hover:text-[var(--text-primary)] lg:hidden"
+              onClick={() => router.push("/boost")}
+              className="w-full flex items-center gap-2.5 rounded px-2.5 py-2 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors cursor-pointer font-medium text-left"
             >
-              <X className="h-4 w-4" />
+              <Star className="h-4 w-4 shrink-0 text-amber-400" />
+              <span>Premium</span>
             </button>
           </div>
 
-          {/* Menu déroulant de changement de serveur */}
-          <AnimatePresence>
-            {serverMenuOpen && (
-              <motion.div
-                initial={reduced ? false : { opacity: 0, y: -4, scale: 0.98 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={reduced ? undefined : { opacity: 0, y: -4, scale: 0.98, transition: { duration: 0.12 } }}
-                transition={{ duration: 0.2, ease: EASE_SNAP }}
-                className="absolute left-2.5 right-2.5 top-[calc(100%-2px)] z-50 overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface-elevated,#17181d)] p-1.5 shadow-2xl shadow-black/80 backdrop-blur-xl ring-1 ring-white/[0.06]"
+          <div className="space-y-1 pt-2">
+            <span className="block px-2 text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+              Protection
+            </span>
+            <div className="space-y-0.5 text-xs">
+              <button
+                type="button"
+                onClick={() => router.push(`/discord/security?guildId=${selectedGuildId}`)}
+                className="w-full flex items-center justify-between rounded px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
               >
-                {/* Action rapide : ouvrir le sélecteur complet */}
-                {onChangeGuild && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setServerMenuOpen(false);
-                      onChangeGuild();
-                      onClose();
-                    }}
-                    className="flex w-full cursor-pointer items-center gap-2.5 rounded-[var(--inset-radius)] bg-[var(--text-primary)]/[0.04] px-2.5 py-2 text-left text-xs font-semibold text-[var(--text-primary)] transition-colors hover:bg-[var(--accent-primary)]/15 hover:text-[var(--accent-primary)]"
-                  >
-                    <Server className="h-3.5 w-3.5 shrink-0 text-[var(--accent-primary)]" />
-                    <span className="min-w-0 flex-1 truncate">Changer de serveur</span>
-                    <span className="rounded bg-[var(--text-primary)]/[0.08] px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
-                      Tous
-                    </span>
-                  </button>
-                )}
-
-                {/* Filtre si plus de 3 serveurs */}
-                {guilds && guilds.length > 3 && (
-                  <div className="mt-1.5 flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] px-2 py-1.5">
-                    <Search className="h-3 w-3 shrink-0 text-[var(--text-muted)]" />
-                    <input
-                      value={serverQuery}
-                      onChange={(e) => setServerQuery(e.target.value)}
-                      placeholder="Filtrer mes serveurs…"
-                      className="min-w-0 flex-1 bg-transparent text-[11px] text-[var(--text-primary)] outline-none placeholder:text-[var(--text-muted)]"
-                      autoFocus
-                    />
-                    {serverQuery && (
-                      <button
-                        type="button"
-                        onClick={() => setServerQuery("")}
-                        className="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    )}
-                  </div>
-                )}
-
-                {/* Liste des serveurs */}
-                {guilds && guilds.length > 0 && (
-                  <div className="mt-1.5">
-                    <div className="flex items-center justify-between px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
-                      <span>Serveurs</span>
-                      <span className="tabular-nums font-mono opacity-70">{filteredGuildList.length}</span>
-                    </div>
-                    <ul className="max-h-48 overflow-y-auto space-y-0.5 os-scroll pr-0.5">
-                      {filteredGuildList.length === 0 ? (
-                        <li className="px-2.5 py-3 text-center text-[11px] text-[var(--text-muted)]">
-                          Aucun serveur correspondant
-                        </li>
-                      ) : (
-                        filteredGuildList.map((g, i) => {
-                          const isSelected = g.id === selectedGuildId;
-                          const hasBot = botGuildIds ? botGuildIds.has(g.id) : false;
-                          return (
-                            <li key={g.id}>
-                              <button
-                                type="button"
-                                onMouseEnter={() => setServerCursor(i)}
-                                onClick={() => {
-                                  setServerMenuOpen(false);
-                                  if (onSelectGuild) onSelectGuild(g);
-                                  onClose();
-                                }}
-                                className={cn(
-                                  "group/row relative flex w-full cursor-pointer items-center gap-2 rounded-[var(--inset-radius)] px-2 py-1.5 text-left text-xs transition-colors",
-                                  isSelected
-                                    ? "bg-[var(--text-primary)]/[0.08] font-semibold text-[var(--text-primary)]"
-                                    : i === serverCursor
-                                    ? "bg-[var(--text-primary)]/[0.06] text-[var(--text-primary)]"
-                                    : "text-[var(--text-muted)] hover:bg-[var(--text-primary)]/[0.05] hover:text-[var(--text-primary)]"
-                                )}
-                              >
-                                <SidebarGuildAvatar guild={g} size={24} />
-                                <span className="min-w-0 flex-1">
-                                  <span className="block truncate">{g.name}</span>
-                                  <span
-                                    className={cn(
-                                      "block text-[10px]",
-                                      hasBot ? "text-[var(--success)]" : "text-[var(--text-muted)]/70"
-                                    )}
-                                  >
-                                    {hasBot ? "Bot présent" : "Sans le bot"}
-                                  </span>
-                                </span>
-                                {isSelected ? (
-                                  <Check className="h-3.5 w-3.5 shrink-0 text-[var(--accent-primary)]" />
-                                ) : hasBot ? (
-                                  <span
-                                    className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--success)] shadow-[0_0_0_2px_color-mix(in_srgb,var(--success)_16%,transparent)]"
-                                    title="Bot présent"
-                                  />
-                                ) : null}
-                              </button>
-                            </li>
-                          );
-                        })
-                      )}
-                    </ul>
-                  </div>
-                )}
-
-                {/* Lien inviter le bot */}
-                {botInviteUrl && (
-                  <div className="mt-1 border-t border-[var(--panel-border)] pt-1">
-                    <a
-                      href={botInviteUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 rounded-[var(--inset-radius)] px-2.5 py-1.5 text-[11px] text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/[0.04] hover:text-[var(--text-primary)]"
-                    >
-                      <Plus className="h-3 w-3 shrink-0 text-[var(--accent-primary)]" />
-                      <span className="min-w-0 flex-1 truncate">Inviter Etho sur un serveur</span>
-                      <ExternalLink className="h-3 w-3 shrink-0 opacity-50" />
-                    </a>
-                  </div>
-                )}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-
-        {/* Recherche */}
-        <div className="px-3 pb-3">
-          <label className="group flex h-9 items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] px-2.5 transition-[border-color,background-color,box-shadow] duration-200 focus-within:border-[var(--accent-primary)]/50 focus-within:bg-[var(--text-primary)]/[0.05] focus-within:shadow-[0_0_0_3px_color-mix(in_srgb,var(--accent-primary)_14%,transparent)] hover:border-[var(--text-primary)]/15">
-            <Search className="h-3.5 w-3.5 shrink-0 text-[var(--text-muted)] transition-colors group-focus-within:text-[var(--accent-primary)]" />
-            <input
-              ref={searchRef}
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onKeyDown={(e) => e.key === "Escape" && (setQuery(""), e.currentTarget.blur())}
-              placeholder="Rechercher un module"
-              aria-label="Rechercher un module"
-              className="min-w-0 flex-1 bg-transparent text-[13px] text-[var(--text-primary)] outline-none placeholder:text-[var(--text-muted)]"
-            />
-            {query ? (
-              <button type="button" onClick={() => setQuery("")} aria-label="Effacer la recherche" className="grid h-5 w-5 cursor-pointer place-items-center rounded text-[var(--text-muted)] hover:text-[var(--text-primary)]">
-                <X className="h-3 w-3" />
+                <div className="flex items-center gap-2.5">
+                  <ShieldAlert className="h-3.5 w-3.5 shrink-0" />
+                  <span>Protections</span>
+                </div>
+                <span className="font-mono text-[10px] text-[var(--text-muted)]">1/30</span>
               </button>
-            ) : (
-              <kbd className="hidden rounded border border-[var(--panel-border)] px-1.5 font-mono text-[10px] text-[var(--text-muted)] lg:inline">/</kbd>
-            )}
-          </label>
-        </div>
 
-        <nav
-          className="min-h-0 flex-1 space-y-5 overflow-y-auto px-3 pb-4 pt-1 [scrollbar-width:thin]"
-          style={{ maskImage: "linear-gradient(to bottom, transparent, black 12px, black calc(100% - 20px), transparent)", WebkitMaskImage: "linear-gradient(to bottom, transparent, black 12px, black calc(100% - 20px), transparent)" }}
-          aria-label="Modules"
-        >
-          <div className="space-y-0.5">
-            <NavRow active={view === "home"} onClick={onHome}>
-              <IconTile active={view === "home"} tint={view === "home" ? "text-[var(--accent-primary)]" : undefined}>
-                <Home className="h-3.5 w-3.5" />
-              </IconTile>
-              <span className="truncate">Accueil</span>
-            </NavRow>
-            <NavRow active={view === "modules"} onClick={onAllModules}>
-              <IconTile active={view === "modules"} tint={view === "modules" ? "text-[var(--accent-primary)]" : undefined}>
-                <LayoutGrid className="h-3.5 w-3.5" />
-              </IconTile>
-              <span className="min-w-0 flex-1 truncate">Tous les modules</span>
-              <span className="rounded-full bg-[var(--text-primary)]/[0.06] px-1.5 text-[10px] font-semibold tabular-nums text-[var(--text-muted)]">{modules.length}</span>
-            </NavRow>
+              <button
+                type="button"
+                onClick={() => router.push(`/discord/server/health?guildId=${selectedGuildId}`)}
+                className="w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors cursor-pointer text-left"
+              >
+                <Sparkles className="h-3.5 w-3.5 shrink-0" />
+                <span>Scan de sécurité</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => router.push(`/discord/setup?guildId=${selectedGuildId}`)}
+                className="w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors cursor-pointer text-left"
+              >
+                <Sliders className="h-3.5 w-3.5 shrink-0" />
+                <span>Configuration assistée</span>
+              </button>
+            </div>
           </div>
 
-          {sections.length === 0 && <p className="px-2.5 text-xs text-[var(--text-muted)]">Aucun module ne correspond.</p>}
-          {sections.map((section, si) => {
-            const expanded = Boolean(q) || section.items.some((m) => view === "module" && m.id === activeId) || !collapsed.has(section.id);
-            const onCount = section.items.filter((m) => status[m.id]).length;
-            return (
-              <motion.div
-                key={section.id}
-                initial={reduced ? false : { opacity: 0, x: -8 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.4, ease: EASE_SNAP, delay: 0.05 + si * 0.05 }}
+          <div className="space-y-1 pt-2">
+            <span className="block px-2 text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+              Membres
+            </span>
+            <div className="space-y-0.5 text-xs">
+              <button
+                type="button"
+                onClick={() => router.push(`/discord/security?tab=whitelist&guildId=${selectedGuildId}`)}
+                className="w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors cursor-pointer text-left"
               >
+                <Users className="h-3.5 w-3.5 shrink-0" />
+                <span>Whitelist</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => router.push(`/discord/security?tab=blacklist&guildId=${selectedGuildId}`)}
+                className="w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors cursor-pointer text-left"
+              >
+                <ShieldAlert className="h-3.5 w-3.5 shrink-0" />
+                <span>Blacklist</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => router.push(`/discord/server/roles?guildId=${selectedGuildId}`)}
+                className="w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors cursor-pointer text-left"
+              >
+                <Crown className="h-3.5 w-3.5 shrink-0" />
+                <span>Rôles et membres</span>
+              </button>
+            </div>
+          </div>
+
+          <div className="space-y-1 pt-2">
+            <span className="block px-2 text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+              Serveur
+            </span>
+            <div className="space-y-0.5 text-xs">
+              <button
+                type="button"
+                onClick={() => router.push(`/discord/logs?guildId=${selectedGuildId}`)}
+                className="w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors cursor-pointer text-left"
+              >
+                <FileText className="h-3.5 w-3.5 shrink-0" />
+                <span>Logs</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => router.push(`/discord/server?guildId=${selectedGuildId}`)}
+                className="w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors cursor-pointer text-left"
+              >
+                <Sliders className="h-3.5 w-3.5 shrink-0" />
+                <span>Outils</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => router.push(`/discord/server/settings?guildId=${selectedGuildId}`)}
+                className="w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors cursor-pointer text-left"
+              >
+                <Settings2 className="h-3.5 w-3.5 shrink-0" />
+                <span>Réglages</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => router.push(`/discord/server/permissions?guildId=${selectedGuildId}`)}
+                className="w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors cursor-pointer text-left"
+              >
+                <Key className="h-3.5 w-3.5 shrink-0" />
+                <span>Accès</span>
+              </button>
+            </div>
+          </div>
+
+          <motion.div
+            variants={consoleSidebarItem}
+            className="rounded-sm border border-[var(--panel-border)] bg-[var(--surface-raised)]/90 p-2.5 space-y-1.5 mt-2"
+          >
+            <div className="flex items-center justify-between text-xs font-semibold">
+              <span className="text-[var(--text-primary)]">Protections actives</span>
+              <span className="font-mono text-emerald-400 font-bold">1/30</span>
+            </div>
+            <div className="flex items-center gap-1.5 text-[11px] text-amber-400 font-medium">
+              <AlertTriangle className="h-3 w-3 shrink-0" />
+              <span>1 sans salon de log</span>
+            </div>
+          </motion.div>
+        </div>
+
+        <div className="space-y-4 pt-3 border-t border-[var(--panel-border)] shrink-0">
+          <motion.div variants={consoleSidebarItem} className="space-y-0.5 text-xs">
+            <button
+              type="button"
+              onClick={onChangeGuild}
+              className="w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-[var(--text-primary)] hover:bg-[var(--surface-hover,var(--surface-raised))] transition-colors cursor-pointer font-medium text-left"
+            >
+              <Home className="h-4 w-4" />
+              <span>Mes serveurs</span>
+            </button>
+            <a
+              href={DOCS_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center justify-between rounded px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors"
+            >
+              <div className="flex items-center gap-2.5">
+                <BookOpen className="h-4 w-4" />
+                <span>Documentation</span>
+              </div>
+              <ExternalLink className="h-3.5 w-3.5 opacity-60" />
+            </a>
+            <a
+              href={SUPPORT_DISCORD_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center justify-between rounded px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors"
+            >
+              <div className="flex items-center gap-2.5">
+                <LifeBuoyIcon className="h-4 w-4" />
+                <span>Support</span>
+              </div>
+              <ExternalLink className="h-3.5 w-3.5 opacity-60" />
+            </a>
+          </motion.div>
+
+          <motion.div variants={consoleSidebarItem} className="pt-2 border-t border-[var(--panel-border)]">
+            <div className="flex items-center justify-between p-1.5">
+              <div className="flex items-center gap-2.5 min-w-0">
+                {currentAvatarUrl ? (
+                  <ClientImage
+                    candidates={[
+                      currentAvatarUrl,
+                      storedUser?.avatarUrl,
+                      storedUser?.avatarUrlSmall,
+                      ethoneProfile?.avatarUrl,
+                    ].filter(Boolean) as string[]}
+                    src={currentAvatarUrl}
+                    alt={currentDisplayName}
+                    width={30}
+                    height={30}
+                    fallback={
+                      <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--surface-raised)] text-[var(--accent-primary)] font-bold text-xs border border-[var(--panel-border)] shrink-0">
+                        {currentDisplayName.slice(0, 2).toUpperCase()}
+                      </div>
+                    }
+                    className="h-7 w-7 rounded-full object-cover border border-[var(--panel-border)] shrink-0"
+                  />
+                ) : (
+                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--surface-raised)] text-[var(--accent-primary)] font-bold text-xs border border-[var(--panel-border)] shrink-0">
+                    {currentDisplayName.slice(0, 2).toUpperCase()}
+                  </div>
+                )}
+                <span className="truncate text-xs font-bold text-[var(--text-primary)]">
+                  {currentDisplayName}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-1 shrink-0">
                 <button
                   type="button"
-                  onClick={() => toggleSection(section.id)}
-                  aria-expanded={expanded}
-                  className="group mb-1 flex w-full cursor-pointer items-center gap-2 rounded-md px-2 py-1 text-[10.5px] font-semibold uppercase tracking-[0.14em] text-[var(--text-muted)] outline-none transition-colors hover:text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
+                  onClick={toggleTheme}
+                  className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] rounded hover:bg-[var(--surface-hover,var(--surface-raised))] transition-colors cursor-pointer"
+                  title={settings.darkMode ? "Activer le mode clair" : "Activer le mode sombre"}
+                  aria-label="Basculer le thème"
                 >
-                  <ChevronDown className={cn("h-3 w-3 shrink-0 transition-transform duration-300 [transition-timing-function:var(--ease-snap)]", !expanded && "-rotate-90")} />
-                  <span className="min-w-0 flex-1 truncate text-left">{section.label}</span>
-                  <span className="font-mono text-[10px] normal-case tracking-normal tabular-nums opacity-70">
-                    {onCount}/{section.items.length}
-                  </span>
+                  {settings.darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
                 </button>
-                <AnimatePresence initial={false}>
-                  {expanded && (
-                    <motion.ul
-                      key="items"
-                      initial={reduced ? false : { height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={reduced ? undefined : { height: 0, opacity: 0 }}
-                      transition={{ duration: 0.3, ease: EASE_SNAP }}
-                      className="space-y-0.5 overflow-hidden"
-                    >
-                      {section.items.map((m) => {
-                        const Icon = m.icon;
-                        const current = view === "module" && m.id === activeId;
-                        const isKnown = typeof status[m.id] === "boolean";
-                        return (
-                          <li key={m.id}>
-                            <NavRow active={current} onClick={() => onSelect(m.id)} title={m.title}>
-                              <IconTile tint={m.tint} active={current}>
-                                <Icon className="h-3.5 w-3.5" />
-                              </IconTile>
-                              <span className="min-w-0 flex-1 truncate">{m.title}</span>
-                              {isKnown && (
-                                <span
-                                  className={cn(
-                                    "h-1.5 w-1.5 shrink-0 rounded-full transition-[background-color,box-shadow] duration-300",
-                                    status[m.id] ? "bg-[var(--success)] shadow-[0_0_0_3px_color-mix(in_srgb,var(--success)_16%,transparent)]" : "bg-[var(--text-primary)]/15"
-                                  )}
-                                  title={status[m.id] ? "Activé" : "Désactivé"}
-                                  aria-label={status[m.id] ? "Activé" : "Désactivé"}
-                                />
-                              )}
-                            </NavRow>
-                          </li>
-                        );
-                      })}
-                    </motion.ul>
-                  )}
-                </AnimatePresence>
-              </motion.div>
-            );
-          })}
-        </nav>
 
-        {/* Bilan d'activation (réel : interrupteurs connus) */}
-        {known.length > 0 && (
-          <div className="border-t border-[var(--panel-border)] px-4 py-3">
-            <div className="flex items-center justify-between text-[11px] text-[var(--text-muted)]">
-              <span>Modules actifs</span>
-              <span className="font-semibold tabular-nums text-[var(--text-primary)]">
-                {enabled} / {known.length}
-              </span>
+                <button
+                  type="button"
+                  onClick={toggleLanguage}
+                  className="p-1 rounded hover:bg-[var(--surface-hover,var(--surface-raised))] transition-colors cursor-pointer"
+                  title="Changer de langue"
+                  aria-label="Changer de langue"
+                >
+                  <FlagIcon code={settings.language === "fr" ? "en" : "fr"} className="h-3.5 w-5 rounded-xs" />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="p-1.5 text-[var(--text-muted)] hover:text-rose-400 rounded hover:bg-[var(--surface-hover,var(--surface-raised))] transition-colors cursor-pointer"
+                  title="Déconnexion"
+                  aria-label="Déconnexion"
+                >
+                  <LogOut className="h-4 w-4" />
+                </button>
+              </div>
             </div>
-            <div className="mt-2 h-1 overflow-hidden rounded-full bg-[var(--text-primary)]/[0.07]">
-              <motion.div
-                className="h-full rounded-full bg-[var(--success)]"
-                initial={reduced ? false : { width: 0 }}
-                animate={{ width: `${(enabled / known.length) * 100}%` }}
-                transition={{ duration: 0.8, ease: EASE_SNAP }}
-              />
-            </div>
-          </div>
-        )}
-      </aside>
+          </motion.div>
+        </div>
+      </motion.aside>
     </>
   );
 }

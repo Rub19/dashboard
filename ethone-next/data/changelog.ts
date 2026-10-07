@@ -46129,6 +46129,54 @@ const v12863_de: ChangelogEntry = {
   ],
 };
 
+const v12864_fr: ChangelogEntry = {
+  version: "v1.55.57",
+  date: "2026-10-07",
+  title: "Résolution Optimale de l'Avatar Discord avec Multi-Candidats",
+  items: [
+    "Priorisation de l'avatar haute résolution 256px sur l'avatar compact 64px pour éviter les erreurs CDN Discord",
+    "Mécanisme multi-candidats avec basculement automatique sur l'URL de secours",
+    "Affichage immédiat et stable de la photo de profil Discord dans la console",
+    "Garantie de continuité visuelle sans disparition du badge utilisateur",
+  ],
+};
+
+const v12864_en: ChangelogEntry = {
+  version: "v1.55.57",
+  date: "2026-10-07",
+  title: "Optimal Discord Avatar Resolution with Multi-Candidate Fallback",
+  items: [
+    "Prioritization of 256px high-resolution avatar over compact 64px avatar preventing Discord CDN errors",
+    "Multi-candidate fallback mechanism with automatic failover between image sources",
+    "Immediate and stable Discord profile photo rendering across the console",
+    "Guaranteed visual continuity with zero avatar collapse",
+  ],
+};
+
+const v12864_es: ChangelogEntry = {
+  version: "v1.55.57",
+  date: "2026-10-07",
+  title: "Resolución Óptima del Avatar de Discord con Múltiples Candidatos",
+  items: [
+    "Priorización del avatar de alta resolución de 256px sobre el de 64px evitando errores de CDN",
+    "Mecanismo de múltiples candidatos con conmutación por error automática entre fuentes",
+    "Visualización inmediata y estable de la foto de perfil de Discord en la consola",
+    "Continuidad visual garantizada sin desaparición del avatar",
+  ],
+};
+
+const v12864_de: ChangelogEntry = {
+  version: "v1.55.57",
+  date: "2026-10-07",
+  title: "Optimale Discord-Avatarauflösung mit Multi-Kandidaten-Fallback",
+  items: [
+    "Priorisierung des hochauflösenden 256px-Avatars vor dem kompakten 64px-Avatar zur Vermeidung von CDN-Fehlern",
+    "Multi-Kandidaten-Fallback mit automatischer Umschaltung zwischen Bildquellen",
+    "Sofortige und stabile Darstellung des Discord-Profilbilds in der Konsole",
+    "Garantierte visuelle Kontinuität ohne Zusammenklappen des Profilbilds",
+  ],
+};
+
 CHANGELOG_BY_LANG.fr.unshift(v12860_fr);
 CHANGELOG_BY_LANG.en.unshift(v12860_en);
 CHANGELOG_BY_LANG.es.unshift(v12860_es);
@@ -46148,5 +46196,10 @@ CHANGELOG_BY_LANG.fr.unshift(v12863_fr);
 CHANGELOG_BY_LANG.en.unshift(v12863_en);
 CHANGELOG_BY_LANG.es.unshift(v12863_es);
 CHANGELOG_BY_LANG.de.unshift(v12863_de);
+
+CHANGELOG_BY_LANG.fr.unshift(v12864_fr);
+CHANGELOG_BY_LANG.en.unshift(v12864_en);
+CHANGELOG_BY_LANG.es.unshift(v12864_es);
+CHANGELOG_BY_LANG.de.unshift(v12864_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

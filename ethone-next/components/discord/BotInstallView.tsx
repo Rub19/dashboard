@@ -290,6 +290,12 @@ export default function BotInstallView({
               <div className="flex items-center gap-2.5 min-w-0">
                 {currentAvatarUrl ? (
                   <ClientImage
+                    candidates={[
+                      currentAvatarUrl,
+                      storedUser?.avatarUrl,
+                      storedUser?.avatarUrlSmall,
+                      ethoneProfile?.avatarUrl,
+                    ].filter(Boolean) as string[]}
                     src={currentAvatarUrl}
                     alt={currentDisplayName}
                     width={30}

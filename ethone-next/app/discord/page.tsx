@@ -1145,7 +1145,7 @@ export default function DiscordDashboardPage() {
           botPresenceKnown={botPresenceKnown || botGuildIds.size > 0}
           inviteUrl={BOT_INVITE_URL}
           userName={isDiscordConnected ? profile?.user?.displayName || profile?.user?.username : undefined}
-          userAvatar={isDiscordConnected ? profile?.user?.avatarUrlSmall || profile?.user?.avatarUrl || null : null}
+          userAvatar={isDiscordConnected ? profile?.user?.avatarUrl || profile?.user?.avatarUrlSmall || null : null}
           isConnected={isDiscordConnected}
           connecting={discordLoading}
           onConnect={connect}
@@ -1209,7 +1209,7 @@ export default function DiscordDashboardPage() {
               : undefined
           }
           userAvatar={
-            profile?.user?.avatarUrlSmall || profile?.user?.avatarUrl || null
+            profile?.user?.avatarUrl || profile?.user?.avatarUrlSmall || null
           }
           botInviteUrl={BOT_INVITE_URL}
         />

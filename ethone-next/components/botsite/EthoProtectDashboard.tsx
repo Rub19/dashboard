@@ -334,6 +334,12 @@ export default function EthoProtectDashboard() {
             <div className="flex items-center gap-2.5 min-w-0">
               {userAvatar ? (
                 <ClientImage
+                  candidates={[
+                    userAvatar,
+                    storedUser?.avatarUrl,
+                    storedUser?.avatarUrlSmall,
+                    ethoneProfile?.avatarUrl,
+                  ].filter(Boolean) as string[]}
                   src={userAvatar}
                   alt={displayName}
                   width={30}

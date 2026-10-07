@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.57 — 2026-10-07
+
+**Résolution Optimale de l'Avatar Discord avec Multi-Candidats**
+
+- Priorisation de l'avatar haute résolution 256px sur l'avatar compact 64px pour éviter les erreurs de serveur CDN Discord.
+- Mécanisme multi-candidats avec basculement automatique sur l'URL de secours en cas d'erreur de chargement d'image.
+- Affichage immédiat et stable de la photo de profil Discord authentique dans la console.
+- Garantie de continuité visuelle sans disparition du badge utilisateur.
+
 ## v1.55.56 — 2026-10-07
 
 **Barre Latérale Pleine Hauteur : Affichage Continu Jusqu'au Bas de l'Écran**

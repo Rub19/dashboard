@@ -32,14 +32,9 @@ import ClientImage from "@/components/ClientImage";
 import BotLanding from "@/components/botsite/BotLanding";
 import { cn } from "@/lib/utils";
 
-const BOT_CLIENT_ID = "1545139931154878464";
 const SUPPORT_DISCORD_URL = "https://discord.gg/WvEcyBuP45";
 const DOCS_URL = "https://ethone.dev/discord";
 
-function getBotInviteUrl(guildId?: string) {
-  const base = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
-  return guildId ? `${base}&guild_id=${guildId}&disable_guild_select=true` : base;
-}
 
 function getGuildInitials(name: string) {
   const words = name.trim().split(/\s+/);
@@ -430,7 +425,8 @@ export default function EthoProtectDashboard() {
                   {filteredUninstalled.map((guild) => (
                     <div
                       key={guild.id}
-                      className="group flex items-center justify-between rounded-xl border border-[#16241c] bg-[#09110d] px-4 py-3 hover:border-[#22392c] hover:bg-[#0c1611] transition-all"
+                      onClick={() => router.push(`/discord?guildId=${guild.id}`)}
+                      className="group flex items-center justify-between rounded-xl border border-[#16241c] bg-[#09110d] px-4 py-3 hover:border-[#22392c] hover:bg-[#0c1611] transition-all cursor-pointer"
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         {guild.iconUrl ? (
@@ -453,15 +449,17 @@ export default function EthoProtectDashboard() {
                         </div>
                       </div>
 
-                      <a
-                        href={getBotInviteUrl(guild.id)}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="flex items-center gap-1 rounded-lg border border-[#1b2b22] px-3 py-1.5 text-xs font-semibold text-[#8ba395] hover:border-emerald-500/40 hover:bg-emerald-500/10 hover:text-emerald-400 transition-all"
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          router.push(`/discord?guildId=${guild.id}`);
+                        }}
+                        className="flex items-center gap-1 rounded-lg border border-[#1b2b22] px-3 py-1.5 text-xs font-semibold text-[#8ba395] hover:border-emerald-500/40 hover:bg-emerald-500/10 hover:text-emerald-400 transition-all cursor-pointer"
                       >
                         <Plus className="h-3.5 w-3.5" />
                         <span>Installer</span>
-                      </a>
+                      </button>
                     </div>
                   ))}
                 </div>

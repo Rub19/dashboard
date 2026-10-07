@@ -45876,4 +45876,57 @@ CHANGELOG_BY_LANG.en.unshift(v12858_en);
 CHANGELOG_BY_LANG.es.unshift(v12858_es);
 CHANGELOG_BY_LANG.de.unshift(v12858_de);
 
+const v12859_fr: ChangelogEntry = {
+  version: "v1.55.50",
+  date: "2026-10-07",
+  title: "Console Discord : Écran d'Installation Bot Style Keeper Protect & Auto-Détection",
+  items: [
+    "Nouvel écran d'onboarding/installation guidée inspiré du flux Keeper Protect lors de la sélection d'un serveur sans le bot Etho.",
+    "Détection automatique de présence du bot en temps réel avec transition fluide dès l'ajout effectif.",
+    "Bouton Vérifier pour contrôle immédiat et bouton Passer l'attente pour accès direct sans délai.",
+    "Barre latérale dédiée avec indicateur Etho absent, recherche Ctrl K, retour 'Mes serveurs' et support intégré.",
+  ],
+};
+
+const v12859_en: ChangelogEntry = {
+  version: "v1.55.50",
+  date: "2026-10-07",
+  title: "Discord Console: Keeper Protect Style Bot Install Flow & Auto-Detection",
+  items: [
+    "New guided onboarding/installation view inspired by Keeper Protect flow when clicking a server without Etho.",
+    "Real-time bot presence auto-detection with automatic transition to server dashboard upon bot join.",
+    "Manual Verify button for instant check and Skip Waiting button to proceed immediately.",
+    "Dedicated sidebar with Etho absent status card, Ctrl K search, My servers back link, and docs/support.",
+  ],
+};
+
+const v12859_es: ChangelogEntry = {
+  version: "v1.55.50",
+  date: "2026-10-07",
+  title: "Consola Discord: Flujo de Instalación Estilo Keeper Protect y Auto-Detección",
+  items: [
+    "Nueva pantalla de instalación guiada al seleccionar un servidor sin el bot Etho estilo Keeper Protect.",
+    "Detección automática en tiempo real de la presencia del bot y transición automática al panel.",
+    "Botón Verificar para comprobación instantánea y botón Omitir espera para acceso directo.",
+    "Barra lateral con estado de servidor no instalado, búsqueda Ctrl K y navegación de retorno.",
+  ],
+};
+
+const v12859_de: ChangelogEntry = {
+  version: "v1.55.50",
+  date: "2026-10-07",
+  title: "Discord-Konsole: Bot-Installationsfluss im Keeper Protect-Stil & Auto-Erkennung",
+  items: [
+    "Neuer geführter Installationsbildschirm im Keeper Protect-Stil bei Auswahl eines Servers ohne Etho.",
+    "Echtzeit-Erkennung der Bot-Anwesenheit mit automatischem Wechsel zum Dashboard nach Hinzufügen.",
+    "Überprüfen-Schaltfläche zur sofortigen Prüfung und Wartezeit überspringen-Schaltfläche.",
+    "Dedizierte Seitenleiste mit Serverstatus, Strg-K-Suche und Schnellnavigation.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12859_fr);
+CHANGELOG_BY_LANG.en.unshift(v12859_en);
+CHANGELOG_BY_LANG.es.unshift(v12859_es);
+CHANGELOG_BY_LANG.de.unshift(v12859_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

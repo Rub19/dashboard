@@ -75,6 +75,7 @@ import ChannelPicker from "@/components/discord/ChannelPicker";
 import { ethoneIcon } from "@/components/EthoneIcon";
 import { useModuleStatus } from "@/lib/hooks/useModuleStatus";
 import ServerPicker from "@/components/discord/ServerPicker";
+import BotInstallView from "@/components/discord/BotInstallView";
 import ModuleNavigator, { type NavigatorCategory, type NavigatorModule } from "@/components/discord/ModuleNavigator";
 import HubSidebar, { type HubView } from "@/components/discord/HubSidebar";
 import ServerOverview from "@/components/discord/ServerOverview";
@@ -569,6 +570,7 @@ export default function DiscordDashboardPage() {
 
   // Serveur choisi dans le sélecteur (id). Le tableau de bord ne s'affiche qu'une fois un serveur choisi.
   const [pickedId, setPickedId] = useState<string | null>(null);
+  const [skippedInstallGuildIds, setSkippedInstallGuildIds] = useState<Set<string>>(new Set());
   const [lastGuildId, setLastGuildId] = useState<string | null>(null);
   const [hydrated, setHydrated] = useState(false);
   const [activeModule, setActiveModule] = useState<ModuleType | null>(null);
@@ -1132,6 +1134,50 @@ export default function DiscordDashboardPage() {
           onToggleManageable={() => setOnlyManageable((v) => !v)}
           botAuthHref={botAuthRequired ? botLoginHref : null}
           onPick={pickGuild}
+        />
+        {onboardingModal}
+      </>
+    );
+  }
+
+  const isBotInstalled = botPresenceKnown
+    ? botGuildIds.has(selectedGuild.id)
+    : botGuildIds.size > 0
+    ? botGuildIds.has(selectedGuild.id)
+    : false;
+  const isInstallSkipped = skippedInstallGuildIds.has(selectedGuild.id);
+
+  if (!isBotInstalled && !isInstallSkipped) {
+    return (
+      <>
+        <BotInstallView
+          guild={selectedGuild}
+          onBack={changeGuild}
+          onBotDetected={(g) => {
+            setBotGuildIds((prev) => new Set(prev).add(g.id));
+            try {
+              const stored = localStorage.getItem("ethone:discord:bot_guild_ids");
+              const parsed = stored ? JSON.parse(stored) : [];
+              if (Array.isArray(parsed) && !parsed.includes(g.id)) {
+                localStorage.setItem(
+                  "ethone:discord:bot_guild_ids",
+                  JSON.stringify([...parsed, g.id])
+                );
+              }
+            } catch {}
+          }}
+          onSkip={(g) => {
+            setSkippedInstallGuildIds((prev) => new Set(prev).add(g.id));
+          }}
+          userName={
+            isDiscordConnected
+              ? profile?.user?.displayName || profile?.user?.username
+              : undefined
+          }
+          userAvatar={
+            profile?.user?.avatarUrlSmall || profile?.user?.avatarUrl || null
+          }
+          botInviteUrl={BOT_INVITE_URL}
         />
         {onboardingModal}
       </>

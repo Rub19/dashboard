@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.50 — 2026-10-07
+
+**Console Discord : Écran d'Installation Bot Style Keeper Protect & Auto-Détection**
+
+- Nouvel écran d'onboarding/installation guidée inspiré du flux Keeper Protect lors de la sélection d'un serveur sans le bot Etho.
+- Détection automatique de présence du bot en temps réel avec transition fluide dès l'ajout effectif.
+- Bouton Vérifier pour contrôle immédiat et bouton Passer l'attente pour accès direct sans délai.
+- Barre latérale dédiée avec indicateur Etho absent, recherche Ctrl K, retour 'Mes serveurs' et support intégré.
+
 ## v1.55.49 — 2026-10-07
 
 **Refonte de la Console Discord : Hub Serveurs Style Keeper Protect & Sécurité**

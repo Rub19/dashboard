@@ -42,13 +42,14 @@ export interface BotPresence {
   status: number;
 }
 
-/** Appel partagé (cache 60 s + requête en cours réutilisée) : utilisé par useBotGuildIds et la page Discord. */
-export async function fetchBotPresence(guildIds: string[]): Promise<BotPresence> {
+export async function fetchBotPresence(guildIds: string[], force?: boolean): Promise<BotPresence> {
   const key = guildIds.join(",");
-  const hit = cache.get(key);
-  if (hit && Date.now() - hit.at < CACHE_TTL_MS) return { present: hit.ids, status: 200 };
-  const pending = inflight.get(key);
-  if (pending) return pending;
+  if (!force) {
+    const hit = cache.get(key);
+    if (hit && Date.now() - hit.at < CACHE_TTL_MS) return { present: hit.ids, status: 200 };
+    const pending = inflight.get(key);
+    if (pending) return pending;
+  }
 
   const promise = (async (): Promise<BotPresence> => {
     try {
@@ -69,6 +70,15 @@ export async function fetchBotPresence(guildIds: string[]): Promise<BotPresence>
   })();
   inflight.set(key, promise);
   return promise;
+}
+
+export function clearBotPresenceCache(guildIds?: string[]): void {
+  if (!guildIds || guildIds.length === 0) {
+    cache.clear();
+    return;
+  }
+  const key = guildIds.join(",");
+  cache.delete(key);
 }
 
 async function fetchPresent(key: string): Promise<string[]> {

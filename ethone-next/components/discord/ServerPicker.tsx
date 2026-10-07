@@ -57,9 +57,6 @@ function getGuildInitials(name: string) {
   return name.slice(0, 2).toUpperCase() || "SV";
 }
 
-function getGuildInviteUrl(baseInviteUrl: string, guildId: string) {
-  return `${baseInviteUrl}&guild_id=${guildId}&disable_guild_select=true`;
-}
 
 function ClassicAvatar({ guild, dim, live }: { guild: DiscordGuild; dim?: boolean; live?: boolean }) {
   return (
@@ -294,18 +291,17 @@ export default function ServerPicker({
                           onMouseEnter={() => setHovered(guild.id)}
                         >
                           {absent ? (
-                            <a
-                              href={getGuildInviteUrl(inviteUrl, guild.id)}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              title="Inviter le bot sur ce serveur"
-                              className={cn(rowClass, "opacity-50 transition-opacity duration-300 hover:opacity-100")}
+                            <button
+                              type="button"
+                              onClick={() => onPick(guild)}
+                              title="Installer le bot sur ce serveur"
+                              className={cn(rowClass, "cursor-pointer opacity-70 transition-opacity duration-300 hover:opacity-100")}
                             >
                               {highlight}
                               <ClassicAvatar guild={guild} dim />
                               <span className="relative min-w-0 flex-1 truncate text-[15px] font-medium text-[var(--text-muted)]">{guild.name}</span>
-                              <Plus className="relative h-5 w-5 shrink-0 text-[var(--text-muted)] transition-transform duration-300 group-hover:rotate-90" aria-label="Ajouter le bot" />
-                            </a>
+                              <Plus className="relative h-5 w-5 shrink-0 text-emerald-400 transition-transform duration-300 group-hover:rotate-90" aria-label="Ajouter le bot" />
+                            </button>
                           ) : (
                             <button type="button" onClick={() => onPick(guild)} className={cn(rowClass, "cursor-pointer")}>
                               {highlight}
@@ -650,7 +646,8 @@ export default function ServerPicker({
                   {filteredUninstalled.map((guild) => (
                     <div
                       key={guild.id}
-                      className="group flex items-center justify-between rounded-xl border border-[#16271e] bg-[#09120e] px-4 py-3 hover:border-[#243c2e] hover:bg-[#0c1812] transition-all"
+                      onClick={() => onPick(guild)}
+                      className="group flex items-center justify-between rounded-xl border border-[#16271e] bg-[#09120e] px-4 py-3 hover:border-[#243c2e] hover:bg-[#0c1812] transition-all cursor-pointer"
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         {guild.iconUrl ? (
@@ -673,15 +670,17 @@ export default function ServerPicker({
                         </div>
                       </div>
 
-                      <a
-                        href={getGuildInviteUrl(inviteUrl, guild.id)}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="flex items-center gap-1.5 rounded-lg border border-[#1e3427] bg-[#0f1d16] px-3 py-1.5 text-xs font-semibold text-[#8caaa0] hover:border-emerald-500/40 hover:text-white transition-all"
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onPick(guild);
+                        }}
+                        className="flex items-center gap-1.5 rounded-lg border border-[#1e3427] bg-[#0f1d16] px-3 py-1.5 text-xs font-semibold text-[#8caaa0] hover:border-emerald-500/40 hover:text-white transition-all cursor-pointer"
                       >
                         <Plus className="h-3.5 w-3.5" />
                         <span>Installer</span>
-                      </a>
+                      </button>
                     </div>
                   ))}
                 </div>

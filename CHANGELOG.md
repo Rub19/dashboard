@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.78 — 2026-10-08
+
+**Console Discord : page Logs façon Keeper**
+
+- Page Logs dans la console : onglet Incidents (chaque déclenchement de protection avec l'auteur, la cible et la raison) et onglet Salons de log (salon par catégorie, protections et journal du serveur).
+- Bandeau « N protections sans salon de log » avec choix d'un salon et bouton Appliquer pour toutes les équiper d'un coup ; le point « À régler » de la vue d'ensemble et la barre latérale y mènent directement.
+- Réglages : le texte du mode raid dit clairement quand le module Anti-raid est désactivé.
+
 ## v1.55.77 — 2026-10-08
 
 **Console Discord : pages Réglages et Accès façon Keeper, droits comme Keeper**

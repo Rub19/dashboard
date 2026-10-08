@@ -39,6 +39,8 @@ interface GuildOverviewScreenProps {
   onOpenScan?: () => void;
   onSelectCategory?: (categoryId: string) => void;
   onAllModules?: () => void;
+  /** Ouvre la page Logs de la console (salons de log). */
+  onOpenLogs?: () => void;
 }
 
 const CATEGORY_DEFINITIONS = [
@@ -123,6 +125,7 @@ export default function GuildOverviewScreen({
   onOpenScan,
   onSelectCategory,
   onAllModules,
+  onOpenLogs,
 }: GuildOverviewScreenProps) {
   const router = useRouter();
   const i18n = useI18n();
@@ -247,7 +250,7 @@ export default function GuildOverviewScreen({
                 </div>
                 <button
                   type="button"
-                  onClick={() => (c.action ? router.push(c.action.href) : openScan())}
+                  onClick={() => (c.action ? (c.id === "protections-log-channel" && onOpenLogs ? onOpenLogs() : router.push(c.action.href)) : openScan())}
                   className="shrink-0 self-start rounded-lg border border-[var(--panel-border)] px-3 py-1.5 text-xs font-semibold text-[var(--text-primary)] transition-[background-color,transform] duration-150 hover:bg-[var(--surface-hover)] active:scale-[0.97] sm:self-auto"
                 >
                   {c.action ? c.action.label : i18n("dSeeDetails", "Voir le détail")}

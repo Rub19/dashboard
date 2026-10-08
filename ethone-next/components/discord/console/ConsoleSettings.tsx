@@ -6,7 +6,7 @@ import ChannelPicker from "../ChannelPicker";
 import { useRaidMode } from "@/lib/hooks/useRaidMode";
 import { ConsolePage, Panel, Row, Switch, useGuildApi } from "./kit";
 
-type Settings = { prefix: string; systemChannelId: string | null; ownerDmAlerts: boolean };
+type Settings = { prefix: string; systemChannelId: string | null; ownerDmAlerts: boolean; antiRaidEnabled?: boolean };
 
 /** Réglages (format Keeper) : préfixe, salon système, MP au propriétaire, mode raid. Tout est lu et écrit sur le bot. */
 export default function ConsoleSettings({ guildId }: { guildId: string }) {
@@ -32,7 +32,7 @@ export default function ConsoleSettings({ guildId }: { guildId: string }) {
     const previous = settings;
     setSettings((s) => (s ? { ...s, ...patch } : s));
     const next = await api<Settings>("/console/settings", { method: "PATCH", json: patch });
-    if (next) setSettings(next);
+    if (next) setSettings((s) => (s ? { ...s, ...next } : next));
     else {
       setSettings(previous);
       if (previous) setPrefixDraft(previous.prefix);
@@ -97,7 +97,9 @@ export default function ConsoleSettings({ guildId }: { guildId: string }) {
                 ? "État inconnu : bot injoignable."
                 : raid.active
                   ? "Actif. Le serveur bloque temporairement les arrivées suspectes."
-                  : "Inactif. Etho l'active tout seul s'il détecte une attaque (module Anti-raid activé)."}
+                  : settings?.antiRaidEnabled === false
+                    ? "Inactif. Le module Anti-raid est désactivé : Etho ne l'active pas tout seul."
+                    : "Inactif. Etho l'active tout seul s'il détecte une attaque."}
             </p>
           </div>
           <Switch checked={raid.active === true} onChange={() => raid.toggle()} disabled={raid.busy || raid.active === null} label="Mode raid" />

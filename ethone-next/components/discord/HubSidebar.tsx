@@ -55,7 +55,7 @@ import {
 import type { NavigatorCategory, NavigatorModule } from "./ModuleNavigator";
 
 /** Pages de la console au format Keeper, affichées dans la console (même barre latérale). */
-export type ConsoleView = "settings" | "access";
+export type ConsoleView = "settings" | "access" | "logs";
 export type HubView = "home" | "modules" | "module" | "setup" | "scan" | ConsoleView;
 
 interface HubSidebarProps {
@@ -563,8 +563,12 @@ export default function HubSidebar({
             <div className="space-y-0.5 text-xs">
               <button
                 type="button"
-                onClick={() => router.push(`/discord/logs?guildId=${selectedGuildId}`)}
-                className="w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors cursor-pointer text-left"
+                onClick={() => (onOpenView ? onOpenView("logs") : router.push(`/discord/logs?guildId=${selectedGuildId}`))}
+                aria-current={view === "logs" ? "page" : undefined}
+                className={cn(
+                  "w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-xs transition-colors cursor-pointer text-left",
+                  view === "logs" ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold" : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
+                )}
               >
                 <FileText className="h-3.5 w-3.5 shrink-0" />
                 <span>{i18n("dLogs", "Logs")}</span>
@@ -628,7 +632,7 @@ export default function HubSidebar({
             {logGap.length > 0 && (
               <button
                 type="button"
-                onClick={() => router.push(`/discord/logs?guildId=${selectedGuildId}&tab=routing`)}
+                onClick={() => (onOpenView ? onOpenView("logs") : router.push(`/discord/logs?guildId=${selectedGuildId}&tab=routing`))}
                 title={logGap.join(", ")}
                 className="flex items-center gap-1.5 text-[10px] text-[var(--warning)] hover:underline"
               >

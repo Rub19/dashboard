@@ -47278,5 +47278,54 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_77_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_77_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_77_de);
 
+const v1_55_78_fr: ChangelogEntry = {
+  version: "v1.55.78",
+  date: "2026-10-08",
+  title: "Console Discord : page Logs façon Keeper",
+  items: [
+    "Page Logs dans la console : onglet Incidents (chaque déclenchement de protection avec l'auteur, la cible et la raison) et onglet Salons de log (salon par catégorie, protections et journal du serveur).",
+    "Bandeau « N protections sans salon de log » avec choix d'un salon et bouton Appliquer pour toutes les équiper d'un coup ; le point « À régler » de la vue d'ensemble et la barre latérale y mènent directement.",
+    "Réglages : le texte du mode raid dit clairement quand le module Anti-raid est désactivé.",
+  ],
+};
+
+const v1_55_78_en: ChangelogEntry = {
+  version: "v1.55.78",
+  date: "2026-10-08",
+  title: "Discord console: Keeper-style Logs page",
+  items: [
+    "Logs page with Incidents and Log channels tabs.",
+    "\"N protections without a log channel\" banner with a one-click apply.",
+    "Settings: raid mode text now reflects the Anti-raid module state.",
+  ],
+};
+
+const v1_55_78_es: ChangelogEntry = {
+  version: "v1.55.78",
+  date: "2026-10-08",
+  title: "Consola Discord: página Logs estilo Keeper",
+  items: [
+    "Página Logs con pestañas Incidentes y Canales de logs.",
+    "Aviso de protecciones sin canal con aplicación en un clic.",
+    "Ajustes: el texto del modo raid refleja el estado del módulo Anti-raid.",
+  ],
+};
+
+const v1_55_78_de: ChangelogEntry = {
+  version: "v1.55.78",
+  date: "2026-10-08",
+  title: "Discord-Konsole: Logs-Seite im Keeper-Stil",
+  items: [
+    "Logs-Seite mit den Tabs Vorfälle und Log-Kanäle.",
+    "Hinweis auf Schutzfunktionen ohne Log-Kanal mit Ein-Klick-Zuweisung.",
+    "Einstellungen: der Raid-Modus-Text zeigt den Zustand des Anti-Raid-Moduls.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_78_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_78_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_78_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_78_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

@@ -3,6 +3,7 @@ import type { Client, GuildMember, User } from 'discord.js';
 import { guildConfigService } from '../../services/guildConfigService.js';
 import { raidModeService } from '../../modules/antiRaid/services/raidModeService.js';
 import { handleRouteError } from '../utils/routeError.js';
+import { isModuleEnabled } from '../../services/moduleRegistry.js';
 
 /**
  * Pages « Réglages » et « Accès » de la console (format Keeper). Monté derrière createGuildAuthMiddleware :
@@ -137,6 +138,7 @@ export function createConsoleRouter(client: Client): Router {
       systemChannelId: conf.systemChannelId ?? null,
       ownerDmAlerts: Boolean(conf.ownerDmAlerts),
       raidModeActive: raidModeService.isRaidModeActive(guild.id),
+      antiRaidEnabled: isModuleEnabled(guild.id, 'security'),
     });
   });
 

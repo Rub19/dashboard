@@ -48029,5 +48029,50 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_92_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_92_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_92_de);
 
+const v1_55_93_fr: ChangelogEntry = {
+  version: "v1.55.93",
+  date: "2026-10-09",
+  title: "Console Discord : finitions",
+  items: [
+    "Bouclier de l'owner : quand il est coupé, ses réactions sont grisées avec une explication (elles reprennent à la réactivation).",
+    "Barre latérale : la couronne « Owner Etho » est remplacée par un point de statut, comme sur Keeper.",
+  ],
+};
+
+const v1_55_93_en: ChangelogEntry = {
+  version: "v1.55.93",
+  date: "2026-10-09",
+  title: "Discord console: polish",
+  items: [
+    "Owner shield: when it's off, its reactions are greyed out with an explanation (they resume when re-enabled).",
+    "Sidebar: the “Owner Etho” crown is replaced by a status dot, like Keeper.",
+  ],
+};
+
+const v1_55_93_es: ChangelogEntry = {
+  version: "v1.55.93",
+  date: "2026-10-09",
+  title: "Consola Discord: retoques",
+  items: [
+    "Escudo del owner: cuando está desactivado, sus reacciones aparecen en gris con una explicación (se reanudan al reactivarlo).",
+    "Barra lateral: la corona « Owner Etho » se sustituye por un punto de estado, como en Keeper.",
+  ],
+};
+
+const v1_55_93_de: ChangelogEntry = {
+  version: "v1.55.93",
+  date: "2026-10-09",
+  title: "Discord-Konsole: Feinschliff",
+  items: [
+    "Owner-Schild: Wenn er aus ist, werden seine Reaktionen ausgegraut und erklärt (sie gelten wieder nach dem Einschalten).",
+    "Seitenleiste: Die Krone „Owner Etho“ wird wie bei Keeper durch einen Statuspunkt ersetzt.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_93_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_93_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_93_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_93_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

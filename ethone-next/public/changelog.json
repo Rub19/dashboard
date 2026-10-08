@@ -1,5 +1,14 @@
 [
   {
+    "version": "v1.55.93",
+    "date": "2026-10-09",
+    "title": "Console Discord : finitions",
+    "items": [
+      "Bouclier de l'owner : quand il est coupé, ses réactions sont grisées avec une explication (elles reprennent à la réactivation).",
+      "Barre latérale : la couronne « Owner Etho » est remplacée par un point de statut, comme sur Keeper."
+    ]
+  },
+  {
     "version": "v1.55.92",
     "date": "2026-10-09",
     "title": "Écran de démarrage une seule fois",
@@ -643,16 +652,6 @@
       "Support de la lecture audio en arrière-plan (mode audio iOS) et minuteur d'extinction automatique progressif.",
       "Parité complète des modules Discord d'administration sur iOS : Alertes Streamers (Twitch, YouTube, Kick) et Mini-Jeux & Casino.",
       "Sélecteur de serveur instantané dans la barre d'outils iOS pour basculer d'un serveur à un autre sans retour en arrière."
-    ]
-  },
-  {
-    "version": "v1.55.31",
-    "date": "2026-10-06",
-    "title": "Fiabilisation du Filtre de Recherche des Serveurs Discord",
-    "items": [
-      "Correction du cycle de réinitialisation dans le sélecteur de serveur de la barre latérale Discord (HubSidebar) : préservation de la saisie utilisateur lors de la recherche.",
-      "Bornage dynamique du curseur de navigation au clavier (flèches Haut/Bas, validation Entrée) lors du filtrage en direct des serveurs.",
-      "Synchronisation instantanée du curseur au survol et fermeture fluide du tiroir mobile."
     ]
   }
 ]

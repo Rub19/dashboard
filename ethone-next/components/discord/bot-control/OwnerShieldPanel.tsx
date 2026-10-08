@@ -432,7 +432,11 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
         </div>
       </Panel>
 
-      <Panel title="Réactions automatiques" subtitle="Ce qu'Etho fait tout seul quand un modérateur te sanctionne.">
+      <Panel
+        title="Réactions automatiques"
+        subtitle={config.enabled ? "Ce qu'Etho fait tout seul quand un modérateur te sanctionne." : "Bouclier coupé : ces réactions sont conservées et reprendront dès que tu le réactives."}
+        className={cn("transition-opacity", !config.enabled && "opacity-60")}
+      >
         {SHIELD_OPTIONS.map((o) => (
           <Row key={o.key} label={o.label} hint={o.hint}>
             <div className="flex justify-end">

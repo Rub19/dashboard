@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.93 — 2026-10-09
+
+**Console Discord : finitions**
+
+- Bouclier de l'owner : quand il est coupé, ses réactions sont grisées avec une explication (elles reprennent à la réactivation).
+- Barre latérale : la couronne « Owner Etho » est remplacée par un point de statut, comme sur Keeper.
+
 ## v1.55.92 — 2026-10-09
 
 **Écran de démarrage une seule fois**

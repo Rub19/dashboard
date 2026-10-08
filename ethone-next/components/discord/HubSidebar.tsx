@@ -12,7 +12,6 @@ import {
   Sun,
   Moon,
   LogOut,
-  Crown,
   MoreHorizontal,
   Sparkles,
   Download,
@@ -286,8 +285,8 @@ export default function HubSidebar({
                 <span className="block truncate text-xs font-semibold text-[var(--text-primary)]">
                   {guildName}
                 </span>
-                <span className="flex items-center gap-1 text-[11px] text-[var(--text-muted)]">
-                  <Crown className="h-3 w-3 text-amber-400 shrink-0" />
+                <span className="flex items-center gap-1.5 text-[11px] text-[var(--text-muted)]">
+                  <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--success)]" />
                   <span className="truncate">{i18n("dOwnerEtho", "Owner Etho")}</span>
                 </span>
               </div>

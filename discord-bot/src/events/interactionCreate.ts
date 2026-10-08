@@ -8,6 +8,7 @@ import {
 } from '../handlers/settingsInteractionHandler.js';
 import { cooldownService } from '../services/cooldownService.js';
 import { checkCommandRule } from '../services/commandRulesService.js';
+import { handleCaptchaButton, handleCaptchaModal } from '../services/captchaService.js';
 import { buildPingMessage } from '../commands/general/ping.js';
 import { handleTicketButton } from '../modules/tickets/interactions/ticketButtonHandler.js';
 import { handleTicketModal } from '../modules/tickets/interactions/ticketModalHandler.js';
@@ -149,6 +150,10 @@ export async function onInteractionCreate(interaction: Interaction) {
   }
 
   if (interaction.isButton()) {
+    if (interaction.customId.startsWith('captcha_')) {
+      await safeHandleComponent(interaction, 'captcha_button', () => handleCaptchaButton(interaction));
+      return;
+    }
     if (interaction.customId.startsWith('guild_join:')) {
       await safeHandleComponent(interaction, 'guild_join_button', () => guildJoinService.handleButton(interaction));
       return;
@@ -222,6 +227,10 @@ export async function onInteractionCreate(interaction: Interaction) {
   }
 
   if (interaction.isModalSubmit()) {
+    if (interaction.customId === 'captcha_modal') {
+      await safeHandleComponent(interaction, 'captcha_modal', () => handleCaptchaModal(interaction));
+      return;
+    }
     if (interaction.customId.startsWith('rep_modal:')) {
       await safeHandleComponent(interaction, 'report_modal', () => reportsService.handleModal(interaction));
     } else if (interaction.customId.startsWith('onb_modal:')) {

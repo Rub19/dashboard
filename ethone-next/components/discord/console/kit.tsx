@@ -1,10 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, type Dispatch, type ReactNode, type SetStateAction } from "react";
+import { useCallback, useEffect, useId, useRef, useState, type Dispatch, type ReactNode, type SetStateAction } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { Hash, Loader2, Plus, Search, Volume2 } from "@/components/icons/ph";
+import { Hash, Loader2, Plus, Search, Volume2, X } from "@/components/icons/ph";
 import { useToast } from "@/components/ToastProvider";
-import { SPRING_LAYOUT, SPRING_PRESS } from "@/lib/ease";
+import { SPRING_LAYOUT, SPRING_PILL, SPRING_PRESS } from "@/lib/ease";
 import { cn } from "@/lib/utils";
 import { fetchGuildRoles, type RoleOption } from "../RolePicker";
 import { fetchGuildChannels, type ChannelOption } from "../ChannelPicker";
@@ -294,12 +294,6 @@ export function MemberPicker({
   );
 }
 
-const roleColor = (c?: string | number) => {
-  if (typeof c === "string" && c.startsWith("#")) return c;
-  const n = typeof c === "number" ? c : parseInt(String(c ?? ""), 10);
-  return n > 0 ? `#${n.toString(16).padStart(6, "0")}` : "var(--text-muted)";
-};
-
 /** « + Rôle » : liste filtrable des rôles du serveur (cache partagé avec les autres sélecteurs de rôle). */
 export function RoleAdder({
   guildId,
@@ -417,5 +411,95 @@ export function ChannelAdder({
         ))
       )}
     </SearchPopover>
+  );
+}
+
+/** Choix exclusif en pilule (format Keeper) : « Comme d'origine | Rôles choisis », « 1 2 3 4 5 »… */
+export function Segmented<T extends string | number>({
+  value,
+  options,
+  onChange,
+  label,
+  disabled,
+}: {
+  value: T;
+  options: ReadonlyArray<readonly [T, ReactNode]>;
+  onChange: (v: T) => void;
+  label: string;
+  disabled?: boolean;
+}) {
+  const id = useId();
+  return (
+    <div role="radiogroup" aria-label={label} className="inline-flex rounded-lg border border-[var(--panel-border)] p-0.5">
+      {options.map(([v, text]) => (
+        <button
+          key={String(v)}
+          type="button"
+          role="radio"
+          aria-checked={value === v}
+          disabled={disabled}
+          onClick={() => value !== v && onChange(v)}
+          className={cn(
+            "relative min-w-8 rounded-md px-3 py-1.5 text-xs font-semibold transition-colors disabled:opacity-50",
+            value === v ? "text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+          )}
+        >
+          {value === v && <motion.span layoutId={`seg-${id}`} transition={SPRING_PILL} className="absolute inset-0 rounded-md bg-[var(--surface-hover)]" />}
+          <span className="relative">{text}</span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/** Pastille retirable (rôle, salon). */
+export function Chip({ label, onRemove, children }: { label: string; onRemove: () => void; children?: ReactNode }) {
+  return (
+    <span className="flex items-center gap-1.5 rounded-lg border border-[var(--panel-border)] py-1 pl-2 pr-1 text-xs text-[var(--text-primary)]">
+      {children}
+      <span className="max-w-40 truncate">{label}</span>
+      <button type="button" onClick={onRemove} aria-label={`Retirer ${label}`} className="rounded p-0.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover)] hover:text-[var(--danger)]">
+        <X className="h-3 w-3" />
+      </button>
+    </span>
+  );
+}
+
+export const roleColor = (c?: string | number) => {
+  if (typeof c === "string" && c.startsWith("#")) return c;
+  const n = typeof c === "number" ? c : parseInt(String(c ?? ""), 10);
+  return n > 0 ? `#${n.toString(16).padStart(6, "0")}` : "var(--text-muted)";
+};
+
+/** Liste de rôles en pastilles + « Ajouter un rôle ». Les noms viennent du cache de rôles partagé. */
+export function RoleChips({
+  guildId,
+  ids,
+  onChange,
+  max,
+  addLabel = "Rôle",
+}: {
+  guildId: string;
+  ids: string[];
+  onChange: (ids: string[]) => void;
+  max?: number;
+  addLabel?: string;
+}) {
+  const [roles, setRoles] = useState<RoleOption[]>([]);
+  useEffect(() => {
+    fetchGuildRoles(guildId).then(setRoles);
+  }, [guildId]);
+  return (
+    <div className="flex flex-wrap items-center gap-1.5">
+      {ids.map((id) => {
+        const r = roles.find((x) => x.id === id);
+        return (
+          <Chip key={id} label={r?.name ?? id} onRemove={() => onChange(ids.filter((x) => x !== id))}>
+            <span className="h-2 w-2 rounded-full" style={{ background: roleColor(r?.color) }} />
+          </Chip>
+        );
+      })}
+      {(max === undefined || ids.length < max) && <RoleAdder guildId={guildId} label={addLabel} excludeIds={ids} onPick={(r) => onChange(max === 1 ? [r.id] : [...ids, r.id])} />}
+    </div>
   );
 }

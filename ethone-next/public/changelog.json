@@ -1,5 +1,16 @@
 [
   {
+    "version": "v1.55.81",
+    "date": "2026-10-08",
+    "title": "Console Discord : page Outils (captcha à l'arrivée et soutiens)",
+    "items": [
+      "Captcha à l'arrivée (nouvelle fonction du bot) : le nouveau membre recopie un code affiché en image, avec tentatives, délai, et au choix expulsion, bannissement ou rien en cas d'échec.",
+      "Rôles donnés et retirés après la réussite, mention à l'arrivée, salon des logs et option pour noter les réussites.",
+      "Soutiens : Etho donne un rôle aux membres qui affichent le tag du serveur sur leur profil, et le retire s'ils l'enlèvent.",
+      "Le lien « sans salon de log » ouvre directement l'onglet « Salons de log »."
+    ]
+  },
+  {
     "version": "v1.55.80",
     "date": "2026-10-08",
     "title": "Console Discord : page Commandes façon Keeper",
@@ -661,17 +672,6 @@
       "Suppression du délai d'attente (3s) dans RawKeySync au profit d'un déclenchement événementiel instantané (storage, v8:focus-session-completed et ethone:raw-key-changed)",
       "Rafraîchissement direct des écrans d'historique et d'objectifs Focus lors des sessions terminées et modifications d'objectifs",
       "Écoute temps réel des changements de préréglages personnalisés dans les paramètres pour affichage multi-onglets immédiat"
-    ]
-  },
-  {
-    "version": "v1.55.19",
-    "date": "2026-10-05",
-    "title": "Résolution intégrale des hooks React et synchronisation multi-onglets",
-    "items": [
-      "Résolution complète des 75 avertissements de hooks React et navigation dans Next.js (useUserState, CommandPalette, BootProvider, AuthProvider, Mail, etc.)",
-      "Ajout de la synchronisation instantanée multi-onglets via événements storage dans useUserState",
-      "Stabilisation des raccourcis clavier et typage strict dans le client de messagerie Mail",
-      "Validation de l'ensemble des suites de tests (298/298 Jest Next.js, 283/283 tests Worker, audits de sécurité et build statique 277 pages sans erreur)"
     ]
   }
 ]

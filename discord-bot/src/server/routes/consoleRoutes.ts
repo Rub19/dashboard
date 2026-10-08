@@ -8,7 +8,9 @@ import { raidModeService } from '../../modules/antiRaid/services/raidModeService
 import { handleRouteError } from '../utils/routeError.js';
 import { isModuleEnabled, moduleForCommand } from '../../services/moduleRegistry.js';
 import { commandRegistry } from '../../handlers/commandHandler.js';
-import { CommandRuleSchema } from '../../types/guildConfig.js';
+import { CaptchaConfigSchema, CommandRuleSchema, SupportersConfigSchema } from '../../types/guildConfig.js';
+import { ensureCaptchaPanel, pendingCount } from '../../services/captchaService.js';
+import { supporterCount, sweepSupporters } from '../../services/supportersService.js';
 import { DEFAULT_RULE } from '../../services/commandRulesService.js';
 
 /**
@@ -233,6 +235,100 @@ export function createConsoleRouter(client: Client): Router {
     else rules[name] = parsed.data;
     guildConfigService.updateConfig(guild.id, { commandRules: rules }, { source: 'DASHBOARD', actorId: req.user?.id });
     res.json({ rule: rules[name] ?? DEFAULT_RULE, customized: Boolean(rules[name]) });
+  });
+
+  // --- Outils (captcha à l'arrivée, soutiens) ---------------------------------------------------------------
+  const toolsView = (guildId: string) => {
+    const guild = client.guilds.cache.get(guildId)!;
+    const conf = guildConfigService.getConfig(guildId);
+    return {
+      captcha: conf.captcha,
+      captchaPending: pendingCount(guildId),
+      supporters: conf.supporters,
+      supportersCount: supporterCount(guild),
+    };
+  };
+
+  router.get('/tools', (req: Request, res: Response) => {
+    const guild = guildOf(req);
+    if (!guild) {
+      res.status(404).json({ error: 'Serveur introuvable pour le bot.' });
+      return;
+    }
+    res.json(toolsView(guild.id));
+  });
+
+  const validIds = (guild: NonNullable<ReturnType<typeof guildOf>>, body: Record<string, unknown>, roles: string[], channels: string[]) => {
+    for (const k of roles) {
+      const v = body[k];
+      if (v === undefined) continue;
+      const list = Array.isArray(v) ? v : [v];
+      if (list.some((id) => id !== null && (typeof id !== 'string' || !guild.roles.cache.has(id)))) return 'Rôle introuvable.';
+    }
+    for (const k of channels) {
+      const v = body[k];
+      if (v !== undefined && v !== null && !(typeof v === 'string' && guild.channels.cache.get(v)?.isTextBased())) return 'Salon introuvable ou non textuel.';
+    }
+    return null;
+  };
+
+  router.patch('/tools/captcha', async (req: Request, res: Response) => {
+    const guild = guildOf(req);
+    if (!guild) {
+      res.status(404).json({ error: 'Serveur introuvable pour le bot.' });
+      return;
+    }
+    const { panelMessageId: _ignored, ...body } = req.body ?? {};
+    const bad = validIds(guild, body, ['givenRoles', 'removedRoles'], ['channelId', 'logChannelId']);
+    if (bad) {
+      res.status(400).json({ error: bad });
+      return;
+    }
+    const current = guildConfigService.getConfig(guild.id).captcha;
+    const parsed = CaptchaConfigSchema.safeParse({ ...current, ...body });
+    if (!parsed.success) {
+      res.status(400).json({ error: 'Réglage invalide : ' + parsed.error.issues.map((i) => i.path.join('.')).join(', ') });
+      return;
+    }
+    if (parsed.data.enabled && !parsed.data.channelId) {
+      res.status(400).json({ error: "Choisis d'abord le salon de vérification." });
+      return;
+    }
+    // Nouveau salon : l'ancien panneau n'y est plus, on en reposte un.
+    const next = { ...parsed.data, panelMessageId: parsed.data.channelId === current.channelId ? current.panelMessageId : null };
+    guildConfigService.updateConfig(guild.id, { captcha: next }, { source: 'DASHBOARD', actorId: req.user?.id });
+    await ensureCaptchaPanel(guild).catch(() => null);
+    res.json(toolsView(guild.id));
+  });
+
+  router.patch('/tools/supporters', async (req: Request, res: Response) => {
+    const guild = guildOf(req);
+    if (!guild) {
+      res.status(404).json({ error: 'Serveur introuvable pour le bot.' });
+      return;
+    }
+    const body = req.body ?? {};
+    const bad = validIds(guild, body, ['roleId'], []);
+    if (bad) {
+      res.status(400).json({ error: bad });
+      return;
+    }
+    const parsed = SupportersConfigSchema.safeParse({ ...guildConfigService.getConfig(guild.id).supporters, ...body });
+    if (!parsed.success) {
+      res.status(400).json({ error: 'Réglage invalide.' });
+      return;
+    }
+    if (parsed.data.enabled && !parsed.data.roleId) {
+      res.status(400).json({ error: "Choisis d'abord le rôle à donner." });
+      return;
+    }
+    if (parsed.data.roleId && !guild.roles.cache.get(parsed.data.roleId)?.editable) {
+      res.status(400).json({ error: "Etho ne peut pas donner ce rôle : il doit être placé sous le rôle d'Etho." });
+      return;
+    }
+    guildConfigService.updateConfig(guild.id, { supporters: parsed.data }, { source: 'DASHBOARD', actorId: req.user?.id });
+    void sweepSupporters(guild, true);
+    res.json(toolsView(guild.id));
   });
 
   // --- Whitelist -------------------------------------------------------------------------------------------------

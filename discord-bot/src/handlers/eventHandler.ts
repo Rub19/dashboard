@@ -1,4 +1,6 @@
 import { enforceBlacklistOnJoin } from '../services/blacklistService.js';
+import { onMemberJoin as captchaOnJoin } from '../services/captchaService.js';
+import { onUserUpdate as supportersOnUserUpdate, startSupportersSweep, syncSupporter } from '../services/supportersService.js';
 import { Client, Events, AuditLogEvent, GuildMember, Role } from 'discord.js';
 import { isModuleEnabled } from '../services/moduleRegistry.js';
 import { recordDeparture, scheduleDepartureRestart } from '../services/departedGuilds.js';
@@ -147,8 +149,13 @@ export function registerEvents(client: Client): void {
   client.on(Events.MessageCreate, (message) => onMessageCreate(message));
   client.on(Events.GuildMemberAdd, (member) => {
     void enforceBlacklistOnJoin(member);
+    void captchaOnJoin(member).catch((err) => logger.warn('[Captcha] arrivée :', err?.message));
+    void syncSupporter(member);
     onGuildMemberAdd(member);
   });
+  // Soutiens : tag du serveur affiché ou retiré du profil
+  client.on(Events.UserUpdate, (_old, user) => void supportersOnUserUpdate(client, user));
+  startSupportersSweep(client);
   client.on(Events.GuildMemberRemove, (member) => {
     onGuildMemberRemove(member);
     ownerShieldService.handleGuildMemberRemove(member);
@@ -186,6 +193,7 @@ export function registerEvents(client: Client): void {
     handleGuildMemberUpdate(oldMember, newMember);
     if (moduleOn(newMember.guild.id, 'automod')) autoModService.handleMemberProfile(newMember);
     ownerShieldService.handleGuildMemberUpdate(oldMember as GuildMember, newMember);
+    void syncSupporter(newMember);
     void guardSecureRoles(oldMember as GuildMember, newMember).catch((err) => logger.warn('[SecureRoles] garde-fou :', err?.message));
     // Auto-Role "attendre le filtrage des règles" : reprend l'attribution une fois `pending` passé à false.
     if (moduleOn(newMember.guild.id, 'roles') && (oldMember as GuildMember).pending && !newMember.pending) {

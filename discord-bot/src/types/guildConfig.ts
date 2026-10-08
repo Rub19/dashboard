@@ -32,6 +32,31 @@ export const CommandRuleSchema = z.object({
 });
 export type CommandRule = z.infer<typeof CommandRuleSchema>;
 
+/** Outils de la console : captcha à l'arrivée. */
+export const CaptchaConfigSchema = z.object({
+  enabled: z.boolean().default(false),
+  channelId: z.string().nullable().default(null),
+  /** Donnés après la réussite. */
+  givenRoles: z.array(z.string()).max(10).default([]),
+  /** Retirés après la réussite. */
+  removedRoles: z.array(z.string()).max(10).default([]),
+  attempts: z.number().int().min(1).max(5).default(3),
+  delayMinutes: z.number().int().min(2).max(60).default(10),
+  failAction: z.enum(['kick', 'ban', 'none']).default('kick'),
+  mentionOnJoin: z.boolean().default(true),
+  logChannelId: z.string().nullable().default(null),
+  logSuccess: z.boolean().default(false),
+  /** Message permanent avec le bouton « Commencer » dans le salon de vérification. */
+  panelMessageId: z.string().nullable().default(null),
+});
+export type CaptchaConfig = z.infer<typeof CaptchaConfigSchema>;
+
+/** Outils de la console : rôle donné aux membres qui portent le tag du serveur. */
+export const SupportersConfigSchema = z.object({
+  enabled: z.boolean().default(false),
+  roleId: z.string().nullable().default(null),
+});
+
 export const GuildConfigSchema = z.object({
   // Identifiant Discord
   guildId: z.string(),
@@ -104,6 +129,8 @@ export const GuildConfigSchema = z.object({
     .array(z.object({ userId: z.string(), reason: z.string().default(''), addedBy: z.string().nullable().default(null), addedAt: z.string() }))
     .default([]),
   commandRules: z.record(z.string(), CommandRuleSchema).default({}),
+  captcha: CaptchaConfigSchema.default({}),
+  supporters: SupportersConfigSchema.default({}),
 });
 
 export type GuildConfig = z.infer<typeof GuildConfigSchema>;
@@ -158,6 +185,8 @@ export const defaultGuildConfig: Omit<GuildConfig, 'guildId'> = {
   ownerDmAlerts: false,
   blacklist: [],
   commandRules: {},
+  captcha: CaptchaConfigSchema.parse({}),
+  supporters: SupportersConfigSchema.parse({}),
 };
 
 /**

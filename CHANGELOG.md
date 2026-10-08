@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.81 — 2026-10-08
+
+**Console Discord : page Outils (captcha à l'arrivée et soutiens)**
+
+- Captcha à l'arrivée (nouvelle fonction du bot) : le nouveau membre recopie un code affiché en image, avec tentatives, délai, et au choix expulsion, bannissement ou rien en cas d'échec.
+- Rôles donnés et retirés après la réussite, mention à l'arrivée, salon des logs et option pour noter les réussites.
+- Soutiens : Etho donne un rôle aux membres qui affichent le tag du serveur sur leur profil, et le retire s'ils l'enlèvent.
+- Le lien « sans salon de log » ouvre directement l'onglet « Salons de log ».
+
 ## v1.55.80 — 2026-10-08
 
 **Console Discord : page Commandes façon Keeper**

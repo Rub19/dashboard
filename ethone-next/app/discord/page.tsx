@@ -76,6 +76,7 @@ import ConsoleWhitelist from "@/components/discord/console/ConsoleWhitelist";
 import ConsoleBlacklist from "@/components/discord/console/ConsoleBlacklist";
 import ConsoleMembers from "@/components/discord/console/ConsoleMembers";
 import ConsoleCommands from "@/components/discord/console/ConsoleCommands";
+import ConsoleTools from "@/components/discord/console/ConsoleTools";
 import GuildOverviewScreen from "@/components/discord/GuildOverviewScreen";
 import GuildAssistedSetup from "@/components/discord/GuildAssistedSetup";
 import GuildSecurityScan from "@/components/discord/GuildSecurityScan";
@@ -724,7 +725,9 @@ export default function DiscordDashboardPage() {
     setConsoleView(null);
     setMenuOpen(false);
   }, []);
-  const openConsoleView = useCallback((v: ConsoleView) => {
+  const [logsTab, setLogsTab] = useState<"incidents" | "channels">("incidents");
+  const openConsoleView = useCallback((v: ConsoleView, opts?: { logsTab?: "incidents" | "channels" }) => {
+    setLogsTab(opts?.logsTab ?? "incidents");
     setActiveModule(null);
     setShowAllModules(false);
     setShowSetup(false);
@@ -762,7 +765,7 @@ export default function DiscordDashboardPage() {
         setShowSetup(true);
       } else if (sp.get("view") === "scan" || sp.get("tab") === "scan") {
         setShowScan(true);
-      } else if (["settings", "access", "logs", "whitelist", "blacklist", "members", "commands"].includes(sp.get("view") ?? "")) {
+      } else if (["settings", "access", "logs", "whitelist", "blacklist", "members", "commands", "tools"].includes(sp.get("view") ?? "")) {
         setConsoleView(sp.get("view") as ConsoleView);
       }
     } catch {}
@@ -1347,6 +1350,8 @@ export default function DiscordDashboardPage() {
                     ? i18n("dRolesAndMembers", "Rôles et membres")
                     : view === "commands"
                     ? i18n("dCommands", "Commandes")
+                    : view === "tools"
+                    ? i18n("dTools", "Outils")
                     : view === "scan"
                     ? i18n("dSecurityScan", "Scan de sécurité")
                     : view === "setup"
@@ -1426,17 +1431,18 @@ export default function DiscordDashboardPage() {
                   onOpenSetup={goSetup}
                   onOpenScan={goScan}
                   onAllModules={goAllModules}
-                  onOpenLogs={() => openConsoleView("logs")}
+                  onOpenLogs={() => openConsoleView("logs", { logsTab: "channels" })}
                 />
               )}
 
               {view === "settings" && <ConsoleSettings guildId={selectedGuild.id} />}
               {view === "access" && <ConsoleAccess guildId={selectedGuild.id} />}
-              {view === "logs" && <ConsoleLogs guildId={selectedGuild.id} />}
+              {view === "logs" && <ConsoleLogs key={logsTab} guildId={selectedGuild.id} initialTab={logsTab} />}
               {view === "whitelist" && <ConsoleWhitelist guildId={selectedGuild.id} />}
               {view === "blacklist" && <ConsoleBlacklist guildId={selectedGuild.id} />}
               {view === "members" && <ConsoleMembers guildId={selectedGuild.id} />}
               {view === "commands" && <ConsoleCommands guildId={selectedGuild.id} />}
+              {view === "tools" && <ConsoleTools guildId={selectedGuild.id} />}
 
               {view === "scan" && (
                 <GuildSecurityScan

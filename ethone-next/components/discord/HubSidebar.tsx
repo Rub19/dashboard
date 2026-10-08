@@ -56,7 +56,7 @@ import {
 import type { NavigatorCategory, NavigatorModule } from "./ModuleNavigator";
 
 /** Pages de la console au format Keeper, affichées dans la console (même barre latérale). */
-export type ConsoleView = "settings" | "access" | "logs" | "whitelist" | "blacklist" | "members" | "commands";
+export type ConsoleView = "settings" | "access" | "logs" | "whitelist" | "blacklist" | "members" | "commands" | "tools";
 export type HubView = "home" | "modules" | "module" | "setup" | "scan" | ConsoleView;
 
 interface HubSidebarProps {
@@ -85,7 +85,7 @@ interface HubSidebarProps {
   onCopyGuildId?: () => void;
   copiedId?: boolean;
   /** Ouvre une page de la console (Réglages, Accès…) sans quitter la console. */
-  onOpenView?: (view: ConsoleView) => void;
+  onOpenView?: (view: ConsoleView, opts?: { logsTab?: "incidents" | "channels" }) => void;
   /** Modules actifs / total sur ce serveur (lus depuis le bot par la page). */
   activeModuleCount?: number;
   totalModuleCount?: number;
@@ -602,8 +602,12 @@ export default function HubSidebar({
 
               <button
                 type="button"
-                onClick={() => router.push(`/discord/server?guildId=${selectedGuildId}`)}
-                className="w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors cursor-pointer text-left"
+                onClick={() => (onOpenView ? onOpenView("tools") : router.push(`/discord/?guildId=${selectedGuildId}&view=tools`))}
+                aria-current={view === "tools" ? "page" : undefined}
+                className={cn(
+                  "w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-xs transition-colors cursor-pointer text-left",
+                  view === "tools" ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold" : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
+                )}
               >
                 <Sliders className="h-3.5 w-3.5 shrink-0" />
                 <span>{i18n("dTools", "Outils")}</span>
@@ -658,7 +662,7 @@ export default function HubSidebar({
             {logGap.length > 0 && (
               <button
                 type="button"
-                onClick={() => (onOpenView ? onOpenView("logs") : router.push(`/discord/logs?guildId=${selectedGuildId}&tab=routing`))}
+                onClick={() => (onOpenView ? onOpenView("logs", { logsTab: "channels" }) : router.push(`/discord/logs?guildId=${selectedGuildId}&tab=routing`))}
                 title={logGap.join(", ")}
                 className="flex items-center gap-1.5 text-[10px] text-[var(--warning)] hover:underline"
               >

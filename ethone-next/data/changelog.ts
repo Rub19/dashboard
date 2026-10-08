@@ -47433,5 +47433,58 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_80_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_80_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_80_de);
 
+const v1_55_81_fr: ChangelogEntry = {
+  version: "v1.55.81",
+  date: "2026-10-08",
+  title: "Console Discord : page Outils (captcha à l'arrivée et soutiens)",
+  items: [
+    "Captcha à l'arrivée (nouvelle fonction du bot) : le nouveau membre recopie un code affiché en image, avec tentatives, délai, et au choix expulsion, bannissement ou rien en cas d'échec.",
+    "Rôles donnés et retirés après la réussite, mention à l'arrivée, salon des logs et option pour noter les réussites.",
+    "Soutiens : Etho donne un rôle aux membres qui affichent le tag du serveur sur leur profil, et le retire s'ils l'enlèvent.",
+    "Le lien « sans salon de log » ouvre directement l'onglet « Salons de log ».",
+  ],
+};
+
+const v1_55_81_en: ChangelogEntry = {
+  version: "v1.55.81",
+  date: "2026-10-08",
+  title: "Discord console: Tools page (join captcha and supporters)",
+  items: [
+    "Join captcha (new bot feature): new members type a code shown in an image, with attempts, a time limit, and kick, ban or nothing on failure.",
+    "Roles given and removed on success, mention on join, log channel and an option to log successes.",
+    "Supporters: Etho gives a role to members who display the server tag on their profile, and removes it when they take it off.",
+    "The “no log channel” link now opens the “Log channels” tab directly.",
+  ],
+};
+
+const v1_55_81_es: ChangelogEntry = {
+  version: "v1.55.81",
+  date: "2026-10-08",
+  title: "Consola Discord: página Herramientas (captcha de llegada y apoyos)",
+  items: [
+    "Captcha de llegada (nueva función del bot): el nuevo miembro copia un código mostrado en una imagen, con intentos, plazo y expulsión, baneo o nada si falla.",
+    "Roles dados y quitados tras el éxito, mención a la llegada, canal de registros y opción para anotar los éxitos.",
+    "Apoyos: Etho da un rol a los miembros que muestran la etiqueta del servidor en su perfil y se lo quita si la retiran.",
+    "El enlace « sin canal de registros » abre directamente la pestaña « Canales de registros ».",
+  ],
+};
+
+const v1_55_81_de: ChangelogEntry = {
+  version: "v1.55.81",
+  date: "2026-10-08",
+  title: "Discord-Konsole: Seite Werkzeuge (Captcha beim Beitritt und Unterstützer)",
+  items: [
+    "Captcha beim Beitritt (neue Bot-Funktion): Neue Mitglieder tippen einen Code aus einem Bild ab, mit Versuchen, Zeitlimit und bei Fehlschlag Kick, Bann oder nichts.",
+    "Rollen werden nach Erfolg vergeben und entfernt, Erwähnung beim Beitritt, Log-Kanal und Option, Erfolge zu protokollieren.",
+    "Unterstützer: Etho vergibt eine Rolle an Mitglieder, die den Server-Tag im Profil zeigen, und entfernt sie wieder, wenn sie ihn abnehmen.",
+    "Der Link „ohne Log-Kanal“ öffnet direkt den Tab „Log-Kanäle“.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_81_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_81_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_81_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_81_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

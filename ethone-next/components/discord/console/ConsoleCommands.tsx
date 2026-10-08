@@ -1,13 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Hash, Search, X } from "@/components/icons/ph";
-import { fetchGuildRoles, type RoleOption } from "../RolePicker";
+import { Hash, Search } from "@/components/icons/ph";
 import { fetchGuildChannels, type ChannelOption } from "../ChannelPicker";
 import { SPRING_LAYOUT, SPRING_PILL } from "@/lib/ease";
 import { cn } from "@/lib/utils";
-import { ChannelAdder, ConsolePage, EmptyLine, Panel, RoleAdder, Row, Switch, useGuildApi } from "./kit";
+import { ChannelAdder, Chip, ConsolePage, EmptyLine, Panel, RoleChips, Row, Segmented, Switch, useGuildApi } from "./kit";
 
 type Rule = {
   enabled: boolean;
@@ -38,11 +37,6 @@ const WINDOWS = [
 const INPUT =
   "h-9 w-20 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-2.5 font-mono text-sm text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/70";
 
-const roleColor = (c?: string | number) => {
-  if (typeof c === "string" && c.startsWith("#")) return c;
-  const n = typeof c === "number" ? c : parseInt(String(c ?? ""), 10);
-  return n > 0 ? `#${n.toString(16).padStart(6, "0")}` : "var(--text-muted)";
-};
 
 const statusOf = (c: Cmd) => (!c.rule.enabled ? "Désactivée" : c.customized ? "Personnalisée" : "Accès d'origine");
 
@@ -55,7 +49,6 @@ export default function ConsoleCommands({ guildId }: { guildId: string }) {
   const [commands, setCommands] = useState<Cmd[] | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
   const [q, setQ] = useState("");
-  const [roles, setRoles] = useState<RoleOption[]>([]);
   const [channels, setChannels] = useState<ChannelOption[]>([]);
 
   const load = useCallback(async () => {
@@ -67,7 +60,6 @@ export default function ConsoleCommands({ guildId }: { guildId: string }) {
   }, [api]);
   useEffect(() => {
     void load();
-    fetchGuildRoles(guildId).then(setRoles);
     fetchGuildChannels(guildId).then(setChannels);
   }, [guildId, load]);
 
@@ -92,22 +84,8 @@ export default function ConsoleCommands({ guildId }: { guildId: string }) {
     return [...map.entries()];
   }, [commands, q]);
 
-  const roleName = (id: string) => roles.find((r) => r.id === id);
   const channelName = (id: string) => channels.find((c) => c.id === id)?.name ?? id;
 
-  const roleChips = (ids: string[], field: "allowedRoles" | "deniedRoles") => (
-    <div className="flex flex-wrap items-center gap-1.5">
-      {ids.map((id) => {
-        const r = roleName(id);
-        return (
-          <Chip key={id} onRemove={() => save({ [field]: ids.filter((x) => x !== id) })} label={r?.name ?? id}>
-            <span className="h-2 w-2 rounded-full" style={{ background: roleColor(r?.color) }} />
-          </Chip>
-        );
-      })}
-      <RoleAdder guildId={guildId} label="Ajouter un rôle" excludeIds={ids} onPick={(r) => save({ [field]: [...ids, r.id] })} />
-    </div>
-  );
 
   return (
     <ConsolePage title="Commandes">
@@ -194,37 +172,23 @@ export default function ConsoleCommands({ guildId }: { guildId: string }) {
 
                 <Panel title="Qui peut l'utiliser">
                   <Row label="Accès" hint="« Rôles choisis » réserve la commande à certains rôles, en plus des droits d'origine.">
-                    <div role="radiogroup" className="inline-flex rounded-lg border border-[var(--panel-border)] p-0.5">
-                      {(
-                        [
-                          ["origin", "Comme d'origine"],
-                          ["roles", "Rôles choisis"],
-                        ] as const
-                      ).map(([id, label]) => (
-                        <button
-                          key={id}
-                          type="button"
-                          role="radio"
-                          aria-checked={cmd.rule.access === id}
-                          onClick={() => cmd.rule.access !== id && save({ access: id })}
-                          className={cn(
-                            "relative rounded-md px-3 py-1.5 text-xs font-semibold transition-colors",
-                            cmd.rule.access === id ? "text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-                          )}
-                        >
-                          {cmd.rule.access === id && <motion.span layoutId="cmd-access" transition={SPRING_PILL} className="absolute inset-0 rounded-md bg-[var(--surface-hover)]" />}
-                          <span className="relative">{label}</span>
-                        </button>
-                      ))}
-                    </div>
+                    <Segmented
+                      label="Accès"
+                      value={cmd.rule.access}
+                      options={[
+                        ["origin", "Comme d'origine"],
+                        ["roles", "Rôles choisis"],
+                      ]}
+                      onChange={(v) => save({ access: v })}
+                    />
                   </Row>
                   {cmd.rule.access === "roles" && (
                     <Row label="Rôles autorisés" hint={cmd.rule.allowedRoles.length ? undefined : "Aucun rôle : seuls les owners peuvent l'utiliser."}>
-                      {roleChips(cmd.rule.allowedRoles, "allowedRoles")}
+                      <RoleChips guildId={guildId} addLabel="Ajouter un rôle" ids={cmd.rule.allowedRoles} onChange={(ids) => save({ allowedRoles: ids })} />
                     </Row>
                   )}
                   <Row label="Rôles interdits" hint="Les membres qui ont un de ces rôles ne peuvent pas l'utiliser.">
-                    {roleChips(cmd.rule.deniedRoles, "deniedRoles")}
+                    <RoleChips guildId={guildId} addLabel="Ajouter un rôle" ids={cmd.rule.deniedRoles} onChange={(ids) => save({ deniedRoles: ids })} />
                   </Row>
                   <Row label="Salons autorisés" hint="Vide : partout. Les fils suivent leur salon.">
                     <div className="flex flex-wrap items-center gap-1.5">
@@ -293,17 +257,6 @@ export default function ConsoleCommands({ guildId }: { guildId: string }) {
   );
 }
 
-function Chip({ label, onRemove, children }: { label: string; onRemove: () => void; children?: ReactNode }) {
-  return (
-    <span className="flex items-center gap-1.5 rounded-lg border border-[var(--panel-border)] py-1 pl-2 pr-1 text-xs text-[var(--text-primary)]">
-      {children}
-      <span className="max-w-40 truncate">{label}</span>
-      <button type="button" onClick={onRemove} aria-label={`Retirer ${label}`} className="rounded p-0.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover)] hover:text-[var(--danger)]">
-        <X className="h-3 w-3" />
-      </button>
-    </span>
-  );
-}
 
 /** Champ numérique enregistré à la sortie du champ (ou Entrée), borné. */
 function NumberField({ value, min, max, suffix, onCommit }: { value: number; min: number; max: number; suffix?: string; onCommit: (n: number) => void }) {

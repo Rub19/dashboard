@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.87 — 2026-10-08
+
+**Console Discord : lien direct vers un module**
+
+- Un lien du type /discord?guildId=…&module=leveling ouvre directement le module dans la console.
+
 ## v1.55.86 — 2026-10-08
 
 **Console Discord : motion design harmonisé**

@@ -1,5 +1,13 @@
 [
   {
+    "version": "v1.55.87",
+    "date": "2026-10-08",
+    "title": "Console Discord : lien direct vers un module",
+    "items": [
+      "Un lien du type /discord?guildId=…&module=leveling ouvre directement le module dans la console."
+    ]
+  },
+  {
     "version": "v1.55.86",
     "date": "2026-10-08",
     "title": "Console Discord : motion design harmonisé",
@@ -648,21 +656,6 @@
       "Alimentation continue du jackpot : prélèvement de 1% à 5% par mise réelle reversé directement dans la cagnotte progressive commune en Ethone Coins.",
       "Recharges rapides intégrées : réclamation du bonus quotidien (/daily) et exécution du job (/work) directement depuis le centre de jeux.",
       "Passerelle croisée et panneau de contrôle dans les paramètres du casino avec redirection directe vers la gestion économique (/discord/economy)."
-    ]
-  },
-  {
-    "version": "v1.55.25",
-    "date": "2026-10-05",
-    "title": "Nouveau Module Bot : Mini-Jeux & Casino Communautaire (Blackjack, Roulette, Dés PvP & Jackpot)",
-    "items": [
-      "Nouveau module Mini-Jeux & Casino (/discord/games) avec interface Apple Sonoma interactive et synthétiseur audio Web Audio sans latence.",
-      "Table de Blackjack 21 VIP : jeu interactif en direct avec calcul de score dynamique, options Tirer (Hit), Rester (Stand) et Doubler (Double), ratio Blackjack naturel 3:2.",
-      "Roulette Royale : roue animée et tapis complet avec paris extérieurs (Rouge/Noir 2x, Pair/Impair 2x) et numéros pleins (36x).",
-      "Arène de Duels de dés PvP : affrontements 2d6 entre membres du serveur avec boutons d'acceptation/refus Discord et cagnotte en jeu.",
-      "Cagnotte Jackpot Progressive : prélèvement paramétrable sur chaque mise avec déclenchement automatique sur 21 naturel ou triple 7.",
-      "Quêtes communautaires hebdomadaires récompensant l'activité avec des crédits d'économie et de l'expérience de leveling.",
-      "Simulateur de live interactif pour les streamers (/discord/streamers) : test 1-clic avec génération d'alertes en direct et attribution de rôle @En Live.",
-      "Nouvelles commandes slash : /blackjack, /roulette, /dice, /casino (jackpot | daily | top | stats) intégrées au /help."
     ]
   }
 ]

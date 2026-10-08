@@ -47727,5 +47727,46 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_86_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_86_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_86_de);
 
+const v1_55_87_fr: ChangelogEntry = {
+  version: "v1.55.87",
+  date: "2026-10-08",
+  title: "Console Discord : lien direct vers un module",
+  items: [
+    "Un lien du type /discord?guildId=…&module=leveling ouvre directement le module dans la console.",
+  ],
+};
+
+const v1_55_87_en: ChangelogEntry = {
+  version: "v1.55.87",
+  date: "2026-10-08",
+  title: "Discord console: direct link to a module",
+  items: [
+    "A link like /discord?guildId=…&module=leveling opens the module inside the console directly.",
+  ],
+};
+
+const v1_55_87_es: ChangelogEntry = {
+  version: "v1.55.87",
+  date: "2026-10-08",
+  title: "Consola Discord: enlace directo a un módulo",
+  items: [
+    "Un enlace del tipo /discord?guildId=…&module=leveling abre directamente el módulo dentro de la consola.",
+  ],
+};
+
+const v1_55_87_de: ChangelogEntry = {
+  version: "v1.55.87",
+  date: "2026-10-08",
+  title: "Discord-Konsole: Direktlink zu einem Modul",
+  items: [
+    "Ein Link wie /discord?guildId=…&module=leveling öffnet das Modul direkt in der Konsole.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_87_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_87_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_87_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_87_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

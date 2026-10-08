@@ -724,6 +724,9 @@ export default function DiscordDashboardPage() {
         setShowScan(true);
       } else if (["settings", "access", "logs", "whitelist", "blacklist", "members", "commands", "tools", "protections"].includes(sp.get("view") ?? "")) {
         setConsoleView(sp.get("view") as ConsoleView);
+      } else if (sp.get("module") && INLINE_MODULE_IDS.has(sp.get("module")!)) {
+        // Lien direct vers un module affiché dans la console (?module=leveling).
+        setActiveModule(sp.get("module") as ModuleType);
       }
     } catch {}
     try {

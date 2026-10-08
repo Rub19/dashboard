@@ -14,6 +14,24 @@ export const GuildModulesSchema = z.object({
 
 export type GuildModules = z.infer<typeof GuildModulesSchema>;
 
+/** Règle d'une commande (page « Commandes » de la console). Valeurs par défaut = fonctionnement d'origine. */
+export const CommandRuleSchema = z.object({
+  enabled: z.boolean().default(true),
+  /** « origin » = accès d'origine ; « roles » = en plus, réservé aux membres qui ont un des allowedRoles. */
+  access: z.enum(['origin', 'roles']).default('origin'),
+  allowedRoles: z.array(z.string()).max(25).default([]),
+  deniedRoles: z.array(z.string()).max(25).default([]),
+  /** Vide = partout. */
+  allowedChannels: z.array(z.string()).max(25).default([]),
+  /** Le propriétaire et les owners Etho ignorent ces règles. */
+  ownersBypass: z.boolean().default(true),
+  cooldownSeconds: z.number().int().min(0).max(86400).default(0),
+  /** 0 = illimité. */
+  maxUses: z.number().int().min(0).max(1000).default(0),
+  maxUsesWindowMinutes: z.number().int().min(1).max(10080).default(60),
+});
+export type CommandRule = z.infer<typeof CommandRuleSchema>;
+
 export const GuildConfigSchema = z.object({
   // Identifiant Discord
   guildId: z.string(),
@@ -85,6 +103,7 @@ export const GuildConfigSchema = z.object({
   blacklist: z
     .array(z.object({ userId: z.string(), reason: z.string().default(''), addedBy: z.string().nullable().default(null), addedAt: z.string() }))
     .default([]),
+  commandRules: z.record(z.string(), CommandRuleSchema).default({}),
 });
 
 export type GuildConfig = z.infer<typeof GuildConfigSchema>;
@@ -138,6 +157,7 @@ export const defaultGuildConfig: Omit<GuildConfig, 'guildId'> = {
   ethoOwners: [],
   ownerDmAlerts: false,
   blacklist: [],
+  commandRules: {},
 };
 
 /**

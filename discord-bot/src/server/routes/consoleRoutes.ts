@@ -6,7 +6,10 @@ import { addToBlacklist, getBlacklist, isBlacklisted, removeFromBlacklist } from
 import { guildConfigService } from '../../services/guildConfigService.js';
 import { raidModeService } from '../../modules/antiRaid/services/raidModeService.js';
 import { handleRouteError } from '../utils/routeError.js';
-import { isModuleEnabled } from '../../services/moduleRegistry.js';
+import { isModuleEnabled, moduleForCommand } from '../../services/moduleRegistry.js';
+import { commandRegistry } from '../../handlers/commandHandler.js';
+import { CommandRuleSchema } from '../../types/guildConfig.js';
+import { DEFAULT_RULE } from '../../services/commandRulesService.js';
 
 /**
  * Pages « Réglages » et « Accès » de la console (format Keeper). Monté derrière createGuildAuthMiddleware :
@@ -172,6 +175,65 @@ export function createConsoleRouter(client: Client): Router {
     res.json({ prefix: conf.prefix, systemChannelId: conf.systemChannelId ?? null, ownerDmAlerts: Boolean(conf.ownerDmAlerts) });
   });
 
+
+  // --- Commandes ------------------------------------------------------------------------------------------------
+  router.get('/commands', (req: Request, res: Response) => {
+    const guild = guildOf(req);
+    if (!guild) {
+      res.status(404).json({ error: 'Serveur introuvable pour le bot.' });
+      return;
+    }
+    const rules = guildConfigService.getConfig(guild.id).commandRules ?? {};
+    const commands = commandRegistry
+      .getAllCommands()
+      .map((c) => {
+        const mod = moduleForCommand(c.name);
+        return {
+          name: c.name,
+          description: c.description,
+          category: c.category ?? 'Général',
+          module: mod ? { id: mod.id, label: mod.label, enabled: isModuleEnabled(guild.id, mod.id) } : null,
+          rule: rules[c.name] ?? DEFAULT_RULE,
+          customized: Boolean(rules[c.name]),
+        };
+      })
+      .sort((a, b) => a.category.localeCompare(b.category, 'fr') || a.name.localeCompare(b.name));
+    res.json({ commands, defaults: DEFAULT_RULE });
+  });
+
+  router.patch('/commands/:name', (req: Request, res: Response) => {
+    const guild = guildOf(req);
+    const name = String(req.params.name).toLowerCase();
+    if (!guild) {
+      res.status(404).json({ error: 'Serveur introuvable pour le bot.' });
+      return;
+    }
+    if (!commandRegistry.getAllCommands().some((c) => c.name === name)) {
+      res.status(404).json({ error: 'Commande inconnue.' });
+      return;
+    }
+    const rules = { ...(guildConfigService.getConfig(guild.id).commandRules ?? {}) };
+    const body = { ...(req.body ?? {}) };
+    for (const k of ['allowedRoles', 'deniedRoles', 'allowedChannels'] as const) {
+      if (body[k] !== undefined) {
+        if (!Array.isArray(body[k]) || body[k].some((id: unknown) => typeof id !== 'string' || !SNOWFLAKE.test(id))) {
+          res.status(400).json({ error: 'Identifiants invalides.' });
+          return;
+        }
+        body[k] = [...new Set(body[k] as string[])];
+      }
+    }
+    const parsed = CommandRuleSchema.safeParse({ ...(rules[name] ?? DEFAULT_RULE), ...body });
+    if (!parsed.success) {
+      res.status(400).json({ error: 'Règle invalide : ' + parsed.error.issues.map((i) => i.path.join('.')).join(', ') });
+      return;
+    }
+    // Revenue aux valeurs d'origine : on retire la règle plutôt que de stocker un doublon des valeurs par défaut.
+    if (JSON.stringify(parsed.data) === JSON.stringify(DEFAULT_RULE)) delete rules[name];
+    else rules[name] = parsed.data;
+    guildConfigService.updateConfig(guild.id, { commandRules: rules }, { source: 'DASHBOARD', actorId: req.user?.id });
+    res.json({ rule: rules[name] ?? DEFAULT_RULE, customized: Boolean(rules[name]) });
+  });
 
   // --- Whitelist -------------------------------------------------------------------------------------------------
   // Deux listes de confiance existent : celle de l'anti-raid et celle de l'anti-nuke. « Globale » = présent dans les

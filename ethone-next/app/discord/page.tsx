@@ -75,6 +75,7 @@ import ConsoleLogs from "@/components/discord/console/ConsoleLogs";
 import ConsoleWhitelist from "@/components/discord/console/ConsoleWhitelist";
 import ConsoleBlacklist from "@/components/discord/console/ConsoleBlacklist";
 import ConsoleMembers from "@/components/discord/console/ConsoleMembers";
+import ConsoleCommands from "@/components/discord/console/ConsoleCommands";
 import GuildOverviewScreen from "@/components/discord/GuildOverviewScreen";
 import GuildAssistedSetup from "@/components/discord/GuildAssistedSetup";
 import GuildSecurityScan from "@/components/discord/GuildSecurityScan";
@@ -761,7 +762,7 @@ export default function DiscordDashboardPage() {
         setShowSetup(true);
       } else if (sp.get("view") === "scan" || sp.get("tab") === "scan") {
         setShowScan(true);
-      } else if (["settings", "access", "logs", "whitelist", "blacklist", "members"].includes(sp.get("view") ?? "")) {
+      } else if (["settings", "access", "logs", "whitelist", "blacklist", "members", "commands"].includes(sp.get("view") ?? "")) {
         setConsoleView(sp.get("view") as ConsoleView);
       }
     } catch {}
@@ -1344,6 +1345,8 @@ export default function DiscordDashboardPage() {
                     ? i18n("dBlacklist", "Blacklist")
                     : view === "members"
                     ? i18n("dRolesAndMembers", "Rôles et membres")
+                    : view === "commands"
+                    ? i18n("dCommands", "Commandes")
                     : view === "scan"
                     ? i18n("dSecurityScan", "Scan de sécurité")
                     : view === "setup"
@@ -1433,6 +1436,7 @@ export default function DiscordDashboardPage() {
               {view === "whitelist" && <ConsoleWhitelist guildId={selectedGuild.id} />}
               {view === "blacklist" && <ConsoleBlacklist guildId={selectedGuild.id} />}
               {view === "members" && <ConsoleMembers guildId={selectedGuild.id} />}
+              {view === "commands" && <ConsoleCommands guildId={selectedGuild.id} />}
 
               {view === "scan" && (
                 <GuildSecurityScan

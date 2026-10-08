@@ -3,6 +3,7 @@ import { commandRegistry } from '../handlers/commandHandler.js';
 import { guildConfigService } from '../services/guildConfigService.js';
 import { statsService } from '../services/statsService.js';
 import { cooldownService } from '../services/cooldownService.js';
+import { checkCommandRule } from '../services/commandRulesService.js';
 import { CommandContext } from '../types/command.js';
 import { autoModService } from '../modules/automod/services/autoModService.js';
 import { levelingService } from '../modules/leveling/services/levelingService.js';
@@ -202,6 +203,22 @@ export async function onMessageCreate(message: Message) {
   if (disabledEmbeds) {
     await message.reply({ embeds: disabledEmbeds }).catch(() => null);
     return;
+  }
+  // Règles de la page « Commandes » de la console (désactivation, rôles, salons, limites par membre)
+  if (message.guild) {
+    const denied = checkCommandRule({
+      guildId: message.guild.id,
+      guildOwnerId: message.guild.ownerId,
+      commandName: command.name,
+      userId: message.author.id,
+      channelIds: [message.channelId, message.channel.isThread() ? message.channel.parentId : null].filter((x): x is string => Boolean(x)),
+      roleIds: Array.from(message.member?.roles.cache.keys() ?? []),
+    });
+    if (denied) {
+      const notice = await message.reply({ embeds: [noticeEmbed('warning', denied)] }).catch(() => null);
+      if (notice) setTimeout(() => notice.delete().catch(() => null), 6000);
+      return;
+    }
   }
 
   const cooldownDuration = guildConfig.commandCooldown || 0;

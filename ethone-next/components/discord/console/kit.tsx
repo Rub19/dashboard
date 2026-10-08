@@ -1,11 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type Dispatch, type ReactNode, type SetStateAction } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { Loader2, Plus, Search } from "@/components/icons/ph";
+import { Hash, Loader2, Plus, Search, Volume2 } from "@/components/icons/ph";
 import { useToast } from "@/components/ToastProvider";
 import { SPRING_LAYOUT, SPRING_PRESS } from "@/lib/ease";
 import { cn } from "@/lib/utils";
+import { fetchGuildRoles, type RoleOption } from "../RolePicker";
+import { fetchGuildChannels, type ChannelOption } from "../ChannelPicker";
 
 /** Boîte à outils des pages de la console au format Keeper : page, blocs, lignes de réglage, interrupteur, sélecteurs. */
 
@@ -148,29 +150,29 @@ export function GhostButton({ children, onClick, disabled }: { children: ReactNo
 
 export type MemberHit = { id: string; username: string; displayName: string; avatarUrl: string; bot: boolean };
 
-/** « + Ajouter » : recherche un membre du serveur (au moins 2 lettres) ou accepte un identifiant collé. */
-export function MemberPicker({
-  guildId,
-  label = "Ajouter",
-  onPick,
-  excludeIds = [],
+/** Bouton « + … » qui ouvre une recherche en popover (format Keeper), partagé par les sélecteurs de membre et de rôle. */
+function SearchPopover({
+  label,
   disabled,
-  humansOnly,
+  placeholder,
+  loading,
+  q,
+  setQ,
+  open,
+  setOpen,
+  children,
 }: {
-  guildId: string;
-  label?: string;
-  onPick: (m: MemberHit) => void;
-  excludeIds?: string[];
+  label: string;
   disabled?: boolean;
-  humansOnly?: boolean;
+  placeholder: string;
+  loading?: boolean;
+  q: string;
+  setQ: (v: string) => void;
+  open: boolean;
+  setOpen: Dispatch<SetStateAction<boolean>>;
+  children: ReactNode;
 }) {
-  const api = useGuildApi(guildId);
-  const [open, setOpen] = useState(false);
-  const [q, setQ] = useState("");
-  const [hits, setHits] = useState<MemberHit[]>([]);
-  const [loading, setLoading] = useState(false);
   const boxRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     if (!open) return;
     const onDown = (e: MouseEvent) => {
@@ -178,22 +180,7 @@ export function MemberPicker({
     };
     document.addEventListener("mousedown", onDown);
     return () => document.removeEventListener("mousedown", onDown);
-  }, [open]);
-
-  useEffect(() => {
-    const query = q.trim();
-    if (!open || query.length < 2) {
-      setHits([]);
-      return;
-    }
-    setLoading(true);
-    const t = window.setTimeout(async () => {
-      const data = await api<{ members: MemberHit[] }>(`/console/members/search?q=${encodeURIComponent(query)}`, { silent: true });
-      setHits((data?.members ?? []).filter((m) => !excludeIds.includes(m.id) && (!humansOnly || !m.bot)));
-      setLoading(false);
-    }, 250);
-    return () => window.clearTimeout(t);
-  }, [api, excludeIds, humansOnly, open, q]);
+  }, [open, setOpen]);
 
   return (
     <div ref={boxRef} className="relative">
@@ -218,46 +205,217 @@ export function MemberPicker({
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
                 onKeyDown={(e) => e.key === "Escape" && setOpen(false)}
-                placeholder="Rechercher un membre ou coller un ID"
-                aria-label="Rechercher un membre ou coller un ID"
+                placeholder={placeholder}
+                aria-label={placeholder}
                 className="w-full bg-transparent text-[13px] text-[var(--text-primary)] outline-none placeholder:text-[var(--text-muted)]"
               />
               {loading && <Loader2 className="h-3.5 w-3.5 animate-spin text-[var(--text-muted)]" />}
             </div>
-            <ul className="max-h-72 overflow-y-auto p-1.5">
-              {q.trim().length < 2 ? (
-                <li className="px-3 py-4 text-center text-xs text-[var(--text-muted)]">Tape au moins deux lettres ou colle un identifiant.</li>
-              ) : !loading && hits.length === 0 ? (
-                <li className="px-3 py-4 text-center text-xs text-[var(--text-muted)]">Aucun membre trouvé.</li>
-              ) : (
-                hits.map((m) => (
-                  <li key={m.id}>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        onPick(m);
-                        setOpen(false);
-                        setQ("");
-                      }}
-                      className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left transition-colors hover:bg-[var(--text-primary)]/[0.07]"
-                    >
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={m.avatarUrl} alt="" width={28} height={28} className="h-7 w-7 shrink-0 rounded-full" />
-                      <span className="min-w-0 flex-1">
-                        <span className="block truncate text-[13px] font-semibold text-[var(--text-primary)]">{m.displayName}</span>
-                        <span className="block truncate text-[11px] text-[var(--text-muted)]">
-                          @{m.username} · ID {m.id}
-                        </span>
-                      </span>
-                      {m.bot && <span className="shrink-0 rounded-md bg-[var(--surface-hover)] px-1.5 py-0.5 text-[10px] font-semibold text-[var(--text-muted)]">Bot</span>}
-                    </button>
-                  </li>
-                ))
-              )}
-            </ul>
+            <ul className="max-h-72 overflow-y-auto p-1.5">{children}</ul>
           </motion.div>
         )}
       </AnimatePresence>
     </div>
+  );
+}
+
+const PICK_ROW = "flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left transition-colors hover:bg-[var(--text-primary)]/[0.07]";
+const PickNote = ({ children }: { children: ReactNode }) => <li className="px-3 py-4 text-center text-xs text-[var(--text-muted)]">{children}</li>;
+
+/** « + Ajouter » : recherche un membre du serveur (au moins 2 lettres) ou accepte un identifiant collé. */
+export function MemberPicker({
+  guildId,
+  label = "Ajouter",
+  onPick,
+  excludeIds = [],
+  disabled,
+  humansOnly,
+}: {
+  guildId: string;
+  label?: string;
+  onPick: (m: MemberHit) => void;
+  excludeIds?: string[];
+  disabled?: boolean;
+  humansOnly?: boolean;
+}) {
+  const api = useGuildApi(guildId);
+  const [open, setOpen] = useState(false);
+  const [q, setQ] = useState("");
+  const [hits, setHits] = useState<MemberHit[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const query = q.trim();
+    if (!open || query.length < 2) {
+      setHits([]);
+      return;
+    }
+    setLoading(true);
+    const t = window.setTimeout(async () => {
+      const data = await api<{ members: MemberHit[] }>(`/console/members/search?q=${encodeURIComponent(query)}`, { silent: true });
+      setHits((data?.members ?? []).filter((m) => !excludeIds.includes(m.id) && (!humansOnly || !m.bot)));
+      setLoading(false);
+    }, 250);
+    return () => window.clearTimeout(t);
+  }, [api, excludeIds, humansOnly, open, q]);
+
+  return (
+    <SearchPopover label={label} disabled={disabled} placeholder="Rechercher un membre ou coller un ID" loading={loading} q={q} setQ={setQ} open={open} setOpen={setOpen}>
+      {q.trim().length < 2 ? (
+        <PickNote>Tape au moins deux lettres ou colle un identifiant.</PickNote>
+      ) : !loading && hits.length === 0 ? (
+        <PickNote>Aucun membre trouvé.</PickNote>
+      ) : (
+        hits.map((m) => (
+          <li key={m.id}>
+            <button
+              type="button"
+              onClick={() => {
+                onPick(m);
+                setOpen(false);
+                setQ("");
+              }}
+              className={PICK_ROW}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={m.avatarUrl} alt="" width={28} height={28} className="h-7 w-7 shrink-0 rounded-full" />
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-[13px] font-semibold text-[var(--text-primary)]">{m.displayName}</span>
+                <span className="block truncate text-[11px] text-[var(--text-muted)]">
+                  @{m.username} · ID {m.id}
+                </span>
+              </span>
+              {m.bot && <span className="shrink-0 rounded-md bg-[var(--surface-hover)] px-1.5 py-0.5 text-[10px] font-semibold text-[var(--text-muted)]">Bot</span>}
+            </button>
+          </li>
+        ))
+      )}
+    </SearchPopover>
+  );
+}
+
+const roleColor = (c?: string | number) => {
+  if (typeof c === "string" && c.startsWith("#")) return c;
+  const n = typeof c === "number" ? c : parseInt(String(c ?? ""), 10);
+  return n > 0 ? `#${n.toString(16).padStart(6, "0")}` : "var(--text-muted)";
+};
+
+/** « + Rôle » : liste filtrable des rôles du serveur (cache partagé avec les autres sélecteurs de rôle). */
+export function RoleAdder({
+  guildId,
+  onPick,
+  excludeIds = [],
+  disabled,
+  label = "Rôle",
+}: {
+  guildId: string;
+  onPick: (r: RoleOption) => void;
+  excludeIds?: string[];
+  disabled?: boolean;
+  label?: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const [q, setQ] = useState("");
+  const [roles, setRoles] = useState<RoleOption[] | null>(null);
+
+  useEffect(() => {
+    if (!open || roles) return;
+    let cancelled = false;
+    fetchGuildRoles(guildId).then((r) => {
+      if (!cancelled) setRoles(r);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [guildId, open, roles]);
+
+  const query = q.trim().toLowerCase();
+  const shown = (roles ?? []).filter((r) => !excludeIds.includes(r.id) && (!query || r.name.toLowerCase().includes(query) || r.id === query));
+
+  return (
+    <SearchPopover label={label} disabled={disabled} placeholder="Rechercher un rôle ou coller un ID" loading={open && !roles} q={q} setQ={setQ} open={open} setOpen={setOpen}>
+      {!roles ? null : shown.length === 0 ? (
+        <PickNote>Aucun rôle trouvé.</PickNote>
+      ) : (
+        shown.map((r) => (
+          <li key={r.id}>
+            <button
+              type="button"
+              onClick={() => {
+                onPick(r);
+                setOpen(false);
+                setQ("");
+              }}
+              className={PICK_ROW}
+            >
+              <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: roleColor(r.color) }} />
+              <span className="min-w-0 flex-1 truncate text-[13px] font-medium text-[var(--text-primary)]">{r.name}</span>
+            </button>
+          </li>
+        ))
+      )}
+    </SearchPopover>
+  );
+}
+
+/** « + Salon » : salons textuels et vocaux du serveur (hors catégories et fils), filtrables par nom. */
+export function ChannelAdder({
+  guildId,
+  onPick,
+  excludeIds = [],
+  disabled,
+  label = "Salon",
+}: {
+  guildId: string;
+  onPick: (c: ChannelOption) => void;
+  excludeIds?: string[];
+  disabled?: boolean;
+  label?: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const [q, setQ] = useState("");
+  const [channels, setChannels] = useState<ChannelOption[] | null>(null);
+
+  useEffect(() => {
+    if (!open || channels) return;
+    let cancelled = false;
+    fetchGuildChannels(guildId).then((c) => {
+      if (!cancelled) setChannels(c.filter((x) => x.type !== 4 && x.type !== 10 && x.type !== 11 && x.type !== 12));
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [guildId, open, channels]);
+
+  const query = q.trim().toLowerCase();
+  const shown = (channels ?? []).filter((c) => !excludeIds.includes(c.id) && (!query || c.name.toLowerCase().includes(query) || c.id === query));
+
+  return (
+    <SearchPopover label={label} disabled={disabled} placeholder="Rechercher un salon ou coller un ID" loading={open && !channels} q={q} setQ={setQ} open={open} setOpen={setOpen}>
+      {!channels ? null : shown.length === 0 ? (
+        <PickNote>Aucun salon trouvé.</PickNote>
+      ) : (
+        shown.map((c) => (
+          <li key={c.id}>
+            <button
+              type="button"
+              onClick={() => {
+                onPick(c);
+                setOpen(false);
+                setQ("");
+              }}
+              className={PICK_ROW}
+            >
+              {c.type === 2 || c.type === 13 ? (
+                <Volume2 className="h-3.5 w-3.5 shrink-0 text-[var(--text-muted)]" />
+              ) : (
+                <Hash className="h-3.5 w-3.5 shrink-0 text-[var(--text-muted)]" />
+              )}
+              <span className="min-w-0 flex-1 truncate text-[13px] font-medium text-[var(--text-primary)]">{c.name}</span>
+            </button>
+          </li>
+        ))
+      )}
+    </SearchPopover>
   );
 }

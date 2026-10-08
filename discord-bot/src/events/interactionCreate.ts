@@ -7,6 +7,7 @@ import {
   handleSettingsSelectMenu,
 } from '../handlers/settingsInteractionHandler.js';
 import { cooldownService } from '../services/cooldownService.js';
+import { checkCommandRule } from '../services/commandRulesService.js';
 import { buildPingMessage } from '../commands/general/ping.js';
 import { handleTicketButton } from '../modules/tickets/interactions/ticketButtonHandler.js';
 import { handleTicketModal } from '../modules/tickets/interactions/ticketModalHandler.js';
@@ -362,6 +363,22 @@ export async function onInteractionCreate(interaction: Interaction) {
   if (disabledEmbeds) {
     await interaction.reply({ embeds: disabledEmbeds, flags: MessageFlags.Ephemeral });
     return;
+  }
+  // Règles de la page « Commandes » de la console (désactivation, rôles, salons, limites par membre)
+  if (interaction.guild) {
+    const ch = interaction.channel;
+    const denied = checkCommandRule({
+      guildId: interaction.guild.id,
+      guildOwnerId: interaction.guild.ownerId,
+      commandName: command.name,
+      userId: interaction.user.id,
+      channelIds: [interaction.channelId, ch?.isThread() ? ch.parentId : null].filter((x): x is string => Boolean(x)),
+      roleIds: interaction.member && 'roles' in interaction.member ? Array.from((interaction.member.roles as any).cache?.keys() ?? []) : [],
+    });
+    if (denied) {
+      await interaction.reply({ embeds: [noticeEmbed('warning', denied)], flags: MessageFlags.Ephemeral });
+      return;
+    }
   }
   const cooldownDuration = guildConfig.commandCooldown || 0;
   const { onCooldown, remainingSeconds } = cooldownService.checkAndApply(

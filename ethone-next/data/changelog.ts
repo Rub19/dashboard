@@ -47380,5 +47380,58 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_79_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_79_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_79_de);
 
+const v1_55_80_fr: ChangelogEntry = {
+  version: "v1.55.80",
+  date: "2026-10-08",
+  title: "Console Discord : page Commandes façon Keeper",
+  items: [
+    "Commandes (nouvelle page) : chaque commande d'Etho peut être désactivée, réservée à certains rôles, interdite à d'autres ou limitée à des salons précis.",
+    "Limites par membre : délai entre deux utilisations et nombre d'utilisations par période (10 min, heure, jour ou semaine).",
+    "Les règles s'appliquent aux commandes slash comme au préfixe, en plus des droits d'origine ; le propriétaire et les owners Etho peuvent les ignorer.",
+    "Whitelist : nouveaux boutons « + Rôle » et « + Membre » avec recherche, à la place de l'ancienne liste déroulante.",
+  ],
+};
+
+const v1_55_80_en: ChangelogEntry = {
+  version: "v1.55.80",
+  date: "2026-10-08",
+  title: "Discord console: Keeper-style Commands page",
+  items: [
+    "Commands (new page): each Etho command can be turned off, restricted to some roles, forbidden to others or limited to specific channels.",
+    "Per-member limits: cooldown between uses and number of uses per period (10 min, hour, day or week).",
+    "Rules apply to slash and prefix commands, on top of the original permissions; the owner and Etho owners can bypass them.",
+    "Whitelist: new searchable “+ Role” and “+ Member” buttons replace the old dropdown.",
+  ],
+};
+
+const v1_55_80_es: ChangelogEntry = {
+  version: "v1.55.80",
+  date: "2026-10-08",
+  title: "Consola Discord: página Comandos al estilo Keeper",
+  items: [
+    "Comandos (nueva página): cada comando de Etho puede desactivarse, reservarse a ciertos roles, prohibirse a otros o limitarse a canales concretos.",
+    "Límites por miembro: espera entre dos usos y número de usos por periodo (10 min, hora, día o semana).",
+    "Las reglas se aplican a los comandos slash y con prefijo, además de los permisos de origen; el propietario y los owners de Etho pueden ignorarlas.",
+    "Whitelist: nuevos botones « + Rol » y « + Miembro » con búsqueda, en lugar de la antigua lista desplegable.",
+  ],
+};
+
+const v1_55_80_de: ChangelogEntry = {
+  version: "v1.55.80",
+  date: "2026-10-08",
+  title: "Discord-Konsole: Befehle-Seite im Keeper-Stil",
+  items: [
+    "Befehle (neue Seite): Jeder Etho-Befehl kann deaktiviert, auf bestimmte Rollen beschränkt, anderen verboten oder auf bestimmte Kanäle begrenzt werden.",
+    "Limits pro Mitglied: Wartezeit zwischen zwei Nutzungen und Anzahl Nutzungen pro Zeitraum (10 Min., Stunde, Tag oder Woche).",
+    "Die Regeln gelten für Slash- und Präfix-Befehle zusätzlich zu den ursprünglichen Rechten; der Eigentümer und die Etho-Owner können sie umgehen.",
+    "Whitelist: neue durchsuchbare Schaltflächen „+ Rolle“ und „+ Mitglied“ statt der alten Auswahlliste.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_80_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_80_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_80_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_80_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

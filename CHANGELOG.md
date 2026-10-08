@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.80 — 2026-10-08
+
+**Console Discord : page Commandes façon Keeper**
+
+- Commandes (nouvelle page) : chaque commande d'Etho peut être désactivée, réservée à certains rôles, interdite à d'autres ou limitée à des salons précis.
+- Limites par membre : délai entre deux utilisations et nombre d'utilisations par période (10 min, heure, jour ou semaine).
+- Les règles s'appliquent aux commandes slash comme au préfixe, en plus des droits d'origine ; le propriétaire et les owners Etho peuvent les ignorer.
+- Whitelist : nouveaux boutons « + Rôle » et « + Membre » avec recherche, à la place de l'ancienne liste déroulante.
+
 ## v1.55.79 — 2026-10-08
 
 **Console Discord : Whitelist, Blacklist et Rôles et membres façon Keeper**

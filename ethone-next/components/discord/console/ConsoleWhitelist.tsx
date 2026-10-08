@@ -3,9 +3,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Trash2 } from "@/components/icons/ph";
-import RolePicker from "../RolePicker";
+
 import { SPRING_LAYOUT } from "@/lib/ease";
-import { ConsolePage, EmptyLine, MemberPicker, Panel, useGuildApi } from "./kit";
+import { ConsolePage, EmptyLine, MemberPicker, Panel, RoleAdder, useGuildApi } from "./kit";
+
 
 type Entry = { id: string; kind: "user" | "role"; name: string; color: string | null; avatarUrl: string | null; bot: boolean };
 type Scope = "global" | "anti-raid" | "anti-nuke";
@@ -80,10 +81,8 @@ export default function ConsoleWhitelist({ guildId }: { guildId: string }) {
 
   const adders = (scope: Scope) => (
     <div className="flex items-center gap-2">
-      <div className="w-40">
-        <RolePicker guildId={guildId} value="" onChange={(id) => id && add(id, "role", scope)} placeholder="+ Rôle" size="sm" />
-      </div>
-      <MemberPicker guildId={guildId} excludeIds={allIds} onPick={(m) => add(m.id, "user", scope)} />
+      <RoleAdder guildId={guildId} excludeIds={allIds} onPick={(r) => add(r.id, "role", scope)} />
+      <MemberPicker guildId={guildId} label="Membre" excludeIds={allIds} onPick={(m) => add(m.id, "user", scope)} />
     </div>
   );
 

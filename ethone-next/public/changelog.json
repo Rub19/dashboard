@@ -1,5 +1,16 @@
 [
   {
+    "version": "v1.55.80",
+    "date": "2026-10-08",
+    "title": "Console Discord : page Commandes façon Keeper",
+    "items": [
+      "Commandes (nouvelle page) : chaque commande d'Etho peut être désactivée, réservée à certains rôles, interdite à d'autres ou limitée à des salons précis.",
+      "Limites par membre : délai entre deux utilisations et nombre d'utilisations par période (10 min, heure, jour ou semaine).",
+      "Les règles s'appliquent aux commandes slash comme au préfixe, en plus des droits d'origine ; le propriétaire et les owners Etho peuvent les ignorer.",
+      "Whitelist : nouveaux boutons « + Rôle » et « + Membre » avec recherche, à la place de l'ancienne liste déroulante."
+    ]
+  },
+  {
     "version": "v1.55.79",
     "date": "2026-10-08",
     "title": "Console Discord : Whitelist, Blacklist et Rôles et membres façon Keeper",
@@ -661,16 +672,6 @@
       "Ajout de la synchronisation instantanée multi-onglets via événements storage dans useUserState",
       "Stabilisation des raccourcis clavier et typage strict dans le client de messagerie Mail",
       "Validation de l'ensemble des suites de tests (298/298 Jest Next.js, 283/283 tests Worker, audits de sécurité et build statique 277 pages sans erreur)"
-    ]
-  },
-  {
-    "version": "v1.55.18",
-    "date": "2026-10-05",
-    "title": "Stabilité Data Dragon, déploiement bot Discord et assainissement des hooks React",
-    "items": [
-      "Bot Discord Etho : synchronisation et redémarrage propre en production sur le VPS (pm2), connexion passerelle et serveurs API opérationnels.",
-      "Worker LoL & Data Dragon : sécurisation des requêtes de catalogue (champions, objets, runes) avec limite de taille étendue à 4 Mo et délai d'attente à 10s.",
-      "Qualité & Performance React : mémoïsation fine des activités Discord et des filtres de modules, navigation légale avec Link Next.js et écoute réactive immédiate des réglages Météo/Lanyard dans useLiveData."
     ]
   }
 ]

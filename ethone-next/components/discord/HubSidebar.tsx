@@ -18,6 +18,7 @@ import {
   FileText,
   Sliders,
   Crown,
+  Terminal,
   Key,
   MoreHorizontal,
   Sparkles,
@@ -55,7 +56,7 @@ import {
 import type { NavigatorCategory, NavigatorModule } from "./ModuleNavigator";
 
 /** Pages de la console au format Keeper, affichées dans la console (même barre latérale). */
-export type ConsoleView = "settings" | "access" | "logs" | "whitelist" | "blacklist" | "members";
+export type ConsoleView = "settings" | "access" | "logs" | "whitelist" | "blacklist" | "members" | "commands";
 export type HubView = "home" | "modules" | "module" | "setup" | "scan" | ConsoleView;
 
 interface HubSidebarProps {
@@ -545,6 +546,19 @@ export default function HubSidebar({
               >
                 <Crown className="h-3.5 w-3.5 shrink-0" />
                 <span>{i18n("dRolesAndMembers", "Rôles et membres")}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => (onOpenView ? onOpenView("commands") : router.push(`/discord/?guildId=${selectedGuildId}&view=commands`))}
+                aria-current={view === "commands" ? "page" : undefined}
+                className={cn(
+                  "w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-xs transition-colors cursor-pointer text-left",
+                  view === "commands" ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold" : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
+                )}
+              >
+                <Terminal className="h-3.5 w-3.5 shrink-0" />
+                <span>{i18n("dCommands", "Commandes")}</span>
               </button>
             </div>
           </div>

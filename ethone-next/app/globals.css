@@ -3820,3 +3820,8 @@ html[data-theme="arctic"] ::-webkit-scrollbar-thumb:hover {
 .console-embed [class*="bg-[var(--surface-raised)]/"] {
   background-color: var(--surface-raised);
 }
+/* Console : les pastilles rondes à texte (badges) deviennent des étiquettes à coins légers, comme Keeper. Les points,
+   avatars et interrupteurs (sans padding horizontal) restent ronds. */
+.console-embed [class*="rounded-full"][class*="px-"] {
+  border-radius: 0.375rem;
+}

@@ -1,34 +1,9 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { motion } from "framer-motion";
-import {
-  Shield,
-  ShieldAlert,
-  Zap,
-  RefreshCw,
-  Unlock,
-  Volume2,
-  Clock,
-  Crown,
-  CheckCircle2,
-  Radio,
-  Power,
-  PowerOff,
-  Sliders,
-  ExternalLink,
-  Ban,
-  UserCheck,
-  VolumeX,
-  MailCheck,
-  EyeOff,
-  Search,
-  Bell,
-  Ghost,
-  ShieldCheck,
-  FlaskConical,
-} from "@/components/icons/ph";
-import Card from "@/components/ui/Card";
+import { FlaskConical, RefreshCw, Zap } from "@/components/icons/ph";
+import { ConsolePage, EmptyLine, GhostButton, Panel, Row, Segmented, Switch } from "@/components/discord/console/kit";
+import { cleanLogText, sinceLabel } from "@/lib/discord/security-scan";
 import { useToast } from "@/components/ToastProvider";
 import { cn } from "@/lib/utils";
 import { formatApiError, errorReason } from "@/lib/format-error";
@@ -110,7 +85,6 @@ interface OwnerShieldPanelProps {
 }
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
-const OWNER_DISCORD_ID = "825124006209388616";
 
 const DEFAULT_CONFIG: OwnerShieldConfig = {
   enabled: true,
@@ -141,9 +115,7 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
   const [updatingConfig, setUpdatingConfig] = useState(false);
 
   // Filtres & Recherche
-  const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | "sanctioned" | "protected" | "ignored">("all");
-  const [autoPolling, setAutoPolling] = useState(true);
 
   const fetchStatus = useCallback(async (notify = false) => {
     if (!BOT_API_URL || !isOwner) return;
@@ -182,12 +154,12 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
 
   // Polling automatique en arrière-plan toutes les 20 secondes
   useEffect(() => {
-    if (!autoPolling || !isOwner) return;
+    if (!isOwner) return;
     const timer = setInterval(() => {
       fetchStatus(false);
     }, 20000);
     return () => clearInterval(timer);
-  }, [autoPolling, isOwner, fetchStatus]);
+  }, [isOwner, fetchStatus]);
 
   // Met à jour un ou plusieurs paramètres de la config
   const updateShieldConfig = async (partial: Partial<OwnerShieldConfig>) => {
@@ -377,12 +349,6 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
   // Filtrage des serveurs
   const filteredGuilds = useMemo(() => {
     return guilds.filter((g) => {
-      const matchesSearch =
-        !searchQuery ||
-        g.guildName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        g.guildId.includes(searchQuery);
-      if (!matchesSearch) return false;
-
       if (statusFilter === "sanctioned") {
         return (
           g.ownerStatus.isBanned ||
@@ -399,912 +365,217 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
       }
       return true;
     });
-  }, [guilds, searchQuery, statusFilter]);
+  }, [guilds, statusFilter]);
 
   if (!isOwner) {
     return (
-      <Card variant="default" padding="none" className="p-8 text-center space-y-3">
-        <EyeOff className="w-10 h-10 text-rose-500 mx-auto" />
-        <h3 className="text-base font-bold text-[var(--text-primary)]">Accès Réservé au Propriétaire</h3>
-        <p className="text-xs text-[var(--text-muted)] max-w-md mx-auto">
-          Ce centre de commande d'urgence est strictement réservé au fondateur du bot (<code className="text-rose-400">rub19.mailpro@gmail.com</code>).
-        </p>
-      </Card>
+      <ConsolePage title="Bouclier de l'owner">
+        <Panel>
+          <EmptyLine>Réservé au propriétaire du bot.</EmptyLine>
+        </Panel>
+      </ConsolePage>
     );
   }
 
-  const isMasterActive = config.enabled;
+  const sanctionsOf = (g: OwnerGuildStatus) =>
+    [
+      g.ownerStatus.isBanned && "banni",
+      g.ownerStatus.isTimedOut && "exclu temporairement",
+      g.ownerStatus.isVoiceMuted && "rendu muet",
+      g.ownerStatus.isVoiceDeafened && "mis en sourdine",
+      g.ownerStatus.hasMuteRole && `rôle restrictif (${g.ownerStatus.muteRoleNames.join(", ")})`,
+    ].filter(Boolean) as string[];
+  const sanctioned = guilds.filter((g) => sanctionsOf(g).length > 0).length;
+  const covered = guilds.filter((g) => !g.isIgnored).length;
+  const HIERARCHY = {
+    SUPREME: { label: "Etho tout en haut", color: "var(--success)" },
+    SUFFICIENT: { label: "Etho assez haut", color: "var(--warning)" },
+    INSUFFICIENT: { label: "Etho trop bas pour agir", color: "var(--danger)" },
+  } as const;
 
   return (
-    <div className="stagger-children space-y-6">
-      {/* BANNER PRINCIPAL & CONTRÔLES MAÎTRES */}
-      <Card
-        variant="default"
-        padding="none"
-        className={cn(
-          "p-6 space-y-5 border transition-all duration-300",
-          isMasterActive
-            ? "border-amber-500/30 bg-gradient-to-br from-amber-500/5 via-transparent to-rose-500/5"
-            : "border-[var(--panel-border)] bg-[var(--bg-card)]/40 opacity-90"
-        )}
+    <ConsolePage
+      title="Bouclier de l'owner"
+      actions={
+        <GhostButton onClick={() => fetchStatus(true)} disabled={refreshing}>
+          <RefreshCw className={cn("h-3.5 w-3.5", refreshing && "animate-spin")} />
+          Actualiser
+        </GhostButton>
+      }
+    >
+      <Panel>
+        <div className="flex flex-wrap items-center justify-between gap-4 px-5 py-4">
+          <div className="min-w-0">
+            <p className="text-sm font-bold text-[var(--text-primary)]">{config.enabled ? "Bouclier actif" : "Bouclier coupé"}</p>
+            <p className="mt-0.5 text-xs text-[var(--text-muted)]">
+              Etho annule les sanctions prises contre ton compte sur les serveurs où il est présent. {covered}/{guilds.length} serveur
+              {guilds.length > 1 ? "s" : ""} couvert{covered > 1 ? "s" : ""}
+              {sanctioned ? `, ${sanctioned} avec une sanction en cours.` : ", aucune sanction en cours."}
+            </p>
+          </div>
+          <Switch
+            checked={config.enabled}
+            disabled={updatingConfig || loading}
+            onChange={(v) => (v ? handleEnableAll() : handleDisableAll())}
+            label={config.enabled ? "Couper le bouclier" : "Activer le bouclier"}
+          />
+        </div>
+        <div className="flex flex-wrap gap-2 border-t border-[var(--panel-border)] px-5 py-3">
+          <GhostButton onClick={handleGlobalRescue} disabled={globalRescuing}>
+            <Zap className="h-3.5 w-3.5" />
+            {globalRescuing ? "Sauvetage…" : "Tout rétablir maintenant"}
+          </GhostButton>
+          <GhostButton onClick={handleSimulateAttack} disabled={simulating}>
+            <FlaskConical className="h-3.5 w-3.5" />
+            {simulating ? "Envoi…" : "Tester l'alerte en MP"}
+          </GhostButton>
+        </div>
+      </Panel>
+
+      <Panel title="Réactions automatiques" subtitle="Ce qu'Etho fait tout seul quand un modérateur te sanctionne.">
+        {SHIELD_OPTIONS.map((o) => (
+          <Row key={o.key} label={o.label} hint={o.hint}>
+            <div className="flex justify-end">
+              <Switch checked={Boolean(config[o.key])} disabled={updatingConfig} onChange={(v) => updateShieldConfig({ [o.key]: v })} label={o.label} />
+            </div>
+          </Row>
+        ))}
+      </Panel>
+
+      <Panel
+        title="Serveurs"
+        subtitle="Position d'Etho et ta situation sur chaque serveur."
+        actions={
+          <Segmented
+            label="Filtrer"
+            value={statusFilter}
+            onChange={setStatusFilter}
+            options={[
+              ["all", `Tous · ${guilds.length}`],
+              ["sanctioned", `Sanctions · ${sanctioned}`],
+              ["ignored", `Exclus · ${guilds.length - covered}`],
+            ]}
+          />
+        }
       >
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-[var(--panel-border)]">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <span
-                className={cn(
-                  "px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider border",
-                  isMasterActive
-                    ? "bg-amber-500/20 text-amber-300 border-amber-500/30"
-                    : "bg-[var(--text-primary)]/10 text-[var(--text-muted)] border-[var(--text-primary)]/16"
-                )}
-              >
-                {isMasterActive ? "⚡ God Mode Actif • Owner Shield" : "⚪ Bouclier Éteint / En sommeil"}
-              </span>
-              <span className="text-xs text-[var(--text-muted)] font-mono">
-                ID: {OWNER_DISCORD_ID}
-              </span>
-              <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-[var(--text-primary)]/10 text-[var(--text-muted)] border border-[var(--text-primary)]/16">
-                Persistant (data/owner_shield.json)
-              </span>
-            </div>
-            <h2 className="text-lg font-black text-[var(--text-primary)] tracking-tight flex items-center gap-2">
-              <Shield className={cn("w-5 h-5", isMasterActive ? "text-amber-400" : "text-[var(--text-muted)]")} />
-              Centre Privé de l'Owner — Bouclier & Sauvetage
-            </h2>
-            <p className="text-xs text-[var(--text-muted)] max-w-2xl">
-              Protection suprême contre toute sanction externe (bannissement, timeout, mute, expulsion, suppression de rôles ou renommage forcé).
-              Vos paramètres sont automatiquement sauvegardés sur le serveur du bot.
-            </p>
-          </div>
-
-          {/* BOUTONS MAÎTRES */}
-          <div className="flex flex-wrap items-center gap-2">
-            <button
-              onClick={() => setAutoPolling(!autoPolling)}
-              className={cn(
-                "h-9 px-3 rounded-xl border text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer",
-                autoPolling
-                  ? "border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
-                  : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)]"
-              )}
-              title="Activer/Désactiver la synchronisation automatique en direct (toutes les 20s)"
-            >
-              <span className={cn("w-2 h-2 rounded-full", autoPolling ? "bg-[var(--success)] animate-pulse" : "bg-[var(--text-primary)]/20")} />
-              <span>{autoPolling ? "Auto-Sync 20s" : "Sync Manuelle"}</span>
-            </button>
-
-            <button
-              onClick={() => fetchStatus(true)}
-              disabled={refreshing}
-              className="h-9 px-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] hover:bg-[var(--surface)] text-xs font-semibold text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50 active:scale-[0.97]"
-              title="Rafraîchir le statut"
-            >
-              <RefreshCw className={cn("w-3.5 h-3.5", refreshing && "animate-spin text-amber-400")} />
-              <span>Actualiser</span>
-            </button>
-
-            <button
-              onClick={handleSimulateAttack}
-              disabled={simulating}
-              className="h-9 px-3.5 rounded-xl border border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/10 hover:bg-[var(--accent-primary)]/20 text-[var(--accent-primary)] text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50 active:scale-[0.97]"
-              title="Déclencher une fausse attaque de test pour vérifier les alertes DM et les boutons d'action"
-            >
-              <FlaskConical className={cn("w-3.5 h-3.5", simulating && "animate-spin text-[var(--accent-primary)]")} />
-              <span>{simulating ? "Simulation..." : "🧪 Simuler une Attaque"}</span>
-            </button>
-
-            {isMasterActive ? (
-              <button
-                onClick={handleDisableAll}
-                disabled={updatingConfig}
-                className="h-9 px-3.5 rounded-xl bg-[var(--text-primary)]/10 hover:bg-rose-950/60 border border-[var(--text-primary)]/16 hover:border-rose-500/40 text-xs font-bold text-rose-300 transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50 active:scale-[0.97]"
-                title="Désactiver et enlever tout le bouclier immédiatement"
-              >
-                <PowerOff className="w-3.5 h-3.5 text-rose-400" />
-                <span>Enlever / Couper le bouclier</span>
-              </button>
-            ) : (
-              <button
-                onClick={handleEnableAll}
-                disabled={updatingConfig}
-                className="h-9 px-3.5 rounded-xl bg-[var(--accent-primary)] hover:bg-[var(--accent-primary)] text-[var(--accent-contrast)] text-xs font-bold shadow-sm transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50 active:scale-[0.97]"
-                title="Réactiver toutes les protections du bouclier"
-              >
-                <Power className="w-3.5 h-3.5" />
-                <span>Réactiver le bouclier</span>
-              </button>
-            )}
-
-            <button
-              onClick={handleGlobalRescue}
-              disabled={globalRescuing}
-              className="h-9 px-4 rounded-xl bg-gradient-to-r from-amber-600 to-rose-600 hover:from-amber-500 hover:to-rose-500 text-white text-xs font-bold shadow-lg shadow-rose-600/20 transition-all active:scale-95 flex items-center gap-2 cursor-pointer disabled:opacity-50"
-            >
-              <Zap className={cn("w-4 h-4", globalRescuing && "animate-spin")} />
-              <span>{globalRescuing ? "Sauvetage global..." : "🚨 Sauvetage Total 1-Clic"}</span>
-            </button>
-          </div>
-        </div>
-
-        {/* KPIs Résumés */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <Card variant="widget" padding="sm" className="space-y-1">
-            <span className="text-[11px] text-[var(--text-muted)] font-medium">État du Bouclier</span>
-            <p className={cn("text-base font-black flex items-center gap-1.5", isMasterActive ? "text-[var(--accent-primary)]" : "text-[var(--text-muted)]")}>
-              <span className={cn("w-2 h-2 rounded-full", isMasterActive ? "bg-[var(--success)] animate-pulse" : "bg-[var(--text-primary)]/20")} />
-              {isMasterActive ? "Actif & Armé" : "Désactivé"}
-            </p>
-          </Card>
-          <Card variant="widget" padding="sm" className="space-y-1">
-            <span className="text-[11px] text-[var(--text-muted)] font-medium">Serveurs sous Protection</span>
-            <p className="text-xl font-black text-amber-400">
-              {guilds.filter((g) => !g.isIgnored).length} / {guilds.length}
-            </p>
-          </Card>
-          <Card variant="widget" padding="sm" className="space-y-1">
-            <span className="text-[11px] text-[var(--text-muted)] font-medium">Sanctions Actives Bloquées</span>
-            <p className="text-xl font-black text-rose-400">
-              {guilds.filter((g) => g.ownerStatus.isBanned || g.ownerStatus.isTimedOut || g.ownerStatus.isVoiceMuted || g.ownerStatus.hasMuteRole).length}
-            </p>
-          </Card>
-          <Card variant="widget" padding="sm" className="space-y-1">
-            <span className="text-[11px] text-[var(--text-muted)] font-medium">Commande Discord</span>
-            <p className="text-xs font-mono font-bold text-rose-300">/rescue | !rescue</p>
-          </Card>
-        </div>
-      </Card>
-
-      {/* MODULES DE PROTECTION GRANULAIRES (TOGGLES) */}
-      <Card variant="default" padding="none" className="p-6 space-y-4">
-        <div className="flex items-center justify-between pb-2 border-b border-[var(--panel-border)]">
-          <div>
-            <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
-              <Sliders className="w-4 h-4 text-amber-400" />
-              Options Modulaires du Bouclier (12 Modules)
-            </h3>
-            <p className="text-xs text-[var(--text-muted)]">
-              Activez ou désactivez individuellement chaque type d'intervention automatique selon vos besoins.
-            </p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-          {/* Auto-Débannissement */}
-          <div className="p-4 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 flex items-start justify-between gap-3">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2 text-xs font-bold text-[var(--text-primary)]">
-                <Ban className="w-4 h-4 text-rose-400" />
-                <span>Auto-Débannissement</span>
-              </div>
-              <p className="text-[11px] text-[var(--text-muted)]">
-                Débannit instantanément votre compte si un modérateur vous bannit.
-              </p>
-            </div>
-            <button
-              onClick={() => updateShieldConfig({ autoUnban: !config.autoUnban })}
-              disabled={updatingConfig || !config.enabled}
-              className={cn(
-                "relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out disabled:opacity-40",
-                config.autoUnban && config.enabled ? "bg-amber-500" : "bg-[var(--text-primary)]/15"
-              )}
-            >
-              <span
-                className={cn(
-                  "pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out",
-                  config.autoUnban && config.enabled ? "translate-x-4" : "translate-x-0"
-                )}
-              />
-            </button>
-          </div>
-
-          {/* Auto-Retrait Timeout */}
-          <div className="p-4 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 flex items-start justify-between gap-3">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2 text-xs font-bold text-[var(--text-primary)]">
-                <Clock className="w-4 h-4 text-amber-400" />
-                <span>Auto-Retrait Timeout</span>
-              </div>
-              <p className="text-[11px] text-[var(--text-muted)]">
-                Lève immédiatement tout timeout ou exclusion temporaire dès son application.
-              </p>
-            </div>
-            <button
-              onClick={() => updateShieldConfig({ autoTimeoutRemove: !config.autoTimeoutRemove })}
-              disabled={updatingConfig || !config.enabled}
-              className={cn(
-                "relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out disabled:opacity-40",
-                config.autoTimeoutRemove && config.enabled ? "bg-amber-500" : "bg-[var(--text-primary)]/15"
-              )}
-            >
-              <span
-                className={cn(
-                  "pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out",
-                  config.autoTimeoutRemove && config.enabled ? "translate-x-4" : "translate-x-0"
-                )}
-              />
-            </button>
-          </div>
-
-          {/* Nettoyage Rôles Mute/Prison */}
-          <div className="p-4 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 flex items-start justify-between gap-3">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2 text-xs font-bold text-[var(--text-primary)]">
-                <VolumeX className="w-4 h-4 text-[var(--accent-primary)]" />
-                <span>Retrait Rôles Mute / Jail</span>
-              </div>
-              <p className="text-[11px] text-[var(--text-muted)]">
-                Retire automatiquement tout rôle restrictif (mute, prison, jail, silence) assigné.
-              </p>
-            </div>
-            <button
-              onClick={() => updateShieldConfig({ autoMuteRolesRemove: !config.autoMuteRolesRemove })}
-              disabled={updatingConfig || !config.enabled}
-              className={cn(
-                "relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out disabled:opacity-40",
-                config.autoMuteRolesRemove && config.enabled ? "bg-amber-500" : "bg-[var(--text-primary)]/15"
-              )}
-            >
-              <span
-                className={cn(
-                  "pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out",
-                  config.autoMuteRolesRemove && config.enabled ? "translate-x-4" : "translate-x-0"
-                )}
-              />
-            </button>
-          </div>
-
-          {/* Restauration Automatique des Rôles (NOUVEAU) */}
-          <div className="p-4 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 flex items-start justify-between gap-3">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2 text-xs font-bold text-[var(--text-primary)]">
-                <ShieldCheck className="w-4 h-4 text-[var(--accent-primary)]" />
-                <span>Restauration Auto des Rôles</span>
-              </div>
-              <p className="text-[11px] text-[var(--text-muted)]">
-                Rétablit instantanément tous vos rôles si un modérateur tente de vous les retirer.
-              </p>
-            </div>
-            <button
-              onClick={() => updateShieldConfig({ autoRestoreRoles: !config.autoRestoreRoles })}
-              disabled={updatingConfig || !config.enabled}
-              className={cn(
-                "relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out disabled:opacity-40",
-                config.autoRestoreRoles && config.enabled ? "bg-amber-500" : "bg-[var(--text-primary)]/15"
-              )}
-            >
-              <span
-                className={cn(
-                  "pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out",
-                  config.autoRestoreRoles && config.enabled ? "translate-x-4" : "translate-x-0"
-                )}
-              />
-            </button>
-          </div>
-
-          {/* Protection Anti-Rename (NOUVEAU) */}
-          <div className="p-4 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 flex items-start justify-between gap-3">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2 text-xs font-bold text-[var(--text-primary)]">
-                <UserCheck className="w-4 h-4 text-[var(--accent-primary)]" />
-                <span>Protection Anti-Changement de Pseudo</span>
-              </div>
-              <p className="text-[11px] text-[var(--text-muted)]">
-                Rétablit immédiatement votre pseudo officiel si un modérateur tente de le modifier.
-              </p>
-            </div>
-            <button
-              onClick={() => updateShieldConfig({ antiNicknameChange: !config.antiNicknameChange })}
-              disabled={updatingConfig || !config.enabled}
-              className={cn(
-                "relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out disabled:opacity-40",
-                config.antiNicknameChange && config.enabled ? "bg-amber-500" : "bg-[var(--text-primary)]/15"
-              )}
-            >
-              <span
-                className={cn(
-                  "pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out",
-                  config.antiNicknameChange && config.enabled ? "translate-x-4" : "translate-x-0"
-                )}
-              />
-            </button>
-          </div>
-
-          {/* Démutage Vocal Serveur */}
-          <div className="p-4 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 flex items-start justify-between gap-3">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2 text-xs font-bold text-[var(--text-primary)]">
-                <Volume2 className="w-4 h-4 text-[var(--accent-primary)]" />
-                <span>Démutage Vocal Auto</span>
-              </div>
-              <p className="text-[11px] text-[var(--text-muted)]">
-                Rétablit votre micro instantanément si un modérateur vous coupe la parole en vocal.
-              </p>
-            </div>
-            <button
-              onClick={() => updateShieldConfig({ autoVoiceUnmute: !config.autoVoiceUnmute })}
-              disabled={updatingConfig || !config.enabled}
-              className={cn(
-                "relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out disabled:opacity-40",
-                config.autoVoiceUnmute && config.enabled ? "bg-amber-500" : "bg-[var(--text-primary)]/15"
-              )}
-            >
-              <span
-                className={cn(
-                  "pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out",
-                  config.autoVoiceUnmute && config.enabled ? "translate-x-4" : "translate-x-0"
-                )}
-              />
-            </button>
-          </div>
-
-          {/* Dé-sourding Vocal */}
-          <div className="p-4 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 flex items-start justify-between gap-3">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2 text-xs font-bold text-[var(--text-primary)]">
-                <Volume2 className="w-4 h-4 text-[var(--accent-primary)]" />
-                <span>Dé-sourding Vocal Auto</span>
-              </div>
-              <p className="text-[11px] text-[var(--text-muted)]">
-                Rétablit votre écoute si un modérateur vous met en sourdine serveur.
-              </p>
-            </div>
-            <button
-              onClick={() => updateShieldConfig({ autoVoiceUndeafen: !config.autoVoiceUndeafen })}
-              disabled={updatingConfig || !config.enabled}
-              className={cn(
-                "relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out disabled:opacity-40",
-                config.autoVoiceUndeafen && config.enabled ? "bg-amber-500" : "bg-[var(--text-primary)]/15"
-              )}
-            >
-              <span
-                className={cn(
-                  "pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out",
-                  config.autoVoiceUndeafen && config.enabled ? "translate-x-4" : "translate-x-0"
-                )}
-              />
-            </button>
-          </div>
-
-          {/* Invitation MP sur Expulsion / Kick */}
-          <div className="p-4 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 flex items-start justify-between gap-3">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2 text-xs font-bold text-[var(--text-primary)]">
-                <MailCheck className="w-4 h-4 text-[var(--accent-primary)]" />
-                <span>Invitation MP sur Kick</span>
-              </div>
-              <p className="text-[11px] text-[var(--text-muted)]">
-                Génère et vous envoie immédiatement par message privé une invitation de retour si expulsé.
-              </p>
-            </div>
-            <button
-              onClick={() => updateShieldConfig({ autoKickInvite: !config.autoKickInvite })}
-              disabled={updatingConfig || !config.enabled}
-              className={cn(
-                "relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out disabled:opacity-40",
-                config.autoKickInvite && config.enabled ? "bg-amber-500" : "bg-[var(--text-primary)]/15"
-              )}
-            >
-              <span
-                className={cn(
-                  "pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out",
-                  config.autoKickInvite && config.enabled ? "translate-x-4" : "translate-x-0"
-                )}
-              />
-            </button>
-          </div>
-
-          {/* Alertes MP Détaillées (NOUVEAU) */}
-          <div className="p-4 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 flex items-start justify-between gap-3">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2 text-xs font-bold text-[var(--text-primary)]">
-                <Bell className="w-4 h-4 text-amber-400" />
-                <span>Alertes MP Détaillées</span>
-              </div>
-              <p className="text-[11px] text-[var(--text-muted)]">
-                Recevez en DM le pseudo, l'ID et la raison de la personne ayant tenté la sanction.
-              </p>
-            </div>
-            <button
-              onClick={() => updateShieldConfig({ dmAlerts: !config.dmAlerts })}
-              disabled={updatingConfig || !config.enabled}
-              className={cn(
-                "relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out disabled:opacity-40",
-                config.dmAlerts && config.enabled ? "bg-amber-500" : "bg-[var(--text-primary)]/15"
-              )}
-            >
-              <span
-                className={cn(
-                  "pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out",
-                  config.dmAlerts && config.enabled ? "translate-x-4" : "translate-x-0"
-                )}
-              />
-            </button>
-          </div>
-
-          {/* Mode Furtif / Discret (NOUVEAU) */}
-          <div className="p-4 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 flex items-start justify-between gap-3">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2 text-xs font-bold text-[var(--text-primary)]">
-                <Ghost className="w-4 h-4 text-[var(--text-muted)]" />
-                <span>Mode Furtif (Discret)</span>
-              </div>
-              <p className="text-[11px] text-[var(--text-muted)]">
-                Ne publie aucun log dans les salons de modération publics du serveur lors d'une intervention.
-              </p>
-            </div>
-            <button
-              onClick={() => updateShieldConfig({ stealthMode: !config.stealthMode })}
-              disabled={updatingConfig || !config.enabled}
-              className={cn(
-                "relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out disabled:opacity-40",
-                config.stealthMode && config.enabled ? "bg-amber-500" : "bg-[var(--text-primary)]/15"
-              )}
-            >
-              <span
-                className={cn(
-                  "pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out",
-                  config.stealthMode && config.enabled ? "translate-x-4" : "translate-x-0"
-                )}
-              />
-            </button>
-          </div>
-
-          {/* Auto-Défense du Bot (Anti-Sabotage & Anti-Révocation) */}
-          <div className="p-4 rounded-xl border border-amber-500/30 bg-amber-500/5 flex items-start justify-between gap-3">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2 text-xs font-bold text-amber-300">
-                <ShieldAlert className="w-4 h-4 text-amber-400" />
-                <span>Auto-Défense du Bot (Anti-Sabotage)</span>
-              </div>
-              <p className="text-[11px] text-[var(--text-muted)]">
-                Neutralise (timeout 28j + retrait de rôles) tout modérateur/admin tentant de réduire les privilèges ou retirer les rôles du bot.
-              </p>
-            </div>
-            <button
-              onClick={() => updateShieldConfig({ botSelfDefense: !config.botSelfDefense })}
-              disabled={updatingConfig || !config.enabled}
-              className={cn(
-                "relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out disabled:opacity-40",
-                config.botSelfDefense && config.enabled ? "bg-amber-500" : "bg-[var(--text-primary)]/15"
-              )}
-            >
-              <span
-                className={cn(
-                  "pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out",
-                  config.botSelfDefense && config.enabled ? "translate-x-4" : "translate-x-0"
-                )}
-              />
-            </button>
-          </div>
-
-          {/* Protection Anti-Move Vocal (NOUVEAU) */}
-          <div className="p-4 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 flex items-start justify-between gap-3">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2 text-xs font-bold text-[var(--text-primary)]">
-                <Radio className="w-4 h-4 text-cyan-400" />
-                <span>Protection Anti-Move Vocal</span>
-              </div>
-              <p className="text-[11px] text-[var(--text-muted)]">
-                Rapatrie instantanément votre compte dans votre salon vocal d'origine si un modérateur vous déplace de force.
-              </p>
-            </div>
-            <button
-              onClick={() => updateShieldConfig({ antiVoiceMove: !config.antiVoiceMove })}
-              disabled={updatingConfig || !config.enabled}
-              className={cn(
-                "relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out disabled:opacity-40",
-                config.antiVoiceMove && config.enabled ? "bg-amber-500" : "bg-[var(--text-primary)]/15"
-              )}
-            >
-              <span
-                className={cn(
-                  "pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out",
-                  config.antiVoiceMove && config.enabled ? "translate-x-4" : "translate-x-0"
-                )}
-              />
-            </button>
-          </div>
-        </div>
-      </Card>
-
-      {/* GESTION & ÉTAT PAR SERVEUR (AVEC RECHERCHE ET FILTRES) */}
-      <Card variant="default" padding="none" className="p-6 space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[var(--panel-border)]">
-          <div>
-            <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
-              <Radio className="w-4 h-4 text-[var(--accent-primary)]" />
-              Serveurs & Contrôles Ciblés ({filteredGuilds.length} / {guilds.length})
-            </h3>
-            <p className="text-xs text-[var(--text-muted)]">
-              Gérez l'auto-défense par serveur et visualisez la force hiérarchique du bot
-            </p>
-          </div>
-
-          {/* FILTRES & RECHERCHE */}
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="relative">
-              <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
-              <input
-                type="text"
-                placeholder="Rechercher un serveur..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-8 pl-8 pr-3 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)] text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-amber-500/50"
-              />
-            </div>
-
-            <div className="flex items-center gap-1 p-0.5 rounded-lg bg-[var(--surface-raised)]/60 border border-[var(--panel-border)] text-xs">
-              {(
-                [
-                  ["all", `Tous (${guilds.length})`, "bg-[var(--text-primary)]/10", "text-[var(--text-primary)]"],
-                  ["sanctioned", "Sanctions", "bg-[var(--danger)]/15", "text-[var(--danger)]"],
-                  ["protected", "Protégés", "bg-[var(--success)]/15", "text-[var(--success)]"],
-                  ["ignored", "Exclus", "bg-[var(--text-primary)]/10", "text-[var(--text-primary)]"],
-                ] as const
-              ).map(([id, label, pill, text]) => (
-                <button
-                  key={id}
-                  type="button"
-                  onClick={() => setStatusFilter(id)}
-                  aria-pressed={statusFilter === id}
-                  className={cn(
-                    "relative isolate px-2 py-1 rounded text-[11px] font-semibold transition-[color,transform] duration-150 cursor-pointer active:scale-[0.97]",
-                    statusFilter === id ? text : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-                  )}
-                >
-                  {statusFilter === id && (
-                    <motion.span layoutId="shield-status-filter" transition={{ type: "spring", bounce: 0, duration: 0.35 }} className={cn("absolute inset-0 -z-10 rounded-[inherit] shadow-sm", pill)} />
-                  )}
-                  {label}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {filteredGuilds.length === 0 && !loading ? (
-          <div className="py-12 text-center text-xs text-[var(--text-muted)]">
-            Aucun serveur ne correspond à vos critères de recherche.
-          </div>
+        {loading ? (
+          <EmptyLine>Chargement…</EmptyLine>
+        ) : filteredGuilds.length === 0 ? (
+          <EmptyLine>Aucun serveur.</EmptyLine>
         ) : (
-          <div className="stagger-children space-y-3">
+          <ul>
             {filteredGuilds.map((g) => {
-              const st = g.ownerStatus;
-              const hasActiveSanction = st.isBanned || st.isTimedOut || st.isVoiceMuted || st.hasMuteRole;
-              const isActing = actingGuildId === g.guildId;
-              const isIgnored = g.isIgnored;
-
+              const issues = sanctionsOf(g);
+              const h = HIERARCHY[g.botHierarchyLevel];
+              const busy = actingGuildId === g.guildId;
               return (
-                <div
-                  key={g.guildId}
-                  className={cn(
-                    "rounded-2xl border p-4 transition-all space-y-3",
-                    isIgnored
-                      ? "border-[var(--panel-border)] bg-[var(--bg-card)]/40 opacity-75"
-                      : hasActiveSanction
-                      ? "border-rose-500/40 bg-rose-500/5"
-                      : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:border-[var(--text-primary)]/16"
-                  )}
-                >
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                      {g.guildIcon ? (
-                        <img src={g.guildIcon} alt={g.guildName} className="w-10 h-10 rounded-xl object-cover" />
-                      ) : (
-                        <div className="w-10 h-10 rounded-xl bg-[var(--text-primary)]/10 border border-[var(--panel-border)] flex items-center justify-center font-bold text-xs text-[var(--text-primary)]">
-                          {g.guildName.substring(0, 2).toUpperCase()}
-                        </div>
-                      )}
-                      <div>
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span className="text-sm font-bold text-[var(--text-primary)]">{g.guildName}</span>
-                          <span className="text-[10px] text-[var(--text-muted)] font-mono">({g.guildId})</span>
-
-                          {/* Badge de hiérarchie */}
-                          {g.botHierarchyLevel === "SUPREME" && (
-                            <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                              👑 Hiérarchie Suprême
-                            </span>
-                          )}
-                          {g.botHierarchyLevel === "SUFFICIENT" && (
-                            <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-[var(--accent-primary)]/20 text-[var(--accent-primary)] border border-[var(--accent-primary)]/30">
-                              ⚡ Hiérarchie Suffisante
-                            </span>
-                          )}
-                          {g.botHierarchyLevel === "INSUFFICIENT" && (
-                            <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30">
-                              ⚠️ Rôle Bot Inférieur
-                            </span>
-                          )}
-
-                          {st.nickname && (
-                            <span className="text-[10px] text-[var(--text-muted)] font-medium">
-                              Pseudo : <code className="text-[var(--text-primary)]">"{st.nickname}"</code>
-                            </span>
-                          )}
-                        </div>
-
-                        {/* Status badges */}
-                        <div className="flex flex-wrap items-center gap-1.5 mt-1">
-                          {isIgnored ? (
-                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[var(--text-primary)]/10 text-[var(--text-muted)] border border-[var(--text-primary)]/16">
-                              ⚪ PROTECTION COUPÉE SUR CE SERVEUR
-                            </span>
-                          ) : (
-                            <span
-                              className={cn(
-                                "px-2 py-0.5 rounded text-[10px] font-semibold border",
-                                st.isPresent
-                                  ? "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border-[var(--accent-primary)]/20"
-                                  : "bg-[var(--text-primary)]/10 text-[var(--text-muted)] border-[var(--text-primary)]/16"
-                              )}
-                            >
-                              {st.isPresent ? "● Présent sur le serv" : "○ Absent du serv"}
-                            </span>
-                          )}
-
-                          {st.isBanned && (
-                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40 animate-pulse">
-                              🚨 BANNI
-                            </span>
-                          )}
-
-                          {st.isTimedOut && (
-                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40 animate-pulse">
-                              ⏱️ TIMEOUT ({st.timeoutUntil ? new Date(st.timeoutUntil).toLocaleTimeString() : "Actif"})
-                            </span>
-                          )}
-
-                          {st.isVoiceMuted && (
-                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40">
-                              🔇 MUET VOCAL
-                            </span>
-                          )}
-
-                          {st.hasMuteRole && (
-                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40">
-                              ⚠️ RÔLE MUTE ({st.muteRoleNames.join(", ")})
-                            </span>
-                          )}
-
-                          {!hasActiveSanction && st.isPresent && !isIgnored && (
-                            <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/20">
-                              ✅ Aucune sanction
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Action buttons */}
-                    <div className="flex flex-wrap items-center gap-1.5">
-                      {/* Interrupteur par serveur */}
-                      <button
-                        onClick={() => handleToggleGuild(g.guildId)}
-                        className={cn(
-                          "h-8 px-2.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1 border",
-                          isIgnored
-                            ? "bg-[var(--accent-primary)]/30 border-[var(--accent-primary)]/30 text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/40"
-                            : "bg-[var(--text-primary)]/8 border-[var(--text-primary)]/16 text-[var(--text-primary)]/85 hover:bg-[var(--text-primary)]/15"
-                        )}
-                        title={isIgnored ? "Réactiver la protection sur ce serveur" : "Désactiver la protection sur ce serveur (ex: pour tests)"}
-                      >
-                        {isIgnored ? <Power className="w-3 h-3 text-[var(--accent-primary)]" /> : <PowerOff className="w-3 h-3 text-[var(--text-muted)]" />}
-                        <span>{isIgnored ? "Réactiver protection" : "Couper protection"}</span>
-                      </button>
-
-                      {st.isBanned && (
-                        <button
-                          onClick={() => handleRescue(g.guildId, { unban: true })}
-                          disabled={isActing}
-                          className="h-8 px-3 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition-all cursor-pointer disabled:opacity-50 flex items-center gap-1 active:scale-[0.97]"
-                        >
-                          <Unlock className="w-3.5 h-3.5" />
-                          <span>Débannir</span>
-                        </button>
-                      )}
-
-                      {st.isTimedOut && (
-                        <button
-                          onClick={() => handleRescue(g.guildId, { removeTimeout: true })}
-                          disabled={isActing}
-                          className="h-8 px-3 rounded-lg bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold transition-all cursor-pointer disabled:opacity-50 flex items-center gap-1 active:scale-[0.97]"
-                        >
-                          <Clock className="w-3.5 h-3.5" />
-                          <span>Lever Timeout</span>
-                        </button>
-                      )}
-
-                      {(st.isVoiceMuted || st.hasMuteRole) && (
-                        <button
-                          onClick={() => handleRescue(g.guildId, { unmute: true })}
-                          disabled={isActing}
-                          className="h-8 px-3 rounded-lg bg-[var(--accent-primary)] hover:bg-[var(--accent-primary)] text-[var(--accent-contrast)] text-xs font-bold transition-all cursor-pointer disabled:opacity-50 flex items-center gap-1 active:scale-[0.97]"
-                        >
-                          <Volume2 className="w-3.5 h-3.5" />
-                          <span>Démuter</span>
-                        </button>
-                      )}
-
-                      <button
-                        onClick={() => handleRescue(g.guildId, { restoreRoles: true })}
-                        disabled={isActing}
-                        className="h-8 px-2.5 rounded-lg border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 hover:bg-[var(--accent-primary)]/20 text-xs font-semibold text-[var(--accent-primary)] transition-all cursor-pointer disabled:opacity-50 flex items-center gap-1 active:scale-[0.97]"
-                        title="Rétablir les rôles enregistrés dans le snapshot"
-                      >
-                        <ShieldCheck className="w-3 h-3" />
-                        <span>Rétablir Rôles</span>
-                      </button>
-
-                      <button
-                        onClick={() => handleRescue(g.guildId, { createInvite: true })}
-                        disabled={isActing}
-                        className="h-8 px-2.5 rounded-lg border border-[var(--panel-border)] bg-[var(--surface)] hover:bg-[var(--text-primary)]/5 text-xs text-[var(--text-primary)]/85 hover:text-[var(--text-primary)] transition-all cursor-pointer disabled:opacity-50 flex items-center gap-1 active:scale-[0.97]"
-                        title="Créer une invitation immédiate vers ce serveur"
-                      >
-                        <ExternalLink className="w-3 h-3" />
-                        <span>Invitation</span>
-                      </button>
-
-                      <button
-                        onClick={() => handleRescue(g.guildId, { giveAdminRole: true })}
-                        disabled={isActing}
-                        className="h-8 px-2.5 rounded-lg border border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 text-xs font-semibold text-amber-300 transition-all cursor-pointer disabled:opacity-50 flex items-center gap-1 active:scale-[0.97]"
-                        title="Rétablir le rôle le plus élevé possible avec permissions admin"
-                      >
-                        <Crown className="w-3 h-3" />
-                        <span>Rétablir Admin</span>
-                      </button>
-
-                      <button
-                        onClick={() => handleRescue(g.guildId)}
-                        disabled={isActing}
-                        className="h-8 px-3 rounded-lg bg-[var(--text-primary)]/10 hover:bg-[var(--text-primary)]/15 text-[var(--text-primary)] text-xs font-bold transition-all cursor-pointer disabled:opacity-50 flex items-center gap-1 active:scale-[0.97]"
-                        title="Exécuter un sauvetage complet (débannir, dé-timeout, démuter, invitation)"
-                      >
-                        <Zap className={cn("w-3.5 h-3.5 text-amber-400", isActing && "animate-spin")} />
-                        <span>Sauver</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </Card>
-
-      {/* HISTORIQUE DES INTERCEPTIONS AUTOMATIQUES AVEC DÉTAILS MODÉRATEUR */}
-      <Card variant="default" padding="none" className="p-6 space-y-4">
-        <div className="flex items-center justify-between pb-2 border-b border-[var(--panel-border)]">
-          <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
-            <ShieldAlert className="w-4 h-4 text-amber-400" />
-            Journal d'Interception & Auteurs Identifiés (Audit Logs Discord)
-          </h3>
-          <span className="text-xs text-[var(--text-muted)] font-mono">
-            {history.length} événement(s)
-          </span>
-        </div>
-
-        {history.length === 0 ? (
-          <div className="py-8 text-center rounded-xl bg-[var(--text-primary)]/[0.02] border border-[var(--panel-border)] text-xs text-[var(--text-muted)] space-y-1">
-            <CheckCircle2 className="w-6 h-6 text-[var(--success)] mx-auto mb-2" />
-            <p className="font-semibold text-[var(--text-primary)]">Aucune tentative de sanction récente</p>
-            <p>Le bouclier est actif et surveille en continu tous les serveurs.</p>
-          </div>
-        ) : (
-          <div className="stagger-children space-y-2">
-            {history.map((ev) => {
-              const isBotDefense = ev.type === "BOT_PROTECTION_TRIGGERED";
-              const isBotKick = ev.type === "BOT_KICK_DETECTED";
-              const isRejoin = ev.type === "REJOIN_ROLES_RESTORED";
-              const isVoiceMove = ev.type === "VOICE_MOVE_RESTORED";
-              const isEmergencyRole = ev.type === "EMERGENCY_ROLE_CREATED";
-              const isSimulated = ev.type === "SIMULATED_ATTACK";
-
-              return (
-                <div
-                  key={ev.id}
-                  className={cn(
-                    "p-3 rounded-xl border text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2.5",
-                    isBotDefense
-                      ? "bg-amber-950/30 border-amber-500/50 text-amber-200"
-                      : isBotKick
-                      ? "bg-rose-950/40 border-rose-500/60 text-rose-200"
-                      : isRejoin
-                      ? "bg-[var(--accent-primary)]/30 border-[var(--accent-primary)]/50 text-[var(--accent-primary)]"
-                      : isVoiceMove
-                      ? "bg-cyan-950/30 border-cyan-500/50 text-cyan-200"
-                      : isEmergencyRole
-                      ? "bg-fuchsia-950/30 border-fuchsia-500/50 text-fuchsia-200"
-                      : isSimulated
-                      ? "bg-[var(--accent-primary)]/30 border-[var(--accent-primary)]/50 text-[var(--accent-primary)]"
-                      : ev.success
-                      ? "bg-[var(--accent-primary)]/20 border-[var(--accent-primary)]/30 text-[var(--accent-primary)]"
-                      : "bg-rose-950/20 border-rose-500/30 text-rose-300"
-                  )}
-                >
-                  <div className="space-y-1 min-w-0">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="font-mono text-[11px] text-[var(--text-muted)]">
-                        {new Date(ev.timestamp).toLocaleTimeString()}
+                <li key={g.guildId} className="border-t border-[var(--panel-border)] px-5 py-3.5 first:border-t-0">
+                  <div className="flex flex-wrap items-center gap-3">
+                    {g.guildIcon ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={g.guildIcon} alt="" width={32} height={32} className="h-8 w-8 shrink-0 rounded-lg" />
+                    ) : (
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--surface-hover)] text-[11px] font-bold text-[var(--text-muted)]">
+                        {g.guildName.slice(0, 2).toUpperCase()}
                       </span>
-                      <span className="font-bold text-[var(--text-primary)]">[{ev.guildName}]</span>
-                      {isBotDefense && (
-                        <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase bg-amber-500/20 text-amber-300 border border-amber-500/40">
-                          ⚡ Défense Bot
-                        </span>
-                      )}
-                      {isBotKick && (
-                        <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase bg-rose-500/30 text-rose-300 border border-rose-500/50">
-                          🚨 Bot Expulsé
-                        </span>
-                      )}
-                      {isRejoin && (
-                        <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase bg-[var(--accent-primary)]/20 text-[var(--accent-primary)] border border-[var(--accent-primary)]/40">
-                          👑 Rôles Réintégrés
-                        </span>
-                      )}
-                      {isVoiceMove && (
-                        <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase bg-cyan-500/20 text-cyan-300 border border-cyan-500/40">
-                          🔊 Anti-Move Vocal
-                        </span>
-                      )}
-                      {isEmergencyRole && (
-                        <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/40">
-                          ⚡ Rôle Secours
-                        </span>
-                      )}
-                      {isSimulated && (
-                        <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase bg-[var(--accent-primary)]/20 text-[var(--accent-primary)] border border-[var(--accent-primary)]/40">
-                          🧪 Simulation
-                        </span>
-                      )}
-                      <span>{ev.details}</span>
-                    </div>
-
-                    {/* Identification du modérateur responsable */}
-                    {(ev.moderatorTag || ev.reason) && (
-                      <div className="flex flex-wrap items-center gap-2 text-[11px] text-[var(--text-muted)] pl-1">
-                        {ev.moderatorTag && (
-                          <span className="inline-flex items-center gap-1 font-medium text-amber-300">
-                            👮 Modérateur : <code className="text-[var(--text-primary)]">{ev.moderatorTag}</code>
-                            {ev.moderatorId && <span className="text-[10px] text-[var(--text-muted)] font-mono">({ev.moderatorId})</span>}
-                          </span>
-                        )}
-                        {ev.reason && (
-                          <span className="text-[var(--text-muted)] italic">
-                            📝 Raison : "{ev.reason}"
-                          </span>
-                        )}
-                      </div>
                     )}
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-[13px] font-semibold text-[var(--text-primary)]">{g.guildName}</p>
+                      <p className="mt-0.5 flex flex-wrap items-center gap-x-2 text-[11px] text-[var(--text-muted)]">
+                        <span className="flex items-center gap-1.5">
+                          <span className="h-1.5 w-1.5 rounded-full" style={{ background: h.color }} />
+                          {h.label}
+                        </span>
+                        <span>·</span>
+                        <span className={issues.length ? "text-[var(--danger)]" : undefined}>
+                          {!g.ownerStatus.isPresent && !g.ownerStatus.isBanned ? "tu n'es pas sur le serveur" : issues.length ? issues.join(", ") : "aucune sanction"}
+                        </span>
+                      </p>
+                    </div>
+                    <label className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
+                      Protégé
+                      <Switch checked={!g.isIgnored} onChange={() => handleToggleGuild(g.guildId)} label={g.isIgnored ? `Protéger ${g.guildName}` : `Exclure ${g.guildName}`} />
+                    </label>
                   </div>
-
-                  <span className="shrink-0 text-[10px] uppercase font-extrabold px-2 py-0.5 rounded-full bg-black/40 self-start sm:self-center">
-                    {isBotDefense
-                      ? "Contre-Mesure Bot"
-                      : isBotKick
-                      ? "Bot Non Présent"
-                      : isRejoin
-                      ? "Réintégration"
-                      : isVoiceMove
-                      ? "Rapatrié Vocal"
-                      : isEmergencyRole
-                      ? "Rôle Créé"
-                      : isSimulated
-                      ? "Attaque Test"
-                      : ev.success
-                      ? "Interception Réussie"
-                      : "Échec"}
-                  </span>
-                </div>
+                  <div className="mt-2.5 flex flex-wrap gap-1.5 pl-11">
+                    {g.ownerStatus.isBanned && (
+                      <GhostButton onClick={() => handleRescue(g.guildId, { unban: true })} disabled={busy}>
+                        Débannir
+                      </GhostButton>
+                    )}
+                    {g.ownerStatus.isTimedOut && (
+                      <GhostButton onClick={() => handleRescue(g.guildId, { removeTimeout: true })} disabled={busy}>
+                        Lever l&apos;exclusion
+                      </GhostButton>
+                    )}
+                    {(g.ownerStatus.isVoiceMuted || g.ownerStatus.hasMuteRole) && (
+                      <GhostButton onClick={() => handleRescue(g.guildId, { unmute: true })} disabled={busy}>
+                        Rendre la parole
+                      </GhostButton>
+                    )}
+                    <GhostButton onClick={() => handleRescue(g.guildId, { restoreRoles: true })} disabled={busy}>
+                      Rétablir mes rôles
+                    </GhostButton>
+                    <GhostButton onClick={() => handleRescue(g.guildId, { createInvite: true })} disabled={busy}>
+                      Copier une invitation
+                    </GhostButton>
+                    <GhostButton onClick={() => handleRescue(g.guildId, { giveAdminRole: true })} disabled={busy}>
+                      Rôle admin d&apos;urgence
+                    </GhostButton>
+                    <GhostButton onClick={() => handleRescue(g.guildId)} disabled={busy}>
+                      <Zap className="h-3.5 w-3.5" />
+                      Tout rétablir
+                    </GhostButton>
+                  </div>
+                </li>
               );
             })}
-          </div>
+          </ul>
         )}
-      </Card>
-    </div>
+      </Panel>
+
+      <Panel title="Historique" subtitle="Les dernières interventions du bouclier.">
+        {history.length === 0 ? (
+          <EmptyLine>Aucune intervention pour l&apos;instant.</EmptyLine>
+        ) : (
+          <ul>
+            {history.map((ev) => (
+              <li key={ev.id} className="flex items-start gap-3 border-t border-[var(--panel-border)] px-5 py-2.5 text-xs first:border-t-0">
+                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: ev.success ? "var(--success)" : "var(--danger)" }} />
+                <div className="min-w-0 flex-1">
+                  <p className="text-[var(--text-primary)]">
+                    <span className="font-semibold">{ev.guildName}</span> · {cleanLogText(ev.details)}
+                    {ev.type === "SIMULATED_ATTACK" && <span className="text-[var(--text-muted)]"> (test)</span>}
+                  </p>
+                  {(ev.moderatorTag || ev.reason) && (
+                    <p className="mt-0.5 text-[11px] text-[var(--text-muted)]">
+                      {ev.moderatorTag ? `par ${ev.moderatorTag}` : ""}
+                      {ev.moderatorTag && ev.reason ? " · " : ""}
+                      {ev.reason ?? ""}
+                    </p>
+                  )}
+                </div>
+                <span className="shrink-0 text-[11px] text-[var(--text-muted)]">{sinceLabel(ev.timestamp)}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Panel>
+    </ConsolePage>
   );
 }
+
+const SHIELD_OPTIONS: Array<{ key: keyof OwnerShieldConfig; label: string; hint: string }> = [
+  { key: "autoUnban", label: "Débannissement", hint: "Te débannit dès qu'un modérateur te bannit." },
+  { key: "autoTimeoutRemove", label: "Exclusion temporaire", hint: "Lève tout timeout dès qu'il est posé." },
+  { key: "autoMuteRolesRemove", label: "Rôles restrictifs", hint: "Retire les rôles mute, prison ou silence qu'on te donne." },
+  { key: "autoRestoreRoles", label: "Rôles retirés", hint: "Te rend les rôles qu'on t'enlève." },
+  { key: "antiNicknameChange", label: "Pseudo", hint: "Remet ton pseudo si un modérateur le change." },
+  { key: "autoVoiceUnmute", label: "Micro coupé", hint: "Te rend la parole en vocal." },
+  { key: "autoVoiceUndeafen", label: "Sourdine", hint: "Te rend l'écoute en vocal." },
+  { key: "antiVoiceMove", label: "Déplacement vocal", hint: "Te ramène dans ton salon vocal si on te déplace." },
+  { key: "autoKickInvite", label: "Invitation après expulsion", hint: "T'envoie en MP une invitation de retour." },
+  { key: "dmAlerts", label: "Alertes en MP", hint: "Pseudo, ID et raison de la personne qui t'a sanctionné." },
+  { key: "botSelfDefense", label: "Défense d'Etho", hint: "Neutralise un modérateur qui retire les rôles ou les pouvoirs d'Etho (timeout 28 j et retrait de rôles)." },
+  { key: "stealthMode", label: "Mode discret", hint: "Aucun log dans les salons de modération publics." },
+];

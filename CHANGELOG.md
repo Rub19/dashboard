@@ -2,6 +2,19 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.91 — 2026-10-09
+
+**Console Discord : nouvelle vue d'ensemble façon Keeper, corrections**
+
+- Vue d'ensemble refaite comme le nouveau Keeper : bandeaux d'alerte, quatre indicateurs (protections actives, scan, mode raid, préfixe), raccourcis « Gérer le serveur » et activité récente sans emoji parasites.
+- Icônes de la console alignées sur Keeper (scan de sécurité, configuration assistée, mode raid…).
+- Sélecteur de membres : la liste s'affiche dès l'ouverture, bots compris, avec une recherche par pseudo, nom ou ID.
+- Le bouton « Scan de sécurité » fonctionne depuis la page Protections.
+- L'écran de chargement ne s'affiche plus qu'au premier lancement de la session.
+- Bouclier de l'owner refait au format de la console, sans badges décoratifs.
+- Jeux : si l'économie est coupée, la page le dit au lieu de proposer des boutons qui échouent.
+- Pages de modules : les badges ronds deviennent des étiquettes discrètes.
+
 ## v1.55.90 — 2026-10-09
 
 **Habitudes : finitions**

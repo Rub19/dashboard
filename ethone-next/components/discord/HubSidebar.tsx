@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ShieldCheck,
-  ShieldAlert,
   Search,
   Home,
   BookOpen,
@@ -13,29 +12,36 @@ import {
   Sun,
   Moon,
   LogOut,
-  Users,
-  Settings2,
-  FileText,
-  Sliders,
   Crown,
-  LayoutGrid,
-  Terminal,
-  Key,
   MoreHorizontal,
   Sparkles,
   Download,
   Upload,
   Copy,
   Check,
-  Scan,
-  Music,
-  Gamepad2,
-  Gift,
-  CalendarDays,
-  Trophy,
-  Coins,
-  Tv,
 } from "@/components/icons/ph";
+// Icônes de la console : les mêmes que Keeper (Lucide, trait fin).
+import {
+  Ban as LBan,
+  BriefcaseBusiness as LBriefcaseBusiness,
+  CalendarDays as LCalendarDays,
+  Coins as LCoins,
+  Gamepad2 as LGamepad2,
+  Gavel as LGavel,
+  Gift as LGift,
+  History as LHistory,
+  LayoutGrid as LLayoutGrid,
+  Music as LMusic,
+  ScanFace as LScanFace,
+  Settings as LSettings,
+  Shield as LShield,
+  SquareUserRound as LSquareUserRound,
+  Trophy as LTrophy,
+  Tv as LTv,
+  UserRoundCog as LUserRoundCog,
+  UsersRound as LUsersRound,
+  WandSparkles as LWandSparkles,
+} from "lucide-react";
 import ClientImage from "@/components/ClientImage";
 import OwnerBotSection from "./OwnerBotSection";
 import DiscordLanguageDropdown from "./DiscordLanguageDropdown";
@@ -127,13 +133,13 @@ function getGuildInitials(name: string) {
 }
 
 const ANIMATION_LINKS = [
-  { id: "music", path: "/discord/music", key: "dMusic", label: "Musique", icon: Music },
-  { id: "games", path: "/discord/games", key: "dGames", label: "Jeux et casino", icon: Gamepad2 },
-  { id: "giveaways", path: "/discord/giveaways", key: "dGiveaways", label: "Giveaways", icon: Gift },
-  { id: "events", path: "/discord/events", key: "dEvents", label: "Événements", icon: CalendarDays },
-  { id: "leveling", path: "/discord/leveling", key: "dLeveling", label: "Niveaux", icon: Trophy },
-  { id: "economy", path: "/discord/economy", key: "dEconomy", label: "Économie", icon: Coins },
-  { id: "streamers", path: "/discord/streamers", key: "dStreamers", label: "Alertes streamers", icon: Tv },
+  { id: "music", path: "/discord/music", key: "dMusic", label: "Musique", icon: LMusic },
+  { id: "games", path: "/discord/games", key: "dGames", label: "Jeux et casino", icon: LGamepad2 },
+  { id: "giveaways", path: "/discord/giveaways", key: "dGiveaways", label: "Giveaways", icon: LGift },
+  { id: "events", path: "/discord/events", key: "dEvents", label: "Événements", icon: LCalendarDays },
+  { id: "leveling", path: "/discord/leveling", key: "dLeveling", label: "Niveaux", icon: LTrophy },
+  { id: "economy", path: "/discord/economy", key: "dEconomy", label: "Économie", icon: LCoins },
+  { id: "streamers", path: "/discord/streamers", key: "dStreamers", label: "Alertes streamers", icon: LTv },
 ] as const;
 
 export default function HubSidebar({
@@ -354,7 +360,7 @@ export default function HubSidebar({
                           }}
                           className="w-full flex items-center gap-2 rounded px-2.5 py-1.5 text-left text-[var(--text-primary)] hover:bg-white/[0.06] transition-colors cursor-pointer"
                         >
-                          <Sliders className="h-3.5 w-3.5 text-[var(--text-muted)]" />
+                          <LWandSparkles className="h-3.5 w-3.5 text-[var(--text-muted)]" strokeWidth={1.75} />
                           <span>{i18n("dAssistedSetup", "Configuration assistée")}</span>
                         </button>
                       )}
@@ -439,7 +445,7 @@ export default function HubSidebar({
                   : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
               )}
             >
-              <ShieldCheck className="h-4 w-4 shrink-0" />
+              <LLayoutGrid className="h-4 w-4 shrink-0" strokeWidth={1.75} />
               <span>{i18n("dOverview", "Vue d'ensemble")}</span>
             </button>
           </div>
@@ -458,7 +464,7 @@ export default function HubSidebar({
                   view === "protections" ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold" : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
                 )}
               >
-                <ShieldAlert className="h-3.5 w-3.5 shrink-0" />
+                <LShield strokeWidth={1.75} className="h-3.5 w-3.5 shrink-0" />
                 <span>{i18n("dProtections", "Protections")}</span>
               </button>
 
@@ -478,7 +484,7 @@ export default function HubSidebar({
                     : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
                 )}
               >
-                <Scan className="h-3.5 w-3.5 shrink-0" />
+                <LScanFace strokeWidth={1.75} className="h-3.5 w-3.5 shrink-0" />
                 <span>{i18n("dSecurityScan", "Scan de sécurité")}</span>
               </button>
 
@@ -498,7 +504,7 @@ export default function HubSidebar({
                     : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
                 )}
               >
-                <Sliders className="h-3.5 w-3.5 shrink-0" />
+                <LWandSparkles strokeWidth={1.75} className="h-3.5 w-3.5 shrink-0" />
                 <span>{i18n("dAssistedSetup", "Configuration assistée")}</span>
               </button>
             </div>
@@ -518,7 +524,7 @@ export default function HubSidebar({
                   view === "whitelist" ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold" : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
                 )}
               >
-                <Users className="h-3.5 w-3.5 shrink-0" />
+                <LUsersRound strokeWidth={1.75} className="h-3.5 w-3.5 shrink-0" />
                 <span>{i18n("dWhitelist", "Whitelist")}</span>
               </button>
 
@@ -531,7 +537,7 @@ export default function HubSidebar({
                   view === "blacklist" ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold" : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
                 )}
               >
-                <ShieldAlert className="h-3.5 w-3.5 shrink-0" />
+                <LBan strokeWidth={1.75} className="h-3.5 w-3.5 shrink-0" />
                 <span>{i18n("dBlacklist", "Blacklist")}</span>
               </button>
 
@@ -544,7 +550,7 @@ export default function HubSidebar({
                   view === "members" ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold" : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
                 )}
               >
-                <Crown className="h-3.5 w-3.5 shrink-0" />
+                <LSquareUserRound strokeWidth={1.75} className="h-3.5 w-3.5 shrink-0" />
                 <span>{i18n("dRolesAndMembers", "Rôles et membres")}</span>
               </button>
 
@@ -557,7 +563,7 @@ export default function HubSidebar({
                   view === "commands" ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold" : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
                 )}
               >
-                <Terminal className="h-3.5 w-3.5 shrink-0" />
+                <LGavel strokeWidth={1.75} className="h-3.5 w-3.5 shrink-0" />
                 <span>{i18n("dCommands", "Commandes")}</span>
               </button>
             </div>
@@ -579,7 +585,7 @@ export default function HubSidebar({
                     activeId === id ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold" : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
                   )}
                 >
-                  <Icon className="h-3.5 w-3.5 shrink-0" />
+                  <Icon strokeWidth={1.75} className="h-3.5 w-3.5 shrink-0" />
                   <span>{i18n(key, label)}</span>
                 </button>
               ))}
@@ -593,7 +599,7 @@ export default function HubSidebar({
                     view === "modules" ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold" : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
                   )}
                 >
-                  <LayoutGrid className="h-3.5 w-3.5 shrink-0" />
+                  <LLayoutGrid strokeWidth={1.75} className="h-3.5 w-3.5 shrink-0" />
                   <span>{i18n("dAllModules", "Tous les modules")}</span>
                 </button>
               )}
@@ -614,7 +620,7 @@ export default function HubSidebar({
                   view === "logs" ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold" : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
                 )}
               >
-                <FileText className="h-3.5 w-3.5 shrink-0" />
+                <LHistory strokeWidth={1.75} className="h-3.5 w-3.5 shrink-0" />
                 <span>{i18n("dLogs", "Logs")}</span>
               </button>
 
@@ -627,7 +633,7 @@ export default function HubSidebar({
                   view === "tools" ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold" : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
                 )}
               >
-                <Sliders className="h-3.5 w-3.5 shrink-0" />
+                <LBriefcaseBusiness strokeWidth={1.75} className="h-3.5 w-3.5 shrink-0" />
                 <span>{i18n("dTools", "Outils")}</span>
               </button>
 
@@ -640,7 +646,7 @@ export default function HubSidebar({
                   view === "settings" ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold" : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
                 )}
               >
-                <Settings2 className="h-3.5 w-3.5 shrink-0" />
+                <LSettings strokeWidth={1.75} className="h-3.5 w-3.5 shrink-0" />
                 <span>{i18n("dSettings", "Réglages")}</span>
               </button>
 
@@ -653,7 +659,7 @@ export default function HubSidebar({
                   view === "access" ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold" : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
                 )}
               >
-                <Key className="h-3.5 w-3.5 shrink-0" />
+                <LUserRoundCog strokeWidth={1.75} className="h-3.5 w-3.5 shrink-0" />
                 <span>{i18n("dAccess", "Accès")}</span>
               </button>
             </div>

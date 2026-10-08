@@ -47919,5 +47919,74 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_90_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_90_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_90_de);
 
+const v1_55_91_fr: ChangelogEntry = {
+  version: "v1.55.91",
+  date: "2026-10-09",
+  title: "Console Discord : nouvelle vue d'ensemble façon Keeper, corrections",
+  items: [
+    "Vue d'ensemble refaite comme le nouveau Keeper : bandeaux d'alerte, quatre indicateurs (protections actives, scan, mode raid, préfixe), raccourcis « Gérer le serveur » et activité récente sans emoji parasites.",
+    "Icônes de la console alignées sur Keeper (scan de sécurité, configuration assistée, mode raid…).",
+    "Sélecteur de membres : la liste s'affiche dès l'ouverture, bots compris, avec une recherche par pseudo, nom ou ID.",
+    "Le bouton « Scan de sécurité » fonctionne depuis la page Protections.",
+    "L'écran de chargement ne s'affiche plus qu'au premier lancement de la session.",
+    "Bouclier de l'owner refait au format de la console, sans badges décoratifs.",
+    "Jeux : si l'économie est coupée, la page le dit au lieu de proposer des boutons qui échouent.",
+    "Pages de modules : les badges ronds deviennent des étiquettes discrètes.",
+  ],
+};
+
+const v1_55_91_en: ChangelogEntry = {
+  version: "v1.55.91",
+  date: "2026-10-09",
+  title: "Discord console: new Keeper-style overview, fixes",
+  items: [
+    "Overview rebuilt like the new Keeper: alert banners, four indicators (active protections, scan, raid mode, prefix), “Manage the server” shortcuts and recent activity without stray emoji.",
+    "Console icons aligned with Keeper (security scan, assisted setup, raid mode…).",
+    "Member picker: the list shows as soon as it opens, bots included, with search by nickname, name or ID.",
+    "The “Security scan” button now works from the Protections page.",
+    "The loading screen only shows on the first launch of the session.",
+    "Owner shield rebuilt in the console layout, without decorative badges.",
+    "Games: when the economy is off, the page says so instead of offering buttons that fail.",
+    "Module pages: round badges become subtle labels.",
+  ],
+};
+
+const v1_55_91_es: ChangelogEntry = {
+  version: "v1.55.91",
+  date: "2026-10-09",
+  title: "Consola Discord: nueva vista general al estilo Keeper, correcciones",
+  items: [
+    "Vista general rehecha como el nuevo Keeper: avisos, cuatro indicadores (protecciones activas, escaneo, modo raid, prefijo), accesos « Gestionar el servidor » y actividad reciente sin emojis sobrantes.",
+    "Iconos de la consola alineados con Keeper (escaneo de seguridad, configuración asistida, modo raid…).",
+    "Selector de miembros: la lista aparece al abrirlo, bots incluidos, con búsqueda por apodo, nombre o ID.",
+    "El botón « Escaneo de seguridad » funciona desde la página Protecciones.",
+    "La pantalla de carga solo aparece en el primer inicio de la sesión.",
+    "Escudo del owner rehecho con el diseño de la consola, sin insignias decorativas.",
+    "Juegos: si la economía está desactivada, la página lo indica en lugar de ofrecer botones que fallan.",
+    "Páginas de módulos: las insignias redondas pasan a ser etiquetas discretas.",
+  ],
+};
+
+const v1_55_91_de: ChangelogEntry = {
+  version: "v1.55.91",
+  date: "2026-10-09",
+  title: "Discord-Konsole: neue Übersicht im Keeper-Stil, Korrekturen",
+  items: [
+    "Übersicht wie beim neuen Keeper neu gebaut: Warnhinweise, vier Kennzahlen (aktive Schutzfunktionen, Scan, Raid-Modus, Präfix), Verknüpfungen „Server verwalten“ und letzte Aktivität ohne störende Emojis.",
+    "Konsolen-Icons an Keeper angeglichen (Sicherheitsscan, geführte Einrichtung, Raid-Modus…).",
+    "Mitgliederauswahl: Die Liste erscheint sofort beim Öffnen, Bots inklusive, mit Suche nach Spitzname, Name oder ID.",
+    "Die Schaltfläche „Sicherheitsscan“ funktioniert jetzt von der Schutz-Seite aus.",
+    "Der Ladebildschirm erscheint nur noch beim ersten Start der Sitzung.",
+    "Owner-Schild im Konsolen-Layout neu gebaut, ohne dekorative Abzeichen.",
+    "Spiele: Ist die Wirtschaft aus, sagt die Seite das, statt Schaltflächen anzubieten, die fehlschlagen.",
+    "Modulseiten: Runde Abzeichen werden zu dezenten Etiketten.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_91_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_91_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_91_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_91_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

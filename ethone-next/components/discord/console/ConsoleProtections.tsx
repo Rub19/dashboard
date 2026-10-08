@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Minus, Plus, Search, Sparkles, Trash2 } from "@/components/icons/ph";
+import { Minus, Plus, Search, Trash2 } from "@/components/icons/ph";
+import { WandSparkles } from "lucide-react";
 import ChannelPicker from "../ChannelPicker";
 import { SPRING_LAYOUT, SPRING_PILL } from "@/lib/ease";
 import { cn } from "@/lib/utils";
@@ -77,6 +78,18 @@ const strongest = (actions: RaidAction[]) => (["BAN", "KICK", "QUARANTINE", "TIM
 const withPunish = (actions: RaidAction[], p: string) => [...actions.filter((a) => !PUNISHERS.includes(a)), ...(p === "none" ? [] : [p as RaidAction])];
 const fmtDuration = (s: number) => (s >= 3600 ? `${Math.round(s / 3600)} h` : s >= 60 ? `${Math.round(s / 60)} min` : `${s} s`);
 
+/** Protection réellement en marche : module allumé, moteur allumé, protection allumée. */
+function defIsOn(d: Def, raid: RaidCfg | null, nuke: NukeCfg | null, modules: Record<string, boolean>): boolean {
+  if (modules[d.engine === "nuke" ? "anti-nuke" : "security"] === false) return false;
+  if (d.engine === "nuke") return Boolean(nuke?.enabled && nuke.protections?.[d.key] !== false);
+  return Boolean(raid?.enabled && raid[d.sub].enabled);
+}
+
+/** Compteur « Protections actives » de la vue d'ensemble, calculé exactement comme cette page. */
+export function protectionCount(raid: unknown, nuke: unknown, modules: Record<string, boolean>): { active: number; total: number } {
+  return { active: DEFS.filter((d) => defIsOn(d, raid as RaidCfg | null, nuke as NukeCfg | null, modules)).length, total: DEFS.length };
+}
+
 export default function ConsoleProtections({ guildId, onOpenView, onOpenSetup }: { guildId: string; onOpenView?: (v: ConsoleView) => void; onOpenSetup?: () => void }) {
   const api = useGuildApi(guildId);
   const [raid, setRaid] = useState<RaidCfg | null>(null);
@@ -118,14 +131,7 @@ export default function ConsoleProtections({ guildId, onOpenView, onOpenSetup }:
   };
 
   const moduleOf = (d: Def) => (d.engine === "nuke" ? "anti-nuke" : "security");
-  const isOn = useCallback(
-    (d: Def) => {
-      if (modules[d.engine === "nuke" ? "anti-nuke" : "security"] === false) return false;
-      if (d.engine === "nuke") return Boolean(nuke?.enabled && nuke.protections?.[d.key] !== false);
-      return Boolean(raid?.enabled && raid[d.sub].enabled);
-    },
-    [modules, nuke, raid]
-  );
+  const isOn = useCallback((d: Def) => defIsOn(d, raid, nuke, modules), [modules, nuke, raid]);
   const toggle = async (d: Def, v: boolean) => {
     if (v && modules[moduleOf(d)] === false) await enableModule(moduleOf(d));
     if (d.engine === "nuke" && nuke) await putNuke({ protections: { ...nuke.protections, [d.key]: v }, ...(v ? { enabled: true } : {}) });
@@ -153,7 +159,7 @@ export default function ConsoleProtections({ guildId, onOpenView, onOpenSetup }:
       actions={
         onOpenSetup && (
           <GhostButton onClick={onOpenSetup}>
-            <Sparkles className="h-3.5 w-3.5" />
+            <WandSparkles className="h-3.5 w-3.5" strokeWidth={2} />
             Configuration assistée
           </GhostButton>
         )

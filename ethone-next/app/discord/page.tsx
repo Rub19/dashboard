@@ -698,11 +698,12 @@ export default function DiscordDashboardPage() {
     setShowAllModules(false);
     setShowSetup(false);
     setShowScan(true);
+    setConsoleView(null);
     setMenuOpen(false);
   }, []);
   useEffect(() => {
     contentRef.current?.scrollTo({ top: 0 });
-  }, [activeModule, showAllModules, showSetup, showScan]);
+  }, [activeModule, showAllModules, showSetup, showScan, consoleView]);
   // Chaque carte a un lien « Ouvrir la page complète » distinct de son clic principal (voir NAV_MODULES_BASE) :
   // il doit pointer vers le serveur affiché ici, pas vers celui que la page de destination devinerait sans indice.
   const navModules = useMemo(
@@ -1286,6 +1287,7 @@ export default function DiscordDashboardPage() {
                   onOpenScan={goScan}
                   onAllModules={goAllModules}
                   onOpenLogs={() => openConsoleView("logs", { logsTab: "channels" })}
+                  onOpenView={openConsoleView}
                 />
               )}
 

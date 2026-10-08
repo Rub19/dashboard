@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { AlertTriangle, Bell, Zap } from "@/components/icons/ph";
 import ChannelPicker from "../ChannelPicker";
-import { sinceLabel } from "@/lib/discord/security-scan";
+import { cleanLogText, sinceLabel } from "@/lib/discord/security-scan";
 import { SPRING_PILL } from "@/lib/ease";
 import { cn } from "@/lib/utils";
 import { ConsolePage, EmptyLine, Panel, useGuildApi } from "./kit";
@@ -140,7 +140,7 @@ export default function ConsoleLogs({ guildId, initialTab = "incidents" }: { gui
                 <li key={e.id} className="flex items-start gap-3 border-t border-[var(--panel-border)] px-5 py-3 first:border-t-0">
                   <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full" style={{ background: SEVERITY_COLOR[e.severity] ?? "var(--text-muted)" }} />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-[13px] font-semibold text-[var(--text-primary)]">{e.reason || e.type.replace(/_/g, " ").toLowerCase()}</p>
+                    <p className="truncate text-[13px] font-semibold text-[var(--text-primary)]">{cleanLogText(e.reason || e.type.replace(/_/g, " ").toLowerCase())}</p>
                     <p className="truncate text-[11px] text-[var(--text-muted)]">
                       {e.actor?.tag ? `Par ${e.actor.tag}` : "Par Etho"}
                       {e.target?.tag || e.target?.name ? ` · Cible : ${e.target.tag || e.target.name}` : ""}

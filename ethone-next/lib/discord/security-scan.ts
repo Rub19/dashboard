@@ -65,3 +65,11 @@ export async function fetchLastScan(guildId: string): Promise<ScanResult | null>
   const data = await res.json().catch(() => null);
   return data?.result ?? null;
 }
+
+/** Textes de logs écrits par le bot (« 🚨 💥 SERVER NUKE DÉTECTÉ ») : sans emoji et sans majuscules criardes. */
+export function cleanLogText(raw: string): string {
+  const t = raw.replace(/[\p{Extended_Pictographic}️‍]/gu, "").replace(/\s+/g, " ").trim();
+  const letters = t.replace(/[^\p{L}]/gu, "");
+  const upper = letters.replace(/[^\p{Lu}]/gu, "").length;
+  return letters.length > 3 && upper / letters.length >= 0.7 ? t.charAt(0).toUpperCase() + t.slice(1).toLowerCase() : t;
+}

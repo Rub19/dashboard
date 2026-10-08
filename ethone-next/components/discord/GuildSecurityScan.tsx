@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { AlertTriangle, Check, RefreshCw, Scan, Shield } from "@/components/icons/ph";
+import { AlertTriangle, Check, RefreshCw, Shield } from "@/components/icons/ph";
+import { ScanFace } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
 import { SPRING_LAYOUT, SPRING_PILL, SPRING_PRESS } from "@/lib/ease";
@@ -110,8 +111,8 @@ export default function GuildSecurityScan({ guild, onOpenProtections }: GuildSec
           transition={SPRING_LAYOUT}
           className="flex flex-col items-center justify-center rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-12 text-center"
         >
-          <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--accent-muted)] text-[var(--accent-primary)]">
-            {scanning || loading ? <RefreshCw className="h-6 w-6 animate-spin" /> : <Scan className="h-6 w-6" />}
+          <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--success)]/12 text-[var(--success)]">
+            {scanning || loading ? <RefreshCw className="h-6 w-6 animate-spin" /> : <ScanFace className="h-6 w-6" strokeWidth={1.75} />}
           </div>
           <h2 className="text-base font-bold text-[var(--text-primary)] sm:text-lg">
             {scanning ? i18n("dScanning", "Scan en cours...") : loading ? "Chargement du dernier scan…" : i18n("dNoScanYet", "Aucun scan pour l'instant")}

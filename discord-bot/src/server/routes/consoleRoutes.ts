@@ -107,27 +107,39 @@ export function createConsoleRouter(client: Client): Router {
   });
 
   // --- Recherche de membres (sélecteurs « Ajouter ») ------------------------------------------------------------
+  // Liste affichée dès l'ouverture du sélecteur (format Keeper), filtrée par « contient » sur pseudo, nom ou ID.
+  // Les petits serveurs sont chargés en entier une fois ; au-delà, la recherche Discord complète le cache.
+  const fullyFetched = new Set<string>();
   router.get('/members/search', async (req: Request, res: Response) => {
     const guild = guildOf(req);
-    const q = String(req.query.q ?? '').trim();
-    if (!guild || q.length < 2) {
+    const q = String(req.query.q ?? '').trim().toLowerCase();
+    if (!guild) {
       res.json({ members: [] });
       return;
     }
     try {
+      if (!fullyFetched.has(guild.id) && guild.memberCount <= 5000) {
+        await guild.members.fetch().catch(() => null);
+        fullyFetched.add(guild.id);
+      }
       if (SNOWFLAKE.test(q)) {
-        const m = await guild.members.fetch(q).catch(() => null);
+        const m = guild.members.cache.get(q) ?? (await guild.members.fetch(q).catch(() => null));
         res.json({ members: m ? [personView(m.user, m)] : [] });
         return;
       }
-      const found = await guild.members.search({ query: q, limit: 15 }).catch(() => null);
-      const lower = q.toLowerCase();
-      const list = found
-        ? [...found.values()]
-        : [...guild.members.cache.values()]
-            .filter((m) => m.user.username.toLowerCase().includes(lower) || m.displayName.toLowerCase().includes(lower))
-            .slice(0, 15);
-      res.json({ members: list.map((m) => personView(m.user, m)) });
+      const match = (m: GuildMember) =>
+        !q || m.displayName.toLowerCase().includes(q) || m.user.username.toLowerCase().includes(q) || (m.user.globalName ?? '').toLowerCase().includes(q);
+      const hits = new Map<string, GuildMember>();
+      for (const m of guild.members.cache.values()) if (match(m)) hits.set(m.id, m);
+      if (q.length >= 2 && hits.size < 25) {
+        const found = await guild.members.search({ query: q, limit: 25 }).catch(() => null);
+        found?.forEach((m) => hits.set(m.id, m));
+      }
+      // Humains d'abord, puis les bots ; ordre alphabétique.
+      const list = [...hits.values()]
+        .sort((a, b) => Number(a.user.bot) - Number(b.user.bot) || a.displayName.localeCompare(b.displayName, 'fr'))
+        .slice(0, 50);
+      res.json({ members: list.map((m) => personView(m.user, m)), total: hits.size });
     } catch (err) {
       handleRouteError(err, res, 'Erreur recherche de membres');
     }

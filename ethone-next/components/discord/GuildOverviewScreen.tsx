@@ -1,468 +1,236 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState, type ComponentType } from "react";
 import { motion } from "framer-motion";
-import {
-  ChevronRight,
-  Radio,
-  FileText,
-} from "@/components/icons/ph";
+import { Ban, BellRing, BriefcaseBusiness, CircleCheck, Gavel, History, ScanFace, Settings, ShieldAlert, ShieldCheck, Siren, UsersRound } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMotionPref } from "@/lib/hooks/useMotionPref";
 import { useI18n } from "@/lib/hooks/useI18n";
-import { SPRING_PRESS } from "@/lib/ease";
+import { SPRING_LAYOUT, SPRING_PRESS } from "@/lib/ease";
+import { pageStagger, staggerItem } from "@/lib/motion-variants";
 import { useRaidMode } from "@/lib/hooks/useRaidMode";
-import { SEVERITY_COLOR, SEVERITY_LABEL, failingChecks, fetchLastScan, scoreColor, sinceLabel, type ScanCheck, type ScanResult } from "@/lib/discord/security-scan";
+import { cleanLogText, failingChecks, fetchLastScan, scoreColor, sinceLabel, type ScanCheck, type ScanResult } from "@/lib/discord/security-scan";
+import { protectionCount } from "./console/ConsoleProtections";
+import type { ConsoleView } from "./HubSidebar";
+import type { DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
-import {
-  consoleCard,
-  consoleFadeUp,
-  consoleReveal,
-  consoleStage,
-} from "./consoleMotion";
-import type { DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
 
 interface GuildOverviewScreenProps {
   guild: DiscordGuild;
   userName?: string;
-  guildSettings?: {
-    prefix?: string;
-    antiRaidEnabled?: boolean;
-    antiSpamEnabled?: boolean;
-  };
+  guildSettings?: { prefix?: string; antiRaidEnabled?: boolean; antiSpamEnabled?: boolean };
   moduleStatus?: Record<string, boolean>;
   activeModuleCount?: number;
   totalModuleCount?: number;
   onOpenSetup?: () => void;
   onOpenScan?: () => void;
-  onSelectCategory?: (categoryId: string) => void;
   onAllModules?: () => void;
   /** Ouvre la page Logs de la console (salons de log). */
   onOpenLogs?: () => void;
+  /** Ouvre une page de la console (Protections, Commandes, Whitelist…). */
+  onOpenView?: (view: ConsoleView) => void;
 }
 
-const CATEGORY_DEFINITIONS = [
-  {
-    id: "protect",
-    labelKey: "dCatSecurity",
-    hintKey: "dCatSecurityHint",
-    defaultLabel: "Sécurité & modération",
-    defaultHint: "Anti-raid, anti-spam, permissions et sauvegardes.",
-    modules: ["security", "secureroles", "moderation", "automodnative", "logs", "backups"],
-    href: "/discord/security",
-  },
-  {
-    id: "community",
-    labelKey: "dCatCommunity",
-    hintKey: "dCatCommunityHint",
-    defaultLabel: "Communauté & rôles",
-    defaultHint: "Accueil des membres, attribution de rôles et sondages.",
-    modules: ["welcome", "roles", "statroles", "leveling", "invites", "suggestions", "polls", "forms", "starboard", "highlights", "birthdays"],
-    href: "/discord/welcome",
-  },
-  {
-    id: "fun",
-    labelKey: "dCatEntertainment",
-    hintKey: "dCatEntertainmentHint",
-    defaultLabel: "Animation & médias",
-    defaultHint: "Musique, jeux, giveaways et événements.",
-    modules: ["streamers", "games", "music", "giveaways", "economy", "counting", "events", "calendar", "voice"],
-    href: "/discord/music",
-  },
-  {
-    id: "tools",
-    labelKey: "dCatDaily",
-    hintKey: "dCatDailyHint",
-    defaultLabel: "Outils du quotidien",
-    defaultHint: "Tickets de support, commandes personnalisées et rappels.",
-    modules: ["tickets", "commands", "tags", "reminders", "sticky", "afk", "serverstats"],
-    href: "/discord/tickets",
-  },
-  {
-    id: "manage",
-    labelKey: "dCatManagement",
-    hintKey: "dCatManagementHint",
-    defaultLabel: "Gestion & intelligence",
-    defaultHint: "Vue globale, paramètres du serveur et intelligence artificielle.",
-    modules: ["overview", "server", "settings", "analytics", "stats", "ai", "bot"],
-    href: "/discord/overview",
-  },
+type Icon = ComponentType<{ className?: string; strokeWidth?: number }>;
+
+/** « Gérer le serveur » : les mêmes raccourcis que Keeper, vers les pages de la console. */
+const SHORTCUTS: Array<{ view: ConsoleView | "scan"; icon: Icon; title: string; text: string }> = [
+  { view: "protections", icon: ShieldCheck, title: "Protections", text: "Activer et régler chaque protection." },
+  { view: "commands", icon: Gavel, title: "Commandes", text: "Qui peut bannir, expulser, effacer." },
+  { view: "whitelist", icon: UsersRound, title: "Whitelist", text: "Membres et rôles de confiance." },
+  { view: "blacklist", icon: Ban, title: "Blacklist", text: "Bannis à chaque arrivée." },
+  { view: "logs", icon: History, title: "Logs", text: "Tout ce qu'Etho a repéré." },
+  { view: "scan", icon: ScanFace, title: "Scan de sécurité", text: "Les failles du serveur, par priorité." },
+  { view: "tools", icon: BriefcaseBusiness, title: "Outils", text: "Captcha à l'arrivée, soutiens." },
+  { view: "settings", icon: Settings, title: "Réglages", text: "Préfixe, salon système, alertes." },
 ];
 
-function SegmentBar({ active, total }: { active: number; total: number }) {
-  const safeTotal = Math.max(total, 1);
-  return (
-    <div className="flex items-center gap-1.5">
-      <div className="flex items-center gap-0.5 sm:gap-1">
-        {Array.from({ length: safeTotal }).map((_, i) => (
-          <span
-            key={i}
-            className={cn(
-              "h-1.5 w-1.5 sm:w-2 rounded-full transition-colors duration-300",
-              i < active ? "bg-emerald-400" : "bg-[var(--panel-border)]"
-            )}
-          />
-        ))}
-      </div>
-      <span className="ml-2 font-mono text-xs tabular-nums text-[var(--text-muted)] min-w-[2.2rem] text-right">
-        {active}/{total}
-      </span>
-      <ChevronRight className="h-3.5 w-3.5 text-[var(--text-muted)] transition-transform duration-200 group-hover:translate-x-0.5" />
-    </div>
-  );
-}
-
-export default function GuildOverviewScreen({
-  guild,
-  userName: _userName,
-  guildSettings,
-  moduleStatus,
-  activeModuleCount,
-  totalModuleCount,
-  onOpenSetup,
-  onOpenScan,
-  onSelectCategory,
-  onAllModules,
-  onOpenLogs,
-}: GuildOverviewScreenProps) {
-  const router = useRouter();
+export default function GuildOverviewScreen({ guild, guildSettings, onOpenScan, onOpenLogs, onOpenView }: GuildOverviewScreenProps) {
   const i18n = useI18n();
   const { reduced } = useMotionPref();
-
-  const { active: raidMode, busy: raidBusy, toggle: handleToggleRaid } = useRaidMode(guild.id);
-  const isRaidModeActive = raidMode === true;
+  const { active: raidMode, busy: raidBusy, toggle: toggleRaid } = useRaidMode(guild.id);
 
   const [lastScan, setLastScan] = useState<ScanResult | null>(null);
   const [logGap, setLogGap] = useState<string[]>([]);
   const [activity, setActivity] = useState<Array<{ id: string; title: string; createdAt: string; color?: string }> | null>(null);
+  const [protections, setProtections] = useState<{ active: number; total: number } | null>(null);
+
   useEffect(() => {
     let cancelled = false;
     fetchLastScan(guild.id)
       .then((r) => !cancelled && setLastScan(r))
       .catch(() => {});
-    if (BOT_API_URL) {
-      fetch(`${BOT_API_URL}/api/guilds/${guild.id}/server/audit`, { credentials: "include" })
+    if (!BOT_API_URL) return;
+    const get = (path: string) =>
+      fetch(`${BOT_API_URL}/api/guilds/${guild.id}${path}`, { credentials: "include" })
         .then((r) => (r.ok ? r.json() : null))
-        .then((d) => !cancelled && setActivity(Array.isArray(d?.logs) ? d.logs.slice(0, 5) : null))
-        .catch(() => {});
-      fetch(`${BOT_API_URL}/api/guilds/${guild.id}/server/log-coverage`, { credentials: "include" })
-        .then((r) => (r.ok ? r.json() : null))
-        .then((d) => !cancelled && setLogGap(Array.isArray(d?.withoutChannel) ? d.withoutChannel : []))
-        .catch(() => {});
-    }
+        .catch(() => null);
+    get("/server/audit").then((d) => !cancelled && setActivity(Array.isArray(d?.logs) ? d.logs.slice(0, 5) : null));
+    get("/server/log-coverage").then((d) => !cancelled && setLogGap(Array.isArray(d?.withoutChannel) ? d.withoutChannel : []));
+    Promise.all([get("/anti-raid/config"), get("/anti-nuke/config"), get("/modules")]).then(([r, n, m]) => {
+      if (cancelled || !r?.config || !n?.config) return;
+      const modules: Record<string, boolean> = Object.fromEntries((m?.modules ?? []).map((x: { id: string; enabled: boolean }) => [x.id, x.enabled]));
+      setProtections(protectionCount(r.config, n.config, modules));
+    });
     return () => {
       cancelled = true;
     };
   }, [guild.id]);
-  const toFix: Array<{ id: string; title: string; fix?: string; severity: ScanCheck["severity"]; action?: { label: string; href: string } }> = [
-    ...failingChecks(lastScan).filter((c) => c.severity !== "suggestion" && c.id !== "protections-log-channel"),
+
+  const open = (view: ConsoleView | "scan") => (view === "scan" ? onOpenScan?.() : onOpenView?.(view));
+
+  // Bandeaux en tête (format Keeper) : points critiques ou à revoir du dernier scan, et protections sans salon de log.
+  const banners: Array<{ id: string; tone: "danger" | "warning"; title: string; action: string; onClick: () => void }> = [
+    ...failingChecks(lastScan)
+      .filter((c: ScanCheck) => (c.severity === "important" || c.severity === "review") && c.id !== "protections-log-channel")
+      .slice(0, 2)
+      .map((c: ScanCheck) => ({ id: c.id, tone: c.severity === "important" ? ("danger" as const) : ("warning" as const), title: c.title, action: "Voir le détail", onClick: () => open("scan") })),
     ...(logGap.length
-      ? [
-          {
-            id: "protections-log-channel",
-            severity: "review" as const,
-            title: `${logGap.length} protection${logGap.length > 1 ? "s actives" : " active"} sans salon de log`,
-            fix: `Elles agissent, mais personne n'est prévenu sur Discord (${logGap.join(", ")}).`,
-            action: { label: i18n("dPickChannel", "Choisir un salon"), href: `/discord/logs?guildId=${guild.id}&tab=routing` },
-          },
-        ]
+      ? [{ id: "log-gap", tone: "warning" as const, title: `${logGap.length} protection${logGap.length > 1 ? "s" : ""} sans salon de log`, action: "Choisir un salon", onClick: () => onOpenLogs?.() }]
       : []),
   ];
-  const openScan = () => (onOpenScan ? onOpenScan() : router.push(`/discord?guildId=${guild.id}&view=scan`));
 
-
-  const categories = useMemo(
-    () =>
-      CATEGORY_DEFINITIONS.map((cat) => ({
-        ...cat,
-        label: i18n(cat.labelKey, cat.defaultLabel),
-        hint: i18n(cat.hintKey, cat.defaultHint),
-      })),
-    [i18n]
-  );
-
-  const totalCount =
-    totalModuleCount ??
-    categories.reduce((acc, cat) => acc + cat.modules.length, 0);
-
-  const activeCount =
-    activeModuleCount ??
-    categories.reduce(
-      (acc, cat) =>
-        acc + cat.modules.filter((id) => Boolean(moduleStatus?.[id])).length,
-      0
-    );
-
-  const subtitleText = `${activeCount} ${i18n("dModulesActiveOf", "modules actifs sur")} ${totalCount}.${
-    lastScan || toFix.length ? ` ${toFix.length ? `${toFix.length} point${toFix.length > 1 ? "s" : ""} à régler.` : "Rien d'urgent à régler."}` : ""
-  }`;
+  const tile = "rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]";
 
   return (
-    <motion.div
-      variants={consoleStage}
-      initial={reduced ? false : "initial"}
-      animate="animate"
-      className="space-y-6"
-    >
-      <motion.div
-        variants={consoleReveal}
-        className="flex flex-col sm:flex-row sm:items-center justify-between gap-3"
-      >
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-[var(--text-primary)] sm:text-3xl">
-            {i18n("dOverview", "Vue d'ensemble")}
-          </h1>
-          <p className="mt-1 text-xs sm:text-sm text-[var(--text-muted)]">
-            {subtitleText}
-          </p>
-        </div>
+    <motion.div variants={pageStagger} initial={reduced ? false : "initial"} animate="animate" className="mx-auto w-full max-w-4xl space-y-5">
+      <motion.h1 variants={staggerItem} className="text-2xl font-bold tracking-tight text-[var(--text-primary)] sm:text-3xl">
+        {i18n("dOverview", "Vue d'ensemble")}
+      </motion.h1>
 
-        <motion.button
-          type="button"
-          onClick={onAllModules || (() => router.push(`/discord/security?guildId=${guild.id}`))}
-          whileHover={reduced ? undefined : { scale: 1.03 }}
-          whileTap={reduced ? undefined : { scale: 0.97 }}
-          transition={SPRING_PRESS}
-          className="inline-flex items-center gap-1 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer self-start sm:self-auto"
-        >
-          <span>{i18n("dAllProtections", "Toutes les protections >")}</span>
-          <ChevronRight className="h-3.5 w-3.5" />
-        </motion.button>
-      </motion.div>
-
-      {toFix.length > 0 && (
-        <motion.div variants={consoleFadeUp} className="space-y-2.5">
-          <div className="flex items-center gap-2">
-            <h2 className="text-sm font-bold text-[var(--text-primary)]">{i18n("dToFix", "À régler")}</h2>
-            <span className="rounded-md bg-[var(--surface-hover)] px-1.5 py-0.5 font-mono text-[11px] text-[var(--text-muted)]">{toFix.length}</span>
-          </div>
-          <ul className="space-y-2">
-            {toFix.slice(0, 4).map((c) => (
-              <li key={c.id} className="flex flex-col gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-4 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex min-w-0 items-start gap-3">
-                  <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full" style={{ background: SEVERITY_COLOR[c.severity] }} aria-label={SEVERITY_LABEL[c.severity]} />
-                  <div className="min-w-0">
-                    <p className="text-xs font-semibold text-[var(--text-primary)]">{c.title}</p>
-                    {c.fix && <p className="mt-0.5 text-[11px] leading-relaxed text-[var(--text-muted)]">{c.fix}</p>}
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => (c.action ? (c.id === "protections-log-channel" && onOpenLogs ? onOpenLogs() : router.push(c.action.href)) : openScan())}
-                  className="shrink-0 self-start rounded-lg border border-[var(--panel-border)] px-3 py-1.5 text-xs font-semibold text-[var(--text-primary)] transition-[background-color,transform] duration-150 hover:bg-[var(--surface-hover)] active:scale-[0.97] sm:self-auto"
-                >
-                  {c.action ? c.action.label : i18n("dSeeDetails", "Voir le détail")}
-                </button>
-              </li>
-            ))}
-          </ul>
+      {banners.length > 0 && (
+        <motion.div variants={staggerItem} className="space-y-2">
+          {banners.map((b) => (
+            <div
+              key={b.id}
+              className={cn(
+                "flex items-center gap-3 rounded-xl border px-4 py-2.5",
+                b.tone === "danger" ? "border-[var(--danger)]/35 bg-[var(--danger)]/[0.07]" : "border-[var(--warning)]/35 bg-[var(--warning)]/[0.07]"
+              )}
+            >
+              {b.tone === "danger" ? <ShieldAlert className="h-4 w-4 shrink-0 text-[var(--danger)]" strokeWidth={2} /> : <BellRing className="h-4 w-4 shrink-0 text-[var(--warning)]" strokeWidth={2} />}
+              <p className="min-w-0 flex-1 truncate text-[13px] font-medium text-[var(--text-primary)]">{b.title}</p>
+              <button type="button" onClick={b.onClick} className="shrink-0 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-1.5 text-xs font-semibold text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-hover)]">
+                {b.action}
+              </button>
+            </div>
+          ))}
         </motion.div>
       )}
 
-      <motion.div
-        variants={consoleFadeUp}
-        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 backdrop-blur-sm"
-      >
-        <div className="flex items-center gap-3.5">
-          <div className="h-10 w-10 rounded-lg bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center shrink-0 font-bold text-base">
-            %
-          </div>
-          <div>
-            <h3 className="text-sm font-bold text-[var(--text-primary)]">
-              {i18n("dBannerTitle", "Configure Etho en une minute")}
-            </h3>
-            <p className="text-xs text-[var(--text-muted)]">
-              {i18n("dBannerSubtitle", "Trois questions sur ton serveur, un récapitulatif, et les bonnes protections sont en place.")}
+      {/* Quatre indicateurs */}
+      <motion.div variants={staggerItem} className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <button type="button" onClick={() => open("protections")} className={cn(tile, "relative overflow-hidden p-4 text-left transition-colors hover:border-[var(--text-primary)]/15")}>
+          <Head icon={ShieldCheck}>Protections actives</Head>
+          <p className="mt-2 text-2xl font-bold tabular-nums text-[var(--text-primary)]">
+            {protections ? protections.active : "—"}
+            <span className="text-[var(--text-muted)]">/{protections?.total ?? "—"}</span>
+          </p>
+          <span className="absolute inset-x-0 bottom-0 h-1 bg-[var(--panel-border)]">
+            <motion.span
+              className="block h-full bg-[var(--success)]"
+              initial={reduced ? false : { width: 0 }}
+              animate={{ width: protections ? `${(protections.active / protections.total) * 100}%` : 0 }}
+              transition={SPRING_LAYOUT}
+            />
+          </span>
+        </button>
+        <button type="button" onClick={() => open("scan")} className={cn(tile, "p-4 text-left transition-colors hover:border-[var(--text-primary)]/15")}>
+          <Head icon={ScanFace}>Scan de sécurité</Head>
+          {lastScan ? (
+            <p className="mt-2 text-2xl font-bold tabular-nums" title={sinceLabel(lastScan.scannedAt)}>
+              <span style={{ color: scoreColor(lastScan.score) }}>{lastScan.score}</span>
+              <span className="text-[var(--text-muted)]">/100</span>
             </p>
+          ) : (
+            <p className="mt-2 text-sm font-semibold text-[var(--text-primary)]">Lancer un scan</p>
+          )}
+        </button>
+        <div className={cn(tile, "p-4")}>
+          <Head icon={Siren}>Mode raid</Head>
+          <div className="mt-2 flex items-center justify-between gap-2">
+            <p className="text-2xl font-bold text-[var(--text-primary)]">{raidMode === null ? "—" : raidMode ? "Actif" : "Inactif"}</p>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={raidMode === true}
+              aria-label="Mode raid"
+              disabled={raidBusy || raidMode === null}
+              onClick={toggleRaid}
+              className={cn("relative h-5 w-9 shrink-0 rounded-full transition-colors duration-200 disabled:opacity-50", raidMode ? "bg-[var(--danger)]" : "bg-[var(--panel-border)]")}
+            >
+              <motion.span className="absolute left-0.5 top-0.5 h-4 w-4 rounded-full bg-white shadow" initial={false} animate={{ x: raidMode ? 16 : 0 }} transition={SPRING_PRESS} />
+            </button>
           </div>
         </div>
-
-        <button
-          type="button"
-          onClick={onOpenSetup || (() => router.push(`/discord/setup?guildId=${guild.id}`))}
-          className="shrink-0 inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold text-xs transition-colors shadow-sm cursor-pointer self-start sm:self-auto"
-        >
-          <span>{i18n("dBannerButton", "Commencer →")}</span>
+        <button type="button" onClick={() => open("settings")} className={cn(tile, "p-4 text-left transition-colors hover:border-[var(--text-primary)]/15")}>
+          <Head icon={Settings}>Préfixe</Head>
+          <p className="mt-2 font-mono text-2xl font-bold text-[var(--text-primary)]">{guildSettings?.prefix || "!"}</p>
         </button>
       </motion.div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        <div className="lg:col-span-8 space-y-6">
-          <motion.div variants={consoleFadeUp} className="space-y-3">
-            <div className="flex items-center justify-between">
-              <h2 className="text-sm font-bold text-[var(--text-primary)]">
-                {i18n("dModuleCoverage", "Couverture des modules")}
-              </h2>
-              <span className="font-mono text-xs tabular-nums text-[var(--text-muted)] font-semibold">
-                {activeCount}/{totalCount}
+      {/* Gérer le serveur */}
+      <motion.section variants={staggerItem} className="space-y-3">
+        <h2 className="text-sm font-bold text-[var(--text-primary)]">Gérer le serveur</h2>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {SHORTCUTS.map(({ view, icon: Ico, title, text }) => (
+            <motion.button
+              key={view}
+              type="button"
+              onClick={() => open(view)}
+              whileTap={reduced ? undefined : { scale: 0.98 }}
+              transition={SPRING_PRESS}
+              className={cn(tile, "flex items-center gap-3 p-3.5 text-left transition-colors hover:border-[var(--text-primary)]/15 hover:bg-[var(--surface-hover)]")}
+            >
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--success)]/12 text-[var(--success)]">
+                <Ico className="h-[18px] w-[18px]" strokeWidth={2} />
               </span>
-            </div>
-
-            <div className="space-y-1 rounded-sm border border-[var(--panel-border)] bg-[var(--surface-raised)] divide-y divide-[var(--panel-border)] overflow-hidden">
-              {categories.map((cat) => {
-                const categoryActive = cat.modules.filter((id) =>
-                  Boolean(moduleStatus?.[id])
-                ).length;
-                const categoryTotal = cat.modules.length;
-
-                return (
-                  <div
-                    key={cat.id}
-                    onClick={() => {
-                      if (onSelectCategory) {
-                        onSelectCategory(cat.id);
-                      } else if (onAllModules) {
-                        onAllModules();
-                      } else {
-                        router.push(`${cat.href}?guildId=${guild.id}`);
-                      }
-                    }}
-                    className="group flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 hover:bg-[var(--surface-hover,var(--surface-raised))] transition-colors cursor-pointer"
-                  >
-                    <div className="min-w-0 flex-1">
-                      <h4 className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent-primary)] transition-colors">
-                        {cat.label}
-                      </h4>
-                      <p className="mt-0.5 text-[11px] text-[var(--text-muted)] leading-relaxed">
-                        {cat.hint}
-                      </p>
-                    </div>
-
-                    <div className="shrink-0 self-end sm:self-auto">
-                      <SegmentBar active={categoryActive} total={categoryTotal} />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </motion.div>
+              <span className="min-w-0">
+                <span className="block text-[13px] font-semibold text-[var(--text-primary)]">{title}</span>
+                <span className="block truncate text-[11px] text-[var(--text-muted)]">{text}</span>
+              </span>
+            </motion.button>
+          ))}
         </div>
+      </motion.section>
 
-        <div className="lg:col-span-4 space-y-6">
-          <motion.div
-            variants={consoleCard}
-            className="rounded-sm border border-[var(--panel-border)] bg-[var(--surface-raised)] p-4 space-y-4 shadow-lg"
-          >
-            <div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Radio className="h-4 w-4 text-emerald-400" />
-                  <h3 className="text-sm font-bold text-[var(--text-primary)]">
-                    {i18n("dRaidMode", "Mode raid")}
-                  </h3>
-                </div>
-
-                <button
-                  type="button"
-                  role="switch"
-                  aria-checked={isRaidModeActive}
-                  disabled={raidBusy || raidMode === null}
-                  aria-label={i18n("dRaidMode", "Mode raid")}
-                  onClick={handleToggleRaid}
-                  className={cn(
-                    "relative h-5 w-10 shrink-0 cursor-pointer rounded-sm border border-[var(--panel-border)] outline-none transition-colors duration-300",
-                    isRaidModeActive ? "bg-emerald-500" : "bg-[var(--surface-raised)]"
-                  )}
-                >
-                  <motion.span
-                    className="absolute left-0.5 top-0.5 h-3.5 w-4 rounded-sm bg-white shadow"
-                    initial={false}
-                    animate={{ x: isRaidModeActive ? 18 : 0 }}
-                    transition={SPRING_PRESS}
-                  />
-                </button>
-              </div>
-
-              <p className="mt-1 text-xs text-[var(--text-muted)]">
-                {raidMode === null
-                  ? i18n("dRaidModeUnknown", "État inconnu : bot injoignable.")
-                  : isRaidModeActive
-                  ? i18n("dRaidModeActive", "Actif. Le serveur bloque temporairement les arrivées suspectes.")
-                  : moduleStatus && !moduleStatus.security
-                  ? i18n("dRaidModeNoAuto", "Inactif. Le module Anti-raid est désactivé : Etho ne l'active pas tout seul.")
-                  : i18n("dRaidModeInactive", "Inactif. Etho active tout seul s'il détecte une attaque.")}
-              </p>
-            </div>
-
-            <div className="pt-3 border-t border-[var(--panel-border)] space-y-2.5 text-xs">
-              <div className="flex items-center justify-between">
-                <span className="text-[var(--text-muted)]">{i18n("dPrefix", "Préfixe")}</span>
-                <span className="font-mono font-bold text-[var(--text-primary)]">
-                  {guildSettings?.prefix || "!"}
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <span className="text-[var(--text-muted)]">{i18n("dYourAccess", "Ton accès")}</span>
-                <span className="font-semibold text-amber-400">
-                  {guild.owner ? i18n("dOwner", "👑 Propriétaire") : i18n("dAdmin", "Administrateur")}
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <span className="text-[var(--text-muted)]">{i18n("dSecurityScan", "Scan de sécurité")}</span>
-                <button
-                  type="button"
-                  onClick={openScan}
-                  title={lastScan ? sinceLabel(lastScan.scannedAt) : undefined}
-                  className="font-semibold hover:underline cursor-pointer"
-                  style={{ color: lastScan ? scoreColor(lastScan.score) : "var(--accent-primary)" }}
-                >
-                  {lastScan ? `${lastScan.score}/100` : i18n("dRunScan", "Lancer un scan →")}
-                </button>
-              </div>
-
-              {lastScan && (
-                <div className="flex items-center justify-between" title={lastScan.sensitiveRoles.join(", ")}>
-                  <span className="text-[var(--text-muted)]">{i18n("dSensitiveRoles", "Rôles sensibles")}</span>
-                  <span className="font-mono font-semibold text-[var(--text-primary)]">{lastScan.sensitiveRoles.length}</span>
-                </div>
-              )}
-            </div>
-          </motion.div>
-
-          <motion.div
-            variants={consoleCard}
-            className="rounded-sm border border-[var(--panel-border)] bg-[var(--surface-raised)] p-4 space-y-3 shadow-lg"
-          >
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold text-[var(--text-primary)]">
-                {i18n("dRecentActivity", "Activité récente")}
-              </h3>
-              <button
-                type="button"
-                onClick={() => router.push(`/discord/logs?guildId=${guild.id}`)}
-                className="text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
-              >
-                {i18n("dLogs", "Logs")}
-              </button>
-            </div>
-
-            {activity && activity.length > 0 ? (
-              <ul className="space-y-1.5">
-                {activity.map((log) => (
-                  <li key={log.id} className="flex items-center gap-2.5 text-xs">
-                    <span className="h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: log.color || "var(--text-muted)" }} />
-                    <span className="min-w-0 flex-1 truncate text-[var(--text-primary)]">{log.title}</span>
-                    <span className="shrink-0 text-[10px] text-[var(--text-muted)]">{sinceLabel(log.createdAt)}</span>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <div className="py-8 text-center space-y-2">
-                <div className="mx-auto flex h-9 w-9 items-center justify-center rounded-sm border border-[var(--panel-border)] bg-[var(--panel-border)]/20 text-[var(--text-muted)]">
-                  <FileText className="h-4 w-4" />
-                </div>
-                <p className="text-xs text-[var(--text-muted)]">
-                  {activity === null ? i18n("dActivityUnavailable", "Logs indisponibles pour l'instant.") : i18n("dNoIncidents", "Aucun incident récent. Etho veille.")}
-                </p>
-              </div>
-            )}
-          </motion.div>
+      {/* Activité récente */}
+      <motion.section variants={staggerItem} className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm font-bold text-[var(--text-primary)]">{i18n("dRecentActivity", "Activité récente")}</h2>
+          <button type="button" onClick={() => open("logs")} className="text-xs font-semibold text-[var(--success)] hover:underline">
+            Tout voir
+          </button>
         </div>
-      </div>
+        <div className={tile}>
+          {activity && activity.length > 0 ? (
+            <ul>
+              {activity.map((log) => (
+                <li key={log.id} className="flex items-center gap-3 border-t border-[var(--panel-border)] px-4 py-2.5 text-[13px] first:border-t-0">
+                  <span className="h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: log.color || "var(--text-muted)" }} />
+                  <span className="min-w-0 flex-1 truncate text-[var(--text-primary)]">{cleanLogText(log.title)}</span>
+                  <span className="shrink-0 text-[11px] text-[var(--text-muted)]">{sinceLabel(log.createdAt)}</span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="flex items-center gap-2.5 px-4 py-3 text-[13px] text-[var(--text-muted)]">
+              <CircleCheck className="h-4 w-4 text-[var(--success)]" strokeWidth={2} />
+              {activity === null ? "Logs indisponibles pour l'instant." : "Rien à signaler. Etho veille."}
+            </p>
+          )}
+        </div>
+      </motion.section>
     </motion.div>
+  );
+}
+
+function Head({ icon: Ico, children }: { icon: Icon; children: string }) {
+  return (
+    <span className="flex items-center justify-between gap-2 text-xs text-[var(--text-muted)]">
+      {children}
+      <Ico className="h-4 w-4" strokeWidth={1.75} />
+    </span>
   );
 }

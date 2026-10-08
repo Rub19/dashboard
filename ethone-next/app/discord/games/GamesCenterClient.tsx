@@ -775,27 +775,35 @@ export default function GamesCenterClient() {
 
           {/* Actions & Switcher de mode */}
           <div className="flex flex-wrap items-center gap-2.5">
-            {/* Bonus Quotidien */}
-            <button
-              type="button"
-              onClick={handleClaimDaily}
-              disabled={claimingDaily}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30 transition-all cursor-pointer disabled:opacity-50"
-            >
-              <Gift className={cn("w-3.5 h-3.5", claimingDaily && "animate-bounce")} />
-              {claimingDaily ? "Réclamation..." : "Bonus Quotidien"}
-            </button>
-
-            {/* Boulot rapide */}
-            <button
-              type="button"
-              onClick={handleQuickWork}
-              disabled={workingJob}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-blue-500/20 text-blue-300 border border-blue-500/40 hover:bg-blue-500/30 transition-all cursor-pointer disabled:opacity-50"
-            >
-              <Briefcase className={cn("w-3.5 h-3.5", workingJob && "animate-spin")} />
-              {workingJob ? "Travail..." : "Petit Boulot /work"}
-            </button>
+            {/* L'économie coupée : les gains et les mises ne marchent pas, on le dit au lieu d'afficher des boutons en erreur. */}
+            {!economyEnabled && (
+              <span className="text-xs text-[var(--warning)]">L&apos;économie est désactivée : bonus, boulot et mises sont indisponibles.</span>
+            )}
+            {economyEnabled && (
+              <>
+                {/* Bonus Quotidien */}
+                <button
+                  type="button"
+                  onClick={handleClaimDaily}
+                  disabled={claimingDaily}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30 transition-all cursor-pointer disabled:opacity-50"
+                >
+                  <Gift className={cn("w-3.5 h-3.5", claimingDaily && "animate-bounce")} />
+                  {claimingDaily ? "Réclamation..." : "Bonus Quotidien"}
+                </button>
+    
+                {/* Boulot rapide */}
+                <button
+                  type="button"
+                  onClick={handleQuickWork}
+                  disabled={workingJob}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-blue-500/20 text-blue-300 border border-blue-500/40 hover:bg-blue-500/30 transition-all cursor-pointer disabled:opacity-50"
+                >
+                  <Briefcase className={cn("w-3.5 h-3.5", workingJob && "animate-spin")} />
+                  {workingJob ? "Travail..." : "Petit Boulot /work"}
+                </button>
+              </>
+            )}
 
             {/* Lien vers Module Économie */}
             <Link

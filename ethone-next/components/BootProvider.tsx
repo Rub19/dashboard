@@ -125,6 +125,16 @@ export default function BootProvider({ children }: { children: ReactNode }) {
   const bootReadyRef = useRef(false);
   const bootStartRef = useRef<number | null>(null);
   const donationReturnRef = useRef(false);
+  // Écran de démarrage seulement au premier lancement de la session d'onglet : ensuite (rechargement, retour depuis
+  // une autre page), l'app s'affiche dès qu'elle est prête, sans écran ni durée minimale.
+  const [warm] = useState(() => {
+    try {
+      return typeof window !== "undefined" && sessionStorage.getItem("ethone:booted") === "1";
+    } catch {
+      return false;
+    }
+  });
+  const warmRef = useRef(warm);
 
   const publicRoute = resolvePublicRoute(pathname);
 
@@ -140,7 +150,12 @@ export default function BootProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     bootReadyRef.current = bootReady;
-  }, [bootReady]);
+    if (bootReady && !resolvePublicRoute(pathname)) {
+      try {
+        sessionStorage.setItem("ethone:booted", "1");
+      } catch {}
+    }
+  }, [bootReady, pathname]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -322,9 +337,10 @@ export default function BootProvider({ children }: { children: ReactNode }) {
 
       // Onglet caché : personne ne voit la barre, on ouvre l'app sans délai d'animation.
       const hidden = typeof document !== "undefined" && document.hidden;
-      if (canShowApp && shellLoadedRef.current && (hidden || elapsed >= BOOT_MIN_DURATION_MS)) {
+      const fast = hidden || warmRef.current;
+      if (canShowApp && shellLoadedRef.current && (fast || elapsed >= BOOT_MIN_DURATION_MS)) {
         fullAtRef.current = fullAtRef.current ?? Date.now();
-        if (hidden || Date.now() - fullAtRef.current >= BOOT_FULL_HOLD_MS) {
+        if (fast || Date.now() - fullAtRef.current >= BOOT_FULL_HOLD_MS) {
           setBootReady(true);
           return;
         }
@@ -429,7 +445,7 @@ export default function BootProvider({ children }: { children: ReactNode }) {
   return (
     <BootContext.Provider value={{ state, retry, continueOffline }}>
       {showApp && (publicRoute ? children : <Shell>{children}</Shell>)}
-      <AnimatePresence>{!showApp && <Loading key="boot" message={message} progress={bootProgress} />}</AnimatePresence>
+      <AnimatePresence>{!showApp && !warm && <Loading key="boot" message={message} progress={bootProgress} />}</AnimatePresence>
     </BootContext.Provider>
   );
 }

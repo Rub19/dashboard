@@ -243,54 +243,55 @@ export function MemberPicker({
   const api = useGuildApi(guildId);
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
-  const [hits, setHits] = useState<MemberHit[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [hits, setHits] = useState<MemberHit[] | null>(null);
 
+  // Liste chargée dès l'ouverture (comme Keeper), puis filtrée côté bot à chaque frappe.
   useEffect(() => {
-    const query = q.trim();
-    if (!open || query.length < 2) {
-      setHits([]);
-      return;
-    }
-    setLoading(true);
+    if (!open) return;
+    let cancelled = false;
     const t = window.setTimeout(async () => {
-      const data = await api<{ members: MemberHit[] }>(`/console/members/search?q=${encodeURIComponent(query)}`, { silent: true });
-      setHits((data?.members ?? []).filter((m) => !excludeIds.includes(m.id) && (!humansOnly || !m.bot)));
-      setLoading(false);
-    }, 250);
-    return () => window.clearTimeout(t);
-  }, [api, excludeIds, humansOnly, open, q]);
+      const data = await api<{ members: MemberHit[] }>(`/console/members/search?q=${encodeURIComponent(q.trim())}`, { silent: true });
+      if (!cancelled) setHits(data?.members ?? []);
+    }, q ? 200 : 0);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(t);
+    };
+  }, [api, open, q]);
+
+  const shown = (hits ?? []).filter((m) => !excludeIds.includes(m.id));
 
   return (
-    <SearchPopover label={label} disabled={disabled} placeholder="Rechercher un membre ou coller un ID" loading={loading} q={q} setQ={setQ} open={open} setOpen={setOpen}>
-      {q.trim().length < 2 ? (
-        <PickNote>Tape au moins deux lettres ou colle un identifiant.</PickNote>
-      ) : !loading && hits.length === 0 ? (
+    <SearchPopover label={label} disabled={disabled} placeholder="Rechercher un membre ou coller un ID" loading={open && hits === null} q={q} setQ={setQ} open={open} setOpen={setOpen}>
+      {hits === null ? null : shown.length === 0 ? (
         <PickNote>Aucun membre trouvé.</PickNote>
       ) : (
-        hits.map((m) => (
-          <li key={m.id}>
-            <button
-              type="button"
-              onClick={() => {
-                onPick(m);
-                setOpen(false);
-                setQ("");
-              }}
-              className={PICK_ROW}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={m.avatarUrl} alt="" width={28} height={28} className="h-7 w-7 shrink-0 rounded-full" />
-              <span className="min-w-0 flex-1">
-                <span className="block truncate text-[13px] font-semibold text-[var(--text-primary)]">{m.displayName}</span>
-                <span className="block truncate text-[11px] text-[var(--text-muted)]">
-                  @{m.username} · ID {m.id}
+        shown.map((m) => {
+          const blocked = humansOnly && m.bot;
+          return (
+            <li key={m.id}>
+              <button
+                type="button"
+                disabled={blocked}
+                title={blocked ? "Un bot ne peut pas être ajouté ici." : undefined}
+                onClick={() => {
+                  onPick(m);
+                  setOpen(false);
+                  setQ("");
+                }}
+                className={cn(PICK_ROW, blocked && "cursor-not-allowed opacity-45 hover:bg-transparent")}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={m.avatarUrl} alt="" width={28} height={28} className="h-7 w-7 shrink-0 rounded-full" />
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-[13px] font-semibold text-[var(--text-primary)]">{m.displayName}</span>
+                  <span className="block truncate text-[11px] text-[var(--text-muted)]">@{m.username}</span>
                 </span>
-              </span>
-              {m.bot && <span className="shrink-0 rounded-md bg-[var(--surface-hover)] px-1.5 py-0.5 text-[10px] font-semibold text-[var(--text-muted)]">Bot</span>}
-            </button>
-          </li>
-        ))
+                {m.bot && <span className="shrink-0 rounded bg-[var(--surface-hover)] px-1.5 py-0.5 text-[10px] font-semibold text-[var(--text-muted)]">Bot</span>}
+              </button>
+            </li>
+          );
+        })
       )}
     </SearchPopover>
   );

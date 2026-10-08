@@ -1,5 +1,20 @@
 [
   {
+    "version": "v1.55.91",
+    "date": "2026-10-09",
+    "title": "Console Discord : nouvelle vue d'ensemble façon Keeper, corrections",
+    "items": [
+      "Vue d'ensemble refaite comme le nouveau Keeper : bandeaux d'alerte, quatre indicateurs (protections actives, scan, mode raid, préfixe), raccourcis « Gérer le serveur » et activité récente sans emoji parasites.",
+      "Icônes de la console alignées sur Keeper (scan de sécurité, configuration assistée, mode raid…).",
+      "Sélecteur de membres : la liste s'affiche dès l'ouverture, bots compris, avec une recherche par pseudo, nom ou ID.",
+      "Le bouton « Scan de sécurité » fonctionne depuis la page Protections.",
+      "L'écran de chargement ne s'affiche plus qu'au premier lancement de la session.",
+      "Bouclier de l'owner refait au format de la console, sans badges décoratifs.",
+      "Jeux : si l'économie est coupée, la page le dit au lieu de proposer des boutons qui échouent.",
+      "Pages de modules : les badges ronds deviennent des étiquettes discrètes."
+    ]
+  },
+  {
     "version": "v1.55.90",
     "date": "2026-10-09",
     "title": "Habitudes : finitions",
@@ -641,16 +656,6 @@
       "Mots-clés de recherche enrichis pour un accès immédiat depuis n'importe quelle page du tableau de bord.",
       "Synchronisation des préréglages et catégories de l'assistant d'onboarding Discord avec le registre d'activation du bot.",
       "Harmonisation des icônes de modules avec l'icône dédiée aux jeux et mini-jeux."
-    ]
-  },
-  {
-    "version": "v1.55.29",
-    "date": "2026-10-06",
-    "title": "Optimisation de l'Ergonomie Discord et Zéro Avertissement de Code",
-    "items": [
-      "Perfectionnement du sélecteur de serveur dans la barre latérale Discord : navigation complète au clavier (flèches Haut/Bas, Entrée, Échap) et fermeture automatique du tiroir mobile lors de la sélection.",
-      "Résolution intégrale de tous les avertissements React hooks (exhaustive-deps) et expressions fonctionnelles dans Brain, Contrôle Bot, Musique, Invitations et Gestion Serveur.",
-      "Zéro avertissement de code fonctionnel sur l'ensemble du projet : conformité totale aux exigences d'hygiène logicielle et de maintenabilité."
     ]
   }
 ]

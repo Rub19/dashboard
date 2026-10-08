@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { WandSparkles } from "lucide-react";
 import { ArrowLeft, ArrowRight, Check, Eye, Home, Loader2, Scale, ShieldAlert, Sliders, Users, Volume2 } from "@/components/icons/ph";
 import ChannelPicker from "./ChannelPicker";
 import { useToast } from "@/components/ToastProvider";
@@ -162,7 +163,10 @@ export default function GuildAssistedSetup({ guild, onFinish, onCancel, onManual
   return (
     <div className="mx-auto w-full max-w-3xl space-y-5">
       <div className="flex items-center justify-between gap-3">
-        <h1 className="text-2xl font-bold tracking-tight text-[var(--text-primary)]">{i18n("dAssistedSetup", "Configuration assistée")}</h1>
+        <h1 className="flex items-center gap-2.5 text-2xl font-bold tracking-tight text-[var(--text-primary)]">
+          <WandSparkles className="h-6 w-6 text-[var(--success)]" strokeWidth={1.75} />
+          {i18n("dAssistedSetup", "Configuration assistée")}
+        </h1>
         {onManualSetup && (
           <button
             type="button"

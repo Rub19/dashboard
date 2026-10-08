@@ -1,5 +1,16 @@
 [
   {
+    "version": "v1.55.82",
+    "date": "2026-10-08",
+    "title": "Console Discord : page Protections façon Keeper",
+    "items": [
+      "Protections (nouvelle page) : liste groupée avec un interrupteur par protection, filtres Toutes / Actives / Inactives et recherche, puis le détail en quatre blocs : Détection, Punition, Alerte, Whitelist.",
+      "Chaque protection affiche « Ce que fait Etho » à partir de ses vrais réglages ; seules les protections réellement appliquées par le bot sont listées.",
+      "Anti-nuke : Anti-ban, Anti-suppression de salon et Anti-suppression de rôle s'activent maintenant séparément.",
+      "Anti-spam et Anti-mention : la punition se choisit (aucune, timeout, expulsion ou bannissement) et la suppression du message peut être coupée."
+    ]
+  },
+  {
     "version": "v1.55.81",
     "date": "2026-10-08",
     "title": "Console Discord : page Outils (captcha à l'arrivée et soutiens)",
@@ -662,16 +673,6 @@
       "Générateur d'ondes binaurales pures (Delta, Theta, Alpha, Beta, Gamma) et fréquences sacrées Solfeggio (432 Hz, 528 Hz, 639 Hz, 852 Hz) avec séparation stéréo stricte.",
       "Mixeur d'ambiances multi-pistes tactile avec curseurs capacitifs, jauges visuelles, presets d'immersion 1-clic et minuteur de mise en veille avec fondu progressif.",
       "Intégration directe dans la barre latérale sous Assistants et indexation dans la palette de commandes (Ctrl+K)."
-    ]
-  },
-  {
-    "version": "v1.55.20",
-    "date": "2026-10-05",
-    "title": "Synchronisation instantanée du Focus et des Préréglages",
-    "items": [
-      "Suppression du délai d'attente (3s) dans RawKeySync au profit d'un déclenchement événementiel instantané (storage, v8:focus-session-completed et ethone:raw-key-changed)",
-      "Rafraîchissement direct des écrans d'historique et d'objectifs Focus lors des sessions terminées et modifications d'objectifs",
-      "Écoute temps réel des changements de préréglages personnalisés dans les paramètres pour affichage multi-onglets immédiat"
     ]
   }
 ]

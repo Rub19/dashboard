@@ -77,6 +77,7 @@ import ConsoleBlacklist from "@/components/discord/console/ConsoleBlacklist";
 import ConsoleMembers from "@/components/discord/console/ConsoleMembers";
 import ConsoleCommands from "@/components/discord/console/ConsoleCommands";
 import ConsoleTools from "@/components/discord/console/ConsoleTools";
+import ConsoleProtections from "@/components/discord/console/ConsoleProtections";
 import GuildOverviewScreen from "@/components/discord/GuildOverviewScreen";
 import GuildAssistedSetup from "@/components/discord/GuildAssistedSetup";
 import GuildSecurityScan from "@/components/discord/GuildSecurityScan";
@@ -765,7 +766,7 @@ export default function DiscordDashboardPage() {
         setShowSetup(true);
       } else if (sp.get("view") === "scan" || sp.get("tab") === "scan") {
         setShowScan(true);
-      } else if (["settings", "access", "logs", "whitelist", "blacklist", "members", "commands", "tools"].includes(sp.get("view") ?? "")) {
+      } else if (["settings", "access", "logs", "whitelist", "blacklist", "members", "commands", "tools", "protections"].includes(sp.get("view") ?? "")) {
         setConsoleView(sp.get("view") as ConsoleView);
       }
     } catch {}
@@ -1352,6 +1353,8 @@ export default function DiscordDashboardPage() {
                     ? i18n("dCommands", "Commandes")
                     : view === "tools"
                     ? i18n("dTools", "Outils")
+                    : view === "protections"
+                    ? i18n("dProtections", "Protections")
                     : view === "scan"
                     ? i18n("dSecurityScan", "Scan de sécurité")
                     : view === "setup"
@@ -1443,6 +1446,7 @@ export default function DiscordDashboardPage() {
               {view === "members" && <ConsoleMembers guildId={selectedGuild.id} />}
               {view === "commands" && <ConsoleCommands guildId={selectedGuild.id} />}
               {view === "tools" && <ConsoleTools guildId={selectedGuild.id} />}
+              {view === "protections" && <ConsoleProtections guildId={selectedGuild.id} onOpenView={openConsoleView} onOpenSetup={goSetup} />}
 
               {view === "scan" && (
                 <GuildSecurityScan

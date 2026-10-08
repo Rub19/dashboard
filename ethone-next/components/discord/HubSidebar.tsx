@@ -56,7 +56,7 @@ import {
 import type { NavigatorCategory, NavigatorModule } from "./ModuleNavigator";
 
 /** Pages de la console au format Keeper, affichées dans la console (même barre latérale). */
-export type ConsoleView = "settings" | "access" | "logs" | "whitelist" | "blacklist" | "members" | "commands" | "tools";
+export type ConsoleView = "settings" | "access" | "logs" | "whitelist" | "blacklist" | "members" | "commands" | "tools" | "protections";
 export type HubView = "home" | "modules" | "module" | "setup" | "scan" | ConsoleView;
 
 interface HubSidebarProps {
@@ -448,18 +448,15 @@ export default function HubSidebar({
             <div className="space-y-0.5 text-xs">
               <button
                 type="button"
-                onClick={() => router.push(`/discord/security?guildId=${selectedGuildId}`)}
-                className="w-full flex items-center justify-between rounded px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors cursor-pointer text-left"
+                onClick={() => (onOpenView ? onOpenView("protections") : router.push(`/discord/?guildId=${selectedGuildId}&view=protections`))}
+                aria-current={view === "protections" ? "page" : undefined}
+                className={cn(
+                  "w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-xs transition-colors cursor-pointer text-left",
+                  view === "protections" ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold" : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
+                )}
               >
-                <div className="flex items-center gap-2.5">
-                  <ShieldAlert className="h-3.5 w-3.5 shrink-0" />
-                  <span>{i18n("dProtections", "Protections")}</span>
-                </div>
-                {totalModuleCount ? (
-                  <span className="font-mono text-[10px] text-[var(--text-muted)]">
-                    {activeModuleCount ?? 0}/{totalModuleCount}
-                  </span>
-                ) : null}
+                <ShieldAlert className="h-3.5 w-3.5 shrink-0" />
+                <span>{i18n("dProtections", "Protections")}</span>
               </button>
 
               <button

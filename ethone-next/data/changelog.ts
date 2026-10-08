@@ -47486,5 +47486,58 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_81_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_81_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_81_de);
 
+const v1_55_82_fr: ChangelogEntry = {
+  version: "v1.55.82",
+  date: "2026-10-08",
+  title: "Console Discord : page Protections façon Keeper",
+  items: [
+    "Protections (nouvelle page) : liste groupée avec un interrupteur par protection, filtres Toutes / Actives / Inactives et recherche, puis le détail en quatre blocs : Détection, Punition, Alerte, Whitelist.",
+    "Chaque protection affiche « Ce que fait Etho » à partir de ses vrais réglages ; seules les protections réellement appliquées par le bot sont listées.",
+    "Anti-nuke : Anti-ban, Anti-suppression de salon et Anti-suppression de rôle s'activent maintenant séparément.",
+    "Anti-spam et Anti-mention : la punition se choisit (aucune, timeout, expulsion ou bannissement) et la suppression du message peut être coupée.",
+  ],
+};
+
+const v1_55_82_en: ChangelogEntry = {
+  version: "v1.55.82",
+  date: "2026-10-08",
+  title: "Discord console: Keeper-style Protections page",
+  items: [
+    "Protections (new page): grouped list with one switch per protection, All / Active / Inactive filters and search, then the detail in four blocks: Detection, Punishment, Alert, Whitelist.",
+    "Each protection shows “What Etho does” from its real settings; only protections the bot actually enforces are listed.",
+    "Anti-nuke: Anti-ban, Anti channel deletion and Anti role deletion can now be turned on separately.",
+    "Anti-spam and Anti-mention: the punishment is now selectable (none, timeout, kick or ban) and message deletion can be turned off.",
+  ],
+};
+
+const v1_55_82_es: ChangelogEntry = {
+  version: "v1.55.82",
+  date: "2026-10-08",
+  title: "Consola Discord: página Protecciones al estilo Keeper",
+  items: [
+    "Protecciones (nueva página): lista agrupada con un interruptor por protección, filtros Todas / Activas / Inactivas y búsqueda, y el detalle en cuatro bloques: Detección, Castigo, Alerta, Whitelist.",
+    "Cada protección muestra « Lo que hace Etho » a partir de sus ajustes reales; solo se listan las protecciones que el bot aplica de verdad.",
+    "Anti-nuke: Anti-ban, Anti-borrado de canal y Anti-borrado de rol se activan ahora por separado.",
+    "Anti-spam y Anti-mención: el castigo se puede elegir (ninguno, timeout, expulsión o baneo) y el borrado del mensaje se puede desactivar.",
+  ],
+};
+
+const v1_55_82_de: ChangelogEntry = {
+  version: "v1.55.82",
+  date: "2026-10-08",
+  title: "Discord-Konsole: Schutz-Seite im Keeper-Stil",
+  items: [
+    "Schutz (neue Seite): gruppierte Liste mit einem Schalter pro Schutz, Filter Alle / Aktiv / Inaktiv und Suche, dann die Details in vier Blöcken: Erkennung, Strafe, Alarm, Whitelist.",
+    "Jeder Schutz zeigt „Was Etho tut“ anhand seiner echten Einstellungen; es werden nur Schutzfunktionen aufgeführt, die der Bot tatsächlich anwendet.",
+    "Anti-Nuke: Anti-Bann, Anti-Kanallöschung und Anti-Rollenlöschung lassen sich jetzt einzeln aktivieren.",
+    "Anti-Spam und Anti-Erwähnung: Die Strafe ist wählbar (keine, Timeout, Kick oder Bann) und das Löschen der Nachricht kann abgeschaltet werden.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_82_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_82_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_82_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_82_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

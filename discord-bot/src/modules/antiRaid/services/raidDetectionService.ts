@@ -265,6 +265,30 @@ class RaidDetectionService {
   // ==========================================
   // 3. ÉVÉNEMENT : MESSAGE CREATE (SPAM / MENTION RAID)
   // ==========================================
+  /**
+   * Sanctions réglées dans la console pour le spam et les mentions : suppression du message puis, au plus, une
+   * sanction sur l'auteur (la plus forte cochée). L'alerte au staff part toujours.
+   */
+  private async punishMessageAuthor(message: Message, actions: RaidAction[], timeoutMs: number, reason: string): Promise<RaidAction[]> {
+    const done: RaidAction[] = [];
+    if (actions.includes('DELETE') && message.deletable) {
+      await message.delete().catch(() => null);
+      done.push('DELETE');
+    }
+    const m = message.member;
+    if (m) {
+      if (actions.includes('BAN') && m.bannable) {
+        if (await m.ban({ reason, deleteMessageSeconds: 3600 }).then(() => true).catch(() => false)) done.push('BAN');
+      } else if (actions.includes('KICK') && m.kickable) {
+        if (await m.kick(reason).then(() => true).catch(() => false)) done.push('KICK');
+      } else if (actions.includes('TIMEOUT') && m.moderatable) {
+        if (await m.timeout(timeoutMs, reason).then(() => true).catch(() => false)) done.push('TIMEOUT');
+      }
+    }
+    done.push('ALERT_STAFF');
+    return done;
+  }
+
   public async handleMessage(message: Message): Promise<void> {
     if (!message.guild || message.author.bot) return;
 
@@ -322,10 +346,7 @@ class RaidDetectionService {
         raidModeService.markSuspiciousActivity(guild.id);
 
         try {
-          if (message.deletable) await message.delete();
-          if (message.member && message.member.moderatable) {
-            await message.member.timeout(10 * 60 * 1000, 'Mention Raid / Mass Ping');
-          }
+          const done = await this.punishMessageAuthor(message, config.mentionRaid.actions, 10 * 60 * 1000, 'Mention Raid / Mass Ping');
 
           await raidAlertService.sendAlert({
             guild,
@@ -333,7 +354,7 @@ class RaidDetectionService {
             riskScore: 65,
             title: '🔔 Mention Raid Détecté',
             reason: `**${message.author.tag}** a tenté un mass ping (${mentionsCount} mentions, everyone: ${hasEveryoneOrHere}).`,
-            actionsTaken: ['DELETE', 'TIMEOUT', 'ALERT_STAFF'],
+            actionsTaken: done,
             signals: [`Burst mentions: ${userMentionsWindow} en ${config.mentionRaid.timeWindowSeconds}s`],
           });
           return;
@@ -362,13 +383,12 @@ class RaidDetectionService {
         raidModeService.markSuspiciousActivity(guild.id);
 
         try {
-          if (message.deletable) await message.delete();
-          if (message.member && message.member.moderatable) {
-            await message.member.timeout(
-              config.messageRaid.timeoutDurationSeconds * 1000,
-              'Message Raid / Spam intense'
-            );
-          }
+          const done = await this.punishMessageAuthor(
+            message,
+            config.messageRaid.actions,
+            config.messageRaid.timeoutDurationSeconds * 1000,
+            'Message Raid / Spam intense'
+          );
 
           await raidAlertService.sendAlert({
             guild,
@@ -376,7 +396,7 @@ class RaidDetectionService {
             riskScore: 50,
             title: '💬 Message Spam Raid Détecté',
             reason: `**${message.author.tag}** envoie des messages trop rapidement (${userMsgsInWindow} msgs / ${config.messageRaid.timeWindowSeconds}s ou ${duplicates} répétitions).`,
-            actionsTaken: ['DELETE', 'TIMEOUT', 'ALERT_STAFF'],
+            actionsTaken: done,
             signals: ['Spam intensif de messages répétés'],
           });
         } catch (err) {

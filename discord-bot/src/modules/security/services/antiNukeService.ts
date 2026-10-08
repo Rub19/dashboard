@@ -117,7 +117,7 @@ class AntiNukeService {
   // ==========================================
   public async handleChannelDelete(guild: Guild): Promise<void> {
     const config = securityStorage.getConfig(guild.id);
-    if (!config.antiNuke.enabled) return;
+    if (!config.antiNuke.enabled || config.antiNuke.protections?.channelDeletes === false) return;
 
     const perpetrator = await this.fetchAuditLogPerpetrator(
       guild,
@@ -169,7 +169,7 @@ class AntiNukeService {
 
   public async handleRoleDelete(guild: Guild): Promise<void> {
     const config = securityStorage.getConfig(guild.id);
-    if (!config.antiNuke.enabled) return;
+    if (!config.antiNuke.enabled || config.antiNuke.protections?.roleDeletes === false) return;
 
     const perpetrator = await this.fetchAuditLogPerpetrator(
       guild,
@@ -209,7 +209,7 @@ class AntiNukeService {
 
   public async handleBanAdd(guild: Guild): Promise<void> {
     const config = securityStorage.getConfig(guild.id);
-    if (!config.antiNuke.enabled) return;
+    if (!config.antiNuke.enabled || config.antiNuke.protections?.bans === false) return;
 
     const perpetrator = await this.fetchAuditLogPerpetrator(
       guild,

@@ -25,6 +25,10 @@ export const AntiNukeConfigSchema = z.object({
   action: AntiNukeActionSchema.default('strip_roles'),
   alertOnDangerousPermissions: z.boolean().default(true),
   blockUnknownWebhooks: z.boolean().default(true),
+  /** Interrupteur par protection (page « Protections » de la console). */
+  protections: z
+    .object({ bans: z.boolean().default(true), channelDeletes: z.boolean().default(true), roleDeletes: z.boolean().default(true) })
+    .default({}),
 });
 
 export const SecurityConfigSchema = z.object({

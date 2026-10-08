@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.82 — 2026-10-08
+
+**Console Discord : page Protections façon Keeper**
+
+- Protections (nouvelle page) : liste groupée avec un interrupteur par protection, filtres Toutes / Actives / Inactives et recherche, puis le détail en quatre blocs : Détection, Punition, Alerte, Whitelist.
+- Chaque protection affiche « Ce que fait Etho » à partir de ses vrais réglages ; seules les protections réellement appliquées par le bot sont listées.
+- Anti-nuke : Anti-ban, Anti-suppression de salon et Anti-suppression de rôle s'activent maintenant séparément.
+- Anti-spam et Anti-mention : la punition se choisit (aucune, timeout, expulsion ou bannissement) et la suppression du message peut être coupée.
+
 ## v1.55.81 — 2026-10-08
 
 **Console Discord : page Outils (captcha à l'arrivée et soutiens)**

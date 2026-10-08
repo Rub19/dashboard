@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.86 — 2026-10-08
+
+**Console Discord : motion design harmonisé**
+
+- Les blocs des pages de la console entrent en cascade, l'un après l'autre (désactivé si le mouvement réduit est demandé).
+- Changement de page plus net et plus rapide : glissement léger sans flou.
+
 ## v1.55.85 — 2026-10-08
 
 **Console Discord : barre latérale vers les modules**

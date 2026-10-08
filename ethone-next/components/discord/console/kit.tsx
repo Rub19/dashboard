@@ -6,6 +6,7 @@ import { Hash, Loader2, Plus, Search, Volume2, X } from "@/components/icons/ph";
 import { useToast } from "@/components/ToastProvider";
 import { SPRING_LAYOUT, SPRING_PILL, SPRING_PRESS } from "@/lib/ease";
 import { cn } from "@/lib/utils";
+import { pageStagger, staggerItem } from "@/lib/motion-variants";
 import { fetchGuildRoles, type RoleOption } from "../RolePicker";
 import { fetchGuildChannels, type ChannelOption } from "../ChannelPicker";
 
@@ -38,13 +39,14 @@ export function useGuildApi(guildId: string) {
   );
 }
 
+/** Page de la console : titre puis blocs qui entrent en cascade (Panel = staggerItem), sauf mouvement réduit. */
 export function ConsolePage({ title, actions, children }: { title: ReactNode; actions?: ReactNode; children: ReactNode }) {
   const reduced = useReducedMotion();
   return (
     <motion.div
-      initial={reduced ? false : { opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={SPRING_LAYOUT}
+      variants={pageStagger}
+      initial={reduced ? false : "initial"}
+      animate="animate"
       className="mx-auto w-full max-w-4xl space-y-5"
     >
       <div className="flex items-center justify-between gap-3">
@@ -70,7 +72,7 @@ export function Panel({
   className?: string;
 }) {
   return (
-    <section className={cn("overflow-visible rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]", className)}>
+    <motion.section variants={staggerItem} className={cn("overflow-visible rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]", className)}>
       {(title || actions) && (
         <header className="flex items-center justify-between gap-3 border-b border-[var(--panel-border)] px-5 py-3.5">
           <div className="min-w-0">
@@ -81,7 +83,7 @@ export function Panel({
         </header>
       )}
       {children}
-    </section>
+    </motion.section>
   );
 }
 

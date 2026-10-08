@@ -47682,5 +47682,50 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_85_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_85_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_85_de);
 
+const v1_55_86_fr: ChangelogEntry = {
+  version: "v1.55.86",
+  date: "2026-10-08",
+  title: "Console Discord : motion design harmonisé",
+  items: [
+    "Les blocs des pages de la console entrent en cascade, l'un après l'autre (désactivé si le mouvement réduit est demandé).",
+    "Changement de page plus net et plus rapide : glissement léger sans flou.",
+  ],
+};
+
+const v1_55_86_en: ChangelogEntry = {
+  version: "v1.55.86",
+  date: "2026-10-08",
+  title: "Discord console: unified motion design",
+  items: [
+    "Blocks on console pages now enter one after another (off when reduced motion is requested).",
+    "Sharper, faster page changes: a light slide without blur.",
+  ],
+};
+
+const v1_55_86_es: ChangelogEntry = {
+  version: "v1.55.86",
+  date: "2026-10-08",
+  title: "Consola Discord: motion design unificado",
+  items: [
+    "Los bloques de las páginas de la consola entran uno tras otro (desactivado si se pide movimiento reducido).",
+    "Cambio de página más nítido y rápido: deslizamiento ligero sin desenfoque.",
+  ],
+};
+
+const v1_55_86_de: ChangelogEntry = {
+  version: "v1.55.86",
+  date: "2026-10-08",
+  title: "Discord-Konsole: einheitliches Motion-Design",
+  items: [
+    "Die Blöcke der Konsolenseiten erscheinen nacheinander (aus, wenn reduzierte Bewegung gewünscht ist).",
+    "Schärferer, schnellerer Seitenwechsel: leichtes Gleiten ohne Unschärfe.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_86_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_86_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_86_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_86_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

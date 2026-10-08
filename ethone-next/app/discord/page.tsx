@@ -1265,10 +1265,10 @@ export default function DiscordDashboardPage() {
               <AnimatePresence mode="wait" initial={false}>
               <motion.div
                 key={activeModule ? `module-${activeModule}` : view}
-                initial={motionReduced ? false : { opacity: 0, y: 12, filter: "blur(4px)" }}
-                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                exit={motionReduced ? undefined : { opacity: 0, y: -6, filter: "blur(3px)", transition: { duration: 0.14 } }}
-                transition={{ duration: 0.4, ease: EASE_SNAP }}
+                initial={motionReduced ? false : { opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={motionReduced ? undefined : { opacity: 0, transition: { duration: 0.1 } }}
+                transition={{ duration: 0.28, ease: EASE_SNAP }}
               >
               {view === "home" && (
                 <GuildOverviewScreen

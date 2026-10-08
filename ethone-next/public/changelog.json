@@ -1,5 +1,13 @@
 [
   {
+    "version": "v1.55.92",
+    "date": "2026-10-09",
+    "title": "Écran de démarrage une seule fois",
+    "items": [
+      "L'écran de démarrage ETHONE ne s'affiche plus qu'au premier lancement : pendant 12 h, les rechargements et les nouveaux onglets ouvrent directement l'app, sans clignotement."
+    ]
+  },
+  {
     "version": "v1.55.91",
     "date": "2026-10-09",
     "title": "Console Discord : nouvelle vue d'ensemble façon Keeper, corrections",
@@ -645,17 +653,6 @@
       "Correction du cycle de réinitialisation dans le sélecteur de serveur de la barre latérale Discord (HubSidebar) : préservation de la saisie utilisateur lors de la recherche.",
       "Bornage dynamique du curseur de navigation au clavier (flèches Haut/Bas, validation Entrée) lors du filtrage en direct des serveurs.",
       "Synchronisation instantanée du curseur au survol et fermeture fluide du tiroir mobile."
-    ]
-  },
-  {
-    "version": "v1.55.30",
-    "date": "2026-10-06",
-    "title": "Synchronisation Palette de Commandes & Assistant de Configuration Discord",
-    "items": [
-      "Intégration globale des modules Alertes Streamers (/discord/streamers), Mini-Jeux & Casino (/discord/games) et AutoMod natif dans la palette de commandes (Ctrl+K).",
-      "Mots-clés de recherche enrichis pour un accès immédiat depuis n'importe quelle page du tableau de bord.",
-      "Synchronisation des préréglages et catégories de l'assistant d'onboarding Discord avec le registre d'activation du bot.",
-      "Harmonisation des icônes de modules avec l'icône dédiée aux jeux et mini-jeux."
     ]
   }
 ]

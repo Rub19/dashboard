@@ -47988,5 +47988,46 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_91_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_91_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_91_de);
 
+const v1_55_92_fr: ChangelogEntry = {
+  version: "v1.55.92",
+  date: "2026-10-09",
+  title: "Écran de démarrage une seule fois",
+  items: [
+    "L'écran de démarrage ETHONE ne s'affiche plus qu'au premier lancement : pendant 12 h, les rechargements et les nouveaux onglets ouvrent directement l'app, sans clignotement.",
+  ],
+};
+
+const v1_55_92_en: ChangelogEntry = {
+  version: "v1.55.92",
+  date: "2026-10-09",
+  title: "Start screen only once",
+  items: [
+    "The ETHONE start screen now only shows on first launch: for 12 hours, reloads and new tabs open the app directly, without flashing.",
+  ],
+};
+
+const v1_55_92_es: ChangelogEntry = {
+  version: "v1.55.92",
+  date: "2026-10-09",
+  title: "Pantalla de inicio una sola vez",
+  items: [
+    "La pantalla de inicio de ETHONE solo aparece en el primer inicio: durante 12 h, las recargas y las pestañas nuevas abren la app directamente, sin parpadeo.",
+  ],
+};
+
+const v1_55_92_de: ChangelogEntry = {
+  version: "v1.55.92",
+  date: "2026-10-09",
+  title: "Startbildschirm nur einmal",
+  items: [
+    "Der ETHONE-Startbildschirm erscheint nur noch beim ersten Start: 12 Stunden lang öffnen Neuladen und neue Tabs die App direkt, ohne Aufflackern.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_92_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_92_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_92_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_92_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

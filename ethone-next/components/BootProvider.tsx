@@ -127,9 +127,11 @@ export default function BootProvider({ children }: { children: ReactNode }) {
   const donationReturnRef = useRef(false);
   // Écran de démarrage seulement au premier lancement de la session d'onglet : ensuite (rechargement, retour depuis
   // une autre page), l'app s'affiche dès qu'elle est prête, sans écran ni durée minimale.
+  // Même règle que le script de <head> (app/layout.tsx) qui masque l'écran statique avant React : lancé il y a < 12 h.
   const [warm] = useState(() => {
     try {
-      return typeof window !== "undefined" && sessionStorage.getItem("ethone:booted") === "1";
+      const at = Number(localStorage.getItem("ethone:booted-at"));
+      return typeof window !== "undefined" && at > 0 && Date.now() - at < 12 * 3600_000;
     } catch {
       return false;
     }
@@ -152,7 +154,7 @@ export default function BootProvider({ children }: { children: ReactNode }) {
     bootReadyRef.current = bootReady;
     if (bootReady && !resolvePublicRoute(pathname)) {
       try {
-        sessionStorage.setItem("ethone:booted", "1");
+        localStorage.setItem("ethone:booted-at", String(Date.now()));
       } catch {}
     }
   }, [bootReady, pathname]);

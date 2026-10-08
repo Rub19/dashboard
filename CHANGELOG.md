@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.92 — 2026-10-09
+
+**Écran de démarrage une seule fois**
+
+- L'écran de démarrage ETHONE ne s'affiche plus qu'au premier lancement : pendant 12 h, les rechargements et les nouveaux onglets ouvrent directement l'app, sans clignotement.
+
 ## v1.55.91 — 2026-10-09
 
 **Console Discord : nouvelle vue d'ensemble façon Keeper, corrections**

@@ -3825,3 +3825,9 @@ html[data-theme="arctic"] ::-webkit-scrollbar-thumb:hover {
 .console-embed [class*="rounded-full"][class*="px-"] {
   border-radius: 0.375rem;
 }
+
+/* Écran de démarrage : seulement au premier lancement (12 h). Le script de <head> pose data-warm avant le premier
+   affichage, donc l'écran présent dans le HTML exporté ne clignote plus aux chargements suivants. */
+html[data-warm] [data-boot-splash] {
+  display: none !important;
+}

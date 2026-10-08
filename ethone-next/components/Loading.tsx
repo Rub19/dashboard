@@ -18,6 +18,7 @@ export default function Loading({ message = "Initialisation", progress }: { mess
 
   return (
     <motion.div
+      data-boot-splash=""
       className="fixed inset-0 z-[var(--z-modal)] flex flex-col items-center justify-center overflow-hidden bg-[var(--bg-main)]"
       role="status"
       aria-live="polite"

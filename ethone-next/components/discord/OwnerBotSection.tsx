@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { Activity, AlertTriangle, Bot, Clock, Cpu, Gauge, ListChecks, Radio, RotateCw, ShieldAlert, Terminal } from "@/components/icons/ph";
 import { useToast } from "@/components/ToastProvider";
 import { confirmDialog } from "@/lib/confirmDialog";
@@ -52,7 +52,7 @@ const LINKS = [
 ] as const;
 
 /**
- * Section « Owner Etho » de la barre latérale : n'apparaît que si le bot répond 200 à sa route réservée au
+ * Section « Pilotage Etho » (en haut de la barre latérale) : n'apparaît que si le bot répond 200 à sa route réservée au
  * propriétaire (/api/bot/overview, 403 pour tout le monde sinon). L'état est relu toutes les 30 s.
  */
 export default function OwnerBotSection({ itemClass }: { itemClass: string }) {
@@ -61,6 +61,18 @@ export default function OwnerBotSection({ itemClass }: { itemClass: string }) {
   const [data, setData] = useState<Overview | null>(null);
   const [restarting, setRestarting] = useState(false);
   const restartingRef = useRef(false);
+  const [toolsOpen, setToolsOpen] = useState(() => {
+    try {
+      return localStorage.getItem("ethone:owner-tools-open") === "1";
+    } catch {
+      return false;
+    }
+  });
+  useEffect(() => {
+    try {
+      localStorage.setItem("ethone:owner-tools-open", toolsOpen ? "1" : "0");
+    } catch {}
+  }, [toolsOpen]);
 
   const load = useCallback(async () => {
     if (!BOT_API_URL) return false;
@@ -120,7 +132,7 @@ export default function OwnerBotSection({ itemClass }: { itemClass: string }) {
 
   return (
     <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={SPRING_LAYOUT} className="space-y-1 pt-2">
-      <span className="block px-2 text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Owner Etho</span>
+      <span className="block px-2 text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Pilotage Etho</span>
 
       <div className="mx-0.5 space-y-2 rounded-md border border-[var(--panel-border)] bg-[var(--surface-raised)] p-2.5 text-[11px]">
         <div className="flex items-center justify-between gap-2">
@@ -169,14 +181,35 @@ export default function OwnerBotSection({ itemClass }: { itemClass: string }) {
         </button>
       </div>
 
-        <div className="space-y-0.5 text-xs">
-          {LINKS.map(({ href, label, icon: Icon }) => (
-            <button key={href} type="button" onClick={() => router.push(href)} className={itemClass}>
-              <Icon className="h-3.5 w-3.5 shrink-0" />
-              <span>{label}</span>
-            </button>
-          ))}
-        </div>
+      <button
+        type="button"
+        onClick={() => setToolsOpen((v) => !v)}
+        aria-expanded={toolsOpen}
+        className="flex w-full items-center justify-between rounded px-2.5 py-1.5 text-[11px] font-semibold text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)]"
+      >
+        <span>Outils du bot · {LINKS.length}</span>
+        <motion.span animate={{ rotate: toolsOpen ? 180 : 0 }} transition={SPRING_LAYOUT} aria-hidden>
+          ▾
+        </motion.span>
+      </button>
+      <AnimatePresence initial={false}>
+        {toolsOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={SPRING_LAYOUT}
+            className="space-y-0.5 overflow-hidden text-xs"
+          >
+            {LINKS.map(({ href, label, icon: Icon }) => (
+              <button key={href} type="button" onClick={() => router.push(href)} className={itemClass}>
+                <Icon className="h-3.5 w-3.5 shrink-0" />
+                <span>{label}</span>
+              </button>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

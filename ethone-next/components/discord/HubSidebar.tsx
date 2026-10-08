@@ -417,6 +417,8 @@ export default function HubSidebar({
             </kbd>
           </motion.button>
 
+          <OwnerBotSection itemClass="w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors cursor-pointer text-left" />
+
           <div className="space-y-0.5 text-xs">
             <button
               type="button"
@@ -592,7 +594,6 @@ export default function HubSidebar({
             </div>
           </div>
 
-          <OwnerBotSection itemClass="w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors cursor-pointer text-left" />
         </div>
 
         {totalModuleCount ? (

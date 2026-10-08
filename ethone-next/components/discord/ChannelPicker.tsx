@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { createPortal } from "react-dom";
 import {
-  Hash, Edit3, ListFilter, X, Check, Loader2, ChevronDown, ChevronRight, Search,
+  Hash, X, Check, Loader2, ChevronDown, ChevronRight, Search,
   Volume2, Mic, Folder, Image as ImageIcon, MessageSquare, MessagesSquare,
 } from "@/components/icons/ph";
 import { cn } from "@/lib/utils";
@@ -40,6 +40,7 @@ export interface ChannelPickerProps {
 }
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
+const DEFAULT_ID_PLACEHOLDER = "ID du salon (ex: 123456789012345678)";
 const globalChannelCache = new Map<string, ChannelOption[]>();
 const globalChannelLoading = new Map<string, Promise<ChannelOption[]>>();
 
@@ -143,6 +144,14 @@ function TypeIcon({ c, className }: { c: Pick<ChannelOption, "type" | "isPost">;
     case 4: return <Folder className={className} />;
     default: return <Hash className={className} />;
   }
+}
+
+function UpDownIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className={className}>
+      <path d="m5 6 3-3 3 3M5 10l3 3 3-3" />
+    </svg>
+  );
 }
 
 interface Row {
@@ -274,7 +283,7 @@ export default function ChannelPicker({
   onChange,
   channels: propChannels,
   guildId,
-  placeholder = "ID du salon (ex: 123456789012345678)",
+  placeholder = DEFAULT_ID_PLACEHOLDER,
   emptyLabel = "— Sélectionner un salon —",
   className,
   inputClassName,
@@ -286,7 +295,6 @@ export default function ChannelPicker({
   const [fetchedChannels, setFetchedChannels] = useState<ChannelOption[]>([]);
   const [loading, setLoading] = useState(false);
   const [refreshTick, setRefreshTick] = useState(0);
-  const inputRef = useRef<HTMLInputElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const popoverRef = useRef<HTMLDivElement>(null);
   const [pos, setPos] = useState<PopoverPos | null>(null);
@@ -347,26 +355,6 @@ export default function ChannelPicker({
     if (!currentId) return null;
     return availableChannels.find((c) => c.id === currentId) || null;
   }, [availableChannels, currentId]);
-
-  // Déterminer le mode initial :
-  // Si on a des salons ou si le salon courant correspond à un salon connu -> mode "select"
-  // Sinon si currentId est renseigné mais non trouvé dans une liste chargée -> mode "id"
-  const [mode, setMode] = useState<"select" | "id">(() => {
-    if (currentId && availableChannels.length > 0 && !matchedChannel) {
-      return "id";
-    }
-    return "select";
-  });
-
-  // Quand on bascule en mode ID, donner le focus
-  const handleToggleMode = () => {
-    const nextMode = mode === "select" ? "id" : "select";
-    setPos(null);
-    setMode(nextMode);
-    if (nextMode === "id") {
-      setTimeout(() => inputRef.current?.focus(), 50);
-    }
-  };
 
   const rows = useMemo(() => {
     const list = buildRows(availableChannels, query.trim().toLowerCase(), collapsed, rawById);
@@ -459,7 +447,6 @@ export default function ChannelPicker({
   return (
     <div className={cn("space-y-1 w-full", className)}>
       <div className="relative flex items-center gap-1.5">
-        {mode === "select" ? (
           <div className="relative flex-1 min-w-0">
             <button
               ref={triggerRef}
@@ -469,8 +456,9 @@ export default function ChannelPicker({
               aria-haspopup="listbox"
               aria-expanded={open}
               className={cn(
-                "w-full flex items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] text-left text-[var(--text-primary)] outline-none transition-all cursor-pointer hover:border-[var(--text-primary)]/20 focus:border-[var(--accent-primary)]/60 focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--accent-primary)_14%,transparent)] disabled:opacity-50",
-                isSmall ? "h-8 px-2.5 pr-8 text-[11px]" : "h-9 px-3 pr-8 text-xs",
+                "w-full flex items-center gap-2 rounded-lg border bg-[var(--surface-base,var(--bg-main))] text-left text-[var(--text-primary)] outline-none transition-[border-color,box-shadow] duration-150 cursor-pointer hover:border-[var(--text-primary)]/25 focus-visible:border-[var(--accent-primary)]/70 focus-visible:shadow-[0_0_0_3px_color-mix(in_srgb,var(--accent-primary)_16%,transparent)] disabled:opacity-50",
+                open ? "border-[var(--accent-primary)]/70 shadow-[0_0_0_3px_color-mix(in_srgb,var(--accent-primary)_16%,transparent)]" : "border-[var(--panel-border)]",
+                isSmall ? "h-8 px-2.5 pr-8 text-[11px]" : "h-10 px-3 pr-9 text-[13px]",
                 inputClassName
               )}
             >
@@ -482,7 +470,7 @@ export default function ChannelPicker({
               ) : currentId ? (
                 <span className="truncate"># Salon sélectionné ({currentId})</span>
               ) : (
-                <span className="truncate text-[var(--text-muted)]">{allowClear ? emptyLabel : "— Sélectionner un salon —"}</span>
+                <span className="truncate text-[var(--text-muted)]">{placeholder && placeholder !== DEFAULT_ID_PLACEHOLDER ? placeholder : "Choisir un salon"}</span>
               )}
             </button>
 
@@ -491,7 +479,7 @@ export default function ChannelPicker({
               {loading ? (
                 <Loader2 className="w-3.5 h-3.5 animate-spin text-amber-400" />
               ) : (
-                <ChevronDown className="w-3.5 h-3.5 text-[var(--text-muted)]" />
+                <UpDownIcon className="h-4 w-4 text-[var(--text-muted)]" />
               )}
             </div>
 
@@ -500,10 +488,10 @@ export default function ChannelPicker({
                 <div
                   ref={popoverRef}
                   style={{ position: "fixed", left: pos.left, width: pos.width, top: pos.top, bottom: pos.bottom, maxHeight: pos.maxHeight }}
-                  className="pop-in z-[1000] flex flex-col overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] shadow-2xl shadow-black/50"
+                  className="pop-in z-[1000] flex flex-col overflow-hidden rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] shadow-2xl shadow-black/50 backdrop-blur-xl"
                 >
-                  <div className="flex items-center gap-2 border-b border-[var(--panel-border)] px-3 py-2">
-                    <Search className="w-3.5 h-3.5 shrink-0 text-[var(--text-muted)]" />
+                  <div className="flex items-center gap-2.5 border-b border-[var(--panel-border)] px-3.5 py-2.5">
+                    <Search className="h-4 w-4 shrink-0 text-[var(--text-muted)]" />
                     <input
                       autoFocus
                       value={query}
@@ -512,17 +500,32 @@ export default function ChannelPicker({
                         setActiveKey(null);
                       }}
                       onKeyDown={handleSearchKey}
-                      placeholder="Rechercher un salon"
-                      aria-label="Rechercher un salon"
+                      placeholder="Rechercher un salon ou coller un ID"
+                      aria-label="Rechercher un salon ou coller un ID"
                       className="w-full bg-transparent text-sm text-[var(--text-primary)] outline-none placeholder:text-[var(--text-muted)]"
                     />
                   </div>
 
                   <div role="listbox" className="min-h-0 flex-1 overflow-y-auto py-1">
+                    {/^\d{15,22}$/.test(query.trim()) && !availableChannels.some((c) => c.id === query.trim()) && (
+                      <div
+                        role="option"
+                        aria-selected={false}
+                        onClick={() => {
+                          onChange(query.trim());
+                          closePopover();
+                          triggerRef.current?.focus();
+                        }}
+                        className="mx-1.5 flex cursor-pointer items-center gap-2.5 rounded-lg bg-[var(--text-primary)]/[0.07] px-3 py-2 text-[13px] text-[var(--text-primary)]"
+                      >
+                        <Hash className="h-3.5 w-3.5 shrink-0 text-[var(--text-muted)]" />
+                        <span className="truncate">Utiliser l&apos;identifiant <span className="font-mono">{query.trim()}</span></span>
+                      </div>
+                    )}
                     {rows.map((row) => {
                       if (row.kind === "header") {
                         return (
-                          <div key={row.key} className="truncate px-3 pb-1 pt-2.5 text-xs font-semibold uppercase tracking-wide text-[var(--text-muted)]">
+                          <div key={row.key} className="truncate px-3.5 pb-1 pt-3 text-xs font-medium text-[var(--text-muted)]">
                             {row.label}
                           </div>
                         );
@@ -557,11 +560,11 @@ export default function ChannelPicker({
                           onClick={row.selectable ? () => pick(row) : undefined}
                           onMouseEnter={row.selectable ? () => setActiveKey(row.key) : undefined}
                           className={cn(
-                            "mx-1 flex items-center gap-2 rounded-lg py-1.5 pr-2 text-sm",
-                            row.depth === 1 ? "pl-7" : "pl-2",
+                            "mx-1.5 flex items-center gap-2.5 rounded-lg py-2 pr-2.5 text-[13px] transition-colors duration-100",
+                            row.depth === 1 ? "pl-8" : "pl-3",
                             row.selectable ? "cursor-pointer text-[var(--text-primary)]" : "cursor-default text-[var(--text-muted)]",
-                            active && "bg-[var(--text-primary)]/8",
-                            selected && "text-amber-300"
+                            active && "bg-[var(--text-primary)]/[0.07]",
+                            selected && "font-semibold"
                           )}
                         >
                           {row.childCount ? (
@@ -589,105 +592,22 @@ export default function ChannelPicker({
                               {t.emoji ? `${t.emoji} ` : ""}{t.name}
                             </span>
                           ))}
-                          {selected && <Check className="ml-auto w-3.5 h-3.5 shrink-0 text-amber-400" />}
+                          {selected && <Check className="ml-auto h-3.5 w-3.5 shrink-0 text-[var(--accent-primary)]" />}
                         </div>
                       );
                     })}
                     {rows.every((r) => r.kind === "clear") && (
                       <div className="px-3 py-3 text-center text-xs text-[var(--text-muted)]">
-                        {query.trim() ? "Aucun salon trouvé" : "Aucun salon disponible"}
+                        {query.trim() ? (/^\d{15,22}$/.test(query.trim()) ? "" : "Aucun salon trouvé") : "Aucun salon disponible"}
                       </div>
                     )}
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={handleToggleMode}
-                    className="flex cursor-pointer items-center gap-2 border-t border-[var(--panel-border)] px-3 py-2 text-left text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-                  >
-                    <Edit3 className="w-3 h-3 text-amber-400" />
-                    Saisir un ID manuellement...
-                  </button>
                 </div>,
                 document.body
               )}
-          </div>
-        ) : (
-          <div className="relative flex-1 min-w-0">
-            <div className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)]">
-              <Hash className="w-3.5 h-3.5" />
-            </div>
-            <input
-              ref={inputRef}
-              type="text"
-              value={currentId}
-              onChange={(e) => {
-                const val = e.target.value.trim();
-                const found = availableChannels.find((c) => c.id === val);
-                onChange(val, found);
-              }}
-              disabled={disabled}
-              placeholder={placeholder}
-              className={cn(
-                "w-full rounded-xl border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] pl-8 pr-8 text-[var(--text-primary)] font-mono outline-none transition-all hover:border-[var(--text-primary)]/20 focus:border-[var(--accent-primary)]/60 focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--accent-primary)_14%,transparent)] disabled:opacity-50",
-                isSmall ? "h-8 text-[11px]" : "h-9 text-xs",
-                inputClassName
-              )}
-            />
-            {currentId && allowClear && !disabled && (
-              <button
-                type="button"
-                onClick={() => onChange("")}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)]/85 transition-colors cursor-pointer"
-                title="Effacer"
-              >
-                <X className="w-3.5 h-3.5" />
-              </button>
-            )}
-          </div>
-        )}
-
-        {/* Bouton de bascule Liste <-> Saisie ID */}
-        <button
-          type="button"
-          onClick={handleToggleMode}
-          disabled={disabled}
-          className={cn(
-            "shrink-0 rounded-xl border transition-all flex items-center justify-center cursor-pointer disabled:opacity-40",
-            isSmall ? "h-8 px-2 text-[10px]" : "h-9 px-2.5 text-xs",
-            mode === "id"
-              ? "border-amber-500/40 bg-amber-500/10 text-amber-300 hover:bg-amber-500/20"
-              : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--text-primary)]/[0.07]"
-          )}
-          title={
-            mode === "select"
-              ? "Basculer vers la saisie manuelle de l'identifiant (ID)"
-              : "Basculer vers la liste déroulante des salons"
-          }
-        >
-          {mode === "select" ? (
-            <span className="flex items-center gap-1 font-semibold">
-              <Edit3 className="w-3 h-3 text-amber-400" />
-              <span>ID</span>
-            </span>
-          ) : (
-            <span className="flex items-center gap-1 font-semibold">
-              <ListFilter className="w-3 h-3 text-amber-400" />
-              <span>Liste</span>
-            </span>
-          )}
-        </button>
-      </div>
-
-      {/* Indication visuelle en mode ID si le salon est reconnu */}
-      {mode === "id" && matchedChannel && (
-        <div className="flex items-center gap-1 text-[11px] text-[var(--accent-primary)] pl-1">
-          <Check className="w-3 h-3" />
-          <span>
-            Salon reconnu : <strong className="text-[var(--text-primary)]">#{matchedChannel.name}</strong>
-          </span>
         </div>
-      )}
+      </div>
     </div>
   );
 }

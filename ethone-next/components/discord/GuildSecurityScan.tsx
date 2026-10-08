@@ -8,6 +8,8 @@ import { useToast } from "@/components/ToastProvider";
 import { SPRING_LAYOUT, SPRING_PILL, SPRING_PRESS } from "@/lib/ease";
 import { cn } from "@/lib/utils";
 import type { DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
+import ScoreRing from "./ScoreRing";
+import ChannelPicker from "./ChannelPicker";
 import {
   BOT_API_URL,
   SEVERITY_COLOR,
@@ -130,10 +132,7 @@ export default function GuildSecurityScan({ guild, onOpenProtections }: GuildSec
           <div className="space-y-6 lg:col-span-5">
             <div className="space-y-5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-5">
               <div className="flex items-center gap-4">
-                <div className="flex h-20 w-20 shrink-0 flex-col items-center justify-center rounded-full border-2" style={{ borderColor: scoreColor(result.score) }}>
-                  <span className="text-2xl font-bold leading-none tracking-tight text-[var(--text-primary)]">{result.score}</span>
-                  <span className="mt-1 text-[11px] font-medium leading-none text-[var(--text-muted)]">/100</span>
-                </div>
+                <ScoreRing key={result.scannedAt} score={result.score} />
                 <div>
                   <h3 className="text-sm font-bold text-[var(--text-primary)]">
                     {issueCount === 0 ? i18n("dServerWellProtected", "Ton serveur est très bien protégé.") : `${issueCount} point${issueCount > 1 ? "s" : ""} à régler`}
@@ -281,13 +280,10 @@ export default function GuildSecurityScan({ guild, onOpenProtections }: GuildSec
   );
 }
 
-type ChannelOption = { id: string; name: string; category: string };
-
 /** Réglages du scan automatique, enregistrés sur le bot à chaque changement. */
 function AutoScanCard({ guildId }: { guildId: string }) {
   const { error: toastError, success } = useToast();
   const [auto, setAuto] = useState<AutoScanConfig | null>(null);
-  const [channels, setChannels] = useState<ChannelOption[]>([]);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -296,16 +292,9 @@ function AutoScanCard({ guildId }: { guildId: string }) {
     const base = `${BOT_API_URL}/api/guilds/${guildId}/server`;
     Promise.all([
       fetch(`${base}/security-scan/auto`, { credentials: "include" }).then((r) => (r.ok ? r.json() : null)),
-      fetch(`${base}/channels`, { credentials: "include" }).then((r) => (r.ok ? r.json() : null)),
     ])
-      .then(([a, tree]) => {
-        if (cancelled) return;
-        if (a?.auto) setAuto(a.auto);
-        const list: ChannelOption[] = [];
-        const isText = (c: { type?: number }) => c.type === 0 || c.type === 5;
-        for (const cat of tree?.categories ?? []) for (const c of cat.channels ?? []) if (isText(c)) list.push({ id: c.id, name: c.name, category: cat.name });
-        for (const c of tree?.orphanChannels ?? []) if (isText(c)) list.push({ id: c.id, name: c.name, category: "Sans catégorie" });
-        setChannels(list);
+      .then(([a]) => {
+        if (!cancelled && a?.auto) setAuto(a.auto);
       })
       .catch(() => {});
     return () => {
@@ -343,7 +332,6 @@ function AutoScanCard({ guildId }: { guildId: string }) {
   };
 
   if (!auto) return null;
-  const grouped = channels.reduce<Record<string, ChannelOption[]>>((acc, c) => ((acc[c.category] ||= []).push(c), acc), {});
 
   return (
     <div className="space-y-4 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-5">
@@ -371,29 +359,17 @@ function AutoScanCard({ guildId }: { guildId: string }) {
         </button>
       </div>
 
-      <label className="block space-y-1.5">
+      <div className="space-y-1.5">
         <span className="text-[11px] font-semibold text-[var(--text-muted)]">Salon du rapport</span>
-        <select
-          value={auto.channelId ?? ""}
+        <ChannelPicker
+          guildId={guildId}
+          value={auto.channelId}
+          onChange={(id) => save({ channelId: id || null })}
+          filterTypes={[0, 5]}
           disabled={saving}
-          onChange={(e) => save({ channelId: e.target.value || null })}
-          className={cn(
-            "w-full rounded-lg border bg-[var(--surface-base,var(--bg-main))] px-3 py-2 text-xs text-[var(--text-primary)] outline-none focus:ring-2 focus:ring-[var(--accent-primary)]/40",
-            auto.enabled && !auto.channelId ? "border-[var(--warning)]" : "border-[var(--panel-border)]"
-          )}
-        >
-          <option value="">Choisir un salon</option>
-          {Object.entries(grouped).map(([cat, list]) => (
-            <optgroup key={cat} label={cat}>
-              {list.map((c) => (
-                <option key={c.id} value={c.id}>
-                  # {c.name}
-                </option>
-              ))}
-            </optgroup>
-          ))}
-        </select>
-      </label>
+          placeholder="Choisir un salon"
+        />
+      </div>
 
       <div role="radiogroup" aria-label="Fréquence" className="flex gap-1.5">
         {(["day", "week"] as const).map((f) => (

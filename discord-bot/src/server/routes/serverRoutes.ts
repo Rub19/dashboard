@@ -461,7 +461,7 @@ export function createServerRouter(client: Client): Router {
   });
 
   // Configuration assistée (façon Keeper) : `apply: false` renvoie le récapitulatif, `apply: true` l'applique.
-  router.post('/protection-setup', (req: Request, res: Response) => {
+  router.post('/protection-setup', async (req: Request, res: Response) => {
     const guild = client.guilds.cache.get(String(req.params.guildId));
     if (!guild) {
       res.status(404).json({ error: 'Serveur introuvable pour le bot.' });
@@ -477,8 +477,12 @@ export function createServerRouter(client: Client): Router {
       return;
     }
     const input = { serverType, severity, alertChannelId: alertChannelId ? String(alertChannelId) : null, overwrite: overwrite === true };
-    const items = apply === true ? applyProtectionSetup(guild, input) : planProtectionSetup(guild, input);
-    res.json({ items, applied: apply === true });
+    try {
+      const items = apply === true ? await applyProtectionSetup(guild, input) : await planProtectionSetup(guild, input);
+      res.json({ items, applied: apply === true });
+    } catch (err: any) {
+      handleRouteError(err, res, 'Erreur configuration assistée');
+    }
   });
 
   // Protections actives dont les alertes n'arrivent dans aucun salon (calcul en direct, pour la vue d'ensemble).

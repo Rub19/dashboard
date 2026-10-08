@@ -4,6 +4,7 @@ import { securityStorage } from '../../security/storage/securityStorage.js';
 import { autoModRepository } from '../../automod/storage/autoModRepository.js';
 import { auditRepository } from '../../logs/storage/auditRepository.js';
 import { isModuleEnabled, setModuleEnabled } from '../../../services/moduleRegistry.js';
+import { nativeAutomodService } from '../../nativeAutomod/services/nativeAutomodService.js';
 import type { RaidAction } from '../../antiRaid/types/antiRaid.js';
 import type { AutoModConfig } from '../../automod/types/autoMod.js';
 
@@ -178,22 +179,54 @@ function protectionsFor(type: ServerType): Protection[] {
   return type === 'friends' ? CORE : [...CORE, ...COMMUNITY];
 }
 
-export function planProtectionSetup(guild: Guild, input: SetupInput): PlanItem[] {
+/** Règles AutoMod de Discord posées par Etho (langage, spam, mentions) : bloquées par Discord avant publication. */
+const NATIVE_TRIGGERS = ['keyword_preset', 'spam', 'mention_spam'] as const;
+const NATIVE_ID = 'discord-automod';
+const wantsNative = (input: SetupInput) => input.serverType !== 'friends' && input.severity !== 'watch';
+
+async function nativeRulesPresent(guild: Guild): Promise<boolean | null> {
+  if (typeof (guild as any).autoModerationRules?.fetch !== 'function') return null;
+  const rules = await nativeAutomodService.list(guild).catch(() => null);
+  if (!rules) return null;
+  const present = new Set(rules.map((r) => r.triggerType));
+  return NATIVE_TRIGGERS.every((t) => present.has(t));
+}
+
+export async function planProtectionSetup(guild: Guild, input: SetupInput): Promise<PlanItem[]> {
   const items: PlanItem[] = protectionsFor(input.serverType).map((p) => {
     const active = p.isActive(guild.id);
     const status: PlanStatus = !active ? 'enable' : p.matches(guild.id, input.severity) ? 'already' : input.overwrite ? 'update' : 'already';
     return { id: p.id, label: p.label, category: p.category, sanction: p.sanction(input.severity), status };
   });
+  if (wantsNative(input)) {
+    const present = await nativeRulesPresent(guild);
+    if (present !== null) {
+      items.push({
+        id: NATIVE_ID,
+        label: 'Règles AutoMod de Discord (langage, spam, mentions)',
+        category: 'Messages',
+        sanction: 'Bloque le message avant publication',
+        status: present ? 'already' : 'enable',
+      });
+    }
+  }
   if (input.serverType === 'large') {
     for (const [id, label] of VOICE_UNAVAILABLE) items.push({ id, label, category: 'Vocal', sanction: 'Pas encore disponible sur Etho', status: 'unavailable' });
   }
   return items;
 }
 
-export function applyProtectionSetup(guild: Guild, input: SetupInput): PlanItem[] {
-  const plan = planProtectionSetup(guild, input);
+export async function applyProtectionSetup(guild: Guild, input: SetupInput): Promise<PlanItem[]> {
+  const plan = await planProtectionSetup(guild, input);
   const toApply = new Set(plan.filter((i) => i.status === 'enable' || i.status === 'update').map((i) => i.id));
   for (const p of protectionsFor(input.serverType)) if (toApply.has(p.id)) p.apply(guild.id, input.severity);
+  if (toApply.has(NATIVE_ID)) {
+    // Discord n'accepte qu'une règle par type : celles qui existent déjà sont laissées telles quelles.
+    await nativeAutomodService.createRecommended(guild, {
+      alertChannelId: input.alertChannelId ?? undefined,
+      reason: 'Configuration assistée Etho',
+    });
+  }
 
   // Salon des alertes : là où les protections écrivent (logs « Modération »), plus les alertes anti-raid et AutoMod.
   if (input.alertChannelId) {

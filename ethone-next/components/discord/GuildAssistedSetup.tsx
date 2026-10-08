@@ -2,10 +2,11 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { Check, ChevronLeft, Loader2, Sliders } from "@/components/icons/ph";
+import { ArrowLeft, ArrowRight, Check, Eye, Home, Loader2, Scale, ShieldAlert, Sliders, Users, Volume2 } from "@/components/icons/ph";
+import ChannelPicker from "./ChannelPicker";
 import { useToast } from "@/components/ToastProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
-import { SPRING_LAYOUT, SPRING_PILL } from "@/lib/ease";
+import { SPRING_LAYOUT } from "@/lib/ease";
 import { cn } from "@/lib/utils";
 import type { DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
 
@@ -31,16 +32,16 @@ export interface GuildAssistedSetupProps {
 
 const STEPS = ["Ton serveur", "Sévérité", "Alertes", "Vérifier"] as const;
 
-const SERVER_TYPES: Array<{ id: ServerType; title: string; hint: string }> = [
-  { id: "community", title: "Communauté ouverte", hint: "Serveur public, beaucoup d'arrivées, des inconnus" },
-  { id: "friends", title: "Entre amis", hint: "Petit serveur privé, tout le monde se connaît" },
-  { id: "large", title: "Grosse communauté avec vocaux", hint: "Beaucoup de monde, un staff, des salons vocaux actifs" },
+const SERVER_TYPES: Array<{ id: ServerType; title: string; hint: string; icon: typeof Users }> = [
+  { id: "community", title: "Communauté ouverte", hint: "Serveur public, beaucoup d'arrivées, des inconnus", icon: Users },
+  { id: "friends", title: "Entre amis", hint: "Petit serveur privé, tout le monde se connaît", icon: Home },
+  { id: "large", title: "Grosse communauté avec vocaux", hint: "Beaucoup de monde, un staff, des salons vocaux actifs", icon: Volume2 },
 ];
 
-const SEVERITIES: Array<{ id: Severity; title: string; hint: string }> = [
-  { id: "watch", title: "Surveillance seulement", hint: "Etho note tout et te prévient, sans sanctionner" },
-  { id: "balanced", title: "Équilibré", hint: "Désarme le fautif sans l'exclure, rend muets les spammeurs" },
-  { id: "strict", title: "Strict", hint: "Bannit quiconque tente de casser le serveur" },
+const SEVERITIES: Array<{ id: Severity; title: string; hint: string; icon: typeof Users }> = [
+  { id: "watch", title: "Surveillance seulement", hint: "Etho note tout et te prévient, sans sanctionner", icon: Eye },
+  { id: "balanced", title: "Équilibré", hint: "Désarme le fautif sans l'exclure, rend muets les spammeurs", icon: Scale },
+  { id: "strict", title: "Strict", hint: "Bannit quiconque tente de casser le serveur", icon: ShieldAlert },
 ];
 
 const STATUS_LABEL: Record<PlanStatus, string> = {
@@ -56,8 +57,6 @@ const STATUS_COLOR: Record<PlanStatus, string> = {
   unavailable: "var(--text-muted)",
 };
 
-type ChannelOption = { id: string; name: string; category: string };
-
 /**
  * Configuration assistée, comme celle de Keeper : le type de serveur choisit les protections, la sévérité choisit
  * la sanction selon le type d'abus, un salon reçoit les alertes, puis le récapitulatif calculé par le bot
@@ -72,7 +71,6 @@ export default function GuildAssistedSetup({ guild, onFinish, onCancel, onManual
   const [severity, setSeverity] = useState<Severity>("balanced");
   const [channelId, setChannelId] = useState<string>("");
   const [overwrite, setOverwrite] = useState(false);
-  const [channels, setChannels] = useState<ChannelOption[]>([]);
   const [plan, setPlan] = useState<PlanItem[] | null>(null);
   const [counts, setCounts] = useState<Partial<Record<ServerType, number>>>({});
   const [loadingPlan, setLoadingPlan] = useState(false);
@@ -110,26 +108,6 @@ export default function GuildAssistedSetup({ guild, onFinish, onCancel, onManual
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [guild.id]);
 
-  // Salons textuels du serveur pour l'étape « Alertes ».
-  useEffect(() => {
-    if (!API_BASE) return;
-    let cancelled = false;
-    fetch(`${base}/channels`, { credentials: "include" })
-      .then((r) => (r.ok ? r.json() : null))
-      .then((tree) => {
-        if (cancelled || !tree) return;
-        const list: ChannelOption[] = [];
-        const isText = (c: { type?: number }) => c.type === 0 || c.type === 5;
-        for (const cat of tree.categories ?? []) for (const c of cat.channels ?? []) if (isText(c)) list.push({ id: c.id, name: c.name, category: cat.name });
-        for (const c of tree.orphanChannels ?? []) if (isText(c)) list.push({ id: c.id, name: c.name, category: "Sans catégorie" });
-        setChannels(list);
-      })
-      .catch(() => {});
-    return () => {
-      cancelled = true;
-    };
-  }, [base]);
-
   // Récapitulatif : recalculé par le bot à l'arrivée sur « Vérifier » et quand l'option d'écrasement change.
   useEffect(() => {
     if (step !== 3) return;
@@ -150,11 +128,6 @@ export default function GuildAssistedSetup({ guild, onFinish, onCancel, onManual
     for (const it of plan ?? []) (out[it.category] ||= []).push(it);
     return out;
   }, [plan]);
-  const groupedChannels = useMemo(
-    () => channels.reduce<Record<string, ChannelOption[]>>((acc, c) => ((acc[c.category] ||= []).push(c), acc), {}),
-    [channels]
-  );
-
   const apply = async () => {
     setApplying(true);
     try {
@@ -171,23 +144,30 @@ export default function GuildAssistedSetup({ guild, onFinish, onCancel, onManual
 
   const optionClass = (active: boolean) =>
     cn(
-      "w-full rounded-xl border p-4 text-left transition-[border-color,background-color,transform] duration-150 active:scale-[0.99]",
+      "flex h-full w-full flex-col gap-1 rounded-xl border p-3.5 text-left transition-[border-color,background-color,transform] duration-150 active:scale-[0.98]",
       active
-        ? "border-[var(--accent-primary)] bg-[var(--accent-muted)]"
-        : "border-[var(--panel-border)] bg-[var(--surface-raised)] hover:border-[var(--accent-primary)]/50"
+        ? "border-[var(--accent-primary)]/70 bg-[var(--accent-primary)]/[0.08]"
+        : "border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))]/40 hover:border-[var(--text-primary)]/20"
     );
+  const OptionCard = ({ active, onPick, title, hint, Icon }: { active: boolean; onPick: () => void; title: string; hint: string; Icon: typeof Users }) => (
+    <button type="button" role="radio" aria-checked={active} onClick={onPick} className={optionClass(active)}>
+      <span className={cn("flex items-center gap-2 text-[13px] font-semibold", active ? "text-[var(--accent-primary)]" : "text-[var(--text-primary)]")}>
+        <Icon className="h-4 w-4 shrink-0" />
+        {title}
+      </span>
+      <span className="text-xs leading-relaxed text-[var(--text-muted)]">{hint}</span>
+    </button>
+  );
 
   return (
-    <div className="mx-auto w-full max-w-3xl space-y-6">
-      <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
-        <h1 className="text-2xl font-bold tracking-tight text-[var(--text-primary)] sm:text-3xl">
-          {i18n("dAssistedSetup", "Configuration assistée")}
-        </h1>
+    <div className="mx-auto w-full max-w-3xl space-y-5">
+      <div className="flex items-center justify-between gap-3">
+        <h1 className="text-2xl font-bold tracking-tight text-[var(--text-primary)]">{i18n("dAssistedSetup", "Configuration assistée")}</h1>
         {onManualSetup && (
           <button
             type="button"
             onClick={onManualSetup}
-            className="flex items-center gap-1.5 self-start rounded-lg border border-[var(--panel-border)] px-3 py-1.5 text-xs font-semibold text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)] sm:self-auto"
+            className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]"
           >
             <Sliders className="h-3.5 w-3.5" />
             Réglage manuel
@@ -195,20 +175,21 @@ export default function GuildAssistedSetup({ guild, onFinish, onCancel, onManual
         )}
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]">
-        {/* Étapes */}
-        <ol className="flex border-b border-[var(--panel-border)]">
-          {STEPS.map((label, idx) => (
-            <li key={label} className="relative flex-1 px-2 py-3 text-center text-xs font-semibold">
-              <span className={idx === step ? "text-[var(--text-primary)]" : idx < step ? "text-[var(--success)]" : "text-[var(--text-muted)]"}>
-                {idx < step && !done ? <Check className="mr-1 inline h-3 w-3" /> : null}
-                {label}
-              </span>
-              {idx === step && <motion.span layoutId="setup-step" transition={SPRING_PILL} className="absolute inset-x-3 bottom-0 h-0.5 rounded-full bg-[var(--accent-primary)]" />}
+      <ol className="grid grid-cols-4 gap-2" aria-label="Étapes">
+        {STEPS.map((label, idx) => {
+          const reached = done || idx <= step;
+          return (
+            <li key={label} className="space-y-2">
+              <div className="h-1 overflow-hidden rounded-full bg-[var(--panel-border)]">
+                <motion.div className="h-full rounded-full bg-[var(--accent-primary)]" initial={false} animate={{ width: reached ? "100%" : "0%" }} transition={SPRING_LAYOUT} />
+              </div>
+              <span className={cn("block text-xs", idx === step && !done ? "font-semibold text-[var(--text-primary)]" : "text-[var(--text-muted)]")}>{label}</span>
             </li>
-          ))}
-        </ol>
+          );
+        })}
+      </ol>
 
+      <div className="overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]">
         <div className="p-5 sm:p-6">
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
@@ -233,12 +214,9 @@ export default function GuildAssistedSetup({ guild, onFinish, onCancel, onManual
                     <h2 className="text-base font-bold text-[var(--text-primary)]">Quel genre de serveur as-tu ?</h2>
                     <p className="mt-0.5 text-xs text-[var(--text-muted)]">Etho choisit les protections adaptées.</p>
                   </div>
-                  <div role="radiogroup" aria-label="Type de serveur" className="space-y-2">
+                  <div role="radiogroup" aria-label="Type de serveur" className="grid gap-2 sm:grid-cols-3">
                     {SERVER_TYPES.map((t) => (
-                      <button key={t.id} type="button" role="radio" aria-checked={serverType === t.id} onClick={() => setServerType(t.id)} className={optionClass(serverType === t.id)}>
-                        <span className="block text-sm font-semibold text-[var(--text-primary)]">{t.title}</span>
-                        <span className="mt-0.5 block text-xs text-[var(--text-muted)]">{t.hint}</span>
-                      </button>
+                      <OptionCard key={t.id} active={serverType === t.id} onPick={() => setServerType(t.id)} title={t.title} hint={t.hint} Icon={t.icon} />
                     ))}
                   </div>
                   {counts[serverType] !== undefined && (
@@ -254,12 +232,9 @@ export default function GuildAssistedSetup({ guild, onFinish, onCancel, onManual
                     <h2 className="text-base font-bold text-[var(--text-primary)]">À quel point Etho doit-il être sévère ?</h2>
                     <p className="mt-0.5 text-xs text-[var(--text-muted)]">La sanction est adaptée au type d&apos;abus.</p>
                   </div>
-                  <div role="radiogroup" aria-label="Sévérité" className="space-y-2">
+                  <div role="radiogroup" aria-label="Sévérité" className="grid gap-2 sm:grid-cols-3">
                     {SEVERITIES.map((s) => (
-                      <button key={s.id} type="button" role="radio" aria-checked={severity === s.id} onClick={() => setSeverity(s.id)} className={optionClass(severity === s.id)}>
-                        <span className="block text-sm font-semibold text-[var(--text-primary)]">{s.title}</span>
-                        <span className="mt-0.5 block text-xs text-[var(--text-muted)]">{s.hint}</span>
-                      </button>
+                      <OptionCard key={s.id} active={severity === s.id} onPick={() => setSeverity(s.id)} title={s.title} hint={s.hint} Icon={s.icon} />
                     ))}
                   </div>
                 </>
@@ -269,28 +244,21 @@ export default function GuildAssistedSetup({ guild, onFinish, onCancel, onManual
                     <h2 className="text-base font-bold text-[var(--text-primary)]">Où Etho doit-il te prévenir ?</h2>
                     <p className="mt-0.5 text-xs text-[var(--text-muted)]">Un salon privé, visible par le staff, de préférence.</p>
                   </div>
-                  <label className="block space-y-1.5">
-                    <span className="text-xs font-semibold text-[var(--text-muted)]">Salon des alertes</span>
-                    <select
+                  <div className="grid items-center gap-2 sm:grid-cols-[10rem_1fr]">
+                    <span className="text-xs font-semibold text-[var(--text-primary)]">Salon des alertes</span>
+                    <ChannelPicker
+                      guildId={guild.id}
                       value={channelId}
-                      onChange={(e) => setChannelId(e.target.value)}
-                      className="w-full rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-3 py-2.5 text-sm text-[var(--text-primary)] outline-none focus:ring-2 focus:ring-[var(--accent-primary)]/40"
-                    >
-                      <option value="">Pas de salon pour l&apos;instant</option>
-                      {Object.entries(groupedChannels).map(([cat, list]) => (
-                        <optgroup key={cat} label={cat}>
-                          {list.map((c) => (
-                            <option key={c.id} value={c.id}>
-                              # {c.name}
-                            </option>
-                          ))}
-                        </optgroup>
-                      ))}
-                    </select>
-                  </label>
+                      onChange={(id) => setChannelId(id)}
+                      filterTypes={[0, 5]}
+                      allowClear
+                      emptyLabel="Pas de salon pour l'instant"
+                      placeholder="Choisir un salon"
+                    />
+                  </div>
                   {!channelId && (
                     <p className="rounded-lg border border-[var(--warning)]/30 bg-[var(--warning)]/10 p-3 text-xs text-[var(--text-primary)]">
-                      Sans salon, les protections agissent mais personne n&apos;est prévenu.
+                      Sans salon, les protections agissent mais personne n&apos;est prévenu. Sur Discord, la commande /setup peut créer ce salon pour toi.
                     </p>
                   )}
                 </>
@@ -346,7 +314,7 @@ export default function GuildAssistedSetup({ guild, onFinish, onCancel, onManual
               onClick={() => (step === 0 ? onCancel?.() : setStep((s) => s - 1))}
               className="flex items-center gap-1 text-xs font-semibold text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)]"
             >
-              <ChevronLeft className="h-3.5 w-3.5" />
+              <ArrowLeft className="h-3.5 w-3.5" />
               Retour
             </button>
           )}
@@ -358,9 +326,10 @@ export default function GuildAssistedSetup({ guild, onFinish, onCancel, onManual
             <button
               type="button"
               onClick={() => setStep((s) => s + 1)}
-              className="rounded-lg bg-[var(--accent-primary)] px-4 py-2 text-xs font-semibold text-[var(--accent-contrast)] transition-[filter,transform] hover:brightness-110 active:scale-[0.97]"
+              className="flex items-center gap-1.5 rounded-lg bg-[var(--accent-primary)] px-4 py-2 text-xs font-semibold text-[var(--accent-contrast)] transition-[filter,transform] hover:brightness-110 active:scale-[0.97]"
             >
               Continuer
+              <ArrowRight className="h-3.5 w-3.5" />
             </button>
           ) : (
             <button

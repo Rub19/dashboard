@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.76 — 2026-10-08
+
+**Console Discord : sélecteur de salon façon Keeper, nouvel anneau de score, configuration assistée à la mise en page de Keeper, Pilotage Etho en haut**
+
+- Sélecteur de salon refait comme celui de Keeper sur toutes les pages : bloc sobre avec ⇅, recherche « Rechercher un salon ou coller un ID » (un identifiant collé se sélectionne directement), catégories en clair.
+- Scan de sécurité : le rond du score devient un anneau qui se remplit en douceur, le chiffre ne touche plus le trait.
+- Configuration assistée : étapes en barres de progression, 3 cartes côte à côte avec icônes, Retour / Continuer en bas, sélecteur de salon façon Keeper.
+- Communauté ouverte et grosse communauté : en équilibré ou strict, Etho pose aussi les règles AutoMod de Discord (langage, spam, mentions de masse), bloquées avant publication.
+- La section owner du bot passe tout en haut de la barre latérale sous le nom « Pilotage Etho », avec ses outils repliables.
+
 ## v1.55.75 — 2026-10-08
 
 **Configuration assistée refaite comme celle de Keeper**

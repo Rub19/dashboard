@@ -47168,5 +47168,62 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_75_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_75_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_75_de);
 
+const v1_55_76_fr: ChangelogEntry = {
+  version: "v1.55.76",
+  date: "2026-10-08",
+  title: "Console Discord : sélecteur de salon façon Keeper, nouvel anneau de score, configuration assistée à la mise en page de Keeper, Pilotage Etho en haut",
+  items: [
+    "Sélecteur de salon refait comme celui de Keeper sur toutes les pages : bloc sobre avec ⇅, recherche « Rechercher un salon ou coller un ID » (un identifiant collé se sélectionne directement), catégories en clair.",
+    "Scan de sécurité : le rond du score devient un anneau qui se remplit en douceur, le chiffre ne touche plus le trait.",
+    "Configuration assistée : étapes en barres de progression, 3 cartes côte à côte avec icônes, Retour / Continuer en bas, sélecteur de salon façon Keeper.",
+    "Communauté ouverte et grosse communauté : en équilibré ou strict, Etho pose aussi les règles AutoMod de Discord (langage, spam, mentions de masse), bloquées avant publication.",
+    "La section owner du bot passe tout en haut de la barre latérale sous le nom « Pilotage Etho », avec ses outils repliables.",
+  ],
+};
+
+const v1_55_76_en: ChangelogEntry = {
+  version: "v1.55.76",
+  date: "2026-10-08",
+  title: "Discord console: Keeper-style channel picker, new score ring, Keeper-style assisted setup, Etho control at the top",
+  items: [
+    "Channel picker redesigned everywhere: search accepts a pasted ID.",
+    "Security scan: smooth animated score ring.",
+    "Assisted setup: progress-bar steps, side-by-side option cards, Back / Continue footer.",
+    "Open and large communities also get Discord's native AutoMod rules on balanced or strict.",
+    "The bot owner section moves to the top of the sidebar as \"Etho control\" with collapsible tools.",
+  ],
+};
+
+const v1_55_76_es: ChangelogEntry = {
+  version: "v1.55.76",
+  date: "2026-10-08",
+  title: "Consola Discord: selector de canales estilo Keeper, nuevo anillo de puntuación, configuración asistida estilo Keeper",
+  items: [
+    "Selector de canales rediseñado: la búsqueda acepta un ID pegado.",
+    "Escaneo: anillo de puntuación animado.",
+    "Configuración asistida: pasos en barras, tarjetas lado a lado, botones Atrás / Continuar.",
+    "Comunidades abiertas y grandes: reglas AutoMod nativas de Discord en equilibrado o estricto.",
+    "La sección del propietario del bot pasa arriba como «Pilotaje Etho».",
+  ],
+};
+
+const v1_55_76_de: ChangelogEntry = {
+  version: "v1.55.76",
+  date: "2026-10-08",
+  title: "Discord-Konsole: Kanalauswahl im Keeper-Stil, neuer Score-Ring, assistierte Einrichtung im Keeper-Layout",
+  items: [
+    "Kanalauswahl überall neu: die Suche akzeptiert eine eingefügte ID.",
+    "Sicherheitsscan: animierter Score-Ring.",
+    "Assistierte Einrichtung: Fortschrittsbalken, Karten nebeneinander, Zurück / Weiter unten.",
+    "Offene und große Communitys erhalten bei ausgewogen oder streng auch die nativen AutoMod-Regeln von Discord.",
+    "Der Owner-Bereich des Bots steht jetzt oben als „Etho-Steuerung“.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_76_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_76_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_76_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_76_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

@@ -47115,5 +47115,58 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_74_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_74_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_74_de);
 
+const v1_55_75_fr: ChangelogEntry = {
+  version: "v1.55.75",
+  date: "2026-10-08",
+  title: "Configuration assistée refaite comme celle de Keeper",
+  items: [
+    "4 étapes comme Keeper : type de serveur (choisit les protections), sévérité (choisit la sanction selon l'abus), salon des alertes, puis récapitulatif « Voilà ce qui va changer » calculé par le bot.",
+    "Sévérités de Keeper : surveillance (alerte seulement), équilibré (timeout 10 min pour les messages, expulsion pour les arrivées, retrait des rôles pour le reste), strict (timeout 1 h, expulsion, bannissement).",
+    "Option « Appliquer le niveau aussi aux protections déjà réglées » ; les protections vocales de Keeper sont signalées comme indisponibles sur Etho.",
+    "AutoMod : la durée des timeouts devient un vrai réglage (avant, 5 min fixes, même pour les règles perso).",
+  ],
+};
+
+const v1_55_75_en: ChangelogEntry = {
+  version: "v1.55.75",
+  date: "2026-10-08",
+  title: "Assisted setup rebuilt like Keeper's",
+  items: [
+    "4 steps: server type, severity, alert channel, bot-computed summary.",
+    "Keeper severities mapped to Etho protections.",
+    "Option to apply the level to already configured protections; voice protections marked unavailable.",
+    "AutoMod timeout duration is now a real setting.",
+  ],
+};
+
+const v1_55_75_es: ChangelogEntry = {
+  version: "v1.55.75",
+  date: "2026-10-08",
+  title: "Configuración asistida rehecha como la de Keeper",
+  items: [
+    "4 pasos: tipo de servidor, severidad, canal de alertas, resumen calculado por el bot.",
+    "Severidades de Keeper aplicadas a las protecciones de Etho.",
+    "Opción para aplicar el nivel a protecciones ya configuradas; protecciones de voz no disponibles.",
+    "AutoMod: la duración del timeout es un ajuste real.",
+  ],
+};
+
+const v1_55_75_de: ChangelogEntry = {
+  version: "v1.55.75",
+  date: "2026-10-08",
+  title: "Assistierte Einrichtung wie bei Keeper neu gebaut",
+  items: [
+    "4 Schritte: Servertyp, Strenge, Alarmkanal, vom Bot berechnete Zusammenfassung.",
+    "Keeper-Strengestufen auf Etho-Schutzfunktionen abgebildet.",
+    "Option für bereits eingestellte Schutzfunktionen; Sprachschutz als nicht verfügbar markiert.",
+    "AutoMod: Timeout-Dauer ist jetzt eine echte Einstellung.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_75_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_75_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_75_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_75_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.75 — 2026-10-08
+
+**Configuration assistée refaite comme celle de Keeper**
+
+- 4 étapes comme Keeper : type de serveur (choisit les protections), sévérité (choisit la sanction selon l'abus), salon des alertes, puis récapitulatif « Voilà ce qui va changer » calculé par le bot.
+- Sévérités de Keeper : surveillance (alerte seulement), équilibré (timeout 10 min pour les messages, expulsion pour les arrivées, retrait des rôles pour le reste), strict (timeout 1 h, expulsion, bannissement).
+- Option « Appliquer le niveau aussi aux protections déjà réglées » ; les protections vocales de Keeper sont signalées comme indisponibles sur Etho.
+- AutoMod : la durée des timeouts devient un vrai réglage (avant, 5 min fixes, même pour les règles perso).
+
 ## v1.55.74 — 2026-10-08
 
 **Vue d'ensemble : protections actives sans salon de log, comme sur Keeper**

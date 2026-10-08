@@ -144,6 +144,8 @@ class AutoModService {
       actions: Array.from(actionsToExecute),
       reason: primaryReason,
       config,
+      // Durée réglée sur le module pour les détecteurs ; une règle perso plus longue l'emporte.
+      customTimeoutSeconds: Math.max(config.timeoutSeconds ?? 300, ...matchedCustomRules.map((m) => m.rule.timeoutSeconds ?? 0)),
       addStrikesCount,
       silent: matchedCustomRules.length === 0 && triggeredDetectors.every((d) => d.silent),
     });

@@ -13,6 +13,7 @@ import { logStorage } from '../../modules/logs/storage/logStorage.js';
 import { logger } from '../../utils/logger.js';
 import { handleRouteError } from '../utils/routeError.js';
 import { protectionLogCoverage, runSecurityScan, securityScanStore } from '../../modules/server/services/securityScanService.js';
+import { applyProtectionSetup, planProtectionSetup } from '../../modules/server/services/protectionSetupService.js';
 
 export function createServerRouter(client: Client): Router {
   const router = Router({ mergeParams: true });
@@ -457,6 +458,27 @@ export function createServerRouter(client: Client): Router {
     } catch (err: any) {
       handleRouteError(err, res, 'Erreur scan de sécurité');
     }
+  });
+
+  // Configuration assistée (façon Keeper) : `apply: false` renvoie le récapitulatif, `apply: true` l'applique.
+  router.post('/protection-setup', (req: Request, res: Response) => {
+    const guild = client.guilds.cache.get(String(req.params.guildId));
+    if (!guild) {
+      res.status(404).json({ error: 'Serveur introuvable pour le bot.' });
+      return;
+    }
+    const { serverType, severity, alertChannelId, overwrite, apply } = req.body ?? {};
+    if (!['community', 'friends', 'large'].includes(serverType) || !['watch', 'balanced', 'strict'].includes(severity)) {
+      res.status(400).json({ error: 'Type de serveur ou sévérité invalide.' });
+      return;
+    }
+    if (alertChannelId != null && !guild.channels.cache.get(String(alertChannelId))?.isTextBased()) {
+      res.status(400).json({ error: 'Salon des alertes introuvable ou non textuel.' });
+      return;
+    }
+    const input = { serverType, severity, alertChannelId: alertChannelId ? String(alertChannelId) : null, overwrite: overwrite === true };
+    const items = apply === true ? applyProtectionSetup(guild, input) : planProtectionSetup(guild, input);
+    res.json({ items, applied: apply === true });
   });
 
   // Protections actives dont les alertes n'arrivent dans aucun salon (calcul en direct, pour la vue d'ensemble).

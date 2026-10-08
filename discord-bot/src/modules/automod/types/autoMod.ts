@@ -232,6 +232,8 @@ export const AutoModConfigSchema = z.object({
   exemptChannelIds: z.array(z.string()).default([]),
   alertChannelId: z.string().nullable().default(null),
   staffMentionRoleId: z.string().nullable().default(null),
+  /** Durée des timeouts posés par les détecteurs (les règles perso gardent la leur). */
+  timeoutSeconds: z.number().min(10).max(86400 * 28).default(300),
   spam: SpamDetectorConfigSchema.default({}),
   flood: FloodDetectorConfigSchema.default({}),
   links: LinkDetectorConfigSchema.default({}),

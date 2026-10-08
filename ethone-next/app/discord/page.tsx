@@ -1406,15 +1406,7 @@ export default function DiscordDashboardPage() {
                   guild={selectedGuild}
                   onCancel={goHome}
                   onManualSetup={goAllModules}
-                  onFinish={(cfg) => {
-                    setGuildSettings((p) => ({
-                      ...p,
-                      antiRaidEnabled: true,
-                      antiSpamEnabled: true,
-                      logChannelId: cfg.channelId || undefined,
-                    }));
-                    goHome();
-                  }}
+                  onFinish={goHome}
                 />
               )}
 

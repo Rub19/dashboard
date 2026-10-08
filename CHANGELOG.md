@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.96 — 2026-10-09
+
+**Console Discord : Économie et Jeux refaits façon Keeper**
+
+- Économie : nouvelle page en blocs avec monnaie, bonus quotidien, gains par message et petit boulot, paris et vols, boutique de rôles modifiable sur place, classement et derniers mouvements.
+- Jeux et casino : nouvelle page avec cagnotte et statistiques, un interrupteur par jeu, mises minimum et maximum, part versée à la cagnotte, meilleurs joueurs et dernières parties.
+- Seuls les réglages réellement appliqués par le bot sont affichés ; chaque modification est enregistrée aussitôt.
+- Les tables de jeu jouables restent accessibles avec « Jouer depuis le site ».
+
 ## v1.55.95 — 2026-10-09
 
 **Sélecteur de serveur : correctif**

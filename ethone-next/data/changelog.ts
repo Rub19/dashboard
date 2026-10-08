@@ -48160,5 +48160,58 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_95_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_95_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_95_de);
 
+const v1_55_96_fr: ChangelogEntry = {
+  version: "v1.55.96",
+  date: "2026-10-09",
+  title: "Console Discord : Économie et Jeux refaits façon Keeper",
+  items: [
+    "Économie : nouvelle page en blocs avec monnaie, bonus quotidien, gains par message et petit boulot, paris et vols, boutique de rôles modifiable sur place, classement et derniers mouvements.",
+    "Jeux et casino : nouvelle page avec cagnotte et statistiques, un interrupteur par jeu, mises minimum et maximum, part versée à la cagnotte, meilleurs joueurs et dernières parties.",
+    "Seuls les réglages réellement appliqués par le bot sont affichés ; chaque modification est enregistrée aussitôt.",
+    "Les tables de jeu jouables restent accessibles avec « Jouer depuis le site ».",
+  ],
+};
+
+const v1_55_96_en: ChangelogEntry = {
+  version: "v1.55.96",
+  date: "2026-10-09",
+  title: "Discord console: Economy and Games rebuilt Keeper-style",
+  items: [
+    "Economy: new block page with currency, daily bonus, per-message earnings and side job, gambling and robbing, an inline-editable role shop, leaderboard and latest transactions.",
+    "Games & casino: new page with jackpot and stats, one switch per game, minimum and maximum bets, jackpot share, top players and latest games.",
+    "Only settings the bot actually enforces are shown; every change is saved instantly.",
+    "The playable game tables remain available via “Play from the site”.",
+  ],
+};
+
+const v1_55_96_es: ChangelogEntry = {
+  version: "v1.55.96",
+  date: "2026-10-09",
+  title: "Consola Discord: Economía y Juegos rehechos al estilo Keeper",
+  items: [
+    "Economía: nueva página en bloques con moneda, bono diario, ganancias por mensaje y trabajo, apuestas y robos, tienda de roles editable, clasificación y últimos movimientos.",
+    "Juegos y casino: nueva página con bote y estadísticas, un interruptor por juego, apuestas mínima y máxima, parte destinada al bote, mejores jugadores y últimas partidas.",
+    "Solo se muestran los ajustes que el bot aplica de verdad; cada cambio se guarda al instante.",
+    "Las mesas de juego siguen disponibles con « Jugar desde el sitio ».",
+  ],
+};
+
+const v1_55_96_de: ChangelogEntry = {
+  version: "v1.55.96",
+  date: "2026-10-09",
+  title: "Discord-Konsole: Wirtschaft und Spiele im Keeper-Stil neu gebaut",
+  items: [
+    "Wirtschaft: neue Blockseite mit Währung, Tagesbonus, Verdienst pro Nachricht und Nebenjob, Wetten und Diebstahl, direkt bearbeitbarem Rollen-Shop, Rangliste und letzten Buchungen.",
+    "Spiele & Casino: neue Seite mit Jackpot und Statistiken, einem Schalter pro Spiel, Mindest- und Höchsteinsatz, Jackpot-Anteil, besten Spielern und letzten Partien.",
+    "Es werden nur Einstellungen angezeigt, die der Bot wirklich anwendet; jede Änderung wird sofort gespeichert.",
+    "Die spielbaren Tische bleiben über „Auf der Website spielen“ erreichbar.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_96_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_96_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_96_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_96_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

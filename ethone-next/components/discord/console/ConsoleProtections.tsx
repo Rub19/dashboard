@@ -1,13 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Minus, Plus, Search, Trash2 } from "@/components/icons/ph";
+import { Plus, Search, Trash2 } from "@/components/icons/ph";
 import { WandSparkles } from "lucide-react";
 import ChannelPicker from "../ChannelPicker";
 import { SPRING_LAYOUT, SPRING_PILL } from "@/lib/ease";
 import { cn } from "@/lib/utils";
-import { ConsolePage, EmptyLine, GhostButton, Panel, RoleChips, Row, Segmented, Switch, useGuildApi } from "./kit";
+import { ConsolePage, EmptyLine, GhostButton, Panel, RoleChips, Row, Segmented, Stepper, Switch, useGuildApi } from "./kit";
 import type { ConsoleView } from "../HubSidebar";
 
 type RaidAction = "WARN" | "DELETE" | "TIMEOUT" | "KICK" | "BAN" | "QUARANTINE" | "VERIFY" | "LOCKDOWN" | "ALERT_STAFF" | "ENABLE_RAID_MODE";
@@ -312,43 +312,6 @@ function Step({ n, children }: { n: number; children: ReactNode }) {
     <span className="flex items-center gap-2.5">
       <span className="flex h-5 w-5 items-center justify-center rounded-full border border-[var(--panel-border)] font-mono text-[10px] text-[var(--text-muted)]">{n}</span>
       {children}
-    </span>
-  );
-}
-
-/** Compteur « − 5 + » (format Keeper) ; l'enregistrement part 500 ms après le dernier clic. */
-function Stepper({ value, min, max, unit, onCommit }: { value: number; min: number; max: number; unit?: string; onCommit: (n: number) => void }) {
-  const [v, setV] = useState(value);
-  const timer = useRef<number | undefined>(undefined);
-  useEffect(() => setV(value), [value]);
-  useEffect(() => () => window.clearTimeout(timer.current), []);
-  const set = (n: number) => {
-    const c = Math.min(max, Math.max(min, Math.round(n) || min));
-    setV(c);
-    window.clearTimeout(timer.current);
-    timer.current = window.setTimeout(() => c !== value && onCommit(c), 500);
-  };
-  const btn = "flex h-8 w-8 items-center justify-center text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)] disabled:opacity-40";
-  return (
-    <span className="inline-flex items-center gap-2 text-xs text-[var(--text-muted)]">
-      <span className="inline-flex items-center rounded-lg border border-[var(--panel-border)]">
-        <button type="button" className={btn} onClick={() => set(v - 1)} disabled={v <= min} aria-label="Moins">
-          <Minus className="h-3.5 w-3.5" />
-        </button>
-        <input
-          type="number"
-          value={v}
-          min={min}
-          max={max}
-          onChange={(e) => set(Number(e.target.value))}
-          aria-label={unit ?? "Valeur"}
-          className="h-8 w-12 border-x border-[var(--panel-border)] bg-transparent text-center font-mono text-sm text-[var(--text-primary)] outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"
-        />
-        <button type="button" className={btn} onClick={() => set(v + 1)} disabled={v >= max} aria-label="Plus">
-          <Plus className="h-3.5 w-3.5" />
-        </button>
-      </span>
-      {unit}
     </span>
   );
 }

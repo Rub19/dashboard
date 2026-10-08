@@ -50,18 +50,26 @@ const PAGES: Record<string, ComponentType> = {
   serverstats: load(() => import("@/app/discord/server-stats/ServerStatsCenterClient")),
   automodnative: load(() => import("@/app/discord/automod-native/AutomodNativeClient")),
   highlights: load(() => import("@/app/discord/highlights/HighlightsCenterClient")),
-  economy: load(() => import("@/app/discord/economy/EconomyCenterClient")),
   calendar: load(() => import("@/app/discord/calendar/DiscordCalendarClient")),
   streamers: load(() => import("@/app/discord/streamers/StreamersCenterClient")),
-  games: load(() => import("@/app/discord/games/GamesCenterClient")),
   bot: load(() => import("@/app/discord/bot/BotControlClient").then((m) => function BotControlEmbed() {
     return <m.default initialTab="overview" />;
   })),
 };
 
-export const hasEmbeddedPage = (moduleId: string) => moduleId in PAGES;
+/** Modules refaits en pages natives de la console (format Keeper) : ils reçoivent le serveur directement. */
+const native = (loader: () => Promise<{ default: ComponentType<{ guildId: string }> }>) =>
+  dynamic(loader, { ssr: false, loading: () => <ModuleSkeleton label="Chargement du module" /> });
+const NATIVE: Record<string, ComponentType<{ guildId: string }>> = {
+  economy: native(() => import("./modules/ConsoleEconomy")),
+  games: native(() => import("./modules/ConsoleGames")),
+};
 
-export default function ModuleEmbed({ moduleId }: { moduleId: string }) {
+export const hasEmbeddedPage = (moduleId: string) => moduleId in PAGES || moduleId in NATIVE;
+
+export default function ModuleEmbed({ moduleId, guildId }: { moduleId: string; guildId: string }) {
+  const Native = NATIVE[moduleId];
+  if (Native) return <Native guildId={guildId} />;
   const Page = PAGES[moduleId];
   if (!Page) return null;
   return (

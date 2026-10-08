@@ -1386,7 +1386,7 @@ export default function DiscordDashboardPage() {
                     );
                   })()}
 
-                  <ModuleEmbed key={`${selectedGuild.id}-${activeMeta.id}`} moduleId={activeMeta.id} />
+                  <ModuleEmbed key={`${selectedGuild.id}-${activeMeta.id}`} moduleId={activeMeta.id} guildId={selectedGuild.id} />
                 </div>
               )}
               </motion.div>

@@ -1,5 +1,16 @@
 [
   {
+    "version": "v1.55.96",
+    "date": "2026-10-09",
+    "title": "Console Discord : Économie et Jeux refaits façon Keeper",
+    "items": [
+      "Économie : nouvelle page en blocs avec monnaie, bonus quotidien, gains par message et petit boulot, paris et vols, boutique de rôles modifiable sur place, classement et derniers mouvements.",
+      "Jeux et casino : nouvelle page avec cagnotte et statistiques, un interrupteur par jeu, mises minimum et maximum, part versée à la cagnotte, meilleurs joueurs et dernières parties.",
+      "Seuls les réglages réellement appliqués par le bot sont affichés ; chaque modification est enregistrée aussitôt.",
+      "Les tables de jeu jouables restent accessibles avec « Jouer depuis le site »."
+    ]
+  },
+  {
     "version": "v1.55.95",
     "date": "2026-10-09",
     "title": "Sélecteur de serveur : correctif",
@@ -636,17 +647,6 @@
       "Composants Liquid Glass interactifs : cartes dépliables animées, badges de typologie et intégration du schéma d'URL `ethone://changelog` et de la route `/changelog`.",
       "Accès rapide depuis la section Compte : la pastille de version dans Plus ouvre directement le journal natif.",
       "Épuration intégrale de la base de code native : suppression sans reste de l'ensemble des commentaires et notes explicatives dans tous les modules Swift."
-    ]
-  },
-  {
-    "version": "v1.55.34",
-    "date": "2026-10-06",
-    "title": "Parité iOS Native : Clip Rapide Liquid Glass & Code Épuré",
-    "items": [
-      "Nouvel écran natif Clip sur iOS (`ClipView`) : capture instantanée de notes et tâches depuis le presse-papier (`UIPasteboard`) avec extraction intelligente d'URL et détection de citations Markdown.",
-      "Formulaire interactif Liquid Glass : bascule Note/Tâche, sélecteur de priorité (Basse, Moyenne, Haute, Urgente), sélecteur d'échéance et retours haptiques UINotificationFeedbackGenerator.",
-      "Routage universel et deeplinks : ouverture directe via `/clip` et schéma d'URL `ethone://clip`.",
-      "Nettoyage global de la base de code Swift : suppression intégrale des commentaires et notes de code redondantes dans l'authentification, le moteur d'administration et les modèles natifs."
     ]
   }
 ]

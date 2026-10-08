@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useId, useRef, useState, type Dispatch, type ReactNode, type SetStateAction } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { Hash, Loader2, Plus, Search, Volume2, X } from "@/components/icons/ph";
+import { Hash, Loader2, Minus, Plus, Search, Volume2, X } from "@/components/icons/ph";
 import { useToast } from "@/components/ToastProvider";
 import { SPRING_LAYOUT, SPRING_PILL, SPRING_PRESS } from "@/lib/ease";
 import { cn } from "@/lib/utils";
@@ -504,5 +504,110 @@ export function RoleChips({
       })}
       {(max === undefined || ids.length < max) && <RoleAdder guildId={guildId} label={addLabel} excludeIds={ids} onPick={(r) => onChange(max === 1 ? [r.id] : [...ids, r.id])} />}
     </div>
+  );
+}
+
+/**
+ * Compteur « − 5 + » (format Keeper). La saisie au clavier reste libre pendant la frappe ; la valeur est bornée et
+ * enregistrée 600 ms après le dernier changement (ou à la sortie du champ).
+ */
+export function Stepper({
+  value,
+  min,
+  max,
+  step = 1,
+  unit,
+  onCommit,
+  disabled,
+}: {
+  value: number;
+  min: number;
+  max: number;
+  step?: number;
+  unit?: string;
+  onCommit: (n: number) => void;
+  disabled?: boolean;
+}) {
+  const decimals = String(step).split(".")[1]?.length ?? 0;
+  const [draft, setDraft] = useState(String(value));
+  const timer = useRef<number | undefined>(undefined);
+  useEffect(() => setDraft(String(value)), [value]);
+  useEffect(() => () => window.clearTimeout(timer.current), []);
+  const clamp = (n: number) => Number(Math.min(max, Math.max(min, Number.isFinite(n) ? n : min)).toFixed(decimals));
+  const commitSoon = (n: number, delay = 600) => {
+    window.clearTimeout(timer.current);
+    timer.current = window.setTimeout(() => {
+      const c = clamp(n);
+      setDraft(String(c));
+      if (c !== value) onCommit(c);
+    }, delay);
+  };
+  const bump = (dir: 1 | -1) => {
+    const c = clamp((Number(draft) || 0) + dir * step);
+    setDraft(String(c));
+    commitSoon(c, 450);
+  };
+  const btn = "flex h-8 w-8 items-center justify-center text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)] disabled:opacity-40";
+  const n = Number(draft);
+  return (
+    <span className="inline-flex items-center gap-2 text-xs text-[var(--text-muted)]">
+      <span className="inline-flex items-center rounded-lg border border-[var(--panel-border)]">
+        <button type="button" className={btn} onClick={() => bump(-1)} disabled={disabled || n <= min} aria-label="Moins">
+          <Minus className="h-3.5 w-3.5" />
+        </button>
+        <input
+          inputMode="decimal"
+          value={draft}
+          disabled={disabled}
+          onChange={(e) => {
+            setDraft(e.target.value);
+            commitSoon(Number(e.target.value.replace(",", ".")), 900);
+          }}
+          onBlur={() => commitSoon(Number(draft.replace(",", ".")), 0)}
+          onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()}
+          aria-label={unit ?? "Valeur"}
+          style={{ width: `${Math.max(3, String(max).length + (decimals ? decimals + 1 : 0)) + 1.5}ch` }}
+          className="h-8 border-x border-[var(--panel-border)] bg-transparent text-center font-mono text-sm text-[var(--text-primary)] outline-none disabled:opacity-50"
+        />
+        <button type="button" className={btn} onClick={() => bump(1)} disabled={disabled || n >= max} aria-label="Plus">
+          <Plus className="h-3.5 w-3.5" />
+        </button>
+      </span>
+      {unit}
+    </span>
+  );
+}
+
+/** Champ texte enregistré à la sortie du champ (ou Entrée). */
+export function TextField({ value, onCommit, maxLength = 80, placeholder, mono, width = "w-56" }: { value: string; onCommit: (v: string) => void; maxLength?: number; placeholder?: string; mono?: boolean; width?: string }) {
+  const [draft, setDraft] = useState(value);
+  useEffect(() => setDraft(value), [value]);
+  return (
+    <input
+      value={draft}
+      maxLength={maxLength}
+      placeholder={placeholder}
+      onChange={(e) => setDraft(e.target.value)}
+      onBlur={() => draft.trim() && draft !== value && onCommit(draft.trim())}
+      onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()}
+      className={cn(
+        "h-9 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-3 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/70",
+        mono && "font-mono",
+        width
+      )}
+    />
+  );
+}
+
+/** Tuile chiffrée (format Keeper) : libellé, valeur, précision. */
+export function StatTile({ label, value, hint, accent }: { label: string; value: ReactNode; hint?: ReactNode; accent?: string }) {
+  return (
+    <motion.div variants={staggerItem} className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-4">
+      <p className="text-xs text-[var(--text-muted)]">{label}</p>
+      <p className="mt-2 text-2xl font-bold tabular-nums text-[var(--text-primary)]" style={accent ? { color: accent } : undefined}>
+        {value}
+      </p>
+      {hint && <p className="mt-0.5 truncate text-[11px] text-[var(--text-muted)]">{hint}</p>}
+    </motion.div>
   );
 }

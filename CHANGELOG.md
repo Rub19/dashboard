@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.97 — 2026-10-09
+
+**Économie et Jeux : finitions**
+
+- Le symbole de la monnaie est plus discret dans les tuiles chiffrées.
+
 ## v1.55.96 — 2026-10-09
 
 **Console Discord : Économie et Jeux refaits façon Keeper**

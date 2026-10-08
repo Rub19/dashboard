@@ -1,5 +1,13 @@
 [
   {
+    "version": "v1.55.97",
+    "date": "2026-10-09",
+    "title": "Économie et Jeux : finitions",
+    "items": [
+      "Le symbole de la monnaie est plus discret dans les tuiles chiffrées."
+    ]
+  },
+  {
     "version": "v1.55.96",
     "date": "2026-10-09",
     "title": "Console Discord : Économie et Jeux refaits façon Keeper",
@@ -636,17 +644,6 @@
       "Tableau de bord défensif Liquid Glass : cartes métriques (serveurs protégés, incidents interceptés, statut hiérarchique du bot) et journal des sanctions interceptées avec attribution des modérateurs.",
       "Gestion granulaire par serveur : activation / désactivation de la protection et opération de secours ciblé en 1 geste.",
       "Routage universel et deeplinks : accès direct via `/owner/shield`, `/discord/owner-shield`, le schéma `ethone://owner-shield` et les sections Administration et Outils de Discord."
-    ]
-  },
-  {
-    "version": "v1.55.35",
-    "date": "2026-10-06",
-    "title": "Parité iOS Native : Journal des Modifications & Code Épuré",
-    "items": [
-      "Nouveau module natif Journal des modifications sur iOS (`ChangelogView`) : consultation complète des versions avec filtrage par catégorie (Nouveautés, Correctifs, Améliorations) et recherche instantanée.",
-      "Composants Liquid Glass interactifs : cartes dépliables animées, badges de typologie et intégration du schéma d'URL `ethone://changelog` et de la route `/changelog`.",
-      "Accès rapide depuis la section Compte : la pastille de version dans Plus ouvre directement le journal natif.",
-      "Épuration intégrale de la base de code native : suppression sans reste de l'ensemble des commentaires et notes explicatives dans tous les modules Swift."
     ]
   }
 ]

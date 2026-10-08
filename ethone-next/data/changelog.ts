@@ -48213,5 +48213,46 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_96_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_96_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_96_de);
 
+const v1_55_97_fr: ChangelogEntry = {
+  version: "v1.55.97",
+  date: "2026-10-09",
+  title: "Économie et Jeux : finitions",
+  items: [
+    "Le symbole de la monnaie est plus discret dans les tuiles chiffrées.",
+  ],
+};
+
+const v1_55_97_en: ChangelogEntry = {
+  version: "v1.55.97",
+  date: "2026-10-09",
+  title: "Economy and Games: polish",
+  items: [
+    "The currency symbol is more discreet in the stat tiles.",
+  ],
+};
+
+const v1_55_97_es: ChangelogEntry = {
+  version: "v1.55.97",
+  date: "2026-10-09",
+  title: "Economía y Juegos: retoques",
+  items: [
+    "El símbolo de la moneda es más discreto en los mosaicos de cifras.",
+  ],
+};
+
+const v1_55_97_de: ChangelogEntry = {
+  version: "v1.55.97",
+  date: "2026-10-09",
+  title: "Wirtschaft und Spiele: Feinschliff",
+  items: [
+    "Das Währungssymbol ist in den Kennzahl-Kacheln dezenter.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_97_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_97_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_97_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_97_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

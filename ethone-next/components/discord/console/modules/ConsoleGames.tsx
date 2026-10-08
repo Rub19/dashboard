@@ -40,6 +40,12 @@ const GAMES: Array<{ key: keyof GamesConfig; label: string; hint: string }> = [
   { key: "dailySpinEnabled", label: "Roue quotidienne", hint: "Un tour gratuit par jour avec /casino daily." },
 ];
 const fmt = (n: number) => n.toLocaleString("fr-FR");
+const Amount = ({ n, sym }: { n: number; sym: string }) => (
+  <>
+    {fmt(n)}
+    <span className="ml-1.5 text-sm font-medium text-[var(--text-muted)]">{sym}</span>
+  </>
+);
 
 /** Jeux et casino (format Keeper) : jeux actifs, mises, cagnotte, meilleurs joueurs et dernières parties. */
 export default function ConsoleGames({ guildId }: { guildId: string }) {
@@ -107,10 +113,10 @@ export default function ConsoleGames({ guildId }: { guildId: string }) {
       )}
 
       <motion.div variants={pageStagger} className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatTile label="Cagnotte" value={`${fmt(ov?.jackpotPool ?? cfg.jackpotPool)} ${sym}`} hint={`${cfg.jackpotContributionPercent} % de chaque mise`} />
+        <StatTile label="Cagnotte" value={<Amount n={ov?.jackpotPool ?? cfg.jackpotPool} sym={sym} />} hint={`${cfg.jackpotContributionPercent} % de chaque mise`} />
         <StatTile label="Parties jouées" value={ov ? fmt(ov.totalGamesPlayed) : "—"} />
         <StatTile label="Misé / redistribué" value={ov ? `${fmt(ov.totalBets)}` : "—"} hint={ov ? `${fmt(ov.totalPayouts)} ${sym} redistribués` : undefined} />
-        <StatTile label="Plus gros gain" value={ov?.biggestWin ? `${fmt(ov.biggestWin.amount)} ${sym}` : "—"} hint={ov?.biggestWin ? `${ov.biggestWin.username} · ${GAME_LABEL[ov.biggestWin.game] ?? ov.biggestWin.game}` : "Aucune partie"} />
+        <StatTile label="Plus gros gain" value={ov?.biggestWin ? <Amount n={ov.biggestWin.amount} sym={sym} /> : "—"} hint={ov?.biggestWin ? `${ov.biggestWin.username} · ${GAME_LABEL[ov.biggestWin.game] ?? ov.biggestWin.game}` : "Aucune partie"} />
       </motion.div>
 
       <Panel title="Jeux">

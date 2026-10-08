@@ -59,6 +59,12 @@ const TX_LABEL: Record<string, string> = {
   admin: "Ajustement",
 };
 const fmt = (n: number) => n.toLocaleString("fr-FR");
+const Amount = ({ n, sym }: { n: number; sym: string }) => (
+  <>
+    {fmt(n)}
+    <span className="ml-1.5 text-sm font-medium text-[var(--text-muted)]">{sym}</span>
+  </>
+);
 
 /** Économie (format Keeper) : monnaie, gains, paris et vols, boutique de rôles, classement et mouvements. */
 export default function ConsoleEconomy({ guildId }: { guildId: string }) {
@@ -121,9 +127,9 @@ export default function ConsoleEconomy({ guildId }: { guildId: string }) {
       )}
 
       <motion.div variants={pageStagger} className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatTile label="En circulation" value={activity ? `${fmt(activity.totalCirculating)} ${sym}` : "—"} hint="Somme de tous les soldes" />
-        <StatTile label="Volume 24 h" value={activity ? `${fmt(activity.volume24h)} ${sym}` : "—"} hint={activity ? `${activity.transactions24h} mouvement${activity.transactions24h > 1 ? "s" : ""}` : undefined} />
-        <StatTile label="Plus gros solde" value={top?.[0] ? `${fmt(top[0].balance)} ${sym}` : "—"} hint={top?.[0]?.username} />
+        <StatTile label="En circulation" value={activity ? <Amount n={activity.totalCirculating} sym={sym} /> : "—"} hint="Somme de tous les soldes" />
+        <StatTile label="Volume 24 h" value={activity ? <Amount n={activity.volume24h} sym={sym} /> : "—"} hint={activity ? `${activity.transactions24h} mouvement${activity.transactions24h > 1 ? "s" : ""}` : undefined} />
+        <StatTile label="Plus gros solde" value={top?.[0] ? <Amount n={top[0].balance} sym={sym} /> : "—"} hint={top?.[0]?.username} />
         <StatTile label="Boutique" value={shop.length} hint={`article${shop.length > 1 ? "s" : ""} en vente`} />
       </motion.div>
 

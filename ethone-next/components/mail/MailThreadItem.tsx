@@ -1,6 +1,6 @@
 "use client";
 
-import { Star, Paperclip, Archive, Trash2, MailOpen, Mail, AlertCircle } from "@/components/icons/ph";
+import { Star, Paperclip, Archive, Trash2, MailOpen, Mail, AlertCircle, Check } from "@/components/icons/ph";
 import { motion, useReducedMotion } from "framer-motion";
 import type { MailMessage } from "@/lib/hooks/useMail";
 import { cn } from "@/lib/utils";
@@ -87,7 +87,7 @@ export default function MailThreadItem({
       }}
       data-testid="mail-thread-item"
       className={cn(
-        "group relative flex w-full cursor-pointer gap-3 px-3.5 py-3 text-left transition-colors duration-100 select-none",
+        "group relative flex w-full cursor-pointer gap-3 px-3.5 py-3 text-left outline-none transition-colors duration-100 select-none focus-visible:bg-[var(--surface-2)]/60",
         active
           ? "bg-[var(--accent-primary)]/[0.10]"
           : selected
@@ -116,17 +116,17 @@ export default function MailThreadItem({
         <MailAvatar name={first.from_name} email={first.from_address} />
         {onSelectToggle && (
           <span
+            role="checkbox"
+            aria-checked={selected}
+            aria-label={selected ? "Désélectionner" : "Sélectionner"}
             className={cn(
-              "absolute inset-0 z-10 flex items-center justify-center rounded-full bg-[var(--bg-main)]/85 backdrop-blur-sm transition-opacity",
-              selected ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+              "absolute inset-0 z-10 flex items-center justify-center rounded-full border transition-[opacity,background-color,border-color] duration-150",
+              selected
+                ? "border-[var(--accent-primary)] bg-[var(--accent-primary)] text-[var(--accent-contrast)] opacity-100"
+                : "border-[var(--text-primary)]/25 bg-[var(--surface-2)] text-transparent opacity-0 group-hover:opacity-100"
             )}
           >
-            <input
-              type="checkbox"
-              checked={selected}
-              onChange={() => {}}
-              className="h-3.5 w-3.5 rounded accent-[var(--accent-primary)]"
-            />
+            <Check className="h-4 w-4" />
           </span>
         )}
       </div>

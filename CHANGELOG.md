@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.89 — 2026-10-09
+
+**Habitudes repensées, Mail plus fluide**
+
+- Habitudes : nouvelle interface avec anneau du jour animé, meilleure série, objectif de la semaine et barres des 7 jours, puis les habitudes en grille, en semaine ou en liste.
+- Cocher une habitude remplit le cercle et trace la coche avec un ressort ; les jours à venir ne peuvent plus être cochés.
+- Nouvelle fenêtre de création avec idées en un clic, choix de l'emoji et objectif de 1 à 7 fois par semaine.
+- Mail : un mail s'ouvre tout de suite au clic, la liste ne change plus de largeur, et changer de mail rapidement n'affiche plus l'ancien.
+- Mail : plus de bordure de focus rouge sur la ligne cliquée, et une case de sélection propre au survol de l'avatar.
+
 ## v1.55.88 — 2026-10-08
 
 **Console Discord : Économie, Jeux et Streamers dans la console**

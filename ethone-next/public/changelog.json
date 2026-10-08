@@ -1,5 +1,17 @@
 [
   {
+    "version": "v1.55.89",
+    "date": "2026-10-09",
+    "title": "Habitudes repensées, Mail plus fluide",
+    "items": [
+      "Habitudes : nouvelle interface avec anneau du jour animé, meilleure série, objectif de la semaine et barres des 7 jours, puis les habitudes en grille, en semaine ou en liste.",
+      "Cocher une habitude remplit le cercle et trace la coche avec un ressort ; les jours à venir ne peuvent plus être cochés.",
+      "Nouvelle fenêtre de création avec idées en un clic, choix de l'emoji et objectif de 1 à 7 fois par semaine.",
+      "Mail : un mail s'ouvre tout de suite au clic, la liste ne change plus de largeur, et changer de mail rapidement n'affiche plus l'ancien.",
+      "Mail : plus de bordure de focus rouge sur la ligne cliquée, et une case de sélection propre au survol de l'avatar."
+    ]
+  },
+  {
     "version": "v1.55.88",
     "date": "2026-10-08",
     "title": "Console Discord : Économie, Jeux et Streamers dans la console",
@@ -641,18 +653,6 @@
       "Bouton rapide « Changer de serveur » ouvrant instantanément la grille complète des serveurs.",
       "Liste déroulante de tous les serveurs de l'utilisateur avec icônes, pastille de présence du bot et indicateur de sélection.",
       "Barre de filtre rapide par recherche et lien d'invitation directe d'Etho sur un nouveau serveur."
-    ]
-  },
-  {
-    "version": "v1.55.27",
-    "date": "2026-10-05",
-    "title": "Harmonisation Visuelle des Modules Streamers et Mini-Jeux / Casino",
-    "items": [
-      "Refonte complète de l'architecture graphique des modules Alertes Streamers (/discord/streamers) et Mini-Jeux (/discord/games) dans le design natif d'ETHONE.",
-      "En-têtes unifiés avec fil d'Ariane Retour Discord, badge dynamique icon-pop, sélecteur de serveur et boutons d'actions contextuelles.",
-      "Bannières d'alerte standardisées (bot non installé avec bouton d'invitation directe, statut de connectivité et mode hors-ligne).",
-      "Cartes d'indicateurs KPI et barres d'onglets horizontales fluides avec animation de transition layoutId.",
-      "Intégration d'un onglet Aperçu Discord dédié dans le module Casino pour tester les embeds de Blackjack, Roulette, Dés et Jackpot en temps réel."
     ]
   }
 ]

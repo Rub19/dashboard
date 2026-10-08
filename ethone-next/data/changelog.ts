@@ -47817,5 +47817,62 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_88_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_88_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_88_de);
 
+const v1_55_89_fr: ChangelogEntry = {
+  version: "v1.55.89",
+  date: "2026-10-09",
+  title: "Habitudes repensées, Mail plus fluide",
+  items: [
+    "Habitudes : nouvelle interface avec anneau du jour animé, meilleure série, objectif de la semaine et barres des 7 jours, puis les habitudes en grille, en semaine ou en liste.",
+    "Cocher une habitude remplit le cercle et trace la coche avec un ressort ; les jours à venir ne peuvent plus être cochés.",
+    "Nouvelle fenêtre de création avec idées en un clic, choix de l'emoji et objectif de 1 à 7 fois par semaine.",
+    "Mail : un mail s'ouvre tout de suite au clic, la liste ne change plus de largeur, et changer de mail rapidement n'affiche plus l'ancien.",
+    "Mail : plus de bordure de focus rouge sur la ligne cliquée, et une case de sélection propre au survol de l'avatar.",
+  ],
+};
+
+const v1_55_89_en: ChangelogEntry = {
+  version: "v1.55.89",
+  date: "2026-10-09",
+  title: "Habits redesigned, smoother Mail",
+  items: [
+    "Habits: new interface with an animated daily ring, best streak, weekly goal and 7-day bars, then your habits as a grid, week or list.",
+    "Checking a habit fills the circle and draws the tick with a spring; future days can no longer be checked.",
+    "New creation window with one-click ideas, emoji picker and a goal from 1 to 7 times a week.",
+    "Mail: a message opens instantly on click, the list no longer changes width, and switching messages quickly no longer shows the previous one.",
+    "Mail: no more red focus border on the clicked row, and a clean selection check when hovering the avatar.",
+  ],
+};
+
+const v1_55_89_es: ChangelogEntry = {
+  version: "v1.55.89",
+  date: "2026-10-09",
+  title: "Hábitos rediseñados, Correo más fluido",
+  items: [
+    "Hábitos: nueva interfaz con anillo diario animado, mejor racha, objetivo semanal y barras de 7 días, y tus hábitos en cuadrícula, semana o lista.",
+    "Marcar un hábito llena el círculo y traza la marca con un resorte; los días futuros ya no se pueden marcar.",
+    "Nueva ventana de creación con ideas en un clic, selector de emoji y objetivo de 1 a 7 veces por semana.",
+    "Correo: un mensaje se abre al instante, la lista ya no cambia de ancho y cambiar rápido de mensaje ya no muestra el anterior.",
+    "Correo: sin borde rojo de foco en la fila pulsada y una casilla de selección limpia al pasar sobre el avatar.",
+  ],
+};
+
+const v1_55_89_de: ChangelogEntry = {
+  version: "v1.55.89",
+  date: "2026-10-09",
+  title: "Gewohnheiten neu gestaltet, flüssigere Mail",
+  items: [
+    "Gewohnheiten: neue Oberfläche mit animiertem Tagesring, bester Serie, Wochenziel und 7-Tage-Balken, dazu die Gewohnheiten als Raster, Woche oder Liste.",
+    "Beim Abhaken füllt sich der Kreis und der Haken wird mit einer Feder gezeichnet; künftige Tage lassen sich nicht mehr abhaken.",
+    "Neues Erstellungsfenster mit Ideen per Klick, Emoji-Auswahl und Ziel von 1 bis 7 Mal pro Woche.",
+    "Mail: Eine Nachricht öffnet sich sofort, die Liste ändert ihre Breite nicht mehr, und schnelles Wechseln zeigt nicht mehr die vorherige.",
+    "Mail: kein roter Fokusrahmen mehr auf der angeklickten Zeile und ein sauberes Auswahlhäkchen beim Überfahren des Avatars.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_89_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_89_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_89_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_89_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

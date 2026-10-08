@@ -105,17 +105,18 @@ export default function MailPage() {
     return c;
   }, [messages]);
 
+  // Ouverture immédiate avec ce que la liste connaît déjà ; le fil complet et le « lu » suivent en arrière-plan.
+  // Le jeton évite qu'une réponse lente d'un mail précédent écrase le mail ouvert ensuite.
+  const openToken = useRef(0);
   const openThread = useCallback(
     async (thread: MailMessage[]) => {
+      const token = ++openToken.current;
+      setActiveThread(thread);
       const last = thread[thread.length - 1];
-      if (last && !last.is_read) {
-        await setFlags([last.id], { is_read: true });
-      }
+      if (last && !last.is_read) void setFlags([last.id], { is_read: true });
       if (last?.thread_id) {
-        const full = await getThread(last.thread_id);
-        setActiveThread(full);
-      } else {
-        setActiveThread(thread);
+        const full = await getThread(last.thread_id).catch(() => null);
+        if (token === openToken.current && full && full.length) setActiveThread(full);
       }
     },
     [setFlags, getThread]
@@ -581,7 +582,8 @@ export default function MailPage() {
       </div>
 
       {/* 2. Mail Thread List (Full on mobile if no active thread, side on desktop) */}
-      <div className={cn("h-full min-w-0 flex-1 flex-col", activeThread ? "hidden md:flex md:max-w-xs lg:max-w-sm" : "flex")}>
+      {/* Largeur fixe sur ordinateur : la liste ne saute plus quand un mail s'ouvre ou se ferme. */}
+      <div className={cn("h-full min-w-0 flex-1 flex-col md:w-[22rem] md:flex-none lg:w-[26rem]", activeThread ? "hidden md:flex" : "flex")}>
         {error && !loading && messages.length === 0 && (
           <div className="mb-2 flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--danger)]/25 bg-[var(--danger)]/10 px-3 py-2 text-xs text-[var(--danger)]">
             <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--danger)]" />

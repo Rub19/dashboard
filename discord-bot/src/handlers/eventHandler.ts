@@ -1,6 +1,6 @@
 import { enforceBlacklistOnJoin } from '../services/blacklistService.js';
 import { onMemberJoin as captchaOnJoin } from '../services/captchaService.js';
-import { onUserUpdate as supportersOnUserUpdate, startSupportersSweep, syncSupporter } from '../services/supportersService.js';
+import { onPresenceUpdate as supportersOnPresenceUpdate, onUserUpdate as supportersOnUserUpdate, startSupportersSweep, syncSupporter } from '../services/supportersService.js';
 import { Client, Events, AuditLogEvent, GuildMember, Role } from 'discord.js';
 import { isModuleEnabled } from '../services/moduleRegistry.js';
 import { recordDeparture, scheduleDepartureRestart } from '../services/departedGuilds.js';
@@ -155,6 +155,7 @@ export function registerEvents(client: Client): void {
   });
   // Soutiens : tag du serveur affiché ou retiré du profil
   client.on(Events.UserUpdate, (_old, user) => void supportersOnUserUpdate(client, user));
+  client.on(Events.PresenceUpdate, (_old, presence) => void supportersOnPresenceUpdate(presence));
   startSupportersSweep(client);
   client.on(Events.GuildMemberRemove, (member) => {
     onGuildMemberRemove(member);

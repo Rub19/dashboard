@@ -19,12 +19,17 @@ type Captcha = {
   logChannelId: string | null;
   logSuccess: boolean;
 };
-type Tools = { captcha: Captcha; captchaPending: number; supporters: { enabled: boolean; roleId: string | null }; supportersCount: number };
+type Tools = { captcha: Captcha; captchaPending: number; supporters: { enabled: boolean; roleId: string | null; mode: "tag" | "status" | "either"; statusText: string }; supportersCount: number };
 
 const FAIL_ACTIONS = [
   { id: "kick", label: "Expulsion", hint: "Il peut revenir" },
   { id: "ban", label: "Bannissement", hint: "Définitif" },
   { id: "none", label: "Rien", hint: "Reste sans accès" },
+] as const;
+const SUPPORT_MODES = [
+  { id: "tag", label: "Tag du serveur", hint: "Il porte le tag" },
+  { id: "status", label: "Statut perso", hint: "Contient un texte" },
+  { id: "either", label: "L'un ou l'autre", hint: "Tag ou statut" },
 ] as const;
 const plural = (n: number, one: string, many: string) => `${n} ${n > 1 ? many : one}`;
 
@@ -145,17 +150,59 @@ export default function ConsoleTools({ guildId }: { guildId: string }) {
       <Panel
         title="Soutiens"
         subtitle={`${plural(tools.supportersCount, "soutien", "soutiens")} en ce moment.`}
-        actions={<Switch checked={s.enabled} onChange={(v) => saveSupporters({ enabled: v })} disabled={!s.enabled && !s.roleId} label={s.enabled ? "Désactiver les soutiens" : "Activer les soutiens"} />}
+        actions={<Switch checked={s.enabled} onChange={(v) => saveSupporters({ enabled: v })} disabled={!s.enabled && (!s.roleId || (s.mode !== "tag" && !s.statusText.trim()))} label={s.enabled ? "Désactiver les soutiens" : "Activer les soutiens"} />}
       >
         <Row label="Comment reconnaître un soutien">
-          <p className="text-xs text-[var(--text-primary)]">
-            Il affiche le <span className="font-semibold">tag du serveur</span> sur son profil Discord.
-          </p>
+          <div role="radiogroup" aria-label="Comment reconnaître un soutien" className="grid gap-2 sm:grid-cols-3">
+            {SUPPORT_MODES.map((m) => (
+              <button
+                key={m.id}
+                type="button"
+                role="radio"
+                aria-checked={s.mode === m.id}
+                onClick={() => s.mode !== m.id && saveSupporters({ mode: m.id, ...(m.id !== "tag" && !s.statusText.trim() ? { enabled: false } : {}) })}
+                className={cn(
+                  "rounded-lg border px-3 py-2 text-left transition-colors",
+                  s.mode === m.id ? "border-[var(--success)]/60 bg-[var(--success)]/10" : "border-[var(--panel-border)] hover:bg-[var(--surface-hover)]"
+                )}
+              >
+                <span className={cn("block text-xs font-semibold", s.mode === m.id ? "text-[var(--success)]" : "text-[var(--text-primary)]")}>{m.label}</span>
+                <span className="block text-[11px] text-[var(--text-muted)]">{m.hint}</span>
+              </button>
+            ))}
+          </div>
         </Row>
+        <AnimatePresence initial={false}>
+          {s.mode !== "tag" && (
+            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} transition={SPRING_LAYOUT}>
+              <Row label="Texte du statut" hint="Majuscules ou minuscules, peu importe (ex. le lien d'invitation du serveur).">
+                <StatusTextField value={s.statusText} onCommit={(t) => saveSupporters({ statusText: t, ...(t.trim() ? {} : { enabled: false }) })} />
+              </Row>
+            </motion.div>
+          )}
+        </AnimatePresence>
         <Row label="Rôle donné" hint="Retiré automatiquement s'il enlève le tag. Le rôle doit être sous celui d'Etho.">
           <RoleChips guildId={guildId} ids={s.roleId ? [s.roleId] : []} max={1} onChange={(ids) => saveSupporters({ roleId: ids[0] ?? null, ...(ids.length ? {} : { enabled: false }) })} />
         </Row>
       </Panel>
     </ConsolePage>
+  );
+}
+
+/** Texte enregistré à la sortie du champ (ou Entrée). */
+function StatusTextField({ value, onCommit }: { value: string; onCommit: (t: string) => void }) {
+  const [draft, setDraft] = useState(value);
+  useEffect(() => setDraft(value), [value]);
+  return (
+    <input
+      value={draft}
+      maxLength={100}
+      onChange={(e) => setDraft(e.target.value)}
+      onBlur={() => draft !== value && onCommit(draft)}
+      onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()}
+      placeholder="discord.gg/monserveur"
+      aria-label="Texte du statut"
+      className="h-9 w-full max-w-sm rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-3 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/70"
+    />
   );
 }

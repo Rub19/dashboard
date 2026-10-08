@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.83 — 2026-10-08
+
+**Soutiens : reconnaissance par statut perso**
+
+- Soutiens : un soutien se reconnaît maintenant au tag du serveur, à un texte dans son statut perso (ex. le lien d'invitation), ou à l'un ou l'autre.
+- Le rôle est donné ou retiré dès que le statut change.
+
 ## v1.55.82 — 2026-10-08
 
 **Console Discord : page Protections façon Keeper**

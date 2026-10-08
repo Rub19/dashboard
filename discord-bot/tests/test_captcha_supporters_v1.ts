@@ -7,7 +7,7 @@ const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'etho-captcha-'));
 process.chdir(tmpDir);
 
 const { newCode, renderCaptcha, onMemberJoin, pendingCount, handleCaptchaButton, handleCaptchaModal } = await import('../src/services/captchaService.js');
-const { wearsGuildTag } = await import('../src/services/supportersService.js');
+const { wearsGuildTag, statusContains, isSupporter } = await import('../src/services/supportersService.js');
 const { guildConfigService } = await import('../src/services/guildConfigService.js');
 
 // Code : 5 caractères, sans caractères ambigus.
@@ -78,7 +78,21 @@ assert.equal(wearsGuildTag({ primaryGuild: { identityEnabled: true, identityGuil
 assert.equal(wearsGuildTag({ primaryGuild: { identityEnabled: false, identityGuildId: G } } as any, G), false);
 assert.equal(wearsGuildTag({ primaryGuild: null } as any, G), false);
 
-console.log('✅ captcha (réussite, échec, expulsion) et soutiens OK');
+// Statut perso (type 4 = Custom).
+const presence = (state: string | null) => ({ activities: [{ type: 4, state }] }) as any;
+assert.equal(statusContains(presence('Rejoins discord.gg/Etho !'), 'discord.gg/etho'), true, 'insensible à la casse');
+assert.equal(statusContains(presence(null), 'etho'), false);
+assert.equal(statusContains(presence('etho'), '  '), false, 'texte vide : jamais soutien');
+const sup: any = { guild: { id: G }, user: { primaryGuild: null }, presence: presence('fan de etho') };
+const setMode = (mode: string) => guildConfigService.updateConfig(G, { supporters: { enabled: true, roleId: null, mode: mode as any, statusText: 'etho' } });
+setMode('tag');
+assert.equal(isSupporter(sup), false, 'mode tag : le statut ne compte pas');
+setMode('status');
+assert.equal(isSupporter(sup), true);
+setMode('either');
+assert.equal(isSupporter({ ...sup, presence: null, user: { primaryGuild: { identityEnabled: true, identityGuildId: G } } }), true, "l'un ou l'autre");
+
+console.log('✅ captcha (réussite, échec, expulsion) et soutiens (tag, statut) OK');
 process.chdir(os.tmpdir());
 fs.rmSync(tmpDir, { recursive: true, force: true });
 process.exit(0);

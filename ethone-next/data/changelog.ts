@@ -47539,5 +47539,50 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_82_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_82_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_82_de);
 
+const v1_55_83_fr: ChangelogEntry = {
+  version: "v1.55.83",
+  date: "2026-10-08",
+  title: "Soutiens : reconnaissance par statut perso",
+  items: [
+    "Soutiens : un soutien se reconnaît maintenant au tag du serveur, à un texte dans son statut perso (ex. le lien d'invitation), ou à l'un ou l'autre.",
+    "Le rôle est donné ou retiré dès que le statut change.",
+  ],
+};
+
+const v1_55_83_en: ChangelogEntry = {
+  version: "v1.55.83",
+  date: "2026-10-08",
+  title: "Supporters: custom status detection",
+  items: [
+    "Supporters: a supporter is now recognised by the server tag, by a text in their custom status (e.g. the invite link), or either.",
+    "The role is given or removed as soon as the status changes.",
+  ],
+};
+
+const v1_55_83_es: ChangelogEntry = {
+  version: "v1.55.83",
+  date: "2026-10-08",
+  title: "Apoyos: detección por estado personalizado",
+  items: [
+    "Apoyos: un apoyo se reconoce ahora por la etiqueta del servidor, por un texto en su estado personalizado (p. ej. el enlace de invitación) o por cualquiera de los dos.",
+    "El rol se da o se quita en cuanto cambia el estado.",
+  ],
+};
+
+const v1_55_83_de: ChangelogEntry = {
+  version: "v1.55.83",
+  date: "2026-10-08",
+  title: "Unterstützer: Erkennung über den benutzerdefinierten Status",
+  items: [
+    "Unterstützer: Ein Unterstützer wird jetzt am Server-Tag, an einem Text in seinem benutzerdefinierten Status (z. B. dem Einladungslink) oder an einem von beiden erkannt.",
+    "Die Rolle wird vergeben oder entfernt, sobald sich der Status ändert.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_83_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_83_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_83_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_83_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

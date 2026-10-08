@@ -55,6 +55,9 @@ export type CaptchaConfig = z.infer<typeof CaptchaConfigSchema>;
 export const SupportersConfigSchema = z.object({
   enabled: z.boolean().default(false),
   roleId: z.string().nullable().default(null),
+  /** tag = tag du serveur affiché ; status = statut perso contenant statusText ; either = l'un ou l'autre. */
+  mode: z.enum(['tag', 'status', 'either']).default('tag'),
+  statusText: z.string().max(100).default(''),
 });
 
 export const GuildConfigSchema = z.object({

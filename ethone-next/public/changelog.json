@@ -1,5 +1,14 @@
 [
   {
+    "version": "v1.55.83",
+    "date": "2026-10-08",
+    "title": "Soutiens : reconnaissance par statut perso",
+    "items": [
+      "Soutiens : un soutien se reconnaît maintenant au tag du serveur, à un texte dans son statut perso (ex. le lien d'invitation), ou à l'un ou l'autre.",
+      "Le rôle est donné ou retiré dès que le statut change."
+    ]
+  },
+  {
     "version": "v1.55.82",
     "date": "2026-10-08",
     "title": "Console Discord : page Protections façon Keeper",
@@ -661,18 +670,6 @@
       "Support tactile complet sur le visualiseur Canvas avec `touchAction: pan-y`, permettant un défilement vertical naturel sur mobile, trackpads et écrans tactiles.",
       "Bouton d'indication et de saut rapide vers le mixeur et les fréquences en bas du visualiseur.",
       "Marges de sécurité accrues (pb-44) évitant tout chevauchement avec le dock flottant en bas de page."
-    ]
-  },
-  {
-    "version": "v1.55.21",
-    "date": "2026-10-05",
-    "title": "Nouveau module Soundscape Studio & Visualiseur Audio 60 FPS",
-    "items": [
-      "Nouveau module Studio Soundscape (/soundscape) avec motion design Apple Sonoma et physique fluide Framer Motion.",
-      "Visualiseur audio haute fidélité 60 FPS sur Canvas avec 4 modes interactifs (Nébuleuse stellaire réactive, Spectre radial bloom, Horizon d'ondes Bézier, Ondes Zen harmoniques) réagissant en temps réel aux fréquences et au curseur.",
-      "Générateur d'ondes binaurales pures (Delta, Theta, Alpha, Beta, Gamma) et fréquences sacrées Solfeggio (432 Hz, 528 Hz, 639 Hz, 852 Hz) avec séparation stéréo stricte.",
-      "Mixeur d'ambiances multi-pistes tactile avec curseurs capacitifs, jauges visuelles, presets d'immersion 1-clic et minuteur de mise en veille avec fondu progressif.",
-      "Intégration directe dans la barre latérale sous Assistants et indexation dans la palette de commandes (Ctrl+K)."
     ]
   }
 ]

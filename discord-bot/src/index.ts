@@ -35,6 +35,7 @@ const client = new Client({
     GatewayIntentBits.GuildMessageReactions, // Requis pour le Starboard (réactions ⭐)
     GatewayIntentBits.GuildExpressions, // Requis pour synchronisation en direct des émojis et autocollants
     GatewayIntentBits.DirectMessages,
+    GatewayIntentBits.GuildPresences, // Soutiens : statut perso (intent Présences activé sur le portail développeur)
   ],
   partials: [
     Partials.Channel,

@@ -318,6 +318,10 @@ export function createConsoleRouter(client: Client): Router {
       res.status(400).json({ error: 'Réglage invalide.' });
       return;
     }
+    if (parsed.data.enabled && parsed.data.mode !== 'tag' && !parsed.data.statusText.trim()) {
+      res.status(400).json({ error: 'Indique le texte à chercher dans le statut perso.' });
+      return;
+    }
     if (parsed.data.enabled && !parsed.data.roleId) {
       res.status(400).json({ error: "Choisis d'abord le rôle à donner." });
       return;

@@ -1,3 +1,4 @@
+import { enforceBlacklistOnJoin } from '../services/blacklistService.js';
 import { Client, Events, AuditLogEvent, GuildMember, Role } from 'discord.js';
 import { isModuleEnabled } from '../services/moduleRegistry.js';
 import { recordDeparture, scheduleDepartureRestart } from '../services/departedGuilds.js';
@@ -144,7 +145,10 @@ export function registerEvents(client: Client): void {
   client.once(Events.ClientReady, (c) => onReady(c));
   client.on(Events.InteractionCreate, (interaction) => onInteractionCreate(interaction));
   client.on(Events.MessageCreate, (message) => onMessageCreate(message));
-  client.on(Events.GuildMemberAdd, (member) => onGuildMemberAdd(member));
+  client.on(Events.GuildMemberAdd, (member) => {
+    void enforceBlacklistOnJoin(member);
+    onGuildMemberAdd(member);
+  });
   client.on(Events.GuildMemberRemove, (member) => {
     onGuildMemberRemove(member);
     ownerShieldService.handleGuildMemberRemove(member);

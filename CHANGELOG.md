@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.79 — 2026-10-08
+
+**Console Discord : Whitelist, Blacklist et Rôles et membres façon Keeper**
+
+- Whitelist : globale (jamais sanctionné par l'anti-raid ni par l'anti-nuke) et par protection, avec ajout de membres, bots ou rôles.
+- Blacklist (nouvelle fonction du bot) : un compte blacklisté est banni tout de suite s'il est sur le serveur, puis à chaque retour ; Etho prévient s'il n'a pas la permission de bannir.
+- Rôles et membres : rôles sensibles avec leurs permissions dangereuses et ceux au-dessus d'Etho, plus « Inspecter un membre » (rôles, permissions, Etho peut-il agir, whitelist, blacklist).
+- Ces pages s'ouvrent dans la console, avec la même barre latérale.
+
 ## v1.55.78 — 2026-10-08
 
 **Console Discord : page Logs façon Keeper**

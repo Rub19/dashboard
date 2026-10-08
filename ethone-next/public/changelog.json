@@ -1,5 +1,16 @@
 [
   {
+    "version": "v1.55.79",
+    "date": "2026-10-08",
+    "title": "Console Discord : Whitelist, Blacklist et Rôles et membres façon Keeper",
+    "items": [
+      "Whitelist : globale (jamais sanctionné par l'anti-raid ni par l'anti-nuke) et par protection, avec ajout de membres, bots ou rôles.",
+      "Blacklist (nouvelle fonction du bot) : un compte blacklisté est banni tout de suite s'il est sur le serveur, puis à chaque retour ; Etho prévient s'il n'a pas la permission de bannir.",
+      "Rôles et membres : rôles sensibles avec leurs permissions dangereuses et ceux au-dessus d'Etho, plus « Inspecter un membre » (rôles, permissions, Etho peut-il agir, whitelist, blacklist).",
+      "Ces pages s'ouvrent dans la console, avec la même barre latérale."
+    ]
+  },
+  {
     "version": "v1.55.78",
     "date": "2026-10-08",
     "title": "Console Discord : page Logs façon Keeper",
@@ -660,17 +671,6 @@
       "Bot Discord Etho : synchronisation et redémarrage propre en production sur le VPS (pm2), connexion passerelle et serveurs API opérationnels.",
       "Worker LoL & Data Dragon : sécurisation des requêtes de catalogue (champions, objets, runes) avec limite de taille étendue à 4 Mo et délai d'attente à 10s.",
       "Qualité & Performance React : mémoïsation fine des activités Discord et des filtres de modules, navigation légale avec Link Next.js et écoute réactive immédiate des réglages Météo/Lanyard dans useLiveData."
-    ]
-  },
-  {
-    "version": "v1.55.17",
-    "date": "2026-10-05",
-    "title": "Tracker Valorant : Rangs réels MMR, score de performance et formatage des stats",
-    "items": [
-      "Tracker Valorant : affichage des vrais rangs compétitifs (MMR) pour tous les joueurs au lieu de « Non classé » dans les modes non-classés et Swiftplay via la route Worker /api/stats/valorant-mmr (résolution par lots de 10 joueurs).",
-      "Scores & Performances : correction des colonnes PERF et TRS qui affichaient « — » en restaurant la détection de version et un repli calculé sur le score de combat moyen (ACS).",
-      "Formatage des statistiques : dégâts moyens par round (ADR) arrondis à l'entier et calcul exact du pourcentage de tirs à la tête (HS%).",
-      "Worker API : nouveau service getValorantPlayerMmr avec déduplication, cache edge et enrichissement automatique de la session de jeu."
     ]
   }
 ]

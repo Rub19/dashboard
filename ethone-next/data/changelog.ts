@@ -47327,5 +47327,58 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_78_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_78_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_78_de);
 
+const v1_55_79_fr: ChangelogEntry = {
+  version: "v1.55.79",
+  date: "2026-10-08",
+  title: "Console Discord : Whitelist, Blacklist et Rôles et membres façon Keeper",
+  items: [
+    "Whitelist : globale (jamais sanctionné par l'anti-raid ni par l'anti-nuke) et par protection, avec ajout de membres, bots ou rôles.",
+    "Blacklist (nouvelle fonction du bot) : un compte blacklisté est banni tout de suite s'il est sur le serveur, puis à chaque retour ; Etho prévient s'il n'a pas la permission de bannir.",
+    "Rôles et membres : rôles sensibles avec leurs permissions dangereuses et ceux au-dessus d'Etho, plus « Inspecter un membre » (rôles, permissions, Etho peut-il agir, whitelist, blacklist).",
+    "Ces pages s'ouvrent dans la console, avec la même barre latérale.",
+  ],
+};
+
+const v1_55_79_en: ChangelogEntry = {
+  version: "v1.55.79",
+  date: "2026-10-08",
+  title: "Discord console: Keeper-style Whitelist, Blacklist and Roles & members",
+  items: [
+    "Whitelist: global and per protection.",
+    "Blacklist (new bot feature): banned immediately, then on every return.",
+    "Roles & members: sensitive roles, roles above Etho and member inspection.",
+    "Pages open inside the console.",
+  ],
+};
+
+const v1_55_79_es: ChangelogEntry = {
+  version: "v1.55.79",
+  date: "2026-10-08",
+  title: "Consola Discord: Whitelist, Blacklist y Roles y miembros estilo Keeper",
+  items: [
+    "Whitelist global y por protección.",
+    "Blacklist (nueva función del bot): baneo inmediato y en cada regreso.",
+    "Roles y miembros: roles sensibles, roles por encima de Etho e inspección de miembros.",
+    "Páginas dentro de la consola.",
+  ],
+};
+
+const v1_55_79_de: ChangelogEntry = {
+  version: "v1.55.79",
+  date: "2026-10-08",
+  title: "Discord-Konsole: Whitelist, Blacklist und Rollen & Mitglieder im Keeper-Stil",
+  items: [
+    "Whitelist global und pro Schutzfunktion.",
+    "Blacklist (neue Bot-Funktion): sofortiger Bann und bei jeder Rückkehr.",
+    "Rollen & Mitglieder: sensible Rollen, Rollen über Etho und Mitgliederprüfung.",
+    "Seiten öffnen sich in der Konsole.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_79_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_79_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_79_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_79_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

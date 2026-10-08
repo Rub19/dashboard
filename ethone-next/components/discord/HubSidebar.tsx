@@ -55,7 +55,7 @@ import {
 import type { NavigatorCategory, NavigatorModule } from "./ModuleNavigator";
 
 /** Pages de la console au format Keeper, affichées dans la console (même barre latérale). */
-export type ConsoleView = "settings" | "access" | "logs";
+export type ConsoleView = "settings" | "access" | "logs" | "whitelist" | "blacklist" | "members";
 export type HubView = "home" | "modules" | "module" | "setup" | "scan" | ConsoleView;
 
 interface HubSidebarProps {
@@ -510,8 +510,12 @@ export default function HubSidebar({
             <div className="space-y-0.5 text-xs">
               <button
                 type="button"
-                onClick={() => router.push(`/discord/security?tab=whitelist&guildId=${selectedGuildId}`)}
-                className="w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors cursor-pointer text-left"
+                onClick={() => (onOpenView ? onOpenView("whitelist") : router.push(`/discord/security?tab=whitelist&guildId=${selectedGuildId}`))}
+                aria-current={view === "whitelist" ? "page" : undefined}
+                className={cn(
+                  "w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-xs transition-colors cursor-pointer text-left",
+                  view === "whitelist" ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold" : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
+                )}
               >
                 <Users className="h-3.5 w-3.5 shrink-0" />
                 <span>{i18n("dWhitelist", "Whitelist")}</span>
@@ -519,8 +523,12 @@ export default function HubSidebar({
 
               <button
                 type="button"
-                onClick={() => router.push(`/discord/security?tab=blacklist&guildId=${selectedGuildId}`)}
-                className="w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors cursor-pointer text-left"
+                onClick={() => (onOpenView ? onOpenView("blacklist") : router.push(`/discord/security?tab=blacklist&guildId=${selectedGuildId}`))}
+                aria-current={view === "blacklist" ? "page" : undefined}
+                className={cn(
+                  "w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-xs transition-colors cursor-pointer text-left",
+                  view === "blacklist" ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold" : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
+                )}
               >
                 <ShieldAlert className="h-3.5 w-3.5 shrink-0" />
                 <span>{i18n("dBlacklist", "Blacklist")}</span>
@@ -528,8 +536,12 @@ export default function HubSidebar({
 
               <button
                 type="button"
-                onClick={() => router.push(`/discord/server/roles?guildId=${selectedGuildId}`)}
-                className="w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors cursor-pointer text-left"
+                onClick={() => (onOpenView ? onOpenView("members") : router.push(`/discord/server/roles?guildId=${selectedGuildId}`))}
+                aria-current={view === "members" ? "page" : undefined}
+                className={cn(
+                  "w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-xs transition-colors cursor-pointer text-left",
+                  view === "members" ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold" : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
+                )}
               >
                 <Crown className="h-3.5 w-3.5 shrink-0" />
                 <span>{i18n("dRolesAndMembers", "Rôles et membres")}</span>

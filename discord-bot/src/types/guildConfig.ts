@@ -81,6 +81,10 @@ export const GuildConfigSchema = z.object({
   ethoOwners: z.array(z.string()).default([]),
   /** Prévenir le propriétaire du serveur en MP lors d'une alerte grave (raid, nuke). */
   ownerDmAlerts: z.boolean().default(false),
+  /** Comptes blacklistés : bannis tout de suite s'ils sont sur le serveur, puis à chaque retour. */
+  blacklist: z
+    .array(z.object({ userId: z.string(), reason: z.string().default(''), addedBy: z.string().nullable().default(null), addedAt: z.string() }))
+    .default([]),
 });
 
 export type GuildConfig = z.infer<typeof GuildConfigSchema>;
@@ -133,6 +137,7 @@ export const defaultGuildConfig: Omit<GuildConfig, 'guildId'> = {
   activePreset: 'PRESET_BALANCED',
   ethoOwners: [],
   ownerDmAlerts: false,
+  blacklist: [],
 };
 
 /**

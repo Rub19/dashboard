@@ -72,6 +72,9 @@ import HubSidebar, { type ConsoleView, type HubView } from "@/components/discord
 import ConsoleSettings from "@/components/discord/console/ConsoleSettings";
 import ConsoleAccess from "@/components/discord/console/ConsoleAccess";
 import ConsoleLogs from "@/components/discord/console/ConsoleLogs";
+import ConsoleWhitelist from "@/components/discord/console/ConsoleWhitelist";
+import ConsoleBlacklist from "@/components/discord/console/ConsoleBlacklist";
+import ConsoleMembers from "@/components/discord/console/ConsoleMembers";
 import GuildOverviewScreen from "@/components/discord/GuildOverviewScreen";
 import GuildAssistedSetup from "@/components/discord/GuildAssistedSetup";
 import GuildSecurityScan from "@/components/discord/GuildSecurityScan";
@@ -758,7 +761,7 @@ export default function DiscordDashboardPage() {
         setShowSetup(true);
       } else if (sp.get("view") === "scan" || sp.get("tab") === "scan") {
         setShowScan(true);
-      } else if (sp.get("view") === "settings" || sp.get("view") === "access" || sp.get("view") === "logs") {
+      } else if (["settings", "access", "logs", "whitelist", "blacklist", "members"].includes(sp.get("view") ?? "")) {
         setConsoleView(sp.get("view") as ConsoleView);
       }
     } catch {}
@@ -1335,6 +1338,12 @@ export default function DiscordDashboardPage() {
                     ? i18n("dAccess", "Accès")
                     : view === "logs"
                     ? i18n("dLogs", "Logs")
+                    : view === "whitelist"
+                    ? i18n("dWhitelist", "Whitelist")
+                    : view === "blacklist"
+                    ? i18n("dBlacklist", "Blacklist")
+                    : view === "members"
+                    ? i18n("dRolesAndMembers", "Rôles et membres")
                     : view === "scan"
                     ? i18n("dSecurityScan", "Scan de sécurité")
                     : view === "setup"
@@ -1421,6 +1430,9 @@ export default function DiscordDashboardPage() {
               {view === "settings" && <ConsoleSettings guildId={selectedGuild.id} />}
               {view === "access" && <ConsoleAccess guildId={selectedGuild.id} />}
               {view === "logs" && <ConsoleLogs guildId={selectedGuild.id} />}
+              {view === "whitelist" && <ConsoleWhitelist guildId={selectedGuild.id} />}
+              {view === "blacklist" && <ConsoleBlacklist guildId={selectedGuild.id} />}
+              {view === "members" && <ConsoleMembers guildId={selectedGuild.id} />}
 
               {view === "scan" && (
                 <GuildSecurityScan

@@ -3808,7 +3808,9 @@ html[data-theme="arctic"] ::-webkit-scrollbar-thumb:hover {
   padding-right: 0;
 }
 .console-embed a[href="/discord"],
-.console-embed a[href^="/discord?"] {
+.console-embed a[href="/discord/"],
+.console-embed a[href^="/discord?"],
+.console-embed a[href^="/discord/?"] {
   display: none;
 }
 .console-embed .rounded-2xl,

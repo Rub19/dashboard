@@ -295,8 +295,9 @@ export default function MusicCenterClient() {
     if (musicState?.status !== "PLAYING" || isScrubbing) return;
     const ticker = setInterval(() => {
       setScrubberPos((prev) => {
-        const dur = musicState.duration || 180;
-        return prev < dur ? prev + 1 : dur;
+        // Durée inconnue (flux en direct) : le compteur avance sans plafond inventé.
+        const dur = musicState.duration || 0;
+        return dur > 0 && prev >= dur ? dur : prev + 1;
       });
     }, 1000);
     return () => clearInterval(ticker);
@@ -705,7 +706,7 @@ export default function MusicCenterClient() {
 
   const currentTrack = musicState?.currentTrack;
   const isPlaying = musicState?.status === "PLAYING";
-  const duration = musicState?.duration || currentTrack?.duration || 180;
+  const duration = musicState?.duration || currentTrack?.duration || 0;
   const isFav = currentTrack ? favorites.some((f) => f.id === currentTrack.id || f.url === currentTrack.url) : false;
 
   return (
@@ -930,7 +931,7 @@ export default function MusicCenterClient() {
                   </div>
                   <div className="flex justify-between text-xs font-mono tabular-nums">
                     <span className="font-semibold text-[var(--text-primary)]">{formatTime(scrubberPos)}</span>
-                    <span className="text-[var(--text-muted)]">{formatTime(duration)}</span>
+                    <span className="text-[var(--text-muted)]">{duration > 0 ? formatTime(duration) : "--:--"}</span>
                   </div>
                 </div>
 

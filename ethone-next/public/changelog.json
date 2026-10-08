@@ -1,5 +1,15 @@
 [
   {
+    "version": "v1.55.88",
+    "date": "2026-10-08",
+    "title": "Console Discord : Économie, Jeux et Streamers dans la console",
+    "items": [
+      "Économie, Jeux et casino, Alertes streamers, Calendrier et AutoMod natif s'ouvrent aussi dans la console.",
+      "Le lien « Retour » des pages de modules est bien masqué dans la console.",
+      "Musique : plus de durée « 03:00 » inventée quand rien ne joue ou que la durée est inconnue."
+    ]
+  },
+  {
     "version": "v1.55.87",
     "date": "2026-10-08",
     "title": "Console Discord : lien direct vers un module",
@@ -643,19 +653,6 @@
       "Bannières d'alerte standardisées (bot non installé avec bouton d'invitation directe, statut de connectivité et mode hors-ligne).",
       "Cartes d'indicateurs KPI et barres d'onglets horizontales fluides avec animation de transition layoutId.",
       "Intégration d'un onglet Aperçu Discord dédié dans le module Casino pour tester les embeds de Blackjack, Roulette, Dés et Jackpot en temps réel."
-    ]
-  },
-  {
-    "version": "v1.55.26",
-    "date": "2026-10-05",
-    "title": "Liaison Casino & Mini-Jeux au Système Monétaire Ethone Coin",
-    "items": [
-      "Liaison complète de l'arène de jeux (/discord/games) au système monétaire officiel du serveur : devise personnalisée (Ethone Coins 🪙) synchronisée dynamiquement.",
-      "Portefeuille joueur en direct : bascule fluide entre le mode Mises Réelles (déduction/crédit immédiat du solde Discord) et le Mode Démo.",
-      "Grand livre économique unifié : enregistrement de chaque partie (blackjack, roulette, duel de dés) dans l'historique des transactions du serveur.",
-      "Alimentation continue du jackpot : prélèvement de 1% à 5% par mise réelle reversé directement dans la cagnotte progressive commune en Ethone Coins.",
-      "Recharges rapides intégrées : réclamation du bonus quotidien (/daily) et exécution du job (/work) directement depuis le centre de jeux.",
-      "Passerelle croisée et panneau de contrôle dans les paramètres du casino avec redirection directe vers la gestion économique (/discord/economy)."
     ]
   }
 ]

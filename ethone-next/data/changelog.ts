@@ -47768,5 +47768,54 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_87_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_87_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_87_de);
 
+const v1_55_88_fr: ChangelogEntry = {
+  version: "v1.55.88",
+  date: "2026-10-08",
+  title: "Console Discord : Économie, Jeux et Streamers dans la console",
+  items: [
+    "Économie, Jeux et casino, Alertes streamers, Calendrier et AutoMod natif s'ouvrent aussi dans la console.",
+    "Le lien « Retour » des pages de modules est bien masqué dans la console.",
+    "Musique : plus de durée « 03:00 » inventée quand rien ne joue ou que la durée est inconnue.",
+  ],
+};
+
+const v1_55_88_en: ChangelogEntry = {
+  version: "v1.55.88",
+  date: "2026-10-08",
+  title: "Discord console: Economy, Games and Streamers in the console",
+  items: [
+    "Economy, Games & casino, Streamer alerts, Calendar and native AutoMod now open inside the console too.",
+    "The module pages' “Back” link is now hidden inside the console.",
+    "Music: no more made-up “03:00” duration when nothing plays or the length is unknown.",
+  ],
+};
+
+const v1_55_88_es: ChangelogEntry = {
+  version: "v1.55.88",
+  date: "2026-10-08",
+  title: "Consola Discord: Economía, Juegos y Streamers en la consola",
+  items: [
+    "Economía, Juegos y casino, Alertas de streamers, Calendario y AutoMod nativo también se abren dentro de la consola.",
+    "El enlace « Volver » de las páginas de módulos queda oculto en la consola.",
+    "Música: ya no aparece una duración « 03:00 » inventada cuando no suena nada o la duración es desconocida.",
+  ],
+};
+
+const v1_55_88_de: ChangelogEntry = {
+  version: "v1.55.88",
+  date: "2026-10-08",
+  title: "Discord-Konsole: Wirtschaft, Spiele und Streamer in der Konsole",
+  items: [
+    "Wirtschaft, Spiele & Casino, Streamer-Alarme, Kalender und natives AutoMod öffnen sich jetzt ebenfalls in der Konsole.",
+    "Der „Zurück“-Link der Modulseiten ist in der Konsole ausgeblendet.",
+    "Musik: keine erfundene Dauer „03:00“ mehr, wenn nichts läuft oder die Länge unbekannt ist.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_88_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_88_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_88_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_88_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

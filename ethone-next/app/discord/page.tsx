@@ -467,7 +467,6 @@ const MODULES: BotModule[] = [
 ];
 
 /** Modules ayant un panneau de configuration rapide dans cette page ; les autres ouvrent directement leur page. */
-const INLINE_MODULE_IDS = new Set<string>(MODULES.map((m) => m.id));
 // Sans `?guildId=`, faute de valeur dynamique à ce niveau (module-scope) : le lien « Ouvrir la page complète » de
 // chaque carte (icône ↗, ModuleNavigator.tsx) atterrissait sur le premier serveur du bot plutôt que celui affiché
 // ici. `useNavModules` ci-dessous complète ces hrefs avec le serveur sélectionné avant de les passer au composant.
@@ -479,6 +478,8 @@ const NAV_MODULES_BASE: NavigatorModule[] = [
   { id: "streamers", title: "Alertes Streamers", description: "Notifications en direct Twitch, YouTube & Kick avec rôle @En Live automatique et embeds animés.", icon: MODULE_ICONS.streamers, tint: "text-purple-400", href: MODULE_PAGES.streamers },
   { id: "games", title: "Mini-Jeux & Casino", description: "Blackjack 21, Roulette Royale, Duels de dés PvP, cagnotte progressive et quêtes actives.", icon: MODULE_ICONS.games, tint: "text-amber-400", href: MODULE_PAGES.games },
 ];
+/** Modules affichés dans la console (page complète intégrée, voir ModuleEmbed). */
+const INLINE_MODULE_IDS = new Set<string>(NAV_MODULES_BASE.map((m) => m.id));
 
 
 // Vérification de permission : Propriétaire OU Administrateur (0x8) OU Gérer le serveur (0x20)
@@ -1127,7 +1128,7 @@ export default function DiscordDashboardPage() {
   }
 
   const userName = isDiscordConnected ? profile?.user?.displayName || profile?.user?.username : undefined;
-  const activeMeta = activeModule ? MODULES.find((m) => m.id === activeModule) ?? null : null;
+  const activeMeta = activeModule ? (MODULES.find((m) => m.id === activeModule) ?? NAV_MODULES_BASE.find((m) => m.id === activeModule)) ?? null : null;
   const view: HubView = consoleView ?? (showScan ? "scan" : showSetup ? "setup" : activeModule ? "module" : showAllModules ? "modules" : "home");
   const inviteHref = `${BOT_INVITE_URL}&guild_id=${selectedGuild.id}`;
 

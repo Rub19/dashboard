@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.88 — 2026-10-08
+
+**Console Discord : Économie, Jeux et Streamers dans la console**
+
+- Économie, Jeux et casino, Alertes streamers, Calendrier et AutoMod natif s'ouvrent aussi dans la console.
+- Le lien « Retour » des pages de modules est bien masqué dans la console.
+- Musique : plus de durée « 03:00 » inventée quand rien ne joue ou que la durée est inconnue.
+
 ## v1.55.87 — 2026-10-08
 
 **Console Discord : lien direct vers un module**

@@ -48119,5 +48119,46 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_94_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_94_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_94_de);
 
+const v1_55_95_fr: ChangelogEntry = {
+  version: "v1.55.95",
+  date: "2026-10-09",
+  title: "Sélecteur de serveur : correctif",
+  items: [
+    "La liste des serveurs s'affiche par-dessus la page au lieu d'être coupée par la barre latérale.",
+  ],
+};
+
+const v1_55_95_en: ChangelogEntry = {
+  version: "v1.55.95",
+  date: "2026-10-09",
+  title: "Server switcher: fix",
+  items: [
+    "The server list now shows above the page instead of being clipped by the sidebar.",
+  ],
+};
+
+const v1_55_95_es: ChangelogEntry = {
+  version: "v1.55.95",
+  date: "2026-10-09",
+  title: "Selector de servidor: corrección",
+  items: [
+    "La lista de servidores se muestra por encima de la página en lugar de quedar recortada por la barra lateral.",
+  ],
+};
+
+const v1_55_95_de: ChangelogEntry = {
+  version: "v1.55.95",
+  date: "2026-10-09",
+  title: "Serverwechsler: Korrektur",
+  items: [
+    "Die Serverliste erscheint jetzt über der Seite, statt von der Seitenleiste abgeschnitten zu werden.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_95_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_95_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_95_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_95_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

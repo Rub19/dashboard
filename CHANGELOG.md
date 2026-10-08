@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.95 — 2026-10-09
+
+**Sélecteur de serveur : correctif**
+
+- La liste des serveurs s'affiche par-dessus la page au lieu d'être coupée par la barre latérale.
+
 ## v1.55.94 — 2026-10-09
 
 **Console Discord : sélecteur de serveur façon Keeper**

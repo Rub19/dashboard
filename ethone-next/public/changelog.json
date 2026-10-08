@@ -1,5 +1,13 @@
 [
   {
+    "version": "v1.55.95",
+    "date": "2026-10-09",
+    "title": "Sélecteur de serveur : correctif",
+    "items": [
+      "La liste des serveurs s'affiche par-dessus la page au lieu d'être coupée par la barre latérale."
+    ]
+  },
+  {
     "version": "v1.55.94",
     "date": "2026-10-09",
     "title": "Console Discord : sélecteur de serveur façon Keeper",
@@ -639,17 +647,6 @@
       "Formulaire interactif Liquid Glass : bascule Note/Tâche, sélecteur de priorité (Basse, Moyenne, Haute, Urgente), sélecteur d'échéance et retours haptiques UINotificationFeedbackGenerator.",
       "Routage universel et deeplinks : ouverture directe via `/clip` et schéma d'URL `ethone://clip`.",
       "Nettoyage global de la base de code Swift : suppression intégrale des commentaires et notes de code redondantes dans l'authentification, le moteur d'administration et les modèles natifs."
-    ]
-  },
-  {
-    "version": "v1.55.33",
-    "date": "2026-10-06",
-    "title": "Parité iOS Native : Marketplace de Plugins & Extensions Liquid Glass",
-    "items": [
-      "Intégration native de l'écosystème Plugins & Extensions sur iOS : catalogue complet (Widgets, Thèmes, Dispositions, Automatisations, IA Brain) avec badges de certification officiels, notes et compteurs d'installation.",
-      "Boutique interactive Liquid Glass : recherche en direct, filtrage par onglets (Tous, Installés, Favoris) et sélecteur horizontal de catégories.",
-      "Gestion locale des extensions : installation, désactivation instantanée sans perte de configuration et mise en favoris avec persistance.",
-      "Fiche détaillée modale : aperçu des permissions requises, fonctionnalités intégrées, métadonnées techniques et journal des modifications par extension."
     ]
   }
 ]

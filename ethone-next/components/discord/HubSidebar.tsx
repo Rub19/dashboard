@@ -18,6 +18,7 @@ import {
   FileText,
   Sliders,
   Crown,
+  LayoutGrid,
   Terminal,
   Key,
   MoreHorizontal,
@@ -126,13 +127,13 @@ function getGuildInitials(name: string) {
 }
 
 const ANIMATION_LINKS = [
-  { path: "/discord/music", key: "dMusic", label: "Musique", icon: Music },
-  { path: "/discord/games", key: "dGames", label: "Jeux et casino", icon: Gamepad2 },
-  { path: "/discord/giveaways", key: "dGiveaways", label: "Giveaways", icon: Gift },
-  { path: "/discord/events", key: "dEvents", label: "Événements", icon: CalendarDays },
-  { path: "/discord/leveling", key: "dLeveling", label: "Niveaux", icon: Trophy },
-  { path: "/discord/economy", key: "dEconomy", label: "Économie", icon: Coins },
-  { path: "/discord/streamers", key: "dStreamers", label: "Alertes streamers", icon: Tv },
+  { id: "music", path: "/discord/music", key: "dMusic", label: "Musique", icon: Music },
+  { id: "games", path: "/discord/games", key: "dGames", label: "Jeux et casino", icon: Gamepad2 },
+  { id: "giveaways", path: "/discord/giveaways", key: "dGiveaways", label: "Giveaways", icon: Gift },
+  { id: "events", path: "/discord/events", key: "dEvents", label: "Événements", icon: CalendarDays },
+  { id: "leveling", path: "/discord/leveling", key: "dLeveling", label: "Niveaux", icon: Trophy },
+  { id: "economy", path: "/discord/economy", key: "dEconomy", label: "Économie", icon: Coins },
+  { id: "streamers", path: "/discord/streamers", key: "dStreamers", label: "Alertes streamers", icon: Tv },
 ] as const;
 
 export default function HubSidebar({
@@ -153,6 +154,8 @@ export default function HubSidebar({
   onCopyGuildId,
   copiedId = false,
   onOpenView,
+  onSelect,
+  onAllModules,
   activeModuleCount,
   totalModuleCount,
 }: HubSidebarProps) {
@@ -565,17 +568,35 @@ export default function HubSidebar({
               {i18n("dAnimation", "Animation")}
             </span>
             <div className="space-y-0.5 text-xs">
-              {ANIMATION_LINKS.map(({ path, key, label, icon: Icon }) => (
+              {ANIMATION_LINKS.map(({ id, path, key, label, icon: Icon }) => (
                 <button
                   key={path}
                   type="button"
-                  onClick={() => router.push(`${path}?guildId=${selectedGuildId}`)}
-                  className="w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors cursor-pointer text-left"
+                  onClick={() => (onSelect ? onSelect(id) : router.push(`${path}?guildId=${selectedGuildId}`))}
+                  aria-current={activeId === id ? "page" : undefined}
+                  className={cn(
+                    "w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-xs transition-colors cursor-pointer text-left",
+                    activeId === id ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold" : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
+                  )}
                 >
                   <Icon className="h-3.5 w-3.5 shrink-0" />
                   <span>{i18n(key, label)}</span>
                 </button>
               ))}
+              {onAllModules && (
+                <button
+                  type="button"
+                  onClick={onAllModules}
+                  aria-current={view === "modules" ? "page" : undefined}
+                  className={cn(
+                    "w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-xs transition-colors cursor-pointer text-left",
+                    view === "modules" ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold" : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
+                  )}
+                >
+                  <LayoutGrid className="h-3.5 w-3.5 shrink-0" />
+                  <span>{i18n("dAllModules", "Tous les modules")}</span>
+                </button>
+              )}
             </div>
           </div>
 

@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.85 — 2026-10-08
+
+**Console Discord : barre latérale vers les modules**
+
+- Les liens Animation de la barre latérale (Musique, Niveaux, Giveaways…) ouvrent le module dans la console au lieu de la pleine page.
+- Nouveau lien « Tous les modules » pour atteindre les autres modules depuis la barre latérale.
+
 ## v1.55.84 — 2026-10-08
 
 **Console Discord : toutes les pages de modules dans la console**

@@ -47637,5 +47637,50 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_84_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_84_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_84_de);
 
+const v1_55_85_fr: ChangelogEntry = {
+  version: "v1.55.85",
+  date: "2026-10-08",
+  title: "Console Discord : barre latérale vers les modules",
+  items: [
+    "Les liens Animation de la barre latérale (Musique, Niveaux, Giveaways…) ouvrent le module dans la console au lieu de la pleine page.",
+    "Nouveau lien « Tous les modules » pour atteindre les autres modules depuis la barre latérale.",
+  ],
+};
+
+const v1_55_85_en: ChangelogEntry = {
+  version: "v1.55.85",
+  date: "2026-10-08",
+  title: "Discord console: sidebar to modules",
+  items: [
+    "The sidebar's Animation links (Music, Levels, Giveaways…) now open the module inside the console instead of the full page.",
+    "New “All modules” link to reach the other modules from the sidebar.",
+  ],
+};
+
+const v1_55_85_es: ChangelogEntry = {
+  version: "v1.55.85",
+  date: "2026-10-08",
+  title: "Consola Discord: barra lateral hacia los módulos",
+  items: [
+    "Los enlaces de Animación de la barra lateral (Música, Niveles, Sorteos…) abren el módulo dentro de la consola en lugar de la página completa.",
+    "Nuevo enlace « Todos los módulos » para llegar a los demás módulos desde la barra lateral.",
+  ],
+};
+
+const v1_55_85_de: ChangelogEntry = {
+  version: "v1.55.85",
+  date: "2026-10-08",
+  title: "Discord-Konsole: Seitenleiste zu den Modulen",
+  items: [
+    "Die Animations-Links der Seitenleiste (Musik, Level, Giveaways…) öffnen das Modul jetzt in der Konsole statt auf der Vollseite.",
+    "Neuer Link „Alle Module“, um die übrigen Module aus der Seitenleiste zu erreichen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_85_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_85_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_85_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_85_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

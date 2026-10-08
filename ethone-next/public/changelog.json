@@ -1,5 +1,14 @@
 [
   {
+    "version": "v1.55.85",
+    "date": "2026-10-08",
+    "title": "Console Discord : barre latérale vers les modules",
+    "items": [
+      "Les liens Animation de la barre latérale (Musique, Niveaux, Giveaways…) ouvrent le module dans la console au lieu de la pleine page.",
+      "Nouveau lien « Tous les modules » pour atteindre les autres modules depuis la barre latérale."
+    ]
+  },
+  {
     "version": "v1.55.84",
     "date": "2026-10-08",
     "title": "Console Discord : toutes les pages de modules dans la console",
@@ -658,18 +667,6 @@
       "Filtres de jeu et seuil de viewers : filtrez les lives par jeu/catégorie et définissez un nombre minimum de viewers avant d'envoyer l'alerte.",
       "Personnalisation visuelle et anti-spam : sélecteur de couleur hexadécimale, masquage de miniature, boutons d'action sur-mesure, délai anti-reconnexion et action de fin de live (mise à jour hors-ligne, suppression ou maintien).",
       "Tiroir de configuration Apple Sonoma refait à neuf avec onglets Dédiés et prévisualisation Discord interactive en temps réel."
-    ]
-  },
-  {
-    "version": "v1.55.23",
-    "date": "2026-10-05",
-    "title": "Nouveau Module Bot : Alertes Streamers Twitch, YouTube & Kick (Motion Design)",
-    "items": [
-      "Nouveau module Alertes Streamers (/discord/streamers) avec interface Apple Sonoma fluide et animations Framer Motion.",
-      "Détection automatique ultra-rapide des diffusions en direct sur Twitch, YouTube et Kick.",
-      "Système d'embeds animés avec emojis pulsants (<a:a_online>, <a:a_sparkles>), compteurs de viewers et miniatures HD.",
-      "Attribution automatique du rôle @En Live aux créateurs du serveur dès le début de leur stream, et retrait automatique à la fin.",
-      "Nouvelles commandes slash Discord : /streamer add, /streamer remove, /streamer list, /streamer check et /streamer config intégrées à l'aide /help."
     ]
   }
 ]

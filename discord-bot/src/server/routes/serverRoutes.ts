@@ -12,6 +12,7 @@ import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { logStorage } from '../../modules/logs/storage/logStorage.js';
 import { logger } from '../../utils/logger.js';
 import { handleRouteError } from '../utils/routeError.js';
+import { runSecurityScan } from '../../modules/server/services/securityScanService.js';
 
 export function createServerRouter(client: Client): Router {
   const router = Router({ mergeParams: true });
@@ -441,6 +442,20 @@ export function createServerRouter(client: Client): Router {
     } catch (err: any) {
       logger.error('Erreur mise à jour server/settings :', err);
       res.status(500).json({ error: 'Erreur serveur' });
+    }
+  });
+
+  // GET /security-scan : vérifie réellement les permissions, rôles, salons, réglages et protections du serveur.
+  router.get('/security-scan', async (req: Request, res: Response) => {
+    try {
+      const result = await runSecurityScan(client, String(req.params.guildId));
+      if (!result) {
+        res.status(404).json({ error: 'Serveur introuvable pour le bot.' });
+        return;
+      }
+      res.json(result);
+    } catch (err: any) {
+      handleRouteError(err, res, 'Erreur scan de sécurité');
     }
   });
 

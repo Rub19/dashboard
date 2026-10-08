@@ -35,13 +35,6 @@ interface ProtectionItem {
   action: string;
 }
 
-const DEFAULT_CHANNELS = [
-  { id: "alertes", name: "alertes" },
-  { id: "etho-logs", name: "etho-logs" },
-  { id: "moderation", name: "moderation" },
-  { id: "general", name: "general" },
-];
-
 export default function GuildAssistedSetup({
   guild,
   onFinish,
@@ -54,9 +47,9 @@ export default function GuildAssistedSetup({
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
   const [serverType, setServerType] = useState<"community" | "friends" | "voice">("community");
   const [severity, setSeverity] = useState<"surveillance" | "balanced" | "strict">("balanced");
-  const [channelId, setChannelId] = useState<string | null>("alertes");
-  const [channelName, setChannelName] = useState<string>("#alertes");
-  const [channels, setChannels] = useState<Array<{ id: string; name: string }>>(DEFAULT_CHANNELS);
+  const [channelId, setChannelId] = useState<string | null>(null);
+  const [channelName, setChannelName] = useState<string>("");
+  const [channels, setChannels] = useState<Array<{ id: string; name: string }>>([]);
   const [_loadingChannels, setLoadingChannels] = useState(false);
   const [isApplying, setIsApplying] = useState(false);
 
@@ -67,21 +60,18 @@ export default function GuildAssistedSetup({
         emoji: "🌳",
         title: i18n("dOptCommunity", "Communauté ouverte"),
         description: i18n("dOptCommunityDesc", "Serveur public, beaucoup d'arrivées, des inconnus."),
-        activeProtectionsCount: 24,
       },
       {
         id: "friends" as const,
         emoji: "🏠",
         title: i18n("dOptFriends", "Entre amis"),
         description: i18n("dOptFriendsDesc", "Petit serveur privé, tout le monde se connaît."),
-        activeProtectionsCount: 8,
       },
       {
         id: "voice" as const,
         emoji: "🔊",
         title: i18n("dOptVoice", "Grosse communauté avec vocaux"),
         description: i18n("dOptVoiceDesc", "Beaucoup de monde, un staff, des salons vocaux actifs."),
-        activeProtectionsCount: 28,
       },
     ],
     [i18n]
@@ -136,124 +126,77 @@ export default function GuildAssistedSetup({
     };
   }, [guild.id]);
 
-  const activeServerMeta = useMemo(() => {
-    return serverTypes.find((s) => s.id === serverType) || serverTypes[0];
-  }, [serverTypes, serverType]);
-
   const computedProtections = useMemo<ProtectionItem[]>(() => {
-    const adminAction =
-      severity === "surveillance"
-        ? "Alerte seule"
-        : severity === "balanced"
-        ? "Retire les rôles"
-        : "Bannit";
-
-    const messageAction =
-      severity === "surveillance"
-        ? "Alerte seule"
-        : severity === "balanced"
-        ? "Rend muet (10m)"
-        : "Rend muet (1h)";
-
-    const raidAction =
-      severity === "strict" ? "Expulse + Lock" : "Alerte staff";
-
     const list: ProtectionItem[] = [
-      { name: "Anti-Raid Mass Join", category: "Raid", action: raidAction },
-      { name: "Anti-Spam Messages", category: "Spam", action: messageAction },
-      { name: "Anti-Mention Mass", category: "Spam", action: messageAction },
-      { name: "Anti-Liens Malveillants", category: "Sécurité", action: "Supprime" },
-      { name: "Anti-Suppression Salons", category: "Staff", action: adminAction },
-      { name: "Anti-Création Salons", category: "Staff", action: adminAction },
-      { name: "Anti-Suppression Rôles", category: "Staff", action: adminAction },
-      { name: "Anti-Création Rôles", category: "Staff", action: adminAction },
-      { name: "Anti-Ban Massif", category: "Staff", action: adminAction },
-      { name: "Anti-Kick Massif", category: "Staff", action: adminAction },
-      { name: "Anti-Bot Non Invité", category: "Sécurité", action: "Expulse" },
-      { name: "Anti-Webhook Illégal", category: "Sécurité", action: "Supprime" },
+      {
+        name: "Anti-raid messages (spam, mentions)",
+        category: "Raid",
+        action: severity === "surveillance" ? "Alerte le staff" : "Supprime, exclut temporairement, alerte",
+      },
     ];
-
-    if (serverType === "community" || serverType === "voice") {
-      list.push(
-        { name: "Anti-Ghost Ping", category: "Chat", action: "Avertit" },
-        { name: "Anti-Invites Publiques", category: "Pub", action: "Supprime" },
-        { name: "Anti-Token Raid", category: "Raid", action: "Quarantaine" },
-        { name: "Slowmode Dynamique", category: "Modération", action: "Ajuste" }
-      );
+    if (serverType !== "friends") {
+      list.push({
+        name: "Anti-raid arrivées massives",
+        category: "Raid",
+        action: severity === "strict" ? "Expulse, alerte" : "Alerte le staff",
+      });
     }
-
-    if (serverType === "voice") {
-      list.push(
-        { name: "Anti-Move Massif", category: "Vocal", action: "Bloque" },
-        { name: "Anti-Mute Massif", category: "Vocal", action: "Bloque" },
-        { name: "Anti-Deafen Massif", category: "Vocal", action: "Bloque" },
-        { name: "Anti-Spam Rejoin Vocal", category: "Vocal", action: "Timeout 5m" }
-      );
-    }
-
+    if (channelId) list.push({ name: "Salon des alertes de modération", category: "Logs", action: channelName || "Salon choisi" });
     return list;
-  }, [serverType, severity]);
+  }, [serverType, severity, channelId, channelName]);
 
   const handleApply = async () => {
+    if (!API_BASE || !guild.id) return;
     setIsApplying(true);
-    const activeCount = activeServerMeta.activeProtectionsCount;
-
+    const base = `${API_BASE}/api/guilds/${encodeURIComponent(guild.id)}`;
     try {
-      if (typeof window !== "undefined") {
-        localStorage.setItem(
-          `ethone:discord:wizard:${guild.id}`,
-          JSON.stringify({
-            serverType,
-            severity,
-            channelId,
-            channelName,
-            activeProtectionsCount: activeCount,
-            configuredAt: Date.now(),
-            isConfigured: true,
-          })
-        );
-      }
-
-      if (API_BASE && guild.id) {
-        await Promise.allSettled([
-          fetch(`${API_BASE}/api/guilds/${encodeURIComponent(guild.id)}/anti-raid/config`, {
+      // Le bot remplace chaque bloc entier : on repart des seuils actuels pour ne changer que l'activation et les actions.
+      const current = await fetch(`${base}/anti-raid/config`, { credentials: "include" })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => d?.config ?? {})
+        .catch(() => ({}));
+      const requests = [
+        fetch(`${base}/anti-raid/config`, {
+          method: "PUT",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            messageRaid: {
+              ...(current.messageRaid ?? {}),
+              enabled: true,
+              actions: severity === "surveillance" ? ["ALERT_STAFF"] : ["DELETE", "TIMEOUT", "ALERT_STAFF"],
+            },
+            joinRaid: {
+              ...(current.joinRaid ?? {}),
+              enabled: serverType !== "friends",
+              actions: severity === "strict" ? ["KICK", "ALERT_STAFF"] : ["ALERT_STAFF"],
+            },
+          }),
+        }),
+      ];
+      if (channelId) {
+        requests.push(
+          fetch(`${base}/moderation/settings`, {
             method: "PUT",
             credentials: "include",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              messageRaid: {
-                enabled: true,
-                actions: severity === "surveillance" ? ["ALERT_STAFF"] : ["DELETE", "TIMEOUT", "ALERT_STAFF"],
-              },
-              joinRaid: {
-                enabled: serverType !== "friends",
-                actions: severity === "strict" ? ["KICK", "ALERT_STAFF"] : ["ALERT_STAFF"],
-              },
-            }),
-          }),
-          ...(channelId
-            ? [
-                fetch(`${API_BASE}/api/guilds/${encodeURIComponent(guild.id)}/moderation/settings`, {
-                  method: "PUT",
-                  credentials: "include",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ logChannelId: channelId }),
-                }),
-              ]
-            : []),
-        ]);
+            body: JSON.stringify({ logChannelId: channelId }),
+          })
+        );
       }
+      const results = await Promise.all(requests);
+      if (results.some((r) => !r.ok)) throw new Error(`Le bot a refusé (${results.find((r) => !r.ok)?.status}).`);
 
-      success(i18n("dConfigApplied", "Configuration appliquée avec succès !"), `${activeCount} ${i18n("dProtectionsWillBeActive", "protections seront actives.")}`);
+      success(i18n("dConfigApplied", "Configuration appliquée avec succès !"), `${computedProtections.length} réglages enregistrés sur le bot.`);
       onFinish?.({
         serverType,
         severity,
         channelId,
         channelName,
-        activeCount,
+        activeCount: computedProtections.length,
       });
-    } catch {
-      showError("Erreur", "Impossible d'appliquer la configuration.");
+    } catch (err) {
+      showError("Erreur", err instanceof Error ? err.message : "Impossible d'appliquer la configuration.");
     } finally {
       setIsApplying(false);
     }
@@ -369,16 +312,13 @@ export default function GuildAssistedSetup({
                       </p>
                     </div>
 
-                    <div className="text-[11px] font-medium text-emerald-500 dark:text-emerald-400/90 pt-1">
-                      {type.activeProtectionsCount} protections
-                    </div>
                   </button>
                 );
               })}
             </div>
 
             <p className="text-xs font-medium text-[var(--text-muted)]">
-              {activeServerMeta.activeProtectionsCount} {i18n("dProtectionsWillBeActive", "protections seront actives.")}
+              {computedProtections.length} {i18n("dSettingsWillApply", "réglages seront appliqués.")}
             </p>
 
             <div className="flex items-center justify-between pt-4 border-t border-[var(--panel-border)]">

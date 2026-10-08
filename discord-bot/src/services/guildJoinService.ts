@@ -12,7 +12,8 @@ import {
   PermissionFlagsBits,
   StringSelectMenuBuilder,
   StringSelectMenuInteraction,
-  TextBasedChannel,
+  MessageFlags,
+  type MessageActionRowComponentBuilder,
   type ButtonInteraction,
   type MessageCreateOptions,
 } from 'discord.js';
@@ -20,6 +21,10 @@ import { guildConfigService } from './guildConfigService.js';
 import { SupportedLanguage } from '../utils/i18n.js';
 import { logger } from '../utils/logger.js';
 import { brandIcon } from '../utils/embeds.js';
+import { container, separator, text } from '../utils/components.js';
+import { icon } from '../utils/v2.js';
+
+const SUPPORT_URL = 'https://discord.gg/WvEcyBuP45';
 
 const PERMISSION_CHECKS = [
   { flag: PermissionFlagsBits.ViewAuditLog, name: 'VIEW_AUDIT_LOG' },
@@ -35,82 +40,45 @@ const PERMISSION_CHECKS = [
   { flag: PermissionFlagsBits.CreateGuildExpressions, name: 'CREATE_GUILD_EXPRESSIONS' },
 ] as const;
 
+/** Permissions sans lesquelles la protection ne fonctionne pas : elles décident de l'état « Opérationnel ». */
+const CORE_PERMISSIONS = [
+  PermissionFlagsBits.ViewAuditLog,
+  PermissionFlagsBits.ManageGuild,
+  PermissionFlagsBits.ManageRoles,
+  PermissionFlagsBits.BanMembers,
+  PermissionFlagsBits.ModerateMembers,
+];
+
 export const guildJoinService = {
   buildJoinMessage(guild: Guild, inviterId?: string | null): MessageCreateOptions {
     const conf = guildConfigService.getConfig(guild.id);
-    const botName = conf.botName || guild.members.me?.displayName || 'Ethone';
+    const botName = conf.botName || guild.members.me?.displayName || 'Etho';
     const me = guild.members.me;
+    const ok = icon('a_check', '✅');
+    const ko = icon('a_cross', '❌');
 
-    const permsList = PERMISSION_CHECKS.map((item) => {
-      const granted = me ? me.permissions.has(item.flag) : true;
-      return `${granted ? '☑️' : '❌'} \`${item.name}\``;
-    });
+    const permsList = PERMISSION_CHECKS.map((item) => `${me?.permissions.has(item.flag) ? ok : ko} \`${item.name}\``);
+    const hasCorePerms = CORE_PERMISSIONS.every((flag) => me?.permissions.has(flag));
+    const missing = PERMISSION_CHECKS.filter((item) => !me?.permissions.has(item.flag)).length;
 
-    const hasCorePerms = PERMISSION_CHECKS.filter((item) =>
-      [
-        PermissionFlagsBits.ViewAuditLog,
-        PermissionFlagsBits.ManageGuild,
-        PermissionFlagsBits.ManageRoles,
-        PermissionFlagsBits.BanMembers,
-        PermissionFlagsBits.ModerateMembers,
-      ].includes(item.flag)
-    ).every((item) => (me ? me.permissions.has(item.flag) : true));
+    const currentLang = (conf.language || 'fr') as SupportedLanguage;
 
-    const statusTitle = hasCorePerms ? 'Opérationnel' : 'Attention aux permissions';
-    const statusSubtitle = hasCorePerms
-      ? 'Les permissions principales sont déjà en place.'
-      : 'Certaines permissions recommandées sont absentes du bot.';
-
-    const descriptionParts = [
-      `Merci d'avoir ajouté **${botName}** à votre serveur.`,
-      '',
-      `🪟 **État actuel**\n> **${statusTitle}**\n> ${statusSubtitle}`,
-      '---',
-      `🛡️ **Permissions**\n${permsList.join('\n')}`,
-      '---',
-      `⚠️ **Important**\nPlace le rôle le plus haut de **${botName}** tout en haut de la hiérarchie pour qu'il puisse protéger, sanctionner et restaurer correctement le serveur.`,
-      '---',
-      `❔ **Commandes utiles**\n> \`/aide\` · voir les commandes\n> \`/config\` · configurer les protections\n> \`/verifier-permissions\` · vérifier les permissions du bot\n> \`/langue\` · changer la langue du bot`,
-      '---',
-      `# **Salon système ${botName}**\nChoisis un salon existant ou crée le automatiquement pour recevoir les messages importants du bot.`,
-      '---',
-      `⚙️ **Langue du bot**\nChoisis la langue utilisée par ${botName} sur ce serveur. Les salons déjà créés ne sont pas renommés automatiquement.`,
-    ];
-
-    const embed = new EmbedBuilder()
-      .setColor(0x10b981)
-      .setTitle(`🛡️ | ${botName} ajouté avec succès`)
-      .setDescription(descriptionParts.join('\n'))
-      .setFooter({ text: 'ETHONE', iconURL: brandIcon('ethone') });
-
-    const channelSelectRow = new ActionRowBuilder<ChannelSelectMenuBuilder>().addComponents(
+    const channelSelectRow = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
       new ChannelSelectMenuBuilder()
         .setCustomId(`guild_join:select_channel:${guild.id}`)
-        .setPlaceholder('Choisir un salon existant...')
+        .setPlaceholder('Choisir un salon existant…')
         .setChannelTypes([ChannelType.GuildText, ChannelType.GuildAnnouncement])
     );
-
-    const createChannelRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
+    const createChannelRow = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
       new ButtonBuilder()
         .setCustomId(`guild_join:create_channel:${guild.id}`)
         .setLabel('Créer le salon système')
         .setEmoji('⚡')
         .setStyle(ButtonStyle.Primary)
     );
-
-    const currentLang = (conf.language || 'fr') as SupportedLanguage;
-    const langSelectRow = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(
+    const langSelectRow = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
       new StringSelectMenuBuilder()
         .setCustomId(`guild_join:language:${guild.id}`)
-        .setPlaceholder(
-          currentLang === 'fr'
-            ? 'Français'
-            : currentLang === 'en'
-            ? 'English'
-            : currentLang === 'es'
-            ? 'Español'
-            : 'Deutsch'
-        )
         .addOptions([
           { label: 'Français', value: 'fr', emoji: '🇫🇷', default: currentLang === 'fr' },
           { label: 'English', value: 'en', emoji: '🇬🇧', default: currentLang === 'en' },
@@ -118,25 +86,54 @@ export const guildJoinService = {
           { label: 'Deutsch', value: 'de', emoji: '🇩🇪', default: currentLang === 'de' },
         ])
     );
-
-    const linksRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
-      new ButtonBuilder()
-        .setLabel('Serveur support')
-        .setStyle(ButtonStyle.Link)
-        .setURL('https://discord.gg/WvEcyBuP45')
-        .setEmoji('🌐'),
+    const linksRow = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
+      new ButtonBuilder().setLabel('Serveur support').setStyle(ButtonStyle.Link).setURL(SUPPORT_URL).setEmoji('🛟'),
       new ButtonBuilder()
         .setLabel('Dashboard')
         .setStyle(ButtonStyle.Link)
-        .setURL(`https://ethone.dev/discord?guildId=${guild.id}`)
+        .setURL(`https://ethone.dev/discord/?guildId=${guild.id}`)
         .setEmoji('📊')
     );
 
-    return {
-      content: inviterId ? `<@${inviterId}>` : undefined,
-      embeds: [embed],
-      components: [channelSelectRow, createChannelRow, langSelectRow, linksRow],
-    };
+    // Components V2 : pas de `content`, la mention de l'inviteur est dans la carte (elle le notifie).
+    const card = container(hasCorePerms ? 0x10b981 : 0xf59e0b, [
+      inviterId ? text(`<@${inviterId}>`) : null,
+      text(`## ${icon('a_logo', '🛡️')} | ${botName} ajouté avec succès`),
+      separator(),
+      text(`Merci d'avoir ajouté **${botName}** à votre serveur.`),
+      text(
+        `### 🪟 État actuel\n> **${hasCorePerms ? 'Opérationnel' : 'Permissions à compléter'}**\n> ${
+          hasCorePerms
+            ? 'Les permissions principales sont déjà en place.'
+            : `${missing} permission${missing > 1 ? 's' : ''} recommandée${missing > 1 ? 's' : ''} manque${missing > 1 ? 'nt' : ''} au bot.`
+        }`
+      ),
+      separator(),
+      text(`### 🛡️ Permissions\n${permsList.map((l) => `> ${l}`).join('\n')}`),
+      separator(),
+      text(
+        `### ${icon('a_warning', '⚠️')} Important\nPlace le rôle le plus haut de **${botName}** tout en haut de la hiérarchie pour qu'il puisse protéger, sanctionner et restaurer correctement le serveur.`
+      ),
+      separator(),
+      text(
+        `### ❔ Commandes utiles\n> \`/help\` · voir les commandes\n> \`/setup\` · configurer le bot\n> \`/language\` · changer la langue du bot`
+      ),
+      separator(),
+      text(
+        `### # Salon système ${botName}\nChoisis un salon existant ou crée-le automatiquement pour recevoir les messages importants du bot.`
+      ),
+      channelSelectRow,
+      createChannelRow,
+      separator(),
+      text(
+        `### ⚙️ Langue du bot\nChoisis la langue utilisée par ${botName} sur ce serveur. Les salons déjà créés ne sont pas renommés automatiquement.`
+      ),
+      langSelectRow,
+      separator(),
+      linksRow,
+    ]);
+
+    return { components: [card], flags: MessageFlags.IsComponentsV2 } as MessageCreateOptions;
   },
 
   async resolveInviterId(guild: Guild): Promise<string> {
@@ -159,58 +156,59 @@ export const guildJoinService = {
     return guild.ownerId;
   },
 
-  findTargetChannel(guild: Guild): TextBasedChannel | null {
-    const me = guild.members.me;
-    if (!me) return null;
-
-    const canSend = (c: any): boolean => {
-      if (!c || typeof c.permissionsFor !== 'function') return false;
-      const perms = c.permissionsFor(me);
-      return Boolean(
-        perms &&
-          perms.has(PermissionFlagsBits.ViewChannel) &&
-          perms.has(PermissionFlagsBits.SendMessages)
-      );
-    };
-
-    if (guild.systemChannel && canSend(guild.systemChannel)) {
-      return guild.systemChannel;
-    }
-
-    const preferred = ['general', 'discussion', 'bienvenue', 'welcome', 'annonces', 'chat', 'bot', 'config'];
-    for (const name of preferred) {
-      const found = guild.channels.cache.find(
-        (c) => c.isTextBased() && !c.isThread() && c.name.toLowerCase().includes(name) && canSend(c)
-      );
-      if (found && found.isTextBased()) return found as TextBasedChannel;
-    }
-
-    const firstWritable = guild.channels.cache.find(
-      (c) => c.isTextBased() && !c.isThread() && canSend(c)
-    );
-    if (firstWritable && firstWritable.isTextBased()) return firstWritable as TextBasedChannel;
-
-    return null;
-  },
-
+  /**
+   * Message d'arrivée visible uniquement par la personne qui a ajouté le bot : Discord ne permet pas de message
+   * « éphémère » sans interaction, donc le bot crée un salon privé (seuls l'inviteur et le bot le voient ; les
+   * administrateurs voient tous les salons par nature). Sans la permission « Gérer les salons », repli en message
+   * privé à l'inviteur. Si l'inviteur est introuvable, rien n'est envoyé.
+   */
   async sendJoinWelcome(guild: Guild): Promise<void> {
     try {
       const inviterId = await this.resolveInviterId(guild);
+      if (!inviterId) return;
       const payload = this.buildJoinMessage(guild, inviterId);
-      const targetChannel = this.findTargetChannel(guild);
+      const me = guild.members.me ?? (await guild.members.fetchMe().catch(() => null));
 
-      if (targetChannel && typeof (targetChannel as any).send === 'function') {
-        await (targetChannel as any).send(payload);
-        logger.success(`[Join] Message d'accueil envoyé avec succès sur ${guild.name} (#${(targetChannel as any).name})`);
-        return;
+      if (me?.permissions.has(PermissionFlagsBits.ManageChannels)) {
+        const channel = await guild.channels
+          .create({
+            name: 'etho-bienvenue',
+            type: ChannelType.GuildText,
+            topic: `Configuration de ${me.displayName} : visible uniquement par la personne qui a ajouté le bot. Ce salon peut être supprimé.`,
+            permissionOverwrites: [
+              { id: guild.roles.everyone.id, deny: [PermissionFlagsBits.ViewChannel] },
+              {
+                id: inviterId,
+                allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.ReadMessageHistory],
+                deny: [PermissionFlagsBits.SendMessages],
+              },
+              {
+                id: guild.client.user.id,
+                allow: [
+                  PermissionFlagsBits.ViewChannel,
+                  PermissionFlagsBits.SendMessages,
+                  PermissionFlagsBits.EmbedLinks,
+                  PermissionFlagsBits.ReadMessageHistory,
+                ],
+              },
+            ],
+            reason: "Message d'accueil privé pour la personne qui a ajouté le bot",
+          })
+          .catch((err) => {
+            logger.warn(`[Join] Salon privé impossible sur ${guild.name} :`, err);
+            return null;
+          });
+        if (channel) {
+          await channel.send(payload);
+          logger.success(`[Join] Message d'accueil privé envoyé sur ${guild.name} (#${channel.name})`);
+          return;
+        }
       }
 
-      if (inviterId) {
-        const user = await guild.client.users.fetch(inviterId).catch(() => null);
-        if (user) {
-          await user.send(payload).catch(() => null);
-          logger.info(`[Join] Aucun salon accessible sur ${guild.name}, message envoyé en MP à l'inviteur.`);
-        }
+      const user = await guild.client.users.fetch(inviterId).catch(() => null);
+      if (user) {
+        await user.send(payload).catch(() => null);
+        logger.info(`[Join] Pas de salon privé possible sur ${guild.name} : message envoyé en MP à l'inviteur.`);
       }
     } catch (err) {
       logger.error(`[Join] Erreur lors de l'envoi du message d'accueil pour ${guild.name}:`, err);

@@ -2,6 +2,21 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.68 — 2026-10-08
+
+**Console Discord : plus aucune donnée inventée, Casino calculé par le bot, vrai scan de sécurité**
+
+- Casino : les cagnottes, parties, joueurs (« Alex_HighRoller », « ShadowKnight »…) et le solde de 2 500 inventés sont retirés ; sans le bot, la page affiche des zéros.
+- Casino : c'est désormais le bot qui tire les cartes, la bille et les dés et qui calcule le gain ; le site n'envoie que la mise et le choix (avant, il pouvait annoncer lui-même une victoire et créditer des pièces).
+- Casino : mode démo, simulateur de parties et quêtes jamais suivies par le bot supprimés ; toutes les requêtes envoient enfin la session (elles étaient refusées).
+- Scan de sécurité réel : le bot vérifie ses permissions et sa place dans les rôles, les permissions dangereuses de @everyone, les rôles administrateurs, les salons modifiables par tous, les réglages de sécurité Discord, les bots administrateurs et les modules de protection. Le score est calculé, plus de 96/100 écrit en dur.
+- Vue d'ensemble : l'interrupteur Mode raid active vraiment le mode raid du bot (avec confirmation) au lieu de changer un réglage local ; le compteur affiche les modules réellement actifs sur le vrai total.
+- Configuration assistée : la liste affiche exactement ce qui est envoyé au bot, plus de faux salons ni de « 24 protections » ; les seuils anti-raid existants sont conservés et une erreur du bot n'est plus annoncée comme un succès.
+- Liste des serveurs : « 1 protection active » inventé remplacé par « Etho installé ».
+- Alertes streamers : plus de catégorie « Just Chatting » ou « Général » inventée quand le jeu est inconnu.
+- Message d'arrivée du bot refait en carte Discord (état, permissions, important, commandes, salon système, langue) et visible uniquement par la personne qui a ajouté le bot, dans un salon privé (sinon en message privé).
+- Espaces partagés : les règles d'accès de la base bouclaient sur elles-mêmes (erreur de récursion) ; corrigées sans changer les droits.
+
 ## v1.55.67 — 2026-10-08
 
 **Ajustement du score circulaire et élimination des placeholders**

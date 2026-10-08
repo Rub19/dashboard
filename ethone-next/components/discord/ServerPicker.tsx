@@ -77,24 +77,9 @@ function getGuildInitials(name: string) {
   return name.slice(0, 2).toUpperCase() || "SV";
 }
 
-function getGuildProtectionText(guildId: string): string {
-  if (typeof window !== "undefined") {
-    try {
-      const saved = localStorage.getItem(`ethone:discord:settings:${guildId}`);
-      if (saved) {
-        const data = JSON.parse(saved);
-        let count = 0;
-        if (data.antiRaidEnabled) count++;
-        if (data.antiSpamEnabled) count++;
-        if (data.mentionLimit > 0) count++;
-        if (data.emergencyLockdown) count++;
-        if (count > 0) {
-          return `${count} ${count > 1 ? "protections actives" : "protection active"}`;
-        }
-      }
-    } catch {}
-  }
-  return "1 protection active";
+// ponytail: libellé fixe ; le nombre de protections actives par serveur demanderait une route bot dédiée.
+function getGuildProtectionText(_guildId: string): string {
+  return "Etho installé";
 }
 
 function LifeBuoyIcon({ className = "h-4 w-4" }: { className?: string }) {

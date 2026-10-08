@@ -1,21 +1,28 @@
 "use client";
 
-import { useState, useEffect, useMemo, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import {
-  Scan,
-  RefreshCw,
-  AlertTriangle,
-  Shield,
-  Check,
-  ChevronDown,
-  Hash,
-  Search,
-} from "@/components/icons/ph";
+import { useCallback, useMemo, useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { AlertTriangle, Check, RefreshCw, Scan, Shield } from "@/components/icons/ph";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
+import { SPRING_LAYOUT, SPRING_PILL } from "@/lib/ease";
 import { cn } from "@/lib/utils";
 import type { DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
+
+const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
+
+type ScanCategory = "bot" | "roles" | "channels" | "discord" | "bots" | "settings";
+interface ScanCheck {
+  id: string;
+  category: ScanCategory;
+  title: string;
+  ok: boolean;
+  detail?: string;
+}
+interface ScanResult {
+  checks: ScanCheck[];
+  scannedAt: string;
+}
 
 interface GuildSecurityScanProps {
   guild: DiscordGuild;
@@ -23,970 +30,243 @@ interface GuildSecurityScanProps {
   onBack?: () => void;
 }
 
-interface ChannelItem {
-  id: string;
-  name: string;
-  category?: string;
-}
-
-
-
-const ANTI_NUKE_MODULES = [
-  "Anti-ban",
-  "Anti-kick",
-  "Anti-suppression de salon",
-  "Anti-création de salon",
-  "Anti-suppression de rôle",
-  "Anti-création de rôle",
-  "Anti-modification de rôle",
-  "Anti-ajout de rôle",
+const CATEGORIES: Array<{ id: ScanCategory; label: string; key: string }> = [
+  { id: "bot", label: "Etho", key: "dTabBot" },
+  { id: "roles", label: "Rôles", key: "dTabRoles" },
+  { id: "channels", label: "Salons", key: "dTabChannels" },
+  { id: "discord", label: "Discord", key: "dTabDiscord" },
+  { id: "bots", label: "Bots", key: "dTabBots" },
+  { id: "settings", label: "Protections", key: "dTabSettings" },
 ];
 
-type CategoryFilter =
-  | "all"
-  | "keeper"
-  | "roles"
-  | "channels"
-  | "discord"
-  | "bots"
-  | "settings";
+const percent = (list: ScanCheck[]) => (list.length ? Math.round((list.filter((c) => c.ok).length / list.length) * 100) : 100);
 
-interface SolidPoint {
-  id: string;
-  category: CategoryFilter;
-  title: string;
-}
-
-const SOLID_POINTS: SolidPoint[] = [
-  {
-    id: "sp-1",
-    category: "keeper",
-    title: "Permissions du bot Keeper optimales (rôle en haut de la hiérarchie)",
-  },
-  {
-    id: "sp-2",
-    category: "roles",
-    title: "Aucun rôle dangereux attribué à @everyone",
-  },
-  {
-    id: "sp-3",
-    category: "channels",
-    title: "Salons sensibles protégés contre les modifications externes",
-  },
-  {
-    id: "sp-4",
-    category: "discord",
-    title: "Niveau de vérification Discord configuré",
-  },
-  {
-    id: "sp-5",
-    category: "bots",
-    title: "Tous les bots intégrés ont été audités",
-  },
-  {
-    id: "sp-6",
-    category: "settings",
-    title: "Salon de logs de modération configuré et restreint",
-  },
-  {
-    id: "sp-7",
-    category: "roles",
-    title: "Hiérarchie des rôles de modération ordonnée",
-  },
-];
-
-function SecurityChannelSelect({
-  value,
-  onChange,
-  channels,
-}: {
-  value: string;
-  onChange: (id: string) => void;
-  channels: ChannelItem[];
-}) {
-  const [open, setOpen] = useState(false);
-  const [search, setSearch] = useState("");
-  const containerRef = useRef<HTMLDivElement>(null);
-  const searchInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    const handleOutsideClick = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    };
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
-    };
-    if (open) {
-      document.addEventListener("mousedown", handleOutsideClick);
-      document.addEventListener("keydown", handleKeyDown);
-      setTimeout(() => searchInputRef.current?.focus(), 50);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleOutsideClick);
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [open]);
-
-  const selectedChannel = channels.find((c) => c.id === value || c.name === value);
-
-  const filteredChannels = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    if (!q) return channels;
-    return channels.filter(
-      (c) => c.name.toLowerCase().includes(q) || c.id.toLowerCase().includes(q)
-    );
-  }, [channels, search]);
-
-  const grouped = useMemo(() => {
-    const groups: Record<string, ChannelItem[]> = {};
-    for (const c of filteredChannels) {
-      const cat = c.category || "Sans catégorie";
-      if (!groups[cat]) groups[cat] = [];
-      groups[cat].push(c);
-    }
-    return groups;
-  }, [filteredChannels]);
-
-  const displayChannelName = selectedChannel
-    ? selectedChannel.name
-    : value
-    ? value
-    : channels[0]
-    ? channels[0].name
-    : "salon";
-
-  return (
-    <div ref={containerRef} className="relative w-full">
-      <button
-        type="button"
-        onClick={() => setOpen((prev) => !prev)}
-        className={cn(
-          "w-full rounded-xl border px-3.5 py-2.5 text-xs flex items-center justify-between transition-all cursor-pointer shadow-sm select-none",
-          open
-            ? "border-emerald-500/80 bg-[#0c1315] ring-1 ring-emerald-500/30"
-            : "border-emerald-500/50 bg-[#0c1315] hover:border-emerald-500/80 hover:bg-[#0f171a]"
-        )}
-      >
-        <span className="truncate font-medium text-zinc-200">
-          # {displayChannelName}
-        </span>
-        <svg
-          className="w-3.5 h-3.5 text-zinc-400 shrink-0 ml-2"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="m7 15 5 5 5-5" />
-          <path d="m7 9 5-5 5 5" />
-        </svg>
-      </button>
-
-      {open && (
-        <div className="absolute left-0 right-0 top-full mt-1.5 z-50 rounded-xl border border-white/10 bg-[#161d1f] p-2 shadow-2xl backdrop-blur-md max-h-72 flex flex-col">
-          <div className="relative flex items-center px-2 py-1.5 mb-1.5 border-b border-white/5">
-            <Search className="w-3.5 h-3.5 text-zinc-400 absolute left-2.5" />
-            <input
-              ref={searchInputRef}
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-transparent pl-6 pr-2 py-0.5 text-xs text-white outline-none"
-            />
-          </div>
-
-          <div className="overflow-y-auto space-y-2 pr-1">
-            {Object.keys(grouped).length === 0 ? (
-              <div className="py-4 text-center text-xs text-zinc-500">
-                {search.trim() ? "Aucun salon trouvé" : "Aucun salon disponible"}
-              </div>
-            ) : (
-              Object.entries(grouped).map(([category, items]) => (
-                <div key={category} className="space-y-0.5">
-                  <div className="px-2.5 pt-1 pb-0.5 text-[11px] font-semibold text-zinc-400 select-none">
-                    {category}
-                  </div>
-                  {items.map((c) => {
-                    const isSelected = c.id === value || c.name === value;
-                    return (
-                      <button
-                        key={c.id}
-                        type="button"
-                        onClick={() => {
-                          onChange(c.id);
-                          setOpen(false);
-                          setSearch("");
-                        }}
-                        className={cn(
-                          "w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium text-left transition-colors cursor-pointer",
-                          isSelected
-                            ? "bg-white/10 text-white font-semibold"
-                            : "text-zinc-300 hover:bg-white/5 hover:text-white"
-                        )}
-                      >
-                        <Hash className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
-                        <span className="truncate">{c.name}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              ))
-            )}
-            {search.trim() && !filteredChannels.some((c) => c.id === search.trim() || c.name.toLowerCase() === search.trim().toLowerCase()) && (
-              <button
-                type="button"
-                onClick={() => {
-                  onChange(search.trim());
-                  setOpen(false);
-                  setSearch("");
-                }}
-                className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium text-emerald-400 hover:bg-emerald-500/10 cursor-pointer"
-              >
-                <Hash className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                <span className="truncate">#{search.trim()}</span>
-              </button>
-            )}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function AutoScanCard({
-  enabled,
-  onToggle,
-  channel,
-  onChangeChannel,
-  frequency,
-  onChangeFrequency,
-  channels,
-  i18n,
-}: {
-  enabled: boolean;
-  onToggle: () => void;
-  channel: string;
-  onChangeChannel: (channelId: string) => void;
-  frequency: "day" | "week";
-  onChangeFrequency: (freq: "day" | "week") => void;
-  channels: ChannelItem[];
-  i18n: (key: string, fallback: string) => string;
-}) {
-  return (
-    <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-5 space-y-4 shadow-sm">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h3 className="font-semibold text-xs sm:text-sm text-[var(--text-primary)]">
-            {i18n("dAutoScanTitle", "Scan automatique")}
-          </h3>
-          <p className="text-[11px] text-[var(--text-muted)] mt-0.5 leading-relaxed">
-            {i18n(
-              "dAutoScanDesc",
-              "Un rapport posté dans un salon, avec ce qui a changé depuis le précédent."
-            )}
-          </p>
-        </div>
-
-        <button
-          type="button"
-          role="switch"
-          aria-checked={enabled}
-          onClick={onToggle}
-          className={cn(
-            "relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none",
-            enabled ? "bg-emerald-500" : "bg-white/20"
-          )}
-        >
-          <span
-            className={cn(
-              "pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out",
-              enabled ? "translate-x-4" : "translate-x-0"
-            )}
-          />
-        </button>
-      </div>
-
-      <div className="space-y-3 pt-1">
-        <SecurityChannelSelect
-          value={channel}
-          onChange={onChangeChannel}
-          channels={channels}
-        />
-
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => onChangeFrequency("day")}
-            className={cn(
-              "rounded-lg px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer",
-              frequency === "day"
-                ? "bg-white/10 text-[var(--text-primary)] border border-white/20"
-                : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-white/5"
-            )}
-          >
-            {i18n("dEveryDay", "Chaque jour")}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => onChangeFrequency("week")}
-            className={cn(
-              "rounded-lg px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer",
-              frequency === "week"
-                ? "bg-white/10 text-[var(--text-primary)] border border-white/20"
-                : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-white/5"
-            )}
-          >
-            {i18n("dEveryWeek", "Chaque semaine")}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export default function GuildSecurityScan({
-  guild,
-  onOpenProtections,
-}: GuildSecurityScanProps) {
+/**
+ * Scan de sécurité : chaque point est vérifié par le bot sur le vrai serveur (permissions, rôles, salons,
+ * réglages Discord, bots tiers, modules de protection). Le score est la part des points conformes.
+ */
+export default function GuildSecurityScan({ guild, onOpenProtections }: GuildSecurityScanProps) {
   const i18n = useI18n();
-  const { success } = useToast();
+  const { error: toastError } = useToast();
+  const reduced = useReducedMotion();
+  const [state, setState] = useState<"idle" | "scanning" | "done">("idle");
+  const [result, setResult] = useState<ScanResult | null>(null);
+  const [filter, setFilter] = useState<ScanCategory | "all">("all");
+  const [showSolid, setShowSolid] = useState(false);
 
-  const [scanState, setScanState] = useState<"idle" | "scanning" | "done">("idle");
-  const [activeCategory, setActiveCategory] = useState<CategoryFilter>("all");
-  const [autoScanEnabled, setAutoScanEnabled] = useState(false);
-  const [autoScanChannel, setAutoScanChannel] = useState("");
-  const [autoScanFrequency, setAutoScanFrequency] = useState<"day" | "week">("week");
-  const [solidPointsOpen, setSolidPointsOpen] = useState(false);
-  const [channels, setChannels] = useState<ChannelItem[]>([]);
-  const [scanTimeText, setScanTimeText] = useState("");
-
-  useEffect(() => {
+  const runScan = useCallback(async () => {
+    if (!BOT_API_URL) return;
+    setState("scanning");
     try {
-      const savedAuto = localStorage.getItem(`ethone_autoscan_${guild.id}`);
-      if (savedAuto) {
-        const parsed = JSON.parse(savedAuto);
-        if (typeof parsed.enabled === "boolean") setAutoScanEnabled(parsed.enabled);
-        if (parsed.channel) setAutoScanChannel(parsed.channel);
-        if (parsed.frequency) setAutoScanFrequency(parsed.frequency);
-      }
-      const savedScan = localStorage.getItem(`ethone_scan_done_${guild.id}`);
-      if (savedScan === "true") {
-        setScanState("done");
-        setScanTimeText(i18n("dScanSecondsAgo", "Il y a quelques secondes"));
-      }
-    } catch {}
-  }, [guild.id, i18n]);
+      const res = await fetch(`${BOT_API_URL}/api/guilds/${guild.id}/server/security-scan`, { credentials: "include" });
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data?.checks) throw new Error(data?.error || `Erreur ${res.status}`);
+      setResult(data);
+      setState("done");
+    } catch (err) {
+      toastError(i18n("dSecurityScan", "Scan de sécurité"), err instanceof Error ? err.message : "Bot injoignable");
+      setState(result ? "done" : "idle");
+    }
+  }, [guild.id, i18n, result, toastError]);
 
-  useEffect(() => {
-    let cancelled = false;
-    const api = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
-    if (!api || !guild?.id) return;
+  const checks = useMemo(() => result?.checks ?? [], [result]);
+  const score = percent(checks);
+  const issues = checks.filter((c) => !c.ok && (filter === "all" || c.category === filter));
+  const solid = checks.filter((c) => c.ok && (filter === "all" || c.category === filter));
+  const tone = score >= 85 ? "var(--success)" : score >= 60 ? "var(--warning)" : "var(--danger)";
 
-    const loadChannels = async () => {
-      const endpoints = [
-        `${api}/api/guilds/${guild.id}/server/channels`,
-        `${api}/api/guilds/${guild.id}/welcome/channels`,
-        `${api}/api/guilds/${guild.id}/polls/channels`,
-      ];
-
-      for (const ep of endpoints) {
-        if (cancelled) return;
-        try {
-          const res = await fetch(ep, { credentials: "include" });
-          if (!res.ok) continue;
-          const data = await res.json();
-          const list: ChannelItem[] = [];
-
-          if (data?.categories && Array.isArray(data.categories)) {
-            for (const cat of data.categories) {
-              const catName = cat?.name || "Sans catégorie";
-              for (const c of cat?.channels || []) {
-                if (c && c.id && c.name) {
-                  list.push({ id: String(c.id), name: String(c.name), category: catName });
-                }
-              }
-            }
-          }
-
-          if (data?.orphanChannels && Array.isArray(data.orphanChannels)) {
-            for (const c of data.orphanChannels) {
-              if (c && c.id && c.name) {
-                list.push({ id: String(c.id), name: String(c.name), category: "Sans catégorie" });
-              }
-            }
-          }
-
-          if (data?.channels && Array.isArray(data.channels)) {
-            for (const c of data.channels) {
-              if (c && c.id && c.name && !list.some((x) => x.id === String(c.id))) {
-                list.push({
-                  id: String(c.id),
-                  name: String(c.name),
-                  category: c.categoryName || c.parentName || "Sans catégorie",
-                });
-              }
-            }
-          }
-
-          if (list.length > 0 && !cancelled) {
-            setChannels(list);
-            setAutoScanChannel((prev) => (list.some((x) => x.id === prev) ? prev : list[0].id));
-            return;
-          }
-        } catch {}
-      }
-    };
-
-    loadChannels();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [guild.id]);
-
-  const handleStartScan = () => {
-    if (scanState === "scanning") return;
-    setScanState("scanning");
-
-    setTimeout(() => {
-      setScanState("done");
-      setScanTimeText(i18n("dScanSecondsAgo", "Il y a quelques secondes"));
-      try {
-        localStorage.setItem(`ethone_scan_done_${guild.id}`, "true");
-      } catch {}
-      success(
-        i18n("dSecurityScan", "Scan de sécurité"),
-        i18n("dServerWellProtected", "Ton serveur est très bien protégé.")
-      );
-    }, 2400);
-  };
-
-  const handleToggleAutoScan = () => {
-    const next = !autoScanEnabled;
-    setAutoScanEnabled(next);
-    try {
-      localStorage.setItem(
-        `ethone_autoscan_${guild.id}`,
-        JSON.stringify({
-          enabled: next,
-          channel: autoScanChannel,
-          frequency: autoScanFrequency,
-        })
-      );
-    } catch {}
-  };
-
-  const handleChangeChannel = (cId: string) => {
-    setAutoScanChannel(cId);
-    try {
-      localStorage.setItem(
-        `ethone_autoscan_${guild.id}`,
-        JSON.stringify({
-          enabled: autoScanEnabled,
-          channel: cId,
-          frequency: autoScanFrequency,
-        })
-      );
-    } catch {}
-  };
-
-  const handleChangeFrequency = (freq: "day" | "week") => {
-    setAutoScanFrequency(freq);
-    try {
-      localStorage.setItem(
-        `ethone_autoscan_${guild.id}`,
-        JSON.stringify({
-          enabled: autoScanEnabled,
-          channel: autoScanChannel,
-          frequency: freq,
-        })
-      );
-    } catch {}
-  };
-
-  const filteredSolidPoints = useMemo(() => {
-    if (activeCategory === "all") return SOLID_POINTS;
-    return SOLID_POINTS.filter((p) => p.category === activeCategory);
-  }, [activeCategory]);
-
-  const memberCount =
-    (guild as any).approximate_member_count ||
-    (guild as any).memberCount ||
-    null;
-
-  const showAntiNukeIssue = activeCategory === "all" || activeCategory === "settings";
-  const show2FAIssue = activeCategory === "all" || activeCategory === "discord";
+  const scanButton = (
+    <button
+      type="button"
+      onClick={runScan}
+      disabled={state === "scanning"}
+      className="flex items-center gap-2 rounded-lg bg-[var(--accent-primary)] px-4 py-2 text-xs font-semibold text-[var(--accent-contrast)] transition-[filter,transform] duration-150 hover:brightness-110 active:scale-[0.97] disabled:cursor-wait disabled:opacity-70"
+    >
+      <RefreshCw className={cn("h-3.5 w-3.5", state === "scanning" && "animate-spin")} />
+      {state === "scanning"
+        ? i18n("dScanning", "Scan en cours...")
+        : result
+          ? i18n("dReRunScan", "Relancer le scan")
+          : i18n("dRunScanBtn", "Lancer un scan")}
+    </button>
+  );
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[var(--text-primary)]">
+        <h1 className="text-xl font-bold tracking-tight text-[var(--text-primary)] sm:text-2xl">
           {i18n("dSecurityScan", "Scan de sécurité")}
         </h1>
-
-        <div>
-          {scanState === "idle" && (
-            <button
-              type="button"
-              onClick={handleStartScan}
-              className="flex items-center gap-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-semibold px-4 py-2 text-xs transition-colors cursor-pointer shadow-sm"
-            >
-              <RefreshCw className="h-3.5 w-3.5" />
-              <span>{i18n("dRunScanBtn", "Lancer un scan")}</span>
-            </button>
-          )}
-
-          {scanState === "scanning" && (
-            <button
-              type="button"
-              disabled
-              className="flex items-center gap-2 rounded-lg bg-emerald-500/80 text-zinc-950 font-semibold px-4 py-2 text-xs opacity-80 cursor-wait shadow-sm"
-            >
-              <RefreshCw className="h-3.5 w-3.5 animate-spin" />
-              <span>{i18n("dScanning", "Scan en cours...")}</span>
-            </button>
-          )}
-
-          {scanState === "done" && (
-            <button
-              type="button"
-              onClick={handleStartScan}
-              className="flex items-center gap-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-semibold px-4 py-2 text-xs transition-colors cursor-pointer shadow-sm"
-            >
-              <RefreshCw className="h-3.5 w-3.5" />
-              <span>{i18n("dReRunScan", "Relancer le scan")}</span>
-            </button>
-          )}
-        </div>
+        {scanButton}
       </div>
 
-      {scanState === "idle" && (
-        <div className="space-y-6">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-12 text-center flex flex-col items-center justify-center shadow-lg"
-          >
-            <div className="h-12 w-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mb-4">
-              <Scan className="h-6 w-6" />
-            </div>
-
-            <h2 className="text-base sm:text-lg font-bold text-[var(--text-primary)]">
-              {i18n("dNoScanYet", "Aucun scan pour l'instant")}
-            </h2>
-
-            <p className="text-xs text-[var(--text-muted)] mt-1.5 max-w-sm leading-relaxed">
-              {i18n(
-                "dNoScanDesc",
-                "Lance un premier scan : le rapport complet s'affiche ici en quelques secondes."
-              )}
-            </p>
-
-            <button
-              type="button"
-              onClick={handleStartScan}
-              className="flex items-center gap-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-semibold px-4 py-2 text-xs transition-colors cursor-pointer mt-5 shadow-sm"
-            >
-              <RefreshCw className="h-3.5 w-3.5" />
-              <span>{i18n("dRunScanBtn", "Lancer un scan")}</span>
-            </button>
-          </motion.div>
-
-          <div className="max-w-md">
-            <AutoScanCard
-              enabled={autoScanEnabled}
-              onToggle={handleToggleAutoScan}
-              channel={autoScanChannel}
-              onChangeChannel={handleChangeChannel}
-              frequency={autoScanFrequency}
-              onChangeFrequency={handleChangeFrequency}
-              channels={channels}
-              i18n={i18n}
-            />
+      {!result && (
+        <motion.div
+          initial={reduced ? false : { opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={SPRING_LAYOUT}
+          className="flex flex-col items-center justify-center rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-12 text-center"
+        >
+          <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--accent-muted)] text-[var(--accent-primary)]">
+            {state === "scanning" ? <RefreshCw className="h-6 w-6 animate-spin" /> : <Scan className="h-6 w-6" />}
           </div>
-        </div>
+          <h2 className="text-base font-bold text-[var(--text-primary)] sm:text-lg">
+            {state === "scanning" ? i18n("dScanning", "Scan en cours...") : i18n("dNoScanYet", "Aucun scan pour l'instant")}
+          </h2>
+          <p className="mt-1.5 max-w-sm text-xs leading-relaxed text-[var(--text-muted)]">
+            {i18n(
+              "dScanRealDesc",
+              "Etho vérifie ses permissions, les rôles, les salons, les réglages de sécurité Discord, les autres bots et tes protections."
+            )}
+          </p>
+        </motion.div>
       )}
 
-      {scanState === "scanning" && (
-        <div className="space-y-6">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-5 shadow-sm"
-          >
-            <div className="flex items-center gap-3">
-              <RefreshCw className="h-4 w-4 animate-spin text-emerald-400 shrink-0" />
+      {result && (
+        <motion.div
+          initial={reduced ? false : { opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={SPRING_LAYOUT}
+          className="grid grid-cols-1 items-start gap-6 lg:grid-cols-12"
+        >
+          <div className="space-y-5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-5 lg:col-span-5">
+            <div className="flex items-center gap-4">
+              <div
+                className="flex h-20 w-20 shrink-0 flex-col items-center justify-center rounded-full border-2"
+                style={{ borderColor: tone }}
+              >
+                <span className="text-2xl font-bold leading-none tracking-tight text-[var(--text-primary)]">{score}</span>
+                <span className="mt-1 text-[11px] font-medium leading-none text-[var(--text-muted)]">/100</span>
+              </div>
               <div>
-                <h3 className="font-semibold text-xs sm:text-sm text-[var(--text-primary)]">
-                  {i18n("dScanQueued", "Scan en file d'attente")}
+                <h3 className="text-sm font-bold text-[var(--text-primary)]">
+                  {issues.length === 0 && filter === "all"
+                    ? i18n("dServerWellProtected", "Ton serveur est très bien protégé.")
+                    : `${checks.filter((c) => !c.ok).length} ${i18n("dPointsToFix", "point(s) à corriger")}`}
                 </h3>
-                <p className="text-[11px] text-[var(--text-muted)] mt-0.5">
-                  {i18n(
-                    "dScanQueuedDesc",
-                    "Quelques secondes, le temps de charger les membres et les webhooks."
-                  )}
+                <p className="mt-0.5 text-[11px] text-[var(--text-muted)]">
+                  {new Date(result.scannedAt).toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" })} ·{" "}
+                  {checks.length} {i18n("dChecks", "vérifications")}
                 </p>
               </div>
             </div>
-          </motion.div>
 
-          <div className="max-w-md">
-            <AutoScanCard
-              enabled={autoScanEnabled}
-              onToggle={handleToggleAutoScan}
-              channel={autoScanChannel}
-              onChangeChannel={handleChangeChannel}
-              frequency={autoScanFrequency}
-              onChangeFrequency={handleChangeFrequency}
-              channels={channels}
-              i18n={i18n}
-            />
-          </div>
-        </div>
-      )}
-
-      {scanState === "done" && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start"
-        >
-          <div className="lg:col-span-5 space-y-6">
-            <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-5 space-y-5 shadow-sm">
-              <div className="flex items-center gap-4">
-                <div className="h-20 w-20 rounded-full border-2 border-emerald-500 bg-emerald-500/[0.04] flex flex-col items-center justify-center shrink-0 shadow-[0_0_15px_rgba(16,185,129,0.12)]">
-                  <span className="text-2xl font-bold text-[var(--text-primary)] leading-none tracking-tight">
-                    96
-                  </span>
-                  <span className="text-[11px] font-medium text-emerald-400/80 leading-none mt-1">
-                    /100
-                  </span>
-                </div>
-
-                <div>
-                  <h3 className="font-bold text-xs sm:text-sm text-[var(--text-primary)]">
-                    {i18n("dServerWellProtected", "Ton serveur est très bien protégé.")}
-                  </h3>
-                  <p className="text-[11px] text-[var(--text-muted)] mt-0.5">
-                    {scanTimeText || i18n("dScanSecondsAgo", "Il y a quelques secondes")}
-                    {memberCount ? ` · ${memberCount} ${i18n("dMembersCount", "membres")}` : ""}
-                  </p>
-                </div>
-              </div>
-
-              <div className="space-y-3 pt-2 border-t border-[var(--panel-border)]">
-                <div>
-                  <div className="flex items-center justify-between text-xs mb-1">
-                    <span className="text-[var(--text-muted)]">Keeper</span>
-                    <span className="font-mono text-[var(--text-primary)]">100</span>
-                  </div>
-                  <div className="h-1.5 w-full rounded-full bg-[var(--panel-border)] overflow-hidden">
-                    <div className="h-full bg-emerald-500 rounded-full" style={{ width: "100%" }} />
-                  </div>
-                </div>
-
-                <div>
-                  <div className="flex items-center justify-between text-xs mb-1">
-                    <span className="text-[var(--text-muted)]">{i18n("dTabRoles", "Rôles")}</span>
-                    <span className="font-mono text-[var(--text-primary)]">100</span>
-                  </div>
-                  <div className="h-1.5 w-full rounded-full bg-[var(--panel-border)] overflow-hidden">
-                    <div className="h-full bg-emerald-500 rounded-full" style={{ width: "100%" }} />
-                  </div>
-                </div>
-
-                <div>
-                  <div className="flex items-center justify-between text-xs mb-1">
-                    <span className="text-[var(--text-muted)]">{i18n("dTabChannels", "Salons")}</span>
-                    <span className="font-mono text-[var(--text-primary)]">100</span>
-                  </div>
-                  <div className="h-1.5 w-full rounded-full bg-[var(--panel-border)] overflow-hidden">
-                    <div className="h-full bg-emerald-500 rounded-full" style={{ width: "100%" }} />
-                  </div>
-                </div>
-
-                <div>
-                  <div className="flex items-center justify-between text-xs mb-1">
-                    <span className="text-[var(--text-muted)]">Discord</span>
-                    <span className="font-mono text-[var(--text-primary)]">97</span>
-                  </div>
-                  <div className="h-1.5 w-full rounded-full bg-[var(--panel-border)] overflow-hidden">
-                    <div className="h-full bg-emerald-500 rounded-full" style={{ width: "97%" }} />
-                  </div>
-                </div>
-
-                <div>
-                  <div className="flex items-center justify-between text-xs mb-1">
-                    <span className="text-[var(--text-muted)]">Bots</span>
-                    <span className="font-mono text-[var(--text-primary)]">100</span>
-                  </div>
-                  <div className="h-1.5 w-full rounded-full bg-[var(--panel-border)] overflow-hidden">
-                    <div className="h-full bg-emerald-500 rounded-full" style={{ width: "100%" }} />
-                  </div>
-                </div>
-
-                <div>
-                  <div className="flex items-center justify-between text-xs mb-1">
-                    <span className="text-[var(--text-muted)]">{i18n("dTabSettings", "Réglages")}</span>
-                    <span className="font-mono text-[var(--text-primary)]">78</span>
-                  </div>
-                  <div className="h-1.5 w-full rounded-full bg-[var(--panel-border)] overflow-hidden">
-                    <div className="h-full bg-emerald-500 rounded-full" style={{ width: "78%" }} />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <AutoScanCard
-              enabled={autoScanEnabled}
-              onToggle={handleToggleAutoScan}
-              channel={autoScanChannel}
-              onChangeChannel={handleChangeChannel}
-              frequency={autoScanFrequency}
-              onChangeFrequency={handleChangeFrequency}
-              channels={channels}
-              i18n={i18n}
-            />
-          </div>
-
-          <div className="lg:col-span-7 space-y-4">
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
-              <button
-                type="button"
-                onClick={() => setActiveCategory("all")}
-                className={cn(
-                  "rounded-lg px-3 py-1.5 transition-colors cursor-pointer font-medium whitespace-nowrap",
-                  activeCategory === "all"
-                    ? "bg-white/10 text-[var(--text-primary)] border border-white/20"
-                    : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-white/5"
-                )}
-              >
-                {i18n("dTabAll", "Tout")} 2
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setActiveCategory("keeper")}
-                className={cn(
-                  "rounded-lg px-3 py-1.5 transition-colors cursor-pointer font-medium whitespace-nowrap",
-                  activeCategory === "keeper"
-                    ? "bg-white/10 text-[var(--text-primary)] border border-white/20"
-                    : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-white/5"
-                )}
-              >
-                Keeper
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setActiveCategory("roles")}
-                className={cn(
-                  "rounded-lg px-3 py-1.5 transition-colors cursor-pointer font-medium whitespace-nowrap",
-                  activeCategory === "roles"
-                    ? "bg-white/10 text-[var(--text-primary)] border border-white/20"
-                    : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-white/5"
-                )}
-              >
-                {i18n("dTabRoles", "Rôles")}
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setActiveCategory("channels")}
-                className={cn(
-                  "rounded-lg px-3 py-1.5 transition-colors cursor-pointer font-medium whitespace-nowrap",
-                  activeCategory === "channels"
-                    ? "bg-white/10 text-[var(--text-primary)] border border-white/20"
-                    : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-white/5"
-                )}
-              >
-                {i18n("dTabChannels", "Salons")}
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setActiveCategory("discord")}
-                className={cn(
-                  "rounded-lg px-3 py-1.5 transition-colors cursor-pointer font-medium whitespace-nowrap",
-                  activeCategory === "discord"
-                    ? "bg-white/10 text-[var(--text-primary)] border border-white/20"
-                    : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-white/5"
-                )}
-              >
-                Discord 1
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setActiveCategory("bots")}
-                className={cn(
-                  "rounded-lg px-3 py-1.5 transition-colors cursor-pointer font-medium whitespace-nowrap",
-                  activeCategory === "bots"
-                    ? "bg-white/10 text-[var(--text-primary)] border border-white/20"
-                    : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-white/5"
-                )}
-              >
-                Bots
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setActiveCategory("settings")}
-                className={cn(
-                  "rounded-lg px-3 py-1.5 transition-colors cursor-pointer font-medium whitespace-nowrap",
-                  activeCategory === "settings"
-                    ? "bg-white/10 text-[var(--text-primary)] border border-white/20"
-                    : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-white/5"
-                )}
-              >
-                {i18n("dTabSettings", "Réglages")} 1
-              </button>
-            </div>
-
-            <div className="space-y-4">
-              {showAntiNukeIssue && (
-                <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-5 space-y-3.5 shadow-sm">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex items-start gap-2.5">
-                      <AlertTriangle className="h-4 w-4 text-amber-400 shrink-0 mt-0.5" />
-                      <div>
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <h4 className="font-bold text-xs sm:text-sm text-[var(--text-primary)]">
-                            {i18n("dIssueAntiNukeTitle", "12 protections anti-nuke sont désactivées")}
-                          </h4>
-                          <span className="rounded bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 text-[10px] font-semibold text-amber-400">
-                            {i18n("dBadgeImportant", "Important")}
-                          </span>
-                          <span className="rounded bg-white/5 px-1.5 py-0.5 text-[10px] font-medium text-[var(--text-muted)]">
-                            {i18n("dTabSettings", "Réglages")}
-                          </span>
-                        </div>
-
-                        <p className="text-xs text-[var(--text-muted)] mt-1.5 leading-relaxed">
-                          {i18n(
-                            "dIssueAntiNukeDesc",
-                            "Ce sont elles qui stoppent un nuke : suppressions de salons, bans en masse, rôles, webhooks."
-                          )}
-                        </p>
-
-                        <p className="text-xs text-[var(--text-muted)] mt-2">
-                          {i18n(
-                            "dIssueAntiNukeTip",
-                            "→ Ouvre-les dans /config pour les activer si tu le souhaites."
-                          )}
-                        </p>
-                      </div>
+            <div className="space-y-3 border-t border-[var(--panel-border)] pt-4">
+              {CATEGORIES.map((cat) => {
+                const list = checks.filter((c) => c.category === cat.id);
+                if (list.length === 0) return null;
+                const p = percent(list);
+                return (
+                  <div key={cat.id}>
+                    <div className="mb-1 flex items-center justify-between text-xs">
+                      <span className="text-[var(--text-muted)]">{i18n(cat.key, cat.label)}</span>
+                      <span className="font-mono text-[var(--text-primary)]">{p}</span>
+                    </div>
+                    <div className="h-1.5 w-full overflow-hidden rounded-full bg-[var(--panel-border)]">
+                      <motion.div
+                        className="h-full rounded-full"
+                        style={{ background: p >= 85 ? "var(--success)" : p >= 60 ? "var(--warning)" : "var(--danger)" }}
+                        initial={reduced ? false : { width: 0 }}
+                        animate={{ width: `${p}%` }}
+                        transition={SPRING_LAYOUT}
+                      />
                     </div>
                   </div>
+                );
+              })}
+            </div>
 
-                  <div className="flex flex-wrap gap-1.5 pt-1">
-                    {ANTI_NUKE_MODULES.map((name) => (
-                      <span
-                        key={name}
-                        className="rounded-md border border-[var(--panel-border)] bg-[var(--background)] px-2 py-1 text-[11px] text-[var(--text-muted)]"
-                      >
-                        {name}
-                      </span>
-                    ))}
-                  </div>
+            {onOpenProtections && (
+              <button
+                type="button"
+                onClick={onOpenProtections}
+                className="flex w-full items-center justify-center gap-2 rounded-lg border border-[var(--panel-border)] px-3 py-2 text-xs font-semibold text-[var(--text-primary)] transition-[background-color,transform] duration-150 hover:bg-[var(--surface-hover)] active:scale-[0.98]"
+              >
+                <Shield className="h-3.5 w-3.5" />
+                {i18n("dOpenProtections", "Gérer les protections")}
+              </button>
+            )}
+          </div>
 
-                  <div className="pt-2">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (onOpenProtections) onOpenProtections();
-                      }}
-                      className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-400 hover:text-emerald-300 hover:underline cursor-pointer"
-                    >
-                      <span>{i18n("dOpenProtections", "Ouvrir les protections →")}</span>
-                    </button>
-                  </div>
-                </div>
-              )}
+          <div className="space-y-4 lg:col-span-7">
+            <div className="flex flex-wrap gap-1.5">
+              {(["all", ...CATEGORIES.map((c) => c.id)] as const).map((id) => {
+                const active = filter === id;
+                const label = id === "all" ? i18n("dAll", "Tout") : i18n(CATEGORIES.find((c) => c.id === id)!.key, CATEGORIES.find((c) => c.id === id)!.label);
+                return (
+                  <button
+                    key={id}
+                    type="button"
+                    onClick={() => setFilter(id)}
+                    className={cn(
+                      "relative rounded-lg px-3 py-1.5 text-xs font-medium transition-colors active:scale-[0.97]",
+                      active ? "text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                    )}
+                  >
+                    {active && (
+                      <motion.span
+                        layoutId="scan-filter-pill"
+                        transition={SPRING_PILL}
+                        className="absolute inset-0 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-hover)]"
+                      />
+                    )}
+                    <span className="relative">{label}</span>
+                  </button>
+                );
+              })}
+            </div>
 
-              {show2FAIssue && (
-                <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-5 space-y-2 shadow-sm">
-                  <div className="flex items-start gap-2.5">
-                    <Shield className="h-4 w-4 text-sky-400 shrink-0 mt-0.5" />
+            {issues.length === 0 ? (
+              <div className="flex items-center gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-4 text-xs text-[var(--text-primary)]">
+                <Check className="h-4 w-4 text-[var(--success)]" />
+                {i18n("dNothingToFix", "Rien à corriger ici.")}
+              </div>
+            ) : (
+              <ul className="space-y-2">
+                {issues.map((c) => (
+                  <li key={c.id} className="flex gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-4">
+                    <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-[var(--warning)]" />
                     <div>
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <h4 className="font-bold text-xs sm:text-sm text-[var(--text-primary)]">
-                          {i18n("dIssue2FATitle", "La 2FA n'est pas exigée pour modérer")}
-                        </h4>
-                        <span className="rounded bg-sky-500/10 border border-sky-500/20 px-1.5 py-0.5 text-[10px] font-semibold text-sky-400">
-                          {i18n("dBadgeSuggestion", "Suggestion")}
-                        </span>
-                        <span className="rounded bg-white/5 px-1.5 py-0.5 text-[10px] font-medium text-[var(--text-muted)]">
-                          Discord
-                        </span>
-                      </div>
-
-                      <p className="text-xs text-[var(--text-muted)] mt-1.5 leading-relaxed">
-                        {i18n(
-                          "dIssue2FADesc",
-                          "Avec la 2FA obligatoire, un compte modérateur dont le mot de passe fuite ne peut pas servir à bannir ou supprimer."
-                        )}
-                      </p>
-
-                      <p className="text-xs text-[var(--text-muted)] mt-2">
-                        {i18n(
-                          "dIssue2FATip",
-                          "→ Option réservée au propriétaire : Paramètres du serveur → Sécurité."
-                        )}
-                      </p>
+                      <p className="text-xs font-semibold text-[var(--text-primary)]">{c.title}</p>
+                      {c.detail && <p className="mt-0.5 text-[11px] leading-relaxed text-[var(--text-muted)]">{c.detail}</p>}
                     </div>
-                  </div>
-                </div>
-              )}
+                  </li>
+                ))}
+              </ul>
+            )}
 
-              <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] overflow-hidden shadow-sm">
+            {solid.length > 0 && (
+              <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]">
                 <button
                   type="button"
-                  onClick={() => setSolidPointsOpen((p) => !p)}
-                  className="w-full flex items-center justify-between p-4 text-xs font-semibold text-[var(--text-primary)] hover:bg-white/[0.03] transition-colors cursor-pointer"
+                  onClick={() => setShowSolid((v) => !v)}
+                  className="flex w-full items-center justify-between px-4 py-3 text-xs font-semibold text-[var(--text-primary)]"
                 >
-                  <div className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-emerald-400" />
-                    <span>
-                      {filteredSolidPoints.length}{" "}
-                      {filteredSolidPoints.length <= 1
-                        ? i18n("dSolidPointSingle", "point solide")
-                        : i18n("dSolidPoints", "points solides")}
-                    </span>
-                  </div>
-                  <ChevronDown
-                    className={cn(
-                      "h-4 w-4 text-[var(--text-muted)] transition-transform duration-200",
-                      solidPointsOpen ? "rotate-180" : "rotate-0"
-                    )}
-                  />
+                  <span>
+                    {solid.length} {i18n("dSolidPoints", "points solides")}
+                  </span>
+                  <span className="text-[var(--text-muted)]">{showSolid ? "−" : "+"}</span>
                 </button>
-
                 <AnimatePresence initial={false}>
-                  {solidPointsOpen && (
-                    <motion.div
+                  {showSolid && (
+                    <motion.ul
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: "auto", opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                      className="border-t border-[var(--panel-border)] divide-y divide-[var(--panel-border)] bg-[var(--background)]/30"
+                      transition={SPRING_LAYOUT}
+                      className="overflow-hidden"
                     >
-                      {filteredSolidPoints.map((point) => (
-                        <div key={point.id} className="flex items-center gap-2.5 px-4 py-2.5 text-xs text-[var(--text-muted)]">
-                          <Check className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
-                          <span>{point.title}</span>
-                        </div>
+                      {solid.map((c) => (
+                        <li key={c.id} className="flex items-center gap-2.5 border-t border-[var(--panel-border)] px-4 py-2.5 text-xs text-[var(--text-primary)]">
+                          <Check className="h-3.5 w-3.5 shrink-0 text-[var(--success)]" />
+                          {c.title}
+                        </li>
                       ))}
-                    </motion.div>
+                    </motion.ul>
                   )}
                 </AnimatePresence>
               </div>
-            </div>
+            )}
           </div>
         </motion.div>
       )}

@@ -1,4 +1,4 @@
-# ETHONE — passation à la prochaine IA (état au 2026-10-07, version 1.55.49)
+# ETHONE — passation à la prochaine IA (état au 2026-10-08, version 1.55.68)
 
 ## Prompt à coller à la prochaine IA (version avec le lien du repo : `PROMPT-IA.md`)
 
@@ -38,8 +38,8 @@ cd ethone-next
 npm run dev                        # serveur local http://localhost:3000
 npm run build                      # export statique dans dist/ (toujours AVANT tsc)
 npx tsc --noEmit                   # types
-npm run lint                       # 0 erreur attendue, 75 avertissements connus
-npm run test:unit                  # Jest, 298 tests
+npm run lint                       # 0 erreur attendue, 45 avertissements connus
+npm run test:unit                  # Jest, 304 tests
 npx playwright test                # E2E (nécessite TEST_EMAIL et TEST_PASSWORD)
 npm run audit:a11y                 # audit accessibilité
 npm run audit:responsive           # audit mobile/tablette
@@ -140,7 +140,7 @@ git log --oneline -10
 - **Commits** : `git -c user.name="Rub19" -c user.email="rub19.mailpro@gmail.com" commit -m "Migration Next.js : vX.Y.Z - description"`, en français, **sans ligne Co-Authored-By d'IA**. Pousser directement sur `main`.
 - **Ne jamais committer** `discord-bot/scripts/etho-avatar-animated.gif` ni `.mcp.json` (toujours `git reset -q` sur ces deux fichiers avant le commit).
 - **À chaque lot** : `cd ethone-next && node scripts/release.js <version> <AAAA-MM-JJ> <fichier.json>` (JSON `{fr|en|es|de: {title, items[]}}` : met à jour `package.json`, `CHANGELOG.md` et `data/changelog.ts`), puis `npm install --package-lock-only`.
-- **Vérifications avant commit** (dans cet ordre) : `npm run build` (AVANT `tsc`, sinon d'anciens types `.next` font échouer `tsc`), `npx tsc --noEmit`, `npm run lint` (0 erreur, 75 avertissements attendus), `npm run test:unit` (298 tests), puis depuis la racine `node scripts/audit-security.mjs` et `node ./scripts/precommit-upload-check.mjs`. Bot : `cd discord-bot && npx tsc --noEmit`. Worker : `npm test` (283 tests).
+- **Vérifications avant commit** (dans cet ordre) : `npm run build` (AVANT `tsc`, sinon d'anciens types `.next` font échouer `tsc`), `npx tsc --noEmit`, `npm run lint` (0 erreur, 45 avertissements attendus), `npm run test:unit` (304 tests), puis depuis la racine `node scripts/audit-security.mjs` et `node ./scripts/precommit-upload-check.mjs`. Bot : `cd discord-bot && npx tsc --noEmit`. Worker : `npm test` (283 tests).
 - **Secrets** : ne jamais accepter, coller, afficher ni utiliser un secret fourni en clair. Donner à l'utilisateur une commande qui le manipule sans l'afficher.
 - **Interface** : appliquer le skill `apple-design` (ressorts critiquement amortis, menus ancrés, retour au clic, réduction des animations respectée, jetons de thème plutôt que couleurs en dur, lisible en thème clair Arctic).
 
@@ -155,8 +155,11 @@ git log --oneline -10
 - **Module Émojis** : page `app/discord/emojis/EmojiStudioClient.tsx`, routes bot `GET/POST/DELETE /api/guilds/:id/server/emojis` (POST : base64 uniquement, 256 Ko max, limite JSON relevée pour cette seule route).
 - **Thèmes** : menu de la barre du haut `components/ThemePicker.tsx` (clic droit : appliquer, police, dupliquer en thème perso, supprimer) ; le studio `components/settings/ThemeStudio.tsx` lit l'intention via `lib/theme-intent.ts`.
 - Musique : Lavalink 4 en Docker sur le NAS (tunnels SSH), YouTube bloqué côté Lavalink, chemin réel yt-dlp puis SoundCloud. L'entrée pm2 `lavalink` arrêtée sur le VPS est normale.
+- **Console Discord style Keeper** (`/discord`, inspirée de https://keeper.jgl-bot.fr à la demande de l'utilisateur) : `components/discord/ServerPicker.tsx` (liste « Avec Etho / Sans Etho »), `HubSidebar.tsx`, `GuildOverviewScreen.tsx` (vue d'ensemble, mode raid réel via `POST /anti-raid/raid-mode`), `GuildSecurityScan.tsx` (scan réel : `GET /api/guilds/:id/server/security-scan`, logique dans `discord-bot/src/modules/server/services/securityScanService.ts`), `GuildAssistedSetup.tsx` (n'envoie que l'anti-raid messages/arrivées et le salon de logs), `BotInstallView.tsx` (détection de présence du bot). Traductions : `lib/i18n-discord.ts`.
+- **Casino** (`/discord/games`) : le bot calcule tout (`discord-bot/src/modules/games/services/webCasino.ts`, routes `POST /games/roulette`, `/games/dice`, `/games/blackjack/start`, `/games/blackjack/:id/action`). Le site n'envoie que la mise et le choix. Les mains de blackjack en cours sont en mémoire (perdues si le bot redémarre).
+- **Message d'arrivée du bot** : `discord-bot/src/services/guildJoinService.ts`. Carte Components V2 (état, permissions, commandes, salon système, langue) postée dans un salon privé `etho-bienvenue` visible seulement par l'inviteur (repli : message privé). `/setup vue:welcome` la réaffiche en éphémère.
 
-## Fait pendant la session du 2026-10-03/05 (v1.52.12 → v1.55.11)
+## Historique des sessions (v1.52.12 → v1.55.67)
 - Thème clair : panneaux restés noirs corrigés (connexions, guide, changelog, dock mobile, tracker…), revue de toutes les pages principales.
 - Supabase : règles d'accès optimisées, 22 index de clés étrangères, index en double supprimé ; Realtime sur `ethone_public_profiles` ; colonnes `status_text`, `status_emoji`, `banner_url` ; GIF autorisés dans `profile-media`.
 - Code : 94 fichiers morts supprimés (site, bot, worker), ~120 variables mortes retirées, imports nettoyés, 4 dépendances de hooks corrigées.
@@ -200,10 +203,15 @@ git log --oneline -10
 - Refonte de la Console Discord ServerPicker (v1.55.49) : refonte intégrale de la sélection de serveur Discord (`/discord` quand aucun serveur n'est choisi) avec le format 3 colonnes Keeper Protect adapté au design system Etho. Partitionnement en temps réel des serveurs connectés (« Avec Etho » menant au dashboard du serveur via `onPick` / « Sans Etho » avec bouton d'installation 1-clic), recherche réactive, filtre « Gérables », volet « Bots privés » avec modal interactif complet, et bascule réversible instantanée vers la vue classique centrée conservée à 100%.
 - Écran d'installation Bot Discord & Auto-Détection (v1.55.50) : intégration du flux d'installation guidé complet reproduisant fidèlement le mockup Keeper Protect lors du clic sur un serveur sans le bot Etho (que ce soit depuis `/discord`, `/bot` ou en accès direct via paramètre `?guildId=`). Barre latérale contextuelle avec pastille de statut « Etho absent », carte active du serveur et raccourcis navigation/support. Conteneur central présentant les 3 étapes d'onboarding Discord (Ajout du bot avec permissions requises, placement du rôle au sommet de la hiérarchie, détection de présence en temps réel). Intégration de l'auto-détection en polling toutes les 3,5s, d'un bouton de vérification manuelle « Vérifier » et d'un bouton d'échappement « Passer l'attente » pour accéder directement à la configuration du serveur sans bloquer l'utilisateur. Tests unitaires (Jest) et E2E (Playwright) validés.
 
+- Session du 2026-10-08 (v1.55.68) : fausses données retirées de la console Discord (Casino, scan, compteurs, configuration assistée, « Just Chatting »), Casino calculé par le bot, vrai scan de sécurité, vrai mode raid, message d'arrivée privé façon Keeper, règles d'accès des espaces partagés réparées (elles plantaient en récursion infinie) et migration appliquée, bot redéployé sur le VPS (il tournait sur le code du 5 octobre).
+
 ## Reste à faire (par priorité)
-1. **Bot animé, vérification réelle** : regarder dans un vrai salon qu'une réponse du bot affiche bien les émojis animés (29 émojis d'application synchronisés au démarrage) et qu'une arrivée de membre envoie la carte GIF (interrupteur et aperçu GIF intégrés sur le site).
-2. **Synchronisation** : faire tester par l'utilisateur sur deux appareils (changer le statut sur l'un, il doit apparaître sur l'autre sans recharger). `RawKeySync` pousse et tire désormais instantanément à chaque action locale ou réception temps réel.
-3. **Supabase** : migration `supabase/migrations/202610050001_shared_spaces_rls_dedup.sql` rédigée pour consolider les 3 avertissements « multiple permissive policies » (`ethone_shared_spaces`, `ethone_shared_space_members`) en politiques dédiées sans altération de droits ; à appliquer via `npx supabase db push` ou l'éditeur SQL Supabase. La protection des mots de passe divulgués apparaissait encore désactivée après activation par l'utilisateur (peut demander l'offre Pro).
-4. **Qualité** : 0 erreur et 0 avertissement fonctionnel de lint (52 `<img>` sans intérêt en export statique uniquement). 5 tests du bot échouent uniquement sous Windows (assertion libuv à la fermeture) ; la CI Linux est verte.
-5. **Autre appareil de l'utilisateur** : un ancien client recréait des notifications « Nouveau mail » en double ; le déclencheur SQL `ethone_strip_legacy_mail_notifications` les nettoie, mais il faut que l'utilisateur ouvre ETHONE sur cet appareil pour qu'il se mette à jour.
-6. **Application iOS & Android** : builds CI automatisés (`.github/workflows/build-ios.yml` et `build-android.yml`) ; parité profil/avatars/émojis réalisée en v1.55.16. Tests sur appareil physique à réaliser par l'utilisateur lors du déploiement TestFlight.
+1. **Pages de la console Discord qui « ne fonctionnent plus trop »** : l'utilisateur doit donner la liste. Pour chaque page : ouvrir dans Chrome, lire les requêtes vers `bot.ethone.dev` (un 404 = route absente ou bot pas redéployé, un 401 = `credentials: "include"` manquant), corriger.
+2. **Parité Keeper** : la vue d'ensemble de Keeper montre en plus les « points à régler » (rôle du bot pas en haut, protections sans salon de log), le score du dernier scan et le nombre de rôles sensibles. Le scan Etho a déjà ces données (`security-scan`) : les afficher sur la vue d'ensemble. Le « scan automatique » (chaque jour / semaine dans un salon) a été retiré car le bot ne le faisait pas : à créer côté bot si voulu.
+3. **Bot animé et message d'arrivée, vérification réelle** : dans un vrai salon, vérifier les émojis animés des réponses, la carte GIF d'arrivée d'un membre, et inviter le bot sur un serveur de test pour voir le salon privé `etho-bienvenue`.
+4. **Synchronisation** : faire tester par l'utilisateur sur deux appareils (changer le statut sur l'un, il doit apparaître sur l'autre sans recharger).
+5. **Supabase** : la protection des mots de passe divulgués apparaissait encore désactivée après activation par l'utilisateur (peut demander l'offre Pro).
+6. **Alertes streamers** : Twitch passe par decapi.me (service tiers non officiel, sans clé). Fragile : passer à l'API Twitch officielle (secrets `TWITCH_CLIENT_ID/SECRET` existent déjà côté worker) si les alertes ratent.
+7. **Qualité** : 0 erreur de lint (avertissements `<img>` attendus en export statique). Quelques tests du bot échouent uniquement sous Windows (assertion libuv à la fermeture) ; la CI Linux est verte.
+8. **Autre appareil de l'utilisateur** : un ancien client recréait des notifications « Nouveau mail » en double ; le déclencheur SQL `ethone_strip_legacy_mail_notifications` les nettoie, mais il faut que l'utilisateur ouvre ETHONE sur cet appareil pour qu'il se mette à jour.
+9. **Application iOS & Android** : builds CI automatisés (`.github/workflows/build-ios.yml` et `build-android.yml`) ; parité profil/avatars/émojis réalisée en v1.55.16. Tests sur appareil physique à réaliser par l'utilisateur lors du déploiement TestFlight.

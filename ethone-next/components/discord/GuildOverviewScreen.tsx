@@ -13,6 +13,9 @@ import { useToast } from "@/components/ToastProvider";
 import { useMotionPref } from "@/lib/hooks/useMotionPref";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { SPRING_PRESS } from "@/lib/ease";
+import { confirmDialog } from "@/lib/confirmDialog";
+
+const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 import {
   consoleCard,
   consoleFadeUp,
@@ -29,7 +32,6 @@ interface GuildOverviewScreenProps {
     antiRaidEnabled?: boolean;
     antiSpamEnabled?: boolean;
   };
-  onToggleRaidMode?: () => void;
   moduleStatus?: Record<string, boolean>;
   activeModuleCount?: number;
   totalModuleCount?: number;
@@ -112,9 +114,8 @@ function SegmentBar({ active, total }: { active: number; total: number }) {
 
 export default function GuildOverviewScreen({
   guild,
-  userName: _userName = "rub19",
+  userName: _userName,
   guildSettings,
-  onToggleRaidMode,
   moduleStatus,
   activeModuleCount,
   totalModuleCount,
@@ -125,44 +126,58 @@ export default function GuildOverviewScreen({
 }: GuildOverviewScreenProps) {
   const router = useRouter();
   const i18n = useI18n();
-  const { success, info } = useToast();
+  const { success, info, error: showError } = useToast();
   const { reduced } = useMotionPref();
 
-  const [raidMode, setRaidMode] = useState(false);
-  const [wizardConfig, setWizardConfig] = useState<{
-    activeProtectionsCount?: number;
-    isConfigured?: boolean;
-  } | null>(null);
+  const [raidMode, setRaidMode] = useState<boolean | null>(null);
+  const [raidBusy, setRaidBusy] = useState(false);
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(`ethone:discord:wizard:${guild.id}`);
-      if (raw) {
-        setWizardConfig(JSON.parse(raw));
-      }
-    } catch {}
+    if (!BOT_API_URL) return;
+    let cancelled = false;
+    fetch(`${BOT_API_URL}/api/guilds/${guild.id}/anti-raid/status`, { credentials: "include" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (!cancelled && typeof d?.metrics?.raidModeActive === "boolean") setRaidMode(d.metrics.raidModeActive);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
   }, [guild.id]);
 
-  const isRaidModeActive = guildSettings?.antiRaidEnabled ?? raidMode;
+  const isRaidModeActive = raidMode === true;
 
-  const handleToggleRaid = useCallback(() => {
-    if (onToggleRaidMode) {
-      onToggleRaidMode();
+  const handleToggleRaid = useCallback(async () => {
+    if (raidBusy || raidMode === null || !BOT_API_URL) return;
+    const next = !raidMode;
+    if (
+      next &&
+      !(await confirmDialog(
+        "Activer le mode raid ? Etho bloque les arrivées suspectes et peut verrouiller les salons prévus dans la configuration anti-raid."
+      ))
+    ) {
       return;
     }
-    setRaidMode((prev) => {
-      const next = !prev;
-      if (next) {
-        success(
-          "Mode Raid activé",
-          "Protection d'urgence enclenchée sur l'ensemble du serveur."
-        );
-      } else {
-        info("Mode Raid désactivé", "Le serveur fonctionne en mode standard.");
-      }
-      return next;
-    });
-  }, [onToggleRaidMode, success, info]);
+    setRaidBusy(true);
+    try {
+      const res = await fetch(`${BOT_API_URL}/api/guilds/${guild.id}/anti-raid/raid-mode`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ active: next }),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok || typeof data?.raidModeActive !== "boolean") throw new Error(data?.error || `Erreur ${res.status}`);
+      setRaidMode(data.raidModeActive);
+      if (data.raidModeActive) success("Mode raid activé", "Etho bloque les arrivées suspectes.");
+      else info("Mode raid désactivé", "Le serveur fonctionne normalement.");
+    } catch (err) {
+      showError("Mode raid", err instanceof Error ? err.message : "Bot injoignable");
+    } finally {
+      setRaidBusy(false);
+    }
+  }, [guild.id, raidBusy, raidMode, success, info, showError]);
 
   const categories = useMemo(
     () =>
@@ -186,14 +201,7 @@ export default function GuildOverviewScreen({
       0
     );
 
-  const countToUse =
-    wizardConfig?.isConfigured && wizardConfig.activeProtectionsCount
-      ? wizardConfig.activeProtectionsCount
-      : activeCount > 1
-      ? activeCount
-      : 1;
-
-  const subtitleText = `${countToUse} ${i18n("dProtectionsActive", "protections actives sur 30.")}`;
+  const subtitleText = `${activeCount} ${i18n("dModulesActiveOf", "modules actifs sur")} ${totalCount}.`;
 
   return (
     <motion.div
@@ -325,6 +333,7 @@ export default function GuildOverviewScreen({
                   type="button"
                   role="switch"
                   aria-checked={isRaidModeActive}
+                  disabled={raidBusy || raidMode === null}
                   aria-label={i18n("dRaidMode", "Mode raid")}
                   onClick={handleToggleRaid}
                   className={cn(
@@ -342,7 +351,9 @@ export default function GuildOverviewScreen({
               </div>
 
               <p className="mt-1 text-xs text-[var(--text-muted)]">
-                {isRaidModeActive
+                {raidMode === null
+                  ? i18n("dRaidModeUnknown", "État inconnu : bot injoignable.")
+                  : isRaidModeActive
                   ? i18n("dRaidModeActive", "Actif. Le serveur bloque temporairement les arrivées suspectes.")
                   : i18n("dRaidModeInactive", "Inactif. Etho active tout seul s'il détecte une attaque.")}
               </p>

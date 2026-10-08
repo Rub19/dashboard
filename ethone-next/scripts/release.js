@@ -42,4 +42,10 @@ rw("../CHANGELOG.md", (s) => {
   if (idx < 0) throw new Error("CHANGELOG.md sans section");
   return s.slice(0, idx) + section + s.slice(idx);
 });
+// 4) public/changelog.json : nouveautés lues par l'app iOS (français, 60 dernières versions)
+rw("public/changelog.json", (s) => {
+  const list = JSON.parse(s).filter((e) => e.version !== `v${version}`);
+  list.unshift({ version: `v${version}`, date, title: rel.fr.title, items: rel.fr.items });
+  return JSON.stringify(list.slice(0, 60), null, 2) + "\n";
+});
 console.log("release", version, "ok");

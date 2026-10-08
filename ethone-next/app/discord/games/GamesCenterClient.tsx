@@ -22,7 +22,6 @@ import {
   Volume2,
   VolumeX,
   Eye,
-  X,
   Gift,
   Briefcase,
   Wallet as WalletIcon,
@@ -71,16 +70,6 @@ export interface GameRecord {
   timestamp: string;
 }
 
-export interface ActiveQuest {
-  id: string;
-  title: string;
-  description: string;
-  gameType: GameType;
-  requiredCount: number;
-  rewardCredits: number;
-  rewardXp: number;
-}
-
 export interface GamesOverview {
   enabled: boolean;
   jackpotPool: number;
@@ -107,118 +96,17 @@ const DEFAULT_CONFIG: GamesConfig = {
   houseEdgePercent: 1,
 };
 
-const DEFAULT_OVERVIEW: GamesOverview = {
+// Vide tant que le bot n'a pas répondu : aucune partie, aucun joueur inventé.
+const EMPTY_OVERVIEW: GamesOverview = {
   enabled: true,
-  jackpotPool: 8450,
-  totalGamesPlayed: 342,
-  totalBets: 48900,
-  totalPayouts: 46120,
-  biggestWin: {
-    username: "Alex_HighRoller",
-    amount: 7200,
-    game: "Roulette Royale (Plein #17)",
-    timestamp: new Date(Date.now() - 3600000 * 4).toISOString(),
-  },
-  recentGames: [
-    {
-      id: "rec_1",
-      guildId: "",
-      userId: "u1",
-      username: "ShadowKnight",
-      gameType: "blackjack",
-      bet: 250,
-      payout: 625,
-      net: 375,
-      won: true,
-      detail: "Blackjack Naturel 21 (A♠ K♦)",
-      timestamp: new Date(Date.now() - 120000).toISOString(),
-    },
-    {
-      id: "rec_2",
-      guildId: "",
-      userId: "u2",
-      username: "Valkyrie99",
-      gameType: "roulette",
-      bet: 100,
-      payout: 200,
-      net: 100,
-      won: true,
-      detail: "Rouge (Numéro 14 Rouge)",
-      timestamp: new Date(Date.now() - 450000).toISOString(),
-    },
-    {
-      id: "rec_3",
-      guildId: "",
-      userId: "u3",
-      username: "PixelMaster",
-      gameType: "dice",
-      bet: 500,
-      payout: 1000,
-      net: 500,
-      won: true,
-      detail: "Duel remporté 11 contre 8",
-      timestamp: new Date(Date.now() - 900000).toISOString(),
-    },
-    {
-      id: "rec_4",
-      guildId: "",
-      userId: "u4",
-      username: "CyberGhost",
-      gameType: "blackjack",
-      bet: 150,
-      payout: 0,
-      net: -150,
-      won: false,
-      detail: "Bust du joueur (23)",
-      timestamp: new Date(Date.now() - 1500000).toISOString(),
-    },
-  ],
-  topWinners: [
-    { userId: "u1", username: "Alex_HighRoller", totalWon: 14200, gamesPlayed: 48 },
-    { userId: "u2", username: "ShadowKnight", totalWon: 9850, gamesPlayed: 62 },
-    { userId: "u3", username: "Valkyrie99", totalWon: 6400, gamesPlayed: 35 },
-    { userId: "u4", username: "LuckyStrike", totalWon: 4120, gamesPlayed: 19 },
-  ],
+  jackpotPool: 0,
+  totalGamesPlayed: 0,
+  totalBets: 0,
+  totalPayouts: 0,
+  biggestWin: null,
+  recentGames: [],
+  topWinners: [],
 };
-
-const DEFAULT_QUESTS: ActiveQuest[] = [
-  {
-    id: "quest_bj_21",
-    title: "Maître du 21",
-    description: "Remportez 3 mains au Blackjack contre le croupier sans dépasser 21.",
-    gameType: "blackjack",
-    requiredCount: 3,
-    rewardCredits: 350,
-    rewardXp: 120,
-  },
-  {
-    id: "quest_roulette_color",
-    title: "Flamme Écarlate",
-    description: "Misez et gagnez 2 fois sur la couleur Rouge à la Roulette Royale.",
-    gameType: "roulette",
-    requiredCount: 2,
-    rewardCredits: 200,
-    rewardXp: 80,
-  },
-  {
-    id: "quest_dice_duel",
-    title: "Gladiateur des Dés",
-    description: "Défiez un membre du serveur et remportez 1 duel de dés PvP.",
-    gameType: "dice",
-    requiredCount: 1,
-    rewardCredits: 500,
-    rewardXp: 200,
-  },
-  {
-    id: "quest_daily_spin",
-    title: "Roue de la Fortune",
-    description: "Faites tourner la roue quotidienne pour débloquer votre bonus de fidélité.",
-    gameType: "spin",
-    requiredCount: 1,
-    rewardCredits: 150,
-    rewardXp: 50,
-  },
-];
 
 // Synthétiseur audio Web Audio API (aucun fichier externe requis, ultra réactif)
 function playProceduralSound(type: "card" | "chip" | "win" | "spin" | "dice") {
@@ -304,15 +192,6 @@ function calculateHandScore(cards: Card[]): number {
   return score;
 }
 
-function generateRandomCard(): Card {
-  const suits: Array<"♠" | "♥" | "♦" | "♣"> = ["♠", "♥", "♦", "♣"];
-  const values = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
-  const suit = suits[Math.floor(Math.random() * suits.length)];
-  const value = values[Math.floor(Math.random() * values.length)];
-  const num = value === "A" ? 11 : ["K", "Q", "J"].includes(value) ? 10 : parseInt(value, 10);
-  return { suit, value, num };
-}
-
 export default function GamesCenterClient() {
   const searchParams = useSearchParams();
   const rawGuildId = searchParams.get("guildId");
@@ -365,57 +244,37 @@ export default function GamesCenterClient() {
 
   // Données du Casino
   const [config, setConfig] = useState<GamesConfig>(DEFAULT_CONFIG);
-  const [overview, setOverview] = useState<GamesOverview>(DEFAULT_OVERVIEW);
-  const [quests, setQuests] = useState<ActiveQuest[]>(DEFAULT_QUESTS);
+  const [overview, setOverview] = useState<GamesOverview>(EMPTY_OVERVIEW);
 
   // Onglet actif : overview | blackjack | roulette | dice | settings | preview
   const [activeTab, setActiveTab] = useState<"overview" | "blackjack" | "roulette" | "dice" | "settings" | "preview">("overview");
 
-  // Démo interactive Blackjack
+  // Blackjack : la main est tenue par le bot, le site n'affiche que ce qu'il renvoie.
   const [bjBet, setBjBet] = useState(100);
-  const [bjPlayerCards, setBjPlayerCards] = useState<Card[]>([
-    { suit: "♠", value: "A", num: 11 },
-    { suit: "♦", value: "K", num: 10 },
-  ]);
-  const [bjDealerCards, setBjDealerCards] = useState<Card[]>([
-    { suit: "♥", value: "10", num: 10 },
-    { suit: "♣", value: "7", num: 7 },
-  ]);
-  const [bjStatus, setBjStatus] = useState<"playing" | "won" | "lost" | "push" | "blackjack">("blackjack");
-  const [bjDealerRevealed, setBjDealerRevealed] = useState(true);
+  const [bjGameId, setBjGameId] = useState<string | null>(null);
+  const [bjPlayerCards, setBjPlayerCards] = useState<Card[]>([]);
+  const [bjDealerCards, setBjDealerCards] = useState<Card[]>([]);
+  const [bjStatus, setBjStatus] = useState<"idle" | "playing" | "won" | "lost" | "push" | "blackjack">("idle");
+  const [bjDealerRevealed, setBjDealerRevealed] = useState(false);
+  const [bjBusy, setBjBusy] = useState(false);
 
-  // Démo interactive Roulette
+  // Roulette
   const [rouletteBet, setRouletteBet] = useState(50);
   const [rouletteChoice, setRouletteChoice] = useState<string>("rouge");
   const [rouletteSpinning, setRouletteSpinning] = useState(false);
-  const [rouletteResultNumber, setRouletteResultNumber] = useState<number>(14);
-  const [rouletteResultColor, setRouletteResultColor] = useState<"rouge" | "noir" | "vert">("rouge");
-  const [rouletteOutcome, setRouletteOutcome] = useState<{ won: boolean; payout: number; msg: string } | null>({
-    won: true,
-    payout: 100,
-    msg: "Victoire ! Le 14 Rouge paie 2:1",
-  });
+  const [rouletteResultNumber, setRouletteResultNumber] = useState<number | null>(null);
+  const [rouletteResultColor, setRouletteResultColor] = useState<"rouge" | "noir" | "vert" | null>(null);
+  const [rouletteOutcome, setRouletteOutcome] = useState<{ won: boolean; payout: number; msg: string } | null>(null);
 
-  // Démo interactive Dés PvP
+  // Duel de dés contre le bot
   const [diceBet, setDiceBet] = useState(100);
   const [diceRolling, setDiceRolling] = useState(false);
-  const [dicePlayerRoll, setDicePlayerRoll] = useState<[number, number]>([5, 6]);
-  const [diceOpponentRoll, setDiceOpponentRoll] = useState<[number, number]>([4, 4]);
-  const [diceOutcome, setDiceOutcome] = useState<{ won: boolean; msg: string } | null>({
-    won: true,
-    msg: "Victoire écrasante 11 contre 8 !",
-  });
+  const [dicePlayerRoll, setDicePlayerRoll] = useState<[number, number] | null>(null);
+  const [diceOpponentRoll, setDiceOpponentRoll] = useState<[number, number] | null>(null);
+  const [diceOutcome, setDiceOutcome] = useState<{ won: boolean; msg: string } | null>(null);
 
   // Aperçu Embed Discord
   const [previewTab, setPreviewTab] = useState<"blackjack" | "roulette" | "dice" | "jackpot">("blackjack");
-
-  // Simulateur Discord Modal
-  const [simModalOpen, setSimModalOpen] = useState(false);
-  const [simGame, setSimGame] = useState<GameType>("blackjack");
-  const [simBet, setSimBet] = useState(250);
-  const [simChannelId, setSimChannelId] = useState<string>("");
-  const [simRunning, setSimRunning] = useState(false);
-  const [simSuccessMsg, setSimSuccessMsg] = useState<string | null>(null);
 
   // Système Monétaire Ethone Coin intégré
   const [currencyName, setCurrencyName] = useState("Ethone Coins");
@@ -429,12 +288,10 @@ export default function GamesCenterClient() {
     totalEarned: number;
     totalSpent: number;
   } | null>(null);
-  const [demoBalance, setDemoBalance] = useState(2500);
-  const [isRealMode, setIsRealMode] = useState(true);
   const [claimingDaily, setClaimingDaily] = useState(false);
   const [workingJob, setWorkingJob] = useState(false);
 
-  const activeBalance = isRealMode && userWallet ? userWallet.balance : demoBalance;
+  const activeBalance = userWallet?.balance ?? 0;
 
   // Synchronisation Discord
   useDiscordSync({
@@ -473,7 +330,7 @@ export default function GamesCenterClient() {
     async (guildId: string) => {
       if (!guildId || !profile?.user?.id) return;
       try {
-        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/economy/wallets/${profile.user.id}`);
+        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/economy/wallets/${profile.user.id}`, { credentials: "include" });
         if (res.ok) {
           const d = await res.json();
           if (d.wallet) setUserWallet(d.wallet);
@@ -491,13 +348,12 @@ export default function GamesCenterClient() {
       if (!guildId) return;
       setLoading(true);
       try {
-        const [ovRes, cfgRes, questRes, ecoCfgRes, walletRes] = await Promise.allSettled([
-          fetch(`${BOT_API_URL}/api/guilds/${guildId}/games/overview`),
-          fetch(`${BOT_API_URL}/api/guilds/${guildId}/games/config`),
-          fetch(`${BOT_API_URL}/api/guilds/${guildId}/games/quests`),
-          fetch(`${BOT_API_URL}/api/guilds/${guildId}/economy/config`),
+        const [ovRes, cfgRes, ecoCfgRes, walletRes] = await Promise.allSettled([
+          fetch(`${BOT_API_URL}/api/guilds/${guildId}/games/overview`, { credentials: "include" }),
+          fetch(`${BOT_API_URL}/api/guilds/${guildId}/games/config`, { credentials: "include" }),
+          fetch(`${BOT_API_URL}/api/guilds/${guildId}/economy/config`, { credentials: "include" }),
           profile?.user?.id
-            ? fetch(`${BOT_API_URL}/api/guilds/${guildId}/economy/wallets/${profile.user.id}`)
+            ? fetch(`${BOT_API_URL}/api/guilds/${guildId}/economy/wallets/${profile.user.id}`, { credentials: "include" })
             : Promise.reject(),
         ]);
 
@@ -516,10 +372,6 @@ export default function GamesCenterClient() {
           setConfig(cfg);
           if (cfg.currencyName) setCurrencyName(cfg.currencyName);
           if (cfg.currencySymbol) setCurrencySymbol(cfg.currencySymbol);
-        }
-        if (questRes.status === "fulfilled" && questRes.value.ok) {
-          const q = await questRes.value.json();
-          if (q.quests) setQuests(q.quests);
         }
         if (ecoCfgRes.status === "fulfilled" && ecoCfgRes.value.ok) {
           const eco = await ecoCfgRes.value.json();
@@ -550,8 +402,8 @@ export default function GamesCenterClient() {
     try {
       const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuildId}/economy/daily`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: profile?.user?.id }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -574,8 +426,8 @@ export default function GamesCenterClient() {
     try {
       const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuildId}/economy/work`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: profile?.user?.id }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -592,63 +444,44 @@ export default function GamesCenterClient() {
     }
   };
 
-  const executePlayRound = async (params: {
-    gameType: GameType;
-    bet: number;
-    won: boolean;
-    payout: number;
-    detail: string;
-  }) => {
-    if (isRealMode && userWallet && profile?.user?.id) {
-      if (userWallet.balance < params.bet) {
-        toastError(
-          `Solde insuffisant en ${currencyName} (${userWallet.balance.toLocaleString("fr-FR")} ${currencySymbol} disponible, ${params.bet.toLocaleString("fr-FR")} ${currencySymbol} requis).`
-        );
-        return false;
+  type PlayResult = {
+    newBalance?: number;
+    jackpotPool?: number;
+    record?: GameRecord;
+    [key: string]: unknown;
+  };
+
+  /** Envoie la mise et le choix au bot ; c'est lui qui tire et calcule le gain. */
+  const callCasino = async <T extends PlayResult>(path: string, body: Record<string, unknown>): Promise<T | null> => {
+    if (!selectedGuildId) return null;
+    try {
+      const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuildId}/games/${path}`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        toastError(data.message || "Le bot a refusé la partie.");
+        return null;
       }
-      try {
-        const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuildId}/games/play`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            gameType: params.gameType,
-            bet: params.bet,
-            won: params.won,
-            payout: params.payout,
-            detail: params.detail,
-            mode: "real",
-            userId: profile.user.id,
-            username: profile.user.username || "Joueur",
-          }),
-        });
-        const data = await res.json();
-        if (!res.ok) {
-          toastError(data.message || "Erreur lors de la mise");
-          return false;
-        }
-        if (typeof data.newBalance === "number") {
-          setUserWallet((prev) => (prev ? { ...prev, balance: data.newBalance } : null));
-        }
-        if (typeof data.jackpotPool === "number") {
-          setOverview((prev) => ({ ...prev, jackpotPool: data.jackpotPool }));
-        }
-        if (data.record) {
-          setOverview((prev) => ({
-            ...prev,
-            recentGames: [data.record, ...prev.recentGames.slice(0, 19)],
-          }));
-        }
-        return true;
-      } catch (err) {
-        console.error(err);
-        return false;
+      if (typeof data.newBalance === "number") {
+        setUserWallet((prev) => (prev ? { ...prev, balance: data.newBalance } : prev));
       }
-    } else {
-      // Mode Démo
-      setDemoBalance((prev) => Math.max(0, prev - params.bet + params.payout));
-      return true;
+      if (typeof data.jackpotPool === "number") {
+        setOverview((prev) => ({ ...prev, jackpotPool: data.jackpotPool }));
+      }
+      if (data.record) {
+        setOverview((prev) => ({ ...prev, recentGames: [data.record, ...prev.recentGames.slice(0, 19)] }));
+      }
+      return data as T;
+    } catch (err) {
+      toastError("Bot injoignable", formatApiError(err));
+      return null;
     }
   };
+
 
   useEffect(() => {
     if (selectedGuildId) {
@@ -663,6 +496,7 @@ export default function GamesCenterClient() {
     try {
       const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuildId}/games/config`, {
         method: "PATCH",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(config),
       });
@@ -684,6 +518,7 @@ export default function GamesCenterClient() {
     try {
       const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuildId}/games/jackpot/seed`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ amount }),
       });
@@ -697,349 +532,97 @@ export default function GamesCenterClient() {
     }
   };
 
-  // Démo & Jeu Blackjack : Démarrer une nouvelle main
-  const startNewBlackjackRound = () => {
-    if (isRealMode && userWallet && userWallet.balance < bjBet) {
-      toastError(
-        `Solde insuffisant en ${currencyName} (${userWallet.balance.toLocaleString("fr-FR")} ${currencySymbol} disponible, ${bjBet.toLocaleString("fr-FR")} ${currencySymbol} requis).`
-      );
-      return;
-    }
-    playSound("card");
-    const p1 = generateRandomCard();
-    const p2 = generateRandomCard();
-    const d1 = generateRandomCard();
-    const d2 = generateRandomCard();
-    const pCards = [p1, p2];
-    const dCards = [d1, d2];
-    setBjPlayerCards(pCards);
-    setBjDealerCards(dCards);
-    setBjDealerRevealed(false);
-
-    const pScore = calculateHandScore(pCards);
-    if (pScore === 21) {
-      setBjDealerRevealed(true);
-      setBjStatus("blackjack");
-      playSound("win");
-      executePlayRound({
-        gameType: "blackjack",
-        bet: bjBet,
-        won: true,
-        payout: Math.round(bjBet * 2.5),
-        detail: "Blackjack Naturel 21 (Gain 3:2)",
-      });
-    } else {
-      setBjStatus("playing");
-    }
+  type BlackjackResponse = PlayResult & {
+    gameId: string;
+    status: "playing" | "won" | "lost" | "push" | "blackjack";
+    bet: number;
+    playerCards: Card[];
+    dealerCards: Card[];
   };
 
-  // Démo & Jeu Blackjack : Tirer (Hit)
-  const handleBjHit = () => {
-    if (bjStatus !== "playing") return;
-    playSound("card");
-    const nextCard = generateRandomCard();
-    const newCards = [...bjPlayerCards, nextCard];
-    setBjPlayerCards(newCards);
-    const score = calculateHandScore(newCards);
-    if (score > 21) {
-      setBjDealerRevealed(true);
-      setBjStatus("lost");
-      executePlayRound({
-        gameType: "blackjack",
-        bet: bjBet,
-        won: false,
-        payout: 0,
-        detail: `Bust (${score} vs Croupier)`,
-      });
-    }
+  const applyBlackjack = (data: BlackjackResponse) => {
+    const over = data.status !== "playing";
+    setBjGameId(over ? null : data.gameId);
+    setBjPlayerCards(data.playerCards);
+    // Pendant la main, le bot ne révèle qu'une carte du croupier : on affiche le dos de la seconde.
+    setBjDealerCards(over ? data.dealerCards : [...data.dealerCards, { suit: "♠", value: "?", num: 0 }]);
+    setBjDealerRevealed(over);
+    setBjStatus(data.status);
+    setBjBet(data.bet);
+    if (data.status === "won" || data.status === "blackjack") playSound("win");
   };
 
-  // Démo & Jeu Blackjack : Rester (Stand)
-  const handleBjStand = () => {
-    if (bjStatus !== "playing") return;
+  const startNewBlackjackRound = async () => {
+    if (bjBusy) return;
+    setBjBusy(true);
     playSound("card");
-    setBjDealerRevealed(true);
-    const currentDealerCards = [...bjDealerCards];
-    let dScore = calculateHandScore(currentDealerCards);
-
-    while (dScore < 17) {
-      const c = generateRandomCard();
-      currentDealerCards.push(c);
-      dScore = calculateHandScore(currentDealerCards);
-    }
-    setBjDealerCards(currentDealerCards);
-
-    const pScore = calculateHandScore(bjPlayerCards);
-    if (dScore > 21) {
-      setBjStatus("won");
-      playSound("win");
-      executePlayRound({
-        gameType: "blackjack",
-        bet: bjBet,
-        won: true,
-        payout: bjBet * 2,
-        detail: `Croupier bust (${dScore})`,
-      });
-    } else if (pScore > dScore) {
-      setBjStatus("won");
-      playSound("win");
-      executePlayRound({
-        gameType: "blackjack",
-        bet: bjBet,
-        won: true,
-        payout: bjBet * 2,
-        detail: `Victoire ${pScore} contre ${dScore}`,
-      });
-    } else if (pScore < dScore) {
-      setBjStatus("lost");
-      executePlayRound({
-        gameType: "blackjack",
-        bet: bjBet,
-        won: false,
-        payout: 0,
-        detail: `Défaite contre le croupier (${pScore} vs ${dScore})`,
-      });
-    } else {
-      setBjStatus("push");
-      executePlayRound({
-        gameType: "blackjack",
-        bet: bjBet,
-        won: false,
-        payout: bjBet,
-        detail: `Égalité push (${pScore} partout)`,
-      });
-    }
+    const data = await callCasino<BlackjackResponse>("blackjack/start", { bet: bjBet });
+    if (data) applyBlackjack(data);
+    setBjBusy(false);
   };
 
-  // Démo & Jeu Blackjack : Doubler (Double)
-  const handleBjDouble = () => {
-    if (bjStatus !== "playing" || bjPlayerCards.length !== 2) return;
-    if (isRealMode && userWallet && userWallet.balance < bjBet * 2) {
-      toastError(
-        `Fonds insuffisants en ${currencyName} pour doubler la mise (${(bjBet * 2).toLocaleString("fr-FR")} ${currencySymbol} requis).`
-      );
-      return;
-    }
-    playSound("chip");
-    const doubledBet = bjBet * 2;
-    setBjBet(doubledBet);
-    playSound("card");
-    const nextCard = generateRandomCard();
-    const newCards = [...bjPlayerCards, nextCard];
-    setBjPlayerCards(newCards);
-    setBjDealerRevealed(true);
-
-    const pScore = calculateHandScore(newCards);
-    if (pScore > 21) {
-      setBjStatus("lost");
-      executePlayRound({
-        gameType: "blackjack",
-        bet: doubledBet,
-        won: false,
-        payout: 0,
-        detail: `Bust sur Double (${pScore})`,
-      });
-      return;
-    }
-
-    const currentDealerCards = [...bjDealerCards];
-    let dScore = calculateHandScore(currentDealerCards);
-    while (dScore < 17) {
-      const c = generateRandomCard();
-      currentDealerCards.push(c);
-      dScore = calculateHandScore(currentDealerCards);
-    }
-    setBjDealerCards(currentDealerCards);
-
-    if (dScore > 21 || pScore > dScore) {
-      setBjStatus("won");
-      playSound("win");
-      executePlayRound({
-        gameType: "blackjack",
-        bet: doubledBet,
-        won: true,
-        payout: doubledBet * 2,
-        detail: `Victoire sur Double (${pScore} vs ${dScore})`,
-      });
-    } else if (pScore < dScore) {
-      setBjStatus("lost");
-      executePlayRound({
-        gameType: "blackjack",
-        bet: doubledBet,
-        won: false,
-        payout: 0,
-        detail: `Défaite sur Double (${pScore} vs ${dScore})`,
-      });
-    } else {
-      setBjStatus("push");
-      executePlayRound({
-        gameType: "blackjack",
-        bet: doubledBet,
-        won: false,
-        payout: doubledBet,
-        detail: `Égalité sur Double (${pScore} partout)`,
-      });
-    }
+  const blackjackAction = async (action: "hit" | "stand" | "double") => {
+    if (bjStatus !== "playing" || !bjGameId || bjBusy) return;
+    setBjBusy(true);
+    playSound(action === "double" ? "chip" : "card");
+    const data = await callCasino<BlackjackResponse>(`blackjack/${bjGameId}/action`, { action });
+    if (data) applyBlackjack(data);
+    setBjBusy(false);
   };
+  const handleBjHit = () => blackjackAction("hit");
+  const handleBjStand = () => blackjackAction("stand");
+  const handleBjDouble = () => blackjackAction("double");
 
-  // Démo & Jeu Roulette : Lancer la bille
-  const handleSpinRoulette = () => {
+  const handleSpinRoulette = async () => {
     if (rouletteSpinning) return;
-    if (isRealMode && userWallet && userWallet.balance < rouletteBet) {
-      toastError(
-        `Solde insuffisant en ${currencyName} (${userWallet.balance.toLocaleString("fr-FR")} ${currencySymbol} disponible, ${rouletteBet.toLocaleString("fr-FR")} ${currencySymbol} requis).`
-      );
-      return;
-    }
     setRouletteSpinning(true);
-    playSound("spin");
     setRouletteOutcome(null);
-
-    setTimeout(() => {
-      const num = Math.floor(Math.random() * 37);
-      const redNumbers = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
-      const color: "rouge" | "noir" | "vert" = num === 0 ? "vert" : redNumbers.includes(num) ? "rouge" : "noir";
-
-      setRouletteResultNumber(num);
-      setRouletteResultColor(color);
-      setRouletteSpinning(false);
-
-      let won = false;
-      let multiplier = 0;
-      if (rouletteChoice === "rouge" && color === "rouge") {
-        won = true;
-        multiplier = 2;
-      } else if (rouletteChoice === "noir" && color === "noir") {
-        won = true;
-        multiplier = 2;
-      } else if (rouletteChoice === "pair" && num > 0 && num % 2 === 0) {
-        won = true;
-        multiplier = 2;
-      } else if (rouletteChoice === "impair" && num % 2 === 1) {
-        won = true;
-        multiplier = 2;
-      } else if (rouletteChoice === String(num)) {
-        won = true;
-        multiplier = 36;
-      }
-
-      if (won) {
-        const payout = rouletteBet * multiplier;
-        setRouletteOutcome({
-          won: true,
-          payout,
-          msg: `Gagné ! Numéro ${num} (${color.toUpperCase()}) — gain de +${payout - rouletteBet} ${currencySymbol}`,
-        });
-        playSound("win");
-        executePlayRound({
-          gameType: "roulette",
-          bet: rouletteBet,
-          won: true,
-          payout,
-          detail: `Roulette: ${color.toUpperCase()} #${num} (x${multiplier})`,
-        });
-      } else {
-        setRouletteOutcome({
-          won: false,
-          payout: 0,
-          msg: `Perdu... Le ${num} (${color.toUpperCase()}) est tombé. Retentez votre chance !`,
-        });
-        executePlayRound({
-          gameType: "roulette",
-          bet: rouletteBet,
-          won: false,
-          payout: 0,
-          detail: `Roulette: #${num} ${color.toUpperCase()}`,
-        });
-      }
-    }, 1800);
+    playSound("spin");
+    const [data] = await Promise.all([
+      callCasino<PlayResult & { number: number; color: "rouge" | "noir" | "vert"; multiplier: number; payout: number }>("roulette", {
+        bet: rouletteBet,
+        choice: rouletteChoice,
+      }),
+      new Promise((r) => setTimeout(r, 1200)),
+    ]);
+    setRouletteSpinning(false);
+    if (!data) return;
+    setRouletteResultNumber(data.number);
+    setRouletteResultColor(data.color);
+    const won = data.multiplier > 0;
+    setRouletteOutcome({
+      won,
+      payout: data.payout,
+      msg: won
+        ? `Gagné ! Numéro ${data.number} (${data.color.toUpperCase()}) : +${data.payout - rouletteBet} ${currencySymbol}`
+        : `Perdu. Le ${data.number} (${data.color.toUpperCase()}) est tombé.`,
+    });
+    if (won) playSound("win");
   };
 
-  // Démo & Jeu Dés PvP : Duel
-  const handleRollDiceDuel = () => {
+  const handleRollDiceDuel = async () => {
     if (diceRolling) return;
-    if (isRealMode && userWallet && userWallet.balance < diceBet) {
-      toastError(
-        `Solde insuffisant en ${currencyName} (${userWallet.balance.toLocaleString("fr-FR")} ${currencySymbol} disponible, ${diceBet.toLocaleString("fr-FR")} ${currencySymbol} requis).`
-      );
-      return;
-    }
     setDiceRolling(true);
-    playSound("dice");
     setDiceOutcome(null);
-
-    setTimeout(() => {
-      const p1: [number, number] = [Math.floor(Math.random() * 6) + 1, Math.floor(Math.random() * 6) + 1];
-      const p2: [number, number] = [Math.floor(Math.random() * 6) + 1, Math.floor(Math.random() * 6) + 1];
-      setDicePlayerRoll(p1);
-      setDiceOpponentRoll(p2);
-      setDiceRolling(false);
-
-      const sum1 = p1[0] + p1[1];
-      const sum2 = p2[0] + p2[1];
-
-      if (sum1 > sum2) {
-        setDiceOutcome({
-          won: true,
-          msg: `Victoire éclatante ! ${sum1} contre ${sum2} (+${diceBet} ${currencySymbol})`,
-        });
-        playSound("win");
-        executePlayRound({
-          gameType: "dice",
-          bet: diceBet,
-          won: true,
-          payout: diceBet * 2,
-          detail: `Duel remporté ${sum1} contre ${sum2}`,
-        });
-      } else if (sum1 < sum2) {
-        setDiceOutcome({
-          won: false,
-          msg: `Défaite... L'adversaire l'emporte avec ${sum2} contre vos ${sum1}.`,
-        });
-        executePlayRound({
-          gameType: "dice",
-          bet: diceBet,
-          won: false,
-          payout: 0,
-          detail: `Duel perdu ${sum1} contre ${sum2}`,
-        });
-      } else {
-        setDiceOutcome({
-          won: false,
-          msg: `Égalité parfaite (${sum1} partout) ! Mise remboursée.`,
-        });
-        executePlayRound({
-          gameType: "dice",
-          bet: diceBet,
-          won: false,
-          payout: diceBet,
-          detail: `Duel égalité (${sum1} partout)`,
-        });
-      }
-    }, 1200);
-  };
-
-  // Simulation Discord
-  const handleExecuteSimulation = async () => {
-    if (!selectedGuildId) return;
-    setSimRunning(true);
-    setSimSuccessMsg(null);
-    try {
-      const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuildId}/games/simulate`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ gameType: simGame, bet: simBet, channelId: simChannelId || undefined }),
-      });
-      if (!res.ok) throw new Error("Échec de la simulation");
-      await res.json();
-      setSimSuccessMsg(`Partie de simulation (${simGame.toUpperCase()}) enregistrée avec succès !`);
-      fetchCasinoData(selectedGuildId);
-      playSound("win");
-    } catch (err) {
-      toastError("Erreur simulation", formatApiError(err));
-    } finally {
-      setSimRunning(false);
-    }
+    playSound("dice");
+    const [data] = await Promise.all([
+      callCasino<PlayResult & { player: [number, number]; house: [number, number]; payout: number }>("dice", { bet: diceBet }),
+      new Promise((r) => setTimeout(r, 900)),
+    ]);
+    setDiceRolling(false);
+    if (!data) return;
+    setDicePlayerRoll(data.player);
+    setDiceOpponentRoll(data.house);
+    const a = data.player[0] + data.player[1];
+    const b = data.house[0] + data.house[1];
+    setDiceOutcome(
+      a > b
+        ? { won: true, msg: `Victoire ${a} contre ${b} (+${diceBet} ${currencySymbol})` }
+        : a === b
+          ? { won: false, msg: `Égalité (${a} partout) : mise remboursée.` }
+          : { won: false, msg: `Défaite : le bot fait ${b} contre vos ${a}.` },
+    );
+    if (a > b) playSound("win");
   };
 
   const playerScore = useMemo(() => calculateHandScore(bjPlayerCards), [bjPlayerCards]);
@@ -1114,14 +697,6 @@ export default function GamesCenterClient() {
               <RefreshCw className={cn("h-3.5 w-3.5", loading && "animate-spin")} />
               Actualiser
             </button>
-            <button
-              type="button"
-              onClick={() => setSimModalOpen(true)}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] text-xs font-semibold cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97]"
-            >
-              <Sparkles className="h-3.5 w-3.5" />
-              <span>Simulateur Discord</span>
-            </button>
           </div>
         </div>
 
@@ -1189,15 +764,10 @@ export default function GamesCenterClient() {
                   {activeBalance.toLocaleString("fr-FR")}
                 </span>
                 <span className="text-sm font-bold text-amber-400/90">{currencySymbol}</span>
-                {isRealMode ? (
-                  <span className="text-xs text-emerald-400 font-medium ml-1 flex items-center gap-1">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping" />
-                    Mises en argent réel {currencyName}
-                  </span>
+                {userWallet ? (
+                  <span className="text-xs text-emerald-400 font-medium ml-1">Solde réel sur ce serveur</span>
                 ) : (
-                  <span className="text-xs text-amber-400/70 font-medium ml-1">
-                    (Solde démo fictif pour s&apos;entraîner)
-                  </span>
+                  <span className="text-xs text-[var(--text-muted)] font-medium ml-1">Portefeuille indisponible (bot injoignable ou économie désactivée)</span>
                 )}
               </div>
             </div>
@@ -1205,34 +775,6 @@ export default function GamesCenterClient() {
 
           {/* Actions & Switcher de mode */}
           <div className="flex flex-wrap items-center gap-2.5">
-            {/* Sélecteur Mode Réel / Démo */}
-            <div className="flex items-center rounded-xl bg-[var(--surface-base)]/80 border border-[var(--panel-border)] p-1 text-xs">
-              <button
-                type="button"
-                onClick={() => setIsRealMode(true)}
-                className={cn(
-                  "px-3 py-1.5 rounded-lg font-semibold transition-all cursor-pointer",
-                  isRealMode
-                    ? "bg-amber-500 text-black shadow-sm font-bold"
-                    : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-                )}
-              >
-                {currencySymbol} Mises Réelles
-              </button>
-              <button
-                type="button"
-                onClick={() => setIsRealMode(false)}
-                className={cn(
-                  "px-3 py-1.5 rounded-lg font-semibold transition-all cursor-pointer",
-                  !isRealMode
-                    ? "bg-white/20 text-white shadow-sm font-bold"
-                    : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-                )}
-              >
-                🎮 Mode Démo
-              </button>
-            </div>
-
             {/* Bonus Quotidien */}
             <button
               type="button"
@@ -1321,7 +863,7 @@ export default function GamesCenterClient() {
               +{overview.biggestWin ? overview.biggestWin.amount.toLocaleString("fr-FR") : "7 200"} {currencySymbol}
             </p>
             <span className="text-xs text-[var(--text-muted)] truncate block">
-              {overview.biggestWin ? `${overview.biggestWin.username}` : "Alex_HighRoller"}
+              {overview.biggestWin ? overview.biggestWin.username : "—"}
             </span>
           </div>
         </div>
@@ -1412,54 +954,8 @@ export default function GamesCenterClient() {
                 </div>
               </div>
 
-              {/* Grille : Quêtes Actives + Classement des Gagnants */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Quêtes communautaires actives */}
-                <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Sparkles size={16} className="text-amber-400" />
-                      <h3 className="text-sm font-bold text-[var(--text-primary)]">
-                        Quêtes Actives de la Semaine
-                      </h3>
-                    </div>
-                    <span className="text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">
-                      Récompenses auto
-                    </span>
-                  </div>
-                  <p className="text-xs text-[var(--text-muted)]">
-                    Accomplir ces objectifs en jouant sur Discord débloque des crédits et de l&apos;expérience bonus pour le leveling.
-                  </p>
-
-                  <div className="space-y-3 pt-2">
-                    {quests.map((q) => (
-                      <div
-                        key={q.id}
-                        className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-3.5 transition-all hover:border-amber-500/30"
-                      >
-                        <div className="flex items-start justify-between gap-3">
-                          <div>
-                            <span className="text-xs font-bold text-[var(--text-primary)] block">
-                              {q.title}
-                            </span>
-                            <span className="text-[11px] text-[var(--text-muted)] mt-0.5 block">
-                              {q.description}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-2 shrink-0">
-                            <span className="rounded-lg bg-amber-500/10 border border-amber-500/20 px-2 py-1 text-[11px] font-bold text-amber-300">
-                              +{q.rewardCredits} {currencySymbol}
-                            </span>
-                            <span className="rounded-lg bg-indigo-500/10 border border-indigo-500/20 px-2 py-1 text-[11px] font-bold text-indigo-300">
-                              +{q.rewardXp} XP
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
+              {/* Classement des gagnants */}
+              <div>
                 {/* Classement des plus grands gagnants */}
                 <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 space-y-4">
                   <div className="flex items-center justify-between">
@@ -1478,6 +974,11 @@ export default function GamesCenterClient() {
                   </p>
 
                   <div className="space-y-2.5 pt-2">
+                    {overview.topWinners.length === 0 && (
+                      <p className="rounded-xl border border-dashed border-[var(--panel-border)] p-4 text-center text-xs text-[var(--text-muted)]">
+                        Aucune partie jouée sur ce serveur pour l&apos;instant.
+                      </p>
+                    )}
                     {overview.topWinners.map((winner, idx) => {
                       const medalColors = [
                         "text-amber-400 bg-amber-500/20 border-amber-500/30",
@@ -1851,10 +1352,10 @@ export default function GamesCenterClient() {
                                 : "text-zinc-200"
                             )}
                           >
-                            {rouletteSpinning ? "?" : rouletteResultNumber}
+                            {rouletteSpinning ? "?" : rouletteResultNumber ?? "—"}
                           </span>
                           <span className="text-[11px] font-bold uppercase tracking-wider text-amber-300">
-                            {rouletteSpinning ? "En rotation..." : rouletteResultColor}
+                            {rouletteSpinning ? "En rotation..." : rouletteResultColor ?? "Pas encore lancée"}
                           </span>
                         </div>
                       </div>
@@ -2036,14 +1537,14 @@ export default function GamesCenterClient() {
 
                       <div className="flex items-center gap-3">
                         <div className="flex h-16 w-16 items-center justify-center rounded-2xl border-2 border-indigo-400/40 bg-indigo-900/40 text-3xl font-black text-white shadow-lg">
-                          {dicePlayerRoll[0]}
+                          {dicePlayerRoll?.[0] ?? "–"}
                         </div>
                         <div className="flex h-16 w-16 items-center justify-center rounded-2xl border-2 border-indigo-400/40 bg-indigo-900/40 text-3xl font-black text-white shadow-lg">
-                          {dicePlayerRoll[1]}
+                          {dicePlayerRoll?.[1] ?? "–"}
                         </div>
                       </div>
                       <span className="text-xs font-bold text-indigo-300">
-                        Total : {dicePlayerRoll[0] + dicePlayerRoll[1]}
+                        Total : {dicePlayerRoll ? dicePlayerRoll[0] + dicePlayerRoll[1] : "–"}
                       </span>
                     </div>
 
@@ -2054,20 +1555,20 @@ export default function GamesCenterClient() {
                           A
                         </div>
                         <span className="text-sm font-bold text-rose-200">
-                          Adversaire Défié
+                          Le bot
                         </span>
                       </div>
 
                       <div className="flex items-center gap-3">
                         <div className="flex h-16 w-16 items-center justify-center rounded-2xl border-2 border-rose-400/40 bg-rose-900/40 text-3xl font-black text-white shadow-lg">
-                          {diceOpponentRoll[0]}
+                          {diceOpponentRoll?.[0] ?? "–"}
                         </div>
                         <div className="flex h-16 w-16 items-center justify-center rounded-2xl border-2 border-rose-400/40 bg-rose-900/40 text-3xl font-black text-white shadow-lg">
-                          {diceOpponentRoll[1]}
+                          {diceOpponentRoll?.[1] ?? "–"}
                         </div>
                       </div>
                       <span className="text-xs font-bold text-rose-300">
-                        Total : {diceOpponentRoll[0] + diceOpponentRoll[1]}
+                        Total : {diceOpponentRoll ? diceOpponentRoll[0] + diceOpponentRoll[1] : "–"}
                       </span>
                     </div>
                   </div>
@@ -2446,10 +1947,10 @@ export default function GamesCenterClient() {
 
                     {/* Description */}
                     <p className="text-stone-300 leading-relaxed text-[11px]">
-                      {previewTab === "blackjack" && "Félicitations ShadowKnight ! Vous remportez la manche contre le croupier."}
+                      {previewTab === "blackjack" && `Félicitations ${profile?.user?.username || "joueur"} ! Vous remportez la manche contre le croupier.`}
                       {previewTab === "roulette" && "La bille s'arrête sur le 14 Rouge. Vos gains ont été crédités !"}
-                      {previewTab === "dice" && "ShadowKnight a battu Valkyrie99 avec un score de 11 contre 8 !"}
-                      {previewTab === "jackpot" && "INCROYABLE ! ShadowKnight vient d'empocher la cagnotte progressive totale !"}
+                      {previewTab === "dice" && `${profile?.user?.username || "Le joueur"} bat le bot avec un score de 11 contre 8 !`}
+                      {previewTab === "jackpot" && `${profile?.user?.username || "Un joueur"} vient d'empocher la cagnotte progressive !`}
                     </p>
 
                     {/* Champs de données */}
@@ -2504,110 +2005,6 @@ export default function GamesCenterClient() {
           )}
         </AnimatePresence>
 
-        {/* ======================================================== */}
-        {/* MODAL : SIMULATEUR DE CASINO DISCORD                    */}
-        {/* ======================================================== */}
-        <AnimatePresence>
-          {simModalOpen && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                className="w-full max-w-lg rounded-2xl border border-amber-500/40 bg-[var(--surface-base)] p-6 shadow-2xl space-y-5"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Sparkles size={18} className="text-amber-400" />
-                    <h3 className="text-base font-bold text-[var(--text-primary)]">
-                      Studio de Simulation de Casino
-                    </h3>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setSimModalOpen(false)}
-                    className="text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"
-                  >
-                    <X size={18} />
-                  </button>
-                </div>
-
-                <p className="text-xs text-[var(--text-muted)]">
-                  Générez un événement de jeu de test pour vérifier la synchronisation en direct du bot, le calcul des cagnottes et l&apos;historique.
-                </p>
-
-                <div className="space-y-4">
-                  <div>
-                    <label className="text-xs font-semibold text-[var(--text-primary)] block mb-1">
-                      Attraction à simuler
-                    </label>
-                    <select
-                      value={simGame}
-                      onChange={(e) => setSimGame(e.target.value as any)}
-                      className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-3 py-2 text-xs font-semibold text-[var(--text-primary)]"
-                    >
-                      <option value="blackjack">Blackjack 21</option>
-                      <option value="roulette">Roulette Royale</option>
-                      <option value="dice">Duel de Dés PvP</option>
-                      <option value="spin">Roue Quotidienne (Daily Spin)</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="text-xs font-semibold text-[var(--text-primary)] block mb-1">
-                      Mise simulée ({currencySymbol})
-                    </label>
-                    <input
-                      type="number"
-                      min={10}
-                      max={10000}
-                      value={simBet}
-                      onChange={(e) => setSimBet(parseInt(e.target.value, 10) || 50)}
-                      className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-3 py-2 text-xs font-semibold text-[var(--text-primary)]"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-xs font-semibold text-[var(--text-primary)] block mb-1">
-                      Salon Discord (optionnel)
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="ID salon Discord (laisser vide pour simulation dashboard)"
-                      value={simChannelId}
-                      onChange={(e) => setSimChannelId(e.target.value.trim())}
-                      className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-3 py-2 text-xs font-mono text-[var(--text-primary)]"
-                    />
-                  </div>
-
-                  {simSuccessMsg && (
-                    <div className="rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-3 text-xs font-semibold text-emerald-300">
-                      {simSuccessMsg}
-                    </div>
-                  )}
-                </div>
-
-                <div className="flex justify-end gap-3 pt-3">
-                  <button
-                    type="button"
-                    onClick={() => setSimModalOpen(false)}
-                    className="rounded-xl border border-[var(--panel-border)] px-4 py-2 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"
-                  >
-                    Fermer
-                  </button>
-                  <button
-                    type="button"
-                    disabled={simRunning}
-                    onClick={handleExecuteSimulation}
-                    className="rounded-xl border border-amber-500/40 bg-gradient-to-r from-amber-500 to-yellow-500 px-5 py-2 text-xs font-black text-stone-950 shadow-md hover:from-amber-400 hover:to-yellow-400 transition-all cursor-pointer disabled:opacity-50"
-                  >
-                    {simRunning ? "Simulation..." : "Exécuter la Simulation"}
-                  </button>
-                </div>
-              </motion.div>
-            </div>
-          )}
-        </AnimatePresence>
       </div>
     </div>
   );

@@ -33,16 +33,6 @@ export interface GameRecord {
   timestamp: string;
 }
 
-export interface ActiveQuest {
-  id: string;
-  title: string;
-  description: string;
-  gameType: GameType;
-  requiredCount: number;
-  rewardCredits: number;
-  rewardXp: number;
-}
-
 export interface GamesOverview {
   enabled: boolean;
   jackpotPool: number;

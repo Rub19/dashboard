@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
-import { Client } from 'discord.js';
-import { gamesStorage, DEFAULT_QUESTS } from '../../modules/games/storage/gamesStorage.js';
-import { gamesService } from '../../modules/games/services/gamesService.js';
+import type { Client } from 'discord.js';
+import { gamesStorage } from '../../modules/games/storage/gamesStorage.js';
+import { actBlackjack, playDice, playRoulette, startBlackjack } from '../../modules/games/services/webCasino.js';
 import { economyStorage } from '../../modules/economy/storage/economyStorage.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 
@@ -52,134 +52,49 @@ export function createGamesRoutes(client: Client): Router {
     res.json({ history });
   });
 
-  // Quêtes actives
-  router.get('/quests', (_req: Request, res: Response): void => {
-    res.json({ quests: DEFAULT_QUESTS });
-  });
-
   // Alimenter la cagnotte du jackpot (Admin)
   router.post('/jackpot/seed', (req: Request, res: Response): void => {
     const guildId = String(req.params.guildId);
-    const amount = Number(req.body?.amount) || 1000;
+    const amount = Number(req.body?.amount);
+    if (!Number.isInteger(amount) || amount < 1 || amount > 1_000_000) {
+      res.status(400).json({ error: 'invalid_amount', message: 'Montant invalide (entre 1 et 1 000 000).' });
+      return;
+    }
     const updated = gamesStorage.addToJackpot(guildId, amount);
 
     emitConfigUpdated('games', guildId, { action: 'jackpot_updated', jackpotPool: updated }, 'DASHBOARD', req.user?.id);
     res.json({ success: true, jackpotPool: updated });
   });
 
-  // Simulation d'une partie démo pour le Dashboard
-  router.post('/simulate', (req: Request, res: Response): void => {
-    const guildId = String(req.params.guildId);
-    const { gameType = 'blackjack', bet = 100 } = req.body || {};
-
-    const won = Math.random() > 0.48;
-    const payout = won ? (gameType === 'blackjack' ? Math.round(bet * 2) : Math.round(bet * 2)) : 0;
-
-    const record = gamesStorage.recordGame(guildId, {
-      guildId,
-      userId: req.user?.id || 'demo_user',
-      username: (req.user as any)?.username || 'Joueur Démo',
-      gameType,
-      bet,
-      payout,
-      net: payout - bet,
-      won,
-      detail: `Simulation Dashboard (${gameType.toUpperCase()})`,
-    });
-
-    res.json({ success: true, record, newJackpot: gamesStorage.getJackpot(guildId) });
+  // Parties jouées depuis le dashboard : le bot décide du résultat, le navigateur n'envoie que la mise et le choix.
+  const player = (req: Request) => ({
+    guildId: String(req.params.guildId),
+    userId: req.user!.id,
+    username: req.user!.globalName || req.user!.username,
   });
-
-  // Jouer une partie réelle (liée au portefeuille Ethone Coin) depuis le Dashboard
-  router.post('/play', (req: Request, res: Response): void => {
-    const guildId = String(req.params.guildId);
-    const { gameType = 'blackjack', bet = 50, won = false, payout = 0, detail = '', mode = 'real' } = req.body || {};
-    const userId = req.user?.id || req.body?.userId;
-    const username = (req.user as any)?.username || req.body?.username || 'Joueur';
-
-    const ecoConfig = economyStorage.getConfig(guildId);
-    const currencyName = ecoConfig.currencyName || 'Ethone Coins';
-    const currencySymbol = ecoConfig.currencySymbol || '🪙';
-
-    // En mode réel, on valide le solde et effectue les transactions monétaires réelles
-    if (mode === 'real' && userId) {
-      const currentBalance = gamesService.getBalance(guildId, userId, username);
-
-      if (bet > 0 && currentBalance < bet) {
-        res.status(400).json({
-          error: 'insufficient_funds',
-          message: `Solde insuffisant en ${currencyName} (${currentBalance.toLocaleString('fr-FR')} ${currencySymbol} disponible, ${bet.toLocaleString('fr-FR')} ${currencySymbol} requis).`,
-          balance: currentBalance,
-        });
-        return;
-      }
-
-      // Déduction de la mise
-      if (bet > 0) {
-        gamesService.deductBalance(guildId, userId, username, bet, `[Ethone Casino Web] ${gameType.toUpperCase()}: Mise`);
-        // Contribution au jackpot
-        const config = gamesStorage.getConfig(guildId);
-        const contrib = Math.max(1, Math.round((bet * (config.jackpotContributionPercent || 2)) / 100));
-        gamesStorage.addToJackpot(guildId, contrib);
-      }
-
-      // Crédit du gain si victoire
-      const finalPayout = Number(payout) || 0;
-      if (won && finalPayout > 0) {
-        gamesService.addBalance(guildId, userId, username, finalPayout, `[Ethone Casino Web] ${gameType.toUpperCase()}: ${detail || 'Gain'}`);
-      }
-
-      const newBalance = gamesService.getBalance(guildId, userId, username);
-
-      const record = gamesStorage.recordGame(guildId, {
-        guildId,
-        userId,
-        username,
-        gameType,
-        bet,
-        payout: finalPayout,
-        net: finalPayout - bet,
-        won: Boolean(won),
-        detail: detail || `${gameType.toUpperCase()} sur Dashboard Web`,
-      });
-
-      emitConfigUpdated('games', guildId, { action: 'game_played', record, jackpotPool: gamesStorage.getJackpot(guildId) }, 'DASHBOARD', userId);
-      emitConfigUpdated('economy', guildId, { action: 'balance_updated', userId, newBalance }, 'DASHBOARD', userId);
-
-      res.json({
-        success: true,
-        won: Boolean(won),
-        payout: finalPayout,
-        net: finalPayout - bet,
-        newBalance,
-        jackpotPool: gamesStorage.getJackpot(guildId),
-        record,
-      });
+  const send = (res: Response, result: object): void => {
+    const r = result as { error?: string; message?: string; httpStatus?: number };
+    if (r.error) {
+      res.status(r.httpStatus || 400).json({ error: r.error, message: r.message });
       return;
     }
+    res.json({ success: true, ...result });
+  };
 
-    // Mode Démo
-    const finalPayout = Number(payout) || 0;
-    const record = gamesStorage.recordGame(guildId, {
-      guildId,
-      userId: userId || 'demo_guest',
-      username: username || 'Joueur Démo',
-      gameType,
-      bet,
-      payout: finalPayout,
-      net: finalPayout - bet,
-      won: Boolean(won),
-      detail: detail || `Démo ${gameType.toUpperCase()}`,
-    });
+  router.post('/roulette', (req: Request, res: Response): void => {
+    send(res, playRoulette(player(req), req.body?.bet, req.body?.choice));
+  });
 
-    res.json({
-      success: true,
-      won: Boolean(won),
-      payout: finalPayout,
-      net: finalPayout - bet,
-      jackpotPool: gamesStorage.getJackpot(guildId),
-      record,
-    });
+  router.post('/dice', (req: Request, res: Response): void => {
+    send(res, playDice(player(req), req.body?.bet));
+  });
+
+  router.post('/blackjack/start', (req: Request, res: Response): void => {
+    send(res, startBlackjack(player(req), req.body?.bet));
+  });
+
+  router.post('/blackjack/:gameId/action', (req: Request, res: Response): void => {
+    send(res, actBlackjack(player(req), String(req.params.gameId), req.body?.action));
   });
 
   return router;

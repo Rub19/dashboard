@@ -90,7 +90,7 @@ export class StreamerService {
             isLive: Boolean(live && live.is_live),
             streamId: live?.id ? String(live.id) : undefined,
             title: live?.session_title || `${cleanUser} en direct sur Kick`,
-            game: live?.categories?.[0]?.name || 'Just Chatting',
+            game: live?.categories?.[0]?.name || '',
             viewers: live?.viewer_count || 0,
             thumbnailUrl: live?.thumbnail?.url || data?.user?.profile_pic,
             avatarUrl: data?.user?.profile_pic,
@@ -142,7 +142,7 @@ export class StreamerService {
             displayName: cleanUser,
             isLive,
             title: title || `${cleanUser} est en direct sur Twitch !`,
-            game: game || 'Just Chatting',
+            game: game.trim(),
             viewers,
             thumbnailUrl: `https://static-cdn.jtvnw.net/previews-ttv/live_user_${cleanUser}-1280x720.jpg?v=${Date.now()}`,
             streamUrl: `https://twitch.tv/${cleanUser}`,
@@ -394,7 +394,7 @@ export class StreamerService {
         .replace(/{streamer}/g, live.displayName)
         .replace(/{platform}/g, PLATFORM_NAMES[streamer.platform])
         .replace(/{title}/g, live.title || 'Live en cours')
-        .replace(/{game}/g, live.game || 'En direct')
+        .replace(/{game}/g, live.game || '')
         .replace(/{url}/g, live.streamUrl);
 
       const onlineEmoji = getAppEmoji('etho_a_online') || '🔴';
@@ -422,8 +422,8 @@ export class StreamerService {
 
       // Description conditionnelle
       let desc = `**${live.title || 'Diffusion en direct'}**\n\n`;
-      if (config.showGame !== false) {
-        desc += `🎮 **Catégorie :** \`${live.game || 'Général'}\`\n`;
+      if (config.showGame !== false && live.game) {
+        desc += `🎮 **Catégorie :** \`${live.game}\`\n`;
       }
       if (config.showViewers !== false && live.viewers !== undefined) {
         desc += `👥 **Spectateurs :** \`${live.viewers.toLocaleString('fr-FR')}\`\n`;

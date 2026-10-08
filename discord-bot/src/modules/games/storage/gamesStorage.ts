@@ -1,39 +1,9 @@
 import fs from 'fs';
 import path from 'path';
-import { GamesConfig, GamesConfigSchema, GameRecord, GamesOverview, ActiveQuest } from '../types/games.js';
+import { GamesConfig, GamesConfigSchema, GameRecord, GamesOverview } from '../types/games.js';
 import { logger } from '../../../utils/logger.js';
 
 const MAX_HISTORY_PER_GUILD = 200;
-
-export const DEFAULT_QUESTS: ActiveQuest[] = [
-  {
-    id: 'quest_bj_21',
-    title: 'Maître du 21',
-    description: 'Remporter 3 mains de Blackjack contre le croupier',
-    gameType: 'blackjack',
-    requiredCount: 3,
-    rewardCredits: 500,
-    rewardXp: 150,
-  },
-  {
-    id: 'quest_roulette_colors',
-    title: 'Flambeur de la Roulette',
-    description: 'Placer 5 mises gagnantes à la Roulette Royale',
-    gameType: 'roulette',
-    requiredCount: 5,
-    rewardCredits: 750,
-    rewardXp: 200,
-  },
-  {
-    id: 'quest_dice_champion',
-    title: 'Champion des Dés',
-    description: 'Remporter 2 duels de dés PvP contre un membre',
-    gameType: 'dice',
-    requiredCount: 2,
-    rewardCredits: 1000,
-    rewardXp: 300,
-  },
-];
 
 class GamesStorage {
   private configPath = path.resolve(process.cwd(), 'data', 'games_configs.json');

@@ -46736,5 +46736,82 @@ CHANGELOG_BY_LANG.en.unshift(v12874_en);
 CHANGELOG_BY_LANG.es.unshift(v12874_es);
 CHANGELOG_BY_LANG.de.unshift(v12874_de);
 
+const v1_55_68_fr: ChangelogEntry = {
+  version: "v1.55.68",
+  date: "2026-10-08",
+  title: "Console Discord : plus aucune donnée inventée, Casino calculé par le bot, vrai scan de sécurité",
+  items: [
+    "Casino : les cagnottes, parties, joueurs (« Alex_HighRoller », « ShadowKnight »…) et le solde de 2 500 inventés sont retirés ; sans le bot, la page affiche des zéros.",
+    "Casino : c'est désormais le bot qui tire les cartes, la bille et les dés et qui calcule le gain ; le site n'envoie que la mise et le choix (avant, il pouvait annoncer lui-même une victoire et créditer des pièces).",
+    "Casino : mode démo, simulateur de parties et quêtes jamais suivies par le bot supprimés ; toutes les requêtes envoient enfin la session (elles étaient refusées).",
+    "Scan de sécurité réel : le bot vérifie ses permissions et sa place dans les rôles, les permissions dangereuses de @everyone, les rôles administrateurs, les salons modifiables par tous, les réglages de sécurité Discord, les bots administrateurs et les modules de protection. Le score est calculé, plus de 96/100 écrit en dur.",
+    "Vue d'ensemble : l'interrupteur Mode raid active vraiment le mode raid du bot (avec confirmation) au lieu de changer un réglage local ; le compteur affiche les modules réellement actifs sur le vrai total.",
+    "Configuration assistée : la liste affiche exactement ce qui est envoyé au bot, plus de faux salons ni de « 24 protections » ; les seuils anti-raid existants sont conservés et une erreur du bot n'est plus annoncée comme un succès.",
+    "Liste des serveurs : « 1 protection active » inventé remplacé par « Etho installé ».",
+    "Alertes streamers : plus de catégorie « Just Chatting » ou « Général » inventée quand le jeu est inconnu.",
+    "Message d'arrivée du bot refait en carte Discord (état, permissions, important, commandes, salon système, langue) et visible uniquement par la personne qui a ajouté le bot, dans un salon privé (sinon en message privé).",
+    "Espaces partagés : les règles d'accès de la base bouclaient sur elles-mêmes (erreur de récursion) ; corrigées sans changer les droits.",
+  ],
+};
+
+const v1_55_68_en: ChangelogEntry = {
+  version: "v1.55.68",
+  date: "2026-10-08",
+  title: "Discord console: no more made-up data, bot-side casino, real security scan",
+  items: [
+    "Casino: invented jackpots, games, players and the fake 2,500 balance are gone; without the bot the page shows zeros.",
+    "Casino: the bot now deals the cards, spins the wheel and rolls the dice and computes the payout; the site only sends the bet and the choice.",
+    "Casino: demo mode, game simulator and untracked quests removed; requests now send the session.",
+    "Real security scan: bot permissions and role position, dangerous @everyone permissions, admin roles, channels anyone can edit, Discord security settings, admin bots and protection modules. The score is computed.",
+    "Overview: the Raid mode switch really toggles the bot's raid mode (with confirmation); the counter shows modules actually enabled.",
+    "Assisted setup: the list shows exactly what is sent to the bot, no fake channels or counts; existing anti-raid thresholds are kept and bot errors are reported.",
+    "Server list: the invented \"1 active protection\" is replaced by \"Etho installed\".",
+    "Streamer alerts: no more invented \"Just Chatting\" category.",
+    "Bot join message rebuilt as a Discord card, visible only to the person who added the bot (private channel, or DM).",
+    "Shared spaces: database access rules were recursive; fixed without changing permissions.",
+  ],
+};
+
+const v1_55_68_es: ChangelogEntry = {
+  version: "v1.55.68",
+  date: "2026-10-08",
+  title: "Consola Discord: sin datos inventados, casino calculado por el bot, escaneo de seguridad real",
+  items: [
+    "Casino: botes, partidas, jugadores y saldo de 2.500 inventados eliminados; sin el bot la página muestra ceros.",
+    "Casino: el bot reparte las cartas, gira la ruleta, tira los dados y calcula la ganancia; el sitio solo envía la apuesta y la elección.",
+    "Casino: modo demo, simulador y misiones sin seguimiento eliminados; las peticiones envían la sesión.",
+    "Escaneo de seguridad real: permisos y posición del bot, permisos peligrosos de @everyone, roles de administrador, canales editables por todos, ajustes de seguridad de Discord, bots administradores y módulos de protección.",
+    "Vista general: el interruptor Modo raid activa de verdad el modo raid del bot (con confirmación); el contador muestra los módulos realmente activos.",
+    "Configuración asistida: la lista muestra exactamente lo que se envía al bot, sin canales ni cifras falsas.",
+    "Lista de servidores: «1 protección activa» inventado sustituido por «Etho instalado».",
+    "Alertas de streamers: ya no se inventa la categoría «Just Chatting».",
+    "Mensaje de llegada del bot rehecho como tarjeta de Discord, visible solo para quien añadió el bot.",
+    "Espacios compartidos: reglas de acceso recursivas corregidas sin cambiar permisos.",
+  ],
+};
+
+const v1_55_68_de: ChangelogEntry = {
+  version: "v1.55.68",
+  date: "2026-10-08",
+  title: "Discord-Konsole: keine erfundenen Daten, Casino vom Bot berechnet, echter Sicherheitsscan",
+  items: [
+    "Casino: erfundene Jackpots, Spiele, Spieler und das 2.500-Guthaben entfernt; ohne Bot zeigt die Seite Nullen.",
+    "Casino: der Bot teilt Karten aus, dreht das Roulette, würfelt und berechnet den Gewinn; die Seite sendet nur Einsatz und Wahl.",
+    "Casino: Demo-Modus, Simulator und nicht verfolgte Quests entfernt; Anfragen senden jetzt die Sitzung.",
+    "Echter Sicherheitsscan: Bot-Rechte und Rollenposition, gefährliche @everyone-Rechte, Admin-Rollen, von allen bearbeitbare Kanäle, Discord-Sicherheitseinstellungen, Admin-Bots und Schutzmodule.",
+    "Übersicht: der Raid-Modus-Schalter schaltet den Raid-Modus des Bots wirklich (mit Bestätigung); der Zähler zeigt tatsächlich aktive Module.",
+    "Assistierte Einrichtung: die Liste zeigt genau, was an den Bot gesendet wird, ohne falsche Kanäle oder Zahlen.",
+    "Serverliste: erfundenes „1 aktiver Schutz“ durch „Etho installiert“ ersetzt.",
+    "Streamer-Alarme: keine erfundene Kategorie „Just Chatting“ mehr.",
+    "Beitrittsnachricht des Bots als Discord-Karte neu gestaltet, nur für die Person sichtbar, die den Bot hinzugefügt hat.",
+    "Geteilte Bereiche: rekursive Zugriffsregeln korrigiert, ohne Rechte zu ändern.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_68_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_68_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_68_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_68_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

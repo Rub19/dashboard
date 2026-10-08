@@ -1,5 +1,190 @@
 [
   {
+    "version": "v1.55.68",
+    "date": "2026-10-08",
+    "title": "Console Discord : plus aucune donnée inventée, Casino calculé par le bot, vrai scan de sécurité",
+    "items": [
+      "Casino : les cagnottes, parties, joueurs (« Alex_HighRoller », « ShadowKnight »…) et le solde de 2 500 inventés sont retirés ; sans le bot, la page affiche des zéros.",
+      "Casino : c'est désormais le bot qui tire les cartes, la bille et les dés et qui calcule le gain ; le site n'envoie que la mise et le choix (avant, il pouvait annoncer lui-même une victoire et créditer des pièces).",
+      "Casino : mode démo, simulateur de parties et quêtes jamais suivies par le bot supprimés ; toutes les requêtes envoient enfin la session (elles étaient refusées).",
+      "Scan de sécurité réel : le bot vérifie ses permissions et sa place dans les rôles, les permissions dangereuses de @everyone, les rôles administrateurs, les salons modifiables par tous, les réglages de sécurité Discord, les bots administrateurs et les modules de protection. Le score est calculé, plus de 96/100 écrit en dur.",
+      "Vue d'ensemble : l'interrupteur Mode raid active vraiment le mode raid du bot (avec confirmation) au lieu de changer un réglage local ; le compteur affiche les modules réellement actifs sur le vrai total.",
+      "Configuration assistée : la liste affiche exactement ce qui est envoyé au bot, plus de faux salons ni de « 24 protections » ; les seuils anti-raid existants sont conservés et une erreur du bot n'est plus annoncée comme un succès.",
+      "Liste des serveurs : « 1 protection active » inventé remplacé par « Etho installé ».",
+      "Alertes streamers : plus de catégorie « Just Chatting » ou « Général » inventée quand le jeu est inconnu.",
+      "Message d'arrivée du bot refait en carte Discord (état, permissions, important, commandes, salon système, langue) et visible uniquement par la personne qui a ajouté le bot, dans un salon privé (sinon en message privé).",
+      "Espaces partagés : les règles d'accès de la base bouclaient sur elles-mêmes (erreur de récursion) ; corrigées sans changer les droits."
+    ]
+  },
+  {
+    "version": "v1.55.67",
+    "date": "2026-10-08",
+    "title": "Ajustement du score circulaire et élimination des placeholders",
+    "items": [
+      "Pastille circulaire de score redimensionnée avec marges confortables pour éliminer tout chevauchement du ratio /100",
+      "Suppression complète des placeholders textuels et des canaux mockés dans le sélecteur",
+      "Détection dynamique des salons Discord réels et sélection automatique du premier salon",
+      "Affichage affiné du nombre de membres sans valeur factice"
+    ]
+  },
+  {
+    "version": "v1.55.66",
+    "date": "2026-10-08",
+    "title": "Sélecteur de salon Discord immersif et accueil de bot interactif",
+    "items": [
+      "Sélecteur de salon enrichi avec recherche instantanée, groupement par catégories et filtrage ID",
+      "Design fidèle avec badge hashtag, états de sélection personnalisés et fermeture fluide",
+      "Service d'accueil à l'arrivée du bot avec mention de l'inviteur, diagnostic des 11 permissions clés, salon système et langue",
+      "Boutons d'accès direct vers le serveur Support et le Dashboard serveur"
+    ]
+  },
+  {
+    "version": "v1.55.65",
+    "date": "2026-10-08",
+    "title": "Nouveau Module : Scan de Sécurité Discord Interactif",
+    "items": [
+      "Nouvel écran complet de scan de sécurité accessible depuis la barre latérale et la vue d'ensemble du serveur",
+      "Rapport détaillé avec score global sur 100, jauge visuelle et répartition par catégorie (Keeper, Rôles, Salons, Discord, Bots, Réglages)",
+      "Filtres interactifs par catégorie, détection des vulnérabilités anti-nuke et 2FA, avec raccourcis de configuration directe",
+      "Scan automatique programmable avec choix de salon cible et fréquence quotidienne ou hebdomadaire",
+      "Section accordéon des points solides et conformités sécuritaires vérifiées sur le serveur"
+    ]
+  },
+  {
+    "version": "v1.55.64",
+    "date": "2026-10-07",
+    "title": "Bouton Thème Intuitif & Support Multilingue Discord (FR, EN, ES, DE)",
+    "items": [
+      "Bouton de thème repensé avec icône intuitive (Lune en mode sombre, Soleil en mode clair) et adaptation des contrastes",
+      "Élimination des classes sombres codées en dur pour un mode clair éclatant sur l'ensemble du hub Discord et l'assistant",
+      "Sélecteur de langue avec menu déroulant élégant supportant 4 langues : Français, Anglais, Espagnol et Allemand",
+      "Traductions complètes et dynamiques du hub Discord dans les 4 langues (navigation, vue d'ensemble, configurateur et installation)"
+    ]
+  },
+  {
+    "version": "v1.55.63",
+    "date": "2026-10-07",
+    "title": "Configurateur Rapide — Bannière & Assistant 4 Étapes",
+    "items": [
+      "Bannière « Configure Etho en une minute » intégrée sur la vue d'ensemble du serveur",
+      "Assistant en 4 étapes : type de serveur (communauté, amis, vocaux), sévérité, salon d'alertes et récapitulatif",
+      "Application et activation réelles des protections et modules selon le type de serveur",
+      "Affichage dynamique du nombre de protections actives sur la vue d'ensemble"
+    ]
+  },
+  {
+    "version": "v1.55.62",
+    "date": "2026-10-07",
+    "title": "Sélecteur de Serveurs — Style Épuré pour les Serveurs Protégés",
+    "items": [
+      "Refonte de la liste des serveurs protégés façon Keeper Protect avec carte cliquable intégrale",
+      "Affichage du badge couronne propriétaire et du statut actif avec indicateur dynamique",
+      "Remplacement du bouton d'action par un chevron de navigation fluide sur les serveurs installés",
+      "Ajout du badge de synchronisation automatique dans l'en-tête de sélection"
+    ]
+  },
+  {
+    "version": "v1.55.61",
+    "date": "2026-10-07",
+    "title": "Épuration de la Console Discord — Retrait des Placeholders et du Bouton Premium",
+    "items": [
+      "Retrait du bouton Premium dans la barre latérale de la console Discord",
+      "Nettoyage complet des placeholders fictifs : suppression de la bannière promo et des alertes statiques",
+      "Dynamisation de la couverture avec compteurs réels calculés en direct sur les modules activés",
+      "Synchronisation des réglages du mode raid et du préfixe réel du serveur dans le tableau de bord"
+    ]
+  },
+  {
+    "version": "v1.55.60",
+    "date": "2026-10-07",
+    "title": "Refonte de la Vue d'Ensemble Serveur — Style Keeper Protect",
+    "items": [
+      "Tableau de bord de vue d'ensemble avec métriques en direct, 8 catégories de couverture et alertes de sécurité",
+      "Barre latérale unifiée avec état du serveur, switch raid, scan en temps réel et navigation avancée",
+      "En-tête épuré avec fil d'ariane et indicateur de synchronisation automatique en temps réel",
+      "Actions rapides pour activer l'anti-nuke, inspecter les rôles et configurer les salons de logs"
+    ]
+  },
+  {
+    "version": "v1.55.59",
+    "date": "2026-10-07",
+    "title": "Motion Design Fluide de la Console Discord et Synchronisation Avatar Bot",
+    "items": [
+      "Animations fluides et transitions cinétiques sur la page de sélection des serveurs et d'installation",
+      "Synchronisation automatique de l'avatar Discord en direct depuis la session bot authentifiée",
+      "Micro-interactions par ressort dynamique sur les boutons d'action (Gérer, Installer, Vérifier)",
+      "Indicateur d'étapes interactif avec validation visuelle dynamique lors de l'ajout du bot"
+    ]
+  },
+  {
+    "version": "v1.55.58",
+    "date": "2026-10-07",
+    "title": "Pleine Hauteur et Épuration de la Vue d'Installation Bot",
+    "items": [
+      "Suppression du bouton de recherche de réglage sur la page d'installation du bot",
+      "Extension de la barre latérale jusqu'au bas de l'écran avec verrouillage plein écran 100dvh",
+      "Suppression du décrochage en bas à gauche de la console d'installation",
+      "Stabilisation de la transition et de la hauteur des conteneurs parents"
+    ]
+  },
+  {
+    "version": "v1.55.57",
+    "date": "2026-10-07",
+    "title": "Résolution Optimale de l'Avatar Discord avec Multi-Candidats",
+    "items": [
+      "Priorisation de l'avatar haute résolution 256px sur l'avatar compact 64px pour éviter les erreurs CDN Discord",
+      "Mécanisme multi-candidats avec basculement automatique sur l'URL de secours",
+      "Affichage immédiat et stable de la photo de profil Discord dans la console",
+      "Garantie de continuité visuelle sans disparition du badge utilisateur"
+    ]
+  },
+  {
+    "version": "v1.55.56",
+    "date": "2026-10-07",
+    "title": "Barre Latérale Pleine Hauteur : Affichage Continu Jusqu'au Bas de l'Écran",
+    "items": [
+      "Suppression du décrochage de 64px (4rem) sous la barre latérale sur l'ensemble des vues de la console",
+      "Extension pleine hauteur de l'aside de 0 à 100% de la fenêtre d'affichage (distance au bas nulle)",
+      "Conteneur de défilement indépendant pour la grille de serveurs garantissant la fixité de la barre latérale",
+      "Rendu robuste de l'avatar Discord avec pastille d'initiales en solution de repli immédiate"
+    ]
+  },
+  {
+    "version": "v1.55.55",
+    "date": "2026-10-07",
+    "title": "Photo de Profil Discord : Affichage Prioritaire dans la Barre Inférieure",
+    "items": [
+      "Priorité donnée à la photo de profil Discord réelle de l'utilisateur dans la barre latérale inférieure",
+      "Récupération automatique du profil Discord OAuth et du cache local synchronisé",
+      "Affichage cohérent sur le tableau de bord Etho, la page d'installation et le sélecteur de serveurs",
+      "Repli gracieux vers la photo de profil Ethone uniquement si le compte Discord n'est pas lié"
+    ]
+  },
+  {
+    "version": "v1.55.54",
+    "date": "2026-10-07",
+    "title": "Barre Latérale Inférieure Fidèle : Contrôles Thème, Langue & Déconnexion",
+    "items": [
+      "Barre latérale inférieure redessinée selon la référence visuelle sans conteneur superflu",
+      "Bouton interactif de bascule de thème clair et sombre synchronisé avec les réglages",
+      "Bouton de sélection de langue rapide avec drapeau interactif (FR / EN)",
+      "Bouton de déconnexion fonctionnel avec redirection sécurisée vers la page de connexion",
+      "Alignement parfait entre le sélecteur de serveurs, l'onboarding et le tableau de bord de configuration"
+    ]
+  },
+  {
+    "version": "v1.55.51",
+    "date": "2026-10-07",
+    "title": "Design System Épuré Etho, Blocs Rectangulaires & Parité Thème",
+    "items": [
+      "Interface d'onboarding et de sélection de serveurs harmonisée aux tokens de thème dynamique ETHONE",
+      "Remplacement des arrondis par des blocs rectangulaires et carrés nets sans fioritures",
+      "Affichage de la photo de profil du compte ETHONE dans la barre latérale",
+      "Bouton fixe Retour à ETHONE en bas à droite pour une navigation fluide",
+      "Nettoyage des mentions superflues et intégration du bouton Passer l'attente"
+    ]
+  },
+  {
     "version": "v1.55.50",
     "date": "2026-10-07",
     "title": "Console Discord : Écran d'Installation Bot Style Keeper Protect & Auto-Détection",
@@ -489,70 +674,6 @@
       "Ajout de la route PATCH /api/guilds/:guildId/server/emojis/:emojiId pour renommer les émojis sur Discord.",
       "Bouton de renommage (crayon) et édition en ligne (avec validation Entrée/Échap ou clic) sur toutes les cartes d'émojis du serveur.",
       "Synchronisation immédiate du cache local et activation de l'intent Discord GuildExpressions."
-    ]
-  },
-  {
-    "version": "v1.55.6",
-    "date": "2026-10-04",
-    "title": "Bot Discord : détection publique de la présence sur les serveurs",
-    "items": [
-      "Correction de l'endpoint /api/guild-presence : accessible publiquement sans exiger de cookie de session Discord séparé sur bot.ethone.dev.",
-      "Les serveurs où le bot est installé affichent désormais correctement 'Bot présent' et sont regroupés en tête de liste dans tout le dashboard."
-    ]
-  },
-  {
-    "version": "v1.55.5",
-    "date": "2026-10-04",
-    "title": "Module Accueil : interrupteur carte animée (GIF)",
-    "items": [
-      "Ajout de l'interrupteur 'Carte animée (GIF)' dans le designer de cartes de bienvenue et départ.",
-      "Badge indicateur de format GIF dans l'aperçu réel généré par le bot."
-    ]
-  },
-  {
-    "version": "v1.55.4",
-    "date": "2026-10-04",
-    "title": "Correction de la connexion OAuth GitHub",
-    "items": [
-      "Rétablissement du Client ID GitHub officiel Ov23li7gnklQJ7ipkgZG.",
-      "Acceptation du paramètre redirectUri lors de l'échange de token sur le Worker Cloudflare."
-    ]
-  },
-  {
-    "version": "v1.55.3",
-    "date": "2026-10-04",
-    "title": "Connexion GitHub officielle et gestion des erreurs OAuth",
-    "items": [
-      "Connexion GitHub : alignement du Client ID officiel avec l'application Ethone Login pour permettre la synchronisation du compte.",
-      "Authentification OAuth : affichage explicite du détail d'erreur (error_description) lors d'un échec de redirection."
-    ]
-  },
-  {
-    "version": "v1.55.2",
-    "date": "2026-10-04",
-    "title": "Réglages : liens directs vers chaque section",
-    "items": [
-      "Les adresses de section des Réglages (Thèmes, Apparence, Sécurité…) ouvrent enfin la bonne section au lieu de Général, y compris depuis la palette de commandes et le clic droit des thèmes."
-    ]
-  },
-  {
-    "version": "v1.55.1",
-    "date": "2026-10-04",
-    "title": "Thèmes : clic droit et thèmes personnalisés",
-    "items": [
-      "Menu Thèmes de la barre du haut : clic droit sur un thème pour l'appliquer, changer sa police, créer un thème à partir de lui ou supprimer un thème perso.",
-      "Vos thèmes personnalisés apparaissent dans ce menu, avec une tuile « Nouveau thème » qui ouvre le créateur."
-    ]
-  },
-  {
-    "version": "v1.55.0",
-    "date": "2026-10-04",
-    "title": "Bot animé et module Émojis",
-    "items": [
-      "Bot : les ✅ ❌ ⚠️ ℹ️ ⏳ ✨ de ses réponses et de ses boutons deviennent des émojis animés ; logo animé dans /help.",
-      "Bot : les cartes de bienvenue et de départ par défaut sont animées (lueurs, particules, halo autour de l'avatar).",
-      "Nouveau module Émojis du serveur : glissez vos images ou GIF, prévisualisez-les comme dans Discord et ajoutez-les au serveur en un clic ; quotas, recherche, copie du code et suppression.",
-      "Brain écrit maintenant les statistiques en toutes lettres (éliminations, morts, assistances)."
     ]
   }
 ]

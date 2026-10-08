@@ -38,7 +38,7 @@ export const setupCommand: Command = {
 
     if (viewChoice === 'welcome' || viewChoice === 'join') {
       const payload = guildJoinService.buildJoinMessage(ctx.guild, ctx.author.id);
-      await ctx.reply(payload as any);
+      await ctx.reply({ ...payload, ephemeral: true } as any);
       return;
     }
 

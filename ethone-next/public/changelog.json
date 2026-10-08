@@ -1,5 +1,16 @@
 [
   {
+    "version": "v1.55.77",
+    "date": "2026-10-08",
+    "title": "Console Discord : pages Réglages et Accès façon Keeper, droits comme Keeper",
+    "items": [
+      "Accès : le propriétaire du serveur et les owners Etho qu'il ajoute peuvent tout régler ; les admins Discord passent en lecture seule (voir l'état et les logs). Seul le propriétaire ajoute ou retire des owners. Le tableau « Qui peut faire quoi » reflète exactement ce que le bot applique.",
+      "Page Accès : liste des owners avec avatar et badge, « Ajouter un owner » avec recherche de membre ou identifiant collé.",
+      "Page Réglages : préfixe, salon système, « Prévenir le propriétaire en MP » (lors d'un raid ou d'un nuke, au plus un message toutes les 10 min) et mode raid.",
+      "Ces pages s'ouvrent dans la console, avec la même barre latérale."
+    ]
+  },
+  {
     "version": "v1.55.76",
     "date": "2026-10-08",
     "title": "Console Discord : sélecteur de salon façon Keeper, nouvel anneau de score, configuration assistée à la mise en page de Keeper, Pilotage Etho en haut",
@@ -662,20 +673,6 @@
       "Résolution d'avatars : AvatarView résout automatiquement les chemins relatifs de la bibliothèque (/avatars/...) vers le domaine officiel.",
       "Discord iOS : renommage d'émojis du serveur directement depuis l'application avec saisie textuelle native (PATCH /emojis/{id}).",
       "Worker API : support unifié des avatars de bibliothèque, du statut de présence et des métadonnées de profil dans /api/profile."
-    ]
-  },
-  {
-    "version": "v1.55.15",
-    "date": "2026-10-05",
-    "title": "Refonte intégrale de Mission Control en Motion Design",
-    "items": [
-      "Refonte complète de l'interface Mission Control avec animations Framer Motion haute fluidité (ressorts physiques, halo ambiant dynamique)",
-      "Nouveau sélecteur d'espaces virtuel interactif avec indicateur d'état actif lumineux et micro-interactions",
-      "Cartes de workflows connectées avec badges d'étapes et flèches de progression animées",
-      "Grille Exposé des fenêtres ouvertes avec barre de titre fenêtrée macOS, traffic lights et boutons d'action rapide",
-      "État vide interactif avec icône flottante en lévitation et lanceurs instantanés pour les applications courantes",
-      "Barre de recherche Spotlight unifiée avec onglets de filtrage par catégorie (Tout, Fenêtres, Espaces, Workflows, Apps) sur layout animé",
-      "Colonne latérale avec connecteurs live temps réel, pulsations lumineuses et liste des dashboards réactive"
     ]
   }
 ]

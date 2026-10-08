@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
@@ -9,11 +9,10 @@ import {
   FileText,
 } from "@/components/icons/ph";
 import { cn } from "@/lib/utils";
-import { useToast } from "@/components/ToastProvider";
 import { useMotionPref } from "@/lib/hooks/useMotionPref";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { SPRING_PRESS } from "@/lib/ease";
-import { confirmDialog } from "@/lib/confirmDialog";
+import { useRaidMode } from "@/lib/hooks/useRaidMode";
 import { SEVERITY_COLOR, SEVERITY_LABEL, failingChecks, fetchLastScan, scoreColor, sinceLabel, type ScanCheck, type ScanResult } from "@/lib/discord/security-scan";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
@@ -127,26 +126,9 @@ export default function GuildOverviewScreen({
 }: GuildOverviewScreenProps) {
   const router = useRouter();
   const i18n = useI18n();
-  const { success, info, error: showError } = useToast();
   const { reduced } = useMotionPref();
 
-  const [raidMode, setRaidMode] = useState<boolean | null>(null);
-  const [raidBusy, setRaidBusy] = useState(false);
-
-  useEffect(() => {
-    if (!BOT_API_URL) return;
-    let cancelled = false;
-    fetch(`${BOT_API_URL}/api/guilds/${guild.id}/anti-raid/status`, { credentials: "include" })
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => {
-        if (!cancelled && typeof d?.metrics?.raidModeActive === "boolean") setRaidMode(d.metrics.raidModeActive);
-      })
-      .catch(() => {});
-    return () => {
-      cancelled = true;
-    };
-  }, [guild.id]);
-
+  const { active: raidMode, busy: raidBusy, toggle: handleToggleRaid } = useRaidMode(guild.id);
   const isRaidModeActive = raidMode === true;
 
   const [lastScan, setLastScan] = useState<ScanResult | null>(null);
@@ -187,36 +169,6 @@ export default function GuildOverviewScreen({
   ];
   const openScan = () => (onOpenScan ? onOpenScan() : router.push(`/discord?guildId=${guild.id}&view=scan`));
 
-  const handleToggleRaid = useCallback(async () => {
-    if (raidBusy || raidMode === null || !BOT_API_URL) return;
-    const next = !raidMode;
-    if (
-      next &&
-      !(await confirmDialog(
-        "Activer le mode raid ? Etho bloque les arrivées suspectes et peut verrouiller les salons prévus dans la configuration anti-raid."
-      ))
-    ) {
-      return;
-    }
-    setRaidBusy(true);
-    try {
-      const res = await fetch(`${BOT_API_URL}/api/guilds/${guild.id}/anti-raid/raid-mode`, {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ active: next }),
-      });
-      const data = await res.json().catch(() => null);
-      if (!res.ok || typeof data?.raidModeActive !== "boolean") throw new Error(data?.error || `Erreur ${res.status}`);
-      setRaidMode(data.raidModeActive);
-      if (data.raidModeActive) success("Mode raid activé", "Etho bloque les arrivées suspectes.");
-      else info("Mode raid désactivé", "Le serveur fonctionne normalement.");
-    } catch (err) {
-      showError("Mode raid", err instanceof Error ? err.message : "Bot injoignable");
-    } finally {
-      setRaidBusy(false);
-    }
-  }, [guild.id, raidBusy, raidMode, success, info, showError]);
 
   const categories = useMemo(
     () =>

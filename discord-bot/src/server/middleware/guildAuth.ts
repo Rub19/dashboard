@@ -2,6 +2,26 @@ import { NextFunction, Request, Response } from 'express';
 import { Client, Guild, PermissionsBitField } from 'discord.js';
 import { config } from '../../config.js';
 import { firstString } from '../utils/params.js';
+import { guildConfigService } from '../../services/guildConfigService.js';
+
+/**
+ * Accès à la console d'un serveur (comme Keeper) :
+ *  - propriétaire du serveur : tout, y compris gérer les owners Etho ;
+ *  - owner Etho (ajouté par le propriétaire) : tout régler ;
+ *  - admin Discord (Administrateur ou Gérer le serveur) : voir l'état et les logs seulement.
+ */
+export type GuildAccessLevel = 'owner' | 'etho_owner' | 'admin';
+
+/** Actions permises aux admins malgré la lecture seule (jouer au casino du serveur depuis le dashboard). */
+const ADMIN_WRITE_ALLOWED = [/\/games\/(roulette|dice|blackjack)(\/|$)/];
+
+function readOnlyBlocked(req: Request, level: GuildAccessLevel): boolean {
+  if (level !== 'admin') return false;
+  if (req.method === 'GET' || req.method === 'HEAD' || req.method === 'OPTIONS') return false;
+  return !ADMIN_WRITE_ALLOWED.some((re) => re.test(req.originalUrl));
+}
+
+const READ_ONLY_ERROR = 'Lecture seule : seuls le propriétaire du serveur et les owners Etho peuvent modifier les réglages.';
 
 export interface CachedUserGuilds {
   timestamp: number;
@@ -64,6 +84,7 @@ export function createGuildAuthMiddleware(
         res.status(404).json({ error: 'Le bot ETHONE n\'est pas installé sur ce serveur Discord.' });
         return;
       }
+      req.guildAccess = 'owner';
       next();
       return;
     }
@@ -97,13 +118,20 @@ export function createGuildAuthMiddleware(
       const isAdmin = (perms & PermissionsBitField.Flags.Administrator) === PermissionsBitField.Flags.Administrator;
       const isManager = (perms & PermissionsBitField.Flags.ManageGuild) === PermissionsBitField.Flags.ManageGuild;
 
-      if (!targetGuild.owner && !isAdmin && !isManager) {
+      const isEthoOwner = (guildConfigService.getConfig(guildId).ethoOwners ?? []).includes(req.user.id);
+      if (!targetGuild.owner && !isEthoOwner && !isAdmin && !isManager) {
         res.status(403).json({
-          error: 'Permissions insuffisantes. Vous devez posséder la permission "Gérer le serveur" ou être Administrateur.',
+          error: 'Permissions insuffisantes. Il faut être propriétaire, owner Etho, administrateur ou avoir « Gérer le serveur ».',
         });
         return;
       }
 
+      const level: GuildAccessLevel = targetGuild.owner ? 'owner' : isEthoOwner ? 'etho_owner' : 'admin';
+      if (readOnlyBlocked(req, level)) {
+        res.status(403).json({ error: READ_ONLY_ERROR, code: 'READ_ONLY' });
+        return;
+      }
+      req.guildAccess = level;
       next();
     } catch (err) {
       res.status(500).json({ error: 'Erreur lors de la vérification des permissions Discord.' });

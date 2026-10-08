@@ -47225,5 +47225,58 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_76_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_76_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_76_de);
 
+const v1_55_77_fr: ChangelogEntry = {
+  version: "v1.55.77",
+  date: "2026-10-08",
+  title: "Console Discord : pages Réglages et Accès façon Keeper, droits comme Keeper",
+  items: [
+    "Accès : le propriétaire du serveur et les owners Etho qu'il ajoute peuvent tout régler ; les admins Discord passent en lecture seule (voir l'état et les logs). Seul le propriétaire ajoute ou retire des owners. Le tableau « Qui peut faire quoi » reflète exactement ce que le bot applique.",
+    "Page Accès : liste des owners avec avatar et badge, « Ajouter un owner » avec recherche de membre ou identifiant collé.",
+    "Page Réglages : préfixe, salon système, « Prévenir le propriétaire en MP » (lors d'un raid ou d'un nuke, au plus un message toutes les 10 min) et mode raid.",
+    "Ces pages s'ouvrent dans la console, avec la même barre latérale.",
+  ],
+};
+
+const v1_55_77_en: ChangelogEntry = {
+  version: "v1.55.77",
+  date: "2026-10-08",
+  title: "Discord console: Keeper-style Settings and Access pages and permissions",
+  items: [
+    "Access: the server owner and the Etho owners they add can change everything; Discord admins become read-only. Only the owner manages owners.",
+    "Access page: owner list and member search to add an owner.",
+    "Settings page: prefix, system channel, owner DM on raid or nuke, raid mode.",
+    "These pages open inside the console.",
+  ],
+};
+
+const v1_55_77_es: ChangelogEntry = {
+  version: "v1.55.77",
+  date: "2026-10-08",
+  title: "Consola Discord: páginas Ajustes y Acceso estilo Keeper",
+  items: [
+    "Acceso: el propietario y los owners de Etho que añade pueden cambiarlo todo; los admins de Discord pasan a solo lectura.",
+    "Página Acceso: lista de owners y búsqueda de miembros.",
+    "Página Ajustes: prefijo, canal del sistema, MD al propietario en raid o nuke, modo raid.",
+    "Estas páginas se abren dentro de la consola.",
+  ],
+};
+
+const v1_55_77_de: ChangelogEntry = {
+  version: "v1.55.77",
+  date: "2026-10-08",
+  title: "Discord-Konsole: Seiten Einstellungen und Zugriff im Keeper-Stil",
+  items: [
+    "Zugriff: der Besitzer und die von ihm hinzugefügten Etho-Owner dürfen alles ändern; Discord-Admins haben nur Lesezugriff.",
+    "Zugriffsseite: Owner-Liste und Mitgliedersuche.",
+    "Einstellungsseite: Präfix, Systemkanal, DM an den Besitzer bei Raid oder Nuke, Raid-Modus.",
+    "Diese Seiten öffnen sich in der Konsole.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_77_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_77_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_77_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_77_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

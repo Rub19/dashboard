@@ -77,6 +77,10 @@ export const GuildConfigSchema = z.object({
   vipRoles: z.array(z.string()).default([]),
   activePreset: z.string().default('PRESET_BALANCED'),
   systemChannelId: z.string().nullable().optional(),
+  /** Owners Etho ajoutés par le propriétaire : peuvent tout régler dans la console (comme les « owners Keeper »). */
+  ethoOwners: z.array(z.string()).default([]),
+  /** Prévenir le propriétaire du serveur en MP lors d'une alerte grave (raid, nuke). */
+  ownerDmAlerts: z.boolean().default(false),
 });
 
 export type GuildConfig = z.infer<typeof GuildConfigSchema>;
@@ -127,6 +131,8 @@ export const defaultGuildConfig: Omit<GuildConfig, 'guildId'> = {
   modRoles: [],
   vipRoles: [],
   activePreset: 'PRESET_BALANCED',
+  ethoOwners: [],
+  ownerDmAlerts: false,
 };
 
 /**

@@ -68,7 +68,9 @@ import { useModuleStatus } from "@/lib/hooks/useModuleStatus";
 import ServerPicker from "@/components/discord/ServerPicker";
 import BotInstallView from "@/components/discord/BotInstallView";
 import ModuleNavigator, { type NavigatorCategory, type NavigatorModule } from "@/components/discord/ModuleNavigator";
-import HubSidebar, { type HubView } from "@/components/discord/HubSidebar";
+import HubSidebar, { type ConsoleView, type HubView } from "@/components/discord/HubSidebar";
+import ConsoleSettings from "@/components/discord/console/ConsoleSettings";
+import ConsoleAccess from "@/components/discord/console/ConsoleAccess";
 import GuildOverviewScreen from "@/components/discord/GuildOverviewScreen";
 import GuildAssistedSetup from "@/components/discord/GuildAssistedSetup";
 import GuildSecurityScan from "@/components/discord/GuildSecurityScan";
@@ -588,6 +590,7 @@ export default function DiscordDashboardPage() {
   const [showAllModules, setShowAllModules] = useState(false);
   const [showSetup, setShowSetup] = useState(false);
   const [showScan, setShowScan] = useState(false);
+  const [consoleView, setConsoleView] = useState<ConsoleView | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const { reduced: motionReduced } = useMotionPref();
   const contentRef = useRef<HTMLDivElement | null>(null);
@@ -682,6 +685,8 @@ export default function DiscordDashboardPage() {
     (id: string) => {
       setMenuOpen(false);
       setShowScan(false);
+      setConsoleView(null);
+    setConsoleView(null);
       if (INLINE_MODULE_IDS.has(id)) {
         setActiveModule(id as ModuleType);
       } else {
@@ -695,6 +700,7 @@ export default function DiscordDashboardPage() {
     setShowAllModules(false);
     setShowSetup(false);
     setShowScan(false);
+    setConsoleView(null);
     setMenuOpen(false);
   }, []);
   const goAllModules = useCallback(() => {
@@ -702,6 +708,7 @@ export default function DiscordDashboardPage() {
     setShowAllModules(true);
     setShowSetup(false);
     setShowScan(false);
+    setConsoleView(null);
     setMenuOpen(false);
   }, []);
   const goSetup = useCallback(() => {
@@ -709,6 +716,15 @@ export default function DiscordDashboardPage() {
     setShowAllModules(false);
     setShowSetup(true);
     setShowScan(false);
+    setConsoleView(null);
+    setMenuOpen(false);
+  }, []);
+  const openConsoleView = useCallback((v: ConsoleView) => {
+    setActiveModule(null);
+    setShowAllModules(false);
+    setShowSetup(false);
+    setShowScan(false);
+    setConsoleView(v);
     setMenuOpen(false);
   }, []);
   const goScan = useCallback(() => {
@@ -741,6 +757,8 @@ export default function DiscordDashboardPage() {
         setShowSetup(true);
       } else if (sp.get("view") === "scan" || sp.get("tab") === "scan") {
         setShowScan(true);
+      } else if (sp.get("view") === "settings" || sp.get("view") === "access") {
+        setConsoleView(sp.get("view") as ConsoleView);
       }
     } catch {}
     try {
@@ -786,6 +804,7 @@ export default function DiscordDashboardPage() {
   const changeGuild = useCallback(() => {
     setPickedId(null);
     setShowScan(false);
+    setConsoleView(null);
     setShowSetup(false);
     setShowAllModules(false);
     setActiveModule(null);
@@ -1250,7 +1269,7 @@ export default function DiscordDashboardPage() {
 
   const userName = isDiscordConnected ? profile?.user?.displayName || profile?.user?.username : undefined;
   const activeMeta = activeModule ? MODULES.find((m) => m.id === activeModule) ?? null : null;
-  const view: HubView = showScan ? "scan" : showSetup ? "setup" : activeModule ? "module" : showAllModules ? "modules" : "home";
+  const view: HubView = consoleView ?? (showScan ? "scan" : showSetup ? "setup" : activeModule ? "module" : showAllModules ? "modules" : "home");
   const inviteHref = `${BOT_INVITE_URL}&guild_id=${selectedGuild.id}`;
 
   return (
@@ -1272,6 +1291,7 @@ export default function DiscordDashboardPage() {
           onImportConfig={() => fileInputRef.current?.click()}
           onCopyGuildId={handleCopyId}
           copiedId={copiedId}
+          onOpenView={openConsoleView}
           activeModuleCount={activeModuleCount}
           totalModuleCount={totalModuleCount}
           botInviteUrl={BOT_INVITE_URL}
@@ -1308,7 +1328,11 @@ export default function DiscordDashboardPage() {
                 </button>
                 <ChevronRight className="h-3.5 w-3.5 text-[var(--text-muted)] shrink-0" />
                 <span className="font-medium text-[var(--text-primary)]">
-                  {view === "scan"
+                  {view === "settings"
+                    ? i18n("dSettings", "Réglages")
+                    : view === "access"
+                    ? i18n("dAccess", "Accès")
+                    : view === "scan"
                     ? i18n("dSecurityScan", "Scan de sécurité")
                     : view === "setup"
                     ? i18n("dAssistedSetup", "Configuration assistée")
@@ -1390,11 +1414,16 @@ export default function DiscordDashboardPage() {
                 />
               )}
 
+              {view === "settings" && <ConsoleSettings guildId={selectedGuild.id} />}
+              {view === "access" && <ConsoleAccess guildId={selectedGuild.id} />}
+
               {view === "scan" && (
                 <GuildSecurityScan
                   guild={selectedGuild}
                   onOpenProtections={() => {
                     setShowScan(false);
+      setConsoleView(null);
+    setConsoleView(null);
                     router.push(`/discord/security?guildId=${selectedGuild.id}`);
                   }}
                   onBack={goHome}

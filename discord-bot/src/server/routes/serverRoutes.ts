@@ -448,6 +448,10 @@ export function createServerRouter(client: Client): Router {
 
   // Scan de sécurité : lancé à la demande (et gardé), dernier résultat, réglages du scan automatique.
   router.get('/security-scan', async (req: Request, res: Response) => {
+    if (req.guildAccess === 'admin') {
+      res.status(403).json({ error: 'Lecture seule : seuls le propriétaire et les owners Etho peuvent lancer un scan.', code: 'READ_ONLY' });
+      return;
+    }
     try {
       const result = await runSecurityScan(client, String(req.params.guildId));
       if (!result) {

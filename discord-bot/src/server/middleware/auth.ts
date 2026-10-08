@@ -15,6 +15,8 @@ declare global {
   namespace Express {
     interface Request {
       user?: DiscordUserPayload;
+      /** Niveau d'accès au serveur demandé, posé par createGuildAuthMiddleware. */
+      guildAccess?: 'owner' | 'etho_owner' | 'admin';
     }
   }
 }

@@ -1,3 +1,4 @@
+import { notifyOwnerByDm } from '../../../services/ownerAlertService.js';
 import { Colors, Guild, TextChannel } from 'discord.js';
 import { RaidAction, ThreatLevel } from '../types/antiRaid.js';
 import { raidConfigService } from './raidConfigService.js';
@@ -72,6 +73,11 @@ class RaidAlertService {
           logger.error(`[RaidAlertService] Échec envoi alerte dans #${channel.id}:`, err);
         }
       }
+    }
+
+    // 1 bis. MP au propriétaire si l'option est activée (menace élevée et au-delà)
+    if (threatLevel === 'CRITICAL' || threatLevel === 'DANGEROUS') {
+      void notifyOwnerByDm(guild, title, `Menace **${threatLevel}** (risque ${riskScore}/100) : ${reason}`);
     }
 
     // 2. Journaliser dans le système centralisé des logs

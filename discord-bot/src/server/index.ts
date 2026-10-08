@@ -62,6 +62,7 @@ import { createServerRouter } from './routes/serverRoutes.js';
 import { createStreamerRouter } from './routes/streamerRoutes.js';
 import { streamerService } from '../modules/streamers/services/streamerService.js';
 import { createGamesRoutes } from './routes/gamesRoutes.js';
+import { createConsoleRouter } from './routes/consoleRoutes.js';
 import { autoScanScheduler } from '../modules/server/services/securityScanService.js';
 import { gamesService } from '../modules/games/services/gamesService.js';
 import { createBotControlRouter } from './routes/botControlRoutes.js';
@@ -415,6 +416,12 @@ export function startWebServer(client: Client): http.Server {
     authMiddleware,
     createGuildAuthMiddleware(client),
     createStreamerRouter(client)
+  );
+  app.use(
+    '/api/guilds/:guildId/console',
+    authMiddleware,
+    createGuildAuthMiddleware(client),
+    createConsoleRouter(client)
   );
   app.use(
     '/api/guilds/:guildId/games',

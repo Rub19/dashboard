@@ -54,7 +54,9 @@ import {
 } from "./consoleMotion";
 import type { NavigatorCategory, NavigatorModule } from "./ModuleNavigator";
 
-export type HubView = "home" | "modules" | "module" | "setup" | "scan";
+/** Pages de la console au format Keeper, affichées dans la console (même barre latérale). */
+export type ConsoleView = "settings" | "access";
+export type HubView = "home" | "modules" | "module" | "setup" | "scan" | ConsoleView;
 
 interface HubSidebarProps {
   guildName: string;
@@ -81,6 +83,8 @@ interface HubSidebarProps {
   onImportConfig?: () => void;
   onCopyGuildId?: () => void;
   copiedId?: boolean;
+  /** Ouvre une page de la console (Réglages, Accès…) sans quitter la console. */
+  onOpenView?: (view: ConsoleView) => void;
   /** Modules actifs / total sur ce serveur (lus depuis le bot par la page). */
   activeModuleCount?: number;
   totalModuleCount?: number;
@@ -147,6 +151,7 @@ export default function HubSidebar({
   onImportConfig,
   onCopyGuildId,
   copiedId = false,
+  onOpenView,
   activeModuleCount,
   totalModuleCount,
 }: HubSidebarProps) {
@@ -576,8 +581,12 @@ export default function HubSidebar({
 
               <button
                 type="button"
-                onClick={() => router.push(`/discord/server/settings?guildId=${selectedGuildId}`)}
-                className="w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors cursor-pointer text-left"
+                onClick={() => (onOpenView ? onOpenView("settings") : router.push(`/discord/server/settings?guildId=${selectedGuildId}`))}
+                aria-current={view === "settings" ? "page" : undefined}
+                className={cn(
+                  "w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-xs transition-colors cursor-pointer text-left",
+                  view === "settings" ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold" : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
+                )}
               >
                 <Settings2 className="h-3.5 w-3.5 shrink-0" />
                 <span>{i18n("dSettings", "Réglages")}</span>
@@ -585,8 +594,12 @@ export default function HubSidebar({
 
               <button
                 type="button"
-                onClick={() => router.push(`/discord/server/permissions?guildId=${selectedGuildId}`)}
-                className="w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors cursor-pointer text-left"
+                onClick={() => (onOpenView ? onOpenView("access") : router.push(`/discord/server/permissions?guildId=${selectedGuildId}`))}
+                aria-current={view === "access" ? "page" : undefined}
+                className={cn(
+                  "w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-xs transition-colors cursor-pointer text-left",
+                  view === "access" ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold" : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
+                )}
               >
                 <Key className="h-3.5 w-3.5 shrink-0" />
                 <span>{i18n("dAccess", "Accès")}</span>

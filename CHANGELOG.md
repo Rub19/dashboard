@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.77 — 2026-10-08
+
+**Console Discord : pages Réglages et Accès façon Keeper, droits comme Keeper**
+
+- Accès : le propriétaire du serveur et les owners Etho qu'il ajoute peuvent tout régler ; les admins Discord passent en lecture seule (voir l'état et les logs). Seul le propriétaire ajoute ou retire des owners. Le tableau « Qui peut faire quoi » reflète exactement ce que le bot applique.
+- Page Accès : liste des owners avec avatar et badge, « Ajouter un owner » avec recherche de membre ou identifiant collé.
+- Page Réglages : préfixe, salon système, « Prévenir le propriétaire en MP » (lors d'un raid ou d'un nuke, au plus un message toutes les 10 min) et mode raid.
+- Ces pages s'ouvrent dans la console, avec la même barre latérale.
+
 ## v1.55.76 — 2026-10-08
 
 **Console Discord : sélecteur de salon façon Keeper, nouvel anneau de score, configuration assistée à la mise en page de Keeper, Pilotage Etho en haut**

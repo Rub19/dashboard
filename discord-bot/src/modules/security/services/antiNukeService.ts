@@ -1,3 +1,4 @@
+import { notifyOwnerByDm } from '../../../services/ownerAlertService.js';
 import {
   AuditLogEvent,
   Guild,
@@ -74,6 +75,7 @@ class AntiNukeService {
     perpetrator: GuildMember,
     reason: string
   ): Promise<string> {
+    void notifyOwnerByDm(guild, `Anti-nuke : ${reason}`, `Auteur : **${perpetrator.user.tag}** (<@${perpetrator.id}>).`);
     const config = securityStorage.getConfig(guild.id);
     const action = config.antiNuke.action;
 

@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.84 — 2026-10-08
+
+**Console Discord : toutes les pages de modules dans la console**
+
+- Chaque module (Niveaux, Giveaways, Tickets, Musique…) s'ouvre maintenant dans la console, avec la barre latérale, au lieu de l'ancien écran intermédiaire.
+- Les écrans intermédiaires sont supprimés, avec leurs tuiles figées qui affichaient des chiffres inventés.
+- Dans la console, les pages de modules prennent le format en blocs de Keeper, sans le lien « Retour » ni un second sélecteur de serveur.
+- Le module Sécurité ouvre directement la page Protections, et l'en-tête de module devient une barre compacte avec l'interrupteur Activé / Désactivé.
+
 ## v1.55.83 — 2026-10-08
 
 **Soutiens : reconnaissance par statut perso**

@@ -1,5 +1,6 @@
 "use client";
 
+import { useConsoleEmbed } from "@/components/discord/console/embedContext";
 import { motion } from "framer-motion";
 
 import { confirmDialog } from "@/lib/confirmDialog";
@@ -128,10 +129,14 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
   const searchParams = useSearchParams();
   const toast = useToast();
 
-  const activeTab: BotTab = (searchParams.get("tab") as BotTab) || initialTab;
+  // Dans la console, l'onglet reste local : changer l'URL ferait quitter la console.
+  const embedded = useConsoleEmbed();
+  const [embeddedTab, setEmbeddedTab] = useState<BotTab>(initialTab);
+  const activeTab: BotTab = embedded ? embeddedTab : (searchParams.get("tab") as BotTab) || initialTab;
 
   const handleTabChange = (tab: BotTab) => {
-    router.push(`/discord/bot?tab=${tab}`);
+    if (embedded) setEmbeddedTab(tab);
+    else router.push(`/discord/bot?tab=${tab}`);
   };
 
   const activeGroupId = useMemo(

@@ -1,5 +1,6 @@
 "use client";
 
+import { useConsoleEmbed } from "@/components/discord/console/embedContext";
 import { usePathSegment } from "@/lib/hooks/usePathSegment";
 import { confirmDialog } from "@/lib/confirmDialog";
 import { useState, useEffect, useCallback, useMemo } from "react";
@@ -304,6 +305,7 @@ export default function ServerManagementClient({
   const { success, error: showError } = useToast();
 
   const [activeTab, setActiveTab] = useState<ServerTab>(initialTab);
+  const embedded = useConsoleEmbed();
   const [overview, setOverview] = useState<ServerOverviewData | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -658,7 +660,7 @@ export default function ServerManagementClient({
   // Tab change handler
   const handleTabChange = (tab: ServerTab) => {
     setActiveTab(tab);
-    window.history.replaceState(null, "", `/discord/server/${tab === "overview" ? "" : tab}?guildId=${guildId}`);
+    if (!embedded) window.history.replaceState(null, "", `/discord/server/${tab === "overview" ? "" : tab}?guildId=${guildId}`);
   };
 
   // Member action execution

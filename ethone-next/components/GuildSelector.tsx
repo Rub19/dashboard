@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { EASE_SNAP, SPRING_PILL } from "@/lib/ease";
 import { useMotionPref } from "@/lib/hooks/useMotionPref";
+import { useConsoleEmbed } from "@/components/discord/console/embedContext";
 
 export interface GuildOption {
   id: string;
@@ -59,7 +60,12 @@ function GuildIcon({ guild, size }: { guild: GuildOption; size: number }) {
  * Sélecteur de serveur moderne : icône, recherche instantanée, serveurs où le bot est présent en
  * premier avec un badge, navigation au clavier (↑ ↓ Entrée Échap). Remplace le menu natif du navigateur.
  */
-export function GuildSelector<T extends GuildOption>({ guilds, value, onChange, className }: GuildSelectorProps<T>) {
+export function GuildSelector<T extends GuildOption>(props: GuildSelectorProps<T>) {
+  // Dans la console, le serveur se change depuis la barre latérale : pas de second sélecteur dans la page.
+  return useConsoleEmbed() ? null : <GuildSelectorMenu {...props} />;
+}
+
+function GuildSelectorMenu<T extends GuildOption>({ guilds, value, onChange, className }: GuildSelectorProps<T>) {
   const botIds = useBotGuildIds(guilds);
   const { reduced } = useMotionPref();
   const [open, setOpen] = useState(false);

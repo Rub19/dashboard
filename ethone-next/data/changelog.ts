@@ -47584,5 +47584,58 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_83_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_83_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_83_de);
 
+const v1_55_84_fr: ChangelogEntry = {
+  version: "v1.55.84",
+  date: "2026-10-08",
+  title: "Console Discord : toutes les pages de modules dans la console",
+  items: [
+    "Chaque module (Niveaux, Giveaways, Tickets, Musique…) s'ouvre maintenant dans la console, avec la barre latérale, au lieu de l'ancien écran intermédiaire.",
+    "Les écrans intermédiaires sont supprimés, avec leurs tuiles figées qui affichaient des chiffres inventés.",
+    "Dans la console, les pages de modules prennent le format en blocs de Keeper, sans le lien « Retour » ni un second sélecteur de serveur.",
+    "Le module Sécurité ouvre directement la page Protections, et l'en-tête de module devient une barre compacte avec l'interrupteur Activé / Désactivé.",
+  ],
+};
+
+const v1_55_84_en: ChangelogEntry = {
+  version: "v1.55.84",
+  date: "2026-10-08",
+  title: "Discord console: every module page inside the console",
+  items: [
+    "Each module (Levels, Giveaways, Tickets, Music…) now opens inside the console, with the sidebar, instead of the old intermediate screen.",
+    "The intermediate screens are gone, along with their static tiles that showed made-up numbers.",
+    "Inside the console, module pages use Keeper's block layout, without the “Back” link or a second server picker.",
+    "The Security module opens the Protections page directly, and the module header is now a compact bar with the On / Off switch.",
+  ],
+};
+
+const v1_55_84_es: ChangelogEntry = {
+  version: "v1.55.84",
+  date: "2026-10-08",
+  title: "Consola Discord: todas las páginas de módulos dentro de la consola",
+  items: [
+    "Cada módulo (Niveles, Sorteos, Tickets, Música…) se abre ahora dentro de la consola, con la barra lateral, en lugar de la antigua pantalla intermedia.",
+    "Se eliminan las pantallas intermedias y sus mosaicos fijos que mostraban cifras inventadas.",
+    "Dentro de la consola, las páginas de módulos usan el diseño en bloques de Keeper, sin el enlace « Volver » ni un segundo selector de servidor.",
+    "El módulo Seguridad abre directamente la página Protecciones, y la cabecera del módulo pasa a ser una barra compacta con el interruptor Activado / Desactivado.",
+  ],
+};
+
+const v1_55_84_de: ChangelogEntry = {
+  version: "v1.55.84",
+  date: "2026-10-08",
+  title: "Discord-Konsole: alle Modulseiten in der Konsole",
+  items: [
+    "Jedes Modul (Level, Giveaways, Tickets, Musik…) öffnet sich jetzt in der Konsole mit Seitenleiste statt im alten Zwischenbildschirm.",
+    "Die Zwischenbildschirme sind entfernt, samt ihrer statischen Kacheln mit erfundenen Zahlen.",
+    "In der Konsole nutzen die Modulseiten das Block-Layout von Keeper, ohne „Zurück“-Link und ohne zweite Serverauswahl.",
+    "Das Sicherheitsmodul öffnet direkt die Schutz-Seite, und der Modulkopf ist jetzt eine kompakte Leiste mit dem Ein/Aus-Schalter.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_84_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_84_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_84_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_84_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

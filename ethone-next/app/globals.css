@@ -3793,3 +3793,28 @@ html[data-theme="arctic"] ::-webkit-scrollbar-thumb {
 html[data-theme="arctic"] ::-webkit-scrollbar-thumb:hover {
   background: rgba(15, 23, 42, 0.4);
 }
+
+/* Pages de modules affichées dans la console (components/discord/console/ModuleEmbed.tsx) : format Keeper.
+   Le lien « Retour » vers le hub disparaît (la barre latérale le remplace), les blocs passent en coins de 12 px et
+   en fond plein, et la page perd ses marges de pleine page. */
+.console-embed {
+  --panel-radius: 0.75rem;
+  --card-radius: 0.75rem;
+  --inset-radius: 0.5rem;
+}
+.console-embed > :first-child {
+  padding-top: 0;
+  padding-left: 0;
+  padding-right: 0;
+}
+.console-embed a[href="/discord"],
+.console-embed a[href^="/discord?"] {
+  display: none;
+}
+.console-embed .rounded-2xl,
+.console-embed .rounded-3xl {
+  border-radius: 0.75rem;
+}
+.console-embed [class*="bg-[var(--surface-raised)]/"] {
+  background-color: var(--surface-raised);
+}

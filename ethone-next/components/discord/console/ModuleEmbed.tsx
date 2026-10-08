@@ -1,0 +1,76 @@
+"use client";
+
+import { Suspense, type ComponentType } from "react";
+import dynamic from "next/dynamic";
+import ModuleSkeleton from "@/components/discord/ModuleSkeleton";
+import { EmbedContext } from "./embedContext";
+
+/**
+ * Page complète d'un module affichée dans la console (barre latérale Keeper conservée) au lieu de l'ancien écran
+ * « passerelle ». Les pages lisent le serveur dans l'URL (?guildId=) comme en pleine page ; en mode console, leur lien
+ * « Retour » et leur sélecteur de serveur sont masqués (la console a les siens) et leurs blocs prennent le style Keeper
+ * (règles `.console-embed` dans globals.css).
+ */
+
+const load = (loader: () => Promise<ComponentType | { default: ComponentType }>) =>
+  dynamic(loader, { ssr: false, loading: () => <ModuleSkeleton label="Chargement du module" /> });
+
+const PAGES: Record<string, ComponentType> = {
+  overview: load(() => import("@/app/discord/overview/OverviewClient")),
+  commands: load(() => import("@/app/discord/commands/CommandsCenterClient")),
+  suggestions: load(() => import("@/app/discord/suggestions/SuggestionsCenterClient")),
+  leveling: load(() => import("@/app/discord/leveling/LevelingCenterClient")),
+  giveaways: load(() => import("@/app/discord/giveaways/GiveawaysCenterClient")),
+  tickets: load(() => import("@/app/discord/tickets/TicketCenterClient").then((m) => m.TicketCenterClient)),
+  welcome: load(() => import("@/app/discord/welcome/WelcomeCenterClient").then((m) => m.WelcomeCenterClient)),
+  moderation: load(() => import("@/app/discord/moderation/page")),
+  logs: load(() => import("@/app/discord/logs/AuditCenterClient").then((m) => m.AuditCenterClient)),
+  music: load(() => import("@/app/discord/music/MusicCenterClient")),
+  invites: load(() => import("@/app/discord/invites/InvitesCenterClient")),
+  voice: load(() => import("@/app/discord/voice/VoiceCenterClient")),
+  backups: load(() => import("@/app/discord/backups/BackupsCenterClient")),
+  ai: load(() => import("@/app/discord/ai/AiCenterClient")),
+  forms: load(() => import("@/app/discord/forms/FormsCenterClient")),
+  polls: load(() => import("@/app/discord/polls/PollsCenterClient")),
+  roles: load(() => import("@/app/discord/roles/RolesCenterClient")),
+  analytics: load(() => import("@/app/discord/analytics/AnalyticsCenterClient")),
+  events: load(() => import("@/app/discord/events/EventsCenterClient")),
+  server: load(() => import("@/app/discord/server/ServerManagementClient")),
+  starboard: load(() => import("@/app/discord/starboard/StarboardCenterClient")),
+  sticky: load(() => import("@/app/discord/sticky/StickyCenterClient")),
+  reminders: load(() => import("@/app/discord/reminders/RemindersCenterClient")),
+  afk: load(() => import("@/app/discord/afk/AfkCenterClient")),
+  counting: load(() => import("@/app/discord/counting/CountingCenterClient")),
+  stats: load(() => import("@/app/discord/stats/StatsCenterClient")),
+  statroles: load(() => import("@/app/discord/statroles/StatrolesCenterClient")),
+  secureroles: load(() => import("@/app/discord/secure-roles/SecureRolesCenterClient")),
+  settings: load(() => import("@/app/discord/settings/SettingsCenterClient")),
+  birthdays: load(() => import("@/app/discord/birthdays/BirthdaysCenterClient")),
+  tags: load(() => import("@/app/discord/tags/TagsCenterClient")),
+  serverstats: load(() => import("@/app/discord/server-stats/ServerStatsCenterClient")),
+  automodnative: load(() => import("@/app/discord/automod-native/AutomodNativeClient")),
+  highlights: load(() => import("@/app/discord/highlights/HighlightsCenterClient")),
+  economy: load(() => import("@/app/discord/economy/EconomyCenterClient")),
+  calendar: load(() => import("@/app/discord/calendar/DiscordCalendarClient")),
+  streamers: load(() => import("@/app/discord/streamers/StreamersCenterClient")),
+  games: load(() => import("@/app/discord/games/GamesCenterClient")),
+  bot: load(() => import("@/app/discord/bot/BotControlClient").then((m) => function BotControlEmbed() {
+    return <m.default initialTab="overview" />;
+  })),
+};
+
+export const hasEmbeddedPage = (moduleId: string) => moduleId in PAGES;
+
+export default function ModuleEmbed({ moduleId }: { moduleId: string }) {
+  const Page = PAGES[moduleId];
+  if (!Page) return null;
+  return (
+    <EmbedContext.Provider value={true}>
+      <div className="console-embed">
+        <Suspense fallback={<ModuleSkeleton label="Chargement du module" />}>
+          <Page />
+        </Suspense>
+      </div>
+    </EmbedContext.Provider>
+  );
+}

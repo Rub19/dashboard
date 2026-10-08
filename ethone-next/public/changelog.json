@@ -1,5 +1,16 @@
 [
   {
+    "version": "v1.55.84",
+    "date": "2026-10-08",
+    "title": "Console Discord : toutes les pages de modules dans la console",
+    "items": [
+      "Chaque module (Niveaux, Giveaways, Tickets, Musique…) s'ouvre maintenant dans la console, avec la barre latérale, au lieu de l'ancien écran intermédiaire.",
+      "Les écrans intermédiaires sont supprimés, avec leurs tuiles figées qui affichaient des chiffres inventés.",
+      "Dans la console, les pages de modules prennent le format en blocs de Keeper, sans le lien « Retour » ni un second sélecteur de serveur.",
+      "Le module Sécurité ouvre directement la page Protections, et l'en-tête de module devient une barre compacte avec l'interrupteur Activé / Désactivé."
+    ]
+  },
+  {
     "version": "v1.55.83",
     "date": "2026-10-08",
     "title": "Soutiens : reconnaissance par statut perso",
@@ -659,17 +670,6 @@
       "Système d'embeds animés avec emojis pulsants (<a:a_online>, <a:a_sparkles>), compteurs de viewers et miniatures HD.",
       "Attribution automatique du rôle @En Live aux créateurs du serveur dès le début de leur stream, et retrait automatique à la fin.",
       "Nouvelles commandes slash Discord : /streamer add, /streamer remove, /streamer list, /streamer check et /streamer config intégrées à l'aide /help."
-    ]
-  },
-  {
-    "version": "v1.55.22",
-    "date": "2026-10-05",
-    "title": "Studio Soundscape : Défilement fluide & navigation optimisée",
-    "items": [
-      "Conteneur de défilement dédié `os-scroll` intégré au module Soundscape (/soundscape), résolvant le blocage de scroll sous le layout ETHONE OS.",
-      "Support tactile complet sur le visualiseur Canvas avec `touchAction: pan-y`, permettant un défilement vertical naturel sur mobile, trackpads et écrans tactiles.",
-      "Bouton d'indication et de saut rapide vers le mixeur et les fréquences en bas du visualiseur.",
-      "Marges de sécurité accrues (pb-44) évitant tout chevauchement avec le dock flottant en bas de page."
     ]
   }
 ]

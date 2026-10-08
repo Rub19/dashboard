@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.67 — 2026-10-08
+
+**Ajustement du score circulaire et élimination des placeholders**
+
+- Pastille circulaire de score agrandie (`h-20 w-20`) avec typographie et espacement repensés pour éliminer tout chevauchement du texte `/100` avec la bordure émeraude.
+- Suppression complète des attributs et textes de placeholder dans le champ de recherche et le bouton du sélecteur de salon.
+- Retrait des salons mockés factices (`serverminecraft`, etc.) et récupération dynamique des salons réels du serveur Discord avec sélection par défaut du premier salon.
+- Suppression de la valeur de repli factice du nombre de membres (`4 membres`).
+
 ## v1.55.66 — 2026-10-08
 
 **Sélecteur de salon Discord immersif et accueil interactif du bot à l'arrivée**

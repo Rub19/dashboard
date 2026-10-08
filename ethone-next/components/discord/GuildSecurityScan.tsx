@@ -29,12 +29,7 @@ interface ChannelItem {
   category?: string;
 }
 
-const DEFAULT_CHANNELS: ChannelItem[] = [
-  { id: "moderator-only", name: "moderator-only", category: "Sans catégorie" },
-  { id: "rules", name: "rules", category: "Sans catégorie" },
-  { id: "serverminecraft", name: "serverminecraft", category: "Sans catégorie" },
-  { id: "general", name: "general", category: "Text Channels" },
-];
+
 
 const ANTI_NUKE_MODULES = [
   "Anti-ban",
@@ -104,12 +99,10 @@ function SecurityChannelSelect({
   value,
   onChange,
   channels,
-  placeholder = "Choisir un salon",
 }: {
   value: string;
   onChange: (id: string) => void;
   channels: ChannelItem[];
-  placeholder?: string;
 }) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -156,6 +149,14 @@ function SecurityChannelSelect({
     return groups;
   }, [filteredChannels]);
 
+  const displayChannelName = selectedChannel
+    ? selectedChannel.name
+    : value
+    ? value
+    : channels[0]
+    ? channels[0].name
+    : "salon";
+
   return (
     <div ref={containerRef} className="relative w-full">
       <button
@@ -168,8 +169,8 @@ function SecurityChannelSelect({
             : "border-emerald-500/50 bg-[#0c1315] hover:border-emerald-500/80 hover:bg-[#0f171a]"
         )}
       >
-        <span className={cn("truncate font-medium", selectedChannel ? "text-zinc-200" : "text-zinc-400")}>
-          {selectedChannel ? `# ${selectedChannel.name}` : placeholder}
+        <span className="truncate font-medium text-zinc-200">
+          # {displayChannelName}
         </span>
         <svg
           className="w-3.5 h-3.5 text-zinc-400 shrink-0 ml-2"
@@ -194,15 +195,14 @@ function SecurityChannelSelect({
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Rechercher un salon ou coller un ID"
-              className="w-full bg-transparent pl-6 pr-2 py-0.5 text-xs text-white placeholder-zinc-500 outline-none"
+              className="w-full bg-transparent pl-6 pr-2 py-0.5 text-xs text-white outline-none"
             />
           </div>
 
           <div className="overflow-y-auto space-y-2 pr-1">
             {Object.keys(grouped).length === 0 ? (
               <div className="py-4 text-center text-xs text-zinc-500">
-                Aucun salon trouvé
+                {search.trim() ? "Aucun salon trouvé" : "Aucun salon disponible"}
               </div>
             ) : (
               Object.entries(grouped).map(([category, items]) => (
@@ -235,6 +235,20 @@ function SecurityChannelSelect({
                   })}
                 </div>
               ))
+            )}
+            {search.trim() && !filteredChannels.some((c) => c.id === search.trim() || c.name.toLowerCase() === search.trim().toLowerCase()) && (
+              <button
+                type="button"
+                onClick={() => {
+                  onChange(search.trim());
+                  setOpen(false);
+                  setSearch("");
+                }}
+                className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium text-emerald-400 hover:bg-emerald-500/10 cursor-pointer"
+              >
+                <Hash className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                <span className="truncate">#{search.trim()}</span>
+              </button>
             )}
           </div>
         </div>
@@ -301,7 +315,6 @@ function AutoScanCard({
           value={channel}
           onChange={onChangeChannel}
           channels={channels}
-          placeholder={i18n("dChooseChannel", "Choisir un salon")}
         />
 
         <div className="flex items-center gap-2">
@@ -346,10 +359,10 @@ export default function GuildSecurityScan({
   const [scanState, setScanState] = useState<"idle" | "scanning" | "done">("idle");
   const [activeCategory, setActiveCategory] = useState<CategoryFilter>("all");
   const [autoScanEnabled, setAutoScanEnabled] = useState(false);
-  const [autoScanChannel, setAutoScanChannel] = useState("moderator-only");
+  const [autoScanChannel, setAutoScanChannel] = useState("");
   const [autoScanFrequency, setAutoScanFrequency] = useState<"day" | "week">("week");
   const [solidPointsOpen, setSolidPointsOpen] = useState(false);
-  const [channels, setChannels] = useState(DEFAULT_CHANNELS);
+  const [channels, setChannels] = useState<ChannelItem[]>([]);
   const [scanTimeText, setScanTimeText] = useState("");
 
   useEffect(() => {
@@ -372,22 +385,64 @@ export default function GuildSecurityScan({
   useEffect(() => {
     let cancelled = false;
     const api = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
-    if (!api) return;
+    if (!api || !guild?.id) return;
 
-    fetch(`${api}/api/guilds/${guild.id}/welcome/channels`, { credentials: "include" })
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (!cancelled && data?.channels && Array.isArray(data.channels) && data.channels.length > 0) {
-          const mapped: ChannelItem[] = data.channels.map((c: any) => ({
-            id: String(c.id),
-            name: String(c.name),
-            category: c.categoryName || c.parentName || "Sans catégorie",
-          }));
-          setChannels(mapped);
-          setAutoScanChannel((prev) => (mapped.some((m) => m.id === prev) ? prev : mapped[0].id));
-        }
-      })
-      .catch(() => {});
+    const loadChannels = async () => {
+      const endpoints = [
+        `${api}/api/guilds/${guild.id}/server/channels`,
+        `${api}/api/guilds/${guild.id}/welcome/channels`,
+        `${api}/api/guilds/${guild.id}/polls/channels`,
+      ];
+
+      for (const ep of endpoints) {
+        if (cancelled) return;
+        try {
+          const res = await fetch(ep, { credentials: "include" });
+          if (!res.ok) continue;
+          const data = await res.json();
+          const list: ChannelItem[] = [];
+
+          if (data?.categories && Array.isArray(data.categories)) {
+            for (const cat of data.categories) {
+              const catName = cat?.name || "Sans catégorie";
+              for (const c of cat?.channels || []) {
+                if (c && c.id && c.name) {
+                  list.push({ id: String(c.id), name: String(c.name), category: catName });
+                }
+              }
+            }
+          }
+
+          if (data?.orphanChannels && Array.isArray(data.orphanChannels)) {
+            for (const c of data.orphanChannels) {
+              if (c && c.id && c.name) {
+                list.push({ id: String(c.id), name: String(c.name), category: "Sans catégorie" });
+              }
+            }
+          }
+
+          if (data?.channels && Array.isArray(data.channels)) {
+            for (const c of data.channels) {
+              if (c && c.id && c.name && !list.some((x) => x.id === String(c.id))) {
+                list.push({
+                  id: String(c.id),
+                  name: String(c.name),
+                  category: c.categoryName || c.parentName || "Sans catégorie",
+                });
+              }
+            }
+          }
+
+          if (list.length > 0 && !cancelled) {
+            setChannels(list);
+            setAutoScanChannel((prev) => (list.some((x) => x.id === prev) ? prev : list[0].id));
+            return;
+          }
+        } catch {}
+      }
+    };
+
+    loadChannels();
 
     return () => {
       cancelled = true;
@@ -462,7 +517,7 @@ export default function GuildSecurityScan({
   const memberCount =
     (guild as any).approximate_member_count ||
     (guild as any).memberCount ||
-    4;
+    null;
 
   const showAntiNukeIssue = activeCategory === "all" || activeCategory === "settings";
   const show2FAIssue = activeCategory === "all" || activeCategory === "discord";
@@ -604,11 +659,11 @@ export default function GuildSecurityScan({
           <div className="lg:col-span-5 space-y-6">
             <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-5 space-y-5 shadow-sm">
               <div className="flex items-center gap-4">
-                <div className="h-16 w-16 rounded-full border-2 border-emerald-500 flex flex-col items-center justify-center shrink-0">
-                  <span className="text-xl font-bold text-[var(--text-primary)] leading-none">
+                <div className="h-20 w-20 rounded-full border-2 border-emerald-500 bg-emerald-500/[0.04] flex flex-col items-center justify-center shrink-0 shadow-[0_0_15px_rgba(16,185,129,0.12)]">
+                  <span className="text-2xl font-bold text-[var(--text-primary)] leading-none tracking-tight">
                     96
                   </span>
-                  <span className="text-[10px] text-[var(--text-muted)] mt-0.5">
+                  <span className="text-[11px] font-medium text-emerald-400/80 leading-none mt-1">
                     /100
                   </span>
                 </div>
@@ -618,7 +673,8 @@ export default function GuildSecurityScan({
                     {i18n("dServerWellProtected", "Ton serveur est très bien protégé.")}
                   </h3>
                   <p className="text-[11px] text-[var(--text-muted)] mt-0.5">
-                    {scanTimeText || i18n("dScanSecondsAgo", "Il y a quelques secondes")} · {memberCount} {i18n("dMembersCount", "membres")}
+                    {scanTimeText || i18n("dScanSecondsAgo", "Il y a quelques secondes")}
+                    {memberCount ? ` · ${memberCount} ${i18n("dMembersCount", "membres")}` : ""}
                   </p>
                 </div>
               </div>

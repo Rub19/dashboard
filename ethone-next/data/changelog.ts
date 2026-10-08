@@ -46683,5 +46683,58 @@ CHANGELOG_BY_LANG.en.unshift(v12873_en);
 CHANGELOG_BY_LANG.es.unshift(v12873_es);
 CHANGELOG_BY_LANG.de.unshift(v12873_de);
 
+const v12874_fr: ChangelogEntry = {
+  version: "v1.55.67",
+  date: "2026-10-08",
+  title: "Ajustement du score circulaire et élimination des placeholders",
+  items: [
+    "Pastille circulaire de score redimensionnée avec marges confortables pour éliminer tout chevauchement du ratio /100",
+    "Suppression complète des placeholders textuels et des canaux mockés dans le sélecteur",
+    "Détection dynamique des salons Discord réels et sélection automatique du premier salon",
+    "Affichage affiné du nombre de membres sans valeur factice",
+  ],
+};
+
+const v12874_en: ChangelogEntry = {
+  version: "v1.55.67",
+  date: "2026-10-08",
+  title: "Circular score badge adjustment and placeholder elimination",
+  items: [
+    "Resized circular score badge with generous spacing eliminating any /100 ratio overlap",
+    "Complete removal of textual placeholders and mock channel data in the selector",
+    "Dynamic detection of real Discord channels and automatic selection of first channel",
+    "Refined member count display without dummy fallback values",
+  ],
+};
+
+const v12874_es: ChangelogEntry = {
+  version: "v1.55.67",
+  date: "2026-10-08",
+  title: "Ajuste de insignia de puntuación circular y eliminación de marcadores",
+  items: [
+    "Insignia de puntuación circular redimensionada con margen amplio para evitar superposiciones con /100",
+    "Eliminación total de textos de marcador de posición y canales simulados en el selector",
+    "Detección dinámica de canales reales de Discord y selección automática del primer canal",
+    "Visualización optimizada de miembros sin valores ficticios",
+  ],
+};
+
+const v12874_de: ChangelogEntry = {
+  version: "v1.55.67",
+  date: "2026-10-08",
+  title: "Kreis-Score-Badge-Korrektur und Beseitigung von Platzhaltern",
+  items: [
+    "Neu dimensioniertes kreisförmiges Punkte-Badge mit großzügigem Abstand zur Vermeidung von /100-Überlappungen",
+    "Vollständige Entfernung von Platzhaltertexten und Dummy-Kanaldaten im Selektor",
+    "Dynamische Erkennung echter Discord-Kanäle und automatische Auswahl des ersten Kanals",
+    "Präzise Mitgliederanzahl ohne fiktive Fallback-Werte",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12874_fr);
+CHANGELOG_BY_LANG.en.unshift(v12874_en);
+CHANGELOG_BY_LANG.es.unshift(v12874_es);
+CHANGELOG_BY_LANG.de.unshift(v12874_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

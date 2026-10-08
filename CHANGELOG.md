@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.73 — 2026-10-08
+
+**Console Discord : section Animation et espace Owner Etho dans la barre latérale**
+
+- Nouvelle section « Animation » dans la barre latérale du serveur, au style Keeper : Musique, Jeux et casino, Giveaways, Événements, Niveaux, Économie, Alertes streamers.
+- Section « Owner Etho », visible uniquement par le propriétaire du bot (le bot le vérifie) : état en direct (en ligne, version, uptime, ping, mémoire, incidents, relu toutes les 30 s), bouton « Redémarrer le bot » avec confirmation et attente du retour en ligne, et accès au centre de contrôle, à la présence, aux performances, aux erreurs, aux tâches planifiées, aux commandes et au bouclier owner.
+- La section Owner apparaît aussi sur la page « Mes serveurs », et la barre latérale défile quand elle dépasse la hauteur de l'écran.
+
 ## v1.55.72 — 2026-10-08
 
 **Scan : titres clairs pour les points à régler ; barre latérale Discord sans chiffres inventés**

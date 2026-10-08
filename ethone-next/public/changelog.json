@@ -1,5 +1,15 @@
 [
   {
+    "version": "v1.55.73",
+    "date": "2026-10-08",
+    "title": "Console Discord : section Animation et espace Owner Etho dans la barre latérale",
+    "items": [
+      "Nouvelle section « Animation » dans la barre latérale du serveur, au style Keeper : Musique, Jeux et casino, Giveaways, Événements, Niveaux, Économie, Alertes streamers.",
+      "Section « Owner Etho », visible uniquement par le propriétaire du bot (le bot le vérifie) : état en direct (en ligne, version, uptime, ping, mémoire, incidents, relu toutes les 30 s), bouton « Redémarrer le bot » avec confirmation et attente du retour en ligne, et accès au centre de contrôle, à la présence, aux performances, aux erreurs, aux tâches planifiées, aux commandes et au bouclier owner.",
+      "La section Owner apparaît aussi sur la page « Mes serveurs », et la barre latérale défile quand elle dépasse la hauteur de l'écran."
+    ]
+  },
+  {
     "version": "v1.55.72",
     "date": "2026-10-08",
     "title": "Scan : titres clairs pour les points à régler ; barre latérale Discord sans chiffres inventés",
@@ -664,17 +674,6 @@
       "Intégration de l'agenda du jour avec les horaires précis des événements planifiés dans le contexte en direct de l'assistant IA.",
       "Interrogation automatique des habitudes quotidiennes (table Supabase ethone_habits et complétions du jour) lorsque l'utilisateur pose une question sur ses routines, séries ou objectifs du jour.",
       "Mise à jour automatique des instructions de Brain pour citer fidèlement ces données sans aucune hallucination."
-    ]
-  },
-  {
-    "version": "v1.55.11",
-    "date": "2026-10-05",
-    "title": "Dock : refonte motion design complète Apple-grade, volets bento et fluidité extrême",
-    "items": [
-      "Centre de contrôle (DockControlCenter) : nouvelle esthétique macOS Sonoma en verre dépoli avec contrôle segmenté fluide des animations (layoutId), curseur de volume capsule interactif, interrupteurs à ressorts élastiques et cartes d'actions rapides tactiles.",
-      "Lecteur Média (DockMediaFlyout) : barres d'égaliseur audio dansantes sous l'icône du dock, halo ambiant de pochette d'album animé, commandes circulaires tactiles avec micro-rebonds et horodatages précis.",
-      "Météo et Minuteur Focus : halo atmosphérique respirant selon les conditions célestes, icône météo en lévitation, jauges bento d'humidité/vent et cartes de préréglages Focus tactiles.",
-      "Barre du Dock et Launchpad : grossissement magnétique à physique de ressorts, infobulles flottantes au survol, voyants d'activité lumineux sous les applications ouvertes et recherche instantanée dans le lanceur."
     ]
   }
 ]

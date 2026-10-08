@@ -26,8 +26,16 @@ import {
   Copy,
   Check,
   Scan,
+  Music,
+  Gamepad2,
+  Gift,
+  CalendarDays,
+  Trophy,
+  Coins,
+  Tv,
 } from "@/components/icons/ph";
 import ClientImage from "@/components/ClientImage";
+import OwnerBotSection from "./OwnerBotSection";
 import DiscordLanguageDropdown from "./DiscordLanguageDropdown";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
 import { useAuth } from "@/components/AuthProvider";
@@ -111,6 +119,16 @@ function getGuildInitials(name: string) {
   }
   return name.slice(0, 2).toUpperCase() || "SV";
 }
+
+const ANIMATION_LINKS = [
+  { path: "/discord/music", key: "dMusic", label: "Musique", icon: Music },
+  { path: "/discord/games", key: "dGames", label: "Jeux et casino", icon: Gamepad2 },
+  { path: "/discord/giveaways", key: "dGiveaways", label: "Giveaways", icon: Gift },
+  { path: "/discord/events", key: "dEvents", label: "Événements", icon: CalendarDays },
+  { path: "/discord/leveling", key: "dLeveling", label: "Niveaux", icon: Trophy },
+  { path: "/discord/economy", key: "dEconomy", label: "Économie", icon: Coins },
+  { path: "/discord/streamers", key: "dStreamers", label: "Alertes streamers", icon: Tv },
+] as const;
 
 export default function HubSidebar({
   guildName,
@@ -201,7 +219,7 @@ export default function HubSidebar({
           open ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         )}
       >
-        <div className="space-y-3 overflow-y-auto pr-0.5 [scrollbar-width:none]">
+        <div className="min-h-0 flex-1 space-y-3 overflow-y-auto pr-0.5 [scrollbar-width:none]">
           <div className="flex items-center gap-2.5 px-2 pt-1 pb-1">
             <motion.div
               variants={consoleBrandMark}
@@ -499,6 +517,25 @@ export default function HubSidebar({
 
           <div className="space-y-1 pt-2">
             <span className="block px-2 text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+              {i18n("dAnimation", "Animation")}
+            </span>
+            <div className="space-y-0.5 text-xs">
+              {ANIMATION_LINKS.map(({ path, key, label, icon: Icon }) => (
+                <button
+                  key={path}
+                  type="button"
+                  onClick={() => router.push(`${path}?guildId=${selectedGuildId}`)}
+                  className="w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors cursor-pointer text-left"
+                >
+                  <Icon className="h-3.5 w-3.5 shrink-0" />
+                  <span>{i18n(key, label)}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-1 pt-2">
+            <span className="block px-2 text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
               {i18n("dServer", "Serveur")}
             </span>
             <div className="space-y-0.5 text-xs">
@@ -539,6 +576,8 @@ export default function HubSidebar({
               </button>
             </div>
           </div>
+
+          <OwnerBotSection itemClass="w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors cursor-pointer text-left" />
         </div>
 
         {totalModuleCount ? (

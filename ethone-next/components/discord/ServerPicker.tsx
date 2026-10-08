@@ -35,6 +35,7 @@ import { EASE_SNAP, SPRING_PILL, SPRING_PRESS } from "@/lib/ease";
 import { useMotionPref } from "@/lib/hooks/useMotionPref";
 import { getStoredDiscordUser, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
 import { useBotSessionUser } from "@/lib/hooks/useBotSessionUser";
+import OwnerBotSection from "./OwnerBotSection";
 import {
   useConsoleIntro,
   consoleSidebar,
@@ -446,7 +447,7 @@ export default function ServerPicker({
         animate="animate"
         className="w-full md:w-64 shrink-0 border-b md:border-b-0 md:border-r border-[var(--panel-border)] bg-[var(--surface-raised)]/95 flex flex-col justify-between p-4 md:h-dvh md:max-h-dvh"
       >
-        <div className="space-y-4">
+        <div className="min-h-0 flex-1 space-y-4 overflow-y-auto [scrollbar-width:none]">
           <div className="flex items-center justify-between px-2 pt-1">
             <div className="flex items-center gap-2.5">
               <motion.div
@@ -517,6 +518,10 @@ export default function ServerPicker({
               <ExternalLink className="h-3.5 w-3.5 opacity-60" />
             </a>
           </motion.div>
+
+          <div className="text-xs">
+            <OwnerBotSection itemClass="w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors cursor-pointer text-left" />
+          </div>
         </div>
 
         <motion.div variants={consoleSidebarItem} className="pt-3 border-t border-[var(--panel-border)]">

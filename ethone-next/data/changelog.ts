@@ -47013,5 +47013,54 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_72_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_72_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_72_de);
 
+const v1_55_73_fr: ChangelogEntry = {
+  version: "v1.55.73",
+  date: "2026-10-08",
+  title: "Console Discord : section Animation et espace Owner Etho dans la barre latérale",
+  items: [
+    "Nouvelle section « Animation » dans la barre latérale du serveur, au style Keeper : Musique, Jeux et casino, Giveaways, Événements, Niveaux, Économie, Alertes streamers.",
+    "Section « Owner Etho », visible uniquement par le propriétaire du bot (le bot le vérifie) : état en direct (en ligne, version, uptime, ping, mémoire, incidents, relu toutes les 30 s), bouton « Redémarrer le bot » avec confirmation et attente du retour en ligne, et accès au centre de contrôle, à la présence, aux performances, aux erreurs, aux tâches planifiées, aux commandes et au bouclier owner.",
+    "La section Owner apparaît aussi sur la page « Mes serveurs », et la barre latérale défile quand elle dépasse la hauteur de l'écran.",
+  ],
+};
+
+const v1_55_73_en: ChangelogEntry = {
+  version: "v1.55.73",
+  date: "2026-10-08",
+  title: "Discord console: Engagement section and Etho owner area in the sidebar",
+  items: [
+    "New \"Engagement\" sidebar section: Music, Games & casino, Giveaways, Events, Levels, Economy, Streamer alerts.",
+    "\"Owner Etho\" section, only visible to the bot owner: live status (online, version, uptime, ping, memory, incidents), \"Restart bot\" with confirmation, and links to the control center tools.",
+    "The owner section also appears on \"My servers\", and the sidebar scrolls when it is taller than the screen.",
+  ],
+};
+
+const v1_55_73_es: ChangelogEntry = {
+  version: "v1.55.73",
+  date: "2026-10-08",
+  title: "Consola Discord: sección Animación y espacio Owner Etho",
+  items: [
+    "Nueva sección «Animación»: Música, Juegos y casino, Sorteos, Eventos, Niveles, Economía, Alertas de streamers.",
+    "Sección «Owner Etho», solo visible para el propietario del bot: estado en vivo, reinicio con confirmación y acceso a las herramientas de control.",
+    "También aparece en «Mis servidores» y la barra lateral se desplaza si es más alta que la pantalla.",
+  ],
+};
+
+const v1_55_73_de: ChangelogEntry = {
+  version: "v1.55.73",
+  date: "2026-10-08",
+  title: "Discord-Konsole: Bereich Aktivitäten und Owner-Bereich",
+  items: [
+    "Neuer Bereich „Aktivitäten“: Musik, Spiele & Casino, Gewinnspiele, Events, Level, Wirtschaft, Streamer-Alarme.",
+    "Bereich „Owner Etho“, nur für den Bot-Besitzer sichtbar: Live-Status, Neustart mit Bestätigung und Zugriff auf die Kontrollwerkzeuge.",
+    "Auch unter „Meine Server“ sichtbar; die Seitenleiste scrollt, wenn sie höher als der Bildschirm ist.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_73_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_73_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_73_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_73_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

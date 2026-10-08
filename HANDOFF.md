@@ -1,4 +1,4 @@
-# ETHONE — passation à la prochaine IA (état au 2026-10-08, version 1.55.72)
+# ETHONE — passation à la prochaine IA (état au 2026-10-08, version 1.55.73)
 
 ## Prompt à coller à la prochaine IA (version avec le lien du repo : `PROMPT-IA.md`)
 
@@ -156,6 +156,7 @@ git log --oneline -10
 - **Thèmes** : menu de la barre du haut `components/ThemePicker.tsx` (clic droit : appliquer, police, dupliquer en thème perso, supprimer) ; le studio `components/settings/ThemeStudio.tsx` lit l'intention via `lib/theme-intent.ts`.
 - Musique : Lavalink 4 en Docker sur le NAS (tunnels SSH), YouTube bloqué côté Lavalink, chemin réel yt-dlp puis SoundCloud. L'entrée pm2 `lavalink` arrêtée sur le VPS est normale.
 - **Console Discord style Keeper** (`/discord`, inspirée de https://keeper.jgl-bot.fr à la demande de l'utilisateur) : `components/discord/ServerPicker.tsx` (liste « Avec Etho / Sans Etho »), `HubSidebar.tsx`, `GuildOverviewScreen.tsx` (vue d'ensemble, mode raid réel via `POST /anti-raid/raid-mode`), `GuildSecurityScan.tsx` (scan réel : `GET /api/guilds/:id/server/security-scan`, `/security-scan/last`, `/security-scan/auto` ; logique dans `discord-bot/src/modules/server/services/securityScanService.ts`), `GuildAssistedSetup.tsx` (n'envoie que l'anti-raid messages/arrivées et le salon de logs), `BotInstallView.tsx` (détection de présence du bot). Traductions : `lib/i18n-discord.ts`.
+- **Barre latérale de la console** (`components/discord/HubSidebar.tsx`) : sections Protection, Membres, Animation, Serveur, puis « Owner Etho » (`OwnerBotSection.tsx`, affichée seulement si `GET /api/bot/overview` répond 200, c'est-à-dire pour le propriétaire du bot ; redémarrage via `POST /api/bot/restart`, pm2 relance le processus).
 - **Casino** (`/discord/games`) : le bot calcule tout (`discord-bot/src/modules/games/services/webCasino.ts`, routes `POST /games/roulette`, `/games/dice`, `/games/blackjack/start`, `/games/blackjack/:id/action`). Le site n'envoie que la mise et le choix. Les mains de blackjack en cours sont en mémoire (perdues si le bot redémarre).
 - **Message d'arrivée du bot** : `discord-bot/src/services/guildJoinService.ts`. Carte Components V2 (état, permissions, commandes, salon système, langue) postée dans un salon privé `etho-bienvenue` visible seulement par l'inviteur (repli : message privé). `/setup vue:welcome` la réaffiche en éphémère.
 

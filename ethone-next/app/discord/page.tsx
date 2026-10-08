@@ -1272,6 +1272,8 @@ export default function DiscordDashboardPage() {
           onImportConfig={() => fileInputRef.current?.click()}
           onCopyGuildId={handleCopyId}
           copiedId={copiedId}
+          activeModuleCount={activeModuleCount}
+          totalModuleCount={totalModuleCount}
           botInviteUrl={BOT_INVITE_URL}
           modules={navModules}
           categories={MODULE_CATEGORIES}

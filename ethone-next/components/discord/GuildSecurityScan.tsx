@@ -230,11 +230,16 @@ export default function GuildSecurityScan({ guild, onOpenProtections }: GuildSec
                         {c.fix && <p className="text-[11px] leading-relaxed text-[var(--text-primary)]">{c.fix}</p>}
                         {c.items && c.items.length > 0 && (
                           <div className="flex flex-wrap gap-1.5 pt-0.5">
-                            {c.items.map((it) => (
+                            {c.items.slice(0, 10).map((it) => (
                               <span key={it} className="rounded-md bg-[var(--surface-hover)] px-1.5 py-0.5 font-mono text-[10px] text-[var(--text-muted)]">
                                 {it}
                               </span>
                             ))}
+                            {c.items.length > 10 && (
+                              <span className="px-1.5 py-0.5 text-[10px] text-[var(--text-muted)]" title={c.items.slice(10).join(", ")}>
+                                +{c.items.length - 10} autres
+                              </span>
+                            )}
                           </div>
                         )}
                       </div>

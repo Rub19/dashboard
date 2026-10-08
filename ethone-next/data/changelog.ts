@@ -46964,5 +46964,54 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_71_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_71_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_71_de);
 
+const v1_55_72_fr: ChangelogEntry = {
+  version: "v1.55.72",
+  date: "2026-10-08",
+  title: "Scan : titres clairs pour les points à régler ; barre latérale Discord sans chiffres inventés",
+  items: [
+    "Scan de sécurité : un point à corriger décrit maintenant le problème (« Module Anti-raid désactivé », « La 2FA n'est pas exigée », « Aucun salon système configuré »…) au lieu de l'objectif.",
+    "Les longues listes (rôles au-dessus d'Etho…) s'arrêtent à 10 éléments avec « +N autres ».",
+    "Barre latérale de la console : « 1/30 protections », la jauge à 3 % et « 1 sans salon de log » étaient écrits en dur ; elle affiche maintenant les modules réellement actifs sur le vrai total.",
+  ],
+};
+
+const v1_55_72_en: ChangelogEntry = {
+  version: "v1.55.72",
+  date: "2026-10-08",
+  title: "Scan: clear titles for issues; Discord sidebar without made-up numbers",
+  items: [
+    "Security scan: failing checks now describe the problem instead of the goal.",
+    "Long lists stop at 10 items with \"+N more\".",
+    "Console sidebar: hardcoded \"1/30\", 3% gauge and \"1 without log channel\" replaced by the real active module count.",
+  ],
+};
+
+const v1_55_72_es: ChangelogEntry = {
+  version: "v1.55.72",
+  date: "2026-10-08",
+  title: "Escaneo: títulos claros; barra lateral de Discord sin cifras inventadas",
+  items: [
+    "Escaneo: los puntos a corregir describen el problema en lugar del objetivo.",
+    "Las listas largas se cortan en 10 elementos con «+N más».",
+    "Barra lateral: «1/30», la barra al 3 % y «1 sin canal de logs» fijos sustituidos por los módulos realmente activos.",
+  ],
+};
+
+const v1_55_72_de: ChangelogEntry = {
+  version: "v1.55.72",
+  date: "2026-10-08",
+  title: "Scan: klare Titel; Discord-Seitenleiste ohne erfundene Zahlen",
+  items: [
+    "Sicherheitsscan: fehlgeschlagene Punkte beschreiben jetzt das Problem statt des Ziels.",
+    "Lange Listen enden nach 10 Einträgen mit „+N weitere“.",
+    "Seitenleiste: fest eingetragene „1/30“, 3-%-Balken und „1 ohne Log-Kanal“ durch die echten aktiven Module ersetzt.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_72_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_72_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_72_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_72_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

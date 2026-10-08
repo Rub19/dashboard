@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.72 — 2026-10-08
+
+**Scan : titres clairs pour les points à régler ; barre latérale Discord sans chiffres inventés**
+
+- Scan de sécurité : un point à corriger décrit maintenant le problème (« Module Anti-raid désactivé », « La 2FA n'est pas exigée », « Aucun salon système configuré »…) au lieu de l'objectif.
+- Les longues listes (rôles au-dessus d'Etho…) s'arrêtent à 10 éléments avec « +N autres ».
+- Barre latérale de la console : « 1/30 protections », la jauge à 3 % et « 1 sans salon de log » étaient écrits en dur ; elle affiche maintenant les modules réellement actifs sur le vrai total.
+
 ## v1.55.71 — 2026-10-08
 
 **Scan de sécurité complet et vue d'ensemble façon Keeper : points à régler, score, rôles sensibles, scan automatique**

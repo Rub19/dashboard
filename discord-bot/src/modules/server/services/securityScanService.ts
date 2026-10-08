@@ -211,7 +211,7 @@ export async function runSecurityScan(client: Client, guildId: string): Promise<
     id: 'verification-level',
     category: 'discord',
     severity: 'suggestion',
-    title: 'Niveau de vérification au moins « Moyen »',
+    title: guild.verificationLevel >= GuildVerificationLevel.Medium ? 'Niveau de vérification au moins « Moyen »' : 'Le niveau de vérification est trop bas',
     ok: guild.verificationLevel >= GuildVerificationLevel.Medium,
     why: 'Un niveau bas laisse parler des comptes créés il y a quelques minutes.',
     fix: 'Paramètres du serveur › Sécurité › Niveau de vérification.',
@@ -220,7 +220,10 @@ export async function runSecurityScan(client: Client, guildId: string): Promise<
     id: 'explicit-filter',
     category: 'discord',
     severity: 'suggestion',
-    title: 'Filtre de contenu explicite pour tous les membres',
+    title:
+      guild.explicitContentFilter === GuildExplicitContentFilter.AllMembers
+        ? 'Filtre de contenu explicite pour tous les membres'
+        : 'Le filtre de contenu explicite ne couvre pas tous les membres',
     ok: guild.explicitContentFilter === GuildExplicitContentFilter.AllMembers,
     why: 'Discord bloque alors les images choquantes avant qu\'elles soient vues.',
     fix: 'Paramètres du serveur › Sécurité › Filtre de contenu.',
@@ -229,7 +232,7 @@ export async function runSecurityScan(client: Client, guildId: string): Promise<
     id: 'mfa',
     category: 'discord',
     severity: 'suggestion',
-    title: 'La 2FA est exigée pour modérer',
+    title: guild.mfaLevel === GuildMFALevel.Elevated ? 'La 2FA est exigée pour modérer' : 'La 2FA n\'est pas exigée pour modérer',
     ok: guild.mfaLevel === GuildMFALevel.Elevated,
     why: 'Avec la 2FA obligatoire, un compte modérateur dont le mot de passe fuite ne peut pas servir à bannir.',
     fix: 'Option réservée au propriétaire : Paramètres du serveur › Sécurité.',
@@ -238,7 +241,10 @@ export async function runSecurityScan(client: Client, guildId: string): Promise<
     id: 'notifications',
     category: 'discord',
     severity: 'suggestion',
-    title: 'Notifications par défaut : mentions uniquement',
+    title:
+      guild.defaultMessageNotifications === GuildDefaultMessageNotifications.OnlyMentions
+        ? 'Notifications par défaut : mentions uniquement'
+        : 'Les notifications par défaut sonnent pour chaque message',
     ok: guild.defaultMessageNotifications === GuildDefaultMessageNotifications.OnlyMentions,
     why: 'Sinon chaque message d\'un raid sonne chez tous les membres.',
     fix: 'Paramètres du serveur › Vue d\'ensemble › Paramètres de notification par défaut.',
@@ -250,7 +256,7 @@ export async function runSecurityScan(client: Client, guildId: string): Promise<
     id: 'system-channel',
     category: 'settings',
     severity: 'suggestion',
-    title: 'Salon système d\'Etho configuré',
+    title: systemChannelId && guild.channels.cache.has(systemChannelId) ? 'Salon système d\'Etho configuré' : 'Aucun salon système configuré',
     ok: Boolean(systemChannelId && guild.channels.cache.has(systemChannelId)),
     why: 'Etho n\'a pas d\'endroit où te prévenir d\'un souci de permissions ou d\'une alerte importante.',
     fix: 'Choisis-le dans le message d\'accueil d\'Etho ou avec /setup.',
@@ -266,7 +272,7 @@ export async function runSecurityScan(client: Client, guildId: string): Promise<
       id: `module-${id}`,
       category: 'settings',
       severity,
-      title: `Module ${label} activé`,
+      title: on ? `Module ${label} activé` : `Module ${label} désactivé`,
       ok: on,
       why: 'Ce module est désactivé : Etho ne réagit pas à ce type d\'attaque.',
       fix: 'Active-le depuis la page Protections du dashboard.',

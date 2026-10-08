@@ -38,7 +38,7 @@ import { getStoredDiscordUser, type DiscordGuild } from "@/lib/hooks/useDiscordO
 import { cn } from "@/lib/utils";
 import { useMotionPref } from "@/lib/hooks/useMotionPref";
 import { useI18n } from "@/lib/hooks/useI18n";
-import { SPRING_PRESS } from "@/lib/ease";
+import { SPRING_LAYOUT, SPRING_PRESS } from "@/lib/ease";
 import {
   consoleSidebar,
   consoleSidebarItem,
@@ -73,6 +73,9 @@ interface HubSidebarProps {
   onImportConfig?: () => void;
   onCopyGuildId?: () => void;
   copiedId?: boolean;
+  /** Modules actifs / total sur ce serveur (lus depuis le bot par la page). */
+  activeModuleCount?: number;
+  totalModuleCount?: number;
   onOpenScan?: () => void;
 }
 
@@ -126,6 +129,8 @@ export default function HubSidebar({
   onImportConfig,
   onCopyGuildId,
   copiedId = false,
+  activeModuleCount,
+  totalModuleCount,
 }: HubSidebarProps) {
   const router = useRouter();
   const i18n = useI18n();
@@ -409,7 +414,11 @@ export default function HubSidebar({
                   <ShieldAlert className="h-3.5 w-3.5 shrink-0" />
                   <span>{i18n("dProtections", "Protections")}</span>
                 </div>
-                <span className="font-mono text-[10px] text-[var(--text-muted)]">1/30</span>
+                {totalModuleCount ? (
+                  <span className="font-mono text-[10px] text-[var(--text-muted)]">
+                    {activeModuleCount ?? 0}/{totalModuleCount}
+                  </span>
+                ) : null}
               </button>
 
               <button
@@ -532,19 +541,24 @@ export default function HubSidebar({
           </div>
         </div>
 
-        <div className="px-2 pt-2 pb-1 space-y-1.5 text-xs text-[var(--text-muted)] shrink-0">
-          <div className="flex items-center justify-between text-[11px]">
-            <span>{i18n("dActiveProtections", "Protections actives")}</span>
-            <span className="font-mono text-[10px] text-[var(--text-primary)]">1/30</span>
+        {totalModuleCount ? (
+          <div className="px-2 pt-2 pb-1 space-y-1.5 text-xs text-[var(--text-muted)] shrink-0">
+            <div className="flex items-center justify-between text-[11px]">
+              <span>{i18n("dActiveModules", "Modules actifs")}</span>
+              <span className="font-mono text-[10px] text-[var(--text-primary)]">
+                {activeModuleCount ?? 0}/{totalModuleCount}
+              </span>
+            </div>
+            <div className="h-1 w-full rounded-full bg-[var(--panel-border)] overflow-hidden">
+              <motion.div
+                className="h-full rounded-full bg-[var(--success)]"
+                initial={false}
+                animate={{ width: `${Math.round(((activeModuleCount ?? 0) / totalModuleCount) * 100)}%` }}
+                transition={SPRING_LAYOUT}
+              />
+            </div>
           </div>
-          <div className="h-1 w-full rounded-full bg-[var(--panel-border)] overflow-hidden">
-            <div className="h-full bg-emerald-500 rounded-full" style={{ width: "3.3%" }} />
-          </div>
-          <div className="flex items-center gap-1.5 text-[10px] text-amber-400">
-            <span className="h-1.5 w-1.5 rounded-full bg-amber-400 shrink-0" />
-            <span>{i18n("dMissingLogChannel", "1 sans salon de log")}</span>
-          </div>
-        </div>
+        ) : null}
 
         <div className="space-y-4 pt-3 border-t border-[var(--panel-border)] shrink-0">
           <motion.div variants={consoleSidebarItem} className="space-y-0.5 text-xs">

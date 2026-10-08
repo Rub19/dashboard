@@ -12,7 +12,7 @@ import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { logStorage } from '../../modules/logs/storage/logStorage.js';
 import { logger } from '../../utils/logger.js';
 import { handleRouteError } from '../utils/routeError.js';
-import { runSecurityScan, securityScanStore } from '../../modules/server/services/securityScanService.js';
+import { protectionLogCoverage, runSecurityScan, securityScanStore } from '../../modules/server/services/securityScanService.js';
 
 export function createServerRouter(client: Client): Router {
   const router = Router({ mergeParams: true });
@@ -457,6 +457,16 @@ export function createServerRouter(client: Client): Router {
     } catch (err: any) {
       handleRouteError(err, res, 'Erreur scan de sécurité');
     }
+  });
+
+  // Protections actives dont les alertes n'arrivent dans aucun salon (calcul en direct, pour la vue d'ensemble).
+  router.get('/log-coverage', (req: Request, res: Response) => {
+    const guild = client.guilds.cache.get(String(req.params.guildId));
+    if (!guild) {
+      res.status(404).json({ error: 'Serveur introuvable pour le bot.' });
+      return;
+    }
+    res.json(protectionLogCoverage(guild));
   });
 
   router.get('/security-scan/last', (req: Request, res: Response) => {

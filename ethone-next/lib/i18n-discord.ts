@@ -1,5 +1,6 @@
 export const DISCORD_I18N: Record<string, Record<string, string>> = {
   fr: {
+    dPickChannel: "Choisir un salon",
     dAnimation: "ANIMATION",
     dMusic: "Musique",
     dGames: "Jeux et casino",
@@ -152,6 +153,7 @@ export const DISCORD_I18N: Record<string, Record<string, string>> = {
     dMissingLogChannel: "1 sans salon de log"
   },
   en: {
+    dPickChannel: "Pick a channel",
     dAnimation: "ENGAGEMENT",
     dMusic: "Music",
     dGames: "Games & casino",
@@ -304,6 +306,7 @@ export const DISCORD_I18N: Record<string, Record<string, string>> = {
     dMissingLogChannel: "1 without log channel"
   },
   es: {
+    dPickChannel: "Elegir un canal",
     dAnimation: "ANIMACIÓN",
     dMusic: "Música",
     dGames: "Juegos y casino",
@@ -456,6 +459,7 @@ export const DISCORD_I18N: Record<string, Record<string, string>> = {
     dMissingLogChannel: "1 sin canal de logs"
   },
   de: {
+    dPickChannel: "Kanal wählen",
     dAnimation: "AKTIVITÄTEN",
     dMusic: "Musik",
     dGames: "Spiele & Casino",

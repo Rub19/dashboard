@@ -161,6 +161,26 @@ export class DiscordLogService {
     }
   }
 
+  /**
+   * Où arriverait une alerte grave de ce module (même routage que les vrais envois). null = nulle part :
+   * module Logs coupé, aucun salon choisi, salon supprimé ou catégorie mise sur « off ».
+   */
+  public static destinationFor(guild: Guild, module: AuditModule): GuildBasedChannel | null {
+    const config = auditRepository.getConfig(guild.id);
+    if (!config.enabled || !isModuleEnabled(guild.id, 'logs')) return null;
+    const probe: AuditEvent = {
+      id: 'AUD-PROBE',
+      guildId: guild.id,
+      module,
+      type: 'PROBE',
+      severity: 'CRITICAL',
+      actor: { id: 'system', tag: 'Système' },
+      reason: '',
+      timestamp: new Date().toISOString(),
+    };
+    return this.resolveChannel(guild, probe, config);
+  }
+
   private static resolveChannel(guild: Guild, event: AuditEvent, config: AuditSettings, force = false): GuildBasedChannel | null {
     const routing = config.routing;
     let channelId: string | null | undefined = null;

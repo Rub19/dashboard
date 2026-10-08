@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -161,6 +161,21 @@ export default function HubSidebar({
   const [serverMenuOpen, setServerMenuOpen] = useState(false);
 
   const { isDark, toggle: toggleTheme } = useDayNightToggle();
+
+  // Protections actives dont les alertes n'arrivent dans aucun salon (calcul du bot).
+  const [logGap, setLogGap] = useState<string[]>([]);
+  useEffect(() => {
+    const api = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
+    if (!api || !selectedGuildId) return;
+    let cancelled = false;
+    fetch(`${api}/api/guilds/${selectedGuildId}/server/log-coverage`, { credentials: "include" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => !cancelled && setLogGap(Array.isArray(d?.withoutChannel) ? d.withoutChannel : []))
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedGuildId]);
 
 
   const handleLogout = useCallback(async () => {
@@ -596,6 +611,17 @@ export default function HubSidebar({
                 transition={SPRING_LAYOUT}
               />
             </div>
+            {logGap.length > 0 && (
+              <button
+                type="button"
+                onClick={() => router.push(`/discord/logs?guildId=${selectedGuildId}&tab=routing`)}
+                title={logGap.join(", ")}
+                className="flex items-center gap-1.5 text-[10px] text-[var(--warning)] hover:underline"
+              >
+                <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--warning)]" />
+                {logGap.length} sans salon de log
+              </button>
+            )}
           </div>
         ) : null}
 

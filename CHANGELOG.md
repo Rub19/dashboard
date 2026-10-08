@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.74 — 2026-10-08
+
+**Vue d'ensemble : protections actives sans salon de log, comme sur Keeper**
+
+- Le bot calcule en direct quelles protections actives (anti-raid, anti-nuke, AutoMod) n'ont aucun salon où envoyer leurs alertes : module Logs coupé, aucun salon choisi pour la modération ni salon général, salon supprimé ou catégorie sur « off ».
+- Vue d'ensemble : le point « N protections actives sans salon de log » apparaît dans « À régler » avec un bouton « Choisir un salon » qui ouvre directement le routage de la page Logs.
+- Barre latérale : la ligne « N sans salon de log » revient, cette fois calculée par le bot (cliquable).
+- Le scan de sécurité contrôle aussi ce point.
+
 ## v1.55.73 — 2026-10-08
 
 **Console Discord : section Animation et espace Owner Etho dans la barre latérale**

@@ -14,7 +14,7 @@ import { useMotionPref } from "@/lib/hooks/useMotionPref";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { SPRING_PRESS } from "@/lib/ease";
 import { confirmDialog } from "@/lib/confirmDialog";
-import { SEVERITY_COLOR, SEVERITY_LABEL, failingChecks, fetchLastScan, scoreColor, sinceLabel, type ScanResult } from "@/lib/discord/security-scan";
+import { SEVERITY_COLOR, SEVERITY_LABEL, failingChecks, fetchLastScan, scoreColor, sinceLabel, type ScanCheck, type ScanResult } from "@/lib/discord/security-scan";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 import {
@@ -150,6 +150,7 @@ export default function GuildOverviewScreen({
   const isRaidModeActive = raidMode === true;
 
   const [lastScan, setLastScan] = useState<ScanResult | null>(null);
+  const [logGap, setLogGap] = useState<string[]>([]);
   const [activity, setActivity] = useState<Array<{ id: string; title: string; createdAt: string; color?: string }> | null>(null);
   useEffect(() => {
     let cancelled = false;
@@ -161,12 +162,29 @@ export default function GuildOverviewScreen({
         .then((r) => (r.ok ? r.json() : null))
         .then((d) => !cancelled && setActivity(Array.isArray(d?.logs) ? d.logs.slice(0, 5) : null))
         .catch(() => {});
+      fetch(`${BOT_API_URL}/api/guilds/${guild.id}/server/log-coverage`, { credentials: "include" })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => !cancelled && setLogGap(Array.isArray(d?.withoutChannel) ? d.withoutChannel : []))
+        .catch(() => {});
     }
     return () => {
       cancelled = true;
     };
   }, [guild.id]);
-  const toFix = failingChecks(lastScan).filter((c) => c.severity !== "suggestion");
+  const toFix: Array<{ id: string; title: string; fix?: string; severity: ScanCheck["severity"]; action?: { label: string; href: string } }> = [
+    ...failingChecks(lastScan).filter((c) => c.severity !== "suggestion" && c.id !== "protections-log-channel"),
+    ...(logGap.length
+      ? [
+          {
+            id: "protections-log-channel",
+            severity: "review" as const,
+            title: `${logGap.length} protection${logGap.length > 1 ? "s actives" : " active"} sans salon de log`,
+            fix: `Elles agissent, mais personne n'est prévenu sur Discord (${logGap.join(", ")}).`,
+            action: { label: i18n("dPickChannel", "Choisir un salon"), href: `/discord/logs?guildId=${guild.id}&tab=routing` },
+          },
+        ]
+      : []),
+  ];
   const openScan = () => (onOpenScan ? onOpenScan() : router.push(`/discord?guildId=${guild.id}&view=scan`));
 
   const handleToggleRaid = useCallback(async () => {
@@ -223,7 +241,7 @@ export default function GuildOverviewScreen({
     );
 
   const subtitleText = `${activeCount} ${i18n("dModulesActiveOf", "modules actifs sur")} ${totalCount}.${
-    lastScan ? ` ${toFix.length ? `${toFix.length} point${toFix.length > 1 ? "s" : ""} à régler.` : "Rien d'urgent à régler."}` : ""
+    lastScan || toFix.length ? ` ${toFix.length ? `${toFix.length} point${toFix.length > 1 ? "s" : ""} à régler.` : "Rien d'urgent à régler."}` : ""
   }`;
 
   return (
@@ -277,10 +295,10 @@ export default function GuildOverviewScreen({
                 </div>
                 <button
                   type="button"
-                  onClick={openScan}
+                  onClick={() => (c.action ? router.push(c.action.href) : openScan())}
                   className="shrink-0 self-start rounded-lg border border-[var(--panel-border)] px-3 py-1.5 text-xs font-semibold text-[var(--text-primary)] transition-[background-color,transform] duration-150 hover:bg-[var(--surface-hover)] active:scale-[0.97] sm:self-auto"
                 >
-                  {i18n("dSeeDetails", "Voir le détail")}
+                  {c.action ? c.action.label : i18n("dSeeDetails", "Voir le détail")}
                 </button>
               </li>
             ))}

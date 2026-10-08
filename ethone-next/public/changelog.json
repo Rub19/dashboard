@@ -1,5 +1,16 @@
 [
   {
+    "version": "v1.55.74",
+    "date": "2026-10-08",
+    "title": "Vue d'ensemble : protections actives sans salon de log, comme sur Keeper",
+    "items": [
+      "Le bot calcule en direct quelles protections actives (anti-raid, anti-nuke, AutoMod) n'ont aucun salon où envoyer leurs alertes : module Logs coupé, aucun salon choisi pour la modération ni salon général, salon supprimé ou catégorie sur « off ».",
+      "Vue d'ensemble : le point « N protections actives sans salon de log » apparaît dans « À régler » avec un bouton « Choisir un salon » qui ouvre directement le routage de la page Logs.",
+      "Barre latérale : la ligne « N sans salon de log » revient, cette fois calculée par le bot (cliquable).",
+      "Le scan de sécurité contrôle aussi ce point."
+    ]
+  },
+  {
     "version": "v1.55.73",
     "date": "2026-10-08",
     "title": "Console Discord : section Animation et espace Owner Etho dans la barre latérale",
@@ -663,17 +674,6 @@
       "Fluidification du curseur de volume sans saccade ni latence lors du glissement",
       "Ajout des transitions de sortie fluides sur le lanceur d'applications, le Centre de contrôle, le Focus et la météo",
       "Harmonisation des transitions sur les cartes Bento du Dock sans interférence avec la physique de ressort"
-    ]
-  },
-  {
-    "version": "v1.55.12",
-    "date": "2026-10-05",
-    "title": "Brain AI : Contexte en direct enrichi (Tâches, Agenda et Habitudes)",
-    "items": [
-      "Brain prend désormais en compte en temps réel les tâches ouvertes de l'utilisateur (titres des tâches en attente et nombre total) pour répondre avec précision sur ce qu'il lui reste à faire.",
-      "Intégration de l'agenda du jour avec les horaires précis des événements planifiés dans le contexte en direct de l'assistant IA.",
-      "Interrogation automatique des habitudes quotidiennes (table Supabase ethone_habits et complétions du jour) lorsque l'utilisateur pose une question sur ses routines, séries ou objectifs du jour.",
-      "Mise à jour automatique des instructions de Brain pour citer fidèlement ces données sans aucune hallucination."
     ]
   }
 ]

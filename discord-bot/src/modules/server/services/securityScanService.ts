@@ -21,6 +21,7 @@ import { BotJobSchedulerService } from '../../botControl/services/botJobSchedule
 import { container, separator, text, type ContainerPart } from '../../../utils/components.js';
 import { icon } from '../../../utils/v2.js';
 import { logger } from '../../../utils/logger.js';
+import { DiscordLogService } from '../../logs/services/discordLogService.js';
 
 /**
  * Scan de sécurité réel : lit l'état du serveur Discord (rôles, salons, réglages, bots) et des modules de
@@ -85,6 +86,20 @@ const BOT_NEEDS: Array<[bigint, string]> = [
 ];
 const SEVERITY_WEIGHT: Record<ScanSeverity, number> = { important: 3, review: 2, suggestion: 1 };
 const plural = (n: number, one: string, many: string) => `${n} ${n > 1 ? many : one}`;
+
+/** Protections qui signalent leurs actions dans les logs (catégorie Modération) : anti-raid, anti-nuke, AutoMod. */
+const LOGGED_PROTECTIONS = [
+  ['security', 'Anti-raid'],
+  ['anti-nuke', 'Anti-nuke'],
+  ['automod', 'AutoMod'],
+] as const;
+
+/** Protections actives et celles dont les alertes n'arrivent dans aucun salon (calcul en direct). */
+export function protectionLogCoverage(guild: Guild): { active: string[]; withoutChannel: string[]; channelId: string | null } {
+  const active = LOGGED_PROTECTIONS.filter(([id]) => isModuleEnabled(guild.id, id)).map(([, label]) => label);
+  const channel = DiscordLogService.destinationFor(guild, 'MODERATION');
+  return { active, withoutChannel: channel ? [] : active, channelId: channel?.id ?? null };
+}
 
 /** Score sur 100 pondéré par la gravité : un point « important » pèse trois fois une suggestion. */
 export function scoreOf(checks: ScanCheck[]): number {
@@ -260,6 +275,21 @@ export async function runSecurityScan(client: Client, guildId: string): Promise<
     ok: Boolean(systemChannelId && guild.channels.cache.has(systemChannelId)),
     why: 'Etho n\'a pas d\'endroit où te prévenir d\'un souci de permissions ou d\'une alerte importante.',
     fix: 'Choisis-le dans le message d\'accueil d\'Etho ou avec /setup.',
+  });
+  const coverage = protectionLogCoverage(guild);
+  add({
+    id: 'protections-log-channel',
+    category: 'settings',
+    severity: 'review',
+    title: coverage.withoutChannel.length
+      ? `${plural(coverage.withoutChannel.length, 'protection active', 'protections actives')} sans salon de log`
+      : coverage.active.length
+        ? 'Les alertes des protections arrivent dans un salon'
+        : 'Aucune protection active à relier à un salon de log',
+    ok: coverage.withoutChannel.length === 0,
+    why: 'Elles agissent, mais personne n\'est prévenu sur Discord.',
+    fix: 'Choisis un salon pour la catégorie « Modération » (ou un salon général) dans Logs › Routage.',
+    items: coverage.withoutChannel,
   });
   for (const [id, label, severity] of [
     ['security', 'Anti-raid', 'review'],

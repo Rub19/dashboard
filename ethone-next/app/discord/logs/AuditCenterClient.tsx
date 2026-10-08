@@ -204,7 +204,10 @@ export function AuditCenterClient() {
   const { success, error: showError } = useToast();
 
   const [selectedGuild, setSelectedGuild] = useState<DiscordGuild | null>(null);
-  const [activeTab, setActiveTab] = useState<"stream" | "critical" | "analytics" | "routing">("stream");
+  // `?tab=routing` : lien « Choisir un salon » de la vue d'ensemble (protections sans salon de log).
+  const [activeTab, setActiveTab] = useState<"stream" | "critical" | "analytics" | "routing">(() =>
+    searchParams.get("tab") === "routing" ? "routing" : "stream"
+  );
 
   // Données
   const [overview, setOverview] = useState<AuditOverview | null>(null);

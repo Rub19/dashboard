@@ -1,4 +1,4 @@
-# ETHONE — passation à la prochaine IA (état au 2026-10-08, version 1.55.73)
+# ETHONE — passation à la prochaine IA (état au 2026-10-08, version 1.55.74)
 
 ## Prompt à coller à la prochaine IA (version avec le lien du repo : `PROMPT-IA.md`)
 
@@ -208,7 +208,7 @@ git log --oneline -10
 
 ## Reste à faire (par priorité)
 1. **Pages de la console Discord qui « ne fonctionnent plus trop »** : l'utilisateur doit donner la liste. Pour chaque page : ouvrir dans Chrome, lire les requêtes vers `bot.ethone.dev` (un 404 = route absente ou bot pas redéployé, un 401 = session du bot expirée, `components/discord/BotSessionGate.tsx` (monté par `app/discord/layout.tsx`) affiche alors la page « Connecte-toi avec Discord », ou `credentials: "include"` manquant), corriger.
-2. **Parité Keeper, à vérifier en vrai** : vue d'ensemble (« À régler », score du dernier scan, rôles sensibles, activité récente) et scan complet + scan automatique faits en 1.55.71 (bot : `discord-bot/src/modules/server/services/securityScanService.ts`, données dans `data/security_scans.json`, rapport toutes les 15 min au plus si dû ; site : `lib/discord/security-scan.ts`). Après reconnexion de l'utilisateur, lancer un scan, activer le scan automatique sur un salon de test et vérifier le premier rapport. Keeper a aussi « protections sans salon de log » dans ses points à régler : à ajouter si les logs par protection existent côté bot.
+2. **Parité Keeper, à vérifier en vrai** : vue d'ensemble (« À régler », score du dernier scan, rôles sensibles, activité récente) et scan complet + scan automatique faits en 1.55.71 (bot : `discord-bot/src/modules/server/services/securityScanService.ts`, données dans `data/security_scans.json`, rapport toutes les 15 min au plus si dû ; site : `lib/discord/security-scan.ts`). Après reconnexion de l'utilisateur, lancer un scan, activer le scan automatique sur un salon de test et vérifier le premier rapport. « Protections sans salon de log » : `GET /server/log-coverage` (même routage que les vrais envois, `DiscordLogService.destinationFor`), affiché dans « À régler » et la barre latérale.
 3. **Bot animé et message d'arrivée, vérification réelle** : dans un vrai salon, vérifier les émojis animés des réponses, la carte GIF d'arrivée d'un membre, et inviter le bot sur un serveur de test pour voir le salon privé `etho-bienvenue`.
 4. **Synchronisation** : faire tester par l'utilisateur sur deux appareils (changer le statut sur l'un, il doit apparaître sur l'autre sans recharger).
 5. **Supabase** : la protection des mots de passe divulgués apparaissait encore désactivée après activation par l'utilisateur (peut demander l'offre Pro).

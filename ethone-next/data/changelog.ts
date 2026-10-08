@@ -47062,5 +47062,58 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_73_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_73_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_73_de);
 
+const v1_55_74_fr: ChangelogEntry = {
+  version: "v1.55.74",
+  date: "2026-10-08",
+  title: "Vue d'ensemble : protections actives sans salon de log, comme sur Keeper",
+  items: [
+    "Le bot calcule en direct quelles protections actives (anti-raid, anti-nuke, AutoMod) n'ont aucun salon où envoyer leurs alertes : module Logs coupé, aucun salon choisi pour la modération ni salon général, salon supprimé ou catégorie sur « off ».",
+    "Vue d'ensemble : le point « N protections actives sans salon de log » apparaît dans « À régler » avec un bouton « Choisir un salon » qui ouvre directement le routage de la page Logs.",
+    "Barre latérale : la ligne « N sans salon de log » revient, cette fois calculée par le bot (cliquable).",
+    "Le scan de sécurité contrôle aussi ce point.",
+  ],
+};
+
+const v1_55_74_en: ChangelogEntry = {
+  version: "v1.55.74",
+  date: "2026-10-08",
+  title: "Overview: active protections without a log channel, like Keeper",
+  items: [
+    "The bot computes live which active protections have nowhere to send their alerts.",
+    "Overview: \"N active protections without a log channel\" in \"To fix\" with a \"Pick a channel\" button to the log routing.",
+    "Sidebar: the \"N without log channel\" line is back, now computed by the bot.",
+    "The security scan checks it too.",
+  ],
+};
+
+const v1_55_74_es: ChangelogEntry = {
+  version: "v1.55.74",
+  date: "2026-10-08",
+  title: "Vista general: protecciones activas sin canal de logs, como en Keeper",
+  items: [
+    "El bot calcula en directo qué protecciones activas no tienen canal para sus alertas.",
+    "Vista general: el punto aparece en «Por corregir» con un botón «Elegir un canal».",
+    "Barra lateral: vuelve la línea «N sin canal de logs», calculada por el bot.",
+    "El escaneo de seguridad también lo comprueba.",
+  ],
+};
+
+const v1_55_74_de: ChangelogEntry = {
+  version: "v1.55.74",
+  date: "2026-10-08",
+  title: "Übersicht: aktive Schutzfunktionen ohne Log-Kanal, wie bei Keeper",
+  items: [
+    "Der Bot berechnet live, welche aktiven Schutzfunktionen keinen Kanal für ihre Alarme haben.",
+    "Übersicht: der Punkt erscheint unter „Zu beheben“ mit der Schaltfläche „Kanal wählen“.",
+    "Seitenleiste: die Zeile „N ohne Log-Kanal“ ist zurück, jetzt vom Bot berechnet.",
+    "Der Sicherheitsscan prüft es ebenfalls.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_74_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_74_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_74_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_74_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

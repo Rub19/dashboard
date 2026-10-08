@@ -14,6 +14,7 @@ import { useMotionPref } from "@/lib/hooks/useMotionPref";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { SPRING_PRESS } from "@/lib/ease";
 import { confirmDialog } from "@/lib/confirmDialog";
+import { SEVERITY_COLOR, SEVERITY_LABEL, failingChecks, fetchLastScan, scoreColor, sinceLabel, type ScanResult } from "@/lib/discord/security-scan";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 import {
@@ -148,6 +149,26 @@ export default function GuildOverviewScreen({
 
   const isRaidModeActive = raidMode === true;
 
+  const [lastScan, setLastScan] = useState<ScanResult | null>(null);
+  const [activity, setActivity] = useState<Array<{ id: string; title: string; createdAt: string; color?: string }> | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    fetchLastScan(guild.id)
+      .then((r) => !cancelled && setLastScan(r))
+      .catch(() => {});
+    if (BOT_API_URL) {
+      fetch(`${BOT_API_URL}/api/guilds/${guild.id}/server/audit`, { credentials: "include" })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => !cancelled && setActivity(Array.isArray(d?.logs) ? d.logs.slice(0, 5) : null))
+        .catch(() => {});
+    }
+    return () => {
+      cancelled = true;
+    };
+  }, [guild.id]);
+  const toFix = failingChecks(lastScan).filter((c) => c.severity !== "suggestion");
+  const openScan = () => (onOpenScan ? onOpenScan() : router.push(`/discord?guildId=${guild.id}&view=scan`));
+
   const handleToggleRaid = useCallback(async () => {
     if (raidBusy || raidMode === null || !BOT_API_URL) return;
     const next = !raidMode;
@@ -201,7 +222,9 @@ export default function GuildOverviewScreen({
       0
     );
 
-  const subtitleText = `${activeCount} ${i18n("dModulesActiveOf", "modules actifs sur")} ${totalCount}.`;
+  const subtitleText = `${activeCount} ${i18n("dModulesActiveOf", "modules actifs sur")} ${totalCount}.${
+    lastScan ? ` ${toFix.length ? `${toFix.length} point${toFix.length > 1 ? "s" : ""} à régler.` : "Rien d'urgent à régler."}` : ""
+  }`;
 
   return (
     <motion.div
@@ -235,6 +258,35 @@ export default function GuildOverviewScreen({
           <ChevronRight className="h-3.5 w-3.5" />
         </motion.button>
       </motion.div>
+
+      {toFix.length > 0 && (
+        <motion.div variants={consoleFadeUp} className="space-y-2.5">
+          <div className="flex items-center gap-2">
+            <h2 className="text-sm font-bold text-[var(--text-primary)]">{i18n("dToFix", "À régler")}</h2>
+            <span className="rounded-md bg-[var(--surface-hover)] px-1.5 py-0.5 font-mono text-[11px] text-[var(--text-muted)]">{toFix.length}</span>
+          </div>
+          <ul className="space-y-2">
+            {toFix.slice(0, 4).map((c) => (
+              <li key={c.id} className="flex flex-col gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex min-w-0 items-start gap-3">
+                  <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full" style={{ background: SEVERITY_COLOR[c.severity] }} aria-label={SEVERITY_LABEL[c.severity]} />
+                  <div className="min-w-0">
+                    <p className="text-xs font-semibold text-[var(--text-primary)]">{c.title}</p>
+                    {c.fix && <p className="mt-0.5 text-[11px] leading-relaxed text-[var(--text-muted)]">{c.fix}</p>}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={openScan}
+                  className="shrink-0 self-start rounded-lg border border-[var(--panel-border)] px-3 py-1.5 text-xs font-semibold text-[var(--text-primary)] transition-[background-color,transform] duration-150 hover:bg-[var(--surface-hover)] active:scale-[0.97] sm:self-auto"
+                >
+                  {i18n("dSeeDetails", "Voir le détail")}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </motion.div>
+      )}
 
       <motion.div
         variants={consoleFadeUp}
@@ -378,18 +430,21 @@ export default function GuildOverviewScreen({
                 <span className="text-[var(--text-muted)]">{i18n("dSecurityScan", "Scan de sécurité")}</span>
                 <button
                   type="button"
-                  onClick={() => {
-                    if (onOpenScan) {
-                      onOpenScan();
-                    } else {
-                      router.push(`/discord?guildId=${guild.id}&view=scan`);
-                    }
-                  }}
-                  className="font-semibold text-emerald-400 hover:underline cursor-pointer"
+                  onClick={openScan}
+                  title={lastScan ? sinceLabel(lastScan.scannedAt) : undefined}
+                  className="font-semibold hover:underline cursor-pointer"
+                  style={{ color: lastScan ? scoreColor(lastScan.score) : "var(--accent-primary)" }}
                 >
-                  {i18n("dRunScan", "Lancer un scan →")}
+                  {lastScan ? `${lastScan.score}/100` : i18n("dRunScan", "Lancer un scan →")}
                 </button>
               </div>
+
+              {lastScan && (
+                <div className="flex items-center justify-between" title={lastScan.sensitiveRoles.join(", ")}>
+                  <span className="text-[var(--text-muted)]">{i18n("dSensitiveRoles", "Rôles sensibles")}</span>
+                  <span className="font-mono font-semibold text-[var(--text-primary)]">{lastScan.sensitiveRoles.length}</span>
+                </div>
+              )}
             </div>
           </motion.div>
 
@@ -410,14 +465,26 @@ export default function GuildOverviewScreen({
               </button>
             </div>
 
-            <div className="py-8 text-center space-y-2">
-              <div className="mx-auto flex h-9 w-9 items-center justify-center rounded-sm border border-[var(--panel-border)] bg-[var(--panel-border)]/20 text-[var(--text-muted)]">
-                <FileText className="h-4 w-4" />
+            {activity && activity.length > 0 ? (
+              <ul className="space-y-1.5">
+                {activity.map((log) => (
+                  <li key={log.id} className="flex items-center gap-2.5 text-xs">
+                    <span className="h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: log.color || "var(--text-muted)" }} />
+                    <span className="min-w-0 flex-1 truncate text-[var(--text-primary)]">{log.title}</span>
+                    <span className="shrink-0 text-[10px] text-[var(--text-muted)]">{sinceLabel(log.createdAt)}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div className="py-8 text-center space-y-2">
+                <div className="mx-auto flex h-9 w-9 items-center justify-center rounded-sm border border-[var(--panel-border)] bg-[var(--panel-border)]/20 text-[var(--text-muted)]">
+                  <FileText className="h-4 w-4" />
+                </div>
+                <p className="text-xs text-[var(--text-muted)]">
+                  {activity === null ? i18n("dActivityUnavailable", "Logs indisponibles pour l'instant.") : i18n("dNoIncidents", "Aucun incident récent. Etho veille.")}
+                </p>
               </div>
-              <p className="text-xs text-[var(--text-muted)]">
-                {i18n("dNoIncidents", "Aucun incident récent. Etho veille.")}
-              </p>
-            </div>
+            )}
           </motion.div>
         </div>
       </div>

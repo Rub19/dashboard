@@ -62,6 +62,7 @@ import { createServerRouter } from './routes/serverRoutes.js';
 import { createStreamerRouter } from './routes/streamerRoutes.js';
 import { streamerService } from '../modules/streamers/services/streamerService.js';
 import { createGamesRoutes } from './routes/gamesRoutes.js';
+import { autoScanScheduler } from '../modules/server/services/securityScanService.js';
 import { gamesService } from '../modules/games/services/gamesService.js';
 import { createBotControlRouter } from './routes/botControlRoutes.js';
 import { createPresenceRouter } from './routes/presenceRoutes.js';
@@ -483,6 +484,9 @@ export function startWebServer(client: Client): http.Server {
 
   // Scheduler des salons compteurs (tick 5 min)
   serverStatsService.initialize(client);
+
+  // Scan de sécurité automatique (rapport quotidien ou hebdomadaire, opt-in par serveur)
+  autoScanScheduler.initialize(client);
 
   // Synchronisation programmée des Auto-Rôles (vérifie chaque heure les serveurs dus)
   autoRoleService.initialize(client);

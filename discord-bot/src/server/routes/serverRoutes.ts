@@ -12,7 +12,7 @@ import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { logStorage } from '../../modules/logs/storage/logStorage.js';
 import { logger } from '../../utils/logger.js';
 import { handleRouteError } from '../utils/routeError.js';
-import { runSecurityScan } from '../../modules/server/services/securityScanService.js';
+import { runSecurityScan, securityScanStore } from '../../modules/server/services/securityScanService.js';
 
 export function createServerRouter(client: Client): Router {
   const router = Router({ mergeParams: true });
@@ -445,7 +445,7 @@ export function createServerRouter(client: Client): Router {
     }
   });
 
-  // GET /security-scan : vérifie réellement les permissions, rôles, salons, réglages et protections du serveur.
+  // Scan de sécurité : lancé à la demande (et gardé), dernier résultat, réglages du scan automatique.
   router.get('/security-scan', async (req: Request, res: Response) => {
     try {
       const result = await runSecurityScan(client, String(req.params.guildId));
@@ -458,6 +458,38 @@ export function createServerRouter(client: Client): Router {
       handleRouteError(err, res, 'Erreur scan de sécurité');
     }
   });
+
+  router.get('/security-scan/last', (req: Request, res: Response) => {
+    res.json({ result: securityScanStore.getLast(String(req.params.guildId)) });
+  });
+
+  router.get('/security-scan/auto', (req: Request, res: Response) => {
+    res.json({ auto: securityScanStore.getAuto(String(req.params.guildId)) });
+  });
+
+  router.put('/security-scan/auto', (req: Request, res: Response) => {
+    const guildId = String(req.params.guildId);
+    const guild = client.guilds.cache.get(guildId);
+    const { enabled, channelId, frequency } = req.body ?? {};
+    const patch: Record<string, unknown> = {};
+    if (typeof enabled === 'boolean') patch.enabled = enabled;
+    if (frequency === 'day' || frequency === 'week') patch.frequency = frequency;
+    if (channelId === null || typeof channelId === 'string') {
+      const channel = channelId ? guild?.channels.cache.get(channelId) : null;
+      if (channelId && !channel?.isTextBased()) {
+        res.status(400).json({ error: 'Salon introuvable ou non textuel.' });
+        return;
+      }
+      patch.channelId = channelId;
+    }
+    const auto = securityScanStore.setAuto(guildId, patch);
+    if (auto.enabled && !auto.channelId) {
+      res.status(400).json({ error: 'Choisis un salon pour le rapport.', auto });
+      return;
+    }
+    res.json({ auto });
+  });
+
 
   // 28. GET /audit
   router.get('/audit', (req: Request, res: Response) => {

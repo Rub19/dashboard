@@ -46911,5 +46911,58 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_70_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_70_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_70_de);
 
+const v1_55_71_fr: ChangelogEntry = {
+  version: "v1.55.71",
+  date: "2026-10-08",
+  title: "Scan de sécurité complet et vue d'ensemble façon Keeper : points à régler, score, rôles sensibles, scan automatique",
+  items: [
+    "Scan de sécurité : chaque point a une gravité (Important, À examiner, Suggestion), l'explication du risque, la solution et la liste des rôles, salons ou bots concernés ; nouveaux contrôles : bots puissants placés au-dessus d'Etho, salon système d'Etho, nombre réel d'administrateurs.",
+    "Le score est pondéré par la gravité, et le dernier scan est gardé par le bot : il s'affiche dès l'ouverture, avec sa date et le nombre de membres.",
+    "Scan automatique : chaque jour ou chaque semaine, le bot poste dans le salon choisi un rapport avec le score, les nouveaux points et ceux corrigés depuis le précédent.",
+    "Vue d'ensemble : section « À régler » avec les points importants du dernier scan, score du scan, nombre de rôles sensibles, et activité récente lue dans les vrais logs du bot (avant : message fixe « Aucun incident récent »).",
+  ],
+};
+
+const v1_55_71_en: ChangelogEntry = {
+  version: "v1.55.71",
+  date: "2026-10-08",
+  title: "Full security scan and Keeper-style overview: issues to fix, score, sensitive roles, automatic scan",
+  items: [
+    "Security scan: each check has a severity, the risk, the fix and the affected roles, channels or bots; new checks for powerful bots above Etho, Etho's system channel and the real admin count.",
+    "Severity-weighted score; the last scan is stored by the bot and shown on open.",
+    "Automatic scan: daily or weekly report in a chosen channel with the score, new issues and fixed ones.",
+    "Overview: \"To fix\" section, scan score, sensitive role count and recent activity from the bot's real logs.",
+  ],
+};
+
+const v1_55_71_es: ChangelogEntry = {
+  version: "v1.55.71",
+  date: "2026-10-08",
+  title: "Escaneo de seguridad completo y vista general estilo Keeper",
+  items: [
+    "Escaneo: cada punto tiene gravedad, riesgo, solución y elementos afectados; nuevos controles de bots por encima de Etho, canal del sistema y administradores reales.",
+    "Puntuación ponderada; el último escaneo queda guardado y se muestra al abrir.",
+    "Escaneo automático diario o semanal con informe en un canal y cambios desde el anterior.",
+    "Vista general: puntos a corregir, puntuación, roles sensibles y actividad reciente real.",
+  ],
+};
+
+const v1_55_71_de: ChangelogEntry = {
+  version: "v1.55.71",
+  date: "2026-10-08",
+  title: "Vollständiger Sicherheitsscan und Übersicht im Keeper-Stil",
+  items: [
+    "Scan: jeder Punkt mit Schweregrad, Risiko, Lösung und betroffenen Elementen; neue Prüfungen für mächtige Bots über Etho, Systemkanal und echte Admin-Anzahl.",
+    "Gewichteter Score; der letzte Scan wird gespeichert und beim Öffnen angezeigt.",
+    "Automatischer Scan täglich oder wöchentlich mit Bericht und Änderungen seit dem letzten.",
+    "Übersicht: zu behebende Punkte, Score, sensible Rollen und echte letzte Aktivität.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_71_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_71_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_71_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_71_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

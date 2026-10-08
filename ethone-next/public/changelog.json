@@ -1,5 +1,16 @@
 [
   {
+    "version": "v1.55.71",
+    "date": "2026-10-08",
+    "title": "Scan de sécurité complet et vue d'ensemble façon Keeper : points à régler, score, rôles sensibles, scan automatique",
+    "items": [
+      "Scan de sécurité : chaque point a une gravité (Important, À examiner, Suggestion), l'explication du risque, la solution et la liste des rôles, salons ou bots concernés ; nouveaux contrôles : bots puissants placés au-dessus d'Etho, salon système d'Etho, nombre réel d'administrateurs.",
+      "Le score est pondéré par la gravité, et le dernier scan est gardé par le bot : il s'affiche dès l'ouverture, avec sa date et le nombre de membres.",
+      "Scan automatique : chaque jour ou chaque semaine, le bot poste dans le salon choisi un rapport avec le score, les nouveaux points et ceux corrigés depuis le précédent.",
+      "Vue d'ensemble : section « À régler » avec les points importants du dernier scan, score du scan, nombre de rôles sensibles, et activité récente lue dans les vrais logs du bot (avant : message fixe « Aucun incident récent »)."
+    ]
+  },
+  {
     "version": "v1.55.70",
     "date": "2026-10-08",
     "title": "Console Discord : page de connexion quand la session du bot expire, photo de profil à jour, bouton jour/nuit stable",
@@ -664,16 +675,6 @@
       "Nouveaux layouts interchangeables : Grille Bento (cartes avec anneaux de complétion et micro-actions), Vue Semaine (matrice calendaire interactive) et Liste Compacte.",
       "Jauge radiale animée de progression quotidienne, indicateurs de séries et suivi hebdomadaire interactif (validation directe de n'importe quel jour de la semaine).",
       "Prise en charge de l'alias /settings/workspaces pour ouvrir directement la section Espace de travail sans 404."
-    ]
-  },
-  {
-    "version": "v1.55.9",
-    "date": "2026-10-05",
-    "title": "Dock : refonte motion design, Apple glassmorphism et prévisions météo visuelles",
-    "items": [
-      "Refonte complète du popover météo (WeatherDetailPopover) : animations fluides avec physique de ressort Apple (framer-motion), halo ambiant dynamique selon le ciel et hiérarchie visuelle aérée sans collision de texte.",
-      "Nouvelles cartes bento pour l'humidité et le vent avec jauges animées, et prévisions sur 5 jours style Apple Weather avec barres de plage thermique en dégradé et curseur de température actuelle.",
-      "Harmonisation motion design de tous les volets du Dock (DockControlCenter, DockMediaFlyout, FocusPopover, DockLauncher) : glassmorphism haute définition, micro-interactions tactiles et boutons d'action fluides."
     ]
   }
 ]

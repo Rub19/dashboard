@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.71 — 2026-10-08
+
+**Scan de sécurité complet et vue d'ensemble façon Keeper : points à régler, score, rôles sensibles, scan automatique**
+
+- Scan de sécurité : chaque point a une gravité (Important, À examiner, Suggestion), l'explication du risque, la solution et la liste des rôles, salons ou bots concernés ; nouveaux contrôles : bots puissants placés au-dessus d'Etho, salon système d'Etho, nombre réel d'administrateurs.
+- Le score est pondéré par la gravité, et le dernier scan est gardé par le bot : il s'affiche dès l'ouverture, avec sa date et le nombre de membres.
+- Scan automatique : chaque jour ou chaque semaine, le bot poste dans le salon choisi un rapport avec le score, les nouveaux points et ceux corrigés depuis le précédent.
+- Vue d'ensemble : section « À régler » avec les points importants du dernier scan, score du scan, nombre de rôles sensibles, et activité récente lue dans les vrais logs du bot (avant : message fixe « Aucun incident récent »).
+
 ## v1.55.70 — 2026-10-08
 
 **Console Discord : page de connexion quand la session du bot expire, photo de profil à jour, bouton jour/nuit stable**

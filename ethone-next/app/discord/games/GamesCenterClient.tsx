@@ -729,7 +729,7 @@ export default function GamesCenterClient() {
         {offline && selectedGuild && (
           <div className="flex items-start gap-2.5 rounded-2xl border border-amber-500/25 bg-amber-500/10 px-4 py-3 text-xs text-amber-200">
             <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
-            <span>Mode hors-ligne : la synchronisation en direct avec le bot Discord est temporairement indisponible. Les parties démo et paramètres locaux restent accessibles.</span>
+            <span>Mode hors-ligne : la synchronisation en direct avec le bot Discord est temporairement indisponible. Les parties et réglages reviennent dès que le bot répond.</span>
           </div>
         )}
 
@@ -837,7 +837,6 @@ export default function GamesCenterClient() {
             <p className="text-2xl font-bold text-[var(--text-primary)]">
               {overview.totalGamesPlayed.toLocaleString("fr-FR")}
             </p>
-            <span className="text-xs text-[var(--text-muted)]">BJ (42%) • Roulette (36%) • Dés (22%)</span>
           </div>
 
           <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-4 space-y-1">
@@ -846,7 +845,7 @@ export default function GamesCenterClient() {
               <span className="rounded-full bg-blue-500/10 px-1.5 py-0.5 text-[10px] font-bold text-blue-400">
                 {overview.totalBets > 0
                   ? `${Math.round((overview.totalPayouts / overview.totalBets) * 100)}% RTP`
-                  : "96% RTP"}
+                  : "—"}
               </span>
             </div>
             <p className="text-2xl font-bold text-[var(--text-primary)]">
@@ -860,7 +859,7 @@ export default function GamesCenterClient() {
           <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-4 space-y-1">
             <span className="text-xs text-[var(--text-muted)] font-medium">Record de Gain</span>
             <p className="text-2xl font-bold text-amber-400 truncate">
-              +{overview.biggestWin ? overview.biggestWin.amount.toLocaleString("fr-FR") : "7 200"} {currencySymbol}
+              +{overview.biggestWin ? overview.biggestWin.amount.toLocaleString("fr-FR") : "0"} {currencySymbol}
             </p>
             <span className="text-xs text-[var(--text-muted)] truncate block">
               {overview.biggestWin ? overview.biggestWin.username : "—"}

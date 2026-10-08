@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.69 — 2026-10-08
+
+**Pages Discord : bandeau de reconnexion au bot et derniers chiffres inventés du Casino retirés**
+
+- Quand la session avec le bot (7 jours) a expiré, toutes les pages Discord affichent maintenant un bandeau « Se reconnecter » au lieu de se dire « hors ligne » sans explication.
+- Casino : la répartition « BJ 42 % • Roulette 36 % • Dés 22 % », le « 96 % RTP » et le record de « +7 200 » écrits en dur sont retirés.
+
 ## v1.55.68 — 2026-10-08
 
 **Console Discord : plus aucune donnée inventée, Casino calculé par le bot, vrai scan de sécurité**

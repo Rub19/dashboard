@@ -46813,5 +46813,50 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_68_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_68_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_68_de);
 
+const v1_55_69_fr: ChangelogEntry = {
+  version: "v1.55.69",
+  date: "2026-10-08",
+  title: "Pages Discord : bandeau de reconnexion au bot et derniers chiffres inventés du Casino retirés",
+  items: [
+    "Quand la session avec le bot (7 jours) a expiré, toutes les pages Discord affichent maintenant un bandeau « Se reconnecter » au lieu de se dire « hors ligne » sans explication.",
+    "Casino : la répartition « BJ 42 % • Roulette 36 % • Dés 22 % », le « 96 % RTP » et le record de « +7 200 » écrits en dur sont retirés.",
+  ],
+};
+
+const v1_55_69_en: ChangelogEntry = {
+  version: "v1.55.69",
+  date: "2026-10-08",
+  title: "Discord pages: bot reconnect banner and last made-up casino figures removed",
+  items: [
+    "When the bot session (7 days) has expired, every Discord page now shows a \"Reconnect\" banner instead of silently claiming to be offline.",
+    "Casino: hardcoded game split, 96% RTP and +7,200 record removed.",
+  ],
+};
+
+const v1_55_69_es: ChangelogEntry = {
+  version: "v1.55.69",
+  date: "2026-10-08",
+  title: "Páginas de Discord: aviso para reconectar el bot y últimas cifras inventadas del casino eliminadas",
+  items: [
+    "Cuando la sesión con el bot (7 días) caduca, todas las páginas de Discord muestran un aviso «Reconectar» en lugar de decir «sin conexión».",
+    "Casino: reparto de juegos, 96 % RTP y récord de +7.200 escritos a mano eliminados.",
+  ],
+};
+
+const v1_55_69_de: ChangelogEntry = {
+  version: "v1.55.69",
+  date: "2026-10-08",
+  title: "Discord-Seiten: Hinweis zur erneuten Bot-Anmeldung und letzte erfundene Casino-Zahlen entfernt",
+  items: [
+    "Wenn die Bot-Sitzung (7 Tage) abgelaufen ist, zeigen alle Discord-Seiten jetzt einen Hinweis „Erneut anmelden“ statt nur „offline“.",
+    "Casino: fest eingetragene Spielverteilung, 96 % RTP und Rekord von +7.200 entfernt.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_69_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_69_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_69_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_69_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

@@ -1,5 +1,14 @@
 [
   {
+    "version": "v1.55.69",
+    "date": "2026-10-08",
+    "title": "Pages Discord : bandeau de reconnexion au bot et derniers chiffres inventés du Casino retirés",
+    "items": [
+      "Quand la session avec le bot (7 jours) a expiré, toutes les pages Discord affichent maintenant un bandeau « Se reconnecter » au lieu de se dire « hors ligne » sans explication.",
+      "Casino : la répartition « BJ 42 % • Roulette 36 % • Dés 22 % », le « 96 % RTP » et le record de « +7 200 » écrits en dur sont retirés."
+    ]
+  },
+  {
     "version": "v1.55.68",
     "date": "2026-10-08",
     "title": "Console Discord : plus aucune donnée inventée, Casino calculé par le bot, vrai scan de sécurité",
@@ -664,16 +673,6 @@
       "Adaptation complète du volet déplié pour les parties issues de l'historique long (stored-matches) : affichage d'un résumé individuel clair sans faux MVP ni tableau vide de 10 joueurs.",
       "Trois blocs statistiques dédiés : Combat (K/D/A, ratio, diff +/-), Dégâts & Impact (infligés, reçus, delta DDΔ, ADR) et Précision des tirs avec jauge tricolore (tête, corps, jambes).",
       "Élimination de la durée codée en dur (8m 24s) au profit de la durée réelle issue de l'API Henrik ou du nombre réel de manches jouées."
-    ]
-  },
-  {
-    "version": "v1.55.7",
-    "date": "2026-10-04",
-    "title": "Module Émojis : renommage d'émojis existants depuis le dashboard",
-    "items": [
-      "Ajout de la route PATCH /api/guilds/:guildId/server/emojis/:emojiId pour renommer les émojis sur Discord.",
-      "Bouton de renommage (crayon) et édition en ligne (avec validation Entrée/Échap ou clic) sur toutes les cartes d'émojis du serveur.",
-      "Synchronisation immédiate du cache local et activation de l'intent Discord GuildExpressions."
     ]
   }
 ]

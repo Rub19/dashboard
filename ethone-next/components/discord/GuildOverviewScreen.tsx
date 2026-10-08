@@ -407,6 +407,8 @@ export default function GuildOverviewScreen({
                   ? i18n("dRaidModeUnknown", "État inconnu : bot injoignable.")
                   : isRaidModeActive
                   ? i18n("dRaidModeActive", "Actif. Le serveur bloque temporairement les arrivées suspectes.")
+                  : moduleStatus && !moduleStatus.security
+                  ? i18n("dRaidModeNoAuto", "Inactif. Le module Anti-raid est désactivé : Etho ne l'active pas tout seul.")
                   : i18n("dRaidModeInactive", "Inactif. Etho active tout seul s'il détecte une attaque.")}
               </p>
             </div>

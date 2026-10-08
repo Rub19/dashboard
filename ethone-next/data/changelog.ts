@@ -46630,4 +46630,58 @@ CHANGELOG_BY_LANG.en.unshift(v12872_en);
 CHANGELOG_BY_LANG.es.unshift(v12872_es);
 CHANGELOG_BY_LANG.de.unshift(v12872_de);
 
+const v12873_fr: ChangelogEntry = {
+  version: "v1.55.66",
+  date: "2026-10-08",
+  title: "Sélecteur de salon Discord immersif et accueil de bot interactif",
+  items: [
+    "Sélecteur de salon enrichi avec recherche instantanée, groupement par catégories et filtrage ID",
+    "Design fidèle avec badge hashtag, états de sélection personnalisés et fermeture fluide",
+    "Service d'accueil à l'arrivée du bot avec mention de l'inviteur, diagnostic des 11 permissions clés, salon système et langue",
+    "Boutons d'accès direct vers le serveur Support et le Dashboard serveur",
+  ],
+};
+
+const v12873_en: ChangelogEntry = {
+  version: "v1.55.66",
+  date: "2026-10-08",
+  title: "Immersive Discord channel picker and interactive bot join onboarding",
+  items: [
+    "Enhanced channel picker with real-time search, category grouping, and channel ID lookup",
+    "Faithful styling with hashtag badges, active selection pills, and smooth backdrop handling",
+    "Bot join welcome service with inviter mention, 11 core permissions diagnostics, system channel creation, and language setup",
+    "Direct action buttons to the Support server and the server Dashboard",
+  ],
+};
+
+const v12873_es: ChangelogEntry = {
+  version: "v1.55.66",
+  date: "2026-10-08",
+  title: "Selector de canales Discord inmersivo y bienvenida interactiva del bot",
+  items: [
+    "Selector de canal mejorado con búsqueda instantánea, agrupación por categorías y búsqueda por ID",
+    "Diseño fiel con etiquetas de hashtag, selección visual activa y cierre fluido",
+    "Servicio de bienvenida al unirse el bot con mención al invitador, diagnóstico de 11 permisos clave y canal del sistema",
+    "Botones de enlace directo al servidor de Soporte y al Panel de control",
+  ],
+};
+
+const v12873_de: ChangelogEntry = {
+  version: "v1.55.66",
+  date: "2026-10-08",
+  title: "Immersiver Discord-Kanalauswähler und interaktives Bot-Beitritts-Onboarding",
+  items: [
+    "Erweiterte Kanalauswahl mit Echtzeitsuche, Kategoriegruppierung und Kanal-ID-Filterung",
+    "Vorlagentreues Design mit Hashtag-Badges, aktiven Auswahl-Pills und flüssigem Dropdown",
+    "Bot-Beitritts-Begrüßungsservice mit Erwähnung des Einladers, Diagnose von 11 Kernberechtigungen und Systemkanal-Setup",
+    "Direktlinks zum Support-Server und zum Server-Dashboard",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12873_fr);
+CHANGELOG_BY_LANG.en.unshift(v12873_en);
+CHANGELOG_BY_LANG.es.unshift(v12873_es);
+CHANGELOG_BY_LANG.de.unshift(v12873_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
+

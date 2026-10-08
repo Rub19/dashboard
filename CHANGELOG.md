@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.66 — 2026-10-08
+
+**Sélecteur de salon Discord immersif et accueil interactif du bot à l'arrivée**
+
+- Nouveau sélecteur de salon Discord immersif fidèle à la maquette : recherche instantanée, groupement par catégories (`Sans catégorie`, `Text Channels`), badges `#` et fermeture fluide.
+- Service d'accueil Discord bot `guildJoinService` lors de l'arrivée sur un serveur (`guildCreate`) : mention directe de l'inviteur (`<@inviterId>`), diagnostic dynamique des 11 permissions recommandées et réglages système.
+- Rangées de composants interactifs pour la sélection/création d'un salon système et le choix de la langue du bot (FR, EN, ES, DE).
+- Boutons de liens externes directs vers le serveur de Support (`https://discord.gg/WvEcyBuP45`) et le Dashboard (`/discord?guildId=...`).
+
 ## v1.55.65 — 2026-10-08
 
 **Scan de Sécurité Discord Interactif & Diagnostic Serveur**

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Scan,
@@ -9,6 +9,8 @@ import {
   Shield,
   Check,
   ChevronDown,
+  Hash,
+  Search,
 } from "@/components/icons/ph";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
@@ -21,11 +23,17 @@ interface GuildSecurityScanProps {
   onBack?: () => void;
 }
 
-const DEFAULT_CHANNELS = [
-  { id: "alertes", name: "alertes" },
-  { id: "etho-logs", name: "etho-logs" },
-  { id: "moderation", name: "moderation" },
-  { id: "general", name: "general" },
+interface ChannelItem {
+  id: string;
+  name: string;
+  category?: string;
+}
+
+const DEFAULT_CHANNELS: ChannelItem[] = [
+  { id: "moderator-only", name: "moderator-only", category: "Sans catégorie" },
+  { id: "rules", name: "rules", category: "Sans catégorie" },
+  { id: "serverminecraft", name: "serverminecraft", category: "Sans catégorie" },
+  { id: "general", name: "general", category: "Text Channels" },
 ];
 
 const ANTI_NUKE_MODULES = [
@@ -92,6 +100,242 @@ const SOLID_POINTS: SolidPoint[] = [
   },
 ];
 
+function SecurityChannelSelect({
+  value,
+  onChange,
+  channels,
+  placeholder = "Choisir un salon",
+}: {
+  value: string;
+  onChange: (id: string) => void;
+  channels: ChannelItem[];
+  placeholder?: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const containerRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    if (open) {
+      document.addEventListener("mousedown", handleOutsideClick);
+      document.addEventListener("keydown", handleKeyDown);
+      setTimeout(() => searchInputRef.current?.focus(), 50);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [open]);
+
+  const selectedChannel = channels.find((c) => c.id === value || c.name === value);
+
+  const filteredChannels = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return channels;
+    return channels.filter(
+      (c) => c.name.toLowerCase().includes(q) || c.id.toLowerCase().includes(q)
+    );
+  }, [channels, search]);
+
+  const grouped = useMemo(() => {
+    const groups: Record<string, ChannelItem[]> = {};
+    for (const c of filteredChannels) {
+      const cat = c.category || "Sans catégorie";
+      if (!groups[cat]) groups[cat] = [];
+      groups[cat].push(c);
+    }
+    return groups;
+  }, [filteredChannels]);
+
+  return (
+    <div ref={containerRef} className="relative w-full">
+      <button
+        type="button"
+        onClick={() => setOpen((prev) => !prev)}
+        className={cn(
+          "w-full rounded-xl border px-3.5 py-2.5 text-xs flex items-center justify-between transition-all cursor-pointer shadow-sm select-none",
+          open
+            ? "border-emerald-500/80 bg-[#0c1315] ring-1 ring-emerald-500/30"
+            : "border-emerald-500/50 bg-[#0c1315] hover:border-emerald-500/80 hover:bg-[#0f171a]"
+        )}
+      >
+        <span className={cn("truncate font-medium", selectedChannel ? "text-zinc-200" : "text-zinc-400")}>
+          {selectedChannel ? `# ${selectedChannel.name}` : placeholder}
+        </span>
+        <svg
+          className="w-3.5 h-3.5 text-zinc-400 shrink-0 ml-2"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="m7 15 5 5 5-5" />
+          <path d="m7 9 5-5 5 5" />
+        </svg>
+      </button>
+
+      {open && (
+        <div className="absolute left-0 right-0 top-full mt-1.5 z-50 rounded-xl border border-white/10 bg-[#161d1f] p-2 shadow-2xl backdrop-blur-md max-h-72 flex flex-col">
+          <div className="relative flex items-center px-2 py-1.5 mb-1.5 border-b border-white/5">
+            <Search className="w-3.5 h-3.5 text-zinc-400 absolute left-2.5" />
+            <input
+              ref={searchInputRef}
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Rechercher un salon ou coller un ID"
+              className="w-full bg-transparent pl-6 pr-2 py-0.5 text-xs text-white placeholder-zinc-500 outline-none"
+            />
+          </div>
+
+          <div className="overflow-y-auto space-y-2 pr-1">
+            {Object.keys(grouped).length === 0 ? (
+              <div className="py-4 text-center text-xs text-zinc-500">
+                Aucun salon trouvé
+              </div>
+            ) : (
+              Object.entries(grouped).map(([category, items]) => (
+                <div key={category} className="space-y-0.5">
+                  <div className="px-2.5 pt-1 pb-0.5 text-[11px] font-semibold text-zinc-400 select-none">
+                    {category}
+                  </div>
+                  {items.map((c) => {
+                    const isSelected = c.id === value || c.name === value;
+                    return (
+                      <button
+                        key={c.id}
+                        type="button"
+                        onClick={() => {
+                          onChange(c.id);
+                          setOpen(false);
+                          setSearch("");
+                        }}
+                        className={cn(
+                          "w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium text-left transition-colors cursor-pointer",
+                          isSelected
+                            ? "bg-white/10 text-white font-semibold"
+                            : "text-zinc-300 hover:bg-white/5 hover:text-white"
+                        )}
+                      >
+                        <Hash className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
+                        <span className="truncate">{c.name}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function AutoScanCard({
+  enabled,
+  onToggle,
+  channel,
+  onChangeChannel,
+  frequency,
+  onChangeFrequency,
+  channels,
+  i18n,
+}: {
+  enabled: boolean;
+  onToggle: () => void;
+  channel: string;
+  onChangeChannel: (channelId: string) => void;
+  frequency: "day" | "week";
+  onChangeFrequency: (freq: "day" | "week") => void;
+  channels: ChannelItem[];
+  i18n: (key: string, fallback: string) => string;
+}) {
+  return (
+    <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-5 space-y-4 shadow-sm">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h3 className="font-semibold text-xs sm:text-sm text-[var(--text-primary)]">
+            {i18n("dAutoScanTitle", "Scan automatique")}
+          </h3>
+          <p className="text-[11px] text-[var(--text-muted)] mt-0.5 leading-relaxed">
+            {i18n(
+              "dAutoScanDesc",
+              "Un rapport posté dans un salon, avec ce qui a changé depuis le précédent."
+            )}
+          </p>
+        </div>
+
+        <button
+          type="button"
+          role="switch"
+          aria-checked={enabled}
+          onClick={onToggle}
+          className={cn(
+            "relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none",
+            enabled ? "bg-emerald-500" : "bg-white/20"
+          )}
+        >
+          <span
+            className={cn(
+              "pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out",
+              enabled ? "translate-x-4" : "translate-x-0"
+            )}
+          />
+        </button>
+      </div>
+
+      <div className="space-y-3 pt-1">
+        <SecurityChannelSelect
+          value={channel}
+          onChange={onChangeChannel}
+          channels={channels}
+          placeholder={i18n("dChooseChannel", "Choisir un salon")}
+        />
+
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => onChangeFrequency("day")}
+            className={cn(
+              "rounded-lg px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer",
+              frequency === "day"
+                ? "bg-white/10 text-[var(--text-primary)] border border-white/20"
+                : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-white/5"
+            )}
+          >
+            {i18n("dEveryDay", "Chaque jour")}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => onChangeFrequency("week")}
+            className={cn(
+              "rounded-lg px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer",
+              frequency === "week"
+                ? "bg-white/10 text-[var(--text-primary)] border border-white/20"
+                : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-white/5"
+            )}
+          >
+            {i18n("dEveryWeek", "Chaque semaine")}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function GuildSecurityScan({
   guild,
   onOpenProtections,
@@ -102,7 +346,7 @@ export default function GuildSecurityScan({
   const [scanState, setScanState] = useState<"idle" | "scanning" | "done">("idle");
   const [activeCategory, setActiveCategory] = useState<CategoryFilter>("all");
   const [autoScanEnabled, setAutoScanEnabled] = useState(false);
-  const [autoScanChannel, setAutoScanChannel] = useState("alertes");
+  const [autoScanChannel, setAutoScanChannel] = useState("moderator-only");
   const [autoScanFrequency, setAutoScanFrequency] = useState<"day" | "week">("week");
   const [solidPointsOpen, setSolidPointsOpen] = useState(false);
   const [channels, setChannels] = useState(DEFAULT_CHANNELS);
@@ -134,8 +378,13 @@ export default function GuildSecurityScan({
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
         if (!cancelled && data?.channels && Array.isArray(data.channels) && data.channels.length > 0) {
-          setChannels(data.channels);
-          setAutoScanChannel(data.channels[0].id);
+          const mapped: ChannelItem[] = data.channels.map((c: any) => ({
+            id: String(c.id),
+            name: String(c.name),
+            category: c.categoryName || c.parentName || "Sans catégorie",
+          }));
+          setChannels(mapped);
+          setAutoScanChannel((prev) => (mapped.some((m) => m.id === prev) ? prev : mapped[0].id));
         }
       })
       .catch(() => {});
@@ -293,85 +542,17 @@ export default function GuildSecurityScan({
             </button>
           </motion.div>
 
-          <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-5 space-y-4 max-w-md shadow-sm">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <h3 className="font-semibold text-xs sm:text-sm text-[var(--text-primary)]">
-                  {i18n("dAutoScanTitle", "Scan automatique")}
-                </h3>
-                <p className="text-[11px] text-[var(--text-muted)] mt-0.5 leading-relaxed">
-                  {i18n(
-                    "dAutoScanDesc",
-                    "Un rapport posté dans un salon, avec ce qui a changé depuis le précédent."
-                  )}
-                </p>
-              </div>
-
-              <button
-                type="button"
-                role="switch"
-                aria-checked={autoScanEnabled}
-                onClick={handleToggleAutoScan}
-                className={cn(
-                  "relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none",
-                  autoScanEnabled ? "bg-emerald-500" : "bg-white/20"
-                )}
-              >
-                <span
-                  className={cn(
-                    "pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out",
-                    autoScanEnabled ? "translate-x-4" : "translate-x-0"
-                  )}
-                />
-              </button>
-            </div>
-
-            <div className="space-y-3 pt-1">
-              <div>
-                <select
-                  value={autoScanChannel}
-                  onChange={(e) => handleChangeChannel(e.target.value)}
-                  className="w-full rounded-lg border border-[var(--panel-border)] bg-[var(--background)] px-3 py-2 text-xs text-[var(--text-primary)] outline-none cursor-pointer focus:border-emerald-500/50"
-                >
-                  <option value="" disabled>
-                    {i18n("dChooseChannel", "Choisir un salon")}
-                  </option>
-                  {channels.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      #{c.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => handleChangeFrequency("day")}
-                  className={cn(
-                    "rounded-lg px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer",
-                    autoScanFrequency === "day"
-                      ? "bg-white/10 text-[var(--text-primary)] border border-white/20"
-                      : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-white/5"
-                  )}
-                >
-                  {i18n("dEveryDay", "Chaque jour")}
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => handleChangeFrequency("week")}
-                  className={cn(
-                    "rounded-lg px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer",
-                    autoScanFrequency === "week"
-                      ? "bg-white/10 text-[var(--text-primary)] border border-white/20"
-                      : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-white/5"
-                  )}
-                >
-                  {i18n("dEveryWeek", "Chaque semaine")}
-                </button>
-              </div>
-            </div>
+          <div className="max-w-md">
+            <AutoScanCard
+              enabled={autoScanEnabled}
+              onToggle={handleToggleAutoScan}
+              channel={autoScanChannel}
+              onChangeChannel={handleChangeChannel}
+              frequency={autoScanFrequency}
+              onChangeFrequency={handleChangeFrequency}
+              channels={channels}
+              i18n={i18n}
+            />
           </div>
         </div>
       )}
@@ -399,85 +580,17 @@ export default function GuildSecurityScan({
             </div>
           </motion.div>
 
-          <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-5 space-y-4 max-w-md shadow-sm">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <h3 className="font-semibold text-xs sm:text-sm text-[var(--text-primary)]">
-                  {i18n("dAutoScanTitle", "Scan automatique")}
-                </h3>
-                <p className="text-[11px] text-[var(--text-muted)] mt-0.5 leading-relaxed">
-                  {i18n(
-                    "dAutoScanDesc",
-                    "Un rapport posté dans un salon, avec ce qui a changé depuis le précédent."
-                  )}
-                </p>
-              </div>
-
-              <button
-                type="button"
-                role="switch"
-                aria-checked={autoScanEnabled}
-                onClick={handleToggleAutoScan}
-                className={cn(
-                  "relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none",
-                  autoScanEnabled ? "bg-emerald-500" : "bg-white/20"
-                )}
-              >
-                <span
-                  className={cn(
-                    "pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out",
-                    autoScanEnabled ? "translate-x-4" : "translate-x-0"
-                  )}
-                />
-              </button>
-            </div>
-
-            <div className="space-y-3 pt-1">
-              <div>
-                <select
-                  value={autoScanChannel}
-                  onChange={(e) => handleChangeChannel(e.target.value)}
-                  className="w-full rounded-lg border border-[var(--panel-border)] bg-[var(--background)] px-3 py-2 text-xs text-[var(--text-primary)] outline-none cursor-pointer focus:border-emerald-500/50"
-                >
-                  <option value="" disabled>
-                    {i18n("dChooseChannel", "Choisir un salon")}
-                  </option>
-                  {channels.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      #{c.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => handleChangeFrequency("day")}
-                  className={cn(
-                    "rounded-lg px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer",
-                    autoScanFrequency === "day"
-                      ? "bg-white/10 text-[var(--text-primary)] border border-white/20"
-                      : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-white/5"
-                  )}
-                >
-                  {i18n("dEveryDay", "Chaque jour")}
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => handleChangeFrequency("week")}
-                  className={cn(
-                    "rounded-lg px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer",
-                    autoScanFrequency === "week"
-                      ? "bg-white/10 text-[var(--text-primary)] border border-white/20"
-                      : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-white/5"
-                  )}
-                >
-                  {i18n("dEveryWeek", "Chaque semaine")}
-                </button>
-              </div>
-            </div>
+          <div className="max-w-md">
+            <AutoScanCard
+              enabled={autoScanEnabled}
+              onToggle={handleToggleAutoScan}
+              channel={autoScanChannel}
+              onChangeChannel={handleChangeChannel}
+              frequency={autoScanFrequency}
+              onChangeFrequency={handleChangeFrequency}
+              channels={channels}
+              i18n={i18n}
+            />
           </div>
         </div>
       )}
@@ -573,86 +686,16 @@ export default function GuildSecurityScan({
               </div>
             </div>
 
-            <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-5 space-y-4 shadow-sm">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <h3 className="font-semibold text-xs sm:text-sm text-[var(--text-primary)]">
-                    {i18n("dAutoScanTitle", "Scan automatique")}
-                  </h3>
-                  <p className="text-[11px] text-[var(--text-muted)] mt-0.5 leading-relaxed">
-                    {i18n(
-                      "dAutoScanDesc",
-                      "Un rapport posté dans un salon, avec ce qui a changé depuis le précédent."
-                    )}
-                  </p>
-                </div>
-
-                <button
-                  type="button"
-                  role="switch"
-                  aria-checked={autoScanEnabled}
-                  onClick={handleToggleAutoScan}
-                  className={cn(
-                    "relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none",
-                    autoScanEnabled ? "bg-emerald-500" : "bg-white/20"
-                  )}
-                >
-                  <span
-                    className={cn(
-                      "pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out",
-                      autoScanEnabled ? "translate-x-4" : "translate-x-0"
-                    )}
-                  />
-                </button>
-              </div>
-
-              <div className="space-y-3 pt-1">
-                <div>
-                  <select
-                    value={autoScanChannel}
-                    onChange={(e) => handleChangeChannel(e.target.value)}
-                    className="w-full rounded-lg border border-[var(--panel-border)] bg-[var(--background)] px-3 py-2 text-xs text-[var(--text-primary)] outline-none cursor-pointer focus:border-emerald-500/50"
-                  >
-                    <option value="" disabled>
-                      {i18n("dChooseChannel", "Choisir un salon")}
-                    </option>
-                    {channels.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        #{c.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => handleChangeFrequency("day")}
-                    className={cn(
-                      "rounded-lg px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer",
-                      autoScanFrequency === "day"
-                        ? "bg-white/10 text-[var(--text-primary)] border border-white/20"
-                        : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-white/5"
-                    )}
-                  >
-                    {i18n("dEveryDay", "Chaque jour")}
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => handleChangeFrequency("week")}
-                    className={cn(
-                      "rounded-lg px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer",
-                      autoScanFrequency === "week"
-                        ? "bg-white/10 text-[var(--text-primary)] border border-white/20"
-                        : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-white/5"
-                    )}
-                  >
-                    {i18n("dEveryWeek", "Chaque semaine")}
-                  </button>
-                </div>
-              </div>
-            </div>
+            <AutoScanCard
+              enabled={autoScanEnabled}
+              onToggle={handleToggleAutoScan}
+              channel={autoScanChannel}
+              onChangeChannel={handleChangeChannel}
+              frequency={autoScanFrequency}
+              onChangeFrequency={handleChangeFrequency}
+              channels={channels}
+              i18n={i18n}
+            />
           </div>
 
           <div className="lg:col-span-7 space-y-4">

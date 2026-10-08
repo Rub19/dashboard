@@ -50,6 +50,7 @@ import { handleModButton } from '../modules/moderation/interactions/modButtonHan
 import { BotConfigService } from '../modules/botControl/services/botConfigService.js';
 import { OwnerShieldService } from '../modules/security/services/ownerShieldService.js';
 import { guildSetupService } from '../services/guildSetupService.js';
+import { guildJoinService } from '../services/guildJoinService.js';
 import { reportsService } from '../modules/reports/services/reportsService.js';
 import { REPORT_CONTEXT_MENUS } from '../modules/reports/commands/reportCommands.js';
 import { logger } from '../utils/logger.js';
@@ -112,6 +113,10 @@ export async function onInteractionCreate(interaction: Interaction) {
   }
   // 1. Gestion des composants d'interaction (Boutons, Menus déroulants, Modals)
   if (interaction.isAnySelectMenu()) {
+    if (interaction.customId.startsWith('guild_join:')) {
+      await safeHandleComponent(interaction, 'guild_join_select', () => guildJoinService.handleSelect(interaction as any));
+      return;
+    }
     if (interaction.customId.startsWith('rep_sanction:') && interaction.isStringSelectMenu()) {
       await safeHandleComponent(interaction, 'report_sanction', () => reportsService.handleSelect(interaction));
       return;
@@ -143,6 +148,10 @@ export async function onInteractionCreate(interaction: Interaction) {
   }
 
   if (interaction.isButton()) {
+    if (interaction.customId.startsWith('guild_join:')) {
+      await safeHandleComponent(interaction, 'guild_join_button', () => guildJoinService.handleButton(interaction));
+      return;
+    }
     if (interaction.customId.startsWith('qsetup:')) {
       await safeHandleComponent(interaction, 'quick_setup', () => guildSetupService.handle(interaction));
       return;

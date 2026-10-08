@@ -76,6 +76,7 @@ export const GuildConfigSchema = z.object({
   modRoles: z.array(z.string()).default([]),
   vipRoles: z.array(z.string()).default([]),
   activePreset: z.string().default('PRESET_BALANCED'),
+  systemChannelId: z.string().nullable().optional(),
 });
 
 export type GuildConfig = z.infer<typeof GuildConfigSchema>;

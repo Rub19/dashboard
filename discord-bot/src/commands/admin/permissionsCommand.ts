@@ -17,7 +17,7 @@ export const permissionsCommand: Command = {
   name: 'permissions',
   description: 'Gère les rôles du serveur, détection automatique multilingue et présets (Admin)',
   category: 'Administration',
-  aliases: ['roles-config', 'perms', 'roles-setup'],
+  aliases: ['roles-config', 'perms', 'roles-setup', 'verifier-permissions', 'verifier_permissions'],
   userPermissions: [PermissionFlagsBits.Administrator],
   slashData: new SlashCommandBuilder()
     .setName('permissions')

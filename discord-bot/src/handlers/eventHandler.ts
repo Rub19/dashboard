@@ -46,6 +46,7 @@ import { BotTelemetryService } from '../modules/botControl/services/botTelemetry
 import { BotEventBusService } from '../modules/botControl/services/botEventBusService.js';
 import { LIVE_DISCORD_EVENTS, guildIdOfEvent, notifyDiscordState } from '../services/discordStateNotifier.js';
 import { guildSetupService } from '../services/guildSetupService.js';
+import { guildJoinService } from '../services/guildJoinService.js';
 import { statsCollector } from '../modules/stats/services/statsCollector.js';
 import { guardMemberUpdate as guardSecureRoles } from '../modules/secureroles/services/secureRolesService.js';
 import { logger } from '../utils/logger.js';
@@ -292,8 +293,8 @@ export function registerEvents(client: Client): void {
   client.on(Events.GuildUpdate, (oldGuild, newGuild) => handleGuildUpdate(oldGuild, newGuild));
   // Nouveau serveur : socle actif, tout le reste désactivé, panneau de configuration rapide posté
   client.on(Events.GuildCreate, (guild) => {
-    // Le bot revient sur un serveur qu'il vient de quitter : la purge en attente reste programmée (départ propre, config remise à zéro).
     guildSetupService.provision(guild).catch((err) => logger.error('[Setup] Initialisation du serveur impossible :', err));
+    guildJoinService.sendJoinWelcome(guild).catch((err) => logger.error('[Join] Envoi du message d\'accueil impossible :', err));
   });
   client.on(Events.GuildDelete, (guild) => {
     if (guild.available === false) return; // panne Discord, pas un départ : rien à effacer

@@ -48074,5 +48074,50 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_93_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_93_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_93_de);
 
+const v1_55_94_fr: ChangelogEntry = {
+  version: "v1.55.94",
+  date: "2026-10-09",
+  title: "Console Discord : sélecteur de serveur façon Keeper",
+  items: [
+    "Un clic sur le serveur en haut de la barre latérale ouvre le sélecteur : recherche, serveurs protégés par Etho (coche sur le serveur ouvert), serveurs sans Etho (+ pour l'inviter) et « Tous mes serveurs ».",
+    "Export et import de la configuration, identifiant du serveur et visite guidée sont maintenant dans Réglages › Configuration.",
+  ],
+};
+
+const v1_55_94_en: ChangelogEntry = {
+  version: "v1.55.94",
+  date: "2026-10-09",
+  title: "Discord console: Keeper-style server switcher",
+  items: [
+    "Clicking the server at the top of the sidebar opens the switcher: search, servers protected by Etho (tick on the open one), servers without Etho (+ to invite it) and “All my servers”.",
+    "Config export and import, server ID and the guided tour now live in Settings › Configuration.",
+  ],
+};
+
+const v1_55_94_es: ChangelogEntry = {
+  version: "v1.55.94",
+  date: "2026-10-09",
+  title: "Consola Discord: selector de servidor al estilo Keeper",
+  items: [
+    "Un clic en el servidor de arriba de la barra lateral abre el selector: búsqueda, servidores protegidos por Etho (marca en el abierto), servidores sin Etho (+ para invitarlo) y « Todos mis servidores ».",
+    "Exportar e importar la configuración, el ID del servidor y la visita guiada están ahora en Ajustes › Configuración.",
+  ],
+};
+
+const v1_55_94_de: ChangelogEntry = {
+  version: "v1.55.94",
+  date: "2026-10-09",
+  title: "Discord-Konsole: Serverwechsler im Keeper-Stil",
+  items: [
+    "Ein Klick auf den Server oben in der Seitenleiste öffnet den Wechsler: Suche, von Etho geschützte Server (Haken beim geöffneten), Server ohne Etho (+ zum Einladen) und „Alle meine Server“.",
+    "Export und Import der Konfiguration, Server-ID und die geführte Tour befinden sich jetzt unter Einstellungen › Konfiguration.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_94_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_94_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_94_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_94_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

@@ -1145,13 +1145,8 @@ export default function DiscordDashboardPage() {
           botGuildIds={botGuildIds}
           onSelectGuild={pickGuild}
           onChangeGuild={changeGuild}
-          onOpenIntro={() => openOnboarding(0)}
           onOpenSetup={goSetup}
           onOpenScan={goScan}
-          onExportConfig={handleExportConfig}
-          onImportConfig={() => fileInputRef.current?.click()}
-          onCopyGuildId={handleCopyId}
-          copiedId={copiedId}
           onOpenView={openConsoleView}
           activeModuleCount={activeModuleCount}
           totalModuleCount={totalModuleCount}
@@ -1291,7 +1286,16 @@ export default function DiscordDashboardPage() {
                 />
               )}
 
-              {view === "settings" && <ConsoleSettings guildId={selectedGuild.id} />}
+              {view === "settings" && (
+                <ConsoleSettings
+                  guildId={selectedGuild.id}
+                  onExport={handleExportConfig}
+                  onImport={() => fileInputRef.current?.click()}
+                  onCopyId={handleCopyId}
+                  copiedId={copiedId}
+                  onOpenTour={() => openOnboarding(0)}
+                />
+              )}
               {view === "access" && <ConsoleAccess guildId={selectedGuild.id} />}
               {view === "logs" && <ConsoleLogs key={logsTab} guildId={selectedGuild.id} initialTab={logsTab} />}
               {view === "whitelist" && <ConsoleWhitelist guildId={selectedGuild.id} />}

@@ -4,12 +4,14 @@ import { useEffect, useState } from "react";
 import { Radio } from "@/components/icons/ph";
 import ChannelPicker from "../ChannelPicker";
 import { useRaidMode } from "@/lib/hooks/useRaidMode";
-import { ConsolePage, Panel, Row, Switch, useGuildApi } from "./kit";
+import { ConsolePage, GhostButton, Panel, Row, Switch, useGuildApi } from "./kit";
 
 type Settings = { prefix: string; systemChannelId: string | null; ownerDmAlerts: boolean; antiRaidEnabled?: boolean };
 
 /** Réglages (format Keeper) : préfixe, salon système, MP au propriétaire, mode raid. Tout est lu et écrit sur le bot. */
-export default function ConsoleSettings({ guildId }: { guildId: string }) {
+type ConfigActions = { onExport?: () => void; onImport?: () => void; onCopyId?: () => void; copiedId?: boolean; onOpenTour?: () => void };
+
+export default function ConsoleSettings({ guildId, onExport, onImport, onCopyId, copiedId, onOpenTour }: { guildId: string } & ConfigActions) {
   const api = useGuildApi(guildId);
   const raid = useRaidMode(guildId);
   const [settings, setSettings] = useState<Settings | null>(null);
@@ -105,6 +107,34 @@ export default function ConsoleSettings({ guildId }: { guildId: string }) {
           <Switch checked={raid.active === true} onChange={() => raid.toggle()} disabled={raid.busy || raid.active === null} label="Mode raid" />
         </div>
       </Panel>
+
+      {(onExport || onImport || onCopyId || onOpenTour) && (
+        <Panel title="Configuration">
+          {(onExport || onImport) && (
+            <Row label="Sauvegarde des réglages" hint="Un fichier .json avec la configuration d'Etho sur ce serveur, à réimporter ici ou sur un autre serveur.">
+              <div className="flex flex-wrap justify-end gap-2">
+                {onExport && <GhostButton onClick={onExport}>Exporter</GhostButton>}
+                {onImport && <GhostButton onClick={onImport}>Importer</GhostButton>}
+              </div>
+            </Row>
+          )}
+          {onCopyId && (
+            <Row label="Identifiant du serveur">
+              <div className="flex items-center justify-end gap-2">
+                <code className="font-mono text-xs text-[var(--text-muted)]">{guildId}</code>
+                <GhostButton onClick={onCopyId}>{copiedId ? "Copié" : "Copier"}</GhostButton>
+              </div>
+            </Row>
+          )}
+          {onOpenTour && (
+            <Row label="Visite guidée" hint="Revoir la présentation d'Etho et de la console.">
+              <div className="flex justify-end">
+                <GhostButton onClick={onOpenTour}>Lancer</GhostButton>
+              </div>
+            </Row>
+          )}
+        </Panel>
+      )}
     </ConsolePage>
   );
 }

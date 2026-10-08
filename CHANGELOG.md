@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.94 — 2026-10-09
+
+**Console Discord : sélecteur de serveur façon Keeper**
+
+- Un clic sur le serveur en haut de la barre latérale ouvre le sélecteur : recherche, serveurs protégés par Etho (coche sur le serveur ouvert), serveurs sans Etho (+ pour l'inviter) et « Tous mes serveurs ».
+- Export et import de la configuration, identifiant du serveur et visite guidée sont maintenant dans Réglages › Configuration.
+
 ## v1.55.93 — 2026-10-09
 
 **Console Discord : finitions**

@@ -1,5 +1,14 @@
 [
   {
+    "version": "v1.55.94",
+    "date": "2026-10-09",
+    "title": "Console Discord : sélecteur de serveur façon Keeper",
+    "items": [
+      "Un clic sur le serveur en haut de la barre latérale ouvre le sélecteur : recherche, serveurs protégés par Etho (coche sur le serveur ouvert), serveurs sans Etho (+ pour l'inviter) et « Tous mes serveurs ».",
+      "Export et import de la configuration, identifiant du serveur et visite guidée sont maintenant dans Réglages › Configuration."
+    ]
+  },
+  {
     "version": "v1.55.93",
     "date": "2026-10-09",
     "title": "Console Discord : finitions",
@@ -641,17 +650,6 @@
       "Boutique interactive Liquid Glass : recherche en direct, filtrage par onglets (Tous, Installés, Favoris) et sélecteur horizontal de catégories.",
       "Gestion locale des extensions : installation, désactivation instantanée sans perte de configuration et mise en favoris avec persistance.",
       "Fiche détaillée modale : aperçu des permissions requises, fonctionnalités intégrées, métadonnées techniques et journal des modifications par extension."
-    ]
-  },
-  {
-    "version": "v1.55.32",
-    "date": "2026-10-06",
-    "title": "Parité iOS Native : Soundscape Studio & Modules Discord Avancés",
-    "items": [
-      "Intégration native de Soundscape sur iOS : moteur audio procédural pur AVFoundation (ondes binaurales stéréo, fréquences Solfeggio 432-852 Hz, ambiances naturelles générées en direct) et visualiseur d'ondes 60 FPS en Canvas SwiftUI sans aucun fichier audio externe.",
-      "Support de la lecture audio en arrière-plan (mode audio iOS) et minuteur d'extinction automatique progressif.",
-      "Parité complète des modules Discord d'administration sur iOS : Alertes Streamers (Twitch, YouTube, Kick) et Mini-Jeux & Casino.",
-      "Sélecteur de serveur instantané dans la barre d'outils iOS pour basculer d'un serveur à un autre sans retour en arrière."
     ]
   }
 ]

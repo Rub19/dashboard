@@ -12,12 +12,6 @@ import {
   Sun,
   Moon,
   LogOut,
-  MoreHorizontal,
-  Sparkles,
-  Download,
-  Upload,
-  Copy,
-  Check,
 } from "@/components/icons/ph";
 // Icônes de la console : les mêmes que Keeper (Lucide, trait fin).
 import {
@@ -42,6 +36,7 @@ import {
   WandSparkles as LWandSparkles,
 } from "lucide-react";
 import ClientImage from "@/components/ClientImage";
+import ServerSwitcher from "./console/ServerSwitcher";
 import OwnerBotSection from "./OwnerBotSection";
 import DiscordLanguageDropdown from "./DiscordLanguageDropdown";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
@@ -84,12 +79,7 @@ interface HubSidebarProps {
   onSelect?: (id: string) => void;
   open?: boolean;
   onClose?: () => void;
-  onOpenIntro?: () => void;
   onOpenSetup?: () => void;
-  onExportConfig?: () => void;
-  onImportConfig?: () => void;
-  onCopyGuildId?: () => void;
-  copiedId?: boolean;
   /** Ouvre une page de la console (Réglages, Accès…) sans quitter la console. */
   onOpenView?: (view: ConsoleView, opts?: { logsTab?: "incidents" | "channels" }) => void;
   /** Modules actifs / total sur ce serveur (lus depuis le bot par la page). */
@@ -123,14 +113,6 @@ function LifeBuoyIcon({ className = "h-4 w-4" }: { className?: string }) {
   );
 }
 
-function getGuildInitials(name: string) {
-  const words = name.trim().split(/\s+/);
-  if (words.length >= 2 && words[0] && words[1]) {
-    return (words[0][0] + words[1][0]).toUpperCase();
-  }
-  return name.slice(0, 2).toUpperCase() || "SV";
-}
-
 const ANIMATION_LINKS = [
   { id: "music", path: "/discord/music", key: "dMusic", label: "Musique", icon: LMusic },
   { id: "games", path: "/discord/games", key: "dGames", label: "Jeux et casino", icon: LGamepad2 },
@@ -146,18 +128,17 @@ export default function HubSidebar({
   guildIconUrl,
   selectedGuildId = "",
   onChangeGuild,
+  guilds = [],
+  botGuildIds,
+  onSelectGuild,
+  botInviteUrl,
   view = "home",
   activeId = "",
   onHome,
   open = false,
   onClose,
-  onOpenIntro,
   onOpenSetup,
   onOpenScan,
-  onExportConfig,
-  onImportConfig,
-  onCopyGuildId,
-  copiedId = false,
   onOpenView,
   onSelect,
   onAllModules,
@@ -172,7 +153,6 @@ export default function HubSidebar({
   const botUser = useBotSessionUser();
   const storedUser = useMemo(() => getStoredDiscordUser(), []);
   const { reduced } = useMotionPref();
-  const [serverMenuOpen, setServerMenuOpen] = useState(false);
 
   const { isDark, toggle: toggleTheme } = useDayNightToggle();
 
@@ -216,7 +196,6 @@ export default function HubSidebar({
     ethoneProfile?.avatarUrl ||
     null;
 
-  const initials = useMemo(() => getGuildInitials(guildName), [guildName]);
 
   const isOverviewActive = view === "home" && !activeId;
   const isSetupActive = view === "setup";
@@ -263,157 +242,18 @@ export default function HubSidebar({
             </span>
           </div>
 
-          <motion.div
-            variants={consoleSidebarItem}
-            className="flex items-center justify-between gap-2 rounded-sm border border-[var(--panel-border)] bg-[var(--surface-raised)] p-2.5"
-          >
-            <div className="flex items-center gap-2.5 min-w-0">
-              {guildIconUrl ? (
-                <ClientImage
-                  src={guildIconUrl}
-                  alt={guildName}
-                  width={36}
-                  height={36}
-                  className="h-9 w-9 rounded-sm object-cover border border-[var(--panel-border)] shrink-0"
-                />
-              ) : (
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm bg-[var(--surface-raised)] text-[var(--accent-primary)] font-bold text-xs border border-[var(--panel-border)]">
-                  {initials}
-                </div>
-              )}
-              <div className="min-w-0 flex-1">
-                <span className="block truncate text-xs font-semibold text-[var(--text-primary)]">
-                  {guildName}
-                </span>
-                <span className="flex items-center gap-1.5 text-[11px] text-[var(--text-muted)]">
-                  <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--success)]" />
-                  <span className="truncate">{i18n("dOwnerEtho", "Owner Etho")}</span>
-                </span>
-              </div>
-            </div>
-
-            <div className="relative shrink-0">
-              <button
-                type="button"
-                onClick={() => setServerMenuOpen((v) => !v)}
-                aria-expanded={serverMenuOpen}
-                aria-haspopup="menu"
-                className="p-1 rounded text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover,var(--surface-raised))] transition-colors cursor-pointer"
-                title="Options du serveur"
-                aria-label="Options du serveur"
-              >
-                <MoreHorizontal className="h-4 w-4" />
-              </button>
-
-              <AnimatePresence>
-                {serverMenuOpen && (
-                  <>
-                    <div
-                      className="fixed inset-0 z-40"
-                      onClick={() => setServerMenuOpen(false)}
-                      aria-hidden="true"
-                    />
-                    <motion.div
-                      role="menu"
-                      initial={{ opacity: 0, scale: 0.95, y: -4 }}
-                      animate={{ opacity: 1, scale: 1, y: 0 }}
-                      exit={{ opacity: 0, scale: 0.95, y: -4 }}
-                      transition={{ duration: 0.15 }}
-                      className="absolute right-0 top-full mt-1.5 w-56 z-50 rounded border border-[var(--panel-border)] bg-[var(--surface-raised)] p-1 shadow-2xl space-y-0.5 text-xs font-medium"
-                    >
-                      {onChangeGuild && (
-                        <button
-                          type="button"
-                          role="menuitem"
-                          onClick={() => {
-                            setServerMenuOpen(false);
-                            onChangeGuild();
-                          }}
-                          className="w-full flex items-center gap-2 rounded px-2.5 py-1.5 text-left text-[var(--text-primary)] hover:bg-white/[0.06] transition-colors cursor-pointer"
-                        >
-                          <Home className="h-3.5 w-3.5 text-[var(--text-muted)]" />
-                          <span>{i18n("dSwitchServer", "Changer de serveur")}</span>
-                        </button>
-                      )}
-                      {onOpenIntro && (
-                        <button
-                          type="button"
-                          role="menuitem"
-                          onClick={() => {
-                            setServerMenuOpen(false);
-                            onOpenIntro();
-                          }}
-                          className="w-full flex items-center gap-2 rounded px-2.5 py-1.5 text-left text-[var(--text-primary)] hover:bg-white/[0.06] transition-colors cursor-pointer"
-                        >
-                          <Sparkles className="h-3.5 w-3.5 text-[var(--text-muted)]" />
-                          <span>{i18n("dRestartTour", "Découvrir le bot")}</span>
-                        </button>
-                      )}
-                      {onOpenSetup && (
-                        <button
-                          type="button"
-                          role="menuitem"
-                          onClick={() => {
-                            setServerMenuOpen(false);
-                            onOpenSetup();
-                          }}
-                          className="w-full flex items-center gap-2 rounded px-2.5 py-1.5 text-left text-[var(--text-primary)] hover:bg-white/[0.06] transition-colors cursor-pointer"
-                        >
-                          <LWandSparkles className="h-3.5 w-3.5 text-[var(--text-muted)]" strokeWidth={1.75} />
-                          <span>{i18n("dAssistedSetup", "Configuration assistée")}</span>
-                        </button>
-                      )}
-                      {onExportConfig && (
-                        <button
-                          type="button"
-                          role="menuitem"
-                          onClick={() => {
-                            setServerMenuOpen(false);
-                            onExportConfig();
-                          }}
-                          className="w-full flex items-center gap-2 rounded px-2.5 py-1.5 text-left text-[var(--text-primary)] hover:bg-white/[0.06] transition-colors cursor-pointer"
-                        >
-                          <Download className="h-3.5 w-3.5 text-[var(--text-muted)]" />
-                          <span>{i18n("dExportConfig", "Exporter la configuration")}</span>
-                        </button>
-                      )}
-                      {onImportConfig && (
-                        <button
-                          type="button"
-                          role="menuitem"
-                          onClick={() => {
-                            setServerMenuOpen(false);
-                            onImportConfig();
-                          }}
-                          className="w-full flex items-center gap-2 rounded px-2.5 py-1.5 text-left text-[var(--text-primary)] hover:bg-white/[0.06] transition-colors cursor-pointer"
-                        >
-                          <Upload className="h-3.5 w-3.5 text-[var(--text-muted)]" />
-                          <span>{i18n("dImportConfig", "Importer une configuration")}</span>
-                        </button>
-                      )}
-                      {onCopyGuildId && (
-                        <button
-                          type="button"
-                          role="menuitem"
-                          onClick={() => {
-                            setServerMenuOpen(false);
-                            onCopyGuildId();
-                          }}
-                          className="w-full flex items-center gap-2 rounded px-2.5 py-1.5 text-left text-[var(--text-primary)] hover:bg-white/[0.06] transition-colors cursor-pointer"
-                        >
-                          {copiedId ? (
-                            <Check className="h-3.5 w-3.5 text-emerald-400" />
-                          ) : (
-                            <Copy className="h-3.5 w-3.5 text-[var(--text-muted)]" />
-                          )}
-                          <span>{copiedId ? i18n("dIdCopied", "Identifiant copié !") : i18n("dCopyId", "Copier l'identifiant")}</span>
-                        </button>
-                      )}
-                    </motion.div>
-                  </>
-                )}
-              </AnimatePresence>
-            </div>
+          <motion.div variants={consoleSidebarItem}>
+            <ServerSwitcher
+              guildName={guildName}
+              guildIconUrl={guildIconUrl ?? undefined}
+              selectedGuildId={selectedGuildId}
+              guilds={guilds}
+              botGuildIds={botGuildIds}
+              onSelectGuild={onSelectGuild}
+              onAllServers={onChangeGuild}
+              botInviteUrl={botInviteUrl}
+              roleLabel={i18n("dOwnerEtho", "Owner Etho")}
+            />
           </motion.div>
 
           <motion.button

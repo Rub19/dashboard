@@ -25,10 +25,9 @@ import LightBorder from "@/components/ui/LightBorder";
 import ClientImage from "@/components/ClientImage";
 import DiscordLanguageDropdown from "./DiscordLanguageDropdown";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
-import { useSettings } from "@/components/SettingsProvider";
 import { useAuth } from "@/components/AuthProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
-import { resolveTheme } from "@/lib/theme-engine";
+import { useDayNightToggle } from "@/lib/hooks/useDayNightToggle";
 import { useAccountProfile } from "@/lib/profile/account-profile";
 import { cn } from "@/lib/utils";
 import { choreography, revealUp } from "@/lib/motion-variants";
@@ -151,20 +150,11 @@ export default function ServerPicker({
   const { setOpen: openCommandPalette } = useCommandPalette();
   const { profile: ethoneProfile } = useAccountProfile();
   const router = useRouter();
-  const { settings, update: updateSettings } = useSettings();
   const { signOut } = useAuth();
 
   const i18n = useI18n();
-  const isDark = settings.darkMode && resolveTheme(settings.theme).dark !== false;
+  const { isDark, toggle: toggleTheme } = useDayNightToggle();
 
-  const toggleTheme = useCallback(() => {
-    const nextDark = !isDark;
-    updateSettings({
-      darkMode: nextDark,
-      theme: nextDark ? "obsidian" : "arctic",
-      colorScheme: nextDark ? "dark" : "light",
-    });
-  }, [isDark, updateSettings]);
 
   const handleLogout = useCallback(async () => {
     try {
@@ -232,7 +222,7 @@ export default function ServerPicker({
     storedUser?.username ||
     ethoneProfile?.displayName ||
     ethoneProfile?.username ||
-    "rub19";
+    "Compte";
   const currentAvatarUrl =
     botUser?.avatarUrl ||
     userAvatar ||

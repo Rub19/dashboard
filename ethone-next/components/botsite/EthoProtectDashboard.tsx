@@ -20,15 +20,15 @@ import {
   LogOut,
 } from "@/components/icons/ph";
 import { useDiscordOAuth, canManageGuild, getStoredDiscordGuilds, getStoredDiscordUser, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
+import { useDayNightToggle } from "@/lib/hooks/useDayNightToggle";
 import { useBotGuildIds } from "@/lib/hooks/useBotGuildIds";
 import { useAccountProfile } from "@/lib/profile/account-profile";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
-import { useSettings } from "@/components/SettingsProvider";
 import { useAuth } from "@/components/AuthProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
-import { resolveTheme } from "@/lib/theme-engine";
 import DiscordLanguageDropdown from "@/components/discord/DiscordLanguageDropdown";
 import ClientImage from "@/components/ClientImage";
+import { useBotSessionUser } from "@/lib/hooks/useBotSessionUser";
 import BotLanding from "@/components/botsite/BotLanding";
 import BotInstallView from "@/components/discord/BotInstallView";
 
@@ -106,20 +106,11 @@ export default function EthoProtectDashboard() {
     }
   }, []);
 
-  const { settings, update: updateSettings } = useSettings();
   const { signOut } = useAuth();
 
   const i18n = useI18n();
-  const isDark = settings.darkMode && resolveTheme(settings.theme).dark !== false;
+  const { isDark, toggle: toggleTheme } = useDayNightToggle();
 
-  const toggleTheme = useCallback(() => {
-    const nextDark = !isDark;
-    updateSettings({
-      darkMode: nextDark,
-      theme: nextDark ? "obsidian" : "arctic",
-      colorScheme: nextDark ? "dark" : "light",
-    });
-  }, [isDark, updateSettings]);
 
   const handleLogout = useCallback(async () => {
     try {
@@ -130,6 +121,7 @@ export default function EthoProtectDashboard() {
 
   const storedGuilds = useMemo(() => getStoredDiscordGuilds(), []);
   const storedUser = useMemo(() => getStoredDiscordUser(), []);
+  const botUser = useBotSessionUser();
 
   const userGuilds: DiscordGuild[] = useMemo(() => {
     const raw = discordProfile?.guilds && discordProfile.guilds.length > 0 ? discordProfile.guilds : storedGuilds;
@@ -182,6 +174,7 @@ export default function EthoProtectDashboard() {
   }, [uninstalledGuilds, searchQuery]);
 
   const displayName = useMemo(() => {
+    if (botUser?.globalName) return botUser.globalName;
     if (discordProfile?.user?.globalName) return discordProfile.user.globalName;
     if (discordProfile?.user?.displayName) return discordProfile.user.displayName;
     if (discordProfile?.user?.username) return discordProfile.user.username;
@@ -190,11 +183,12 @@ export default function EthoProtectDashboard() {
     if (storedUser?.username) return storedUser.username;
     if (ethoneProfile?.displayName) return ethoneProfile.displayName;
     if (ethoneProfile?.username) return ethoneProfile.username;
-    return "rub19";
-  }, [discordProfile?.user, storedUser, ethoneProfile]);
+    return "Compte";
+  }, [botUser, discordProfile?.user, storedUser, ethoneProfile]);
 
   const userAvatar = useMemo(() => {
     return (
+      botUser?.avatarUrl ||
       discordProfile?.user?.avatarUrl ||
       discordProfile?.user?.avatarUrlSmall ||
       storedUser?.avatarUrl ||
@@ -202,7 +196,7 @@ export default function EthoProtectDashboard() {
       ethoneProfile?.avatarUrl ||
       null
     );
-  }, [discordProfile?.user, storedUser, ethoneProfile?.avatarUrl]);
+  }, [botUser, discordProfile?.user, storedUser, ethoneProfile?.avatarUrl]);
 
   if (viewMode === "legacy") {
     return (

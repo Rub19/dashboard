@@ -18,14 +18,13 @@ import {
 } from "@/components/icons/ph";
 import ClientImage from "@/components/ClientImage";
 import DiscordLanguageDropdown from "./DiscordLanguageDropdown";
-import { useSettings } from "@/components/SettingsProvider";
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ToastProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
+import { useDayNightToggle } from "@/lib/hooks/useDayNightToggle";
 import { useAccountProfile } from "@/lib/profile/account-profile";
 import { fetchBotPresence, clearBotPresenceCache } from "@/lib/hooks/useBotGuildIds";
 import { cn } from "@/lib/utils";
-import { resolveTheme } from "@/lib/theme-engine";
 import { getStoredDiscordUser, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
 import { useBotSessionUser } from "@/lib/hooks/useBotSessionUser";
 import { motion } from "framer-motion";
@@ -112,7 +111,7 @@ export default function BotInstallView({
   onBack,
   onBotDetected,
   onSkip,
-  userName = "rub19",
+  userName = "",
   userAvatar,
   botInviteUrl,
   botName = "Etho",
@@ -120,20 +119,11 @@ export default function BotInstallView({
   const router = useRouter();
   const i18n = useI18n();
   const { signOut } = useAuth();
-  const { settings, update: updateSettings } = useSettings();
   const { success, info, error: showError } = useToast();
   const { profile: ethoneProfile } = useAccountProfile();
 
-  const isDark = settings.darkMode && resolveTheme(settings.theme).dark !== false;
+  const { isDark, toggle: toggleTheme } = useDayNightToggle();
 
-  const toggleTheme = useCallback(() => {
-    const nextDark = !isDark;
-    updateSettings({
-      darkMode: nextDark,
-      theme: nextDark ? "obsidian" : "arctic",
-      colorScheme: nextDark ? "dark" : "light",
-    });
-  }, [isDark, updateSettings]);
 
   const handleLogout = useCallback(async () => {
     try {
@@ -238,7 +228,7 @@ export default function BotInstallView({
     storedUser?.username ||
     ethoneProfile?.displayName ||
     ethoneProfile?.username ||
-    "rub19";
+    "Compte";
 
   const currentAvatarUrl =
     botUser?.avatarUrl ||

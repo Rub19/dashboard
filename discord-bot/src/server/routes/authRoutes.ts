@@ -248,13 +248,39 @@ authRouter.post('/mobile/exchange', (req: Request, res: Response) => {
  * GET /api/auth/me
  * Renvoie les informations de l'utilisateur actuellement connecté
  */
-authRouter.get('/me', authMiddleware, (req: Request, res: Response) => {
+// La session garde l'avatar du jour de la connexion : on relit le profil Discord actuel (au plus toutes les 5 min).
+const FRESH_PROFILE_TTL_MS = 5 * 60_000;
+const freshProfiles = new Map<string, { at: number; data: Partial<Pick<DiscordUserPayload, 'username' | 'globalName' | 'avatar'>> }>();
+
+async function freshDiscordProfile(userId: string, accessToken?: string) {
+  const hit = freshProfiles.get(userId);
+  if (hit && Date.now() - hit.at < FRESH_PROFILE_TTL_MS) return hit.data;
+  let data: Partial<Pick<DiscordUserPayload, 'username' | 'globalName' | 'avatar'>> = {};
+  if (accessToken) {
+    try {
+      const r = await fetch('https://discord.com/api/v10/users/@me', {
+        headers: { Authorization: `Bearer ${accessToken}` },
+        signal: AbortSignal.timeout(4000),
+      });
+      if (r.ok) {
+        const u = (await r.json()) as { id: string; username: string; global_name: string | null; avatar: string | null };
+        if (u.id === userId) data = { username: u.username, globalName: u.global_name, avatar: u.avatar };
+      }
+    } catch {
+      // Discord injoignable : on garde les infos de la session.
+    }
+  }
+  freshProfiles.set(userId, { at: Date.now(), data });
+  return data;
+}
+
+authRouter.get('/me', authMiddleware, async (req: Request, res: Response) => {
   if (!req.user) {
     res.status(401).json({ error: 'Non connecté' });
     return;
   }
   const { accessToken, ...safeUser } = req.user;
-  res.json({ user: safeUser });
+  res.json({ user: { ...safeUser, ...(await freshDiscordProfile(safeUser.id, accessToken)) } });
 });
 
 /**

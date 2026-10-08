@@ -1,4 +1,4 @@
-# ETHONE — passation à la prochaine IA (état au 2026-10-08, version 1.55.69)
+# ETHONE — passation à la prochaine IA (état au 2026-10-08, version 1.55.70)
 
 ## Prompt à coller à la prochaine IA (version avec le lien du repo : `PROMPT-IA.md`)
 
@@ -206,7 +206,7 @@ git log --oneline -10
 - Session du 2026-10-08 (v1.55.68) : fausses données retirées de la console Discord (Casino, scan, compteurs, configuration assistée, « Just Chatting »), Casino calculé par le bot, vrai scan de sécurité, vrai mode raid, message d'arrivée privé façon Keeper, règles d'accès des espaces partagés réparées (elles plantaient en récursion infinie) et migration appliquée, bot redéployé sur le VPS (il tournait sur le code du 5 octobre).
 
 ## Reste à faire (par priorité)
-1. **Pages de la console Discord qui « ne fonctionnent plus trop »** : l'utilisateur doit donner la liste. Pour chaque page : ouvrir dans Chrome, lire les requêtes vers `bot.ethone.dev` (un 404 = route absente ou bot pas redéployé, un 401 = session du bot expirée, le bandeau `components/discord/BotSessionBanner.tsx` propose alors de se reconnecter, ou `credentials: "include"` manquant), corriger.
+1. **Pages de la console Discord qui « ne fonctionnent plus trop »** : l'utilisateur doit donner la liste. Pour chaque page : ouvrir dans Chrome, lire les requêtes vers `bot.ethone.dev` (un 404 = route absente ou bot pas redéployé, un 401 = session du bot expirée, `components/discord/BotSessionGate.tsx` (monté par `app/discord/layout.tsx`) affiche alors la page « Connecte-toi avec Discord », ou `credentials: "include"` manquant), corriger.
 2. **Parité Keeper** : la vue d'ensemble de Keeper montre en plus les « points à régler » (rôle du bot pas en haut, protections sans salon de log), le score du dernier scan et le nombre de rôles sensibles. Le scan Etho a déjà ces données (`security-scan`) : les afficher sur la vue d'ensemble. Le « scan automatique » (chaque jour / semaine dans un salon) a été retiré car le bot ne le faisait pas : à créer côté bot si voulu.
 3. **Bot animé et message d'arrivée, vérification réelle** : dans un vrai salon, vérifier les émojis animés des réponses, la carte GIF d'arrivée d'un membre, et inviter le bot sur un serveur de test pour voir le salon privé `etho-bienvenue`.
 4. **Synchronisation** : faire tester par l'utilisateur sur deux appareils (changer le statut sur l'un, il doit apparaître sur l'autre sans recharger).

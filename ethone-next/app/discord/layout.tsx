@@ -1,10 +1,5 @@
-import BotSessionBanner from "@/components/discord/BotSessionBanner";
+import BotSessionGate from "@/components/discord/BotSessionGate";
 
 export default function DiscordLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <>
-      <BotSessionBanner />
-      {children}
-    </>
-  );
+  return <BotSessionGate>{children}</BotSessionGate>;
 }

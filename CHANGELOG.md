@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.70 — 2026-10-08
+
+**Console Discord : page de connexion quand la session du bot expire, photo de profil à jour, bouton jour/nuit stable**
+
+- Si la session avec le bot (7 jours) a expiré, ouvrir n'importe quelle page Discord affiche directement « Connecte-toi avec Discord » ; après la connexion, on revient sur la page ouverte.
+- Photo de profil : le bot relit ta photo et ton nom actuels sur Discord (toutes les 5 minutes au plus) au lieu de garder ceux du jour de la connexion, et l'ancienne copie gardée dans le navigateur est remplacée.
+- Bouton jour/nuit des écrans Discord : le thème change d'un coup sans fondu et les clics répétés pendant le changement sont ignorés, plus de clignotement. Les 4 copies du bouton partagent maintenant le même code.
+- Plus de nom « rub19 » écrit en dur quand le profil n'est pas encore chargé.
+
 ## v1.55.69 — 2026-10-08
 
 **Pages Discord : bandeau de reconnexion au bot et derniers chiffres inventés du Casino retirés**

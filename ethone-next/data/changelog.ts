@@ -46858,5 +46858,58 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_69_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_69_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_69_de);
 
+const v1_55_70_fr: ChangelogEntry = {
+  version: "v1.55.70",
+  date: "2026-10-08",
+  title: "Console Discord : page de connexion quand la session du bot expire, photo de profil à jour, bouton jour/nuit stable",
+  items: [
+    "Si la session avec le bot (7 jours) a expiré, ouvrir n'importe quelle page Discord affiche directement « Connecte-toi avec Discord » ; après la connexion, on revient sur la page ouverte.",
+    "Photo de profil : le bot relit ta photo et ton nom actuels sur Discord (toutes les 5 minutes au plus) au lieu de garder ceux du jour de la connexion, et l'ancienne copie gardée dans le navigateur est remplacée.",
+    "Bouton jour/nuit des écrans Discord : le thème change d'un coup sans fondu et les clics répétés pendant le changement sont ignorés, plus de clignotement. Les 4 copies du bouton partagent maintenant le même code.",
+    "Plus de nom « rub19 » écrit en dur quand le profil n'est pas encore chargé.",
+  ],
+};
+
+const v1_55_70_en: ChangelogEntry = {
+  version: "v1.55.70",
+  date: "2026-10-08",
+  title: "Discord console: sign-in page when the bot session expires, up-to-date avatar, stable day/night button",
+  items: [
+    "If the bot session (7 days) has expired, any Discord page now shows \"Sign in with Discord\" right away and returns to the page afterwards.",
+    "Avatar: the bot reads your current Discord avatar and name (at most every 5 minutes) and the old copy stored in the browser is replaced.",
+    "Day/night button: the theme switches instantly and repeated clicks during the switch are ignored, no more flicker.",
+    "No more hardcoded \"rub19\" name while the profile loads.",
+  ],
+};
+
+const v1_55_70_es: ChangelogEntry = {
+  version: "v1.55.70",
+  date: "2026-10-08",
+  title: "Consola Discord: página de inicio de sesión cuando caduca la sesión del bot, avatar actualizado, botón día/noche estable",
+  items: [
+    "Si la sesión con el bot (7 días) ha caducado, cualquier página de Discord muestra «Inicia sesión con Discord» y vuelve a la página después.",
+    "Avatar: el bot lee tu avatar y nombre actuales de Discord y se sustituye la copia antigua del navegador.",
+    "Botón día/noche: el tema cambia al instante y se ignoran los clics repetidos, sin parpadeo.",
+    "Ya no aparece el nombre «rub19» fijo mientras carga el perfil.",
+  ],
+};
+
+const v1_55_70_de: ChangelogEntry = {
+  version: "v1.55.70",
+  date: "2026-10-08",
+  title: "Discord-Konsole: Anmeldeseite bei abgelaufener Bot-Sitzung, aktuelles Profilbild, stabiler Tag/Nacht-Schalter",
+  items: [
+    "Ist die Bot-Sitzung (7 Tage) abgelaufen, zeigt jede Discord-Seite sofort „Mit Discord anmelden“ und kehrt danach zur Seite zurück.",
+    "Profilbild: der Bot liest dein aktuelles Discord-Bild und deinen Namen; die alte Kopie im Browser wird ersetzt.",
+    "Tag/Nacht-Schalter: das Thema wechselt sofort, wiederholte Klicks werden ignoriert, kein Flackern mehr.",
+    "Kein fest eingetragener Name „rub19“ mehr beim Laden des Profils.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_70_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_70_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_70_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_70_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

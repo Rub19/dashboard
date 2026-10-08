@@ -28,6 +28,24 @@ function buildAvatarUrl(id: string, avatar: string | null | undefined): string {
   return `https://cdn.discordapp.com/avatars/${encodeURIComponent(id)}/${encodeURIComponent(avatar)}.${ext}?size=256`;
 }
 
+/** Le profil Discord gardé dans ce navigateur peut dater (ancienne photo) : on y recopie la version actuelle du bot. */
+function replaceStaleStoredProfile(fresh: BotSessionUser): void {
+  try {
+    const raw = localStorage.getItem("ethone:discord:profile");
+    if (!raw) return;
+    const parsed = JSON.parse(raw);
+    const u = parsed?.user || (parsed?.id ? parsed : null);
+    if (!u || u.id !== fresh.id) return;
+    u.avatarUrl = fresh.avatarUrl;
+    u.avatarUrlSmall = fresh.avatarUrl;
+    u.avatar_url = fresh.avatarUrl;
+    u.globalName = fresh.globalName;
+    u.displayName = fresh.globalName;
+    u.username = fresh.username || u.username;
+    localStorage.setItem("ethone:discord:profile", JSON.stringify(parsed));
+  } catch {}
+}
+
 async function loadBotSessionUser(): Promise<BotSessionUser | null> {
   if (!BOT_API_URL) return null;
   if (cached && Date.now() - cached.at < CACHE_TTL_MS) return cached.value;
@@ -39,12 +57,14 @@ async function loadBotSessionUser(): Promise<BotSessionUser | null> {
       const json = (await res.json()) as { user?: RawBotUser };
       const u = json?.user;
       if (!u?.id) return null;
-      return {
+      const fresh = {
         id: u.id,
         username: u.username || "",
         globalName: u.globalName || u.username || "",
         avatarUrl: buildAvatarUrl(u.id, u.avatar),
       };
+      replaceStaleStoredProfile(fresh);
+      return fresh;
     } catch {
       return null;
     }

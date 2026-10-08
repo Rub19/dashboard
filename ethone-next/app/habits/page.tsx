@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, LayoutGroup, animate, motion, useMotionValue, useTransform } from "framer-motion";
-import { Calendar, Check, Flame, LayoutGrid, List as ListIcon, Pencil, Plus, RefreshCw, Search, Sparkles, Target, Trash2 } from "@/components/icons/ph";
+import { Calendar, Flame, LayoutGrid, List as ListIcon, Pencil, Plus, RefreshCw, Search, Sparkles, Target, Trash2 } from "@/components/icons/ph";
 import Modal from "@/components/ui/Modal";
 import { useHabits, type Habit } from "@/lib/hooks/useHabits";
 import { useToast } from "@/components/ToastProvider";
@@ -296,7 +296,7 @@ export default function HabitsPage() {
             <Tile className="py-10 text-center text-sm text-[var(--text-muted)]">Aucune habitude ne correspond.</Tile>
           ) : (
             <AnimatePresence mode="wait" initial={false}>
-              <motion.div key={layout} initial={reduced ? false : { opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
+              <motion.div key={layout} initial={reduced ? false : { opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, transition: { duration: 0.1 } }} transition={{ duration: 0.22 }}>
                 {layout === "week" ? (
                   <WeekTable habits={visible} week={week} isDone={isDoneOnDate} onToggle={toggle} weekCount={weekCount} reduced={reduced} />
                 ) : (
@@ -442,7 +442,9 @@ function ProgressRing({ done, total, reduced }: { done: number; total: number; r
         <AnimatePresence mode="wait" initial={false}>
           {complete ? (
             <motion.span key="ok" initial={reduced ? false : { scale: 0.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.6, opacity: 0 }} transition={{ type: "spring", bounce: 0.35, duration: 0.5 }}>
-              <Check className="h-7 w-7 text-[var(--success)]" />
+              <svg viewBox="0 0 24 24" className="h-8 w-8 text-[var(--success)]" fill="none" stroke="currentColor" strokeWidth={2.75} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <motion.path d="M5 12.5l4.2 4.2L19 7" initial={reduced ? false : { pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ type: "spring", bounce: 0, duration: 0.5, delay: 0.15 }} />
+              </svg>
             </motion.span>
           ) : (
             <motion.span key="pct" initial={false} exit={{ opacity: 0 }} className="text-base font-bold tabular-nums text-[var(--text-primary)]">

@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.90 — 2026-10-09
+
+**Habitudes : finitions**
+
+- L'anneau du jour trace sa coche quand toutes les habitudes sont faites.
+- Changement de vue (Grille, Semaine, Liste) plus rapide.
+
 ## v1.55.89 — 2026-10-09
 
 **Habitudes repensées, Mail plus fluide**

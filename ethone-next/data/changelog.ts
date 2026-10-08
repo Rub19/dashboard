@@ -47874,5 +47874,50 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_89_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_89_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_89_de);
 
+const v1_55_90_fr: ChangelogEntry = {
+  version: "v1.55.90",
+  date: "2026-10-09",
+  title: "Habitudes : finitions",
+  items: [
+    "L'anneau du jour trace sa coche quand toutes les habitudes sont faites.",
+    "Changement de vue (Grille, Semaine, Liste) plus rapide.",
+  ],
+};
+
+const v1_55_90_en: ChangelogEntry = {
+  version: "v1.55.90",
+  date: "2026-10-09",
+  title: "Habits: polish",
+  items: [
+    "The daily ring draws its tick once every habit is done.",
+    "Faster switching between Grid, Week and List views.",
+  ],
+};
+
+const v1_55_90_es: ChangelogEntry = {
+  version: "v1.55.90",
+  date: "2026-10-09",
+  title: "Hábitos: retoques",
+  items: [
+    "El anillo diario traza su marca cuando todos los hábitos están hechos.",
+    "Cambio más rápido entre las vistas Cuadrícula, Semana y Lista.",
+  ],
+};
+
+const v1_55_90_de: ChangelogEntry = {
+  version: "v1.55.90",
+  date: "2026-10-09",
+  title: "Gewohnheiten: Feinschliff",
+  items: [
+    "Der Tagesring zeichnet seinen Haken, sobald alle Gewohnheiten erledigt sind.",
+    "Schnellerer Wechsel zwischen Raster-, Wochen- und Listenansicht.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_90_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_90_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_90_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_90_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

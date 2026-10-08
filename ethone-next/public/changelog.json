@@ -1,5 +1,14 @@
 [
   {
+    "version": "v1.55.90",
+    "date": "2026-10-09",
+    "title": "Habitudes : finitions",
+    "items": [
+      "L'anneau du jour trace sa coche quand toutes les habitudes sont faites.",
+      "Changement de vue (Grille, Semaine, Liste) plus rapide."
+    ]
+  },
+  {
     "version": "v1.55.89",
     "date": "2026-10-09",
     "title": "Habitudes repensées, Mail plus fluide",
@@ -642,17 +651,6 @@
       "Perfectionnement du sélecteur de serveur dans la barre latérale Discord : navigation complète au clavier (flèches Haut/Bas, Entrée, Échap) et fermeture automatique du tiroir mobile lors de la sélection.",
       "Résolution intégrale de tous les avertissements React hooks (exhaustive-deps) et expressions fonctionnelles dans Brain, Contrôle Bot, Musique, Invitations et Gestion Serveur.",
       "Zéro avertissement de code fonctionnel sur l'ensemble du projet : conformité totale aux exigences d'hygiène logicielle et de maintenabilité."
-    ]
-  },
-  {
-    "version": "v1.55.28",
-    "date": "2026-10-05",
-    "title": "Sélecteur de Changement de Serveur dans la Barre Latérale Discord",
-    "items": [
-      "Transformation de la tuile serveur en haut à gauche de la barre latérale (/discord) en sélecteur interactif avec menu déroulant.",
-      "Bouton rapide « Changer de serveur » ouvrant instantanément la grille complète des serveurs.",
-      "Liste déroulante de tous les serveurs de l'utilisateur avec icônes, pastille de présence du bot et indicateur de sélection.",
-      "Barre de filtre rapide par recherche et lien d'invitation directe d'Etho sur un nouveau serveur."
     ]
   }
 ]

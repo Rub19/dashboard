@@ -1,5 +1,18 @@
 [
   {
+    "version": "v1.63.0",
+    "date": "2026-10-09",
+    "title": "Console : toutes les pages au format Keeper, sécurité renforcée",
+    "items": [
+      "Commandes personnalisées : création d'une réponse simple, modèles, activation, description, réponse, déclenchement, délai, rôles requis, duplication et suppression ; éditeur avancé pour les conditions et actions.",
+      "Analytics : indicateurs avec évolution par rapport à la période précédente, points à retenir, carte des heures d'activité, commandes les plus utilisées, sanctions par type, export CSV et JSON.",
+      "AutoMod Discord : règles recommandées en un clic (avec salon d'alerte), liste des règles avec résumé, activation et suppression.",
+      "Événements : nouvelle vue Calendrier (grille du mois, clic sur un jour pour préremplir un événement) ; le module Calendrier l'ouvre directement.",
+      "Vue d'ensemble : renvoie vers l'accueil de la console, qui affiche déjà ces informations.",
+      "Sécurité : une commande personnalisée ne peut plus être déplacée vers un autre serveur ni lue depuis un autre serveur ; les suggestions ne peuvent plus être modifiées depuis un autre serveur."
+    ]
+  },
+  {
     "version": "v1.62.0",
     "date": "2026-10-09",
     "title": "Console : Serveur, Assistant IA et Journal des logs au format Keeper",
@@ -633,17 +646,6 @@
       "Affichage de la photo de profil du compte ETHONE dans la barre latérale",
       "Bouton fixe Retour à ETHONE en bas à droite pour une navigation fluide",
       "Nettoyage des mentions superflues et intégration du bouton Passer l'attente"
-    ]
-  },
-  {
-    "version": "v1.55.50",
-    "date": "2026-10-07",
-    "title": "Console Discord : Écran d'Installation Bot Style Keeper Protect & Auto-Détection",
-    "items": [
-      "Nouvel écran d'onboarding/installation guidée inspiré du flux Keeper Protect lors de la sélection d'un serveur sans le bot Etho.",
-      "Détection automatique de présence du bot en temps réel avec transition fluide dès l'ajout effectif.",
-      "Bouton Vérifier pour contrôle immédiat et bouton Passer l'attente pour accès direct sans délai.",
-      "Barre latérale dédiée avec indicateur Etho absent, recherche Ctrl K, retour 'Mes serveurs' et support intégré."
     ]
   }
 ]

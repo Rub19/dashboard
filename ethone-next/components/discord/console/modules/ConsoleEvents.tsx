@@ -57,8 +57,13 @@ const defaultStart = () => {
 };
 
 /** Événements (format Keeper) : création rapide, prochains événements, participants, report et annulation. */
-export default function ConsoleEvents({ guildId }: { guildId: string }) {
+export default function ConsoleEvents({ guildId, initialView = "list" }: { guildId: string; initialView?: "list" | "calendar" }) {
   const api = useGuildApi(guildId);
+  const [view, setView] = useState<"list" | "calendar">(initialView);
+  const [month, setMonth] = useState(() => {
+    const d = new Date();
+    return new Date(d.getFullYear(), d.getMonth(), 1);
+  });
   const [events, setEvents] = useState<Event[] | null>(null);
   const [stats, setStats] = useState<Stats | null>(null);
   const [channels, setChannels] = useState<ChannelOption[]>([]);
@@ -128,7 +133,20 @@ export default function ConsoleEvents({ guildId }: { guildId: string }) {
   const canCreate = title.trim().length > 0 && !!start && !Number.isNaN(new Date(start).getTime()) && !busy;
 
   return (
-    <ConsolePage title="Événements">
+    <ConsolePage
+      title="Événements"
+      actions={
+        <Segmented
+          label="Affichage"
+          value={view}
+          options={[
+            ["list", "Liste"],
+            ["calendar", "Calendrier"],
+          ]}
+          onChange={setView}
+        />
+      }
+    >
       <motion.div variants={pageStagger} className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatTile label="À venir" value={stats?.upcomingCount ?? "—"} />
         <StatTile label="En cours" value={stats?.activeCount ?? "—"} />
@@ -174,6 +192,33 @@ export default function ConsoleEvents({ guildId }: { guildId: string }) {
         </div>
       </Panel>
 
+      {view === "calendar" && (
+        <Panel
+          title={month.toLocaleDateString("fr-FR", { month: "long", year: "numeric" })}
+          actions={
+            <div className="flex gap-1.5">
+              <GhostButton onClick={() => setMonth((m) => new Date(m.getFullYear(), m.getMonth() - 1, 1))}>←</GhostButton>
+              <GhostButton
+                onClick={() => {
+                  const d = new Date();
+                  setMonth(new Date(d.getFullYear(), d.getMonth(), 1));
+                }}
+              >
+                Aujourd&apos;hui
+              </GhostButton>
+              <GhostButton onClick={() => setMonth((m) => new Date(m.getFullYear(), m.getMonth() + 1, 1))}>→</GhostButton>
+            </div>
+          }
+        >
+          <MonthGrid month={month} events={events ?? []} onPickDay={(d) => setStart(dayStart(d))} onOpen={(id) => {
+            setView("list");
+            setFilter("all");
+            setOpen(id);
+          }} />
+        </Panel>
+      )}
+
+      {view === "list" && (
       <Panel
         title="Événements du serveur"
         actions={
@@ -244,6 +289,78 @@ export default function ConsoleEvents({ guildId }: { guildId: string }) {
           </ul>
         )}
       </Panel>
+      )}
     </ConsolePage>
+  );
+}
+
+/** Valeur datetime-local à 21 h pour un jour cliqué dans le calendrier. */
+function dayStart(d: Date) {
+  const x = new Date(d);
+  x.setHours(21, 0, 0, 0);
+  return new Date(x.getTime() - x.getTimezoneOffset() * 60_000).toISOString().slice(0, 16);
+}
+
+/** Grille du mois (lundi en premier) : événements du jour en pastilles, clic sur un jour pour préremplir la création. */
+function MonthGrid({ month, events, onPickDay, onOpen }: { month: Date; events: Event[]; onPickDay: (d: Date) => void; onOpen: (id: string) => void }) {
+  const first = new Date(month.getFullYear(), month.getMonth(), 1);
+  const offset = (first.getDay() + 6) % 7;
+  const days = new Date(month.getFullYear(), month.getMonth() + 1, 0).getDate();
+  const cells = Array.from({ length: Math.ceil((offset + days) / 7) * 7 }, (_, i) => {
+    const n = i - offset + 1;
+    return n >= 1 && n <= days ? new Date(month.getFullYear(), month.getMonth(), n) : null;
+  });
+  const today = new Date().toDateString();
+  const byDay = new Map<string, Event[]>();
+  for (const e of events) {
+    const key = new Date(e.startDate).toDateString();
+    byDay.set(key, [...(byDay.get(key) ?? []), e]);
+  }
+  return (
+    <div className="px-3 pb-3 pt-2">
+      <div className="grid grid-cols-7 gap-1 pb-1 text-center text-[10px] font-semibold uppercase text-[var(--text-muted)]">
+        {["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"].map((d) => (
+          <span key={d}>{d}</span>
+        ))}
+      </div>
+      <div className="grid grid-cols-7 gap-1">
+        {cells.map((d, i) =>
+          !d ? (
+            <span key={i} />
+          ) : (
+            <div
+              key={i}
+              role="button"
+              tabIndex={0}
+              onClick={() => onPickDay(d)}
+              onKeyDown={(ev) => ev.key === "Enter" && onPickDay(d)}
+              title="Préremplir un événement ce jour-là"
+              className={cn(
+                "min-h-16 cursor-pointer rounded-lg border p-1 text-left transition-colors hover:bg-[var(--surface-hover)]",
+                d.toDateString() === today ? "border-[var(--accent-primary)]" : "border-[var(--panel-border)]"
+              )}
+            >
+              <span className="text-[10px] font-semibold text-[var(--text-muted)]">{d.getDate()}</span>
+              {(byDay.get(d.toDateString()) ?? []).slice(0, 3).map((e) => (
+                <button
+                  key={e.id}
+                  type="button"
+                  onClick={(ev) => {
+                    ev.stopPropagation();
+                    onOpen(e.id);
+                  }}
+                  className={cn(
+                    "mt-0.5 block w-full truncate rounded px-1 py-px text-left text-[10px] font-semibold",
+                    e.status === "CANCELLED" ? "bg-[var(--danger)]/15 text-[var(--danger)] line-through" : "bg-[var(--accent-primary)]/15 text-[var(--text-primary)]"
+                  )}
+                >
+                  {new Date(e.startDate).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })} {e.title}
+                </button>
+              ))}
+            </div>
+          )
+        )}
+      </div>
+    </div>
   );
 }

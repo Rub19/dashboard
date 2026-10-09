@@ -17,10 +17,6 @@ const load = (loader: () => Promise<ComponentType | { default: ComponentType }>)
 
 const PAGES: Record<string, ComponentType> = {
   overview: load(() => import("@/app/discord/overview/OverviewClient")),
-  commands: load(() => import("@/app/discord/commands/CommandsCenterClient")),
-  analytics: load(() => import("@/app/discord/analytics/AnalyticsCenterClient")),
-  automodnative: load(() => import("@/app/discord/automod-native/AutomodNativeClient")),
-  calendar: load(() => import("@/app/discord/calendar/DiscordCalendarClient")),
   bot: load(() => import("@/app/discord/bot/BotControlClient").then((m) => function BotControlEmbed() {
     return <m.default initialTab="overview" />;
   })),
@@ -61,6 +57,11 @@ const NATIVE: Record<string, ComponentType<{ guildId: string }>> = {
   backups: native(() => import("./modules/ConsoleBackups")),
   server: native(() => import("./modules/ConsoleServer")),
   ai: native(() => import("./modules/ConsoleAi")),
+  commands: native(() => import("./modules/ConsoleCustomCommands")),
+  analytics: native(() => import("./modules/ConsoleAnalytics")),
+  automodnative: native(() => import("./modules/ConsoleAutomodNative")),
+  // Le calendrier est la vue « Calendrier » de la page Événements.
+  calendar: native(() => import("./modules/ConsoleEvents").then((m) => ({ default: ({ guildId }: { guildId: string }) => <m.default guildId={guildId} initialView="calendar" /> }))),
   // Le journal complet est un onglet de la page Logs de la console.
   logs: native(() => import("./ConsoleLogs").then((m) => ({ default: ({ guildId }: { guildId: string }) => <m.default guildId={guildId} initialTab="journal" /> }))),
   // Les paramètres du bot sont regroupés dans la page Réglages de la console.

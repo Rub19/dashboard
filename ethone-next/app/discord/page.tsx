@@ -651,6 +651,13 @@ export default function DiscordDashboardPage() {
         setConsoleView("protections");
         return;
       }
+      // Vue d'ensemble = accueil de la console (même contenu, déjà au format Keeper).
+      if (id === "overview") {
+        setActiveModule(null);
+        setShowSetup(false);
+        setShowAllModules(false);
+        return;
+      }
       if (INLINE_MODULE_IDS.has(id)) {
         setActiveModule(id as ModuleType);
       } else {
@@ -726,7 +733,7 @@ export default function DiscordDashboardPage() {
         setShowScan(true);
       } else if (["settings", "access", "logs", "whitelist", "blacklist", "members", "commands", "tools", "protections"].includes(sp.get("view") ?? "")) {
         setConsoleView(sp.get("view") as ConsoleView);
-      } else if (sp.get("module") && INLINE_MODULE_IDS.has(sp.get("module")!)) {
+      } else if (sp.get("module") && sp.get("module") !== "overview" && INLINE_MODULE_IDS.has(sp.get("module")!)) {
         // Lien direct vers un module affiché dans la console (?module=leveling).
         setActiveModule(sp.get("module") as ModuleType);
       }

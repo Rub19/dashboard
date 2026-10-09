@@ -70,6 +70,8 @@ class CustomCommandStorage {
     const valid = CustomCommandSchema.parse({
       ...data,
       id,
+      usageCount: 0,
+      createdAt: new Date().toISOString(),
       name: data.name.toLowerCase().trim(),
     });
 
@@ -82,10 +84,16 @@ class CustomCommandStorage {
     const existing = this.commands.get(id);
     if (!existing) return null;
 
+    // Identité figée : une mise à jour ne peut jamais changer de serveur, d'identifiant ni de compteur.
+    const { guildId: _g, id: _i, usageCount: _u, createdAt: _c, ...changes } = update;
+    void _g;
+    void _i;
+    void _u;
+    void _c;
     const valid = CustomCommandSchema.parse({
       ...existing,
-      ...update,
-      name: update.name ? update.name.toLowerCase().trim() : existing.name,
+      ...changes,
+      name: changes.name ? changes.name.toLowerCase().trim() : existing.name,
       updatedAt: new Date().toISOString(),
     });
 

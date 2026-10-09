@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.63.0 — 2026-10-09
+
+**Console : toutes les pages au format Keeper, sécurité renforcée**
+
+- Commandes personnalisées : création d'une réponse simple, modèles, activation, description, réponse, déclenchement, délai, rôles requis, duplication et suppression ; éditeur avancé pour les conditions et actions.
+- Analytics : indicateurs avec évolution par rapport à la période précédente, points à retenir, carte des heures d'activité, commandes les plus utilisées, sanctions par type, export CSV et JSON.
+- AutoMod Discord : règles recommandées en un clic (avec salon d'alerte), liste des règles avec résumé, activation et suppression.
+- Événements : nouvelle vue Calendrier (grille du mois, clic sur un jour pour préremplir un événement) ; le module Calendrier l'ouvre directement.
+- Vue d'ensemble : renvoie vers l'accueil de la console, qui affiche déjà ces informations.
+- Sécurité : une commande personnalisée ne peut plus être déplacée vers un autre serveur ni lue depuis un autre serveur ; les suggestions ne peuvent plus être modifiées depuis un autre serveur.
+
 ## v1.62.0 — 2026-10-09
 
 **Console : Serveur, Assistant IA et Journal des logs au format Keeper**

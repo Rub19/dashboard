@@ -49004,5 +49004,60 @@ CHANGELOG_BY_LANG.en.unshift(v1_62_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_62_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_62_0_de);
 
+const v1_63_0_fr: ChangelogEntry = {
+  version: "v1.63.0",
+  date: "2026-10-09",
+  title: "Console : toutes les pages au format Keeper, sécurité renforcée",
+  items: [
+    "Commandes personnalisées : création d'une réponse simple, modèles, activation, description, réponse, déclenchement, délai, rôles requis, duplication et suppression ; éditeur avancé pour les conditions et actions.",
+    "Analytics : indicateurs avec évolution par rapport à la période précédente, points à retenir, carte des heures d'activité, commandes les plus utilisées, sanctions par type, export CSV et JSON.",
+    "AutoMod Discord : règles recommandées en un clic (avec salon d'alerte), liste des règles avec résumé, activation et suppression.",
+    "Événements : nouvelle vue Calendrier (grille du mois, clic sur un jour pour préremplir un événement) ; le module Calendrier l'ouvre directement.",
+    "Vue d'ensemble : renvoie vers l'accueil de la console, qui affiche déjà ces informations.",
+    "Sécurité : une commande personnalisée ne peut plus être déplacée vers un autre serveur ni lue depuis un autre serveur ; les suggestions ne peuvent plus être modifiées depuis un autre serveur.",
+  ],
+};
+
+const v1_63_0_en: ChangelogEntry = {
+  version: "v1.63.0",
+  date: "2026-10-09",
+  title: "Console: every page in the Keeper layout, stronger security",
+  items: [
+    "Custom commands: simple reply creation, templates, toggle, description, reply, trigger, cooldown, required roles, duplicate and delete; advanced editor for conditions and actions.",
+    "Analytics: KPIs compared with the previous period, insights, activity heatmap, top commands, sanctions by type, CSV and JSON export.",
+    "Discord AutoMod: recommended rules in one click (with alert channel), rule list with summary, toggle and delete.",
+    "Events: new Calendar view (month grid, click a day to prefill an event); the Calendar module opens it directly.",
+    "Overview: now goes to the console home, which already shows this information.",
+    "Security: a custom command can no longer be moved to or read from another server; suggestions can no longer be edited from another server.",
+  ],
+};
+
+const v1_63_0_es: ChangelogEntry = {
+  version: "v1.63.0",
+  date: "2026-10-09",
+  title: "Consola: todas las páginas con el formato Keeper, seguridad reforzada",
+  items: [
+    "Comandos personalizados, Analytics, AutoMod de Discord y vista Calendario en Eventos.",
+    "Vista general: lleva al inicio de la consola.",
+    "Seguridad: comandos personalizados y sugerencias ya no son accesibles desde otro servidor.",
+  ],
+};
+
+const v1_63_0_de: ChangelogEntry = {
+  version: "v1.63.0",
+  date: "2026-10-09",
+  title: "Konsole: alle Seiten im Keeper-Layout, mehr Sicherheit",
+  items: [
+    "Eigene Befehle, Analytics, Discord-AutoMod und Kalenderansicht bei Events.",
+    "Übersicht: führt zur Startseite der Konsole.",
+    "Sicherheit: Eigene Befehle und Vorschläge sind von anderen Servern aus nicht mehr erreichbar.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_63_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_63_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_63_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_63_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

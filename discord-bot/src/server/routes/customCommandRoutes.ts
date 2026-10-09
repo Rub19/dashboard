@@ -30,7 +30,8 @@ export function createCustomCommandRouter(client: Client) {
   router.get('/:id', (req: Request, res: Response): void => {
     const id = String(req.params.id);
     const cmd = customCommandStorage.getById(id);
-    if (!cmd) {
+    // Jamais la commande d'un autre serveur, même avec son identifiant.
+    if (!cmd || cmd.guildId !== String(req.params.guildId)) {
       res.status(404).json({ error: 'Commande introuvable' });
       return;
     }

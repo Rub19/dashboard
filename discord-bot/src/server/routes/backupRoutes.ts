@@ -7,6 +7,30 @@ import { requireStringParam } from '../utils/params.js';
 import { rateLimit, idempotent, guildLock } from '../middleware/antiAbuseMiddleware.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { clientErrorMessage } from '../utils/routeError.js';
+import { z } from 'zod';
+
+// Champs inconnus ignorés (l'ancienne page renvoie l'objet complet, guildId compris).
+const BackupSettingsPatchSchema = z
+  .object({
+    enabled: z.boolean(),
+    frequency: z.enum(['6h', '12h', 'daily', 'weekly']),
+    preferredTime: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/),
+    timezone: z.string().max(64).refine((tz) => {
+      try {
+        new Intl.DateTimeFormat('fr-FR', { timeZone: tz });
+        return true;
+      } catch {
+        return false;
+      }
+    }),
+    retentionCount: z.number().int().min(1).max(30),
+    retentionDays: z.number().int().min(1).max(90),
+    maxStorageMb: z.number().int().min(1).max(200),
+    autoBackupBeforeMajorChanges: z.boolean(),
+    defaultSafetyLevel: z.enum(['SAFE', 'STANDARD', 'DESTRUCTIVE']),
+    notifyChannelId: z.union([z.string().regex(/^\d{5,25}$/), z.literal('')]),
+  })
+  .partial();
 
 export function createBackupRouter(client: Client): Router {
   const router = Router({ mergeParams: true });
@@ -128,7 +152,12 @@ export function createBackupRouter(client: Client): Router {
   router.put('/settings', (req: Request, res: Response) => {
     try {
       const guildId = requireStringParam(req.params.guildId, 'guildId');
-      const updated = backupRepository.saveSettings(guildId, req.body);
+      // Bornes strictes : la rétention et la fréquence déterminent l'espace disque utilisé sur le serveur du bot.
+      const parsed = BackupSettingsPatchSchema.safeParse(req.body ?? {});
+      if (!parsed.success) {
+        return res.status(400).json({ error: 'Réglages de sauvegarde invalides', details: parsed.error.flatten() });
+      }
+      const updated = backupRepository.saveSettings(guildId, parsed.data);
       emitConfigUpdated('backups', guildId, updated, 'DASHBOARD', req.user?.id);
       res.json(updated);
     } catch (err: any) {

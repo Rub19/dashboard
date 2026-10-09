@@ -1,5 +1,16 @@
 [
   {
+    "version": "v1.61.0",
+    "date": "2026-10-09",
+    "title": "Console : Réglages complets, Alertes streamers et Sauvegardes au format Keeper",
+    "items": [
+      "Réglages : la page regroupe désormais tous les paramètres du bot (langue, fuseau horaire, commandes / et à préfixe, contacts d'urgence avec test, aperçu des messages en privé, problèmes détectés), en plus du préfixe, du salon système et du mode raid.",
+      "Alertes streamers : suivre une chaîne Twitch, YouTube ou Kick, pause par streamer, salon, mention, spectateurs minimum, jeu, message, alerte de test ; salons par plateforme, message d'alerte, affichage, fin de live, délai et rôle « En live ».",
+      "Sauvegardes : sauvegarde manuelle (protégée ou non), liste avec vérification, téléchargement, protection et suppression, planification et rétention. La restauration garde son assistant détaillé.",
+      "Sécurité : les réglages des sauvegardes sont validés par le bot (au plus 30 sauvegardes et 90 jours de rétention) pour éviter de remplir le disque du serveur."
+    ]
+  },
+  {
     "version": "v1.60.1",
     "date": "2026-10-09",
     "title": "Commandes : le détail suit toujours la commande choisie",
@@ -632,18 +643,6 @@
       "Partitionnement dynamique entre serveurs gérés (« Avec Etho ») et non configurés (« Sans Etho ») avec installation 1-clic.",
       "Bascule instantanée vers la vue classique centrée conservée à 100% via le bouton dédié.",
       "Barre latérale avec accès rapide aux réglages (Ctrl K), serveurs, documentation et support 24/7."
-    ]
-  },
-  {
-    "version": "v1.55.48",
-    "date": "2026-10-07",
-    "title": "Refonte du Hub Bot Etho Protect & Interface de Gestion des Serveurs",
-    "items": [
-      "Nouvelle interface Hub Serveurs inspirée de Keeper Protect adaptée à l'identité visuelle Etho (vert émeraude, obsidian).",
-      "Détection automatique des serveurs Discord avec statut d'installation du bot (Avec Etho / Sans Etho) et bouton d'installation 1-clic.",
-      "Recherche en temps réel des serveurs et lien direct vers le panneau de gestion (/discord?guildId=...).",
-      "Carte Bots Privés avec modal dédié présentant les fonctionnalités exclusives (anti-raid rollback, instance dédiée).",
-      "Basculement réversible entre le nouveau Hub et l'ancienne vitrine publique conservée."
     ]
   }
 ]

@@ -19,14 +19,11 @@ const PAGES: Record<string, ComponentType> = {
   overview: load(() => import("@/app/discord/overview/OverviewClient")),
   commands: load(() => import("@/app/discord/commands/CommandsCenterClient")),
   logs: load(() => import("@/app/discord/logs/AuditCenterClient").then((m) => m.AuditCenterClient)),
-  backups: load(() => import("@/app/discord/backups/BackupsCenterClient")),
   ai: load(() => import("@/app/discord/ai/AiCenterClient")),
   analytics: load(() => import("@/app/discord/analytics/AnalyticsCenterClient")),
   server: load(() => import("@/app/discord/server/ServerManagementClient")),
-  settings: load(() => import("@/app/discord/settings/SettingsCenterClient")),
   automodnative: load(() => import("@/app/discord/automod-native/AutomodNativeClient")),
   calendar: load(() => import("@/app/discord/calendar/DiscordCalendarClient")),
-  streamers: load(() => import("@/app/discord/streamers/StreamersCenterClient")),
   bot: load(() => import("@/app/discord/bot/BotControlClient").then((m) => function BotControlEmbed() {
     return <m.default initialTab="overview" />;
   })),
@@ -63,6 +60,10 @@ const NATIVE: Record<string, ComponentType<{ guildId: string }>> = {
   statroles: native(() => import("./modules/ConsoleStatroles")),
   secureroles: native(() => import("./modules/ConsoleSecureRoles")),
   events: native(() => import("./modules/ConsoleEvents")),
+  streamers: native(() => import("./modules/ConsoleStreamers")),
+  backups: native(() => import("./modules/ConsoleBackups")),
+  // Les paramètres du bot sont regroupés dans la page Réglages de la console.
+  settings: native(() => import("./ConsoleSettings")),
 };
 
 export const hasEmbeddedPage = (moduleId: string) => moduleId in PAGES || moduleId in NATIVE;

@@ -48894,5 +48894,58 @@ CHANGELOG_BY_LANG.en.unshift(v1_60_1_en);
 CHANGELOG_BY_LANG.es.unshift(v1_60_1_es);
 CHANGELOG_BY_LANG.de.unshift(v1_60_1_de);
 
+const v1_61_0_fr: ChangelogEntry = {
+  version: "v1.61.0",
+  date: "2026-10-09",
+  title: "Console : Réglages complets, Alertes streamers et Sauvegardes au format Keeper",
+  items: [
+    "Réglages : la page regroupe désormais tous les paramètres du bot (langue, fuseau horaire, commandes / et à préfixe, contacts d'urgence avec test, aperçu des messages en privé, problèmes détectés), en plus du préfixe, du salon système et du mode raid.",
+    "Alertes streamers : suivre une chaîne Twitch, YouTube ou Kick, pause par streamer, salon, mention, spectateurs minimum, jeu, message, alerte de test ; salons par plateforme, message d'alerte, affichage, fin de live, délai et rôle « En live ».",
+    "Sauvegardes : sauvegarde manuelle (protégée ou non), liste avec vérification, téléchargement, protection et suppression, planification et rétention. La restauration garde son assistant détaillé.",
+    "Sécurité : les réglages des sauvegardes sont validés par le bot (au plus 30 sauvegardes et 90 jours de rétention) pour éviter de remplir le disque du serveur.",
+  ],
+};
+
+const v1_61_0_en: ChangelogEntry = {
+  version: "v1.61.0",
+  date: "2026-10-09",
+  title: "Console: full Settings, Streamer alerts and Backups in the Keeper layout",
+  items: [
+    "Settings: the page now gathers every bot setting (language, timezone, slash and prefix commands, emergency contacts with test, message preview by DM, detected issues), plus prefix, system channel and raid mode.",
+    "Streamer alerts: follow a Twitch, YouTube or Kick channel, per-streamer pause, channel, mention, minimum viewers, game, message, test alert; per-platform channels, alert message, display, stream end, cooldown and live role.",
+    "Backups: manual backup (protected or not), list with verify, download, protect and delete, schedule and retention. Restore keeps its detailed wizard.",
+    "Security: backup settings are validated by the bot (at most 30 backups and 90 days of retention) to avoid filling the server disk.",
+  ],
+};
+
+const v1_61_0_es: ChangelogEntry = {
+  version: "v1.61.0",
+  date: "2026-10-09",
+  title: "Consola: Ajustes completos, Alertas de streamers y Copias de seguridad con el formato Keeper",
+  items: [
+    "Ajustes: todos los parámetros del bot en una página (idioma, zona horaria, comandos, contactos de emergencia, vista previa, problemas detectados).",
+    "Alertas de streamers: seguir canales de Twitch, YouTube o Kick con ajustes por streamer y alerta de prueba.",
+    "Copias de seguridad: copia manual, lista con verificación, descarga, protección y borrado, planificación y retención.",
+    "Seguridad: el bot valida los ajustes de copias (máximo 30 copias y 90 días).",
+  ],
+};
+
+const v1_61_0_de: ChangelogEntry = {
+  version: "v1.61.0",
+  date: "2026-10-09",
+  title: "Konsole: vollständige Einstellungen, Streamer-Alarme und Backups im Keeper-Layout",
+  items: [
+    "Einstellungen: alle Bot-Parameter auf einer Seite (Sprache, Zeitzone, Befehle, Notfallkontakte, Nachrichtenvorschau, erkannte Probleme).",
+    "Streamer-Alarme: Twitch-, YouTube- oder Kick-Kanäle folgen, Einstellungen pro Streamer und Testalarm.",
+    "Backups: manuelles Backup, Liste mit Prüfung, Download, Schutz und Löschen, Planung und Aufbewahrung.",
+    "Sicherheit: Der Bot prüft die Backup-Einstellungen (höchstens 30 Backups und 90 Tage).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_61_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_61_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_61_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_61_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

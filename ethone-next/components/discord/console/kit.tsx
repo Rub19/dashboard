@@ -579,7 +579,24 @@ export function Stepper({
 }
 
 /** Champ texte enregistré à la sortie du champ (ou Entrée). */
-export function TextField({ value, onCommit, maxLength = 80, placeholder, mono, width = "w-56" }: { value: string; onCommit: (v: string) => void; maxLength?: number; placeholder?: string; mono?: boolean; width?: string }) {
+export function TextField({
+  value,
+  onCommit,
+  maxLength = 80,
+  placeholder,
+  mono,
+  width = "w-56",
+  allowEmpty,
+}: {
+  value: string;
+  onCommit: (v: string) => void;
+  maxLength?: number;
+  placeholder?: string;
+  mono?: boolean;
+  width?: string;
+  /** Accepte un champ vidé (valeur facultative). */
+  allowEmpty?: boolean;
+}) {
   const [draft, setDraft] = useState(value);
   useEffect(() => setDraft(value), [value]);
   return (
@@ -588,7 +605,7 @@ export function TextField({ value, onCommit, maxLength = 80, placeholder, mono, 
       maxLength={maxLength}
       placeholder={placeholder}
       onChange={(e) => setDraft(e.target.value)}
-      onBlur={() => draft.trim() && draft !== value && onCommit(draft.trim())}
+      onBlur={() => (allowEmpty || draft.trim()) && draft.trim() !== value && onCommit(draft.trim())}
       onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()}
       className={cn(
         "h-9 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-3 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/70",

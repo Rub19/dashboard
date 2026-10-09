@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.61.0 — 2026-10-09
+
+**Console : Réglages complets, Alertes streamers et Sauvegardes au format Keeper**
+
+- Réglages : la page regroupe désormais tous les paramètres du bot (langue, fuseau horaire, commandes / et à préfixe, contacts d'urgence avec test, aperçu des messages en privé, problèmes détectés), en plus du préfixe, du salon système et du mode raid.
+- Alertes streamers : suivre une chaîne Twitch, YouTube ou Kick, pause par streamer, salon, mention, spectateurs minimum, jeu, message, alerte de test ; salons par plateforme, message d'alerte, affichage, fin de live, délai et rôle « En live ».
+- Sauvegardes : sauvegarde manuelle (protégée ou non), liste avec vérification, téléchargement, protection et suppression, planification et rétention. La restauration garde son assistant détaillé.
+- Sécurité : les réglages des sauvegardes sont validés par le bot (au plus 30 sauvegardes et 90 jours de rétention) pour éviter de remplir le disque du serveur.
+
 ## v1.60.1 — 2026-10-09
 
 **Commandes : le détail suit toujours la commande choisie**

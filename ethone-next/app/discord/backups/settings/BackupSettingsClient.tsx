@@ -267,21 +267,21 @@ export default function BackupSettingsClient() {
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-[var(--text-muted)]">Nombre maximum</label>
               <div className="flex items-center gap-2">
-                <input type="number" min={1} max={100} value={settings.retentionCount} onChange={(e) => patch({ retentionCount: Number(e.target.value) || 1 })} className="w-full bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl px-3 py-2 text-sm text-[var(--text-primary)]" />
+                <input type="number" min={1} max={30} value={settings.retentionCount} onChange={(e) => patch({ retentionCount: Number(e.target.value) || 1 })} className="w-full bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl px-3 py-2 text-sm text-[var(--text-primary)]" />
                 <span className="text-xs text-[var(--text-muted)]">snapshots</span>
               </div>
             </div>
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-[var(--text-muted)]">Âge maximal</label>
               <div className="flex items-center gap-2">
-                <input type="number" min={1} max={365} value={settings.retentionDays} onChange={(e) => patch({ retentionDays: Number(e.target.value) || 1 })} className="w-full bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl px-3 py-2 text-sm text-[var(--text-primary)]" />
+                <input type="number" min={1} max={90} value={settings.retentionDays} onChange={(e) => patch({ retentionDays: Number(e.target.value) || 1 })} className="w-full bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl px-3 py-2 text-sm text-[var(--text-primary)]" />
                 <span className="text-xs text-[var(--text-muted)]">jours</span>
               </div>
             </div>
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-[var(--text-muted)]">Quota de stockage</label>
               <div className="flex items-center gap-2">
-                <input type="number" min={5} max={500} value={settings.maxStorageMb} onChange={(e) => patch({ maxStorageMb: Number(e.target.value) || 5 })} className="w-full bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl px-3 py-2 text-sm text-[var(--text-primary)]" />
+                <input type="number" min={5} max={200} value={settings.maxStorageMb} onChange={(e) => patch({ maxStorageMb: Number(e.target.value) || 5 })} className="w-full bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl px-3 py-2 text-sm text-[var(--text-primary)]" />
                 <span className="text-xs text-[var(--text-muted)]">MB</span>
               </div>
             </div>

@@ -1,5 +1,13 @@
 [
   {
+    "version": "v1.59.2",
+    "date": "2026-10-09",
+    "title": "Casino : cagnotte liée à l'économie",
+    "items": [
+      "La cagnotte ne peut être alimentée que si le casino et l'économie sont tous deux activés, comme pour les parties."
+    ]
+  },
+  {
     "version": "v1.59.1",
     "date": "2026-10-09",
     "title": "Casino : cagnotte sécurisée",
@@ -638,17 +646,6 @@
       "Réinitialisation des filtres : bouton d'action contextuel en état vide permettant d'effacer les filtres actifs en un clic.",
       "Notes & Rédacteur (/notes) : refonte adaptative mobile avec bascule fluide entre liste et éditeur plein écran et bouton de retour direct.",
       "Bouton Nouvelle Note : accès direct depuis l'en-tête de liste sur mobile et préservation de la saisie sans superposition d'éléments."
-    ]
-  },
-  {
-    "version": "v1.55.45",
-    "date": "2026-10-06",
-    "title": "Calendrier & Agenda Unifié : Synchronisation Supabase & Double Volet Factures/Agenda",
-    "items": [
-      "Agenda Supabase intégré : prise en charge complète des rendez-vous et événements (ethone_items, type event) synchronisés en temps réel avec sélecteur d'heures ou journée entière, titre, lieu et notes.",
-      "Navigation à double volet : bascule instantanée entre l'Agenda d'événements et le Suivi des factures/abonnements pour chaque journée sélectionnée avec badges de comptage dédiés.",
-      "Marqueurs calendaires unifiés : fusion visuelle dynamique sur la grille mensuelle combinant les pastilles info pour les événements et les logos/statuts financiers pour les factures.",
-      "Indicateurs de chargement et gestion d'erreurs : retour tactile haptique immédiat et notifications toast lors de la création ou suppression de rendez-vous."
     ]
   }
 ]

@@ -953,8 +953,8 @@ export default function GamesCenterClient() {
                     <button
                       type="button"
                       onClick={() => handleSeedJackpot(500)}
-                      disabled={!config.enabled}
-                      title={config.enabled ? undefined : "Active le casino pour alimenter la cagnotte."}
+                      disabled={!config.enabled || !economyEnabled}
+                      title={config.enabled && economyEnabled ? undefined : "Active le casino et l’économie pour alimenter la cagnotte."}
                       className="rounded-xl border border-amber-500/30 bg-amber-500/20 px-4 py-2 text-xs font-bold text-amber-200 hover:bg-amber-500/30 transition-all cursor-pointer disabled:cursor-not-allowed disabled:opacity-40"
                     >
                       +500 {currencySymbol} Injecter

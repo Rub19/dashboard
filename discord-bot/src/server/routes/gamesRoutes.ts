@@ -79,9 +79,9 @@ export function createGamesRoutes(client: Client): Router {
       res.status(400).json({ error: 'invalid_amount', message: 'Montant invalide (entre 1 et 1 000 000).' });
       return;
     }
-    // La cagnotte crée de la monnaie : refusée quand le casino est coupé, et plafonnée.
-    if (!gamesStorage.getConfig(guildId).enabled) {
-      res.status(403).json({ error: 'disabled', message: 'Le casino est désactivé sur ce serveur : active le module avant d’alimenter la cagnotte.' });
+    // La cagnotte crée de la monnaie : refusée quand le casino ou l'économie est coupé (comme les parties), et plafonnée.
+    if (!gamesStorage.getConfig(guildId).enabled || !economyStorage.getConfig(guildId).enabled) {
+      res.status(403).json({ error: 'disabled', message: 'Le casino ou l’économie est désactivé sur ce serveur : active-les avant d’alimenter la cagnotte.' });
       return;
     }
     if (gamesStorage.getJackpot(guildId) + amount > JACKPOT_MAX) {

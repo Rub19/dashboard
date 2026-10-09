@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.59.2 — 2026-10-09
+
+**Casino : cagnotte liée à l'économie**
+
+- La cagnotte ne peut être alimentée que si le casino et l'économie sont tous deux activés, comme pour les parties.
+
 ## v1.59.1 — 2026-10-09
 
 **Casino : cagnotte sécurisée**

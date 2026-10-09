@@ -48755,5 +48755,46 @@ CHANGELOG_BY_LANG.en.unshift(v1_59_1_en);
 CHANGELOG_BY_LANG.es.unshift(v1_59_1_es);
 CHANGELOG_BY_LANG.de.unshift(v1_59_1_de);
 
+const v1_59_2_fr: ChangelogEntry = {
+  version: "v1.59.2",
+  date: "2026-10-09",
+  title: "Casino : cagnotte liée à l'économie",
+  items: [
+    "La cagnotte ne peut être alimentée que si le casino et l'économie sont tous deux activés, comme pour les parties.",
+  ],
+};
+
+const v1_59_2_en: ChangelogEntry = {
+  version: "v1.59.2",
+  date: "2026-10-09",
+  title: "Casino: jackpot tied to the economy",
+  items: [
+    "The jackpot can only be topped up when both the casino and the economy are enabled, like games.",
+  ],
+};
+
+const v1_59_2_es: ChangelogEntry = {
+  version: "v1.59.2",
+  date: "2026-10-09",
+  title: "Casino: bote ligado a la economía",
+  items: [
+    "El bote solo se puede alimentar si el casino y la economía están activados, como las partidas.",
+  ],
+};
+
+const v1_59_2_de: ChangelogEntry = {
+  version: "v1.59.2",
+  date: "2026-10-09",
+  title: "Casino: Jackpot an die Wirtschaft gekoppelt",
+  items: [
+    "Der Jackpot kann nur aufgefüllt werden, wenn Casino und Wirtschaft aktiviert sind, wie bei Spielen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_59_2_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_59_2_en);
+CHANGELOG_BY_LANG.es.unshift(v1_59_2_es);
+CHANGELOG_BY_LANG.de.unshift(v1_59_2_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

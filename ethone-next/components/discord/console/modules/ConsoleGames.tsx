@@ -141,10 +141,10 @@ export default function ConsoleGames({ guildId }: { guildId: string }) {
         <Row label="Part versée à la cagnotte" hint="Prélevée sur chaque mise ; la cagnotte tombe sur un Blackjack naturel ou un 777.">
           <Stepper value={cfg.jackpotContributionPercent} min={0} max={10} step={0.5} unit="%" onCommit={(n) => save({ jackpotContributionPercent: n })} />
         </Row>
-        <Row label="Alimenter la cagnotte" hint={cfg.enabled ? "Ajoute un montant à la cagnotte actuelle (plafond : 10 000 000)." : "Active le casino pour alimenter la cagnotte."}>
+        <Row label="Alimenter la cagnotte" hint={cfg.enabled && cfg.economyEnabled !== false ? "Ajoute un montant à la cagnotte actuelle (plafond : 10 000 000)." : "Active le casino et l'économie pour alimenter la cagnotte."}>
           <div className="flex flex-wrap items-center gap-2">
-            <Stepper value={seed} min={1} max={1000000} step={100} unit={sym} onCommit={setSeed} disabled={!cfg.enabled} />
-            <GhostButton onClick={addToJackpot} disabled={!cfg.enabled}>
+            <Stepper value={seed} min={1} max={1000000} step={100} unit={sym} onCommit={setSeed} disabled={!cfg.enabled || cfg.economyEnabled === false} />
+            <GhostButton onClick={addToJackpot} disabled={!cfg.enabled || cfg.economyEnabled === false}>
               Ajouter
             </GhostButton>
           </div>

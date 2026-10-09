@@ -1,10 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Hash, Search } from "@/components/icons/ph";
+import { ChevronDown, Hash, Search } from "@/components/icons/ph";
 import { fetchGuildChannels, type ChannelOption } from "../ChannelPicker";
-import { SPRING_LAYOUT, SPRING_PILL } from "@/lib/ease";
+import { SPRING_PILL } from "@/lib/ease";
+import { pageStagger } from "@/lib/motion-variants";
 import { cn } from "@/lib/utils";
 import { ChannelAdder, Chip, ConsolePage, EmptyLine, Panel, RoleChips, Row, Segmented, Switch, useGuildApi } from "./kit";
 
@@ -39,6 +40,8 @@ const INPUT =
 
 
 const statusOf = (c: Cmd) => (!c.rule.enabled ? "Désactivée" : c.customized ? "Personnalisée" : "Accès d'origine");
+type Filter = "all" | "off" | "custom";
+const FILTERS: Record<Filter, (c: Cmd) => boolean> = { all: () => true, off: (c) => !c.rule.enabled, custom: (c) => c.rule.enabled && c.customized };
 
 /**
  * Commandes (format Keeper) : liste des commandes d'Etho, et pour chacune activation, qui peut l'utiliser et limites
@@ -49,7 +52,11 @@ export default function ConsoleCommands({ guildId }: { guildId: string }) {
   const [commands, setCommands] = useState<Cmd[] | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
   const [q, setQ] = useState("");
+  const [filter, setFilter] = useState<Filter>("all");
+  // Catégories dépliées : celle de la commande choisie l'est toujours ; une recherche ou un filtre déplie tout.
+  const [openCats, setOpenCats] = useState<Set<string>>(new Set());
   const [channels, setChannels] = useState<ChannelOption[]>([]);
+  const listRef = useRef<HTMLDivElement>(null);
 
   const load = useCallback(async () => {
     const d = await api<{ commands: Cmd[] }>("/console/commands");
@@ -78,11 +85,39 @@ export default function ConsoleCommands({ guildId }: { guildId: string }) {
     const query = q.trim().toLowerCase().replace(/^\//, "");
     const map = new Map<string, Cmd[]>();
     for (const c of commands ?? []) {
+      if (!FILTERS[filter](c)) continue;
       if (query && !c.name.includes(query) && !c.description.toLowerCase().includes(query)) continue;
       map.set(c.category, [...(map.get(c.category) ?? []), c]);
     }
     return [...map.entries()];
-  }, [commands, q]);
+  }, [commands, q, filter]);
+  const expandAll = q.trim() !== "" || filter !== "all";
+  const isOpen = (category: string) => expandAll || openCats.has(category) || cmd?.category === category;
+  const toggleCat = (category: string) =>
+    setOpenCats((prev) => {
+      const next = new Set(prev);
+      if (isOpen(category)) next.delete(category);
+      else next.add(category);
+      return next;
+    });
+  // Flèches haut/bas : commande précédente/suivante parmi celles affichées.
+  const visible = groups.flatMap(([category, list]) => (isOpen(category) ? list : []));
+  const onListKey = (e: KeyboardEvent) => {
+    if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return;
+    e.preventDefault();
+    const i = visible.findIndex((c) => c.name === selected);
+    const next = visible[Math.min(visible.length - 1, Math.max(0, i + (e.key === "ArrowDown" ? 1 : -1)))];
+    if (next) {
+      setSelected(next.name);
+      listRef.current?.querySelector(`[data-cmd="${next.name}"]`)?.scrollIntoView({ block: "nearest" });
+    }
+  };
+  const counts = { off: (commands ?? []).filter(FILTERS.off).length, custom: (commands ?? []).filter(FILTERS.custom).length };
+  const filterOptions: [Filter, string][] = [
+    ["all", "Toutes"],
+    ["off", counts.off ? `Coupées · ${counts.off}` : "Coupées"],
+    ["custom", counts.custom ? `Modifiées · ${counts.custom}` : "Modifiées"],
+  ];
 
   const channelName = (id: string) => channels.find((c) => c.id === id)?.name ?? id;
 
@@ -106,52 +141,82 @@ export default function ConsoleCommands({ guildId }: { guildId: string }) {
                 className="w-full bg-transparent text-xs text-[var(--text-primary)] outline-none placeholder:text-[var(--text-muted)]"
               />
             </div>
-            <div className="max-h-64 overflow-y-auto p-1.5 md:max-h-[calc(100vh-12rem)]">
-              {groups.length === 0 && <p className="px-2 py-4 text-center text-xs text-[var(--text-muted)]">Aucune commande.</p>}
-              {groups.map(([category, list]) => (
-                <div key={category} className="mb-1.5">
-                  <p className="px-2 pb-1 pt-2 text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">{category}</p>
-                  {list.map((c) => (
-                    <button
-                      key={c.name}
-                      type="button"
-                      onClick={() => setSelected(c.name)}
-                      aria-current={c.name === selected ? "true" : undefined}
-                      className={cn(
-                        "relative w-full rounded-lg px-2.5 py-1.5 text-left transition-colors",
-                        c.name === selected ? "text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]"
-                      )}
-                    >
-                      {c.name === selected && <motion.span layoutId="cmd-active" transition={SPRING_PILL} className="absolute inset-0 rounded-lg bg-[var(--surface-hover)]" />}
-                      <span className="relative flex items-center gap-2">
-                        <span
-                          className={cn(
-                            "h-1.5 w-1.5 shrink-0 rounded-full",
-                            !c.rule.enabled ? "bg-[var(--danger)]" : c.customized ? "bg-[var(--warning)]" : "bg-[var(--success)]"
-                          )}
-                        />
-                        <span className="min-w-0">
-                          <span className="block truncate font-mono text-[12px] font-semibold">/{c.name}</span>
-                          <span className="block truncate text-[10px] text-[var(--text-muted)]">{statusOf(c)}</span>
-                        </span>
-                      </span>
-                    </button>
-                  ))}
-                </div>
+            <div className="flex gap-1 border-b border-[var(--panel-border)] px-2 py-2">
+              {filterOptions.map(([f, label]) => (
+                <button
+                  key={f}
+                  type="button"
+                  onClick={() => setFilter(f)}
+                  aria-pressed={filter === f}
+                  className={cn(
+                    "rounded-md px-2 py-1 text-[11px] font-semibold transition-colors",
+                    filter === f ? "bg-[var(--surface-hover)] text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                  )}
+                >
+                  {label}
+                </button>
               ))}
+            </div>
+            <div
+              ref={listRef}
+              tabIndex={0}
+              onKeyDown={onListKey}
+              aria-label="Liste des commandes (flèches haut et bas pour naviguer)"
+              className="max-h-72 overflow-y-auto p-1.5 outline-none md:max-h-[calc(100vh-15rem)]"
+            >
+              {groups.length === 0 && <p className="px-2 py-4 text-center text-xs text-[var(--text-muted)]">Aucune commande.</p>}
+              {groups.map(([category, list]) => {
+                const open = isOpen(category);
+                return (
+                  <div key={category} className="mb-0.5">
+                    <button
+                      type="button"
+                      onClick={() => toggleCat(category)}
+                      aria-expanded={open}
+                      className="flex w-full items-center gap-1.5 rounded-md px-2 py-1.5 text-left text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                    >
+                      <ChevronDown className={cn("h-3 w-3 shrink-0 transition-transform", !open && "-rotate-90")} />
+                      <span className="flex-1 truncate">{category}</span>
+                      <span className="font-mono font-normal normal-case tracking-normal">{list.length}</span>
+                    </button>
+                    {open &&
+                      list.map((c) => (
+                        <button
+                          key={c.name}
+                          type="button"
+                          data-cmd={c.name}
+                          onClick={() => setSelected(c.name)}
+                          aria-current={c.name === selected ? "true" : undefined}
+                          title={`${statusOf(c)} — ${c.description}`}
+                          className={cn(
+                            "relative w-full rounded-lg px-2.5 py-1 text-left transition-colors",
+                            c.name === selected ? "text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]"
+                          )}
+                        >
+                          {c.name === selected && <motion.span layoutId="cmd-active" transition={SPRING_PILL} className="absolute inset-0 rounded-lg bg-[var(--surface-hover)]" />}
+                          <span className="relative flex items-center gap-2">
+                            <span
+                              className={cn(
+                                "h-1.5 w-1.5 shrink-0 rounded-full",
+                                !c.rule.enabled ? "bg-[var(--danger)]" : c.customized ? "bg-[var(--warning)]" : "bg-[var(--success)]"
+                              )}
+                            />
+                            <span className="min-w-0 flex-1 truncate font-mono text-[12px] font-semibold">/{c.name}</span>
+                            {(!c.rule.enabled || c.customized) && <span className="shrink-0 text-[10px] text-[var(--text-muted)]">{c.rule.enabled ? "modifiée" : "coupée"}</span>}
+                          </span>
+                        </button>
+                      ))}
+                  </div>
+                );
+              })}
             </div>
           </nav>
 
           <AnimatePresence mode="wait" initial={false}>
             {cmd && (
-              <motion.div
-                key={cmd.name}
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -4 }}
-                transition={SPRING_LAYOUT}
-                className="min-w-0 space-y-4"
-              >
+              // Variantes nommées : les blocs (Panel = staggerItem) rejouent leur entrée à chaque commande. Avec des
+              // valeurs brutes ici, ils restaient sur leur état initial (invisibles) dès qu'on changeait de commande.
+              <motion.div key={cmd.name} variants={pageStagger} initial="initial" animate="animate" exit={{ opacity: 0, transition: { duration: 0.08 } }} className="min-w-0 space-y-4">
                 <Panel>
                   <div className="flex items-start justify-between gap-4 px-5 py-4">
                     <div className="min-w-0">

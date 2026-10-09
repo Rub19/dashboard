@@ -22,11 +22,7 @@ const PAGES: Record<string, ComponentType> = {
   backups: load(() => import("@/app/discord/backups/BackupsCenterClient")),
   ai: load(() => import("@/app/discord/ai/AiCenterClient")),
   analytics: load(() => import("@/app/discord/analytics/AnalyticsCenterClient")),
-  events: load(() => import("@/app/discord/events/EventsCenterClient")),
   server: load(() => import("@/app/discord/server/ServerManagementClient")),
-  stats: load(() => import("@/app/discord/stats/StatsCenterClient")),
-  statroles: load(() => import("@/app/discord/statroles/StatrolesCenterClient")),
-  secureroles: load(() => import("@/app/discord/secure-roles/SecureRolesCenterClient")),
   settings: load(() => import("@/app/discord/settings/SettingsCenterClient")),
   automodnative: load(() => import("@/app/discord/automod-native/AutomodNativeClient")),
   calendar: load(() => import("@/app/discord/calendar/DiscordCalendarClient")),
@@ -63,6 +59,10 @@ const NATIVE: Record<string, ComponentType<{ guildId: string }>> = {
   sticky: native(() => import("./modules/ConsoleSticky")),
   serverstats: native(() => import("./modules/ConsoleServerStats")),
   highlights: native(() => import("./modules/ConsoleHighlights")),
+  stats: native(() => import("./modules/ConsoleStats")),
+  statroles: native(() => import("./modules/ConsoleStatroles")),
+  secureroles: native(() => import("./modules/ConsoleSecureRoles")),
+  events: native(() => import("./modules/ConsoleEvents")),
 };
 
 export const hasEmbeddedPage = (moduleId: string) => moduleId in PAGES || moduleId in NATIVE;

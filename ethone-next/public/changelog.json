@@ -1,5 +1,17 @@
 [
   {
+    "version": "v1.60.0",
+    "date": "2026-10-09",
+    "title": "Console : Commandes plus rapides, Statistiques, Rôles de stats, Rôles sécurisés et Événements au format Keeper",
+    "items": [
+      "Commandes : correction du détail qui disparaissait en changeant de commande ; liste compacte avec catégories repliables, filtres « Coupées » et « Modifiées », navigation aux flèches haut et bas.",
+      "Statistiques : période (7 j à 1 an), messages, vocal, membres actifs, arrivées et départs, graphique par jour, salons les plus actifs, classement des membres avec recherche, effacement des données.",
+      "Rôles de stats : règles avec conditions imbriquées, aperçu des membres concernés, activation par règle et application immédiate.",
+      "Rôles sécurisés : sécuriser ou restaurer un rôle, durée de session, équipe (inviter, terminer une session, réinitialiser) et journal.",
+      "Événements : création rapide (date, durée, salon vocal, places, événement Discord), liste à venir et passée, report, duplication et annulation. L'organisateur enregistré est le compte connecté."
+    ]
+  },
+  {
     "version": "v1.59.2",
     "date": "2026-10-09",
     "title": "Casino : cagnotte liée à l'économie",
@@ -635,17 +647,6 @@
       "Inspecteur d'Espace (/spaces/[spaceId]) : affichage d'un indicateur de chargement dédié et écran d'erreur clair avec bouton de retour si l'espace est introuvable.",
       "Gestionnaire de Flows (/flows) : barre de création intégrée réunissant le sélecteur de modèle et le champ de nom personnalisé dans une carte épurée.",
       "Fiabilité & Erreurs : meilleure gestion des états asynchrones lors du chargement des espaces Cloud."
-    ]
-  },
-  {
-    "version": "v1.55.46",
-    "date": "2026-10-06",
-    "title": "Dashboard Web : Filtres Dynamiques de Tâches & Expérience Mobile Notes Apple-Grade",
-    "items": [
-      "Tâches & Projets (/tasks) : barre de filtres par catégories avec calcul en temps réel des compteurs par projet et détection automatique des catégories personnalisées.",
-      "Réinitialisation des filtres : bouton d'action contextuel en état vide permettant d'effacer les filtres actifs en un clic.",
-      "Notes & Rédacteur (/notes) : refonte adaptative mobile avec bascule fluide entre liste et éditeur plein écran et bouton de retour direct.",
-      "Bouton Nouvelle Note : accès direct depuis l'en-tête de liste sur mobile et préservation de la saisie sans superposition d'éléments."
     ]
   }
 ]

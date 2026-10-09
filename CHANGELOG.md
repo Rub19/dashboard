@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.60.0 — 2026-10-09
+
+**Console : Commandes plus rapides, Statistiques, Rôles de stats, Rôles sécurisés et Événements au format Keeper**
+
+- Commandes : correction du détail qui disparaissait en changeant de commande ; liste compacte avec catégories repliables, filtres « Coupées » et « Modifiées », navigation aux flèches haut et bas.
+- Statistiques : période (7 j à 1 an), messages, vocal, membres actifs, arrivées et départs, graphique par jour, salons les plus actifs, classement des membres avec recherche, effacement des données.
+- Rôles de stats : règles avec conditions imbriquées, aperçu des membres concernés, activation par règle et application immédiate.
+- Rôles sécurisés : sécuriser ou restaurer un rôle, durée de session, équipe (inviter, terminer une session, réinitialiser) et journal.
+- Événements : création rapide (date, durée, salon vocal, places, événement Discord), liste à venir et passée, report, duplication et annulation. L'organisateur enregistré est le compte connecté.
+
 ## v1.59.2 — 2026-10-09
 
 **Casino : cagnotte liée à l'économie**

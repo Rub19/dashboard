@@ -17,21 +17,21 @@ import ModuleSkeleton from "@/components/discord/ModuleSkeleton";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
-type Op = ">=" | ">" | "<=" | "<" | "=";
-type Leaf =
+export type Op = ">=" | ">" | "<=" | "<" | "=";
+export type Leaf =
   | { kind: "messages"; days: number; op: Op; value: number }
   | { kind: "voice"; days: number; op: Op; hours: number }
   | { kind: "joinedAge"; op: Op; days: number }
   | { kind: "accountAge"; op: Op; days: number }
   | { kind: "hasRole"; roleId: string; not: boolean };
-interface Group {
+export interface Group {
   kind: "group";
   match: "ALL" | "ANY";
   children: Node[];
 }
-type Node = Leaf | Group;
+export type Node = Leaf | Group;
 
-interface Rule {
+export interface Rule {
   id: string;
   name: string;
   roleId: string;
@@ -39,18 +39,18 @@ interface Rule {
   removeWhenNotMatching: boolean;
   enabled: boolean;
 }
-interface RoleInfo {
+export interface RoleInfo {
   id: string;
   name: string;
   color: string;
   assignable: boolean;
 }
-interface Overview {
+export interface Overview {
   config: { enabled: boolean; rules: Rule[]; lastRunAt: string | null; lastRun: { added: number; removed: number; errors: number; skipped: number } | null };
   statsEnabled: boolean;
   roles: RoleInfo[];
 }
-interface Preview {
+export interface Preview {
   matching: number;
   holders: number;
   toAdd: number;
@@ -88,7 +88,7 @@ const newLeaf = (kind: string): Node => {
   }
 };
 
-const emptyRule = (): Rule => ({
+export const emptyRule = (): Rule => ({
   id: `regle-${Math.random().toString(36).slice(2, 8)}`,
   name: "Nouvelle règle",
   roleId: "",
@@ -99,7 +99,7 @@ const emptyRule = (): Rule => ({
 
 const inputCls = "h-8 rounded-xl border border-[var(--panel-border)] bg-[var(--bg-surface)] px-2 text-xs text-[var(--text-primary)] outline-none focus:border-[var(--input-border-hover)]";
 
-function countLeaves(n: Node): number {
+export function countLeaves(n: Node): number {
   return n.kind === "group" ? n.children.reduce((s, c) => s + countLeaves(c), 0) : 1;
 }
 
@@ -259,7 +259,7 @@ function LeafEditor({ leaf, roles, onChange, onDelete }: { leaf: Leaf; roles: Ro
   );
 }
 
-function GroupEditor({ group, roles, depth, onChange, onDelete }: { group: Group; roles: RoleInfo[]; depth: number; onChange: (g: Group) => void; onDelete?: () => void }) {
+export function GroupEditor({ group, roles, depth, onChange, onDelete }: { group: Group; roles: RoleInfo[]; depth: number; onChange: (g: Group) => void; onDelete?: () => void }) {
   const setChild = (i: number, node: Node) => onChange({ ...group, children: group.children.map((c, idx) => (idx === i ? node : c)) });
   const delChild = (i: number) => onChange({ ...group, children: group.children.filter((_, idx) => idx !== i) });
   return (

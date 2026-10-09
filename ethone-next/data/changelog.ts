@@ -48796,5 +48796,62 @@ CHANGELOG_BY_LANG.en.unshift(v1_59_2_en);
 CHANGELOG_BY_LANG.es.unshift(v1_59_2_es);
 CHANGELOG_BY_LANG.de.unshift(v1_59_2_de);
 
+const v1_60_0_fr: ChangelogEntry = {
+  version: "v1.60.0",
+  date: "2026-10-09",
+  title: "Console : Commandes plus rapides, Statistiques, Rôles de stats, Rôles sécurisés et Événements au format Keeper",
+  items: [
+    "Commandes : correction du détail qui disparaissait en changeant de commande ; liste compacte avec catégories repliables, filtres « Coupées » et « Modifiées », navigation aux flèches haut et bas.",
+    "Statistiques : période (7 j à 1 an), messages, vocal, membres actifs, arrivées et départs, graphique par jour, salons les plus actifs, classement des membres avec recherche, effacement des données.",
+    "Rôles de stats : règles avec conditions imbriquées, aperçu des membres concernés, activation par règle et application immédiate.",
+    "Rôles sécurisés : sécuriser ou restaurer un rôle, durée de session, équipe (inviter, terminer une session, réinitialiser) et journal.",
+    "Événements : création rapide (date, durée, salon vocal, places, événement Discord), liste à venir et passée, report, duplication et annulation. L'organisateur enregistré est le compte connecté.",
+  ],
+};
+
+const v1_60_0_en: ChangelogEntry = {
+  version: "v1.60.0",
+  date: "2026-10-09",
+  title: "Console: faster Commands, Stats, Stat roles, Secure roles and Events in the Keeper layout",
+  items: [
+    "Commands: fixed the detail disappearing when switching commands; compact list with collapsible categories, “Off” and “Edited” filters, arrow-key navigation.",
+    "Stats: period (7 days to 1 year), messages, voice, active members, joins and leaves, daily chart, top channels, searchable member leaderboard, data wipe.",
+    "Stat roles: rules with nested conditions, preview of affected members, per-rule toggle and run now.",
+    "Secure roles: secure or restore a role, session length, team (invite, end session, reset) and log.",
+    "Events: quick creation (date, duration, voice channel, slots, Discord event), upcoming and past list, postpone, duplicate and cancel. The organizer is the signed-in account.",
+  ],
+};
+
+const v1_60_0_es: ChangelogEntry = {
+  version: "v1.60.0",
+  date: "2026-10-09",
+  title: "Consola: Comandos más rápidos, Estadísticas, Roles por estadísticas, Roles seguros y Eventos con el formato Keeper",
+  items: [
+    "Comandos: corregido el detalle que desaparecía al cambiar de comando; lista compacta con categorías plegables, filtros y navegación con flechas.",
+    "Estadísticas: periodo, mensajes, voz, miembros activos, altas y bajas, gráfico diario, canales y clasificación de miembros.",
+    "Roles por estadísticas: reglas con condiciones anidadas, vista previa, activación y aplicación inmediata.",
+    "Roles seguros: asegurar o restaurar un rol, duración de sesión, equipo y registro.",
+    "Eventos: creación rápida, lista, aplazar, duplicar y cancelar. El organizador es la cuenta conectada.",
+  ],
+};
+
+const v1_60_0_de: ChangelogEntry = {
+  version: "v1.60.0",
+  date: "2026-10-09",
+  title: "Konsole: schnellere Befehle, Statistiken, Statistik-Rollen, gesicherte Rollen und Events im Keeper-Layout",
+  items: [
+    "Befehle: Detailansicht verschwindet beim Wechseln nicht mehr; kompakte Liste mit einklappbaren Kategorien, Filtern und Pfeiltasten-Navigation.",
+    "Statistiken: Zeitraum, Nachrichten, Sprache, aktive Mitglieder, Beitritte und Abgänge, Tagesdiagramm, Kanäle und Mitglieder-Rangliste.",
+    "Statistik-Rollen: Regeln mit verschachtelten Bedingungen, Vorschau, Aktivierung und sofortige Anwendung.",
+    "Gesicherte Rollen: Rolle sichern oder wiederherstellen, Sitzungsdauer, Team und Protokoll.",
+    "Events: Schnellerstellung, Liste, verschieben, duplizieren und absagen. Organisator ist das angemeldete Konto.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_60_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_60_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_60_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_60_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

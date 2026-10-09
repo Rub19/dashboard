@@ -83,9 +83,17 @@ export function createEventRouter(client?: Client): Router {
         return res.status(400).json({ success: false, error: 'title and startDate are required' });
       }
 
+      // L'organisateur est la personne connectée au dashboard, jamais une valeur envoyée par le client.
       const created = EventService.createEvent({
         ...eventData,
         guildId,
+        organizer: req.user
+          ? {
+              id: req.user.id,
+              username: req.user.globalName || req.user.username,
+              avatarUrl: req.user.avatar ? `https://cdn.discordapp.com/avatars/${req.user.id}/${req.user.avatar}.png?size=64` : undefined,
+            }
+          : eventData.organizer,
       });
 
       if (client && eventData.syncToDiscord) {

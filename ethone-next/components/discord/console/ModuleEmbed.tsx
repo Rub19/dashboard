@@ -18,15 +18,12 @@ const load = (loader: () => Promise<ComponentType | { default: ComponentType }>)
 const PAGES: Record<string, ComponentType> = {
   overview: load(() => import("@/app/discord/overview/OverviewClient")),
   commands: load(() => import("@/app/discord/commands/CommandsCenterClient")),
-  suggestions: load(() => import("@/app/discord/suggestions/SuggestionsCenterClient")),
   logs: load(() => import("@/app/discord/logs/AuditCenterClient").then((m) => m.AuditCenterClient)),
-  invites: load(() => import("@/app/discord/invites/InvitesCenterClient")),
   voice: load(() => import("@/app/discord/voice/VoiceCenterClient")),
   backups: load(() => import("@/app/discord/backups/BackupsCenterClient")),
   ai: load(() => import("@/app/discord/ai/AiCenterClient")),
   forms: load(() => import("@/app/discord/forms/FormsCenterClient")),
   polls: load(() => import("@/app/discord/polls/PollsCenterClient")),
-  roles: load(() => import("@/app/discord/roles/RolesCenterClient")),
   analytics: load(() => import("@/app/discord/analytics/AnalyticsCenterClient")),
   events: load(() => import("@/app/discord/events/EventsCenterClient")),
   server: load(() => import("@/app/discord/server/ServerManagementClient")),
@@ -55,6 +52,9 @@ const PAGES: Record<string, ComponentType> = {
 const native = (loader: () => Promise<{ default: ComponentType<{ guildId: string }> }>) =>
   dynamic(loader, { ssr: false, loading: () => <ModuleSkeleton label="Chargement du module" /> });
 const NATIVE: Record<string, ComponentType<{ guildId: string }>> = {
+  suggestions: native(() => import("./modules/ConsoleSuggestions")),
+  roles: native(() => import("./modules/ConsoleRoles")),
+  invites: native(() => import("./modules/ConsoleInvites")),
   welcome: native(() => import("./modules/ConsoleWelcome")),
   moderation: native(() => import("./modules/ConsoleModeration")),
   tickets: native(() => import("./modules/ConsoleTickets")),

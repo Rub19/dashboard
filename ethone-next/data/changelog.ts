@@ -48413,5 +48413,62 @@ CHANGELOG_BY_LANG.en.unshift(v1_56_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_56_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_56_0_de);
 
+const v1_56_1_fr: ChangelogEntry = {
+  version: "v1.56.1",
+  date: "2026-10-09",
+  title: "Console : Suggestions, Rôles et Invitations au format Keeper",
+  items: [
+    "Suggestions : salon, fil de discussion, message à l'auteur, et traitement des idées (statut et réponse officielle) par filtre.",
+    "Rôles : rôles donnés à l'arrivée (bots, règles, délai, rattrapage) et menus de rôles à publier, avec option « un seul rôle à la fois ».",
+    "Invitations : suivi, annonces dans un salon, paliers de récompense, meilleurs inviteurs et liens du serveur.",
+    "Invitations : le salon des annonces choisi dans le tableau de bord est maintenant bien utilisé, et un chiffre inventé a été retiré des statistiques.",
+    "Suggestions : une suggestion ne peut plus être modifiée depuis un autre serveur.",
+  ],
+};
+
+const v1_56_1_en: ChangelogEntry = {
+  version: "v1.56.1",
+  date: "2026-10-09",
+  title: "Console: Suggestions, Roles and Invites in the Keeper layout",
+  items: [
+    "Suggestions: channel, thread, author DM, and handling ideas (status and official reply) by filter.",
+    "Roles: roles given on join (bots, rules screening, delay, catch-up) and role menus to publish, with a one-role-at-a-time option.",
+    "Invites: tracking, announcements in a channel, reward tiers, top inviters and server links.",
+    "Invites: the announcement channel picked in the dashboard is now actually used, and a made-up number was removed from the stats.",
+    "Suggestions: a suggestion can no longer be edited from another server.",
+  ],
+};
+
+const v1_56_1_es: ChangelogEntry = {
+  version: "v1.56.1",
+  date: "2026-10-09",
+  title: "Consola: Sugerencias, Roles e Invitaciones con el diseño de Keeper",
+  items: [
+    "Sugerencias: canal, hilo, mensaje al autor y gestión de ideas (estado y respuesta oficial) por filtro.",
+    "Roles: roles al entrar (bots, reglas, retraso, recuperación) y menús de roles para publicar, con opción de un solo rol a la vez.",
+    "Invitaciones: seguimiento, anuncios en un canal, niveles de recompensa, mejores invitadores y enlaces del servidor.",
+    "Invitaciones: el canal de anuncios elegido en el panel ahora se usa de verdad, y se quitó una cifra inventada de las estadísticas.",
+    "Sugerencias: ya no se puede editar una sugerencia desde otro servidor.",
+  ],
+};
+
+const v1_56_1_de: ChangelogEntry = {
+  version: "v1.56.1",
+  date: "2026-10-09",
+  title: "Konsole: Vorschläge, Rollen und Einladungen im Keeper-Layout",
+  items: [
+    "Vorschläge: Kanal, Thread, DM an den Autor und Bearbeitung der Ideen (Status und offizielle Antwort) per Filter.",
+    "Rollen: Rollen beim Beitritt (Bots, Regelprüfung, Verzögerung, Nachholen) und Rollenmenüs zum Veröffentlichen, mit Option „nur eine Rolle“.",
+    "Einladungen: Tracking, Ankündigungen in einem Kanal, Belohnungsstufen, Top-Einlader und Server-Links.",
+    "Einladungen: Der im Dashboard gewählte Ankündigungskanal wird jetzt wirklich genutzt, und eine erfundene Zahl wurde aus den Statistiken entfernt.",
+    "Vorschläge: Ein Vorschlag kann nicht mehr von einem anderen Server aus bearbeitet werden.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_56_1_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_56_1_en);
+CHANGELOG_BY_LANG.es.unshift(v1_56_1_es);
+CHANGELOG_BY_LANG.de.unshift(v1_56_1_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

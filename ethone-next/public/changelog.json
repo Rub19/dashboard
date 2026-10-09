@@ -1,5 +1,17 @@
 [
   {
+    "version": "v1.56.1",
+    "date": "2026-10-09",
+    "title": "Console : Suggestions, Rôles et Invitations au format Keeper",
+    "items": [
+      "Suggestions : salon, fil de discussion, message à l'auteur, et traitement des idées (statut et réponse officielle) par filtre.",
+      "Rôles : rôles donnés à l'arrivée (bots, règles, délai, rattrapage) et menus de rôles à publier, avec option « un seul rôle à la fois ».",
+      "Invitations : suivi, annonces dans un salon, paliers de récompense, meilleurs inviteurs et liens du serveur.",
+      "Invitations : le salon des annonces choisi dans le tableau de bord est maintenant bien utilisé, et un chiffre inventé a été retiré des statistiques.",
+      "Suggestions : une suggestion ne peut plus être modifiée depuis un autre serveur."
+    ]
+  },
+  {
     "version": "v1.56.0",
     "date": "2026-10-09",
     "title": "Console : Tickets, Bienvenue et Modération au format Keeper",
@@ -631,18 +643,6 @@
       "Refonte de la carte Stockage (`StorageMetricsCard`) : affichage précis des données réelles (notes, tâches, fichiers) avec pourcentages réels et gestion propre de l'état zéro.",
       "Bandeau de raccourcis rapides (`HomeScreen`) : puces tactiles ergonomiques Liquid Glass pour naviguer directement vers Brain, Tâches, Notes, Fichiers, Focus et Mail.",
       "Navigation étendue (`BentoGridScreen` & `NativeFloatingDock`) : intégration fluide des écrans Fichiers et Mail, et sauvegarde de notes depuis la capture rapide Brain."
-    ]
-  },
-  {
-    "version": "v1.55.39",
-    "date": "2026-10-06",
-    "title": "Parité iOS Native : Gestionnaire de Fichiers Enrichi, Grille & Inspecteur",
-    "items": [
-      "Refonte du gestionnaire de fichiers natif (`FilesView`) : navigation arborescente avec fil d'Ariane interactif permettant de remonter instantanément à tout niveau du dossier.",
-      "Bascule d'affichage dynamique Liste / Grille : cartes tactiles Liquid Glass avec icônes colorées par format et métadonnées en temps réel.",
-      "Filtrage multi-catégories : pastilles rapides pour Tous, Favoris, Dossiers, Documents et Médias avec mise en cache réactive.",
-      "Feuille d'inspection native (`FileInspectorSheet`) : détails complets du fichier (type MIME, taille exacte, date, lien direct Google Drive et partage natif).",
-      "Actions contextuelles rapides : gestion des favoris dans le Cloud, intégration `SharedLinksView` et ouverture instantanée."
     ]
   }
 ]

@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.56.1 — 2026-10-09
+
+**Console : Suggestions, Rôles et Invitations au format Keeper**
+
+- Suggestions : salon, fil de discussion, message à l'auteur, et traitement des idées (statut et réponse officielle) par filtre.
+- Rôles : rôles donnés à l'arrivée (bots, règles, délai, rattrapage) et menus de rôles à publier, avec option « un seul rôle à la fois ».
+- Invitations : suivi, annonces dans un salon, paliers de récompense, meilleurs inviteurs et liens du serveur.
+- Invitations : le salon des annonces choisi dans le tableau de bord est maintenant bien utilisé, et un chiffre inventé a été retiré des statistiques.
+- Suggestions : une suggestion ne peut plus être modifiée depuis un autre serveur.
+
 ## v1.56.0 — 2026-10-09
 
 **Console : Tickets, Bienvenue et Modération au format Keeper**

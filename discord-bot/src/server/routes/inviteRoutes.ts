@@ -99,7 +99,8 @@ export function createInviteRouter(client: Client): Router {
             : null,
         },
         funnel: {
-          invitationsTracked: totalInvites * 2 + 140,
+          // Utilisations cumulées des liens d'invitation actuels du serveur (compteur Discord).
+          invitationsTracked: Array.from(inviteRepository.getSnapshots(guildId).values()).reduce((n, snap) => n + (snap.uses || 0), 0),
           totalJoins: totalInvites,
           validJoins: validInvites,
           retainedMembers,

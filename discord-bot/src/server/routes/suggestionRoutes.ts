@@ -11,6 +11,16 @@ import { handleRouteError } from '../utils/routeError.js';
 export function createSuggestionRouter(discordClient: Client) {
   const router = express.Router({ mergeParams: true });
 
+  // Une suggestion d'un autre serveur n'existe pas ici (évite d'agir sur l'id d'un autre serveur).
+  router.param('id', (req, res, next, id) => {
+    const found = suggestionStorage.getById(String(id));
+    if (found && found.guildId !== String(req.params.guildId)) {
+      res.status(404).json({ error: 'Suggestion introuvable' });
+      return;
+    }
+    next();
+  });
+
   // 1. Vue d'ensemble (Stats & Répartition)
   router.get('/overview', async (req: Request, res: Response): Promise<void> => {
     const guildId = String(req.params.guildId);

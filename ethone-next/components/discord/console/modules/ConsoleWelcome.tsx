@@ -331,9 +331,11 @@ export default function ConsoleWelcome({ guildId }: { guildId: string }) {
       </Panel>
 
       <Panel title="À l'arrivée">
-        <Row label="Rôles donnés" hint="À chaque nouveau membre.">
-          <RoleChips guildId={guildId} ids={welcome.autoRoleIds} onChange={(ids) => w({ autoRoleIds: ids })} />
-        </Row>
+        {welcome.autoRoleIds.length > 0 && (
+          <Row label="Rôles donnés" hint="Ancien réglage : les rôles à l&apos;arrivée se gèrent maintenant dans le module Rôles.">
+            <RoleChips guildId={guildId} ids={welcome.autoRoleIds} onChange={(ids) => w({ autoRoleIds: ids })} />
+          </Row>
+        )}
         <Row label="Ignorer les comptes récents" hint="Pas de message pour un compte Discord plus jeune. 0 : désactivé.">
           <Stepper value={minAge} min={0} max={365} unit="jours" onCommit={(n) => w({ conditions: { ...welcome.conditions, enabled: n > 0, minAccountAgeDays: n } })} />
         </Row>

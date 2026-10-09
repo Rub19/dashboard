@@ -79,7 +79,8 @@ export class InviteTrackingService {
       // 5. Send Notification in dedicated channel if configured
       if (settings.notificationChannel) {
         const channel = member.guild.channels.cache.find(
-          (c) => c.type === ChannelType.GuildText && c.name === settings.notificationChannel
+          // Id du salon (dashboard) ; le nom reste accepté pour les anciens réglages.
+          (c) => c.type === ChannelType.GuildText && (c.id === settings.notificationChannel || c.name === settings.notificationChannel)
         ) as TextChannel | undefined;
 
         if (channel && channel.permissionsFor(member.guild.members.me!)?.has('SendMessages')) {

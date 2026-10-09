@@ -48853,5 +48853,46 @@ CHANGELOG_BY_LANG.en.unshift(v1_60_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_60_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_60_0_de);
 
+const v1_60_1_fr: ChangelogEntry = {
+  version: "v1.60.1",
+  date: "2026-10-09",
+  title: "Commandes : le détail suit toujours la commande choisie",
+  items: [
+    "Le panneau de droite affiche immédiatement la commande sélectionnée (il pouvait rester vide ou figé sur la précédente).",
+  ],
+};
+
+const v1_60_1_en: ChangelogEntry = {
+  version: "v1.60.1",
+  date: "2026-10-09",
+  title: "Commands: the detail always follows the selected command",
+  items: [
+    "The right panel now shows the selected command immediately (it could stay empty or stuck on the previous one).",
+  ],
+};
+
+const v1_60_1_es: ChangelogEntry = {
+  version: "v1.60.1",
+  date: "2026-10-09",
+  title: "Comandos: el detalle sigue siempre al comando elegido",
+  items: [
+    "El panel derecho muestra al instante el comando seleccionado.",
+  ],
+};
+
+const v1_60_1_de: ChangelogEntry = {
+  version: "v1.60.1",
+  date: "2026-10-09",
+  title: "Befehle: Detail folgt immer dem gewählten Befehl",
+  items: [
+    "Das rechte Feld zeigt den gewählten Befehl sofort an.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_60_1_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_60_1_en);
+CHANGELOG_BY_LANG.es.unshift(v1_60_1_es);
+CHANGELOG_BY_LANG.de.unshift(v1_60_1_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

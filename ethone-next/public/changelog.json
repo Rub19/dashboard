@@ -1,5 +1,13 @@
 [
   {
+    "version": "v1.60.1",
+    "date": "2026-10-09",
+    "title": "Commandes : le détail suit toujours la commande choisie",
+    "items": [
+      "Le panneau de droite affiche immédiatement la commande sélectionnée (il pouvait rester vide ou figé sur la précédente)."
+    ]
+  },
+  {
     "version": "v1.60.0",
     "date": "2026-10-09",
     "title": "Console : Commandes plus rapides, Statistiques, Rôles de stats, Rôles sécurisés et Événements au format Keeper",
@@ -636,17 +644,6 @@
       "Recherche en temps réel des serveurs et lien direct vers le panneau de gestion (/discord?guildId=...).",
       "Carte Bots Privés avec modal dédié présentant les fonctionnalités exclusives (anti-raid rollback, instance dédiée).",
       "Basculement réversible entre le nouveau Hub et l'ancienne vitrine publique conservée."
-    ]
-  },
-  {
-    "version": "v1.55.47",
-    "date": "2026-10-06",
-    "title": "Dashboard Web : Alignement Espaces & Gestionnaire de Flows Intégré",
-    "items": [
-      "Espaces Partagés (/spaces) : alignement responsive précis des onglets et suppression des marges superflues sur smartphone et tablette.",
-      "Inspecteur d'Espace (/spaces/[spaceId]) : affichage d'un indicateur de chargement dédié et écran d'erreur clair avec bouton de retour si l'espace est introuvable.",
-      "Gestionnaire de Flows (/flows) : barre de création intégrée réunissant le sélecteur de modèle et le champ de nom personnalisé dans une carte épurée.",
-      "Fiabilité & Erreurs : meilleure gestion des états asynchrones lors du chargement des espaces Cloud."
     ]
   }
 ]

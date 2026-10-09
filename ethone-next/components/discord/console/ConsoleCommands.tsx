@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { ChevronDown, Hash, Search } from "@/components/icons/ph";
 import { fetchGuildChannels, type ChannelOption } from "../ChannelPicker";
 import { SPRING_PILL } from "@/lib/ease";
@@ -212,11 +212,11 @@ export default function ConsoleCommands({ guildId }: { guildId: string }) {
             </div>
           </nav>
 
-          <AnimatePresence mode="wait" initial={false}>
-            {cmd && (
-              // Variantes nommées : les blocs (Panel = staggerItem) rejouent leur entrée à chaque commande. Avec des
-              // valeurs brutes ici, ils restaient sur leur état initial (invisibles) dès qu'on changeait de commande.
-              <motion.div key={cmd.name} variants={pageStagger} initial="initial" animate="animate" exit={{ opacity: 0, transition: { duration: 0.08 } }} className="min-w-0 space-y-4">
+          {cmd && (
+              // Pas d'AnimatePresence « wait » : son animation de sortie pouvait ne jamais se terminer et laissait le détail
+              // vide (ou figé sur l'ancienne commande). Le bloc est remonté à chaque commande (key) et rejoue seulement son
+              // entrée ; les variantes nommées font apparaître les Panel (staggerItem).
+              <motion.div key={cmd.name} variants={pageStagger} initial="initial" animate="animate" className="min-w-0 space-y-4">
                 <Panel>
                   <div className="flex items-start justify-between gap-4 px-5 py-4">
                     <div className="min-w-0">
@@ -315,7 +315,6 @@ export default function ConsoleCommands({ guildId }: { guildId: string }) {
                 </Panel>
               </motion.div>
             )}
-          </AnimatePresence>
         </div>
       )}
     </ConsolePage>

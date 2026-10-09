@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.60.1 — 2026-10-09
+
+**Commandes : le détail suit toujours la commande choisie**
+
+- Le panneau de droite affiche immédiatement la commande sélectionnée (il pouvait rester vide ou figé sur la précédente).
+
 ## v1.60.0 — 2026-10-09
 
 **Console : Commandes plus rapides, Statistiques, Rôles de stats, Rôles sécurisés et Événements au format Keeper**

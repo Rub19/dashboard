@@ -107,7 +107,11 @@ export function createTicketRouter(discordClient: Client) {
     try {
       const guildId = String(req.params.guildId);
       const ticketId = String(req.params.ticketId);
-      const { staffId, staffTag, staffAvatar } = req.body;
+      // Le compte connecté fait foi : le corps ne sert que sans session (tests).
+      const me = req.user;
+      const staffId = me?.id || req.body.staffId;
+      const staffTag = me ? me.globalName || me.username : req.body.staffTag;
+      const staffAvatar = me ? (me.avatar ? `https://cdn.discordapp.com/avatars/${me.id}/${me.avatar}.png` : null) : req.body.staffAvatar;
       if (!staffId || !staffTag) {
         res.status(400).json({ error: 'staffId et staffTag sont requis.' });
         return;
@@ -249,7 +253,7 @@ export function createTicketRouter(discordClient: Client) {
       const ticket = await ticketService.closeTicket(
         guild,
         ticketId,
-        closedBy || { id: 'dashboard', tag: 'Dashboard' },
+        req.user ? { id: req.user.id, tag: req.user.globalName || req.user.username } : closedBy || { id: 'dashboard', tag: 'Dashboard' },
         reason || 'Résolu via Dashboard'
       );
       res.json({ success: true, ticket });

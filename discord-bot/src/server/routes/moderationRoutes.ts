@@ -399,7 +399,9 @@ export function createModerationRouter(discordClient: Client) {
   router.put('/settings', rateLimit('CONFIG', { byGuild: true, actionName: 'moderation_settings' }), async (req: Request, res: Response): Promise<void> => {
     const guildId = String(req.params.guildId);
     try {
-      const updated = ModerationService.updateSettings(guildId, req.body);
+      // null = champ vidé (salon, rôle de quarantaine) : le schéma attend une clé absente.
+      const body = Object.fromEntries(Object.entries(req.body ?? {}).map(([k, v]) => [k, v === null ? undefined : v]));
+      const updated = ModerationService.updateSettings(guildId, body);
       emitConfigUpdated('moderation', guildId, updated, 'DASHBOARD', req.user?.id);
       res.json({ success: true, settings: updated });
     } catch (err: any) {

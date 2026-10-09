@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.56.0 — 2026-10-09
+
+**Console : Tickets, Bienvenue et Modération au format Keeper**
+
+- Tickets : réglages (salon ou forum), catégories, panneaux à publier et tickets en cours, avec prise en charge et fermeture à ton nom.
+- Bienvenue : message d'accueil, carte avec aperçu réel, message privé, rôles donnés à l'arrivée et message de départ, enregistrés automatiquement.
+- Modération : sanctionner un membre, sanctions récentes à révoquer, bannis, salon des sanctions, sanction automatique après avertissements et alertes d'abus du staff.
+- Tickets : « 0 h » désactive maintenant vraiment la fermeture automatique.
+
 ## v1.55.99 — 2026-10-09
 
 **Console Discord : Niveaux, Giveaways et Musique refaits façon Keeper**

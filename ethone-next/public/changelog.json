@@ -1,5 +1,16 @@
 [
   {
+    "version": "v1.56.0",
+    "date": "2026-10-09",
+    "title": "Console : Tickets, Bienvenue et Modération au format Keeper",
+    "items": [
+      "Tickets : réglages (salon ou forum), catégories, panneaux à publier et tickets en cours, avec prise en charge et fermeture à ton nom.",
+      "Bienvenue : message d'accueil, carte avec aperçu réel, message privé, rôles donnés à l'arrivée et message de départ, enregistrés automatiquement.",
+      "Modération : sanctionner un membre, sanctions récentes à révoquer, bannis, salon des sanctions, sanction automatique après avertissements et alertes d'abus du staff.",
+      "Tickets : « 0 h » désactive maintenant vraiment la fermeture automatique."
+    ]
+  },
+  {
     "version": "v1.55.99",
     "date": "2026-10-09",
     "title": "Console Discord : Niveaux, Giveaways et Musique refaits façon Keeper",
@@ -632,17 +643,6 @@
       "Filtrage multi-catégories : pastilles rapides pour Tous, Favoris, Dossiers, Documents et Médias avec mise en cache réactive.",
       "Feuille d'inspection native (`FileInspectorSheet`) : détails complets du fichier (type MIME, taille exacte, date, lien direct Google Drive et partage natif).",
       "Actions contextuelles rapides : gestion des favoris dans le Cloud, intégration `SharedLinksView` et ouverture instantanée."
-    ]
-  },
-  {
-    "version": "v1.55.38",
-    "date": "2026-10-06",
-    "title": "Parité iOS Native : Centre d'Activité Enrichi & Filtrage Multi-Catégories",
-    "items": [
-      "Refonte du journal d'activité natif (`ActivityView`) : affichage harmonisé des actions récentes sur les notes, tâches, sessions Focus, événements et habitudes.",
-      "Grille KPI métrique Liquid Glass : synthèse en temps réel des actions globales, tâches terminées, minutes de concentration et habitudes du jour.",
-      "Bandeau de filtrage par catégories : puces tactiles ergonomiques avec animations de ressort pour filtrer instantanément par type (Tous, Tâches, Notes, Focus, Habitudes, Événements).",
-      "Recherche plein texte instantanée : filtrage interactif direct par titre ou détail d'activité avec gestion des états vides."
     ]
   }
 ]

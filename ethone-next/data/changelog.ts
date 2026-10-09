@@ -48360,5 +48360,58 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_99_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_99_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_99_de);
 
+const v1_56_0_fr: ChangelogEntry = {
+  version: "v1.56.0",
+  date: "2026-10-09",
+  title: "Console : Tickets, Bienvenue et Modération au format Keeper",
+  items: [
+    "Tickets : réglages (salon ou forum), catégories, panneaux à publier et tickets en cours, avec prise en charge et fermeture à ton nom.",
+    "Bienvenue : message d'accueil, carte avec aperçu réel, message privé, rôles donnés à l'arrivée et message de départ, enregistrés automatiquement.",
+    "Modération : sanctionner un membre, sanctions récentes à révoquer, bannis, salon des sanctions, sanction automatique après avertissements et alertes d'abus du staff.",
+    "Tickets : « 0 h » désactive maintenant vraiment la fermeture automatique.",
+  ],
+};
+
+const v1_56_0_en: ChangelogEntry = {
+  version: "v1.56.0",
+  date: "2026-10-09",
+  title: "Console: Tickets, Welcome and Moderation in the Keeper layout",
+  items: [
+    "Tickets: settings (channel or forum), categories, panels to publish and open tickets, claimed and closed under your name.",
+    "Welcome: welcome message, card with live preview, DM, roles given on join and goodbye message, saved automatically.",
+    "Moderation: sanction a member, recent cases to revoke, bans, sanctions channel, automatic sanction after warnings and staff abuse alerts.",
+    "Tickets: \"0 h\" now really disables auto-close.",
+  ],
+};
+
+const v1_56_0_es: ChangelogEntry = {
+  version: "v1.56.0",
+  date: "2026-10-09",
+  title: "Consola: Tickets, Bienvenida y Moderación con el diseño de Keeper",
+  items: [
+    "Tickets: ajustes (canal o foro), categorías, paneles para publicar y tickets abiertos, asumidos y cerrados a tu nombre.",
+    "Bienvenida: mensaje, tarjeta con vista previa real, mensaje privado, roles al entrar y mensaje de despedida, guardados automáticamente.",
+    "Moderación: sancionar a un miembro, sanciones recientes revocables, baneados, canal de sanciones, sanción automática tras advertencias y alertas de abuso del staff.",
+    "Tickets: «0 h» ahora desactiva de verdad el cierre automático.",
+  ],
+};
+
+const v1_56_0_de: ChangelogEntry = {
+  version: "v1.56.0",
+  date: "2026-10-09",
+  title: "Konsole: Tickets, Willkommen und Moderation im Keeper-Layout",
+  items: [
+    "Tickets: Einstellungen (Kanal oder Forum), Kategorien, Panels zum Veröffentlichen und offene Tickets, unter deinem Namen übernommen und geschlossen.",
+    "Willkommen: Begrüßung, Karte mit echter Vorschau, Direktnachricht, Rollen beim Beitritt und Abschiedsnachricht, automatisch gespeichert.",
+    "Moderation: Mitglied sanktionieren, letzte Fälle widerrufen, Banns, Sanktionskanal, automatische Sanktion nach Verwarnungen und Warnungen bei Staff-Missbrauch.",
+    "Tickets: „0 h“ deaktiviert das automatische Schließen jetzt wirklich.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_56_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_56_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_56_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_56_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

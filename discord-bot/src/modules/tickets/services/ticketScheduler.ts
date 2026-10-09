@@ -41,7 +41,7 @@ export class TicketScheduler {
             .find((c) => c.id === ticket.categoryId);
 
           const autoCloseHours =
-            category?.autoCloseInactivityHours || config.autoCloseInactivityHours || 24;
+            category?.autoCloseInactivityHours ?? config.autoCloseInactivityHours ?? 24; // 0 = jamais
 
           if (autoCloseHours > 0 && inactiveHours >= autoCloseHours) {
             logger.info(`[TicketScheduler] Fermeture auto du ticket ${ticket.id} (${inactiveHours.toFixed(1)}h d'inactivité)`);

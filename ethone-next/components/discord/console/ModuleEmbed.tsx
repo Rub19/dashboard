@@ -19,9 +19,6 @@ const PAGES: Record<string, ComponentType> = {
   overview: load(() => import("@/app/discord/overview/OverviewClient")),
   commands: load(() => import("@/app/discord/commands/CommandsCenterClient")),
   suggestions: load(() => import("@/app/discord/suggestions/SuggestionsCenterClient")),
-  tickets: load(() => import("@/app/discord/tickets/TicketCenterClient").then((m) => m.TicketCenterClient)),
-  welcome: load(() => import("@/app/discord/welcome/WelcomeCenterClient").then((m) => m.WelcomeCenterClient)),
-  moderation: load(() => import("@/app/discord/moderation/page")),
   logs: load(() => import("@/app/discord/logs/AuditCenterClient").then((m) => m.AuditCenterClient)),
   invites: load(() => import("@/app/discord/invites/InvitesCenterClient")),
   voice: load(() => import("@/app/discord/voice/VoiceCenterClient")),
@@ -58,6 +55,9 @@ const PAGES: Record<string, ComponentType> = {
 const native = (loader: () => Promise<{ default: ComponentType<{ guildId: string }> }>) =>
   dynamic(loader, { ssr: false, loading: () => <ModuleSkeleton label="Chargement du module" /> });
 const NATIVE: Record<string, ComponentType<{ guildId: string }>> = {
+  welcome: native(() => import("./modules/ConsoleWelcome")),
+  moderation: native(() => import("./modules/ConsoleModeration")),
+  tickets: native(() => import("./modules/ConsoleTickets")),
   economy: native(() => import("./modules/ConsoleEconomy")),
   games: native(() => import("./modules/ConsoleGames")),
   leveling: native(() => import("./modules/ConsoleLeveling")),

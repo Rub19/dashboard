@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.59.1 — 2026-10-09
+
+**Casino : cagnotte sécurisée**
+
+- La cagnotte ne peut plus être alimentée quand le casino est désactivé, et elle est plafonnée à 10 000 000 ; chaque ajout est journalisé côté bot.
+- Les réglages du casino sont validés par le bot (mises entre 1 et 1 000 000, mise minimale ≤ maximale) et ne permettent plus de modifier la cagnotte directement.
+- Formulaires : l'examinateur enregistré est le compte connecté, et le faux taux de complétion a été retiré.
+
 ## v1.59.0 — 2026-10-09
 
 **Console : 8 modules de plus au format Keeper**

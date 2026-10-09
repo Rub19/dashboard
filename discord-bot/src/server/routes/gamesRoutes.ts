@@ -1,9 +1,19 @@
 import { Router, Request, Response } from 'express';
+import { z } from 'zod';
 import type { Client } from 'discord.js';
 import { gamesStorage } from '../../modules/games/storage/gamesStorage.js';
 import { actBlackjack, playDice, playRoulette, startBlackjack } from '../../modules/games/services/webCasino.js';
 import { economyStorage } from '../../modules/economy/storage/economyStorage.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
+import { GamesConfigSchema } from '../../modules/games/types/games.js';
+import { logger } from '../../utils/logger.js';
+
+/** Plafond de la cagnotte alimentée depuis le dashboard. */
+const JACKPOT_MAX = 10_000_000;
+// Champs inconnus (ex. currencyName renvoyé par GET /config) ignorés ; jackpotPool retiré.
+const ConfigPatchSchema = GamesConfigSchema.omit({ jackpotPool: true })
+  .extend({ minBet: z.number().int().min(1).max(1_000_000), maxBet: z.number().int().min(10).max(1_000_000) })
+  .partial();
 
 export function createGamesRoutes(client: Client): Router {
   const router = Router({ mergeParams: true });
@@ -37,9 +47,18 @@ export function createGamesRoutes(client: Client): Router {
   // Mettre à jour la configuration
   router.patch('/config', (req: Request, res: Response): void => {
     const guildId = String(req.params.guildId);
-    const patch = req.body || {};
-
-    const updated = gamesStorage.updateConfig(guildId, patch);
+    // Champs connus seulement (la cagnotte ne se règle pas ici : elle passe par /jackpot/seed, contrôlée et plafonnée).
+    const parsed = ConfigPatchSchema.safeParse(req.body ?? {});
+    if (!parsed.success) {
+      res.status(400).json({ error: 'invalid_config', message: 'Réglages du casino invalides.', details: parsed.error.flatten() });
+      return;
+    }
+    const merged = { ...gamesStorage.getConfig(guildId), ...parsed.data };
+    if (merged.minBet > merged.maxBet) {
+      res.status(400).json({ error: 'invalid_config', message: 'La mise minimale dépasse la mise maximale.' });
+      return;
+    }
+    const updated = gamesStorage.updateConfig(guildId, parsed.data);
     emitConfigUpdated('games', guildId, updated, 'DASHBOARD', req.user?.id);
     res.json({ success: true, config: updated });
   });
@@ -60,7 +79,17 @@ export function createGamesRoutes(client: Client): Router {
       res.status(400).json({ error: 'invalid_amount', message: 'Montant invalide (entre 1 et 1 000 000).' });
       return;
     }
+    // La cagnotte crée de la monnaie : refusée quand le casino est coupé, et plafonnée.
+    if (!gamesStorage.getConfig(guildId).enabled) {
+      res.status(403).json({ error: 'disabled', message: 'Le casino est désactivé sur ce serveur : active le module avant d’alimenter la cagnotte.' });
+      return;
+    }
+    if (gamesStorage.getJackpot(guildId) + amount > JACKPOT_MAX) {
+      res.status(400).json({ error: 'jackpot_cap', message: `La cagnotte est plafonnée à ${JACKPOT_MAX.toLocaleString('fr-FR')}.` });
+      return;
+    }
     const updated = gamesStorage.addToJackpot(guildId, amount);
+    logger.info(`[Games] Cagnotte de ${guildId} alimentée de ${amount} par ${req.user?.id ?? '?'} (total ${updated}).`);
 
     emitConfigUpdated('games', guildId, { action: 'jackpot_updated', jackpotPool: updated }, 'DASHBOARD', req.user?.id);
     res.json({ success: true, jackpotPool: updated });

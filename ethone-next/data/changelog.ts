@@ -48706,5 +48706,54 @@ CHANGELOG_BY_LANG.en.unshift(v1_59_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_59_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_59_0_de);
 
+const v1_59_1_fr: ChangelogEntry = {
+  version: "v1.59.1",
+  date: "2026-10-09",
+  title: "Casino : cagnotte sécurisée",
+  items: [
+    "La cagnotte ne peut plus être alimentée quand le casino est désactivé, et elle est plafonnée à 10 000 000 ; chaque ajout est journalisé côté bot.",
+    "Les réglages du casino sont validés par le bot (mises entre 1 et 1 000 000, mise minimale ≤ maximale) et ne permettent plus de modifier la cagnotte directement.",
+    "Formulaires : l'examinateur enregistré est le compte connecté, et le faux taux de complétion a été retiré.",
+  ],
+};
+
+const v1_59_1_en: ChangelogEntry = {
+  version: "v1.59.1",
+  date: "2026-10-09",
+  title: "Casino: secured jackpot",
+  items: [
+    "The jackpot can no longer be topped up while the casino is disabled, and is capped at 10,000,000; each top-up is logged by the bot.",
+    "Casino settings are validated by the bot (bets between 1 and 1,000,000, minimum ≤ maximum) and can no longer change the jackpot directly.",
+    "Forms: the recorded reviewer is the signed-in account, and the fake completion rate was removed.",
+  ],
+};
+
+const v1_59_1_es: ChangelogEntry = {
+  version: "v1.59.1",
+  date: "2026-10-09",
+  title: "Casino: bote protegido",
+  items: [
+    "El bote ya no se puede alimentar con el casino desactivado y está limitado a 10 000 000; cada aporte queda registrado.",
+    "El bot valida los ajustes del casino (apuestas entre 1 y 1 000 000, mínima ≤ máxima) y ya no permiten cambiar el bote directamente.",
+    "Formularios: el revisor registrado es la cuenta conectada y se quitó la tasa de finalización falsa.",
+  ],
+};
+
+const v1_59_1_de: ChangelogEntry = {
+  version: "v1.59.1",
+  date: "2026-10-09",
+  title: "Casino: abgesicherter Jackpot",
+  items: [
+    "Der Jackpot kann bei deaktiviertem Casino nicht mehr aufgefüllt werden und ist auf 10.000.000 begrenzt; jede Einzahlung wird protokolliert.",
+    "Casino-Einstellungen werden vom Bot geprüft (Einsätze 1 bis 1.000.000, Minimum ≤ Maximum) und ändern den Jackpot nicht mehr direkt.",
+    "Formulare: Als Prüfer wird das angemeldete Konto gespeichert, die erfundene Abschlussquote wurde entfernt.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_59_1_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_59_1_en);
+CHANGELOG_BY_LANG.es.unshift(v1_59_1_es);
+CHANGELOG_BY_LANG.de.unshift(v1_59_1_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

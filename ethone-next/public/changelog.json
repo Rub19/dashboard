@@ -1,5 +1,15 @@
 [
   {
+    "version": "v1.59.1",
+    "date": "2026-10-09",
+    "title": "Casino : cagnotte sécurisée",
+    "items": [
+      "La cagnotte ne peut plus être alimentée quand le casino est désactivé, et elle est plafonnée à 10 000 000 ; chaque ajout est journalisé côté bot.",
+      "Les réglages du casino sont validés par le bot (mises entre 1 et 1 000 000, mise minimale ≤ maximale) et ne permettent plus de modifier la cagnotte directement.",
+      "Formulaires : l'examinateur enregistré est le compte connecté, et le faux taux de complétion a été retiré."
+    ]
+  },
+  {
     "version": "v1.59.0",
     "date": "2026-10-09",
     "title": "Console : 8 modules de plus au format Keeper",
@@ -639,17 +649,6 @@
       "Navigation à double volet : bascule instantanée entre l'Agenda d'événements et le Suivi des factures/abonnements pour chaque journée sélectionnée avec badges de comptage dédiés.",
       "Marqueurs calendaires unifiés : fusion visuelle dynamique sur la grille mensuelle combinant les pastilles info pour les événements et les logos/statuts financiers pour les factures.",
       "Indicateurs de chargement et gestion d'erreurs : retour tactile haptique immédiat et notifications toast lors de la création ou suppression de rendez-vous."
-    ]
-  },
-  {
-    "version": "v1.55.44",
-    "date": "2026-10-06",
-    "title": "Dashboard Web : Bento Responsive, Navigation Mobile Fichiers & Hub d'Activité Interactif",
-    "items": [
-      "Accueil Bento : harmonisation responsive des colonnes sur mobile, tablette et desktop pour un affichage équilibré sans vide latéral.",
-      "Carte Flux du jour & Notes : ajout d'un accès direct à l'agenda dans l'en-tête, préservation du minuteur Focus même les jours libres, et affichage de 3 notes récentes.",
-      "Gestionnaire de fichiers : barre de navigation tactile mobile (Accueil, Fichiers, Récents, Favoris, Corbeille) avec compteurs en temps réel et filtres pour les éléments partagés et espaces.",
-      "Centre d'activité : interactivité complète de la timeline (événements isolés et regroupés) avec tiroir d'inspection détaillé et raccourcis rapides vers Tâches, Notes, Calendrier, Fichiers et Brain."
     ]
   }
 ]

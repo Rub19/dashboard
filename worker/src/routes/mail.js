@@ -695,7 +695,7 @@ export async function mailReceiveHandler(message, env, context) {
       if (env.ENVIRONMENT !== "production") console.error("Support forward error:", error);
     });
   }
-  const subject = message.headers.get("subject") || "";
+  const rawSubject = message.headers.get("subject") || "";
   const replyTo = message.headers.get("reply-to") || null;
   const messageId = message.headers.get("message-id") || null;
   const inReplyTo = message.headers.get("in-reply-to") || null;
@@ -710,6 +710,8 @@ export async function mailReceiveHandler(message, env, context) {
 
   // Les e-mails entrants Cloudflare n'exposent que le flux brut (message.raw) : on le décode avec postal-mime.
   const parsed = await PostalMime.parse(message.raw).catch(() => null);
+  // Objet décodé par postal-mime (« =?UTF-8?Q?…?= » et lignes repliées) ; sinon l'en-tête brut.
+  const subject = parsed?.subject || rawSubject;
   const text = parsed?.text || "";
   const html = parsed?.html || "";
 

@@ -48254,5 +48254,58 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_97_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_97_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_97_de);
 
+const v1_55_98_fr: ChangelogEntry = {
+  version: "v1.55.98",
+  date: "2026-10-09",
+  title: "Mail : redirections vers Gmail, iCloud et autres",
+  items: [
+    "Profil mail › Redirections : reçois aussi les mails de tes adresses @ethone.dev sur une autre boîte (Gmail, iCloud…), pour toutes tes adresses ou une seule.",
+    "Sécurité : un code à 6 chiffres est envoyé à la boîte de destination ; rien n'est transféré tant que le code n'est pas saisi (15 minutes, 5 essais, 5 redirections au maximum).",
+    "Les mails classés en spam ou bloqués ne sont jamais transférés ; les pièces jointes suivent jusqu'à 10 Mo, et répondre depuis Gmail répond directement à l'expéditeur.",
+    "Chaque redirection peut être mise en pause ou supprimée.",
+  ],
+};
+
+const v1_55_98_en: ChangelogEntry = {
+  version: "v1.55.98",
+  date: "2026-10-09",
+  title: "Mail: forwarding to Gmail, iCloud and more",
+  items: [
+    "Mail profile › Forwarding: also receive your @ethone.dev mail in another inbox (Gmail, iCloud…), for all your addresses or just one.",
+    "Security: a 6-digit code is sent to the destination inbox; nothing is forwarded until the code is entered (15 minutes, 5 attempts, up to 5 forwards).",
+    "Spam and blocked mail is never forwarded; attachments follow up to 10 MB, and replying from Gmail answers the original sender.",
+    "Each forward can be paused or removed.",
+  ],
+};
+
+const v1_55_98_es: ChangelogEntry = {
+  version: "v1.55.98",
+  date: "2026-10-09",
+  title: "Correo: reenvío a Gmail, iCloud y otros",
+  items: [
+    "Perfil de correo › Reenvíos: recibe también el correo de tus direcciones @ethone.dev en otro buzón (Gmail, iCloud…), para todas tus direcciones o solo una.",
+    "Seguridad: se envía un código de 6 cifras al buzón de destino; nada se reenvía hasta introducir el código (15 minutos, 5 intentos, 5 reenvíos como máximo).",
+    "El spam y el correo bloqueado nunca se reenvían; los adjuntos se incluyen hasta 10 MB y responder desde Gmail contesta al remitente original.",
+    "Cada reenvío se puede pausar o eliminar.",
+  ],
+};
+
+const v1_55_98_de: ChangelogEntry = {
+  version: "v1.55.98",
+  date: "2026-10-09",
+  title: "Mail: Weiterleitung an Gmail, iCloud und mehr",
+  items: [
+    "Mail-Profil › Weiterleitungen: Empfange Mails deiner @ethone.dev-Adressen auch in einem anderen Postfach (Gmail, iCloud…), für alle Adressen oder nur eine.",
+    "Sicherheit: Ein 6-stelliger Code wird an das Zielpostfach gesendet; nichts wird weitergeleitet, bevor der Code eingegeben ist (15 Minuten, 5 Versuche, höchstens 5 Weiterleitungen).",
+    "Spam und blockierte Mails werden nie weitergeleitet; Anhänge bis 10 MB werden mitgesendet, und Antworten aus Gmail gehen direkt an den Absender.",
+    "Jede Weiterleitung kann pausiert oder gelöscht werden.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_98_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_98_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_98_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_98_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

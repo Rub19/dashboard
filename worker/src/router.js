@@ -103,6 +103,7 @@ import { mailAccountsRoute } from "./routes/mail-accounts.js";
 import { mailPgpRoute } from "./routes/mail-pgp.js";
 import { mailPushRoute, webhookMailRoute } from "./routes/mail-push.js";
 import { mailListsRoute } from "./routes/mail-lists.js";
+import { mailForwardsRoute, mailForwardsVerifyRoute } from "./routes/mail-forwards.js";
 import {
   mailAnalyzeRoute,
   mailExtractRoute,
@@ -389,6 +390,13 @@ export const ROUTES = Object.freeze([
   route("mail.bulk", "/api/mail/bulk", mailBulkActionRoute, { method: "POST", service: "mail", rateLimit: "standard" }),
   route("mail.schedule", "/api/mail/schedule", mailScheduleRoute, { method: "POST", service: "mail", rateLimit: "strict" }),
   route("mail.analytics", "/api/mail/analytics", mailAnalyticsRoute, { service: "mail", rateLimit: "standard" }),
+
+  // Redirections vers des boîtes externes (confirmées par code)
+  route("mail.forwards", "/api/mail/forwards", mailForwardsRoute, { service: "mail", rateLimit: "standard" }),
+  route("mail.forwards.create", "/api/mail/forwards", mailForwardsRoute, { method: "POST", service: "mail", rateLimit: "strict" }),
+  route("mail.forwards.update", "/api/mail/forwards", mailForwardsRoute, { method: "PATCH", service: "mail", rateLimit: "standard" }),
+  route("mail.forwards.delete", "/api/mail/forwards", mailForwardsRoute, { method: "DELETE", service: "mail", rateLimit: "standard" }),
+  route("mail.forwards.verify", "/api/mail/forwards/verify", mailForwardsVerifyRoute, { method: "POST", service: "mail", rateLimit: "strict" }),
 
   // Mail security
   route("mail.blocked", "/api/mail/blocked", mailBlockedRoute, { service: "mail", rateLimit: "standard" }),

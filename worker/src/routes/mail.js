@@ -25,6 +25,7 @@ import {
 import { applyRules, createNotification, detectImportance, getRules } from "../services/mail-brain.js";
 import { extractSourceIp, isBlocked, isTrusted, parseAuthResults } from "../services/mail-security.js";
 import { forwardToList, getListByAlias } from "../services/mail-lists.js";
+import { forwardInbound } from "../services/mail-forwards.js";
 import { notifyUser } from "../services/mail-push.js";
 
 function safeText(value, limit = 320) {
@@ -812,6 +813,22 @@ export async function mailReceiveHandler(message, env, context) {
   await createNotification(env, userId, processed, ruleIds[0] || null).catch(() => null);
   await upsertContact(env, userId, { email: from, name: fromName, direction: "inbound" }).catch(() => null);
   await notifyUser(env, userId, { ...dbMessage, id: saved.id, list_id: list?.id || null }).catch(() => null);
+
+  // Redirections confirmées par code vers les boîtes externes du compte (jamais le spam).
+  if (!processed.is_spam && processed.folder !== "spam" && processed.folder !== "trash") {
+    const forwarding = forwardInbound(env, userId, {
+      aliasId: alias?.id || null,
+      aliasAddress: to,
+      fromAddress: from,
+      fromName,
+      subject,
+      text,
+      html,
+      attachments: parsed?.attachments || []
+    }).catch(() => 0);
+    if (typeof context?.waitUntil === "function") context.waitUntil(forwarding);
+    else await forwarding;
+  }
 
   return saved;
 }

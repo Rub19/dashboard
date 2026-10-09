@@ -6,6 +6,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
 import type { MailAlias } from "@/lib/hooks/useMail";
 import Modal from "@/components/ui/Modal";
+import MailForwardsSection from "./MailForwardsSection";
 import { cn } from "@/lib/utils";
 
 function sanitizeLocal(value: string) {
@@ -291,6 +292,9 @@ export default function MailProfileButton({ aliases, primaryAlias, updateAlias, 
               </div>
             </div>
           )}
+
+          {/* 4. REDIRECTIONS (confirmées par code) */}
+          <MailForwardsSection aliases={aliases} />
         </div>
       </Modal>
     </>

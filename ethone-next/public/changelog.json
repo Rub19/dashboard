@@ -1,5 +1,16 @@
 [
   {
+    "version": "v1.55.98",
+    "date": "2026-10-09",
+    "title": "Mail : redirections vers Gmail, iCloud et autres",
+    "items": [
+      "Profil mail › Redirections : reçois aussi les mails de tes adresses @ethone.dev sur une autre boîte (Gmail, iCloud…), pour toutes tes adresses ou une seule.",
+      "Sécurité : un code à 6 chiffres est envoyé à la boîte de destination ; rien n'est transféré tant que le code n'est pas saisi (15 minutes, 5 essais, 5 redirections au maximum).",
+      "Les mails classés en spam ou bloqués ne sont jamais transférés ; les pièces jointes suivent jusqu'à 10 Mo, et répondre depuis Gmail répond directement à l'expéditeur.",
+      "Chaque redirection peut être mise en pause ou supprimée."
+    ]
+  },
+  {
     "version": "v1.55.97",
     "date": "2026-10-09",
     "title": "Économie et Jeux : finitions",
@@ -633,17 +644,6 @@
       "Agenda du jour : affichage des événements programmés pour aujourd'hui avec horodatages précis et accès 1-geste vers le calendrier complet.",
       "Aperçu des notes récentes : cartes de lecture instantanée des dernières notes avec texte épuré et ouverture directe dans l'onglet Notes.",
       "Intégration Discord optimisée : raccourcis directs vers le Lecteur Musical et le Classement Public avec sélection instantanée des serveurs connectés."
-    ]
-  },
-  {
-    "version": "v1.55.36",
-    "date": "2026-10-06",
-    "title": "Parité iOS Native : Bouclier Propriétaire Suprême (Owner Shield)",
-    "items": [
-      "Intégration native complète du Bouclier Propriétaire sur iOS (`OwnerShieldView`) : contrôle en temps réel du statut de défense automatique, déclenchement du sauvetage global d'urgence et gestion granulaire des règles de protection.",
-      "Tableau de bord défensif Liquid Glass : cartes métriques (serveurs protégés, incidents interceptés, statut hiérarchique du bot) et journal des sanctions interceptées avec attribution des modérateurs.",
-      "Gestion granulaire par serveur : activation / désactivation de la protection et opération de secours ciblé en 1 geste.",
-      "Routage universel et deeplinks : accès direct via `/owner/shield`, `/discord/owner-shield`, le schéma `ethone://owner-shield` et les sections Administration et Outils de Discord."
     ]
   }
 ]

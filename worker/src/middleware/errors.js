@@ -32,6 +32,15 @@ const PUBLIC_MESSAGES = Object.freeze({
   UPSTREAM_TIMEOUT: "Le service externe a depasse le temps d'attente.",
   UPSTREAM_INVALID_RESPONSE: "Le service externe a renvoye une reponse invalide.",
   UPSTREAM_UNAVAILABLE: "Le service externe est temporairement indisponible.",
+  FORWARD_INVALID_EMAIL: "Cette adresse e-mail n'est pas valide.",
+  FORWARD_SELF_DOMAIN: "Une adresse @ethone.dev ne peut pas recevoir de redirection.",
+  FORWARD_UNKNOWN_ALIAS: "Cette adresse ETHONE ne fait pas partie de ton compte.",
+  FORWARD_LIMIT: "Tu as déjà 5 redirections. Retires-en une pour en ajouter une autre.",
+  FORWARD_COOLDOWN: "Un code vient d'être envoyé. Attends une minute avant d'en redemander un.",
+  FORWARD_NOT_FOUND: "Cette redirection n'existe pas.",
+  FORWARD_CODE_EXPIRED: "Ce code a expiré. Demandes-en un nouveau.",
+  FORWARD_TOO_MANY_ATTEMPTS: "Trop de codes faux. Demande un nouveau code.",
+  FORWARD_WRONG_CODE: "Code incorrect.",
   INTERNAL_ERROR: "Une erreur interne est survenue.",
   DB_SCHEMA_ERROR: "Le schema de la base de donnees est incomplet."
 });

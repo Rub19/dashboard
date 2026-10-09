@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.98 — 2026-10-09
+
+**Mail : redirections vers Gmail, iCloud et autres**
+
+- Profil mail › Redirections : reçois aussi les mails de tes adresses @ethone.dev sur une autre boîte (Gmail, iCloud…), pour toutes tes adresses ou une seule.
+- Sécurité : un code à 6 chiffres est envoyé à la boîte de destination ; rien n'est transféré tant que le code n'est pas saisi (15 minutes, 5 essais, 5 redirections au maximum).
+- Les mails classés en spam ou bloqués ne sont jamais transférés ; les pièces jointes suivent jusqu'à 10 Mo, et répondre depuis Gmail répond directement à l'expéditeur.
+- Chaque redirection peut être mise en pause ou supprimée.
+
 ## v1.55.97 — 2026-10-09
 
 **Économie et Jeux : finitions**

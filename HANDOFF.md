@@ -1,4 +1,4 @@
-# ETHONE — passation (2026-10-09, version 1.58.0)
+# ETHONE — passation (2026-10-09, version 1.59.0)
 
 ## Projet
 - `ethone-next/` : site Next.js statique (ethone.dev, Cloudflare Pages, déploiement auto au push sur `main`).
@@ -25,7 +25,7 @@
 ## Architecture console (/discord, format Keeper)
 - `app/discord/page.tsx` : état `consoleView` (settings, access, logs, whitelist, blacklist, members, commands, tools, protections), liens `?view=`, `?module=`, `?p=` (protection choisie).
 - Kit commun : `components/discord/console/kit.tsx`. Icônes console = `lucide-react`.
-- Modules natifs (`components/discord/console/modules/*`, table `NATIVE` de `ModuleEmbed.tsx`) : Économie, Jeux, Niveaux, Giveaways, Musique, Tickets, Bienvenue, Modération, Suggestions, Rôles, Invitations, Sondages, Formulaires, Vocal, Starboard (1.58.0). Les autres modules sont encore l'ancienne page dans `.console-embed`.
+- Modules natifs (`components/discord/console/modules/*`, table `NATIVE` de `ModuleEmbed.tsx`) : Économie, Jeux, Niveaux, Giveaways, Musique, Tickets, Bienvenue, Modération, Suggestions, Rôles, Invitations, Sondages, Formulaires, Vocal, Starboard (1.58.0), AFK, Anniversaires, Tags, Rappels, Compteur, Messages épinglés, Salons compteurs, Highlights (1.59.0). Hook `useMemberNames` du kit pour afficher les noms à partir d'ID. Les autres modules sont encore l'ancienne page dans `.console-embed`.
 
 ## Protections (livré dans la 1.57.0, à vérifier en vrai)
 - Bot : `discord-bot/src/modules/protections/`
@@ -52,5 +52,5 @@
    - Le HubSidebar pourrait afficher le compteur « Protections X/45 » comme Keeper.
    - La page Whitelist parle encore de « anti-raid / anti-nuke » : à aligner sur les protections.
 5. **Mail** : corrigé le 2026-10-09 (liste > 64 Ko = 502 ; objets =?UTF-8?…?= décodés via postal-mime). La redirection marche ; le mail reçu le 2026-10-09 à 11:40 est bien dans la boîte ETHONE (non lu) et copié sur Gmail. Si l'utilisateur ne le voit pas dans ETHONE, regarder le rafraîchissement de la liste et les notifications temps réel de `app/mail/page.tsx`.
-6. **Modules encore à passer au format Keeper** dans la console : les autres de la table `PAGES` de `ModuleEmbed.tsx` (afk, anniversaires, tags, rappels, compteurs, stats, statroles, secure roles, réglages, serveur, événements, streamers, highlights, calendrier, IA, backups, logs, analytics, sticky, server-stats, automod natif, commandes, overview, bot).
+6. **Modules encore à passer au format Keeper** dans la console : les autres de la table `PAGES` de `ModuleEmbed.tsx` (stats, statroles, secure roles, réglages, serveur, événements, streamers, calendrier, IA, backups, logs, analytics, automod natif, commandes, overview, bot).
 7. Commandes : `/help` est à jour (catégorie Sécurité = `/protection`, `/antiraid`, `/automod`, `/verification`, `/logs`). Les réponses en texte brut de `/games` et `/bienvenue` sont passées en embeds ; `/tag` reste en texte (contenu du tag).

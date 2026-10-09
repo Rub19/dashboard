@@ -48637,5 +48637,74 @@ CHANGELOG_BY_LANG.en.unshift(v1_58_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_58_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_58_0_de);
 
+const v1_59_0_fr: ChangelogEntry = {
+  version: "v1.59.0",
+  date: "2026-10-09",
+  title: "Console : 8 modules de plus au format Keeper",
+  items: [
+    "AFK : retour automatique, réponse aux mentions, préfixe [AFK], effacement des réponses, liste des membres absents avec retrait manuel.",
+    "Anniversaires : salon, heure, message ({user}, {age}), mention, rôle du jour, anniversaires du jour et à venir.",
+    "Tags : création, recherche, modification et suppression des réponses /tag, avec le nombre d'affichages.",
+    "Rappels : création d'un rappel (délai, répétition, salon), liste des rappels programmés et annulation.",
+    "Compteur : salon, règles (deux fois de suite, retour à 0 en cas d'erreur), remise à zéro, record et meilleurs compteurs.",
+    "Messages épinglés : un message par salon toujours en bas, en texte ou en embed (titre, couleur), délai, pause, republication.",
+    "Salons compteurs : fréquence, catégories prêtes à l'emploi, modèles avec variables cliquables et aperçu en direct, actualisation immédiate.",
+    "Highlights : chiffres du serveur et gestion de tes propres mots-clés et salons ignorés (ceux des autres restent privés).",
+  ],
+};
+
+const v1_59_0_en: ChangelogEntry = {
+  version: "v1.59.0",
+  date: "2026-10-09",
+  title: "Console: 8 more modules in the Keeper layout",
+  items: [
+    "AFK: auto-return, mention replies, [AFK] prefix, reply cleanup, list of away members with manual removal.",
+    "Birthdays: channel, hour, message ({user}, {age}), mention, birthday role, today's and upcoming birthdays.",
+    "Tags: create, search, edit and delete /tag replies, with usage count.",
+    "Reminders: create a reminder (delay, repeat, channel), list of scheduled reminders and cancellation.",
+    "Counting: channel, rules (twice in a row, reset on mistake), reset, record and top counters.",
+    "Sticky messages: one message per channel always at the bottom, plain or embed (title, colour), cooldown, pause, repost.",
+    "Counter channels: update frequency, ready-made categories, templates with clickable variables and live preview, refresh now.",
+    "Highlights: server figures and management of your own keywords and ignored channels (others' stay private).",
+  ],
+};
+
+const v1_59_0_es: ChangelogEntry = {
+  version: "v1.59.0",
+  date: "2026-10-09",
+  title: "Consola: 8 módulos más con el formato Keeper",
+  items: [
+    "AFK: regreso automático, respuesta a menciones, prefijo [AFK], borrado de respuestas, lista de miembros ausentes.",
+    "Cumpleaños: canal, hora, mensaje ({user}, {age}), mención, rol del día, cumpleaños de hoy y próximos.",
+    "Tags: crear, buscar, editar y borrar respuestas /tag, con número de usos.",
+    "Recordatorios: crear un recordatorio (plazo, repetición, canal), lista y cancelación.",
+    "Contador: canal, reglas, reinicio, récord y mejores contadores.",
+    "Mensajes fijos: un mensaje por canal siempre abajo, en texto o embed, espera, pausa, republicar.",
+    "Canales contador: frecuencia, categorías listas, plantillas con variables y vista previa, actualizar ahora.",
+    "Highlights: cifras del servidor y gestión de tus palabras clave y canales ignorados.",
+  ],
+};
+
+const v1_59_0_de: ChangelogEntry = {
+  version: "v1.59.0",
+  date: "2026-10-09",
+  title: "Konsole: 8 weitere Module im Keeper-Layout",
+  items: [
+    "AFK: automatische Rückkehr, Antwort auf Erwähnungen, [AFK]-Präfix, Löschen der Antworten, Liste abwesender Mitglieder.",
+    "Geburtstage: Kanal, Uhrzeit, Nachricht ({user}, {age}), Erwähnung, Geburtstagsrolle, heutige und kommende Geburtstage.",
+    "Tags: /tag-Antworten erstellen, suchen, bearbeiten und löschen, mit Nutzungszahl.",
+    "Erinnerungen: Erinnerung anlegen (Verzögerung, Wiederholung, Kanal), Liste und Abbrechen.",
+    "Zählen: Kanal, Regeln, Zurücksetzen, Rekord und beste Zähler.",
+    "Sticky-Nachrichten: eine Nachricht pro Kanal immer unten, als Text oder Embed, Wartezeit, Pause, neu posten.",
+    "Zählerkanäle: Häufigkeit, fertige Kategorien, Vorlagen mit Variablen und Live-Vorschau, sofort aktualisieren.",
+    "Highlights: Serverzahlen und Verwaltung deiner eigenen Stichwörter und ignorierten Kanäle.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_59_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_59_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_59_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_59_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

@@ -2,6 +2,19 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.59.0 — 2026-10-09
+
+**Console : 8 modules de plus au format Keeper**
+
+- AFK : retour automatique, réponse aux mentions, préfixe [AFK], effacement des réponses, liste des membres absents avec retrait manuel.
+- Anniversaires : salon, heure, message ({user}, {age}), mention, rôle du jour, anniversaires du jour et à venir.
+- Tags : création, recherche, modification et suppression des réponses /tag, avec le nombre d'affichages.
+- Rappels : création d'un rappel (délai, répétition, salon), liste des rappels programmés et annulation.
+- Compteur : salon, règles (deux fois de suite, retour à 0 en cas d'erreur), remise à zéro, record et meilleurs compteurs.
+- Messages épinglés : un message par salon toujours en bas, en texte ou en embed (titre, couleur), délai, pause, republication.
+- Salons compteurs : fréquence, catégories prêtes à l'emploi, modèles avec variables cliquables et aperçu en direct, actualisation immédiate.
+- Highlights : chiffres du serveur et gestion de tes propres mots-clés et salons ignorés (ceux des autres restent privés).
+
 ## v1.58.0 — 2026-10-09
 
 **Console : Sondages, Formulaires, Vocal et Starboard au format Keeper**

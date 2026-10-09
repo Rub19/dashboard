@@ -1,5 +1,20 @@
 [
   {
+    "version": "v1.59.0",
+    "date": "2026-10-09",
+    "title": "Console : 8 modules de plus au format Keeper",
+    "items": [
+      "AFK : retour automatique, réponse aux mentions, préfixe [AFK], effacement des réponses, liste des membres absents avec retrait manuel.",
+      "Anniversaires : salon, heure, message ({user}, {age}), mention, rôle du jour, anniversaires du jour et à venir.",
+      "Tags : création, recherche, modification et suppression des réponses /tag, avec le nombre d'affichages.",
+      "Rappels : création d'un rappel (délai, répétition, salon), liste des rappels programmés et annulation.",
+      "Compteur : salon, règles (deux fois de suite, retour à 0 en cas d'erreur), remise à zéro, record et meilleurs compteurs.",
+      "Messages épinglés : un message par salon toujours en bas, en texte ou en embed (titre, couleur), délai, pause, republication.",
+      "Salons compteurs : fréquence, catégories prêtes à l'emploi, modèles avec variables cliquables et aperçu en direct, actualisation immédiate.",
+      "Highlights : chiffres du serveur et gestion de tes propres mots-clés et salons ignorés (ceux des autres restent privés)."
+    ]
+  },
+  {
     "version": "v1.58.0",
     "date": "2026-10-09",
     "title": "Console : Sondages, Formulaires, Vocal et Starboard au format Keeper",
@@ -635,17 +650,6 @@
       "Carte Flux du jour & Notes : ajout d'un accès direct à l'agenda dans l'en-tête, préservation du minuteur Focus même les jours libres, et affichage de 3 notes récentes.",
       "Gestionnaire de fichiers : barre de navigation tactile mobile (Accueil, Fichiers, Récents, Favoris, Corbeille) avec compteurs en temps réel et filtres pour les éléments partagés et espaces.",
       "Centre d'activité : interactivité complète de la timeline (événements isolés et regroupés) avec tiroir d'inspection détaillé et raccourcis rapides vers Tâches, Notes, Calendrier, Fichiers et Brain."
-    ]
-  },
-  {
-    "version": "v1.55.43",
-    "date": "2026-10-06",
-    "title": "Pureté Native : Liquid Glass iOS 26/27 & Material Design 3 Android",
-    "items": [
-      "iOS 26/27 : alignement strict sur le framework natif officiel Apple (.glassEffect, Glass.regular, GlassEffectContainer), retrait des faux contours à gradient manuel.",
-      "Android 100% Material Design 3 : suppression des imitations de verre (LiquidGlassSurface, AmbientLuminousBackground), adoption intégrale des composants M3 (Surface, FilterChip, AssistChip, élévation tonale, formes standard).",
-      "Dock tactile flottant Android (NativeFloatingDock) : Surface Material 3 avec conteneur surélevé, élévation tonale et bordure outlineVariant.",
-      "Orbes IA et composants partagés épurés : BrainOrb, cartes métriques, capture et timer sans artefacts visuels non-standards."
     ]
   }
 ]

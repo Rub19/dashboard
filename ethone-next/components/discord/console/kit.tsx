@@ -611,3 +611,24 @@ export function StatTile({ label, value, hint, accent }: { label: string; value:
     </motion.div>
   );
 }
+
+/** Noms des membres à partir de leurs identifiants (recherche par ID, 25 au plus), pour les listes stockées par le bot. */
+export function useMemberNames(guildId: string, ids: string[]) {
+  const api = useGuildApi(guildId);
+  const [names, setNames] = useState<Record<string, MemberHit>>({});
+  const key = [...new Set(ids)].slice(0, 25).join(",");
+  useEffect(() => {
+    if (!key) return;
+    let cancelled = false;
+    Promise.all(key.split(",").map((id) => api<{ members: MemberHit[] }>(`/console/members/search?q=${id}`, { silent: true }))).then((all) => {
+      if (cancelled) return;
+      const next: Record<string, MemberHit> = {};
+      for (const r of all) for (const m of r?.members ?? []) next[m.id] = m;
+      setNames(next);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [api, key]);
+  return names;
+}

@@ -1,5 +1,15 @@
 [
   {
+    "version": "v1.56.2",
+    "date": "2026-10-09",
+    "title": "Console : plus d'erreurs au premier chargement d'une page",
+    "items": [
+      "Les pages de modules ne tombent plus en erreur au premier chargement : la vérification de tes droits interroge Discord une seule fois au lieu d'une fois par requête.",
+      "Rôles : l'indication « membres déjà présents » demande d'abord de choisir des rôles quand aucun n'est réglé.",
+      "Invitations : un salon d'annonces enregistré par son nom (ancien réglage) s'affiche correctement."
+    ]
+  },
+  {
     "version": "v1.56.1",
     "date": "2026-10-09",
     "title": "Console : Suggestions, Rôles et Invitations au format Keeper",
@@ -632,17 +642,6 @@
       "Gestionnaire de Fichiers Android Enrichi (`FilesScreen`) : bascule instantanée entre affichage Liste et Grille (2 colonnes), fil d'Ariane interactif pour naviguer dans les sous-dossiers, et inspecteur de détails complet avec ouverture et partage de lien.",
       "Favoris Cloud en Temps Réel (`SupabaseClient`) : synchronisation bidirectionnelle des favoris avec la table Supabase `ethone_file_favorites`, mise à jour immédiate de l'étoile et bouton dédié sur chaque carte.",
       "Fiabilisation des Coroutines & Synthèse Réactive : résolution des extensions de portée sur les cartes de capture Brain et génération dynamique de synthèse dans l'application Mail."
-    ]
-  },
-  {
-    "version": "v1.55.40",
-    "date": "2026-10-06",
-    "title": "Parité Android Native : Fichiers Réels, Métriques de Stockage & Raccourcis Rapides",
-    "items": [
-      "Connexion des fichiers réels sur Android (`FilesScreen`) : chargement dynamique depuis la base Supabase sans données simulées, avec filtrage catégoriel et recherche instantanée.",
-      "Refonte de la carte Stockage (`StorageMetricsCard`) : affichage précis des données réelles (notes, tâches, fichiers) avec pourcentages réels et gestion propre de l'état zéro.",
-      "Bandeau de raccourcis rapides (`HomeScreen`) : puces tactiles ergonomiques Liquid Glass pour naviguer directement vers Brain, Tâches, Notes, Fichiers, Focus et Mail.",
-      "Navigation étendue (`BentoGridScreen` & `NativeFloatingDock`) : intégration fluide des écrans Fichiers et Mail, et sauvegarde de notes depuis la capture rapide Brain."
     ]
   }
 ]

@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.56.2 — 2026-10-09
+
+**Console : plus d'erreurs au premier chargement d'une page**
+
+- Les pages de modules ne tombent plus en erreur au premier chargement : la vérification de tes droits interroge Discord une seule fois au lieu d'une fois par requête.
+- Rôles : l'indication « membres déjà présents » demande d'abord de choisir des rôles quand aucun n'est réglé.
+- Invitations : un salon d'annonces enregistré par son nom (ancien réglage) s'affiche correctement.
+
 ## v1.56.1 — 2026-10-09
 
 **Console : Suggestions, Rôles et Invitations au format Keeper**

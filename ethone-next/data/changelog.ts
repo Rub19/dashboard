@@ -48470,5 +48470,54 @@ CHANGELOG_BY_LANG.en.unshift(v1_56_1_en);
 CHANGELOG_BY_LANG.es.unshift(v1_56_1_es);
 CHANGELOG_BY_LANG.de.unshift(v1_56_1_de);
 
+const v1_56_2_fr: ChangelogEntry = {
+  version: "v1.56.2",
+  date: "2026-10-09",
+  title: "Console : plus d'erreurs au premier chargement d'une page",
+  items: [
+    "Les pages de modules ne tombent plus en erreur au premier chargement : la vérification de tes droits interroge Discord une seule fois au lieu d'une fois par requête.",
+    "Rôles : l'indication « membres déjà présents » demande d'abord de choisir des rôles quand aucun n'est réglé.",
+    "Invitations : un salon d'annonces enregistré par son nom (ancien réglage) s'affiche correctement.",
+  ],
+};
+
+const v1_56_2_en: ChangelogEntry = {
+  version: "v1.56.2",
+  date: "2026-10-09",
+  title: "Console: no more errors on a page's first load",
+  items: [
+    "Module pages no longer fail on first load: your access check now asks Discord once instead of once per request.",
+    "Roles: the existing-members line asks you to pick roles first when none are set.",
+    "Invites: an announcement channel saved by name (old setting) now displays correctly.",
+  ],
+};
+
+const v1_56_2_es: ChangelogEntry = {
+  version: "v1.56.2",
+  date: "2026-10-09",
+  title: "Consola: sin errores en la primera carga de una página",
+  items: [
+    "Las páginas de módulos ya no fallan en la primera carga: la verificación de tus permisos consulta a Discord una sola vez.",
+    "Roles: la línea de miembros existentes pide elegir roles primero cuando no hay ninguno.",
+    "Invitaciones: un canal de anuncios guardado por nombre (ajuste antiguo) ahora se muestra bien.",
+  ],
+};
+
+const v1_56_2_de: ChangelogEntry = {
+  version: "v1.56.2",
+  date: "2026-10-09",
+  title: "Konsole: keine Fehler mehr beim ersten Laden einer Seite",
+  items: [
+    "Modulseiten schlagen beim ersten Laden nicht mehr fehl: Die Rechteprüfung fragt Discord nur noch einmal ab.",
+    "Rollen: Die Zeile zu bestehenden Mitgliedern bittet zuerst um Rollenauswahl, wenn keine gesetzt ist.",
+    "Einladungen: Ein per Name gespeicherter Ankündigungskanal (alte Einstellung) wird jetzt richtig angezeigt.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_56_2_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_56_2_en);
+CHANGELOG_BY_LANG.es.unshift(v1_56_2_es);
+CHANGELOG_BY_LANG.de.unshift(v1_56_2_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

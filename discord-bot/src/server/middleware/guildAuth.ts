@@ -37,23 +37,36 @@ export interface CachedUserGuilds {
 const userGuildsCache = new Map<string, CachedUserGuilds>();
 const CACHE_TTL_MS = 60 * 1000; // 1 minute
 
+// Une page du dashboard lance plusieurs requêtes à la fois : un seul appel Discord par utilisateur (sinon 429 → 500).
+const userGuildsInFlight = new Map<string, Promise<CachedUserGuilds['guilds']>>();
+
 export async function fetchUserGuilds(accessToken: string, userId: string) {
   const cached = userGuildsCache.get(userId);
   if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
     return cached.guilds;
   }
+  const pending = userGuildsInFlight.get(userId);
+  if (pending) return pending;
 
-  const res = await fetch('https://discord.com/api/v10/users/@me/guilds', {
-    headers: { Authorization: `Bearer ${accessToken}` },
-  });
-
-  if (!res.ok) {
-    throw new Error(`Erreur récupération guilds Discord: ${res.statusText}`);
+  const request = (async () => {
+    const res = await fetch('https://discord.com/api/v10/users/@me/guilds', {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    if (!res.ok) {
+      // Discord limite (429) ou répond mal : la liste précédente, même expirée, vaut mieux qu'un échec.
+      if (cached) return cached.guilds;
+      throw new Error(`Erreur récupération guilds Discord: ${res.statusText}`);
+    }
+    const guilds = (await res.json()) as CachedUserGuilds['guilds'];
+    userGuildsCache.set(userId, { timestamp: Date.now(), guilds });
+    return guilds;
+  })();
+  userGuildsInFlight.set(userId, request);
+  try {
+    return await request;
+  } finally {
+    userGuildsInFlight.delete(userId);
   }
-
-  const guilds = (await res.json()) as CachedUserGuilds['guilds'];
-  userGuildsCache.set(userId, { timestamp: Date.now(), guilds });
-  return guilds;
 }
 
 export interface GuildAuthOptions {

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
-import ChannelPicker from "../../ChannelPicker";
+import ChannelPicker, { fetchGuildChannels, type ChannelOption } from "../../ChannelPicker";
 import { confirmDialog } from "@/lib/confirmDialog";
 import { useToast } from "@/components/ToastProvider";
 import { SPRING_LAYOUT } from "@/lib/ease";
@@ -29,6 +29,7 @@ export default function ConsoleInvites({ guildId }: { guildId: string }) {
   const [template, setTemplate] = useState("");
   const [tier, setTier] = useState(5);
   const [syncing, setSyncing] = useState(false);
+  const [channels, setChannels] = useState<ChannelOption[]>([]);
 
   const loadLinks = useCallback(async () => {
     const r = await api<{ links: Link[] }>("/invites/links", { silent: true });
@@ -44,7 +45,8 @@ export default function ConsoleInvites({ guildId }: { guildId: string }) {
     api<{ leaderboard: Leader[] }>("/invites/leaderboard", { silent: true }).then((r) => setLeaders((r?.leaderboard ?? []).slice(0, 10)));
     api<{ rewards: Reward[] }>("/invites/rewards").then((r) => setRewards(r?.rewards ?? []));
     void loadLinks();
-  }, [api, loadLinks]);
+    fetchGuildChannels(guildId).then(setChannels);
+  }, [api, guildId, loadLinks]);
 
   const save = async (patch: Partial<Settings>) => {
     if (settings) setSettings({ ...settings, ...patch });
@@ -90,7 +92,7 @@ export default function ConsoleInvites({ guildId }: { guildId: string }) {
               <Switch checked={settings.trackBots} onChange={(v) => save({ trackBots: v })} label="Compter les bots" />
             </Row>
             <Row label="Salon des annonces" hint="Vide : aucune annonce.">
-              <ChannelPicker guildId={guildId} value={settings.notificationChannel ?? ""} filterTypes={[0]} placeholder="Aucun" onChange={(id) => save({ notificationChannel: id })} />
+              <ChannelPicker guildId={guildId} value={channels.find((c) => c.name === settings.notificationChannel)?.id ?? settings.notificationChannel ?? ""} filterTypes={[0]} placeholder="Aucun" onChange={(id) => save({ notificationChannel: id })} />
             </Row>
             {settings.notificationChannel && (
               <>

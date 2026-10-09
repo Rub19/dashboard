@@ -134,7 +134,7 @@ export default function ConsoleRoles({ guildId }: { guildId: string }) {
             <Row label="Délai" hint="Laisse le temps à l'anti-raid de passer. 0 : immédiat.">
               <Stepper value={auto.delaySeconds} min={0} max={86400} unit="s" onCommit={(n) => saveAuto({ delaySeconds: n })} />
             </Row>
-            <Row label="Membres déjà présents" hint={missing ? `${missing} membre${missing > 1 ? "s" : ""} n'${missing > 1 ? "ont" : "a"} pas encore ces rôles.` : "Tout le monde a déjà ces rôles."}>
+            <Row label="Membres déjà présents" hint={auto.roleIds.length === 0 ? "Choisis d'abord les rôles à donner." : missing ? `${missing} membre${missing > 1 ? "s" : ""} n'${missing > 1 ? "ont" : "a"} pas encore ces rôles.` : "Tout le monde a déjà ces rôles."}>
               <GhostButton onClick={syncNow} disabled={!missing || busy === "sync" || auto.roleIds.length === 0}>
                 {busy === "sync" ? "Attribution…" : "Donner maintenant"}
               </GhostButton>

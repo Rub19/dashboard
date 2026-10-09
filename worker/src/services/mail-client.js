@@ -455,16 +455,34 @@ function buildMessageQuery(userId, filters) {
   return parts.join("&");
 }
 
-export async function listMessages(env, userId, { folder, label, labels, search, from, subject, body, dateFrom, dateTo, hasAttachments, direction, limit = 50, offset = 0 } = {}) {
+// Colonnes de la liste : sans body_html, headers ni search_vector (plusieurs dizaines de Ko par mail).
+// Le contenu complet est chargé à l'ouverture via /api/mail/thread.
+const LIST_COLUMNS = [
+  "id", "user_id", "alias_id", "account_id", "list_id", "thread_id", "folder", "direction", "status",
+  "from_address", "from_name", "to_addresses", "cc_addresses", "bcc_addresses", "reply_to", "subject", "body_text",
+  "is_read", "is_starred", "is_important", "is_spam", "is_encrypted", "labels", "attachments",
+  "received_at", "sent_at", "created_at", "scheduled_at", "snoozed_until", "deleted_at", "message_size", "raw_size"
+].join(",");
+const SNIPPET_LENGTH = 200;
+
+function toListItem(row) {
+  const { body_text: bodyText, ...rest } = row;
+  const snippet = typeof bodyText === "string" ? bodyText.replace(/\s+/g, " ").trim().slice(0, SNIPPET_LENGTH) : "";
+  return { ...rest, snippet };
+}
+
+export async function listMessages(env, userId, { folder, label, labels, search, from, subject, body, dateFrom, dateTo, hasAttachments, direction, limit = 50, offset = 0, full = false } = {}) {
   const origin = projectOrigin(env);
   if (!origin || !userId) return [];
   const filters = { folder, label, labels, search, from, subject, body, dateFrom, dateTo, hasAttachments, direction };
   const query = buildMessageQuery(userId, filters);
-  const response = await supabaseRequest(env, `/rest/v1/ethone_mail_messages?${query}&order=received_at.desc&limit=${limit}&offset=${offset}`, {
+  const select = full ? "" : `&select=${LIST_COLUMNS}`;
+  const response = await supabaseRequest(env, `/rest/v1/ethone_mail_messages?${query}${select}&order=received_at.desc&limit=${limit}&offset=${offset}`, {
     method: "GET",
-    maxBytes: 65536
+    maxBytes: full ? 4 * 1024 * 1024 : 1024 * 1024
   });
-  return Array.isArray(response?.data) ? response.data : [];
+  const rows = Array.isArray(response?.data) ? response.data : [];
+  return full ? rows : rows.map(toListItem);
 }
 
 export async function countMessages(env, userId, filters) {

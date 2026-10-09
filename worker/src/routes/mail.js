@@ -294,7 +294,7 @@ export async function mailThreadRoute({ request, env, auth }) {
 
   const response = await supabaseRequest(env, `/rest/v1/ethone_mail_messages?user_id=eq.${auth.userId}&thread_id=eq.${encodeURIComponent(threadId)}&deleted_at=is.null&order=received_at.asc`, {
     method: "GET",
-    maxBytes: 65536
+    maxBytes: 4 * 1024 * 1024
   });
 
   return { data: Array.isArray(response.data) ? response.data : [] };
@@ -413,7 +413,7 @@ export async function mailDraftsRoute({ request, env, auth }) {
   if (request.method === "GET") {
     const limit = Math.min(100, Math.max(1, Number(url.searchParams.get("limit")) || 50));
     const offset = Math.max(0, Number(url.searchParams.get("offset")) || 0);
-    const messages = await listMessages(env, auth.userId, { folder: "drafts", limit, offset });
+    const messages = await listMessages(env, auth.userId, { folder: "drafts", limit, offset, full: true });
     return { data: messages };
   }
 

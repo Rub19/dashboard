@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.58.0 — 2026-10-09
+
+**Console : Sondages, Formulaires, Vocal et Starboard au format Keeper**
+
+- Sondages : page native de la console. Sondage Discord en quelques secondes (question, 2 à 10 réponses, durée, plusieurs réponses, salon), liste filtrable avec barres de résultats, pause, reprise, +24 h, clôture et suppression.
+- Formulaires : liste des formulaires avec publication, envoi du panneau Discord, duplication et suppression ; traitement des réponses (accepter, refuser, demander des modifications, spam) avec raison envoyée au membre.
+- Salons vocaux : salons déclencheurs « rejoindre pour créer » réglables (nom, catégorie, modèle de nom, places, débit, accès, rôles), installation rapide, salons ouverts avec fermeture, règles (suppression des salons vides, transfert de propriété, limites, délai, panneaux).
+- Starboard : salon d'honneur, emoji, seuil, couleur, règles de décompte, salons ignorés et liste des messages mis en avant.
+- Mail : la boîte de réception se charge de nouveau (la liste n'embarque plus le contenu complet des mails) et les objets accentués des mails reçus sont décodés.
+
 ## v1.57.0 — 2026-10-09
 
 **Protections : 45 protections au format Keeper, toutes gratuites**

@@ -212,6 +212,11 @@ function buildRows(list: ChannelOption[], q: string, collapsed: Set<string>, raw
   return rows;
 }
 
+/** Oublie les salons en cache d'un serveur (après une création de salons par le bot). */
+export function invalidateGuildChannels(guildId: string) {
+  globalChannelCache.delete(guildId);
+}
+
 /**
  * Charge les salons d'un serveur depuis l'API bot avec mise en cache mémoire
  */

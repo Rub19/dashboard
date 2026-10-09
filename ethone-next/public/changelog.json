@@ -1,5 +1,17 @@
 [
   {
+    "version": "v1.58.0",
+    "date": "2026-10-09",
+    "title": "Console : Sondages, Formulaires, Vocal et Starboard au format Keeper",
+    "items": [
+      "Sondages : page native de la console. Sondage Discord en quelques secondes (question, 2 à 10 réponses, durée, plusieurs réponses, salon), liste filtrable avec barres de résultats, pause, reprise, +24 h, clôture et suppression.",
+      "Formulaires : liste des formulaires avec publication, envoi du panneau Discord, duplication et suppression ; traitement des réponses (accepter, refuser, demander des modifications, spam) avec raison envoyée au membre.",
+      "Salons vocaux : salons déclencheurs « rejoindre pour créer » réglables (nom, catégorie, modèle de nom, places, débit, accès, rôles), installation rapide, salons ouverts avec fermeture, règles (suppression des salons vides, transfert de propriété, limites, délai, panneaux).",
+      "Starboard : salon d'honneur, emoji, seuil, couleur, règles de décompte, salons ignorés et liste des messages mis en avant.",
+      "Mail : la boîte de réception se charge de nouveau (la liste n'embarque plus le contenu complet des mails) et les objets accentués des mails reçus sont décodés."
+    ]
+  },
+  {
     "version": "v1.57.0",
     "date": "2026-10-09",
     "title": "Protections : 45 protections au format Keeper, toutes gratuites",
@@ -634,17 +646,6 @@
       "Android 100% Material Design 3 : suppression des imitations de verre (LiquidGlassSurface, AmbientLuminousBackground), adoption intégrale des composants M3 (Surface, FilterChip, AssistChip, élévation tonale, formes standard).",
       "Dock tactile flottant Android (NativeFloatingDock) : Surface Material 3 avec conteneur surélevé, élévation tonale et bordure outlineVariant.",
       "Orbes IA et composants partagés épurés : BrainOrb, cartes métriques, capture et timer sans artefacts visuels non-standards."
-    ]
-  },
-  {
-    "version": "v1.55.42",
-    "date": "2026-10-06",
-    "title": "Design System Liquid Glass Avancé : Reflets Spéculaires & Fond Lumineux Ambiant",
-    "items": [
-      "Design System Liquid Glass Avancé (iOS & Android) : intégration de bordures spéculaires à réfraction de lumière (`LiquidGlassBorder`) sur l'ensemble des cartes, champs de saisie, pilules tactiles et arrière-plans de rangées de listes (`GlassRowBackground`).",
-      "Fond Lumineux Ambiant Réactif Android (`AmbientLuminousBackground`) : orbes de gradient mouvants projetant des reflets subtils à travers les surfaces translucides de `BentoGridScreen` et de l'écran de connexion `LoginScreen`.",
-      "Dock Flottant & Pilules Tactiles Sublimés (`NativeFloatingDock`) : capsule de sélection en verre acrylique avec micro-haptique et élévation spéculaire sur Android.",
-      "Expérience Liquid Glass unifiée : bulles de discussion Brain (`BrainBubble`), sélecteurs de filtres (`LiquidGlassPill`), mini-barre Focus (`FocusMiniBar`), orbe IA (`ETHBrainOrb`) et écran de verrouillage (`LockScreen`)."
     ]
   }
 ]

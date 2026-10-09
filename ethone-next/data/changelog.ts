@@ -48580,5 +48580,62 @@ CHANGELOG_BY_LANG.en.unshift(v1_57_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_57_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_57_0_de);
 
+const v1_58_0_fr: ChangelogEntry = {
+  version: "v1.58.0",
+  date: "2026-10-09",
+  title: "Console : Sondages, Formulaires, Vocal et Starboard au format Keeper",
+  items: [
+    "Sondages : page native de la console. Sondage Discord en quelques secondes (question, 2 à 10 réponses, durée, plusieurs réponses, salon), liste filtrable avec barres de résultats, pause, reprise, +24 h, clôture et suppression.",
+    "Formulaires : liste des formulaires avec publication, envoi du panneau Discord, duplication et suppression ; traitement des réponses (accepter, refuser, demander des modifications, spam) avec raison envoyée au membre.",
+    "Salons vocaux : salons déclencheurs « rejoindre pour créer » réglables (nom, catégorie, modèle de nom, places, débit, accès, rôles), installation rapide, salons ouverts avec fermeture, règles (suppression des salons vides, transfert de propriété, limites, délai, panneaux).",
+    "Starboard : salon d'honneur, emoji, seuil, couleur, règles de décompte, salons ignorés et liste des messages mis en avant.",
+    "Mail : la boîte de réception se charge de nouveau (la liste n'embarque plus le contenu complet des mails) et les objets accentués des mails reçus sont décodés.",
+  ],
+};
+
+const v1_58_0_en: ChangelogEntry = {
+  version: "v1.58.0",
+  date: "2026-10-09",
+  title: "Console: Polls, Forms, Voice and Starboard in the Keeper layout",
+  items: [
+    "Polls: native console page. Create a Discord poll in seconds (question, 2 to 10 answers, duration, multiple answers, channel), filterable list with result bars, pause, resume, +24 h, end and delete.",
+    "Forms: form list with publishing, Discord panel sending, duplication and deletion; response review (approve, reject, request changes, spam) with a reason sent to the member.",
+    "Voice channels: configurable join-to-create triggers (name, category, name template, slots, bitrate, access, roles), quick setup, open rooms with close action, rules (empty room deletion, ownership transfer, limits, cooldown, panels).",
+    "Starboard: hall of fame channel, emoji, threshold, colour, counting rules, ignored channels and list of featured messages.",
+    "Mail: the inbox loads again (the list no longer carries full message bodies) and accented subjects of received mails are decoded.",
+  ],
+};
+
+const v1_58_0_es: ChangelogEntry = {
+  version: "v1.58.0",
+  date: "2026-10-09",
+  title: "Consola: Encuestas, Formularios, Voz y Starboard con el formato Keeper",
+  items: [
+    "Encuestas: página nativa de la consola. Encuesta de Discord en segundos (pregunta, de 2 a 10 respuestas, duración, varias respuestas, canal), lista filtrable con barras de resultados, pausa, reanudar, +24 h, cierre y eliminación.",
+    "Formularios: lista de formularios con publicación, envío del panel de Discord, duplicado y eliminación; revisión de respuestas (aceptar, rechazar, pedir cambios, spam) con motivo enviado al miembro.",
+    "Canales de voz: disparadores «unirse para crear» configurables (nombre, categoría, plantilla, plazas, bitrate, acceso, roles), instalación rápida, salas abiertas con cierre, reglas (borrado de salas vacías, transferencia, límites, espera, paneles).",
+    "Starboard: canal de honor, emoji, umbral, color, reglas de conteo, canales ignorados y lista de mensajes destacados.",
+    "Correo: la bandeja de entrada vuelve a cargar y los asuntos con acentos de los correos recibidos se decodifican.",
+  ],
+};
+
+const v1_58_0_de: ChangelogEntry = {
+  version: "v1.58.0",
+  date: "2026-10-09",
+  title: "Konsole: Umfragen, Formulare, Sprachkanäle und Starboard im Keeper-Layout",
+  items: [
+    "Umfragen: native Konsolenseite. Discord-Umfrage in Sekunden (Frage, 2 bis 10 Antworten, Dauer, Mehrfachauswahl, Kanal), filterbare Liste mit Ergebnisbalken, Pause, Fortsetzen, +24 h, Beenden und Löschen.",
+    "Formulare: Formularliste mit Veröffentlichen, Discord-Panel senden, Duplizieren und Löschen; Antworten prüfen (annehmen, ablehnen, Änderungen anfordern, Spam) mit Begründung an das Mitglied.",
+    "Sprachkanäle: einstellbare Join-to-Create-Auslöser (Name, Kategorie, Namensvorlage, Plätze, Bitrate, Zugriff, Rollen), Schnellinstallation, offene Räume mit Schließen, Regeln (Löschen leerer Räume, Besitzübergabe, Limits, Wartezeit, Panels).",
+    "Starboard: Ehrenkanal, Emoji, Schwelle, Farbe, Zählregeln, ignorierte Kanäle und Liste hervorgehobener Nachrichten.",
+    "Mail: Der Posteingang lädt wieder und Betreffzeilen mit Umlauten werden dekodiert.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_58_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_58_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_58_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_58_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

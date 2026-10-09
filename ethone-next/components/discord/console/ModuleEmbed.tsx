@@ -19,15 +19,11 @@ const PAGES: Record<string, ComponentType> = {
   overview: load(() => import("@/app/discord/overview/OverviewClient")),
   commands: load(() => import("@/app/discord/commands/CommandsCenterClient")),
   logs: load(() => import("@/app/discord/logs/AuditCenterClient").then((m) => m.AuditCenterClient)),
-  voice: load(() => import("@/app/discord/voice/VoiceCenterClient")),
   backups: load(() => import("@/app/discord/backups/BackupsCenterClient")),
   ai: load(() => import("@/app/discord/ai/AiCenterClient")),
-  forms: load(() => import("@/app/discord/forms/FormsCenterClient")),
-  polls: load(() => import("@/app/discord/polls/PollsCenterClient")),
   analytics: load(() => import("@/app/discord/analytics/AnalyticsCenterClient")),
   events: load(() => import("@/app/discord/events/EventsCenterClient")),
   server: load(() => import("@/app/discord/server/ServerManagementClient")),
-  starboard: load(() => import("@/app/discord/starboard/StarboardCenterClient")),
   sticky: load(() => import("@/app/discord/sticky/StickyCenterClient")),
   reminders: load(() => import("@/app/discord/reminders/RemindersCenterClient")),
   afk: load(() => import("@/app/discord/afk/AfkCenterClient")),
@@ -63,6 +59,10 @@ const NATIVE: Record<string, ComponentType<{ guildId: string }>> = {
   leveling: native(() => import("./modules/ConsoleLeveling")),
   giveaways: native(() => import("./modules/ConsoleGiveaways")),
   music: native(() => import("./modules/ConsoleMusic")),
+  polls: native(() => import("./modules/ConsolePolls")),
+  forms: native(() => import("./modules/ConsoleForms")),
+  voice: native(() => import("./modules/ConsoleVoice")),
+  starboard: native(() => import("./modules/ConsoleStarboard")),
 };
 
 export const hasEmbeddedPage = (moduleId: string) => moduleId in PAGES || moduleId in NATIVE;

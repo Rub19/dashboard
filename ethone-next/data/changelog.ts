@@ -48519,5 +48519,66 @@ CHANGELOG_BY_LANG.en.unshift(v1_56_2_en);
 CHANGELOG_BY_LANG.es.unshift(v1_56_2_es);
 CHANGELOG_BY_LANG.de.unshift(v1_56_2_de);
 
+const v1_57_0_fr: ChangelogEntry = {
+  version: "v1.57.0",
+  date: "2026-10-09",
+  title: "Protections : 45 protections au format Keeper, toutes gratuites",
+  items: [
+    "Nouvelle page Protections : liste par catégorie, filtres Toutes / Actives / Inactives / À compléter, recherche, et pour chaque protection : détection, punition, alerte et whitelist.",
+    "45 protections réelles sur Etho : sanctions en série, salons, rôles, bots, webhooks, fils, vocal, serveur, messages (liens, spam, mots interdits, mentions, ghost ping, pavés, doublons, emojis, arnaques, toxicité, stickers), comptes récents, renommages, emojis, invitations et sauvegardes automatiques.",
+    "Etho répare la rafale : membres débannis, salons et rôles recréés, modifications annulées, bot ajouté banni, webhooks supprimés.",
+    "Verrouillage du serveur en option, levable d'un clic depuis la console ou avec /protection deverrouiller.",
+    "Nouvelle commande /protection (liste, voir, activer, désactiver, punition, seuil, salon) ; /antinuke est remplacée, /help est à jour et les réponses des commandes sont en embeds.",
+    "La configuration assistée active désormais ces nouvelles protections.",
+  ],
+};
+
+const v1_57_0_en: ChangelogEntry = {
+  version: "v1.57.0",
+  date: "2026-10-09",
+  title: "Protections: 45 protections in the Keeper layout, all free",
+  items: [
+    "New Protections page: list by category, All / Active / Inactive / To complete filters, search, and per protection: detection, punishment, alert and whitelist.",
+    "45 real protections on Etho: serial sanctions, channels, roles, bots, webhooks, threads, voice, server, messages (links, spam, banned words, mentions, ghost ping, text walls, duplicates, emojis, scams, toxicity, stickers), new accounts, renames, emojis, invites and automatic backups.",
+    "Etho repairs the burst: members unbanned, channels and roles recreated, edits reverted, added bot banned, webhooks deleted.",
+    "Optional server lockdown, lifted in one click from the console or with /protection deverrouiller.",
+    "New /protection command; /antinuke is replaced, /help is updated and command replies use embeds.",
+    "Assisted setup now enables these new protections.",
+  ],
+};
+
+const v1_57_0_es: ChangelogEntry = {
+  version: "v1.57.0",
+  date: "2026-10-09",
+  title: "Protecciones: 45 protecciones con el diseño de Keeper, todas gratis",
+  items: [
+    "Nueva página Protecciones: lista por categoría, filtros, búsqueda y, para cada protección: detección, castigo, alerta y lista blanca.",
+    "45 protecciones reales en Etho: sanciones en serie, canales, roles, bots, webhooks, hilos, voz, servidor, mensajes, cuentas nuevas, renombres, emojis, invitaciones y copias automáticas.",
+    "Etho repara la ráfaga: desbaneos, canales y roles recreados, cambios revertidos, bot añadido baneado.",
+    "Bloqueo del servidor opcional, se levanta con un clic o con /protection deverrouiller.",
+    "Nuevo comando /protection; /antinuke se reemplaza, /help actualizado y respuestas en embeds.",
+    "La configuración asistida activa ahora estas protecciones.",
+  ],
+};
+
+const v1_57_0_de: ChangelogEntry = {
+  version: "v1.57.0",
+  date: "2026-10-09",
+  title: "Schutz: 45 Schutzfunktionen im Keeper-Layout, alle kostenlos",
+  items: [
+    "Neue Seite Schutz: Liste nach Kategorie, Filter, Suche und pro Schutz: Erkennung, Strafe, Warnung und Whitelist.",
+    "45 echte Schutzfunktionen in Etho: Serienstrafen, Kanäle, Rollen, Bots, Webhooks, Threads, Sprache, Server, Nachrichten, neue Konten, Umbenennungen, Emojis, Einladungen und automatische Backups.",
+    "Etho repariert die Welle: Entbannungen, Kanäle und Rollen neu erstellt, Änderungen zurückgesetzt, hinzugefügter Bot gebannt.",
+    "Optionale Serversperre, mit einem Klick oder /protection deverrouiller aufhebbar.",
+    "Neuer Befehl /protection; /antinuke ersetzt, /help aktualisiert, Antworten als Embeds.",
+    "Die geführte Einrichtung aktiviert jetzt diese Schutzfunktionen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_57_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_57_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_57_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_57_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

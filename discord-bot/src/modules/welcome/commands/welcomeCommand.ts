@@ -184,7 +184,7 @@ export const welcomeCommand: Command = {
 
     if (sub === 'apercu') {
       await ctx.deferReply({ ephemeral: true });
-      await ctx.editReply({ content: `Ta carte de ${KIND_LABEL[kind]} telle qu’elle sera envoyée :`, files: [await cardFor(member, kind)] });
+      await ctx.editReply({ embeds: [ctx.createEmbed('info').setDescription(`Ta carte de ${KIND_LABEL[kind]} telle qu’elle sera envoyée :`)], files: [await cardFor(member, kind)] });
       return;
     }
 
@@ -192,9 +192,9 @@ export const welcomeCommand: Command = {
       await ctx.deferReply({ ephemeral: true });
       try {
         const res = await welcomeService.sendTest(ctx.guild, kind, 'channel', ctx.author);
-        await ctx.editReply({ content: `✅ Message de ${KIND_LABEL[kind]} de test envoyé dans <#${welcomeService.getConfig(guildId)[kind].channelId}>${res.channelName ? ` (#${res.channelName})` : ''}.` });
+        await ctx.editReply({ embeds: [ctx.createEmbed('success').setDescription(`Message de ${KIND_LABEL[kind]} de test envoyé dans <#${welcomeService.getConfig(guildId)[kind].channelId}>${res.channelName ? ` (#${res.channelName})` : ''}.`)] });
       } catch (err: any) {
-        await ctx.editReply({ content: `❌ ${err?.message || 'Envoi impossible.'} Choisis d'abord un salon avec \`/bienvenue salon${kind === 'goodbye' ? ' type:Départ' : ''}\`.` });
+        await ctx.editReply({ embeds: [ctx.createEmbed('error').setDescription(`${err?.message || 'Envoi impossible.'} Choisis d'abord un salon avec \`/bienvenue salon${kind === 'goodbye' ? ' type:Départ' : ''}\`.`)] });
       }
       return;
     }
@@ -231,17 +231,17 @@ export const welcomeCommand: Command = {
       if (color !== null) {
         const v = hex(color);
         if (!v) {
-          await ctx.reply({ content: `❌ « ${color} » n'est pas une couleur (format #RRGGBB).`, ephemeral: true });
+          await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(`« ${color} » n'est pas une couleur (format #RRGGBB).`)], ephemeral: true });
           return;
         }
         embed.color = v;
       }
       if (!Object.keys(embed).length) {
-        await ctx.reply({ content: 'Indique au moins `titre`, `texte` ou `couleur`.', ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('info').setDescription('Indique au moins `titre`, `texte` ou `couleur`.')], ephemeral: true });
         return;
       }
       save({ [kind]: { embed: { ...embed, enabled: true } } } as never);
-      await ctx.reply({ content: `✅ Embed de ${KIND_LABEL[kind]} mis à jour. Vérifie le rendu avec \`/bienvenue test${kind === 'goodbye' ? ' type:Départ' : ''}\`.`, ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('success').setDescription(`Embed de ${KIND_LABEL[kind]} mis à jour. Vérifie le rendu avec \`/bienvenue test${kind === 'goodbye' ? ' type:Départ' : ''}\`.`)], ephemeral: true });
     }
   },
 };

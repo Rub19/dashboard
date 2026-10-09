@@ -38,7 +38,7 @@ import { voiceStayService } from '../modules/music/services/voiceStayService.js'
 import { handleGuildUpdate } from '../modules/logs/events/serverLogs.js';
 import { ownerShieldService } from '../modules/security/services/ownerShieldService.js';
 import { autoRoleService } from '../modules/roles/services/autoRoleService.js';
-import { antiNukeService } from '../modules/security/services/antiNukeService.js';
+import { protectionEngine } from '../modules/protections/protectionEngine.js';
 import { raidDetectionService } from '../modules/antiRaid/services/raidDetectionService.js';
 import { autoModService } from '../modules/automod/services/autoModService.js';
 import { inviteSnapshotService } from '../modules/invites/services/inviteSnapshotService.js';
@@ -60,6 +60,7 @@ let isEventsRegistered = false;
 const moduleOn = (guildId: string | null | undefined, moduleId: string): boolean => Boolean(guildId) && isModuleEnabled(guildId as string, moduleId);
 
 export function registerEvents(client: Client): void {
+  protectionEngine.init(client);
   if (isEventsRegistered) {
     logger.warn('[EventHandler] Events already registered. Skipping duplicate registration.');
     return;
@@ -146,9 +147,13 @@ export function registerEvents(client: Client): void {
   // Base Events
   client.once(Events.ClientReady, (c) => onReady(c));
   client.on(Events.InteractionCreate, (interaction) => onInteractionCreate(interaction));
-  client.on(Events.MessageCreate, (message) => onMessageCreate(message));
+  client.on(Events.MessageCreate, (message) => {
+    onMessageCreate(message);
+    void protectionEngine.onMessage(message).catch((err) => logger.warn('[Protections] message :', err?.message));
+  });
   client.on(Events.GuildMemberAdd, (member) => {
     void enforceBlacklistOnJoin(member);
+    void protectionEngine.onMemberAdd(member).catch((err) => logger.warn('[Protections] arrivée :', err?.message));
     void captchaOnJoin(member).catch((err) => logger.warn('[Captcha] arrivée :', err?.message));
     void syncSupporter(member);
     onGuildMemberAdd(member);
@@ -174,13 +179,18 @@ export function registerEvents(client: Client): void {
 
   // Logs : Emojis & Fils
   client.on(Events.GuildEmojiCreate, (emoji) => void handleEmojiCreate(emoji));
-  client.on(Events.GuildEmojiDelete, (emoji) => void handleEmojiDelete(emoji));
+  client.on(Events.GuildEmojiDelete, (emoji) => {
+    protectionEngine.snapEmoji(emoji);
+    void handleEmojiDelete(emoji);
+  });
+  client.on(Events.GuildStickerDelete, (sticker) => protectionEngine.snapSticker(sticker));
   client.on(Events.ThreadCreate, (thread, newlyCreated) => void handleThreadCreate(thread, newlyCreated));
   client.on(Events.ThreadDelete, (thread) => void handleThreadDelete(thread));
 
   // Logs : Messages
   client.on(Events.MessageDelete, (message) => {
     handleMessageDelete(message);
+    void protectionEngine.onMessageDelete(message).catch(() => {});
     if (moduleOn(message.guildId, 'automod')) autoModService.handleMessageDelete(message);
     if (moduleOn(message.guildId, 'starboard')) starboardService.handleMessageDelete(message);
   });
@@ -203,7 +213,6 @@ export function registerEvents(client: Client): void {
   });
   client.on(Events.GuildBanAdd, (ban) => {
     handleGuildBanAdd(ban);
-    if (moduleOn(ban.guild.id, 'anti-nuke')) antiNukeService.handleBanAdd(ban.guild);
     ownerShieldService.handleGuildBanAdd(ban);
   });
   client.on(Events.GuildBanRemove, (ban) => handleGuildBanRemove(ban));
@@ -214,12 +223,13 @@ export function registerEvents(client: Client): void {
     if (moduleOn(role.guild.id, 'security')) raidDetectionService.handleRoleEvent('ROLE_CREATE', role);
   });
   client.on(Events.GuildRoleDelete, (role) => {
+    protectionEngine.snapRole(role);
     handleRoleDelete(role);
-    if (moduleOn(role.guild.id, 'anti-nuke')) antiNukeService.handleRoleDelete(role.guild);
     if (moduleOn(role.guild.id, 'security')) raidDetectionService.handleRoleEvent('ROLE_DELETE', role);
   });
   client.on(Events.GuildRoleUpdate, (oldRole, newRole) => {
     handleRoleUpdate(oldRole, newRole);
+    protectionEngine.onRolePosition(oldRole as Role, newRole as Role);
     ownerShieldService.handleGuildRoleUpdate(oldRole as Role, newRole as Role);
   });
 
@@ -231,9 +241,9 @@ export function registerEvents(client: Client): void {
     }
   });
   client.on(Events.ChannelDelete, (channel) => {
+    if ('guild' in channel && channel.guild) protectionEngine.snapChannel(channel as any);
     handleChannelDelete(channel);
     if ('guild' in channel && channel.guild) {
-      if (moduleOn(channel.guild.id, 'anti-nuke')) antiNukeService.handleChannelDelete(channel.guild);
       if (moduleOn(channel.guild.id, 'security')) raidDetectionService.handleChannelEvent('CHANNEL_DELETE', channel as any);
     }
   });
@@ -241,6 +251,7 @@ export function registerEvents(client: Client): void {
 
   // Audit Logs (Mass ban/kick, webhooks, bots)
   client.on(Events.GuildAuditLogEntryCreate, (entry, guild) => {
+    void protectionEngine.onAuditEntry(guild, entry as any);
     if (moduleOn(guild.id, 'security')) raidDetectionService.handleAuditLog(guild, entry);
 
     if (

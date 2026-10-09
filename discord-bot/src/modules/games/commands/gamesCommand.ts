@@ -25,7 +25,7 @@ export const blackjackCommand: Command = {
     ) as SlashCommandBuilder,
   execute: async (ctx: CommandContext) => {
     if (!ctx.guildId || !ctx.channel) {
-      await ctx.reply('Cette commande doit être exécutée dans un salon de serveur.');
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('Cette commande doit être exécutée dans un salon de serveur.')] });
       return;
     }
 
@@ -41,7 +41,7 @@ export const blackjackCommand: Command = {
     );
 
     if (res.error) {
-      await ctx.reply({ content: `❌ ${res.error}`, ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(`${res.error}`)], ephemeral: true });
     }
   },
 };
@@ -86,7 +86,7 @@ export const rouletteCommand: Command = {
     ) as SlashCommandBuilder,
   execute: async (ctx: CommandContext) => {
     if (!ctx.guildId) {
-      await ctx.reply('Cette commande doit être exécutée dans un serveur.');
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('Cette commande doit être exécutée dans un serveur.')] });
       return;
     }
 
@@ -106,7 +106,7 @@ export const rouletteCommand: Command = {
 
     const res = await gamesService.playRoulette(ctx.guildId, ctx.author, bet, choice);
     if (res.error) {
-      await ctx.reply({ content: `❌ ${res.error}`, ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(`${res.error}`)], ephemeral: true });
       return;
     }
 
@@ -139,12 +139,12 @@ export const diceCommand: Command = {
     ) as SlashCommandBuilder,
   execute: async (ctx: CommandContext) => {
     if (!ctx.guildId || !ctx.channel) {
-      await ctx.reply('Cette commande doit être exécutée dans un salon de serveur.');
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('Cette commande doit être exécutée dans un salon de serveur.')] });
       return;
     }
 
     if (!ctx.isSlash || !ctx.interaction) {
-      await ctx.reply('Cette commande est disponible via la commande slash `/dice mise adversaire`.');
+      await ctx.reply({ embeds: [ctx.createEmbed('info').setDescription('Cette commande est disponible via la commande slash `/dice mise adversaire`.')] });
       return;
     }
 
@@ -161,9 +161,9 @@ export const diceCommand: Command = {
     );
 
     if (res.error) {
-      await ctx.reply({ content: `❌ ${res.error}`, ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(`${res.error}`)], ephemeral: true });
     } else {
-      await ctx.reply({ content: `Défi envoyé à <@${opponent.id}> !`, ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('info').setDescription(`Défi envoyé à <@${opponent.id}> !`)], ephemeral: true });
     }
   },
 };
@@ -198,7 +198,7 @@ export const casinoCommand: Command = {
     ) as SlashCommandBuilder,
   execute: async (ctx: CommandContext) => {
     if (!ctx.guildId) {
-      await ctx.reply('Cette commande doit être exécutée dans un serveur.');
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('Cette commande doit être exécutée dans un serveur.')] });
       return;
     }
 
@@ -212,7 +212,7 @@ export const casinoCommand: Command = {
     if (sub === 'daily') {
       const res = await gamesService.dailySpin(ctx.guildId, ctx.author);
       if (!res.ok) {
-        await ctx.reply({ content: `⏳ ${res.message}`, ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('info').setDescription(`${res.message}`)], ephemeral: true });
         return;
       }
 

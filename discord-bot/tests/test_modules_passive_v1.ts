@@ -27,7 +27,6 @@ const { registerEvents } = await import('../src/handlers/eventHandler.js');
 const { autoModService } = await import('../src/modules/automod/services/autoModService.js');
 const { levelingService } = await import('../src/modules/leveling/services/levelingService.js');
 const { raidDetectionService } = await import('../src/modules/antiRaid/services/raidDetectionService.js');
-const { antiNukeService } = await import('../src/modules/security/services/antiNukeService.js');
 const { aiService } = await import('../src/modules/ai/services/aiService.js');
 const { stickyService } = await import('../src/modules/stickyMessages/services/stickyService.js');
 const { afkService } = await import('../src/modules/afk/services/afkService.js');
@@ -314,9 +313,6 @@ await check('événements Discord (réactions, salons, rôles, bans, invitations
     starDelete: spy(starboardService, 'handleMessageDelete'),
     automodDelete: spy(autoModService, 'handleMessageDelete'),
     automodProfile: spy(autoModService, 'handleMemberProfile'),
-    nukeBan: spy(antiNukeService, 'handleBanAdd'),
-    nukeRole: spy(antiNukeService, 'handleRoleDelete'),
-    nukeChannel: spy(antiNukeService, 'handleChannelDelete'),
     raidRole: spy(raidDetectionService, 'handleRoleEvent'),
     raidChannel: spy(raidDetectionService, 'handleChannelEvent'),
     raidAudit: spy(raidDetectionService, 'handleAuditLog'),

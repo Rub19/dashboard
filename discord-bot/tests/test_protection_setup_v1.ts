@@ -8,48 +8,52 @@ const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'etho-setup-'));
 process.chdir(tmpDir);
 
 const { planProtectionSetup, applyProtectionSetup } = await import('../src/modules/server/services/protectionSetupService.js');
-const { securityStorage } = await import('../src/modules/security/storage/securityStorage.js');
-const { raidRepository } = await import('../src/modules/antiRaid/storage/raidRepository.js');
-const { autoModRepository } = await import('../src/modules/automod/storage/autoModRepository.js');
+const { protectionStore } = await import('../src/modules/protections/protectionStore.js');
 const { auditRepository } = await import('../src/modules/logs/storage/auditRepository.js');
 const { setModuleEnabled, isModuleEnabled } = await import('../src/services/moduleRegistry.js');
 
 const guild = { id: '900000000000000001' } as any;
+protectionStore.startFresh(guild.id);
 for (const m of ['security', 'anti-nuke', 'automod', 'logs']) setModuleEnabled(guild.id, m, false, 'DASHBOARD', undefined, false);
 
 // Types de serveur : même découpage que Keeper.
-const friends = await planProtectionSetup(guild, { serverType: 'friends', severity: 'balanced', alertChannelId: null, overwrite: false });
-const community = await planProtectionSetup(guild, { serverType: 'community', severity: 'balanced', alertChannelId: null, overwrite: false });
-const large = await planProtectionSetup(guild, { serverType: 'large', severity: 'balanced', alertChannelId: null, overwrite: false });
-assert.equal(friends.length, 7, 'entre amis : base');
-assert.equal(community.length, 16, 'communauté : base + messages et arrivées');
-assert.equal(large.filter((i) => i.status === 'unavailable').length, 4, 'grosse communauté : 4 protections vocales indisponibles');
+const plan = (serverType: 'friends' | 'community' | 'large', severity: 'watch' | 'balanced' | 'strict' = 'balanced', overwrite = false) =>
+  planProtectionSetup(guild, { serverType, severity, alertChannelId: null, overwrite });
+const friends = await plan('friends');
+const community = await plan('community');
+const large = await plan('large');
+assert.equal(friends.length, 18, 'entre amis : base');
+assert.equal(community.length, 26, 'communauté : base + messages et arrivées');
+assert.equal(large.length, 32, 'grosse communauté : + vocal, fils, expressions');
+assert.ok(!large.some((i) => i.status === 'unavailable'), 'tout est disponible');
 assert.ok(community.every((i) => i.status === 'enable'), 'tout est à activer sur un serveur vierge');
-assert.ok(!community.some((i) => i.category === 'Vocal'), 'pas de vocal hors grosse communauté');
 
 // Équilibré : retrait des rôles pour le staff, expulsion pour les arrivées, timeout 10 min pour les messages.
-assert.equal(community.find((i) => i.id === 'nuke-sanctions')!.sanction, 'Retire les rôles');
-assert.equal(community.find((i) => i.id === 'join-raid')!.sanction, 'Expulse');
-assert.equal(community.find((i) => i.id === 'automod-links')!.sanction, 'Supprime + timeout 10 min');
+assert.equal(community.find((i) => i.id === 'antiBan')!.sanction, 'Retire les rôles');
+assert.equal(community.find((i) => i.id === 'antiAlt')!.sanction, 'Expulse');
+assert.equal(community.find((i) => i.id === 'antiLink')!.sanction, 'Timeout 10 min');
 
 // Application en strict avec un salon d'alertes.
 const after = await applyProtectionSetup(guild, { serverType: 'community', severity: 'strict', alertChannelId: '900000000000000099', overwrite: false });
 assert.ok(after.every((i) => i.status === 'already'), 'après application, tout est en place');
-assert.equal(securityStorage.getConfig(guild.id).antiNuke.action, 'ban', 'strict : anti-nuke bannit');
-assert.equal(raidRepository.getConfig(guild.id).messageRaid.timeoutDurationSeconds, 3600, 'strict : timeout spam 1 h');
-assert.deepEqual(raidRepository.getConfig(guild.id).joinRaid.actions, ['KICK', 'ALERT_STAFF']);
-assert.equal(autoModRepository.getConfig(guild.id).timeoutSeconds, 3600, 'strict : timeout AutoMod 1 h');
-assert.ok(autoModRepository.getConfig(guild.id).links.enabled, 'détecteur de liens activé');
+assert.equal(protectionStore.get(guild.id, 'antiBan').punish, 'ban', 'strict : bannit');
+assert.equal(protectionStore.get(guild.id, 'antiSpam').timeoutSeconds, 3600, 'strict : timeout 1 h');
+assert.equal(protectionStore.get(guild.id, 'antiAlt').punish, 'kick');
+assert.equal(protectionStore.get(guild.id, 'antiBan').logChannelId, '900000000000000099', 'salon de log posé sur chaque protection');
 assert.equal(auditRepository.getConfig(guild.id).routing.moderationChannelId, '900000000000000099', 'salon des alertes branché sur les logs');
-assert.ok(['security', 'anti-nuke', 'automod', 'logs'].every((m) => isModuleEnabled(guild.id, m)), 'modules activés');
+assert.ok(isModuleEnabled(guild.id, 'anti-nuke'), 'module Protections allumé');
+assert.equal(protectionStore.get(guild.id, 'antiMuteVoc').enabled, false, 'vocal non activé pour une communauté');
 
 // Sans « appliquer partout », une protection déjà active garde ses réglages.
-const keep = await planProtectionSetup(guild, { serverType: 'community', severity: 'balanced', alertChannelId: null, overwrite: false });
-assert.ok(keep.every((i) => i.status === 'already'), 'sans écraser : déjà active');
-const overwrite = await planProtectionSetup(guild, { serverType: 'community', severity: 'balanced', alertChannelId: null, overwrite: true });
-assert.ok(overwrite.some((i) => i.status === 'update'), 'en écrasant : mise à jour vers équilibré');
-await applyProtectionSetup(guild, { serverType: "community", severity: "balanced", alertChannelId: null, overwrite: true });
-assert.equal(securityStorage.getConfig(guild.id).antiNuke.action, 'strip_roles', 'équilibré : retire les rôles');
+assert.ok((await plan('community')).every((i) => i.status === 'already'), 'sans écraser : déjà active');
+assert.ok((await plan('community', 'balanced', true)).some((i) => i.status === 'update'), 'en écrasant : mise à jour vers équilibré');
+await applyProtectionSetup(guild, { serverType: 'community', severity: 'balanced', alertChannelId: null, overwrite: true });
+assert.equal(protectionStore.get(guild.id, 'antiBan').punish, 'derank', 'équilibré : retire les rôles');
+
+// Module Protections éteint : tout est coupé, réglages gardés.
+setModuleEnabled(guild.id, 'anti-nuke', false, 'DASHBOARD');
+assert.ok(Object.values(protectionStore.all(guild.id)).every((p) => !p.enabled), 'module éteint : plus rien d’actif');
+assert.equal(protectionStore.get(guild.id, 'antiBan').logChannelId, '900000000000000099', 'réglages conservés');
 
 console.log('✅ configuration assistée : types, sévérités et application OK');
 process.chdir(os.tmpdir());

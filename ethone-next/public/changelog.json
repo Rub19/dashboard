@@ -1,5 +1,18 @@
 [
   {
+    "version": "v1.57.0",
+    "date": "2026-10-09",
+    "title": "Protections : 45 protections au format Keeper, toutes gratuites",
+    "items": [
+      "Nouvelle page Protections : liste par catégorie, filtres Toutes / Actives / Inactives / À compléter, recherche, et pour chaque protection : détection, punition, alerte et whitelist.",
+      "45 protections réelles sur Etho : sanctions en série, salons, rôles, bots, webhooks, fils, vocal, serveur, messages (liens, spam, mots interdits, mentions, ghost ping, pavés, doublons, emojis, arnaques, toxicité, stickers), comptes récents, renommages, emojis, invitations et sauvegardes automatiques.",
+      "Etho répare la rafale : membres débannis, salons et rôles recréés, modifications annulées, bot ajouté banni, webhooks supprimés.",
+      "Verrouillage du serveur en option, levable d'un clic depuis la console ou avec /protection deverrouiller.",
+      "Nouvelle commande /protection (liste, voir, activer, désactiver, punition, seuil, salon) ; /antinuke est remplacée, /help est à jour et les réponses des commandes sont en embeds.",
+      "La configuration assistée active désormais ces nouvelles protections."
+    ]
+  },
+  {
     "version": "v1.56.2",
     "date": "2026-10-09",
     "title": "Console : plus d'erreurs au premier chargement d'une page",
@@ -632,16 +645,6 @@
       "Fond Lumineux Ambiant Réactif Android (`AmbientLuminousBackground`) : orbes de gradient mouvants projetant des reflets subtils à travers les surfaces translucides de `BentoGridScreen` et de l'écran de connexion `LoginScreen`.",
       "Dock Flottant & Pilules Tactiles Sublimés (`NativeFloatingDock`) : capsule de sélection en verre acrylique avec micro-haptique et élévation spéculaire sur Android.",
       "Expérience Liquid Glass unifiée : bulles de discussion Brain (`BrainBubble`), sélecteurs de filtres (`LiquidGlassPill`), mini-barre Focus (`FocusMiniBar`), orbe IA (`ETHBrainOrb`) et écran de verrouillage (`LockScreen`)."
-    ]
-  },
-  {
-    "version": "v1.55.41",
-    "date": "2026-10-06",
-    "title": "Android Natif : Grille/Liste, Navigation Dossiers, Favoris Cloud & Fiabilisation",
-    "items": [
-      "Gestionnaire de Fichiers Android Enrichi (`FilesScreen`) : bascule instantanée entre affichage Liste et Grille (2 colonnes), fil d'Ariane interactif pour naviguer dans les sous-dossiers, et inspecteur de détails complet avec ouverture et partage de lien.",
-      "Favoris Cloud en Temps Réel (`SupabaseClient`) : synchronisation bidirectionnelle des favoris avec la table Supabase `ethone_file_favorites`, mise à jour immédiate de l'étoile et bouton dédié sur chaque carte.",
-      "Fiabilisation des Coroutines & Synthèse Réactive : résolution des extensions de portée sur les cartes de capture Brain et génération dynamique de synthèse dans l'application Mail."
     ]
   }
 ]

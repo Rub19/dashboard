@@ -1,7 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 import { raidRepository } from '../modules/antiRaid/storage/raidRepository.js';
-import { securityStorage } from '../modules/security/storage/securityStorage.js';
+import { protectionStore } from '../modules/protections/protectionStore.js';
+import { RECOMMENDED_PROTECTIONS } from '../modules/protections/catalog.js';
 import { autoModRepository } from '../modules/automod/storage/autoModRepository.js';
 import { logStorage } from '../modules/logs/storage/logStorage.js';
 import { welcomeRepository } from '../modules/welcome/storage/welcomeRepository.js';
@@ -62,13 +63,19 @@ export const MODULES: ModuleDef[] = [
   },
   {
     id: 'anti-nuke',
-    label: 'Anti-Nuke',
-    emoji: '☢️',
-    description: 'Protection contre les suppressions et bannissements en série.',
-    commands: ['antinuke'],
+    label: 'Protections',
+    emoji: '🛡️',
+    description: 'Anti-ban, anti-spam, anti-lien et une quarantaine d’autres protections.',
+    commands: ['protection'],
     own: {
-      get: (g) => securityStorage.getConfig(g).antiNuke.enabled,
-      set: (g, enabled) => void securityStorage.updateConfig(g, { antiNuke: { ...securityStorage.getConfig(g).antiNuke, enabled } }),
+      // Allumé = au moins une protection active. Éteindre coupe toutes les protections (réglages gardés) ;
+      // allumer sans rien d'actif pose la base recommandée.
+      get: (g) => Object.values(protectionStore.all(g)).some((p) => p.enabled),
+      set: (g, enabled) => {
+        const all = protectionStore.all(g);
+        if (!enabled) for (const [key, p] of Object.entries(all)) if (p.enabled) protectionStore.update(g, key, { enabled: false });
+        if (enabled && !Object.values(all).some((p) => p.enabled)) for (const key of RECOMMENDED_PROTECTIONS) protectionStore.update(g, key, { enabled: true });
+      },
     },
   },
   {

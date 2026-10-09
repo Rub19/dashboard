@@ -49,8 +49,8 @@ export const HELP_CATEGORIES: HelpCategoryMeta[] = [
     name: 'Sécurité & Anti-Raid',
     emoji: '🚨',
     color: 0xf97316,
-    description: "Anti-raid, anti-nuke, AutoMod, vérification des nouveaux membres et journaux d'audit",
-    commandNames: ['antiraid', 'antinuke', 'automod', 'verification', 'logs'],
+    description: "45 protections (anti-ban, anti-spam, anti-lien…), anti-raid, AutoMod, vérification des nouveaux membres et journaux d'audit",
+    commandNames: ['protection', 'antiraid', 'automod', 'verification', 'logs'],
   },
   {
     id: 'leveling',

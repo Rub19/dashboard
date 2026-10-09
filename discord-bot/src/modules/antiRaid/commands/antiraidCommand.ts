@@ -11,6 +11,7 @@ import { raidActionService } from '../services/raidActionService.js';
 import { formatString, getTranslation } from '../../../utils/i18n.js';
 import { BRAND_COLORS, baseEmbed } from '../../../utils/embeds.js';
 import { emitConfigUpdated } from '../../../services/syncConfigEmitter.js';
+import { securityStorage } from '../../security/storage/securityStorage.js';
 
 export const antiraidCommand: Command = {
   name: 'antiraid',
@@ -30,14 +31,6 @@ export const antiraidCommand: Command = {
         .setDescription("Active ou désactive complètement l'Anti-Raid sur ce serveur")
         .addBooleanOption((opt) =>
           opt.setName('actif').setDescription('Activer (True) ou tout désactiver (False)').setRequired(true)
-        )
-    )
-    .addSubcommand((sub) =>
-      sub
-        .setName('botprotection')
-        .setDescription("Expulser automatiquement les bots non autorisés qui rejoignent")
-        .addBooleanOption((opt) =>
-          opt.setName('actif').setDescription('Activer (True) ou désactiver (False)').setRequired(true)
         )
     )
     .addSubcommand((sub) =>
@@ -131,11 +124,8 @@ export const antiraidCommand: Command = {
       const detectors: string[] = [];
       const d = (on: boolean, label: string) => `${on ? '🟢' : '⚫'} ${label}`;
       detectors.push(d(raidCfg.joinRaid.enabled, 'Vague d\'arrivées'));
-      detectors.push(d(raidCfg.messageRaid.enabled, 'Spam messages'));
-      detectors.push(d(raidCfg.mentionRaid.enabled, 'Spam mentions'));
-      detectors.push(d(raidCfg.botRaid.enabled && raidCfg.botRaid.blockUnwhitelistedBots, 'Bots non autorisés'));
-      detectors.push(d(raidCfg.serverNuke.enabled, 'Nuke serveur'));
-      detectors.push(d(raidCfg.accountAge.enabled, 'Comptes récents'));
+      // Spam, mentions, bots, comptes récents et destructions : voir /protection liste.
+      detectors.push('Spam, mentions, bots, comptes récents : `/protection liste`');
 
       const embed = baseEmbed('default', { color: levelColors[metrics.threatLevel] || BRAND_COLORS.success })
         .setAuthor({ name: `Anti-Raid — ${ctx.guild.name}`, iconURL: ctx.guild.iconURL({ size: 128 }) ?? undefined })
@@ -164,7 +154,7 @@ export const antiraidCommand: Command = {
             inline: false,
           }
         )
-        .setFooter({ text: '/antiraid toggle · botprotection · trustbot · raidmode · lockdown' });
+        .setFooter({ text: '/antiraid toggle · trustbot · raidmode · lockdown · /protection' });
 
       await ctx.reply({ embeds: [embed] });
       return;
@@ -189,28 +179,6 @@ export const antiraidCommand: Command = {
       return;
     }
 
-    if (sub === 'botprotection') {
-      const active = (ctx.interaction as ChatInputCommandInteraction).options.getBoolean('actif', true);
-      const current = raidConfigService.getConfig(guildId);
-      const botProtectionConfig = raidConfigService.updateConfig(guildId, {
-        botRaid: { ...current.botRaid, blockUnwhitelistedBots: active },
-      });
-      emitConfigUpdated('antiRaid', guildId, botProtectionConfig, 'DISCORD_COMMAND', ctx.author.id);
-      await ctx.reply({
-        embeds: [
-          ctx
-            .createEmbed(active ? 'success' : 'neutral')
-            .setDescription(
-              active
-                ? "🤖 Les bots non autorisés seront **expulsés** en rejoignant (sauf s'ils sont invités par un admin)."
-                : '🤖 Expulsion automatique des bots **désactivée**. Les bots peuvent rejoindre librement.'
-            ),
-        ],
-        ephemeral: true,
-      });
-      return;
-    }
-
     if (sub === 'trustbot') {
       const bot = (ctx.interaction as ChatInputCommandInteraction).options.getUser('bot', true);
       const current = raidConfigService.getConfig(guildId);
@@ -219,6 +187,9 @@ export const antiraidCommand: Command = {
       if (added) set.add(bot.id);
       else set.delete(bot.id);
       raidConfigService.updateWhitelist(guildId, { trustedBotIds: Array.from(set) });
+      // Même liste pour les protections (whitelist globale) : un bot autorisé n'est ni expulsé ni compté.
+      const sec = securityStorage.getConfig(guildId);
+      securityStorage.updateConfig(guildId, { whitelist: { ...sec.whitelist, trustedBotIds: Array.from(set) } });
       await ctx.reply({
         embeds: [
           ctx

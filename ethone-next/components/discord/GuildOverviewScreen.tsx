@@ -68,10 +68,9 @@ export default function GuildOverviewScreen({ guild, guildSettings, onOpenScan, 
         .catch(() => null);
     get("/server/audit").then((d) => !cancelled && setActivity(Array.isArray(d?.logs) ? d.logs.slice(0, 5) : null));
     get("/server/log-coverage").then((d) => !cancelled && setLogGap(Array.isArray(d?.withoutChannel) ? d.withoutChannel : []));
-    Promise.all([get("/anti-raid/config"), get("/anti-nuke/config"), get("/modules")]).then(([r, n, m]) => {
-      if (cancelled || !r?.config || !n?.config) return;
-      const modules: Record<string, boolean> = Object.fromEntries((m?.modules ?? []).map((x: { id: string; enabled: boolean }) => [x.id, x.enabled]));
-      setProtections(protectionCount(r.config, n.config, modules));
+    get("/protections").then((d) => {
+      const c = protectionCount(d);
+      if (!cancelled && c) setProtections(c);
     });
     return () => {
       cancelled = true;

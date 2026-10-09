@@ -15,6 +15,7 @@ export const IncidentTypeSchema = z.enum([
   'SPAM_FLOOD',
   'DANGEROUS_PERMS',
   'LOCKDOWN_ACTIVATED',
+  'PROTECTION',
 ]);
 export type IncidentType = z.infer<typeof IncidentTypeSchema>;
 

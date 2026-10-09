@@ -49,7 +49,7 @@ import {
   robCommand,
   shopCommand,
 } from '../modules/economy/commands/economyShortcuts.js';
-import { antinukeCommand } from '../modules/security/commands/antinukeCommand.js';
+import { protectionCommand } from '../modules/protections/protectionCommand.js';
 import { automodCommand } from '../modules/automod/commands/automodCommand.js';
 import { musicCommand } from '../commands/music/music.js';
 import {
@@ -157,7 +157,7 @@ class CommandRegistry {
     this.register(gambleCommand);
     this.register(robCommand);
     this.register(shopCommand);
-    this.register(antinukeCommand);
+    this.register(protectionCommand);
 
     // AutoMod 2.0 (Smart Moderation)
     this.register(automodCommand);

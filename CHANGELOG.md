@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.57.0 — 2026-10-09
+
+**Protections : 45 protections au format Keeper, toutes gratuites**
+
+- Nouvelle page Protections : liste par catégorie, filtres Toutes / Actives / Inactives / À compléter, recherche, et pour chaque protection : détection, punition, alerte et whitelist.
+- 45 protections réelles sur Etho : sanctions en série, salons, rôles, bots, webhooks, fils, vocal, serveur, messages (liens, spam, mots interdits, mentions, ghost ping, pavés, doublons, emojis, arnaques, toxicité, stickers), comptes récents, renommages, emojis, invitations et sauvegardes automatiques.
+- Etho répare la rafale : membres débannis, salons et rôles recréés, modifications annulées, bot ajouté banni, webhooks supprimés.
+- Verrouillage du serveur en option, levable d'un clic depuis la console ou avec /protection deverrouiller.
+- Nouvelle commande /protection (liste, voir, activer, désactiver, punition, seuil, salon) ; /antinuke est remplacée, /help est à jour et les réponses des commandes sont en embeds.
+- La configuration assistée active désormais ces nouvelles protections.
+
 ## v1.56.2 — 2026-10-09
 
 **Console : plus d'erreurs au premier chargement d'une page**

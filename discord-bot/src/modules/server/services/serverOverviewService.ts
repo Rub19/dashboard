@@ -59,7 +59,8 @@ export class ServerOverviewService {
       totalMembers,
       humans,
       bots,
-      onlineMembers: online > 0 ? online : Math.round(totalMembers * 0.45) || 1,
+      // Valeur réelle du cache de présences (0 si l'intent des présences est absent) : jamais d'estimation inventée.
+      onlineMembers: online,
       channelsCount: guild.channels.cache.size,
       categoriesCount: categories,
       textChannelsCount: textChannels,

@@ -1,5 +1,17 @@
 [
   {
+    "version": "v1.62.0",
+    "date": "2026-10-09",
+    "title": "Console : Serveur, Assistant IA et Journal des logs au format Keeper",
+    "items": [
+      "Serveur : aperçu (membres, salons, rôles, boosts, score de sécurité expliqué, activité), salons (création, nom, sujet, mode lent, NSFW, places, suppression), rôles (création, nom, couleur, affichage séparé, mention, suppression), emojis (ajout, renommage, suppression, stickers), webhooks et paramètres Discord du serveur.",
+      "Assistant IA : mode général, salon dédié et modes par salon, personnalité (nom, humeur, consignes, curseurs), précision, images, mots interdits, mémoire, connaissances et essai en direct. Seuls les réglages appliqués par le bot sont affichés.",
+      "Logs : nouvel onglet Journal avec recherche, catégories, gravité, période et chargement progressif.",
+      "Correction : le nombre de membres en ligne n'est plus estimé (45 % des membres) quand le bot ne voit pas les présences.",
+      "Sécurité : les réglages IA et les règles de salon sont validés par le bot (modes connus, budget plafonné)."
+    ]
+  },
+  {
     "version": "v1.61.0",
     "date": "2026-10-09",
     "title": "Console : Réglages complets, Alertes streamers et Sauvegardes au format Keeper",
@@ -632,17 +644,6 @@
       "Détection automatique de présence du bot en temps réel avec transition fluide dès l'ajout effectif.",
       "Bouton Vérifier pour contrôle immédiat et bouton Passer l'attente pour accès direct sans délai.",
       "Barre latérale dédiée avec indicateur Etho absent, recherche Ctrl K, retour 'Mes serveurs' et support intégré."
-    ]
-  },
-  {
-    "version": "v1.55.49",
-    "date": "2026-10-07",
-    "title": "Refonte de la Console Discord : Hub Serveurs Style Keeper Protect & Sécurité",
-    "items": [
-      "Refonte intégrale de l'écran de sélection de serveurs Discord (/discord) au format 3 colonnes Keeper Protect adapté à l'univers émeraude Etho.",
-      "Partitionnement dynamique entre serveurs gérés (« Avec Etho ») et non configurés (« Sans Etho ») avec installation 1-clic.",
-      "Bascule instantanée vers la vue classique centrée conservée à 100% via le bouton dédié.",
-      "Barre latérale avec accès rapide aux réglages (Ctrl K), serveurs, documentation et support 24/7."
     ]
   }
 ]

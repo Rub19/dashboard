@@ -48947,5 +48947,62 @@ CHANGELOG_BY_LANG.en.unshift(v1_61_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_61_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_61_0_de);
 
+const v1_62_0_fr: ChangelogEntry = {
+  version: "v1.62.0",
+  date: "2026-10-09",
+  title: "Console : Serveur, Assistant IA et Journal des logs au format Keeper",
+  items: [
+    "Serveur : aperçu (membres, salons, rôles, boosts, score de sécurité expliqué, activité), salons (création, nom, sujet, mode lent, NSFW, places, suppression), rôles (création, nom, couleur, affichage séparé, mention, suppression), emojis (ajout, renommage, suppression, stickers), webhooks et paramètres Discord du serveur.",
+    "Assistant IA : mode général, salon dédié et modes par salon, personnalité (nom, humeur, consignes, curseurs), précision, images, mots interdits, mémoire, connaissances et essai en direct. Seuls les réglages appliqués par le bot sont affichés.",
+    "Logs : nouvel onglet Journal avec recherche, catégories, gravité, période et chargement progressif.",
+    "Correction : le nombre de membres en ligne n'est plus estimé (45 % des membres) quand le bot ne voit pas les présences.",
+    "Sécurité : les réglages IA et les règles de salon sont validés par le bot (modes connus, budget plafonné).",
+  ],
+};
+
+const v1_62_0_en: ChangelogEntry = {
+  version: "v1.62.0",
+  date: "2026-10-09",
+  title: "Console: Server, AI assistant and Log journal in the Keeper layout",
+  items: [
+    "Server: overview (members, channels, roles, boosts, explained security score, activity), channels, roles, emojis, webhooks and Discord server settings.",
+    "AI assistant: general mode, dedicated channel and per-channel modes, personality, accuracy, images, banned words, memory, knowledge and live test. Only settings the bot applies are shown.",
+    "Logs: new Journal tab with search, categories, severity, period and paging.",
+    "Fix: online members are no longer estimated (45% of members) when the bot cannot see presences.",
+    "Security: AI settings and channel rules are validated by the bot.",
+  ],
+};
+
+const v1_62_0_es: ChangelogEntry = {
+  version: "v1.62.0",
+  date: "2026-10-09",
+  title: "Consola: Servidor, Asistente IA y Registro con el formato Keeper",
+  items: [
+    "Servidor: resumen, canales, roles, emojis, webhooks y ajustes de Discord.",
+    "Asistente IA: modos, canal dedicado, personalidad, precisión, imágenes, palabras prohibidas, memoria, conocimientos y prueba.",
+    "Logs: nueva pestaña Registro con búsqueda y filtros.",
+    "Corrección: los miembros conectados ya no se estiman.",
+    "Seguridad: el bot valida los ajustes de IA.",
+  ],
+};
+
+const v1_62_0_de: ChangelogEntry = {
+  version: "v1.62.0",
+  date: "2026-10-09",
+  title: "Konsole: Server, KI-Assistent und Log-Journal im Keeper-Layout",
+  items: [
+    "Server: Übersicht, Kanäle, Rollen, Emojis, Webhooks und Discord-Einstellungen.",
+    "KI-Assistent: Modi, eigener Kanal, Persönlichkeit, Genauigkeit, Bilder, verbotene Wörter, Gedächtnis, Wissen und Test.",
+    "Logs: neuer Journal-Tab mit Suche und Filtern.",
+    "Korrektur: Online-Mitglieder werden nicht mehr geschätzt.",
+    "Sicherheit: Der Bot prüft die KI-Einstellungen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_62_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_62_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_62_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_62_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

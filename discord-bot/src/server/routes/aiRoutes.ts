@@ -38,6 +38,16 @@ const ToolsSchema = z
   })
   .partial();
 
+const ChannelRuleSchema = z.object({
+  channelId: z.string().regex(/^\d{5,25}$/),
+  channelName: z.string().max(100).optional(),
+  isCategory: z.boolean().optional(),
+  mode: z.enum(['AUTOMATIC', 'MENTION_ONLY', 'COMMAND_ONLY', 'REPLY', 'HYBRID', 'DISABLED', 'INHERIT']),
+  knowledgeSourceIds: z.array(z.string().max(64)).max(50).optional(),
+  threadModeEnabled: z.boolean().optional(),
+  maxHistoryMessages: z.number().int().min(1).max(50).optional(),
+});
+
 const KnowledgeSchema = z.object({
   title: z.string().min(1).max(200),
   type: z.enum(['TEXT', 'FAQ', 'DOC', 'URL', 'DISCORD']).optional(),
@@ -124,20 +134,24 @@ export function createAiRouter(client: Client): Router {
       const body = req.body || {};
       const patch: Record<string, unknown> = {};
       if (typeof body.enabled === 'boolean') patch.enabled = body.enabled;
-      if (typeof body.defaultMode === 'string') patch.defaultMode = body.defaultMode;
-      if (typeof body.hallucinationMode === 'string') patch.hallucinationMode = body.hallucinationMode;
-      if (typeof body.showSources === 'string') patch.showSources = body.showSources;
-      if (typeof body.dailyBudgetTokens === 'number' && body.dailyBudgetTokens >= 0) patch.dailyBudgetTokens = body.dailyBudgetTokens;
+      // Valeurs connues seulement : une chaîne quelconque casserait le moteur IA.
+      if (['AUTOMATIC', 'MENTION_ONLY', 'COMMAND_ONLY', 'REPLY', 'HYBRID', 'DISABLED'].includes(body.defaultMode)) patch.defaultMode = body.defaultMode;
+      if (['STRICT', 'BALANCED', 'CREATIVE'].includes(body.hallucinationMode)) patch.hallucinationMode = body.hallucinationMode;
+      if (['ALWAYS', 'WHEN_USED', 'NEVER'].includes(body.showSources)) patch.showSources = body.showSources;
+      // Plafonné : réglé par n'importe quel serveur, il ne doit jamais autoriser une consommation illimitée.
+      if (typeof body.dailyBudgetTokens === 'number' && Number.isFinite(body.dailyBudgetTokens) && body.dailyBudgetTokens >= 0) {
+        patch.dailyBudgetTokens = Math.min(1_000_000, Math.round(body.dailyBudgetTokens));
+      }
       if (body.memory && typeof body.memory === 'object') {
         const current = aiRepository.getSettings(guildId).memory;
         patch.memory = { ...current, ...body.memory };
       }
-      if (typeof body.dedicatedChannelId === 'string' || body.dedicatedChannelId === null) {
+      if ((typeof body.dedicatedChannelId === 'string' && /^(\d{5,25})?$/.test(body.dedicatedChannelId)) || body.dedicatedChannelId === null) {
         patch.dedicatedChannelId = body.dedicatedChannelId;
       }
       if (typeof body.allowImageGeneration === 'boolean') patch.allowImageGeneration = body.allowImageGeneration;
       if (Array.isArray(body.bannedWords) && body.bannedWords.every((w: unknown) => typeof w === 'string')) {
-        patch.bannedWords = body.bannedWords.slice(0, 200);
+        patch.bannedWords = body.bannedWords.slice(0, 200).map((w: string) => w.slice(0, 50));
       }
       if (['SAGE', 'GAMER_SARCASTIQUE', 'PROTECTEUR', 'CYBERPUNK', 'CUSTOM'].includes(body.thonMood)) {
         patch.thonMood = body.thonMood;
@@ -179,11 +193,26 @@ export function createAiRouter(client: Client): Router {
   router.put('/channels', (req: Request, res: Response) => {
     try {
       const guildId = requireStringParam(req.params.guildId, 'guildId');
-      const { rule } = req.body;
-      if (!rule || !rule.channelId) {
+      const parsed = ChannelRuleSchema.safeParse(req.body?.rule);
+      if (!parsed.success) {
         return res.status(400).json({ error: 'Règle de salon invalide' });
       }
-      const updated = aiService.updateChannelRule(guildId, rule);
+      const rule = parsed.data;
+      // « INHERIT » retire la règle : le salon reprend le mode général.
+      const updated =
+        rule.mode === 'INHERIT'
+          ? aiRepository.saveSettings(guildId, {
+              channelRules: Object.fromEntries(Object.entries(aiRepository.getSettings(guildId).channelRules).filter(([id]) => id !== rule.channelId)),
+            })
+          : aiService.updateChannelRule(guildId, {
+              channelId: rule.channelId,
+              channelName: rule.channelName ?? client.guilds.cache.get(guildId)?.channels.cache.get(rule.channelId)?.name ?? rule.channelId,
+              isCategory: rule.isCategory ?? false,
+              mode: rule.mode,
+              knowledgeSourceIds: rule.knowledgeSourceIds ?? [],
+              threadModeEnabled: rule.threadModeEnabled ?? false,
+              maxHistoryMessages: rule.maxHistoryMessages ?? 10,
+            });
       emitConfigUpdated('ai', guildId, updated, 'DASHBOARD', req.user?.id);
       res.json(updated.channelRules);
     } catch (err: any) {

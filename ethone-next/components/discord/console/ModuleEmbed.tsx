@@ -18,10 +18,7 @@ const load = (loader: () => Promise<ComponentType | { default: ComponentType }>)
 const PAGES: Record<string, ComponentType> = {
   overview: load(() => import("@/app/discord/overview/OverviewClient")),
   commands: load(() => import("@/app/discord/commands/CommandsCenterClient")),
-  logs: load(() => import("@/app/discord/logs/AuditCenterClient").then((m) => m.AuditCenterClient)),
-  ai: load(() => import("@/app/discord/ai/AiCenterClient")),
   analytics: load(() => import("@/app/discord/analytics/AnalyticsCenterClient")),
-  server: load(() => import("@/app/discord/server/ServerManagementClient")),
   automodnative: load(() => import("@/app/discord/automod-native/AutomodNativeClient")),
   calendar: load(() => import("@/app/discord/calendar/DiscordCalendarClient")),
   bot: load(() => import("@/app/discord/bot/BotControlClient").then((m) => function BotControlEmbed() {
@@ -62,6 +59,10 @@ const NATIVE: Record<string, ComponentType<{ guildId: string }>> = {
   events: native(() => import("./modules/ConsoleEvents")),
   streamers: native(() => import("./modules/ConsoleStreamers")),
   backups: native(() => import("./modules/ConsoleBackups")),
+  server: native(() => import("./modules/ConsoleServer")),
+  ai: native(() => import("./modules/ConsoleAi")),
+  // Le journal complet est un onglet de la page Logs de la console.
+  logs: native(() => import("./ConsoleLogs").then((m) => ({ default: ({ guildId }: { guildId: string }) => <m.default guildId={guildId} initialTab="journal" /> }))),
   // Les paramètres du bot sont regroupés dans la page Réglages de la console.
   settings: native(() => import("./ConsoleSettings")),
 };

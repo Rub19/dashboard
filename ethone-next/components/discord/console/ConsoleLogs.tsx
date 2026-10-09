@@ -7,7 +7,7 @@ import ChannelPicker from "../ChannelPicker";
 import { cleanLogText, sinceLabel } from "@/lib/discord/security-scan";
 import { SPRING_PILL } from "@/lib/ease";
 import { cn } from "@/lib/utils";
-import { ConsolePage, EmptyLine, Panel, useGuildApi } from "./kit";
+import { ConsolePage, EmptyLine, GhostButton, Panel, useGuildApi } from "./kit";
 
 type AuditEvent = {
   id: string;
@@ -19,6 +19,7 @@ type AuditEvent = {
   reason?: string;
   timestamp: string;
 };
+type Tab = "incidents" | "journal" | "channels";
 type LogConfig = { categoryChannels?: Record<string, string | null>; routing?: Record<string, string | null> };
 
 /** Catégories de journal du bot : celles où les protections écrivent, puis le journal du serveur. */
@@ -43,12 +44,30 @@ const SERVER_CATEGORIES = [
   { key: "SYSTEM", label: "Système" },
 ];
 const INCIDENT_MODULES = ["SECURITY", "AUTOMOD", "MODERATION"];
+const ALL_CATEGORIES = [...PROTECTION_CATEGORIES.filter((c) => c.key !== "RAID"), ...SERVER_CATEGORIES];
+const PERIODS: [string, string][] = [
+  ["24h", "24 h"],
+  ["7d", "7 jours"],
+  ["30d", "30 jours"],
+  ["all", "Tout"],
+];
+const SEVERITIES: [string, string][] = [
+  ["ALL", "Toutes gravités"],
+  ["CRITICAL", "Critique"],
+  ["HIGH", "Haute"],
+  ["MEDIUM", "Moyenne"],
+  ["LOW", "Basse"],
+  ["INFO", "Info"],
+];
+const PAGE = 50;
+const SELECT =
+  "h-8 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/70";
 const SEVERITY_COLOR: Record<string, string> = { CRITICAL: "var(--danger)", HIGH: "var(--danger)", MEDIUM: "var(--warning)", LOW: "var(--text-muted)", INFO: "var(--text-muted)" };
 
-/** Logs (format Keeper) : incidents des protections et salons de log par catégorie, lus et écrits sur le bot. */
-export default function ConsoleLogs({ guildId, initialTab = "incidents" }: { guildId: string; initialTab?: "incidents" | "channels" }) {
+/** Logs (format Keeper) : incidents des protections, journal complet du serveur et salons de log par catégorie. */
+export default function ConsoleLogs({ guildId, initialTab = "incidents" }: { guildId: string; initialTab?: Tab }) {
   const api = useGuildApi(guildId);
-  const [tab, setTab] = useState<"incidents" | "channels">(initialTab);
+  const [tab, setTab] = useState<Tab>(initialTab);
   const [events, setEvents] = useState<AuditEvent[] | null>(null);
   const [config, setConfig] = useState<LogConfig | null>(null);
   const [gap, setGap] = useState<string[]>([]);
@@ -96,6 +115,7 @@ export default function ConsoleLogs({ guildId, initialTab = "incidents" }: { gui
 
   const tabs = [
     { id: "incidents" as const, label: "Incidents" },
+    { id: "journal" as const, label: "Journal" },
     { id: "channels" as const, label: "Salons de log", count: gap.length || undefined },
   ];
 
@@ -122,7 +142,9 @@ export default function ConsoleLogs({ guildId, initialTab = "incidents" }: { gui
         </div>
       }
     >
-      {tab === "incidents" ? (
+      {tab === "journal" ? (
+        <Journal guildId={guildId} />
+      ) : tab === "incidents" ? (
         <Panel>
           {events === null ? (
             <EmptyLine>Chargement…</EmptyLine>
@@ -219,5 +241,114 @@ export default function ConsoleLogs({ guildId, initialTab = "incidents" }: { gui
         </div>
       )}
     </ConsolePage>
+  );
+}
+
+/** Journal complet : tous les événements enregistrés par le bot, filtrables, chargés par pages de 50. */
+function Journal({ guildId }: { guildId: string }) {
+  const api = useGuildApi(guildId);
+  const [module, setModule] = useState("ALL");
+  const [severity, setSeverity] = useState("ALL");
+  const [period, setPeriod] = useState("7d");
+  const [search, setSearch] = useState("");
+  const [rows, setRows] = useState<AuditEvent[] | null>(null);
+  const [total, setTotal] = useState(0);
+  const [loadingMore, setLoadingMore] = useState(false);
+
+  const query = useCallback(
+    (offset: number) =>
+      api<{ events: AuditEvent[]; total: number }>(
+        `/logs/events?module=${module}&severity=${severity}&period=${period}&limit=${PAGE}&offset=${offset}${search.trim() ? `&search=${encodeURIComponent(search.trim())}` : ""}`,
+        { silent: true }
+      ),
+    [api, module, severity, period, search]
+  );
+  useEffect(() => {
+    let cancelled = false;
+    setRows(null);
+    const t = window.setTimeout(() => {
+      query(0).then((r) => {
+        if (cancelled) return;
+        setRows(r?.events ?? []);
+        setTotal(r?.total ?? 0);
+      });
+    }, search ? 300 : 0);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(t);
+    };
+  }, [query, search]);
+  const more = async () => {
+    setLoadingMore(true);
+    const r = await query(rows?.length ?? 0);
+    setLoadingMore(false);
+    if (r) setRows((l) => [...(l ?? []), ...r.events]);
+  };
+  const label = (key: string) => ALL_CATEGORIES.find((c) => c.key === key)?.label ?? key;
+
+  return (
+    <Panel
+      title="Journal"
+      subtitle={rows ? `${total.toLocaleString("fr-FR")} événement${total > 1 ? "s" : ""}` : undefined}
+      actions={
+        <div className="flex flex-wrap items-center justify-end gap-1.5">
+          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Rechercher" aria-label="Rechercher dans le journal" className={`${SELECT} w-32`} />
+          <select value={module} onChange={(e) => setModule(e.target.value)} aria-label="Catégorie" className={SELECT}>
+            <option value="ALL">Toutes catégories</option>
+            {ALL_CATEGORIES.map((c) => (
+              <option key={c.key} value={c.key}>
+                {c.label}
+              </option>
+            ))}
+          </select>
+          <select value={severity} onChange={(e) => setSeverity(e.target.value)} aria-label="Gravité" className={SELECT}>
+            {SEVERITIES.map(([v, l]) => (
+              <option key={v} value={v}>
+                {l}
+              </option>
+            ))}
+          </select>
+          <select value={period} onChange={(e) => setPeriod(e.target.value)} aria-label="Période" className={SELECT}>
+            {PERIODS.map(([v, l]) => (
+              <option key={v} value={v}>
+                {l}
+              </option>
+            ))}
+          </select>
+        </div>
+      }
+    >
+      {!rows ? (
+        <EmptyLine>Chargement…</EmptyLine>
+      ) : rows.length === 0 ? (
+        <EmptyLine>Aucun événement pour ces filtres.</EmptyLine>
+      ) : (
+        <>
+          <ul>
+            {rows.map((e) => (
+              <li key={e.id} className="flex items-start gap-3 border-t border-[var(--panel-border)] px-5 py-2.5 first:border-t-0">
+                <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full" style={{ background: SEVERITY_COLOR[e.severity] ?? "var(--text-muted)" }} />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-[13px] text-[var(--text-primary)]">{cleanLogText(e.reason || e.type.replace(/_/g, " ").toLowerCase())}</p>
+                  <p className="truncate text-[11px] text-[var(--text-muted)]">
+                    {label(e.module)}
+                    {e.actor?.tag ? ` · par ${e.actor.tag}` : ""}
+                    {e.target?.tag || e.target?.name ? ` · ${e.target.tag || e.target.name}` : ""}
+                  </p>
+                </div>
+                <span className="shrink-0 text-[11px] text-[var(--text-muted)]">{sinceLabel(e.timestamp)}</span>
+              </li>
+            ))}
+          </ul>
+          {rows.length < total && (
+            <div className="flex justify-center border-t border-[var(--panel-border)] px-5 py-3">
+              <GhostButton disabled={loadingMore} onClick={more}>
+                {loadingMore ? "Chargement…" : `Afficher plus (${(total - rows.length).toLocaleString("fr-FR")} restants)`}
+              </GhostButton>
+            </div>
+          )}
+        </>
+      )}
+    </Panel>
   );
 }

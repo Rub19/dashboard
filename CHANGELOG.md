@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.62.0 — 2026-10-09
+
+**Console : Serveur, Assistant IA et Journal des logs au format Keeper**
+
+- Serveur : aperçu (membres, salons, rôles, boosts, score de sécurité expliqué, activité), salons (création, nom, sujet, mode lent, NSFW, places, suppression), rôles (création, nom, couleur, affichage séparé, mention, suppression), emojis (ajout, renommage, suppression, stickers), webhooks et paramètres Discord du serveur.
+- Assistant IA : mode général, salon dédié et modes par salon, personnalité (nom, humeur, consignes, curseurs), précision, images, mots interdits, mémoire, connaissances et essai en direct. Seuls les réglages appliqués par le bot sont affichés.
+- Logs : nouvel onglet Journal avec recherche, catégories, gravité, période et chargement progressif.
+- Correction : le nombre de membres en ligne n'est plus estimé (45 % des membres) quand le bot ne voit pas les présences.
+- Sécurité : les réglages IA et les règles de salon sont validés par le bot (modes connus, budget plafonné).
+
 ## v1.61.0 — 2026-10-09
 
 **Console : Réglages complets, Alertes streamers et Sauvegardes au format Keeper**

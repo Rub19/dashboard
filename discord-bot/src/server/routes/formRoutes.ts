@@ -214,13 +214,14 @@ export function createFormRouter(client: Client): Router {
   router.post('/:formId/responses/:responseId/review', async (req: Request, res: Response) => {
     const guildId = requireStringParam(req.params.guildId, 'guildId');
     const responseId = requireStringParam(req.params.responseId, 'responseId');
-    const { reviewerId, reviewerTag, status, decisionReason, noteContent } = req.body;
+    const { status, decisionReason, noteContent } = req.body;
 
+    // L'examinateur est la personne connectée au dashboard, jamais une valeur envoyée par le client.
     const result = await formService.reviewResponse({
       guildId,
       responseId,
-      reviewerId: reviewerId || 'staff-admin',
-      reviewerTag: reviewerTag || 'Staff Member',
+      reviewerId: req.user?.id ?? 'staff-admin',
+      reviewerTag: req.user ? req.user.globalName || req.user.username : 'Staff',
       status,
       decisionReason,
       noteContent,
@@ -236,7 +237,7 @@ export function createFormRouter(client: Client): Router {
   router.post('/:formId/responses/:responseId/notes', (req: Request, res: Response) => {
     const guildId = requireStringParam(req.params.guildId, 'guildId');
     const responseId = requireStringParam(req.params.responseId, 'responseId');
-    const { authorId, authorTag, content } = req.body;
+    const { content } = req.body;
 
     if (!content || !content.trim()) {
       return res.status(400).json({ success: false, error: 'Contenu de la note requis' });
@@ -245,8 +246,8 @@ export function createFormRouter(client: Client): Router {
     const updated = formService.addNote({
       guildId,
       responseId,
-      authorId: authorId || 'staff',
-      authorTag: authorTag || 'Staff',
+      authorId: req.user?.id ?? 'staff',
+      authorTag: req.user ? req.user.globalName || req.user.username : 'Staff',
       content,
     });
 

@@ -305,7 +305,6 @@ export interface FormOverviewStats {
   activeForms: number;
   totalResponses: number;
   pendingReviews: number;
-  averageCompletionRate: number;
   approvedCount: number;
   rejectedCount: number;
 }

@@ -162,14 +162,11 @@ export class FormRepository {
     const approvedCount = guildResponses.filter((r) => r.status === 'APPROVED').length;
     const rejectedCount = guildResponses.filter((r) => r.status === 'REJECTED').length;
 
-    const completionRate = guildResponses.length > 0 ? 94.2 : 0;
-
     return {
       totalForms: guildForms.length,
       activeForms,
       totalResponses: guildResponses.length,
       pendingReviews,
-      averageCompletionRate: completionRate,
       approvedCount,
       rejectedCount,
     };

@@ -9,6 +9,13 @@ import { DESTINATION_CHANNEL_TYPES } from '../../utils/channelSend.js';
 export function createGiveawayRouter(discordClient: Client) {
   const router = express.Router({ mergeParams: true });
 
+  // Chaque action vise un giveaway de CE serveur : sinon un admin pourrait agir sur le tirage d'un autre serveur.
+  const sameGuild = (req: Request, giveawayId: string, res: Response): boolean => {
+    if (giveawayStorage.getById(giveawayId)?.guildId === String(req.params.guildId)) return true;
+    res.status(404).json({ success: false, error: 'Tirage introuvable sur ce serveur.' });
+    return false;
+  };
+
   // 1. Vue d'ensemble
   router.get('/overview', async (req: Request, res: Response): Promise<void> => {
     const guildId = String(req.params.guildId);
@@ -99,6 +106,7 @@ export function createGiveawayRouter(discordClient: Client) {
   // 4. Terminer manuellement
   router.post('/:id/end', async (req: Request, res: Response): Promise<void> => {
     const giveawayId = String(req.params.id);
+    if (!sameGuild(req, giveawayId, res)) return;
     try {
       const winners = await giveawayService.endGiveawayManual(giveawayId, discordClient);
       res.json({ success: true, winners });
@@ -110,6 +118,7 @@ export function createGiveawayRouter(discordClient: Client) {
   // 5. Reroll
   router.post('/:id/reroll', async (req: Request, res: Response): Promise<void> => {
     const giveawayId = String(req.params.id);
+    if (!sameGuild(req, giveawayId, res)) return;
     const count = req.body.count ? parseInt(String(req.body.count), 10) : 1;
     try {
       const winners = await giveawayService.reroll(giveawayId, discordClient, count);
@@ -122,6 +131,7 @@ export function createGiveawayRouter(discordClient: Client) {
   // 6. Annuler
   router.post('/:id/cancel', async (req: Request, res: Response): Promise<void> => {
     const giveawayId = String(req.params.id);
+    if (!sameGuild(req, giveawayId, res)) return;
     try {
       const ok = await giveawayService.cancelGiveaway(giveawayId, discordClient);
       res.json({ success: ok });
@@ -133,6 +143,7 @@ export function createGiveawayRouter(discordClient: Client) {
   // 7. Prolonger
   router.post('/:id/extend', async (req: Request, res: Response): Promise<void> => {
     const giveawayId = String(req.params.id);
+    if (!sameGuild(req, giveawayId, res)) return;
     const minutes = req.body.minutes ? parseInt(String(req.body.minutes), 10) : 1440; // défaut 24h
     try {
       const ok = await giveawayService.extendGiveaway(giveawayId, minutes, discordClient);
@@ -145,6 +156,7 @@ export function createGiveawayRouter(discordClient: Client) {
   // 8. Participants
   router.get('/:id/participants', async (req: Request, res: Response): Promise<void> => {
     const giveawayId = String(req.params.id);
+    if (!sameGuild(req, giveawayId, res)) return;
     const gw = giveawayStorage.getById(giveawayId);
     if (!gw) {
       res.status(404).json({ error: 'Giveaway introuvable' });

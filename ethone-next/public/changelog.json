@@ -1,5 +1,16 @@
 [
   {
+    "version": "v1.55.99",
+    "date": "2026-10-09",
+    "title": "Console Discord : Niveaux, Giveaways et Musique refaits façon Keeper",
+    "items": [
+      "Niveaux : annonces avec aperçu, gain d'XP, XP en vocal, salons et rôles ignorés, récompenses par niveau, boosts d'XP, carte /rank avec aperçu réel, classements et top 10 avec ajustement d'XP.",
+      "Giveaways : lancement d'un tirage avec durée, gagnants, rôle à gagner et conditions (rôles requis ou exclus, âge du compte, niveau, réclamation), puis suivi des tirages en cours et relance des terminés.",
+      "Musique : lecteur en direct (lecture, pause, titre suivant ou précédent, volume, répétition, aléatoire), recherche et lancement d'un titre, file d'attente, réglages (DJ, 24 h/24, déconnexion) et statistiques.",
+      "Sécurité : les actions sur un giveaway (terminer, relancer, annuler, prolonger) vérifient désormais qu'il appartient bien au serveur ouvert."
+    ]
+  },
+  {
     "version": "v1.55.98",
     "date": "2026-10-09",
     "title": "Mail : redirections vers Gmail, iCloud et autres",
@@ -632,18 +643,6 @@
       "Grille KPI métrique Liquid Glass : synthèse en temps réel des actions globales, tâches terminées, minutes de concentration et habitudes du jour.",
       "Bandeau de filtrage par catégories : puces tactiles ergonomiques avec animations de ressort pour filtrer instantanément par type (Tous, Tâches, Notes, Focus, Habitudes, Événements).",
       "Recherche plein texte instantanée : filtrage interactif direct par titre ou détail d'activité avec gestion des états vides."
-    ]
-  },
-  {
-    "version": "v1.55.37",
-    "date": "2026-10-06",
-    "title": "Parité iOS Native : Hub d'Accueil Enrichi & Lecteur Soundscape Partagé",
-    "items": [
-      "Hub d'accueil iOS dynamisé (`HomeView`) : barre de raccourcis rapides Liquid Glass (Brain, Soundscape, Clip, Discord, Agenda, Espaces) avec retours haptiques et animations fluides.",
-      "Widget Soundscape temps réel : mini-lecteur partagé sur l'écran d'accueil avec forme d'onde animée réactive, affichage des fréquences Solfeggio / ondes actives et contrôle direct.",
-      "Agenda du jour : affichage des événements programmés pour aujourd'hui avec horodatages précis et accès 1-geste vers le calendrier complet.",
-      "Aperçu des notes récentes : cartes de lecture instantanée des dernières notes avec texte épuré et ouverture directe dans l'onglet Notes.",
-      "Intégration Discord optimisée : raccourcis directs vers le Lecteur Musical et le Classement Public avec sélection instantanée des serveurs connectés."
     ]
   }
 ]

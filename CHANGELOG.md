@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.99 — 2026-10-09
+
+**Console Discord : Niveaux, Giveaways et Musique refaits façon Keeper**
+
+- Niveaux : annonces avec aperçu, gain d'XP, XP en vocal, salons et rôles ignorés, récompenses par niveau, boosts d'XP, carte /rank avec aperçu réel, classements et top 10 avec ajustement d'XP.
+- Giveaways : lancement d'un tirage avec durée, gagnants, rôle à gagner et conditions (rôles requis ou exclus, âge du compte, niveau, réclamation), puis suivi des tirages en cours et relance des terminés.
+- Musique : lecteur en direct (lecture, pause, titre suivant ou précédent, volume, répétition, aléatoire), recherche et lancement d'un titre, file d'attente, réglages (DJ, 24 h/24, déconnexion) et statistiques.
+- Sécurité : les actions sur un giveaway (terminer, relancer, annuler, prolonger) vérifient désormais qu'il appartient bien au serveur ouvert.
+
 ## v1.55.98 — 2026-10-09
 
 **Mail : redirections vers Gmail, iCloud et autres**

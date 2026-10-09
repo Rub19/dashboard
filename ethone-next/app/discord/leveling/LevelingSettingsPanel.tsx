@@ -57,14 +57,14 @@ export const RANK_CARD_DEFAULTS: RankCardStyle = {
   font: "poppins",
 };
 
-const HEX = /^#[0-9a-fA-F]{6}$/;
-const FONTS: Array<[RankCardStyle["font"], string]> = [
+export const HEX = /^#[0-9a-fA-F]{6}$/;
+export const FONTS: Array<[RankCardStyle["font"], string]> = [
   ["poppins", "Poppins"],
   ["bebas", "Bebas (condensée)"],
   ["serif", "Serif"],
   ["mono", "Mono"],
 ];
-const SHAPES: Array<[RankCardStyle["avatarShape"], string]> = [
+export const SHAPES: Array<[RankCardStyle["avatarShape"], string]> = [
   ["circle", "Rond"],
   ["rounded", "Arrondi"],
   ["square", "Carré"],
@@ -82,7 +82,7 @@ function ColorField({ label, value, fallback, onChange }: { label: string; value
 }
 
 /** Vraie carte /rank générée par le bot (tes stats sur ce serveur), 500 ms après le dernier changement. */
-function RankCardPreview({ url, accentColor, rankCard }: { url: string; accentColor: string; rankCard: RankCardStyle }) {
+export function RankCardPreview({ url, accentColor, rankCard }: { url: string; accentColor: string; rankCard: RankCardStyle }) {
   const [src, setSrc] = useState<string | null>(null);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -129,29 +129,29 @@ function RankCardPreview({ url, accentColor, rankCard }: { url: string; accentCo
   );
 }
 
-const LEVELUP_TYPES: Array<[LevelingSettings["levelUpChannelType"], string]> = [
+export const LEVELUP_TYPES: Array<[LevelingSettings["levelUpChannelType"], string]> = [
   ["same_channel", "Dans le salon du message"],
   ["specific_channel", "Dans un salon précis"],
   ["dm", "En message privé"],
   ["disabled", "Aucune annonce"],
 ];
-const REWARD_TYPES: Array<[LevelingSettings["rewardAnnounceType"], string]> = [
+export const REWARD_TYPES: Array<[LevelingSettings["rewardAnnounceType"], string]> = [
   ["with_levelup", "Ajoutée au message de niveau"],
   ["same_channel", "Message séparé, dans le salon du message"],
   ["specific_channel", "Message séparé, dans un salon précis"],
   ["dm", "Message séparé, en message privé"],
   ["disabled", "Aucune annonce"],
 ];
-const VARS = ["{user}", "{username}", "{level}", "{xp}", "{server}"];
-const REWARD_VARS = ["{user}", "{username}", "{role}", "{level}", "{server}"];
+export const VARS = ["{user}", "{username}", "{level}", "{xp}", "{server}"];
+export const REWARD_VARS = ["{user}", "{username}", "{role}", "{level}", "{server}"];
 
-const fill = (tpl: string, extra: Record<string, string> = {}) => {
+export const fill = (tpl: string, extra: Record<string, string> = {}) => {
   const vars: Record<string, string> = { "{user}": "@Lucas", "{username}": "Lucas", "{level}": "12", "{xp}": "1 450", "{server}": "Mon serveur", "{role}": "Actif", ...extra };
   return Object.entries(vars).reduce((acc, [k, v]) => acc.split(k).join(v), tpl);
 };
 
 /** Aperçu de l'embed tel qu'il apparaît sur Discord. */
-function EmbedPreview({ color, title, text }: { color: string; title?: string; text: string }) {
+export function EmbedPreview({ color, title, text }: { color: string; title?: string; text: string }) {
   return (
     <div className="rounded-lg border-l-4 bg-[#2b2d31] p-3 text-sm text-[#dbdee1]" style={{ borderColor: color }}>
       {title && <p className="mb-1 font-bold text-[var(--text-primary)]">{title}</p>}

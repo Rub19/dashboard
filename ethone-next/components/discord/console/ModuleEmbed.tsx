@@ -19,13 +19,10 @@ const PAGES: Record<string, ComponentType> = {
   overview: load(() => import("@/app/discord/overview/OverviewClient")),
   commands: load(() => import("@/app/discord/commands/CommandsCenterClient")),
   suggestions: load(() => import("@/app/discord/suggestions/SuggestionsCenterClient")),
-  leveling: load(() => import("@/app/discord/leveling/LevelingCenterClient")),
-  giveaways: load(() => import("@/app/discord/giveaways/GiveawaysCenterClient")),
   tickets: load(() => import("@/app/discord/tickets/TicketCenterClient").then((m) => m.TicketCenterClient)),
   welcome: load(() => import("@/app/discord/welcome/WelcomeCenterClient").then((m) => m.WelcomeCenterClient)),
   moderation: load(() => import("@/app/discord/moderation/page")),
   logs: load(() => import("@/app/discord/logs/AuditCenterClient").then((m) => m.AuditCenterClient)),
-  music: load(() => import("@/app/discord/music/MusicCenterClient")),
   invites: load(() => import("@/app/discord/invites/InvitesCenterClient")),
   voice: load(() => import("@/app/discord/voice/VoiceCenterClient")),
   backups: load(() => import("@/app/discord/backups/BackupsCenterClient")),
@@ -63,6 +60,9 @@ const native = (loader: () => Promise<{ default: ComponentType<{ guildId: string
 const NATIVE: Record<string, ComponentType<{ guildId: string }>> = {
   economy: native(() => import("./modules/ConsoleEconomy")),
   games: native(() => import("./modules/ConsoleGames")),
+  leveling: native(() => import("./modules/ConsoleLeveling")),
+  giveaways: native(() => import("./modules/ConsoleGiveaways")),
+  music: native(() => import("./modules/ConsoleMusic")),
 };
 
 export const hasEmbeddedPage = (moduleId: string) => moduleId in PAGES || moduleId in NATIVE;

@@ -48307,5 +48307,58 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_98_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_98_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_98_de);
 
+const v1_55_99_fr: ChangelogEntry = {
+  version: "v1.55.99",
+  date: "2026-10-09",
+  title: "Console Discord : Niveaux, Giveaways et Musique refaits façon Keeper",
+  items: [
+    "Niveaux : annonces avec aperçu, gain d'XP, XP en vocal, salons et rôles ignorés, récompenses par niveau, boosts d'XP, carte /rank avec aperçu réel, classements et top 10 avec ajustement d'XP.",
+    "Giveaways : lancement d'un tirage avec durée, gagnants, rôle à gagner et conditions (rôles requis ou exclus, âge du compte, niveau, réclamation), puis suivi des tirages en cours et relance des terminés.",
+    "Musique : lecteur en direct (lecture, pause, titre suivant ou précédent, volume, répétition, aléatoire), recherche et lancement d'un titre, file d'attente, réglages (DJ, 24 h/24, déconnexion) et statistiques.",
+    "Sécurité : les actions sur un giveaway (terminer, relancer, annuler, prolonger) vérifient désormais qu'il appartient bien au serveur ouvert.",
+  ],
+};
+
+const v1_55_99_en: ChangelogEntry = {
+  version: "v1.55.99",
+  date: "2026-10-09",
+  title: "Discord console: Levels, Giveaways and Music rebuilt Keeper-style",
+  items: [
+    "Levels: announcements with preview, XP gain, voice XP, ignored channels and roles, level rewards, XP boosts, /rank card with live preview, leaderboards and a top 10 with XP adjustment.",
+    "Giveaways: start a draw with duration, winners, reward role and requirements (required or excluded roles, account age, level, claim), then follow running draws and reroll finished ones.",
+    "Music: live player (play, pause, next or previous, volume, repeat, shuffle), search and play, queue, settings (DJ, 24/7, disconnect) and statistics.",
+    "Security: giveaway actions (end, reroll, cancel, extend) now check that the giveaway belongs to the open server.",
+  ],
+};
+
+const v1_55_99_es: ChangelogEntry = {
+  version: "v1.55.99",
+  date: "2026-10-09",
+  title: "Consola Discord: Niveles, Sorteos y Música rehechos al estilo Keeper",
+  items: [
+    "Niveles: anuncios con vista previa, ganancia de XP, XP en voz, canales y roles ignorados, recompensas por nivel, boosts de XP, tarjeta /rank con vista previa real, clasificaciones y top 10 con ajuste de XP.",
+    "Sorteos: lanza un sorteo con duración, ganadores, rol de premio y condiciones (roles requeridos o excluidos, antigüedad de la cuenta, nivel, reclamación), sigue los activos y repite los terminados.",
+    "Música: reproductor en directo (reproducir, pausa, siguiente o anterior, volumen, repetición, aleatorio), búsqueda, cola, ajustes (DJ, 24/7, desconexión) y estadísticas.",
+    "Seguridad: las acciones sobre un sorteo (terminar, repetir, cancelar, prolongar) comprueban que pertenece al servidor abierto.",
+  ],
+};
+
+const v1_55_99_de: ChangelogEntry = {
+  version: "v1.55.99",
+  date: "2026-10-09",
+  title: "Discord-Konsole: Level, Giveaways und Musik im Keeper-Stil neu gebaut",
+  items: [
+    "Level: Ankündigungen mit Vorschau, XP-Gewinn, Sprach-XP, ignorierte Kanäle und Rollen, Level-Belohnungen, XP-Boosts, /rank-Karte mit Live-Vorschau, Ranglisten und Top 10 mit XP-Anpassung.",
+    "Giveaways: Verlosung mit Dauer, Gewinnern, Belohnungsrolle und Bedingungen (benötigte oder ausgeschlossene Rollen, Kontoalter, Level, Abholung) starten, laufende verfolgen und beendete neu auslosen.",
+    "Musik: Live-Player (Abspielen, Pause, nächster oder vorheriger Titel, Lautstärke, Wiederholung, Zufall), Suche, Warteschlange, Einstellungen (DJ, 24/7, Trennen) und Statistiken.",
+    "Sicherheit: Giveaway-Aktionen (beenden, neu auslosen, abbrechen, verlängern) prüfen jetzt, dass das Giveaway zum geöffneten Server gehört.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_99_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_99_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_99_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_99_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

@@ -49206,5 +49206,62 @@ CHANGELOG_BY_LANG.en.unshift(v1_65_1_en);
 CHANGELOG_BY_LANG.es.unshift(v1_65_1_es);
 CHANGELOG_BY_LANG.de.unshift(v1_65_1_de);
 
+const v1_66_0_fr: ChangelogEntry = {
+  version: "v1.66.0",
+  date: "2026-10-10",
+  title: "Logs des protections et compteur",
+  items: [
+    "Logs : les incidents des protections (salon supprimé, spam, ghost ping…) apparaissent enfin dans l'onglet Incidents, avec l'auteur et la réaction d'Etho.",
+    "Barre latérale : compteur « Protections actives / total », mis à jour dès qu'une protection est activée ou coupée.",
+    "Whitelist : libellés alignés sur les protections (fini « anti-nuke »).",
+    "Anti-renommage de salon : le bon motif apparaît dans le journal d'audit Discord.",
+    "Sécurité : dépendances mises à jour (Express, Wrangler, Jest 30).",
+  ],
+};
+
+const v1_66_0_en: ChangelogEntry = {
+  version: "v1.66.0",
+  date: "2026-10-10",
+  title: "Protection logs and counter",
+  items: [
+    "Logs: protection incidents (deleted channel, spam, ghost ping…) now show in the Incidents tab, with the author and Etho's response.",
+    "Sidebar: \"active protections / total\" counter, updated as soon as a protection is turned on or off.",
+    "Whitelist: labels aligned with protections (no more \"anti-nuke\").",
+    "Channel anti-rename: the right reason now shows in the Discord audit log.",
+    "Security: dependencies updated (Express, Wrangler, Jest 30).",
+  ],
+};
+
+const v1_66_0_es: ChangelogEntry = {
+  version: "v1.66.0",
+  date: "2026-10-10",
+  title: "Registros de protecciones y contador",
+  items: [
+    "Registros: los incidentes de las protecciones (canal eliminado, spam, ghost ping…) aparecen en la pestaña Incidentes, con el autor y la reacción de Etho.",
+    "Barra lateral: contador «protecciones activas / total», actualizado al activar o desactivar una protección.",
+    "Lista blanca: textos alineados con las protecciones (adiós a «anti-nuke»).",
+    "Anti-renombrado de canal: el motivo correcto aparece en el registro de auditoría de Discord.",
+    "Seguridad: dependencias actualizadas (Express, Wrangler, Jest 30).",
+  ],
+};
+
+const v1_66_0_de: ChangelogEntry = {
+  version: "v1.66.0",
+  date: "2026-10-10",
+  title: "Schutz-Logs und Zähler",
+  items: [
+    "Logs: Schutz-Vorfälle (gelöschter Kanal, Spam, Ghost Ping…) erscheinen jetzt im Tab Vorfälle, mit Verursacher und Reaktion von Etho.",
+    "Seitenleiste: Zähler „aktive Schutzfunktionen / gesamt“, sofort aktualisiert beim Ein- oder Ausschalten.",
+    "Whitelist: Bezeichnungen an die Schutzfunktionen angepasst (kein „Anti-Nuke“ mehr).",
+    "Kanal-Umbenennungsschutz: Der richtige Grund steht jetzt im Discord-Audit-Log.",
+    "Sicherheit: Abhängigkeiten aktualisiert (Express, Wrangler, Jest 30).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_66_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_66_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_66_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_66_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

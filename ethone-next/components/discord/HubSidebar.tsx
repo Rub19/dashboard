@@ -171,6 +171,28 @@ export default function HubSidebar({
     };
   }, [selectedGuildId]);
 
+  // Compteur « Protections actives / total » (comme Keeper), rechargé quand une protection est activée ou coupée.
+  const [protCount, setProtCount] = useState<{ on: number; total: number } | null>(null);
+  useEffect(() => {
+    const api = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
+    if (!api || !selectedGuildId) return;
+    let cancelled = false;
+    const load = () =>
+      fetch(`${api}/api/guilds/${selectedGuildId}/protections`, { credentials: "include" })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => {
+          if (cancelled || !d?.settings) return;
+          const all = Object.values(d.settings as Record<string, { enabled?: boolean }>);
+          setProtCount({ on: all.filter((s) => s.enabled).length, total: all.length });
+        })
+        .catch(() => {});
+    void load();
+    window.addEventListener("etho:protections-changed", load);
+    return () => {
+      cancelled = true;
+      window.removeEventListener("etho:protections-changed", load);
+    };
+  }, [selectedGuildId]);
 
   const handleLogout = useCallback(async () => {
     try {
@@ -305,6 +327,11 @@ export default function HubSidebar({
               >
                 <LShield strokeWidth={1.75} className="h-3.5 w-3.5 shrink-0" />
                 <span>{i18n("dProtections", "Protections")}</span>
+                {protCount && (
+                  <span className={cn("ml-auto font-mono text-[10px] tabular-nums", protCount.on ? "text-emerald-400" : "text-[var(--text-muted)]")}>
+                    {protCount.on}/{protCount.total}
+                  </span>
+                )}
               </button>
 
               <button

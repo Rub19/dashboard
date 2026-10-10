@@ -13,8 +13,8 @@ type Scope = "global" | "anti-raid" | "anti-nuke";
 type Data = { global: Entry[]; perProtection: Array<{ protection: Scope; label: string; entries: Entry[] }> };
 
 /**
- * Whitelist (format Keeper). « Globale » = jamais sanctionné par l'anti-raid ni l'anti-nuke ; « Par protection » =
- * exempté d'une seule des deux. Les entrées sont lues et écrites dans les listes de confiance du bot.
+ * Whitelist (format Keeper). « Globale » = ignoré par les protections et par l'anti-raid ; « Par protection » =
+ * exempté d'un seul des deux (la liste « anti-nuke » du bot est celle que lisent les protections). Les entrées sont lues et écrites dans les listes de confiance du bot.
  */
 export default function ConsoleWhitelist({ guildId }: { guildId: string }) {
   const api = useGuildApi(guildId);
@@ -88,10 +88,10 @@ export default function ConsoleWhitelist({ guildId }: { guildId: string }) {
 
   return (
     <ConsolePage title="Whitelist">
-      <Panel title="Whitelist globale" subtitle="Jamais sanctionnés par l'anti-raid ni par l'anti-nuke." actions={adders("global")}>
+      <Panel title="Whitelist globale" subtitle="Ignorés par les protections et par l'anti-raid (arrivées en masse)." actions={adders("global")}>
         {!data ? <EmptyLine>Chargement…</EmptyLine> : list(data.global, "global", "Personne pour l'instant. Ajoute tes bots de confiance pour qu'ils ne soient jamais sanctionnés.")}
       </Panel>
-      <Panel title="Par protection" subtitle="Exemptés d'une seule protection.">
+      <Panel title="Par protection" subtitle="Exemptés d'une seule des deux listes. Une protection peut aussi avoir sa propre whitelist (page Protections).">
         {!data ? (
           <EmptyLine>Chargement…</EmptyLine>
         ) : (
@@ -101,7 +101,7 @@ export default function ConsoleWhitelist({ guildId }: { guildId: string }) {
                 <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">{p.label}</span>
                 {adders(p.protection)}
               </div>
-              {list(p.entries, p.protection, `Aucune exemption propre à l'${p.label.toLowerCase()}.`)}
+              {list(p.entries, p.protection, `Aucune exemption propre à : ${p.label}.`)}
             </div>
           ))
         )}

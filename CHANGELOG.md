@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.66.0 — 2026-10-10
+
+**Logs des protections et compteur**
+
+- Logs : les incidents des protections (salon supprimé, spam, ghost ping…) apparaissent enfin dans l'onglet Incidents, avec l'auteur et la réaction d'Etho.
+- Barre latérale : compteur « Protections actives / total », mis à jour dès qu'une protection est activée ou coupée.
+- Whitelist : libellés alignés sur les protections (fini « anti-nuke »).
+- Anti-renommage de salon : le bon motif apparaît dans le journal d'audit Discord.
+- Sécurité : dépendances mises à jour (Express, Wrangler, Jest 30).
+
 ## v1.65.1 — 2026-10-10
 
 **Protections testées et règles AutoMod vérifiées**

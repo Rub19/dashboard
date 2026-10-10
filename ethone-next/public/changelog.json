@@ -1,5 +1,17 @@
 [
   {
+    "version": "v1.66.0",
+    "date": "2026-10-10",
+    "title": "Logs des protections et compteur",
+    "items": [
+      "Logs : les incidents des protections (salon supprimé, spam, ghost ping…) apparaissent enfin dans l'onglet Incidents, avec l'auteur et la réaction d'Etho.",
+      "Barre latérale : compteur « Protections actives / total », mis à jour dès qu'une protection est activée ou coupée.",
+      "Whitelist : libellés alignés sur les protections (fini « anti-nuke »).",
+      "Anti-renommage de salon : le bon motif apparaît dans le journal d'audit Discord.",
+      "Sécurité : dépendances mises à jour (Express, Wrangler, Jest 30)."
+    ]
+  },
+  {
     "version": "v1.65.1",
     "date": "2026-10-10",
     "title": "Protections testées et règles AutoMod vérifiées",
@@ -632,17 +644,6 @@
       "Mécanisme multi-candidats avec basculement automatique sur l'URL de secours",
       "Affichage immédiat et stable de la photo de profil Discord dans la console",
       "Garantie de continuité visuelle sans disparition du badge utilisateur"
-    ]
-  },
-  {
-    "version": "v1.55.56",
-    "date": "2026-10-07",
-    "title": "Barre Latérale Pleine Hauteur : Affichage Continu Jusqu'au Bas de l'Écran",
-    "items": [
-      "Suppression du décrochage de 64px (4rem) sous la barre latérale sur l'ensemble des vues de la console",
-      "Extension pleine hauteur de l'aside de 0 à 100% de la fenêtre d'affichage (distance au bas nulle)",
-      "Conteneur de défilement indépendant pour la grille de serveurs garantissant la fixité de la barre latérale",
-      "Rendu robuste de l'avatar Discord avec pastille d'initiales en solution de repli immédiate"
     ]
   }
 ]

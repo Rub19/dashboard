@@ -17,14 +17,17 @@ type AuditEvent = {
   actor?: { id: string; tag?: string };
   target?: { id: string; name?: string; tag?: string };
   reason?: string;
+  /** Réaction d'Etho (incidents des protections). */
+  action?: string;
   timestamp: string;
 };
+type ProtectionIncident = { id: string; type: string; severity: string; title: string; description: string; perpetratorId?: string; perpetratorTag?: string; actionTaken?: string; timestamp: string };
 type Tab = "incidents" | "journal" | "channels";
 type LogConfig = { categoryChannels?: Record<string, string | null>; routing?: Record<string, string | null> };
 
 /** Catégories de journal du bot : celles où les protections écrivent, puis le journal du serveur. */
 const PROTECTION_CATEGORIES = [
-  { key: "MODERATION", label: "Modération et protections", hint: "Anti-raid, anti-nuke, AutoMod et sanctions" },
+  { key: "MODERATION", label: "Modération et protections", hint: "Protections, anti-raid, AutoMod et sanctions" },
   { key: "SECURITY", label: "Sécurité" },
   { key: "RAID", label: "Détection de raid" },
   { key: "AUTOMOD", label: "AutoMod" },
@@ -85,9 +88,26 @@ export default function ConsoleLogs({ guildId, initialTab = "incidents" }: { gui
   useEffect(() => {
     void loadConfig();
     let cancelled = false;
-    Promise.all(INCIDENT_MODULES.map((m) => api<{ events: AuditEvent[] }>(`/logs/events?module=${m}&limit=40`, { silent: true }))).then((lists) => {
+    // Les protections écrivent leurs incidents à part (/security/incidents) : on les fusionne avec le journal des modules.
+    Promise.all([
+      api<{ incidents: ProtectionIncident[] }>("/security/incidents", { silent: true }),
+      ...INCIDENT_MODULES.map((m) => api<{ events: AuditEvent[] }>(`/logs/events?module=${m}&limit=40`, { silent: true })),
+    ]).then(([sec, ...lists]) => {
       if (cancelled) return;
-      const all = lists.flatMap((l) => l?.events ?? []).filter((e) => e.module !== "MODERATION" || /SANCTION|RAID|NUKE|AUTOMOD/.test(e.type));
+      const fromProtections: AuditEvent[] = ((sec as { incidents?: ProtectionIncident[] } | null)?.incidents ?? []).map((i) => {
+        const detail = i.perpetratorTag && i.description.startsWith(`${i.perpetratorTag} · `) ? i.description.slice(i.perpetratorTag.length + 3) : i.description;
+        return {
+          id: `protection-${i.id}`,
+          module: "PROTECTION",
+          type: i.type,
+          severity: i.severity.toUpperCase(),
+          actor: i.perpetratorId ? { id: i.perpetratorId, tag: i.perpetratorTag } : undefined,
+          reason: `${i.title} : ${detail}`,
+          action: i.actionTaken || undefined,
+          timestamp: i.timestamp,
+        };
+      });
+      const all = [...fromProtections, ...(lists as ({ events: AuditEvent[] } | null)[]).flatMap((l) => l?.events ?? []).filter((e) => e.module !== "MODERATION" || /SANCTION|RAID|NUKE|AUTOMOD/.test(e.type))];
       all.sort((a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp));
       setEvents(all.slice(0, 60));
     });
@@ -166,6 +186,7 @@ export default function ConsoleLogs({ guildId, initialTab = "incidents" }: { gui
                     <p className="truncate text-[11px] text-[var(--text-muted)]">
                       {e.actor?.tag ? `Par ${e.actor.tag}` : "Par Etho"}
                       {e.target?.tag || e.target?.name ? ` · Cible : ${e.target.tag || e.target.name}` : ""}
+                      {e.action ? ` · ${e.action}` : ""}
                     </p>
                   </div>
                   <span className="shrink-0 text-[11px] text-[var(--text-muted)]">{sinceLabel(e.timestamp)}</span>

@@ -1,4 +1,4 @@
-# ETHONE — passation (2026-10-10, version 1.65.1)
+# ETHONE — passation (2026-10-10, version 1.66.0)
 
 ## Projet
 - `ethone-next/` : site Next.js statique (ethone.dev, Cloudflare Pages, déploiement auto au push sur `main`).
@@ -57,13 +57,12 @@
 ## Reste à faire
 1. **Vérifier la 1.57.0 en production** : le commit/push et le déploiement du bot n'ont peut-être pas été faits (voir `git status` et `git log`). Si besoin : lancer les vérifs, committer, pousser, déployer le bot (sauvegarde avant).
 2. **Protections testées (2026-10-10)** : `tests/test_protections_scenarios_v1.ts` (11 scénarios : salon/rôle supprimés recréés, bot banni, webhook supprimé, rafale de bans annulée, lien, spam, ghost ping, anti-alt, verrouillage + levée). En vrai : Rollback OK (capture visible dans Sauvegardes). Impossible de tester depuis le compte de l'utilisateur : propriétaire du serveur et du bot toujours ignorés. Sur le serveur de test, **Keeper supprime les règles AutoMod d'Etho** (anti-AutoMod de Keeper) : Etho le signale maintenant (`confirmRuleKept`). **Test réel avec un 2e compte (Lynn, rôle Mod, 2026-10-10)** : création/suppression de salon, création/suppression de rôle, webhook, lien, spam → tous réparés en 0–2 s par Etho (journal d'audit), sanction « derank » appliquée. Keeper a été retiré du serveur de test ; le rôle « Ethone Bot » doit être tout en haut. 2e série : @everyone supprimé, ghost ping signalé dans le salon, renommage de salon annulé, verrouillage puis levée (5 rôles, permissions revenues à l'identique). Réglages des protections remis à l'identique après le test.
-3. **Vérifier la page Protections dans Chrome** (lecture seule) : chargement, filtres, recherche, sélection `?p=`, « Préparer les réglages », animations, affichage mobile.
+3. **Page Protections vérifiée dans Chrome (1.66.0)** : chargement, recherche, sélection `?p=`, « Préparer les réglages », aucune erreur console ; mobile vérifié dans le code (liste max-h-80 au-dessus du détail).
 4. Points connus à améliorer :
    - Anti-réorganisation : Discord ne journalise pas l'auteur → remise en place sans sanction.
    - Anti-toxicité : lexique local simple (pas d'IA) ; anti-token grab : texte et liens seulement (pas d'analyse d'image).
-   - La page « Logs de protection » de la console doit afficher les incidents de type `PROTECTION` (vérifier le libellé).
-   - Le HubSidebar pourrait afficher le compteur « Protections X/45 » comme Keeper.
-   - La page Whitelist parle encore de « anti-raid / anti-nuke » : à aligner sur les protections.
+   - Fait en 1.66.0 : l'onglet Incidents de Logs fusionne `/security/incidents` (incidents `PROTECTION`) ; compteur « Protections X/45 » dans le HubSidebar (événement `etho:protections-changed`) ; Whitelist : la liste « anti-nuke » du bot (celle que lisent les protections) s'affiche « Protections ».
+   - Ménage possible : les anciennes pages `app/discord/*` remplacées par la console ne sont plus liées.
 5. **Mail** : corrigé le 2026-10-09 (liste > 64 Ko = 502 ; objets =?UTF-8?…?= décodés via postal-mime). La redirection marche ; le mail reçu le 2026-10-09 à 11:40 est bien dans la boîte ETHONE (non lu) et copié sur Gmail. Si l'utilisateur ne le voit pas dans ETHONE, regarder le rafraîchissement de la liste et les notifications temps réel de `app/mail/page.tsx`.
 6. **Modules** : tous au format Keeper (1.63.0). Éditeurs avancés aussi dans la console (1.64.0-1.65.0) : restauration guidée, AutoMod Discord, commandes personnalisées (`CustomCommandEditor.tsx`), formulaires (`FormEditor.tsx`, 5 questions texte max = fenêtre Discord), sondages avancés (`AdvancedPollForm.tsx`), participants d'événements (`EventDetails.tsx`). Les anciennes pages existent encore mais ne sont plus liées.
 7. Commandes : `/help` est à jour (catégorie Sécurité = `/protection`, `/antiraid`, `/automod`, `/verification`, `/logs`). Les réponses en texte brut de `/games` et `/bienvenue` sont passées en embeds ; `/tag` reste en texte (contenu du tag).

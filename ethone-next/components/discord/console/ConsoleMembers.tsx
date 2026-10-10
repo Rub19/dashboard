@@ -85,7 +85,7 @@ export default function ConsoleMembers({ guildId }: { guildId: string }) {
                         : "Son rôle le plus haut est au-dessus d'Etho : Etho ne peut pas le sanctionner."}
                   </p>
                   <p className="text-[var(--text-muted)]">
-                    Whitelist : {inspected.whitelisted.antiRaid || inspected.whitelisted.antiNuke ? [inspected.whitelisted.antiRaid && "anti-raid", inspected.whitelisted.antiNuke && "anti-nuke"].filter(Boolean).join(", ") : "non"}
+                    Whitelist : {inspected.whitelisted.antiRaid || inspected.whitelisted.antiNuke ? [inspected.whitelisted.antiRaid && "anti-raid", inspected.whitelisted.antiNuke && "protections"].filter(Boolean).join(", ") : "non"}
                     {inspected.blacklisted && " · blacklisté"}
                   </p>
                   <p className="text-[var(--text-muted)]">

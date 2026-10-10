@@ -388,8 +388,8 @@ export function createConsoleRouter(client: Client): Router {
       res.json({
         global: [...(await out(both('user'), 'user')), ...(await out(both('role'), 'role'))],
         perProtection: [
-          { protection: 'anti-raid', label: 'Anti-raid', entries: [...(await out(only(l.raid.user, l.nuke.user), 'user')), ...(await out(only(l.raid.role, l.nuke.role), 'role'))] },
-          { protection: 'anti-nuke', label: 'Anti-nuke', entries: [...(await out(only(l.nuke.user, l.raid.user), 'user')), ...(await out(only(l.nuke.role, l.raid.role), 'role'))] },
+          { protection: 'anti-raid', label: 'Anti-raid (arrivées en masse)', entries: [...(await out(only(l.raid.user, l.nuke.user), 'user')), ...(await out(only(l.raid.role, l.nuke.role), 'role'))] },
+          { protection: 'anti-nuke', label: 'Protections', entries: [...(await out(only(l.nuke.user, l.raid.user), 'user')), ...(await out(only(l.nuke.role, l.raid.role), 'role'))] },
         ],
       });
     } catch (err) {

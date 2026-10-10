@@ -410,6 +410,8 @@ export default function ConsoleProtections({ guildId, onOpenSetup }: { guildId: 
     const r = await api<{ settings: Settings; warning: string | null }>(`/protections/${key}`, { method: "PATCH", json: patch });
     if (r) {
       setData((d) => (d ? { ...d, settings: { ...d.settings, [key]: r.settings } } : d));
+      // Compteur « Protections X/45 » de la barre latérale.
+      if ("enabled" in patch) window.dispatchEvent(new Event("etho:protections-changed"));
       if (r.warning) toastError("AutoMod", r.warning);
     } else void load();
   };

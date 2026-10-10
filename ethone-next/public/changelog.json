@@ -1,5 +1,14 @@
 [
   {
+    "version": "v1.64.0",
+    "date": "2026-10-10",
+    "title": "Console : restauration de sauvegarde et éditeur AutoMod Discord au format Keeper",
+    "items": [
+      "Sauvegardes : restauration guidée directement dans la console. Choix des éléments (rôles, catégories, salons, permissions, réglages d'Etho), mode « Ajouter et mettre à jour » ou « Remettre à l'identique », plan détaillé recalculé à chaque choix, confirmation par le nom du serveur pour le mode destructif, puis suivi en direct (progression, erreurs, journal).",
+      "AutoMod Discord : création et modification des règles dans la console. Type (avec les limites Discord), mots-clés, expressions régulières, mots autorisés, listes prédéfinies, limite de mentions, actions (bloquer avec message, alerter, exclure temporairement, bloquer le membre) et exceptions."
+    ]
+  },
+  {
     "version": "v1.63.0",
     "date": "2026-10-09",
     "title": "Console : toutes les pages au format Keeper, sécurité renforcée",
@@ -634,18 +643,6 @@
       "Bouton de sélection de langue rapide avec drapeau interactif (FR / EN)",
       "Bouton de déconnexion fonctionnel avec redirection sécurisée vers la page de connexion",
       "Alignement parfait entre le sélecteur de serveurs, l'onboarding et le tableau de bord de configuration"
-    ]
-  },
-  {
-    "version": "v1.55.51",
-    "date": "2026-10-07",
-    "title": "Design System Épuré Etho, Blocs Rectangulaires & Parité Thème",
-    "items": [
-      "Interface d'onboarding et de sélection de serveurs harmonisée aux tokens de thème dynamique ETHONE",
-      "Remplacement des arrondis par des blocs rectangulaires et carrés nets sans fioritures",
-      "Affichage de la photo de profil du compte ETHONE dans la barre latérale",
-      "Bouton fixe Retour à ETHONE en bas à droite pour une navigation fluide",
-      "Nettoyage des mentions superflues et intégration du bouton Passer l'attente"
     ]
   }
 ]

@@ -49059,5 +49059,50 @@ CHANGELOG_BY_LANG.en.unshift(v1_63_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_63_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_63_0_de);
 
+const v1_64_0_fr: ChangelogEntry = {
+  version: "v1.64.0",
+  date: "2026-10-10",
+  title: "Console : restauration de sauvegarde et éditeur AutoMod Discord au format Keeper",
+  items: [
+    "Sauvegardes : restauration guidée directement dans la console. Choix des éléments (rôles, catégories, salons, permissions, réglages d'Etho), mode « Ajouter et mettre à jour » ou « Remettre à l'identique », plan détaillé recalculé à chaque choix, confirmation par le nom du serveur pour le mode destructif, puis suivi en direct (progression, erreurs, journal).",
+    "AutoMod Discord : création et modification des règles dans la console. Type (avec les limites Discord), mots-clés, expressions régulières, mots autorisés, listes prédéfinies, limite de mentions, actions (bloquer avec message, alerter, exclure temporairement, bloquer le membre) et exceptions.",
+  ],
+};
+
+const v1_64_0_en: ChangelogEntry = {
+  version: "v1.64.0",
+  date: "2026-10-10",
+  title: "Console: backup restore and Discord AutoMod editor in the Keeper layout",
+  items: [
+    "Backups: guided restore in the console with component choice, add/update or exact restore, detailed plan, server-name confirmation for destructive restores, and live progress.",
+    "Discord AutoMod: create and edit rules in the console with trigger type, keywords, regex, allow list, presets, mention limit, actions and exemptions.",
+  ],
+};
+
+const v1_64_0_es: ChangelogEntry = {
+  version: "v1.64.0",
+  date: "2026-10-10",
+  title: "Consola: restauración de copias y editor de AutoMod de Discord con el formato Keeper",
+  items: [
+    "Copias de seguridad: restauración guiada con plan detallado y seguimiento en directo.",
+    "AutoMod de Discord: creación y edición de reglas en la consola.",
+  ],
+};
+
+const v1_64_0_de: ChangelogEntry = {
+  version: "v1.64.0",
+  date: "2026-10-10",
+  title: "Konsole: Backup-Wiederherstellung und Discord-AutoMod-Editor im Keeper-Layout",
+  items: [
+    "Backups: geführte Wiederherstellung mit detailliertem Plan und Live-Fortschritt.",
+    "Discord-AutoMod: Regeln in der Konsole erstellen und bearbeiten.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_64_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_64_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_64_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_64_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

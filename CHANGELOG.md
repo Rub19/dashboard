@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.64.0 — 2026-10-10
+
+**Console : restauration de sauvegarde et éditeur AutoMod Discord au format Keeper**
+
+- Sauvegardes : restauration guidée directement dans la console. Choix des éléments (rôles, catégories, salons, permissions, réglages d'Etho), mode « Ajouter et mettre à jour » ou « Remettre à l'identique », plan détaillé recalculé à chaque choix, confirmation par le nom du serveur pour le mode destructif, puis suivi en direct (progression, erreurs, journal).
+- AutoMod Discord : création et modification des règles dans la console. Type (avec les limites Discord), mots-clés, expressions régulières, mots autorisés, listes prédéfinies, limite de mentions, actions (bloquer avec message, alerter, exclure temporairement, bloquer le membre) et exceptions.
+
 ## v1.63.0 — 2026-10-09
 
 **Console : toutes les pages au format Keeper, sécurité renforcée**

@@ -49263,5 +49263,46 @@ CHANGELOG_BY_LANG.en.unshift(v1_66_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_66_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_66_0_de);
 
+const v1_66_1_fr: ChangelogEntry = {
+  version: "v1.66.1",
+  date: "2026-10-10",
+  title: "Incidents plus lisibles",
+  items: [
+    "Logs : les incidents affichent le nom des rôles et des salons au lieu des identifiants Discord.",
+  ],
+};
+
+const v1_66_1_en: ChangelogEntry = {
+  version: "v1.66.1",
+  date: "2026-10-10",
+  title: "Easier-to-read incidents",
+  items: [
+    "Logs: incidents show role and channel names instead of Discord IDs.",
+  ],
+};
+
+const v1_66_1_es: ChangelogEntry = {
+  version: "v1.66.1",
+  date: "2026-10-10",
+  title: "Incidentes más legibles",
+  items: [
+    "Registros: los incidentes muestran el nombre de los roles y canales en lugar de los ID de Discord.",
+  ],
+};
+
+const v1_66_1_de: ChangelogEntry = {
+  version: "v1.66.1",
+  date: "2026-10-10",
+  title: "Lesbarere Vorfälle",
+  items: [
+    "Logs: Vorfälle zeigen Rollen- und Kanalnamen statt Discord-IDs.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_66_1_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_66_1_en);
+CHANGELOG_BY_LANG.es.unshift(v1_66_1_es);
+CHANGELOG_BY_LANG.de.unshift(v1_66_1_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

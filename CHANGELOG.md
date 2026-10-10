@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.66.1 — 2026-10-10
+
+**Incidents plus lisibles**
+
+- Logs : les incidents affichent le nom des rôles et des salons au lieu des identifiants Discord.
+
 ## v1.66.0 — 2026-10-10
 
 **Logs des protections et compteur**

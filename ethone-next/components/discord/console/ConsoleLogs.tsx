@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { AlertTriangle, Bell, Zap } from "@/components/icons/ph";
-import ChannelPicker from "../ChannelPicker";
+import ChannelPicker, { fetchGuildChannels } from "../ChannelPicker";
+import { fetchGuildRoles } from "../RolePicker";
 import { cleanLogText, sinceLabel } from "@/lib/discord/security-scan";
 import { SPRING_PILL } from "@/lib/ease";
 import { cn } from "@/lib/utils";
@@ -75,6 +76,23 @@ export default function ConsoleLogs({ guildId, initialTab = "incidents" }: { gui
   const [config, setConfig] = useState<LogConfig | null>(null);
   const [gap, setGap] = useState<string[]>([]);
   const [bulkChannel, setBulkChannel] = useState("");
+  const [names, setNames] = useState<{ roles: Record<string, string>; channels: Record<string, string> }>({ roles: {}, channels: {} });
+
+  // Les incidents gardent les mentions Discord (<@&id>, <#id>) : on les remplace par les noms du serveur.
+  useEffect(() => {
+    let cancelled = false;
+    Promise.all([fetchGuildRoles(guildId), fetchGuildChannels(guildId)]).then(([roles, channels]) => {
+      if (!cancelled) setNames({ roles: Object.fromEntries(roles.map((r) => [r.id, r.name])), channels: Object.fromEntries(channels.map((c) => [c.id, c.name])) });
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [guildId]);
+  const readable = (text: string) =>
+    text
+      .replace(/<@&(\d+)>/g, (_, id: string) => `@${names.roles[id] ?? "rôle supprimé"}`)
+      .replace(/<#(\d+)>/g, (_, id: string) => `#${names.channels[id] ?? "salon supprimé"}`)
+      .replace(/<@!?(\d+)>/g, "@membre");
 
   const loadConfig = useCallback(async () => {
     const [c, cov] = await Promise.all([
@@ -182,7 +200,7 @@ export default function ConsoleLogs({ guildId, initialTab = "incidents" }: { gui
                 <li key={e.id} className="flex items-start gap-3 border-t border-[var(--panel-border)] px-5 py-3 first:border-t-0">
                   <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full" style={{ background: SEVERITY_COLOR[e.severity] ?? "var(--text-muted)" }} />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-[13px] font-semibold text-[var(--text-primary)]">{cleanLogText(e.reason || e.type.replace(/_/g, " ").toLowerCase())}</p>
+                    <p className="truncate text-[13px] font-semibold text-[var(--text-primary)]">{readable(cleanLogText(e.reason || e.type.replace(/_/g, " ").toLowerCase()))}</p>
                     <p className="truncate text-[11px] text-[var(--text-muted)]">
                       {e.actor?.tag ? `Par ${e.actor.tag}` : "Par Etho"}
                       {e.target?.tag || e.target?.name ? ` · Cible : ${e.target.tag || e.target.name}` : ""}

@@ -1,5 +1,13 @@
 [
   {
+    "version": "v1.66.1",
+    "date": "2026-10-10",
+    "title": "Incidents plus lisibles",
+    "items": [
+      "Logs : les incidents affichent le nom des rôles et des salons au lieu des identifiants Discord."
+    ]
+  },
+  {
     "version": "v1.66.0",
     "date": "2026-10-10",
     "title": "Logs des protections et compteur",
@@ -633,17 +641,6 @@
       "Extension de la barre latérale jusqu'au bas de l'écran avec verrouillage plein écran 100dvh",
       "Suppression du décrochage en bas à gauche de la console d'installation",
       "Stabilisation de la transition et de la hauteur des conteneurs parents"
-    ]
-  },
-  {
-    "version": "v1.55.57",
-    "date": "2026-10-07",
-    "title": "Résolution Optimale de l'Avatar Discord avec Multi-Candidats",
-    "items": [
-      "Priorisation de l'avatar haute résolution 256px sur l'avatar compact 64px pour éviter les erreurs CDN Discord",
-      "Mécanisme multi-candidats avec basculement automatique sur l'URL de secours",
-      "Affichage immédiat et stable de la photo de profil Discord dans la console",
-      "Garantie de continuité visuelle sans disparition du badge utilisateur"
     ]
   }
 ]

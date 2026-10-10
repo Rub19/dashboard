@@ -119,13 +119,7 @@ export function buildEventDiscordPanel(
       .setLabel(t.events_btn_checkin_label)
       .setStyle(ButtonStyle.Primary)
       .setEmoji('🎟️')
-      .setDisabled(isCancelledOrDone),
-
-    new ButtonBuilder()
-      .setLabel(t.events_btn_details_label)
-      .setStyle(ButtonStyle.Link)
-      .setURL(`${dashboardBaseUrl.replace(/\/$/, '')}/discord/events/${event.id}`)
-      .setEmoji('🌐')
+      .setDisabled(isCancelledOrDone)
   );
 
   return {

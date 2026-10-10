@@ -6,7 +6,7 @@ import ChannelPicker from "../ChannelPicker";
 import { useRaidMode } from "@/lib/hooks/useRaidMode";
 import { Chip, ConsolePage, EmptyLine, GhostButton, MemberPicker, Panel, RoleChips, Row, Segmented, Switch, useGuildApi, useMemberNames } from "./kit";
 
-type Settings = { prefix: string; systemChannelId: string | null; ownerDmAlerts: boolean; antiRaidEnabled?: boolean };
+type Settings = { prefix: string; systemChannelId: string | null; ownerDmAlerts: boolean; weeklyReport?: boolean; antiRaidEnabled?: boolean };
 type Mode = "admins" | "owner" | "custom";
 type BotConfig = {
   language: "fr" | "en" | "es" | "de";
@@ -172,6 +172,9 @@ export default function ConsoleSettings({ guildId, onExport, onImport, onCopyId,
             </Row>
             <Row label="Prévenir le propriétaire en MP" hint="Lors d'un raid ou d'un nuke, au plus un message toutes les 10 minutes.">
               <Switch checked={settings.ownerDmAlerts} onChange={(v) => save({ ownerDmAlerts: v })} label="Prévenir le propriétaire en MP" />
+            </Row>
+            <Row label="Rapport de sécurité hebdomadaire" hint="Chaque lundi, le propriétaire reçoit en MP : incidents de la semaine, protections actives, rôles au-dessus d'Etho et permissions manquantes.">
+              <Switch checked={Boolean(settings.weeklyReport)} onChange={(v) => save({ weeklyReport: v })} label="Rapport de sécurité hebdomadaire" />
             </Row>
           </>
         )}

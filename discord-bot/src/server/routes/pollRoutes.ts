@@ -180,6 +180,11 @@ export function createPollRouter(client: Client): Router {
       res.status(400).json({ success: false, error: 'Chaque question doit avoir au moins 2 options.' });
       return;
     }
+    // Le vote se fait par boutons sous le message : Discord en affiche au plus 10 (2 rangées de 5).
+    if (newPoll.questions.some((q) => q.options.length > 10)) {
+      res.status(400).json({ success: false, error: 'Un sondage Etho accepte 10 choix au maximum (boutons Discord).' });
+      return;
+    }
 
     try {
       const saved = pollRepository.savePoll(newPoll);

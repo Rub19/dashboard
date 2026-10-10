@@ -157,6 +157,7 @@ export function createConsoleRouter(client: Client): Router {
       prefix: conf.prefix,
       systemChannelId: conf.systemChannelId ?? null,
       ownerDmAlerts: Boolean(conf.ownerDmAlerts),
+      weeklyReport: Boolean(conf.weeklyReport),
       raidModeActive: raidModeService.isRaidModeActive(guild.id),
       antiRaidEnabled: isModuleEnabled(guild.id, 'security'),
     });
@@ -168,7 +169,7 @@ export function createConsoleRouter(client: Client): Router {
       res.status(404).json({ error: 'Serveur introuvable pour le bot.' });
       return;
     }
-    const { prefix, systemChannelId, ownerDmAlerts } = req.body ?? {};
+    const { prefix, systemChannelId, ownerDmAlerts, weeklyReport } = req.body ?? {};
     const patch: Record<string, unknown> = {};
     if (prefix !== undefined) {
       if (typeof prefix !== 'string' || !prefix.trim() || prefix.length > 5 || /\s/.test(prefix)) {
@@ -185,8 +186,9 @@ export function createConsoleRouter(client: Client): Router {
       patch.systemChannelId = systemChannelId;
     }
     if (ownerDmAlerts !== undefined) patch.ownerDmAlerts = ownerDmAlerts === true;
+    if (weeklyReport !== undefined) patch.weeklyReport = weeklyReport === true;
     const conf = guildConfigService.updateConfig(guild.id, patch);
-    res.json({ prefix: conf.prefix, systemChannelId: conf.systemChannelId ?? null, ownerDmAlerts: Boolean(conf.ownerDmAlerts) });
+    res.json({ prefix: conf.prefix, systemChannelId: conf.systemChannelId ?? null, ownerDmAlerts: Boolean(conf.ownerDmAlerts), weeklyReport: Boolean(conf.weeklyReport) });
   });
 
 

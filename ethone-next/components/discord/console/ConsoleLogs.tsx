@@ -22,7 +22,7 @@ type AuditEvent = {
   action?: string;
   timestamp: string;
 };
-type ProtectionIncident = { id: string; type: string; severity: string; title: string; description: string; perpetratorId?: string; perpetratorTag?: string; actionTaken?: string; timestamp: string };
+type ProtectionIncident = { id: string; type: string; severity: string; title: string; description: string; perpetratorId?: string; perpetratorTag?: string; actionTaken?: string; createdAt: string };
 type Tab = "incidents" | "journal" | "channels";
 type LogConfig = { categoryChannels?: Record<string, string | null>; routing?: Record<string, string | null> };
 
@@ -122,7 +122,7 @@ export default function ConsoleLogs({ guildId, initialTab = "incidents" }: { gui
           actor: i.perpetratorId ? { id: i.perpetratorId, tag: i.perpetratorTag } : undefined,
           reason: `${i.title} : ${detail}`,
           action: i.actionTaken || undefined,
-          timestamp: i.timestamp,
+          timestamp: i.createdAt,
         };
       });
       const all = [...fromProtections, ...(lists as ({ events: AuditEvent[] } | null)[]).flatMap((l) => l?.events ?? []).filter((e) => e.module !== "MODERATION" || /SANCTION|RAID|NUKE|AUTOMOD/.test(e.type))];

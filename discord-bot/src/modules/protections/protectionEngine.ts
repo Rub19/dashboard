@@ -85,6 +85,8 @@ class ProtectionEngine {
   private client: Client | null = null;
   private hits = new Map<string, Hit[]>();
   private recentlyPunished = new Map<string, number>();
+  /** Après une rafale sanctionnée : les messages suivants de l'auteur sont supprimés jusqu'à la fin de la fenêtre. */
+  private spamUntil = new Map<string, number>();
   private channelSnaps = new Map<string, { snap: ChannelSnap; at: number }>();
   private roleSnaps = new Map<string, { snap: RoleSnap; at: number }>();
   private emojiSnaps = new Map<string, { name: string; url: string; at: number }>();
@@ -853,7 +855,13 @@ class ProtectionEngine {
       }
     }
     if (on('antiSpam')) {
-      await this.evaluate(guild, 'antiSpam', author, { ...base, detail: 'a envoyé des messages en rafale', undo: del });
+      const sk = `${guild.id}:${author}`;
+      if ((this.spamUntil.get(sk) ?? 0) > Date.now()) {
+        await del();
+        return;
+      }
+      const punished = await this.evaluate(guild, 'antiSpam', author, { ...base, detail: 'a envoyé des messages en rafale', undo: del });
+      if (punished) this.spamUntil.set(sk, Date.now() + (all.antiSpam.quotaSeconds ?? 8) * 1000);
     }
   }
 

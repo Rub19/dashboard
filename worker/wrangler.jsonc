@@ -46,6 +46,10 @@
   "ai": {
     "binding": "AI"
   },
+  // Chaque minute : boîte d'envoi des mails ; toutes les 5 minutes : surveillance du bot (src/services/bot-monitor.js).
+  "triggers": {
+    "crons": ["* * * * *"]
+  },
   "kv_namespaces": [
     {
       "binding": "GAME_OVERRIDES",

@@ -1,3 +1,4 @@
+import { checkBotHealth } from "./services/bot-monitor.js";
 import { authenticateRequest } from "./middleware/auth.js";
 import { applyCors, assertCors, evaluateCors, preflightResponse } from "./middleware/cors.js";
 import { httpError, normalizeError } from "./middleware/errors.js";
@@ -125,6 +126,10 @@ async function handleScheduled(event, env, executionCtx) {
     if (env.ENVIRONMENT !== "production") {
       console.error("Scheduled mail error:", error);
     }
+  }
+  // Surveillance du bot toutes les 5 minutes (le cron tourne chaque minute pour la boîte d'envoi).
+  if (new Date(event?.scheduledTime ?? Date.now()).getUTCMinutes() % 5 === 0) {
+    await checkBotHealth(env).catch(() => null);
   }
 }
 

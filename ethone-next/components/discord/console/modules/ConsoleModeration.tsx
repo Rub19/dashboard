@@ -11,6 +11,7 @@ import { SPRING_LAYOUT } from "@/lib/ease";
 import { pageStagger } from "@/lib/motion-variants";
 import { cn } from "@/lib/utils";
 import { ConsolePage, EmptyLine, GhostButton, MemberPicker, Panel, RoleChips, Row, Segmented, StatTile, Stepper, Switch, useGuildApi, type MemberHit } from "../kit";
+import { MemberRecord, ReportsPanel } from "./ModerationRecords";
 
 type Action = "WARN" | "TIMEOUT" | "KICK" | "BAN" | "UNBAN" | "SOFTBAN" | "QUARANTINE";
 type Case = { caseNumber: number; userId: string; userTag: string; moderatorTag: string; action: Action; reason: string; createdAt: string; status: "ACTIVE" | "EXPIRED" | "REVOKED"; source: string; durationSeconds: number | null };
@@ -207,6 +208,9 @@ export default function ConsoleModeration({ guildId }: { guildId: string }) {
           </ul>
         )}
       </Panel>
+
+      <ReportsPanel guildId={guildId} />
+      <MemberRecord guildId={guildId} />
 
       <Panel title="Bannis" subtitle={bans && bans.length >= 100 ? "Les 100 derniers." : undefined}>
         {!bans ? (

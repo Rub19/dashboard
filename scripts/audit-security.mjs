@@ -18,6 +18,8 @@ const APPROVED_SERVICE_ROLE_REFERENCES = new Set([
   "supabase/migrations/202609130001_ethone_shared_spaces.sql",
   "worker/src/services/shared-spaces-client.js",
   "discord-bot/src/modules/ai/services/aiSafetyService.ts",
+  "discord-bot/src/services/offsiteBackupService.ts",
+  "discord-bot/scripts/restore-offsite-backup.ts",
   // Nom de la variable d'environnement (aucune valeur) : config du bot, synchro télémétrie et sa migration.
   "discord-bot/src/config.ts",
   "discord-bot/src/modules/botControl/services/botTelemetrySyncService.ts",

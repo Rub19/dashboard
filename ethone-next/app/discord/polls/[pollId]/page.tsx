@@ -1,8 +1,4 @@
-import { Suspense } from "react";
-import PollDetailClient from "./PollDetailClient";
-import PollCreateClient from "../create/PollCreateClient";
-import ChildRouter from "@/components/discord/ChildRouter";
-import ModuleSkeleton from "@/components/discord/ModuleSkeleton";
+import LegacyModuleRedirect from "@/components/discord/LegacyModuleRedirect";
 
 export const dynamic = "force-static";
 
@@ -15,14 +11,7 @@ export function generateStaticParams() {
   ];
 }
 
-export default function PollDetailPage() {
-  return (
-    <Suspense
-      fallback={<ModuleSkeleton label="Chargement du Sondage…" />}
-    >
-      <ChildRouter after="polls" routes={{ create: <PollCreateClient /> }}>
-        <PollDetailClient />
-      </ChildRouter>
-    </Suspense>
-  );
+/** Ancienne sous-page : son contenu est maintenant dans le module « polls » de la console. */
+export default function LegacySubPage() {
+  return <LegacyModuleRedirect module="polls" />;
 }

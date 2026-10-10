@@ -8,7 +8,8 @@ import { GhostButton, Panel, RoleAdder, RoleChips, Row, Segmented, Stepper, Swit
 type Weight = { roleId: string; roleName: string; weightMultiplier: number; color?: string };
 const field =
   "h-9 w-full rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-3 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/70";
-const MAX_OPTIONS = 25;
+// Discord affiche au plus 2 rangées de 5 boutons de vote.
+const MAX_OPTIONS = 10;
 
 /**
  * Sondage Etho (votes par boutons) : seules les options réellement appliquées par le bot sont proposées (qui peut voter,

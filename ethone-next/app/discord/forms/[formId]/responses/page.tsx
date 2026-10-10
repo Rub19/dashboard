@@ -1,6 +1,4 @@
-import { Suspense } from "react";
-import FormResponsesClient from "./FormResponsesClient";
-import ModuleSkeleton from "@/components/discord/ModuleSkeleton";
+import LegacyModuleRedirect from "@/components/discord/LegacyModuleRedirect";
 
 export const dynamic = "force-static";
 
@@ -8,12 +6,7 @@ export function generateStaticParams() {
   return [{ formId: "demo" }, { formId: "staff-app" }, { formId: "partner-app" }];
 }
 
-export default function FormResponsesPage() {
-  return (
-    <Suspense
-      fallback={<ModuleSkeleton label="Chargement des réponses…" />}
-    >
-      <FormResponsesClient />
-    </Suspense>
-  );
+/** Ancienne sous-page : son contenu est maintenant dans le module « forms » de la console. */
+export default function LegacySubPage() {
+  return <LegacyModuleRedirect module="forms" />;
 }

@@ -64,6 +64,8 @@ import { streamerService } from '../modules/streamers/services/streamerService.j
 import { createGamesRoutes } from './routes/gamesRoutes.js';
 import { createConsoleRouter } from './routes/consoleRoutes.js';
 import { createProtectionRouter } from './routes/protectionRoutes.js';
+import { startOffsiteBackups } from '../services/offsiteBackupService.js';
+import { startWeeklySecurityReports } from '../services/weeklySecurityReportService.js';
 import { autoScanScheduler } from '../modules/server/services/securityScanService.js';
 import { gamesService } from '../modules/games/services/gamesService.js';
 import { createBotControlRouter } from './routes/botControlRoutes.js';
@@ -508,6 +510,8 @@ export function startWebServer(client: Client): http.Server {
 
   // Synchro Supabase de la télémétrie (Centre de contrôle du dashboard, RLS owner only)
   startBotTelemetrySync(client);
+  startOffsiteBackups();
+  startWeeklySecurityReports(client);
 
   // Route de santé de l'API
   app.get('/api/health', (req: Request, res: Response) => {

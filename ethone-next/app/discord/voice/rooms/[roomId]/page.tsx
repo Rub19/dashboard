@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import VoiceRoomDetailClient from "./VoiceRoomDetailClient";
+import LegacyModuleRedirect from "@/components/discord/LegacyModuleRedirect";
 
 export const metadata: Metadata = {
   title: "Détail Salon Vocal — ETHONE",
@@ -17,11 +17,7 @@ export function generateStaticParams() {
   ];
 }
 
-export default async function VoiceRoomDetailPage({
-  params,
-}: {
-  params: Promise<{ roomId: string }>;
-}) {
-  const { roomId } = await params;
-  return <VoiceRoomDetailClient roomId={roomId} />;
+/** Ancienne sous-page : son contenu est maintenant dans le module « voice » de la console. */
+export default function LegacySubPage() {
+  return <LegacyModuleRedirect module="voice" />;
 }

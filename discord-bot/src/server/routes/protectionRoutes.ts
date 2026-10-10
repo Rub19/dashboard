@@ -4,6 +4,7 @@ import { PROTECTIONS, PROTECTION_CATEGORIES, DEFAULT_WATCHED_PERMS, getProtectio
 import { protectionStore, ProtectionSettingsSchema } from '../../modules/protections/protectionStore.js';
 import { protectionEngine } from '../../modules/protections/protectionEngine.js';
 import { syncAutomodRule } from '../../modules/protections/automodSync.js';
+import { checkProtection } from '../../modules/protections/protectionCheck.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { handleRouteError } from '../utils/routeError.js';
 
@@ -78,6 +79,21 @@ export function createProtectionRouter(client: Client): Router {
     emitConfigUpdated('protections', guild.id, { key, ...updated }, 'DASHBOARD', req.user?.id);
     const warning = key === 'antiLink' || key === 'antiBadWord' ? await syncAutomodRule(guild, key) : null;
     res.json({ settings: updated, warning });
+  });
+
+  // « Tester » : vérifie permissions, place du rôle d'Etho et salon de log (envoie un vrai message de test).
+  router.post('/:key/test', async (req: Request, res: Response) => {
+    const guild = guildOf(req);
+    const key = String(req.params.key);
+    if (!guild || !getProtection(key)) {
+      res.status(404).json({ error: 'Protection ou serveur introuvable.' });
+      return;
+    }
+    try {
+      res.json({ checks: await checkProtection(guild, key) });
+    } catch (err) {
+      handleRouteError(err, res, 'Test impossible');
+    }
   });
 
   router.post('/lockdown/lift', async (req: Request, res: Response) => {

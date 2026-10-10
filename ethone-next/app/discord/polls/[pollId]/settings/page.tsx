@@ -1,6 +1,4 @@
-import { Suspense } from "react";
-import PollSettingsClient from "./PollSettingsClient";
-import ModuleSkeleton from "@/components/discord/ModuleSkeleton";
+import LegacyModuleRedirect from "@/components/discord/LegacyModuleRedirect";
 
 export const dynamic = "force-static";
 
@@ -13,12 +11,7 @@ export function generateStaticParams() {
   ];
 }
 
-export default function PollSettingsPage() {
-  return (
-    <Suspense
-      fallback={<ModuleSkeleton label="Chargement des Paramètres…" />}
-    >
-      <PollSettingsClient />
-    </Suspense>
-  );
+/** Ancienne sous-page : son contenu est maintenant dans le module « polls » de la console. */
+export default function LegacySubPage() {
+  return <LegacyModuleRedirect module="polls" />;
 }

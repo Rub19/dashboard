@@ -1,6 +1,4 @@
-import { Suspense } from "react";
-import EventSettingsClient from "./EventSettingsClient";
-import ModuleSkeleton from "@/components/discord/ModuleSkeleton";
+import LegacyModuleRedirect from "@/components/discord/LegacyModuleRedirect";
 
 export const dynamic = "force-static";
 
@@ -14,12 +12,7 @@ export function generateStaticParams() {
   ];
 }
 
-export default function EventSettingsPage() {
-  return (
-    <Suspense
-      fallback={<ModuleSkeleton label="Chargement des paramètres…" />}
-    >
-      <EventSettingsClient />
-    </Suspense>
-  );
+/** Ancienne sous-page : son contenu est maintenant dans le module « events » de la console. */
+export default function LegacySubPage() {
+  return <LegacyModuleRedirect module="events" />;
 }

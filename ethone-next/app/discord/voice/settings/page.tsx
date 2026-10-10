@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import VoiceSettingsClient from "./VoiceSettingsClient";
+import LegacyModuleRedirect from "@/components/discord/LegacyModuleRedirect";
 
 export const metadata: Metadata = {
   title: "Paramètres Salons Vocaux — ETHONE",
@@ -8,6 +8,7 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-static";
 
-export default function VoiceSettingsPage() {
-  return <VoiceSettingsClient />;
+/** Ancienne sous-page : son contenu est maintenant dans le module « voice » de la console. */
+export default function LegacySubPage() {
+  return <LegacyModuleRedirect module="voice" />;
 }

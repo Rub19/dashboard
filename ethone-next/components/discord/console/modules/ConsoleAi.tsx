@@ -17,6 +17,9 @@ type Behavior = {
   allowImageGeneration: boolean;
   bannedWords: string[];
   thonMood: "SAGE" | "GAMER_SARCASTIQUE" | "PROTECTEUR" | "CYBERPUNK" | "CUSTOM";
+  dailyBudgetTokens: number;
+  paidProvider: boolean;
+  budgetUsedToday: number;
 };
 type Sliders = { friendly: number; humor: number; formality: number; verbosity: number; creativity: number };
 type Personality = { name: string; systemInstructions: string; sliders: Sliders; language: string; replyInUserLanguage: boolean };
@@ -251,6 +254,11 @@ export default function ConsoleAi({ guildId }: { guildId: string }) {
             />
           </div>
         </Row>
+        {b.paidProvider && (
+          <Row label="Budget quotidien" hint={`Au-delà, Etho répond avec son moteur intégré gratuit jusqu'à minuit (UTC). Utilisé aujourd'hui : ${b.budgetUsedToday.toLocaleString("fr-FR")} tokens.`}>
+            <Stepper value={b.dailyBudgetTokens} min={0} max={1000000} step={10000} unit="tokens" onCommit={(n) => saveB({ dailyBudgetTokens: n })} />
+          </Row>
+        )}
         <Row label="Mémoire de conversation" hint="Etho se souvient des derniers messages échangés.">
           <div className="flex flex-wrap items-center gap-3">
             <Switch checked={b.memory.enabled} onChange={(v) => saveB({ memory: { ...b.memory, enabled: v } })} label="Mémoire de conversation" />

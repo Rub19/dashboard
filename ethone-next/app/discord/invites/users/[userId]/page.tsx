@@ -1,6 +1,4 @@
-import { Suspense } from "react";
-import InviteUserDetailClient from "./InviteUserDetailClient";
-import ModuleSkeleton from "@/components/discord/ModuleSkeleton";
+import LegacyModuleRedirect from "@/components/discord/LegacyModuleRedirect";
 
 export const dynamic = "force-static";
 
@@ -8,12 +6,7 @@ export function generateStaticParams() {
   return [{ userId: "demo" }, { userId: "top" }];
 }
 
-export default function InviteUserPage() {
-  return (
-    <Suspense
-      fallback={<ModuleSkeleton label="Chargement du profil de parrainage…" />}
-    >
-      <InviteUserDetailClient />
-    </Suspense>
-  );
+/** Ancienne sous-page : son contenu est maintenant dans le module « invites » de la console. */
+export default function LegacySubPage() {
+  return <LegacyModuleRedirect module="invites" />;
 }

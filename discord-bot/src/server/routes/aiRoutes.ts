@@ -6,6 +6,7 @@ import { aiRepository } from '../../modules/ai/storage/aiRepository.js';
 import { logger } from '../../utils/logger.js';
 import { requireStringParam } from '../utils/params.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
+import { aiDailyBudget } from '../../modules/ai/services/aiDailyBudget.js';
 
 const PersonalitySchema = z
   .object({
@@ -105,6 +106,7 @@ export function createAiRouter(client: Client): Router {
   // mémoire, budget, salon IA dédié, génération d'images, humeur du Thon,
   // mots bannis) — whitelist explicite pour ne jamais laisser le dashboard
   // toucher provider/model/clés via cette route.
+  const PAID_KEYS: Record<string, string | undefined> = { OPENROUTER: 'OPENROUTER_API_KEY', OPENAI: 'OPENAI_API_KEY', GROQ: 'GROQ_API_KEY' };
   const BEHAVIOR_FIELDS = (settings: ReturnType<typeof aiRepository.getSettings>) => ({
     enabled: settings.enabled,
     defaultMode: settings.defaultMode,
@@ -112,6 +114,9 @@ export function createAiRouter(client: Client): Router {
     showSources: settings.showSources,
     memory: settings.memory,
     dailyBudgetTokens: settings.dailyBudgetTokens,
+    // Le budget ne compte que si un fournisseur payant est réellement branché (clé présente sur le VPS).
+    paidProvider: settings.provider !== 'BUILTIN' && Boolean(PAID_KEYS[settings.provider] && process.env[PAID_KEYS[settings.provider]!]),
+    budgetUsedToday: aiDailyBudget.used(settings.guildId),
     dedicatedChannelId: settings.dedicatedChannelId ?? null,
     allowImageGeneration: settings.allowImageGeneration ?? false,
     bannedWords: settings.bannedWords ?? [],

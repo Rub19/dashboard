@@ -89,7 +89,7 @@ export const formCommand: Command = {
         await ctx.interaction.showModal(modal);
       } else {
         await ctx.reply({
-          embeds: [ctx.createEmbed('info').setTitle(`📝 ${form.title}`).setDescription(formatString(t.form_web_portal_desc, { url: `https://ethone.dev/discord/forms/${form.id}?guildId=${form.guildId}` }))],
+          embeds: [ctx.createEmbed('warning').setTitle(`📝 ${form.title}`).setDescription(t.form_web_required_desc)],
           ephemeral: true,
         });
       }

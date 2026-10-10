@@ -606,6 +606,16 @@ function Detail({
   busy: string | null;
 }) {
   const open = s.enabled || prepared;
+  const api = useGuildApi(guildId);
+  const [checks, setChecks] = useState<{ label: string; ok: boolean; detail?: string }[] | null>(null);
+  const [testing, setTesting] = useState(false);
+  // Le propriétaire est toujours ignoré par les protections : ce test vérifie à sa place ce qui ferait échouer une réaction.
+  const runTest = async () => {
+    setTesting(true);
+    const r = await api<{ checks: { label: string; ok: boolean; detail?: string }[] }>(`/protections/${def.key}/test`, { method: "POST", json: {} });
+    setTesting(false);
+    if (r) setChecks(r.checks);
+  };
   const [dm, setDm] = useState(s.dmMessage ?? "");
   useEffect(() => setDm(s.dmMessage ?? ""), [s.dmMessage, def.key]);
   let n = 0;
@@ -632,6 +642,25 @@ function Detail({
             <CircleCheck className="mt-px h-3.5 w-3.5 shrink-0 text-[var(--success)]" />
             {def.aftermath}
           </p>
+        )}
+        <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-[var(--panel-border)] pt-3">
+          <GhostButton onClick={runTest} disabled={testing}>
+            {testing ? "Test…" : "Tester la protection"}
+          </GhostButton>
+          <span className="text-[11px] text-[var(--text-muted)]">Vérifie les permissions d&apos;Etho, sa place dans les rôles et le salon de log (message de test).</span>
+        </div>
+        {checks && (
+          <ul className="mt-2 space-y-1">
+            {checks.map((c) => (
+              <li key={c.label} className="flex items-start gap-2 text-xs">
+                {c.ok ? <CircleCheck className="mt-px h-3.5 w-3.5 shrink-0 text-[var(--success)]" /> : <TriangleAlert className="mt-px h-3.5 w-3.5 shrink-0 text-[var(--warning)]" />}
+                <span className="text-[var(--text-primary)]">
+                  {c.label}
+                  {c.detail && <span className="text-[var(--text-muted)]"> — {c.detail}</span>}
+                </span>
+              </li>
+            ))}
+          </ul>
         )}
       </div>
 

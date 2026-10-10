@@ -11,10 +11,11 @@ import { pageStagger } from "@/lib/motion-variants";
 import { cn } from "@/lib/utils";
 import { BOT_API_URL, ConsolePage, EmptyLine, GhostButton, Panel, Row, Segmented, StatTile, Stepper, Switch, useGuildApi } from "../kit";
 import AdvancedPollForm from "./AdvancedPollForm";
+import PollInsights from "./PollInsights";
 
 type Status = "DRAFT" | "SCHEDULED" | "ACTIVE" | "PAUSED" | "ENDED" | "ARCHIVED";
 type Option = { id: string; label: string; emoji?: string; votesCount: number };
-type Poll = { panelConfig?: { channelId?: string; messageId?: string }; id: string; native?: boolean; title: string; status: Status; type: string; questions: { title: string; options: Option[] }[]; endsAt?: string; createdAt: string; updatedAt: string; creatorTag?: string };
+type Poll = { panelConfig?: { channelId?: string; messageId?: string }; id: string; native?: boolean; title: string; status: Status; type: string; questions: { title: string; options: Option[] }[]; endsAt?: string; createdAt: string; updatedAt: string; creatorTag?: string; anonymity?: string };
 
 const STATUS: Record<Status, string> = { DRAFT: "Brouillon", SCHEDULED: "Programmé", ACTIVE: "En cours", PAUSED: "En pause", ENDED: "Terminé", ARCHIVED: "Archivé" };
 const FILTERS = {
@@ -242,6 +243,7 @@ export default function ConsolePolls({ guildId }: { guildId: string }) {
                               );
                             })}
                           </ul>
+                          {!p.native && p.status !== "DRAFT" && <PollInsights guildId={guildId} pollId={p.id} anonymous={Boolean(p.anonymity && p.anonymity !== "PUBLIC")} />}
                           <div className="flex flex-wrap items-center gap-1.5">
                             {p.status === "DRAFT" && !p.native && (
                               <GhostButton disabled={busy} onClick={() => action(p, "publish")}>

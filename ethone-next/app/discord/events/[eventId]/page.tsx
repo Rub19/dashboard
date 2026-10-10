@@ -1,8 +1,4 @@
-import { Suspense } from "react";
-import EventDetailClient from "./EventDetailClient";
-import EventCreateClient from "../create/EventCreateClient";
-import ChildRouter from "@/components/discord/ChildRouter";
-import ModuleSkeleton from "@/components/discord/ModuleSkeleton";
+import LegacyModuleRedirect from "@/components/discord/LegacyModuleRedirect";
 
 export const dynamic = "force-static";
 
@@ -16,14 +12,7 @@ export function generateStaticParams() {
   ];
 }
 
-export default function EventDetailPage() {
-  return (
-    <Suspense
-      fallback={<ModuleSkeleton label="Chargement de l'événement…" />}
-    >
-      <ChildRouter after="events" routes={{ create: <EventCreateClient /> }}>
-        <EventDetailClient />
-      </ChildRouter>
-    </Suspense>
-  );
+/** Ancienne sous-page : son contenu est maintenant dans le module « events » de la console. */
+export default function LegacySubPage() {
+  return <LegacyModuleRedirect module="events" />;
 }

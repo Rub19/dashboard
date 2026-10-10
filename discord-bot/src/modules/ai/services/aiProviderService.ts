@@ -3,6 +3,7 @@ import { logger } from '../../../utils/logger.js';
 import type { IntentResult } from './intentTypes.js';
 import { detectIntent, pickShortReply } from './intentDetector.js';
 import { MathEvaluator } from './mathEvaluator.js';
+import { aiDailyBudget } from './aiDailyBudget.js';
 
 export interface GenerateCompletionParams {
   settings: AISettings;
@@ -45,6 +46,16 @@ export class AIProviderService {
    * rétrocompatibilité avec les call-sites existants (tests playground, etc.).
    */
   public static async generate(params: GenerateCompletionParams): Promise<AICompletionResult> {
+    // Budget quotidien atteint (ou 0) : pas d'appel au fournisseur payant, moteur intégré gratuit.
+    const budget = params.settings.dailyBudgetTokens ?? 0;
+    const overBudget = params.settings.provider !== 'BUILTIN' && aiDailyBudget.remaining(params.settings.guildId, budget) <= 0;
+    if (overBudget) logger.info(`[AIProviderService] Budget IA du jour atteint pour ${params.settings.guildId} : moteur intégré.`);
+    const result = await this.generateRaw(overBudget ? { ...params, settings: { ...params.settings, provider: 'BUILTIN' } } : params);
+    if (result.tokensUsed > 0) aiDailyBudget.record(params.settings.guildId, result.tokensUsed);
+    return result;
+  }
+
+  private static async generateRaw(params: GenerateCompletionParams): Promise<AICompletionResult> {
     const { settings, systemPrompt, messages, knowledgeContext = '' } = params;
     const lastUserMessage = messages[messages.length - 1]?.content || '';
 

@@ -49357,5 +49357,82 @@ CHANGELOG_BY_LANG.en.unshift(v1_67_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_67_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_67_0_de);
 
+const v1_68_0_fr: ChangelogEntry = {
+  version: "v1.68.0",
+  date: "2026-10-10",
+  title: "Fiabilité, alertes et outils de modération",
+  items: [
+    "Protections : bouton « Tester la protection » (permissions d'Etho, place de son rôle, message de test dans le salon de log).",
+    "Anti-spam : après une rafale, les messages suivants de l'auteur sont supprimés jusqu'à la fin de la fenêtre.",
+    "Modération : fiche d'un membre (historique complet) et signalements à traiter dans la console.",
+    "Sondages : participation, quorum, points pondérés et liste des votants ; 10 choix maximum (boutons Discord).",
+    "Rapport de sécurité hebdomadaire en MP au propriétaire (option dans Réglages).",
+    "IA : le budget quotidien est maintenant appliqué (au-delà, moteur intégré gratuit).",
+    "Les membres ne sont plus envoyés vers le dashboard (formulaires, sondages, événements) : tout se fait dans Discord.",
+    "Corrigé : les rôles d'un membre étaient ignorés pour le vote (rôles autorisés et poids).",
+    "Corrigé : dates et tri des incidents dans Logs.",
+    "Copie quotidienne des données du bot hors du serveur, et alerte par mail si le bot tombe.",
+  ],
+};
+
+const v1_68_0_en: ChangelogEntry = {
+  version: "v1.68.0",
+  date: "2026-10-10",
+  title: "Reliability, alerts and moderation tools",
+  items: [
+    "Protections: \"Test protection\" button (Etho's permissions, role position, test message in the log channel).",
+    "Anti-spam: after a burst, the author's next messages are deleted until the window ends.",
+    "Moderation: member record (full history) and reports to handle in the console.",
+    "Polls: turnout, quorum, weighted points and voter list; 10 choices max (Discord buttons).",
+    "Weekly security report by DM to the owner (option in Settings).",
+    "AI: the daily budget is now enforced (beyond it, free built-in engine).",
+    "Members are no longer sent to the dashboard (forms, polls, events): everything happens in Discord.",
+    "Fixed: a member's roles were ignored when voting (allowed roles and weights).",
+    "Fixed: incident dates and sorting in Logs.",
+    "Daily off-server copy of the bot's data, and an email alert if the bot goes down.",
+  ],
+};
+
+const v1_68_0_es: ChangelogEntry = {
+  version: "v1.68.0",
+  date: "2026-10-10",
+  title: "Fiabilidad, alertas y herramientas de moderación",
+  items: [
+    "Protecciones: botón «Probar la protección» (permisos de Etho, posición de su rol, mensaje de prueba en el canal de registro).",
+    "Anti-spam: tras una ráfaga, los mensajes siguientes del autor se eliminan hasta el final de la ventana.",
+    "Moderación: ficha de un miembro (historial completo) y reportes por tratar en la consola.",
+    "Encuestas: participación, quórum, puntos ponderados y lista de votantes; 10 opciones como máximo (botones de Discord).",
+    "Informe de seguridad semanal por MD al propietario (opción en Ajustes).",
+    "IA: el presupuesto diario ahora se aplica (después, motor integrado gratuito).",
+    "Los miembros ya no se envían al panel (formularios, encuestas, eventos): todo se hace en Discord.",
+    "Corregido: los roles de un miembro se ignoraban al votar (roles permitidos y pesos).",
+    "Corregido: fechas y orden de los incidentes en Registros.",
+    "Copia diaria de los datos del bot fuera del servidor y alerta por correo si el bot cae.",
+  ],
+};
+
+const v1_68_0_de: ChangelogEntry = {
+  version: "v1.68.0",
+  date: "2026-10-10",
+  title: "Zuverlässigkeit, Warnungen und Moderationswerkzeuge",
+  items: [
+    "Schutz: Schaltfläche „Schutz testen“ (Rechte von Etho, Rollenposition, Testnachricht im Log-Kanal).",
+    "Anti-Spam: Nach einer Welle werden weitere Nachrichten des Verursachers bis zum Ende des Zeitfensters gelöscht.",
+    "Moderation: Mitgliederakte (vollständiger Verlauf) und offene Meldungen in der Konsole.",
+    "Umfragen: Beteiligung, Quorum, gewichtete Punkte und Wählerliste; höchstens 10 Optionen (Discord-Schaltflächen).",
+    "Wöchentlicher Sicherheitsbericht per DM an den Besitzer (Option in den Einstellungen).",
+    "KI: Das Tagesbudget wird jetzt eingehalten (danach kostenlose integrierte Engine).",
+    "Mitglieder werden nicht mehr ins Dashboard geschickt (Formulare, Umfragen, Events): Alles läuft in Discord.",
+    "Behoben: Rollen eines Mitglieds wurden beim Abstimmen ignoriert (erlaubte Rollen und Gewichte).",
+    "Behoben: Datum und Sortierung der Vorfälle in den Logs.",
+    "Tägliche Kopie der Bot-Daten außerhalb des Servers und E-Mail-Warnung, wenn der Bot ausfällt.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_68_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_68_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_68_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_68_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

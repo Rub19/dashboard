@@ -2,6 +2,21 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.68.0 — 2026-10-10
+
+**Fiabilité, alertes et outils de modération**
+
+- Protections : bouton « Tester la protection » (permissions d'Etho, place de son rôle, message de test dans le salon de log).
+- Anti-spam : après une rafale, les messages suivants de l'auteur sont supprimés jusqu'à la fin de la fenêtre.
+- Modération : fiche d'un membre (historique complet) et signalements à traiter dans la console.
+- Sondages : participation, quorum, points pondérés et liste des votants ; 10 choix maximum (boutons Discord).
+- Rapport de sécurité hebdomadaire en MP au propriétaire (option dans Réglages).
+- IA : le budget quotidien est maintenant appliqué (au-delà, moteur intégré gratuit).
+- Les membres ne sont plus envoyés vers le dashboard (formulaires, sondages, événements) : tout se fait dans Discord.
+- Corrigé : les rôles d'un membre étaient ignorés pour le vote (rôles autorisés et poids).
+- Corrigé : dates et tri des incidents dans Logs.
+- Copie quotidienne des données du bot hors du serveur, et alerte par mail si le bot tombe.
+
 ## v1.67.0 — 2026-10-10
 
 **Ménage et sécurité**

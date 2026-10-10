@@ -1,5 +1,22 @@
 [
   {
+    "version": "v1.68.0",
+    "date": "2026-10-10",
+    "title": "Fiabilité, alertes et outils de modération",
+    "items": [
+      "Protections : bouton « Tester la protection » (permissions d'Etho, place de son rôle, message de test dans le salon de log).",
+      "Anti-spam : après une rafale, les messages suivants de l'auteur sont supprimés jusqu'à la fin de la fenêtre.",
+      "Modération : fiche d'un membre (historique complet) et signalements à traiter dans la console.",
+      "Sondages : participation, quorum, points pondérés et liste des votants ; 10 choix maximum (boutons Discord).",
+      "Rapport de sécurité hebdomadaire en MP au propriétaire (option dans Réglages).",
+      "IA : le budget quotidien est maintenant appliqué (au-delà, moteur intégré gratuit).",
+      "Les membres ne sont plus envoyés vers le dashboard (formulaires, sondages, événements) : tout se fait dans Discord.",
+      "Corrigé : les rôles d'un membre étaient ignorés pour le vote (rôles autorisés et poids).",
+      "Corrigé : dates et tri des incidents dans Logs.",
+      "Copie quotidienne des données du bot hors du serveur, et alerte par mail si le bot tombe."
+    ]
+  },
+  {
     "version": "v1.67.0",
     "date": "2026-10-10",
     "title": "Ménage et sécurité",
@@ -630,17 +647,6 @@
       "Barre latérale unifiée avec état du serveur, switch raid, scan en temps réel et navigation avancée",
       "En-tête épuré avec fil d'ariane et indicateur de synchronisation automatique en temps réel",
       "Actions rapides pour activer l'anti-nuke, inspecter les rôles et configurer les salons de logs"
-    ]
-  },
-  {
-    "version": "v1.55.59",
-    "date": "2026-10-07",
-    "title": "Motion Design Fluide de la Console Discord et Synchronisation Avatar Bot",
-    "items": [
-      "Animations fluides et transitions cinétiques sur la page de sélection des serveurs et d'installation",
-      "Synchronisation automatique de l'avatar Discord en direct depuis la session bot authentifiée",
-      "Micro-interactions par ressort dynamique sur les boutons d'action (Gérer, Installer, Vérifier)",
-      "Indicateur d'étapes interactif avec validation visuelle dynamique lors de l'ajout du bot"
     ]
   }
 ]

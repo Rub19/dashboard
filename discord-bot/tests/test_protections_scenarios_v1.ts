@@ -177,13 +177,16 @@ await step('anti-lien : message supprimé et auteur sanctionné au premier lien'
 });
 
 // 8. Spam : la rafale est supprimée au seuil, puis sanction.
-await step('anti-spam : rafale supprimée et auteur exclu', async () => {
+await step('anti-spam : rafale supprimée, auteur exclu, messages suivants supprimés', async () => {
   const raider = '200000000000000017';
   members.set(raider, mkMember(raider));
   enable('antiSpam', { quotaMax: 5, quotaSeconds: 10, punish: 'timeout' });
   for (let i = 0; i < 5; i++) await protectionEngine.onMessage(mkMessage(raider, `spam ${i}`));
   assert.equal(log.filter((l) => l === `msg.delete:${raider}`).length, 5, 'les 5 messages supprimés');
   assert.ok(has(`timeout:${raider}`));
+  // Pendant la fenêtre, les messages suivants sont supprimés aussi (sans nouvelle sanction).
+  await protectionEngine.onMessage(mkMessage(raider, 'spam après la rafale'));
+  assert.equal(log.filter((l) => l === `msg.delete:${raider}`).length, 6, 'message suivant supprimé');
   protectionStore.update(G, 'antiSpam', { enabled: false });
 });
 

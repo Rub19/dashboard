@@ -85,7 +85,7 @@ export class DiscordPollPanel {
       }
     }
 
-    // Utility row: View Results + Web Link
+    // Rangée utilitaire : résultats en direct
     const utilRow = new ActionRowBuilder<ButtonBuilder>();
     if (poll.panelConfig.showLiveResultsButton) {
       utilRow.addComponents(
@@ -97,15 +97,8 @@ export class DiscordPollPanel {
       );
     }
 
-    utilRow.addComponents(
-      new ButtonBuilder()
-        .setLabel(t.poll_btn_vote_web)
-        .setStyle(ButtonStyle.Link)
-        .setURL(`https://ethone.dev/discord/polls/${poll.id}/vote?guildId=${poll.guildId}`)
-        .setEmoji('🌐')
-    );
-
-    rows.push(utilRow);
+    // Pas de vote sur le web : le dashboard est réservé au staff, tout se fait par les boutons.
+    if (utilRow.components.length > 0) rows.push(utilRow);
     return rows;
   }
 
@@ -150,7 +143,9 @@ export class DiscordPollPanel {
     // 2. Cast Vote
     if (action === 'poll_vote' && optionId) {
       const member = interaction.member;
-      const roles = member && 'roles' in member && Array.isArray(member.roles) ? (member.roles as string[]) : [];
+      // Membre en cache : gestionnaire de rôles ; sinon (API brute) : tableau d'identifiants.
+      const rawRoles = member && 'roles' in member ? member.roles : null;
+      const roles = Array.isArray(rawRoles) ? (rawRoles as string[]) : rawRoles && 'cache' in rawRoles ? [...rawRoles.cache.keys()] : [];
 
       const result = await pollVotingService.castVote({
         guildId: poll.guildId,

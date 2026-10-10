@@ -482,7 +482,7 @@ class ProtectionEngine {
     const ch = guild.channels.cache.get(target) as GuildChannel | undefined;
     const changes = entry.changes ?? [];
     const onlyName = changes.length === 1 && changes[0].key === 'name';
-    const revert = async () => {
+    const revert = (reason: string) => async () => {
       const c = guild.channels.cache.get(target) as GuildChannel | undefined;
       if (!c) return;
       const old: Record<string, unknown> = {};
@@ -494,14 +494,14 @@ class ProtectionEngine {
         ...(old.rate_limit_per_user !== undefined ? { rateLimitPerUser: Number(old.rate_limit_per_user) || 0 } : {}),
         ...(old.bitrate !== undefined ? { bitrate: Number(old.bitrate) } : {}),
         ...(old.user_limit !== undefined ? { userLimit: Number(old.user_limit) || 0 } : {}),
-        reason: 'Etho · Anti-modification de salon',
+        reason,
       } as Parameters<GuildChannel['edit']>[0]);
     };
     if (onlyName && protectionStore.get(guild.id, 'antiChannelRename').enabled) {
-      await this.evaluate(guild, 'antiChannelRename', ex, { channelId: target, detail: `a renommé #${changes[0].old} en #${changes[0].new}`, undo: revert });
+      await this.evaluate(guild, 'antiChannelRename', ex, { channelId: target, detail: `a renommé #${changes[0].old} en #${changes[0].new}`, undo: revert('Etho · Anti-renommage de salon') });
       return;
     }
-    await this.evaluate(guild, 'antiChannelUpdate', ex, { channelId: target, detail: `a modifié #${ch?.name ?? target}`, undo: revert });
+    await this.evaluate(guild, 'antiChannelUpdate', ex, { channelId: target, detail: `a modifié #${ch?.name ?? target}`, undo: revert('Etho · Anti-modification de salon') });
   }
 
   private async onRoleUpdateEntry(guild: Guild, entry: GuildAuditLogsEntry, ex: string, target: string) {

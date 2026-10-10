@@ -1,15 +1,6 @@
-import { Suspense } from "react";
-import EventsCenterClient from "./EventsCenterClient";
-import ModuleSkeleton from "@/components/discord/ModuleSkeleton";
+import LegacyModuleRedirect from "@/components/discord/LegacyModuleRedirect";
 
-export const dynamic = "force-static";
-
-export default function EventsPage() {
-  return (
-    <Suspense
-      fallback={<ModuleSkeleton label="Chargement de Events & Calendar…" />}
-    >
-      <EventsCenterClient />
-    </Suspense>
-  );
+/** Ancienne adresse : le module s'ouvre maintenant dans la console. */
+export default function EventsLegacyPage() {
+  return <LegacyModuleRedirect module="events" />;
 }

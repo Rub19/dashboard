@@ -1,6 +1,6 @@
 {
   "name": "ethone-next",
-  "version": "1.66.1",
+  "version": "1.67.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -9,7 +9,6 @@
     "lint": "eslint .",
     "test": "tsc --noEmit && npm run lint && npm run build && npm run test:unit",
     "test:unit": "jest",
-    "postinstall": "patch-package || true",
     "test:e2e": "npx playwright test",
     "test:all": "npm run test && npm run test:e2e && npm run audit:a11y && npm run audit:responsive",
     "audit:a11y": "node scripts/a11y-audit.mjs",
@@ -61,7 +60,6 @@
     "jest": "^30.5.2",
     "jest-environment-jsdom": "^30.5.2",
     "jsdom": "^26.0.0",
-    "patch-package": "^8.0.1",
     "tailwindcss": "^4",
     "ts-jest": "^29.4.12",
     "typescript": "^5"
@@ -71,6 +69,9 @@
   },
   "overrides": {
     "brace-expansion@^1": "^1.1.21",
-    "brace-expansion@^5": "^5.0.12"
+    "brace-expansion@^5": "^5.0.12",
+    "@istanbuljs/load-nyc-config": {
+      "js-yaml": "^4.1.0"
+    }
   }
 }

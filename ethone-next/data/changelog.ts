@@ -49304,5 +49304,58 @@ CHANGELOG_BY_LANG.en.unshift(v1_66_1_en);
 CHANGELOG_BY_LANG.es.unshift(v1_66_1_es);
 CHANGELOG_BY_LANG.de.unshift(v1_66_1_de);
 
+const v1_67_0_fr: ChangelogEntry = {
+  version: "v1.67.0",
+  date: "2026-10-10",
+  title: "Ménage et sécurité",
+  items: [
+    "Les anciennes pages des modules renvoient vers la console : les favoris et liens existants marchent toujours.",
+    "Le lien « Pleine page » disparaît pour les modules refaits dans la console.",
+    "Code inutilisé retiré (anciens écrans de modules et composants orphelins).",
+    "Sécurité : 20 alertes de dépendances en moins (patch-package retiré, js-yaml à jour).",
+  ],
+};
+
+const v1_67_0_en: ChangelogEntry = {
+  version: "v1.67.0",
+  date: "2026-10-10",
+  title: "Cleanup and security",
+  items: [
+    "Old module pages now redirect to the console: existing bookmarks and links still work.",
+    "The \"Full page\" link is gone for modules rebuilt in the console.",
+    "Unused code removed (old module screens and orphan components).",
+    "Security: 20 fewer dependency alerts (patch-package removed, js-yaml updated).",
+  ],
+};
+
+const v1_67_0_es: ChangelogEntry = {
+  version: "v1.67.0",
+  date: "2026-10-10",
+  title: "Limpieza y seguridad",
+  items: [
+    "Las páginas antiguas de los módulos redirigen a la consola: los marcadores y enlaces siguen funcionando.",
+    "El enlace «Página completa» desaparece en los módulos rehechos en la consola.",
+    "Código sin uso eliminado (pantallas antiguas y componentes huérfanos).",
+    "Seguridad: 20 alertas de dependencias menos (patch-package eliminado, js-yaml actualizado).",
+  ],
+};
+
+const v1_67_0_de: ChangelogEntry = {
+  version: "v1.67.0",
+  date: "2026-10-10",
+  title: "Aufräumen und Sicherheit",
+  items: [
+    "Alte Modulseiten leiten zur Konsole weiter: bestehende Lesezeichen und Links funktionieren weiter.",
+    "Der Link „Ganze Seite“ entfällt bei Modulen, die in der Konsole neu gebaut wurden.",
+    "Ungenutzter Code entfernt (alte Modulansichten und verwaiste Komponenten).",
+    "Sicherheit: 20 Abhängigkeitswarnungen weniger (patch-package entfernt, js-yaml aktualisiert).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_67_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_67_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_67_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_67_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

@@ -29,7 +29,7 @@ import ConsoleMembers from "@/components/discord/console/ConsoleMembers";
 import ConsoleCommands from "@/components/discord/console/ConsoleCommands";
 import ConsoleTools from "@/components/discord/console/ConsoleTools";
 import ConsoleProtections from "@/components/discord/console/ConsoleProtections";
-import ModuleEmbed from "@/components/discord/console/ModuleEmbed";
+import ModuleEmbed, { hasNativePage } from "@/components/discord/console/ModuleEmbed";
 import GuildOverviewScreen from "@/components/discord/GuildOverviewScreen";
 import GuildAssistedSetup from "@/components/discord/GuildAssistedSetup";
 import GuildSecurityScan from "@/components/discord/GuildSecurityScan";
@@ -1349,7 +1349,7 @@ export default function DiscordDashboardPage() {
                   {(() => {
                     const panelOn = moduleStatus[activeMeta.id];
                     const panelPending = pendingModuleIds.has(activeMeta.id);
-                    const fullPage = MODULE_PAGES[activeMeta.id];
+                    const fullPage = hasNativePage(activeMeta.id) ? null : MODULE_PAGES[activeMeta.id];
                     return (
                       <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-5 py-3.5">
                         <div className="flex min-w-0 items-center gap-3">

@@ -1,10 +1,11 @@
-import SettingsCenterClient from "./SettingsCenterClient";
+import LegacyModuleRedirect from "@/components/discord/LegacyModuleRedirect";
 
 export const metadata = {
   title: "Paramètres | ETHONE",
   description: "Langue, fuseau horaire, contacts d'urgence et commandes du bot sur votre serveur.",
 };
 
-export default function SettingsPage() {
-  return <SettingsCenterClient />;
+/** Ancienne adresse : le module s'ouvre maintenant dans la console. */
+export default function SettingsLegacyPage() {
+  return <LegacyModuleRedirect module="settings" />;
 }

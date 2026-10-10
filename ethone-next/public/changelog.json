@@ -1,5 +1,16 @@
 [
   {
+    "version": "v1.67.0",
+    "date": "2026-10-10",
+    "title": "Ménage et sécurité",
+    "items": [
+      "Les anciennes pages des modules renvoient vers la console : les favoris et liens existants marchent toujours.",
+      "Le lien « Pleine page » disparaît pour les modules refaits dans la console.",
+      "Code inutilisé retiré (anciens écrans de modules et composants orphelins).",
+      "Sécurité : 20 alertes de dépendances en moins (patch-package retiré, js-yaml à jour)."
+    ]
+  },
+  {
     "version": "v1.66.1",
     "date": "2026-10-10",
     "title": "Incidents plus lisibles",
@@ -630,17 +641,6 @@
       "Synchronisation automatique de l'avatar Discord en direct depuis la session bot authentifiée",
       "Micro-interactions par ressort dynamique sur les boutons d'action (Gérer, Installer, Vérifier)",
       "Indicateur d'étapes interactif avec validation visuelle dynamique lors de l'ajout du bot"
-    ]
-  },
-  {
-    "version": "v1.55.58",
-    "date": "2026-10-07",
-    "title": "Pleine Hauteur et Épuration de la Vue d'Installation Bot",
-    "items": [
-      "Suppression du bouton de recherche de réglage sur la page d'installation du bot",
-      "Extension de la barre latérale jusqu'au bas de l'écran avec verrouillage plein écran 100dvh",
-      "Suppression du décrochage en bas à gauche de la console d'installation",
-      "Stabilisation de la transition et de la hauteur des conteneurs parents"
     ]
   }
 ]

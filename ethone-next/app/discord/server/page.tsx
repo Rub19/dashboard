@@ -1,17 +1,11 @@
-import { Suspense } from "react";
-import ServerManagementClient from "./ServerManagementClient";
+import LegacyModuleRedirect from "@/components/discord/LegacyModuleRedirect";
 
 export const metadata = {
   title: "Server Management Center — ETHONE",
   description: "Centre de gestion globale du serveur Discord",
 };
 
-export const dynamic = "force-static";
-
-export default function ServerManagementPage() {
-  return (
-    <Suspense fallback={<div className="min-h-[50vh]" />}>
-      <ServerManagementClient initialTab="overview" />
-    </Suspense>
-  );
+/** Ancienne adresse : le module s'ouvre maintenant dans la console. */
+export default function ServerLegacyPage() {
+  return <LegacyModuleRedirect module="server" />;
 }

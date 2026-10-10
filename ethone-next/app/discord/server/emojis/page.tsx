@@ -1,5 +1,4 @@
-import { Suspense } from "react";
-import ServerManagementClient from "../ServerManagementClient";
+import LegacyModuleRedirect from "@/components/discord/LegacyModuleRedirect";
 
 export const metadata = {
   title: "Emojis & Stickers — Server Management Center — ETHONE",
@@ -7,10 +6,7 @@ export const metadata = {
 
 export const dynamic = "force-static";
 
-export default function ServerEmojisPage() {
-  return (
-    <Suspense fallback={<div className="min-h-[50vh]" />}>
-      <ServerManagementClient initialTab="emojis" />
-    </Suspense>
-  );
+/** Ancien onglet de la gestion du serveur : le module Serveur s'ouvre maintenant dans la console. */
+export default function ServerLegacyPage() {
+  return <LegacyModuleRedirect module="server" />;
 }

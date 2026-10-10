@@ -1,10 +1,11 @@
-import StickyCenterClient from "./StickyCenterClient";
+import LegacyModuleRedirect from "@/components/discord/LegacyModuleRedirect";
 
 export const metadata = {
   title: "Sticky Messages | ETHONE",
   description: "Garde un message important toujours visible en bas d'un salon Discord.",
 };
 
-export default function StickyPage() {
-  return <StickyCenterClient />;
+/** Ancienne adresse : le module s'ouvre maintenant dans la console. */
+export default function StickyLegacyPage() {
+  return <LegacyModuleRedirect module="sticky" />;
 }

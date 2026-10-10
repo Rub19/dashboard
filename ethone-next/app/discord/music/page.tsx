@@ -1,7 +1,6 @@
-import MusicCenterClient from "./MusicCenterClient";
+import LegacyModuleRedirect from "@/components/discord/LegacyModuleRedirect";
 
-export const dynamic = "force-static";
-
-export default function MusicCenterPage() {
-  return <MusicCenterClient />;
+/** Ancienne adresse : le module s'ouvre maintenant dans la console. */
+export default function MusicLegacyPage() {
+  return <LegacyModuleRedirect module="music" />;
 }

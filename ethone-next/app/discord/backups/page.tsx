@@ -1,10 +1,11 @@
-import BackupsCenterClient from "./BackupsCenterClient";
+import LegacyModuleRedirect from "@/components/discord/LegacyModuleRedirect";
 
 export const metadata = {
   title: "Server Backup & Disaster Recovery | ETHONE",
   description: "Protect your server configuration and restore it when you need it.",
 };
 
-export default function BackupsPage() {
-  return <BackupsCenterClient />;
+/** Ancienne adresse : le module s'ouvre maintenant dans la console. */
+export default function BackupsLegacyPage() {
+  return <LegacyModuleRedirect module="backups" />;
 }

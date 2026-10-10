@@ -1,5 +1,4 @@
-import { Suspense } from "react";
-import ServerManagementClient from "../../ServerManagementClient";
+import LegacyModuleRedirect from "@/components/discord/LegacyModuleRedirect";
 
 export const metadata = {
   title: "Salon — Server Management Center — ETHONE",
@@ -16,11 +15,7 @@ export function generateStaticParams() {
   ];
 }
 
-export default async function ChannelDetailPage({ params }: { params: Promise<{ channelId: string }> }) {
-  const resolved = await params;
-  return (
-    <Suspense fallback={<div className="min-h-[50vh]" />}>
-      <ServerManagementClient initialTab="channels" openedChannelId={resolved.channelId} />
-    </Suspense>
-  );
+/** Ancien onglet de la gestion du serveur : le module Serveur s'ouvre maintenant dans la console. */
+export default function ServerLegacyPage() {
+  return <LegacyModuleRedirect module="server" />;
 }

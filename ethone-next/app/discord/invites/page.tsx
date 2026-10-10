@@ -1,15 +1,6 @@
-import { Suspense } from "react";
-import InvitesCenterClient from "./InvitesCenterClient";
-import ModuleSkeleton from "@/components/discord/ModuleSkeleton";
+import LegacyModuleRedirect from "@/components/discord/LegacyModuleRedirect";
 
-export const dynamic = "force-static";
-
-export default function DiscordInvitesPage() {
-  return (
-    <Suspense
-      fallback={<ModuleSkeleton label="Chargement d'Invite Tracker…" />}
-    >
-      <InvitesCenterClient />
-    </Suspense>
-  );
+/** Ancienne adresse : le module s'ouvre maintenant dans la console. */
+export default function InvitesLegacyPage() {
+  return <LegacyModuleRedirect module="invites" />;
 }

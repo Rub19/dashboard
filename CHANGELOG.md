@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.67.0 — 2026-10-10
+
+**Ménage et sécurité**
+
+- Les anciennes pages des modules renvoient vers la console : les favoris et liens existants marchent toujours.
+- Le lien « Pleine page » disparaît pour les modules refaits dans la console.
+- Code inutilisé retiré (anciens écrans de modules et composants orphelins).
+- Sécurité : 20 alertes de dépendances en moins (patch-package retiré, js-yaml à jour).
+
 ## v1.66.1 — 2026-10-10
 
 **Incidents plus lisibles**

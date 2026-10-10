@@ -1,4 +1,4 @@
-# ETHONE — passation (2026-10-10, version 1.66.1)
+# ETHONE — passation (2026-10-10, version 1.67.0)
 
 ## Projet
 - `ethone-next/` : site Next.js statique (ethone.dev, Cloudflare Pages, déploiement auto au push sur `main`).
@@ -62,7 +62,8 @@
    - Anti-réorganisation : Discord ne journalise pas l'auteur → remise en place sans sanction.
    - Anti-toxicité : lexique local simple (pas d'IA) ; anti-token grab : texte et liens seulement (pas d'analyse d'image).
    - Fait en 1.66.0 : l'onglet Incidents de Logs fusionne `/security/incidents` (incidents `PROTECTION`) ; compteur « Protections X/45 » dans le HubSidebar (événement `etho:protections-changed`) ; Whitelist : la liste « anti-nuke » du bot (celle que lisent les protections) s'affiche « Protections ».
-   - Ménage possible : les anciennes pages `app/discord/*` remplacées par la console ne sont plus liées.
+   - Ménage fait en 1.67.0 : la page racine de chaque module natif (`app/discord/<module>/page.tsx`, et les onglets `app/discord/server/*`) n'est plus qu'une redirection (`LegacyModuleRedirect`) vers `/discord/?guildId=…&module=…` ; les anciens écrans `*CenterClient.tsx` et 8 composants orphelins sont supprimés. Gardés : les sous-pages encore visées par des liens (détail d'événement, vote/résultats de sondage, tickets/[id], modération cases/users/reports/automod, formulaires), `bot`, `setup`, `overview`, `security`, `scan`, `owner-shield`, `emojis`, et `statroles/StatrolesCenterClient.tsx` (GroupEditor réutilisé par la console). Le lien « Pleine page » est masqué pour les modules natifs (`hasNativePage`).
+   - Failles npm du site : 5 restantes, toutes `braces` via eslint-config-next (pas de version corrigée publiée, outil de dev uniquement). `patch-package` retiré (aucun patch), `js-yaml` forcé en v4 sous `@istanbuljs/load-nyc-config`.
 5. **Mail** : corrigé le 2026-10-09 (liste > 64 Ko = 502 ; objets =?UTF-8?…?= décodés via postal-mime). La redirection marche ; le mail reçu le 2026-10-09 à 11:40 est bien dans la boîte ETHONE (non lu) et copié sur Gmail. Si l'utilisateur ne le voit pas dans ETHONE, regarder le rafraîchissement de la liste et les notifications temps réel de `app/mail/page.tsx`.
 6. **Modules** : tous au format Keeper (1.63.0). Éditeurs avancés aussi dans la console (1.64.0-1.65.0) : restauration guidée, AutoMod Discord, commandes personnalisées (`CustomCommandEditor.tsx`), formulaires (`FormEditor.tsx`, 5 questions texte max = fenêtre Discord), sondages avancés (`AdvancedPollForm.tsx`), participants d'événements (`EventDetails.tsx`). Les anciennes pages existent encore mais ne sont plus liées.
 7. Commandes : `/help` est à jour (catégorie Sécurité = `/protection`, `/antiraid`, `/automod`, `/verification`, `/logs`). Les réponses en texte brut de `/games` et `/bienvenue` sont passées en embeds ; `/tag` reste en texte (contenu du tag).

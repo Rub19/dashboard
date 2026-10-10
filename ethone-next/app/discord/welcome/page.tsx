@@ -1,15 +1,6 @@
-import { Suspense } from "react";
-import { WelcomeCenterClient } from "./WelcomeCenterClient";
-import ModuleSkeleton from "@/components/discord/ModuleSkeleton";
+import LegacyModuleRedirect from "@/components/discord/LegacyModuleRedirect";
 
-export const dynamic = "force-static";
-
-export default function DiscordWelcomePage() {
-  return (
-    <Suspense
-      fallback={<ModuleSkeleton label="Chargement de Welcome & Onboarding…" />}
-    >
-      <WelcomeCenterClient />
-    </Suspense>
-  );
+/** Ancienne adresse : le module s'ouvre maintenant dans la console. */
+export default function WelcomeLegacyPage() {
+  return <LegacyModuleRedirect module="welcome" />;
 }

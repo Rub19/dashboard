@@ -69,6 +69,8 @@ const NATIVE: Record<string, ComponentType<{ guildId: string }>> = {
 };
 
 export const hasEmbeddedPage = (moduleId: string) => moduleId in PAGES || moduleId in NATIVE;
+/** Module refait dans la console : son ancienne adresse ne fait que rediriger ici (pas de lien « Pleine page »). */
+export const hasNativePage = (moduleId: string) => moduleId in NATIVE;
 
 export default function ModuleEmbed({ moduleId, guildId }: { moduleId: string; guildId: string }) {
   const Native = NATIVE[moduleId];

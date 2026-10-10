@@ -2,6 +2,7 @@ import { Guild, GuildMember } from 'discord.js';
 import { inviteRepository } from '../storage/inviteRepository.js';
 import { logService } from '../../logs/services/logService.js';
 import { logger } from '../../../utils/logger.js';
+import { isSensitiveRole } from '../../../utils/roleSafety.js';
 
 export class ReferralRewardService {
   public async checkAndGrantRewards(guild: Guild, inviterId: string): Promise<void> {
@@ -31,7 +32,7 @@ export class ReferralRewardService {
         if (eligibleInvites >= rule.requiredValidInvites) {
           if (rule.roleId) {
             const role = guild.roles.cache.get(rule.roleId);
-            if (role && !member.roles.cache.has(role.id)) {
+            if (role && !isSensitiveRole(role) && !member.roles.cache.has(role.id)) {
               // Verify bot role hierarchy
               const botMember = guild.members.me;
               if (botMember && botMember.permissions.has('ManageRoles')) {

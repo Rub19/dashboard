@@ -65,7 +65,14 @@ export class EventService {
     const event = eventRepository.getEventById(guildId, eventId);
     if (!event) return null;
 
-    Object.assign(event, updates, { updatedAt: new Date().toISOString() });
+    // Identité et compteurs figés : jamais déplacé vers un autre serveur, ni organisateur ou participations falsifiés.
+    const { id: _i, guildId: _g, organizer: _o, stats: _s, createdAt: _c, ...changes } = updates;
+    void _i;
+    void _g;
+    void _o;
+    void _s;
+    void _c;
+    Object.assign(event, changes, { updatedAt: new Date().toISOString() });
     eventRepository.saveEvent(event);
     logger.info(`[EventService] Event mis à jour : "${event.title}" (${event.id})`);
     return event;

@@ -152,19 +152,9 @@ export class DiscordFormPanel {
       return;
     }
 
-    // Web form link fallback
-    const webUrl = `https://ethone.dev/discord/forms/${form.id}?guildId=${form.guildId}`;
-    const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
-      new ButtonBuilder()
-        .setLabel(t.form_btn_open_web)
-        .setStyle(ButtonStyle.Link)
-        .setURL(webUrl)
-        .setEmoji('🌐')
-    );
-
+    // Pas de lien vers le dashboard : il est réservé au staff, un membre ne pourrait pas y répondre.
     await interaction.reply({
-      embeds: [baseEmbed('info').setTitle(`📝 ${form.title}`).setDescription(t.form_web_required_desc)],
-      components: [row],
+      embeds: [baseEmbed('warning').setTitle(`📝 ${form.title}`).setDescription(t.form_web_required_desc)],
       flags: MessageFlags.Ephemeral,
     });
   }

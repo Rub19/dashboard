@@ -19,6 +19,7 @@ import { buildLevelUpEmbed, buildRewardEmbed } from './levelMessages.js';
 import type { LevelingConfig } from '../types/levelingConfig.js';
 import { isSendableTarget, sendToConfiguredChannel } from '../../../utils/channelSend.js';
 import { isModuleEnabled } from '../../../services/moduleRegistry.js';
+import { isSensitiveRole } from '../../../utils/roleSafety.js';
 
 const VOICE_TICK_MS = 60_000;
 
@@ -220,7 +221,7 @@ class LevelingService {
         // Mode cumulatif : attribuer tous les rôles débloqués
         for (const rew of eligibleRewards) {
           const role = guild.roles.cache.get(rew.roleId);
-          if (role && role.position < botHighest && !member.roles.cache.has(role.id)) {
+          if (role && !isSensitiveRole(role) && role.position < botHighest && !member.roles.cache.has(role.id)) {
             await member.roles.add(role, `Récompense de niveau ${rew.level} atteinte`).catch(() => {});
             newlyGranted.push({ name: role.name, level: rew.level });
             if (!user.unlockedRewardRoleIds.includes(role.id)) {
@@ -244,7 +245,7 @@ class LevelingService {
         }
 
         // Ajouter le plus haut rôle
-        if (highestRole && highestRole.position < botHighest && !member.roles.cache.has(highestRole.id)) {
+        if (highestRole && !isSensitiveRole(highestRole) && highestRole.position < botHighest && !member.roles.cache.has(highestRole.id)) {
           await member.roles.add(highestRole, `Récompense de niveau ${highestReward.level}`).catch(() => {});
           newlyGranted.push({ name: highestRole.name, level: highestReward.level });
           user.unlockedRewardRoleIds = [highestRole.id];

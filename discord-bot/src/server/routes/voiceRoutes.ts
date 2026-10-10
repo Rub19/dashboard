@@ -506,9 +506,10 @@ export function createVoiceRouter(client: Client): Router {
         res.status(403).json({ error: 'Tu ne peux modifier que tes propres préférences.' });
         return;
       }
+      // L'identifiant vient toujours de la session, jamais du corps de la requête.
       const saved = voiceRepository.saveUserPreferences({
-        userId,
         ...req.body,
+        userId,
       });
       res.json({ preferences: saved });
     } catch (err: any) {

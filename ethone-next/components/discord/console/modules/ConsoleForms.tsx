@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import ChannelPicker from "../../ChannelPicker";
 import { confirmDialog } from "@/lib/confirmDialog";
@@ -10,6 +9,7 @@ import { SPRING_LAYOUT } from "@/lib/ease";
 import { pageStagger } from "@/lib/motion-variants";
 import { cn } from "@/lib/utils";
 import { ConsolePage, EmptyLine, GhostButton, Panel, Row, Segmented, StatTile, useGuildApi } from "../kit";
+import FormEditor, { type FullForm } from "./FormEditor";
 
 type FormStatus = "DRAFT" | "PUBLISHED" | "CLOSED" | "ARCHIVED";
 type RespStatus = "PENDING" | "REVIEWING" | "APPROVED" | "REJECTED" | "CHANGES_REQUESTED" | "ARCHIVED" | "SPAM";
@@ -52,6 +52,7 @@ export default function ConsoleForms({ guildId }: { guildId: string }) {
   const [responses, setResponses] = useState<Resp[] | null>(null);
   const [filter, setFilter] = useState<keyof typeof FILTERS>("todo");
   const [openForm, setOpenForm] = useState<string | null>(null);
+  const [editing, setEditing] = useState<FullForm | null>(null);
   const [openResp, setOpenResp] = useState<string | null>(null);
   const [reason, setReason] = useState("");
   const [panelChannel, setPanelChannel] = useState("");
@@ -108,6 +109,23 @@ export default function ConsoleForms({ guildId }: { guildId: string }) {
     }
   };
 
+  const createForm = async () => {
+    setBusy(true);
+    const r = await api<{ form: FullForm & Form }>("/forms", {
+      method: "POST",
+      json: { title: "Nouveau formulaire", fields: [{ id: `f-${Date.now().toString(36)}`, type: "SHORT_TEXT", label: "Ton pseudo en jeu", description: "", placeholder: "", required: true, sectionId: "sec-1", order: 0, options: [] }] },
+    });
+    setBusy(false);
+    if (r?.form) {
+      setForms((l) => [...(l ?? []), r.form]);
+      setEditing(r.form);
+    }
+  };
+  const editForm = async (id: string) => {
+    const r = await api<{ form: FullForm }>(`/forms/${id}`);
+    if (r?.form) setEditing(r.form);
+  };
+
   const shown = (responses ?? []).filter((r) => FILTERS[filter](r.status)).sort((a, b) => b.submittedAt.localeCompare(a.submittedAt));
   const current = forms?.find((f) => f.id === formId) ?? null;
 
@@ -115,9 +133,9 @@ export default function ConsoleForms({ guildId }: { guildId: string }) {
     <ConsolePage
       title="Formulaires"
       actions={
-        <Link href={`/discord/forms/create?guildId=${guildId}`} className="rounded-lg border border-[var(--panel-border)] px-3 py-1.5 text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--surface-hover)]">
+        <GhostButton disabled={busy} onClick={createForm}>
           Nouveau formulaire
-        </Link>
+        </GhostButton>
       }
     >
       <motion.div variants={pageStagger} className="grid grid-cols-2 gap-3 lg:grid-cols-4">
@@ -126,6 +144,21 @@ export default function ConsoleForms({ guildId }: { guildId: string }) {
         <StatTile label="Acceptées" value={stats?.approvedCount ?? "—"} />
         <StatTile label="Refusées" value={stats?.rejectedCount ?? "—"} />
       </motion.div>
+
+      {editing && (
+        <Panel title={`Modifier · ${editing.title}`}>
+          <FormEditor
+            key={editing.id}
+            guildId={guildId}
+            form={editing}
+            onCancel={() => setEditing(null)}
+            onSaved={(saved) => {
+              setForms((l) => l?.map((x) => (x.id === saved.id ? (saved as unknown as Form) : x)) ?? null);
+              setEditing(null);
+            }}
+          />
+        </Panel>
+      )}
 
       <Panel title="Formulaires du serveur">
         {!forms ? (
@@ -173,9 +206,7 @@ export default function ConsoleForms({ guildId }: { guildId: string }) {
                             </GhostButton>
                           )}
                           <GhostButton onClick={() => setFormId(f.id)}>Voir les réponses</GhostButton>
-                          <Link href={`/discord/forms/${f.id}?guildId=${guildId}`} className="rounded-lg border border-[var(--panel-border)] px-2.5 py-1.5 text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--surface-hover)]">
-                            Modifier les questions
-                          </Link>
+                          <GhostButton onClick={() => editForm(f.id)}>Modifier les questions</GhostButton>
                           <GhostButton onClick={() => duplicate(f)}>Dupliquer</GhostButton>
                           <span className="flex-1" />
                           <GhostButton onClick={() => remove(f)}>Supprimer</GhostButton>

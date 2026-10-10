@@ -4,6 +4,7 @@ import { Client, GuildMember, PermissionFlagsBits } from 'discord.js';
 import { AutoRoleConfig, AutoRoleConfigSchema } from '../types/autoRoleConfig.js';
 import { logService } from '../../logs/services/logService.js';
 import { logger } from '../../../utils/logger.js';
+import { isSensitiveRole } from '../../../utils/roleSafety.js';
 
 class AutoRoleService {
   private configPath = path.resolve(process.cwd(), 'data', 'auto_roles.json');
@@ -158,6 +159,10 @@ class AutoRoleService {
       try {
         const role = guild.roles.cache.get(roleId);
         if (!role || role.managed || role.id === guild.id) continue;
+        if (isSensitiveRole(role)) {
+          logger.warn(`[AutoRole] Rôle sensible "${role.name}" refusé : jamais donné automatiquement à l'arrivée.`);
+          continue;
+        }
 
         if (role.position >= botHighest) {
           logger.warn(`[AutoRole] Rôle "${role.name}" trop haut dans la hiérarchie pour être attribué.`);
@@ -242,7 +247,7 @@ class AutoRoleService {
       const override = config.userOverrides.find((o) => o.userId === member.id);
       const base = isBot ? botRoleIds : humanRoleIds;
       const wanted = [...new Set([...base, ...assignable(override?.roleIds || [])])];
-      const missing = wanted.filter((id) => !member.roles.cache.has(id));
+      const missing = wanted.filter((id) => !member.roles.cache.has(id) && !(guild.roles.cache.get(id) && isSensitiveRole(guild.roles.cache.get(id)!)));
       if (missing.length === 0) continue;
       try {
         await member.roles.add(missing, 'Synchronisation des rôles automatiques (Auto-Role)');

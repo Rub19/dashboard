@@ -1,13 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import ChannelPicker, { fetchGuildChannels, type ChannelOption } from "../../ChannelPicker";
 import { confirmDialog } from "@/lib/confirmDialog";
 import { SPRING_LAYOUT } from "@/lib/ease";
 import { pageStagger } from "@/lib/motion-variants";
 import { cn } from "@/lib/utils";
+import EventDetails from "./EventDetails";
 import { ConsolePage, EmptyLine, GhostButton, Panel, Row, Segmented, StatTile, Stepper, Switch, useGuildApi } from "../kit";
 
 type Category = "GAMING" | "TOURNAMENT" | "COMMUNITY" | "STAFF" | "WATCH_PARTY" | "GIVEAWAY" | "MEETING" | "VOICE" | "OTHER";
@@ -23,7 +23,7 @@ type Event = {
   endDate: string;
   durationMinutes: number;
   location: { type: string; channelId?: string; channelName?: string; externalUrl?: string };
-  capacity: { unlimited: boolean; maxParticipants: number };
+  capacity: { unlimited: boolean; maxParticipants: number; waitlistEnabled: boolean };
   stats: { goingCount: number; maybeCount: number; attendedCount: number };
   discordScheduledEventId?: string;
 };
@@ -70,6 +70,7 @@ export default function ConsoleEvents({ guildId, initialView = "list" }: { guild
   const [filter, setFilter] = useState<keyof typeof FILTERS>("next");
   const [open, setOpen] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [details, setDetails] = useState<string | null>(null);
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -274,12 +275,11 @@ export default function ConsoleEvents({ guildId, initialView = "list" }: { guild
                             </>
                           )}
                           <GhostButton onClick={() => duplicate(e)}>Dupliquer</GhostButton>
-                          <Link href={`/discord/events?guildId=${guildId}`} className="rounded-lg border border-[var(--panel-border)] px-2.5 py-1.5 text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--surface-hover)]">
-                            Participants et réglages avancés
-                          </Link>
+                          <GhostButton onClick={() => setDetails(details === e.id ? null : e.id)}>{details === e.id ? "Masquer les participants" : "Participants et réglages"}</GhostButton>
                           <span className="flex-1" />
                           {e.status !== "CANCELLED" && e.status !== "COMPLETED" && <GhostButton onClick={() => cancel(e)}>Annuler</GhostButton>}
                         </div>
+                        {details === e.id && <EventDetails guildId={guildId} event={e} onChanged={load} />}
                       </div>
                     </motion.div>
                   )}

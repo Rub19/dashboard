@@ -1,4 +1,4 @@
-# ETHONE — passation (2026-10-10, version 1.64.0)
+# ETHONE — passation (2026-10-10, version 1.65.0)
 
 ## Projet
 - `ethone-next/` : site Next.js statique (ethone.dev, Cloudflare Pages, déploiement auto au push sur `main`).
@@ -47,6 +47,9 @@
 - Accès : un admin Discord est en lecture seule (`readOnlyBlocked` dans `guildAuth.ts`) ; seuls propriétaire et owners Etho écrivent.
 - IA : `PUT /ai/settings` et `/ai/channels` validés ; `dailyBudgetTokens` plafonné mais NON appliqué par le moteur (pas affiché). Aucune clé IA payante sur le VPS (fournisseur BUILTIN).
 - Commandes personnalisées : `update` ne peut plus changer guildId/id/usageCount ; `GET /:id` vérifie le serveur. Suggestions : `router.param('id')` vérifie le serveur.
+- Rôles sensibles : `utils/roleSafety.ts` (`isSensitiveRole`) bloque tout rôle avec permissions de modération/admin dans les attributions automatiques (panneau de rôles, auto-rôle, niveaux, invitations, boutique, commandes perso). Test : `tests/test_role_safety_v1.ts`.
+- Événements : `updateEvent` fige id/guildId/organizer/stats. Préférences vocales : userId toujours celui de la session.
+- Formulaires : le repli web (page staff-only) est remplacé par un message ; limite connue : un membre ne peut répondre que par la fenêtre Discord.
 - Sauvegardes : `PUT /backups/settings` validé (rétention ≤ 30 sauvegardes / 90 jours).
 - Formulaires et événements : examinateur / organisateur = `req.user`, jamais une valeur du client.
 - Accès VPS depuis le PC Windows : clé `~/.ssh/id_ed25519_ethone`, alias `vps` (ubuntu@141.94.237.150).
@@ -62,5 +65,5 @@
    - Le HubSidebar pourrait afficher le compteur « Protections X/45 » comme Keeper.
    - La page Whitelist parle encore de « anti-raid / anti-nuke » : à aligner sur les protections.
 5. **Mail** : corrigé le 2026-10-09 (liste > 64 Ko = 502 ; objets =?UTF-8?…?= décodés via postal-mime). La redirection marche ; le mail reçu le 2026-10-09 à 11:40 est bien dans la boîte ETHONE (non lu) et copié sur Gmail. Si l'utilisateur ne le voit pas dans ETHONE, regarder le rafraîchissement de la liste et les notifications temps réel de `app/mail/page.tsx`.
-6. **Modules** : tous au format Keeper (1.63.0). Les anciennes pages pleine page restent accessibles pour les éditeurs avancés (sondages, formulaires, commandes, AutoMod, restauration de sauvegarde, participants d'événements).
+6. **Modules** : tous au format Keeper (1.63.0). Éditeurs avancés aussi dans la console (1.64.0-1.65.0) : restauration guidée, AutoMod Discord, commandes personnalisées (`CustomCommandEditor.tsx`), formulaires (`FormEditor.tsx`, 5 questions texte max = fenêtre Discord), sondages avancés (`AdvancedPollForm.tsx`), participants d'événements (`EventDetails.tsx`). Les anciennes pages existent encore mais ne sont plus liées.
 7. Commandes : `/help` est à jour (catégorie Sécurité = `/protection`, `/antiraid`, `/automod`, `/verification`, `/logs`). Les réponses en texte brut de `/games` et `/bienvenue` sont passées en embeds ; `/tag` reste en texte (contenu du tag).

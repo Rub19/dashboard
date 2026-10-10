@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { Plus, Trash2 } from "@/components/icons/ph";
 import ChannelPicker from "../../ChannelPicker";
@@ -10,11 +9,12 @@ import { sinceLabel } from "@/lib/discord/security-scan";
 import { SPRING_LAYOUT } from "@/lib/ease";
 import { pageStagger } from "@/lib/motion-variants";
 import { cn } from "@/lib/utils";
-import { ConsolePage, EmptyLine, GhostButton, Panel, Row, Segmented, StatTile, Stepper, Switch, useGuildApi } from "../kit";
+import { BOT_API_URL, ConsolePage, EmptyLine, GhostButton, Panel, Row, Segmented, StatTile, Stepper, Switch, useGuildApi } from "../kit";
+import AdvancedPollForm from "./AdvancedPollForm";
 
 type Status = "DRAFT" | "SCHEDULED" | "ACTIVE" | "PAUSED" | "ENDED" | "ARCHIVED";
 type Option = { id: string; label: string; emoji?: string; votesCount: number };
-type Poll = { id: string; native?: boolean; title: string; status: Status; type: string; questions: { title: string; options: Option[] }[]; endsAt?: string; createdAt: string; updatedAt: string; creatorTag?: string };
+type Poll = { panelConfig?: { channelId?: string; messageId?: string }; id: string; native?: boolean; title: string; status: Status; type: string; questions: { title: string; options: Option[] }[]; endsAt?: string; createdAt: string; updatedAt: string; creatorTag?: string };
 
 const STATUS: Record<Status, string> = { DRAFT: "Brouillon", SCHEDULED: "Programmé", ACTIVE: "En cours", PAUSED: "En pause", ENDED: "Terminé", ARCHIVED: "Archivé" };
 const FILTERS = {
@@ -37,6 +37,7 @@ export default function ConsolePolls({ guildId }: { guildId: string }) {
   const [filter, setFilter] = useState<keyof typeof FILTERS>("live");
   const [open, setOpen] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [mode, setMode] = useState<"discord" | "advanced">("discord");
 
   // Brouillon du sondage rapide (sondage natif Discord).
   const [question, setQuestion] = useState("");
@@ -92,9 +93,15 @@ export default function ConsolePolls({ guildId }: { guildId: string }) {
     <ConsolePage
       title="Sondages"
       actions={
-        <Link href={`/discord/polls/create?guildId=${guildId}`} className="rounded-lg border border-[var(--panel-border)] px-3 py-1.5 text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--surface-hover)]">
-          Sondage avancé
-        </Link>
+        <Segmented
+          label="Type de sondage"
+          value={mode}
+          options={[
+            ["discord", "Sondage Discord"],
+            ["advanced", "Sondage avancé"],
+          ]}
+          onChange={setMode}
+        />
       }
     >
       <motion.div variants={pageStagger} className="grid grid-cols-2 gap-3 lg:grid-cols-4">
@@ -104,6 +111,9 @@ export default function ConsolePolls({ guildId }: { guildId: string }) {
         <StatTile label="Brouillons" value={polls ? all.filter((p) => p.status === "DRAFT").length : "—"} />
       </motion.div>
 
+      {mode === "advanced" && <AdvancedPollForm guildId={guildId} onCreated={() => { setFilter("live"); void load(); }} />}
+
+      {mode === "discord" && (
       <Panel title="Nouveau sondage" subtitle="Sondage Discord natif : les membres votent directement dans le message.">
         <Row label="Question">
           <input value={question} maxLength={300} onChange={(e) => setQuestion(e.target.value)} placeholder="Quel jeu ce week-end ?" className={input} />
@@ -157,6 +167,7 @@ export default function ConsolePolls({ guildId }: { guildId: string }) {
           </button>
         </div>
       </Panel>
+      )}
 
       <Panel
         title="Sondages du serveur"
@@ -257,10 +268,15 @@ export default function ConsolePolls({ guildId }: { guildId: string }) {
                                 Terminer maintenant
                               </GhostButton>
                             )}
+                            {!p.native && p.panelConfig?.channelId && (p.status === "ACTIVE" || p.status === "PAUSED") && (
+                              <GhostButton disabled={busy} onClick={() => action(p, "panel/deploy", { channelId: p.panelConfig?.channelId })}>
+                                {p.panelConfig?.messageId ? "Republier le panneau" : "Publier le panneau"}
+                              </GhostButton>
+                            )}
                             {!p.native && (
-                              <Link href={`/discord/polls/${p.id}?guildId=${guildId}`} className="rounded-lg border border-[var(--panel-border)] px-2.5 py-1.5 text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--surface-hover)]">
-                                Détails
-                              </Link>
+                              <a href={`${BOT_API_URL}/api/guilds/${guildId}/polls/${p.id}/export/csv`} className="rounded-lg border border-[var(--panel-border)] px-2.5 py-1.5 text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--surface-hover)]">
+                                Exporter les votes
+                              </a>
                             )}
                             <span className="flex-1" />
                             <GhostButton disabled={busy} onClick={() => remove(p)}>

@@ -49104,5 +49104,62 @@ CHANGELOG_BY_LANG.en.unshift(v1_64_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_64_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_64_0_de);
 
+const v1_65_0_fr: ChangelogEntry = {
+  version: "v1.65.0",
+  date: "2026-10-10",
+  title: "Console : éditeurs avancés au format Keeper et sécurité des rôles",
+  items: [
+    "Commandes personnalisées : éditeur complet dans la console (arguments, conditions si/alors/sinon, réponses texte ou embed avec boutons, rôle donné ou retiré, message privé, suppression du message), aperçu de test et enregistrement unique.",
+    "Formulaires : création et modification dans la console (jusqu'à 5 questions affichées dans la fenêtre Discord, ordre, obligatoire, longueur, délai entre deux réponses, ancienneté, rôles requis ou exclus, panneau).",
+    "Sondages : mode « Sondage avancé » (votes par boutons) avec choix et emojis, date de fin, anonymat, changement ou retrait du vote, rôles autorisés ou exclus, ancienneté, poids des votes par rôle et quorum ; republication du panneau et export des votes.",
+    "Événements : participants dans la console (inscrits, peut-être, liste d'attente), pointage des présences et retrait, modification du titre, de la description et des places.",
+    "Sécurité : un rôle avec des permissions de modération ou d'administration n'est plus jamais donné automatiquement (panneau de rôles, rôle à l'arrivée, récompenses de niveau et d'invitation, boutique, commandes personnalisées).",
+    "Sécurité : un événement ne peut plus être déplacé vers un autre serveur ni voir son organisateur ou ses compteurs modifiés ; les préférences vocales d'un membre ne peuvent plus être modifiées par un autre.",
+    "Formulaires : un formulaire impossible à ouvrir sur Discord n'envoie plus les membres vers une page réservée au staff ; ils reçoivent un message clair.",
+  ],
+};
+
+const v1_65_0_en: ChangelogEntry = {
+  version: "v1.65.0",
+  date: "2026-10-10",
+  title: "Console: advanced editors in the Keeper layout and role safety",
+  items: [
+    "Custom commands: full editor in the console (arguments, if/then/else conditions, text or embed replies with buttons, add/remove role, DM, delete trigger), test preview.",
+    "Forms: create and edit in the console (up to 5 questions in the Discord window, order, required, length, cooldown, account and membership age, required or excluded roles, panel).",
+    "Polls: Advanced poll mode with emojis, end date, anonymity, vote change/retract, allowed or excluded roles, minimum age, role weights and quorum; panel repost and vote export.",
+    "Events: participants in the console with attendance marking and removal, title, description and capacity editing.",
+    "Security: roles with moderation or admin permissions are never granted automatically anymore.",
+    "Security: events can no longer be moved to another server or have their organizer or counters changed; members can no longer change another member's voice preferences.",
+    "Forms: a form that cannot open on Discord no longer sends members to a staff-only page.",
+  ],
+};
+
+const v1_65_0_es: ChangelogEntry = {
+  version: "v1.65.0",
+  date: "2026-10-10",
+  title: "Consola: editores avanzados con el formato Keeper y seguridad de roles",
+  items: [
+    "Comandos personalizados, formularios, encuestas avanzadas y participantes de eventos en la consola.",
+    "Seguridad: los roles con permisos de moderación o administración ya no se dan automáticamente.",
+    "Seguridad: eventos y preferencias de voz protegidos.",
+  ],
+};
+
+const v1_65_0_de: ChangelogEntry = {
+  version: "v1.65.0",
+  date: "2026-10-10",
+  title: "Konsole: erweiterte Editoren im Keeper-Layout und Rollensicherheit",
+  items: [
+    "Eigene Befehle, Formulare, erweiterte Umfragen und Event-Teilnehmer in der Konsole.",
+    "Sicherheit: Rollen mit Moderations- oder Adminrechten werden nie mehr automatisch vergeben.",
+    "Sicherheit: Events und Sprach-Einstellungen geschützt.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_65_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_65_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_65_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_65_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

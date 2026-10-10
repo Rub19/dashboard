@@ -1,5 +1,19 @@
 [
   {
+    "version": "v1.65.0",
+    "date": "2026-10-10",
+    "title": "Console : éditeurs avancés au format Keeper et sécurité des rôles",
+    "items": [
+      "Commandes personnalisées : éditeur complet dans la console (arguments, conditions si/alors/sinon, réponses texte ou embed avec boutons, rôle donné ou retiré, message privé, suppression du message), aperçu de test et enregistrement unique.",
+      "Formulaires : création et modification dans la console (jusqu'à 5 questions affichées dans la fenêtre Discord, ordre, obligatoire, longueur, délai entre deux réponses, ancienneté, rôles requis ou exclus, panneau).",
+      "Sondages : mode « Sondage avancé » (votes par boutons) avec choix et emojis, date de fin, anonymat, changement ou retrait du vote, rôles autorisés ou exclus, ancienneté, poids des votes par rôle et quorum ; republication du panneau et export des votes.",
+      "Événements : participants dans la console (inscrits, peut-être, liste d'attente), pointage des présences et retrait, modification du titre, de la description et des places.",
+      "Sécurité : un rôle avec des permissions de modération ou d'administration n'est plus jamais donné automatiquement (panneau de rôles, rôle à l'arrivée, récompenses de niveau et d'invitation, boutique, commandes personnalisées).",
+      "Sécurité : un événement ne peut plus être déplacé vers un autre serveur ni voir son organisateur ou ses compteurs modifiés ; les préférences vocales d'un membre ne peuvent plus être modifiées par un autre.",
+      "Formulaires : un formulaire impossible à ouvrir sur Discord n'envoie plus les membres vers une page réservée au staff ; ils reçoivent un message clair."
+    ]
+  },
+  {
     "version": "v1.64.0",
     "date": "2026-10-10",
     "title": "Console : restauration de sauvegarde et éditeur AutoMod Discord au format Keeper",
@@ -631,18 +645,6 @@
       "Récupération automatique du profil Discord OAuth et du cache local synchronisé",
       "Affichage cohérent sur le tableau de bord Etho, la page d'installation et le sélecteur de serveurs",
       "Repli gracieux vers la photo de profil Ethone uniquement si le compte Discord n'est pas lié"
-    ]
-  },
-  {
-    "version": "v1.55.54",
-    "date": "2026-10-07",
-    "title": "Barre Latérale Inférieure Fidèle : Contrôles Thème, Langue & Déconnexion",
-    "items": [
-      "Barre latérale inférieure redessinée selon la référence visuelle sans conteneur superflu",
-      "Bouton interactif de bascule de thème clair et sombre synchronisé avec les réglages",
-      "Bouton de sélection de langue rapide avec drapeau interactif (FR / EN)",
-      "Bouton de déconnexion fonctionnel avec redirection sécurisée vers la page de connexion",
-      "Alignement parfait entre le sélecteur de serveurs, l'onboarding et le tableau de bord de configuration"
     ]
   }
 ]

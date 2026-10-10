@@ -1,6 +1,7 @@
 import { GuildMember, PermissionFlagsBits } from 'discord.js';
 import { economyStorage } from '../storage/economyStorage.js';
 import { logger } from '../../../utils/logger.js';
+import { isSensitiveRole } from '../../../utils/roleSafety.js';
 
 type UserRef = { id: string; username: string; avatarUrl?: string | null; bot?: boolean };
 
@@ -219,7 +220,7 @@ class EconomyService {
       return { ok: false, reason: 'role_unavailable' };
     }
     const role = member.guild.roles.cache.get(item.roleId);
-    if (!role || role.managed || role.position >= botMember.roles.highest.position) {
+    if (!role || isSensitiveRole(role) || role.position >= botMember.roles.highest.position) {
       return { ok: false, reason: 'role_unavailable' };
     }
 

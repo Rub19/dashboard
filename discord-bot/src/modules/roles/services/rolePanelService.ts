@@ -17,6 +17,7 @@ import {
 import { RoleItemStyle, RolePanel, RolePanelSchema } from '../types/rolePanel.js';
 import { logService } from '../../logs/services/logService.js';
 import { logger } from '../../../utils/logger.js';
+import { isSensitiveRole } from '../../../utils/roleSafety.js';
 
 class RolePanelService {
   private panelsPath = path.resolve(process.cwd(), 'data', 'role_panels.json');
@@ -451,6 +452,10 @@ class RolePanelService {
         action: 'removed',
       };
     } else {
+      if (isSensitiveRole(role)) {
+        logger.warn(`[RolePanel] Rôle sensible refusé (${role.name}) sur ${member.guild.id}`);
+        return { success: false, message: `❌ Le rôle **@${role.name}** a des permissions de modération : il ne peut pas être pris en libre-service.`, action: 'denied' };
+      }
       await member.roles.add(role, 'Attribution par utilisateur (Role Panel)');
 
       let extraText = '';

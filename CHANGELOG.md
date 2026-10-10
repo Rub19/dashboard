@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.65.0 — 2026-10-10
+
+**Console : éditeurs avancés au format Keeper et sécurité des rôles**
+
+- Commandes personnalisées : éditeur complet dans la console (arguments, conditions si/alors/sinon, réponses texte ou embed avec boutons, rôle donné ou retiré, message privé, suppression du message), aperçu de test et enregistrement unique.
+- Formulaires : création et modification dans la console (jusqu'à 5 questions affichées dans la fenêtre Discord, ordre, obligatoire, longueur, délai entre deux réponses, ancienneté, rôles requis ou exclus, panneau).
+- Sondages : mode « Sondage avancé » (votes par boutons) avec choix et emojis, date de fin, anonymat, changement ou retrait du vote, rôles autorisés ou exclus, ancienneté, poids des votes par rôle et quorum ; republication du panneau et export des votes.
+- Événements : participants dans la console (inscrits, peut-être, liste d'attente), pointage des présences et retrait, modification du titre, de la description et des places.
+- Sécurité : un rôle avec des permissions de modération ou d'administration n'est plus jamais donné automatiquement (panneau de rôles, rôle à l'arrivée, récompenses de niveau et d'invitation, boutique, commandes personnalisées).
+- Sécurité : un événement ne peut plus être déplacé vers un autre serveur ni voir son organisateur ou ses compteurs modifiés ; les préférences vocales d'un membre ne peuvent plus être modifiées par un autre.
+- Formulaires : un formulaire impossible à ouvrir sur Discord n'envoie plus les membres vers une page réservée au staff ; ils reçoivent un message clair.
+
 ## v1.64.0 — 2026-10-10
 
 **Console : restauration de sauvegarde et éditeur AutoMod Discord au format Keeper**

@@ -10,6 +10,8 @@ import {
 import { CommandAction, CommandResponseBlock } from '../types/customCommand.js';
 import { CommandVariableEngine, VariableContext } from './commandVariableEngine.js';
 import { logger } from '../../../utils/logger.js';
+import { isSensitiveRole } from '../../../utils/roleSafety.js';
+
 
 export class CommandActionExecutor {
   public static buildReply(
@@ -86,7 +88,9 @@ export class CommandActionExecutor {
             if (!action.roleId) break;
             const role = member.guild.roles.cache.get(action.roleId);
             const botMember = member.guild.members.me;
-            if (role && botMember && botMember.roles.highest.comparePositionTo(role) > 0) {
+            if (role && isSensitiveRole(role)) {
+              logger.warn(`[CustomCommands] Rôle sensible refusé (${role.name}) sur ${member.guild.id}`);
+            } else if (role && botMember && botMember.roles.highest.comparePositionTo(role) > 0) {
               await member.roles.add(role).catch(() => null);
             }
             break;

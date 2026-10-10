@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.68.1 — 2026-10-10
+
+**Connexion stable sur mobile**
+
+- Page de connexion : plus de tremblement sur téléphone (le fond ne suit plus le doigt, animations coûteuses coupées sur écran tactile).
+- Connexion plus compacte sur mobile : tout le formulaire et les connexions Google, GitHub et Discord tiennent à l'écran.
+
 ## v1.68.0 — 2026-10-10
 
 **Fiabilité, alertes et outils de modération**

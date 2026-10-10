@@ -49434,5 +49434,50 @@ CHANGELOG_BY_LANG.en.unshift(v1_68_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_68_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_68_0_de);
 
+const v1_68_1_fr: ChangelogEntry = {
+  version: "v1.68.1",
+  date: "2026-10-10",
+  title: "Connexion stable sur mobile",
+  items: [
+    "Page de connexion : plus de tremblement sur téléphone (le fond ne suit plus le doigt, animations coûteuses coupées sur écran tactile).",
+    "Connexion plus compacte sur mobile : tout le formulaire et les connexions Google, GitHub et Discord tiennent à l'écran.",
+  ],
+};
+
+const v1_68_1_en: ChangelogEntry = {
+  version: "v1.68.1",
+  date: "2026-10-10",
+  title: "Stable sign-in on mobile",
+  items: [
+    "Sign-in page: no more shaking on phones (the background no longer follows your finger, heavy animations are off on touch screens).",
+    "More compact sign-in on mobile: the whole form and Google, GitHub and Discord sign-in fit on screen.",
+  ],
+};
+
+const v1_68_1_es: ChangelogEntry = {
+  version: "v1.68.1",
+  date: "2026-10-10",
+  title: "Inicio de sesión estable en móvil",
+  items: [
+    "Página de inicio de sesión: ya no tiembla en el teléfono (el fondo ya no sigue al dedo, animaciones pesadas desactivadas en pantallas táctiles).",
+    "Inicio de sesión más compacto en móvil: todo el formulario y Google, GitHub y Discord caben en pantalla.",
+  ],
+};
+
+const v1_68_1_de: ChangelogEntry = {
+  version: "v1.68.1",
+  date: "2026-10-10",
+  title: "Stabile Anmeldung auf dem Handy",
+  items: [
+    "Anmeldeseite: kein Zittern mehr auf dem Handy (der Hintergrund folgt nicht mehr dem Finger, aufwendige Animationen auf Touchscreens aus).",
+    "Kompaktere Anmeldung auf dem Handy: Das ganze Formular und Google, GitHub und Discord passen auf den Bildschirm.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_68_1_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_68_1_en);
+CHANGELOG_BY_LANG.es.unshift(v1_68_1_es);
+CHANGELOG_BY_LANG.de.unshift(v1_68_1_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

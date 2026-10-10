@@ -415,7 +415,7 @@ export default function LoginPage() {
         >
           {/* Mode Selector Tabs (only when in root mode or register) */}
           {!(mode === "otp" && otpStep === "code") && (
-            <div className="mb-5">
+            <div className="mb-4 sm:mb-5">
               <div className="relative grid grid-cols-3 rounded-[calc(var(--inset-radius)+4px)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.035] p-1">
                 {(["password", "otp", "register"] as AuthMode[]).map((m) => {
                   const active = mode === m;
@@ -491,7 +491,7 @@ export default function LoginPage() {
                 initial={reduced ? "animate" : "initial"}
                 animate="animate"
                 exit="exit"
-                className="space-y-4"
+                className="space-y-3 sm:space-y-4"
               >
                 <AuthInputField
                   id="login-email"
@@ -575,7 +575,7 @@ export default function LoginPage() {
                 initial={reduced ? "animate" : "initial"}
                 animate="animate"
                 exit="exit"
-                className="space-y-4"
+                className="space-y-3 sm:space-y-4"
               >
                 <AuthInputField
                   id="otp-email"
@@ -811,7 +811,7 @@ export default function LoginPage() {
 
           {/* Social Authentication & Alternative Methods (only in login modes) */}
           {mode !== "register" && !(mode === "otp" && otpStep === "code") && (
-            <div className="mt-6 space-y-3.5">
+            <div className="mt-4 space-y-3 sm:mt-6 sm:space-y-3.5">
               <div className="flex items-center gap-3">
                 <div className="h-px flex-1 bg-gradient-to-r from-transparent to-[var(--panel-border)]" />
                 <span className="text-xs font-medium uppercase tracking-[0.16em] text-[var(--text-muted)]">
@@ -835,7 +835,7 @@ export default function LoginPage() {
                     onClick={() => handleOAuth(provider)}
                     aria-label={label}
                     leftIcon={providerIcon}
-                    className="h-12 rounded-[var(--inset-radius)] text-sm bg-[var(--text-primary)]/[0.03] hover:-translate-y-0.5 hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.06] [&_svg]:transition-transform [&_svg]:duration-300 hover:[&_svg]:scale-110"
+                    className="h-11 sm:h-12 rounded-[var(--inset-radius)] text-sm bg-[var(--text-primary)]/[0.03] hover:-translate-y-0.5 hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.06] [&_svg]:transition-transform [&_svg]:duration-300 hover:[&_svg]:scale-110"
                   >
                     <span className="hidden sm:inline">{label}</span>
                   </Button>

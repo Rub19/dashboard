@@ -34,7 +34,7 @@ export default function AuthScreen({ children }: { children: ReactNode }) {
     <div className="relative h-dvh w-full overflow-hidden bg-[var(--bg-main)] text-[var(--text-primary)] selection:bg-[var(--accent-primary)]/30 selection:text-[var(--text-primary)]">
       <AuthBackdrop />
       <div className="relative z-10 flex h-full flex-col overflow-y-auto overflow-x-hidden overscroll-contain [scrollbar-width:thin]">
-      <motion.header {...fadeIn(0.15)} className={`relative z-20 flex items-center justify-between gap-4 py-5 ${EDGE}`}>
+      <motion.header {...fadeIn(0.15)} className={`relative z-20 flex items-center justify-between gap-4 py-3 sm:py-5 ${EDGE}`}>
         <div className="flex min-w-0 items-center gap-4">
           <Link href="/login" aria-label="ETHONE" className={`group flex shrink-0 select-none items-center gap-3 ${FOCUS}`}>
             <span className="grid h-9 w-9 place-items-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] shadow-[inset_0_1px_0_rgb(255_255_255/0.06)] transition-colors duration-200 group-hover:border-[var(--text-primary)]/20">
@@ -51,7 +51,7 @@ export default function AuthScreen({ children }: { children: ReactNode }) {
       </motion.header>
 
       <main
-        className={`relative z-10 grid flex-1 grid-cols-[minmax(0,1fr)] content-center overflow-x-clip items-center gap-12 pb-[6vh] pt-2 lg:grid-cols-[minmax(0,35rem)_440px] lg:justify-center lg:gap-x-12 2xl:grid-cols-[minmax(0,38rem)_460px] 2xl:gap-x-14 ${CONTAINER}`}
+        className={`relative z-10 grid flex-1 grid-cols-[minmax(0,1fr)] content-center overflow-x-clip items-center gap-12 pb-3 pt-1 sm:pb-[6vh] sm:pt-2 lg:grid-cols-[minmax(0,35rem)_440px] lg:justify-center lg:gap-x-12 2xl:grid-cols-[minmax(0,38rem)_460px] 2xl:gap-x-14 ${CONTAINER}`}
       >
         <AuthShowcase />
         <div className="flex w-full justify-center lg:justify-end">{children}</div>
@@ -59,7 +59,7 @@ export default function AuthScreen({ children }: { children: ReactNode }) {
 
       <motion.footer
         {...fadeIn(0.6)}
-        className={`relative z-20 flex flex-col items-start gap-2 py-6 text-xs text-[var(--text-muted)] sm:flex-row sm:items-center sm:justify-between sm:gap-6 ${EDGE}`}
+        className={`relative z-20 flex flex-col items-start gap-2 py-4 text-xs sm:py-6 text-[var(--text-muted)] sm:flex-row sm:items-center sm:justify-between sm:gap-6 ${EDGE}`}
       >
         <span className="whitespace-nowrap">© {new Date().getFullYear()} ETHONE</span>
         <nav className="flex items-center gap-5 whitespace-nowrap">

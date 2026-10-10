@@ -43,6 +43,7 @@ export default function AuthBackdrop() {
   useEffect(() => {
     if (reduced) return;
     const onMove = (e: PointerEvent) => {
+      if (e.pointerType !== "mouse") return;
       px.set(e.clientX / window.innerWidth - 0.5);
       py.set(e.clientY / window.innerHeight - 0.5);
     };

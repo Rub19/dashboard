@@ -1664,7 +1664,7 @@ select[data-haptic-state="released"],
   background: var(--text-primary);
   animation: auth-particle 20s linear infinite;
 }
-@media (prefers-reduced-motion: reduce) {
+@media (prefers-reduced-motion: reduce), (hover: none) and (pointer: coarse) {
   .auth-field, .auth-particle { animation: none; }
 }
 

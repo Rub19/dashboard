@@ -13,7 +13,7 @@ export interface AuthInputFieldProps extends InputHTMLAttributes<HTMLInputElemen
 const AuthInputField = forwardRef<HTMLInputElement, AuthInputFieldProps>(
   ({ label, leftIcon, rightElement, error, className, id, disabled, ...props }, ref) => {
     return (
-      <div className="space-y-2 w-full text-left">
+      <div className="space-y-1.5 w-full text-left sm:space-y-2">
         <label htmlFor={id} className="block text-sm font-medium text-[var(--text-muted)] select-none">
           {label}
         </label>
@@ -28,7 +28,7 @@ const AuthInputField = forwardRef<HTMLInputElement, AuthInputFieldProps>(
             ref={ref}
             disabled={disabled}
             className={cn(
-              "auth-input h-[3.25rem] w-full rounded-[var(--inset-radius)] border bg-[var(--text-primary)]/[0.035] text-[15px] text-[var(--text-primary)] placeholder-[var(--text-muted)] transition-all duration-150 [transition-timing-function:var(--ease-snap)] outline-none",
+              "auth-input h-12 w-full sm:h-[3.25rem] rounded-[var(--inset-radius)] border bg-[var(--text-primary)]/[0.035] text-[15px] text-[var(--text-primary)] placeholder-[var(--text-muted)] transition-all duration-150 [transition-timing-function:var(--ease-snap)] outline-none",
               leftIcon ? "pl-12" : "pl-4",
               rightElement ? "pr-12" : "pr-4",
               "border-[var(--panel-border)] hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.05]",

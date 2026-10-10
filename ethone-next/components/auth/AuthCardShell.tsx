@@ -50,15 +50,15 @@ export default function AuthCardShell({ icon, title, subtitle, children, below, 
             light={success ? "--success" : "--accent-primary"}
             speed={9}
             className="shadow-[0_40px_90px_-40px_rgb(0_0_0/0.75),0_12px_30px_-18px_rgb(0_0_0/0.5)]"
-            innerClassName="backdrop-blur-2xl shadow-[inset_0_1px_0_rgb(255_255_255/0.05)]"
+            innerClassName="sm:backdrop-blur-2xl shadow-[inset_0_1px_0_rgb(255_255_255/0.05)]"
             innerStyle={{ background: "linear-gradient(180deg, color-mix(in srgb, var(--text-primary) 4%, var(--bg-card, var(--bg-main))) 0%, color-mix(in srgb, var(--bg-card, var(--bg-main)) 96%, transparent) 38%)" }}
           >
             <div aria-hidden className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-[var(--text-primary)]/30 to-transparent" />
 
             {/* Header */}
-            <div className="flex items-start gap-4 px-6 pb-5 pt-6 sm:px-8">
+            <div className="flex items-start gap-3 px-5 pb-4 pt-5 sm:gap-4 sm:px-8 sm:pb-5 sm:pt-6">
               <div
-                className="relative grid h-12 w-12 shrink-0 place-items-center rounded-[var(--inset-radius)] border transition-colors duration-500"
+                className="relative grid h-10 w-10 shrink-0 place-items-center rounded-[var(--inset-radius)] border transition-colors duration-500 sm:h-12 sm:w-12"
                 style={{
                   borderColor: success ? "color-mix(in srgb, var(--success) 40%, transparent)" : "var(--panel-border)",
                   background: success ? "color-mix(in srgb, var(--success) 12%, transparent)" : "color-mix(in srgb, var(--text-primary) 4%, transparent)",
@@ -81,19 +81,19 @@ export default function AuthCardShell({ icon, title, subtitle, children, below, 
               <div className="min-w-0 flex-1 pt-0.5">
                 <AnimatePresence mode="wait" initial={false}>
                   <motion.div key={title + (subtitle ?? "")} variants={revealUp} initial="initial" animate="animate" exit="exit">
-                    <h1 className="text-balance text-[1.6rem] font-semibold leading-tight tracking-[-0.025em] text-[var(--text-primary)] 2xl:text-[1.8rem]">
+                    <h1 className="text-balance text-[1.35rem] font-semibold leading-tight tracking-[-0.025em] text-[var(--text-primary)] sm:text-[1.6rem] 2xl:text-[1.8rem]">
                       {title}
                     </h1>
-                    {subtitle && <p className="mt-1.5 text-pretty text-[15px] leading-relaxed text-[var(--text-muted)]">{subtitle}</p>}
+                    {subtitle && <p className="mt-1 text-pretty text-sm leading-snug text-[var(--text-muted)] sm:mt-1.5 sm:text-[15px] sm:leading-relaxed">{subtitle}</p>}
                   </motion.div>
                 </AnimatePresence>
               </div>
             </div>
 
-            <div aria-hidden className="mx-6 h-px bg-gradient-to-r from-transparent via-[var(--panel-border)] to-transparent sm:mx-8" />
+            <div aria-hidden className="mx-5 h-px bg-gradient-to-r from-transparent via-[var(--panel-border)] to-transparent sm:mx-8" />
 
             <AutoHeight reduced={reduced}>
-              <div className="relative px-6 pb-7 pt-5 sm:px-8">{children}</div>
+              <div className="relative px-5 pb-5 pt-4 sm:px-8 sm:pb-7 sm:pt-5">{children}</div>
             </AutoHeight>
           </LightBorder>
         </motion.div>

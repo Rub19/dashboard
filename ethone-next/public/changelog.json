@@ -1,5 +1,14 @@
 [
   {
+    "version": "v1.68.1",
+    "date": "2026-10-10",
+    "title": "Connexion stable sur mobile",
+    "items": [
+      "Page de connexion : plus de tremblement sur téléphone (le fond ne suit plus le doigt, animations coûteuses coupées sur écran tactile).",
+      "Connexion plus compacte sur mobile : tout le formulaire et les connexions Google, GitHub et Discord tiennent à l'écran."
+    ]
+  },
+  {
     "version": "v1.68.0",
     "date": "2026-10-10",
     "title": "Fiabilité, alertes et outils de modération",
@@ -636,17 +645,6 @@
       "Nettoyage complet des placeholders fictifs : suppression de la bannière promo et des alertes statiques",
       "Dynamisation de la couverture avec compteurs réels calculés en direct sur les modules activés",
       "Synchronisation des réglages du mode raid et du préfixe réel du serveur dans le tableau de bord"
-    ]
-  },
-  {
-    "version": "v1.55.60",
-    "date": "2026-10-07",
-    "title": "Refonte de la Vue d'Ensemble Serveur — Style Keeper Protect",
-    "items": [
-      "Tableau de bord de vue d'ensemble avec métriques en direct, 8 catégories de couverture et alertes de sécurité",
-      "Barre latérale unifiée avec état du serveur, switch raid, scan en temps réel et navigation avancée",
-      "En-tête épuré avec fil d'ariane et indicateur de synchronisation automatique en temps réel",
-      "Actions rapides pour activer l'anti-nuke, inspecter les rôles et configurer les salons de logs"
     ]
   }
 ]

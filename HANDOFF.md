@@ -1,4 +1,4 @@
-# ETHONE — passation (2026-10-10, version 1.65.0)
+# ETHONE — passation (2026-10-10, version 1.65.1)
 
 ## Projet
 - `ethone-next/` : site Next.js statique (ethone.dev, Cloudflare Pages, déploiement auto au push sur `main`).
@@ -56,7 +56,7 @@
 
 ## Reste à faire
 1. **Vérifier la 1.57.0 en production** : le commit/push et le déploiement du bot n'ont peut-être pas été faits (voir `git status` et `git log`). Si besoin : lancer les vérifs, committer, pousser, déployer le bot (sauvegarde avant).
-2. **Tester les protections sur Discord** avec un serveur de test (pas le serveur principal) : anti-ban (débannissement de la rafale), suppression de salon/rôle (recréation), anti-bot, anti-webhook, anti-spam, anti-lien, ghost ping, anti-alt, verrouillage puis levée, mode AutoMod (règle créée/supprimée), Rollback (capture visible dans Sauvegardes).
+2. **Protections testées (2026-10-10)** : `tests/test_protections_scenarios_v1.ts` (11 scénarios : salon/rôle supprimés recréés, bot banni, webhook supprimé, rafale de bans annulée, lien, spam, ghost ping, anti-alt, verrouillage + levée). En vrai : Rollback OK (capture visible dans Sauvegardes). Impossible de tester depuis le compte de l'utilisateur : propriétaire du serveur et du bot toujours ignorés. Sur le serveur de test, **Keeper supprime les règles AutoMod d'Etho** (anti-AutoMod de Keeper) : Etho le signale maintenant (`confirmRuleKept`).
 3. **Vérifier la page Protections dans Chrome** (lecture seule) : chargement, filtres, recherche, sélection `?p=`, « Préparer les réglages », animations, affichage mobile.
 4. Points connus à améliorer :
    - Anti-réorganisation : Discord ne journalise pas l'auteur → remise en place sans sanction.

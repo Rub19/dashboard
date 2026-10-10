@@ -49161,5 +49161,50 @@ CHANGELOG_BY_LANG.en.unshift(v1_65_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_65_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_65_0_de);
 
+const v1_65_1_fr: ChangelogEntry = {
+  version: "v1.65.1",
+  date: "2026-10-10",
+  title: "Protections testées et règles AutoMod vérifiées",
+  items: [
+    "Les règles AutoMod créées par Etho (mode AutoMod des protections, AutoMod Discord, règles recommandées) sont vérifiées après création : si un autre bot de protection les supprime aussitôt, Etho le signale avec son nom au lieu d'afficher « enregistré ».",
+    "Nouveaux tests de scénarios d'attaque : suppression de salon et de rôle (recréés), ajout de bot (banni), webhook (supprimé), rafale de bans (annulée), lien, spam, ghost ping, compte récent et verrouillage avec levée.",
+  ],
+};
+
+const v1_65_1_en: ChangelogEntry = {
+  version: "v1.65.1",
+  date: "2026-10-10",
+  title: "Protections tested and AutoMod rules verified",
+  items: [
+    "AutoMod rules created by Etho are checked after creation: if another protection bot deletes them right away, Etho now says so with its name instead of showing “saved”.",
+    "New attack-scenario tests for the protection engine.",
+  ],
+};
+
+const v1_65_1_es: ChangelogEntry = {
+  version: "v1.65.1",
+  date: "2026-10-10",
+  title: "Protecciones probadas y reglas de AutoMod verificadas",
+  items: [
+    "Las reglas de AutoMod creadas por Etho se verifican tras su creación; si otro bot las elimina, Etho lo indica.",
+    "Nuevas pruebas de escenarios de ataque.",
+  ],
+};
+
+const v1_65_1_de: ChangelogEntry = {
+  version: "v1.65.1",
+  date: "2026-10-10",
+  title: "Schutz getestet und AutoMod-Regeln geprüft",
+  items: [
+    "Von Etho erstellte AutoMod-Regeln werden nach dem Erstellen geprüft; löscht ein anderer Bot sie sofort, meldet Etho das.",
+    "Neue Tests für Angriffsszenarien.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_65_1_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_65_1_en);
+CHANGELOG_BY_LANG.es.unshift(v1_65_1_es);
+CHANGELOG_BY_LANG.de.unshift(v1_65_1_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

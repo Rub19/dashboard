@@ -8,6 +8,7 @@ import {
 } from 'discord.js';
 import { z } from 'zod';
 import { logger } from '../../../utils/logger.js';
+import { confirmRuleKept } from '../../protections/automodSync.js';
 
 /**
  * AutoMod NATIF de Discord (Paramètres du serveur > AutoMod) : les règles vivent chez Discord et
@@ -342,8 +343,12 @@ export const nativeAutomodService = {
         exemptChannels: data.exemptChannels,
         reason,
       });
+      // Un autre bot de protection peut supprimer la règle aussitôt : on ne répond « créée » que si elle existe encore.
+      const removed = await confirmRuleKept(guild, rule.id);
+      if (removed) throw new NativeAutomodError(removed, 409);
       return toView(rule);
     } catch (err) {
+      if (err instanceof NativeAutomodError) throw err;
       throw mapDiscordError(err);
     }
   },
@@ -423,7 +428,13 @@ export const nativeAutomodService = {
         skipped.push({ name: rule.name, reason: `Une règle « ${TRIGGER_LABELS[rule.triggerType]} » existe déjà (limite Discord : 1).` });
         continue;
       }
-      created.push(await this.create(guild, rule, opts.reason));
+      try {
+        created.push(await this.create(guild, rule, opts.reason));
+      } catch (err) {
+        // Règle refusée ou supprimée aussitôt (autre bot) : on continue avec les suivantes et on le signale.
+        if (!(err instanceof NativeAutomodError)) throw err;
+        skipped.push({ name: rule.name, reason: err.message });
+      }
     }
     return { created, skipped };
   },

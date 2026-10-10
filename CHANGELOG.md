@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.65.1 — 2026-10-10
+
+**Protections testées et règles AutoMod vérifiées**
+
+- Les règles AutoMod créées par Etho (mode AutoMod des protections, AutoMod Discord, règles recommandées) sont vérifiées après création : si un autre bot de protection les supprime aussitôt, Etho le signale avec son nom au lieu d'afficher « enregistré ».
+- Nouveaux tests de scénarios d'attaque : suppression de salon et de rôle (recréés), ajout de bot (banni), webhook (supprimé), rafale de bans (annulée), lien, spam, ghost ping, compte récent et verrouillage avec levée.
+
 ## v1.65.0 — 2026-10-10
 
 **Console : éditeurs avancés au format Keeper et sécurité des rôles**

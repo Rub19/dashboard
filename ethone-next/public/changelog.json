@@ -1,5 +1,14 @@
 [
   {
+    "version": "v1.65.1",
+    "date": "2026-10-10",
+    "title": "Protections testées et règles AutoMod vérifiées",
+    "items": [
+      "Les règles AutoMod créées par Etho (mode AutoMod des protections, AutoMod Discord, règles recommandées) sont vérifiées après création : si un autre bot de protection les supprime aussitôt, Etho le signale avec son nom au lieu d'afficher « enregistré ».",
+      "Nouveaux tests de scénarios d'attaque : suppression de salon et de rôle (recréés), ajout de bot (banni), webhook (supprimé), rafale de bans (annulée), lien, spam, ghost ping, compte récent et verrouillage avec levée."
+    ]
+  },
+  {
     "version": "v1.65.0",
     "date": "2026-10-10",
     "title": "Console : éditeurs avancés au format Keeper et sécurité des rôles",
@@ -634,17 +643,6 @@
       "Extension pleine hauteur de l'aside de 0 à 100% de la fenêtre d'affichage (distance au bas nulle)",
       "Conteneur de défilement indépendant pour la grille de serveurs garantissant la fixité de la barre latérale",
       "Rendu robuste de l'avatar Discord avec pastille d'initiales en solution de repli immédiate"
-    ]
-  },
-  {
-    "version": "v1.55.55",
-    "date": "2026-10-07",
-    "title": "Photo de Profil Discord : Affichage Prioritaire dans la Barre Inférieure",
-    "items": [
-      "Priorité donnée à la photo de profil Discord réelle de l'utilisateur dans la barre latérale inférieure",
-      "Récupération automatique du profil Discord OAuth et du cache local synchronisé",
-      "Affichage cohérent sur le tableau de bord Etho, la page d'installation et le sélecteur de serveurs",
-      "Repli gracieux vers la photo de profil Ethone uniquement si le compte Discord n'est pas lié"
     ]
   }
 ]

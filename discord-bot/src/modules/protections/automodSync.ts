@@ -1,6 +1,22 @@
-import { AutoModerationActionType, AutoModerationRuleEventType, AutoModerationRuleTriggerType, Guild } from 'discord.js';
+import { AuditLogEvent, AutoModerationActionType, AutoModerationRuleEventType, AutoModerationRuleTriggerType, Guild } from 'discord.js';
 import { protectionStore } from './protectionStore.js';
 import { logger } from '../../utils/logger.js';
+
+const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+/**
+ * Vérifie qu'une règle AutoMod créée par Etho existe toujours quelques instants après : un autre bot de protection
+ * (Keeper, Wick…) peut la supprimer aussitôt s'il ne fait pas confiance à Etho. Renvoie un avertissement lisible, ou null.
+ */
+export async function confirmRuleKept(guild: Guild, ruleId: string): Promise<string | null> {
+  await wait(2000);
+  const still = await guild.autoModerationRules.fetch({ autoModerationRule: ruleId, force: true }).catch(() => null);
+  if (still) return null;
+  const logs = await guild.fetchAuditLogs({ type: AuditLogEvent.AutoModerationRuleDelete, limit: 5 }).catch(() => null);
+  const entry = logs?.entries.find((e) => e.targetId === ruleId);
+  const who = entry?.executor ? `${entry.executor.bot ? 'le bot ' : ''}${entry.executor.username}` : 'un autre bot ou membre';
+  return `La règle a été supprimée aussitôt par ${who}. Ajoute Etho à sa whitelist (ou désactive sa protection AutoMod) puis réessaie.`;
+}
 
 const RULE_NAME: Record<string, string> = { antiLink: 'Etho · Anti-lien', antiBadWord: 'Etho · Anti-BadWord' };
 
@@ -49,9 +65,8 @@ export async function syncAutomodRule(guild: Guild, key: 'antiLink' | 'antiBadWo
     reason: 'Etho · protection en mode AutoMod',
   };
   try {
-    if (existing) await existing.edit(data);
-    else await guild.autoModerationRules.create(data);
-    return null;
+    const rule = existing ? await existing.edit(data) : await guild.autoModerationRules.create(data);
+    return await confirmRuleKept(guild, rule.id);
   } catch (err) {
     logger.warn(`[Protections] Règle AutoMod ${key} :`, (err as Error)?.message);
     return 'Discord a refusé la règle AutoMod (limite de règles atteinte ou permission manquante).';

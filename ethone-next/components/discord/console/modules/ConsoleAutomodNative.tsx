@@ -125,10 +125,10 @@ export default function ConsoleAutomodNative({ guildId }: { guildId: string }) {
   };
   const recommended = async () => {
     setBusy("rec");
-    const r = await api<{ created: unknown[]; skipped: unknown[] }>("/automod-native/recommended", { method: "POST", json: { alertChannelId: alertChannel || undefined } });
+    const r = await api<{ created: unknown[]; skipped: { name: string; reason: string }[] }>("/automod-native/recommended", { method: "POST", json: { alertChannelId: alertChannel || undefined } });
     setBusy(null);
     if (r) {
-      setNote(`${r.created.length} règle(s) créée(s)${r.skipped.length ? `, ${r.skipped.length} déjà présente(s) ou impossible(s)` : ""}.`);
+      setNote(`${r.created.length} règle(s) créée(s).${r.skipped.map((x) => ` ${x.name} : ${x.reason}`).join("")}`);
       void load();
     }
   };

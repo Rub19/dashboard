@@ -112,7 +112,7 @@ export const guildSetupService = {
           '> Réservé aux membres qui ont la permission **Gérer le serveur**. Modifiable à tout moment avec `/module` ou sur le dashboard.',
         ].join('\n')
       )
-      .setThumbnail('https://ethone.dev/icons/ethone-icon-192.png?v=r2')
+      .setThumbnail(brandIcon('ethone'))
       .addFields(
         { name: `✅ Actifs (${active.length})`, value: list(active).slice(0, 1024) },
         { name: `⚪ Désactivés (${inactive.length})`, value: list(inactive).slice(0, 1024) },
@@ -186,7 +186,7 @@ export const guildSetupService = {
         .setAuthor({ name: 'ETHONE · Configuration rapide', iconURL: brandIcon('ethone') })
         .setTitle('✅ Configuration enregistrée')
         .setDescription(`${active.length} module(s) actif(s) : ${active.map((m) => `${m.emoji} ${m.label}`).join('  ·  ') || '—'}\n\nPour changer plus tard : \`/module\` ou le dashboard.`)
-        .setThumbnail('https://ethone.dev/icons/ethone-icon-192.png?v=r2');
+        .setThumbnail(brandIcon('ethone'));
       await interaction.update({ embeds: [embed], components: [] });
     }
   },

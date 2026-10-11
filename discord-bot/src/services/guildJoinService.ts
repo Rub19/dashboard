@@ -263,7 +263,11 @@ export const guildJoinService = {
         .setColor(0x10b981)
         .setTitle('✅ Salon système configuré')
         .setDescription(`Le salon <#${channelId}> a été défini comme salon système pour les alertes et notifications.`)
-        .setFooter({ text: 'ETHONE', iconURL: brandIcon('ethone') });
+        .setFooter({
+          text: 'ETHONE',
+          iconURL:
+            interaction.client?.user?.displayAvatarURL?.({ extension: 'png', size: 128 }) || brandIcon('ethone'),
+        });
 
       await interaction.reply({ embeds: [embed], ephemeral: true });
       return;
@@ -286,7 +290,11 @@ export const guildJoinService = {
         .setColor(0x10b981)
         .setTitle('⚙️ Langue mise à jour')
         .setDescription(confirmationTexts[lang] || confirmationTexts.fr)
-        .setFooter({ text: 'ETHONE', iconURL: brandIcon('ethone') });
+        .setFooter({
+          text: 'ETHONE',
+          iconURL:
+            interaction.client?.user?.displayAvatarURL?.({ extension: 'png', size: 128 }) || brandIcon('ethone'),
+        });
 
       await interaction.reply({ embeds: [embed], ephemeral: true });
     }
@@ -343,7 +351,7 @@ export const guildJoinService = {
               allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.ReadMessageHistory],
             },
             {
-              id: interaction.client.user.id,
+              id: interaction.client?.user?.id || me.id,
               allow: [
                 PermissionFlagsBits.ViewChannel,
                 PermissionFlagsBits.SendMessages,
@@ -368,7 +376,11 @@ export const guildJoinService = {
         .setColor(0x10b981)
         .setTitle('⚡ Salon système créé')
         .setDescription(`Le salon ${targetChannel} a été créé et défini comme salon système pour ETHONE.`)
-        .setFooter({ text: 'ETHONE', iconURL: brandIcon('ethone') });
+        .setFooter({
+          text: 'ETHONE',
+          iconURL:
+            interaction.client?.user?.displayAvatarURL?.({ extension: 'png', size: 128 }) || brandIcon('ethone'),
+        });
 
       await interaction.reply({ embeds: [embed], ephemeral: true });
     }

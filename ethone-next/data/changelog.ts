@@ -50469,5 +50469,54 @@ CHANGELOG_BY_LANG.en.unshift(v1_73_6_en);
 CHANGELOG_BY_LANG.es.unshift(v1_73_6_es);
 CHANGELOG_BY_LANG.de.unshift(v1_73_6_de);
 
+const v1_73_7_fr: ChangelogEntry = {
+  version: "v1.73.7",
+  date: "2026-10-12",
+  title: "Bot : Nouveau logo Etho (anneau pourpre éclatant) dans tous les embeds",
+  items: [
+    "Remplacement de l'ancien monogramme bleu par le nouvel avatar officiel Etho (anneau pourpre métallisé et lettre E blanche)",
+    "Bascule de la révision d'icône d'embeds (v=r3) pour invalider immédiatement le cache mandataire Discord",
+    "Récupération dynamique de la photo de profil du bot dans les embeds d'accueil et de configuration rapide",
+  ],
+};
+
+const v1_73_7_en: ChangelogEntry = {
+  version: "v1.73.7",
+  date: "2026-10-12",
+  title: "Bot: New glowing crimson Etho logo across all embeds",
+  items: [
+    "Replaced old cyan monogram with official Etho avatar (metallic crimson glowing ring and white E)",
+    "Bumped embed icon revision to v=r3 to instantly invalidate Discord proxy image cache",
+    "Dynamic bot avatar lookup for welcome and setup embeds with automatic high-res fallback",
+  ],
+};
+
+const v1_73_7_es: ChangelogEntry = {
+  version: "v1.73.7",
+  date: "2026-10-12",
+  title: "Bot: Nuevo logo de Etho (anillo carmesí brillante) en todos los embeds",
+  items: [
+    "Reemplazo del antiguo monograma azul por el avatar oficial de Etho (anillo carmesí y letra E blanca)",
+    "Actualización de la revisión de iconos a v=r3 para invalidar el proxy de Discord al instante",
+    "Resolución dinámica de la foto de perfil del bot en embeds de bienvenida y configuración",
+  ],
+};
+
+const v1_73_7_de: ChangelogEntry = {
+  version: "v1.73.7",
+  date: "2026-10-12",
+  title: "Bot: Neues leuchtendes karmesinrotes Etho-Logo in allen Embeds",
+  items: [
+    "Altes blaues Monogramm durch das offizielle Etho-Avatar ersetzt (karmesinroter Ring mit weißem E)",
+    "Icon-Revision auf v=r3 erhöht für sofortiges Ungültigmachen des Discord-Proxy-Caches",
+    "Dynamische Profilbild-Auflösung des Bots in Begrüßungs- und Setup-Embeds",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_73_7_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_73_7_en);
+CHANGELOG_BY_LANG.es.unshift(v1_73_7_es);
+CHANGELOG_BY_LANG.de.unshift(v1_73_7_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

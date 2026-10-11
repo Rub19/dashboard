@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.73.7 — 2026-10-12
+
+**Bot : Nouveau logo Etho (anneau pourpre éclatant) dans tous les embeds**
+
+- Remplacement du pictogramme bleu monogrammé obsolète par l'avatar officiel d'Etho (anneau pourpre métallisé et lettre E blanche, extrait de `etho-avatar.gif`) dans `ethone-next/public/bot-icons/ethone.png`.
+- Incrémentation de la révision d'icône d'embeds (`ICON_REV = 'r3'`) pour purger instantanément le proxy d'images mis en cache par Discord.
+- Résolution dynamique de la photo de profil réelle du bot (`displayAvatarURL`) dans les messages de confirmation d'accueil et de sélection de salon/langue avec repli automatique sur l'icône de marque.
+
 ## v1.73.6 — 2026-10-12
 
 **Bot : Message d'accueil compact façon Keeper & ciblage du salon staff privé**

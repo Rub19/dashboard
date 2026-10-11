@@ -135,8 +135,7 @@ export function neutralEmbed(options: EmbedChromeOptions = {}): EmbedBuilder {
 
 /** Adresse des icônes personnalisées des embeds (générées par ethone-next/scripts/build-bot-icons.mjs, servies par le site). */
 export const BOT_ICON_BASE = 'https://ethone.dev/bot-icons';
-/** Révision des icônes : Discord garde les images d'embed en cache (proxy) très longtemps — changer cette valeur force le rechargement quand un logo change. */
-export const ICON_REV = 'r2';
+export const ICON_REV = 'r3';
 export const brandIcon = (name: string): string => `${BOT_ICON_BASE}/${name}.png?v=${ICON_REV}`;
 
 export type NoticeKind = 'success' | 'error' | 'warning' | 'info' | 'denied' | 'neutral';

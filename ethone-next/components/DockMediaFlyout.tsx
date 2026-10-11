@@ -329,18 +329,26 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
               }}
               onMouseLeave={handleLeave}
               style={{ position: "fixed", left: pos.left, bottom: pos.bottom }}
-              className="z-[var(--z-popover)] w-84 max-w-[calc(100vw-1.5rem)] rounded-3xl border border-white/[0.09] bg-[#0c1017]/92 dark:bg-[#070b13]/96 p-4.5 text-[var(--text-primary)] shadow-[0_30px_70px_-10px_rgba(0,0,0,0.75),inset_0_1px_1px_rgba(255,255,255,0.15)] backdrop-blur-3xl pointer-events-auto origin-bottom overflow-hidden"
+              className="z-[var(--z-popover)] w-84 max-w-[calc(100vw-1.5rem)] rounded-3xl border border-[var(--panel-border)] bg-[var(--bg-surface,var(--panel-bg))]/95 p-4.5 text-[var(--text-primary)] shadow-[0_30px_70px_-10px_rgba(0,0,0,0.7),inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-3xl pointer-events-auto origin-bottom overflow-hidden"
             >
               {/* Dynamic ambient music aura */}
-              <motion.div
-                animate={{
-                  scale: isPlaying ? [1, 1.15, 1] : 1,
-                  opacity: isPlaying ? [0.6, 0.85, 0.6] : 0.4,
-                }}
-                transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
-                className="pointer-events-none absolute -right-8 -top-8 h-40 w-40 rounded-full bg-gradient-to-br from-emerald-500/25 via-[var(--accent-primary)]/20 to-sky-500/15 blur-3xl"
-                aria-hidden="true"
-              />
+              <AnimatePresence>
+                {coverCandidates[0] ? (
+                  <motion.div
+                    key={coverCandidates[0]}
+                    aria-hidden="true"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: isPlaying ? 0.4 : 0.22 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.8 }}
+                    className="pointer-events-none absolute inset-0 scale-125 bg-cover bg-center blur-2xl"
+                    style={{ backgroundImage: `url("${coverCandidates[0]}")` }}
+                  />
+                ) : (
+                  <div aria-hidden="true" className="pointer-events-none absolute -right-10 -top-12 h-44 w-44 rounded-full bg-[var(--accent-primary)]/15 blur-3xl" />
+                )}
+              </AnimatePresence>
+              <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-[var(--bg-surface,var(--panel-bg))]/40 to-[var(--bg-surface,var(--panel-bg))]/90" />
 
               {!hasTrack ? (
                 <div className="relative flex items-center gap-3 py-1">
@@ -370,8 +378,8 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
                   {/* Hero track row */}
                   <div className="flex items-center gap-3">
                     <motion.div
-                      animate={{ scale: isPlaying ? [1, 1.03, 1] : 1 }}
-                      transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                      animate={{ scale: isPlaying ? 1 : 0.86 }}
+                      transition={{ type: "spring", stiffness: 260, damping: 20 }}
                       className="relative shrink-0"
                     >
                       {coverCandidates.length > 0 ? (
@@ -379,7 +387,7 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
                           candidates={coverCandidates}
                           alt={title}
                           size={96}
-                          className="h-13 w-13 shrink-0 rounded-2xl border border-white/[0.1] object-cover shadow-[0_8px_20px_rgba(0,0,0,0.5)]"
+                          className="h-16 w-16 shrink-0 rounded-2xl border border-white/[0.1] object-cover shadow-[0_10px_28px_rgba(0,0,0,0.55)]"
                           iconClassName="h-6 w-6"
                           loading="eager"
                           priority
@@ -392,8 +400,16 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
                       )}
                     </motion.div>
 
-                    <div className="min-w-0 flex-1">
-                      <h4 className="truncate text-xs font-bold tracking-tight text-[var(--text-primary)]">
+                    <AnimatePresence mode="popLayout" initial={false}>
+                    <motion.div
+                      key={trackId || title}
+                      initial={{ opacity: 0, x: 14 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -14 }}
+                      transition={{ type: "spring", bounce: 0, duration: 0.35 }}
+                      className="min-w-0 flex-1"
+                    >
+                      <h4 className="truncate text-[13px] font-bold tracking-tight text-[var(--text-primary)]">
                         {title || "Spotify"}
                       </h4>
                       <p className="truncate text-[11px] font-medium text-[var(--text-primary)]/80">
@@ -404,7 +420,8 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
                           {album}
                         </p>
                       )}
-                    </div>
+                    </motion.div>
+                    </AnimatePresence>
 
                     <motion.button
                       type="button"
@@ -446,14 +463,14 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
                   </div>
 
                   {/* Playback controls row */}
-                  <div className="flex items-center justify-between border-t border-white/[0.06] px-1 pt-2">
+                  <div className="flex items-center justify-between border-t border-[var(--panel-border)] px-1 pt-2">
                     <motion.button
                       type="button"
                       whileHover={{ scale: 1.15 }}
                       whileTap={{ scale: 0.9 }}
                       onClick={skipPrevious}
                       disabled={pending || !hasClientId}
-                      className="flex h-8 w-8 items-center justify-center rounded-full text-[var(--text-muted)] transition-colors hover:bg-white/[0.08] hover:text-white disabled:opacity-40 cursor-pointer"
+                      className="flex h-8 w-8 items-center justify-center rounded-full text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] disabled:opacity-40 cursor-pointer"
                       aria-label={i18n("previous")}
                     >
                       <SkipBack className="h-4.5 w-4.5" />
@@ -465,7 +482,7 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
                       whileTap={{ scale: 0.9 }}
                       onClick={() => seek(-10000)}
                       disabled={pending || !hasClientId}
-                      className="flex h-8 w-8 items-center justify-center rounded-full text-[var(--text-muted)] transition-colors hover:bg-white/[0.08] hover:text-white disabled:opacity-40 cursor-pointer"
+                      className="flex h-8 w-8 items-center justify-center rounded-full text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] disabled:opacity-40 cursor-pointer"
                       aria-label="-10s"
                     >
                       <RotateCcw className="h-3.5 w-3.5" />
@@ -482,11 +499,18 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
                       className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-black shadow-[0_4px_18px_rgba(255,255,255,0.35)] hover:shadow-[0_6px_25px_rgba(255,255,255,0.55)] transition-shadow disabled:opacity-50 cursor-pointer"
                       aria-label={isPlaying ? i18n("pause") : i18n("play")}
                     >
-                      {isPlaying ? (
-                        <Pause className="h-4.5 w-4.5 fill-current" />
-                      ) : (
-                        <Play className="h-4.5 w-4.5 fill-current ml-0.5" />
-                      )}
+                      <AnimatePresence mode="popLayout" initial={false}>
+                        <motion.span
+                          key={isPlaying ? "pause" : "play"}
+                          initial={{ scale: 0.4, opacity: 0, rotate: -40 }}
+                          animate={{ scale: 1, opacity: 1, rotate: 0 }}
+                          exit={{ scale: 0.4, opacity: 0, rotate: 40 }}
+                          transition={{ type: "spring", stiffness: 500, damping: 26 }}
+                          className="flex"
+                        >
+                          {isPlaying ? <Pause className="h-4.5 w-4.5 fill-current" /> : <Play className="ml-0.5 h-4.5 w-4.5 fill-current" />}
+                        </motion.span>
+                      </AnimatePresence>
                     </motion.button>
 
                     <motion.button
@@ -495,7 +519,7 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
                       whileTap={{ scale: 0.9 }}
                       onClick={() => seek(10000)}
                       disabled={pending || !hasClientId}
-                      className="flex h-8 w-8 items-center justify-center rounded-full text-[var(--text-muted)] transition-colors hover:bg-white/[0.08] hover:text-white disabled:opacity-40 cursor-pointer"
+                      className="flex h-8 w-8 items-center justify-center rounded-full text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] disabled:opacity-40 cursor-pointer"
                       aria-label="+10s"
                     >
                       <RotateCw className="h-3.5 w-3.5" />
@@ -507,7 +531,7 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
                       whileTap={{ scale: 0.9 }}
                       onClick={skipNext}
                       disabled={pending || !hasClientId}
-                      className="flex h-8 w-8 items-center justify-center rounded-full text-[var(--text-muted)] transition-colors hover:bg-white/[0.08] hover:text-white disabled:opacity-40 cursor-pointer"
+                      className="flex h-8 w-8 items-center justify-center rounded-full text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] disabled:opacity-40 cursor-pointer"
                       aria-label={i18n("next")}
                     >
                       <SkipForward className="h-4.5 w-4.5" />

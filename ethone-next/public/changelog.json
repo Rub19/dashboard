@@ -1,5 +1,15 @@
 [
   {
+    "version": "v1.71.0",
+    "date": "2026-10-11",
+    "title": "Météo, musique et Dynamic Island retravaillées",
+    "items": [
+      "Météo du dock : les blocs apparaissent en cascade, la température monte jusqu'à sa valeur et les barres de prévisions se remplissent ; couleurs du thème.",
+      "Musique du dock : pochette floutée en fond, pochette qui rétrécit en pause, titre qui glisse au changement de morceau et bouton lecture/pause qui se transforme.",
+      "Dynamic Island : rebond plus naturel, coins qui s'adaptent, halo quand une musique ou un minuteur tourne, contenu qui arrive après la coque, pochette floutée et anneau de progression pour le Pomodoro."
+    ]
+  },
+  {
     "version": "v1.70.3",
     "date": "2026-10-11",
     "title": "Dock : Mission Control retiré, textes et Control Center",
@@ -626,17 +636,6 @@
       "Alertes streamers : plus de catégorie « Just Chatting » ou « Général » inventée quand le jeu est inconnu.",
       "Message d'arrivée du bot refait en carte Discord (état, permissions, important, commandes, salon système, langue) et visible uniquement par la personne qui a ajouté le bot, dans un salon privé (sinon en message privé).",
       "Espaces partagés : les règles d'accès de la base bouclaient sur elles-mêmes (erreur de récursion) ; corrigées sans changer les droits."
-    ]
-  },
-  {
-    "version": "v1.55.67",
-    "date": "2026-10-08",
-    "title": "Ajustement du score circulaire et élimination des placeholders",
-    "items": [
-      "Pastille circulaire de score redimensionnée avec marges confortables pour éliminer tout chevauchement du ratio /100",
-      "Suppression complète des placeholders textuels et des canaux mockés dans le sélecteur",
-      "Détection dynamique des salons Discord réels et sélection automatique du premier salon",
-      "Affichage affiné du nombre de membres sans valeur factice"
     ]
   }
 ]

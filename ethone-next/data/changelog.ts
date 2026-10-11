@@ -49769,5 +49769,54 @@ CHANGELOG_BY_LANG.en.unshift(v1_70_3_en);
 CHANGELOG_BY_LANG.es.unshift(v1_70_3_es);
 CHANGELOG_BY_LANG.de.unshift(v1_70_3_de);
 
+const v1_71_0_fr: ChangelogEntry = {
+  version: "v1.71.0",
+  date: "2026-10-11",
+  title: "Météo, musique et Dynamic Island retravaillées",
+  items: [
+    "Météo du dock : les blocs apparaissent en cascade, la température monte jusqu'à sa valeur et les barres de prévisions se remplissent ; couleurs du thème.",
+    "Musique du dock : pochette floutée en fond, pochette qui rétrécit en pause, titre qui glisse au changement de morceau et bouton lecture/pause qui se transforme.",
+    "Dynamic Island : rebond plus naturel, coins qui s'adaptent, halo quand une musique ou un minuteur tourne, contenu qui arrive après la coque, pochette floutée et anneau de progression pour le Pomodoro.",
+  ],
+};
+
+const v1_71_0_en: ChangelogEntry = {
+  version: "v1.71.0",
+  date: "2026-10-11",
+  title: "Weather, music and Dynamic Island reworked",
+  items: [
+    "Dock weather: staggered entrance, temperature counts up, forecast bars fill in.",
+    "Dock music: blurred artwork background, artwork shrinks on pause, sliding title and morphing play/pause.",
+    "Dynamic Island: more natural bounce, adaptive corners, glow while playing, blurred artwork and a Pomodoro progress ring.",
+  ],
+};
+
+const v1_71_0_es: ChangelogEntry = {
+  version: "v1.71.0",
+  date: "2026-10-11",
+  title: "Tiempo, música y Dynamic Island renovados",
+  items: [
+    "Tiempo del dock: entrada en cascada, temperatura animada y barras que se llenan.",
+    "Música del dock: carátula difuminada, título que se desliza y botón que se transforma.",
+    "Dynamic Island: rebote más natural, halo durante la reproducción y anillo de progreso para el Pomodoro.",
+  ],
+};
+
+const v1_71_0_de: ChangelogEntry = {
+  version: "v1.71.0",
+  date: "2026-10-11",
+  title: "Wetter, Musik und Dynamic Island überarbeitet",
+  items: [
+    "Dock-Wetter: gestaffelter Auftritt, hochzählende Temperatur, sich füllende Balken.",
+    "Dock-Musik: unscharfes Cover, gleitender Titel, sich verwandelnde Play-Taste.",
+    "Dynamic Island: natürlicheres Federn, Leuchten bei Wiedergabe, Fortschrittsring für Pomodoro.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_71_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_71_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_71_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_71_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

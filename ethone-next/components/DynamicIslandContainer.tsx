@@ -862,6 +862,7 @@ export default function DynamicIslandContainer() {
             view={expanded && selectedView ? selectedView : null}
             compact={compact}
             progressPercent={activeProgress}
+            glow={Boolean(nowPlaying?.isPlaying && selectedView === "spotify") || (pomodoroActive && selectedView === "pomodoro")}
             onClick={toggleExpanded}
             onKeyDown={handleKeyDown}
             onMouseEnter={onIslandEnter}
@@ -873,7 +874,18 @@ export default function DynamicIslandContainer() {
             role="button"
           >
             <DynamicIslandView id="spotify" data-testid="dynamic-island-spotify" className="w-[min(94vw,340px)] sm:w-[400px]">
-              <div onClick={stopPropagation} className="flex w-full flex-col gap-3.5 p-1.5">
+              <div onClick={stopPropagation} className="relative flex w-full flex-col gap-3.5 p-1.5">
+                {(nowPlaying?.cover || nowPlaying?.artworkUrl) && (
+                  <motion.div
+                    key={nowPlaying?.cover || nowPlaying?.artworkUrl}
+                    aria-hidden="true"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: nowPlaying?.isPlaying ? 0.35 : 0.18 }}
+                    transition={{ duration: 0.7 }}
+                    className="pointer-events-none absolute -inset-6 -z-10 scale-110 bg-cover bg-center blur-2xl"
+                    style={{ backgroundImage: `url("${nowPlaying?.cover || nowPlaying?.artworkUrl}")` }}
+                  />
+                )}
                 <IslandExpandedHeader
                   activeViews={activeViews}
                   selected={selectedView ?? "spotify"}
@@ -905,7 +917,7 @@ export default function DynamicIslandContainer() {
                     transition={{ duration: 0.2, ease: EASE_OUT }}
                     className="relative flex items-center gap-3.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-2)]/40 p-2.5"
                   >
-                    <div className="relative shrink-0 flex items-center justify-center">
+                    <motion.div animate={{ scale: nowPlaying?.isPlaying ? 1 : 0.88 }} transition={{ type: "spring", stiffness: 260, damping: 20 }} className="relative shrink-0 flex items-center justify-center">
                       {(nowPlaying?.cover || nowPlaying?.artworkUrl || (nowPlaying?.covers && nowPlaying.covers.length > 0)) ? (
                         <SafeImage
                           candidates={[nowPlaying?.cover, nowPlaying?.artworkUrl, ...(nowPlaying?.covers || [])]}
@@ -923,7 +935,7 @@ export default function DynamicIslandContainer() {
                           <ServiceIcon id="spotify" icon="music" className="h-9 w-9" colored />
                         </div>
                       )}
-                    </div>
+                    </motion.div>
 
                     <div className="flex min-w-0 flex-1 flex-col justify-center gap-0.5">
                       <p className="line-clamp-1 text-sm font-semibold tracking-tight text-[var(--text-primary)]" title={nowPlaying?.title}>
@@ -993,11 +1005,22 @@ export default function DynamicIslandContainer() {
                     aria-label={nowPlaying?.isPlaying ? i18n("pause") : i18n("play")}
                     title={nowPlaying?.isPlaying ? "Mettre en pause" : "Lire"}
                   >
-                    {nowPlaying?.isPlaying ? (
-                      <Icon name="pause" pack="phosphor" className="h-5 w-5 fill-current" />
-                    ) : (
-                      <Icon name="play" pack="phosphor" className="h-5 w-5 fill-current ml-0.5" />
-                    )}
+                    <AnimatePresence mode="popLayout" initial={false}>
+                      <motion.span
+                        key={nowPlaying?.isPlaying ? "pause" : "play"}
+                        initial={{ scale: 0.4, opacity: 0, rotate: -40 }}
+                        animate={{ scale: 1, opacity: 1, rotate: 0 }}
+                        exit={{ scale: 0.4, opacity: 0, rotate: 40 }}
+                        transition={{ type: "spring", stiffness: 500, damping: 26 }}
+                        className="flex"
+                      >
+                        {nowPlaying?.isPlaying ? (
+                          <Icon name="pause" pack="phosphor" className="h-5 w-5 fill-current" />
+                        ) : (
+                          <Icon name="play" pack="phosphor" className="ml-0.5 h-5 w-5 fill-current" />
+                        )}
+                      </motion.span>
+                    </AnimatePresence>
                   </button>
 
                   <button
@@ -1023,20 +1046,31 @@ export default function DynamicIslandContainer() {
                   selected={selectedView ?? "pomodoro"}
                   onSelect={selectView}
                 />
-                <div className="flex flex-col items-center gap-1">
-                  <span className="text-4xl font-semibold tabular-nums text-[var(--text-primary)]">
-                    {focus.state.format(focus.state.remaining)}
-                  </span>
-                  <span className="text-xs font-medium text-[var(--text-muted)]">
-                    {phaseLabels[focus.state.phase] || focus.state.phase}
-                  </span>
-                </div>
-
-                <div className="h-1.5 w-full rounded-full bg-[var(--text-primary)]/[0.08]">
-                  <div
-                    className="h-full rounded-full bg-[var(--accent)] transition-all duration-500"
-                    style={{ width: `${pomodoroPct}%` }}
-                  />
+                <div className="relative flex h-36 w-36 items-center justify-center">
+                  <svg viewBox="0 0 120 120" className="absolute inset-0 -rotate-90" aria-hidden="true">
+                    <circle cx="60" cy="60" r="54" fill="none" strokeWidth="6" className="stroke-[var(--text-primary)]/[0.08]" />
+                    <motion.circle
+                      cx="60"
+                      cy="60"
+                      r="54"
+                      fill="none"
+                      strokeWidth="6"
+                      strokeLinecap="round"
+                      className="stroke-[var(--accent-primary)]"
+                      style={{ filter: "drop-shadow(0 0 6px var(--glow-color))" }}
+                      initial={false}
+                      animate={{ pathLength: pomodoroPct / 100 }}
+                      transition={{ type: "spring", bounce: 0, duration: 0.8 }}
+                    />
+                  </svg>
+                  <div className="flex flex-col items-center">
+                    <span className="text-3xl font-semibold tabular-nums tracking-tight text-[var(--text-primary)]">
+                      {focus.state.format(focus.state.remaining)}
+                    </span>
+                    <span className="text-[11px] font-medium text-[var(--text-muted)]">
+                      {phaseLabels[focus.state.phase] || focus.state.phase}
+                    </span>
+                  </div>
                 </div>
 
                 <div className="flex items-center gap-2">

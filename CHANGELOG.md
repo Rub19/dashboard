@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.71.0 — 2026-10-11
+
+**Météo, musique et Dynamic Island retravaillées**
+
+- Météo du dock : les blocs apparaissent en cascade, la température monte jusqu'à sa valeur et les barres de prévisions se remplissent ; couleurs du thème.
+- Musique du dock : pochette floutée en fond, pochette qui rétrécit en pause, titre qui glisse au changement de morceau et bouton lecture/pause qui se transforme.
+- Dynamic Island : rebond plus naturel, coins qui s'adaptent, halo quand une musique ou un minuteur tourne, contenu qui arrive après la coque, pochette floutée et anneau de progression pour le Pomodoro.
+
 ## v1.70.3 — 2026-10-11
 
 **Dock : Mission Control retiré, textes et Control Center**

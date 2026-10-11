@@ -31,9 +31,9 @@ const IslandContext = createContext<IslandContextValue | null>(null);
 // rather than folded into lib/ease.ts's general-purpose springs.
 const ISLAND_SHELL_SPRING = {
   type: "spring",
-  stiffness: 280,
-  damping: 28,
-  mass: 0.7,
+  stiffness: 380,
+  damping: 30,
+  mass: 0.8,
 } as const;
 
 const ISLAND_CONTENT_SPRING = {
@@ -116,7 +116,7 @@ function Slot({
               transition: { duration: 0.1, ease: EASE_SNAP },
             }
       }
-      transition={reduce ? { duration: 0.12 } : ISLAND_CONTENT_SPRING}
+      transition={reduce ? { duration: 0.12 } : { ...ISLAND_CONTENT_SPRING, delay: 0.06 }}
       style={{ transformOrigin: "top center", willChange: "transform, opacity" }}
       className={cn("flex items-center justify-center", className)}
     >
@@ -132,6 +132,8 @@ export interface DynamicIslandProps extends Omit<HTMLMotionProps<"div">, "onDrag
   compact?: ReactNode;
   /** Changes when the compact content switches to another integration (re-plays its transition). */
   compactKey?: string;
+  /** Halo coloré quand une activité est en cours (musique en lecture, minuteur…). */
+  glow?: boolean;
   /** DynamicIslandView elements. */
   children?: ReactNode;
   className?: string;
@@ -145,6 +147,7 @@ export function DynamicIsland({
   children,
   className,
   progressPercent,
+  glow,
   onClick,
   onMouseEnter,
   onMouseLeave,
@@ -162,29 +165,25 @@ export function DynamicIsland({
         aria-live="polite"
         aria-atomic="true"
         initial={false}
-        animate={
-          size
-            ? { width: size.width, height: size.height }
-            : { width: PILL_WIDTH, height: PILL_HEIGHT }
-        }
-        whileHover={
-          reduce
-            ? undefined
-            : {
-                scale: expanded ? 1 : 1.02,
-                boxShadow: "0 14px 40px -8px rgba(0,0,0,0.65)",
-              }
-        }
+        animate={{
+          ...(size ? { width: size.width, height: size.height } : { width: PILL_WIDTH, height: PILL_HEIGHT }),
+          borderRadius: expanded ? 30 : 22,
+          boxShadow: glow
+            ? "0 10px 34px -8px rgba(0,0,0,0.6), 0 0 0 1px color-mix(in srgb, var(--accent-primary) 35%, transparent), 0 0 26px -6px var(--glow-color)"
+            : "0 10px 34px -8px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.06)",
+        }}
+        whileHover={reduce ? undefined : { scale: expanded ? 1 : 1.03 }}
         whileTap={reduce ? undefined : { scale: 0.98 }}
         transition={reduce ? { duration: 0 } : ISLAND_SHELL_SPRING}
         style={{ borderRadius: RADIUS }}
+        data-glow={glow ? "true" : undefined}
         onClick={onClick}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
         className={cn(
           "relative inline-flex items-start justify-center overflow-hidden",
-          "border border-[var(--panel-border)]/[0.22] bg-[var(--bg-main)]/90 text-[var(--text-primary)] hover:border-[var(--text-primary)]/20",
-          "shadow-[0_8px_32px_-6px_rgba(0,0,0,0.55)] backdrop-blur-[var(--panel-blur)]",
+          "bg-gradient-to-b from-[var(--bg-surface,var(--bg-main))]/95 to-[var(--bg-main)]/95 text-[var(--text-primary)]",
+          "backdrop-blur-2xl",
           "cursor-pointer pointer-events-auto select-none transition-colors duration-300",
           "before:pointer-events-none before:absolute before:inset-0 before:z-10 before:rounded-[inherit]",
           "before:bg-gradient-to-b before:from-[var(--text-primary)]/[0.06] before:to-transparent",

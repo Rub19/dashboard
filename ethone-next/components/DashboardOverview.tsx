@@ -54,7 +54,6 @@ import WidgetConfigModal from "@/components/widgets/WidgetConfigModal";
 import { getWidgetManifest } from "@/lib/widget-registry";
 import MobileTabs from "@/components/ui/MobileTabs";
 import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
-import { AnimatePresence, motion } from "framer-motion";
 
 const LiveBentoGrid = dynamic(() => import("@/components/LiveBentoGrid"));
 const BillsWidget = dynamic(() => import("@/components/BillsWidget"));
@@ -713,8 +712,7 @@ export default function DashboardOverview() {
                     value={current.id}
                     onChange={setMobileWidget}
                   />
-                  <AnimatePresence mode="wait" initial={false}>
-                    <motion.div key={current.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.16 }} className="pt-3">
+                  <div key={current.id} className="rise-in pt-3">
                       <WidgetContainer
                         key={`${current.id}-${widgetRefreshKeys[current.id] ?? 0}`}
                         id={current.id}
@@ -728,8 +726,7 @@ export default function DashboardOverview() {
                       >
                         {renderWidgetContent(current.id)}
                       </WidgetContainer>
-                    </motion.div>
-                  </AnimatePresence>
+                  </div>
                 </div>
               );
             })()

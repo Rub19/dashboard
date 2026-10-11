@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.69.1 — 2026-10-11
+
+**Mobile : widget de l'accueil visible**
+
+- Accueil sur téléphone : le widget choisi dans les onglets s'affiche bien (il restait invisible).
+
 ## v1.69.0 — 2026-10-11
 
 **Mobile : pages plus compactes et rangées en onglets**

@@ -67,11 +67,9 @@ export function ConsolePage({ title, actions, children }: { title: ReactNode; ac
         <>
           {items.filter((c) => !panels.includes(c as ReactElement<{ title?: ReactNode }>))}
           <MobileTabs layoutId="console-panel-tab" tabs={panels.map((p, i) => ({ id: String(i), label: label(p, i) }))} value={String(current)} onChange={setTab} />
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.div key={current} variants={pageStagger} initial={reduced ? false : "initial"} animate="animate" exit={{ opacity: 0, transition: { duration: 0.1 } }}>
-              {panels[current]}
-            </motion.div>
-          </AnimatePresence>
+          <motion.div key={current} variants={pageStagger} initial={reduced ? false : "initial"} animate="animate">
+            {panels[current]}
+          </motion.div>
         </>
       ) : (
         children

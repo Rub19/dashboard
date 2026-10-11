@@ -1,5 +1,13 @@
 [
   {
+    "version": "v1.69.1",
+    "date": "2026-10-11",
+    "title": "Mobile : widget de l'accueil visible",
+    "items": [
+      "Accueil sur téléphone : le widget choisi dans les onglets s'affiche bien (il restait invisible)."
+    ]
+  },
+  {
     "version": "v1.69.0",
     "date": "2026-10-11",
     "title": "Mobile : pages plus compactes et rangées en onglets",
@@ -634,17 +642,6 @@
       "Assistant en 4 étapes : type de serveur (communauté, amis, vocaux), sévérité, salon d'alertes et récapitulatif",
       "Application et activation réelles des protections et modules selon le type de serveur",
       "Affichage dynamique du nombre de protections actives sur la vue d'ensemble"
-    ]
-  },
-  {
-    "version": "v1.55.62",
-    "date": "2026-10-07",
-    "title": "Sélecteur de Serveurs — Style Épuré pour les Serveurs Protégés",
-    "items": [
-      "Refonte de la liste des serveurs protégés façon Keeper Protect avec carte cliquable intégrale",
-      "Affichage du badge couronne propriétaire et du statut actif avec indicateur dynamique",
-      "Remplacement du bouton d'action par un chevron de navigation fluide sur les serveurs installés",
-      "Ajout du badge de synchronisation automatique dans l'en-tête de sélection"
     ]
   }
 ]

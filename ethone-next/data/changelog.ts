@@ -49532,5 +49532,46 @@ CHANGELOG_BY_LANG.en.unshift(v1_69_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_69_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_69_0_de);
 
+const v1_69_1_fr: ChangelogEntry = {
+  version: "v1.69.1",
+  date: "2026-10-11",
+  title: "Mobile : widget de l'accueil visible",
+  items: [
+    "Accueil sur téléphone : le widget choisi dans les onglets s'affiche bien (il restait invisible).",
+  ],
+};
+
+const v1_69_1_en: ChangelogEntry = {
+  version: "v1.69.1",
+  date: "2026-10-11",
+  title: "Mobile: home widget visible",
+  items: [
+    "Home on phones: the widget picked in the tabs now shows (it stayed invisible).",
+  ],
+};
+
+const v1_69_1_es: ChangelogEntry = {
+  version: "v1.69.1",
+  date: "2026-10-11",
+  title: "Móvil: widget de inicio visible",
+  items: [
+    "Inicio en el móvil: el widget elegido en las pestañas ahora se ve.",
+  ],
+};
+
+const v1_69_1_de: ChangelogEntry = {
+  version: "v1.69.1",
+  date: "2026-10-11",
+  title: "Mobil: Start-Widget sichtbar",
+  items: [
+    "Start auf dem Handy: Das in den Tabs gewählte Widget wird jetzt angezeigt.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_69_1_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_69_1_en);
+CHANGELOG_BY_LANG.es.unshift(v1_69_1_es);
+CHANGELOG_BY_LANG.de.unshift(v1_69_1_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

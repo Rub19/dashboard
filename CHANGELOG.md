@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.70.3 — 2026-10-11
+
+**Dock : Mission Control retiré, textes et Control Center**
+
+- Mission Control est supprimé (bouton du dock, raccourci F2 et écran).
+- Météo du dock : « Prévisions sur 5 jours » et « ressenti » s'affichent enfin en clair (au lieu des clés de traduction).
+- Control Center : aux couleurs du thème et indique si tes réglages sont bien enregistrés sur ton compte.
+
 ## v1.70.2 — 2026-10-11
 
 **Mobile : Connexions compactes**

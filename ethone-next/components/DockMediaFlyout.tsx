@@ -153,9 +153,9 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
             ...extras,
           }
         );
-        success(i18n("ok"));
+        success(i18n("ok", "OK"));
       } catch (err) {
-        showError(err instanceof Error ? err.message : i18n("playbackControlFailed"));
+        showError(err instanceof Error ? err.message : i18n("playbackControlFailed", "Contrôle de lecture impossible"));
       } finally {
         setPending(false);
       }
@@ -413,7 +413,7 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
                       onClick={toggleLike}
                       disabled={pending || !hasClientId || !trackId}
                       className="flex h-8 w-8 items-center justify-center rounded-full text-[var(--text-muted)] transition-colors hover:bg-white/[0.08] hover:text-[var(--text-primary)] disabled:opacity-40 cursor-pointer"
-                      aria-label={isLiked ? i18n("unlike") : i18n("like")}
+                      aria-label={isLiked ? i18n("unlike", "Ne plus aimer") : i18n("like")}
                     >
                       <motion.div
                         animate={{ scale: isLiked ? [1, 1.35, 1] : 1 }}

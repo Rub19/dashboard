@@ -49720,5 +49720,54 @@ CHANGELOG_BY_LANG.en.unshift(v1_70_2_en);
 CHANGELOG_BY_LANG.es.unshift(v1_70_2_es);
 CHANGELOG_BY_LANG.de.unshift(v1_70_2_de);
 
+const v1_70_3_fr: ChangelogEntry = {
+  version: "v1.70.3",
+  date: "2026-10-11",
+  title: "Dock : Mission Control retiré, textes et Control Center",
+  items: [
+    "Mission Control est supprimé (bouton du dock, raccourci F2 et écran).",
+    "Météo du dock : « Prévisions sur 5 jours » et « ressenti » s'affichent enfin en clair (au lieu des clés de traduction).",
+    "Control Center : aux couleurs du thème et indique si tes réglages sont bien enregistrés sur ton compte.",
+  ],
+};
+
+const v1_70_3_en: ChangelogEntry = {
+  version: "v1.70.3",
+  date: "2026-10-11",
+  title: "Dock: Mission Control removed, labels and Control Center",
+  items: [
+    "Mission Control is removed (dock button, F2 shortcut and screen).",
+    "Dock weather: \"5-day forecast\" and \"feels like\" now show properly.",
+    "Control Center follows the theme and shows whether your settings are saved to your account.",
+  ],
+};
+
+const v1_70_3_es: ChangelogEntry = {
+  version: "v1.70.3",
+  date: "2026-10-11",
+  title: "Dock: Mission Control eliminado, textos y Centro de control",
+  items: [
+    "Mission Control eliminado (botón, atajo F2 y pantalla).",
+    "Tiempo del dock: textos corregidos.",
+    "Centro de control con los colores del tema y estado de guardado en tu cuenta.",
+  ],
+};
+
+const v1_70_3_de: ChangelogEntry = {
+  version: "v1.70.3",
+  date: "2026-10-11",
+  title: "Dock: Mission Control entfernt, Texte und Kontrollzentrum",
+  items: [
+    "Mission Control entfernt (Dock-Taste, F2 und Ansicht).",
+    "Dock-Wetter: Texte korrigiert.",
+    "Kontrollzentrum in Themenfarben, zeigt die Speicherung im Konto.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_70_3_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_70_3_en);
+CHANGELOG_BY_LANG.es.unshift(v1_70_3_es);
+CHANGELOG_BY_LANG.de.unshift(v1_70_3_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

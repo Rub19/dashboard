@@ -116,13 +116,6 @@ export default function KeyboardShortcuts() {
         if (key === "s") { event.preventDefault(); haptics.trigger(8); router.push("/scratchpad"); return; }
       }
 
-      // F2 / ? alternative mission control.
-      if (event.key === "F2" && !event.ctrlKey && !event.metaKey && !event.altKey && !event.shiftKey) {
-        event.preventDefault();
-        haptics.trigger(12);
-        toggleMissionControl();
-        return;
-      }
 
       // Alt+Z toggle minimal / default layout.
       if (event.altKey && event.key.toLowerCase() === "z" && !event.ctrlKey && !event.metaKey) {

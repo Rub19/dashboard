@@ -1,5 +1,15 @@
 [
   {
+    "version": "v1.70.3",
+    "date": "2026-10-11",
+    "title": "Dock : Mission Control retiré, textes et Control Center",
+    "items": [
+      "Mission Control est supprimé (bouton du dock, raccourci F2 et écran).",
+      "Météo du dock : « Prévisions sur 5 jours » et « ressenti » s'affichent enfin en clair (au lieu des clés de traduction).",
+      "Control Center : aux couleurs du thème et indique si tes réglages sont bien enregistrés sur ton compte."
+    ]
+  },
+  {
     "version": "v1.70.2",
     "date": "2026-10-11",
     "title": "Mobile : Connexions compactes",
@@ -627,17 +637,6 @@
       "Suppression complète des placeholders textuels et des canaux mockés dans le sélecteur",
       "Détection dynamique des salons Discord réels et sélection automatique du premier salon",
       "Affichage affiné du nombre de membres sans valeur factice"
-    ]
-  },
-  {
-    "version": "v1.55.66",
-    "date": "2026-10-08",
-    "title": "Sélecteur de salon Discord immersif et accueil de bot interactif",
-    "items": [
-      "Sélecteur de salon enrichi avec recherche instantanée, groupement par catégories et filtrage ID",
-      "Design fidèle avec badge hashtag, états de sélection personnalisés et fermeture fluide",
-      "Service d'accueil à l'arrivée du bot avec mention de l'inviteur, diagnostic des 11 permissions clés, salon système et langue",
-      "Boutons d'accès direct vers le serveur Support et le Dashboard serveur"
     ]
   }
 ]

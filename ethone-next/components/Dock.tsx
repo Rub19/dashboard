@@ -7,7 +7,6 @@ import {
   LayoutGrid,
   Search,
   Clock,
-  AppWindow,
   Bell,
   Sliders,
   ChevronUp,
@@ -16,7 +15,6 @@ import {
   X,
 } from "@/components/icons/ph";
 import { useSettings } from "@/components/SettingsProvider";
-import { useWindowManager } from "@/components/WindowManagerProvider";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useNotifications } from "@/lib/hooks/useNotifications";
@@ -139,7 +137,6 @@ function Dock() {
   const { settings, update } = useSettings();
   const router = useRouter();
   const pathname = usePathname() ?? "/";
-  const { missionControl, toggleMissionControl } = useWindowManager();
   const { setOpen: setCommandOpen } = useCommandPalette();
   const i18n = useI18n();
   const { nowPlaying } = useNowPlaying(15000);
@@ -490,17 +487,6 @@ function Dock() {
                 label={i18n("dockPomodoro")}
                 active={focusOpen}
                 onClick={toggleFocus}
-              />
-
-              <AppleDockItem
-                icon={AppWindow}
-                label={i18n("dockMissionControl")}
-                active={missionControl}
-                aria-pressed={missionControl}
-                onClick={() => {
-                  toggleMissionControl();
-                  setLauncherOpen(false);
-                }}
               />
 
               <AppleDockItem

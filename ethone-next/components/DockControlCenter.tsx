@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useSettings } from "@/components/SettingsProvider";
+import { useSyncStore } from "@/lib/stores/sync";
 import { Icon } from "@/lib/icons";
 import { useLayer } from "@/components/LayerProvider";
 import { useSound } from "@/lib/sound";
@@ -246,6 +247,7 @@ export default function DockControlCenter({
 }) {
   const i18n = useI18n();
   const { settings, update } = useSettings();
+  const syncStatus = useSyncStore((st) => st.status);
   const { play } = useSound();
   const router = useRouter();
   const panelRef = useRef<HTMLDivElement | null>(null);
@@ -299,24 +301,25 @@ export default function DockControlCenter({
             aria-modal="false"
             aria-label={i18n("controlCenter")}
           >
-            <div className="relative max-h-[min(82vh-2.5rem,640px)] space-y-3.5 overflow-y-auto no-scrollbar rounded-3xl border border-white/[0.09] bg-[#0c1017]/92 dark:bg-[#080c14]/95 p-4 text-[var(--text-primary)] shadow-[0_28px_60px_-10px_rgba(0,0,0,0.75),inset_0_1px_1px_rgba(255,255,255,0.15)] backdrop-blur-3xl">
+            <div className="relative max-h-[min(82vh-2.5rem,640px)] space-y-3.5 overflow-y-auto no-scrollbar rounded-3xl border border-[var(--panel-border)] bg-[var(--bg-surface,var(--panel-bg))]/95 p-4 text-[var(--text-primary)] shadow-[0_28px_60px_-10px_rgba(0,0,0,0.7),inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-3xl">
               {/* Dynamic ambient background aura */}
               <div
-                className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 rounded-full bg-gradient-to-br from-violet-500/20 via-[var(--accent-primary)]/15 to-transparent blur-3xl opacity-70 animate-pulse"
-                style={{ animationDuration: "6s" }}
+                className="pointer-events-none absolute -right-12 -top-16 h-40 w-40 rounded-full bg-[var(--accent-primary)]/15 blur-3xl"
                 aria-hidden="true"
               />
 
               {/* Header */}
-              <div className="relative flex items-center justify-between border-b border-white/[0.06] pb-3">
+              <div className="relative flex items-center justify-between border-b border-[var(--panel-border)] pb-3">
                 <div className="flex items-center gap-2.5">
                   <div className="flex h-7 w-7 items-center justify-center rounded-xl bg-[var(--accent-primary)]/15 border border-[var(--accent-primary)]/30 text-[var(--accent-primary)] shadow-[0_0_12px_var(--glow-color)]">
                     <Icon name="sliders" className="h-4 w-4" />
                   </div>
                   <div>
-                    <h3 className="text-xs font-bold tracking-wider uppercase text-[var(--text-primary)]">
-                      {i18n("controlCenter")}
-                    </h3>
+                    <h3 className="text-sm font-semibold text-[var(--text-primary)]">{i18n("controlCenter", "Centre de contrôle")}</h3>
+                    <p className="flex items-center gap-1.5 text-[10px] text-[var(--text-muted)]">
+                      <span className={cn("h-1.5 w-1.5 rounded-full", syncStatus === "syncing" ? "animate-pulse bg-[var(--info)]" : syncStatus === "error" ? "bg-[var(--danger)]" : syncStatus === "offline" ? "bg-[var(--warning)]" : "bg-[var(--success)]")} />
+                      {syncStatus === "syncing" ? "Enregistrement sur ton compte…" : syncStatus === "error" ? "Erreur de synchro" : syncStatus === "offline" ? "Hors ligne : enregistré sur l'appareil" : "Enregistré sur ton compte"}
+                    </p>
                   </div>
                 </div>
                 <motion.button
@@ -325,7 +328,7 @@ export default function DockControlCenter({
                   whileHover={{ scale: 1.12, rotate: 90 }}
                   whileTap={{ scale: 0.9 }}
                   aria-label={i18n("close")}
-                  className="flex h-7 w-7 items-center justify-center rounded-xl border border-white/[0.06] bg-white/[0.04] text-[var(--text-muted)] transition-colors hover:bg-white/10 hover:text-white cursor-pointer"
+                  className="flex h-7 w-7 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-white/[0.04] text-[var(--text-muted)] transition-colors hover:bg-white/10 hover:text-white cursor-pointer"
                 >
                   <Icon name="close" className="h-3.5 w-3.5" />
                 </motion.button>
@@ -401,7 +404,7 @@ export default function DockControlCenter({
               </section>
 
               {/* Section 3: Interface & Display Switches */}
-              <section className="space-y-0.5 rounded-2xl border border-white/[0.07] bg-white/[0.02] p-2 backdrop-blur-md">
+              <section className="space-y-0.5 rounded-2xl border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.02] p-2 backdrop-blur-md">
                 <AppleToggle
                   label={i18n("uiGlow")}
                   checked={settings.uiGlow}
@@ -476,7 +479,7 @@ export default function DockControlCenter({
               </section>
 
               {/* Section 5: Volume Section (Master toggle + Smooth range slider) */}
-              <section className="space-y-2.5 rounded-2xl border border-white/[0.07] bg-white/[0.02] p-2.5 backdrop-blur-md">
+              <section className="space-y-2.5 rounded-2xl border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.02] p-2.5 backdrop-blur-md">
                 <AppleToggle
                   label={i18n("masterVolume")}
                   checked={settings.masterVolume}
@@ -494,7 +497,7 @@ export default function DockControlCenter({
                 <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] px-0.5">
                   {i18n("ambience")}
                 </p>
-                <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] p-2 backdrop-blur-md">
+                <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.02] p-2 backdrop-blur-md">
                   <AmbientSoundControl compact />
                 </div>
               </section>

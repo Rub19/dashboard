@@ -441,7 +441,7 @@ function WeatherDetailContent({
                         )}
                         {apparentTemp !== undefined && (
                           <span className="text-[var(--text-muted)] font-medium">
-                            • {i18n("apparent") || "Ressenti"} {Math.round(apparentTemp)}°
+                            • {i18n("apparent", "ressenti") || "Ressenti"} {Math.round(apparentTemp)}°
                           </span>
                         )}
                       </div>
@@ -508,7 +508,7 @@ function WeatherDetailContent({
                     <div className="space-y-1.5">
                       <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] px-0.5">
                         <Calendar className="h-3 w-3" />
-                        <span>{i18n("forecast5Days") || i18n("forecast")}</span>
+                        <span>{i18n("forecast5Days", "Prévisions sur 5 jours")}</span>
                       </div>
                       <div className="space-y-0.5 rounded-2xl border border-white/[0.07] bg-white/[0.02] p-1.5">
                         {forecast.map((day, i) => (

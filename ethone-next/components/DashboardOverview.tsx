@@ -52,6 +52,9 @@ import WidgetContainer from "@/components/widgets/WidgetContainer";
 import WidgetPickerModal from "@/components/widgets/WidgetPickerModal";
 import WidgetConfigModal from "@/components/widgets/WidgetConfigModal";
 import { getWidgetManifest } from "@/lib/widget-registry";
+import MobileTabs from "@/components/ui/MobileTabs";
+import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
+import { AnimatePresence, motion } from "framer-motion";
 
 const LiveBentoGrid = dynamic(() => import("@/components/LiveBentoGrid"));
 const BillsWidget = dynamic(() => import("@/components/BillsWidget"));
@@ -114,6 +117,9 @@ export default function DashboardOverview() {
   const homeLoading = loading;
   const bentoLoading = false;
   const [customizing, setCustomizing] = useState(false);
+  // Téléphone : un widget à la fois, choisi dans une barre d'onglets (au lieu de 6 écrans à faire défiler).
+  const isMobile = useMediaQuery("(max-width: 767px)");
+  const [mobileWidget, setMobileWidget] = useState<string>("");
   const [pickerOpen, setPickerOpen] = useState(false);
   const [configModal, setConfigModal] = useState<{ open: boolean; widgetId: string } | null>(null);
   const [layoutLocked, setLayoutLocked] = useLocalStorage<boolean>("ethone-home-layout-locked", false);
@@ -496,7 +502,7 @@ export default function DashboardOverview() {
       <PullToRefresh onRefresh={handleRefresh}>
         <div className={cn("mx-auto w-full min-h-full px-2 pb-28 sm:px-4 space-y-4", maxWClass)}>
           {/* 1. Intelligent OS Home 2026 Header */}
-          <header className="shrink-0 flex flex-col md:flex-row md:items-center justify-between gap-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)]/80 bg-[var(--panel-bg)]/80 p-5 shadow-sm backdrop-blur-[var(--panel-blur)] select-none">
+          <header className="shrink-0 flex flex-row items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)]/80 bg-[var(--panel-bg)]/80 p-3 md:gap-4 md:p-5 shadow-sm backdrop-blur-[var(--panel-blur)] select-none">
             <div className="min-w-0 space-y-1">
               <div className="flex items-center gap-2">
                 <span className="rounded-lg bg-[var(--accent-primary)]/15 px-2 py-0.5 font-mono text-[10px] font-bold text-[var(--accent-primary)] uppercase tracking-wider">
@@ -509,13 +515,13 @@ export default function DashboardOverview() {
               <h1 className="text-xl font-bold tracking-tight text-[var(--text-primary)] sm:text-2xl">
                 {dynamicGreeting}, <span className="text-[var(--accent-primary)]">{userName}</span>
               </h1>
-              <p className="text-xs text-[var(--text-muted)]">
+              <p className="hidden text-xs text-[var(--text-muted)] md:block">
                 Votre système d'exploitation personnel en un coup d'œil.
               </p>
             </div>
 
             {/* Quick Actions & Controls */}
-            <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex shrink-0 items-center gap-1.5 md:gap-2 md:flex-wrap">
               <button
                 type="button"
                 onClick={() => setPickerOpen(true)}
@@ -523,7 +529,7 @@ export default function DashboardOverview() {
                 title="Ajouter un widget"
               >
                 <Plus className="h-3.5 w-3.5" />
-                <span>Ajouter</span>
+                <span className="hidden sm:inline">Ajouter</span>
               </button>
 
               <button
@@ -548,7 +554,7 @@ export default function DashboardOverview() {
                 leftIcon={<LayoutGrid className="h-3.5 w-3.5" />}
                 className="h-9 rounded-2xl px-3 text-xs font-semibold"
               >
-                {customizing ? i18n("done", "Terminer") : i18n("customize", "Organiser")}
+                <span className="hidden sm:inline">{customizing ? i18n("done", "Terminer") : i18n("customize", "Organiser")}</span>
               </Button>
             </div>
           </header>
@@ -696,6 +702,37 @@ export default function DashboardOverview() {
           {/* 4. Draggable Grid of Widgets (preserving all 3D tilt cards) */}
           {bentoLoading ? (
             <DashboardSkeleton />
+          ) : isMobile && !customizing && visibleWidgets.length > 0 ? (
+            (() => {
+              const current = visibleWidgets.find((w) => w.id === mobileWidget) ?? visibleWidgets[0];
+              return (
+                <div>
+                  <MobileTabs
+                    layoutId="home-widget-tab"
+                    tabs={visibleWidgets.map((w) => ({ id: w.id, label: sections.find((x) => x.id === w.id)?.label ?? w.id }))}
+                    value={current.id}
+                    onChange={setMobileWidget}
+                  />
+                  <AnimatePresence mode="wait" initial={false}>
+                    <motion.div key={current.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.16 }} className="pt-3">
+                      <WidgetContainer
+                        key={`${current.id}-${widgetRefreshKeys[current.id] ?? 0}`}
+                        id={current.id}
+                        pinned={pinnedWidgets.includes(current.id)}
+                        favorite={favoriteWidgets.includes(current.id)}
+                        onPin={() => handleTogglePin(current.id)}
+                        onFavorite={() => handleToggleFavorite(current.id)}
+                        onConfigure={() => setConfigModal({ open: true, widgetId: current.id })}
+                        onHide={() => toggleSection(current.id)}
+                        onRefresh={() => handleWidgetRefresh(current.id)}
+                      >
+                        {renderWidgetContent(current.id)}
+                      </WidgetContainer>
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
+              );
+            })()
           ) : (
             <DndContext
               sensors={sensors}

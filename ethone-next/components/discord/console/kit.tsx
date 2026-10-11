@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useId, useRef, useState, type Dispatch, type ReactNode, type SetStateAction } from "react";
+import { Children, isValidElement, useCallback, useEffect, useId, useRef, useState, type Dispatch, type ReactElement, type ReactNode, type SetStateAction } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Hash, Loader2, Minus, Plus, Search, Volume2, X } from "@/components/icons/ph";
 import { useToast } from "@/components/ToastProvider";
@@ -9,6 +9,8 @@ import { cn } from "@/lib/utils";
 import { pageStagger, staggerItem } from "@/lib/motion-variants";
 import { fetchGuildRoles, type RoleOption } from "../RolePicker";
 import { fetchGuildChannels, type ChannelOption } from "../ChannelPicker";
+import MobileTabs from "@/components/ui/MobileTabs";
+import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
 
 /** Boîte à outils des pages de la console au format Keeper : page, blocs, lignes de réglage, interrupteur, sélecteurs. */
 
@@ -42,18 +44,38 @@ export function useGuildApi(guildId: string) {
 /** Page de la console : titre puis blocs qui entrent en cascade (Panel = staggerItem), sauf mouvement réduit. */
 export function ConsolePage({ title, actions, children }: { title: ReactNode; actions?: ReactNode; children: ReactNode }) {
   const reduced = useReducedMotion();
+  const isPhone = useMediaQuery("(max-width: 767px)");
+  const [tab, setTab] = useState("0");
+  // Téléphone : chaque bloc titré devient un onglet, un seul affiché à la fois (moins de défilement).
+  const items = Children.toArray(children);
+  const panels = items.filter((c): c is ReactElement<{ title?: ReactNode }> => isValidElement(c) && c.type === Panel && Boolean((c.props as { title?: ReactNode }).title));
+  const tabbed = isPhone && panels.length > 1;
+  const current = Math.min(Number(tab) || 0, panels.length - 1);
+  const label = (p: ReactElement<{ title?: ReactNode }>, i: number) => (typeof p.props.title === "string" ? p.props.title : `Bloc ${i + 1}`);
   return (
     <motion.div
       variants={pageStagger}
       initial={reduced ? false : "initial"}
       animate="animate"
-      className="mx-auto w-full max-w-4xl space-y-5"
+      className="mx-auto w-full max-w-4xl space-y-3 sm:space-y-5"
     >
       <div className="flex items-center justify-between gap-3">
-        <h1 className="text-2xl font-bold tracking-tight text-[var(--text-primary)] sm:text-3xl">{title}</h1>
+        <h1 className="text-xl font-bold tracking-tight text-[var(--text-primary)] sm:text-3xl">{title}</h1>
         {actions}
       </div>
-      {children}
+      {tabbed ? (
+        <>
+          {items.filter((c) => !panels.includes(c as ReactElement<{ title?: ReactNode }>))}
+          <MobileTabs layoutId="console-panel-tab" tabs={panels.map((p, i) => ({ id: String(i), label: label(p, i) }))} value={String(current)} onChange={setTab} />
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div key={current} variants={pageStagger} initial={reduced ? false : "initial"} animate="animate" exit={{ opacity: 0, transition: { duration: 0.1 } }}>
+              {panels[current]}
+            </motion.div>
+          </AnimatePresence>
+        </>
+      ) : (
+        children
+      )}
     </motion.div>
   );
 }
@@ -619,9 +641,9 @@ export function TextField({
 /** Tuile chiffrée (format Keeper) : libellé, valeur, précision. */
 export function StatTile({ label, value, hint, accent }: { label: string; value: ReactNode; hint?: ReactNode; accent?: string }) {
   return (
-    <motion.div variants={staggerItem} className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-4">
+    <motion.div variants={staggerItem} className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-3 sm:p-4">
       <p className="text-xs text-[var(--text-muted)]">{label}</p>
-      <p className="mt-2 text-2xl font-bold tabular-nums text-[var(--text-primary)]" style={accent ? { color: accent } : undefined}>
+      <p className="mt-1 text-xl sm:mt-2 sm:text-2xl font-bold tabular-nums text-[var(--text-primary)]" style={accent ? { color: accent } : undefined}>
         {value}
       </p>
       {hint && <p className="mt-0.5 truncate text-[11px] text-[var(--text-muted)]">{hint}</p>}

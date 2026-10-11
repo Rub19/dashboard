@@ -71,10 +71,10 @@ export default function Shell({ children }: { children: ReactNode }) {
                         window.location.assign("https://ethone.dev/");
                       }
                     }}
-                    className="fixed bottom-4 right-4 z-50 flex items-center gap-2 border border-[var(--panel-border)] bg-[var(--surface-raised)]/95 backdrop-blur-md px-3.5 py-2 text-xs font-semibold text-[var(--text-primary)] hover:border-[var(--accent-primary)] hover:text-[var(--accent-primary)] shadow-lg transition-all rounded-sm cursor-pointer"
+                    className="fixed bottom-4 right-4 z-50 flex items-center gap-2 border border-[var(--panel-border)] bg-[var(--surface-raised)]/95 backdrop-blur-md px-2.5 py-2 sm:px-3.5 text-xs font-semibold text-[var(--text-primary)] hover:border-[var(--accent-primary)] hover:text-[var(--accent-primary)] shadow-lg transition-all rounded-sm cursor-pointer"
                   >
                     <ArrowLeft className="h-4 w-4" />
-                    <span>Retour à ETHONE</span>
+                    <span className="hidden sm:inline">Retour à ETHONE</span>
                   </a>
                   <PrivacyShield>
                     <main

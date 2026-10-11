@@ -169,8 +169,8 @@ Donne-moi un bilan financier express en 3 puces : (1) Total estimé par mois et 
         </button>
       </div>
 
-      {/* Quick Add Brands Carousel */}
-      <div className="space-y-1.5 pt-1">
+      {/* Quick Add Brands Carousel (masqué sur téléphone : l'assistant suffit) */}
+      <div className="hidden space-y-1.5 pt-1 sm:block">
         <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
           ⚡ Ajouter un abonnement officiel en 1 clic
         </p>

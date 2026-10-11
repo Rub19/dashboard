@@ -177,22 +177,22 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
   }, [form.query, contentRef]);
 
   return (
-    <div className="flex h-full min-h-0 w-full flex-col overflow-hidden p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:p-6 sm:pb-[calc(1.5rem+env(safe-area-inset-bottom))]">
+    <div className="flex h-full min-h-0 w-full flex-col overflow-hidden p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] sm:p-6 sm:pb-[calc(1.5rem+env(safe-area-inset-bottom))]">
       {/* Header */}
       <motion.header
         initial={reduced ? false : { opacity: 0, y: -8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: EASE_SNAP }}
-        className="relative mb-4 shrink-0 overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/30 px-4 py-3.5 sm:px-5"
+        className="relative mb-3 shrink-0 overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/30 px-3 py-2.5 sm:mb-4 sm:px-5 sm:py-3.5"
       >
         <div aria-hidden className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-[var(--text-primary)]/20 to-transparent" />
-        <div className="flex w-full min-w-0 max-w-full flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex w-full min-w-0 max-w-full flex-col gap-2.5 sm:gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex min-w-0 items-center gap-3">
             <motion.div
               initial={reduced ? false : { rotate: -90, scale: 0.6, opacity: 0 }}
               animate={{ rotate: 0, scale: 1, opacity: 1 }}
               transition={{ type: "spring", stiffness: 260, damping: 33, delay: 0.05 }}
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
+              className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--accent-primary)]/20 sm:flex bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
             >
               <Icon name="settings" className="h-5 w-5" aria-hidden="true" />
             </motion.div>
@@ -200,7 +200,7 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
               <h1 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">
                 {i18n("settingsTitle") || "Paramètres"}
               </h1>
-              <p className="text-[11px] text-[var(--text-muted)]">
+              <p className="hidden text-[11px] text-[var(--text-muted)] sm:block">
                 {i18n("settingsGeneralDesc", "Personnalisez l'apparence et le comportement global d'ETHONE OS.")}
               </p>
             </div>
@@ -255,7 +255,7 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
 
             <div
               className={cn(
-                "flex min-h-[44px] items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-medium transition-colors duration-300",
+                "hidden min-h-[44px] items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-medium transition-colors duration-300 sm:flex",
                 form.hasExplicitChanges
                   ? "border-[var(--warning)]/20 bg-[var(--warning)]/10 text-[var(--warning)]"
                   : "border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
@@ -285,7 +285,7 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
               </AnimatePresence>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="hidden items-center gap-2 sm:flex">
               <Button
                 type="button"
                 variant="secondary"
@@ -312,7 +312,7 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
       </motion.header>
 
       {/* Mobile category strip */}
-      <div className="mb-4 block md:hidden">
+      <div className="mb-2 block md:hidden">
         <SettingsNavigation
           active={activeCategory}
           onSelect={(id) => navigateTo(id, "user")}

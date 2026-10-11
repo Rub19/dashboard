@@ -49479,5 +49479,58 @@ CHANGELOG_BY_LANG.en.unshift(v1_68_1_en);
 CHANGELOG_BY_LANG.es.unshift(v1_68_1_es);
 CHANGELOG_BY_LANG.de.unshift(v1_68_1_de);
 
+const v1_69_0_fr: ChangelogEntry = {
+  version: "v1.69.0",
+  date: "2026-10-11",
+  title: "Mobile : pages plus compactes et rangées en onglets",
+  items: [
+    "Accueil : sur téléphone, un widget à la fois choisi dans une barre d'onglets, au lieu de six écrans à faire défiler.",
+    "Console Discord : chaque page de module affiche ses blocs en onglets sur téléphone ; la page Protections s'ouvre en liste puis en détail avec un bouton retour.",
+    "Réglages, Profil, Habitudes, Tâches et Agenda : en-têtes et indicateurs compactés pour voir l'essentiel sans défiler.",
+    "Le bouton « Retour à ETHONE » de la console devient une simple icône sur téléphone.",
+  ],
+};
+
+const v1_69_0_en: ChangelogEntry = {
+  version: "v1.69.0",
+  date: "2026-10-11",
+  title: "Mobile: more compact pages organised in tabs",
+  items: [
+    "Home: on phones, one widget at a time picked from a tab bar instead of six screens of scrolling.",
+    "Discord console: each module page shows its blocks as tabs on phones; Protections opens as a list then a detail view with a back button.",
+    "Settings, Profile, Habits, Tasks and Calendar: compact headers and stats so the essentials fit without scrolling.",
+    "The console's \"Back to ETHONE\" button becomes a simple icon on phones.",
+  ],
+};
+
+const v1_69_0_es: ChangelogEntry = {
+  version: "v1.69.0",
+  date: "2026-10-11",
+  title: "Móvil: páginas más compactas y organizadas en pestañas",
+  items: [
+    "Inicio: en el móvil, un widget a la vez elegido en una barra de pestañas.",
+    "Consola de Discord: cada página de módulo muestra sus bloques en pestañas; Protecciones abre lista y luego detalle con botón atrás.",
+    "Ajustes, Perfil, Hábitos, Tareas y Agenda: encabezados e indicadores compactos.",
+    "El botón «Volver a ETHONE» de la consola es un icono en el móvil.",
+  ],
+};
+
+const v1_69_0_de: ChangelogEntry = {
+  version: "v1.69.0",
+  date: "2026-10-11",
+  title: "Mobil: kompaktere Seiten in Tabs",
+  items: [
+    "Start: auf dem Handy ein Widget nach dem anderen über eine Tab-Leiste.",
+    "Discord-Konsole: Modulseiten zeigen ihre Blöcke als Tabs; Schutz öffnet Liste, dann Detail mit Zurück-Taste.",
+    "Einstellungen, Profil, Gewohnheiten, Aufgaben und Kalender: kompakte Kopfzeilen und Kennzahlen.",
+    "Der Button „Zurück zu ETHONE“ wird auf dem Handy zu einem Symbol.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_69_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_69_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_69_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_69_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

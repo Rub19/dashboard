@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.69.0 — 2026-10-11
+
+**Mobile : pages plus compactes et rangées en onglets**
+
+- Accueil : sur téléphone, un widget à la fois choisi dans une barre d'onglets, au lieu de six écrans à faire défiler.
+- Console Discord : chaque page de module affiche ses blocs en onglets sur téléphone ; la page Protections s'ouvre en liste puis en détail avec un bouton retour.
+- Réglages, Profil, Habitudes, Tâches et Agenda : en-têtes et indicateurs compactés pour voir l'essentiel sans défiler.
+- Le bouton « Retour à ETHONE » de la console devient une simple icône sur téléphone.
+
 ## v1.68.1 — 2026-10-10
 
 **Connexion stable sur mobile**

@@ -2,7 +2,7 @@
 
 import { Fragment, useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { Ban, Camera, CircleCheck, FolderClosed, Hash, Info, Lock, LogOut, PenLine, Search, Timer, TriangleAlert, UserRoundMinus, WandSparkles } from "lucide-react";
+import { ArrowLeft, Ban, Camera, CircleCheck, FolderClosed, Hash, Info, Lock, LogOut, PenLine, Search, Timer, TriangleAlert, UserRoundMinus, WandSparkles } from "lucide-react";
 import ChannelPicker, { fetchGuildChannels, type ChannelOption } from "../ChannelPicker";
 import { confirmDialog } from "@/lib/confirmDialog";
 import { useToast } from "@/components/ToastProvider";
@@ -10,6 +10,7 @@ import { SPRING_LAYOUT, SPRING_PILL } from "@/lib/ease";
 import { cn } from "@/lib/utils";
 import { ChannelAdder, Chip, EmptyLine, GhostButton, MemberPicker, RoleChips, Segmented, Stepper, Switch, useGuildApi } from "./kit";
 import type { ConsoleView } from "../HubSidebar";
+import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
 
 type Punish = "none" | "timeout" | "derank" | "kick" | "ban";
 type Kind = "quota" | "watched" | "link" | "words" | "toxicity" | "scam" | "alt" | "rollback" | "reorder";
@@ -398,8 +399,12 @@ export default function ConsoleProtections({ guildId, onOpenSetup }: { guildId: 
     if (p) setSelected(p);
   }, [guildId, load]);
 
+  // Téléphone : la liste occupe l'écran ; toucher une protection ouvre son détail (bouton retour).
+  const isPhone = useMediaQuery("(max-width: 1023px)");
+  const [phoneDetail, setPhoneDetail] = useState(false);
   const select = (key: string) => {
     setSelected(key);
+    setPhoneDetail(true);
     const url = new URL(window.location.href);
     url.searchParams.set("p", key);
     window.history.replaceState(window.history.state, "", url);
@@ -520,7 +525,7 @@ export default function ConsoleProtections({ guildId, onOpenSetup }: { guildId: 
 
       <div className="grid overflow-hidden rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] lg:grid-cols-[19rem_1fr]">
         {/* Liste */}
-        <nav aria-label="Protections" className="max-h-80 overflow-y-auto border-b border-[var(--panel-border)] p-2 lg:max-h-[calc(100vh-14rem)] lg:border-b-0 lg:border-r">
+        <nav aria-label="Protections" className={cn("overflow-y-auto p-2 lg:max-h-[calc(100vh-14rem)] lg:border-r lg:border-[var(--panel-border)]", isPhone && phoneDetail && "hidden")}>
           {visible.length === 0 && <p className="px-3 py-6 text-center text-xs text-[var(--text-muted)]">Aucune protection ne correspond.</p>}
           {data.categories.map((cat) => {
             const items = visible.filter((d) => d.category === cat);
@@ -554,7 +559,13 @@ export default function ConsoleProtections({ guildId, onOpenSetup }: { guildId: 
         </nav>
 
         {/* Détail */}
-        <div className="min-w-0">
+        <div className={cn("min-w-0", isPhone && !phoneDetail && "hidden")}>
+          {isPhone && (
+            <button type="button" onClick={() => setPhoneDetail(false)} className="flex w-full items-center gap-2 border-b border-[var(--panel-border)] px-4 py-3 text-[13px] font-semibold text-[var(--text-muted)] active:bg-[var(--surface-hover)]">
+              <ArrowLeft className="h-4 w-4" />
+              Toutes les protections
+            </button>
+          )}
           <AnimatePresence mode="popLayout" initial={false}>
             {current && (
               <motion.div key={current.key} initial={reduced ? false : { opacity: 0, x: 8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}>

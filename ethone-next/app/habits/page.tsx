@@ -154,13 +154,13 @@ export default function HabitsPage() {
         initial={enter}
         animate="shown"
         variants={{ shown: { transition: { staggerChildren: 0.06, delayChildren: 0.04 } } }}
-        className="mx-auto w-full max-w-6xl space-y-6 p-4 sm:p-6 lg:p-8"
+        className="mx-auto w-full max-w-6xl space-y-3 p-3 sm:space-y-6 sm:p-6 lg:p-8"
       >
         {/* En-tête */}
-        <Rise className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <Rise className="flex flex-row items-center justify-between gap-3 sm:items-end">
           <div>
             <h1 className="text-[clamp(1.75rem,3vw,2.25rem)] font-bold leading-tight tracking-[-0.02em] text-[var(--text-primary)]">Habitudes</h1>
-            <p className="mt-1 text-sm text-[var(--text-muted)]">
+            <p className="mt-1 hidden text-sm text-[var(--text-muted)] sm:block">
               {stats.total ? `${plural(stats.total, "habitude active", "habitudes actives")} · une routine qui se construit jour après jour.` : "Une routine qui se construit jour après jour."}
             </p>
           </div>
@@ -193,8 +193,8 @@ export default function HabitsPage() {
         </Rise>
 
         {/* Aujourd'hui + indicateurs */}
-        <Rise className="grid gap-3 lg:grid-cols-[1.4fr_1fr_1fr_1.4fr]">
-          <Tile className="flex items-center gap-5">
+        <Rise className="grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-[1.4fr_1fr_1fr_1.4fr]">
+          <Tile className="col-span-2 flex items-center gap-4 sm:gap-5 lg:col-span-1">
             <ProgressRing done={stats.doneToday} total={stats.total} reduced={reduced} />
             <div className="min-w-0">
               <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Aujourd&apos;hui</p>
@@ -222,22 +222,22 @@ export default function HabitsPage() {
           </Tile>
           <Tile>
             <Label icon={<Flame className="h-3.5 w-3.5 text-orange-400" />}>Meilleure série</Label>
-            <p className="mt-2 text-3xl font-bold tabular-nums text-[var(--text-primary)]">
+            <p className="mt-1.5 text-2xl font-bold tabular-nums text-[var(--text-primary)] sm:mt-2 sm:text-3xl">
               <CountUp value={stats.bestStreak} reduced={reduced} />
               <span className="ml-1.5 text-sm font-medium text-[var(--text-muted)]">{stats.bestStreak > 1 ? "jours" : "jour"}</span>
             </p>
           </Tile>
           <Tile>
             <Label icon={<Target className="h-3.5 w-3.5 text-sky-400" />}>Objectif de la semaine</Label>
-            <p className="mt-2 text-3xl font-bold tabular-nums text-[var(--text-primary)]">
+            <p className="mt-1.5 text-2xl font-bold tabular-nums text-[var(--text-primary)] sm:mt-2 sm:text-3xl">
               <CountUp value={stats.weeklyRate} reduced={reduced} />
               <span className="text-sm font-medium text-[var(--text-muted)]">%</span>
             </p>
             <Bar value={stats.weeklyRate / 100} reduced={reduced} className="mt-2" />
           </Tile>
-          <Tile>
+          <Tile className="col-span-2 lg:col-span-1">
             <Label icon={<Sparkles className="h-3.5 w-3.5 text-violet-400" />}>Cette semaine</Label>
-            <div className="mt-3 flex h-14 items-end gap-1.5" role="img" aria-label="Part des habitudes faites chaque jour de la semaine">
+            <div className="mt-2 flex h-14 items-end gap-1.5" role="img" aria-label="Part des habitudes faites chaque jour de la semaine">
               {week.map((d, i) => (
                 <div key={d.key} className="flex flex-1 flex-col items-center gap-1">
                   <div className="relative flex h-10 w-full items-end overflow-hidden rounded-md bg-[var(--text-primary)]/[0.05]">
@@ -374,7 +374,7 @@ function Rise({ children, className }: { children: ReactNode; className?: string
 }
 
 function Tile({ children, className }: { children: ReactNode; className?: string }) {
-  return <div className={cn("rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-5", className)}>{children}</div>;
+  return <div className={cn("rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-3.5 sm:p-5", className)}>{children}</div>;
 }
 
 function Label({ icon, children }: { icon: ReactNode; children: ReactNode }) {
@@ -415,8 +415,8 @@ function Bar({ value, reduced, className }: { value: number; reduced: boolean; c
 }
 
 function ProgressRing({ done, total, reduced }: { done: number; total: number; reduced: boolean }) {
-  const size = 84;
-  const stroke = 8;
+  const size = 68;
+  const stroke = 7;
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
   const pct = total ? done / total : 0;

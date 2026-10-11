@@ -196,7 +196,7 @@ export default function CalendarPage() {
               </span>
             </div>
           </div>
-          <p className="text-xs text-[var(--text-muted)]">
+          <p className="hidden text-xs text-[var(--text-muted)] sm:block">
             Planifiez vos rendez-vous, suivez vos échéances et optimisez vos dépenses.
           </p>
         </div>

@@ -1,5 +1,16 @@
 [
   {
+    "version": "v1.69.0",
+    "date": "2026-10-11",
+    "title": "Mobile : pages plus compactes et rangées en onglets",
+    "items": [
+      "Accueil : sur téléphone, un widget à la fois choisi dans une barre d'onglets, au lieu de six écrans à faire défiler.",
+      "Console Discord : chaque page de module affiche ses blocs en onglets sur téléphone ; la page Protections s'ouvre en liste puis en détail avec un bouton retour.",
+      "Réglages, Profil, Habitudes, Tâches et Agenda : en-têtes et indicateurs compactés pour voir l'essentiel sans défiler.",
+      "Le bouton « Retour à ETHONE » de la console devient une simple icône sur téléphone."
+    ]
+  },
+  {
     "version": "v1.68.1",
     "date": "2026-10-10",
     "title": "Connexion stable sur mobile",
@@ -634,17 +645,6 @@
       "Affichage du badge couronne propriétaire et du statut actif avec indicateur dynamique",
       "Remplacement du bouton d'action par un chevron de navigation fluide sur les serveurs installés",
       "Ajout du badge de synchronisation automatique dans l'en-tête de sélection"
-    ]
-  },
-  {
-    "version": "v1.55.61",
-    "date": "2026-10-07",
-    "title": "Épuration de la Console Discord — Retrait des Placeholders et du Bouton Premium",
-    "items": [
-      "Retrait du bouton Premium dans la barre latérale de la console Discord",
-      "Nettoyage complet des placeholders fictifs : suppression de la bannière promo et des alertes statiques",
-      "Dynamisation de la couverture avec compteurs réels calculés en direct sur les modules activés",
-      "Synchronisation des réglages du mode raid et du préfixe réel du serveur dans le tableau de bord"
     ]
   }
 ]

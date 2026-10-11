@@ -275,12 +275,12 @@ export default function TasksPage() {
   ];
 
   return (
-    <div className="flex h-full min-h-0 w-full flex-col overflow-hidden p-4 sm:p-6 lg:p-8 space-y-4">
+    <div className="flex h-full min-h-0 w-full flex-col overflow-hidden p-3 sm:p-6 lg:p-8 space-y-3 sm:space-y-4">
       {/* Header */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between shrink-0">
+      <div className="flex flex-row items-center justify-between gap-3 shrink-0">
         <div>
           <h1 className="text-xl font-semibold tracking-tight text-[var(--text-primary)]">Tâches</h1>
-          <p className="mt-0.5 text-xs text-[var(--text-muted)]">
+          <p className="mt-0.5 hidden text-xs text-[var(--text-muted)] sm:block">
             Organisez et priorisez votre travail du jour.
           </p>
         </div>
@@ -292,7 +292,7 @@ export default function TasksPage() {
             className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] px-3 py-1.5 text-xs font-medium text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-2)] hover:text-[var(--text-primary)]"
           >
             <Sparkles className="h-3.5 w-3.5" />
-            <span>Assistant IA</span>
+            <span className="hidden sm:inline">Assistant IA</span>
           </button>
 
           <div className="flex items-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] p-0.5">
@@ -327,15 +327,15 @@ export default function TasksPage() {
       </div>
 
       {/* KPI strip */}
-      <div className="stagger-children v8-panel grid shrink-0 grid-cols-2 divide-[var(--panel-border)] sm:grid-cols-4 sm:divide-x">
+      <div className="stagger-children v8-panel grid shrink-0 grid-cols-4 divide-x divide-[var(--panel-border)]">
         {KPIS.map((kpi) => (
-          <div key={kpi.label} className="relative flex items-center gap-3 p-3.5">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--surface-2)] text-[var(--text-muted)]">
+          <div key={kpi.label} className="relative flex items-center gap-3 px-2 py-2.5 sm:p-3.5">
+            <span className="hidden sm:flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--surface-2)] text-[var(--text-muted)]">
               <kpi.icon className="h-4 w-4" />
             </span>
             <div className="min-w-0">
-              <p className="text-[11px] uppercase tracking-wide text-[var(--text-muted)]">{kpi.label}</p>
-              <p className="mt-0.5 text-lg font-semibold tabular-nums text-[var(--text-primary)]">{kpi.value}</p>
+              <p className="truncate text-[10px] uppercase tracking-wide text-[var(--text-muted)] sm:text-[11px]">{kpi.label}</p>
+              <p className="mt-0.5 text-base sm:text-lg font-semibold tabular-nums text-[var(--text-primary)]">{kpi.value}</p>
             </div>
             {kpi.label === "Progression" && (
               <span className="absolute inset-x-3.5 bottom-2 h-1 overflow-hidden rounded-full bg-[var(--text-primary)]/[0.06]">

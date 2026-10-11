@@ -13,6 +13,7 @@ import { describeProfileError, saveAccountProfile, uploadProfileImage, useAccoun
 import { AVATAR_FRAMES, PRESENCE, PROFILE_BACKGROUNDS, STATUS_EMOJIS, STATUS_SUGGESTIONS, backgroundById } from "@/lib/profile/cosmetics";
 import { EASE_SNAP, SPRING_PILL } from "@/lib/ease";
 import { cn } from "@/lib/utils";
+import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
 
 type Tab = "profile" | "status" | "appearance" | "account";
 const TABS: Array<{ id: Tab; label: string; icon: typeof User }> = [
@@ -40,6 +41,7 @@ export default function ProfilePage() {
   const { profile, loaded, signedIn } = useAccountProfile();
   const { success, error: toastError } = useToast();
   const [tab, setTab] = useState<Tab>("profile");
+  const isPhone = useMediaQuery("(max-width: 639px)");
   const [libraryOpen, setLibraryOpen] = useState(false);
 
   // « Mis à jour depuis un autre appareil » : le profil change sans qu'on vienne d'enregistrer ici.
@@ -118,7 +120,7 @@ export default function ProfilePage() {
               </motion.div>
             )}
           </AnimatePresence>
-          <div className="relative flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:gap-7 sm:p-7">
+          <div className="relative flex flex-row items-center gap-3.5 p-3.5 sm:gap-7 sm:p-7">
             {loaded ? (
               <button
                 type="button"
@@ -126,18 +128,21 @@ export default function ProfilePage() {
                 aria-label="Changer d'avatar"
                 className="group relative w-fit rounded-full outline-none transition-transform duration-150 active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)] focus-visible:ring-offset-4 focus-visible:ring-offset-[var(--bg-surface)]"
               >
-                <ProfileAvatar src={identity.avatarUrl} initials={identity.initials} frameId={profile.frameId} presence={profile.presence} size={112} />
+                <ProfileAvatar src={identity.avatarUrl} initials={identity.initials} frameId={profile.frameId} presence={profile.presence} size={isPhone ? 64 : 112} />
+                <span className="absolute -bottom-0.5 -right-0.5 grid h-6 w-6 place-items-center rounded-full border-2 border-[var(--bg-surface)] bg-[var(--accent-primary)] text-[var(--accent-contrast)] sm:hidden">
+                  <Camera className="h-3 w-3" />
+                </span>
                 <span className="absolute inset-0 grid place-items-center rounded-full bg-black/45 text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100">
                   <Camera className="h-6 w-6" />
                 </span>
               </button>
             ) : (
-              <div className="skeleton-shimmer h-28 w-28 rounded-full" />
+              <div className="skeleton-shimmer h-16 w-16 rounded-full sm:h-28 sm:w-28" />
             )}
 
-            <div className="min-w-0 flex-1 space-y-2">
+            <div className="min-w-0 flex-1 space-y-1 sm:space-y-2">
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                <h1 className="truncate text-[28px] font-semibold leading-tight tracking-[-0.02em] text-[var(--text-primary)] sm:text-[32px]">{identity.displayName}</h1>
+                <h1 className="truncate text-[22px] font-semibold leading-tight tracking-[-0.02em] text-[var(--text-primary)] sm:text-[32px]">{identity.displayName}</h1>
                 <PresenceChip presence={profile.presence} />
               </div>
               <p className="text-sm text-[var(--text-muted)]">@{identity.username}</p>
@@ -155,12 +160,12 @@ export default function ProfilePage() {
                   </motion.p>
                 )}
               </AnimatePresence>
-              <p className={cn("max-w-2xl text-sm leading-relaxed", profile.bio ? "text-[var(--text-primary)]/85" : "text-[var(--text-muted)]")}>
+              <p className={cn("hidden max-w-2xl text-sm leading-relaxed sm:block", profile.bio ? "text-[var(--text-primary)]/85" : "text-[var(--text-muted)]")}>
                 {profile.bio || "Pas encore de bio. Ajoutez-en une dans l'onglet Profil."}
               </p>
             </div>
 
-            <div className="flex shrink-0 flex-row gap-2 sm:flex-col sm:items-end">
+            <div className="hidden shrink-0 flex-col items-end gap-2 sm:flex">
               <SyncPill pulse={remotePulse} ready={loaded} />
               <button
                 type="button"

@@ -42,7 +42,7 @@ export const setupCommand: Command = {
 
     const isWelcomeAlias = invokedName === 'bienvenue' || invokedName === 'welcome' || invokedName === 'setup-welcome';
     if (viewChoice === 'welcome' || viewChoice === 'join' || isWelcomeAlias) {
-      const payload = guildJoinService.buildJoinMessage(ctx.guild, ctx.author.id, false);
+      const payload = guildJoinService.buildJoinMessage(ctx.guild, ctx.author.id, ctx.channel?.id || null);
       await ctx.reply({
         ...payload,
         flags: ((payload.flags as number) || MessageFlags.IsComponentsV2) | MessageFlags.Ephemeral,

@@ -113,7 +113,7 @@ function createMockGuild(options: {
 async function run() {
   console.log('🧪 Tests du service de bienvenue et d\'accueil du bot (GuildJoinService)\n');
 
-  console.log('--- 1. Carte d\'accueil Components V2 ---');
+  console.log('--- 1. Carte d\'accueil Components V2 (style compact Keeper) ---');
   const fullPermsGuild = createMockGuild({ allPerms: true });
   const msg: any = guildJoinService.buildJoinMessage(fullPermsGuild, inviterId);
   const card = JSON.stringify(msg.components.map((c: any) => c.toJSON()));
@@ -122,21 +122,18 @@ async function run() {
   assert(msg.flags === MessageFlags.IsComponentsV2, 'Drapeau IsComponentsV2 posé');
   assert(msg.components.length === 1 && msg.components[0].toJSON().accent_color === 0x10b981, 'Une seule carte, barre émeraude quand tout est en place');
   assert(card.includes(`<@${inviterId}>`), 'La carte mentionne l\'inviteur');
-  assert(card.includes('ajouté avec succès') && card.includes('Opérationnel'), 'Titre et état Opérationnel');
-  assert(card.includes('VIEW_AUDIT_LOG') && card.includes('CREATE_GUILD_EXPRESSIONS'), 'Les 11 permissions sont listées');
-  assert(card.includes('Place le rôle le plus haut'), 'Avertissement sur la hiérarchie des rôles');
-  assert(card.includes('/help') && card.includes('/setup') && card.includes('/language'), 'Commandes utiles réelles du bot');
-  assert(card.includes('guild_join:select_channel:') && card.includes('guild_join:create_channel:'), 'Sélecteur et bouton du salon système');
+  assert(card.includes('ajouté avec succès') && card.includes('toutes en place'), 'Titre et permissions toutes en place');
+  assert(card.includes('Rôle de Etho') && card.includes('Salon système'), 'Rôle et salon système listés');
+  assert(card.includes('/help') && card.includes('/setup') && card.includes('/verifier-permissions'), 'Commandes utiles réelles du bot');
   assert(card.includes('guild_join:language:') && card.includes('"value":"de"'), 'Sélecteur de langue (4 langues)');
-  assert(card.includes('https://discord.gg/WvEcyBuP45') && card.includes(`https://ethone.dev/discord/?guildId=${guildId}`), 'Liens Support et Dashboard');
+  assert(card.includes('Serveur support') && card.includes('Dashboard du serveur'), 'Boutons Support et Dashboard');
 
   console.log('\n--- 2. Permissions manquantes ---');
   const restrictedGuild = createMockGuild({ allPerms: false });
   const restricted: any = guildJoinService.buildJoinMessage(restrictedGuild, inviterId);
   const restrictedCard = JSON.stringify(restricted.components[0].toJSON());
-  assert(restrictedCard.includes('Permissions à compléter'), 'Statut adapté si les permissions principales manquent');
+  assert(restrictedCard.includes('manquante'), 'Statut adapté si les permissions principales manquent');
   assert(restricted.components[0].toJSON().accent_color === 0xf59e0b, 'Barre orange quand il manque des permissions');
-  assert(restrictedCard.includes('❌ `VIEW_AUDIT_LOG`'), 'Permissions manquantes marquées d\'une croix');
 
   console.log('\n--- 3. Résolution de l\'inviteur ---');
   const auditGuild = createMockGuild({ auditExecutorId: '825124006209388616' });
@@ -144,25 +141,36 @@ async function run() {
   const noAuditGuild = createMockGuild({ auditExecutorId: null });
   assert((await guildJoinService.resolveInviterId(noAuditGuild)) === '999888777666555444', 'Repli sur le propriétaire si l\'audit log est indisponible');
 
-  console.log('\n--- 4. Envoi privé : MP à l\'inviteur et zéro création de salon ---');
-  const privateGuild = createMockGuild({ allPerms: true, auditExecutorId: inviterId });
+  console.log('\n--- 4. Détection du salon privé staff & zéro création de salon ---');
+  const sentInChannel: any[] = [];
+  const modChannel = {
+    id: 'chan_mod',
+    name: 'moderator-only',
+    type: ChannelType.GuildText,
+    permissionOverwrites: {
+      find: (fn: any) => fn({ id: guildId, deny: [PermissionFlagsBits.ViewChannel] }),
+    },
+    permissionsFor: () => ({ has: () => true }),
+    send: async (p: any) => sentInChannel.push(p),
+  };
+  const staffGuild = createMockGuild({ allPerms: true, auditExecutorId: inviterId, channels: [modChannel] });
   let createdParams: any = null;
-  const dmsList: any[] = [];
-  privateGuild.client.users.fetch = async (id: string) => ({ id, send: async (p: any) => dmsList.push({ id, p }) });
-  privateGuild.channels.create = async (params: any) => {
+  staffGuild.channels.create = async (params: any) => {
     createdParams = params;
     return { id: 'chan_private', name: params.name, send: async () => true };
   };
-  await guildJoinService.sendJoinWelcome(privateGuild);
+  await guildJoinService.sendJoinWelcome(staffGuild);
   assert(createdParams === null, 'Aucun salon créé à l\'arrivée du bot');
-  assert(dmsList.length === 1 && dmsList[0].id === inviterId, 'Message d\'accueil envoyé en MP à l\'inviteur');
-  assert(dmsList[0].p.flags === MessageFlags.IsComponentsV2, 'Carte MP au format Components V2');
+  assert(sentInChannel.length === 1, 'Message envoyé dans le salon privé staff (#moderator-only)');
+  assert(sentInChannel[0].flags === MessageFlags.IsComponentsV2, 'Carte au format Components V2');
+  const confStaff = guildConfigService.getConfig(guildId);
+  assert(confStaff.systemChannelId === 'chan_mod', 'systemChannelId configuré automatiquement sur le salon staff');
 
-  const dmGuild = createMockGuild({ allPerms: false, auditExecutorId: null });
-  const fallbackDms: any[] = [];
-  dmGuild.client.users.fetch = async (id: string) => ({ id, send: async (p: any) => fallbackDms.push({ id, p }) });
-  await guildJoinService.sendJoinWelcome(dmGuild);
-  assert(fallbackDms.length === 1 && fallbackDms[0].id === '999888777666555444', 'Sans audit log : repli en MP sur le propriétaire');
+  const emptyGuild = createMockGuild({ allPerms: true, auditExecutorId: inviterId, channels: [] });
+  const dmsList: any[] = [];
+  emptyGuild.client.users.fetch = async (id: string) => ({ id, send: async (p: any) => dmsList.push({ id, p }) });
+  await guildJoinService.sendJoinWelcome(emptyGuild);
+  assert(dmsList.length === 1 && dmsList[0].id === inviterId, 'Sans salon accessible : repli en MP à l\'inviteur');
 
   const textChannel = {
     id: 'chan_general',

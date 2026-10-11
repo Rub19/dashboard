@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.73.6 — 2026-10-12
+
+**Bot : Message d'accueil compact façon Keeper & ciblage du salon staff privé**
+
+- Refonte du message d'accueil pour correspondre au format épuré de Keeper : 4 puces clés (Permissions, Rôle tout en haut, Salon système et Commandes réelles d'Etho `/help` · `/setup` · `/verifier-permissions`).
+- Détection intelligente du salon privé du staff (recherche des salons privés avec mots-clés `moderator-only`, `mod`, `staff`, `admin`) pour y poster le message sans créer aucun nouveau salon.
+- Mention active de l'inviteur en tête de message et attribution automatique du salon système.
+
 ## v1.73.5 — 2026-10-12
 
 **Bot : Accueil discret en MP et configuration éphémère sans création de salon**

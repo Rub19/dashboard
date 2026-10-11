@@ -49,32 +49,19 @@ const CORE_PERMISSIONS = [
 ];
 
 export const guildJoinService = {
-  buildJoinMessage(guild: Guild, inviterId?: string | null, isDm = false): MessageCreateOptions {
+  buildJoinMessage(
+    guild: Guild,
+    inviterId?: string | null,
+    targetChannelId?: string | null
+  ): MessageCreateOptions {
     const conf = guildConfigService.getConfig(guild.id);
     const botName = conf.botName || guild.members.me?.displayName || 'Etho';
     const me = guild.members.me;
-    const ok = icon('a_check', '✅');
-    const ko = icon('a_cross', '❌');
-
-    const permsList = PERMISSION_CHECKS.map((item) => `${me?.permissions.has(item.flag) ? ok : ko} \`${item.name}\``);
     const hasCorePerms = CORE_PERMISSIONS.every((flag) => me?.permissions.has(flag));
     const missing = PERMISSION_CHECKS.filter((item) => !me?.permissions.has(item.flag)).length;
 
     const currentLang = (conf.language || 'fr') as SupportedLanguage;
 
-    const channelSelectRow = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
-      new ChannelSelectMenuBuilder()
-        .setCustomId(`guild_join:select_channel:${guild.id}`)
-        .setPlaceholder('Choisir un salon existant…')
-        .setChannelTypes([ChannelType.GuildText, ChannelType.GuildAnnouncement])
-    );
-    const createChannelRow = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
-      new ButtonBuilder()
-        .setCustomId(`guild_join:create_channel:${guild.id}`)
-        .setLabel('Créer le salon système')
-        .setEmoji('⚡')
-        .setStyle(ButtonStyle.Primary)
-    );
     const langSelectRow = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
       new StringSelectMenuBuilder()
         .setCustomId(`guild_join:language:${guild.id}`)
@@ -86,63 +73,109 @@ export const guildJoinService = {
         ])
     );
     const linksRow = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
-      new ButtonBuilder().setLabel('Serveur support').setStyle(ButtonStyle.Link).setURL(SUPPORT_URL).setEmoji('🛟'),
       new ButtonBuilder()
-        .setLabel('Dashboard')
+        .setLabel('Dashboard du serveur')
         .setStyle(ButtonStyle.Link)
         .setURL('https:' + '/' + `/ethone.dev/discord/?guildId=${guild.id}`)
-        .setEmoji('📊')
+        .setEmoji('📊'),
+      new ButtonBuilder()
+        .setLabel('Serveur support')
+        .setStyle(ButtonStyle.Link)
+        .setURL(SUPPORT_URL)
+        .setEmoji('🛟')
     );
 
-    const systemChannelElements = isDm
-      ? [
-          separator(),
-          text(
-            `### # Salon système ${botName}\nPour configurer le salon système ou les alertes, utilise la commande \`/setup\` directement sur le serveur ou configure tes alertes depuis le Dashboard.`
-          ),
-        ]
-      : [
-          separator(),
-          text(
-            `### # Salon système ${botName}\nChoisis un salon existant ou crée-le automatiquement pour recevoir les messages importants du bot.`
-          ),
-          channelSelectRow,
-          createChannelRow,
-        ];
+    const channelMention = targetChannelId
+      ? `<#${targetChannelId}>`
+      : conf.systemChannelId
+        ? `<#${conf.systemChannelId}>`
+        : '#salon-systeme';
+
+    const permissionsText = hasCorePerms
+      ? 'toutes en place'
+      : `${missing} manquante${missing > 1 ? 's' : ''}`;
 
     const card = container(hasCorePerms ? 0x10b981 : 0xf59e0b, [
       inviterId ? text(`<@${inviterId}>`) : null,
       text(`## ${icon('a_logo', '🛡️')} | ${botName} ajouté avec succès`),
       separator(),
-      text(`Merci d'avoir ajouté **${botName}** à votre serveur.`),
       text(
-        `### 🪟 État actuel\n> **${hasCorePerms ? 'Opérationnel' : 'Permissions à compléter'}**\n> ${
-          hasCorePerms
-            ? 'Les permissions principales sont déjà en place.'
-            : `${missing} permission${missing > 1 ? 's' : ''} recommandée${missing > 1 ? 's' : ''} manque${missing > 1 ? 'nt' : ''} au bot.`
-        }`
+        `Merci d'avoir ajouté **${botName}** à ton serveur.\n\n` +
+          `> • **Permissions** : ${permissionsText}\n` +
+          `> • **Rôle de ${botName}** : à placer tout en haut de la hiérarchie\n` +
+          `> • **Salon système** : ${channelMention}, modifiable avec \`/setup\`\n` +
+          `> • **Commandes** : \`/help\` · \`/setup\` · \`/verifier-permissions\``
       ),
       separator(),
-      text(`### 🛡️ Permissions\n${permsList.map((l) => `> ${l}`).join('\n')}`),
-      separator(),
-      text(
-        `### ${icon('a_warning', '⚠️')} Important\nPlace le rôle le plus haut de **${botName}** tout en haut de la hiérarchie pour qu'il puisse protéger, sanctionner et restaurer correctement le serveur.`
-      ),
-      separator(),
-      text(
-        `### ❔ Commandes utiles\n> \`/help\` · voir les commandes\n> \`/setup\` · configurer le bot\n> \`/language\` · changer la langue du bot`
-      ),
-      ...systemChannelElements,
-      separator(),
-      text(
-        `### ⚙️ Langue du bot\nChoisis la langue utilisée par ${botName} sur ce serveur. Les salons déjà créés ne sont pas renommés automatiquement.`
-      ),
       langSelectRow,
       separator(),
       linksRow,
     ]);
 
     return { components: [card], flags: MessageFlags.IsComponentsV2 } as MessageCreateOptions;
+  },
+
+  findBestStaffChannel(guild: Guild): any {
+    const botId = guild.client.user?.id || '';
+    const channels = Array.from(guild.channels.cache.values()).filter((c: any) => {
+      if (c.type !== ChannelType.GuildText && c.type !== ChannelType.GuildAnnouncement) return false;
+      const perms = c.permissionsFor?.(botId) ?? c.permissionsFor?.(guild.members.me ?? botId);
+      return perms?.has?.([PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages]) ?? true;
+    });
+
+    if (channels.length === 0) return null;
+
+    const staffKeywords = [
+      'moderator',
+      'modo',
+      'mod',
+      'staff',
+      'admin',
+      'gestion',
+      'private',
+      'prive',
+      'lead',
+      'equipe',
+      'bureau',
+      'bot',
+      'log',
+      'system',
+      'securite',
+    ];
+
+    const isStaffNamed = (name: string) => {
+      const lower = (name || '').toLowerCase();
+      return staffKeywords.some((kw) => lower.includes(kw));
+    };
+
+    const isPrivate = (c: any) => {
+      const everyoneOverwrite =
+        c.permissionOverwrites?.cache?.get?.(guild.roles.everyone.id) ??
+        c.permissionOverwrites?.find?.((o: any) => o.id === guild.roles.everyone.id);
+      if (!everyoneOverwrite) return false;
+      const denied = everyoneOverwrite.deny;
+      if (typeof denied?.has === 'function') return denied.has(PermissionFlagsBits.ViewChannel);
+      if (Array.isArray(denied)) return denied.includes(PermissionFlagsBits.ViewChannel);
+      return false;
+    };
+
+    const privateStaff = channels.find((c: any) => isPrivate(c) && isStaffNamed(c.name));
+    if (privateStaff) return privateStaff;
+
+    const anyPrivate = channels.find((c: any) => isPrivate(c));
+    if (anyPrivate) return anyPrivate;
+
+    const anyStaff = channels.find((c: any) => isStaffNamed(c.name));
+    if (anyStaff) return anyStaff;
+
+    if (
+      guild.systemChannel &&
+      channels.some((c: any) => c.id === guild.systemChannel?.id)
+    ) {
+      return guild.systemChannel;
+    }
+
+    return channels[0] || null;
   },
 
   async resolveInviterId(guild: Guild): Promise<string> {
@@ -168,53 +201,30 @@ export const guildJoinService = {
   async sendJoinWelcome(guild: Guild): Promise<void> {
     try {
       const inviterId = await this.resolveInviterId(guild);
+      const targetChannel = this.findBestStaffChannel(guild);
+
+      if (targetChannel) {
+        guildConfigService.updateConfig(guild.id, {
+          systemChannelId: targetChannel.id,
+        });
+
+        const payload = this.buildJoinMessage(guild, inviterId, targetChannel.id);
+        await targetChannel.send(payload).catch((err: any) => {
+          logger.warn(`[Join] Envoi du message d'accueil impossible dans #${targetChannel.name} :`, err);
+        });
+        logger.success(`[Join] Message d'accueil envoyé dans #${targetChannel.name} sur ${guild.name}`);
+        return;
+      }
+
       if (inviterId) {
         const user = await guild.client.users.fetch(inviterId).catch(() => null);
         if (user) {
-          const dmPayload = this.buildJoinMessage(guild, inviterId, true);
-          await user.send(dmPayload).catch((err) => {
+          const payload = this.buildJoinMessage(guild, inviterId, null);
+          await user.send(payload).catch((err) => {
             logger.warn(`[Join] Envoi en MP impossible à l'inviteur (${inviterId}) :`, err);
           });
-          logger.success(`[Join] Message d'accueil privé envoyé en MP à l'inviteur (${inviterId}) pour ${guild.name}`);
+          logger.info(`[Join] Aucun salon accessible sur ${guild.name} : message envoyé en MP à l'inviteur.`);
         }
-      }
-
-      const conf = guildConfigService.getConfig(guild.id);
-      const botName = conf.botName || guild.members.me?.displayName || 'Etho';
-      const targetChannel =
-        guild.systemChannel &&
-        guild.systemChannel
-          .permissionsFor(guild.client.user?.id || '')
-          ?.has([PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages])
-          ? guild.systemChannel
-          : null;
-
-      if (targetChannel) {
-        const promptCard = container(0x10b981, [
-          text(`## ${icon('a_logo', '🛡️')} | ${botName} a rejoint le serveur`),
-          separator(),
-          text(
-            `Merci ${inviterId ? `<@${inviterId}>` : ''} d'avoir ajouté **${botName}** à votre communauté.\nSeuls les membres avec la permission **Gérer le serveur** peuvent afficher la configuration.`
-          ),
-          separator(),
-          new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
-            new ButtonBuilder()
-              .setCustomId(`guild_join:open_card:${guild.id}`)
-              .setLabel('Ouvrir la configuration')
-              .setEmoji('🛡️')
-              .setStyle(ButtonStyle.Primary),
-            new ButtonBuilder()
-              .setLabel('Dashboard')
-              .setStyle(ButtonStyle.Link)
-              .setURL('https:' + '/' + `/ethone.dev/discord/?guildId=${guild.id}`)
-              .setEmoji('📊')
-          ),
-        ]);
-        await targetChannel
-          .send({ components: [promptCard], flags: MessageFlags.IsComponentsV2 } as MessageCreateOptions)
-          .catch((err) => {
-            logger.warn(`[Join] Envoi du bouton d'accueil impossible dans le salon système :`, err);
-          });
       }
     } catch (err) {
       logger.error(`[Join] Erreur lors de l'envoi du message d'accueil pour ${guild.name}:`, err);
@@ -296,7 +306,7 @@ export const guildJoinService = {
     }
 
     if (interaction.customId.startsWith('guild_join:open_card:')) {
-      const payload = this.buildJoinMessage(guild, interaction.user.id, false);
+      const payload = this.buildJoinMessage(guild, interaction.user.id, interaction.channelId);
       await interaction.reply({
         ...payload,
         flags: ((payload.flags as number) || MessageFlags.IsComponentsV2) | MessageFlags.Ephemeral,

@@ -50420,5 +50420,54 @@ CHANGELOG_BY_LANG.en.unshift(v1_73_5_en);
 CHANGELOG_BY_LANG.es.unshift(v1_73_5_es);
 CHANGELOG_BY_LANG.de.unshift(v1_73_5_de);
 
+const v1_73_6_fr: ChangelogEntry = {
+  version: "v1.73.6",
+  date: "2026-10-12",
+  title: "Bot : Message d'accueil compact façon Keeper & ciblage du salon staff privé",
+  items: [
+    "Format condensé ultra-épuré identique à Keeper avec 4 points clés, sélecteur de langue et boutons",
+    "Détection automatique du salon privé du staff (moderator-only, admin, staff) sans aucune création de salon",
+    "Mention de l'inviteur intégrée et configuration automatique du salon système",
+  ],
+};
+
+const v1_73_6_en: ChangelogEntry = {
+  version: "v1.73.6",
+  date: "2026-10-12",
+  title: "Bot: Keeper-style compact welcome & private staff channel targeting",
+  items: [
+    "Ultra-sleek compact card matching Keeper with 4 bullet points, language picker and action buttons",
+    "Automatic detection of private staff channels (moderator-only, admin, staff) with zero channel creation",
+    "Inviter ping included and automatic system channel binding",
+  ],
+};
+
+const v1_73_6_es: ChangelogEntry = {
+  version: "v1.73.6",
+  date: "2026-10-12",
+  title: "Bot: Bienvenida compacta estilo Keeper y detección de canal privado del staff",
+  items: [
+    "Formato condensado idéntico a Keeper con 4 puntos clave, selector de idioma y botones",
+    "Detección automática de canal privado del staff (moderator-only, admin, staff) sin crear canales",
+    "Mención al invitador y vinculación automática del canal de sistema",
+  ],
+};
+
+const v1_73_6_de: ChangelogEntry = {
+  version: "v1.73.6",
+  date: "2026-10-12",
+  title: "Bot: Kompakte Begrüßung im Keeper-Stil & Erkennung privater Staff-Kanäle",
+  items: [
+    "Ultraschlankes kompaktes Format wie bei Keeper mit 4 Kernpunkten, Sprachauswahl und Buttons",
+    "Automatische Erkennung privater Staff-Kanäle (moderator-only, admin, staff) ohne Kanälerstellung",
+    "Ping des Einladenden und automatische Systemkanal-Zuweisung",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_73_6_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_73_6_en);
+CHANGELOG_BY_LANG.es.unshift(v1_73_6_es);
+CHANGELOG_BY_LANG.de.unshift(v1_73_6_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

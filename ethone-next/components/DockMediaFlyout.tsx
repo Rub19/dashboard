@@ -266,11 +266,10 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
         }}
         className="group/media relative flex h-10 w-10 cursor-pointer flex-col items-center justify-center rounded-xl transition-all duration-200 ease-out hover:bg-white/[0.08]"
       >
+        {/* Pochette carrée arrondie (taille fixe) ; égaliseur posé dessus, dans l'icône. */}
         <div
-          className={`relative flex items-center justify-center overflow-hidden rounded-full transition-all ${
-            isPlaying && hasTrack
-              ? "ring-2 ring-[var(--accent-primary)] shadow-[0_0_12px_var(--glow-color)]"
-              : "ring-1 ring-white/10"
+          className={`relative h-7 w-7 shrink-0 overflow-hidden rounded-lg ${
+            isPlaying && hasTrack ? "ring-2 ring-[var(--accent-primary)] shadow-[0_0_12px_var(--glow-color)]" : "ring-1 ring-white/10"
           }`}
         >
           {hasTrack && coverCandidates.length > 0 ? (
@@ -278,40 +277,30 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
               candidates={coverCandidates}
               alt={title}
               size={48}
-              className="h-7 w-7 rounded-full object-cover transition-transform group-hover/media:scale-105"
+              className="block h-full w-full object-cover"
               iconClassName="h-3.5 w-3.5"
               loading="eager"
               priority
               crossOrigin="anonymous"
             />
           ) : (
-            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-black/40">
+            <div className="flex h-full w-full items-center justify-center bg-black/40">
               <ServiceIcon id="spotify" icon="music" className="h-4 w-4" colored />
             </div>
           )}
+          {isPlaying && hasTrack ? (
+            <span className="absolute inset-x-0 bottom-0 flex h-3 items-end justify-center gap-0.5 bg-gradient-to-t from-black/70 to-transparent pb-0.5" aria-hidden="true">
+              {[0, 1, 2].map((i) => (
+                <motion.span
+                  key={i}
+                  className="w-0.5 rounded-full bg-white"
+                  animate={{ height: [2, i === 1 ? 7 : 5, 2] }}
+                  transition={{ duration: 0.8, repeat: Infinity, repeatType: "reverse", delay: i * 0.15, ease: "easeInOut" }}
+                />
+              ))}
+            </span>
+          ) : null}
         </div>
-
-        {/* Dynamic Equalizer Bars */}
-        {isPlaying && hasTrack ? (
-          <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 flex h-2 items-end justify-center gap-0.5" aria-hidden="true">
-            {[0, 1, 2].map((i) => (
-              <motion.span
-                key={i}
-                className="w-0.5 rounded-full bg-[var(--accent-primary)] shadow-[0_0_4px_var(--accent-primary)]"
-                animate={{
-                  height: [2.5, i === 1 ? 8 : 6, 2.5],
-                }}
-                transition={{
-                  duration: 0.8,
-                  repeat: Infinity,
-                  repeatType: "reverse",
-                  delay: i * 0.15,
-                  ease: "easeInOut",
-                }}
-              />
-            ))}
-          </span>
-        ) : null}
       </motion.button>
 
       {/* Flyout Card mounted in FloatingPortal */}

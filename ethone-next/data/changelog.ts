@@ -49818,5 +49818,46 @@ CHANGELOG_BY_LANG.en.unshift(v1_71_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_71_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_71_0_de);
 
+const v1_71_1_fr: ChangelogEntry = {
+  version: "v1.71.1",
+  date: "2026-10-11",
+  title: "Dock : icône Spotify corrigée",
+  items: [
+    "L'icône Spotify du dock est une pochette carrée nette, avec l'égaliseur dessus au lieu de déborder sous l'icône.",
+  ],
+};
+
+const v1_71_1_en: ChangelogEntry = {
+  version: "v1.71.1",
+  date: "2026-10-11",
+  title: "Dock: Spotify icon fixed",
+  items: [
+    "The dock Spotify icon is a clean square artwork with the equalizer on top instead of spilling below.",
+  ],
+};
+
+const v1_71_1_es: ChangelogEntry = {
+  version: "v1.71.1",
+  date: "2026-10-11",
+  title: "Dock: icono de Spotify corregido",
+  items: [
+    "El icono de Spotify del dock es una carátula cuadrada nítida con el ecualizador encima.",
+  ],
+};
+
+const v1_71_1_de: ChangelogEntry = {
+  version: "v1.71.1",
+  date: "2026-10-11",
+  title: "Dock: Spotify-Symbol korrigiert",
+  items: [
+    "Das Spotify-Symbol im Dock ist ein sauberes quadratisches Cover mit Equalizer darauf.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_71_1_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_71_1_en);
+CHANGELOG_BY_LANG.es.unshift(v1_71_1_es);
+CHANGELOG_BY_LANG.de.unshift(v1_71_1_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.71.1 — 2026-10-11
+
+**Dock : icône Spotify corrigée**
+
+- L'icône Spotify du dock est une pochette carrée nette, avec l'égaliseur dessus au lieu de déborder sous l'icône.
+
 ## v1.71.0 — 2026-10-11
 
 **Météo, musique et Dynamic Island retravaillées**

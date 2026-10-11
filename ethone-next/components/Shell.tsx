@@ -23,7 +23,6 @@ import PageTransition from "@/components/PageTransition";
 import AutomationRuntime from "@/components/AutomationRuntime";
 import Dock from "@/components/Dock";
 import SkipLink from "@/components/SkipLink";
-import StatusBar from "@/components/layout/StatusBar";
 
 import ContextMenuProvider from "@/components/ContextMenuProvider";
 import NativeIntegration from "@/components/NativeIntegration";
@@ -135,7 +134,7 @@ export default function Shell({ children }: { children: ReactNode }) {
                 <main
                   data-v8-main
                   id="main-content"
-                  className="relative z-0 min-h-0 min-w-0 flex-1 flex flex-col outline-none overflow-y-auto overflow-x-hidden [overscroll-behavior:contain] bg-transparent pb-[calc(env(safe-area-inset-bottom)+5rem)] md:pb-32"
+                  className="relative z-0 min-h-0 min-w-0 flex-1 flex flex-col outline-none overflow-y-auto overflow-x-hidden [overscroll-behavior:contain] bg-transparent pb-[calc(env(safe-area-inset-bottom)+5rem)] md:pb-24"
                   tabIndex={-1}
                 >
                   <ActivityJournalProvider>
@@ -143,7 +142,6 @@ export default function Shell({ children }: { children: ReactNode }) {
                     <AutomationRuntime />
                   </ActivityJournalProvider>
                 </main>
-                <StatusBar />
                 </PrivacyShield>
               </div>
             </AnimatedSidebarProvider>

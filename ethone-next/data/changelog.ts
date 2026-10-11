@@ -50226,5 +50226,56 @@ CHANGELOG_BY_LANG.en.unshift(v1_73_1_en);
 CHANGELOG_BY_LANG.es.unshift(v1_73_1_es);
 CHANGELOG_BY_LANG.de.unshift(v1_73_1_de);
 
+const v1_73_2_fr: ChangelogEntry = {
+  version: "v1.73.2",
+  date: "2026-10-12",
+  title: "Interface : Suppression du bandeau noir inférieur & dock flottant naturel",
+  items: [
+    "Suppression du bandeau noir inférieur fixe (ancienne StatusBar) qui polluait l'arrière-plan du dock",
+    "Repositionnement du dock desktop à un niveau flottant naturel et épuré style macOS",
+    "Ajustement dynamique des menus déroulants et popovers (Centre de contrôle, Focus) directement au-dessus du dock",
+    "Réduction du padding de fond de page pour éliminer l'espace vide inutile",
+  ],
+};
+
+const v1_73_2_en: ChangelogEntry = {
+  version: "v1.73.2",
+  date: "2026-10-12",
+  title: "UI: Removed bottom black bar & refined natural floating dock",
+  items: [
+    "Removed the legacy fixed bottom black bar (former StatusBar) behind the dock",
+    "Repositioned the desktop dock to a clean and natural macOS-style floating level",
+    "Adjusted popovers and control flyouts (Control Center, Focus) right above the dock",
+    "Optimized main bottom padding to eliminate unnecessary dead space",
+  ],
+};
+
+const v1_73_2_es: ChangelogEntry = {
+  version: "v1.73.2",
+  date: "2026-10-12",
+  title: "Interfaz: Eliminación de la barra negra inferior y dock flotante natural",
+  items: [
+    "Eliminación de la barra negra inferior fija (antigua StatusBar) detrás del dock",
+    "Reposicionamiento del dock de escritorio a una altura flotante natural estilo macOS",
+    "Ajuste de los paneles desplegables (Centro de control, Focus) justo encima del dock",
+  ],
+};
+
+const v1_73_2_de: ChangelogEntry = {
+  version: "v1.73.2",
+  date: "2026-10-12",
+  title: "Oberfläche: Entfernung des unteren schwarzen Balkens & natürliches Dock",
+  items: [
+    "Entfernung des festen schwarzen Balkens (frühere StatusBar) hinter dem Dock",
+    "Neupositionierung des Desktop-Docks auf eine natürliche schwebende Höhe im macOS-Stil",
+    "Anpassung der Popover-Menüs (Kontrollzentrum, Focus) direkt über dem Dock",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_73_2_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_73_2_en);
+CHANGELOG_BY_LANG.es.unshift(v1_73_2_es);
+CHANGELOG_BY_LANG.de.unshift(v1_73_2_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

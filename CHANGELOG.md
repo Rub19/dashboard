@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.73.2 — 2026-10-12
+
+**Interface : Suppression du bandeau noir inférieur & dock flottant naturel**
+
+- Suppression du bandeau noir inférieur fixe (ancienne `StatusBar`) qui polluait l'arrière-plan du dock.
+- Repositionnement du dock desktop à un niveau flottant naturel et épuré style macOS (`bottom-[calc(1.25rem+env(safe-area-inset-bottom))]`).
+- Alignement dynamique des panneaux et menus déroulants (Centre de contrôle, Focus) directement au-dessus du dock.
+- Allègement du padding bas de page pour éliminer tout espacement mort.
+
 ## v1.73.1 — 2026-10-12
 
 **Soundscape : Sélecteur de veille animé**

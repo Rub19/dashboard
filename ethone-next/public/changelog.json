@@ -1,5 +1,18 @@
 [
   {
+    "version": "v1.70.0",
+    "date": "2026-10-11",
+    "title": "Réglages refaits de zéro",
+    "items": [
+      "Nouvelle page Réglages : navigation par groupes (Toi, Apparence, Son & alertes, Système, Sécurité, Plus) avec une pastille qui glisse d'une catégorie à l'autre.",
+      "Chaque catégorie s'ouvre avec un en-tête animé : nombre de réglages personnalisés, réinitialisation, annuler et rétablir.",
+      "Recherche Ctrl K : on tape, on choisit avec les flèches, et le réglage trouvé s'illumine à l'écran.",
+      "Sections repliables, barre d'accent sur les réglages modifiés, confirmation « Enregistré » et remise par défaut en un clic.",
+      "Accueil des réglages : interrupteurs rapides (sons, notifications, vibrations, animations, dock, Dynamic Island) et accès direct à toutes les catégories ; les raccourcis ouvrent enfin la bonne catégorie.",
+      "Transitions orientées entre catégories et liens Précédent / Suivant en bas de page."
+    ]
+  },
+  {
     "version": "v1.69.1",
     "date": "2026-10-11",
     "title": "Mobile : widget de l'accueil visible",
@@ -631,17 +644,6 @@
       "Élimination des classes sombres codées en dur pour un mode clair éclatant sur l'ensemble du hub Discord et l'assistant",
       "Sélecteur de langue avec menu déroulant élégant supportant 4 langues : Français, Anglais, Espagnol et Allemand",
       "Traductions complètes et dynamiques du hub Discord dans les 4 langues (navigation, vue d'ensemble, configurateur et installation)"
-    ]
-  },
-  {
-    "version": "v1.55.63",
-    "date": "2026-10-07",
-    "title": "Configurateur Rapide — Bannière & Assistant 4 Étapes",
-    "items": [
-      "Bannière « Configure Etho en une minute » intégrée sur la vue d'ensemble du serveur",
-      "Assistant en 4 étapes : type de serveur (communauté, amis, vocaux), sévérité, salon d'alertes et récapitulatif",
-      "Application et activation réelles des protections et modules selon le type de serveur",
-      "Affichage dynamique du nombre de protections actives sur la vue d'ensemble"
     ]
   }
 ]

@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.70.0 — 2026-10-11
+
+**Réglages refaits de zéro**
+
+- Nouvelle page Réglages : navigation par groupes (Toi, Apparence, Son & alertes, Système, Sécurité, Plus) avec une pastille qui glisse d'une catégorie à l'autre.
+- Chaque catégorie s'ouvre avec un en-tête animé : nombre de réglages personnalisés, réinitialisation, annuler et rétablir.
+- Recherche Ctrl K : on tape, on choisit avec les flèches, et le réglage trouvé s'illumine à l'écran.
+- Sections repliables, barre d'accent sur les réglages modifiés, confirmation « Enregistré » et remise par défaut en un clic.
+- Accueil des réglages : interrupteurs rapides (sons, notifications, vibrations, animations, dock, Dynamic Island) et accès direct à toutes les catégories ; les raccourcis ouvrent enfin la bonne catégorie.
+- Transitions orientées entre catégories et liens Précédent / Suivant en bas de page.
+
 ## v1.69.1 — 2026-10-11
 
 **Mobile : widget de l'accueil visible**

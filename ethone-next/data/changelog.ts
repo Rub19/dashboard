@@ -49573,5 +49573,66 @@ CHANGELOG_BY_LANG.en.unshift(v1_69_1_en);
 CHANGELOG_BY_LANG.es.unshift(v1_69_1_es);
 CHANGELOG_BY_LANG.de.unshift(v1_69_1_de);
 
+const v1_70_0_fr: ChangelogEntry = {
+  version: "v1.70.0",
+  date: "2026-10-11",
+  title: "Réglages refaits de zéro",
+  items: [
+    "Nouvelle page Réglages : navigation par groupes (Toi, Apparence, Son & alertes, Système, Sécurité, Plus) avec une pastille qui glisse d'une catégorie à l'autre.",
+    "Chaque catégorie s'ouvre avec un en-tête animé : nombre de réglages personnalisés, réinitialisation, annuler et rétablir.",
+    "Recherche Ctrl K : on tape, on choisit avec les flèches, et le réglage trouvé s'illumine à l'écran.",
+    "Sections repliables, barre d'accent sur les réglages modifiés, confirmation « Enregistré » et remise par défaut en un clic.",
+    "Accueil des réglages : interrupteurs rapides (sons, notifications, vibrations, animations, dock, Dynamic Island) et accès direct à toutes les catégories ; les raccourcis ouvrent enfin la bonne catégorie.",
+    "Transitions orientées entre catégories et liens Précédent / Suivant en bas de page.",
+  ],
+};
+
+const v1_70_0_en: ChangelogEntry = {
+  version: "v1.70.0",
+  date: "2026-10-11",
+  title: "Settings rebuilt from scratch",
+  items: [
+    "New Settings page: grouped navigation with a pill that glides between categories.",
+    "Each category opens with an animated header: customised count, reset, undo and redo.",
+    "Ctrl K search: type, pick with the arrows, and the setting lights up on screen.",
+    "Collapsible sections, accent bar on changed settings, \"Saved\" confirmation and one-click reset.",
+    "Settings home: quick toggles and direct access to every category; shortcuts now open the right category.",
+    "Directional transitions and Previous / Next links.",
+  ],
+};
+
+const v1_70_0_es: ChangelogEntry = {
+  version: "v1.70.0",
+  date: "2026-10-11",
+  title: "Ajustes rehechos desde cero",
+  items: [
+    "Nueva página de Ajustes: navegación por grupos con una píldora animada.",
+    "Cada categoría abre con un encabezado animado: ajustes personalizados, restablecer, deshacer y rehacer.",
+    "Búsqueda Ctrl K con flechas y resaltado del ajuste encontrado.",
+    "Secciones plegables, barra de acento en ajustes modificados y restablecer en un clic.",
+    "Inicio de ajustes: interruptores rápidos y acceso directo a todas las categorías.",
+    "Transiciones orientadas y enlaces Anterior / Siguiente.",
+  ],
+};
+
+const v1_70_0_de: ChangelogEntry = {
+  version: "v1.70.0",
+  date: "2026-10-11",
+  title: "Einstellungen von Grund auf neu",
+  items: [
+    "Neue Einstellungsseite: Navigation in Gruppen mit gleitender Markierung.",
+    "Jede Kategorie öffnet mit animiertem Kopf: angepasste Werte, Zurücksetzen, Rückgängig und Wiederholen.",
+    "Strg K-Suche mit Pfeiltasten; die gefundene Einstellung leuchtet auf.",
+    "Einklappbare Abschnitte, Akzentbalken bei geänderten Werten, Zurücksetzen mit einem Klick.",
+    "Start der Einstellungen: Schnellschalter und direkter Zugang zu allen Kategorien.",
+    "Gerichtete Übergänge und Links Zurück / Weiter.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_70_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_70_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_70_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_70_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

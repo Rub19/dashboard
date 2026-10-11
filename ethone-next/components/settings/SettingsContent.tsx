@@ -1185,12 +1185,7 @@ export default function SettingsContent({
         keywords: ["général", "vue", "dashboard", "control center", "statut", "raccourcis"],
         fields: [],
         children: (
-          <SettingsOverview
-            onNavigate={(id) => {
-              const el = categoryRefs.current[id];
-              el?.scrollIntoView({ behavior: "smooth", block: "start" });
-            }}
-          />
+          <SettingsOverview />
         ),
       },
       {
@@ -1630,12 +1625,8 @@ export default function SettingsContent({
     return cat ? [cat] : [CATEGORY_ORDER[0]];
   }, [isSearching, activeCategory]);
 
-  const activeCategoryDef = useMemo(() => {
-    return CATEGORY_ORDER.find((c) => c.id === activeCategory) || CATEGORY_ORDER[0];
-  }, [activeCategory]);
-
   return (
-    <div className="w-full space-y-6 pb-24">
+    <div className="w-full space-y-4">
       {isSearching && (
         <div
           className="flex items-center justify-between rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] px-3.5 py-2.5 text-xs text-[var(--text-muted)]"
@@ -1648,22 +1639,6 @@ export default function SettingsContent({
           {allVisibleSections.length === 0 && (
             <span className="text-[var(--danger)]">Aucun paramètre trouvé.</span>
           )}
-        </div>
-      )}
-
-      {!isSearching && activeCategoryDef && (
-        <div className="flex items-center gap-3 px-1">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
-            <Icon name={activeCategoryDef.icon} className="h-[18px] w-[18px]" />
-          </div>
-          <div className="min-w-0 flex-1">
-            <h2 className="truncate text-base font-bold leading-tight text-[var(--text-primary)]">
-              {activeCategoryDef.label}
-            </h2>
-            <p className="truncate text-xs text-[var(--text-muted)]">
-              {i18n(activeCategoryDef.descriptionKey || "", activeCategoryDef.description)}
-            </p>
-          </div>
         </div>
       )}
 

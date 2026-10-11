@@ -1,7 +1,9 @@
 "use client";
 
 import { memo } from "react";
-import { Icon } from "@/lib/icons";
+import { AnimatePresence, motion } from "framer-motion";
+import { Check, RotateCcw } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { useSettings } from "@/components/SettingsProvider";
 import { DEFAULTS } from "@/lib/settings";
 import { getValueByPath } from "@/lib/object-path";
@@ -182,6 +184,7 @@ function SettingField({ field }: { field: FieldDef }) {
   })();
 
   if (!control) return null;
+  const saved = form.instantSaved(settingKey);
 
   return (
     <div
@@ -189,41 +192,62 @@ function SettingField({ field }: { field: FieldDef }) {
       data-setting-key={settingKey}
       data-setting-path={path}
       data-setting-label={field.label}
-      className={`relative px-4 py-3 transition-opacity ${hidden ? "hidden" : ""}`}
+      className={cn("group/row relative px-5 py-3.5 transition-colors duration-200 hover:bg-[var(--text-primary)]/[0.025]", hidden && "hidden")}
     >
-      <div className="grid min-h-[44px] grid-cols-1 items-start gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(16rem,20rem)]">
-        <div className="flex min-w-0 items-start gap-2.5">
-          {isDirty && (
-            <span
-              className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[var(--accent-primary)]"
-              title="Modifié"
-              aria-label="Modifié"
-            />
-          )}
-          <div className="flex min-w-0 flex-col">
-            <span id={labelId} className="text-sm font-medium text-[var(--text-primary)]">
+      <AnimatePresence>
+        {isDirty && (
+          <motion.span
+            key="dirty"
+            aria-label="Modifié"
+            title="Modifié"
+            initial={{ scaleY: 0, opacity: 0 }}
+            animate={{ scaleY: 1, opacity: 1 }}
+            exit={{ scaleY: 0, opacity: 0 }}
+            transition={{ type: "spring", bounce: 0, duration: 0.3 }}
+            className="absolute bottom-3 left-0 top-3 w-[3px] origin-center rounded-r-full bg-[var(--accent-primary)]"
+          />
+        )}
+      </AnimatePresence>
+      <div className="grid min-h-[40px] grid-cols-1 items-center gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(16rem,22rem)]">
+        <div className="flex min-w-0 flex-col">
+          <span className="flex items-center gap-2">
+            <span id={labelId} className="text-[13.5px] font-medium text-[var(--text-primary)]">
               {field.label}
             </span>
-            {field.description && (
-              <span id={descId} className="text-[11px] leading-tight text-[var(--text-muted)]">
-                {field.description}
-              </span>
-            )}
-            {form.query && field.keywords && field.keywords.length > 0 && (
-              <span className="text-[10px] text-[var(--text-muted)]">{field.keywords.join(" > ")}</span>
-            )}
-          </div>
+            <AnimatePresence>
+              {saved && (
+                <motion.span
+                  key="saved"
+                  initial={{ opacity: 0, x: -4 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0 }}
+                  className="inline-flex items-center gap-1 text-[11px] font-medium text-[var(--success)]"
+                >
+                  <Check className="h-3 w-3" />
+                  Enregistré
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </span>
+          {field.description && (
+            <span id={descId} className="mt-0.5 text-[12px] leading-snug text-[var(--text-muted)]">
+              {field.description}
+            </span>
+          )}
+          {form.query && field.keywords && field.keywords.length > 0 && (
+            <span className="mt-0.5 text-[10px] text-[var(--text-muted)]">{field.keywords.join(" › ")}</span>
+          )}
         </div>
-        <div className="flex min-w-0 items-center gap-2">
+        <div className="flex min-w-0 items-center justify-end gap-2">
           {isDirty && (
             <button
               type="button"
               onClick={handleUndo}
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/[0.05] hover:text-[var(--accent-primary)]"
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[var(--text-muted)] opacity-60 transition-[opacity,color,background-color,transform] hover:bg-[var(--accent-primary)]/10 hover:text-[var(--accent-primary)] hover:opacity-100 active:scale-90 group-hover/row:opacity-100"
               title="Rétablir la valeur par défaut"
               aria-label="Rétablir la valeur par défaut"
             >
-              <Icon name="rotate-ccw" className="h-3.5 w-3.5" />
+              <RotateCcw className="h-3.5 w-3.5" />
             </button>
           )}
           <div className="min-w-0 flex-1">{control}</div>

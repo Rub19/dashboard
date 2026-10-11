@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.72.0 — 2026-10-11
+
+**Soundscape : studio d'ambiance repensé (motion design, boutons carrés, ergonomie studio)**
+
+- Mixeur multi-pistes repensé avec boutons carrés tactiles et animations d'égaliseur audio en temps réel
+- Atmosphères préréglées immersives en un clic sans surcharge ni jargon marketing
+- Synthèse d'ondes binaurales au style matériel avec sélecteurs de bandes et de fréquences sacrées Solfeggio
+- Bannière oscilloscope studio compacte et onglets ergonomiques pour un accès immédiat aux réglages
+
 ## v1.71.3 — 2026-10-11
 
 **Petites retouches**

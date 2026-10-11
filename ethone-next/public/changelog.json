@@ -1,5 +1,16 @@
 [
   {
+    "version": "v1.72.0",
+    "date": "2026-10-11",
+    "title": "Soundscape : studio d'ambiance repensé (motion design, boutons carrés, ergonomie studio)",
+    "items": [
+      "Mixeur multi-pistes repensé avec boutons carrés tactiles et animations d'égaliseur audio en temps réel",
+      "Atmosphères préréglées immersives en un clic sans surcharge ni jargon marketing",
+      "Synthèse d'ondes binaurales au style matériel avec sélecteurs de bandes et de fréquences sacrées Solfeggio",
+      "Bannière oscilloscope studio compacte et onglets ergonomiques pour un accès immédiat aux réglages"
+    ]
+  },
+  {
     "version": "v1.71.3",
     "date": "2026-10-11",
     "title": "Petites retouches",
@@ -616,17 +627,6 @@
       "Scan de sécurité : un point à corriger décrit maintenant le problème (« Module Anti-raid désactivé », « La 2FA n'est pas exigée », « Aucun salon système configuré »…) au lieu de l'objectif.",
       "Les longues listes (rôles au-dessus d'Etho…) s'arrêtent à 10 éléments avec « +N autres ».",
       "Barre latérale de la console : « 1/30 protections », la jauge à 3 % et « 1 sans salon de log » étaient écrits en dur ; elle affiche maintenant les modules réellement actifs sur le vrai total."
-    ]
-  },
-  {
-    "version": "v1.55.71",
-    "date": "2026-10-08",
-    "title": "Scan de sécurité complet et vue d'ensemble façon Keeper : points à régler, score, rôles sensibles, scan automatique",
-    "items": [
-      "Scan de sécurité : chaque point a une gravité (Important, À examiner, Suggestion), l'explication du risque, la solution et la liste des rôles, salons ou bots concernés ; nouveaux contrôles : bots puissants placés au-dessus d'Etho, salon système d'Etho, nombre réel d'administrateurs.",
-      "Le score est pondéré par la gravité, et le dernier scan est gardé par le bot : il s'affiche dès l'ouverture, avec sa date et le nombre de membres.",
-      "Scan automatique : chaque jour ou chaque semaine, le bot poste dans le salon choisi un rapport avec le score, les nouveaux points et ceux corrigés depuis le précédent.",
-      "Vue d'ensemble : section « À régler » avec les points importants du dernier scan, score du scan, nombre de rôles sensibles, et activité récente lue dans les vrais logs du bot (avant : message fixe « Aucun incident récent »)."
     ]
   }
 ]

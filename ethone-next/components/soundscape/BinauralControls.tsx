@@ -7,7 +7,14 @@ import {
   SOLFEGGIO_FREQUENCIES,
   type BrainwaveBand,
 } from "@/lib/audio/binaural-engine";
-import { Headphones, Volume2, Sparkles, Activity } from "@/components/icons/ph";
+import {
+  Headphones,
+  Volume2,
+  Activity,
+  Plus,
+  Minus,
+  Sparkles,
+} from "@/components/icons/ph";
 import { cn } from "@/lib/utils";
 
 interface BinauralControlsProps {
@@ -37,105 +44,135 @@ export const BinauralControls = memo(function BinauralControls({
 }: BinauralControlsProps) {
   const currentBandInfo = BRAINWAVE_BANDS[activeBand];
 
+  const handleStepBeat = (delta: number) => {
+    const min = currentBandInfo.range[0];
+    const max = currentBandInfo.range[1];
+    const next = Math.max(min, Math.min(max, parseFloat((beatFreq + delta).toFixed(1))));
+    onBeatChange(next);
+  };
+
   return (
-    <div className="flex flex-col gap-5 rounded-3xl border border-white/10 bg-white/[0.03] p-5 shadow-2xl backdrop-blur-2xl transition-all">
-      {/* En-tête : Titre & Commutateur Master */}
-      <div className="flex items-center justify-between">
+    <div className="flex flex-col gap-5 rounded-2xl border border-white/10 bg-white/[0.03] p-5 shadow-xl backdrop-blur-xl">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <div
             className={cn(
-              "flex h-10 w-10 items-center justify-center rounded-2xl border transition-all duration-300",
+              "flex h-10 w-10 items-center justify-center rounded-lg border transition-all",
               isActive
-                ? "border-emerald-500/50 bg-emerald-500/20 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.3)]"
-                : "border-white/10 bg-white/5 text-[var(--text-muted)]"
+                ? "border-emerald-500/50 bg-emerald-500/20 text-emerald-300 shadow-[0_0_12px_rgba(16,185,129,0.3)]"
+                : "border-white/10 bg-white/5 text-zinc-400"
             )}
           >
             <Activity className="h-5 w-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="text-sm font-semibold text-[var(--text-primary)]">
-                Ondes Binaurales & Fréquences
+              <h3 className="text-sm font-bold text-white tracking-tight">
+                Battements binauraux & Fréquences
               </h3>
-              <span className="flex items-center gap-1 rounded-full border border-sky-500/30 bg-sky-500/10 px-2 py-0.5 text-[10px] font-medium text-sky-400">
+              <span className="flex items-center gap-1 rounded-md border border-sky-500/30 bg-sky-500/10 px-2 py-0.5 text-[10px] font-mono text-sky-300">
                 <Headphones className="h-3 w-3" /> Casque requis
               </span>
             </div>
-            <p className="text-xs text-[var(--text-muted)]">
-              Synchronisation des ondes cérébrales par écart de phase stéréo
+            <p className="text-xs text-zinc-400">
+              Synchronisation cérébrale par décalage de phase stéréo
             </p>
           </div>
         </div>
 
-        {/* Bouton d'activation avec ressort Apple */}
-        <button
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.95 }}
           type="button"
           onClick={onToggleActive}
           className={cn(
-            "relative flex h-8 items-center gap-2 rounded-full px-4 text-xs font-semibold transition-all duration-300 active:scale-95",
+            "flex h-9 items-center gap-2 rounded-lg border px-4 text-xs font-bold transition-all cursor-pointer",
             isActive
-              ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/25 hover:bg-emerald-400"
-              : "border border-white/15 bg-white/5 text-[var(--text-primary)] hover:bg-white/10"
+              ? "border-emerald-500 bg-emerald-500 text-zinc-950 shadow-md shadow-emerald-500/30 hover:bg-emerald-400"
+              : "border-white/15 bg-white/5 text-white hover:bg-white/10"
           )}
         >
           <span
             className={cn(
-              "h-2 w-2 rounded-full transition-colors",
-              isActive ? "animate-pulse bg-white" : "bg-zinc-500"
+              "h-2 w-2 rounded-sm transition-colors",
+              isActive ? "bg-zinc-950 animate-pulse" : "bg-zinc-500"
             )}
           />
-          {isActive ? "Actif" : "Activer"}
-        </button>
+          <span>{isActive ? "Actif" : "Activer"}</span>
+        </motion.button>
       </div>
 
-      {/* Sélecteur de bandes d'ondes (Delta, Theta, Alpha, Beta, Gamma) */}
-      <div className="grid grid-cols-5 gap-1.5 rounded-2xl bg-black/30 p-1.5 border border-white/5">
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
         {(Object.keys(BRAINWAVE_BANDS) as BrainwaveBand[]).map((bandKey) => {
           const info = BRAINWAVE_BANDS[bandKey];
           const isSelected = activeBand === bandKey;
+
           return (
-            <button
+            <motion.button
               key={bandKey}
+              whileHover={{ y: -1 }}
+              whileTap={{ scale: 0.96 }}
               type="button"
               onClick={() => onSelectBand(bandKey)}
               className={cn(
-                "relative flex flex-col items-center justify-center rounded-xl py-2 px-1 text-center transition-all duration-200",
+                "relative flex flex-col items-center justify-center rounded-lg border py-2.5 px-2 text-center transition-all cursor-pointer",
                 isSelected
-                  ? "bg-white/10 text-white shadow-sm"
-                  : "text-[var(--text-muted)] hover:bg-white/5 hover:text-[var(--text-primary)]"
+                  ? "border-emerald-400/80 bg-emerald-500/15 text-white shadow-sm font-bold"
+                  : "border-white/10 bg-black/30 text-zinc-400 hover:border-white/20 hover:text-white"
               )}
             >
-              <span className="text-[11px] font-bold capitalize">{bandKey}</span>
-              <span className="text-[9px] opacity-75 font-mono">{info.range[0]}-{info.range[1]} Hz</span>
+              <span className="text-xs capitalize font-bold">{bandKey}</span>
+              <span className="text-[10px] opacity-80 font-mono mt-0.5">
+                {info.range[0]} – {info.range[1]} Hz
+              </span>
+
               {isSelected && (
                 <motion.div
-                  layoutId="activeBandIndicator"
-                  className="absolute inset-x-2 -bottom-0.5 h-0.5 rounded-full bg-emerald-400"
-                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                  layoutId="activeBinauralBand"
+                  className="absolute inset-x-2 -bottom-px h-0.5 rounded-sm bg-emerald-400"
+                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
                 />
               )}
-            </button>
+            </motion.button>
           );
         })}
       </div>
 
-      {/* Carte d'information de l'onde active */}
-      <div className="flex items-start gap-3 rounded-2xl border border-white/5 bg-white/[0.02] p-3 text-xs">
+      <div className="flex items-start gap-2.5 rounded-lg border border-white/10 bg-black/25 p-3 text-xs">
         <Sparkles className="h-4 w-4 shrink-0 text-amber-400 mt-0.5" />
-        <div>
-          <span className="font-semibold text-[var(--text-primary)]">{currentBandInfo.name}</span>
-          <span className="text-[var(--text-muted)]"> — {currentBandInfo.description}. {currentBandInfo.benefit}</span>
+        <div className="leading-relaxed">
+          <span className="font-bold text-white">{currentBandInfo.name}</span>
+          <span className="text-zinc-400"> : {currentBandInfo.description}. {currentBandInfo.benefit}</span>
         </div>
       </div>
 
-      {/* Curseurs de réglage fin : Fréquence du battement (Hz) & Volume */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Curseur Fréquence cible (Hz) */}
-        <div className="flex flex-col gap-2 rounded-2xl border border-white/5 bg-black/20 p-3.5">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div className="flex flex-col gap-2 rounded-xl border border-white/10 bg-black/30 p-3.5">
           <div className="flex items-center justify-between text-xs">
-            <span className="font-medium text-[var(--text-secondary)]">Fréquence du battement</span>
-            <span className="font-mono font-bold text-emerald-400 text-sm">{beatFreq.toFixed(1)} Hz</span>
+            <span className="font-semibold text-zinc-300">Fréquence du battement</span>
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => handleStepBeat(-0.5)}
+                className="flex h-6 w-6 items-center justify-center rounded-md border border-white/10 bg-white/5 text-zinc-300 hover:text-white hover:border-white/20 transition-colors cursor-pointer"
+                title="-0.5 Hz"
+              >
+                <Minus className="h-3 w-3" />
+              </button>
+              <span className="font-mono font-bold text-emerald-400 text-sm px-1">
+                {beatFreq.toFixed(1)} Hz
+              </span>
+              <button
+                type="button"
+                onClick={() => handleStepBeat(0.5)}
+                className="flex h-6 w-6 items-center justify-center rounded-md border border-white/10 bg-white/5 text-zinc-300 hover:text-white hover:border-white/20 transition-colors cursor-pointer"
+                title="+0.5 Hz"
+              >
+                <Plus className="h-3 w-3" />
+              </button>
+            </div>
           </div>
+
           <input
             type="range"
             min={currentBandInfo.range[0]}
@@ -143,26 +180,28 @@ export const BinauralControls = memo(function BinauralControls({
             step={0.1}
             value={beatFreq}
             onChange={(e) => onBeatChange(parseFloat(e.target.value))}
-            className="accent-emerald-500 cursor-pointer h-1.5 bg-white/10 rounded-lg appearance-none"
+            className="h-1.5 w-full cursor-pointer appearance-none rounded-sm bg-white/10 accent-emerald-500"
             aria-label="Fréquence binaurale en Hertz"
           />
-          <div className="flex justify-between text-[10px] text-[var(--text-muted)] font-mono">
+
+          <div className="flex justify-between text-[10px] text-zinc-500 font-mono">
             <span>{currentBandInfo.range[0]} Hz</span>
-            <span>Cible</span>
+            <span>Plage {currentBandInfo.name}</span>
             <span>{currentBandInfo.range[1]} Hz</span>
           </div>
         </div>
 
-        {/* Curseur Volume de l'onde */}
-        <div className="flex flex-col gap-2 rounded-2xl border border-white/5 bg-black/20 p-3.5">
+        <div className="flex flex-col gap-2 rounded-xl border border-white/10 bg-black/30 p-3.5">
           <div className="flex items-center justify-between text-xs">
-            <span className="flex items-center gap-1.5 font-medium text-[var(--text-secondary)]">
-              <Volume2 className="h-3.5 w-3.5" /> Intensité de l'onde
+            <span className="flex items-center gap-1.5 font-semibold text-zinc-300">
+              <Volume2 className="h-3.5 w-3.5 text-zinc-400" />
+              <span>Volume de l'onde</span>
             </span>
-            <span className="font-mono font-bold text-[var(--text-primary)] text-sm">
+            <span className="font-mono font-bold text-white text-sm">
               {Math.round(volume * 100)}%
             </span>
           </div>
+
           <input
             type="range"
             min={0}
@@ -170,41 +209,47 @@ export const BinauralControls = memo(function BinauralControls({
             step={0.01}
             value={volume}
             onChange={(e) => onVolumeChange(parseFloat(e.target.value))}
-            className="accent-emerald-500 cursor-pointer h-1.5 bg-white/10 rounded-lg appearance-none"
+            className="h-1.5 w-full cursor-pointer appearance-none rounded-sm bg-white/10 accent-emerald-500"
             aria-label="Volume de l'onde binaurale"
           />
-          <div className="flex justify-between text-[10px] text-[var(--text-muted)] font-mono">
+
+          <div className="flex justify-between text-[10px] text-zinc-500 font-mono">
             <span>0%</span>
-            <span>Subtile</span>
+            <span>Dosage doux</span>
             <span>100%</span>
           </div>
         </div>
       </div>
 
-      {/* Fréquence porteuse sacrée (Solfeggio) */}
-      <div className="flex flex-col gap-2 pt-1">
+      <div className="flex flex-col gap-2 pt-1 border-t border-white/5">
         <div className="flex items-center justify-between text-xs">
-          <span className="font-medium text-[var(--text-secondary)]">Harmonique porteuse (Solfeggio)</span>
-          <span className="font-mono text-xs text-[var(--accent-primary)] font-semibold">{carrierFreq} Hz</span>
+          <span className="font-semibold text-zinc-300">Harmonique porteuse (Solfeggio)</span>
+          <span className="font-mono text-xs text-emerald-400 font-bold">{carrierFreq} Hz</span>
         </div>
-        <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
           {SOLFEGGIO_FREQUENCIES.map((item) => {
             const isSelected = carrierFreq === item.freq;
+
             return (
-              <button
+              <motion.button
                 key={item.freq}
+                whileHover={{ y: -1 }}
+                whileTap={{ scale: 0.96 }}
                 type="button"
                 onClick={() => onCarrierChange(item.freq)}
                 className={cn(
-                  "flex flex-col items-center rounded-xl p-2 text-center transition-all duration-200 border text-xs active:scale-95",
+                  "flex flex-col items-center justify-center rounded-lg border p-2.5 text-center transition-all cursor-pointer",
                   isSelected
-                    ? "border-emerald-500/60 bg-emerald-500/15 text-emerald-300 font-bold shadow-sm"
-                    : "border-white/5 bg-white/[0.02] text-[var(--text-muted)] hover:bg-white/5 hover:text-[var(--text-primary)]"
+                    ? "border-emerald-400 bg-emerald-500/20 text-emerald-300 font-bold shadow-sm"
+                    : "border-white/10 bg-black/30 text-zinc-400 hover:border-white/20 hover:text-white"
                 )}
               >
-                <span className="font-mono font-semibold">{item.title}</span>
-                <span className="text-[9px] line-clamp-1 opacity-70 mt-0.5">{item.harmonic}</span>
-              </button>
+                <span className="font-mono font-bold text-xs">{item.title}</span>
+                <span className="text-[10px] opacity-75 mt-0.5 truncate max-w-full">
+                  {item.harmonic}
+                </span>
+              </motion.button>
             );
           })}
         </div>

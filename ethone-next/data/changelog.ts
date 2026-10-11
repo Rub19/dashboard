@@ -49957,5 +49957,58 @@ CHANGELOG_BY_LANG.en.unshift(v1_71_3_en);
 CHANGELOG_BY_LANG.es.unshift(v1_71_3_es);
 CHANGELOG_BY_LANG.de.unshift(v1_71_3_de);
 
+const v1_72_0_fr: ChangelogEntry = {
+  version: "v1.72.0",
+  date: "2026-10-11",
+  title: "Soundscape : studio d'ambiance repensé (motion design, boutons carrés, ergonomie studio)",
+  items: [
+    "Mixeur multi-pistes repensé avec boutons carrés tactiles et animations d'égaliseur audio en temps réel",
+    "Atmosphères préréglées immersives en un clic sans surcharge ni jargon marketing",
+    "Synthèse d'ondes binaurales au style matériel avec sélecteurs de bandes et de fréquences sacrées Solfeggio",
+    "Bannière oscilloscope studio compacte et onglets ergonomiques pour un accès immédiat aux réglages",
+  ],
+};
+
+const v1_72_0_en: ChangelogEntry = {
+  version: "v1.72.0",
+  date: "2026-10-11",
+  title: "Soundscape: redesigned ambient studio (motion design, square buttons, ergonomic console)",
+  items: [
+    "Redesigned multi-track mixer with tactile square pads and real-time audio equalizer animations",
+    "Immersive one-click sound atmospheres without clutter or marketing jargon",
+    "Hardware-style binaural brainwave synthesis with band selectors and sacred Solfeggio pads",
+    "Compact studio oscilloscope banner and ergonomic tabs for immediate access to audio controls",
+  ],
+};
+
+const v1_72_0_es: ChangelogEntry = {
+  version: "v1.72.0",
+  date: "2026-10-11",
+  title: "Soundscape: estudio de ambientes rediseñado (motion design, botones cuadrados, ergonomía)",
+  items: [
+    "Mezclador multipista renovado con pads cuadrados táctiles y animaciones de ecualizador en tiempo real",
+    "Atmósferas preconfiguradas inmersivas en un clic sin sobrecarga ni términos artificiales",
+    "Síntesis de ondas binaurales de estilo hardware con selectores de bandas y frecuencias Solfeggio",
+    "Banner osciloscopio compacto y pestañas ergonómicas para acceso inmediato a los controles",
+  ],
+};
+
+const v1_72_0_de: ChangelogEntry = {
+  version: "v1.72.0",
+  date: "2026-10-11",
+  title: "Soundscape: neu gestaltetes Klangstudio (Motion Design, quadratische Tasten, Studio-Ergonomie)",
+  items: [
+    "Neuer Mehrspur-Mixer mit taktilen quadratischen Pads und Echtzeit-Equalizer-Animationen",
+    "Immersive 1-Klick-Klangatmosphären ohne Ballast oder Marketing-Jargon",
+    "Binaurale Wellensynthese im Hardware-Stil mit Band- und Solfeggio-Frequenzauswahl",
+    "Kompakter Studio-Oszilloskop-Header und ergonomische Tabs für sofortigen Zugriff",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_72_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_72_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_72_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_72_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

@@ -59,6 +59,8 @@ export default function SoundscapePage() {
   const [activePresetId, setActivePresetId] = useState<string | null>("rain-fire");
   const [sleepTimerMinutes, setSleepTimerMinutes] = useState(0);
   const [remainingSeconds, setRemainingSeconds] = useState<number | null>(null);
+  const [sleepTimerOpen, setSleepTimerOpen] = useState(false);
+  const timerRef = useRef<HTMLDivElement>(null);
 
   const previousMixRef = useRef<{
     layers: Partial<Record<SoundAmbient, number>>;
@@ -96,6 +98,16 @@ export default function SoundscapePage() {
 
     return () => clearInterval(interval);
   }, [sleepTimerMinutes, stopAmbient]);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (timerRef.current && !timerRef.current.contains(e.target as Node)) {
+        setSleepTimerOpen(false);
+      }
+    };
+    if (sleepTimerOpen) document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [sleepTimerOpen]);
 
   const handleToggleBinaural = useCallback(() => {
     play("toggle");
@@ -355,23 +367,85 @@ export default function SoundscapePage() {
               ))}
             </div>
 
-            <div className="relative flex items-center">
-              <select
-                value={sleepTimerMinutes}
-                onChange={(e) => {
-                  play("click");
-                  setSleepTimerMinutes(parseInt(e.target.value, 10));
-                }}
-                className="cursor-pointer rounded-lg border border-white/15 bg-black/60 py-1.5 pl-7 pr-3 text-xs font-semibold text-white backdrop-blur-md hover:bg-white/10 focus:outline-none appearance-none"
+            <div ref={timerRef} className="relative">
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.95 }}
+                type="button"
                 aria-label="Minuteur de mise en veille"
+                onClick={() => {
+                  play("click");
+                  setSleepTimerOpen((o) => !o);
+                }}
+                className={cn(
+                  "flex h-8 items-center gap-1.5 rounded-lg border px-2.5 text-xs font-semibold backdrop-blur-md transition-all cursor-pointer",
+                  sleepTimerMinutes > 0
+                    ? "border-amber-500/60 bg-amber-500/15 text-amber-300 shadow-sm shadow-amber-500/10"
+                    : "border-white/15 bg-black/60 text-zinc-300 hover:bg-white/10 hover:text-white"
+                )}
               >
-                {SLEEP_TIMER_OPTIONS.map((opt) => (
-                  <option key={opt.minutes} value={opt.minutes} className="bg-zinc-900 text-white">
-                    {opt.minutes === 0 ? "Veille" : opt.label}
-                  </option>
-                ))}
-              </select>
-              <Clock className="pointer-events-none absolute left-2 h-3.5 w-3.5 text-zinc-300" />
+                <Clock className="h-3.5 w-3.5 shrink-0" />
+                <span>
+                  {sleepTimerMinutes === 0
+                    ? "Veille"
+                    : SLEEP_TIMER_OPTIONS.find((o) => o.minutes === sleepTimerMinutes)?.label ?? "Veille"}
+                </span>
+              </motion.button>
+
+              <AnimatePresence>
+                {sleepTimerOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.92, y: -6 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.92, y: -6 }}
+                    transition={{ type: "spring", stiffness: 380, damping: 28 }}
+                    className="absolute right-0 top-full z-50 mt-2 min-w-[9rem] overflow-hidden rounded-xl border border-white/10 bg-zinc-950/95 p-1.5 shadow-2xl shadow-black/60 backdrop-blur-xl"
+                  >
+                    {SLEEP_TIMER_OPTIONS.map((opt, i) => {
+                      const isActive = sleepTimerMinutes === opt.minutes;
+                      return (
+                        <motion.button
+                          key={opt.minutes}
+                          initial={{ opacity: 0, x: -8 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: i * 0.04, type: "spring", stiffness: 350, damping: 26 }}
+                          type="button"
+                          onClick={() => {
+                            play("click");
+                            setSleepTimerMinutes(opt.minutes);
+                            setSleepTimerOpen(false);
+                          }}
+                          className={cn(
+                            "relative flex w-full items-center gap-2 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors cursor-pointer",
+                            isActive
+                              ? "text-amber-300"
+                              : "text-zinc-400 hover:text-white hover:bg-white/5"
+                          )}
+                        >
+                          {isActive && (
+                            <motion.div
+                              layoutId="sleepTimerActive"
+                              className="absolute inset-0 rounded-lg bg-amber-500/15 border border-amber-500/30"
+                              transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                            />
+                          )}
+                          <Clock className="relative h-3 w-3 shrink-0 opacity-70" />
+                          <span className="relative">
+                            {opt.minutes === 0 ? "Désactivé" : opt.label}
+                          </span>
+                          {isActive && (
+                            <motion.span
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              className="relative ml-auto h-1.5 w-1.5 rounded-full bg-amber-400"
+                            />
+                          )}
+                        </motion.button>
+                      );
+                    })}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             <motion.button

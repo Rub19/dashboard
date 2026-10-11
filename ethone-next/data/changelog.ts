@@ -50177,5 +50177,54 @@ CHANGELOG_BY_LANG.en.unshift(v1_73_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_73_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_73_0_de);
 
+const v1_73_1_fr: ChangelogEntry = {
+  version: "v1.73.1",
+  date: "2026-10-12",
+  title: "Soundscape : Sélecteur de veille animé",
+  items: [
+    "Remplacement du menu natif de minuterie de veille par un sélecteur à pilules animé avec popover en verre dépoli et ressort framer-motion",
+    "Le bouton affiche la durée sélectionnée en ambre quand un timer est actif, et passe en mode discret quand désactivé",
+    "Les options s'animent en cascade à l'ouverture avec un fond actif glissant (layoutId) pour un rendu fluide",
+  ],
+};
+
+const v1_73_1_en: ChangelogEntry = {
+  version: "v1.73.1",
+  date: "2026-10-12",
+  title: "Soundscape: animated sleep timer selector",
+  items: [
+    "Replaced native sleep timer dropdown with a custom animated pill popover using frosted-glass style and framer-motion spring",
+    "The trigger shows selected duration in amber when active, subtle outline when off",
+    "Options cascade in on open with a sliding active background (layoutId) for smooth transitions",
+  ],
+};
+
+const v1_73_1_es: ChangelogEntry = {
+  version: "v1.73.1",
+  date: "2026-10-12",
+  title: "Soundscape: selector de temporizador animado",
+  items: [
+    "Reemplazo del selector nativo de temporizador por un popover de píldoras animado con vidrio esmerilado y spring de framer-motion",
+    "El botón muestra la duración seleccionada en ámbar cuando está activo",
+    "Las opciones se animan en cascada con fondo activo deslizante (layoutId)",
+  ],
+};
+
+const v1_73_1_de: ChangelogEntry = {
+  version: "v1.73.1",
+  date: "2026-10-12",
+  title: "Soundscape: animierter Sleep-Timer-Selektor",
+  items: [
+    "Nativer Sleep-Timer-Dropdown durch animiertes Pill-Popover mit Milchglas-Stil und framer-motion Spring ersetzt",
+    "Der Auslöser zeigt die gewählte Dauer in Bernstein wenn aktiv",
+    "Optionen animieren mit gleitendem aktivem Hintergrund (layoutId) für flüssige Übergänge",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_73_1_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_73_1_en);
+CHANGELOG_BY_LANG.es.unshift(v1_73_1_es);
+CHANGELOG_BY_LANG.de.unshift(v1_73_1_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

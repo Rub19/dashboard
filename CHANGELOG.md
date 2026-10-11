@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.73.1 — 2026-10-12
+
+**Soundscape : Sélecteur de veille animé**
+
+- Remplacement du menu natif `<select>` par un sélecteur à pilules animé avec popover en verre dépoli.
+- Bouton trigger affichant la durée active en ambre avec bordure lumineuse ; discret quand désactivé.
+- Options cascadant à l'ouverture via framer-motion spring, avec fond actif glissant (`layoutId`) pour des transitions fluides.
+
 ## v1.73.0 — 2026-10-11
 
 **Télémétrie Boost, inspecteur Browser Lab, Mode Zen et Command Palette 2.0**

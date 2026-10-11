@@ -15,6 +15,8 @@ import {
   Pause,
   SkipForward,
   Square,
+  Maximize2,
+  Minimize2,
 } from "@/components/icons/ph";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/motion/Popover";
 import { useAnimatedSidebar } from "@/components/motion/animated-sidebar";
@@ -347,6 +349,28 @@ function FeedbackButton() {
   );
 }
 
+function ZenToggle() {
+  const { settings, update } = useSettings();
+  const isZen = settings.zenMode;
+  return (
+    <Tooltip label={isZen ? "Quitter le mode Zen (Ctrl+Shift+Z)" : "Mode Zen (Ctrl+Shift+Z)"} position="bottom">
+      <button
+        type="button"
+        onClick={() => update({ zenMode: !isZen })}
+        className={cn(
+          "inline-flex h-10 w-10 items-center justify-center rounded-[var(--inset-radius)] border transition-all active:scale-95 cursor-pointer shadow-sm",
+          isZen
+            ? "border-[var(--accent-primary)]/50 bg-[var(--accent-primary)]/20 text-[var(--accent-primary)]"
+            : "border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]"
+        )}
+        aria-label="Mode Zen"
+      >
+        {isZen ? <Minimize2 className="h-[18px] w-[18px]" /> : <Maximize2 className="h-[18px] w-[18px]" />}
+      </button>
+    </Tooltip>
+  );
+}
+
 function TopBar() {
   const { home, page } = useBreadcrumb();
   const { reduced } = useMotionPref();
@@ -371,6 +395,7 @@ function TopBar() {
 
         <div className="flex items-center gap-1.5">
           <FocusLivePill mobile />
+          <ZenToggle />
           <CommandBarTrigger />
           <NotificationCenter mobile />
           <UserProfileDropdown dataTestId="user-profile-trigger-mobile" />
@@ -443,6 +468,9 @@ function TopBar() {
           </div>
           <div className="ethone-toolbar">
             <FocusLivePill />
+            <div className="hidden md:inline-flex">
+              <ZenToggle />
+            </div>
             <div className="hidden 2xl:contents">
               <FeedbackButton />
               <DynamicIslandToggle />

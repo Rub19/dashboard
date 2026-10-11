@@ -14,6 +14,10 @@ import {
   AlertTriangle,
   CornerDownLeft,
   Brain,
+  Zap,
+  Copy,
+  Check,
+  Terminal,
 } from "@/components/icons/ph";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
 import { useCommandItems, type CommandItem } from "@/lib/commands";
@@ -22,6 +26,9 @@ import {
   createCommandHistory,
   type SearchableCommandItem,
 } from "@/lib/command-search";
+import { useSettings } from "@/components/SettingsProvider";
+import { useSound } from "@/lib/sound";
+import { useFocus } from "@/components/FocusProvider";
 import { cn } from "@/lib/utils";
 import { useTouchCapable } from "@/lib/hooks/use-touch-capable";
 
@@ -37,12 +44,158 @@ const CATEGORY_CHIPS = [
   { id: "Brain", label: "Brain" },
 ];
 
+interface MathResult {
+  expression: string;
+  result: number;
+  formatted: string;
+}
+
+function evaluateMathExpression(raw: string): MathResult | null {
+  const trimmed = raw.trim();
+  if (trimmed.length < 2 || trimmed.startsWith("/")) return null;
+
+  const clean = trimmed.replace(/\s*=\s*$/, "");
+
+  const percentMatch = clean.match(/^([\d.,]+)\s*%\s*(?:of|de|\*)\s*([\d.,]+)$/i);
+  if (percentMatch) {
+    const p = parseFloat(percentMatch[1].replace(",", "."));
+    const total = parseFloat(percentMatch[2].replace(",", "."));
+    if (!isNaN(p) && !isNaN(total)) {
+      const res = (p / 100) * total;
+      const formatted = Number.isInteger(res) ? String(res) : res.toFixed(4).replace(/\.?0+$/, "");
+      return { expression: trimmed, result: res, formatted };
+    }
+  }
+
+  const percentMatch2 = clean.match(/^([\d.,]+)\s*\*\s*([\d.,]+)\s*%$/i);
+  if (percentMatch2) {
+    const total = parseFloat(percentMatch2[1].replace(",", "."));
+    const p = parseFloat(percentMatch2[2].replace(",", "."));
+    if (!isNaN(p) && !isNaN(total)) {
+      const res = (p / 100) * total;
+      const formatted = Number.isInteger(res) ? String(res) : res.toFixed(4).replace(/\.?0+$/, "");
+      return { expression: trimmed, result: res, formatted };
+    }
+  }
+
+  const sqrtMatch = clean.match(/^sqrt\s*\(\s*([\d.,]+)\s*\)$/i);
+  if (sqrtMatch) {
+    const val = parseFloat(sqrtMatch[1].replace(",", "."));
+    if (!isNaN(val) && val >= 0) {
+      const res = Math.sqrt(val);
+      const formatted = Number.isInteger(res) ? String(res) : res.toFixed(4).replace(/\.?0+$/, "");
+      return { expression: trimmed, result: res, formatted };
+    }
+  }
+
+  const normalized = clean
+    .replace(/[xX]/g, "*")
+    .replace(/÷/g, "/")
+    .replace(/,/g, ".")
+    .replace(/\s+/g, "");
+
+  if (!/^[\d+\-*/^().]+$/.test(normalized)) return null;
+  if (!/[+\-*/^]/.test(normalized)) return null;
+
+  try {
+    let pos = 0;
+    const parseNumber = (): number => {
+      const start = pos;
+      while (pos < normalized.length && (/\d/.test(normalized[pos]) || normalized[pos] === ".")) {
+        pos++;
+      }
+      const numStr = normalized.substring(start, pos);
+      const val = parseFloat(numStr);
+      if (isNaN(val)) throw new Error("nan");
+      return val;
+    };
+
+    const parseFactor = (): number => {
+      if (pos >= normalized.length) throw new Error("end");
+      let sign = 1;
+      if (normalized[pos] === "-") {
+        sign = -1;
+        pos++;
+      } else if (normalized[pos] === "+") {
+        pos++;
+      }
+      if (normalized[pos] === "(") {
+        pos++;
+        const val = parseExpression();
+        if (normalized[pos] !== ")") throw new Error("paren");
+        pos++;
+        return sign * val;
+      }
+      return sign * parseNumber();
+    };
+
+    const parsePower = (): number => {
+      let val = parseFactor();
+      while (pos < normalized.length && normalized[pos] === "^") {
+        pos++;
+        const next = parseFactor();
+        val = Math.pow(val, next);
+      }
+      return val;
+    };
+
+    const parseTerm = (): number => {
+      let val = parsePower();
+      while (pos < normalized.length && (normalized[pos] === "*" || normalized[pos] === "/" || normalized[pos] === "%")) {
+        const op = normalized[pos];
+        pos++;
+        const next = parsePower();
+        if (op === "*") val *= next;
+        else if (op === "/") {
+          if (next === 0) throw new Error("divzero");
+          val /= next;
+        } else if (op === "%") val %= next;
+      }
+      return val;
+    };
+
+    const parseExpression = (): number => {
+      let val = parseTerm();
+      while (pos < normalized.length && (normalized[pos] === "+" || normalized[pos] === "-")) {
+        const op = normalized[pos];
+        pos++;
+        const next = parseTerm();
+        if (op === "+") val += next;
+        else if (op === "-") val -= next;
+      }
+      return val;
+    };
+
+    const result = parseExpression();
+    if (pos === normalized.length && isFinite(result)) {
+      const formatted = Number.isInteger(result) ? String(result) : result.toFixed(4).replace(/\.?0+$/, "");
+      return { expression: trimmed, result, formatted };
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+interface DirectSlashCommand {
+  command: string;
+  label: string;
+  description: string;
+  badge: string;
+  execute: (param: string) => void;
+}
+
 export default function CommandPalette() {
   const { open, setOpen } = useCommandPalette();
   const pathname = usePathname();
   const router = useRouter();
   const isTouch = useTouchCapable();
   const prefersReduced = useReducedMotion();
+
+  const { settings, update: updateSettings } = useSettings();
+  const { playAmbient, stopAmbient } = useSound();
+  const focus = useFocus();
+  const [copiedMath, setCopiedMath] = useState(false);
 
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
@@ -60,7 +213,6 @@ export default function CommandPalette() {
     setMounted(true);
   }, []);
 
-  // Global Keyboard Shortcut: Ctrl+K / Cmd+K
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
@@ -72,7 +224,6 @@ export default function CommandPalette() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [open, setOpen]);
 
-  // Reset state when opening
   useEffect(() => {
     if (open) {
       setQuery("");
@@ -83,7 +234,6 @@ export default function CommandPalette() {
     }
   }, [open]);
 
-  // Search Context
   const searchContext = useMemo(() => {
     if (!open) {
       return {
@@ -104,16 +254,148 @@ export default function CommandPalette() {
     };
   }, [pathname, activeCategory, open]);
 
-  // Filtered & Ranked commands
   const filteredCommands = useMemo(() => {
     return searchCommands(allCommands as SearchableCommandItem[], query, searchContext, 40);
   }, [allCommands, query, searchContext]);
 
-  // Grouped commands
   const pinnedIds = useMemo(() => (open ? new Set(historyRef.current.pinned()) : new Set<string>()), [open]);
   const recentIds = useMemo(() => (open ? new Set(historyRef.current.recent()) : new Set<string>()), [open]);
 
-  // Handle execution
+  const mathResult = useMemo(() => {
+    return evaluateMathExpression(query);
+  }, [query]);
+
+  const slashCommands = useMemo<DirectSlashCommand[]>(() => {
+    return [
+      {
+        command: "/zen",
+        label: "Basculer le Mode Zen",
+        description: "Plein écran épuré sans chrome applicatif",
+        badge: "Zen OS",
+        execute: () => {
+          updateSettings({ zenMode: !settings.zenMode });
+        },
+      },
+      {
+        command: "/mute",
+        label: "Couper les Sons",
+        description: "Désactiver les ambiances et sons d'interface",
+        badge: "Audio",
+        execute: () => {
+          stopAmbient();
+          updateSettings({ masterVolume: !settings.masterVolume });
+        },
+      },
+      {
+        command: "/rain",
+        label: "Lancer la Pluie",
+        description: "Démarrer l'ambiance sonore naturelle de pluie",
+        badge: "Soundscape",
+        execute: () => {
+          playAmbient("rain", 65);
+          router.push("/soundscape");
+        },
+      },
+      {
+        command: "/focus",
+        label: "Démarrer un Focus",
+        description: "Lancer un chronomètre de productivité (ex: /focus 25)",
+        badge: "Pomodoro",
+        execute: (param) => {
+          const mins = param ? parseInt(param, 10) : 25;
+          focus.start(isNaN(mins) ? "standard" : String(mins));
+          router.push("/focus");
+        },
+      },
+      {
+        command: "/theme",
+        label: "Changer de Thème",
+        description: "Basculer vers un thème (ex: /theme midnight, /theme day)",
+        badge: "Apparence",
+        execute: (param) => {
+          const themeName = param.toLowerCase().trim();
+          if (themeName) {
+            const aliasMap: Record<string, string> = {
+              dark: "obsidian",
+              night: "midnight",
+              oled: "midnight",
+              light: "arctic",
+              teal: "aurora",
+              pink: "dyno-rose",
+              purple: "purple-space",
+            };
+            const targetTheme = aliasMap[themeName] || themeName;
+            updateSettings({ theme: targetTheme as unknown as typeof settings.theme });
+          } else {
+            router.push("/settings");
+          }
+        },
+      },
+      {
+        command: "/notes",
+        label: "Ouvrir les Notes",
+        description: "Accéder au carnet de notes et idées",
+        badge: "Notes",
+        execute: () => router.push("/notes"),
+      },
+      {
+        command: "/tasks",
+        label: "Ouvrir les Tâches",
+        description: "Accéder au gestionnaire de tâches",
+        badge: "Tâches",
+        execute: () => router.push("/tasks"),
+      },
+      {
+        command: "/soundscape",
+        label: "Studio Soundscape",
+        description: "Mixeur d'ambiances et fréquences binaurales",
+        badge: "Audio",
+        execute: () => router.push("/soundscape"),
+      },
+      {
+        command: "/discord",
+        label: "Discord Center",
+        description: "Centre de contrôle des serveurs Discord",
+        badge: "Discord",
+        execute: () => router.push("/discord"),
+      },
+      {
+        command: "/boost",
+        label: "Diagnostic Performance",
+        description: "Fluidité FPS, mémoire tas et latence réelle",
+        badge: "Système",
+        execute: () => router.push("/boost"),
+      },
+      {
+        command: "/browser",
+        label: "Inspecteur Web & Sandbox",
+        description: "Test de routes et analyse d'en-têtes HTTP",
+        badge: "Outils",
+        execute: () => router.push("/browser"),
+      },
+    ];
+  }, [settings, updateSettings, stopAmbient, playAmbient, router, focus]);
+
+  const activeSlashCommands = useMemo(() => {
+    if (!query.startsWith("/")) return [];
+    const lower = query.toLowerCase();
+    const parts = lower.slice(1).split(" ");
+    const cmdPart = parts[0] || "";
+    return slashCommands.filter((sc) => sc.command.slice(1).startsWith(cmdPart));
+  }, [query, slashCommands]);
+
+  const handleCopyMathResult = useCallback(() => {
+    if (!mathResult) return;
+    if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(mathResult.formatted);
+    }
+    setCopiedMath(true);
+    setTimeout(() => {
+      setCopiedMath(false);
+      setOpen(false);
+    }, 350);
+  }, [mathResult, setOpen]);
+
   const executeCommand = useCallback(
     (cmd: CommandItem) => {
       if (cmd.isSensitive) {
@@ -140,13 +422,11 @@ export default function CommandPalette() {
     (id: string, e?: React.MouseEvent) => {
       e?.stopPropagation();
       historyRef.current.togglePin(id);
-      // Force re-render
       setActiveIndex((prev) => prev);
     },
     []
   );
 
-  // Keyboard Navigation inside Palette
   useEffect(() => {
     if (!open || sensitivePrompt) return;
 
@@ -156,19 +436,38 @@ export default function CommandPalette() {
         setOpen(false);
       } else if (e.key === "ArrowDown") {
         e.preventDefault();
-        setActiveIndex((prev) => (prev + 1 < filteredCommands.length ? prev + 1 : 0));
+        const maxLen = query.startsWith("/") ? activeSlashCommands.length : filteredCommands.length;
+        setActiveIndex((prev) => (prev + 1 < maxLen ? prev + 1 : 0));
       } else if (e.key === "ArrowUp") {
         e.preventDefault();
-        setActiveIndex((prev) => (prev - 1 >= 0 ? prev - 1 : filteredCommands.length - 1));
+        const maxLen = query.startsWith("/") ? activeSlashCommands.length : filteredCommands.length;
+        setActiveIndex((prev) => (prev - 1 >= 0 ? prev - 1 : Math.max(0, maxLen - 1)));
       } else if (e.key === "Enter") {
         e.preventDefault();
+
+        if (mathResult) {
+          handleCopyMathResult();
+          return;
+        }
+
+        if (query.startsWith("/")) {
+          const selectedSlash = activeSlashCommands[activeIndex];
+          if (selectedSlash) {
+            const parts = query.trim().split(/\s+/);
+            const param = parts.slice(1).join(" ");
+            selectedSlash.execute(param);
+            setOpen(false);
+            return;
+          }
+        }
+
         if (query.trim().startsWith("ask ") || query.trim().startsWith("demande ")) {
-          // Ask brain direct query
-          const q = query.replace(/^(ask|demande)s+/i, "").trim();
+          const q = query.replace(/^(ask|demande)\s+/i, "").trim();
           router.push(`/brain/?q=${encodeURIComponent(q)}`);
           setOpen(false);
           return;
         }
+
         const active = filteredCommands[activeIndex];
         if (active) executeCommand(active);
       } else if (e.key === "Tab") {
@@ -182,9 +481,21 @@ export default function CommandPalette() {
 
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, [open, sensitivePrompt, filteredCommands, activeIndex, activeCategory, query, router, executeCommand, setOpen]);
+  }, [
+    open,
+    sensitivePrompt,
+    filteredCommands,
+    activeSlashCommands,
+    activeIndex,
+    activeCategory,
+    query,
+    mathResult,
+    handleCopyMathResult,
+    router,
+    executeCommand,
+    setOpen,
+  ]);
 
-  // Auto scroll active item into view
   useEffect(() => {
     if (!listRef.current) return;
     const activeEl = listRef.current.querySelector(`[data-index="${activeIndex}"]`) as HTMLElement | null;
@@ -199,7 +510,6 @@ export default function CommandPalette() {
     <AnimatePresence>
       {open && (
         <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 select-none">
-          {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -209,7 +519,6 @@ export default function CommandPalette() {
             className="fixed inset-0 bg-[var(--bg-overlay)] backdrop-blur-md"
           />
 
-          {/* Dialog Body */}
           <motion.div
             initial={isTouch ? { y: "100%" } : { opacity: 0, scale: 0.96, y: -10 }}
             animate={isTouch ? { y: 0 } : { opacity: 1, scale: 1, y: 0 }}
@@ -222,14 +531,12 @@ export default function CommandPalette() {
                 : "rounded-3xl max-h-[640px] bg-[var(--panel-bg)]"
             )}
           >
-            {/* Mobile Sheet Handle */}
             {isTouch && (
               <div className="flex justify-center pt-3 pb-1">
                 <div className="h-1.5 w-12 rounded-full bg-[var(--text-muted)]/30" />
               </div>
             )}
 
-            {/* Header / Search Input */}
             <div className="relative flex items-center border-b border-[var(--panel-border)]/60 px-4 py-3.5 gap-3">
               <Search className="h-5 w-5 text-[var(--accent-primary)] shrink-0" />
               <input
@@ -240,7 +547,7 @@ export default function CommandPalette() {
                   setQuery(e.target.value);
                   setActiveIndex(0);
                 }}
-                placeholder="Rechercher une page, action, focus, thème ou demander à Brain..."
+                placeholder="Taper un calcul (150*1.2), une commande (/zen, /mute) ou rechercher..."
                 className="flex-1 bg-transparent text-sm font-medium text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none"
               />
               {query && (
@@ -260,7 +567,6 @@ export default function CommandPalette() {
               </kbd>
             </div>
 
-            {/* Category Filter Chips */}
             <div className="flex items-center gap-1.5 overflow-x-auto px-4 py-2 border-b border-[var(--panel-border)]/40 no-scrollbar">
               {CATEGORY_CHIPS.map((chip) => {
                 const active = activeCategory === chip.id;
@@ -273,7 +579,7 @@ export default function CommandPalette() {
                       setActiveIndex(0);
                     }}
                     className={cn(
-                      "rounded-xl px-3 py-1 text-xs font-semibold whitespace-nowrap transition-all touch-manipulation",
+                      "rounded-xl px-3 py-1 text-xs font-semibold whitespace-nowrap transition-all touch-manipulation cursor-pointer",
                       active
                         ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-sm"
                         : "border border-[var(--panel-border)]/40 bg-[var(--surface-raised)]/30 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)]"
@@ -285,7 +591,6 @@ export default function CommandPalette() {
               })}
             </div>
 
-            {/* Sensitive Action Modal Prompt */}
             {sensitivePrompt ? (
               <div className="p-6 space-y-4 text-center">
                 <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-500/20 text-amber-400">
@@ -293,7 +598,7 @@ export default function CommandPalette() {
                 </div>
                 <div>
                   <h4 className="text-base font-bold text-[var(--text-primary)]">
-                    Confirmer l'action sensible
+                    Confirmer l&apos;action sensible
                   </h4>
                   <p className="text-xs text-[var(--text-muted)] mt-1">
                     Êtes-vous sûr de vouloir exécuter : <strong className="text-[var(--text-primary)]">{sensitivePrompt.label}</strong> ?
@@ -303,27 +608,98 @@ export default function CommandPalette() {
                   <button
                     type="button"
                     onClick={() => setSensitivePrompt(null)}
-                    className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] px-4 py-2 text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--surface-hover)]"
+                    className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] px-4 py-2 text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--surface-hover)] cursor-pointer"
                   >
                     Annuler
                   </button>
                   <button
                     type="button"
                     onClick={confirmSensitive}
-                    className="rounded-xl bg-rose-500 px-4 py-2 text-xs font-semibold text-white shadow-md hover:bg-rose-600"
+                    className="rounded-xl bg-rose-500 px-4 py-2 text-xs font-semibold text-white shadow-md hover:bg-rose-600 cursor-pointer"
                   >
                     Confirmer
                   </button>
                 </div>
               </div>
             ) : (
-              /* Results List */
               <div
                 ref={listRef}
                 className="flex-1 overflow-y-auto px-2 py-2 space-y-1 divide-y divide-transparent no-scrollbar max-h-[380px] sm:max-h-[440px]"
               >
-                {/* Ask Brain Dynamic Card */}
-                {query.trim().length > 1 && (
+                {mathResult && (
+                  <div
+                    onClick={handleCopyMathResult}
+                    className="group mx-2 mb-2 flex items-center justify-between gap-3 rounded-2xl border border-emerald-500/40 bg-emerald-500/10 p-3.5 transition-all cursor-pointer hover:bg-emerald-500/20 shadow-sm"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500 text-black shadow-md">
+                        <Zap className="h-5 w-5 fill-current" />
+                      </div>
+                      <div>
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">
+                          Moteur de Calcul Instantané
+                        </span>
+                        <p className="font-mono text-base font-bold text-[var(--text-primary)]">
+                          {mathResult.expression} = <span className="text-emerald-400">{mathResult.formatted}</span>
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1.5 rounded-lg bg-emerald-500/20 px-2.5 py-1 text-xs font-semibold text-emerald-400">
+                      {copiedMath ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+                      <span>{copiedMath ? "Copié !" : "Copier (Entrée)"}</span>
+                    </div>
+                  </div>
+                )}
+
+                {query.startsWith("/") && activeSlashCommands.length > 0 && (
+                  <div className="space-y-1 px-1 mb-2">
+                    <span className="px-2 text-[10px] font-bold uppercase tracking-wider text-[var(--accent-primary)]">
+                      Commandes Directes Disponibles
+                    </span>
+                    {activeSlashCommands.map((sc, idx) => {
+                      const isSelected = activeIndex === idx;
+                      return (
+                        <div
+                          key={sc.command}
+                          data-index={idx}
+                          onClick={() => {
+                            const parts = query.trim().split(/\s+/);
+                            const param = parts.slice(1).join(" ");
+                            sc.execute(param);
+                            setOpen(false);
+                          }}
+                          onMouseEnter={() => setActiveIndex(idx)}
+                          className={cn(
+                            "flex items-center justify-between gap-3 rounded-2xl px-3 py-2.5 transition-all cursor-pointer",
+                            isSelected
+                              ? "bg-[var(--surface-hover)] border border-[var(--accent-primary)]/40 shadow-sm"
+                              : "hover:bg-[var(--surface-raised)]/40 border border-transparent"
+                          )}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="flex h-8 w-8 items-center justify-center rounded-xl border border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]">
+                              <Terminal className="h-4 w-4" />
+                            </div>
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <span className="font-mono text-xs font-bold text-[var(--text-primary)]">
+                                  {sc.command}
+                                </span>
+                                <span className="rounded-md bg-[var(--accent-primary)]/20 px-1.5 py-0.2 text-[9px] font-bold text-[var(--accent-primary)]">
+                                  {sc.badge}
+                                </span>
+                              </div>
+                              <p className="text-[11px] text-[var(--text-muted)]">{sc.description}</p>
+                            </div>
+                          </div>
+                          <CornerDownLeft className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {!query.startsWith("/") && query.trim().length > 1 && !mathResult && (
                   <div
                     onClick={() => {
                       router.push(`/brain/?q=${encodeURIComponent(query.trim())}`);
@@ -340,7 +716,7 @@ export default function CommandPalette() {
                           Demander à ETHONE Brain
                         </p>
                         <p className="text-[11px] text-[var(--accent-primary)] font-medium line-clamp-1">
-                          "{query}"
+                          &quot;{query}&quot;
                         </p>
                       </div>
                     </div>
@@ -348,15 +724,15 @@ export default function CommandPalette() {
                   </div>
                 )}
 
-                {filteredCommands.length === 0 ? (
+                {!query.startsWith("/") && filteredCommands.length === 0 && !mathResult ? (
                   <div className="py-12 text-center space-y-2">
                     <Command className="mx-auto h-8 w-8 text-[var(--text-muted)] opacity-40" />
                     <p className="text-xs font-medium text-[var(--text-muted)]">
-                      Aucun résultat trouvé pour "{query}"
+                      Aucun résultat trouvé pour &quot;{query}&quot;
                     </p>
                   </div>
                 ) : (
-                  filteredCommands.map((cmd, idx) => {
+                  !query.startsWith("/") && filteredCommands.map((cmd, idx) => {
                     const isSelected = activeIndex === idx;
                     const isPinned = pinnedIds.has(cmd.id);
                     const isRecent = recentIds.has(cmd.id);
@@ -375,7 +751,6 @@ export default function CommandPalette() {
                         )}
                       >
                         <div className="flex items-center gap-3 min-w-0">
-                          {/* Icon Container */}
                           <div
                             className={cn(
                               "flex h-8 w-8 shrink-0 items-center justify-center rounded-[var(--inset-radius)] border text-sm transition-all",
@@ -387,7 +762,6 @@ export default function CommandPalette() {
                             {cmd.icon || <Sparkles className="h-4 w-4" />}
                           </div>
 
-                          {/* Info Text */}
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-2">
                               <span className="text-xs font-bold text-[var(--text-primary)] truncate">
@@ -417,7 +791,6 @@ export default function CommandPalette() {
                           </div>
                         </div>
 
-                        {/* Right Actions & Shortcuts */}
                         <div className="flex items-center gap-2 shrink-0">
                           <button
                             type="button"
@@ -450,7 +823,6 @@ export default function CommandPalette() {
               </div>
             )}
 
-            {/* Footer Navigation Hints */}
             <div className="hidden sm:flex items-center justify-between border-t border-[var(--panel-border)]/60 px-4 py-2.5 text-[11px] text-[var(--text-muted)]">
               <div className="flex items-center gap-4">
                 <span className="flex items-center gap-1">
@@ -464,7 +836,7 @@ export default function CommandPalette() {
                 </span>
               </div>
               <span className="font-semibold text-[var(--accent-primary)]">
-                ETHONE Command Center
+                ETHONE Command Center 2.0
               </span>
             </div>
           </motion.div>

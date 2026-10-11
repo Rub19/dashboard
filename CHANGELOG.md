@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.73.0 — 2026-10-11
+
+**Télémétrie Boost, inspecteur Browser Lab, Mode Zen et Command Palette 2.0**
+
+- Refonte complète de `/boost` : sparkline FPS 60s interactive, jauge mémoire V8, stockage/quota réels et détection GPU WebGL.
+- Refonte de `/browser` : inspecteur d'URL et webhooks en direct, audit d'en-têtes HTTP de sécurité et bac à sable iframe responsive.
+- Nouveau Mode Zen immersif (`Ctrl+Shift+Z`) rétractant la barre latérale, la TopBar et le Dock avec sortie rapide.
+- Command Palette 2.0 (`Ctrl+K`) : moteur de calcul arithmétique instantané et commandes directes (`/zen`, `/mute`, `/focus`, `/theme`).
+- Mini-capsule d'ambiance sonore dans la Dynamic Island avec curseur de volume en direct.
+- Timeline interactive des incidents de sécurité Discord avec filtrage par sévérité et statut de résolution.
+
 ## v1.72.2 — 2026-10-11
 
 **Interface : dégagement du dock desktop, disposition Dynamic Island et accessibilité clavier**

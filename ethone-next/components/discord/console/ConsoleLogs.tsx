@@ -2,13 +2,14 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { AlertTriangle, Bell, Zap } from "@/components/icons/ph";
+import { AlertTriangle, Zap } from "@/components/icons/ph";
 import ChannelPicker, { fetchGuildChannels } from "../ChannelPicker";
 import { fetchGuildRoles } from "../RolePicker";
 import { cleanLogText, sinceLabel } from "@/lib/discord/security-scan";
 import { SPRING_PILL } from "@/lib/ease";
 import { cn } from "@/lib/utils";
 import { ConsolePage, EmptyLine, GhostButton, Panel, useGuildApi } from "./kit";
+import DiscordIncidentsTimeline from "../DiscordIncidentsTimeline";
 
 type AuditEvent = {
   id: string;
@@ -183,36 +184,7 @@ export default function ConsoleLogs({ guildId, initialTab = "incidents" }: { gui
       {tab === "journal" ? (
         <Journal guildId={guildId} />
       ) : tab === "incidents" ? (
-        <Panel>
-          {events === null ? (
-            <EmptyLine>Chargement…</EmptyLine>
-          ) : events.length === 0 ? (
-            <div className="flex flex-col items-center gap-2 px-5 py-12 text-center">
-              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--surface-hover)] text-[var(--text-muted)]">
-                <Bell className="h-4 w-4" />
-              </span>
-              <p className="text-sm font-semibold text-[var(--text-primary)]">Aucun incident</p>
-              <p className="max-w-sm text-xs text-[var(--text-muted)]">Chaque fois qu&apos;une protection se déclenche, elle apparaît ici avec l&apos;auteur, la cible et la raison.</p>
-            </div>
-          ) : (
-            <ul>
-              {events.map((e) => (
-                <li key={e.id} className="flex items-start gap-3 border-t border-[var(--panel-border)] px-5 py-3 first:border-t-0">
-                  <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full" style={{ background: SEVERITY_COLOR[e.severity] ?? "var(--text-muted)" }} />
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-[13px] font-semibold text-[var(--text-primary)]">{readable(cleanLogText(e.reason || e.type.replace(/_/g, " ").toLowerCase()))}</p>
-                    <p className="truncate text-[11px] text-[var(--text-muted)]">
-                      {e.actor?.tag ? `Par ${e.actor.tag}` : "Par Etho"}
-                      {e.target?.tag || e.target?.name ? ` · Cible : ${e.target.tag || e.target.name}` : ""}
-                      {e.action ? ` · ${e.action}` : ""}
-                    </p>
-                  </div>
-                  <span className="shrink-0 text-[11px] text-[var(--text-muted)]">{sinceLabel(e.timestamp)}</span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </Panel>
+        <DiscordIncidentsTimeline events={events} guildId={guildId} readable={readable} />
       ) : (
         <div className="space-y-5">
           {gap.length > 0 && (

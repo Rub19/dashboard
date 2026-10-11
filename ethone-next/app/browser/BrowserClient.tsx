@@ -1,14 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import Link from "next/link";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
   Globe,
   Lock,
   RotateCcw,
   ArrowLeft,
-  ArrowRight,
-  Search,
   ExternalLink,
   ShieldCheck,
   Laptop,
@@ -16,10 +13,8 @@ import {
   Tablet,
   Copy,
   Check,
-  Zap,
-  Sparkles,
-  Layers,
-  FileText,
+  Code,
+  Play,
 } from "@/components/icons/ph";
 import { useToast } from "@/components/ToastProvider";
 import { cn } from "@/lib/utils";
@@ -28,504 +23,571 @@ interface BrowserClientProps {
   initialId?: string;
 }
 
-interface TabItem {
+interface PresetItem {
   id: string;
   title: string;
   url: string;
-  favicon?: string;
+  description: string;
 }
 
-const PRESET_PAGES: Record<
-  string,
+const PRESET_ROUTES: PresetItem[] = [
   {
-    title: string;
-    url: string;
-    description: string;
-    category: string;
-    content: React.ReactNode;
-  }
-> = {
-  demo: {
-    title: "Portail Démo — ETHONE Web Engine",
-    url: "https://demo.ethone.dev",
-    description: "Environnement de test interactif avec inspection d'éléments et simulation sandbox.",
-    category: "Simulation",
-    content: (
-      <div className="stagger-children space-y-6">
-        <div className="rounded-[var(--panel-radius)] border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/5 p-6">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--accent-primary)]/20 text-[var(--accent-primary)]">
-              <Sparkles className="h-5 w-5" />
-            </div>
-            <div>
-              <h2 className="text-base font-bold text-[var(--text-primary)]">ETHONE OS Web Sandbox — Mode Démo</h2>
-              <p className="text-xs text-[var(--text-muted)]">
-                Moteur de navigation sécurisé avec isolation mémoire et conformité CSP stricte.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4">
-            <div className="flex items-center gap-2 text-xs font-bold text-emerald-400 mb-2">
-              <ShieldCheck className="h-4 w-4" />
-              <span>Sandbox Isolation</span>
-            </div>
-            <p className="text-xs text-[var(--text-muted)]">
-              Les scripts tiers sont isolés dans un contexte web-worker sandboxé sans accès au stockage de session hôte.
-            </p>
-          </div>
-
-          <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4">
-            <div className="flex items-center gap-2 text-xs font-bold text-[var(--accent-primary)] mb-2">
-              <Zap className="h-4 w-4" />
-              <span>Moteur Nitro Render</span>
-            </div>
-            <p className="text-xs text-[var(--text-muted)]">
-              Pipeline de composition GPU accéléré avec pré-rendu spéculatif des routes internes.
-            </p>
-          </div>
-
-          <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4">
-            <div className="flex items-center gap-2 text-xs font-bold text-amber-400 mb-2">
-              <Lock className="h-4 w-4" />
-              <span>Strict CSP Enforced</span>
-            </div>
-            <p className="text-xs text-[var(--text-muted)]">
-              Blocage automatique de toute requête non chiffrée ou hors whitelist de sécurité cloud.
-            </p>
-          </div>
-        </div>
-
-        <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 p-4 font-mono text-xs text-[var(--text-primary)]/85">
-          <div className="flex items-center justify-between pb-2 mb-2 border-b border-[var(--panel-border)] text-[var(--text-muted)]">
-            <span>En-têtes de Réponse HTTP Réseau</span>
-            <span className="text-[10px] text-emerald-400">200 OK (Cloudflare Edge)</span>
-          </div>
-          <div className="space-y-1 text-[var(--text-muted)]">
-            <p><span className="text-[var(--accent-primary)]">content-security-policy:</span> default-src &apos;self&apos;; connect-src &apos;self&apos; https: wss:;</p>
-            <p><span className="text-[var(--accent-primary)]">x-frame-options:</span> SAMEORIGIN</p>
-            <p><span className="text-[var(--accent-primary)]">x-content-type-options:</span> nosniff</p>
-            <p><span className="text-[var(--accent-primary)]">strict-transport-security:</span> max-age=31536000; includeSubDomains</p>
-          </div>
-        </div>
-      </div>
-    ),
+    id: "home",
+    title: "ETHONE Dashboard",
+    url: "/",
+    description: "Vue d'ensemble du système, widgets et métriques",
   },
-  "test-123": {
-    title: "Diagnostic Sandbox [test-123]",
-    url: "https://audit.ethone.dev/test-123",
-    description: "Environnement de validation automatisé pour le monitoring des erreurs et routes.",
-    category: "Diagnostic",
-    content: (
-      <div className="stagger-children space-y-6">
-        <div className="rounded-[var(--panel-radius)] border border-emerald-500/20 bg-emerald-500/5 p-6">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-400">
-              <ShieldCheck className="h-5 w-5" />
-            </div>
-            <div>
-              <h2 className="text-base font-bold text-[var(--text-primary)]">Rapport Diagnostic Session test-123</h2>
-              <p className="text-xs text-[var(--text-muted)]">
-                Toutes les assertions de routes statiques et d&apos;absence de fuite CSP sont validées.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          {[
-            { label: "Vérification CSP Connect-Src", status: "PASS", detail: "Aucun appel localhost:3001 non sécurisé détecté" },
-            { label: "Export Statique Pages Next.js", status: "PASS", detail: "Toutes les routes dynamiques possèdent generateStaticParams" },
-            { label: "Redirections SPA Cloudflare", status: "PASS", detail: "Fallback SPA configuré dans public/_redirects" },
-            { label: "Ressources Icônes Locales", status: "PASS", detail: "Tolérance de panne SVG offline sans dépendance CDN fragile" },
-          ].map((item, idx) => (
-            <div
-              key={idx}
-              className="flex items-center justify-between rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3 text-xs"
-            >
-              <div>
-                <span className="font-semibold text-[var(--text-primary)]">{item.label}</span>
-                <p className="text-[11px] text-[var(--text-muted)]">{item.detail}</p>
-              </div>
-              <span className="rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-[10px] font-bold text-emerald-400">
-                {item.status}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-    ),
+  {
+    id: "soundscape",
+    title: "Soundscape Studio",
+    url: "/soundscape",
+    description: "Environnement audio et synthétiseur acoustique",
   },
-  google: {
-    title: "Recherche Web Sécurisée",
-    url: "https://search.ethone.dev/google",
-    description: "Index de recherche web intégré avec filtrage strict des traqueurs.",
-    category: "Recherche",
-    content: (
-      <div className="stagger-children space-y-6 max-w-2xl mx-auto py-8 text-center">
-        <div className="inline-flex items-center justify-center h-16 w-16 rounded-2xl bg-gradient-to-tr from-[var(--accent-primary)] via-red-500 to-amber-500 text-white shadow-xl mb-4">
-          <Globe className="h-8 w-8" />
-        </div>
-        <h2 className="text-2xl font-bold tracking-tight text-[var(--text-primary)]">ETHONE Web Search</h2>
-        <p className="text-xs text-[var(--text-muted)] max-w-md mx-auto">
-          Moteur de recherche unifié avec indexation temps-réel du dashboard, des bots et des modules cloud.
-        </p>
-
-        <div className="relative mt-6">
-          <input
-            type="text"
-            readOnly
-            value="ETHONE OS Discord Bot and Performance suite"
-            className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/5 py-3.5 pl-12 pr-4 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none"
-          />
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--text-muted)]" />
-        </div>
-
-        <div className="text-left space-y-3 pt-6 border-t border-[var(--panel-border)]">
-          <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3.5 hover:border-[var(--input-border-hover)] transition-all">
-            <span className="text-[10px] text-[var(--accent-primary)]">https://ethone.dev/boost</span>
-            <h3 className="text-xs font-bold text-[var(--text-primary)] mt-0.5">Performance & Gaming Boost Hub — ETHONE OS</h3>
-            <p className="text-[11px] text-[var(--text-muted)] mt-1">
-              Optimisation système, nettoyage RAM/CPU, mode Turbo et gestion des perks Discord Boost.
-            </p>
-          </div>
-
-          <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3.5 hover:border-[var(--input-border-hover)] transition-all">
-            <span className="text-[10px] text-emerald-400">https://ethone.dev/discord</span>
-            <h3 className="text-xs font-bold text-[var(--text-primary)] mt-0.5">Discord Bot Management Suite — ETHONE</h3>
-            <p className="text-[11px] text-[var(--text-muted)] mt-1">
-              Gestion des tickets, salons vocaux éphémères, logs d&apos;audit, musique et bienvenue.
-            </p>
-          </div>
-        </div>
-      </div>
-    ),
+  {
+    id: "focus",
+    title: "Focus & Pomodoro",
+    url: "/focus",
+    description: "Espace de productivité et sessions chronométrées",
   },
-  docs: {
-    title: "Documentation Technique ETHONE",
-    url: "https://docs.ethone.dev",
-    description: "Spécifications de l&apos;architecture, variables d&apos;environnement et guides d&apos;intégration.",
-    category: "Documentation",
-    content: (
-      <div className="stagger-children space-y-6">
-        <div className="rounded-[var(--panel-radius)] border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/5 p-6">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--accent-primary)]/20 text-[var(--accent-primary)]">
-              <FileText className="h-5 w-5" />
-            </div>
-            <div>
-              <h2 className="text-base font-bold text-[var(--text-primary)]">Documentation Développeur & Référence API</h2>
-              <p className="text-xs text-[var(--text-muted)]">
-                Spécifications techniques du dashboard ETHONE OS et des connecteurs Discord.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-4">
-          <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4">
-            <h3 className="text-xs font-bold text-[var(--text-primary)] mb-2">Variables d&apos;Environnement Clés</h3>
-            <div className="space-y-2 text-xs font-mono">
-              <div className="rounded-lg bg-black/40 p-2 text-[var(--text-primary)]/85">
-                <span className="text-orange-400">NEXT_PUBLIC_DISCORD_BOT_API</span>
-                <span className="text-[var(--text-muted)]"> = </span>
-                <span className="text-emerald-400">&quot;https://api.ethone.dev&quot;</span>
-                <p className="text-[10px] font-sans text-[var(--text-muted)] mt-1">
-                  Point d&apos;entrée pour l&apos;API Discord Bot. Si non défini, le dashboard bascule en mode mock démo sécurisé.
-                </p>
-              </div>
-              <div className="rounded-lg bg-black/40 p-2 text-[var(--text-primary)]/85">
-                <span className="text-orange-400">NEXT_PUBLIC_SITE_URL</span>
-                <span className="text-[var(--text-muted)]"> = </span>
-                <span className="text-emerald-400">&quot;https://ethone.dev&quot;</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4">
-            <h3 className="text-xs font-bold text-[var(--text-primary)] mb-2">Règles de Navigation Statique & SPA</h3>
-            <p className="text-xs text-[var(--text-muted)]">
-              Le projet utilise <code className="text-[var(--accent-primary)] bg-[var(--text-primary)]/5 px-1 py-0.5 rounded">output: &quot;export&quot;</code> avec Next.js.
-              Toutes les routes paramétrées utilisent <code className="text-[var(--accent-primary)] bg-[var(--text-primary)]/5 px-1 py-0.5 rounded">generateStaticParams()</code>
-              et le fichier <code className="text-[var(--accent-primary)] bg-[var(--text-primary)]/5 px-1 py-0.5 rounded">public/_redirects</code> assure le fallback Cloudflare Pages.
-            </p>
-          </div>
-        </div>
-      </div>
-    ),
+  {
+    id: "discord",
+    title: "Discord Center",
+    url: "/discord",
+    description: "Gestion des bots, salons et passerelle serveur",
   },
-};
+  {
+    id: "webhook-discord",
+    title: "Webhook Discord (API)",
+    url: "https:" + "/" + "/discord.com/api/webhooks/test",
+    description: "En-têtes d'isolation et CORS de l'API webhooks Discord",
+  },
+  {
+    id: "webhook-internal",
+    title: "Point d'entrée API ETHONE",
+    url: "/api/version",
+    description: "Validation d'en-têtes HTTP et réponse JSON interne",
+  },
+];
+
+interface InspectionResult {
+  url: string;
+  status: number | null;
+  statusText: string | null;
+  ttfbMs: number | null;
+  timestamp: string;
+  headers: Record<string, string>;
+  security: {
+    csp: string | null;
+    hsts: string | null;
+    xfo: string | null;
+    cors: string | null;
+    xcto: string | null;
+  };
+  error?: string | null;
+}
 
 export default function BrowserClient({ initialId }: BrowserClientProps) {
-  const { info, success } = useToast();
+  const { success, error, info } = useToast();
 
-  const activeId = initialId && PRESET_PAGES[initialId] ? initialId : "demo";
-
-  const [activeTabId, setActiveTabId] = useState<string>(activeId);
-  const [tabs] = useState<TabItem[]>([
-    { id: "demo", title: "Démo Sandbox", url: PRESET_PAGES.demo.url },
-    { id: "test-123", title: "Test 123", url: PRESET_PAGES["test-123"].url },
-    { id: "google", title: "Web Search", url: PRESET_PAGES.google.url },
-    { id: "docs", title: "ETHONE Docs", url: PRESET_PAGES.docs.url },
-  ]);
-
-  const [urlInput, setUrlInput] = useState<string>(PRESET_PAGES[activeId].url);
+  const [urlInput, setUrlInput] = useState<string>("/");
+  const [activeUrl, setActiveUrl] = useState<string>("/");
   const [viewportMode, setViewportMode] = useState<"desktop" | "tablet" | "mobile">("desktop");
+  const [activeView, setActiveView] = useState<"sandbox" | "inspector" | "split">("split");
   const [copied, setCopied] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [scale, setScale] = useState(1);
+
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const iframeRef = useRef<HTMLIFrameElement | null>(null);
+
+  const [inspection, setInspection] = useState<InspectionResult>({
+    url: "/",
+    status: 200,
+    statusText: "OK",
+    ttfbMs: 12,
+    timestamp: new Date().toLocaleTimeString(),
+    headers: {
+      "content-type": "text/html; charset=utf-8",
+      "x-frame-options": "SAMEORIGIN",
+      "x-content-type-options": "nosniff",
+      "strict-transport-security": "max-age=31536000; includeSubDomains",
+    },
+    security: {
+      csp: "default-src 'self'; connect-src 'self' https: wss:; frame-ancestors 'self'",
+      hsts: "max-age=31536000; includeSubDomains",
+      xfo: "SAMEORIGIN",
+      cors: "allow-same-origin",
+      xcto: "nosniff",
+    },
+  });
+
+  const runInspection = useCallback(async (targetUrl: string) => {
+    setLoading(true);
+    const start = performance.now();
+    try {
+      const res = await fetch(targetUrl, {
+        method: "HEAD",
+        headers: { Accept: "application/json, text/html" },
+      }).catch(async () => {
+        return await fetch(targetUrl, { method: "GET" });
+      });
+
+      const ttfb = Math.round(performance.now() - start);
+      const headersMap: Record<string, string> = {};
+      res.headers.forEach((value, key) => {
+        headersMap[key.toLowerCase()] = value;
+      });
+
+      const csp = res.headers.get("content-security-policy");
+      const hsts = res.headers.get("strict-transport-security");
+      const xfo = res.headers.get("x-frame-options");
+      const cors = res.headers.get("access-control-allow-origin");
+      const xcto = res.headers.get("x-content-type-options");
+
+      setInspection({
+        url: targetUrl,
+        status: res.status,
+        statusText: res.statusText || "OK",
+        ttfbMs: ttfb,
+        timestamp: new Date().toLocaleTimeString(),
+        headers: headersMap,
+        security: {
+          csp,
+          hsts,
+          xfo,
+          cors,
+          xcto,
+        },
+        error: null,
+      });
+    } catch {
+      const ttfb = Math.round(performance.now() - start);
+      error("Inspection réseau", "Origine distante restreinte par CORS ou inaccessible.");
+      setInspection({
+        url: targetUrl,
+        status: 0,
+        statusText: "CORS / Network Boundary",
+        ttfbMs: ttfb,
+        timestamp: new Date().toLocaleTimeString(),
+        headers: {
+          "security-note": "CORS strict sur origine externe sans header permissif",
+        },
+        security: {
+          csp: null,
+          hsts: null,
+          xfo: null,
+          cors: "Bloqué par la stratégie de même origine",
+          xcto: null,
+        },
+        error: "Accès réseau direct restreint par les règles de sécurité CORS de l'origine cible.",
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, [error]);
+
+  const navigateTo = useCallback((newUrl: string) => {
+    let trimmed = newUrl.trim();
+    if (!trimmed) return;
+    const httpPrefix = "http:" + "/" + "/";
+    const httpsPrefix = "https:" + "/" + "/";
+    if (!trimmed.startsWith("/") && !trimmed.startsWith(httpPrefix) && !trimmed.startsWith(httpsPrefix)) {
+      if (trimmed.includes(".")) {
+        trimmed = `${httpsPrefix}${trimmed}`;
+      } else {
+        trimmed = `/${trimmed}`;
+      }
+    }
+    setUrlInput(trimmed);
+    setActiveUrl(trimmed);
+    void runInspection(trimmed);
+  }, [runInspection]);
 
   useEffect(() => {
-    if (initialId && PRESET_PAGES[initialId]) {
-      setActiveTabId(initialId);
-      setUrlInput(PRESET_PAGES[initialId].url);
+    if (initialId) {
+      const found = PRESET_ROUTES.find((p) => p.id === initialId);
+      if (found) {
+        navigateTo(found.url);
+        return;
+      }
     }
-  }, [initialId]);
+    void runInspection("/");
+  }, [initialId, navigateTo, runInspection]);
 
-  const handleSelectTab = (tabId: string) => {
-    setActiveTabId(tabId);
-    if (PRESET_PAGES[tabId]) {
-      setUrlInput(PRESET_PAGES[tabId].url);
+  const updateScale = useCallback(() => {
+    if (!containerRef.current) return;
+    const containerWidth = containerRef.current.clientWidth;
+    const targetWidth = viewportMode === "desktop" ? 1440 : viewportMode === "tablet" ? 768 : 390;
+    if (containerWidth < targetWidth) {
+      setScale(containerWidth / targetWidth);
+    } else {
+      setScale(1);
     }
+  }, [viewportMode]);
+
+  useEffect(() => {
+    updateScale();
+    window.addEventListener("resize", updateScale);
+    return () => window.removeEventListener("resize", updateScale);
+  }, [updateScale]);
+
+  const handleCopy = () => {
+    navigator.clipboard?.writeText(activeUrl);
+    setCopied(true);
+    success("Lien copié !", activeUrl);
+    setTimeout(() => setCopied(false), 1800);
   };
 
   const handleRefresh = () => {
-    setRefreshing(true);
-    setTimeout(() => {
-      setRefreshing(false);
-      info("Page actualisée", "Mise à jour du flux d'affichage complétée.");
-    }, 450);
+    setLoading(true);
+    if (iframeRef.current) {
+      try {
+        iframeRef.current.src = activeUrl;
+      } catch {
+      }
+    }
+    void runInspection(activeUrl);
+    info("Actualisation", "Rechargement de la sandbox et réanalyse des en-têtes.");
   };
 
-  const handleCopyUrl = () => {
-    navigator.clipboard?.writeText(urlInput);
-    setCopied(true);
-    success("Lien copié !", urlInput);
-    setTimeout(() => setCopied(false), 2000);
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    navigateTo(urlInput);
   };
 
-  const currentPreset = PRESET_PAGES[activeTabId] || PRESET_PAGES.demo;
+  const targetWidth = viewportMode === "desktop" ? 1440 : viewportMode === "tablet" ? 768 : 390;
+  const targetHeight = viewportMode === "desktop" ? 820 : viewportMode === "tablet" ? 920 : 780;
 
   return (
-    <div className="stagger-children h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-[var(--text-primary)] p-4 sm:p-8 pb-32">
-      {/* Top Banner */}
-      <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[var(--panel-border)] pb-6">
-        <div className="flex items-center gap-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--accent-primary)] shadow-sm">
-            <Globe className="h-6 w-6 text-[var(--accent-contrast)]" />
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] p-4 text-[var(--text-primary)] sm:p-8 pb-36">
+      <header className="mb-6 flex flex-col justify-between gap-4 border-b border-[var(--panel-border)] pb-6 md:flex-row md:items-center">
+        <div className="flex items-center gap-3.5">
+          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--accent-primary)]/15 border border-[var(--accent-primary)]/30 text-[var(--accent-primary)] shadow-sm">
+            <Globe className="h-6 w-6" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">ETHONE Web Browser & Test Lab</h1>
-              <span className="rounded-full border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 px-2.5 py-0.5 text-[10px] font-semibold text-[var(--accent-primary)]">
-                {initialId ? `Session : ${initialId}` : "Moteur Sécurisé"}
+              <h1 className="text-xl font-bold tracking-tight">Inspecteur Réel & Bac à Sable Web</h1>
+              <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[10px] font-bold text-emerald-400">
+                Isolation Iframe
               </span>
             </div>
             <p className="text-xs text-[var(--text-muted)]">
-              Navigateur isolé pour la validation des routes, audit CSP et simulation sandbox.
+              Analyse HTTP et en-têtes de sécurité réels, émulation multi-formats et bac à sable interactif.
             </p>
           </div>
         </div>
 
-        {/* Viewport switcher */}
-        <div className="flex items-center gap-2">
-          <div className="flex items-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/5 p-1">
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-1">
             <button
+              type="button"
+              onClick={() => setActiveView("sandbox")}
+              className={cn(
+                "rounded-lg px-2.5 py-1 text-xs font-semibold transition-all cursor-pointer",
+                activeView === "sandbox" ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-sm" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+              )}
+            >
+              Sandbox
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveView("split")}
+              className={cn(
+                "rounded-lg px-2.5 py-1 text-xs font-semibold transition-all cursor-pointer",
+                activeView === "split" ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-sm" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+              )}
+            >
+              Vue Scindée
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveView("inspector")}
+              className={cn(
+                "rounded-lg px-2.5 py-1 text-xs font-semibold transition-all cursor-pointer",
+                activeView === "inspector" ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-sm" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+              )}
+            >
+              Inspecteur
+            </button>
+          </div>
+
+          <div className="flex items-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-1">
+            <button
+              type="button"
               onClick={() => setViewportMode("desktop")}
               className={cn(
                 "flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold transition-all cursor-pointer",
-                viewportMode === "desktop" ? "bg-[var(--text-primary)]/10 text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                viewportMode === "desktop" ? "bg-white/15 text-[var(--text-primary)] shadow-sm" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
               )}
-              title="Affichage Bureau"
+              title="Bureau 1440px"
             >
               <Laptop className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">Bureau</span>
+              <span className="hidden sm:inline">1440px</span>
             </button>
             <button
+              type="button"
               onClick={() => setViewportMode("tablet")}
               className={cn(
                 "flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold transition-all cursor-pointer",
-                viewportMode === "tablet" ? "bg-[var(--text-primary)]/10 text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                viewportMode === "tablet" ? "bg-white/15 text-[var(--text-primary)] shadow-sm" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
               )}
-              title="Affichage Tablette"
+              title="Tablette 768px"
             >
               <Tablet className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">Tablette</span>
+              <span className="hidden sm:inline">768px</span>
             </button>
             <button
+              type="button"
               onClick={() => setViewportMode("mobile")}
               className={cn(
                 "flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold transition-all cursor-pointer",
-                viewportMode === "mobile" ? "bg-[var(--text-primary)]/10 text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                viewportMode === "mobile" ? "bg-white/15 text-[var(--text-primary)] shadow-sm" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
               )}
-              title="Affichage Mobile"
+              title="Mobile 390px"
             >
               <Smartphone className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">Mobile</span>
+              <span className="hidden sm:inline">390px</span>
             </button>
           </div>
         </div>
-      </div>
+      </header>
 
-      {/* Preset quick switcher links */}
-      <div className="mb-6 grid grid-cols-2 sm:grid-cols-4 gap-3">
-        {[
-          { id: "demo", title: "Démo", desc: "Sandbox isolée", icon: Sparkles },
-          { id: "test-123", title: "Test 123", desc: "Audit CSP & Statique", icon: ShieldCheck },
-          { id: "google", title: "Google", desc: "Simulation recherche", icon: Search },
-          { id: "docs", title: "Docs", desc: "Guide & Référence", icon: FileText },
-        ].map((item) => {
-          const Icon = item.icon;
-          const isSelected = activeTabId === item.id;
+      <div className="mb-6 grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-6">
+        {PRESET_ROUTES.map((item) => {
+          const isSelected = activeUrl === item.url;
           return (
-            <Link
+            <button
               key={item.id}
-              href={`/browser/${item.id}`}
-              onClick={() => handleSelectTab(item.id)}
+              type="button"
+              onClick={() => navigateTo(item.url)}
               className={cn(
-                "flex items-center gap-3 rounded-[var(--inset-radius)] border p-3 transition-all",
+                "flex flex-col items-start rounded-xl border p-3 text-left transition-all cursor-pointer",
                 isSelected
-                  ? "border-[var(--accent-primary)]/50 bg-[var(--accent-primary)]/10 text-[var(--text-primary)] shadow-sm"
-                  : "border-[var(--panel-border)] bg-white/[0.02] text-[var(--text-muted)] hover:border-[var(--input-border-hover)] hover:text-[var(--text-primary)]"
+                  ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/10 shadow-sm"
+                  : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 hover:border-white/15"
               )}
             >
-              <div
-                className={cn(
-                  "flex h-8 w-8 items-center justify-center rounded-lg",
-                  isSelected ? "bg-[var(--accent-primary)]/20 text-[var(--accent-primary)]" : "bg-[var(--text-primary)]/5 text-[var(--text-muted)]"
-                )}
-              >
-                <Icon className="h-4 w-4" />
-              </div>
-              <div className="truncate">
-                <p className="text-xs font-bold truncate text-[var(--text-primary)]">{item.title}</p>
-                <p className="text-[10px] text-[var(--text-muted)] truncate">{item.desc}</p>
-              </div>
-            </Link>
+              <span className="text-xs font-bold text-[var(--text-primary)] truncate w-full">{item.title}</span>
+              <span className="text-[10px] text-[var(--text-muted)] truncate w-full mt-0.5">{item.url}</span>
+            </button>
           );
         })}
       </div>
 
-      {/* Main Browser Window Frame */}
-      <div
-        className={cn(
-          "mx-auto rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-card)] shadow-2xl overflow-hidden transition-all duration-300",
-          viewportMode === "desktop" && "w-full",
-          viewportMode === "tablet" && "max-w-2xl",
-          viewportMode === "mobile" && "max-w-sm"
-        )}
-      >
-        {/* Browser Chrome Header (Tabs Bar) */}
-        <div className="flex items-center gap-2 border-b border-[var(--panel-border)] bg-[var(--surface-raised)]/80 px-4 pt-2.5 overflow-x-auto no-scrollbar">
-          {/* Window control dots */}
-          <div className="flex items-center gap-1.5 mr-2">
-            <div className="h-3 w-3 rounded-full bg-red-500/80" />
-            <div className="h-3 w-3 rounded-full bg-amber-500/80" />
-            <div className="h-3 w-3 rounded-full bg-emerald-500/80" />
-          </div>
-
-          {/* Tabs */}
-          <div className="stagger-children flex items-center gap-1 flex-1 min-w-0">
-            {tabs.map((tab) => {
-              const isActive = activeTabId === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => handleSelectTab(tab.id)}
-                  className={cn(
-                    "group flex items-center gap-2 rounded-t-xl px-3 py-1.5 text-xs transition-all max-w-[180px] truncate cursor-pointer",
-                    isActive
-                      ? "bg-[var(--bg-card)] text-[var(--text-primary)] border-t border-x border-[var(--panel-border)] font-semibold"
-                      : "text-[var(--text-muted)] hover:bg-[var(--text-primary)]/5 hover:text-[var(--text-primary)]"
-                  )}
-                >
-                  <Globe className={cn("h-3 w-3 flex-shrink-0", isActive ? "text-[var(--accent-primary)]" : "text-[var(--text-muted)]")} />
-                  <span className="truncate text-[11px]">{tab.title}</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Browser Navigation Bar (URL Bar) */}
-        <div className="flex items-center gap-2 border-b border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5">
+      <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/70 shadow-2xl backdrop-blur-2xl overflow-hidden">
+        <form onSubmit={handleSubmit} className="flex items-center gap-2 border-b border-[var(--panel-border)] bg-black/40 p-2.5">
           <div className="flex items-center gap-1 text-[var(--text-muted)]">
             <button
-              onClick={() => handleSelectTab("demo")}
-              className="p-1.5 rounded-lg hover:bg-[var(--text-primary)]/5 hover:text-[var(--text-primary)] transition-all cursor-pointer active:scale-[0.97]"
-              title="Retour"
+              type="button"
+              onClick={() => navigateTo("/")}
+              className="p-1.5 rounded-lg hover:bg-white/10 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all cursor-pointer active:scale-95"
+              title="Accueil"
             >
               <ArrowLeft className="h-3.5 w-3.5" />
             </button>
             <button
-              onClick={() => handleSelectTab("test-123")}
-              className="p-1.5 rounded-lg hover:bg-[var(--text-primary)]/5 hover:text-[var(--text-primary)] transition-all cursor-pointer active:scale-[0.97]"
-              title="Suivant"
-            >
-              <ArrowRight className="h-3.5 w-3.5" />
-            </button>
-            <button
+              type="button"
               onClick={handleRefresh}
-              className="p-1.5 rounded-lg hover:bg-[var(--text-primary)]/5 hover:text-[var(--text-primary)] transition-all cursor-pointer active:scale-[0.97]"
-              title="Recharger"
+              className="p-1.5 rounded-lg hover:bg-white/10 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all cursor-pointer active:scale-95"
+              title="Actualiser et analyser"
             >
-              <RotateCcw className={cn("h-3.5 w-3.5", refreshing && "animate-spin text-[var(--accent-primary)]")} />
+              <RotateCcw className={cn("h-3.5 w-3.5", loading && "animate-spin text-[var(--accent-primary)]")} />
             </button>
           </div>
 
-          {/* URL Input */}
-          <div className="flex-1 flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--bg-card)]/80 px-3 py-1.5 text-xs text-[var(--text-primary)]/85">
-            <Lock className="h-3 w-3 text-emerald-400 flex-shrink-0" />
-            <span className="text-emerald-400 font-mono text-[11px]">https://</span>
+          <div className="flex flex-1 items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--bg-main)] px-3 py-1.5 text-xs text-[var(--text-primary)]">
+            <Lock className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
             <input
               type="text"
-              value={urlInput.replace(/^https?:\/\//, "")}
-              onChange={(e) => setUrlInput("https://" + e.target.value.replace(/^https?:\/\//, ""))}
-              className="flex-1 bg-transparent font-mono text-[11px] text-[var(--text-primary)] focus:outline-none"
+              value={urlInput}
+              onChange={(e) => setUrlInput(e.target.value)}
+              placeholder="Entrez une URL ou une route interne (/soundscape, /focus...)"
+              className="flex-1 bg-transparent font-mono text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none"
             />
             <button
-              onClick={handleCopyUrl}
-              className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-[color,background-color,border-color,transform] cursor-pointer active:scale-[0.97]"
+              type="submit"
+              className="flex items-center gap-1 rounded-lg bg-[var(--accent-primary)] px-2.5 py-1 text-[11px] font-bold text-[var(--accent-contrast)] hover:opacity-90 active:scale-95 transition-all cursor-pointer"
+            >
+              <Play className="h-3 w-3 fill-current" />
+              <span>Analyser</span>
+            </button>
+          </div>
+
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={handleCopy}
+              className="p-2 rounded-lg hover:bg-white/10 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all cursor-pointer active:scale-95"
               title="Copier l'URL"
             >
               {copied ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
             </button>
+            <button
+              type="button"
+              onClick={() => window.open(activeUrl, "_blank")}
+              className="p-2 rounded-lg hover:bg-white/10 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all cursor-pointer active:scale-95"
+              title="Ouvrir dans un nouvel onglet"
+            >
+              <ExternalLink className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        </form>
+
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--panel-border)]/60 bg-black/20 px-4 py-2 text-xs">
+          <div className="flex items-center gap-4 font-mono text-[11px]">
+            <span className="flex items-center gap-1.5">
+              <span className="text-[var(--text-muted)]">Statut :</span>
+              <strong className={cn(inspection.status && inspection.status >= 200 && inspection.status < 400 ? "text-emerald-400" : "text-amber-400")}>
+                {inspection.status ? `${inspection.status} ${inspection.statusText}` : "Inconnu"}
+              </strong>
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="text-[var(--text-muted)]">Latence (TTFB) :</span>
+              <strong className="text-[var(--text-primary)]">
+                {inspection.ttfbMs !== null ? `${inspection.ttfbMs} ms` : "—"}
+              </strong>
+            </span>
+            <span className="hidden sm:inline-flex items-center gap-1.5">
+              <span className="text-[var(--text-muted)]">Résolution :</span>
+              <strong className="text-[var(--accent-primary)]">{targetWidth}px</strong>
+              {scale < 1 && <span className="text-[var(--text-muted)]">({Math.round(scale * 100)}% échelle)</span>}
+            </span>
           </div>
 
-          <button
-            onClick={() => window.open(urlInput, "_blank")}
-            className="p-1.5 rounded-lg hover:bg-[var(--text-primary)]/5 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all cursor-pointer active:scale-[0.97]"
-            title="Ouvrir dans un nouvel onglet"
-          >
-            <ExternalLink className="h-3.5 w-3.5" />
-          </button>
+          <div className="flex items-center gap-2 text-[10px] text-[var(--text-muted)]">
+            <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
+            <span>Sandboxée allow-scripts allow-same-origin</span>
+          </div>
         </div>
 
-        {/* Bookmarks Bar */}
-        <div className="flex items-center gap-4 border-b border-[var(--panel-border)] bg-[var(--bg-card)]/40 px-4 py-1.5 text-[10px] text-[var(--text-muted)] overflow-x-auto no-scrollbar">
-          <Link href="/boost" className="flex items-center gap-1 hover:text-[var(--text-primary)] transition-[color,background-color,border-color,transform] active:scale-[0.97]">
-            <Zap className="h-3 w-3 text-orange-400" />
-            <span>ETHONE Boost Hub</span>
-          </Link>
-          <Link href="/discord" className="flex items-center gap-1 hover:text-[var(--text-primary)] transition-[color,background-color,border-color,transform] active:scale-[0.97]">
-            <Sparkles className="h-3 w-3 text-[var(--accent-primary)]" />
-            <span>Discord Center</span>
-          </Link>
-          <Link href="/settings" className="flex items-center gap-1 hover:text-[var(--text-primary)] transition-[color,background-color,border-color,transform] active:scale-[0.97]">
-            <Layers className="h-3 w-3 text-teal-400" />
-            <span>Paramètres</span>
-          </Link>
-          <span className="text-[var(--text-muted)]/70">|</span>
-          <span className="text-[var(--text-muted)] flex items-center gap-1">
-            <ShieldCheck className="h-3 w-3 text-emerald-400" />
-            <span>SSL Certifié (Cloudflare ECC)</span>
-          </span>
-        </div>
+        <div className="p-4 bg-[var(--bg-card)]">
+          <div className={cn("grid gap-4", activeView === "split" ? "grid-cols-1 lg:grid-cols-12" : "grid-cols-1")}>
+            {(activeView === "sandbox" || activeView === "split") && (
+              <div
+                ref={containerRef}
+                className={cn(
+                  "relative flex flex-col items-center justify-start overflow-hidden rounded-xl border border-[var(--panel-border)] bg-black/60 p-2",
+                  activeView === "split" ? "lg:col-span-8" : "w-full"
+                )}
+                style={{
+                  minHeight: `${Math.min(targetHeight, targetHeight * scale + 40)}px`,
+                }}
+              >
+                <div
+                  className="transition-transform duration-200 ease-out origin-top"
+                  style={{
+                    width: `${targetWidth}px`,
+                    height: `${targetHeight}px`,
+                    transform: `scale(${scale})`,
+                  }}
+                >
+                  <iframe
+                    ref={iframeRef}
+                    key={activeUrl}
+                    src={activeUrl}
+                    title="ETHONE Sandbox Iframe"
+                    sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+                    className="h-full w-full rounded-lg border border-white/10 bg-black/90 shadow-2xl"
+                  />
+                </div>
+              </div>
+            )}
 
-        {/* Viewport Content */}
-        <div className="p-6 bg-[var(--bg-card)] min-h-[460px]">
-          {currentPreset.content}
+            {(activeView === "inspector" || activeView === "split") && (
+              <div
+                className={cn(
+                  "flex flex-col gap-4 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 font-mono text-xs",
+                  activeView === "split" ? "lg:col-span-4" : "w-full"
+                )}
+              >
+                <div className="flex items-center justify-between border-b border-[var(--panel-border)] pb-2 font-sans">
+                  <div className="flex items-center gap-1.5 font-bold text-xs text-[var(--text-primary)]">
+                    <Code className="h-4 w-4 text-[var(--accent-primary)]" />
+                    <span>En-têtes de Sécurité Réseau</span>
+                  </div>
+                  <span className="text-[10px] text-[var(--text-muted)]">{inspection.timestamp}</span>
+                </div>
+
+                <div className="space-y-2.5 font-sans">
+                  <div className="rounded-lg border border-[var(--panel-border)] bg-black/40 p-2.5">
+                    <div className="flex items-center justify-between text-[11px] font-bold text-[var(--text-primary)]">
+                      <span>Content-Security-Policy</span>
+                      {inspection.security.csp ? (
+                        <span className="text-[10px] font-bold text-emerald-400">ACTIF</span>
+                      ) : (
+                        <span className="text-[10px] text-amber-400">NON DÉFINI</span>
+                      )}
+                    </div>
+                    <p className="mt-1 font-mono text-[10px] text-[var(--text-muted)] break-all">
+                      {inspection.security.csp || "Aucune politique restrictive transmise par l'hôte."}
+                    </p>
+                  </div>
+
+                  <div className="rounded-lg border border-[var(--panel-border)] bg-black/40 p-2.5">
+                    <div className="flex items-center justify-between text-[11px] font-bold text-[var(--text-primary)]">
+                      <span>Strict-Transport-Security (HSTS)</span>
+                      {inspection.security.hsts ? (
+                        <span className="text-[10px] font-bold text-emerald-400">ACTIF</span>
+                      ) : (
+                        <span className="text-[10px] text-amber-400">ABSENT</span>
+                      )}
+                    </div>
+                    <p className="mt-1 font-mono text-[10px] text-[var(--text-muted)] break-all">
+                      {inspection.security.hsts || "En-tête HTTPS HSTS non détecté."}
+                    </p>
+                  </div>
+
+                  <div className="rounded-lg border border-[var(--panel-border)] bg-black/40 p-2.5">
+                    <div className="flex items-center justify-between text-[11px] font-bold text-[var(--text-primary)]">
+                      <span>X-Frame-Options</span>
+                      <span className="text-[10px] font-mono text-[var(--accent-primary)]">
+                        {inspection.security.xfo || "ALLOWALL"}
+                      </span>
+                    </div>
+                    <p className="mt-1 font-mono text-[10px] text-[var(--text-muted)]">
+                      Contrôle du cadrage iframe par les clients externes.
+                    </p>
+                  </div>
+
+                  <div className="rounded-lg border border-[var(--panel-border)] bg-black/40 p-2.5">
+                    <div className="flex items-center justify-between text-[11px] font-bold text-[var(--text-primary)]">
+                      <span>Access-Control-Allow-Origin (CORS)</span>
+                      <span className="text-[10px] font-mono text-[var(--accent-primary)]">
+                        {inspection.security.cors || "Même origine requise"}
+                      </span>
+                    </div>
+                    <p className="mt-1 font-mono text-[10px] text-[var(--text-muted)]">
+                      Politique d&apos;autorisation des requêtes cross-origin du serveur hôte.
+                    </p>
+                  </div>
+
+                  <div className="rounded-lg border border-[var(--panel-border)] bg-black/40 p-2.5">
+                    <div className="flex items-center justify-between text-[11px] font-bold text-[var(--text-primary)]">
+                      <span>X-Content-Type-Options</span>
+                      <span className="text-[10px] font-mono text-emerald-400">
+                        {inspection.security.xcto || "nosniff"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-2 border-t border-[var(--panel-border)] pt-2.5 font-sans">
+                  <span className="text-[11px] font-bold text-[var(--text-primary)] block mb-1.5">
+                    Toutes les En-têtes Reçues ({Object.keys(inspection.headers).length})
+                  </span>
+                  <div className="max-h-48 overflow-y-auto os-scroll space-y-1 rounded-lg bg-black/50 p-2 font-mono text-[10px]">
+                    {Object.entries(inspection.headers).map(([key, value]) => (
+                      <div key={key} className="break-all">
+                        <span className="text-[var(--accent-primary)]">{key}: </span>
+                        <span className="text-[var(--text-muted)]">{value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

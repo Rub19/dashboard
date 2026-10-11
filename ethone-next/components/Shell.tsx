@@ -2,8 +2,11 @@
 
 import { type ReactNode } from "react";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowLeft } from "@/components/icons/ph";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowLeft, Minimize2 } from "@/components/icons/ph";
+import { useSettings } from "@/components/SettingsProvider";
 import { WindowManagerProvider } from "@/components/WindowManagerProvider";
 import PresenceProvider from "@/components/PresenceProvider";
 import { ShortcutsProvider } from "@/components/ShortcutsProvider";
@@ -42,6 +45,7 @@ const KeyboardShortcuts = dynamic(() => import("@/components/KeyboardShortcuts")
 
 export default function Shell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const { settings, update } = useSettings();
   const discordFullscreen = pathname === "/discord" || pathname === "/bot" || (pathname?.startsWith("/discord/") ?? false) || (pathname?.startsWith("/bot/") ?? false);
 
   if (discordFullscreen) {
@@ -59,7 +63,7 @@ export default function Shell({ children }: { children: ReactNode }) {
                   <CosmicBackground />
                   <RefreshSpinner />
                   <VisualHaptics />
-                  <a
+                  <Link
                     href="/"
                     onClick={(e) => {
                       try {
@@ -75,7 +79,7 @@ export default function Shell({ children }: { children: ReactNode }) {
                   >
                     <ArrowLeft className="h-4 w-4" />
                     <span className="hidden sm:inline">Retour à ETHONE</span>
-                  </a>
+                  </Link>
                   <PrivacyShield>
                     <main
                       data-v8-main
@@ -149,6 +153,26 @@ export default function Shell({ children }: { children: ReactNode }) {
             <Dock />
             <ShortcutsOverlay />
             <KeyboardShortcuts />
+            <AnimatePresence>
+              {settings.zenMode && (
+                <motion.button
+                  initial={{ opacity: 0, y: -20, scale: 0.92 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -20, scale: 0.92 }}
+                  transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+                  type="button"
+                  onClick={() => update({ zenMode: false })}
+                  className="fixed top-3 right-4 z-[9999] flex items-center gap-2 rounded-full border border-white/15 bg-black/75 px-3.5 py-1.5 text-xs font-semibold text-white shadow-2xl backdrop-blur-xl transition-all hover:bg-black/90 hover:scale-105 active:scale-95 cursor-pointer"
+                  title="Quitter le mode Zen (Échap ou Ctrl+Shift+Z)"
+                >
+                  <Minimize2 className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
+                  <span>Quitter Zen</span>
+                  <kbd className="rounded border border-white/20 bg-white/10 px-1 py-0.2 font-mono text-[9px] text-zinc-300">
+                    Échap
+                  </kbd>
+                </motion.button>
+              )}
+            </AnimatePresence>
           </ShortcutsProvider>
         </PresenceProvider>
       </ContextMenuProvider>

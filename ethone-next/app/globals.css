@@ -2943,21 +2943,47 @@ html {
    ============================================================ */
 
 html[data-zen-mode="true"] [data-v8-rail],
-html[data-zen-mode="true"] header[data-v8-topbar],
+html[data-zen-mode="true"] aside[data-slot="sidebar"] {
+  transform: translateX(-100%) !important;
+  width: 0 !important;
+  min-width: 0 !important;
+  max-width: 0 !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease, width 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+html[data-zen-mode="true"] header[data-v8-topbar] {
+  transform: translateY(-100%) !important;
+  max-height: 0 !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease !important;
+}
+
 html[data-zen-mode="true"] .v8-floating-dock,
 html[data-zen-mode="true"] [data-dock],
 html[data-zen-mode="true"] [data-v8-status-bar],
+html[data-zen-mode="true"] [data-status-bar] {
+  transform: translateY(120%) !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease !important;
+}
+
 html[data-zen-mode="true"] [data-zen-hidden] {
   display: none !important;
 }
 
 html[data-zen-mode="true"] [data-v8-shell] {
   margin-left: 0 !important;
-  transition: none;
+  transition: margin-left 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 html[data-zen-mode="true"] [data-v8-main] {
   padding-bottom: 1.5rem !important;
+  padding-top: 1rem !important;
+  transition: padding 0.35s ease !important;
 }
 
 /* Global icon/control radius */

@@ -16,7 +16,8 @@ export type IslandView =
   | "call"
   | "system"
   | "network"
-  | "battery";
+  | "battery"
+  | "soundscape";
 
 export const ISLAND_VIEW_PRIORITY: Record<IslandView, number> = {
   system: 8,
@@ -25,6 +26,7 @@ export const ISLAND_VIEW_PRIORITY: Record<IslandView, number> = {
   call: 7,
   notification: 6,
   mail: 6,
+  soundscape: 5,
   timer: 5,
   brain: 5,
   spotify: 4,

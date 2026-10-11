@@ -22,6 +22,7 @@ import { OAUTH_APP_CLIENT_IDS } from "@/lib/oauth";
 import { useDynamicIslandStore } from "@/lib/stores/dynamic-island";
 import { useBrainActivityStore } from "@/lib/stores/brain-activity";
 import { useActivityJournal } from "@/lib/hooks/useActivityJournal";
+import { useSound, type SoundAmbient } from "@/lib/sound";
 import { cn } from "@/lib/utils";
 import VolumeSlider from "@/components/VolumeSlider";
 import UploadIslandView from "@/components/UploadIslandView";
@@ -50,6 +51,8 @@ function viewLabel(view: IslandView, i18n: (key: string, fallback?: string) => s
       return i18n("network", "Réseau");
     case "battery":
       return i18n("battery", "Batterie");
+    case "soundscape":
+      return i18n("soundscape", "Ambiance");
     default:
       return "";
   }
@@ -148,6 +151,7 @@ function IslandBubble({
     view === "sync" && !active && "text-[var(--accent-primary)] hover:text-[var(--accent-primary)]",
     view === "upload" && !active && "text-[var(--accent-primary)] hover:text-[var(--accent-primary)]",
     view === "mail" && !active && "text-[var(--accent-primary)] hover:text-[var(--accent-primary)]",
+    view === "soundscape" && !active && "text-emerald-400 hover:text-emerald-300",
   );
 
   const icon =
@@ -169,6 +173,8 @@ function IslandBubble({
       <Icon name="wifi-high" pack="phosphor" className={iconClass} />
     ) : view === "battery" ? (
       <Icon name="battery-charging" pack="phosphor" className={iconClass} />
+    ) : view === "soundscape" ? (
+      <Icon name="waveform" pack="phosphor" className={iconClass} />
     ) : (
       <Icon name="sparkles" pack="phosphor" className={iconClass} />
     );
@@ -221,6 +227,8 @@ function IslandExpandedHeader({
       <Icon name="wifi-high" pack="phosphor" className="h-3.5 w-3.5 text-[var(--info)]" />
     ) : selected === "battery" ? (
       <Icon name="battery-charging" pack="phosphor" className="h-3.5 w-3.5 text-[var(--success)]" />
+    ) : selected === "soundscape" ? (
+      <Icon name="waveform" pack="phosphor" className="h-3.5 w-3.5 text-emerald-400" />
     ) : (
       <Icon name="sparkles" pack="phosphor" className="h-3.5 w-3.5 text-[var(--text-muted)]" />
     );
@@ -310,12 +318,33 @@ export default function DynamicIslandContainer() {
       Boolean(localStorage.getItem("ethone:clientId:spotify")) ||
       settings?.liveNowPlayingSource === "spotify");
 
+  const { ambientSound, ambientLayers, stopAmbient, setAmbientVolume, setAmbientLayerVolume } = useSound();
+  const [soundVolume, setSoundVolume] = useState(70);
+  const activeSoundscapeLayers = useMemo(
+    () => Object.keys(ambientLayers).filter((k) => (ambientLayers[k as SoundAmbient] ?? 0) > 0),
+    [ambientLayers],
+  );
+  const soundscapeActive = ambientSound !== "none" || activeSoundscapeLayers.length > 0;
+
+  const handleSoundVolumeChange = useCallback(
+    (newVol: number) => {
+      setSoundVolume(newVol);
+      setAmbientVolume(newVol);
+      if (ambientSound !== "none") {
+        setAmbientLayerVolume(ambientSound, newVol);
+      }
+      for (const layer of activeSoundscapeLayers) {
+        setAmbientLayerVolume(layer as SoundAmbient, newVol);
+      }
+    },
+    [ambientSound, activeSoundscapeLayers, setAmbientVolume, setAmbientLayerVolume],
+  );
+
   const spotifyActive = settings.islandShowSpotify;
   const pomodoroActive = focus.state.phase !== "idle";
   const brainActive = isThinking;
   const syncActive = syncing || pendingCount > 0;
 
-  // Register / unregister island events from the priority queue.
   useEffect(() => {
     if (npLoading) return;
 
@@ -331,12 +360,9 @@ export default function DynamicIslandContainer() {
     if (syncActive) register({ id: "sync", type: "sync" } as IslandEvent);
     else unregister("sync");
 
-    // Spotify is always registered (standby placeholder when idle/disconnected),
-    // but must never rank below the passive background chores (sync, upload)
-    // or it never becomes the queue's "top" view and silently never shows in
-    // the compact pill. Idle keeps its natural ISLAND_VIEW_PRIORITY (4, same
-    // as before); an actively playing track is bumped above brain/pomodoro so
-    // real playback reliably takes over the compact slot.
+    if (soundscapeActive) register({ id: "soundscape", type: "soundscape" } as IslandEvent);
+    else unregister("soundscape");
+
     if (settings.islandShowSpotify) {
       register({
         id: "spotify",
@@ -346,7 +372,7 @@ export default function DynamicIslandContainer() {
     } else {
       unregister("spotify");
     }
-  }, [brainActive, pomodoroActive, syncActive, nowPlaying?.isPlaying, uploadActive, npLoading, register, unregister, settings.islandShowSpotify, settings.islandShowUploads]);
+  }, [brainActive, pomodoroActive, syncActive, soundscapeActive, nowPlaying?.isPlaying, uploadActive, npLoading, register, unregister, settings.islandShowSpotify, settings.islandShowUploads]);
 
   // Intégrations appareil (données réelles du navigateur, rien d'inventé) : réseau et batterie.
   const [netState, setNetState] = useState<"offline" | "online" | null>(null);
@@ -722,10 +748,26 @@ export default function DynamicIslandContainer() {
             </span>
           </div>
         );
+      case "soundscape": {
+        const soundTitle =
+          ambientSound !== "none"
+            ? ambientSound.charAt(0).toUpperCase() + ambientSound.slice(1)
+            : activeSoundscapeLayers.length > 0
+              ? `${activeSoundscapeLayers.length} ambiance(s)`
+              : i18n("soundscape", "Ambiance");
+        return (
+          <div className={cn(base)}>
+            <Icon name="waveform" pack="phosphor" className="h-3.5 w-3.5 text-emerald-400 animate-pulse" />
+            <span className="text-xs font-medium tabular-nums text-emerald-400">
+              {soundTitle}
+            </span>
+          </div>
+        );
+      }
       default:
         return null;
     }
-  }, [selectedView, top, nowPlaying, focus, i18n, syncing, pendingCount, uploadingCount, completedCount, errorCount, netState, batteryInfo, brainActive, pomodoroActive, selectView, spotifyActive]);
+  }, [selectedView, top, nowPlaying, focus, i18n, syncing, pendingCount, uploadingCount, completedCount, errorCount, netState, batteryInfo, brainActive, pomodoroActive, selectView, spotifyActive, ambientSound, activeSoundscapeLayers]);
 
   // Spotify controls
   const spotifyControl = useCallback(
@@ -1326,6 +1368,60 @@ export default function DynamicIslandContainer() {
                   <p className="text-xs text-[var(--text-muted)]">
                     {batteryInfo?.charging ? i18n("charging", "En charge") : i18n("batteryLowHint", "Batterie faible : pensez à brancher le chargeur.")}
                   </p>
+                </div>
+              </div>
+            </DynamicIslandView>
+
+            <DynamicIslandView id="soundscape" className="w-[min(92vw,280px)] sm:w-[320px]">
+              <div onClick={stopPropagation} className="flex w-full flex-col gap-3 text-center">
+                <IslandExpandedHeader activeViews={activeViews} selected={selectedView ?? "soundscape"} onSelect={selectView} />
+                <div className="flex items-center justify-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400">
+                    <Icon name="waveform" pack="phosphor" className="h-5 w-5 animate-pulse" />
+                  </div>
+                  <div className="text-left">
+                    <p className="text-sm font-semibold text-[var(--text-primary)]">
+                      {ambientSound !== "none"
+                        ? ambientSound.charAt(0).toUpperCase() + ambientSound.slice(1)
+                        : "Ambiance active"}
+                    </p>
+                    <p className="text-xs text-[var(--text-muted)]">
+                      {activeSoundscapeLayers.length > 0
+                        ? `${activeSoundscapeLayers.length} source(s) mixée(s)`
+                        : "Générateur audio naturel"}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 px-1">
+                  <Icon name="speaker-simple-low" pack="phosphor" className="h-3.5 w-3.5 text-[var(--text-muted)] shrink-0" />
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={soundVolume}
+                    onChange={(e) => handleSoundVolumeChange(Number(e.target.value))}
+                    className="h-1.5 w-full cursor-pointer appearance-none rounded-lg bg-[var(--surface-raised)] accent-emerald-400"
+                  />
+                  <span className="min-w-[28px] font-mono text-[10px] text-[var(--text-muted)]">{soundVolume}%</span>
+                </div>
+                <div className="flex items-center justify-center gap-2 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => stopAmbient()}
+                    className="cursor-pointer rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-1.5 text-xs font-semibold text-[var(--danger)] transition-all hover:bg-[var(--danger)]/10 active:scale-[0.97]"
+                  >
+                    Couper
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMode("COMPACT");
+                      router.push("/soundscape");
+                    }}
+                    className="cursor-pointer rounded-lg bg-[var(--accent-primary)] px-3 py-1.5 text-xs font-semibold text-[var(--accent-contrast)] transition-all hover:opacity-90 active:scale-[0.97]"
+                  >
+                    Studio Soundscape
+                  </button>
                 </div>
               </div>
             </DynamicIslandView>

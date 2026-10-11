@@ -50116,5 +50116,66 @@ CHANGELOG_BY_LANG.en.unshift(v1_72_2_en);
 CHANGELOG_BY_LANG.es.unshift(v1_72_2_es);
 CHANGELOG_BY_LANG.de.unshift(v1_72_2_de);
 
+const v1_73_0_fr: ChangelogEntry = {
+  version: "v1.73.0",
+  date: "2026-10-11",
+  title: "Télémétrie Boost, inspecteur Browser Lab, Mode Zen et Command Palette 2.0",
+  items: [
+    "Refonte complète de /boost : sparkline FPS 60s interactive, jauge mémoire V8, stockage/quota réels et détection GPU WebGL",
+    "Refonte de /browser : inspecteur d'URL et webhooks en direct, audit d'en-têtes HTTP de sécurité et bac à sable iframe responsive",
+    "Nouveau Mode Zen immersif (Ctrl+Shift+Z) rétractant la barre latérale, la TopBar et le Dock avec sortie rapide",
+    "Command Palette 2.0 (Ctrl+K) : moteur de calcul arithmétique instantané et commandes directes (/zen, /mute, /focus, /theme)",
+    "Mini-capsule ambiance sonore dans la Dynamic Island avec curseur de volume en direct",
+    "Timeline interactive des incidents de sécurité Discord avec filtrage par sévérité et statut de résolution",
+  ],
+};
+
+const v1_73_0_en: ChangelogEntry = {
+  version: "v1.73.0",
+  date: "2026-10-11",
+  title: "Boost telemetry, Browser Lab inspector, Zen Mode and Command Palette 2.0",
+  items: [
+    "Complete /boost overhaul: interactive 60s FPS sparkline, V8 memory gauge, real storage/quota and WebGL GPU detection",
+    "Complete /browser redesign: live URL and webhook inspector, HTTP security header audit, and responsive sandbox iframe",
+    "New immersive Zen Mode (Ctrl+Shift+Z) hiding chrome with quick floating exit pill",
+    "Command Palette 2.0 (Ctrl+K): instant math evaluation and slash action shortcuts (/zen, /mute, /focus, /theme)",
+    "Ambient soundscape mini-capsule in the Dynamic Island with live volume slider",
+    "Interactive Discord security incident timeline with severity filtering and resolution status",
+  ],
+};
+
+const v1_73_0_es: ChangelogEntry = {
+  version: "v1.73.0",
+  date: "2026-10-11",
+  title: "Telemetría Boost, inspector Browser Lab, Modo Zen y Command Palette 2.0",
+  items: [
+    "Renovación de /boost: sparkline FPS interactivo de 60s, indicador de memoria V8, cuotas reales y GPU WebGL",
+    "Rediseño de /browser: inspector de URLs y webhooks, auditoría de cabeceras HTTP y sandbox iframe adaptable",
+    "Nuevo Modo Zen inmersivo (Ctrl+Shift+Z) que oculta el entorno para concentración total",
+    "Command Palette 2.0 (Ctrl+K): calculadora aritmética instantánea y comandos rápidos (/zen, /mute, /focus)",
+    "Mini-cápsula de sonido ambiental en Dynamic Island con deslizador de volumen",
+    "Timeline interactiva de incidentes de seguridad de Discord con filtros de gravedad",
+  ],
+};
+
+const v1_73_0_de: ChangelogEntry = {
+  version: "v1.73.0",
+  date: "2026-10-11",
+  title: "Boost-Telemetrie, Browser Lab Inspector, Zen-Modus und Command Palette 2.0",
+  items: [
+    "Komplette /boost-Überarbeitung: interaktive 60s FPS-Sparkline, V8-Speicheranzeige, echter Speicher und WebGL-GPU",
+    "Neues /browser-Design: Live-URL- und Webhook-Inspektor, HTTP-Sicherheits-Header und responsive Iframe-Sandbox",
+    "Neuer immersiver Zen-Modus (Ctrl+Shift+Z) zum Ausblenden aller Leisten mit Schnellbeendigung",
+    "Command Palette 2.0 (Ctrl+K): Sofortige Mathe-Berechnung und Direktbefehle (/zen, /mute, /focus, /theme)",
+    "Soundscape-Minikapsel in der Dynamic Island mit Echtzeit-Lautstärkeregler",
+    "Interaktive Discord-Sicherheitsvorfall-Timeline mit Schweregrad-Filterung",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_73_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_73_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_73_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_73_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

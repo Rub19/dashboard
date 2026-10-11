@@ -87,6 +87,11 @@ export default function KeyboardShortcuts() {
           haptics.trigger(12);
           handled = true;
         }
+        if (settings.zenMode) {
+          update({ zenMode: false });
+          haptics.trigger(12);
+          handled = true;
+        }
         window.dispatchEvent(new CustomEvent("v8:request-close-drawer"));
         if (handled) {
           event.preventDefault();
@@ -96,7 +101,6 @@ export default function KeyboardShortcuts() {
 
       if (isEditable(event.target)) return;
 
-      // Ctrl/Cmd + 1-9 global navigation hotkeys.
       if ((event.ctrlKey || event.metaKey) && !event.altKey && /^[1-9]$/.test(event.key)) {
         const hotkey = NAV_HOTKEYS.find((h) => h.digit === Number(event.key));
         if (hotkey) {
@@ -107,9 +111,14 @@ export default function KeyboardShortcuts() {
         }
       }
 
-      // Ctrl/Cmd + Shift + letter creation shortcuts.
       if ((event.ctrlKey || event.metaKey) && event.shiftKey && !event.altKey) {
         const key = event.key.toLowerCase();
+        if (key === "z") {
+          event.preventDefault();
+          haptics.trigger(12);
+          update({ zenMode: !settings.zenMode });
+          return;
+        }
         if (key === "n") { event.preventDefault(); haptics.trigger(8); router.push("/notes"); return; }
         if (key === "t") { event.preventDefault(); haptics.trigger(8); router.push("/tasks"); return; }
         if (key === "e") { event.preventDefault(); haptics.trigger(8); router.push("/calendar"); return; }
@@ -168,7 +177,7 @@ export default function KeyboardShortcuts() {
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [router, pathname, settings.dockItems, settings.layoutPreset, update, toggleMissionControl, missionControl, setMissionControl, haptics, shortcuts]);
+  }, [router, pathname, settings.dockItems, settings.layoutPreset, settings.zenMode, update, toggleMissionControl, missionControl, setMissionControl, haptics, shortcuts]);
 
   return null;
 }

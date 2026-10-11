@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.70.1 — 2026-10-11
+
+**Réglages : Ctrl K et annulation**
+
+- Dans les Réglages, Ctrl K n'ouvre plus la palette générale en même temps que la recherche des réglages.
+- Ctrl Z dans un champ texte annule la frappe, sans annuler un réglage.
+
 ## v1.70.0 — 2026-10-11
 
 **Réglages refaits de zéro**

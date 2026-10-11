@@ -1,5 +1,14 @@
 [
   {
+    "version": "v1.70.1",
+    "date": "2026-10-11",
+    "title": "Réglages : Ctrl K et annulation",
+    "items": [
+      "Dans les Réglages, Ctrl K n'ouvre plus la palette générale en même temps que la recherche des réglages.",
+      "Ctrl Z dans un champ texte annule la frappe, sans annuler un réglage."
+    ]
+  },
+  {
     "version": "v1.70.0",
     "date": "2026-10-11",
     "title": "Réglages refaits de zéro",
@@ -633,17 +642,6 @@
       "Filtres interactifs par catégorie, détection des vulnérabilités anti-nuke et 2FA, avec raccourcis de configuration directe",
       "Scan automatique programmable avec choix de salon cible et fréquence quotidienne ou hebdomadaire",
       "Section accordéon des points solides et conformités sécuritaires vérifiées sur le serveur"
-    ]
-  },
-  {
-    "version": "v1.55.64",
-    "date": "2026-10-07",
-    "title": "Bouton Thème Intuitif & Support Multilingue Discord (FR, EN, ES, DE)",
-    "items": [
-      "Bouton de thème repensé avec icône intuitive (Lune en mode sombre, Soleil en mode clair) et adaptation des contrastes",
-      "Élimination des classes sombres codées en dur pour un mode clair éclatant sur l'ensemble du hub Discord et l'assistant",
-      "Sélecteur de langue avec menu déroulant élégant supportant 4 langues : Français, Anglais, Espagnol et Allemand",
-      "Traductions complètes et dynamiques du hub Discord dans les 4 langues (navigation, vue d'ensemble, configurateur et installation)"
     ]
   }
 ]

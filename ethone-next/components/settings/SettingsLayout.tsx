@@ -150,12 +150,17 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
       const isMac = navigator.platform.toLowerCase().includes("mac");
       const ctrl = e.ctrlKey || e.metaKey;
       const k = e.key.toLowerCase();
+      const typing = e.target instanceof HTMLElement && (e.target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName));
       if (ctrl && k === "k") {
+        // Sur cette page, Ctrl K ouvre la recherche des réglages, pas la palette générale du site.
         e.preventDefault();
+        e.stopPropagation();
         setPaletteOpen(true);
       } else if (ctrl && k === "s") {
         e.preventDefault();
         void handleSave();
+      } else if (typing) {
+        return;
       } else if (ctrl && !e.shiftKey && k === "z") {
         e.preventDefault();
         form.undo();
@@ -164,8 +169,8 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
         form.redo();
       }
     }
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
+    window.addEventListener("keydown", onKeyDown, true);
+    return () => window.removeEventListener("keydown", onKeyDown, true);
   }, [form, handleSave]);
 
   // Résultats de la recherche : lus dans la page, qui affiche toutes les catégories filtrées pendant la saisie.

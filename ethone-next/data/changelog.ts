@@ -49634,5 +49634,50 @@ CHANGELOG_BY_LANG.en.unshift(v1_70_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_70_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_70_0_de);
 
+const v1_70_1_fr: ChangelogEntry = {
+  version: "v1.70.1",
+  date: "2026-10-11",
+  title: "Réglages : Ctrl K et annulation",
+  items: [
+    "Dans les Réglages, Ctrl K n'ouvre plus la palette générale en même temps que la recherche des réglages.",
+    "Ctrl Z dans un champ texte annule la frappe, sans annuler un réglage.",
+  ],
+};
+
+const v1_70_1_en: ChangelogEntry = {
+  version: "v1.70.1",
+  date: "2026-10-11",
+  title: "Settings: Ctrl K and undo",
+  items: [
+    "In Settings, Ctrl K no longer opens the global palette on top of the settings search.",
+    "Ctrl Z inside a text field undoes typing, not a setting.",
+  ],
+};
+
+const v1_70_1_es: ChangelogEntry = {
+  version: "v1.70.1",
+  date: "2026-10-11",
+  title: "Ajustes: Ctrl K y deshacer",
+  items: [
+    "En Ajustes, Ctrl K ya no abre la paleta general a la vez.",
+    "Ctrl Z en un campo de texto deshace la escritura, no un ajuste.",
+  ],
+};
+
+const v1_70_1_de: ChangelogEntry = {
+  version: "v1.70.1",
+  date: "2026-10-11",
+  title: "Einstellungen: Strg K und Rückgängig",
+  items: [
+    "In den Einstellungen öffnet Strg K nicht mehr zusätzlich die globale Palette.",
+    "Strg Z in einem Textfeld macht die Eingabe rückgängig, nicht eine Einstellung.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_70_1_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_70_1_en);
+CHANGELOG_BY_LANG.es.unshift(v1_70_1_es);
+CHANGELOG_BY_LANG.de.unshift(v1_70_1_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

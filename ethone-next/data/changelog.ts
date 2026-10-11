@@ -49859,5 +49859,54 @@ CHANGELOG_BY_LANG.en.unshift(v1_71_1_en);
 CHANGELOG_BY_LANG.es.unshift(v1_71_1_es);
 CHANGELOG_BY_LANG.de.unshift(v1_71_1_de);
 
+const v1_71_2_fr: ChangelogEntry = {
+  version: "v1.71.2",
+  date: "2026-10-11",
+  title: "Dock et Dynamic Island plus beaux",
+  items: [
+    "Dynamic Island (musique) : plus épurée, grande pochette, gros bouton lecture blanc entouré de précédent / suivant, volume en dessous.",
+    "Dock : verre aux couleurs du thème, boutons arrondis et bouton actif teinté de la couleur d'accent ; bulles d'aide aux couleurs du thème.",
+    "Musique du dock : bouton lecture plus grand.",
+  ],
+};
+
+const v1_71_2_en: ChangelogEntry = {
+  version: "v1.71.2",
+  date: "2026-10-11",
+  title: "Nicer dock and Dynamic Island",
+  items: [
+    "Dynamic Island (music): cleaner, large artwork, big white play button between previous / next, volume below.",
+    "Dock: themed glass, rounded buttons and accent-tinted active button.",
+    "Dock music: bigger play button.",
+  ],
+};
+
+const v1_71_2_es: ChangelogEntry = {
+  version: "v1.71.2",
+  date: "2026-10-11",
+  title: "Dock y Dynamic Island más bonitos",
+  items: [
+    "Dynamic Island (música): más limpia, carátula grande y gran botón de reproducción blanco.",
+    "Dock: cristal con los colores del tema y botones redondeados.",
+    "Música del dock: botón de reproducción más grande.",
+  ],
+};
+
+const v1_71_2_de: ChangelogEntry = {
+  version: "v1.71.2",
+  date: "2026-10-11",
+  title: "Schöneres Dock und Dynamic Island",
+  items: [
+    "Dynamic Island (Musik): aufgeräumter, großes Cover, große weiße Play-Taste.",
+    "Dock: Glas in Themenfarben, abgerundete Tasten.",
+    "Dock-Musik: größere Play-Taste.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_71_2_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_71_2_en);
+CHANGELOG_BY_LANG.es.unshift(v1_71_2_es);
+CHANGELOG_BY_LANG.de.unshift(v1_71_2_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

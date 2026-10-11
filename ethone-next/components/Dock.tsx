@@ -92,7 +92,7 @@ function AppleDockItem({
             animate={{ opacity: 1, y: -8, x: "-50%", scale: 1 }}
             exit={{ opacity: 0, y: 2, x: "-50%", scale: 0.94 }}
             transition={{ duration: 0.15, ease: "easeOut" }}
-            className="pointer-events-none absolute -top-8 left-1/2 z-50 whitespace-nowrap rounded-lg border border-white/[0.1] bg-[#0c1017]/95 px-2.5 py-1 text-[11px] font-semibold text-white shadow-xl backdrop-blur-xl select-none"
+            className="pointer-events-none absolute -top-9 left-1/2 z-50 whitespace-nowrap rounded-lg border border-[var(--panel-border)] bg-[var(--bg-surface,var(--panel-bg))]/95 px-2.5 py-1 text-[11px] font-semibold text-[var(--text-primary)] shadow-xl backdrop-blur-xl select-none"
           >
             {label}
           </motion.div>
@@ -113,10 +113,10 @@ function AppleDockItem({
         aria-expanded={ariaExpanded}
         aria-pressed={ariaPressed}
         className={cn(
-          "relative flex h-10 w-10 cursor-pointer items-center justify-center rounded-xl transition-colors select-none",
+          "relative flex h-10 w-10 cursor-pointer items-center justify-center rounded-2xl transition-colors duration-200 select-none",
           active
-            ? "bg-white/[0.12] text-white"
-            : "text-[var(--text-muted)] hover:bg-white/[0.08] hover:text-[var(--text-primary)]"
+            ? "bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] ring-1 ring-[var(--accent-primary)]/30"
+            : "text-[var(--text-muted)] hover:bg-[var(--text-primary)]/[0.07] hover:text-[var(--text-primary)]"
         )}
       >
         <IconComp className="w-4.5 h-4.5 transition-transform" />
@@ -435,7 +435,7 @@ function Dock() {
 
             {/* Apple-grade Floating Glass Dock Bar */}
             <nav
-              className="pointer-events-auto inline-flex items-center gap-1.5 overflow-x-auto no-scrollbar v8-dock px-3.5 py-1.5 select-none backdrop-blur-2xl border border-white/[0.09] bg-[#080c14]/85 shadow-[0_20px_50px_rgba(0,0,0,0.65),inset_0_1px_1px_rgba(255,255,255,0.14)] rounded-[22px]"
+              className="pointer-events-auto inline-flex items-center gap-1 overflow-x-auto no-scrollbar v8-dock px-2.5 py-2 select-none backdrop-blur-3xl backdrop-saturate-150 border border-[var(--panel-border)] bg-[var(--bg-surface,var(--panel-bg))]/80 shadow-[0_24px_60px_-12px_rgba(0,0,0,0.65),inset_0_1px_0_rgba(255,255,255,0.08)] rounded-[24px]"
               aria-label={i18n("dock")}
             >
               <DockMediaFlyout

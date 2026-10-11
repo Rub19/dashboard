@@ -892,20 +892,6 @@ export default function DynamicIslandContainer() {
                   onSelect={selectView}
                 />
 
-                {/* État : source + lecture, égaliseur à droite (l'horloge est déjà dans la barre) */}
-                <div className="flex items-center gap-2 px-0.5 text-[11px] font-medium text-[var(--text-muted)]">
-                  <span className={cn("h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)]", nowPlaying?.isPlaying && "animate-pulse")} />
-                  <span className="text-[var(--text-primary)]">{nowPlaying?.isPlaying ? "Lecture en cours" : isSpotifyConnected ? "En pause" : "Prêt"}</span>
-                  <AudioVisualizer
-                    seed={nowPlaying?.id || nowPlaying?.title || "spotify"}
-                    isPlaying={!!nowPlaying?.isPlaying}
-                    bars={9}
-                    barWidth={2}
-                    gap={1.5}
-                    className="ml-auto h-3 w-[26px] opacity-90"
-                    color="var(--accent-primary)"
-                  />
-                </div>
 
                 {/* Main Track Details Card */}
                 <AnimatePresence mode="wait">
@@ -915,7 +901,7 @@ export default function DynamicIslandContainer() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.96 }}
                     transition={{ duration: 0.2, ease: EASE_OUT }}
-                    className="relative flex items-center gap-3.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-2)]/40 p-2.5"
+                    className="relative flex items-center gap-4 px-0.5"
                   >
                     <motion.div animate={{ scale: nowPlaying?.isPlaying ? 1 : 0.88 }} transition={{ type: "spring", stiffness: 260, damping: 20 }} className="relative shrink-0 flex items-center justify-center">
                       {(nowPlaying?.cover || nowPlaying?.artworkUrl || (nowPlaying?.covers && nowPlaying.covers.length > 0)) ? (
@@ -923,7 +909,7 @@ export default function DynamicIslandContainer() {
                           candidates={[nowPlaying?.cover, nowPlaying?.artworkUrl, ...(nowPlaying?.covers || [])]}
                           alt={nowPlaying?.title || "Spotify"}
                           size={68}
-                          className="h-[68px] w-[68px] rounded-xl object-cover shadow-lg ring-1 ring-[var(--panel-border)]"
+                          className="h-[76px] w-[76px] rounded-2xl object-cover shadow-[0_12px_30px_-8px_rgba(0,0,0,0.7)] ring-1 ring-white/10"
                           iconClassName="h-6 w-6 text-[var(--accent-primary)]"
                           loading="eager"
                           priority
@@ -931,20 +917,20 @@ export default function DynamicIslandContainer() {
                           crossOrigin="anonymous"
                         />
                       ) : (
-                        <div className="flex h-[68px] w-[68px] items-center justify-center rounded-xl bg-[var(--surface-raised)] ring-1 ring-[var(--panel-border)] shadow-lg">
+                        <div className="flex h-[76px] w-[76px] items-center justify-center rounded-2xl bg-[var(--surface-raised)] ring-1 ring-[var(--panel-border)] shadow-lg">
                           <ServiceIcon id="spotify" icon="music" className="h-9 w-9" colored />
                         </div>
                       )}
                     </motion.div>
 
                     <div className="flex min-w-0 flex-1 flex-col justify-center gap-0.5">
-                      <p className="line-clamp-1 text-sm font-semibold tracking-tight text-[var(--text-primary)]" title={nowPlaying?.title}>
+                      <p className="line-clamp-1 text-[15px] font-bold tracking-tight text-[var(--text-primary)]" title={nowPlaying?.title}>
                         {nowPlaying?.title || "Spotify"}
                       </p>
                       <p className="truncate text-xs font-medium text-[var(--text-muted)]" title={nowPlaying?.artist}>
                         {nowPlaying?.artist || (isSpotifyConnected ? "Connecté • Prêt pour la lecture" : "Prêt • Cliquez pour connecter")}
                       </p>
-                      <p className="truncate text-[10px] font-semibold text-[var(--accent-primary)]/90" title={nowPlaying?.album}>
+                      <p className="truncate text-[11px] text-[var(--text-muted)]/80" title={nowPlaying?.album}>
                         {nowPlaying?.album || "Spotify Music"}
                       </p>
                     </div>
@@ -981,27 +967,24 @@ export default function DynamicIslandContainer() {
                 )}
 
                 {/* Contrôles : volume à gauche, lecture au centre */}
-                <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 pt-0.5">
-                <div className="flex items-center justify-start" onPointerDown={stopPropagation}>
-                  <VolumeSlider value={localVolume} onChange={onSpotifyVolume} data-testid="dynamic-island-volume" />
-                </div>
-                <div className="flex items-center justify-center gap-4">
+                <div className="flex flex-col items-center gap-3 pt-0.5">
+                <div className="flex items-center justify-center gap-7">
                   <button
                     type="button"
                     onClick={() => spotifyControl("previous")}
                     disabled={pendingSpotify}
-                    className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-muted)] transition-colors duration-150 hover:bg-[var(--surface-2)] hover:text-[var(--text-primary)] active:scale-95 disabled:opacity-40 cursor-pointer"
+                    className="flex h-10 w-10 items-center justify-center rounded-full text-[var(--text-primary)] transition-[background-color,transform] duration-150 hover:bg-[var(--text-primary)]/[0.08] active:scale-90 disabled:opacity-40 cursor-pointer"
                     aria-label={i18n("previous")}
                     title="Piste précédente"
                   >
-                    <Icon name="skipBack" pack="phosphor" className="h-[18px] w-[18px]" />
+                    <Icon name="skipBack" pack="phosphor" className="h-[22px] w-[22px] fill-current" />
                   </button>
 
                   <button
                     type="button"
                     onClick={togglePlay}
                     disabled={pendingSpotify}
-                    className="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--accent-primary)] text-[var(--accent-contrast)] font-semibold transition-[filter] duration-150 hover:brightness-110 active:scale-95 disabled:opacity-40 cursor-pointer"
+                    className="flex h-14 w-14 items-center justify-center rounded-full bg-white text-black shadow-[0_8px_24px_-6px_rgba(255,255,255,0.45)] transition-[transform,box-shadow] duration-150 hover:scale-105 hover:shadow-[0_10px_30px_-6px_rgba(255,255,255,0.6)] active:scale-95 disabled:opacity-40 cursor-pointer"
                     aria-label={nowPlaying?.isPlaying ? i18n("pause") : i18n("play")}
                     title={nowPlaying?.isPlaying ? "Mettre en pause" : "Lire"}
                   >
@@ -1015,9 +998,9 @@ export default function DynamicIslandContainer() {
                         className="flex"
                       >
                         {nowPlaying?.isPlaying ? (
-                          <Icon name="pause" pack="phosphor" className="h-5 w-5 fill-current" />
+                          <Icon name="pause" pack="phosphor" className="h-6 w-6 fill-current" />
                         ) : (
-                          <Icon name="play" pack="phosphor" className="ml-0.5 h-5 w-5 fill-current" />
+                          <Icon name="play" pack="phosphor" className="ml-0.5 h-6 w-6 fill-current" />
                         )}
                       </motion.span>
                     </AnimatePresence>
@@ -1027,14 +1010,16 @@ export default function DynamicIslandContainer() {
                     type="button"
                     onClick={() => spotifyControl("next")}
                     disabled={pendingSpotify}
-                    className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-muted)] transition-colors duration-150 hover:bg-[var(--surface-2)] hover:text-[var(--text-primary)] active:scale-95 disabled:opacity-40 cursor-pointer"
+                    className="flex h-10 w-10 items-center justify-center rounded-full text-[var(--text-primary)] transition-[background-color,transform] duration-150 hover:bg-[var(--text-primary)]/[0.08] active:scale-90 disabled:opacity-40 cursor-pointer"
                     aria-label={i18n("next")}
                     title="Piste suivante"
                   >
-                    <Icon name="skipForward" pack="phosphor" className="h-[18px] w-[18px]" />
+                    <Icon name="skipForward" pack="phosphor" className="h-[22px] w-[22px] fill-current" />
                   </button>
                 </div>
-                <div aria-hidden />
+                <div className="flex w-full items-center justify-center" onPointerDown={stopPropagation}>
+                  <VolumeSlider value={localVolume} onChange={onSpotifyVolume} data-testid="dynamic-island-volume" />
+                </div>
                 </div>
               </div>
             </DynamicIslandView>

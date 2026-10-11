@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.71.2 — 2026-10-11
+
+**Dock et Dynamic Island plus beaux**
+
+- Dynamic Island (musique) : plus épurée, grande pochette, gros bouton lecture blanc entouré de précédent / suivant, volume en dessous.
+- Dock : verre aux couleurs du thème, boutons arrondis et bouton actif teinté de la couleur d'accent ; bulles d'aide aux couleurs du thème.
+- Musique du dock : bouton lecture plus grand.
+
 ## v1.71.1 — 2026-10-11
 
 **Dock : icône Spotify corrigée**

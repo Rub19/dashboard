@@ -485,7 +485,7 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
                       transition={{ type: "spring", stiffness: 500, damping: 25 }}
                       onClick={togglePlay}
                       disabled={pending || !hasClientId}
-                      className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-black shadow-[0_4px_18px_rgba(255,255,255,0.35)] hover:shadow-[0_6px_25px_rgba(255,255,255,0.55)] transition-shadow disabled:opacity-50 cursor-pointer"
+                      className="flex h-13 w-13 items-center justify-center rounded-full bg-white text-black shadow-[0_8px_24px_-6px_rgba(255,255,255,0.45)] hover:shadow-[0_10px_30px_-6px_rgba(255,255,255,0.6)] transition-shadow disabled:opacity-50 cursor-pointer"
                       aria-label={isPlaying ? i18n("pause") : i18n("play")}
                     >
                       <AnimatePresence mode="popLayout" initial={false}>

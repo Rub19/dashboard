@@ -690,8 +690,8 @@ export default function DiscordDashboardPage() {
     setConsoleView(null);
     setMenuOpen(false);
   }, []);
-  const [logsTab, setLogsTab] = useState<"incidents" | "channels">("incidents");
-  const openConsoleView = useCallback((v: ConsoleView, opts?: { logsTab?: "incidents" | "channels" }) => {
+  const [logsTab, setLogsTab] = useState<"incidents" | "journal" | "channels">("incidents");
+  const openConsoleView = useCallback((v: ConsoleView, opts?: { logsTab?: "incidents" | "journal" | "channels" }) => {
     setLogsTab(opts?.logsTab ?? "incidents");
     setActiveModule(null);
     setShowAllModules(false);

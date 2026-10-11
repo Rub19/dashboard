@@ -27,7 +27,7 @@ import {
   type SearchableCommandItem,
 } from "@/lib/command-search";
 import { useSettings } from "@/components/SettingsProvider";
-import { useSound } from "@/lib/sound";
+import { useSound, type SoundAmbient } from "@/lib/sound";
 import { useFocus } from "@/components/FocusProvider";
 import { cn } from "@/lib/utils";
 import { useTouchCapable } from "@/lib/hooks/use-touch-capable";
@@ -44,138 +44,7 @@ const CATEGORY_CHIPS = [
   { id: "Brain", label: "Brain" },
 ];
 
-interface MathResult {
-  expression: string;
-  result: number;
-  formatted: string;
-}
-
-function evaluateMathExpression(raw: string): MathResult | null {
-  const trimmed = raw.trim();
-  if (trimmed.length < 2 || trimmed.startsWith("/")) return null;
-
-  const clean = trimmed.replace(/\s*=\s*$/, "");
-
-  const percentMatch = clean.match(/^([\d.,]+)\s*%\s*(?:of|de|\*)\s*([\d.,]+)$/i);
-  if (percentMatch) {
-    const p = parseFloat(percentMatch[1].replace(",", "."));
-    const total = parseFloat(percentMatch[2].replace(",", "."));
-    if (!isNaN(p) && !isNaN(total)) {
-      const res = (p / 100) * total;
-      const formatted = Number.isInteger(res) ? String(res) : res.toFixed(4).replace(/\.?0+$/, "");
-      return { expression: trimmed, result: res, formatted };
-    }
-  }
-
-  const percentMatch2 = clean.match(/^([\d.,]+)\s*\*\s*([\d.,]+)\s*%$/i);
-  if (percentMatch2) {
-    const total = parseFloat(percentMatch2[1].replace(",", "."));
-    const p = parseFloat(percentMatch2[2].replace(",", "."));
-    if (!isNaN(p) && !isNaN(total)) {
-      const res = (p / 100) * total;
-      const formatted = Number.isInteger(res) ? String(res) : res.toFixed(4).replace(/\.?0+$/, "");
-      return { expression: trimmed, result: res, formatted };
-    }
-  }
-
-  const sqrtMatch = clean.match(/^sqrt\s*\(\s*([\d.,]+)\s*\)$/i);
-  if (sqrtMatch) {
-    const val = parseFloat(sqrtMatch[1].replace(",", "."));
-    if (!isNaN(val) && val >= 0) {
-      const res = Math.sqrt(val);
-      const formatted = Number.isInteger(res) ? String(res) : res.toFixed(4).replace(/\.?0+$/, "");
-      return { expression: trimmed, result: res, formatted };
-    }
-  }
-
-  const normalized = clean
-    .replace(/[xX]/g, "*")
-    .replace(/÷/g, "/")
-    .replace(/,/g, ".")
-    .replace(/\s+/g, "");
-
-  if (!/^[\d+\-*/^().]+$/.test(normalized)) return null;
-  if (!/[+\-*/^]/.test(normalized)) return null;
-
-  try {
-    let pos = 0;
-    const parseNumber = (): number => {
-      const start = pos;
-      while (pos < normalized.length && (/\d/.test(normalized[pos]) || normalized[pos] === ".")) {
-        pos++;
-      }
-      const numStr = normalized.substring(start, pos);
-      const val = parseFloat(numStr);
-      if (isNaN(val)) throw new Error("nan");
-      return val;
-    };
-
-    const parseFactor = (): number => {
-      if (pos >= normalized.length) throw new Error("end");
-      let sign = 1;
-      if (normalized[pos] === "-") {
-        sign = -1;
-        pos++;
-      } else if (normalized[pos] === "+") {
-        pos++;
-      }
-      if (normalized[pos] === "(") {
-        pos++;
-        const val = parseExpression();
-        if (normalized[pos] !== ")") throw new Error("paren");
-        pos++;
-        return sign * val;
-      }
-      return sign * parseNumber();
-    };
-
-    const parsePower = (): number => {
-      let val = parseFactor();
-      while (pos < normalized.length && normalized[pos] === "^") {
-        pos++;
-        const next = parseFactor();
-        val = Math.pow(val, next);
-      }
-      return val;
-    };
-
-    const parseTerm = (): number => {
-      let val = parsePower();
-      while (pos < normalized.length && (normalized[pos] === "*" || normalized[pos] === "/" || normalized[pos] === "%")) {
-        const op = normalized[pos];
-        pos++;
-        const next = parsePower();
-        if (op === "*") val *= next;
-        else if (op === "/") {
-          if (next === 0) throw new Error("divzero");
-          val /= next;
-        } else if (op === "%") val %= next;
-      }
-      return val;
-    };
-
-    const parseExpression = (): number => {
-      let val = parseTerm();
-      while (pos < normalized.length && (normalized[pos] === "+" || normalized[pos] === "-")) {
-        const op = normalized[pos];
-        pos++;
-        const next = parseTerm();
-        if (op === "+") val += next;
-        else if (op === "-") val -= next;
-      }
-      return val;
-    };
-
-    const result = parseExpression();
-    if (pos === normalized.length && isFinite(result)) {
-      const formatted = Number.isInteger(result) ? String(result) : result.toFixed(4).replace(/\.?0+$/, "");
-      return { expression: trimmed, result, formatted };
-    }
-    return null;
-  } catch {
-    return null;
-  }
-}
+import { evaluateCalculation } from "@/lib/instant-calc";
 
 interface DirectSlashCommand {
   command: string;
@@ -261,8 +130,8 @@ export default function CommandPalette() {
   const pinnedIds = useMemo(() => (open ? new Set(historyRef.current.pinned()) : new Set<string>()), [open]);
   const recentIds = useMemo(() => (open ? new Set(historyRef.current.recent()) : new Set<string>()), [open]);
 
-  const mathResult = useMemo(() => {
-    return evaluateMathExpression(query);
+  const calcResult = useMemo(() => {
+    return evaluateCalculation(query);
   }, [query]);
 
   const slashCommands = useMemo<DirectSlashCommand[]>(() => {
@@ -294,6 +163,80 @@ export default function CommandPalette() {
         execute: () => {
           playAmbient("rain", 65);
           router.push("/soundscape");
+        },
+      },
+      {
+        command: "/sound",
+        label: "Contrôler l'Ambiance",
+        description: "Lancer ou couper une ambiance (ex: /sound rain, ocean, wind, none, off)",
+        badge: "Soundscape",
+        execute: (param) => {
+          const p = (param || "").toLowerCase().trim();
+          if (p === "none" || p === "off" || p === "stop" || p === "mute") {
+            stopAmbient();
+          } else if (p === "rain") {
+            playAmbient("rain", 65);
+            router.push("/soundscape");
+          } else if (p === "ocean" || p === "waves" || p === "mer") {
+            playAmbient("ocean", 65);
+            router.push("/soundscape");
+          } else if (p === "wind" || p === "vent") {
+            playAmbient("wind", 65);
+            router.push("/soundscape");
+          } else if (p) {
+            playAmbient(p as SoundAmbient, 65);
+            router.push("/soundscape");
+          } else {
+            router.push("/soundscape");
+          }
+        },
+      },
+      {
+        command: "/sound rain",
+        label: "Lancer la Pluie",
+        description: "Démarrer l'ambiance sonore naturelle de pluie",
+        badge: "Soundscape",
+        execute: () => {
+          playAmbient("rain", 65);
+          router.push("/soundscape");
+        },
+      },
+      {
+        command: "/sound ocean",
+        label: "Lancer l'Océan",
+        description: "Démarrer l'ambiance apaisante des vagues",
+        badge: "Soundscape",
+        execute: () => {
+          playAmbient("ocean", 65);
+          router.push("/soundscape");
+        },
+      },
+      {
+        command: "/sound wind",
+        label: "Lancer le Vent",
+        description: "Démarrer l'ambiance sonore du vent",
+        badge: "Soundscape",
+        execute: () => {
+          playAmbient("wind", 65);
+          router.push("/soundscape");
+        },
+      },
+      {
+        command: "/sound none",
+        label: "Couper l'Ambiance",
+        description: "Désactiver l'ambiance sonore en cours",
+        badge: "Soundscape",
+        execute: () => {
+          stopAmbient();
+        },
+      },
+      {
+        command: "/sound off",
+        label: "Couper l'Ambiance",
+        description: "Désactiver l'ambiance sonore en cours",
+        badge: "Soundscape",
+        execute: () => {
+          stopAmbient();
         },
       },
       {
@@ -378,23 +321,28 @@ export default function CommandPalette() {
 
   const activeSlashCommands = useMemo(() => {
     if (!query.startsWith("/")) return [];
-    const lower = query.toLowerCase();
-    const parts = lower.slice(1).split(" ");
-    const cmdPart = parts[0] || "";
-    return slashCommands.filter((sc) => sc.command.slice(1).startsWith(cmdPart));
+    const lower = query.toLowerCase().trim();
+    const queryWithoutSlash = lower.slice(1);
+    return slashCommands.filter((sc) => {
+      const cmdWithoutSlash = sc.command.slice(1).toLowerCase();
+      if (cmdWithoutSlash.startsWith(queryWithoutSlash)) return true;
+      const cmdBase = cmdWithoutSlash.split(" ")[0];
+      const queryBase = queryWithoutSlash.split(" ")[0];
+      return cmdBase === queryBase;
+    });
   }, [query, slashCommands]);
 
-  const handleCopyMathResult = useCallback(() => {
-    if (!mathResult) return;
+  const handleCopyCalcResult = useCallback(() => {
+    if (!calcResult) return;
     if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
-      navigator.clipboard.writeText(mathResult.formatted);
+      navigator.clipboard.writeText(calcResult.formatted);
     }
     setCopiedMath(true);
     setTimeout(() => {
       setCopiedMath(false);
       setOpen(false);
     }, 350);
-  }, [mathResult, setOpen]);
+  }, [calcResult, setOpen]);
 
   const executeCommand = useCallback(
     (cmd: CommandItem) => {
@@ -445,8 +393,8 @@ export default function CommandPalette() {
       } else if (e.key === "Enter") {
         e.preventDefault();
 
-        if (mathResult) {
-          handleCopyMathResult();
+        if (calcResult) {
+          handleCopyCalcResult();
           return;
         }
 
@@ -489,8 +437,8 @@ export default function CommandPalette() {
     activeIndex,
     activeCategory,
     query,
-    mathResult,
-    handleCopyMathResult,
+    calcResult,
+    handleCopyCalcResult,
     router,
     executeCommand,
     setOpen,
@@ -547,7 +495,7 @@ export default function CommandPalette() {
                   setQuery(e.target.value);
                   setActiveIndex(0);
                 }}
-                placeholder="Taper un calcul (150*1.2), une commande (/zen, /mute) ou rechercher..."
+                placeholder="Calcul (150*1.2), devise (50 EUR en USD), commande (/sound, /zen)..."
                 className="flex-1 bg-transparent text-sm font-medium text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none"
               />
               {query && (
@@ -626,25 +574,61 @@ export default function CommandPalette() {
                 ref={listRef}
                 className="flex-1 overflow-y-auto px-2 py-2 space-y-1 divide-y divide-transparent no-scrollbar max-h-[380px] sm:max-h-[440px]"
               >
-                {mathResult && (
+                {calcResult && (
                   <div
-                    onClick={handleCopyMathResult}
-                    className="group mx-2 mb-2 flex items-center justify-between gap-3 rounded-2xl border border-emerald-500/40 bg-emerald-500/10 p-3.5 transition-all cursor-pointer hover:bg-emerald-500/20 shadow-sm"
+                    onClick={handleCopyCalcResult}
+                    className={cn(
+                      "group mx-2 mb-2 flex items-center justify-between gap-3 rounded-2xl border p-3.5 transition-all cursor-pointer shadow-sm",
+                      calcResult.type === "currency"
+                        ? "border-sky-500/40 bg-sky-500/10 hover:bg-sky-500/20"
+                        : "border-emerald-500/40 bg-emerald-500/10 hover:bg-emerald-500/20"
+                    )}
                   >
                     <div className="flex items-center gap-3">
-                      <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500 text-black shadow-md">
-                        <Zap className="h-5 w-5 fill-current" />
+                      <div
+                        className={cn(
+                          "flex h-9 w-9 items-center justify-center rounded-xl text-black shadow-md",
+                          calcResult.type === "currency" ? "bg-sky-500" : "bg-emerald-500"
+                        )}
+                      >
+                        {calcResult.type === "currency" ? (
+                          <Sparkles className="h-5 w-5 fill-current" />
+                        ) : (
+                          <Zap className="h-5 w-5 fill-current" />
+                        )}
                       </div>
                       <div>
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">
-                          Moteur de Calcul Instantané
+                        <span
+                          className={cn(
+                            "text-[10px] font-bold uppercase tracking-wider",
+                            calcResult.type === "currency" ? "text-sky-400" : "text-emerald-400"
+                          )}
+                        >
+                          {calcResult.type === "currency"
+                            ? "Conversion de Devise Instantanée"
+                            : "Moteur de Calcul Instantané"}
                         </span>
                         <p className="font-mono text-base font-bold text-[var(--text-primary)]">
-                          {mathResult.expression} = <span className="text-emerald-400">{mathResult.formatted}</span>
+                          {calcResult.expression} ={" "}
+                          <span className={calcResult.type === "currency" ? "text-sky-400" : "text-emerald-400"}>
+                            {calcResult.formatted}
+                          </span>
                         </p>
+                        {calcResult.detail && (
+                          <p className="text-[10px] text-[var(--text-muted)] mt-0.5 font-sans">
+                            {calcResult.detail}
+                          </p>
+                        )}
                       </div>
                     </div>
-                    <div className="flex items-center gap-1.5 rounded-lg bg-emerald-500/20 px-2.5 py-1 text-xs font-semibold text-emerald-400">
+                    <div
+                      className={cn(
+                        "flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold",
+                        calcResult.type === "currency"
+                          ? "bg-sky-500/20 text-sky-400"
+                          : "bg-emerald-500/20 text-emerald-400"
+                      )}
+                    >
                       {copiedMath ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
                       <span>{copiedMath ? "Copié !" : "Copier (Entrée)"}</span>
                     </div>
@@ -699,7 +683,7 @@ export default function CommandPalette() {
                   </div>
                 )}
 
-                {!query.startsWith("/") && query.trim().length > 1 && !mathResult && (
+                {!query.startsWith("/") && query.trim().length > 1 && !calcResult && (
                   <div
                     onClick={() => {
                       router.push(`/brain/?q=${encodeURIComponent(query.trim())}`);
@@ -724,7 +708,7 @@ export default function CommandPalette() {
                   </div>
                 )}
 
-                {!query.startsWith("/") && filteredCommands.length === 0 && !mathResult ? (
+                {!query.startsWith("/") && filteredCommands.length === 0 && !calcResult ? (
                   <div className="py-12 text-center space-y-2">
                     <Command className="mx-auto h-8 w-8 text-[var(--text-muted)] opacity-40" />
                     <p className="text-xs font-medium text-[var(--text-muted)]">

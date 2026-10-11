@@ -2,7 +2,7 @@
 
 import { Fragment, useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { ArrowLeft, Ban, Camera, CircleCheck, FolderClosed, Hash, Info, Lock, LogOut, PenLine, Search, Timer, TriangleAlert, UserRoundMinus, WandSparkles } from "lucide-react";
+import { ArrowLeft, Ban, Camera, CircleCheck, FolderClosed, Hash, History, Info, Lock, LogOut, PenLine, Search, Timer, TriangleAlert, UserRoundMinus, WandSparkles } from "lucide-react";
 import ChannelPicker, { fetchGuildChannels, type ChannelOption } from "../ChannelPicker";
 import { confirmDialog } from "@/lib/confirmDialog";
 import { useToast } from "@/components/ToastProvider";
@@ -376,7 +376,15 @@ function ChannelChips({ ids, channels, onChange, guildId, categories }: { ids: s
 type Filter = "all" | "on" | "off" | "todo";
 
 /** Protections (format Keeper) : liste par catégorie à gauche, réglages de la protection choisie à droite. */
-export default function ConsoleProtections({ guildId, onOpenSetup }: { guildId: string; onOpenView?: (v: ConsoleView) => void; onOpenSetup?: () => void }) {
+export default function ConsoleProtections({
+  guildId,
+  onOpenView,
+  onOpenSetup,
+}: {
+  guildId: string;
+  onOpenView?: (v: ConsoleView, opts?: { logsTab?: "incidents" | "journal" | "channels" }) => void;
+  onOpenSetup?: () => void;
+}) {
   const api = useGuildApi(guildId);
   const { success, error: toastError } = useToast();
   const reduced = useReducedMotion();
@@ -469,14 +477,30 @@ export default function ConsoleProtections({ guildId, onOpenSetup }: { guildId: 
 
   return (
     <motion.div initial={reduced ? false : { opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="mx-auto w-full max-w-6xl space-y-4">
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-bold tracking-tight text-[var(--text-primary)] sm:text-3xl">Protections</h1>
-        {onOpenSetup && (
-          <button type="button" onClick={onOpenSetup} className="flex items-center gap-2 rounded-lg border border-[var(--panel-border)] px-3 py-2 text-[13px] font-semibold text-[var(--text-primary)] transition-[background-color,transform] hover:bg-[var(--surface-hover)] active:scale-[0.98]">
-            <WandSparkles className="h-4 w-4" />
-            Configuration assistée
-          </button>
-        )}
+        <div className="flex items-center gap-2">
+          {onOpenView && (
+            <button
+              type="button"
+              onClick={() => onOpenView("logs", { logsTab: "incidents" })}
+              className="flex items-center gap-2 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-2 text-[13px] font-semibold text-[var(--text-primary)] transition-[background-color,transform] hover:bg-[var(--surface-hover)] active:scale-[0.98] cursor-pointer"
+            >
+              <History className="h-4 w-4 text-[var(--accent-primary)]" />
+              <span>Timeline des incidents</span>
+            </button>
+          )}
+          {onOpenSetup && (
+            <button
+              type="button"
+              onClick={onOpenSetup}
+              className="flex items-center gap-2 rounded-lg border border-[var(--panel-border)] px-3 py-2 text-[13px] font-semibold text-[var(--text-primary)] transition-[background-color,transform] hover:bg-[var(--surface-hover)] active:scale-[0.98] cursor-pointer"
+            >
+              <WandSparkles className="h-4 w-4" />
+              <span>Configuration assistée</span>
+            </button>
+          )}
+        </div>
       </div>
 
       {data.lockdown && (

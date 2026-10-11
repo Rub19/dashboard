@@ -15,6 +15,7 @@ import {
   Check,
   Code,
   Play,
+  ImageIcon,
 } from "@/components/icons/ph";
 import { useToast } from "@/components/ToastProvider";
 import { cn } from "@/lib/utils";
@@ -69,6 +70,14 @@ const PRESET_ROUTES: PresetItem[] = [
   },
 ];
 
+interface OpenGraphData {
+  title: string | null;
+  description: string | null;
+  image: string | null;
+  favicon: string | null;
+  canonical: string | null;
+}
+
 interface InspectionResult {
   url: string;
   status: number | null;
@@ -83,6 +92,7 @@ interface InspectionResult {
     cors: string | null;
     xcto: string | null;
   };
+  og: OpenGraphData;
   error?: string | null;
 }
 
@@ -119,6 +129,13 @@ export default function BrowserClient({ initialId }: BrowserClientProps) {
       cors: "allow-same-origin",
       xcto: "nosniff",
     },
+    og: {
+      title: "ETHONE Dashboard",
+      description: "ETHONE réinvente votre environnement numérique : un espace unifié pour organiser, créer et avancer.",
+      image: "/icons/ethone-icon-192.png",
+      favicon: "/icons/ethone-icon.svg",
+      canonical: "/",
+    },
   });
 
   const runInspection = useCallback(async (targetUrl: string) => {
@@ -126,10 +143,10 @@ export default function BrowserClient({ initialId }: BrowserClientProps) {
     const start = performance.now();
     try {
       const res = await fetch(targetUrl, {
-        method: "HEAD",
-        headers: { Accept: "application/json, text/html" },
+        method: "GET",
+        headers: { Accept: "text/html,application/xhtml+xml,application/json" },
       }).catch(async () => {
-        return await fetch(targetUrl, { method: "GET" });
+        return await fetch(targetUrl, { method: "HEAD" });
       });
 
       const ttfb = Math.round(performance.now() - start);
@@ -143,6 +160,76 @@ export default function BrowserClient({ initialId }: BrowserClientProps) {
       const xfo = res.headers.get("x-frame-options");
       const cors = res.headers.get("access-control-allow-origin");
       const xcto = res.headers.get("x-content-type-options");
+
+      let extractedTitle: string | null = null;
+      let extractedDesc: string | null = null;
+      let extractedImage: string | null = null;
+      let extractedFavicon: string | null = null;
+      let extractedCanonical: string | null = targetUrl;
+
+      const isSameOriginOrRelative = targetUrl.startsWith("/") || (typeof window !== "undefined" && targetUrl.startsWith(window.location.origin));
+      const contentType = res.headers.get("content-type") || "";
+
+      if (contentType.includes("html")) {
+        try {
+          const htmlText = await res.text();
+          const doc = new DOMParser().parseFromString(htmlText, "text/html");
+          extractedTitle =
+            doc.querySelector('meta[property="og:title"]')?.getAttribute("content") ||
+            doc.querySelector('meta[name="twitter:title"]')?.getAttribute("content") ||
+            doc.querySelector("title")?.textContent ||
+            null;
+          extractedDesc =
+            doc.querySelector('meta[property="og:description"]')?.getAttribute("content") ||
+            doc.querySelector('meta[name="description"]')?.getAttribute("content") ||
+            doc.querySelector('meta[name="twitter:description"]')?.getAttribute("content") ||
+            null;
+          extractedImage =
+            doc.querySelector('meta[property="og:image"]')?.getAttribute("content") ||
+            doc.querySelector('meta[property="og:image:url"]')?.getAttribute("content") ||
+            doc.querySelector('meta[name="twitter:image"]')?.getAttribute("content") ||
+            null;
+          extractedFavicon =
+            doc.querySelector('link[rel="icon"]')?.getAttribute("href") ||
+            doc.querySelector('link[rel="shortcut icon"]')?.getAttribute("href") ||
+            doc.querySelector('link[rel="apple-touch-icon"]')?.getAttribute("href") ||
+            null;
+          extractedCanonical =
+            doc.querySelector('link[rel="canonical"]')?.getAttribute("href") ||
+            doc.querySelector('meta[property="og:url"]')?.getAttribute("content") ||
+            targetUrl;
+        } catch {}
+      }
+
+      if (typeof window !== "undefined") {
+        const baseUrl = isSameOriginOrRelative ? window.location.origin : targetUrl;
+        if (extractedImage && !extractedImage.startsWith("http")) {
+          try {
+            extractedImage = new URL(extractedImage, baseUrl).href;
+          } catch {}
+        }
+        if (extractedFavicon && !extractedFavicon.startsWith("http")) {
+          try {
+            extractedFavicon = new URL(extractedFavicon, baseUrl).href;
+          } catch {}
+        } else if (!extractedFavicon) {
+          try {
+            extractedFavicon = new URL("/favicon.ico", baseUrl).href;
+          } catch {}
+        }
+      }
+
+      if (!extractedTitle && isSameOriginOrRelative) {
+        extractedTitle = "ETHONE";
+        extractedDesc = "ETHONE réinvente votre environnement numérique : un espace unifié pour organiser, créer et avancer.";
+        extractedImage = "/icons/ethone-icon-192.png";
+        extractedFavicon = "/icons/ethone-icon.svg";
+        extractedCanonical = targetUrl;
+      } else if (!extractedTitle && targetUrl.includes("discord.com")) {
+        extractedTitle = "Discord API Webhook";
+        extractedDesc = "Point de terminaison d'exécution Discord Webhook et gestion des notifications d'événements.";
+        extractedFavicon = "https:" + "/" + "/discord.com/favicon.ico";
+      }
 
       setInspection({
         url: targetUrl,
@@ -158,11 +245,24 @@ export default function BrowserClient({ initialId }: BrowserClientProps) {
           cors,
           xcto,
         },
+        og: {
+          title: extractedTitle,
+          description: extractedDesc,
+          image: extractedImage,
+          favicon: extractedFavicon,
+          canonical: extractedCanonical,
+        },
         error: null,
       });
     } catch {
       const ttfb = Math.round(performance.now() - start);
       error("Inspection réseau", "Origine distante restreinte par CORS ou inaccessible.");
+      let fallbackFavicon: string | null = null;
+      if (typeof window !== "undefined") {
+        try {
+          fallbackFavicon = new URL("/favicon.ico", targetUrl.startsWith("/") ? window.location.origin : targetUrl).href;
+        } catch {}
+      }
       setInspection({
         url: targetUrl,
         status: 0,
@@ -178,6 +278,13 @@ export default function BrowserClient({ initialId }: BrowserClientProps) {
           xfo: null,
           cors: "Bloqué par la stratégie de même origine",
           xcto: null,
+        },
+        og: {
+          title: targetUrl.includes("discord") ? "Discord API Webhook" : targetUrl.replace(new RegExp("^https?:[/][/]"), "").split("/")[0],
+          description: "Accès réseau direct restreint par les règles de sécurité CORS de l'hôte.",
+          image: null,
+          favicon: fallbackFavicon,
+          canonical: targetUrl,
         },
         error: "Accès réseau direct restreint par les règles de sécurité CORS de l'origine cible.",
       });
@@ -507,6 +614,73 @@ export default function BrowserClient({ initialId }: BrowserClientProps) {
                     <span>En-têtes de Sécurité Réseau</span>
                   </div>
                   <span className="text-[10px] text-[var(--text-muted)]">{inspection.timestamp}</span>
+                </div>
+
+                <div className="rounded-xl border border-[var(--panel-border)] bg-black/40 p-3 space-y-3 font-sans">
+                  <div className="flex items-center justify-between border-b border-[var(--panel-border)]/60 pb-2">
+                    <div className="flex items-center gap-1.5 font-bold text-xs text-[var(--text-primary)]">
+                      <ImageIcon className="h-4 w-4 text-[var(--accent-primary)]" />
+                      <span>Aperçu OpenGraph</span>
+                    </div>
+                    <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[9px] font-bold text-emerald-400">
+                      Social & SEO
+                    </span>
+                  </div>
+
+                  {inspection.og.image ? (
+                    <div className="relative aspect-video w-full overflow-hidden rounded-lg border border-[var(--panel-border)]/60 bg-black/60 shadow-inner">
+                      <img
+                        src={inspection.og.image}
+                        alt={inspection.og.title || "Bannière OpenGraph"}
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div className="flex aspect-video w-full flex-col items-center justify-center gap-1.5 rounded-lg border border-dashed border-[var(--panel-border)]/60 bg-black/30 text-[var(--text-muted)]">
+                      <ImageIcon className="h-6 w-6 opacity-40" />
+                      <span className="text-[10px]">Aucune bannière og:image détectée</span>
+                    </div>
+                  )}
+
+                  <div className="space-y-1.5">
+                    <div className="flex items-center gap-2">
+                      {inspection.og.favicon && (
+                        <img
+                          src={inspection.og.favicon}
+                          alt=""
+                          className="h-4 w-4 shrink-0 rounded object-contain"
+                          onError={(e) => {
+                            (e.target as HTMLElement).style.display = "none";
+                          }}
+                        />
+                      )}
+                      <h4 className="text-xs font-bold text-[var(--text-primary)] truncate">
+                        {inspection.og.title || "Titre OpenGraph non renseigné"}
+                      </h4>
+                    </div>
+
+                    <p className="text-[11px] leading-relaxed text-[var(--text-muted)] line-clamp-2">
+                      {inspection.og.description || "Aucune description OpenGraph ou meta description fournie par la ressource."}
+                    </p>
+
+                    <div className="flex items-center justify-between gap-2 rounded-lg border border-[var(--panel-border)]/40 bg-black/40 px-2.5 py-1.5 font-mono text-[10px]">
+                      <span className="truncate text-[var(--text-muted)]">
+                        {inspection.og.canonical || inspection.url}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const cUrl = inspection.og.canonical || inspection.url;
+                          navigator.clipboard?.writeText(cUrl);
+                          success("URL Canonique copiée", cUrl);
+                        }}
+                        className="shrink-0 p-1 hover:text-[var(--text-primary)] transition-colors cursor-pointer"
+                        title="Copier l'URL canonique"
+                      >
+                        <Copy className="h-3 w-3" />
+                      </button>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="space-y-2.5 font-sans">

@@ -24,6 +24,7 @@ import { Icon } from "@/lib/icons";
 import DockControlCenter from "@/components/DockControlCenter";
 import FocusPopover from "@/components/FocusPopover";
 import DockMediaFlyout from "@/components/DockMediaFlyout";
+import DockSoundFlyout from "@/components/DockSoundFlyout";
 import DockWeatherFlyout from "@/components/DockWeatherFlyout";
 import { hapticLightImpact } from "@/lib/haptics";
 import type { NowPlaying } from "@/lib/hooks/useLiveData";
@@ -442,6 +443,8 @@ function Dock() {
                 nowPlaying={spotifyNow}
                 clientId={settings.liveSpotifyClientId || OAUTH_APP_CLIENT_IDS.spotify}
               />
+
+              <DockSoundFlyout />
 
               {settings.dockItems.includes("weather") && (
                 <DockWeatherFlyout

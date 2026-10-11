@@ -144,26 +144,25 @@ async function run() {
   const noAuditGuild = createMockGuild({ auditExecutorId: null });
   assert((await guildJoinService.resolveInviterId(noAuditGuild)) === '999888777666555444', 'Repli sur le propriétaire si l\'audit log est indisponible');
 
-  console.log('\n--- 4. Envoi privé : salon visible par l\'inviteur seul, sinon MP ---');
+  console.log('\n--- 4. Envoi privé : MP à l\'inviteur et zéro création de salon ---');
   const privateGuild = createMockGuild({ allPerms: true, auditExecutorId: inviterId });
   let createdParams: any = null;
-  const sentInChannel: any[] = [];
+  const dmsList: any[] = [];
+  privateGuild.client.users.fetch = async (id: string) => ({ id, send: async (p: any) => dmsList.push({ id, p }) });
   privateGuild.channels.create = async (params: any) => {
     createdParams = params;
-    return { id: 'chan_private', name: params.name, send: async (p: any) => sentInChannel.push(p) };
+    return { id: 'chan_private', name: params.name, send: async () => true };
   };
   await guildJoinService.sendJoinWelcome(privateGuild);
-  const everyoneRule = createdParams?.permissionOverwrites.find((o: any) => o.id === privateGuild.roles.everyone.id);
-  const inviterRule = createdParams?.permissionOverwrites.find((o: any) => o.id === inviterId);
-  assert(everyoneRule?.deny.includes(PermissionFlagsBits.ViewChannel), 'Salon caché à @everyone');
-  assert(inviterRule?.allow.includes(PermissionFlagsBits.ViewChannel), 'Salon visible par l\'inviteur');
-  assert(sentInChannel.length === 1 && sentInChannel[0].flags === MessageFlags.IsComponentsV2, 'Carte envoyée dans le salon privé');
+  assert(createdParams === null, 'Aucun salon créé à l\'arrivée du bot');
+  assert(dmsList.length === 1 && dmsList[0].id === inviterId, 'Message d\'accueil envoyé en MP à l\'inviteur');
+  assert(dmsList[0].p.flags === MessageFlags.IsComponentsV2, 'Carte MP au format Components V2');
 
   const dmGuild = createMockGuild({ allPerms: false, auditExecutorId: null });
-  const dms: any[] = [];
-  dmGuild.client.users.fetch = async (id: string) => ({ id, send: async (p: any) => dms.push({ id, p }) });
+  const fallbackDms: any[] = [];
+  dmGuild.client.users.fetch = async (id: string) => ({ id, send: async (p: any) => fallbackDms.push({ id, p }) });
   await guildJoinService.sendJoinWelcome(dmGuild);
-  assert(dms.length === 1 && dms[0].id === '999888777666555444', 'Sans « Gérer les salons » : message privé à l\'inviteur');
+  assert(fallbackDms.length === 1 && fallbackDms[0].id === '999888777666555444', 'Sans audit log : repli en MP sur le propriétaire');
 
   const textChannel = {
     id: 'chan_general',
@@ -199,6 +198,18 @@ async function run() {
   await guildJoinService.handleButton(fakeButtonInteraction);
   const confAfterCreate = guildConfigService.getConfig(guildId);
   assert(confAfterCreate.systemChannelId === 'chan_new_system', 'Salon système créé et configuré automatiquement');
+
+  const fakeOpenCardInteraction: any = {
+    guild: targetGuild,
+    user: { id: inviterId },
+    member: { permissions: { has: () => true } },
+    customId: `guild_join:open_card:${guildId}`,
+    client: targetGuild.client,
+    reply: async (payload: any) => replies.push(payload),
+  };
+  await guildJoinService.handleButton(fakeOpenCardInteraction);
+  const openCardReply = replies[replies.length - 1];
+  assert(Boolean(openCardReply.flags & MessageFlags.Ephemeral), 'Bouton d\'ouverture répond avec le drapeau éphémère (Visible uniquement par vous)');
 
   const fakeLangInteraction: any = {
     guild: targetGuild,

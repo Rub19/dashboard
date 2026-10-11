@@ -40,7 +40,6 @@ const PERMISSION_CHECKS = [
   { flag: PermissionFlagsBits.CreateGuildExpressions, name: 'CREATE_GUILD_EXPRESSIONS' },
 ] as const;
 
-/** Permissions sans lesquelles la protection ne fonctionne pas : elles décident de l'état « Opérationnel ». */
 const CORE_PERMISSIONS = [
   PermissionFlagsBits.ViewAuditLog,
   PermissionFlagsBits.ManageGuild,
@@ -50,7 +49,7 @@ const CORE_PERMISSIONS = [
 ];
 
 export const guildJoinService = {
-  buildJoinMessage(guild: Guild, inviterId?: string | null): MessageCreateOptions {
+  buildJoinMessage(guild: Guild, inviterId?: string | null, isDm = false): MessageCreateOptions {
     const conf = guildConfigService.getConfig(guild.id);
     const botName = conf.botName || guild.members.me?.displayName || 'Etho';
     const me = guild.members.me;
@@ -91,11 +90,26 @@ export const guildJoinService = {
       new ButtonBuilder()
         .setLabel('Dashboard')
         .setStyle(ButtonStyle.Link)
-        .setURL(`https://ethone.dev/discord/?guildId=${guild.id}`)
+        .setURL('https:' + '/' + `/ethone.dev/discord/?guildId=${guild.id}`)
         .setEmoji('📊')
     );
 
-    // Components V2 : pas de `content`, la mention de l'inviteur est dans la carte (elle le notifie).
+    const systemChannelElements = isDm
+      ? [
+          separator(),
+          text(
+            `### # Salon système ${botName}\nPour configurer le salon système ou les alertes, utilise la commande \`/setup\` directement sur le serveur ou configure tes alertes depuis le Dashboard.`
+          ),
+        ]
+      : [
+          separator(),
+          text(
+            `### # Salon système ${botName}\nChoisis un salon existant ou crée-le automatiquement pour recevoir les messages importants du bot.`
+          ),
+          channelSelectRow,
+          createChannelRow,
+        ];
+
     const card = container(hasCorePerms ? 0x10b981 : 0xf59e0b, [
       inviterId ? text(`<@${inviterId}>`) : null,
       text(`## ${icon('a_logo', '🛡️')} | ${botName} ajouté avec succès`),
@@ -118,12 +132,7 @@ export const guildJoinService = {
       text(
         `### ❔ Commandes utiles\n> \`/help\` · voir les commandes\n> \`/setup\` · configurer le bot\n> \`/language\` · changer la langue du bot`
       ),
-      separator(),
-      text(
-        `### # Salon système ${botName}\nChoisis un salon existant ou crée-le automatiquement pour recevoir les messages importants du bot.`
-      ),
-      channelSelectRow,
-      createChannelRow,
+      ...systemChannelElements,
       separator(),
       text(
         `### ⚙️ Langue du bot\nChoisis la langue utilisée par ${botName} sur ce serveur. Les salons déjà créés ne sont pas renommés automatiquement.`
@@ -156,59 +165,56 @@ export const guildJoinService = {
     return guild.ownerId;
   },
 
-  /**
-   * Message d'arrivée visible uniquement par la personne qui a ajouté le bot : Discord ne permet pas de message
-   * « éphémère » sans interaction, donc le bot crée un salon privé (seuls l'inviteur et le bot le voient ; les
-   * administrateurs voient tous les salons par nature). Sans la permission « Gérer les salons », repli en message
-   * privé à l'inviteur. Si l'inviteur est introuvable, rien n'est envoyé.
-   */
   async sendJoinWelcome(guild: Guild): Promise<void> {
     try {
       const inviterId = await this.resolveInviterId(guild);
-      if (!inviterId) return;
-      const payload = this.buildJoinMessage(guild, inviterId);
-      const me = guild.members.me ?? (await guild.members.fetchMe().catch(() => null));
-
-      if (me?.permissions.has(PermissionFlagsBits.ManageChannels)) {
-        const channel = await guild.channels
-          .create({
-            name: 'etho-bienvenue',
-            type: ChannelType.GuildText,
-            topic: `Configuration de ${me.displayName} : visible uniquement par la personne qui a ajouté le bot. Ce salon peut être supprimé.`,
-            permissionOverwrites: [
-              { id: guild.roles.everyone.id, deny: [PermissionFlagsBits.ViewChannel] },
-              {
-                id: inviterId,
-                allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.ReadMessageHistory],
-                deny: [PermissionFlagsBits.SendMessages],
-              },
-              {
-                id: guild.client.user.id,
-                allow: [
-                  PermissionFlagsBits.ViewChannel,
-                  PermissionFlagsBits.SendMessages,
-                  PermissionFlagsBits.EmbedLinks,
-                  PermissionFlagsBits.ReadMessageHistory,
-                ],
-              },
-            ],
-            reason: "Message d'accueil privé pour la personne qui a ajouté le bot",
-          })
-          .catch((err) => {
-            logger.warn(`[Join] Salon privé impossible sur ${guild.name} :`, err);
-            return null;
+      if (inviterId) {
+        const user = await guild.client.users.fetch(inviterId).catch(() => null);
+        if (user) {
+          const dmPayload = this.buildJoinMessage(guild, inviterId, true);
+          await user.send(dmPayload).catch((err) => {
+            logger.warn(`[Join] Envoi en MP impossible à l'inviteur (${inviterId}) :`, err);
           });
-        if (channel) {
-          await channel.send(payload);
-          logger.success(`[Join] Message d'accueil privé envoyé sur ${guild.name} (#${channel.name})`);
-          return;
+          logger.success(`[Join] Message d'accueil privé envoyé en MP à l'inviteur (${inviterId}) pour ${guild.name}`);
         }
       }
 
-      const user = await guild.client.users.fetch(inviterId).catch(() => null);
-      if (user) {
-        await user.send(payload).catch(() => null);
-        logger.info(`[Join] Pas de salon privé possible sur ${guild.name} : message envoyé en MP à l'inviteur.`);
+      const conf = guildConfigService.getConfig(guild.id);
+      const botName = conf.botName || guild.members.me?.displayName || 'Etho';
+      const targetChannel =
+        guild.systemChannel &&
+        guild.systemChannel
+          .permissionsFor(guild.client.user?.id || '')
+          ?.has([PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages])
+          ? guild.systemChannel
+          : null;
+
+      if (targetChannel) {
+        const promptCard = container(0x10b981, [
+          text(`## ${icon('a_logo', '🛡️')} | ${botName} a rejoint le serveur`),
+          separator(),
+          text(
+            `Merci ${inviterId ? `<@${inviterId}>` : ''} d'avoir ajouté **${botName}** à votre communauté.\nSeuls les membres avec la permission **Gérer le serveur** peuvent afficher la configuration.`
+          ),
+          separator(),
+          new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
+            new ButtonBuilder()
+              .setCustomId(`guild_join:open_card:${guild.id}`)
+              .setLabel('Ouvrir la configuration')
+              .setEmoji('🛡️')
+              .setStyle(ButtonStyle.Primary),
+            new ButtonBuilder()
+              .setLabel('Dashboard')
+              .setStyle(ButtonStyle.Link)
+              .setURL('https:' + '/' + `/ethone.dev/discord/?guildId=${guild.id}`)
+              .setEmoji('📊')
+          ),
+        ]);
+        await targetChannel
+          .send({ components: [promptCard], flags: MessageFlags.IsComponentsV2 } as MessageCreateOptions)
+          .catch((err) => {
+            logger.warn(`[Join] Envoi du bouton d'accueil impossible dans le salon système :`, err);
+          });
       }
     } catch (err) {
       logger.error(`[Join] Erreur lors de l'envoi du message d'accueil pour ${guild.name}:`, err);
@@ -286,6 +292,15 @@ export const guildJoinService = {
         content: '❌ Seuls les membres ayant la permission **Gérer le serveur** peuvent effectuer cette action.',
         ephemeral: true,
       });
+      return;
+    }
+
+    if (interaction.customId.startsWith('guild_join:open_card:')) {
+      const payload = this.buildJoinMessage(guild, interaction.user.id, false);
+      await interaction.reply({
+        ...payload,
+        flags: ((payload.flags as number) || MessageFlags.IsComponentsV2) | MessageFlags.Ephemeral,
+      } as any);
       return;
     }
 

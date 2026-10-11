@@ -50371,5 +50371,54 @@ CHANGELOG_BY_LANG.en.unshift(v1_73_4_en);
 CHANGELOG_BY_LANG.es.unshift(v1_73_4_es);
 CHANGELOG_BY_LANG.de.unshift(v1_73_4_de);
 
+const v1_73_5_fr: ChangelogEntry = {
+  version: "v1.73.5",
+  date: "2026-10-12",
+  title: "Bot : Accueil discret en MP et configuration éphémère sans création de salon",
+  items: [
+    "Suppression définitive de la création automatique du salon etho-bienvenue à l'arrivée du bot",
+    "Envoi direct du message d'accueil et d'état en Message Privé (MP) à la personne qui a ajouté le bot",
+    "Bouton interactif dans le salon système existant pour afficher la configuration en mode éphémère (Visible uniquement par vous)",
+  ],
+};
+
+const v1_73_5_en: ChangelogEntry = {
+  version: "v1.73.5",
+  date: "2026-10-12",
+  title: "Bot: Discreet welcome in DM and ephemeral setup without creating channels",
+  items: [
+    "Removed automatic creation of etho-bienvenue channel when the bot joins a server",
+    "Direct welcome and setup message sent via DM to the person who invited the bot",
+    "Interactive button in the existing system channel to open the setup card in ephemeral mode (Only you can see this)",
+  ],
+};
+
+const v1_73_5_es: ChangelogEntry = {
+  version: "v1.73.5",
+  date: "2026-10-12",
+  title: "Bot: Bienvenida discreta por MD y configuración efímera sin crear canales",
+  items: [
+    "Eliminada la creación automática del canal etho-bienvenue al unirse el bot",
+    "Envío directo del mensaje de bienvenida por mensaje directo (MD) a quien invitó al bot",
+    "Botón interactivo en el canal de sistema existente para ver la configuración en modo efímero",
+  ],
+};
+
+const v1_73_5_de: ChangelogEntry = {
+  version: "v1.73.5",
+  date: "2026-10-12",
+  title: "Bot: Diskrete Begrüßung per DM und ephemere Konfiguration ohne Kanälerstellung",
+  items: [
+    "Automatische Erstellung des etho-bienvenue Kanals beim Serverbeitritt vollständig entfernt",
+    "Direkte Begrüßungsnachricht per DM an den Einladenden",
+    "Interaktive Schaltfläche im bestehenden Systemkanal für ephemere Ansicht (Nur du kannst dies sehen)",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_73_5_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_73_5_en);
+CHANGELOG_BY_LANG.es.unshift(v1_73_5_es);
+CHANGELOG_BY_LANG.de.unshift(v1_73_5_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

@@ -1,4 +1,4 @@
-import { PermissionFlagsBits, SlashCommandBuilder } from 'discord.js';
+import { MessageFlags, PermissionFlagsBits, SlashCommandBuilder } from 'discord.js';
 import { Command, CommandContext } from '../../types/command.js';
 import { guildSetupService } from '../../services/guildSetupService.js';
 import { guildJoinService } from '../../services/guildJoinService.js';
@@ -7,7 +7,7 @@ import { getTranslation } from '../../utils/i18n.js';
 
 export const setupCommand: Command = {
   name: 'setup',
-  aliases: ['configuration', 'modules-setup', 'setup-welcome'],
+  aliases: ['configuration', 'modules-setup', 'setup-welcome', 'bienvenue', 'welcome'],
   description: 'Ouvre la configuration rapide : choisissez les modules à activer sur ce serveur',
   category: 'Administration',
   userPermissions: [PermissionFlagsBits.ManageGuild],
@@ -36,9 +36,17 @@ export const setupCommand: Command = {
       ? (ctx.interaction as any).options?.getString?.('vue')
       : ctx.args[0]?.toLowerCase();
 
-    if (viewChoice === 'welcome' || viewChoice === 'join') {
-      const payload = guildJoinService.buildJoinMessage(ctx.guild, ctx.author.id);
-      await ctx.reply({ ...payload, ephemeral: true } as any);
+    const invokedName = ctx.isSlash && ctx.interaction
+      ? ctx.interaction.commandName
+      : ctx.message?.content.slice(ctx.prefix.length).trim().split(/\s+/)[0]?.toLowerCase();
+
+    const isWelcomeAlias = invokedName === 'bienvenue' || invokedName === 'welcome' || invokedName === 'setup-welcome';
+    if (viewChoice === 'welcome' || viewChoice === 'join' || isWelcomeAlias) {
+      const payload = guildJoinService.buildJoinMessage(ctx.guild, ctx.author.id, false);
+      await ctx.reply({
+        ...payload,
+        flags: ((payload.flags as number) || MessageFlags.IsComponentsV2) | MessageFlags.Ephemeral,
+      } as any);
       return;
     }
 

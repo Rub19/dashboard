@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.73.5 — 2026-10-12
+
+**Bot : Accueil discret en MP et configuration éphémère sans création de salon**
+
+- Suppression définitive de la création automatique du salon `# etho-bienvenue` lors de l'arrivée du bot sur un serveur.
+- Envoi direct de la carte de bienvenue et d'état en Message Privé (MP) à la personne qui a ajouté le bot (`inviterId`).
+- Bouton interactif dans le salon système existant permettant aux administrateurs d'ouvrir la configuration en mode éphémère natif (`flags: MessageFlags.Ephemeral`, mention *« Visible uniquement par vous »*).
+- Support des alias `/bienvenue` et `/welcome` pour rouvrir la carte de configuration éphémère à la demande sur le serveur.
+
 ## v1.73.4 — 2026-10-12
 
 **Interface : Suppression du padding résiduel sous le contenu desktop**

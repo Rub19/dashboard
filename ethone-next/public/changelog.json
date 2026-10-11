@@ -1,5 +1,15 @@
 [
   {
+    "version": "v1.71.3",
+    "date": "2026-10-11",
+    "title": "Petites retouches",
+    "items": [
+      "Mail sur téléphone : le tri « Plus récents » ne chevauche plus le titre de la boîte.",
+      "Dock : bouton météo et Control Center aux couleurs du thème.",
+      "Activité sur téléphone : marges réduites."
+    ]
+  },
+  {
     "version": "v1.71.2",
     "date": "2026-10-11",
     "title": "Dock et Dynamic Island plus beaux",
@@ -617,17 +627,6 @@
       "Le score est pondéré par la gravité, et le dernier scan est gardé par le bot : il s'affiche dès l'ouverture, avec sa date et le nombre de membres.",
       "Scan automatique : chaque jour ou chaque semaine, le bot poste dans le salon choisi un rapport avec le score, les nouveaux points et ceux corrigés depuis le précédent.",
       "Vue d'ensemble : section « À régler » avec les points importants du dernier scan, score du scan, nombre de rôles sensibles, et activité récente lue dans les vrais logs du bot (avant : message fixe « Aucun incident récent »)."
-    ]
-  },
-  {
-    "version": "v1.55.70",
-    "date": "2026-10-08",
-    "title": "Console Discord : page de connexion quand la session du bot expire, photo de profil à jour, bouton jour/nuit stable",
-    "items": [
-      "Si la session avec le bot (7 jours) a expiré, ouvrir n'importe quelle page Discord affiche directement « Connecte-toi avec Discord » ; après la connexion, on revient sur la page ouverte.",
-      "Photo de profil : le bot relit ta photo et ton nom actuels sur Discord (toutes les 5 minutes au plus) au lieu de garder ceux du jour de la connexion, et l'ancienne copie gardée dans le navigateur est remplacée.",
-      "Bouton jour/nuit des écrans Discord : le thème change d'un coup sans fondu et les clics répétés pendant le changement sont ignorés, plus de clignotement. Les 4 copies du bouton partagent maintenant le même code.",
-      "Plus de nom « rub19 » écrit en dur quand le profil n'est pas encore chargé."
     ]
   }
 ]

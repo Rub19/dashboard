@@ -49908,5 +49908,54 @@ CHANGELOG_BY_LANG.en.unshift(v1_71_2_en);
 CHANGELOG_BY_LANG.es.unshift(v1_71_2_es);
 CHANGELOG_BY_LANG.de.unshift(v1_71_2_de);
 
+const v1_71_3_fr: ChangelogEntry = {
+  version: "v1.71.3",
+  date: "2026-10-11",
+  title: "Petites retouches",
+  items: [
+    "Mail sur téléphone : le tri « Plus récents » ne chevauche plus le titre de la boîte.",
+    "Dock : bouton météo et Control Center aux couleurs du thème.",
+    "Activité sur téléphone : marges réduites.",
+  ],
+};
+
+const v1_71_3_en: ChangelogEntry = {
+  version: "v1.71.3",
+  date: "2026-10-11",
+  title: "Small touch-ups",
+  items: [
+    "Mail on phones: the sort menu no longer overlaps the folder title.",
+    "Dock: weather button and Control Center follow the theme.",
+    "Activity on phones: tighter margins.",
+  ],
+};
+
+const v1_71_3_es: ChangelogEntry = {
+  version: "v1.71.3",
+  date: "2026-10-11",
+  title: "Pequeños retoques",
+  items: [
+    "Correo en el móvil: el menú de orden ya no se superpone al título.",
+    "Dock: botón del tiempo y Centro de control con los colores del tema.",
+    "Actividad en el móvil: márgenes reducidos.",
+  ],
+};
+
+const v1_71_3_de: ChangelogEntry = {
+  version: "v1.71.3",
+  date: "2026-10-11",
+  title: "Kleine Korrekturen",
+  items: [
+    "Mail auf dem Handy: Sortiermenü überlappt den Titel nicht mehr.",
+    "Dock: Wettertaste und Kontrollzentrum in Themenfarben.",
+    "Aktivität auf dem Handy: kleinere Ränder.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_71_3_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_71_3_en);
+CHANGELOG_BY_LANG.es.unshift(v1_71_3_es);
+CHANGELOG_BY_LANG.de.unshift(v1_71_3_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

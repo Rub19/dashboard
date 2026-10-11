@@ -328,7 +328,7 @@ export default function DockControlCenter({
                   whileHover={{ scale: 1.12, rotate: 90 }}
                   whileTap={{ scale: 0.9 }}
                   aria-label={i18n("close")}
-                  className="flex h-7 w-7 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-white/[0.04] text-[var(--text-muted)] transition-colors hover:bg-white/10 hover:text-white cursor-pointer"
+                  className="flex h-7 w-7 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-white/[0.04] text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] cursor-pointer"
                 >
                   <Icon name="close" className="h-3.5 w-3.5" />
                 </motion.button>
@@ -340,7 +340,7 @@ export default function DockControlCenter({
                   {i18n("controlCenterAnimations")}
                 </p>
                 <LayoutGroup id="cc-animations-group">
-                  <div className="relative flex p-1 rounded-2xl bg-white/[0.03] border border-white/[0.07] backdrop-blur-md gap-1">
+                  <div className="relative flex p-1 rounded-2xl bg-[var(--text-primary)]/[0.03] border border-[var(--panel-border)] backdrop-blur-md gap-1">
                     {UI_ANIMATIONS.map((id) => {
                       const isSelected = settings.uiAnimations === id;
                       return (

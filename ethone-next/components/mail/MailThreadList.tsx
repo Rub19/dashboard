@@ -149,7 +149,7 @@ export default function MailThreadList({
       {/* Header */}
       <div className="shrink-0 border-b border-[var(--panel-border)] px-4 pt-3.5 pb-3 select-none">
         <div className="flex items-center justify-between gap-2">
-          <div className="flex items-baseline gap-2 min-w-0">
+          <div className="flex min-w-0 flex-1 items-baseline gap-2">
             <h2 className="truncate text-[15px] font-semibold text-[var(--text-primary)]">{title}</h2>
             <span className="shrink-0 text-xs text-[var(--text-muted)]">
               {filteredCount}
@@ -169,7 +169,7 @@ export default function MailThreadList({
             <select
               value={sort}
               onChange={(e) => setSort(e.target.value as SortMode)}
-              className="cursor-pointer rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-transparent px-2 py-1 text-xs text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)] focus:outline-none"
+              className="h-7 max-w-[8rem] cursor-pointer truncate rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-transparent px-2 py-0 !text-xs leading-none text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)] focus:outline-none"
             >
               <option value="date_desc">Plus récents</option>
               <option value="date_asc">Plus anciens</option>

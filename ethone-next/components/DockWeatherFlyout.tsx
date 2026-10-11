@@ -55,10 +55,10 @@ export default function DockWeatherFlyout({
         aria-expanded={open}
         aria-label="Météo"
         className={cn(
-          "flex h-10 items-center gap-1.5 rounded-xl border px-2.5 text-xs font-semibold select-none cursor-pointer backdrop-blur-md transition-colors",
+          "flex h-10 items-center gap-1.5 rounded-2xl border px-2.5 text-xs font-semibold select-none cursor-pointer transition-colors",
           open
-            ? "border-amber-400/40 bg-amber-400/15 text-amber-200 shadow-[0_0_12px_rgba(251,191,36,0.3)]"
-            : "border-white/[0.08] bg-white/[0.04] text-[var(--text-primary)] hover:border-amber-400/30 hover:bg-white/[0.08]"
+            ? "border-amber-400/40 bg-amber-400/15 text-[var(--text-primary)] shadow-[0_0_12px_rgba(251,191,36,0.25)]"
+            : "border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] text-[var(--text-primary)] hover:border-amber-400/30 hover:bg-[var(--text-primary)]/[0.07]"
         )}
       >
         <CloudSun className="h-4.5 w-4.5 shrink-0 text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.4)]" />

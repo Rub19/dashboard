@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.71.3 — 2026-10-11
+
+**Petites retouches**
+
+- Mail sur téléphone : le tri « Plus récents » ne chevauche plus le titre de la boîte.
+- Dock : bouton météo et Control Center aux couleurs du thème.
+- Activité sur téléphone : marges réduites.
+
 ## v1.71.2 — 2026-10-11
 
 **Dock et Dynamic Island plus beaux**

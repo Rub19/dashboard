@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.73.4 — 2026-10-12
+
+**Interface : Suppression du padding résiduel sous le contenu desktop**
+
+- Suppression du padding inférieur de 96px sur le conteneur principal desktop (`md:pb-0` au lieu de `md:pb-24` dans `Shell.tsx`).
+- Élimination totale de la bande vide en bas d'écran visible derrière le dock (mise en évidence en vert dans DevTools).
+
 ## v1.73.3 — 2026-10-12
 
 **Bot : Pack étendu AutoMod natif & éligibilité badge Discord**

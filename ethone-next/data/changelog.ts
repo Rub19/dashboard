@@ -50326,5 +50326,50 @@ CHANGELOG_BY_LANG.en.unshift(v1_73_3_en);
 CHANGELOG_BY_LANG.es.unshift(v1_73_3_es);
 CHANGELOG_BY_LANG.de.unshift(v1_73_3_de);
 
+const v1_73_4_fr: ChangelogEntry = {
+  version: "v1.73.4",
+  date: "2026-10-12",
+  title: "Interface : Suppression du padding résiduel sous le contenu desktop",
+  items: [
+    "Suppression du padding inférieur de 96px sur le conteneur principal desktop (md:pb-0 au lieu de md:pb-24)",
+    "Élimination totale de la bande vide en bas d'écran visible derrière le dock",
+  ],
+};
+
+const v1_73_4_en: ChangelogEntry = {
+  version: "v1.73.4",
+  date: "2026-10-12",
+  title: "UI: Removed residual desktop bottom padding",
+  items: [
+    "Removed 96px bottom padding on desktop main container (md:pb-0 instead of md:pb-24)",
+    "Completely eliminated the dead space strip visible behind the dock",
+  ],
+};
+
+const v1_73_4_es: ChangelogEntry = {
+  version: "v1.73.4",
+  date: "2026-10-12",
+  title: "Interfaz: Eliminación del padding residual inferior en escritorio",
+  items: [
+    "Eliminación del padding inferior de 96px en el contenedor principal de escritorio (md:pb-0)",
+    "Eliminación total del espacio vacío visible detrás del dock",
+  ],
+};
+
+const v1_73_4_de: ChangelogEntry = {
+  version: "v1.73.4",
+  date: "2026-10-12",
+  title: "Oberfläche: Entfernung des restlichen unteren Desktop-Paddings",
+  items: [
+    "96px unteres Padding im Desktop-Hauptcontainer entfernt (md:pb-0)",
+    "Vollständige Beseitigung des toten Bereichs hinter dem Dock",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_73_4_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_73_4_en);
+CHANGELOG_BY_LANG.es.unshift(v1_73_4_es);
+CHANGELOG_BY_LANG.de.unshift(v1_73_4_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

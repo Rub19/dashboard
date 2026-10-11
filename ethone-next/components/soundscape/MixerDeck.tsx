@@ -131,38 +131,29 @@ export const MixerDeck = memo(function MixerDeck({
                     <span className="text-xs font-bold text-white truncate">
                       {track.title}
                     </span>
-                    <div className="flex items-end gap-0.5 h-3 shrink-0">
-                      {[0.3, 0.7, 0.5, 0.9].map((multiplier, idx) => (
-                        <motion.span
-                          key={idx}
-                          className={cn(
-                            "w-0.5 rounded-sm transition-colors",
-                            isPlaying ? "bg-emerald-400" : "bg-zinc-700"
-                          )}
-                          animate={
-                            isPlaying
-                              ? {
-                                  height: [
-                                    "20%",
-                                    `${Math.min(100, Math.max(25, currentVol * multiplier))}%`,
-                                    "25%",
-                                  ],
-                                }
-                              : { height: "20%" }
-                          }
-                          transition={
-                            isPlaying
-                              ? {
-                                  repeat: Infinity,
-                                  repeatType: "reverse",
-                                  duration: 0.45 + idx * 0.12,
-                                  ease: "easeInOut",
-                                }
-                              : { duration: 0.2 }
-                          }
-                        />
-                      ))}
-                    </div>
+                    {isPlaying && (
+                      <div className="flex items-end gap-0.5 h-3 shrink-0">
+                        {[0.3, 0.7, 0.5, 0.9].map((multiplier, idx) => (
+                          <motion.span
+                            key={idx}
+                            className="w-0.5 rounded-sm bg-emerald-400"
+                            animate={{
+                              height: [
+                                "20%",
+                                `${Math.min(100, Math.max(25, currentVol * multiplier))}%`,
+                                "25%",
+                              ],
+                            }}
+                            transition={{
+                              repeat: Infinity,
+                              repeatType: "reverse",
+                              duration: 0.45 + idx * 0.12,
+                              ease: "easeInOut",
+                            }}
+                          />
+                        ))}
+                      </div>
+                    )}
                   </div>
                   <p className="text-[10px] text-zinc-400 line-clamp-1 mt-0.5">
                     {track.subtitle}

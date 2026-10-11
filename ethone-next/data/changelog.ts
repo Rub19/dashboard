@@ -50010,5 +50010,54 @@ CHANGELOG_BY_LANG.en.unshift(v1_72_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_72_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_72_0_de);
 
+const v1_72_1_fr: ChangelogEntry = {
+  version: "v1.72.1",
+  date: "2026-10-11",
+  title: "Ambiance sonore : désactivation de l'égaliseur sur l'option Aucune",
+  items: [
+    "Suppression de l'animation d'égaliseur et de l'indicateur d'activité sur le bouton « Aucune »",
+    "Masquage dynamique des barres d'égaliseur sur les pistes inactives du mixeur sonore",
+    "Support et synchronisation cross-packs de l'icône volume coupé (volume-x) sans repli d'icône inconnue",
+  ],
+};
+
+const v1_72_1_en: ChangelogEntry = {
+  version: "v1.72.1",
+  date: "2026-10-11",
+  title: "Ambient sound: disable equalizer when set to None",
+  items: [
+    "Removed equalizer animation and activity indicator on the 'None' ambient sound button",
+    "Dynamic hiding of equalizer bars on inactive soundscape mixer tracks",
+    "Cross-pack support and mapping for the muted volume icon (volume-x) without missing icon fallback",
+  ],
+};
+
+const v1_72_1_es: ChangelogEntry = {
+  version: "v1.72.1",
+  date: "2026-10-11",
+  title: "Sonido ambiental: desactivar ecualizador en opción Ninguno",
+  items: [
+    "Eliminación de la animación de ecualizador e indicador de actividad en el botón 'Ninguno'",
+    "Ocultación dinámica de barras de ecualizador en pistas inactivas del mezclador",
+    "Soporte cross-pack para el icono de volumen silenciado (volume-x) sin icono de interrogación",
+  ],
+};
+
+const v1_72_1_de: ChangelogEntry = {
+  version: "v1.72.1",
+  date: "2026-10-11",
+  title: "Hintergrundsound: Equalizer bei Option Keine deaktivieren",
+  items: [
+    "Equalizer-Animation und Aktivitätsanzeige auf der Schaltfläche 'Keine' entfernt",
+    "Dynamisches Ausblenden der Equalizer-Balken bei inaktiven Soundscape-Spuren",
+    "Cross-Pack-Unterstützung für das Stummschalt-Symbol (volume-x) ohne Fragezeichen-Fallback",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_72_1_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_72_1_en);
+CHANGELOG_BY_LANG.es.unshift(v1_72_1_es);
+CHANGELOG_BY_LANG.de.unshift(v1_72_1_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

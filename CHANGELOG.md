@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.72.1 — 2026-10-11
+
+**Ambiance sonore : égaliseur désactivé sur l'option Aucune et icône multi-packs**
+
+- Suppression de l'animation d'égaliseur audio et du point d'activité sur le bouton d'ambiance « Aucune ».
+- Masquage dynamique des barres d'égaliseur sur les pistes inactives ou muettes du mixeur audio.
+- Mappage et synchronisation cross-packs de l'icône de coupure sonore (`volume-x`), éliminant l'icône d'interrogation par défaut.
+
 ## v1.72.0 — 2026-10-11
 
 **Soundscape : studio d'ambiance repensé (motion design, boutons carrés, ergonomie studio)**

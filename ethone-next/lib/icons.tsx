@@ -302,6 +302,7 @@ const MAP: Record<string, Partial<Record<IconPack, string>>> = {
   "speaker-simple-slash": { lucide: "volume-x", phosphor: "speaker-simple-slash", tabler: "volume-off", heroicons: "speaker-x-mark", radix: "speaker-off" },
   "speaker-simple-high": { lucide: "volume-2", phosphor: "speaker-simple-high", tabler: "volume-2", heroicons: "speaker-wave", radix: "speaker-loud" },
   "speaker-slash": { lucide: "volume-x", phosphor: "speaker-slash", tabler: "volume-off", heroicons: "speaker-x-mark", radix: "speaker-off" },
+  "volume-x": { lucide: "volume-x", phosphor: "speaker-slash", tabler: "volume-off", heroicons: "speaker-x-mark", radix: "speaker-off" },
   "floppy-disk": { lucide: "save", phosphor: "floppy-disk", tabler: "device-floppy", heroicons: "archive-box-arrow-down", radix: "file-text" },
   "paper-plane-tilt": { lucide: "send", phosphor: "paper-plane-tilt", tabler: "send", heroicons: "paper-airplane", radix: "paper-plane" },
   "chat-circle": { lucide: "message-circle", phosphor: "chat-circle", tabler: "message-circle", heroicons: "chat-bubble-oval-left", radix: "chat-bubble" },

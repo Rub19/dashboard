@@ -26,7 +26,7 @@ const AMBIENT_ICONS: Record<string, string> = {
 };
 
 const AMBIENT_LABELS: Record<string, string> = {
-  none: "Aucun",
+  none: "Aucune",
   rain: "Pluie",
   wind: "Vent",
   ocean: "Océan",
@@ -100,6 +100,7 @@ export default function AmbientSoundControl({ value, onChange, compact }: Ambien
     >
       {AMBIENT_SOUNDS.map((id) => {
         const active = current === id;
+        const isPlaying = active && id !== "none";
         const label = i18n(`ambientSound${id.charAt(0).toUpperCase() + id.slice(1)}`, AMBIENT_LABELS[id] ?? id);
         return (
           <button
@@ -121,8 +122,8 @@ export default function AmbientSoundControl({ value, onChange, compact }: Ambien
               className={cn("h-5 w-5 transition-transform group-hover:scale-110", active ? "text-[var(--accent-primary)]" : "")}
             />
             <span className="mt-1.5 text-[10px] font-medium">{label}</span>
-            <SoundWave active={active} reduced={reducedMotion} />
-            {active && !compact && (
+            <SoundWave active={isPlaying} reduced={reducedMotion} />
+            {isPlaying && !compact && (
               <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)] shadow-[0_0_6px_var(--accent-primary)]" />
             )}
           </button>

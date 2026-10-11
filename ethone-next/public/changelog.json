@@ -1,5 +1,13 @@
 [
   {
+    "version": "v1.70.2",
+    "date": "2026-10-11",
+    "title": "Mobile : Connexions compactes",
+    "items": [
+      "Connexions sur téléphone : chaque service tient sur une ligne (nom, état, bouton), l'en-tête est plus court et les blocs de présentation sont masqués."
+    ]
+  },
+  {
     "version": "v1.70.1",
     "date": "2026-10-11",
     "title": "Réglages : Ctrl K et annulation",
@@ -630,18 +638,6 @@
       "Design fidèle avec badge hashtag, états de sélection personnalisés et fermeture fluide",
       "Service d'accueil à l'arrivée du bot avec mention de l'inviteur, diagnostic des 11 permissions clés, salon système et langue",
       "Boutons d'accès direct vers le serveur Support et le Dashboard serveur"
-    ]
-  },
-  {
-    "version": "v1.55.65",
-    "date": "2026-10-08",
-    "title": "Nouveau Module : Scan de Sécurité Discord Interactif",
-    "items": [
-      "Nouvel écran complet de scan de sécurité accessible depuis la barre latérale et la vue d'ensemble du serveur",
-      "Rapport détaillé avec score global sur 100, jauge visuelle et répartition par catégorie (Keeper, Rôles, Salons, Discord, Bots, Réglages)",
-      "Filtres interactifs par catégorie, détection des vulnérabilités anti-nuke et 2FA, avec raccourcis de configuration directe",
-      "Scan automatique programmable avec choix de salon cible et fréquence quotidienne ou hebdomadaire",
-      "Section accordéon des points solides et conformités sécuritaires vérifiées sur le serveur"
     ]
   }
 ]

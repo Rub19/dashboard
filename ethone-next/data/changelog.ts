@@ -49679,5 +49679,46 @@ CHANGELOG_BY_LANG.en.unshift(v1_70_1_en);
 CHANGELOG_BY_LANG.es.unshift(v1_70_1_es);
 CHANGELOG_BY_LANG.de.unshift(v1_70_1_de);
 
+const v1_70_2_fr: ChangelogEntry = {
+  version: "v1.70.2",
+  date: "2026-10-11",
+  title: "Mobile : Connexions compactes",
+  items: [
+    "Connexions sur téléphone : chaque service tient sur une ligne (nom, état, bouton), l'en-tête est plus court et les blocs de présentation sont masqués.",
+  ],
+};
+
+const v1_70_2_en: ChangelogEntry = {
+  version: "v1.70.2",
+  date: "2026-10-11",
+  title: "Mobile: compact Connections",
+  items: [
+    "Connections on phones: each service fits on one row, shorter header, intro blocks hidden.",
+  ],
+};
+
+const v1_70_2_es: ChangelogEntry = {
+  version: "v1.70.2",
+  date: "2026-10-11",
+  title: "Móvil: Conexiones compactas",
+  items: [
+    "Conexiones en el móvil: cada servicio en una fila, encabezado más corto.",
+  ],
+};
+
+const v1_70_2_de: ChangelogEntry = {
+  version: "v1.70.2",
+  date: "2026-10-11",
+  title: "Mobil: kompakte Verbindungen",
+  items: [
+    "Verbindungen auf dem Handy: jeder Dienst in einer Zeile, kürzerer Kopf.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_70_2_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_70_2_en);
+CHANGELOG_BY_LANG.es.unshift(v1_70_2_es);
+CHANGELOG_BY_LANG.de.unshift(v1_70_2_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

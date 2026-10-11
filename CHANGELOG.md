@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.70.2 — 2026-10-11
+
+**Mobile : Connexions compactes**
+
+- Connexions sur téléphone : chaque service tient sur une ligne (nom, état, bouton), l'en-tête est plus court et les blocs de présentation sont masqués.
+
 ## v1.70.1 — 2026-10-11
 
 **Réglages : Ctrl K et annulation**

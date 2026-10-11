@@ -329,14 +329,14 @@ export default function IntegrationsSettings() {
   return (
     <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden bg-transparent">
       {/* Top Header Bar */}
-      <div className="shrink-0 border-b border-[var(--panel-border)]/60 bg-[var(--panel-bg)]/40 px-6 py-4 backdrop-blur-xl">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between max-w-7xl mx-auto w-full">
+      <div className="shrink-0 border-b border-[var(--panel-border)]/60 bg-[var(--panel-bg)]/40 px-3 py-3 backdrop-blur-xl sm:px-6 sm:py-4">
+        <div className="flex flex-col gap-3 sm:gap-4 sm:flex-row sm:items-center sm:justify-between max-w-7xl mx-auto w-full">
           <div className="flex items-center gap-3">
             <motion.div
               initial={{ scale: 0.6, rotate: -15, opacity: 0 }}
               animate={{ scale: 1, rotate: 0, opacity: 1 }}
               transition={{ type: "spring", stiffness: 320, damping: 36 }}
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--inset-radius)] bg-[var(--accent-primary)]/15 border border-[var(--accent-primary)]/30 text-[var(--accent-primary)]"
+              className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-[var(--inset-radius)] bg-[var(--accent-primary)]/15 border border-[var(--accent-primary)]/30 text-[var(--accent-primary)] sm:flex"
             >
               <Plug className="h-5 w-5" />
             </motion.div>
@@ -349,13 +349,13 @@ export default function IntegrationsSettings() {
                   {myConnections.length} / {INTEGRATIONS.length} connectés
                 </span>
               </div>
-              <p className="text-xs text-[var(--text-muted)]">
+              <p className="hidden text-xs text-[var(--text-muted)] sm:block">
                 Connectez vos services préférés à l&apos;écosystème ETHONE OS & Brain
               </p>
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-2 sm:flex-wrap sm:gap-3">
             {/* Search Bar in Header */}
             <Input
               type="search"
@@ -366,7 +366,7 @@ export default function IntegrationsSettings() {
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Rechercher une intégration..."
               aria-label="Rechercher une intégration"
-              className="min-w-[200px] sm:w-64"
+              className="min-w-0 flex-1 sm:w-64 sm:flex-none"
             />
 
             <button
@@ -376,7 +376,7 @@ export default function IntegrationsSettings() {
               className="btn-sheen relative flex items-center gap-1.5 rounded-xl bg-[var(--accent-primary)] px-3.5 py-2 text-xs font-bold text-[var(--accent-contrast)] transition-[filter,transform] duration-200 hover:brightness-110 active:scale-95 disabled:opacity-50 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
             >
               <Zap className={cn("h-3.5 w-3.5", testingAll && "animate-spin")} />
-              <span>{testingAll ? "Test global en cours..." : "Tester toutes"}</span>
+              <span className="hidden sm:inline">{testingAll ? "Test global en cours..." : "Tester toutes"}</span>
             </button>
             {(search || filter !== "all") && (
               <button
@@ -396,19 +396,21 @@ export default function IntegrationsSettings() {
       </div>
 
       {/* Main Scrollable Content */}
-      <div className="min-h-0 flex-1 overflow-y-auto os-scroll p-4 sm:p-6 pb-16 space-y-6 [overscroll-behavior:contain]">
-        <div className="stagger-children max-w-7xl mx-auto w-full space-y-6">
-          {/* Brain Ecosystem Hub */}
+      <div className="min-h-0 flex-1 overflow-y-auto os-scroll p-3 sm:p-6 pb-16 space-y-6 [overscroll-behavior:contain]">
+        <div className="stagger-children max-w-7xl mx-auto w-full space-y-4 sm:space-y-6">
+          {/* Brain Ecosystem Hub (masqué sur téléphone) */}
+          <div className="hidden sm:block">
           <BrainIntegrationsHub
             connectedCount={myConnections.length}
             totalCount={INTEGRATIONS.length}
             configuredMap={configuredMap}
             onConnectPrompt={(id) => setSearch(id)}
           />
+          </div>
 
           <Link
             href="/extension"
-            className="group flex items-center gap-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 transition-colors hover:border-[var(--accent-primary)]/40"
+            className="group hidden items-center sm:flex gap-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 transition-colors hover:border-[var(--accent-primary)]/40"
           >
             <span className="grid h-10 w-10 shrink-0 place-items-center rounded-[var(--inset-radius)] bg-[var(--accent-primary)]/12 text-[var(--accent-primary)]">
               <Download className="h-5 w-5 transition-transform duration-300 group-hover:translate-y-0.5" />
@@ -495,7 +497,7 @@ export default function IntegrationsSettings() {
           ) : (
             <motion.div
               layout="position"
-              className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
+              className="grid grid-cols-1 gap-2 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3"
             >
               <AnimatePresence mode="popLayout">
                 {filtered.map((integration) => (

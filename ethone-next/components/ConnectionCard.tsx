@@ -117,7 +117,7 @@ export default function ConnectionCard({
         transition={{ duration: 0.15, ease: "easeOut" }}
         onClick={() => setDrawerOpen(true)}
         className={cn(
-          "group relative flex flex-col justify-between rounded-[var(--panel-radius)] border p-4.5 transition-all cursor-pointer shadow-lg backdrop-blur-[var(--panel-blur)]",
+          "group relative flex flex-col justify-between rounded-[var(--panel-radius)] border p-3 sm:p-4.5 transition-all cursor-pointer shadow-lg backdrop-blur-[var(--panel-blur)]",
           isConnected
             ? "border-[var(--accent-primary)]/30 bg-gradient-to-b from-[var(--surface-raised)]/90 to-[var(--surface-raised)]/60 hover:border-[var(--accent-primary)]/60"
             : "border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/50 hover:border-[var(--panel-border)] hover:bg-[var(--surface-raised)]/70"
@@ -125,9 +125,9 @@ export default function ConnectionCard({
       >
         {/* Top Service Info */}
         <div>
-          <div className="flex items-start justify-between gap-2.5 mb-3">
+          <div className="flex items-center justify-between gap-2.5 sm:mb-3 sm:items-start">
             <div className="flex items-center gap-3 min-w-0">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] shadow-xs transition-transform group-hover:scale-105">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--inset-radius)] border sm:h-11 sm:w-11 border-[var(--panel-border)] bg-[var(--surface-raised)] shadow-xs transition-transform group-hover:scale-105">
                 <ServiceIcon id={integration.id} icon={integration.icon} className="h-6 w-6" colored />
               </div>
               <div className="min-w-0">
@@ -141,7 +141,7 @@ export default function ConnectionCard({
                     </span>
                   )}
                 </div>
-                <p className="line-clamp-2 text-[11px] text-[var(--text-muted)] mt-0.5 leading-snug">
+                <p className="hidden line-clamp-2 text-[11px] text-[var(--text-muted)] mt-0.5 leading-snug sm:block">
                   {config?.description || integration.description}
                 </p>
               </div>
@@ -174,9 +174,9 @@ export default function ConnectionCard({
         </div>
 
         {/* Bottom Health & Action Buttons */}
-        <div className="mt-4 pt-3 border-t border-[var(--panel-border)]/50 flex items-center justify-between gap-2">
+        <div className="mt-2 flex items-center justify-between gap-2 sm:mt-4 sm:border-t sm:border-[var(--panel-border)]/50 sm:pt-3">
           {/* Latency badge if tested */}
-          <div className="flex items-center gap-1.5 text-[11px] text-[var(--text-muted)]">
+          <div className="hidden items-center gap-1.5 sm:flex text-[11px] text-[var(--text-muted)]">
             {health?.ms ? (
               <span className="rounded-md border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 px-1.5 py-0.5 font-mono text-[10px] font-bold text-[var(--accent-primary)]">
                 ⚡ {health.ms} ms
@@ -189,7 +189,7 @@ export default function ConnectionCard({
           </div>
 
           {/* Quick Actions */}
-          <div className="flex items-center gap-1.5">
+          <div className="ml-auto flex items-center gap-1.5 sm:ml-0">
             <button
               type="button"
               onClick={handleTestPing}

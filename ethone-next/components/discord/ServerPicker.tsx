@@ -709,7 +709,16 @@ export default function ServerPicker({
                         whileHover={reduced ? undefined : { y: -1, scale: 1.004 }}
                         whileTap={reduced ? undefined : { scale: 0.995 }}
                         transition={SPRING_PRESS}
+                        role="button"
+                        tabIndex={0}
                         onClick={() => onPick(guild)}
+                        onKeyDown={(e) => {
+                          if (e.target !== e.currentTarget) return;
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            onPick(guild);
+                          }
+                        }}
                         className="group flex items-center justify-between rounded-md border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-4 py-3 hover:border-emerald-500/40 hover:bg-[var(--surface-raised)] transition-all cursor-pointer shadow-sm"
                       >
                         <div className="flex items-center gap-3.5 min-w-0">
@@ -771,7 +780,16 @@ export default function ServerPicker({
                     whileHover={reduced ? undefined : { y: -1, scale: 1.004 }}
                     whileTap={reduced ? undefined : { scale: 0.995 }}
                     transition={SPRING_PRESS}
+                    role="button"
+                    tabIndex={0}
                     onClick={() => onPick(guild)}
+                    onKeyDown={(e) => {
+                      if (e.target !== e.currentTarget) return;
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        onPick(guild);
+                      }
+                    }}
                     className="group flex items-center justify-between rounded-sm border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-4 py-3 hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-raised)] transition-colors cursor-pointer"
                   >
                     <div className="flex items-center gap-3 min-w-0">

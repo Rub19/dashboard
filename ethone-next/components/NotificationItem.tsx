@@ -204,6 +204,7 @@ export default function NotificationItem({
           <div onClick={(e) => e.stopPropagation()}>
             <AnimatedDropdown modal={false} onOpenChange={() => setSnoozeExpanded(false)}>
             <AnimatedDropdownTrigger
+              aria-label="Options"
               className="h-7 w-7 p-0 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 shadow-xs"
             >
               <MoreHorizontal className="h-3.5 w-3.5" />

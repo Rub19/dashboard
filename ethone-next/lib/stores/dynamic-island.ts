@@ -10,7 +10,11 @@ function readVisible(): boolean {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return false;
     const parsed = JSON.parse(raw);
-    return parsed?.visible === true;
+    if (typeof parsed === "boolean") return parsed;
+    if (typeof parsed === "object" && parsed !== null && "visible" in parsed) {
+      return Boolean(parsed.visible);
+    }
+    return false;
   } catch {
     return false;
   }
@@ -21,7 +25,6 @@ function writeVisible(visible: boolean) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ visible }));
   } catch {
-    // ignore storage errors
   }
 }
 

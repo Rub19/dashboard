@@ -108,7 +108,7 @@ export default function BrainPage() {
       />
 
       {/* Center Main Workspace */}
-      <main className="flex min-h-0 flex-1 flex-col overflow-hidden bg-[var(--panel-bg)]/40 backdrop-blur-2xl">
+      <main className="flex min-h-0 flex-1 flex-col overflow-hidden bg-[var(--panel-bg)]/40 backdrop-blur-2xl md:pt-14">
         {/* Navigation Tabs Bar */}
         <div className="flex items-center justify-between border-b border-[var(--panel-border)]/50 px-4 py-2 bg-[var(--surface-raised)]/30">
           <div className="flex items-center gap-1">

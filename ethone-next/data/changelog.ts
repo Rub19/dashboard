@@ -50059,5 +50059,62 @@ CHANGELOG_BY_LANG.en.unshift(v1_72_1_en);
 CHANGELOG_BY_LANG.es.unshift(v1_72_1_es);
 CHANGELOG_BY_LANG.de.unshift(v1_72_1_de);
 
+const v1_72_2_fr: ChangelogEntry = {
+  version: "v1.72.2",
+  date: "2026-10-11",
+  title: "Interface : dégagement du dock desktop, disposition Dynamic Island et accessibilité clavier",
+  items: [
+    "Dégagement confortable du contenu au-dessus du dock flottant et de la barre d'état (md:pb-32)",
+    "Disposition ajustée sur Brain et Focus pour éviter toute collision avec la Dynamic Island",
+    "Navigation au clavier complète (Enter / Espace) sur le sélecteur de serveurs Discord",
+    "Propagation aria-label sur AnimatedDropdown, bouton d'ajout de tâche et cartes",
+    "Scrollbars horizontales élégantes sans barre grise native sur la heatmap et la météo",
+  ],
+};
+
+const v1_72_2_en: ChangelogEntry = {
+  version: "v1.72.2",
+  date: "2026-10-11",
+  title: "Interface: desktop dock clearance, Dynamic Island layout and keyboard accessibility",
+  items: [
+    "Comfortable bottom padding above the floating dock and status bar (md:pb-32)",
+    "Adjusted top layout on Brain and Focus pages to prevent Dynamic Island overlap",
+    "Full keyboard navigation (Enter / Space) on Discord server picker cards",
+    "Forwarded aria-label on AnimatedDropdown, task quick-add button, and card options",
+    "Polished touch scrollbars without native grey bars on heatmap and weather graphs",
+  ],
+};
+
+const v1_72_2_es: ChangelogEntry = {
+  version: "v1.72.2",
+  date: "2026-10-11",
+  title: "Interfaz: despeje del dock, disposición de Dynamic Island y accesibilidad de teclado",
+  items: [
+    "Espaciado inferior cómodo sobre el dock flotante y la barra de estado (md:pb-32)",
+    "Diseño superior ajustado en Brain y Focus para evitar superposiciones con Dynamic Island",
+    "Navegación completa por teclado (Enter / Espacio) en el selector de servidores de Discord",
+    "Propagación de aria-label en AnimatedDropdown, botón de añadir tarea y tarjetas",
+    "Scrollbars táctiles elegantes sin barras grises nativas en heatmap y tiempo",
+  ],
+};
+
+const v1_72_2_de: ChangelogEntry = {
+  version: "v1.72.2",
+  date: "2026-10-11",
+  title: "Benutzeroberfläche: Desktop-Dock-Freiraum, Dynamic Island Layout und Tastatur-Bedienung",
+  items: [
+    "Komfortabler Abstand über dem schwebenden Dock und der Statusleiste (md:pb-32)",
+    "Angepasstes Layout auf Brain und Focus zur Vermeidung von Dynamic-Island-Überlagerungen",
+    "Vollständige Tastaturnavigation (Enter / Leertaste) auf den Discord-Serverkarten",
+    "Aria-label-Weiterleitung auf AnimatedDropdown, Schnellaufgabe-Button und Karten",
+    "Elegante horizontale Scrollleisten ohne graue Balken bei Heatmap und Wetter",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_72_2_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_72_2_en);
+CHANGELOG_BY_LANG.es.unshift(v1_72_2_es);
+CHANGELOG_BY_LANG.de.unshift(v1_72_2_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

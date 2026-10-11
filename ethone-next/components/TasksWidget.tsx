@@ -188,6 +188,7 @@ const TasksWidget = memo(function TasksWidget({ className = "", data, scrollable
           />
           <button
             type="submit"
+            aria-label={i18n("addTask", "Ajouter une tâche")}
             disabled={!newTaskTitle.trim() || loading}
             className={`flex shrink-0 items-center justify-center rounded-lg p-2 font-medium transition-[filter] active:scale-95 ${
               newTaskTitle.trim()

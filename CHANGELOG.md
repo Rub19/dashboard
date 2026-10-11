@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.72.2 — 2026-10-11
+
+**Interface : dégagement du dock desktop, disposition Dynamic Island et accessibilité clavier**
+
+- Dégagement confortable du contenu au-dessus du dock flottant et de la barre d'état (`md:pb-32`).
+- Disposition ajustée sur Brain et Focus (`md:pt-14`) pour éviter toute collision avec la Dynamic Island.
+- Navigation au clavier complète (`Enter` / `Espace`) sur les cartes du sélecteur de serveurs Discord.
+- Propagation `aria-label` sur `AnimatedDropdown`, bouton d'ajout de tâche et cartes contextuelles.
+- Scrollbars horizontales élégantes sans barre grise native sur la heatmap d'activité et les prévisions météo.
+
 ## v1.72.1 — 2026-10-11
 
 **Ambiance sonore : égaliseur désactivé sur l'option Aucune et icône multi-packs**

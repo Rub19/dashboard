@@ -9,6 +9,7 @@ import {
 } from "framer-motion";
 import {
   createContext,
+  type ButtonHTMLAttributes,
   type ReactNode,
   useContext,
   useId,
@@ -72,10 +73,11 @@ export interface AnimatedDropdownItemProps {
   className?: string;
 }
 
-export interface AnimatedDropdownTriggerProps {
+export interface AnimatedDropdownTriggerProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
   className?: string;
   "aria-labelledby"?: string;
+  "aria-label"?: string;
 }
 
 export interface AnimatedDropdownTriggerIndicatorProps {
@@ -116,15 +118,17 @@ export function AnimatedDropdown({
   );
 }
 
-// ─── Trigger ──────────────────────────────────────────────────────────────────
 export function AnimatedDropdownTrigger({
   children,
   className,
   "aria-labelledby": ariaLabelledBy,
+  "aria-label": ariaLabel,
+  ...props
 }: AnimatedDropdownTriggerProps) {
   return (
     <Menu.Trigger
       aria-labelledby={ariaLabelledBy}
+      aria-label={ariaLabel}
       className={cn(
         "group inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5",
         "bg-[var(--surface-raised)] text-[var(--text-primary)] text-sm font-medium",
@@ -133,6 +137,7 @@ export function AnimatedDropdownTrigger({
         "data-[popup-open]:bg-[var(--surface-hover)]",
         className,
       )}
+      {...props}
     >
       {children}
     </Menu.Trigger>

@@ -166,7 +166,7 @@ export default function ActivityHeatmap({
   }
 
   return (
-    <div ref={scrollRef} className="relative w-full overflow-x-auto os-scroll pb-1">
+    <div ref={scrollRef} className="relative w-full overflow-x-auto no-scrollbar pb-1 [overscroll-behavior-x:contain] [-webkit-overflow-scrolling:touch]">
       <div className="min-w-max">
         {/* Month labels positioned directly above their respective start weeks */}
         <div className="relative mb-2 ml-8 h-4 text-[10px] font-medium uppercase text-[var(--text-muted)]" style={{ width: weeks * COL }}>

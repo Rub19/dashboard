@@ -235,7 +235,7 @@ export default function MarketplaceCard({
           {/* AnimatedDropdown Contextual Menu */}
           <div onClick={(e) => e.stopPropagation()}>
             <AnimatedDropdown>
-              <AnimatedDropdownTrigger className="h-7 w-7 p-0 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-transparent shadow-none">
+              <AnimatedDropdownTrigger aria-label="Options" className="h-7 w-7 p-0 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-transparent shadow-none">
                 <MoreVertical className="h-3.5 w-3.5" />
               </AnimatedDropdownTrigger>
 

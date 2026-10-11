@@ -128,7 +128,7 @@ export default function FocusPage() {
   }
 
   return (
-    <div className="flex h-full min-h-0 w-full flex-col overflow-hidden bg-transparent">
+    <div className="flex h-full min-h-0 w-full flex-col overflow-hidden bg-transparent md:pt-14">
       {/* Top Bar Header */}
       <header className="flex items-center justify-between border-b border-[var(--panel-border)]/60 bg-[var(--panel-bg)]/40 px-6 py-3.5 backdrop-blur-[var(--panel-blur)] gap-3">
         <div className="flex items-center gap-3">

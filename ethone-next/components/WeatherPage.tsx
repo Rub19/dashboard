@@ -463,7 +463,7 @@ export default function WeatherPage() {
                 <Card variant="default" padding="md">
                   <h2 className="mb-3 text-sm font-semibold text-[var(--text-primary)]">Prochaines 24 heures</h2>
                   {hourly.length ? (
-                    <div className="-mx-1 overflow-x-auto os-scroll px-1 pb-1">
+                    <div className="-mx-1 overflow-x-auto no-scrollbar px-1 pb-1 [overscroll-behavior-x:contain] [-webkit-overflow-scrolling:touch]">
                       {curve && (
                         <svg width={curve.width} height={56} viewBox={`0 0 ${curve.width} 56`} className="block overflow-visible" aria-hidden>
                           <defs>

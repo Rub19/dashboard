@@ -50277,5 +50277,54 @@ CHANGELOG_BY_LANG.en.unshift(v1_73_2_en);
 CHANGELOG_BY_LANG.es.unshift(v1_73_2_es);
 CHANGELOG_BY_LANG.de.unshift(v1_73_2_de);
 
+const v1_73_3_fr: ChangelogEntry = {
+  version: "v1.73.3",
+  date: "2026-10-12",
+  title: "Bot : Pack étendu AutoMod natif & éligibilité badge Discord",
+  items: [
+    "Extension du pack de règles AutoMod recommandées : ajout de l'anti-phishing Nitro, filtrage d'invitations et surveillance de profils",
+    "Nouvelle commande /automod-native badge pour mesurer la progression vers le badge officiel Discord (seuil de 100 règles)",
+    "Sous-commande /automod-native deploy-all et script d'approvisionnement global pour propager les règles sur tous les serveurs du bot",
+  ],
+};
+
+const v1_73_3_en: ChangelogEntry = {
+  version: "v1.73.3",
+  date: "2026-10-12",
+  title: "Bot: Extended native AutoMod pack & Discord badge eligibility",
+  items: [
+    "Expanded recommended AutoMod pack: anti-phishing Nitro, invite links blocking, and member profile guard",
+    "New /automod-native badge command to track progress towards the official Discord badge (100 rules threshold)",
+    "Added /automod-native deploy-all subcommand and automated provisioning script to deploy rules across all bot servers",
+  ],
+};
+
+const v1_73_3_es: ChangelogEntry = {
+  version: "v1.73.3",
+  date: "2026-10-12",
+  title: "Bot: Pack ampliado de AutoMod nativo y elegibilidad para insignia Discord",
+  items: [
+    "Ampliación del paquete de reglas recomendadas: anti-phishing, bloqueo de enlaces y perfiles sospechosos",
+    "Nuevo comando /automod-native badge para medir el progreso hacia la insignia de Discord (100 reglas)",
+    "Subcomando /automod-native deploy-all para desplegar reglas en todos los servidores del bot",
+  ],
+};
+
+const v1_73_3_de: ChangelogEntry = {
+  version: "v1.73.3",
+  date: "2026-10-12",
+  title: "Bot: Erweitertes natives AutoMod-Paket & Discord-Badge-Berechtigung",
+  items: [
+    "Erweiterung des empfohlenen AutoMod-Regelpakets um Phishing-Schutz, Einladungsfilter und Profilprüfung",
+    "Neuer Befehl /automod-native badge zur Verfolgung des Fortschritts zum Discord-Badge (100-Regeln-Schwelle)",
+    "Neuer Unterbefehl /automod-native deploy-all zur Bereitstellung der Regeln auf allen Servern",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_73_3_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_73_3_en);
+CHANGELOG_BY_LANG.es.unshift(v1_73_3_es);
+CHANGELOG_BY_LANG.de.unshift(v1_73_3_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

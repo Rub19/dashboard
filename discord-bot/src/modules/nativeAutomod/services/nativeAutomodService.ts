@@ -4,6 +4,7 @@ import {
   AutoModerationRuleKeywordPresetType,
   AutoModerationRuleTriggerType,
   PermissionFlagsBits,
+  type Client,
   type Guild,
 } from 'discord.js';
 import { z } from 'zod';
@@ -419,23 +420,83 @@ export const nativeAutomodService = {
       { name: 'ETHONE • Langage inapproprié', triggerType: 'keyword_preset', presets: [...PRESET_KEYS], actions: block('Ce message a été bloqué : langage inapproprié.') },
       { name: 'ETHONE • Spam suspect', triggerType: 'spam', actions: block('Ce message a été bloqué : spam suspecté.') },
       { name: 'ETHONE • Spam de mentions', triggerType: 'mention_spam', mentionTotalLimit: 8, mentionRaidProtection: true, actions: block('Ce message a été bloqué : trop de mentions.') },
+      { name: 'ETHONE • Anti-Scam & Phishing', triggerType: 'keyword', keywords: ['*discord-nitro*', '*free-nitro*', '*steamcommunity-nitro*', '*discordgift*', '*discrod*', '*dlscord*', '*steam-gift*'], actions: block('Ce message a été bloqué : lien suspect ou tentative de scam.') },
+      { name: 'ETHONE • Anti-Invites Discord', triggerType: 'keyword', keywords: ['*discord.gg/' + '*', '*discord.com/invite/' + '*'], actions: block('Ce message a été bloqué : invitation non autorisée.') },
+      { name: 'ETHONE • Profils suspects', triggerType: 'member_profile', keywords: ['discord mod', 'discord admin', 'etho staff', 'nitro generator'], actions: [{ type: 'block_member_interaction' as const }] },
     ];
-    const present = new Set((await fetchRules(guild)).map((r) => r.triggerType));
+    const existing = await fetchRules(guild);
+    const existingNames = new Set(existing.map((r) => r.name.toLowerCase()));
+    const typeCounts: Record<string, number> = {};
+    for (const r of existing) {
+      typeCounts[r.triggerType] = (typeCounts[r.triggerType] || 0) + 1;
+    }
     const created: NativeRuleView[] = [];
     const skipped: Array<{ name: string; reason: string }> = [];
     for (const rule of plan) {
-      if (present.has(TRIGGER_ENUM[rule.triggerType])) {
-        skipped.push({ name: rule.name, reason: `Une règle « ${TRIGGER_LABELS[rule.triggerType]} » existe déjà (limite Discord : 1).` });
+      if (existingNames.has(rule.name.toLowerCase())) {
+        skipped.push({ name: rule.name, reason: 'Règle déjà installée sous ce nom.' });
+        continue;
+      }
+      const triggerEnum = TRIGGER_ENUM[rule.triggerType];
+      const currentCount = typeCounts[triggerEnum] || 0;
+      if (currentCount >= TRIGGER_QUOTAS[rule.triggerType]) {
+        skipped.push({ name: rule.name, reason: `Quota atteint pour « ${TRIGGER_LABELS[rule.triggerType]} » (limite : ${TRIGGER_QUOTAS[rule.triggerType]}).` });
         continue;
       }
       try {
-        created.push(await this.create(guild, rule, opts.reason));
+        const res = await this.create(guild, rule, opts.reason);
+        created.push(res);
+        typeCounts[triggerEnum] = currentCount + 1;
       } catch (err) {
-        // Règle refusée ou supprimée aussitôt (autre bot) : on continue avec les suivantes et on le signale.
         if (!(err instanceof NativeAutomodError)) throw err;
         skipped.push({ name: rule.name, reason: err.message });
       }
     }
     return { created, skipped };
+  },
+
+  async countAllBotRules(client: Client) {
+    let totalRules = 0;
+    const rulesByGuild: Array<{ guildId: string; guildName: string; count: number }> = [];
+    for (const guild of client.guilds.cache.values()) {
+      if (!guild.members.me?.permissions.has(PermissionFlagsBits.ManageGuild)) continue;
+      try {
+        const rules = await fetchRules(guild);
+        const botRules = rules.filter((r) => r.creatorId === client.user?.id || r.name.startsWith('ETHONE'));
+        totalRules += botRules.length;
+        rulesByGuild.push({ guildId: guild.id, guildName: guild.name, count: botRules.length });
+      } catch {
+      }
+    }
+    return {
+      totalRules,
+      guildCount: client.guilds.cache.size,
+      badgeUnlocked: totalRules >= 100,
+      rulesByGuild,
+    };
+  },
+
+  async deployToAllGuilds(client: Client, opts: { alertChannelId?: string; reason?: string } = {}) {
+    let totalCreated = 0;
+    let totalSkipped = 0;
+    let processedGuilds = 0;
+    for (const guild of client.guilds.cache.values()) {
+      if (!guild.members.me?.permissions.has(PermissionFlagsBits.ManageGuild)) continue;
+      try {
+        const res = await this.createRecommended(guild, opts);
+        totalCreated += res.created.length;
+        totalSkipped += res.skipped.length;
+        processedGuilds++;
+      } catch {
+      }
+    }
+    const status = await this.countAllBotRules(client);
+    return {
+      totalCreated,
+      totalSkipped,
+      processedGuilds,
+      totalActiveRules: status.totalRules,
+      badgeUnlocked: status.badgeUnlocked,
+    };
   },
 };

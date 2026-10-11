@@ -44,6 +44,15 @@ export const nativeAutomodCommand: Command = {
         .addChannelOption((o) =>
           o.setName('alert').setDescription("Salon d'alerte (facultatif)").addChannelTypes(ChannelType.GuildText, ChannelType.GuildAnnouncement).setRequired(false)
         )
+    )
+    .addSubcommand((s) => s.setName('badge').setDescription("Vérifier la progression vers le badge 'Uses AutoMod' (100 règles)"))
+    .addSubcommand((s) =>
+      s
+        .setName('deploy-all')
+        .setDescription("Déployer le pack AutoMod sur tous les serveurs du bot")
+        .addChannelOption((o) =>
+          o.setName('alert').setDescription("Salon d'alerte pour ce serveur").addChannelTypes(ChannelType.GuildText, ChannelType.GuildAnnouncement).setRequired(false)
+        )
     ),
 
   autocomplete: async (interaction) => {
@@ -73,7 +82,23 @@ export const nativeAutomodCommand: Command = {
     const reason = `/automod-native par ${ctx.author.tag}`;
     try {
       const sub = i.options.getSubcommand();
-      if (sub === 'toggle') {
+      if (sub === 'badge') {
+        const stats = await nativeAutomodService.countAllBotRules(ctx.client);
+        const percent = Math.min(100, Math.round((stats.totalRules / 100) * 100));
+        const badgeStatus = stats.badgeUnlocked
+          ? '🎉 **Badge Débloqué !** (100+ règles actives sur Discord, badge présent sur le profil).'
+          : `⏳ **Progression : ${stats.totalRules} / 100 règles** (${percent}%)\n> Discord attribue automatiquement le badge « Uses AutoMod » dès que 100 règles actives sont créées par le bot.`;
+        const embed = ctx.createEmbed(stats.badgeUnlocked ? 'success' : 'default')
+          .setTitle("Badge Discord « Uses AutoMod »")
+          .setDescription(`${badgeStatus}\n\n**Serveurs gérés :** ${stats.guildCount}\n**Règles actives configurées :** ${stats.totalRules}\n\n*Conseil : utilise \`/automod-native deploy-all\` pour déployer le pack complet (jusqu'à 6 règles/serveur).*`);
+        await ctx.editReply({ embeds: [embed] });
+      } else if (sub === 'deploy-all') {
+        const res = await nativeAutomodService.deployToAllGuilds(ctx.client, { alertChannelId: i.options.getChannel('alert')?.id, reason });
+        const embed = ctx.createEmbed(res.badgeUnlocked ? 'success' : 'default')
+          .setTitle("Déploiement global AutoMod")
+          .setDescription(`**Serveurs traités :** ${res.processedGuilds}\n**Nouvelles règles créées :** ${res.totalCreated}\n**Règles existantes conservées :** ${res.totalSkipped}\n**Total actuel de règles actives :** ${res.totalActiveRules} / 100\n\n${res.badgeUnlocked ? '✨ Objectif 100 règles atteint ! Discord actualise le badge sur le profil sous peu.' : 'Il manque encore ' + (100 - res.totalActiveRules) + ' règle(s) pour le seuil des 100.'}`);
+        await ctx.editReply({ embeds: [embed] });
+      } else if (sub === 'toggle') {
         const rule = await nativeAutomodService.toggle(guild, i.options.getString('rule', true), i.options.getBoolean('enabled', true), reason);
         await ctx.editReply({ embeds: [ctx.createEmbed('success').setDescription(`Règle **${rule.name}** ${rule.enabled ? 'activée' : 'désactivée'}.`)] });
       } else if (sub === 'preset') {

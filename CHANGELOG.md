@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.73.3 — 2026-10-12
+
+**Bot : Pack étendu AutoMod natif & éligibilité badge Discord**
+
+- Extension du pack de règles AutoMod recommandées (`nativeAutomodService.ts`) avec détection anti-phishing Nitro, blocage d'invitations et surveillance de profils frauduleux.
+- Ajout de la sous-commande `/automod-native badge` pour suivre en direct le nombre de règles actives et la progression vers le badge Discord (seuil de 100 règles).
+- Ajout de la sous-commande `/automod-native deploy-all` et du script d'approvisionnement global (`scripts/provision-automod-badge.mjs`) pour déployer jusqu'à 6 règles par serveur sur l'ensemble des serveurs du bot.
+
 ## v1.73.2 — 2026-10-12
 
 **Interface : Suppression du bandeau noir inférieur & dock flottant naturel**

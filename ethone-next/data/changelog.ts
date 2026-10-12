@@ -51864,6 +51864,59 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_3_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_3_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_3_de);
 
+const v1_75_4_fr: ChangelogEntry = {
+  version: "v1.75.4",
+  date: "2026-10-12",
+  title: "Intégration Last.fm Complète & Section Plateformes Vitrine",
+  items: [
+    "Intégration complète de Last.fm format Bleed : commandes /lastfm (nowplaying, recent, topartists, toptracks, topalbums, taste, user, login, logout, spotify, youtube, lyrics) reliées directement aux données de scrobble réelles.",
+    "Nouvelle section vitrine « Intégrations avec vos Plateformes préférées » : cartes avec halos de couleur réactifs et motion design pour Spotify, Last.fm, SoundCloud, TikTok, Pinterest, YouTube et Twitch.",
+    "Studio interactif Last.fm dans le Dashboard (/discord?view=fun) avec égaliseur sonore animé, écoute en direct, historique des scrobbles récents et top artistes sans placeholder.",
+    "Traduction intégrale des nouvelles sections et métadonnées en Français, Anglais, Espagnol et Allemand.",
+  ],
+};
+
+const v1_75_4_en: ChangelogEntry = {
+  version: "v1.75.4",
+  date: "2026-10-12",
+  title: "Complete Last.fm Integration & Platform Showcase Section",
+  items: [
+    "Full Bleed-style Last.fm integration: /lastfm commands (nowplaying, recent, topartists, toptracks, topalbums, taste, user, login, logout, spotify, youtube, lyrics) connected to live scrobble data.",
+    "New public showcase section 'Integrations with your favorite Platforms': responsive motion cards with brand glowing accents for Spotify, Last.fm, SoundCloud, TikTok, Pinterest, YouTube, and Twitch.",
+    "Interactive Last.fm Studio in the Dashboard (/discord?view=fun) with live animated equalizer, current scrobbles, recent history, and top artists with zero placeholders.",
+    "Comprehensive localization across English, French, Spanish, and German.",
+  ],
+};
+
+const v1_75_4_es: ChangelogEntry = {
+  version: "v1.75.4",
+  date: "2026-10-12",
+  title: "Integración Completa de Last.fm y Sección de Plataformas",
+  items: [
+    "Integración completa de Last.fm estilo Bleed: comandos /lastfm conectados directamente a los datos reales de scrobble.",
+    "Nueva sección en la vitrina 'Integraciones con tus Plataformas favoritas' para Spotify, Last.fm, SoundCloud, TikTok, Pinterest, YouTube y Twitch.",
+    "Estudio interactivo de Last.fm en el panel (/discord?view=fun) con ecualizador animado, canciones recientes y artistas principales.",
+    "Localización completa en francés, inglés, español y alemán.",
+  ],
+};
+
+const v1_75_4_de: ChangelogEntry = {
+  version: "v1.75.4",
+  date: "2026-10-12",
+  title: "Vollständige Last.fm-Integration & Plattform-Präsentationssektion",
+  items: [
+    "Vollständige Last.fm-Integration im Bleed-Format: /lastfm-Befehle verbunden mit echten Live-Scrobble-Daten.",
+    "Neue Präsentationssektion 'Integrationen mit deinen Lieblingsplattformen' für Spotify, Last.fm, SoundCloud, TikTok, Pinterest, YouTube und Twitch.",
+    "Interaktives Last.fm-Studio im Dashboard (/discord?view=fun) mit animiertem Equalizer und echten Hörer-Statistiken.",
+    "Vollständige Übersetzung in Französisch, Englisch, Spanisch und Deutsch.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_4_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_4_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_4_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_4_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

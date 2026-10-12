@@ -5,12 +5,14 @@ import { motion } from "framer-motion";
 import {
   Check,
   Copy,
+  Disc,
   ExternalLink,
   Film,
   Gamepad2,
   Image as ImageIcon,
   Music,
   Quote,
+  Radio,
   Search,
   Tv,
 } from "@/components/icons/ph";
@@ -101,6 +103,51 @@ const FUN_COMMANDS: BleedCommandMeta[] = [
     category: "Jeux Vidéo",
     icon: Gamepad2,
   },
+  {
+    name: "lastfm",
+    description: "Integrate your Last.fm account and view listening stats",
+    argumentName: "subcommand",
+    syntax: "/lastfm nowplaying [username:<pseudo>]",
+    example: "/lastfm nowplaying username:rj",
+    category: "Last.fm",
+    icon: Radio,
+  },
+  {
+    name: "lastfm recent",
+    description: "View your recent tracks on Last.fm",
+    argumentName: "limit",
+    syntax: "/lastfm recent [limit:<1-10>] [username:<pseudo>]",
+    example: "/lastfm recent limit:5",
+    category: "Last.fm",
+    icon: Disc,
+  },
+  {
+    name: "lastfm topartists",
+    description: "View your most listened to artists",
+    argumentName: "period",
+    syntax: "/lastfm topartists [period:<7day|1month|overall>]",
+    example: "/lastfm topartists period:7day",
+    category: "Last.fm",
+    icon: Music,
+  },
+  {
+    name: "lastfm taste",
+    description: "Compare your music taste with another member",
+    argumentName: "target",
+    syntax: "/lastfm taste target:<@membre>",
+    example: "/lastfm taste target:@Alex",
+    category: "Last.fm",
+    icon: Radio,
+  },
+  {
+    name: "lastfm user",
+    description: "View Last.fm profile stats and total scrobbles",
+    argumentName: "username",
+    syntax: "/lastfm user [username:<pseudo>]",
+    example: "/lastfm user username:rj",
+    category: "Last.fm",
+    icon: ExternalLink,
+  },
 ];
 
 export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } = {}) {
@@ -132,6 +179,12 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
   const [gameQuery, setGameQuery] = useState("Cyberpunk 2077");
   const [gameLoading, setGameLoading] = useState(false);
   const [gameData, setGameData] = useState<any>(null);
+
+  const [lastfmUsername, setLastfmUsername] = useState("rj");
+  const [lastfmLoading, setLastfmLoading] = useState(false);
+  const [lastfmNowPlaying, setLastfmNowPlaying] = useState<any>(null);
+  const [lastfmRecent, setLastfmRecent] = useState<any[]>([]);
+  const [lastfmTopArtists, setLastfmTopArtists] = useState<any[]>([]);
 
   const copyToClipboard = useCallback(
     (textToCopy: string, cmdName: string) => {
@@ -326,11 +379,64 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
     }
   }, [imageQuery, toast]);
 
+  const searchLastfm = useCallback(
+    async (explicitUser?: string) => {
+      const user = (explicitUser || lastfmUsername).trim();
+      if (!user) return;
+      setLastfmLoading(true);
+      try {
+        const [npRes, recentRes, topRes] = await Promise.allSettled([
+          fetch(
+            `https://raspy-fog-bf5b.rub19-mailpro.workers.dev/api/now-playing?source=lastfm&username=${encodeURIComponent(
+              user
+            )}`
+          ),
+          fetch(
+            `https://raspy-fog-bf5b.rub19-mailpro.workers.dev/api/lastfm/recent-tracks?username=${encodeURIComponent(
+              user
+            )}&limit=5`
+          ),
+          fetch(
+            `https://raspy-fog-bf5b.rub19-mailpro.workers.dev/api/lastfm/top-artists?username=${encodeURIComponent(
+              user
+            )}&period=7day&limit=5`
+          ),
+        ]);
+
+        if (npRes.status === "fulfilled" && npRes.value.ok) {
+          const body = await npRes.value.json();
+          setLastfmNowPlaying(body?.data?.track || null);
+        } else {
+          setLastfmNowPlaying(null);
+        }
+
+        if (recentRes.status === "fulfilled" && recentRes.value.ok) {
+          const body = await recentRes.value.json();
+          setLastfmRecent(Array.isArray(body?.data) ? body.data : []);
+        } else {
+          setLastfmRecent([]);
+        }
+
+        if (topRes.status === "fulfilled" && topRes.value.ok) {
+          const body = await topRes.value.json();
+          setLastfmTopArtists(Array.isArray(body?.data) ? body.data : []);
+        } else {
+          setLastfmTopArtists([]);
+        }
+      } catch {
+        toast.show({ type: "error", title: "Erreur Last.fm", message: "Impossible de joindre le service Last.fm." });
+      } finally {
+        setLastfmLoading(false);
+      }
+    },
+    [lastfmUsername, toast]
+  );
+
   return (
     <ConsolePage title="Fun & Médias">
       <div className="space-y-6">
         <p className="text-xs text-[var(--text-muted)]">
-          Commandes interactives de divertissement format Bleed : paroles, citations, recherche d'images, films, séries TV et base de jeux vidéo.
+          Commandes interactives de divertissement format Bleed : Last.fm, paroles, citations, recherche d'images, films, séries TV et base de jeux vidéo.
         </p>
 
         <div className="flex flex-wrap items-center justify-between gap-3">
@@ -338,6 +444,7 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
             label="Catégories Fun"
             options={[
               ["catalog", "Catalogue Bleed"],
+              ["lastfm", "Studio Last.fm"],
               ["lyrics", "Paroles (Lyrics)"],
               ["quote", "Citations (Quote)"],
               ["images", "Images & Google"],
@@ -417,6 +524,209 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
               );
             })}
           </motion.div>
+        )}
+
+        {tab === "lastfm" && (
+          <Panel
+            title="Studio Last.fm (/lastfm)"
+            subtitle="Scrobbles réels, lecture en direct, historique et artistes les plus écoutés connectés à l'API Last.fm."
+          >
+            <div className="space-y-6 p-5">
+              <div className="flex flex-col sm:flex-row gap-3">
+                <input
+                  type="text"
+                  value={lastfmUsername}
+                  onChange={(e) => setLastfmUsername(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && searchLastfm()}
+                  placeholder="Pseudo Last.fm (ex: rj)..."
+                  className="flex-1 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-sunken)] px-3 py-2 text-sm text-[var(--text-primary)] focus:outline-none focus:border-[#d51007] font-mono"
+                />
+                <button
+                  onClick={() => searchLastfm()}
+                  disabled={lastfmLoading}
+                  className="flex items-center justify-center gap-2 rounded-lg bg-[#d51007]/20 border border-[#d51007]/40 px-5 py-2 text-xs font-semibold text-rose-300 hover:bg-[#d51007]/30 transition-colors"
+                >
+                  {lastfmLoading ? (
+                    <span className="animate-spin text-sm">⏳</span>
+                  ) : (
+                    <Radio className="h-4 w-4 text-[#d51007]" />
+                  )}
+                  <span>Interroger Last.fm</span>
+                </button>
+              </div>
+
+              <div className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
+                <span>Comptes suggérés :</span>
+                {["rj", "ethone"].map((u) => (
+                  <button
+                    key={u}
+                    onClick={() => {
+                      setLastfmUsername(u);
+                      searchLastfm(u);
+                    }}
+                    className="rounded-full border border-[var(--panel-border)] bg-[var(--surface-sunken)] px-2.5 py-0.5 text-[11px] font-mono text-[var(--text-secondary)] hover:border-[#d51007]/40 hover:text-rose-300 transition-colors"
+                  >
+                    @{u}
+                  </button>
+                ))}
+              </div>
+
+              {lastfmNowPlaying ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <div className="rounded-2xl border border-[#d51007]/30 bg-gradient-to-br from-[#d51007]/10 via-[var(--surface-sunken)] to-[var(--surface-raised)] p-5 shadow-lg relative overflow-hidden">
+                    <div className="flex items-center justify-between">
+                      <span className="inline-flex items-center gap-1.5 rounded-full border border-[#d51007]/30 bg-[#d51007]/20 px-2.5 py-0.5 text-[10px] font-bold text-rose-300">
+                        {lastfmNowPlaying.playing ? (
+                          <>
+                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                            En direct sur Last.fm
+                          </>
+                        ) : (
+                          <>
+                            <span className="h-1.5 w-1.5 rounded-full bg-zinc-400" />
+                            Dernier scrobble
+                          </>
+                        )}
+                      </span>
+                      <div className="flex items-end gap-1">
+                        {[0.5, 1, 0.4, 0.8, 0.6].map((h, i) => (
+                          <motion.span
+                            key={i}
+                            className="w-1 rounded-full bg-[#d51007]"
+                            animate={{ height: lastfmNowPlaying.playing ? [4, 14 * h, 4] : 4 }}
+                            transition={{ duration: 0.8, repeat: Infinity, delay: i * 0.1 }}
+                          />
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="mt-4 flex items-center gap-4">
+                      {lastfmNowPlaying.artworkUrl ? (
+                        <div className="h-16 w-16 shrink-0 rounded-xl overflow-hidden border border-white/10 bg-black/50">
+                          <ClientImage src={lastfmNowPlaying.artworkUrl} alt="" className="h-full w-full object-cover" />
+                        </div>
+                      ) : (
+                        <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl border border-[#d51007]/30 bg-[#d51007]/10 text-[#d51007]">
+                          <Disc className="h-8 w-8" />
+                        </div>
+                      )}
+                      <div className="min-w-0 flex-1">
+                        <h4 className="text-base font-bold text-white truncate">{lastfmNowPlaying.name}</h4>
+                        <p className="text-sm font-semibold text-rose-300 truncate">{lastfmNowPlaying.artist}</p>
+                        {lastfmNowPlaying.album && (
+                          <p className="text-xs text-[var(--text-muted)] truncate">{lastfmNowPlaying.album}</p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="mt-5 flex flex-wrap items-center gap-2 border-t border-[var(--panel-border)]/60 pt-4">
+                      {lastfmNowPlaying.profileUrl && (
+                        <a
+                          href={lastfmNowPlaying.profileUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-1 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-sunken)] px-2.5 py-1 text-[11px] font-semibold text-[var(--text-secondary)] hover:text-white transition-colors"
+                        >
+                          Last.fm ↗
+                        </a>
+                      )}
+                      <a
+                        href={`https://open.spotify.com/search/${encodeURIComponent(
+                          `${lastfmNowPlaying.artist} ${lastfmNowPlaying.name}`
+                        )}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-[11px] font-semibold text-emerald-300 hover:bg-emerald-500/20 transition-colors"
+                      >
+                        Spotify ↗
+                      </a>
+                      <button
+                        onClick={() => copyToClipboard(`/lastfm nowplaying username:${lastfmUsername}`, "lastfm-np")}
+                        className="rounded-lg border border-[var(--panel-border)] bg-[var(--surface-sunken)] px-2.5 py-1 text-[11px] font-mono text-[var(--text-muted)] hover:text-white transition-colors"
+                      >
+                        {copiedCmd === "lastfm-np" ? "✓ Copié" : "/lastfm nowplaying"}
+                      </button>
+                    </div>
+                  </div>
+
+                  {lastfmTopArtists.length > 0 && (
+                    <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-sunken)] p-5">
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] mb-3">
+                        Top Artistes de la semaine
+                      </h4>
+                      <div className="space-y-2">
+                        {lastfmTopArtists.map((artist, idx) => (
+                          <div
+                            key={artist.name}
+                            className="flex items-center justify-between rounded-lg bg-[var(--surface-raised)]/60 px-3 py-2 text-xs"
+                          >
+                            <div className="flex items-center gap-2 min-w-0">
+                              <span className="font-mono text-[11px] text-[var(--text-muted)]">#{idx + 1}</span>
+                              <span className="font-bold text-[var(--text-primary)] truncate">{artist.name}</span>
+                            </div>
+                            <span className="font-mono text-[11px] text-rose-300 shrink-0">
+                              {artist.playCount} écoutes
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="rounded-xl border border-dashed border-[var(--panel-border)] p-8 text-center text-xs text-[var(--text-muted)]">
+                  <Radio className="mx-auto h-8 w-8 text-[#d51007]/50 mb-2" />
+                  <p>Entrez un pseudo Last.fm ci-dessus pour inspecter son profil en direct.</p>
+                </div>
+              )}
+
+              {lastfmRecent.length > 0 && (
+                <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-sunken)] p-5 space-y-3">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                    Historique des scrobbles récents
+                  </h4>
+                  <div className="divide-y divide-[var(--panel-border)]/40">
+                    {lastfmRecent.map((track, i) => (
+                      <div key={`${track.name}-${i}`} className="flex items-center justify-between py-2.5 text-xs">
+                        <div className="min-w-0 flex-1 pr-3">
+                          <p className="font-bold text-[var(--text-primary)] truncate">{track.name}</p>
+                          <p className="text-[11px] text-[var(--text-muted)] truncate">{track.artist}</p>
+                        </div>
+                        <span className="text-[11px] font-mono text-[var(--text-muted)] shrink-0">
+                          {track.playing ? "🟢 En cours" : "Écouté"}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-5">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] mb-3">
+                  Commandes Discord Format Bleed
+                </h4>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    "/lastfm nowplaying",
+                    "/lastfm recent limit:5",
+                    "/lastfm topartists period:7day",
+                    "/lastfm toptracks",
+                    "/lastfm topalbums",
+                    "/lastfm taste target:@Alex",
+                    "/lastfm login username:rj",
+                  ].map((syntax) => (
+                    <button
+                      key={syntax}
+                      onClick={() => copyToClipboard(syntax, syntax)}
+                      className="rounded-lg border border-[var(--panel-border)] bg-[var(--surface-sunken)] px-3 py-1.5 font-mono text-xs text-[var(--text-secondary)] hover:border-[#d51007]/40 hover:text-white transition-colors"
+                    >
+                      {copiedCmd === syntax ? "✓ Copié !" : syntax}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </Panel>
         )}
 
         {tab === "lyrics" && (

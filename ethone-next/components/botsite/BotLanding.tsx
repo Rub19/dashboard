@@ -15,7 +15,7 @@ import {
 import FlagIcon, { LANGUAGE_LABELS } from "@/components/FlagIcon";
 import { EASE_SNAP, SPRING_MOUSE } from "@/lib/ease";
 import { useMotionPref } from "@/lib/hooks/useMotionPref";
-import { BOT_COPY, BOT_LANGS, BOT_LANG_KEY, detectBotLang, type BotCopy, type BotLang } from "./botLandingI18n";
+import { BOT_COPY, BOT_LANGS, BOT_LANG_KEY, detectBotLang, type BotLang } from "./botLandingI18n";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 const BOT_CLIENT_ID = "1545139931154878464";
@@ -40,6 +40,7 @@ const STATIC_FALLBACK_COMMANDS: PublicCommand[] = [
   { name: "shield", description: "Active ou consulte l'état du bouclier Owner pour restaurer vos rôles en cas de raid.", category: "Sécurité", subcommands: [{ name: "status", description: "Affiche l'état du bouclier" }, { name: "toggle", description: "Active ou coupe le bouclier" }] },
   { name: "automod", description: "Configure les filtres automatiques contre le spam, les raids et les pings massifs.", category: "Sécurité", subcommands: [{ name: "rules", description: "Liste les règles actives" }, { name: "action", description: "Définit la sanction automatique" }] },
   { name: "spotify", description: "Contrôle la lecture Spotify et diffuse votre titre dans votre salon vocal Discord.", category: "Spotify", subcommands: [{ name: "vc", description: "Rejoint le salon et diffuse le titre" }, { name: "nowplaying", description: "Affiche le titre en cours" }, { name: "like", description: "Ajoute aux favoris Spotify" }] },
+  { name: "lastfm", description: "Affiche vos statistiques d'écoute Last.fm et votre titre en direct.", category: "Fun", subcommands: [{ name: "nowplaying", description: "Titre en cours" }, { name: "recent", description: "Récents scrobbles" }, { name: "topartists", description: "Top artistes" }, { name: "taste", description: "Comparateur de goûts" }, { name: "login", description: "Associer son compte" }] },
   { name: "lyrics", description: "Recherche les paroles complètes d'un morceau en direct avec synchronisation.", category: "Fun", subcommands: [] },
   { name: "quote", description: "Génère un visuel de citation stylisé aux couleurs de Discord.", category: "Fun", subcommands: [] },
   { name: "image", description: "Recherche des visuels et images haute résolution sur DuckDuckGo.", category: "Fun", subcommands: [] },
@@ -723,6 +724,86 @@ const FEATURE_KEYS = [
   "autoResponders", "reminders", "counters", "reactionRoles", "lyrics", "translation",
 ] as const;
 
+const PLATFORM_CONFIGS = [
+  {
+    key: "spotify" as const,
+    color: "#1DB954",
+    bgGlow: "rgba(29, 185, 84, 0.15)",
+    borderGlow: "rgba(29, 185, 84, 0.4)",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6 text-[#1DB954]" aria-hidden="true">
+        <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381C8.28 5.92 15.24 6.182 19.38 8.94c.54.3.72 1.02.42 1.56-.3.42-1.02.6-1.56.3l-.158-.12z" />
+      </svg>
+    ),
+  },
+  {
+    key: "lastfm" as const,
+    color: "#D51007",
+    bgGlow: "rgba(213, 16, 7, 0.15)",
+    borderGlow: "rgba(213, 16, 7, 0.4)",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6 text-[#D51007]" aria-hidden="true">
+        <path d="M10.59 13.07c-.36-1.07-.88-1.93-1.57-2.57-.69-.64-1.54-.97-2.56-.97-1.19 0-2.17.43-2.93 1.29-.76.86-1.14 1.99-1.14 3.39 0 1.45.39 2.62 1.18 3.5.79.88 1.78 1.32 2.97 1.32 1.22 0 2.21-.49 2.97-1.46.76-.98 1.25-2.3 1.47-3.97l.18-1.35c.34-2.6 1.11-4.57 2.31-5.91 1.2-1.34 2.82-2.01 4.87-2.01 1.83 0 3.29.56 4.39 1.68 1.1 1.12 1.65 2.58 1.65 4.38 0 1.4-.38 2.58-1.14 3.55-.76.97-1.78 1.55-3.06 1.74l-.44.06c-.46.06-.79-.04-.99-.3-.2-.26-.2-.61 0-1.06l.16-.36c.65-1.43.98-2.67.98-3.71 0-1.11-.32-2-.97-2.67-.65-.67-1.52-1-2.62-1-1.34 0-2.37.51-3.1 1.54-.73 1.02-1.2 2.45-1.4 4.29l-.27 2.19c-.31 2.37-.99 4.2-2.04 5.5-1.05 1.3-2.48 1.95-4.29 1.95-1.94 0-3.56-.7-4.85-2.09C.63 18.35 0 16.53 0 14.39c0-2.22.66-4.06 1.98-5.52C3.3 7.41 4.99 6.68 7.05 6.68c1.55 0 2.89.44 4.02 1.32 1.13.88 1.91 2.1 2.34 3.66l.24 1.41h-3.06z" />
+      </svg>
+    ),
+  },
+  {
+    key: "soundcloud" as const,
+    color: "#FF5500",
+    bgGlow: "rgba(255, 85, 0, 0.15)",
+    borderGlow: "rgba(255, 85, 0, 0.4)",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6 text-[#FF5500]" aria-hidden="true">
+        <path d="M1.5 14.25v2.25h1.5v-2.25H1.5zm2.25-1.5v5.25h1.5v-5.25h-1.5zm2.25-2.25v9.75h1.5v-9.75H6zm2.25 1.5v6.75h1.5V12h-1.5zm2.25-3.75v14.25h1.5V8.25h-1.5zm7.34 2.25c-.47 0-.91.07-1.34.2v9.3h6.75c1.79 0 3.25-1.46 3.25-3.25s-1.46-3.25-3.25-3.25h-.41c-.42-1.74-1.99-3-3.84-3h-.16z" />
+      </svg>
+    ),
+  },
+  {
+    key: "tiktok" as const,
+    color: "#00F2FE",
+    bgGlow: "rgba(0, 242, 254, 0.15)",
+    borderGlow: "rgba(0, 242, 254, 0.4)",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6 text-[#00F2FE]" aria-hidden="true">
+        <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.29 0 .58.04.85.12V9.41a6.33 6.33 0 0 0-.85-.06A6.34 6.34 0 0 0 3.14 15.7a6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.34-6.34V8.75a8.28 8.28 0 0 0 4.88 1.56V6.86a4.85 4.85 0 0 1-1.11-.17z" />
+      </svg>
+    ),
+  },
+  {
+    key: "pinterest" as const,
+    color: "#E60023",
+    bgGlow: "rgba(230, 0, 35, 0.15)",
+    borderGlow: "rgba(230, 0, 35, 0.4)",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6 text-[#E60023]" aria-hidden="true">
+        <path d="M12 0C5.37 0 0 5.37 0 12c0 5.08 3.16 9.42 7.63 11.1-.11-.94-.2-2.39.04-3.42.22-.93 1.43-6.07 1.43-6.07s-.36-.73-.36-1.81c0-1.7 0.99-2.97 2.21-2.97 1.04 0 1.55.78 1.55 1.72 0 1.05-.67 2.62-1.02 4.07-.29 1.22.61 2.22 1.82 2.22 2.18 0 3.86-2.3 3.86-5.63 0-2.94-2.11-5-5.13-5-3.49 0-5.54 2.62-5.54 5.33 0 1.05.41 2.18.91 2.79.1.12.11.23.08.36-.09.38-.3 1.22-.34 1.39-.06.23-.19.28-.43.17-1.61-.75-2.61-3.1-2.61-4.99 0-4.06 2.95-7.79 8.51-7.79 4.47 0 7.94 3.18 7.94 7.44 0 4.44-2.8 8.01-6.68 8.01-1.3 0-2.53-.68-2.95-1.48l-.8 3.07c-.29 1.12-1.08 2.53-1.61 3.39A12.02 12.02 0 0 0 12 24c6.63 0 12-5.37 12-12S18.63 0 12 0z" />
+      </svg>
+    ),
+  },
+  {
+    key: "youtube" as const,
+    color: "#FF0000",
+    bgGlow: "rgba(255, 0, 0, 0.15)",
+    borderGlow: "rgba(255, 0, 0, 0.4)",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6 text-[#FF0000]" aria-hidden="true">
+        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+      </svg>
+    ),
+  },
+  {
+    key: "twitch" as const,
+    color: "#9146FF",
+    bgGlow: "rgba(145, 70, 255, 0.15)",
+    borderGlow: "rgba(145, 70, 255, 0.4)",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6 text-[#9146FF]" aria-hidden="true">
+        <path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z" />
+      </svg>
+    ),
+  },
+];
+
 export default function BotLanding() {
   const { reduced } = useMotionPref();
   const { stats, commands } = useLiveData();
@@ -864,6 +945,13 @@ export default function BotLanding() {
               {c.nav.music}
             </a>
             <a
+              href="#platforms"
+              onClick={scrollToSection("platforms")}
+              className="text-sm font-medium text-zinc-300 transition-colors hover:text-white"
+            >
+              {c.nav.platforms}
+            </a>
+            <a
               href="#features"
               onClick={scrollToSection("features")}
               className="text-sm font-medium text-zinc-300 transition-colors hover:text-white"
@@ -940,6 +1028,7 @@ export default function BotLanding() {
               <div className="flex flex-col gap-3">
                 <a href="#security" onClick={scrollToSection("security")} className="text-sm font-medium text-zinc-300">{c.nav.security}</a>
                 <a href="#music" onClick={scrollToSection("music")} className="text-sm font-medium text-zinc-300">{c.nav.music}</a>
+                <a href="#platforms" onClick={scrollToSection("platforms")} className="text-sm font-medium text-zinc-300">{c.nav.platforms}</a>
                 <a href="#features" onClick={scrollToSection("features")} className="text-sm font-medium text-zinc-300">{c.nav.features}</a>
                 <a href="#steps" onClick={scrollToSection("steps")} className="text-sm font-medium text-zinc-300">{c.nav.steps}</a>
                 <a href="#commandes" onClick={scrollToSection("commandes")} className="text-sm font-medium text-zinc-300">{c.nav.commands}</a>
@@ -1272,6 +1361,82 @@ export default function BotLanding() {
               <svg viewBox="0 0 16 16" fill="currentColor" className="h-3 w-3" aria-hidden="true"><path d="M6 3l5 5-5 5" /></svg>
             </a>
           </Reveal>
+        </section>
+
+        <section id="platforms" className="mx-auto w-full max-w-6xl px-6 py-24 scroll-mt-20">
+          <Reveal className="text-center">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#92C8D2]/10 ring-1 ring-[#92C8D2]/20 shadow-lg shadow-[#92C8D2]/5">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#92C8D2" strokeWidth="1.5" className="h-7 w-7" aria-hidden="true">
+                <circle cx="18" cy="5" r="3" />
+                <circle cx="6" cy="12" r="3" />
+                <circle cx="18" cy="19" r="3" />
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+              </svg>
+            </div>
+            <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+              {c.platforms.titlePart1}{" "}
+              <span className="bg-gradient-to-r from-[#92C8D2] via-white to-[#92C8D2] bg-clip-text text-transparent">
+                {c.platforms.titleHighlight}
+              </span>
+            </h2>
+            <p className="mx-auto mt-3 max-w-xl text-zinc-400">{c.platforms.subtitle}</p>
+          </Reveal>
+
+          <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {PLATFORM_CONFIGS.map((plat, i) => {
+              const data = c.platforms.cards[plat.key];
+              return (
+                <Reveal key={plat.key} delay={i * 0.05}>
+                  <motion.div
+                    whileHover={{ y: -4, scale: 1.01 }}
+                    transition={{ type: "spring", stiffness: 350, damping: 25 }}
+                    className="group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0c0d14]/90 p-6 shadow-xl backdrop-blur-xl transition-all hover:bg-[#0f101a]"
+                    style={{
+                      boxShadow: "0 10px 30px -10px rgba(0,0,0,0.5)",
+                    }}
+                  >
+                    <div
+                      aria-hidden
+                      className="pointer-events-none absolute -right-12 -top-12 h-32 w-32 rounded-full opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-100"
+                      style={{ background: plat.bgGlow }}
+                    />
+                    <div>
+                      <div className="flex items-center justify-between">
+                        <div
+                          className="flex h-12 w-12 items-center justify-center rounded-2xl border bg-black/40 shadow-inner"
+                          style={{ borderColor: plat.borderGlow }}
+                        >
+                          {plat.icon}
+                        </div>
+                        <span
+                          className="rounded-full border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider"
+                          style={{
+                            borderColor: plat.borderGlow,
+                            color: plat.color,
+                            backgroundColor: plat.bgGlow,
+                          }}
+                        >
+                          {data.tag}
+                        </span>
+                      </div>
+
+                      <h3 className="mt-4 text-base font-bold text-white group-hover:text-white">{data.name}</h3>
+                      <p className="mt-2 text-xs leading-relaxed text-zinc-400">{data.desc}</p>
+                    </div>
+
+                    <div className="mt-5 border-t border-white/[0.06] pt-3 flex items-center justify-between text-[11px]">
+                      <span className="font-mono text-zinc-500">Intégration native</span>
+                      <span className="font-bold text-zinc-300 group-hover:text-white transition-colors flex items-center gap-1">
+                        Connecté
+                        <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: plat.color }} />
+                      </span>
+                    </div>
+                  </motion.div>
+                </Reveal>
+              );
+            })}
+          </div>
         </section>
 
         <section id="features" className="mx-auto w-full max-w-6xl px-6 py-24 scroll-mt-20">

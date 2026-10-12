@@ -115,6 +115,7 @@ import {
   gameCommand,
   funMasterCommand,
 } from '../commands/fun/funCommands.js';
+import { lastfmCommand, fmCommand } from '../commands/fun/lastfmCommands.js';
 
 import { config } from '../config.js';
 import { Command } from '../types/command.js';
@@ -282,6 +283,8 @@ class CommandRegistry {
     this.register(movieCommand);
     this.register(gameCommand);
     this.register(funMasterCommand);
+    this.register(lastfmCommand);
+    this.register(fmCommand);
   }
 
   public register(command: Command) {

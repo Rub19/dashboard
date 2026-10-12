@@ -16,6 +16,7 @@ const CATEGORY_MAP: Record<string, string> = {
   musique: 'Musique',
   music: 'Musique',
   spotify: 'Spotify',
+  lastfm: 'Last.fm',
   fun: 'Fun',
   modération: 'Modération',
   moderation: 'Modération',

@@ -15,6 +15,7 @@ export interface BotCopy {
     features: string;
     security: string;
     music: string;
+    platforms: string;
     steps: string;
     commands: string;
     faq: string;
@@ -89,6 +90,21 @@ export interface BotCopy {
     };
     moreBtn: string;
   };
+  platforms: {
+    badge: string;
+    titlePart1: string;
+    titleHighlight: string;
+    subtitle: string;
+    cards: {
+      spotify: { name: string; desc: string; tag: string };
+      lastfm: { name: string; desc: string; tag: string };
+      soundcloud: { name: string; desc: string; tag: string };
+      tiktok: { name: string; desc: string; tag: string };
+      pinterest: { name: string; desc: string; tag: string };
+      youtube: { name: string; desc: string; tag: string };
+      twitch: { name: string; desc: string; tag: string };
+    };
+  };
   features: {
     badge: string;
     titlePart1: string;
@@ -156,6 +172,7 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
       features: "Fonctionnalités",
       security: "Sécurité",
       music: "Musique",
+      platforms: "Plateformes",
       steps: "Prise en main",
       commands: "Commandes",
       faq: "FAQ",
@@ -234,6 +251,49 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
         status: "Synchronisé",
       },
       moreBtn: "20+ commandes musicales",
+    },
+    platforms: {
+      badge: "INTÉGRATIONS",
+      titlePart1: "Intégrations avec vos",
+      titleHighlight: "Plateformes préférées",
+      subtitle: "Suivez, écoutez, recherchez et diffusez vos médias en direct depuis vos services favoris.",
+      cards: {
+        spotify: {
+          name: "Spotify",
+          desc: "Jouez, contrôlez votre musique en vocal, synchronisez vos titres et diffusez en direct.",
+          tag: "14+ commandes",
+        },
+        lastfm: {
+          name: "Last.fm",
+          desc: "Scrobbles en direct, récents morceaux, top artistes, comparaisons de goûts et leaderboards.",
+          tag: "20+ commandes",
+        },
+        soundcloud: {
+          name: "SoundCloud",
+          desc: "Recherchez des morceaux indépendants, diffusez en vocal et partagez des liens audio directs.",
+          tag: "Vocal direct",
+        },
+        tiktok: {
+          name: "TikTok",
+          desc: "Recherchez des profils, suivez les créateurs et recevez des alertes de nouvelles vidéos.",
+          tag: "Flux & alertes",
+        },
+        pinterest: {
+          name: "Pinterest",
+          desc: "Recherche visuelle Lens sur vos images, profils et intégration de flux d'épingles.",
+          tag: "Recherche Lens",
+        },
+        youtube: {
+          name: "YouTube",
+          desc: "Streaming audio haute fidélité dans vos salons vocaux et lecture directe de playlists.",
+          tag: "Streaming HD",
+        },
+        twitch: {
+          name: "Twitch",
+          desc: "Alertes automatiques de streamers en direct et notifications personnalisées instantanées.",
+          tag: "Alertes en direct",
+        },
+      },
     },
     features: {
       badge: "CATALOGUE",
@@ -374,6 +434,7 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
       features: "Features",
       security: "Security",
       music: "Music",
+      platforms: "Platforms",
       steps: "Getting Started",
       commands: "Commands",
       faq: "FAQ",
@@ -452,6 +513,49 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
         status: "Connected",
       },
       moreBtn: "20+ music commands",
+    },
+    platforms: {
+      badge: "PLATFORMS",
+      titlePart1: "Integrations with your",
+      titleHighlight: "favorite Platforms",
+      subtitle: "Effortlessly track, view, search, play, notify updates and more from many platforms.",
+      cards: {
+        spotify: {
+          name: "Spotify",
+          desc: "Play, Queue, Control your Music, Listen in any Voice Channel, and 14+ more.",
+          tag: "14+ commands",
+        },
+        lastfm: {
+          name: "Last.fm",
+          desc: "View your current track, Recent Tracks, Search Artists, Profiles, Track Leaderboards, and 20+ more.",
+          tag: "20+ commands",
+        },
+        soundcloud: {
+          name: "SoundCloud",
+          desc: "Search Songs, Track Feeds, Notify any channel about New Posts and stream audio.",
+          tag: "Voice Stream",
+        },
+        tiktok: {
+          name: "TikTok",
+          desc: "Search Profiles, Track Feeds, Notify any channel about New Posts.",
+          tag: "Live Feeds",
+        },
+        pinterest: {
+          name: "Pinterest",
+          desc: "Use Lens Search on images, Search, View Profiles, Embed Live Feed into any channel.",
+          tag: "Lens Search",
+        },
+        youtube: {
+          name: "YouTube",
+          desc: "High-fidelity audio streaming in voice channels and direct playlist playback.",
+          tag: "HD Stream",
+        },
+        twitch: {
+          name: "Twitch",
+          desc: "Real-time streamer alerts, notifications and live broadcast tracking.",
+          tag: "Live Alerts",
+        },
+      },
     },
     features: {
       badge: "FEATURES",
@@ -592,6 +696,7 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
       features: "Funcionalidades",
       security: "Seguridad",
       music: "Música",
+      platforms: "Plataformas",
       steps: "Primeros Pasos",
       commands: "Comandos",
       faq: "Preguntas",
@@ -670,6 +775,49 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
         status: "Conectado",
       },
       moreBtn: "20+ comandos musicales",
+    },
+    platforms: {
+      badge: "PLATAFORMAS",
+      titlePart1: "Integraciones con tus",
+      titleHighlight: "Plataformas favoritas",
+      subtitle: "Sigue, escucha, busca y transmite en vivo desde tus servicios favoritos con total facilidad.",
+      cards: {
+        spotify: {
+          name: "Spotify",
+          desc: "Reproduce, gestiona la cola, transmite en canales de voz y comparte tus canciones favoritas.",
+          tag: "14+ comandos",
+        },
+        lastfm: {
+          name: "Last.fm",
+          desc: "Scrobbles en vivo, canciones recientes, artistas principales, comparador de gustos y más.",
+          tag: "20+ comandos",
+        },
+        soundcloud: {
+          name: "SoundCloud",
+          desc: "Busca canciones, transmite en canales de voz y comparte pistas de audio directamente.",
+          tag: "Voz directa",
+        },
+        tiktok: {
+          name: "TikTok",
+          desc: "Busca perfiles, sigue creadores y recibe alertas automáticas de nuevas publicaciones.",
+          tag: "Alertas en vivo",
+        },
+        pinterest: {
+          name: "Pinterest",
+          desc: "Búsqueda visual Lens de imágenes, perfiles e integración de tableros en tus canales.",
+          tag: "Búsqueda Lens",
+        },
+        youtube: {
+          name: "YouTube",
+          desc: "Transmisión de audio en canales de voz en alta fidelidad y reproducción de playlists.",
+          tag: "Transmisión HD",
+        },
+        twitch: {
+          name: "Twitch",
+          desc: "Alertas en tiempo real de directos de streamers y notificaciones automáticas.",
+          tag: "Directos 0s",
+        },
+      },
     },
     features: {
       badge: "CATÁLOGO",
@@ -810,6 +958,7 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
       features: "Funktionen",
       security: "Sicherheit",
       music: "Musik",
+      platforms: "Plattformen",
       steps: "Erste Schritte",
       commands: "Befehle",
       faq: "FAQ",
@@ -888,6 +1037,49 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
         status: "Verbunden",
       },
       moreBtn: "20+ Musik-Befehle",
+    },
+    platforms: {
+      badge: "PLATTFORMEN",
+      titlePart1: "Integrationen mit deinen",
+      titleHighlight: "Lieblingsplattformen",
+      subtitle: "Tracke, höre, suche und streame Live-Medien von all deinen bevorzugten Diensten.",
+      cards: {
+        spotify: {
+          name: "Spotify",
+          desc: "Spiele, steuere deine Musik im Sprachkanal, verwalte die Queue und teile Songs.",
+          tag: "14+ Befehle",
+        },
+        lastfm: {
+          name: "Last.fm",
+          desc: "Live-Scrobbles, kürzlich gehörte Titel, Top-Künstler, Geschmacksvergleich und Leaderboards.",
+          tag: "20+ Befehle",
+        },
+        soundcloud: {
+          name: "SoundCloud",
+          desc: "Suche Tracks, streame Audio direkt in Sprachkanälen und teile Wiedergabelisten.",
+          tag: "Direkt-Voice",
+        },
+        tiktok: {
+          name: "TikTok",
+          desc: "Profile durchsuchen, Feeds verfolgen und Benachrichtigungen bei neuen Videos erhalten.",
+          tag: "Live-Alerts",
+        },
+        pinterest: {
+          name: "Pinterest",
+          desc: "Visuelle Lens-Suche auf Bildern, Profile und Pin-Feeds direkt in deine Kanäle einbinden.",
+          tag: "Lens-Suche",
+        },
+        youtube: {
+          name: "YouTube",
+          desc: "High-Fidelity Audio-Streaming in Sprachkanälen und Playlist-Wiedergabe.",
+          tag: "HD-Streaming",
+        },
+        twitch: {
+          name: "Twitch",
+          desc: "Echtzeit-Streamer-Benachrichtigungen und automatische Live-Meldungen.",
+          tag: "Live-Alerts",
+        },
+      },
     },
     features: {
       badge: "FUNKTIONEN",

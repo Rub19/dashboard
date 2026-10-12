@@ -2,6 +2,25 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.4 — 2026-10-12
+
+**Intégration Last.fm Complète & Section Plateformes Vitrine (Bleed Style)**
+
+- **Intégration Complète de Last.fm dans le Bot (Format Bleed)** :
+  - Suite de commandes complètes `/lastfm` et raccourci `/fm` (`nowplaying`, `recent`, `topartists`, `toptracks`, `topalbums`, `taste`, `user`, `login`, `logout`, `spotify`, `youtube`, `lyrics`).
+  - Stockage persistant des liaisons de comptes Discord ↔ Last.fm (`data/lastfm_users.json`).
+  - Connectivité directe avec le Worker Cloudflare et l'API officielle Last.fm (2.0 Audioscrobbler) avec fallback sans aucun placeholder.
+  - Embeds Discord format Bleed avec couleur de marque Last.fm `#D51007`, métadonnées de lecture (album, scrobbles, auditeurs, statut de lecture, tags), et boutons d'action interactifs.
+- **Section Vitrine : « Intégrations avec vos Plateformes préférées » (`#platforms`)** :
+  - Section fidèle à la maquette utilisateur sur `discord.ethone.dev/bot` mettant en avant Spotify, Last.fm, SoundCloud, TikTok, Pinterest, YouTube et Twitch.
+  - Cartes avec halos lumineux réactifs aux couleurs des marques respectives et animations Framer Motion.
+  - Lien direct dans la barre de navigation desktop et mobile (`Plateformes`).
+- **Studio Interactif Last.fm dans le Dashboard (`/discord?view=fun`)** :
+  - Onglet dédié « Studio Last.fm » dans le module Fun du dashboard.
+  - Testeur en direct interrogeant les endpoints réels de l'API avec égaliseur sonore animé en barres réactives, écoute en direct, scrobbles récents et top artistes.
+- **Internationalisation Exhaustive (i18n)** :
+  - Traductions complètes et fluides en Français (FR), Anglais (EN), Espagnol (ES) et Allemand (DE).
+
 ## v1.75.3 — 2026-10-12
 
 **Vitrine Bot : Bento Haute Fidélité, Zéro Faux Serveurs & Traduction Complète (FR/EN/ES/DE)**

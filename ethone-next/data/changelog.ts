@@ -50838,5 +50838,58 @@ CHANGELOG_BY_LANG.en.unshift(v1_74_3_en);
 CHANGELOG_BY_LANG.es.unshift(v1_74_3_es);
 CHANGELOG_BY_LANG.de.unshift(v1_74_3_de);
 
+const v1_74_4_fr: ChangelogEntry = {
+  version: "v1.74.4",
+  date: "2026-10-12",
+  title: "Messagerie : Rendu haute-fidélité des e-mails en sandbox isolée, mode fond clair et texte brut",
+  items: [
+    "Rendu isolé et sandboxé : Affichage des e-mails HTML dans un iframe sécurisé avec sandbox stricte (zéro risque d'exécution de script) et ajustement dynamique de la hauteur",
+    "Fidélité visuelle des e-mails : Préservation intégrale des tableaux, styles en ligne, dimensions d'images et typographie d'origine des expéditeurs",
+    "Modes d'affichage : Bascule instantanée entre fond clair d'origine et mode sombre adapté, et bascule vers le format texte brut formaté",
+    "Nettoyage sécurisé : Assainissement avancé retirant scripts, gestionnaires d'événements et schémas dangereux sans altérer la mise en page",
+  ],
+};
+
+const v1_74_4_en: ChangelogEntry = {
+  version: "v1.74.4",
+  date: "2026-10-12",
+  title: "Mail: High-fidelity email rendering in sandboxed iframe, light/dark themes & plain text toggle",
+  items: [
+    "Isolated sandboxed rendering: HTML emails rendered in a secure iframe with strict sandboxing and dynamic height sizing",
+    "Email layout fidelity: Complete preservation of tables, inline styles, image dimensions, and original sender typography",
+    "Viewing modes: Instant toggle between original light canvas and dark mode, plus plain text formatted view",
+    "Security sanitization: Advanced sanitizer stripping scripts, event handlers, and dangerous URL protocols while preserving layouts",
+  ],
+};
+
+const v1_74_4_es: ChangelogEntry = {
+  version: "v1.74.4",
+  date: "2026-10-12",
+  title: "Correo: Renderizado de alta fidelidad en sandbox aislado, modos de tema y vista de texto plano",
+  items: [
+    "Renderizado en sandbox: Visualización de correos HTML en iframe seguro con sandbox estricto y altura dinámica",
+    "Fidelidad de diseño: Preservación de tablas, estilos en línea, dimensiones de imágenes y tipografía original",
+    "Modos de lectura: Alternancia entre fondo claro original y modo oscuro, con opción de texto plano formateado",
+    "Saneamiento seguro: Eliminación de scripts y protocolos peligrosos conservando la estructura visual del correo",
+  ],
+};
+
+const v1_74_4_de: ChangelogEntry = {
+  version: "v1.74.4",
+  date: "2026-10-12",
+  title: "Mail: High-Fidelity E-Mail-Rendering im isolierten Sandbox-Iframe, Hell/Dunkel-Modus & Nur-Text",
+  items: [
+    "Isoliertes Sandbox-Rendering: HTML-E-Mails in sicherem Iframe mit striktem Sandbox-Schutz und dynamischer Höhenanpassung",
+    "Layout-Treue: Vollständiger Erhalt von Tabellen, Inline-Stilen, Bildabmessungen und Typografie der Absender",
+    "Anzeigemodi: Sofortiger Wechsel zwischen hellem Originalhintergrund, Dunkelmodus und formatierter Nur-Text-Ansicht",
+    "Sicherheitsbereinigung: Entfernt Skripte, Event-Handler und gefährliche Protokolle ohne Beeinträchtigung des Layouts",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_74_4_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_74_4_en);
+CHANGELOG_BY_LANG.es.unshift(v1_74_4_es);
+CHANGELOG_BY_LANG.de.unshift(v1_74_4_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

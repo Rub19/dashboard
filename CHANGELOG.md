@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.74.4 — 2026-10-12
+
+**Messagerie : Rendu haute-fidélité des e-mails en sandbox isolée, mode fond clair et texte brut**
+
+- **Rendu sandboxé isolé** : Intégration du composant `<MailBodyViewer />` affichant les e-mails HTML dans un `<iframe>` sécurisé (`sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin"` sans `allow-scripts`) avec ajustement automatique et continu de la hauteur selon le contenu réel.
+- **Fidélité visuelle et typographique** : Préservation intégrale des tableaux de mise en page, styles en ligne, largeurs de colonnes, dimensions et alignements d'images (`<img>`), évitant tout tassement ou empilement vertical anarchique des logos et boutons.
+- **Feuille de lecture & thèmes** : Présentation du message sur une carte élégante avec bascule instantanée entre **Fond clair (original)** (recommandé pour les e-mails marketing/transactionnels conçus pour un fond blanc) et **Mode sombre**, ainsi qu'une bascule vers le **Texte brut** formaté avec citations stylisées.
+- **Assainissement sécurisé (`sanitizeEmailHtml`)** : Analyseur dédié supprimant les scripts, gestionnaires d'événements (`on*`) et schémas dangereux (`javascript:`, `vbscript:`, etc.) sans détruire les balises HTML sémantiques.
+
 ## v1.74.3 — 2026-10-12
 
 **Console Discord : Agrandissement et mise à l'échelle typographique de la barre latérale**

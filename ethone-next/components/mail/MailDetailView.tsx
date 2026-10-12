@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { toSafeHtml } from "@/components/RichTextEditor";
+import MailBodyViewer from "./MailBodyViewer";
 import {
   Reply,
   ReplyAll,
@@ -348,8 +348,8 @@ export default function MailDetailView({
             <div
               key={msg.id}
               className={cn(
-                "rounded-[var(--inset-radius)] border border-[var(--panel-border)]",
-                isLatest ? "bg-transparent p-1" : "bg-[var(--surface-2)]/30 p-3"
+                "w-full max-w-4xl mx-auto",
+                thread.length > 1 && "rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-2)]/30 p-3"
               )}
             >
               {thread.length > 1 && (
@@ -384,13 +384,7 @@ export default function MailDetailView({
                     exit={{ opacity: 0, height: 0 }}
                     transition={{ duration: 0.18 }}
                   >
-                    <div
-                      className="max-w-none overflow-x-auto break-words px-1 text-sm leading-relaxed text-[var(--text-primary)] [&_a]:text-[var(--accent-primary)] [&_a]:underline [&_blockquote]:border-l-2 [&_blockquote]:border-[var(--panel-border)] [&_blockquote]:pl-3 [&_blockquote]:text-[var(--text-muted)] [&_img]:max-w-full"
-                      dangerouslySetInnerHTML={{
-                        // Contenu d'un e-mail reçu = HTML d'un tiers : toujours assaini (scripts, on*, javascript: retirés).
-                        __html: toSafeHtml(msg.body_html || msg.body_text || msg.snippet || ""),
-                      }}
-                    />
+                    <MailBodyViewer msg={msg} />
                   </motion.div>
                 )}
               </AnimatePresence>

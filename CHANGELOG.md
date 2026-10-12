@@ -2,6 +2,20 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.16 — 2026-10-13
+
+**Épuration du Hero Vitrine Bot & Harmonisation Fun & Médias**
+
+- **Retrait Définitif de la Pastille Superflue sur la Vitrine Bot (`/bot`)** :
+  - Suppression de la 4e pastille du bandeau Hero sur la vitrine publique du bot afin d'offrir une disposition aérée et percutante centrée sur le trio clé : `Anti-Raid 0.2s`, `Pont vocal Spotify` et `Zéro latence` / `Sub-15ms Latency`.
+- **Harmonisation Globale de la Catégorie Communautaire (« Fun & Médias »)** :
+  - Harmonisation et alignement des onglets du simulateur de chat en direct, de la console de gestion et des répertoires de commandes sous l'intitulé unifié `Fun & Médias` (FR: « Fun & Médias », EN: « Fun & Media », ES: « Fun y Medios », DE: « Fun & Medien »).
+  - Épuration des descriptions de démonstration pour privilégier des présentations communautaires sobres et authentiques.
+- **Épuration des Embeds Discord Last.fm** :
+  - Simplification des signatures de pied de page des embeds Discord Last.fm (`Etho Last.fm`) pour un rendu minimaliste et soigné.
+- **Synchronisation Quadri-lingue Complète** :
+  - Maintien d'une parité linguistique rigoureuse à travers les 4 langues supportées (Français, Anglais, Espagnol, Allemand).
+
 ## v1.75.15 — 2026-10-13
 
 **Correction du Flux API HenrikDev & Affichage des Matchs Valorant**
@@ -51,7 +65,7 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 **Rétablissement de la Vitrine Publique sur `discord.ethone.dev`**
 
 - **Aiguillage Racine Rétabli vers la Page de Présentation (`/bot`)** :
-  - Correction dans `app/layout.tsx` du script d'interception du sous-domaine `discord.ethone.dev` qui redirigeait par erreur vers `/discord` (console et sélecteur de serveurs) au lieu de `/bot` (vitrine publique officielle Etho avec animations Bleed & Keeper, simulateur de chat, défilement des modules et commandes).
+  - Correction dans `app/layout.tsx` du script d'interception du sous-domaine `discord.ethone.dev` qui redirigeait par erreur vers `/discord` (console et sélecteur de serveurs) au lieu de `/bot` (vitrine publique officielle Etho avec animations modernes, simulateur de chat, défilement des modules et commandes).
   - Navigation préservée : le bouton « Tableau de bord » de la barre de navigation de la vitrine continue de pointer vers `/discord` pour gérer ses serveurs.
 
 ## v1.75.11 — 2026-10-13
@@ -175,13 +189,13 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## v1.75.4 — 2026-10-12
 
-**Intégration Last.fm Complète & Section Plateformes Vitrine (Bleed Style)**
+**Intégration Last.fm Complète & Section Plateformes Vitrine**
 
-- **Intégration Complète de Last.fm dans le Bot (Format Bleed)** :
+- **Intégration Complète de Last.fm dans le Bot** :
   - Suite de commandes complètes `/lastfm` et raccourci `/fm` (`nowplaying`, `recent`, `topartists`, `toptracks`, `topalbums`, `taste`, `user`, `login`, `logout`, `spotify`, `youtube`, `lyrics`).
   - Stockage persistant des liaisons de comptes Discord ↔ Last.fm (`data/lastfm_users.json`).
   - Connectivité directe avec le Worker Cloudflare et l'API officielle Last.fm (2.0 Audioscrobbler) avec fallback sans aucun placeholder.
-  - Embeds Discord format Bleed avec couleur de marque Last.fm `#D51007`, métadonnées de lecture (album, scrobbles, auditeurs, statut de lecture, tags), et boutons d'action interactifs.
+  - Embeds Discord avec couleur de marque Last.fm `#D51007`, métadonnées de lecture (album, scrobbles, auditeurs, statut de lecture, tags), et boutons d'action interactifs.
 - **Section Vitrine : « Intégrations avec vos Plateformes préférées » (`#platforms`)** :
   - Section fidèle à la maquette utilisateur sur `discord.ethone.dev/bot` mettant en avant Spotify, Last.fm, SoundCloud, TikTok, Pinterest, YouTube et Twitch.
   - Cartes avec halos lumineux réactifs aux couleurs des marques respectives et animations Framer Motion.
@@ -217,11 +231,11 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## v1.75.2 — 2026-10-12
 
-**Vitrine Bot : Refonte Motion Design Format Bleed & Rétablissement de /bot**
+**Vitrine Bot : Refonte Motion Design & Rétablissement de /bot**
 
 - Rétablissement officiel de la page vitrine sur `/bot` (accessible sur discord.ethone.dev/bot et ethone.dev/bot) avec métadonnées OpenGraph complètes.
-- Refonte intégrale en motion design inspirée de MultiBot, Keeper Protect et Bleed bot, avec ton sobre et direct sans jargon IA.
-- Simulateur de chat Discord interactif en direct avec 4 démos sélectionnables (Anti-Raid, Spotify avec vinyle animé, Fun Bleed et Bienvenue).
+- Refonte intégrale en motion design inspirée de MultiBot et Keeper Protect, avec ton sobre et direct sans jargon IA.
+- Simulateur de chat Discord interactif en direct avec 4 démos sélectionnables (Anti-Raid, Spotify avec vinyle animé, Fun & Médias et Bienvenue).
 - Grille bento interactive 6 modules avec commutateurs de sécurité ON/OFF en temps réel et prévisualisations concrètes.
 - Bande défilante des communautés Discord partenaires et compteurs de statistiques en direct.
 - Guide de mise en route en 3 étapes claires, catalogue de commandes avec filtres et copie de syntaxe en 1 clic.
@@ -229,9 +243,9 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## v1.75.1 — 2026-10-12
 
-**Catégorie Fun & Divertissement : Suite de Commandes Format Bleed & Studio Dashboard**
+**Catégorie Fun & Divertissement : Suite de Commandes Fun & Médias & Studio Dashboard**
 
-- Nouvelle catégorie Fun & Divertissement : ajout de la suite complète de commandes Bleed (/lyrics, /quote, /image, /duckduckgoimage, /reverseimage, /movie, /tvshow, /game) et commande maître /fun.
+- Nouvelle catégorie Fun & Divertissement : ajout de la suite complète de commandes interactives (/lyrics, /quote, /image, /duckduckgoimage, /reverseimage, /movie, /tvshow, /game) et commande maître /fun.
 - Recherche de paroles en direct (/lyrics) : moteur LRCLib avec durée, métadonnées d'album et affichage élégant des paroles complètes.
 - Générateur de citations (/quote) : création et prévisualisation instantanée de citations stylisées aux formats embed Discord.
 - Recherche d'images & inversée (/image, /duckduckgoimage, /reverseimage) : recherche de visuels haute résolution et liens directs vers Google Lens, Bing Visual, TinEye, Yandex et SauceNAO.

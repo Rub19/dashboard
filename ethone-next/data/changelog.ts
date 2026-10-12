@@ -18757,7 +18757,7 @@ CHANGELOG_BY_LANG.en.unshift({
     "Ultra-smooth spring animations for Dock entrance/exit and [Dock] button in the bottom status bar.",
     "Notification Center: fixed text truncations, highlighted critical security alerts, reliable mark-as-read/archive actions.",
     "Brain: fixed missing icons (meeting note prompt, official Discord brand logo) and enhanced context drawer.",
-    "User Profile: 100% solid opaque background preventing text bleed, added Changelog direct action.",
+    "User Profile: 100% solid opaque background preventing text overlap, added Changelog direct action.",
     "Validation: Next.js 105/105 pages build, 0 TypeScript errors.",
     "Version badge: v1.10.38.",
   ],
@@ -38888,7 +38888,7 @@ const v1_37_5_en: ChangelogEntry = {
   title: "Fix: Bot Control info leak",
   items: [
     "Bot Control Center: server count and online-status indicators are now owner-only (they had no reason to be visible to other servers' admins).",
-    "Fixed the Bot Control header's translucent background letting scrolled content bleed through as unreadable overlap.",
+    "Fixed the Bot Control header's translucent background letting scrolled content show through as unreadable overlap.",
   ],
 };
 
@@ -38933,7 +38933,7 @@ const v1_37_6_en: ChangelogEntry = {
   date: "2026-09-29",
   title: "Bot Control Center cleanup",
   items: [
-    "Bot Control Center header: fully opaque background (scrolled content was still bleeding through behind the header even after the earlier /80 fix).",
+    "Bot Control Center header: fully opaque background (scrolled content was still showing through behind the header even after the earlier /80 fix).",
     "Global status strip now hidden on Bot Control Center pages: it duplicated the telemetry already shown right below it.",
     "Server count removed from the header (even for the owner) and bot identity badges trimmed for a less cluttered page.",
   ],
@@ -51689,9 +51689,9 @@ CHANGELOG_BY_LANG.de.unshift(v1_75_0_de);
 const v1_75_1_fr: ChangelogEntry = {
   version: "v1.75.1",
   date: "2026-10-12",
-  title: "Catégorie Fun & Divertissement : Suite de Commandes Format Bleed & Studio Dashboard",
+  title: "Catégorie Fun & Divertissement : Suite de Commandes Fun & Médias & Studio Dashboard",
   items: [
-    "Nouvelle catégorie Fun & Divertissement : ajout de la suite complète de commandes Bleed (/lyrics, /quote, /image, /duckduckgoimage, /reverseimage, /movie, /tvshow, /game) et commande maître /fun.",
+    "Nouvelle catégorie Fun & Divertissement : ajout de la suite complète de commandes interactives (/lyrics, /quote, /image, /duckduckgoimage, /reverseimage, /movie, /tvshow, /game) et commande maître /fun.",
     "Recherche de paroles en direct (/lyrics) : moteur LRCLib avec durée, métadonnées d'album et affichage élégant des paroles complètes.",
     "Générateur de citations (/quote) : création et prévisualisation instantanée de citations stylisées aux formats embed Discord.",
     "Recherche d'images & inversée (/image, /duckduckgoimage, /reverseimage) : recherche de visuels haute résolution et liens directs vers Google Lens, Bing Visual, TinEye, Yandex et SauceNAO.",
@@ -51703,9 +51703,9 @@ const v1_75_1_fr: ChangelogEntry = {
 const v1_75_1_en: ChangelogEntry = {
   version: "v1.75.1",
   date: "2026-10-12",
-  title: "Fun & Media Category: Bleed-Style Command Suite & Interactive Dashboard Studio",
+  title: "Fun & Media Category: Interactive Fun & Media Command Suite & Studio",
   items: [
-    "New Fun & Entertainment category: complete Bleed-style command suite (/lyrics, /quote, /image, /duckduckgoimage, /reverseimage, /movie, /tvshow, /game) and /fun command.",
+    "New Fun & Entertainment category: complete interactive command suite (/lyrics, /quote, /image, /duckduckgoimage, /reverseimage, /movie, /tvshow, /game) and /fun command.",
     "Live lyrics lookup (/lyrics): powered by LRCLib with track duration, album metadata, and formatted lyric scroll.",
     "Quote generator (/quote): instant preview and creation of styled Discord quote embeds.",
     "Image and reverse search (/image, /duckduckgoimage, /reverseimage): high-resolution visual search and deep links to Google Lens, Bing Visual, TinEye, Yandex, and SauceNAO.",
@@ -51717,9 +51717,9 @@ const v1_75_1_en: ChangelogEntry = {
 const v1_75_1_es: ChangelogEntry = {
   version: "v1.75.1",
   date: "2026-10-12",
-  title: "Categoría Fun y Medios: Suite de Comandos Estilo Bleed y Estudio Interactivo",
+  title: "Categoría Fun y Medios: Suite de Comandos Interactivos y Estudio",
   items: [
-    "Nueva categoría Fun y Entretenimiento: suite completa de comandos estilo Bleed (/lyrics, /quote, /image, /duckduckgoimage, /reverseimage, /movie, /tvshow, /game) y comando maestro /fun.",
+    "Nueva categoría Fun y Entretenimiento: suite completa de comandos interactivos (/lyrics, /quote, /image, /duckduckgoimage, /reverseimage, /movie, /tvshow, /game) y comando maestro /fun.",
     "Búsqueda de letras (/lyrics): con LRCLib, duración, álbum y visualización completa de letras.",
     "Generador de citas (/quote): creación y vista previa de citas con estilo Discord.",
     "Búsqueda de imágenes e inversa (/image, /duckduckgoimage, /reverseimage): búsqueda de imágenes y enlaces a Google Lens, Bing, TinEye y Yandex.",
@@ -51731,9 +51731,9 @@ const v1_75_1_es: ChangelogEntry = {
 const v1_75_1_de: ChangelogEntry = {
   version: "v1.75.1",
   date: "2026-10-12",
-  title: "Fun- & Medien-Kategorie: Bleed-Befehlssuite & Interaktives Dashboard-Studio",
+  title: "Fun- & Medien-Kategorie: Interaktive Befehlssuite & Dashboard-Studio",
   items: [
-    "Neue Fun- und Unterhaltungs-Kategorie: Vollständige Bleed-Befehlssuite (/lyrics, /quote, /image, /duckduckgoimage, /reverseimage, /movie, /tvshow, /game) und /fun-Hauptbefehl.",
+    "Neue Fun- und Unterhaltungs-Kategorie: Vollständige interaktive Befehlssuite (/lyrics, /quote, /image, /duckduckgoimage, /reverseimage, /movie, /tvshow, /game) und /fun-Hauptbefehl.",
     "Live-Songtext-Suche (/lyrics): LRCLib-gestützt mit Spieldauer, Album-Metadaten und vollständigen Texten.",
     "Zitate-Generator (/quote): Sofortige Vorschau und Erstellung von stilvollen Discord-Zitaten.",
     "Bilder- und Bildrückwärtssuche (/image, /duckduckgoimage, /reverseimage): Hochauflösende Bildersuche und Direktlinks zu Google Lens, Bing Visual, TinEye und Yandex.",
@@ -51745,11 +51745,11 @@ const v1_75_1_de: ChangelogEntry = {
 const v1_75_2_fr: ChangelogEntry = {
   version: "v1.75.2",
   date: "2026-10-12",
-  title: "Vitrine Bot : Refonte Motion Design Format Bleed & Rétablissement de /bot",
+  title: "Vitrine Bot : Refonte Motion Design & Rétablissement de /bot",
   items: [
     "Rétablissement officiel de la page vitrine sur /bot (accessible sur discord.ethone.dev/bot et ethone.dev/bot) avec métadonnées OpenGraph complètes.",
-    "Refonte intégrale en motion design inspirée de MultiBot, Keeper Protect et Bleed bot, avec ton sobre et direct sans jargon IA.",
-    "Simulateur de chat Discord interactif en direct avec 4 démos sélectionnables (Anti-Raid, Spotify avec vinyle animé, Fun Bleed et Bienvenue).",
+    "Refonte intégrale en motion design inspirée de MultiBot et Keeper Protect, avec ton sobre et direct sans jargon IA.",
+    "Simulateur de chat Discord interactif en direct avec 4 démos sélectionnables (Anti-Raid, Spotify avec vinyle animé, Fun & Médias et Bienvenue).",
     "Grille bento interactive 6 modules avec commutateurs de sécurité ON/OFF en temps réel et prévisualisations concrètes.",
     "Bande défilante des communautés Discord partenaires et compteurs de statistiques en direct.",
     "Guide de mise en route en 3 étapes claires, catalogue de commandes avec filtres et copie de syntaxe en 1 clic.",
@@ -51760,11 +51760,11 @@ const v1_75_2_fr: ChangelogEntry = {
 const v1_75_2_en: ChangelogEntry = {
   version: "v1.75.2",
   date: "2026-10-12",
-  title: "Bot Showcase: Bleed-Style Motion Design Redesign & /bot Restoration",
+  title: "Bot Showcase: Modern Motion Design Redesign & /bot Restoration",
   items: [
     "Official restoration of the public bot showcase on /bot (accessible on discord.ethone.dev/bot and ethone.dev/bot) with complete OpenGraph metadata.",
-    "Complete motion design revamp inspired by MultiBot, Keeper Protect, and Bleed bot, featuring crisp authentic community copy without AI buzzwords.",
-    "Interactive live Discord chat simulator featuring 4 switchable demos (Anti-Raid, Spotify with animated vinyl, Bleed Fun, and Welcome).",
+    "Complete motion design revamp inspired by MultiBot and Keeper Protect, featuring crisp authentic community copy without AI buzzwords.",
+    "Interactive live Discord chat simulator featuring 4 switchable demos (Anti-Raid, Spotify with animated vinyl, Fun & Media, and Welcome).",
     "Interactive 6-module bento grid with live toggleable ON/OFF security switches and rich previews.",
     "Infinite marquee of partner Discord communities and animated live stat counters.",
     "Clear 3-step onboarding guide, command explorer with category filters and 1-click syntax copying.",
@@ -51775,11 +51775,11 @@ const v1_75_2_en: ChangelogEntry = {
 const v1_75_2_es: ChangelogEntry = {
   version: "v1.75.2",
   date: "2026-10-12",
-  title: "Vitrina del Bot: Rediseño Motion Design Estilo Bleed y Restauración de /bot",
+  title: "Vitrina del Bot: Rediseño Motion Design Moderno y Restauración de /bot",
   items: [
     "Restauración oficial de la página vitrina en /bot (accesible en discord.ethone.dev/bot y ethone.dev/bot) con metadatos completos.",
-    "Rediseño integral en motion design inspirado en MultiBot, Keeper Protect y Bleed bot, sin frases artificiales de IA.",
-    "Simulador interactivo de chat de Discord en vivo con 4 demos seleccionables (Anti-Raid, Spotify con vinilo animado, Bleed Fun y Bienvenida).",
+    "Rediseño integral en motion design inspirado en MultiBot y Keeper Protect, sin frases artificiales de IA.",
+    "Simulador interactivo de chat de Discord en vivo con 4 demos seleccionables (Anti-Raid, Spotify con vinilo animado, Fun y Bienvenida).",
     "Rejilla bento interactiva de 6 módulos con interruptores ON/OFF en tiempo real y vistas previas enriquecidas.",
     "Cinta continua de comunidades asociadas de Discord y contadores de estadísticas en vivo.",
     "Guía de inicio en 3 pasos, explorador de comandos con filtros y copia de sintaxis con 1 clic.",
@@ -51790,11 +51790,11 @@ const v1_75_2_es: ChangelogEntry = {
 const v1_75_2_de: ChangelogEntry = {
   version: "v1.75.2",
   date: "2026-10-12",
-  title: "Bot-Präsentation: Bleed-Style Motion Design Neugestaltung & Wiederherstellung von /bot",
+  title: "Bot-Präsentation: Modernes Motion Design & Wiederherstellung von /bot",
   items: [
     "Offizielle Wiederherstellung der Bot-Präsentationsseite auf /bot (erreichbar unter discord.ethone.dev/bot und ethone.dev/bot) mit vollständigen Metadaten.",
-    "Vollständige Motion-Design-Überarbeitung inspiriert von MultiBot, Keeper Protect und Bleed bot, mit authentischen Texten ohne KI-Klischees.",
-    "Interaktiver Live-Discord-Chat-Simulator mit 4 auswählbaren Demos (Anti-Raid, Spotify mit animiertem Vinyl, Bleed Fun und Willkommen).",
+    "Vollständige Motion-Design-Überarbeitung inspiriert von MultiBot und Keeper Protect, mit authentischen Texten ohne KI-Klischees.",
+    "Interaktiver Live-Discord-Chat-Simulator mit 4 auswählbaren Demos (Anti-Raid, Spotify mit animiertem Vinyl, Fun und Willkommen).",
     "Interaktives 6-Modul-Bento-Grid mit echten umschaltbaren AN/AUS-Sicherheitsschaltern.",
     "Laufband mit Partner-Discord-Communities und animierten Live-Statistikzählern.",
     "3-Schritte-Einstiegsleitfaden, Befehlskatalog mit Filtern und 1-Klick-Syntaxkopieren.",
@@ -51869,7 +51869,7 @@ const v1_75_4_fr: ChangelogEntry = {
   date: "2026-10-12",
   title: "Intégration Last.fm Complète & Section Plateformes Vitrine",
   items: [
-    "Intégration complète de Last.fm format Bleed : commandes /lastfm (nowplaying, recent, topartists, toptracks, topalbums, taste, user, login, logout, spotify, youtube, lyrics) reliées directement aux données de scrobble réelles.",
+    "Intégration complète de Last.fm : commandes /lastfm (nowplaying, recent, topartists, toptracks, topalbums, taste, user, login, logout, spotify, youtube, lyrics) reliées directement aux données de scrobble réelles.",
     "Nouvelle section vitrine « Intégrations avec vos Plateformes préférées » : cartes avec halos de couleur réactifs et motion design pour Spotify, Last.fm, SoundCloud, TikTok, Pinterest, YouTube et Twitch.",
     "Studio interactif Last.fm dans le Dashboard (/discord?view=fun) avec égaliseur sonore animé, écoute en direct, historique des scrobbles récents et top artistes sans placeholder.",
     "Traduction intégrale des nouvelles sections et métadonnées en Français, Anglais, Espagnol et Allemand.",
@@ -51881,7 +51881,7 @@ const v1_75_4_en: ChangelogEntry = {
   date: "2026-10-12",
   title: "Complete Last.fm Integration & Platform Showcase Section",
   items: [
-    "Full Bleed-style Last.fm integration: /lastfm commands (nowplaying, recent, topartists, toptracks, topalbums, taste, user, login, logout, spotify, youtube, lyrics) connected to live scrobble data.",
+    "Full Last.fm integration: /lastfm commands (nowplaying, recent, topartists, toptracks, topalbums, taste, user, login, logout, spotify, youtube, lyrics) connected to live scrobble data.",
     "New public showcase section 'Integrations with your favorite Platforms': responsive motion cards with brand glowing accents for Spotify, Last.fm, SoundCloud, TikTok, Pinterest, YouTube, and Twitch.",
     "Interactive Last.fm Studio in the Dashboard (/discord?view=fun) with live animated equalizer, current scrobbles, recent history, and top artists with zero placeholders.",
     "Comprehensive localization across English, French, Spanish, and German.",
@@ -51893,7 +51893,7 @@ const v1_75_4_es: ChangelogEntry = {
   date: "2026-10-12",
   title: "Integración Completa de Last.fm y Sección de Plataformas",
   items: [
-    "Integración completa de Last.fm estilo Bleed: comandos /lastfm conectados directamente a los datos reales de scrobble.",
+    "Integración completa de Last.fm: comandos /lastfm conectados directamente a los datos reales de scrobble.",
     "Nueva sección en la vitrina 'Integraciones con tus Plataformas favoritas' para Spotify, Last.fm, SoundCloud, TikTok, Pinterest, YouTube y Twitch.",
     "Estudio interactivo de Last.fm en el panel (/discord?view=fun) con ecualizador animado, canciones recientes y artistas principales.",
     "Localización completa en francés, inglés, español y alemán.",
@@ -51905,7 +51905,7 @@ const v1_75_4_de: ChangelogEntry = {
   date: "2026-10-12",
   title: "Vollständige Last.fm-Integration & Plattform-Präsentationssektion",
   items: [
-    "Vollständige Last.fm-Integration im Bleed-Format: /lastfm-Befehle verbunden mit echten Live-Scrobble-Daten.",
+    "Vollständige Last.fm-Integration: /lastfm-Befehle verbunden mit echten Live-Scrobble-Daten.",
     "Neue Präsentationssektion 'Integrationen mit deinen Lieblingsplattformen' für Spotify, Last.fm, SoundCloud, TikTok, Pinterest, YouTube und Twitch.",
     "Interaktives Last.fm-Studio im Dashboard (/discord?view=fun) mit animiertem Equalizer und echten Hörer-Statistiken.",
     "Vollständige Übersetzung in Französisch, Englisch, Spanisch und Deutsch.",
@@ -52480,6 +52480,55 @@ CHANGELOG_BY_LANG.fr.unshift(v1_75_15_fr);
 CHANGELOG_BY_LANG.en.unshift(v1_75_15_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_15_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_15_de);
+
+const v1_75_16_fr: ChangelogEntry = {
+  version: "v1.75.16",
+  date: "2026-10-13",
+  title: "Nettoyage Vitrine Bot : Épuration du Hero & Harmonisation Fun & Médias",
+  items: [
+    "Suppression définitive de la 4e pastille superflue sur la vitrine bot (/bot) au profit d'un trio épuré et percutant (Anti-Raid 0.2s, Pont vocal Spotify, Zéro latence).",
+    "Harmonisation complète et unifiée des modules sous l'appellation sobre « Fun & Médias » à travers l'ensemble des titres, interfaces, descriptions et traductions (FR/EN/ES/DE).",
+    "Nettoyage et épuration des embeds Last.fm Discord pour une présentation sobre et soignée.",
+  ],
+};
+
+const v1_75_16_en: ChangelogEntry = {
+  version: "v1.75.16",
+  date: "2026-10-13",
+  title: "Bot Showcase Cleanup: Hero Streamlining & Fun & Media Harmonization",
+  items: [
+    "Removed the superfluous 4th pill from the bot landing hero (/bot) in favor of a clean, high-impact trio (0.2s Anti-Raid, Spotify Voice Bridge, Sub-15ms Latency).",
+    "Complete harmonization of community modules under the unified 'Fun & Media' label across all showcase titles, UI elements, descriptions, and localizations (FR/EN/ES/DE).",
+    "Refined and cleaned Last.fm Discord embed footers for a polished presentation.",
+  ],
+};
+
+const v1_75_16_es: ChangelogEntry = {
+  version: "v1.75.16",
+  date: "2026-10-13",
+  title: "Limpieza de la Vitrina del Bot: Simplificación del Hero y Armonización Fun y Medios",
+  items: [
+    "Eliminada la 4ª pastilla superflua de la vitrina (/bot) a favor de tres aspectos destacados nítidos (Anti-Raid 0.2s, Puente de voz Spotify, Cero latencia).",
+    "Armonización completa de los módulos comunitarios bajo la denominación 'Fun y Medios' en todos los títulos, interfaces, descripciones y traducciones (FR/EN/ES/DE).",
+    "Limpieza y refinamiento de los pies de página de Discord en Last.fm para una presentación pulida.",
+  ],
+};
+
+const v1_75_16_de: ChangelogEntry = {
+  version: "v1.75.16",
+  date: "2026-10-13",
+  title: "Bereinigung der Bot-Präsentation: Hero-Verschlankung & Fun & Medien Harmonisation",
+  items: [
+    "Entfernung der überflüssigen 4. Pille aus dem Hero-Bereich (/bot) zugunsten von drei klaren Highlights (0.2s Anti-Raid, Spotify Voice-Bridge, Null Latenz).",
+    "Vollständige Vereinheitlichung der Community-Module unter der Bezeichnung 'Fun & Medien' über alle Titel, Benutzeroberflächen, Beschreibungen und Übersetzungen (FR/EN/ES/DE).",
+    "Bereinigung der Last.fm Discord-Embed-Footer für eine saubere Präsentation.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_16_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_16_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_16_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_16_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

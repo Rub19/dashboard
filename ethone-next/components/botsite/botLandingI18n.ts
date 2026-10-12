@@ -190,7 +190,7 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
       badge: "Le bot Discord tout-en-un",
       titlePart1: "Le bot Discord tout-en-un,",
       titleHighlight: "pensé pour ta communauté",
-      subtitle: "Modération chirurgicale, protection anti-raid, musique haute fidélité, pont vocal Spotify et commandes fun format Bleed. Active ce dont tu as besoin et configure tout depuis un dashboard clair, sans superflu.",
+      subtitle: "Modération chirurgicale, protection anti-raid, musique haute fidélité, pont vocal Spotify et commandes fun interactives. Active ce dont tu as besoin et configure tout depuis un dashboard clair, sans superflu.",
       addBtn: "Ajouter le bot ↗",
       dashboardBtn: "Ouvrir le dashboard",
       onlineLabel: "En ligne 24/7",
@@ -198,7 +198,6 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
         "🛡️ Anti-Raid 0.2s",
         "🎵 Pont vocal Spotify",
         "⚡ Zéro latence",
-        "🎉 Commandes Fun Bleed",
       ],
     },
     security: {
@@ -434,7 +433,7 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
   en: {
     meta: {
       title: "Etho — The All-in-One Discord Bot for Your Community",
-      description: "Surgical anti-raid protection, instant moderation, music, Spotify voice bridge, and Bleed-style fun commands. Everything your server needs without fluff.",
+      description: "Surgical anti-raid protection, instant moderation, music, Spotify voice bridge, and fun interactive commands. Everything your server needs without fluff.",
     },
     nav: {
       features: "Features",
@@ -455,7 +454,7 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
       badge: "The all-in-one Discord bot",
       titlePart1: "The all-in-one Discord bot,",
       titleHighlight: "built for your community",
-      subtitle: "Surgical anti-raid defense, instant moderation, high-fidelity music, Spotify voice bridge, and Bleed-style fun commands. Enable what you need and configure everything from a clean dashboard.",
+      subtitle: "Surgical anti-raid defense, instant moderation, high-fidelity music, Spotify voice bridge, and fun interactive commands. Enable what you need and configure everything from a clean dashboard.",
       addBtn: "Add to Discord ↗",
       dashboardBtn: "Open Dashboard",
       onlineLabel: "Online 24/7",
@@ -463,7 +462,6 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
         "🛡️ 0.2s Anti-Raid",
         "🎵 Spotify Voice Bridge",
         "⚡ Sub-15ms Latency",
-        "🎉 Bleed Fun Commands",
       ],
     },
     security: {
@@ -699,7 +697,7 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
   es: {
     meta: {
       title: "Etho — El bot de Discord todo en uno para tu comunidad",
-      description: "Protección anti-raid quirúrgica, moderación instantánea, música, puente de voz de Spotify y comandos divertidos estilo Bleed. Todo lo que tu servidor necesita.",
+      description: "Protección anti-raid quirúrgica, moderación instantánea, música, puente de voz de Spotify y comandos divertidos e interactivos. Todo lo que tu servidor necesita.",
     },
     nav: {
       features: "Funcionalidades",
@@ -720,7 +718,7 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
       badge: "El bot de Discord todo en uno",
       titlePart1: "El bot de Discord todo en uno,",
       titleHighlight: "pensado para tu comunidad",
-      subtitle: "Defensa anti-raid quirúrgica, moderación inmediata, música, puente de voz de Spotify y comandos divertidos estilo Bleed. Activa lo que necesites desde un panel claro y sin complicaciones.",
+      subtitle: "Defensa anti-raid quirúrgica, moderación inmediata, música, puente de voz de Spotify y comandos divertidos e interactivos. Activa lo que necesites desde un panel claro y sin complicaciones.",
       addBtn: "Añadir el bot ↗",
       dashboardBtn: "Abrir el panel",
       onlineLabel: "En línea 24/7",
@@ -728,7 +726,6 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
         "🛡️ Anti-Raid 0.2s",
         "🎵 Puente de voz Spotify",
         "⚡ Cero latencia",
-        "🎉 Comandos Bleed",
       ],
     },
     security: {
@@ -964,7 +961,7 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
   de: {
     meta: {
       title: "Etho — Der All-in-One Discord-Bot für deine Community",
-      description: "Präziser Anti-Raid-Schutz, sofortige Moderation, Musik, Spotify-Voice-Bridge und Bleed-Style Fun-Befehle. Alles, was dein Server braucht.",
+      description: "Präziser Anti-Raid-Schutz, sofortige Moderation, Musik, Spotify-Voice-Bridge und interaktive Fun-Befehle. Alles, was dein Server braucht.",
     },
     nav: {
       features: "Funktionen",
@@ -985,7 +982,7 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
       badge: "Der All-in-One Discord-Bot",
       titlePart1: "Der All-in-One Discord-Bot,",
       titleHighlight: "gebaut für deine Community",
-      subtitle: "Chirurgischer Anti-Raid-Schutz, blitzschnelle Moderation, Musik, Spotify-Voice-Bridge und Bleed-Style Fun-Befehle. Aktiviere, was du brauchst, und passe alles im Dashboard an.",
+      subtitle: "Chirurgischer Anti-Raid-Schutz, blitzschnelle Moderation, Musik, Spotify-Voice-Bridge und interaktive Fun-Befehle. Aktiviere, was du brauchst, und passe alles im Dashboard an.",
       addBtn: "Bot hinzufügen ↗",
       dashboardBtn: "Dashboard öffnen",
       onlineLabel: "Online 24/7",
@@ -993,7 +990,6 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
         "🛡️ 0.2s Anti-Raid",
         "🎵 Spotify Voice-Bridge",
         "⚡ Null Latenz",
-        "🎉 Bleed Fun-Befehle",
       ],
     },
     security: {

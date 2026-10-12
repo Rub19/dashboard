@@ -1,10 +1,20 @@
 [
   {
+    "version": "v1.75.16",
+    "date": "2026-10-13",
+    "title": "Nettoyage Vitrine Bot : Épuration du Hero & Harmonisation Fun & Médias",
+    "items": [
+      "Suppression définitive de la 4e pastille superflue sur la vitrine bot (/bot) au profit d'un trio épuré et percutant (Anti-Raid 0.2s, Pont vocal Spotify, Zéro latence).",
+      "Harmonisation complète et unifiée des modules sous l'appellation sobre « Fun & Médias » à travers l'ensemble des titres, interfaces, descriptions et traductions (FR/EN/ES/DE).",
+      "Nettoyage et épuration des embeds Last.fm Discord pour une présentation sobre et soignée."
+    ]
+  },
+  {
     "version": "v1.75.1",
     "date": "2026-10-12",
-    "title": "Catégorie Fun & Divertissement : Suite de Commandes Format Bleed & Studio Dashboard",
+    "title": "Catégorie Fun & Divertissement : Suite de Commandes Fun & Médias & Studio Dashboard",
     "items": [
-      "Nouvelle catégorie Fun & Divertissement : ajout de la suite complète de commandes Bleed (/lyrics, /quote, /image, /duckduckgoimage, /reverseimage, /movie, /tvshow, /game) et commande maître /fun.",
+      "Nouvelle catégorie Fun & Divertissement : ajout de la suite complète de commandes interactives (/lyrics, /quote, /image, /duckduckgoimage, /reverseimage, /movie, /tvshow, /game) et commande maître /fun.",
       "Recherche de paroles en direct (/lyrics) : moteur LRCLib avec durée, métadonnées d'album et affichage élégant des paroles complètes.",
       "Générateur de citations (/quote) : création et prévisualisation instantanée de citations stylisées aux formats embed Discord.",
       "Recherche d'images & inversée (/image, /duckduckgoimage, /reverseimage) : recherche de visuels haute résolution et liens directs vers Google Lens, Bing Visual, TinEye, Yandex et SauceNAO.",

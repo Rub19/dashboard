@@ -485,7 +485,7 @@ const MODULES: BotModule[] = [
   {
     id: "fun",
     title: "Fun & Médias",
-    description: "Suite de commandes divertissement format Bleed : paroles, citations, recherche d'images, films, séries TV et fiches de jeux vidéo.",
+    description: "Suite de commandes divertissement : paroles, citations, recherche d'images, films, séries TV et fiches de jeux vidéo.",
     icon: MODULE_ICONS.fun,
     color: "text-[var(--text-muted)]",
     badge: "Divertissement",

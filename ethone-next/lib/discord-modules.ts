@@ -36,7 +36,7 @@ export const DISCORD_MODULES: DiscordModuleMeta[] = [
   { id: "emojis", title: "Émojis du serveur", href: "/discord/emojis", keywords: ["emoji", "emote", "expression", "gif", "anime", "importer", "upload"], icon: "mod-emojis", tint: "text-yellow-300" },
   { id: "birthdays", title: "Anniversaires", href: "/discord/birthdays", keywords: ["anniversaire", "birthday", "fete"], icon: "mod-birthdays", tint: "text-pink-300" },
   { id: "music", title: "Lecteur Musique", href: "/discord/music", keywords: ["musique", "music", "play", "playlist", "dj", "spotify", "lavalink", "24/7"], icon: "mod-music", tint: "text-green-400" },
-  { id: "spotify", title: "Spotify Connect", href: "/discord/spotify", keywords: ["spotify", "musique", "lecteur", "connect", "titres", "artistes", "vocal", "diffusion", "bleed"], icon: "mod-music", tint: "text-emerald-400" },
+  { id: "spotify", title: "Spotify Connect", href: "/discord/spotify", keywords: ["spotify", "musique", "lecteur", "connect", "titres", "artistes", "vocal", "diffusion"], icon: "mod-music", tint: "text-emerald-400" },
   { id: "giveaways", title: "Tirages au sort", href: "/discord/giveaways", keywords: ["giveaway", "concours", "tirage", "cadeau"], icon: "mod-giveaways", tint: "text-pink-400" },
   { id: "economy", title: "Économie & Boutique", href: "/discord/economy", keywords: ["economie", "monnaie", "credits", "boutique", "shop", "daily", "pieces"], icon: "mod-economy", tint: "text-yellow-300" },
   { id: "events", title: "Événements & Calendrier", href: "/discord/events", keywords: ["evenement", "event", "inscription", "rsvp"], icon: "mod-events", tint: "text-orange-300" },
@@ -61,5 +61,5 @@ export const DISCORD_MODULES: DiscordModuleMeta[] = [
   { id: "automodnative", title: "AutoMod natif Discord", href: "/discord/automod-native", keywords: ["automod", "regles", "discord natif", "filtre", "spam", "mentions"], icon: "mod-security", tint: "text-red-300" },
   { id: "streamers", title: "Alertes Streamers", href: "/discord/streamers", keywords: ["stream", "streamer", "twitch", "youtube", "kick", "live", "notification", "alerte"], icon: "mod-events", tint: "text-purple-400" },
   { id: "games", title: "Mini-Jeux & Casino", href: "/discord/games", keywords: ["casino", "jeux", "mini jeux", "blackjack", "roulette", "des", "jackpot", "ethone coin", "pari"], icon: "games", tint: "text-amber-400" },
-  { id: "fun", title: "Fun & Médias", href: "/discord/fun", keywords: ["fun", "lyrics", "paroles", "quote", "citation", "image", "duckduckgo", "reverse", "movie", "tvshow", "game", "bleed", "cinema"], icon: "games", tint: "text-amber-400" },
+  { id: "fun", title: "Fun & Médias", href: "/discord/fun", keywords: ["fun", "lyrics", "paroles", "quote", "citation", "image", "duckduckgo", "reverse", "movie", "tvshow", "game", "cinema"], icon: "games", tint: "text-amber-400" },
 ];

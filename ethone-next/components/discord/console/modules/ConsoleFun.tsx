@@ -20,7 +20,7 @@ import { useToast } from "@/components/ToastProvider";
 import ClientImage from "@/components/ClientImage";
 import { ConsolePage, Panel, Segmented } from "../kit";
 
-interface BleedCommandMeta {
+interface FunCommandMeta {
   name: string;
   description: string;
   argumentName: string;
@@ -30,7 +30,7 @@ interface BleedCommandMeta {
   icon: any;
 }
 
-const FUN_COMMANDS: BleedCommandMeta[] = [
+const FUN_COMMANDS: FunCommandMeta[] = [
   {
     name: "lyrics",
     description: "Gets lyrics for the given song",
@@ -436,14 +436,14 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
     <ConsolePage title="Fun & Médias">
       <div className="space-y-6">
         <p className="text-xs text-[var(--text-muted)]">
-          Commandes interactives de divertissement format Bleed : Last.fm, paroles, citations, recherche d'images, films, séries TV et base de jeux vidéo.
+          Commandes interactives de divertissement et médias : Last.fm, paroles, citations, recherche d'images, films, séries TV et base de jeux vidéo.
         </p>
 
         <div className="flex flex-wrap items-center justify-between gap-3">
           <Segmented
             label="Catégories Fun"
             options={[
-              ["catalog", "Catalogue Bleed"],
+              ["catalog", "Catalogue des Commandes"],
               ["lastfm", "Studio Last.fm"],
               ["lyrics", "Paroles (Lyrics)"],
               ["quote", "Citations (Quote)"],
@@ -703,7 +703,7 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
 
               <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-5">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] mb-3">
-                  Commandes Discord Format Bleed
+                  Commandes Discord Fun & Médias
                 </h4>
                 <div className="flex flex-wrap gap-2">
                   {[

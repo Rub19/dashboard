@@ -29,7 +29,7 @@ export function buildNowPlayingEmbed(username: string, track: LastFmTrack): {
     .setTitle(track.name)
     .setDescription(`**${track.artist}**${track.album ? `\n*Album : ${track.album}*` : ""}`)
     .setFooter({
-      text: "Etho Last.fm Integration · bleed format",
+      text: "Etho Last.fm Integration",
       iconURL: "https://www.last.fm/static/images/favicon.702b239b6194.ico",
     })
     .setTimestamp();

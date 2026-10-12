@@ -1,4 +1,4 @@
-# ETHONE — passation & nouveautés (2026-10-12, version 1.75.2)
+# ETHONE — passation & nouveautés (2026-10-13, version 1.75.16)
 
 ## Projet
 - `ethone-next/` : site Next.js statique (ethone.dev, Cloudflare Pages, déploiement auto au push sur `main`).
@@ -27,24 +27,24 @@
 
 ## Nouveautés majeures & Réalisations récentes (v1.73.0 → v1.75.2)
 
-### 1. Vitrine Bot : Refonte Motion Design Format Bleed & Rétablissement de /bot (v1.75.2)
+### 1. Vitrine Bot : Refonte Motion Design & Rétablissement de /bot (v1.75.2)
 - **Rétablissement officiel de la vitrine sur `/bot`** : accessible directement sur `discord.ethone.dev/bot` et `ethone.dev/bot` avec métadonnées OpenGraph complètes et sans redirection cassée.
-- **Motion design inspiré de MultiBot, Keeper Protect et Bleed bot** : esthétique sombre satinée (`#07080d`), halos cyan glacé `#92C8D2`, cartes en verre dépoli et spring transitions.
+- **Motion design inspiré de MultiBot et Keeper Protect** : esthétique sombre satinée (`#07080d`), halos cyan glacé `#92C8D2`, cartes en verre dépoli et spring transitions.
 - **Ton sobre et direct sans jargon IA** : élimination complète des formulations artificielles ("console d'élite", "IA ultime") au profit d'un texte clair, direct et orienté communauté.
-- **Simulateur de chat Discord interactif en direct** : 4 scénarios cliquables (Anti-Raid avec sanction 0.2s, Spotify avec vinyle tournant et vagues sonores, Suite Fun Bleed avec paroles défilantes, et Bienvenue avec rôles automatiques).
+- **Simulateur de chat Discord interactif en direct** : 4 scénarios cliquables (Anti-Raid avec sanction 0.2s, Spotify avec vinyle tournant et vagues sonores, Suite Fun & Médias avec paroles défilantes, et Bienvenue avec rôles automatiques).
 - **Grille bento interactive 6 modules** : commutateurs de sécurité ON/OFF interactifs en direct (Anti-Spam, Bouclier Owner, Anti-Nuke, Pont Spotify), cartes visuelles et exemples concrets.
 - **Bandeau défilant des communautés partenaires** et compteurs réels animés (`CountUp`).
 - **Prise en main en 3 étapes claires**, catalogue de commandes avec recherche, filtres et copie de syntaxe en 1 clic.
 - **Section FAQ interactive** avec accordéons repliables et bannière d'invitation finale.
 
-### 2. Catégorie Fun & Divertissement : Suite de Commandes Format Bleed & Studio Dashboard (v1.75.1)
-- **Suite complète de commandes Bleed pour Etho** : 8 commandes Discord dédiées (`/lyrics`, `/quote`, `/image`, `/duckduckgoimage`, `/reverseimage`, `/tvshow`, `/movie`, `/game`) et commande d'aiguillage `/fun <subcommand>`.
+### 2. Catégorie Fun & Divertissement : Suite de Commandes Fun & Médias & Studio Dashboard (v1.75.1)
+- **Suite complète de commandes interactives pour Etho** : 8 commandes Discord dédiées (`/lyrics`, `/quote`, `/image`, `/duckduckgoimage`, `/reverseimage`, `/tvshow`, `/movie`, `/game`) et commande d'aiguillage `/fun <subcommand>`.
 - **Recherche de paroles en direct (`/lyrics`)** : Moteur LRCLib gratuit sans clé, support des requêtes artiste + titre, affichage des paroles synchronisées ou brutes, durée et pochette d'album.
 - **Générateur de citations stylisées (`/quote`)** : Rendu esthétique instantané aux couleurs de Discord avec support des auteurs, texte et date.
 - **Recherche visuelle & Recherche inversée (`/image`, `/duckduckgoimage`, `/reverseimage`)** : Recherche d'images haute résolution via Wikimedia Commons et génération de liens profonds directs vers Google Lens, Bing Visual Search, TinEye, Yandex et SauceNAO.
 - **Bases culturelles en temps réel (`/tvshow`, `/movie`, `/game`)** : Requêtes en direct sur TVMaze (séries TV), Wikipédia REST API (films), CheapShark & Steam (jeux vidéo avec réductions, évaluations et prix).
 - **Module Dashboard Fun interactif (`/discord?view=fun`)** :
-  - Catalogue style Bleed : cartes sombres avec badges d'arguments et permissions `none`, bouton de copie en un clic avec animation de coche.
+  - Catalogue interactif : cartes sombres avec badges d'arguments et permissions `none`, bouton de copie en un clic avec animation de coche.
   - Studios interactifs en direct : onglets Paroles, Citations, Recherche d'images, Recherche inversée, Cinéma & Séries et Jeux vidéo sans aucun placeholder ni fausse donnée.
 - **Zéro commentaire & zéro placeholder** : Conforme aux règles strictes du projet (0 commentaire dans le code source, données 100 % réelles).
 

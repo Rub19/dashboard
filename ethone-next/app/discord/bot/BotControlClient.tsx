@@ -1,7 +1,7 @@
 "use client";
 
 import { useConsoleEmbed } from "@/components/discord/console/embedContext";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 import { confirmDialog } from "@/lib/confirmDialog";
 import { useState, useEffect, useCallback, useMemo } from "react";
@@ -16,8 +16,6 @@ import {
   Bot,
   Check,
   CheckCircle2,
-  ChevronDown,
-  ChevronUp,
   Cpu,
   Crown,
   Gamepad2,
@@ -41,20 +39,23 @@ import {
   Users,
   Wifi,
   XCircle,
+  X,
 } from "@/components/icons/ph";
 import { useToast } from "@/components/ToastProvider";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/Tabs";
 import SecurityGroup from "@/components/discord/bot-control/SecurityGroup";
 import OverviewGroup from "@/components/discord/bot-control/OverviewGroup";
 import HealthGroup from "@/components/discord/bot-control/HealthGroup";
 import OperationsGroup from "@/components/discord/bot-control/OperationsGroup";
 import ConfigurationGroup from "@/components/discord/bot-control/ConfigurationGroup";
+import Card from "@/components/ui/Card";
 import { useAuth } from "@/components/AuthProvider";
 import { supabase } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
 import { formatApiError, errorReason } from "@/lib/format-error";
 import { useDiscordSync } from "@/lib/useDiscordSync";
 import ModuleSkeleton from "@/components/discord/ModuleSkeleton";
+import { SPRING_PILL } from "@/lib/ease";
+import { pageStagger, staggerItem } from "@/lib/motion-variants";
 
 export type BotTab =
   | "overview"
@@ -78,37 +79,73 @@ interface BotControlClientProps {
   initialTab?: BotTab;
 }
 
-// Regroups the 16 flat tabs into 5 top-level categories for navigation —
-// each tab's own content/JSX is unchanged, only how you get to it.
-const TAB_GROUPS: { id: string; label: string; icon: any; tabs: BotTab[] }[] = [
-  { id: "overview", label: "Vue d'ensemble", icon: BarChart3, tabs: ["overview", "presence"] },
-  { id: "configuration", label: "Configuration", icon: Settings, tabs: ["settings", "ai", "modules"] },
-  { id: "health", label: "Santé & Performance", icon: Activity, tabs: ["performance", "diagnostics", "health", "servers"] },
-  { id: "security", label: "Sécurité", icon: ShieldCheck, tabs: ["security", "errors"] },
-  { id: "operations", label: "Opérations", icon: Wifi, tabs: ["integrations", "jobs", "commands", "events"] },
+const KEEPER_TABS: {
+  id: string;
+  label: string;
+  icon: any;
+  tabs: BotTab[];
+  subTabs: { id: BotTab; label: string; icon: any }[];
+}[] = [
+  {
+    id: "overview",
+    label: "Vue Générale",
+    icon: BarChart3,
+    tabs: ["overview", "presence"],
+    subTabs: [{ id: "overview", label: "Vue Générale", icon: BarChart3 }],
+  },
+  {
+    id: "modules",
+    label: "Modules",
+    icon: Layers,
+    tabs: ["modules"],
+    subTabs: [{ id: "modules", label: "Modules Actifs", icon: Layers }],
+  },
+  {
+    id: "health",
+    label: "Santé & Systèmes",
+    icon: Cpu,
+    tabs: ["health", "performance", "diagnostics", "servers"],
+    subTabs: [
+      { id: "health", label: "Sous-Systèmes", icon: Cpu },
+      { id: "performance", label: "RAM & Métriques", icon: Activity },
+      { id: "diagnostics", label: "Diagnostics", icon: CheckCircle2 },
+      { id: "servers", label: "Serveurs", icon: Server },
+    ],
+  },
+  {
+    id: "operations",
+    label: "Opérations",
+    icon: Wifi,
+    tabs: ["events", "integrations", "jobs", "commands"],
+    subTabs: [
+      { id: "events", label: "Flux SSE", icon: Radio },
+      { id: "integrations", label: "Intégrations", icon: Wifi },
+      { id: "jobs", label: "Tâches Planifiées", icon: ListRestart },
+      { id: "commands", label: "Commandes", icon: Terminal },
+    ],
+  },
+  {
+    id: "security",
+    label: "Sécurité & Audit",
+    icon: ShieldCheck,
+    tabs: ["security", "errors"],
+    subTabs: [
+      { id: "security", label: "Audit & Shield", icon: ShieldCheck },
+      { id: "errors", label: "Incidents & Erreurs", icon: ShieldAlert },
+    ],
+  },
+  {
+    id: "settings",
+    label: "Configuration & IA",
+    icon: Settings,
+    tabs: ["settings", "ai"],
+    subTabs: [
+      { id: "settings", label: "Paramètres Bot", icon: Settings },
+      { id: "ai", label: "Assistant IA", icon: Bot },
+    ],
+  },
 ];
 
-const TAB_META: Record<BotTab, { label: string; icon: any }> = {
-  overview: { label: "Vue Générale", icon: BarChart3 },
-  presence: { label: "Présence & Activité", icon: Sparkles },
-  settings: { label: "Configuration & Confidentialité", icon: Settings },
-  ai: { label: "Assistant IA & Tokens", icon: Bot },
-  performance: { label: "Performances & RAM", icon: Activity },
-  diagnostics: { label: "Diagnostics 1-Clic", icon: CheckCircle2 },
-  security: { label: "Sécurité & Audit", icon: ShieldCheck },
-  shield: { label: "Bouclier Owner ⚡", icon: ShieldAlert },
-  integrations: { label: "Intégrations", icon: Wifi },
-  jobs: { label: "Tâches Planifiées", icon: ListRestart },
-  commands: { label: "Commandes", icon: Terminal },
-  health: { label: "Sous-Systèmes", icon: Cpu },
-  servers: { label: "Serveurs Installés", icon: Server },
-  modules: { label: "Modules Actifs", icon: Layers },
-  events: { label: "Flux d'Événements", icon: Radio },
-  errors: { label: "Incidents & Erreurs", icon: ShieldAlert },
-};
-
-// Maps the `icon` string returned by GET /api/guilds/:guildId/modules (moduleRoutes.ts'
-// AVAILABLE_MODULES catalog) to an actual lucide component.
 const MODULE_ICONS: Record<string, any> = {
   Shield,
   UserPlus,
@@ -119,9 +156,6 @@ const MODULE_ICONS: Record<string, any> = {
   Music,
 };
 
-// Même convention que le reste des pages /discord/* (welcome, moderation, automod...) :
-// NEXT_PUBLIC_DISCORD_BOT_API pointe vers le serveur Express du bot Discord (pas vers
-// ethone-next lui-même — il n'existe pas de route Next.js /api/bot/*).
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
 export default function BotControlClient({ initialTab = "overview" }: BotControlClientProps) {
@@ -129,7 +163,6 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
   const searchParams = useSearchParams();
   const toast = useToast();
 
-  // Dans la console, l'onglet reste local : changer l'URL ferait quitter la console.
   const embedded = useConsoleEmbed();
   const [embeddedTab, setEmbeddedTab] = useState<BotTab>(initialTab);
   const activeTab: BotTab = embedded ? embeddedTab : (searchParams.get("tab") as BotTab) || initialTab;
@@ -139,13 +172,13 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
     else router.push(`/discord/bot?tab=${tab}`);
   };
 
-  const activeGroupId = useMemo(
-    () => TAB_GROUPS.find((g) => g.tabs.includes(activeTab))?.id || "overview",
+  const activeKeeperTab = useMemo(
+    () => KEEPER_TABS.find((g) => g.tabs.includes(activeTab)) || KEEPER_TABS[0],
     [activeTab]
   );
-  const handleGroupChange = (groupId: string) => {
-    const group = TAB_GROUPS.find((g) => g.id === groupId);
-    if (group) handleTabChange(group.tabs[0]);
+
+  const handleKeeperTabChange = (group: (typeof KEEPER_TABS)[number]) => {
+    handleTabChange(group.subTabs[0].id);
   };
 
   // Owner Authentication (Strictly rub19.mailpro@gmail.com)
@@ -1185,7 +1218,6 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
     fetchData();
   }, [fetchData]);
 
-  // Format uptime cleanly
   const formattedUptime = useMemo(() => {
     const s = botCore.uptimeSeconds || 0;
     const days = Math.floor(s / 86400);
@@ -1196,7 +1228,31 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
     return `${minutes}m`;
   }, [botCore.uptimeSeconds]);
 
-  // Status visual mapping (discrete, refined, non-aggressive)
+  const enabledCount = useMemo(() => modules.filter((m) => m.enabled).length, [modules]);
+
+  const tabCounts: Partial<Record<BotTab, number>> = useMemo(
+    () => ({
+      integrations: integrations.length,
+      jobs: jobs.length,
+      commands: officialCommands.length,
+      servers: servers.length,
+      modules: modules.length,
+      events: recentEvents.length,
+      errors: errors.length,
+      health: subsystems.length,
+    }),
+    [
+      integrations.length,
+      jobs.length,
+      officialCommands.length,
+      servers.length,
+      modules.length,
+      recentEvents.length,
+      errors.length,
+      subsystems.length,
+    ]
+  );
+
   const statusConfig = {
     online: { label: "En Ligne", dot: "bg-[var(--success)]", border: "border-[var(--success)]/20", text: "text-[var(--success)]" },
     idle: { label: "Inactif", dot: "bg-amber-400", border: "border-amber-500/20", text: "text-amber-400" },
@@ -1206,35 +1262,24 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
 
   const currentCfg = statusConfig[botCore.status as keyof typeof statusConfig] || statusConfig.online;
 
-  // Subsystem health status mapping — mirrors BotSubsystemHealth's status values
-  // (operational / degraded / critical) returned by GET /api/bot/overview.
   const subsystemStatusConfig: Record<string, { label: string; dot: string; text: string }> = {
     operational: { label: "Opérationnel", dot: "bg-[var(--success)]", text: "text-[var(--success)]" },
     degraded: { label: "Dégradé", dot: "bg-amber-400", text: "text-amber-400" },
     critical: { label: "Critique", dot: "bg-rose-400", text: "text-rose-400" },
   };
 
-  // Diagnostic check status mapping — mirrors POST /api/bot/diagnostics/run's
-  // per-check status ('pass'/'warn'/'critical', normalized to passed/warning/critical).
   const diagnosticStatusConfig: Record<string, { label: string; icon: any; chip: string; badge: string }> = {
     passed: { label: "Opérationnel", icon: Check, chip: "bg-[var(--success)]/10 text-[var(--success)]", badge: "bg-[var(--success)]/10 text-[var(--success)] border-[var(--success)]/20" },
     warning: { label: "Avertissement", icon: AlertTriangle, chip: "bg-amber-500/10 text-amber-400", badge: "bg-amber-500/10 text-amber-400 border-amber-500/20" },
     critical: { label: "Critique", icon: XCircle, chip: "bg-rose-500/10 text-rose-400", badge: "bg-rose-500/10 text-rose-400 border-rose-500/20" },
   };
 
-  // Filter modules (search only — the real per-guild module list has no "category"
-  // grouping, unlike the old fabricated 22-module catalog it replaced)
   const filteredModules = useMemo(() => {
     const q = searchQuery.toLowerCase();
     return modules.filter(
       (m) => m.name.toLowerCase().includes(q) || m.description.toLowerCase().includes(q)
     );
   }, [modules, searchQuery]);
-
-  // Le Centre de contrôle expose de la télémétrie réelle (serveurs, présence, sous-systèmes) : les fetch vers
-  // /api/bot/* sont déjà bloqués côté serveur (requireBotOwner) pour un non-propriétaire, mais la page essayait
-  // quand même de s'afficher (vide/cassée) au lieu de refuser clairement l'accès. Tant que l'auth n'est pas
-  // résolue, on n'affiche rien plutôt que de flasher ce message par erreur.
   if (auth.loading) {
     return <div className="h-full bg-[var(--bg-main)]" />;
   }
@@ -1258,13 +1303,12 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
 
   return (
     <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-[var(--text-primary)] font-sans pb-44 md:pb-44">
-      {/* TOP COMPACT SYNC BAR */}
-      <div className="border-b border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-6 py-2">
+      <div className="sticky top-0 z-30 border-b border-[var(--panel-border)] bg-[var(--bg-main)]/90 backdrop-blur-md px-4 sm:px-6 py-2.5">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3 text-xs">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5">
             <Link
               href="/discord"
-              className="inline-flex h-8 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] px-3 text-xs font-semibold normal-case tracking-normal text-[var(--text-muted)] outline-none transition-[border-color,background-color,color] duration-200 hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 cursor-pointer active:scale-[0.97]"
+              className="inline-flex h-7 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-2.5 text-xs font-semibold text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] active:scale-[0.97]"
             >
               <ArrowLeft className="h-3.5 w-3.5" />
               <span>Retour Discord</span>
@@ -1274,13 +1318,12 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
           </div>
 
           <div className="flex items-center gap-3">
-            {/* Realtime SSE indicator */}
-            <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs font-mono">
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[var(--surface-raised)]/60 border border-[var(--panel-border)] text-xs font-mono">
               <span
                 className={cn(
                   "w-1.5 h-1.5 rounded-full",
                   connectionState === "connected"
-                    ? "bg-[var(--accent-primary)]"
+                    ? "bg-[var(--accent-primary)] animate-pulse"
                     : connectionState === "connecting"
                     ? "bg-amber-400 animate-pulse"
                     : "bg-rose-400"
@@ -1294,366 +1337,380 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
               )}
             </div>
 
-            <span className="text-[var(--text-muted)] font-mono text-xs">
-              Dernière synchro : {botCore?.lastSync ? new Date(botCore.lastSync).toLocaleTimeString("fr-FR") : "—"}
-            </span>
+            {isOwner && (
+              <button
+                type="button"
+                onClick={() => setOwnerPanelOpen(true)}
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/25 text-amber-300 text-xs font-semibold transition-all cursor-pointer active:scale-[0.97]"
+                title="Ouvrir la console système propriétaire PM2"
+              >
+                <Crown className="w-3.5 h-3.5 text-amber-400" />
+                <span>Console VPS (PM2)</span>
+              </button>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Header */}
-      {/* Plus sticky : défile avec la page au lieu de rester épinglé (demandé après plusieurs allers-retours sur le bug d'opacité). */}
-      <div className="border-b border-[var(--panel-border)] bg-[var(--bg-main)]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
-          <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-5">
-            {/* Left: Identity & Status */}
-            <div className="flex items-center gap-4 min-w-0">
-              <div className="relative shrink-0">
-                <img
-                  src={botCore.avatarUrl}
-                  alt={botCore.name}
-                  className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] object-cover"
-                  onError={(e) => {
-                    (e.target as any).src = "https://cdn.discordapp.com/embed/avatars/0.png";
-                  }}
-                />
-              </div>
+      <div className="border-b border-[var(--panel-border)] bg-[var(--bg-main)]/95 backdrop-blur-md sticky top-[45px] z-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none py-2.5">
+            {KEEPER_TABS.map((group) => {
+              const GroupIcon = group.icon;
+              const isGroupActive = activeKeeperTab.id === group.id;
+              const badgeCount =
+                group.id === "modules"
+                  ? modules.length
+                  : group.id === "health"
+                  ? subsystems.length
+                  : group.id === "operations"
+                  ? jobs.length
+                  : group.id === "security" && errors.length > 0
+                  ? errors.length
+                  : undefined;
 
-              <div className="min-w-0">
-                <div className="flex flex-wrap items-center gap-2">
-                  <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[var(--text-primary)] whitespace-nowrap">
-                    {botCore.name}
-                  </h1>
-                  <span className="text-xs text-[var(--text-muted)] font-mono">
-                    #{botCore.discriminator} · v{botCore.version}
-                  </span>
-                </div>
-
-                <div className="mt-1.5 flex flex-wrap items-center gap-2.5 text-xs text-[var(--text-muted)]">
-                  {isOwner && (
-                    <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
-                      <span className={cn("w-2 h-2 rounded-full", currentCfg.dot)} />
-                      <span className={cn("font-medium", currentCfg.text)}>{currentCfg.label}</span>
-                    </div>
-                  )}
-
-                  {botCore?.activity ? (
-                    <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/30 text-[var(--accent-primary)]">
-                      {botCore.activity.type && (
-                        <span className="font-semibold text-[var(--accent-primary)] uppercase text-xs tracking-wider">
-                          {botCore.activity.type}
-                        </span>
-                      )}
-                      <span className="truncate max-w-[220px] font-medium text-[var(--text-primary)]">
-                        {botCore.activity.name || "Actif"}
-                      </span>
-                    </div>
-                  ) : (
-                    <span className="text-[var(--text-muted)] italic text-xs">En attente d'activité</span>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Right: Bento Telemetry Cards & Quick Actions */}
-            <div className="flex flex-wrap items-center gap-3 xl:gap-4">
-              {/* Bento Telemetry Cards */}
-              <div className="grid grid-cols-3 gap-2.5 w-full sm:w-auto">
-                {/* Ping */}
-                <div className="px-3.5 py-2 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] hover:border-[var(--input-border-hover)] transition-all">
-                  <div className="flex items-center justify-between gap-1 text-xs text-[var(--text-muted)]">
-                    <span>Ping Gateway</span>
-                    <Wifi className="w-3 h-3 text-[var(--accent-primary)]" />
-                  </div>
-                  <div className="flex items-baseline gap-1 mt-0.5">
-                    <span className="text-sm font-bold font-mono text-[var(--accent-primary)]">{botCore.pingMs}</span>
-                    <span className="text-xs text-[var(--text-muted)] font-mono">ms</span>
-                  </div>
-                </div>
-
-                {/* Uptime */}
-                <div className="px-3.5 py-2 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] hover:border-[var(--input-border-hover)] transition-all">
-                  <div className="flex items-center justify-between gap-1 text-xs text-[var(--text-muted)]">
-                    <span>Uptime</span>
-                    <Timer className="w-3 h-3 text-[var(--accent-primary)]" />
-                  </div>
-                  <div className="mt-0.5">
-                    <span className="text-xs font-bold font-mono text-[var(--text-primary)] truncate block">
-                      {formattedUptime}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Members */}
-                <div className="px-3.5 py-2 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] hover:border-[var(--input-border-hover)] transition-all">
-                  <div className="flex items-center justify-between gap-1 text-xs text-[var(--text-muted)]">
-                    <span>Membres</span>
-                    <Users className="w-3 h-3 text-[var(--accent-primary)]" />
-                  </div>
-                  <div className="mt-0.5">
-                    <span className="text-sm font-bold font-mono text-[var(--accent-primary)]">
-                      {Number(botCore.userCount || 0).toLocaleString("fr-FR")}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex items-center gap-2 shrink-0">
-                <Link
-                  href="/discord/bot/presence"
-                  className="px-3.5 py-2 rounded-xl bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] text-xs font-semibold flex items-center gap-1.5 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
-                >
-                  <Sparkles className="w-3.5 h-3.5" />
-                  <span>Présence</span>
-                </Link>
-
-                <button
-                  onClick={fetchData}
-                  disabled={refreshing}
-                  className="px-3 py-2 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--text-primary)] text-xs font-medium flex items-center gap-1.5 transition-all disabled:opacity-50 cursor-pointer active:scale-[0.97]"
-                  title="Actualiser les données"
-                >
-                  <RefreshCw className={cn("w-3.5 h-3.5", refreshing && "animate-spin text-[var(--accent-primary)]")} />
-                  <span className="hidden sm:inline">Actualiser</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* GROUP NAVIGATION (5 categories) */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 border-t border-[var(--panel-border)] pt-3">
-          <Tabs value={activeGroupId} onValueChange={handleGroupChange} variant="segment">
-            <TabsList className="w-full flex-wrap sm:w-auto">
-              {TAB_GROUPS.map((group) => {
-                const GroupIcon = group.icon;
-                return (
-                  <TabsTrigger key={group.id} value={group.id}>
-                    <span className="flex items-center gap-1.5">
-                      <GroupIcon className="w-3.5 h-3.5" />
-                      {group.label}
-                    </span>
-                  </TabsTrigger>
-                );
-              })}
-            </TabsList>
-          </Tabs>
-        </div>
-
-        {/* TAB NAVIGATION (within the active group) */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center gap-1.5 overflow-x-auto scrollbar-none py-2.5">
-          {(() => {
-            const tabCounts: Partial<Record<BotTab, number>> = {
-              integrations: integrations.length,
-              jobs: jobs.length,
-              commands: officialCommands.length,
-              servers: servers.length,
-              modules: modules.length,
-              events: recentEvents.length,
-              errors: errors.length,
-            };
-            const groupTabs = TAB_GROUPS.find((g) => g.id === activeGroupId)?.tabs || [];
-            return groupTabs.map((tabId) => {
-              const meta = TAB_META[tabId];
-              const Icon = meta.icon;
-              const isActive = activeTab === tabId;
-              const count = tabCounts[tabId];
               return (
                 <button
-                  key={tabId}
-                  onClick={() => handleTabChange(tabId)}
+                  key={group.id}
+                  type="button"
+                  onClick={() => handleKeeperTabChange(group)}
                   className={cn(
-                    "relative isolate px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-2 transition-colors whitespace-nowrap cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97]",
-                    isActive
-                      ? "text-[var(--accent-contrast)] font-semibold"
+                    "relative isolate px-3.5 py-2 rounded-xl text-xs font-medium flex items-center gap-2 transition-colors whitespace-nowrap cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97]",
+                    isGroupActive
+                      ? "text-[var(--accent-contrast)] font-bold shadow-sm"
                       : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70"
                   )}
                 >
-                  {isActive && <motion.span layoutId="botcontrol-tab" transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
-                  <Icon className={cn("w-3.5 h-3.5", isActive ? "text-[var(--accent-contrast)]" : "text-[var(--text-muted)]")} />
-                  <span>{meta.label}</span>
-                  {count !== undefined && (
+                  {isGroupActive && (
+                    <motion.span
+                      layoutId="botcontrol-keeper-tab"
+                      transition={SPRING_PILL}
+                      className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm"
+                    />
+                  )}
+                  <GroupIcon
+                    className={cn(
+                      "w-4 h-4",
+                      isGroupActive ? "text-[var(--accent-contrast)]" : "text-[var(--text-muted)]"
+                    )}
+                  />
+                  <span>{group.label}</span>
+                  {badgeCount !== undefined && (
                     <span
                       className={cn(
-                        "px-1.5 py-0.2 rounded-full text-xs font-mono",
-                        isActive
+                        "px-1.5 py-0.2 rounded-full text-[10px] font-mono",
+                        isGroupActive
                           ? "bg-[var(--accent-contrast)]/20 text-[var(--accent-contrast)] font-bold"
-                          : "bg-[var(--surface-raised)]/40 text-[var(--text-muted)]"
+                          : "bg-[var(--surface-raised)]/60 text-[var(--text-muted)]"
                       )}
                     >
-                      {count}
+                      {badgeCount}
                     </span>
                   )}
                 </button>
               );
-            });
-          })()}
+            })}
+          </div>
+
+          {activeKeeperTab.subTabs.length > 1 && (
+            <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none py-2 border-t border-[var(--panel-border)]/60">
+              {activeKeeperTab.subTabs.map((sub) => {
+                const SubIcon = sub.icon;
+                const isSubActive = activeTab === sub.id;
+                const count = tabCounts[sub.id];
+                return (
+                  <button
+                    key={sub.id}
+                    type="button"
+                    onClick={() => handleTabChange(sub.id)}
+                    className={cn(
+                      "relative isolate px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-colors whitespace-nowrap cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97]",
+                      isSubActive
+                        ? "text-[var(--accent-primary)] bg-[var(--accent-primary)]/10 font-bold border border-[var(--accent-primary)]/30"
+                        : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70 border border-transparent"
+                    )}
+                  >
+                    <SubIcon
+                      className={cn(
+                        "w-3.5 h-3.5",
+                        isSubActive ? "text-[var(--accent-primary)]" : "text-[var(--text-muted)]"
+                      )}
+                    />
+                    <span>{sub.label}</span>
+                    {count !== undefined && (
+                      <span
+                        className={cn(
+                          "px-1.5 py-0.2 rounded-full text-[10px] font-mono",
+                          isSubActive
+                            ? "bg-[var(--accent-primary)]/20 text-[var(--accent-primary)] font-bold"
+                            : "bg-[var(--surface-raised)]/60 text-[var(--text-muted)]"
+                        )}
+                      >
+                        {count}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
 
-      {/* CONTENT AREA */}
+      <AnimatePresence>
+        {ownerPanelOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="w-full max-w-2xl rounded-2xl border border-amber-500/30 bg-[var(--bg-main)] p-6 shadow-2xl space-y-5"
+            >
+              <div className="flex items-center justify-between pb-4 border-b border-[var(--panel-border)]">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/25 flex items-center justify-center text-amber-400 shrink-0">
+                    <Crown className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-base font-bold text-[var(--text-primary)]">Console Système Propriétaire</h3>
+                      <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-amber-500/15 text-amber-300 border border-amber-500/25">
+                        Root Verified
+                      </span>
+                    </div>
+                    <p className="text-xs text-[var(--text-muted)] font-mono">rub19.mailpro@gmail.com • ethone-bot PM2</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setOwnerPanelOpen(false)}
+                  className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] transition-all cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="p-3 rounded-xl bg-[var(--surface-raised)]/60 border border-[var(--panel-border)]">
+                  <span className="text-[10px] text-[var(--text-muted)] block uppercase font-mono">Processus VPS PM2</span>
+                  <span className="text-xs font-bold text-[var(--text-primary)] font-mono mt-1 flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-[var(--accent-primary)]" />
+                    ethone-bot
+                  </span>
+                  <span className="text-[10px] text-[var(--success)] mt-0.5 block font-mono">Status: Online</span>
+                </div>
+
+                <div className="p-3 rounded-xl bg-[var(--surface-raised)]/60 border border-[var(--panel-border)]">
+                  <span className="text-[10px] text-[var(--text-muted)] block uppercase font-mono">Compte Suprême</span>
+                  <span className="text-xs font-bold text-amber-300 font-mono mt-1 block truncate" title="rub19.mailpro@gmail.com">
+                    rub19.mailpro
+                  </span>
+                  <span className="text-[10px] text-[var(--text-muted)] mt-0.5 block">Niveau Root</span>
+                </div>
+
+                <div className="p-3 rounded-xl bg-[var(--surface-raised)]/60 border border-[var(--panel-border)]">
+                  <span className="text-[10px] text-[var(--text-muted)] block uppercase font-mono">Gateway Shard</span>
+                  <span className="text-xs font-bold text-[var(--text-primary)] font-mono mt-1 block">{botCore.pingMs} ms</span>
+                  <span className="text-[10px] text-[var(--success)] mt-0.5 block">Shard 0 Live</span>
+                </div>
+
+                <div className="p-3 rounded-xl bg-[var(--surface-raised)]/60 border border-[var(--panel-border)]">
+                  <span className="text-[10px] text-[var(--text-muted)] block uppercase font-mono">Audit Supabase</span>
+                  <span className="text-xs font-bold text-[var(--text-primary)] font-mono mt-1 block">
+                    {ownerLogs.length} action(s)
+                  </span>
+                  <span className="text-[10px] text-[var(--accent-primary)] mt-0.5 block font-mono">RLS Sécurisée</span>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={handleRemoteRestart}
+                  disabled={restartingBot}
+                  className="flex-1 px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-sm disabled:opacity-50 cursor-pointer active:scale-[0.97]"
+                >
+                  <Power className={cn("w-4 h-4", restartingBot && "animate-spin")} />
+                  <span>{restartingBot ? "Redémarrage en cours..." : "Redémarrer PM2"}</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleRemoteUpdate}
+                  disabled={updatingBot}
+                  className="flex-1 px-4 py-2.5 rounded-xl bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] text-xs font-semibold flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97]"
+                >
+                  <RefreshCw className={cn("w-4 h-4", updatingBot && "animate-spin")} />
+                  <span>{updatingBot ? "Mise à jour en cours..." : "Mettre à Jour"}</span>
+                </button>
+              </div>
+
+              {ownerLogs.length > 0 && (
+                <div className="pt-3 border-t border-[var(--panel-border)]">
+                  <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider block mb-2">
+                    Dernières Actions Administratives
+                  </span>
+                  <div className="space-y-1.5 max-h-36 overflow-y-auto">
+                    {ownerLogs.map((log: any, idx: number) => (
+                      <div
+                        key={log.id || idx}
+                        className="px-3 py-1.5 rounded-lg bg-[var(--surface-raised)]/60 border border-[var(--panel-border)] text-xs flex items-center justify-between"
+                      >
+                        <span className="font-mono text-amber-300 font-semibold">{log.action}</span>
+                        <span className="text-[11px] text-[var(--text-muted)] font-mono">
+                          {log.created_at ? new Date(log.created_at).toLocaleString("fr-FR") : "À l'instant"}
+                        </span>
+                        <span className="px-2 py-0.2 rounded text-[10px] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/20 font-mono">
+                          {log.status || "SUCCESS"}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         {loading ? (
           <ModuleSkeleton compact className="px-0 sm:px-0" label="Chargement de la console du bot…" />
         ) : (
-        <>
-        {/* ======================================================== */}
-        {/* EXCLUSIVE BOT OWNER EXECUTIVE COMMAND DECK               */}
-        {/* ======================================================== */}
-        {isOwner && (
-          <div className="mb-6 rounded-2xl border border-amber-500/20 overflow-hidden transition-all bg-[var(--surface-raised)]/40">
-            {/* Executive Bar (Always visible to owner) */}
-            <div className="p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/25 flex items-center justify-center text-amber-400 shrink-0">
-                  <Crown className="w-5 h-5" />
-                </div>
+          <>
+            <motion.div
+              variants={pageStagger}
+              initial="initial"
+              animate="animate"
+              className="space-y-6 mb-8"
+            >
+              <motion.div variants={staggerItem} className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-xs font-bold text-[var(--text-primary)] tracking-wide">Console Système Propriétaire</span>
-                    <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-amber-500/15 text-amber-300 border border-amber-500/25">
-                      Root Verified
-                    </span>
-                    <span className="text-xs text-[var(--text-muted)] font-mono hidden sm:inline">rub19.mailpro@gmail.com</span>
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/25 text-xs font-semibold text-[var(--accent-primary)] mb-2">
+                    <Sparkles className="w-3.5 h-3.5" />
+                    <span>Console d&apos;Administration Discord</span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-primary)]" />
+                    <span className="font-mono text-[11px] text-[var(--text-muted)]">v{botCore.version || "2.4.0"}</span>
                   </div>
-                  <div className="mt-1 flex flex-wrap items-center gap-2.5 text-xs text-[var(--text-muted)]">
-                    <span className="flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-primary)]" />
-                      PM2: <strong className="text-[var(--text-primary)] font-mono">ethone-bot</strong>
-                    </span>
-                    <span className="text-[var(--text-muted)]">•</span>
-                    <span>Shard 0 ({botCore.pingMs}ms)</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Action Controls */}
-              <div className="flex flex-wrap items-center gap-2 shrink-0">
-                <button
-                  onClick={handleRemoteRestart}
-                  disabled={restartingBot}
-                  className="px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm disabled:opacity-50 cursor-pointer active:scale-[0.97]"
-                  title="Redémarrer le bot sur le VPS via PM2"
-                >
-                  <Power className={cn("w-3.5 h-3.5", restartingBot && "animate-spin")} />
-                  <span>{restartingBot ? "Redémarrage..." : "Redémarrer PM2"}</span>
-                </button>
-
-                <button
-                  onClick={handleRemoteUpdate}
-                  disabled={updatingBot}
-                  className="px-3.5 py-2 rounded-xl bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] text-xs font-semibold flex items-center gap-1.5 disabled:opacity-50 cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
-                  title="Déclencher la mise à jour et recharger les modules"
-                >
-                  <RefreshCw className={cn("w-3.5 h-3.5", updatingBot && "animate-spin")} />
-                  <span>{updatingBot ? "Mise à jour..." : "Mettre à Jour"}</span>
-                </button>
-
-                <button
-                  onClick={() => setOwnerPanelOpen((prev) => !prev)}
-                  className="px-3 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/25 text-amber-300 text-xs font-medium flex items-center gap-1.5 transition-all cursor-pointer active:scale-[0.97]"
-                >
-                  <span>{ownerPanelOpen ? "Masquer Détails" : "Supervision & Logs"}</span>
-                  {ownerPanelOpen ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-                </button>
-              </div>
-            </div>
-
-            {/* Collapsible Detailed Section */}
-            {ownerPanelOpen && (
-              <div className="p-5 border-t border-amber-500/15 bg-[var(--surface-raised)]/40 space-y-5 animate-in fade-in slide-in-from-top-2 duration-200">
-                {/* Telemetry Grid */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  <div className="p-3.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
-                    <span className="text-xs text-[var(--text-muted)] block uppercase font-mono">Processus VPS PM2</span>
-                    <span className="text-sm font-bold text-[var(--text-primary)] font-mono mt-1 flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-[var(--accent-primary)]" />
-                      ethone-bot
-                    </span>
-                    <span className="text-xs text-[var(--success)] mt-0.5 block font-mono">Status: Online</span>
-                  </div>
-
-                  <div className="p-3.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
-                    <span className="text-xs text-[var(--text-muted)] block uppercase font-mono">Compte Suprême</span>
-                    <span className="text-xs font-bold text-amber-300 font-mono mt-1 block truncate" title="rub19.mailpro@gmail.com">
-                      rub19.mailpro@gmail.com
-                    </span>
-                    <span className="text-xs text-[var(--text-muted)] mt-0.5 block">Niveau Root vérifié</span>
-                  </div>
-
-                  <div className="p-3.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
-                    <span className="text-xs text-[var(--text-muted)] block uppercase font-mono">Gateway Shard</span>
-                    <span className="text-sm font-bold text-[var(--text-primary)] font-mono mt-1 block">{botCore.pingMs} ms (WebSocket)</span>
-                    <span className="text-xs text-[var(--success)] mt-0.5 block">Shard 0 Connecté</span>
-                  </div>
-
-                  <div className="p-3.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
-                    <span className="text-xs text-[var(--text-muted)] block uppercase font-mono">Audit Supabase</span>
-                    <span className="text-sm font-bold text-[var(--text-primary)] font-mono mt-1 block">
-                      {ownerLogs.length} action(s)
-                    </span>
-                    <span className="text-xs text-[var(--accent-primary)] mt-0.5 block font-mono">RLS Sécurisée</span>
-                  </div>
+                  <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--text-primary)]">
+                    Centre de Contrôle Etho
+                  </h1>
+                  <p className="text-sm text-[var(--text-muted)] mt-1 max-w-2xl">
+                    Supervision temps réel, télémétrie gateway, modules dynamiques et santé opérationnelle du bot Discord.
+                  </p>
                 </div>
 
-                {/* Recent Audit Logs */}
-                {ownerLogs.length > 0 && (
-                  <div className="pt-2 border-t border-[var(--panel-border)]">
-                    <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider block mb-2">
-                      Dernières Actions Administratives Exécutées
-                    </span>
-                    <div className="stagger-children space-y-1.5 max-h-36 overflow-y-auto">
-                      {ownerLogs.map((log: any, idx: number) => (
-                        <div
-                          key={log.id || idx}
-                          className="px-3 py-1.5 rounded-lg bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs flex items-center justify-between"
-                        >
-                          <span className="font-mono text-amber-300 font-semibold">{log.action}</span>
-                          <span className="text-xs text-[var(--text-muted)] font-mono">
-                            {log.created_at ? new Date(log.created_at).toLocaleString("fr-FR") : "À l'instant"}
-                          </span>
-                          <span className="px-2 py-0.2 rounded text-xs bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/20 font-mono">
-                            {log.status || "SUCCESS"}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        )}
+                <div className="flex items-center gap-2.5 shrink-0">
+                  <Link
+                    href="/discord/bot/presence"
+                    className="px-3.5 py-2 rounded-xl bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] text-xs font-semibold flex items-center gap-1.5 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] shadow-sm"
+                  >
+                    <Sparkles className="w-3.5 h-3.5" />
+                    <span>Mode Streamer & Présence</span>
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={fetchData}
+                    disabled={refreshing}
+                    className="px-3.5 py-2 rounded-xl bg-[var(--surface-raised)]/60 hover:bg-[var(--surface-raised)] border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--text-primary)] text-xs font-medium flex items-center gap-1.5 transition-all disabled:opacity-50 cursor-pointer active:scale-[0.97]"
+                    title="Actualiser les données"
+                  >
+                    <RefreshCw className={cn("w-3.5 h-3.5", refreshing && "animate-spin text-[var(--accent-primary)]")} />
+                    <span className="hidden sm:inline">Actualiser</span>
+                  </button>
+                </div>
+              </motion.div>
 
-        {/* Rejoue l'entrée à chaque changement d'onglet. */}
-        <div key={activeTab} className="stagger-children">
-        {/* ======================================================== */}
-        {/* TAB: OVERVIEW                                            */}
-        {/* ======================================================== */}
-        {(activeTab === "overview" || activeTab === "presence") && (
-          <OverviewGroup
-            activeTab={activeTab}
-            handleTabChange={handleTabChange}
-            currentCfg={currentCfg}
-            botCore={botCore}
-            subsystems={subsystems}
-            subsystemStatusConfig={subsystemStatusConfig}
-            servers={servers}
-            modules={modules}
-            settingsGuildId={settingsGuildId}
-            setSettingsGuildId={setSettingsGuildId}
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            modulesLoading={modulesLoading}
-            modulesError={modulesError}
-            loadModules={loadModules}
-            filteredModules={filteredModules}
-            MODULE_ICONS={MODULE_ICONS}
-            togglingModuleId={togglingModuleId}
-            handleToggleModule={handleToggleModule}
-          />
-        )}
+              <motion.div variants={staggerItem} className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+                <Card variant="default" padding="none" className="p-4 hover:border-[var(--accent-primary)]/40 transition-all shadow-sm">
+                  <div className="flex items-center justify-between text-xs text-[var(--text-muted)]">
+                    <span className="font-medium">Uptime Système</span>
+                    <Timer className="w-4 h-4 text-[var(--accent-primary)]" />
+                  </div>
+                  <div className="mt-2 flex items-baseline gap-1.5">
+                    <span className="text-lg sm:text-xl font-bold font-mono text-[var(--text-primary)]">
+                      {formattedUptime}
+                    </span>
+                  </div>
+                  <div className="mt-1 flex items-center gap-1.5 text-[11px] text-[var(--text-muted)]">
+                    <span className={cn("w-1.5 h-1.5 rounded-full", currentCfg.dot)} />
+                    <span>{currentCfg.label}</span>
+                  </div>
+                </Card>
+
+                <Card variant="default" padding="none" className="p-4 hover:border-[var(--accent-primary)]/40 transition-all shadow-sm">
+                  <div className="flex items-center justify-between text-xs text-[var(--text-muted)]">
+                    <span className="font-medium">Latence Gateway</span>
+                    <Wifi className="w-4 h-4 text-[var(--accent-primary)]" />
+                  </div>
+                  <div className="mt-2 flex items-baseline gap-1.5">
+                    <span className="text-lg sm:text-xl font-bold font-mono text-[var(--accent-primary)]">
+                      {botCore.pingMs}
+                    </span>
+                    <span className="text-xs text-[var(--text-muted)] font-mono">ms</span>
+                  </div>
+                  <div className="mt-1 text-[11px] text-[var(--text-muted)] font-mono">
+                    Shard 0 • WebSocket Live
+                  </div>
+                </Card>
+
+                <Card variant="default" padding="none" className="p-4 hover:border-[var(--accent-primary)]/40 transition-all shadow-sm">
+                  <div className="flex items-center justify-between text-xs text-[var(--text-muted)]">
+                    <span className="font-medium">Membres Couverts</span>
+                    <Users className="w-4 h-4 text-[var(--accent-primary)]" />
+                  </div>
+                  <div className="mt-2 flex items-baseline gap-1.5">
+                    <span className="text-lg sm:text-xl font-bold font-mono text-[var(--accent-primary)]">
+                      {Number(botCore.userCount || 0).toLocaleString("fr-FR")}
+                    </span>
+                  </div>
+                  <div className="mt-1 text-[11px] text-[var(--text-muted)]">
+                    Sur {servers.length} serveur{servers.length > 1 ? "s" : ""}
+                  </div>
+                </Card>
+
+                <Card variant="default" padding="none" className="p-4 hover:border-[var(--accent-primary)]/40 transition-all shadow-sm">
+                  <div className="flex items-center justify-between text-xs text-[var(--text-muted)]">
+                    <span className="font-medium">Modules Actifs</span>
+                    <Layers className="w-4 h-4 text-[var(--accent-primary)]" />
+                  </div>
+                  <div className="mt-2 flex items-baseline gap-1.5">
+                    <span className="text-lg sm:text-xl font-bold font-mono text-emerald-400">
+                      {enabledCount}
+                    </span>
+                    <span className="text-xs text-[var(--text-muted)] font-mono">/ {modules.length}</span>
+                  </div>
+                  <div className="mt-1 text-[11px] text-emerald-400 font-semibold">
+                    {modules.length > 0 && Math.round((enabledCount / modules.length) * 100)}% opérationnels
+                  </div>
+                </Card>
+              </motion.div>
+            </motion.div>
+
+            <div key={activeTab} className="stagger-children">
+              {(activeTab === "overview" || activeTab === "presence" || activeTab === "modules") && (
+                <OverviewGroup
+                  activeTab={activeTab}
+                  handleTabChange={handleTabChange}
+                  currentCfg={currentCfg}
+                  botCore={botCore}
+                  subsystems={subsystems}
+                  subsystemStatusConfig={subsystemStatusConfig}
+                  servers={servers}
+                  modules={modules}
+                  settingsGuildId={settingsGuildId}
+                  setSettingsGuildId={setSettingsGuildId}
+                  searchQuery={searchQuery}
+                  setSearchQuery={setSearchQuery}
+                  modulesLoading={modulesLoading}
+                  modulesError={modulesError}
+                  loadModules={loadModules}
+                  filteredModules={filteredModules}
+                  MODULE_ICONS={MODULE_ICONS}
+                  togglingModuleId={togglingModuleId}
+                  handleToggleModule={handleToggleModule}
+                />
+              )}
 
         {/* ======================================================== */}
         {/* TAB: HEALTH & SUBSYSTEMS                                 */}
@@ -1705,10 +1762,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
           />
         )}
 
-        {/* ======================================================== */}
-        {/* TAB: MODULES                                             */}
-        {/* ======================================================== */}
-        {(activeTab === "modules" || activeTab === "settings" || activeTab === "ai") && (
+        {(activeTab === "settings" || activeTab === "ai") && (
           <ConfigurationGroup
             activeTab={activeTab}
             modules={modules}

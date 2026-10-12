@@ -52229,6 +52229,63 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_10_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_10_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_10_de);
 
+const v1_75_11_fr: ChangelogEntry = {
+  version: "v1.75.11",
+  date: "2026-10-13",
+  title: "Centre de Contrôle du Bot au Format Keeper & Motion Design",
+  items: [
+    "Refonte complète du centre de contrôle du bot (/discord/bot) : suppression des doubles rangées d'onglets imbriquées, de l'en-tête monolithique encombré et de la console rouge permanente.",
+    "Bandeau supérieur glass sticky épuré : retour instantané au Discord Hub, statut de synchronisation SSE en temps réel et console VPS PM2 propriétaire accessible à la demande dans une modale dédiée.",
+    "Hero avec Motion Design Framer Motion et 4 cartes de télémétrie Bento (Uptime système, Latence Gateway Shard 0, Membres couverts, Modules actifs).",
+    "Barre de navigation fluide mono-ligne avec pilule dynamique (Vue Générale, Modules 36, Santé & Systèmes, Opérations, Sécurité & Audit, Configuration & IA) et sous-filtres contextuels fluides.",
+    "Catalogue complet des 36 modules du bot repensé en cartes Bento interactives avec filtres thématiques, sélecteur de serveur, recherche instantanée '/' et commutateurs animés.",
+  ],
+};
+
+const v1_75_11_en: ChangelogEntry = {
+  version: "v1.75.11",
+  date: "2026-10-13",
+  title: "Bot Control Center in Keeper Format & Motion Design",
+  items: [
+    "Full overhaul of the Bot Control Center (/discord/bot): removed bloated 2-level nested tab rows, redundant massive header, and permanent red system deck.",
+    "Sleek sticky glass top bar: instant return to Discord Hub, live SSE sync state indicator, and discrete on-demand modal for the owner PM2 VPS console.",
+    "Hero section with Framer Motion animations and 4 Bento telemetry KPI cards (System Uptime, Gateway Latency Shard 0, Total Members, Active Modules).",
+    "Single-row fluid tab bar with dynamic spring pill (Overview, Modules 36, Health & Systems, Operations, Security & Audit, Configuration & AI) and contextual sub-filters.",
+    "Complete 36-module catalog redesigned into interactive Bento cards with category pills, guild switcher, instant '/' search, and spring-animated toggle switches.",
+  ],
+};
+
+const v1_75_11_es: ChangelogEntry = {
+  version: "v1.75.11",
+  date: "2026-10-13",
+  title: "Centro de Control del Bot en Formato Keeper y Motion Design",
+  items: [
+    "Rediseño completo del centro de control del bot (/discord/bot): eliminación de pestañas anidadas en dos niveles, encabezado masivo redundante y consola de sistema invasiva.",
+    "Barra superior de vidrio fija y limpia: retorno inmediato a Discord Hub, sincronización SSE en tiempo real y consola VPS PM2 bajo demanda en ventana modal.",
+    "Sección Hero con animaciones Framer Motion y 4 tarjetas Bento de telemetría (Tiempo de actividad, Latencia Gateway, Miembros cubiertos, Módulos activos).",
+    "Barra de navegación de fila única con indicador elástico (Visión general, Módulos 36, Salud y Sistemas, Operaciones, Seguridad, Configuración e IA).",
+    "Catálogo completo de 36 módulos rediseñado en tarjetas Bento interactivas con filtros de categoría, selector de servidor, búsqueda rápida '/' e interruptores animados.",
+  ],
+};
+
+const v1_75_11_de: ChangelogEntry = {
+  version: "v1.75.11",
+  date: "2026-10-13",
+  title: "Bot-Kontrollzentrum im Keeper-Format & Motion Design",
+  items: [
+    "Vollständige Überarbeitung des Bot-Kontrollzentrums (/discord/bot): Entfernung verschachtelter Doppel-Tabs, überladener Kopfzeilen und permanenter roter Systemboxen.",
+    "Schlanke Sticky-Glass-Kopfleiste: Direkte Rückkehr zum Discord Hub, SSE-Echtzeit-Synchronisationsstatus und Owner-VPS-PM2-Konsole als On-Demand-Modal.",
+    "Hero-Bereich mit Framer Motion und 4 Bento-Telemetriekarten (System-Uptime, Gateway-Latenz Shard 0, Mitglieder, Aktive Module).",
+    "Einzeilige flüssige Navigationsleiste mit dynamischer Pille (Übersicht, 36 Module, Gesundheit & Systeme, Operationen, Sicherheit & Audit, Konfiguration & KI).",
+    "Kompletter 36-Module-Katalog als interaktive Bento-Karten mit Kategoriefiltern, Serverauswahl, '/'-Schnellsuche und animierten Kippschaltern.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_11_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_11_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_11_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_11_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

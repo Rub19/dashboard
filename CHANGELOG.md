@@ -2,6 +2,23 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.11 — 2026-10-13
+
+**Refonte Intégrale du Centre de Contrôle du Bot (`/discord/bot`) au Format Keeper & Motion Design**
+
+- **Interface Débarrassée des Éléments Encombrants & Navigation Mono-Ligne** :
+  - Élimination des deux rangées superposées d'onglets au profit d'une barre de navigation fluide à un seul niveau (`KEEPER_TABS` : Vue Générale, Modules (36), Santé & Systèmes, Opérations, Sécurité & Audit, Configuration & IA) dotée de l'indicateur d'animation physique `SPRING_PILL`.
+  - Sous-filtres contextuels fluides affichés uniquement au besoin (ex. dans Santé & Systèmes ou Opérations).
+- **Bandeau Supérieur Glass Sticky Épuré & Console Propriétaire Discrète** :
+  - Remplacement de l'imposant deck rouge/ambre permanent par une modale à la demande ouverte via le bouton discret `Console VPS (PM2)`.
+  - Accès complet aux commandes d'administration réservées au propriétaire (redémarrage PM2 à distance, mise à jour du bot, métriques du shard, statut en ligne et audit des logs Supabase).
+- **Hero avec Motion Design & 4 Cartes KPI Bento** :
+  - Animations de cascade Framer Motion (`pageStagger`, `staggerItem`).
+  - 4 métriques authentiques en cartes Bento : Uptime système avec statut du bot, Latence Gateway WebSocket (ms), Membres Discord couverts et Modules actifs.
+  - Accès direct 1-clic vers le mode Streamer & Présence (`/discord/bot/presence`) et rafraîchissement avec icône animée.
+- **Catalogue Complet des 36 Modules Redessiné en Grille Bento** :
+  - Refonte intégrale de la gestion des 36 modules avec filtres par catégorie (Tous, Sécurité, Modération, Engagement, Audio, Outils), sélecteur de serveur Discord actif, recherche instantanée par raccourci clavier `/` et compteurs dynamiques en temps réel.
+
 ## v1.75.10 — 2026-10-12
 
 **Refonte Intégrale de la Page des Tâches Planifiées (`/discord/bot/jobs`) au Format Keeper & Motion Design**

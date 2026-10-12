@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 import { ChannelType, Client } from 'discord.js';
 import { reminderStorage } from '../../modules/reminders/storage/reminderStorage.js';
-import { parseDuration } from '../../modules/reminders/services/reminderService.js';
+import { parseDuration, reminderService } from '../../modules/reminders/services/reminderService.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { DESTINATION_CHANNEL_TYPES } from '../../utils/channelSend.js';
 
@@ -75,6 +75,18 @@ export function createReminderRouter(client: Client) {
     });
     emitConfigUpdated('reminders', guildId, reminder, 'DASHBOARD', userId);
     res.json({ success: true, reminder });
+  });
+
+  router.post('/:id/trigger', async (req: Request, res: Response): Promise<void> => {
+    const guildId = String(req.params.guildId);
+    const id = String(req.params.id);
+    const target = reminderStorage.get(id);
+    if (!target || target.guildId !== guildId) {
+      res.status(404).json({ error: 'Rappel introuvable' });
+      return;
+    }
+    const ok = await reminderService.triggerNow(id);
+    res.json({ success: ok });
   });
 
   router.delete('/:id', (req: Request, res: Response): void => {

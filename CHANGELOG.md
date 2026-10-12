@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.74.0 — 2026-10-12
+
+**Console : Simulateur de commandes perso, test d'annonces d'anniversaires, ajustement de compteur & déclencheur de rappels**
+
+- **Simulateur de commandes personnalisées** : Exécution interactive en bac à sable (`POST /api/guilds/:guildId/custom-commands/:id/test`) avec prévisualisation fidèle du message Discord, des embeds personnalisés (couleurs, titre, description, pied de page) et des boutons interactifs.
+- **Test d'annonces & modération des anniversaires** : Bouton d'envoi de test en direct sur Discord (`POST /api/guilds/:guildId/birthdays/test`) pour valider les mentions et le salon configuré, et suppression en 1 clic (`DELETE /api/guilds/:guildId/birthdays/:userId`) de tout anniversaire erroné.
+- **Ajustement interactif du compteur** : Modale d'ajustement du nombre (`POST /api/guilds/:guildId/counting/set`) permettant de resynchroniser ou corriger le nombre en cours sans effacer le record ni les statistiques des membres.
+- **Déclencheur instantané de rappels & sélecteurs rapides** : Déclencheur immédiat (`POST /api/guilds/:guildId/reminders/:id/trigger`) pour livrer un rappel sur Discord à la demande, accompagné de puces de délais rapides (15m, 30m, 1h, 3h, 1j, 1sem).
+
 ## v1.73.9 — 2026-10-12
 
 **Console & Dashboard : Modération des salons vocaux, gestion des participants de concours & simulateur de streams**

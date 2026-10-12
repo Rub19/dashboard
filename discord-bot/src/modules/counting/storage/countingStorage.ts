@@ -53,9 +53,14 @@ class CountingStorage {
     return next;
   }
 
-  /** Remet le compteur à zéro (le record, les statistiques et les réglages sont conservés). */
   public resetCount(guildId: string): CountingConfig {
     return this.updateConfig(guildId, { count: 0, lastUserId: null, lastResetAt: new Date().toISOString() });
+  }
+
+  public setCount(guildId: string, count: number): CountingConfig {
+    const current = this.getConfig(guildId);
+    const nextHighScore = Math.max(current.highScore, count);
+    return this.updateConfig(guildId, { count, highScore: nextHighScore, lastUserId: null });
   }
 
   public getOverview(guildId: string): CountingOverview {

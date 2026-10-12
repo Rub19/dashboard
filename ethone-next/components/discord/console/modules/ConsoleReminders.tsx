@@ -10,6 +10,7 @@ type Recurrence = "none" | "daily" | "weekly";
 type Reminder = { id: string; channelId: string; userId: string; message: string; remindAt: string; recurrence: Recurrence; delivered: boolean; deliveredCount: number };
 
 const REC: Record<Recurrence, string> = { none: "Une fois", daily: "Chaque jour", weekly: "Chaque semaine" };
+const PRESETS = ["15m", "30m", "1h", "3h", "1j", "1sem"];
 const DELAY_RE = /^(\d+\s*[smhdjw]\s*)+$/i;
 const field =
   "w-full rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/70";
@@ -48,6 +49,14 @@ export default function ConsoleReminders({ guildId }: { guildId: string }) {
       setMessage("");
     }
   };
+  const trigger = async (r: Reminder) => {
+    setBusy(true);
+    const res = await api<{ success: boolean }>(`/reminders/${r.id}/trigger`, { method: "POST" });
+    setBusy(false);
+    if (res?.success) {
+      void load();
+    }
+  };
   const cancel = async (r: Reminder) => {
     if (await api(`/reminders/${r.id}`, { method: "DELETE" })) setList((l) => l?.filter((x) => x.id !== r.id) ?? null);
   };
@@ -67,7 +76,21 @@ export default function ConsoleReminders({ guildId }: { guildId: string }) {
           <textarea value={message} maxLength={1500} rows={2} onChange={(e) => setMessage(e.target.value)} placeholder="Réunion staff dans 10 minutes" aria-label="Message du rappel" className={field} />
         </Row>
         <Row label="Dans" hint="Ex. 30m, 2h, 1j, 1h30m (30 secondes minimum).">
-          <input value={delay} maxLength={20} onChange={(e) => setDelay(e.target.value)} aria-label="Délai" className={`${field} h-9 w-32 py-0 font-mono`} />
+          <div className="flex flex-wrap items-center gap-2">
+            <input value={delay} maxLength={20} onChange={(e) => setDelay(e.target.value)} aria-label="Délai" className={`${field} h-9 w-28 py-0 font-mono`} />
+            <div className="flex flex-wrap gap-1">
+              {PRESETS.map((p) => (
+                <button
+                  key={p}
+                  type="button"
+                  onClick={() => setDelay(p)}
+                  className={`rounded-md border px-2 py-1 font-mono text-xs transition-colors ${delay === p ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]" : "border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--text-primary)]"}`}
+                >
+                  {p}
+                </button>
+              ))}
+            </div>
+          </div>
         </Row>
         <Row label="Répéter">
           <Segmented label="Répéter" value={recurrence} options={Object.entries(REC) as [Recurrence, string][]} onChange={setRecurrence} />
@@ -97,7 +120,10 @@ export default function ConsoleReminders({ guildId }: { guildId: string }) {
                     {when(r.remindAt)} · {REC[r.recurrence]} · #{channelName(r.channelId)} · {names[r.userId]?.displayName ?? r.userId}
                   </p>
                 </div>
-                <GhostButton onClick={() => cancel(r)}>Annuler</GhostButton>
+                <div className="flex items-center gap-1.5">
+                  <GhostButton disabled={busy} onClick={() => trigger(r)}>Déclencher</GhostButton>
+                  <GhostButton disabled={busy} onClick={() => cancel(r)}>Annuler</GhostButton>
+                </div>
               </li>
             ))}
           </ul>

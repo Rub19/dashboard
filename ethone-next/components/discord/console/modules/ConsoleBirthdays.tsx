@@ -3,8 +3,9 @@
 import { useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import ChannelPicker from "../../ChannelPicker";
+import { confirmDialog } from "@/lib/confirmDialog";
 import { pageStagger } from "@/lib/motion-variants";
-import { ConsolePage, EmptyLine, Panel, RoleChips, Row, StatTile, Stepper, Switch, useGuildApi, useMemberNames } from "../kit";
+import { ConsolePage, EmptyLine, GhostButton, Panel, RoleChips, Row, StatTile, Stepper, Switch, useGuildApi, useMemberNames } from "../kit";
 
 type Config = { enabled: boolean; announceChannelId: string | null; announceHour: number; message: string; birthdayRoleId: string | null; mentionUser: boolean };
 type Overview = { total: number; today: { userId: string; age: number | null }[]; upcoming: { userId: string; day: number; month: number; inDays: number }[] };
@@ -17,6 +18,8 @@ export default function ConsoleBirthdays({ guildId }: { guildId: string }) {
   const [cfg, setCfg] = useState<Config | null>(null);
   const [ov, setOv] = useState<Overview | null>(null);
   const [message, setMessage] = useState("");
+  const [busy, setBusy] = useState<string | null>(null);
+  const [note, setNote] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     const [c, o] = await Promise.all([api<Config>("/birthdays/config"), api<Overview>("/birthdays/overview", { silent: true })]);
@@ -39,6 +42,27 @@ export default function ConsoleBirthdays({ guildId }: { guildId: string }) {
     else void load();
   };
 
+  const testAnnounce = async () => {
+    setBusy("test");
+    const r = await api<{ success: boolean }>("/birthdays/test", { method: "POST" });
+    setBusy(null);
+    if (r?.success) {
+      setNote("Message de test envoyé avec succès sur Discord !");
+    } else {
+      setNote("Échec de l'envoi du test. Vérifie les permissions d'Etho dans le salon d'annonce.");
+    }
+  };
+
+  const deleteBirthday = async (userId: string) => {
+    if (!(await confirmDialog(`Retirer l'anniversaire de ${name(userId)} ?`, { title: "Retirer l'anniversaire", confirmLabel: "Retirer" }))) return;
+    setBusy(`del:${userId}`);
+    const r = await api<{ success: boolean }>(`/birthdays/${userId}`, { method: "DELETE" });
+    setBusy(null);
+    if (r?.success) {
+      void load();
+    }
+  };
+
   return (
     <ConsolePage title="Anniversaires">
       {cfg && !cfg.enabled ? (
@@ -54,13 +78,31 @@ export default function ConsoleBirthdays({ guildId }: { guildId: string }) {
         )
       )}
 
+      {note && (
+        <Panel>
+          <div className="flex items-center justify-between px-5 py-3">
+            <p className="text-xs text-[var(--text-primary)]">{note}</p>
+            <button type="button" onClick={() => setNote(null)} className="text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)]">
+              Fermer
+            </button>
+          </div>
+        </Panel>
+      )}
+
       <motion.div variants={pageStagger} className="grid grid-cols-2 gap-3 lg:grid-cols-3">
         <StatTile label="Anniversaires enregistrés" value={ov?.total ?? "—"} hint="Ajoutés par les membres avec /birthday set" />
         <StatTile label="Aujourd'hui" value={ov?.today.length ?? "—"} />
         <StatTile label="Prochain" value={ov?.upcoming[0] ? (ov.upcoming[0].inDays === 0 ? "Aujourd'hui" : `Dans ${ov.upcoming[0].inDays} j`) : "—"} hint={ov?.upcoming[0] ? name(ov.upcoming[0].userId) : undefined} />
       </motion.div>
 
-      <Panel title="Annonce">
+      <Panel
+        title="Annonce"
+        actions={
+          <GhostButton disabled={busy !== null || !cfg?.announceChannelId} onClick={testAnnounce}>
+            {busy === "test" ? "Envoi…" : "Tester l'annonce"}
+          </GhostButton>
+        }
+      >
         {!cfg ? (
           <EmptyLine>Chargement…</EmptyLine>
         ) : (
@@ -105,6 +147,15 @@ export default function ConsoleBirthdays({ guildId }: { guildId: string }) {
                   🎂 {name(t.userId)}
                   {t.age !== null && <span className="font-normal text-[var(--text-muted)]"> · {t.age} ans</span>}
                 </p>
+                <button
+                  type="button"
+                  title={`Retirer l'anniversaire de ${name(t.userId)}`}
+                  disabled={busy !== null}
+                  onClick={() => deleteBirthday(t.userId)}
+                  className="text-sm text-[var(--text-muted)] transition-colors hover:text-[var(--danger)]"
+                >
+                  ×
+                </button>
               </li>
             ))}
             {ov.upcoming
@@ -116,6 +167,15 @@ export default function ConsoleBirthdays({ guildId }: { guildId: string }) {
                   </span>
                   <p className="min-w-0 flex-1 truncate text-[13px] text-[var(--text-primary)]">{name(u.userId)}</p>
                   <span className="text-[11px] text-[var(--text-muted)]">dans {u.inDays} j</span>
+                  <button
+                    type="button"
+                    title={`Retirer l'anniversaire de ${name(u.userId)}`}
+                    disabled={busy !== null}
+                    onClick={() => deleteBirthday(u.userId)}
+                    className="text-sm text-[var(--text-muted)] transition-colors hover:text-[var(--danger)]"
+                  >
+                    ×
+                  </button>
                 </li>
               ))}
           </ul>

@@ -104,12 +104,33 @@ class ReminderService {
     }
   }
 
-  private async deliver(reminder: Reminder): Promise<boolean> {
+  public async triggerNow(reminderId: string): Promise<boolean> {
+    const reminder = reminderStorage.get(reminderId);
+    if (!reminder) return false;
+    const ok = await this.deliver(reminder);
+    if (ok) {
+      const next = nextOccurrence(new Date(reminder.remindAt), reminder.recurrence);
+      if (next) {
+        reminderStorage.update(reminder.id, {
+          remindAt: next.toISOString(),
+          delivered: false,
+          deliveredCount: reminder.deliveredCount + 1,
+        });
+      } else {
+        reminderStorage.update(reminder.id, {
+          delivered: true,
+          deliveredCount: reminder.deliveredCount + 1,
+        });
+      }
+    }
+    return ok;
+  }
+
+  public async deliver(reminder: Reminder): Promise<boolean> {
     if (!this.client) return false;
     const content = `<@${reminder.userId}>`;
     const embed = this.buildEmbed(reminder);
 
-    // 1. Salon d'origine.
     try {
       const channel = await this.client.channels.fetch(reminder.channelId).catch(() => null);
       if (this.isSendable(channel)) {
@@ -124,7 +145,6 @@ class ReminderService {
       logger.warn(`[Reminders] Envoi salon ${reminder.channelId} échoué :`, err);
     }
 
-    // 2. Fallback : message privé.
     try {
       const user = await this.client.users.fetch(reminder.userId);
       await user.send({ embeds: [embed] });

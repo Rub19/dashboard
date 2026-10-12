@@ -66,7 +66,7 @@ export default function CustomCommandEditor({ guildId, command, onSaved, footer 
   const api = useGuildApi(guildId);
   const [c, setC] = useState<Command>(() => structuredClone(command));
   const [busy, setBusy] = useState(false);
-  const [previews, setPreviews] = useState<{ content: string | null; embed: { title?: string; description?: string } | null }[] | null>(null);
+  const [previews, setPreviews] = useState<{ content: string | null; embed: { title?: string; description?: string; color?: number | string; footer?: { text?: string } } | null; buttons?: boolean }[] | null>(null);
   const set = (patch: Partial<Command>) => setC((x) => ({ ...x, ...patch }));
   const dirty = JSON.stringify(c) !== JSON.stringify(command);
 
@@ -83,8 +83,20 @@ export default function CustomCommandEditor({ guildId, command, onSaved, footer 
     }
   };
   const test = async () => {
-    const r = await api<{ previews: typeof previews }>(`/custom-commands/${c.id}/test`, { method: "POST", json: { args: {} } });
-    if (r) setPreviews(r.previews ?? []);
+    setBusy(true);
+    if (dirty) {
+      const r = await api<{ command: Command }>(`/custom-commands/${c.id}`, {
+        method: "PUT",
+        json: { description: c.description, triggerType: c.triggerType, cooldownSeconds: c.cooldownSeconds, requiredRoleIds: c.requiredRoleIds, arguments: c.arguments, conditions: c.conditions, defaultActions: c.defaultActions },
+      });
+      if (r?.command) {
+        setC(structuredClone(r.command));
+        onSaved(r.command);
+      }
+    }
+    const res = await api<{ previews: typeof previews }>(`/custom-commands/${c.id}/test`, { method: "POST", json: { args: {} } });
+    setBusy(false);
+    if (res) setPreviews(res.previews ?? []);
   };
 
   return (
@@ -188,16 +200,38 @@ export default function CustomCommandEditor({ guildId, command, onSaved, footer 
       </div>
 
       {previews && (
-        <div className="space-y-1.5 border-t border-[var(--panel-border)] px-5 py-3">
-          <p className="text-[11px] font-semibold text-[var(--text-muted)]">Aperçu (avec un membre d&apos;exemple)</p>
+        <div className="space-y-2 border-t border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] p-4">
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-bold text-[var(--text-primary)]">Rendu simulé de la commande (Discord)</p>
+            <GhostButton onClick={() => setPreviews(null)}>Fermer l&apos;aperçu</GhostButton>
+          </div>
           {previews.length === 0 ? (
             <p className="text-xs text-[var(--text-muted)]">Aucune réponse à afficher.</p>
           ) : (
             previews.map((p, i) => (
-              <div key={i} className="rounded-lg border-l-4 border-[var(--accent-primary)] bg-[var(--surface-hover)] px-3 py-2 text-xs text-[var(--text-primary)]">
-                {p.content && <p className="whitespace-pre-wrap">{p.content}</p>}
-                {p.embed?.title && <p className="font-semibold">{p.embed.title}</p>}
-                {p.embed?.description && <p className="whitespace-pre-wrap text-[var(--text-muted)]">{p.embed.description}</p>}
+              <div key={i} className="space-y-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-hover)] p-3">
+                {p.content && <p className="whitespace-pre-wrap text-sm text-[var(--text-primary)]">{p.content}</p>}
+                {p.embed && (
+                  <div
+                    className="space-y-1.5 rounded-lg border-l-4 bg-[var(--surface-base,var(--bg-main))] p-3"
+                    style={{
+                      borderColor: p.embed.color
+                        ? typeof p.embed.color === "number"
+                          ? `#${p.embed.color.toString(16).padStart(6, "0")}`
+                          : p.embed.color
+                        : "var(--accent-primary)",
+                    }}
+                  >
+                    {p.embed.title && <p className="text-sm font-bold text-[var(--text-primary)]">{p.embed.title}</p>}
+                    {p.embed.description && <p className="whitespace-pre-wrap text-xs text-[var(--text-muted)]">{p.embed.description}</p>}
+                    {p.embed.footer?.text && <p className="pt-1 text-[11px] text-[var(--text-muted)] opacity-75">{p.embed.footer.text}</p>}
+                  </div>
+                )}
+                {p.buttons && (
+                  <div className="flex items-center gap-2 pt-1 text-xs font-semibold text-[var(--accent-primary)]">
+                    <span>🔘 Boutons interactifs inclus</span>
+                  </div>
+                )}
               </div>
             ))
           )}
@@ -209,8 +243,8 @@ export default function CustomCommandEditor({ guildId, command, onSaved, footer 
           {busy ? "Enregistrement…" : "Enregistrer"}
         </button>
         {dirty && <GhostButton onClick={() => setC(structuredClone(command))}>Annuler les changements</GhostButton>}
-        <GhostButton disabled={dirty} onClick={test}>
-          Tester
+        <GhostButton disabled={busy} onClick={test}>
+          {busy ? "Test en cours…" : "Tester la commande"}
         </GhostButton>
         <span className="flex-1" />
         {footer}

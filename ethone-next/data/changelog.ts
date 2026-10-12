@@ -50623,6 +50623,58 @@ CHANGELOG_BY_LANG.fr.unshift(v1_73_9_fr);
 CHANGELOG_BY_LANG.en.unshift(v1_73_9_en);
 CHANGELOG_BY_LANG.es.unshift(v1_73_9_es);
 CHANGELOG_BY_LANG.de.unshift(v1_73_9_de);
+const v1_74_0_fr: ChangelogEntry = {
+  version: "v1.74.0",
+  date: "2026-10-12",
+  title: "Console : Simulateur de commandes perso, test d'annonces d'anniversaires, ajustement de compteur & déclencheur de rappels",
+  items: [
+    "Simulateur de commandes personnalisées : exécution en bac à sable avec aperçu instantané du message Discord, des embeds colorés et des boutons interactifs",
+    "Test d'annonce et gestion des anniversaires : envoi d'un message d'annonce de test directement sur Discord et bouton de suppression rapide pour chaque membre enregistré",
+    "Ajustement du compteur : modale d'ajustement du nombre en direct sans réinitialiser le record ni les statistiques des membres",
+    "Déclencheur immédiat de rappels : bouton pour expédier un rappel programmé sur-le-champ et boutons de sélection rapide de durée (15m, 30m, 1h, 3h, 1j, 1sem)",
+  ],
+};
+
+const v1_74_0_en: ChangelogEntry = {
+  version: "v1.74.0",
+  date: "2026-10-12",
+  title: "Console: Custom commands simulator, birthday announcement tester, count adjuster & instant reminders trigger",
+  items: [
+    "Custom commands simulator: Sandboxed preview rendering the full Discord message layout, colored embeds, and interactive buttons",
+    "Birthday tester & manager: Direct test announcement dispatch to Discord and 1-click removal for any registered member",
+    "Count adjuster: Dedicated modal to tune the current counting value without clearing high scores or member leaderboard stats",
+    "Instant reminder trigger: Action button to deliver pending reminders on the spot with one-click duration preset chips",
+  ],
+};
+
+const v1_74_0_es: ChangelogEntry = {
+  version: "v1.74.0",
+  date: "2026-10-12",
+  title: "Consola: Simulador de comandos personalizados, prueba de cumpleaños, ajuste de contador y recordatorios instantáneos",
+  items: [
+    "Simulador de comandos: Vista previa interactiva con diseño de mensaje de Discord, embeds con color y botones",
+    "Prueba de cumpleaños y gestión: Envío de anuncio de prueba a Discord y eliminación rápida de cumpleaños registrados",
+    "Ajuste de contador: Modal para corregir el conteo actual sin reiniciar el récord histórico",
+    "Disparador de recordatorios: Envío inmediato de recordatorios pendientes y accesos directos de duración",
+  ],
+};
+
+const v1_74_0_de: ChangelogEntry = {
+  version: "v1.74.0",
+  date: "2026-10-12",
+  title: "Konsole: Eigene-Befehle-Simulator, Geburtstags-Testbenachrichtigung, Zähler-Anpassung & Sofort-Erinnerungen",
+  items: [
+    "Befehle-Simulator: Sandkasten-Vorschau mit vollständiger Discord-Nachricht, farbigen Embeds und interaktiven Buttons",
+    "Geburtstags-Test: Sofortige Testankündigung auf Discord und 1-Klick-Löschung für registrierte Geburtstage",
+    "Zähler-Anpassung: Modal zur Korrektur des aktuellen Zählerstands ohne Zurücksetzen von Rekorden oder Statistiken",
+    "Sofort-Erinnerung: Auslöser zum sofortigen Senden von Erinnerungen mit praktischen Dauer-Auswahlschaltflächen",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_74_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_74_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_74_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_74_0_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

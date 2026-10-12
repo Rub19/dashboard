@@ -66,5 +66,17 @@ export function createCountingRouter(client: Client) {
     res.json({ success: true, ...(await overviewWithNames(guildId)) });
   });
 
+  router.post('/set', async (req: Request, res: Response): Promise<void> => {
+    const guildId = String(req.params.guildId);
+    const count = typeof req.body?.count === 'number' && Number.isInteger(req.body.count) && req.body.count >= 0 ? req.body.count : null;
+    if (count === null) {
+      res.status(400).json({ error: 'Nombre entier positif requis' });
+      return;
+    }
+    const updated = countingStorage.setCount(guildId, count);
+    emitConfigUpdated('counting', guildId, updated, 'DASHBOARD', req.user?.id);
+    res.json({ success: true, ...(await overviewWithNames(guildId)) });
+  });
+
   return router;
 }

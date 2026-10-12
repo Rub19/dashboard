@@ -3,7 +3,8 @@ import { ChannelType, Client } from 'discord.js';
 import { birthdayStorage } from '../../modules/birthdays/storage/birthdayStorage.js';
 import { BirthdayConfigSchema } from '../../modules/birthdays/types/birthday.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
-import { DESTINATION_CHANNEL_TYPES } from '../../utils/channelSend.js';
+import { DESTINATION_CHANNEL_TYPES, sendToConfiguredChannel } from '../../utils/channelSend.js';
+import { baseEmbed } from '../../utils/embeds.js';
 
 /**
  * API Dashboard du module Birthdays.
@@ -40,6 +41,50 @@ export function createBirthdayRouter(client: Client) {
 
   router.get('/list', (req: Request, res: Response): void => {
     res.json({ birthdays: birthdayStorage.getGuildEntries(String(req.params.guildId)) });
+  });
+
+  router.delete('/:userId', (req: Request, res: Response): void => {
+    const guildId = String(req.params.guildId);
+    const userId = String(req.params.userId);
+    const ok = birthdayStorage.delete(guildId, userId);
+    res.json({ success: ok });
+  });
+
+  router.post('/test', async (req: Request, res: Response): Promise<void> => {
+    const guildId = String(req.params.guildId);
+    const config = birthdayStorage.getConfig(guildId);
+    if (!config.announceChannelId) {
+      res.status(400).json({ error: "Aucun salon d'annonce configuré" });
+      return;
+    }
+    const guild = client.guilds.cache.get(guildId);
+    if (!guild) {
+      res.status(404).json({ error: 'Serveur introuvable' });
+      return;
+    }
+    const channel = await client.channels.fetch(config.announceChannelId).catch(() => null);
+    if (!channel || !channel.isTextBased()) {
+      res.status(400).json({ error: "Salon d'annonce introuvable ou inaccessible" });
+      return;
+    }
+    const now = new Date();
+    const testEmbed = baseEmbed('default', { color: '#FF6BAA' })
+      .setTitle('🎂 [TEST] Anniversaire du jour')
+      .setDescription(
+        config.message
+          .replaceAll('{user}', config.mentionUser && req.user?.id ? `<@${req.user.id}>` : '**Membre Test**')
+          .replaceAll('{age}', '20')
+          .replaceAll('{date}', `${now.getDate()}/${now.getMonth() + 1}`)
+      );
+    await sendToConfiguredChannel(
+      channel as any,
+      {
+        content: config.mentionUser && req.user?.id ? `<@${req.user.id}>` : undefined,
+        embeds: [testEmbed],
+      },
+      { postTitle: '🎂 [TEST] Anniversaire du jour' }
+    );
+    res.json({ success: true });
   });
 
   // Salons + rôles pour les sélecteurs du dashboard.

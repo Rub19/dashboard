@@ -1,12 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import ChannelPicker from "../../ChannelPicker";
 import { confirmDialog } from "@/lib/confirmDialog";
 import { sinceLabel } from "@/lib/discord/security-scan";
+import { SPRING_LAYOUT } from "@/lib/ease";
 import { pageStagger } from "@/lib/motion-variants";
-import { ConsolePage, EmptyLine, GhostButton, Panel, Row, StatTile, Switch, useGuildApi } from "../kit";
+import { ConsolePage, EmptyLine, GhostButton, Panel, Row, StatTile, Stepper, Switch, useGuildApi } from "../kit";
 
 type Config = { enabled: boolean; channelId: string | null; allowConsecutive: boolean; resetOnMistake: boolean; count: number; highScore: number; totalCorrect: number; totalMistakes: number; lastResetAt: string | null };
 type Overview = { config: Config; leaderboard: { userId: string; correct: number; mistakes: number; name: string; avatarUrl: string | null }[] };
@@ -15,6 +16,8 @@ type Overview = { config: Config; leaderboard: { userId: string; correct: number
 export default function ConsoleCounting({ guildId }: { guildId: string }) {
   const api = useGuildApi(guildId);
   const [ov, setOv] = useState<Overview | null>(null);
+  const [editingCount, setEditingCount] = useState(false);
+  const [customCount, setCustomCount] = useState(0);
 
   const load = useCallback(async () => {
     const r = await api<Overview>("/counting/overview");
@@ -37,6 +40,14 @@ export default function ConsoleCounting({ guildId }: { guildId: string }) {
     if (!(await confirmDialog("Remettre le compteur à 0 ? Le record est conservé.", { title: "Remettre à zéro", confirmLabel: "Remettre à 0" }))) return;
     const r = await api<Overview>("/counting/reset", { method: "POST" });
     if (r) setOv(r);
+  };
+  const setCount = async () => {
+    if (customCount < 0) return;
+    const r = await api<Overview>("/counting/set", { method: "POST", json: { count: customCount } });
+    if (r) {
+      setOv(r);
+      setEditingCount(false);
+    }
   };
 
   const cfg = ov?.config;
@@ -62,7 +73,19 @@ export default function ConsoleCounting({ guildId }: { guildId: string }) {
         <StatTile label="Erreurs" value={cfg?.totalMistakes ?? "—"} hint={cfg?.lastResetAt ? `Dernière remise à 0 ${sinceLabel(cfg.lastResetAt)}` : undefined} />
       </motion.div>
 
-      <Panel title="Règles" actions={cfg && <GhostButton onClick={reset}>Remettre à 0</GhostButton>}>
+      <Panel
+        title="Règles"
+        actions={
+          cfg && (
+            <div className="flex items-center gap-1.5">
+              <GhostButton onClick={() => { setCustomCount(cfg.count); setEditingCount(true); }}>
+                Ajuster le nombre
+              </GhostButton>
+              <GhostButton onClick={reset}>Remettre à 0</GhostButton>
+            </div>
+          )
+        }
+      >
         {!cfg ? (
           <EmptyLine>Chargement…</EmptyLine>
         ) : (
@@ -100,6 +123,45 @@ export default function ConsoleCounting({ guildId }: { guildId: string }) {
           </ul>
         )}
       </Panel>
+
+      <AnimatePresence>
+        {editingCount && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={SPRING_LAYOUT}
+              className="relative flex w-full max-w-sm flex-col rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] p-5 shadow-2xl"
+            >
+              <h3 className="text-sm font-bold text-[var(--text-primary)]">Ajuster le nombre actuel</h3>
+              <p className="mt-1 text-xs text-[var(--text-muted)]">
+                Modifie la valeur du compteur sans remettre les statistiques ni le record à zéro.
+              </p>
+              <div className="mt-4 flex items-center justify-center">
+                <Stepper
+                  value={customCount}
+                  min={0}
+                  max={1000000}
+                  step={1}
+                  unit="nombre"
+                  onCommit={(n) => setCustomCount(n)}
+                />
+              </div>
+              <div className="mt-5 flex justify-end gap-2 border-t border-[var(--panel-border)] pt-4">
+                <GhostButton onClick={() => setEditingCount(false)}>Annuler</GhostButton>
+                <button
+                  type="button"
+                  onClick={setCount}
+                  className="rounded-lg bg-[var(--accent-primary)] px-4 py-2 text-xs font-bold text-white transition-opacity hover:opacity-90"
+                >
+                  Enregistrer
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </ConsolePage>
   );
 }

@@ -116,6 +116,8 @@ import {
   funMasterCommand,
 } from '../commands/fun/funCommands.js';
 import { lastfmCommand, fmCommand } from '../commands/fun/lastfmCommands.js';
+import { tiktokCommand } from '../commands/fun/tiktokCommand.js';
+import { pinterestCommand } from '../commands/fun/pinterestCommand.js';
 
 import { config } from '../config.js';
 import { Command } from '../types/command.js';
@@ -285,6 +287,8 @@ class CommandRegistry {
     this.register(funMasterCommand);
     this.register(lastfmCommand);
     this.register(fmCommand);
+    this.register(tiktokCommand);
+    this.register(pinterestCommand);
   }
 
   public register(command: Command) {

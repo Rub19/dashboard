@@ -44,6 +44,8 @@ const STATIC_FALLBACK_COMMANDS: PublicCommand[] = [
   { name: "automod", description: "Configure les filtres automatiques contre le spam, les raids et les pings massifs.", category: "Sécurité", subcommands: [{ name: "rules", description: "Liste les règles actives" }, { name: "action", description: "Définit la sanction automatique" }] },
   { name: "spotify", description: "Contrôle la lecture Spotify et diffuse votre titre dans votre salon vocal Discord.", category: "Spotify", subcommands: [{ name: "vc", description: "Rejoint le salon et diffuse le titre" }, { name: "nowplaying", description: "Affiche le titre en cours" }, { name: "like", description: "Ajoute aux favoris Spotify" }] },
   { name: "lastfm", description: "Affiche vos statistiques d'écoute Last.fm et votre titre en direct.", category: "Fun", subcommands: [{ name: "nowplaying", description: "Titre en cours" }, { name: "recent", description: "Récents scrobbles" }, { name: "topartists", description: "Top artistes" }, { name: "taste", description: "Comparateur de goûts" }, { name: "login", description: "Associer son compte" }] },
+  { name: "tiktok", description: "Recherche de profils, inspection de vidéos et liens de créateurs TikTok.", category: "Fun", subcommands: [{ name: "profile", description: "Affiche les infos d'un compte TikTok" }, { name: "video", description: "Inspecte une vidéo TikTok" }] },
+  { name: "pinterest", description: "Recherche visuelle d'épingles, profils et tableaux d'inspiration Pinterest.", category: "Fun", subcommands: [{ name: "search", description: "Recherche visuelle de pins" }, { name: "pin", description: "Affiche le détail d'une épingle" }, { name: "user", description: "Affiche un profil créateur" }] },
   { name: "lyrics", description: "Recherche les paroles complètes d'un morceau en direct avec synchronisation.", category: "Fun", subcommands: [] },
   { name: "quote", description: "Génère un visuel de citation stylisé aux couleurs de Discord.", category: "Fun", subcommands: [] },
   { name: "image", description: "Recherche des visuels et images haute résolution sur DuckDuckGo.", category: "Fun", subcommands: [] },
@@ -586,17 +588,17 @@ function WaveformBars() {
   const { reduced } = useMotionPref();
   const heights = [28, 48, 20, 56, 36, 64, 24, 52, 32, 60, 18, 44, 40, 56, 22, 50, 30, 58, 26, 46, 38, 62, 16, 42];
   return (
-    <div className="mt-8 flex items-end justify-center gap-[3px]">
+    <div className="flex h-16 items-end justify-center gap-1 sm:gap-1.5">
       {heights.map((h, i) => (
         <motion.div
           key={i}
-          className="w-[5px] rounded-full bg-gradient-to-t from-[#92C8D2]/30 to-[#92C8D2]/80"
+          className="w-1 rounded-full bg-gradient-to-t from-[#92C8D2]/40 via-[#92C8D2] to-emerald-400 sm:w-1.5"
           style={{ height: reduced ? h : 8 }}
-          animate={reduced ? {} : { height: [8, h, h * 0.4, h * 0.9, 8] }}
+          animate={reduced ? {} : { height: [8, h, Math.max(8, h * 0.35), Math.max(12, h * 0.85), 8] }}
           transition={{
-            duration: 2.4,
+            duration: 2.2,
             repeat: Infinity,
-            delay: i * 0.08,
+            delay: i * 0.07,
             ease: "easeInOut",
           }}
         />
@@ -807,6 +809,13 @@ const PLATFORM_CONFIGS = [
   },
 ];
 
+const STATS_LABELS: Record<BotLang, { servers: string; members: string; commands: string }> = {
+  fr: { servers: "Serveurs", members: "Membres", commands: "Commandes" },
+  en: { servers: "Servers", members: "Members", commands: "Commands" },
+  es: { servers: "Servidores", members: "Miembros", commands: "Comandos" },
+  de: { servers: "Server", members: "Mitglieder", commands: "Befehle" },
+};
+
 export default function BotLanding() {
   const { reduced } = useMotionPref();
   const { stats, commands } = useLiveData();
@@ -918,12 +927,14 @@ export default function BotLanding() {
           scrolled ? "border-white/[0.08] bg-[#07080d]/85 py-3" : "border-transparent bg-transparent py-5"
         }`}
       >
-        <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6">
-          <a href="/bot" className="flex items-center gap-3">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+        <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-6">
+          <a href="/bot" className="flex shrink-0 items-center gap-2.5">
+            <Image
               src="/icons/ethone-icon-192.png"
               alt="Etho Logo"
+              width={32}
+              height={32}
+              unoptimized
               className="h-8 w-8 rounded-xl ring-1 ring-white/10"
             />
             <span className="font-extrabold tracking-tight text-white">ETHO</span>
@@ -932,70 +943,48 @@ export default function BotLanding() {
             </span>
           </a>
 
-          <nav className="hidden items-center gap-7 md:flex">
+          <nav className="hidden items-center gap-6 lg:flex xl:gap-8">
             <a
               href="#security"
               onClick={scrollToSection("security")}
-              className="text-sm font-medium text-zinc-300 transition-colors hover:text-white"
+              className="whitespace-nowrap text-xs font-medium text-zinc-400 transition-colors hover:text-white xl:text-sm"
             >
               {c.nav.security}
             </a>
             <a
               href="#music"
               onClick={scrollToSection("music")}
-              className="text-sm font-medium text-zinc-300 transition-colors hover:text-white"
+              className="whitespace-nowrap text-xs font-medium text-zinc-400 transition-colors hover:text-white xl:text-sm"
             >
               {c.nav.music}
             </a>
             <a
               href="#platforms"
               onClick={scrollToSection("platforms")}
-              className="text-sm font-medium text-zinc-300 transition-colors hover:text-white"
+              className="whitespace-nowrap text-xs font-medium text-zinc-400 transition-colors hover:text-white xl:text-sm"
             >
               {c.nav.platforms}
             </a>
             <a
-              href="#features"
-              onClick={scrollToSection("features")}
-              className="text-sm font-medium text-zinc-300 transition-colors hover:text-white"
-            >
-              {c.nav.features}
-            </a>
-            <a
-              href="#steps"
-              onClick={scrollToSection("steps")}
-              className="text-sm font-medium text-zinc-300 transition-colors hover:text-white"
-            >
-              {c.nav.steps}
-            </a>
-            <a
               href="#commandes"
               onClick={scrollToSection("commandes")}
-              className="text-sm font-medium text-zinc-300 transition-colors hover:text-white"
+              className="whitespace-nowrap text-xs font-medium text-zinc-400 transition-colors hover:text-white xl:text-sm"
             >
               {c.nav.commands}
             </a>
             <a
               href="#faq"
               onClick={scrollToSection("faq")}
-              className="text-sm font-medium text-zinc-300 transition-colors hover:text-white"
+              className="whitespace-nowrap text-xs font-medium text-zinc-400 transition-colors hover:text-white xl:text-sm"
             >
               {c.nav.faq}
             </a>
-            <a
-              href={SUPPORT_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm font-medium text-zinc-300 transition-colors hover:text-white"
-            >
-              {c.nav.support}
-            </a>
           </nav>
 
-          <div className="flex items-center gap-3">
+          <div className="flex shrink-0 items-center gap-2.5 sm:gap-3">
             <Link
               href={DASHBOARD_URL}
-              className="hidden rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-xs font-semibold text-zinc-200 transition-all hover:border-white/20 hover:bg-white/[0.08] sm:inline-flex"
+              className="hidden rounded-full border border-white/10 bg-white/[0.04] px-3.5 py-1.5 text-xs font-semibold text-zinc-200 transition-all hover:border-white/20 hover:bg-white/[0.08] hover:text-white sm:inline-flex"
             >
               {c.nav.dashboard}
             </Link>
@@ -1003,7 +992,7 @@ export default function BotLanding() {
               href={INVITE_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-white via-zinc-100 to-white px-4 py-2 text-xs font-bold text-black shadow-lg shadow-white/10 transition-transform hover:scale-105"
+              className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-white via-zinc-100 to-white px-3.5 py-1.5 text-xs font-bold text-black shadow-lg shadow-white/10 transition-transform hover:scale-105"
             >
               <DiscordGlyph className="h-4 w-4" />
               {c.nav.invite}
@@ -1013,7 +1002,7 @@ export default function BotLanding() {
               type="button"
               aria-label={menuOpen ? c.nav.closeMenu : c.nav.openMenu}
               onClick={() => setMenuOpen(!menuOpen)}
-              className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 text-zinc-300 md:hidden"
+              className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 text-zinc-300 lg:hidden"
             >
               <span className="text-base">{menuOpen ? "✕" : "☰"}</span>
             </button>
@@ -1026,7 +1015,7 @@ export default function BotLanding() {
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              className="overflow-hidden border-t border-white/[0.06] bg-[#07080d]/95 px-6 py-4 md:hidden"
+              className="overflow-hidden border-t border-white/[0.06] bg-[#07080d]/95 px-6 py-4 lg:hidden"
             >
               <div className="flex flex-col gap-3">
                 <a href="#security" onClick={scrollToSection("security")} className="text-sm font-medium text-zinc-300">{c.nav.security}</a>
@@ -1138,19 +1127,25 @@ export default function BotLanding() {
                   <p className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
                     <CountUp value={stats.guilds} />
                   </p>
-                  <p className="mt-1 text-xs uppercase tracking-wider text-zinc-500">Servers</p>
+                  <p className="mt-1 text-xs uppercase tracking-wider text-zinc-500">
+                    {STATS_LABELS[lang]?.servers || "Serveurs"}
+                  </p>
                 </div>
                 <div className="p-6 text-center">
                   <p className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
                     <CountUp value={stats.members} />
                   </p>
-                  <p className="mt-1 text-xs uppercase tracking-wider text-zinc-500">Members</p>
+                  <p className="mt-1 text-xs uppercase tracking-wider text-zinc-500">
+                    {STATS_LABELS[lang]?.members || "Membres"}
+                  </p>
                 </div>
                 <div className="p-6 text-center">
                   <p className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
                     <CountUp value={commands.length} />
                   </p>
-                  <p className="mt-1 text-xs uppercase tracking-wider text-zinc-500">Commands</p>
+                  <p className="mt-1 text-xs uppercase tracking-wider text-zinc-500">
+                    {STATS_LABELS[lang]?.commands || "Commandes"}
+                  </p>
                 </div>
               </div>
             </Reveal>
@@ -1301,12 +1296,33 @@ export default function BotLanding() {
               <div className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0c0d14] p-7 transition-all hover:border-[#92C8D2]/30">
                 <h3 className="text-lg font-bold text-[#92C8D2]">{c.music.filters.title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-zinc-400">{c.music.filters.desc}</p>
-                <div className="mt-auto">
-                  <p className="mb-1 text-right text-xs font-bold text-[#92C8D2]/70">{c.music.filters.label8D}</p>
-                  <WaveformBars />
-                  <p className="mt-3 text-center text-[10px] font-bold uppercase tracking-widest text-emerald-400">
-                    {c.music.filters.status}
-                  </p>
+                <div className="mt-auto pt-6">
+                  <div className="rounded-2xl border border-white/[0.08] bg-black/40 p-4 backdrop-blur-md">
+                    <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
+                      <div className="flex items-center gap-2">
+                        <span className="relative flex h-2 w-2">
+                          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                          <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+                        </span>
+                        <span className="text-xs font-semibold tracking-wide text-[#92C8D2]">
+                          {c.music.filters.label8D}
+                        </span>
+                      </div>
+                      <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold tracking-widest text-emerald-400">
+                        {c.music.filters.status}
+                      </span>
+                    </div>
+
+                    <div className="py-4">
+                      <WaveformBars />
+                    </div>
+
+                    <div className="flex items-center justify-between border-t border-white/[0.04] pt-2 text-[10px] font-mono text-zinc-500">
+                      <span>L ◄ 32 Hz</span>
+                      <span className="text-zinc-400">Surround 360°</span>
+                      <span>16 kHz ► R</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </Reveal>

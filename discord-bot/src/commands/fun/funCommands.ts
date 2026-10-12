@@ -503,7 +503,7 @@ export const funMasterCommand: Command = {
         return gameCommand.execute(subCtx);
       default:
         await ctx.reply({
-          content: '🎮 **Commandes Fun disponibles :**\n• `/lyrics <query>`\n• `/quote <text>`\n• `/image <search>`\n• `/duckduckgoimage <search>`\n• `/reverseimage <url>`\n• `/movie <title>`\n• `/tvshow <title>`\n• `/game <title>`',
+          content: '🎮 **Commandes Fun disponibles :**\n• `/lyrics <query>`\n• `/quote <text>`\n• `/image <search>`\n• `/duckduckgoimage <search>`\n• `/reverseimage <url>`\n• `/tiktok <user|video>`\n• `/pinterest <search|pin|user>`\n• `/movie <title>`\n• `/tvshow <title>`\n• `/game <title>`',
         });
     }
   },

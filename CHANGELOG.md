@@ -2,6 +2,25 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.14 — 2026-10-13
+
+**Refonte Épurée de la Topbar Vitrine, Studio Audio 8D & Commandes TikTok / Pinterest**
+
+- **Dépollution Visuelle & Aération de la Topbar de Présentation (`/bot`)** :
+  - Restructuration de la navigation desktop (`hidden lg:flex`) autour des 5 piliers cardinaux (`Sécurité`, `Musique`, `Plateformes`, `Commandes`, `FAQ`) avec `whitespace-nowrap` pour garantir plus de 250px d'espace de respiration et éliminer les chevauchements de badges et de boutons.
+  - Logo `[E] ETHO BOT` stabilisé avec `shrink-0` et espacements revus ; le badge `BOT` ne touche plus le premier élément de menu.
+  - Menu tiroir déroulant responsive (`lg:hidden`) pour tablettes et mobiles intégrant la totalité des 8 rubriques et liens d'action (`Tableau de bord`, `Support`).
+- **Studio Audio Rack Immersif pour la Carte Filtres 8D** :
+  - Remplacement de la disposition éclatée par un boîtier studio rack glassmorphique centré (`bg-black/40`, bordures subtiles).
+  - En-tête avec voyant vert émeraude pulsé et badge `ACTIF` stylisé.
+  - Égaliseur `WaveformBars` redessiné, équilibré et centré sur toute la largeur avec spectre surround 360° en pied de carte (`L ◄ 32 Hz · Surround 360° · 16 kHz ► R`).
+- **Internationalisation Complète des Métriques d'Accueil** :
+  - Libellés dynamiques traduits dans les 4 langues (`Serveurs`, `Membres`, `Commandes`) synchronisés avec le sélecteur de langue.
+- **Ajout des Commandes Dédiées TikTok & Pinterest dans le Bot Discord** :
+  - `/tiktok user <pseudo>` & `/tiktok video <url>` : métadonnées oEmbed officielles, profils de créateurs et miniatures.
+  - `/pinterest search <query>`, `/pinterest pin <url>`, `/pinterest user <username>` : exploration visuelle, fiches d'épingles et profils.
+  - Répertoire de commandes statiques de la vitrine aligné à 100% avec les 7 plateformes supportées.
+
 ## v1.75.13 — 2026-10-13
 
 **Correction de l'Affichage des Nouveaux Comptes & Pastille de Version Discord**

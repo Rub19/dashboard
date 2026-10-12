@@ -52379,6 +52379,59 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_13_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_13_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_13_de);
 
+const v1_75_14_fr: ChangelogEntry = {
+  version: "v1.75.14",
+  date: "2026-10-13",
+  title: "Refonte Épurée Topbar Vitrine, Studio Audio 8D & Commandes Réseaux",
+  items: [
+    "Refonte complète de la barre de navigation sur /bot : espacements optimisés, menu responsive pour écrans intermédiaires et mobiles, élimination de tout chevauchement de badge ou de texte.",
+    "Studio rack audio immersif pour la carte des filtres 8D : égaliseur dynamique centré, témoin d'activité actif pulsé et indicateurs surround stéréo 360°.",
+    "Internationalisation des libellés du bloc de métriques d'accueil (Serveurs, Membres, Commandes) pour toutes les langues supportées.",
+    "Ajout des commandes dédiées TikTok (/tiktok user, /tiktok video) et Pinterest (/pinterest search, /pinterest pin, /pinterest user) pour le bot Discord.",
+  ],
+};
+
+const v1_75_14_en: ChangelogEntry = {
+  version: "v1.75.14",
+  date: "2026-10-13",
+  title: "Streamlined Showcase Topbar, 8D Audio Studio & Social Commands",
+  items: [
+    "Complete redesign of the /bot topbar: optimized spacing, responsive drawer for mobile/tablet viewports, eliminating badge and text collisions.",
+    "Immersive audio rack enclosure for 8D spatial filter card: centered dynamic equalizer bars, active indicator pill, and 360° surround metrics.",
+    "Localized stats bar counters (Servers, Members, Commands) across all supported languages.",
+    "Added dedicated Discord bot slash commands for TikTok (/tiktok user, /tiktok video) and Pinterest (/pinterest search, /pinterest pin, /pinterest user).",
+  ],
+};
+
+const v1_75_14_es: ChangelogEntry = {
+  version: "v1.75.14",
+  date: "2026-10-13",
+  title: "Barra Superior Optimizada, Estudio de Audio 8D y Comandos Sociales",
+  items: [
+    "Rediseño completo de la barra de navegación en /bot: espaciado optimizado y menú desplegable responsivo sin superposiciones de texto.",
+    "Gabinete de estudio de audio inmersivo para la tarjeta de filtros 8D: ecualizador centrado, testigo activo y métricas surround 360°.",
+    "Traducción localizada de las etiquetas de estadísticas (Servidores, Miembros, Comandos) en todos los idiomas.",
+    "Nuevos comandos de bot dedicados para TikTok (/tiktok) y Pinterest (/pinterest).",
+  ],
+};
+
+const v1_75_14_de: ChangelogEntry = {
+  version: "v1.75.14",
+  date: "2026-10-13",
+  title: "Optimierte Showcase-Topbar, 8D-Audiostudio & Social-Befehle",
+  items: [
+    "Vollständige Überarbeitung der Navigationsleiste auf /bot: optimierte Abstände und responsives Menü ohne Textüberlappungen.",
+    "Immersives Studio-Rack für 8D-Audiofilter: zentrierter dynamischer Equalizer, aktiver Statusindikator und 360°-Surround-Anzeige.",
+    "Lokalisierte Beschriftungen für Server-, Mitglieder- und Befehlsstatistiken in allen Sprachen.",
+    "Neue dedizierte Discord-Bot-Befehle für TikTok (/tiktok) und Pinterest (/pinterest).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_14_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_14_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_14_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_14_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

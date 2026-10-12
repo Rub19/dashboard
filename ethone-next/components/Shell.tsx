@@ -64,26 +64,28 @@ export default function Shell({ children }: { children: ReactNode }) {
                   <CosmicBackground />
                   <RefreshSpinner />
                   <VisualHaptics />
-                  <div className="fixed bottom-4 left-4 z-50 pointer-events-auto">
-                    <VersionPill />
+                  <div className="fixed bottom-4 right-4 z-50 flex items-center gap-2 pointer-events-auto">
+                    <div className="flex items-center border border-[var(--panel-border)] bg-[var(--surface-raised)]/95 backdrop-blur-md px-1 py-0.5 shadow-lg rounded-sm">
+                      <VersionPill />
+                    </div>
+                    <Link
+                      href="/"
+                      onClick={(e) => {
+                        try {
+                          sessionStorage.removeItem("ethone:discord:picked");
+                        } catch {
+                        }
+                        if (typeof window !== "undefined" && window.location.hostname === "discord.ethone.dev") {
+                          e.preventDefault();
+                          window.location.assign("https://ethone.dev/");
+                        }
+                      }}
+                      className="flex items-center gap-2 border border-[var(--panel-border)] bg-[var(--surface-raised)]/95 backdrop-blur-md px-2.5 py-2 sm:px-3.5 text-xs font-semibold text-[var(--text-primary)] hover:border-[var(--accent-primary)] hover:text-[var(--accent-primary)] shadow-lg transition-all rounded-sm cursor-pointer"
+                    >
+                      <ArrowLeft className="h-4 w-4" />
+                      <span className="hidden sm:inline">Retour à ETHONE</span>
+                    </Link>
                   </div>
-                  <Link
-                    href="/"
-                    onClick={(e) => {
-                      try {
-                        sessionStorage.removeItem("ethone:discord:picked");
-                      } catch {
-                      }
-                      if (typeof window !== "undefined" && window.location.hostname === "discord.ethone.dev") {
-                        e.preventDefault();
-                        window.location.assign("https://ethone.dev/");
-                      }
-                    }}
-                    className="fixed bottom-4 right-4 z-50 flex items-center gap-2 border border-[var(--panel-border)] bg-[var(--surface-raised)]/95 backdrop-blur-md px-2.5 py-2 sm:px-3.5 text-xs font-semibold text-[var(--text-primary)] hover:border-[var(--accent-primary)] hover:text-[var(--accent-primary)] shadow-lg transition-all rounded-sm cursor-pointer"
-                  >
-                    <ArrowLeft className="h-4 w-4" />
-                    <span className="hidden sm:inline">Retour à ETHONE</span>
-                  </Link>
                   <PrivacyShield>
                     <main
                       data-v8-main

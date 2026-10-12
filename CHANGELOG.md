@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.13 — 2026-10-13
+
+**Correction de l'Affichage des Nouveaux Comptes & Pastille de Version Discord**
+
+- **Dépollution Visuelle de la Barre Latérale Discord & Repositionnement de la Pastille de Version** :
+  - Déplacement de `<VersionPill />` dans `Shell.tsx` qui était positionné en `fixed bottom-4 left-4 z-50` et venait recouvrir l'avatar, le pseudo et les contrôles du profil utilisateur au bas de la barre latérale.
+  - La pastille de version est désormais intégrée en bas à droite aux côtés du bouton « Retour à ETHONE », libérant l'intégralité de la barre latérale gauche sur grand et petit écran.
+- **Résolution Native de l'Identité pour les Nouveaux Comptes ETHONE** :
+  - Intégration de `useUserIdentity()` dans `ServerPicker.tsx`, `HubSidebar.tsx` et `BotInstallView.tsx` pour afficher le véritable nom d'affichage, pseudo ou nom d'email de l'utilisateur plutôt que le texte générique « Compte » / « Bienvenue, Compte ».
+  - Calcul dynamique et précis des initiales d'avatar (`currentInitials`) et prise en charge de l'avatar du profil pour les comptes créés sans liaison Discord préalable.
+
 ## v1.75.12 — 2026-10-13
 
 **Rétablissement de la Vitrine Publique sur `discord.ethone.dev`**

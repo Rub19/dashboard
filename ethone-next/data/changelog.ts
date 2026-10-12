@@ -52330,10 +52330,54 @@ const v1_75_12_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v1_75_12_fr);
-CHANGELOG_BY_LANG.en.unshift(v1_75_12_en);
-CHANGELOG_BY_LANG.es.unshift(v1_75_12_es);
-CHANGELOG_BY_LANG.de.unshift(v1_75_12_de);
+const v1_75_13_fr: ChangelogEntry = {
+  version: "v1.75.13",
+  date: "2026-10-13",
+  title: "Correction Affichage Nouveaux Comptes & Pastille Version Discord",
+  items: [
+    "Suppression du chevauchement de la pastille de version (VersionPill) en bas à gauche de la barre latérale Discord : déplacée proprement en bas à droite aux côtés du bouton Retour à ETHONE.",
+    "Résolution native de l'identité des nouveaux comptes ETHONE dans la console Discord : affichage du vrai nom, pseudo ou préfixe d'email au lieu du fallback générique 'Compte'.",
+    "Génération correcte des initiales d'avatar et prise en compte de l'avatar du profil pour tous les nouveaux comptes sans Discord lié.",
+  ],
+};
+
+const v1_75_13_en: ChangelogEntry = {
+  version: "v1.75.13",
+  date: "2026-10-13",
+  title: "New Account Profile Display & Discord Version Pill Fix",
+  items: [
+    "Removed version pill overlap in the bottom-left Discord sidebar: relocated cleanly to the bottom-right next to the Return to ETHONE button.",
+    "Native identity resolution for new ETHONE accounts in the Discord console: displays actual name, username, or email prefix instead of generic 'Compte'.",
+    "Accurate avatar initials and profile avatar fallback for all new accounts without linked Discord.",
+  ],
+};
+
+const v1_75_13_es: ChangelogEntry = {
+  version: "v1.75.13",
+  date: "2026-10-13",
+  title: "Corrección de Nuevas Cuentas y Pastilla de Versión en Discord",
+  items: [
+    "Eliminada la superposición de la pastilla de versión en la barra lateral izquierda de Discord: reubicada en la esquina inferior derecha junto al botón Volver a ETHONE.",
+    "Resolución de identidad nativa para cuentas nuevas en la consola de Discord: muestra el nombre real, usuario o prefijo de correo en lugar del genérico 'Compte'.",
+    "Iniciales de avatar correctas y compatibilidad con el avatar del perfil para todas las cuentas nuevas sin Discord vinculado.",
+  ],
+};
+
+const v1_75_13_de: ChangelogEntry = {
+  version: "v1.75.13",
+  date: "2026-10-13",
+  title: "Behebung des Profils für neue Konten & Discord-Versionsanzeige",
+  items: [
+    "Überlappung der Versionsanzeige in der linken Discord-Seitenleiste behoben: sauber in die rechte untere Ecke neben die Zurück-Schaltfläche verschoben.",
+    "Native Identitätsauflösung für neue ETHONE-Konten in der Discord-Konsole: zeigt echten Namen, Benutzernamen oder E-Mail-Präfix statt 'Compte'.",
+    "Präzise Avatar-Initialen und Übernahme des Profil-Avatars für alle neuen Konten ohne verknüpftes Discord.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_13_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_13_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_13_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_13_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

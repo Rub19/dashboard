@@ -23,6 +23,7 @@ import { useToast } from "@/components/ToastProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useDayNightToggle } from "@/lib/hooks/useDayNightToggle";
 import { useAccountProfile } from "@/lib/profile/account-profile";
+import { useUserIdentity } from "@/lib/hooks/useUserIdentity";
 import { fetchBotPresence, clearBotPresenceCache } from "@/lib/hooks/useBotGuildIds";
 import { cn } from "@/lib/utils";
 import { getStoredDiscordUser, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
@@ -221,14 +222,19 @@ export default function BotInstallView({
 
   const storedUser = useMemo(() => getStoredDiscordUser(), []);
   const botUser = useBotSessionUser();
+  const identity = useUserIdentity();
   const currentDisplayName =
     userName ||
     storedUser?.globalName ||
     storedUser?.displayName ||
     storedUser?.username ||
-    ethoneProfile?.displayName ||
-    ethoneProfile?.username ||
-    "Compte";
+    (ethoneProfile?.displayName && ethoneProfile.displayName.trim()) ||
+    (ethoneProfile?.username && ethoneProfile.username.trim()) ||
+    (!identity.isGuest && identity.displayName && identity.displayName !== "Personnel" ? identity.displayName : "") ||
+    (!identity.isGuest && identity.username && identity.username !== "utilisateur" ? identity.username : "") ||
+    (identity.email ? identity.email.split("@")[0] : "") ||
+    (!identity.isGuest ? identity.displayName : "") ||
+    i18n("dAccount", "Compte");
 
   const currentAvatarUrl =
     botUser?.avatarUrl ||
@@ -236,7 +242,21 @@ export default function BotInstallView({
     storedUser?.avatarUrl ||
     storedUser?.avatarUrlSmall ||
     ethoneProfile?.avatarUrl ||
+    identity.avatarUrl ||
     null;
+
+  const userInitials = useMemo(() => {
+    if (userName || storedUser?.globalName || storedUser?.displayName || storedUser?.username) {
+      const name = userName || storedUser?.globalName || storedUser?.displayName || storedUser?.username || "";
+      const parts = name.trim().split(/\s+/);
+      if (parts.length >= 2 && parts[0] && parts[1]) return (parts[0][0] + parts[1][0]).toUpperCase();
+      return name.slice(0, 2).toUpperCase() || "SV";
+    }
+    if (!identity.isGuest && identity.initials) return identity.initials;
+    const parts = currentDisplayName.trim().split(/\s+/);
+    if (parts.length >= 2 && parts[0] && parts[1]) return (parts[0][0] + parts[1][0]).toUpperCase();
+    return currentDisplayName.slice(0, 2).toUpperCase() || "CO";
+  }, [userName, storedUser, identity.isGuest, identity.initials, currentDisplayName]);
 
   const initials = useMemo(() => getGuildInitials(guild.name), [guild.name]);
 
@@ -347,15 +367,28 @@ export default function BotInstallView({
               <div className="flex items-center gap-2 min-w-0">
                 {currentAvatarUrl ? (
                   <ClientImage
+                    candidates={[
+                      currentAvatarUrl,
+                      userAvatar,
+                      storedUser?.avatarUrl,
+                      storedUser?.avatarUrlSmall,
+                      ethoneProfile?.avatarUrl,
+                      identity.avatarUrl,
+                    ].filter(Boolean) as string[]}
                     src={currentAvatarUrl}
                     alt={currentDisplayName}
                     width={28}
                     height={28}
+                    fallback={
+                      <div className="h-7 w-7 rounded-sm bg-[var(--panel-border)] flex items-center justify-center font-bold text-xs text-[var(--text-primary)] shrink-0">
+                        {userInitials}
+                      </div>
+                    }
                     className="h-7 w-7 rounded-sm object-cover shrink-0 border border-[var(--panel-border)]"
                   />
                 ) : (
                   <div className="h-7 w-7 rounded-sm bg-[var(--panel-border)] flex items-center justify-center font-bold text-xs text-[var(--text-primary)] shrink-0">
-                    {currentDisplayName.slice(0, 2).toUpperCase()}
+                    {userInitials}
                   </div>
                 )}
                 <span className="truncate text-xs font-bold text-[var(--text-primary)]">

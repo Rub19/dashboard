@@ -24,6 +24,7 @@ import { useAuth } from "@/components/AuthProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useDayNightToggle } from "@/lib/hooks/useDayNightToggle";
 import { useAccountProfile } from "@/lib/profile/account-profile";
+import { useUserIdentity } from "@/lib/hooks/useUserIdentity";
 import { cn } from "@/lib/utils";
 import { SPRING_PILL, SPRING_PRESS } from "@/lib/ease";
 import { useMotionPref } from "@/lib/hooks/useMotionPref";
@@ -162,21 +163,39 @@ export default function ServerPicker({
 
   const storedUser = useMemo(() => getStoredDiscordUser(), []);
   const botUser = useBotSessionUser();
+  const identity = useUserIdentity();
   const currentDisplayName =
     userName ||
     storedUser?.globalName ||
     storedUser?.displayName ||
     storedUser?.username ||
-    ethoneProfile?.displayName ||
-    ethoneProfile?.username ||
-    "Compte";
+    (ethoneProfile?.displayName && ethoneProfile.displayName.trim()) ||
+    (ethoneProfile?.username && ethoneProfile.username.trim()) ||
+    (!identity.isGuest && identity.displayName && identity.displayName !== "Personnel" ? identity.displayName : "") ||
+    (!identity.isGuest && identity.username && identity.username !== "utilisateur" ? identity.username : "") ||
+    (identity.email ? identity.email.split("@")[0] : "") ||
+    (!identity.isGuest ? identity.displayName : "") ||
+    i18n("dAccount", "Compte");
   const currentAvatarUrl =
     botUser?.avatarUrl ||
     userAvatar ||
     storedUser?.avatarUrl ||
     storedUser?.avatarUrlSmall ||
     ethoneProfile?.avatarUrl ||
+    identity.avatarUrl ||
     null;
+  const currentInitials = useMemo(() => {
+    if (userName || storedUser?.globalName || storedUser?.displayName || storedUser?.username) {
+      const name = userName || storedUser?.globalName || storedUser?.displayName || storedUser?.username || "";
+      const parts = name.trim().split(/\s+/);
+      if (parts.length >= 2 && parts[0] && parts[1]) return (parts[0][0] + parts[1][0]).toUpperCase();
+      return name.slice(0, 2).toUpperCase() || "SV";
+    }
+    if (!identity.isGuest && identity.initials) return identity.initials;
+    const parts = currentDisplayName.trim().split(/\s+/);
+    if (parts.length >= 2 && parts[0] && parts[1]) return (parts[0][0] + parts[1][0]).toUpperCase();
+    return currentDisplayName.slice(0, 2).toUpperCase() || "CO";
+  }, [userName, storedUser, identity.isGuest, identity.initials, currentDisplayName]);
 
   return (
     <div className="h-dvh min-h-dvh w-full bg-[var(--background)] text-[var(--text-primary)] flex flex-col md:flex-row antialiased overflow-hidden">
@@ -263,6 +282,7 @@ export default function ServerPicker({
                     storedUser?.avatarUrl,
                     storedUser?.avatarUrlSmall,
                     ethoneProfile?.avatarUrl,
+                    identity.avatarUrl,
                   ].filter(Boolean) as string[]}
                   src={currentAvatarUrl}
                   alt={currentDisplayName}
@@ -270,14 +290,14 @@ export default function ServerPicker({
                   height={30}
                   fallback={
                     <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--surface-raised)] text-[var(--accent-primary)] font-bold text-xs border border-[var(--panel-border)] shrink-0">
-                      {currentDisplayName.slice(0, 2).toUpperCase()}
+                      {currentInitials}
                     </div>
                   }
                   className="h-7 w-7 rounded-full object-cover border border-[var(--panel-border)] shrink-0"
                 />
               ) : (
                 <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--surface-raised)] text-[var(--accent-primary)] font-bold text-xs border border-[var(--panel-border)] shrink-0">
-                  {currentDisplayName.slice(0, 2).toUpperCase()}
+                  {currentInitials}
                 </div>
               )}
               <span className="truncate text-xs font-bold text-[var(--text-primary)]">{currentDisplayName}</span>
@@ -355,15 +375,27 @@ export default function ServerPicker({
             <motion.div variants={consoleReveal} className="flex items-center gap-3.5">
               {currentAvatarUrl ? (
                 <ClientImage
+                  candidates={[
+                    currentAvatarUrl,
+                    storedUser?.avatarUrl,
+                    storedUser?.avatarUrlSmall,
+                    ethoneProfile?.avatarUrl,
+                    identity.avatarUrl,
+                  ].filter(Boolean) as string[]}
                   src={currentAvatarUrl}
                   alt={currentDisplayName}
                   width={48}
                   height={48}
+                  fallback={
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--surface-raised)] text-[var(--accent-primary)] font-bold text-sm border border-[var(--panel-border)] shrink-0 shadow-sm">
+                      {currentInitials}
+                    </div>
+                  }
                   className="h-12 w-12 rounded-full object-cover border border-[var(--panel-border)] shrink-0 shadow-sm"
                 />
               ) : (
                 <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--surface-raised)] text-[var(--accent-primary)] font-bold text-sm border border-[var(--panel-border)] shrink-0 shadow-sm">
-                  {currentDisplayName.slice(0, 2).toUpperCase()}
+                  {currentInitials}
                 </div>
               )}
               <div className="min-w-0">

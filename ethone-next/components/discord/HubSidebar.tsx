@@ -42,6 +42,7 @@ import DiscordLanguageDropdown from "./DiscordLanguageDropdown";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
 import { useAuth } from "@/components/AuthProvider";
 import { useAccountProfile } from "@/lib/profile/account-profile";
+import { useUserIdentity } from "@/lib/hooks/useUserIdentity";
 import { useBotSessionUser } from "@/lib/hooks/useBotSessionUser";
 import { useDayNightToggle } from "@/lib/hooks/useDayNightToggle";
 import { getStoredDiscordUser, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
@@ -200,22 +201,41 @@ export default function HubSidebar({
     router.push("/login");
   }, [signOut, router]);
 
+  const identity = useUserIdentity();
   const currentDisplayName =
     botUser?.globalName ||
     botUser?.username ||
     storedUser?.globalName ||
     storedUser?.displayName ||
     storedUser?.username ||
-    ethoneProfile?.displayName ||
-    ethoneProfile?.username ||
-    "Compte";
+    (ethoneProfile?.displayName && ethoneProfile.displayName.trim()) ||
+    (ethoneProfile?.username && ethoneProfile.username.trim()) ||
+    (!identity.isGuest && identity.displayName && identity.displayName !== "Personnel" ? identity.displayName : "") ||
+    (!identity.isGuest && identity.username && identity.username !== "utilisateur" ? identity.username : "") ||
+    (identity.email ? identity.email.split("@")[0] : "") ||
+    (!identity.isGuest ? identity.displayName : "") ||
+    i18n("dAccount", "Compte");
 
   const currentAvatarUrl =
     botUser?.avatarUrl ||
     storedUser?.avatarUrl ||
     storedUser?.avatarUrlSmall ||
     ethoneProfile?.avatarUrl ||
+    identity.avatarUrl ||
     null;
+
+  const currentInitials = useMemo(() => {
+    if (botUser?.globalName || botUser?.username || storedUser?.globalName || storedUser?.displayName || storedUser?.username) {
+      const name = botUser?.globalName || botUser?.username || storedUser?.globalName || storedUser?.displayName || storedUser?.username || "";
+      const parts = name.trim().split(/\s+/);
+      if (parts.length >= 2 && parts[0] && parts[1]) return (parts[0][0] + parts[1][0]).toUpperCase();
+      return name.slice(0, 2).toUpperCase() || "SV";
+    }
+    if (!identity.isGuest && identity.initials) return identity.initials;
+    const parts = currentDisplayName.trim().split(/\s+/);
+    if (parts.length >= 2 && parts[0] && parts[1]) return (parts[0][0] + parts[1][0]).toUpperCase();
+    return currentDisplayName.slice(0, 2).toUpperCase() || "CO";
+  }, [botUser, storedUser, identity.isGuest, identity.initials, currentDisplayName]);
 
 
   const isOverviewActive = view === "home" && !activeId;
@@ -621,6 +641,7 @@ export default function HubSidebar({
                       storedUser?.avatarUrl,
                       storedUser?.avatarUrlSmall,
                       ethoneProfile?.avatarUrl,
+                      identity.avatarUrl,
                     ].filter(Boolean) as string[]}
                     src={currentAvatarUrl}
                     alt={currentDisplayName}
@@ -628,14 +649,14 @@ export default function HubSidebar({
                     height={36}
                     fallback={
                       <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--surface-raised)] text-[var(--accent-primary)] font-bold text-xs border border-[var(--panel-border)] shrink-0">
-                        {currentDisplayName.slice(0, 2).toUpperCase()}
+                        {currentInitials}
                       </div>
                     }
                     className="h-8 w-8 rounded-full object-cover border border-[var(--panel-border)] shrink-0"
                   />
                 ) : (
                   <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--surface-raised)] text-[var(--accent-primary)] font-bold text-xs border border-[var(--panel-border)] shrink-0">
-                    {currentDisplayName.slice(0, 2).toUpperCase()}
+                    {currentInitials}
                   </div>
                 )}
                 <span className="truncate text-sm font-semibold text-[var(--text-primary)]">

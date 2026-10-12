@@ -26,6 +26,7 @@ import {
   ChevronUp,
   ChevronLeft,
   Maximize2,
+  Minimize2,
   Sparkles,
 } from "@/components/icons/ph";
 import { useI18n } from "@/lib/hooks/useI18n";
@@ -77,6 +78,8 @@ type MailDetailViewProps = {
   onToggleRead: () => void;
   onToggleStar: () => void;
   onQuickReplySend?: (text: string) => Promise<void>;
+  isMaximized?: boolean;
+  onToggleMaximize?: () => void;
 };
 
 function AttachmentCard({ attachment }: { attachment: MailAttachment }) {
@@ -152,6 +155,8 @@ export default function MailDetailView({
   onToggleRead,
   onToggleStar,
   onQuickReplySend,
+  isMaximized,
+  onToggleMaximize,
 }: MailDetailViewProps) {
   const i18n = useI18n();
   const endRef = useRef<HTMLDivElement>(null);
@@ -331,6 +336,16 @@ export default function MailDetailView({
           >
             <Trash2 className="h-4 w-4" />
           </button>
+          {onToggleMaximize && (
+            <button
+              type="button"
+              onClick={onToggleMaximize}
+              className="rounded-lg p-2 text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-2)] hover:text-[var(--text-primary)]"
+              title={isMaximized ? "Réduire l'affichage" : "Agrandir en pleine largeur"}
+            >
+              {isMaximized ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+            </button>
+          )}
         </div>
       </div>
 
@@ -364,8 +379,7 @@ export default function MailDetailView({
         </div>
       </div>
 
-      {/* Thread body */}
-      <div className="flex-1 space-y-3 overflow-y-auto os-scroll p-5">
+      <div className="flex-1 min-h-0 w-full space-y-3 overflow-y-auto os-scroll p-3 sm:p-5 flex flex-col">
         {thread.map((msg, index) => {
           const isLatest = index === thread.length - 1;
           const isExpanded = expandedMessages[msg.id] ?? isLatest;
@@ -374,7 +388,7 @@ export default function MailDetailView({
             <div
               key={msg.id}
               className={cn(
-                "w-full max-w-4xl mx-auto",
+                "w-full flex-1 flex flex-col min-h-0",
                 thread.length > 1 && "rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-2)]/30 p-3"
               )}
             >
@@ -405,10 +419,11 @@ export default function MailDetailView({
               <AnimatePresence initial={false}>
                 {isExpanded && (
                   <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.18 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.15 }}
+                    className="w-full flex-1 flex flex-col min-h-0"
                   >
                     <MailBodyViewer msg={msg} />
                   </motion.div>

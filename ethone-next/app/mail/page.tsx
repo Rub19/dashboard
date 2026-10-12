@@ -50,6 +50,7 @@ export default function MailPage() {
 
   const [activeThread, setActiveThread] = useState<MailMessage[] | null>(null);
   const [activeLabel, setActiveLabel] = useState<string | undefined>();
+  const [isMaximized, setIsMaximized] = useState(false);
   const [composeOpen, setComposeOpen] = useState(false);
   const [composeInitial, setComposeInitial] = useState<Partial<ComposeState>>({});
   const [submitting, setSubmitting] = useState(false);
@@ -124,6 +125,7 @@ export default function MailPage() {
 
   function closeThread() {
     setActiveThread(null);
+    setIsMaximized(false);
   }
 
   function handleFolderChange(newFolder: MailFolder) {
@@ -568,8 +570,7 @@ export default function MailPage() {
 
   return (
     <div className="flex h-full min-h-0 w-full gap-2.5 overflow-hidden p-2 select-none">
-      {/* 1. Sidebar (Desktop / Tablet wide) */}
-      <div className="hidden lg:flex h-full">
+      <div className={cn("hidden h-full", isMaximized ? "lg:hidden" : "lg:flex")}>
         <MailSidebar
           active={folder as MailFolder}
           onChange={handleFolderChange}
@@ -586,9 +587,7 @@ export default function MailPage() {
         />
       </div>
 
-      {/* 2. Mail Thread List (Full on mobile if no active thread, side on desktop) */}
-      {/* Largeur fixe sur ordinateur : la liste ne saute plus quand un mail s'ouvre ou se ferme. */}
-      <div className={cn("h-full min-w-0 flex-1 flex-col md:w-[22rem] md:flex-none lg:w-[26rem]", activeThread ? "hidden md:flex" : "flex")}>
+      <div className={cn("h-full min-w-0 flex-col md:w-[20rem] md:flex-none lg:w-[24rem]", isMaximized ? "hidden" : activeThread ? "hidden md:flex" : "flex")}>
         {error && !loading && messages.length === 0 && (
           <div className="mb-2 flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--danger)]/25 bg-[var(--danger)]/10 px-3 py-2 text-xs text-[var(--danger)]">
             <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--danger)]" />
@@ -615,9 +614,7 @@ export default function MailPage() {
         />
       </div>
 
-      {/* 3. Reading Pane (Full on mobile if active thread, side on desktop) */}
-      {/* Rejoue l'entrée à chaque conversation ouverte. */}
-      <div key={activeThreadId ?? "none"} className={cn("rise-in h-full flex-1 flex-col", activeThread ? "flex" : "hidden md:flex")}>
+      <div key={activeThreadId ?? "none"} className={cn("rise-in h-full flex-1 flex-col min-w-0 min-h-0", isMaximized ? "flex" : activeThread ? "flex" : "hidden md:flex")}>
         <MailDetailView
           thread={activeThread}
           onBack={closeThread}
@@ -630,6 +627,8 @@ export default function MailPage() {
           onToggleRead={handleToggleRead}
           onToggleStar={handleToggleStarThread}
           onQuickReplySend={handleQuickReplySend}
+          isMaximized={isMaximized}
+          onToggleMaximize={() => setIsMaximized((prev) => !prev)}
         />
       </div>
 

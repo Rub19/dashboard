@@ -29,9 +29,18 @@ describe("sanitizeEmailHtml", () => {
     const input = '<img src="https://images.ethone.dev/logo.png" width="120" height="40" alt="Claude">';
     const output = sanitizeEmailHtml(input);
     expect(output).toContain('src="https://images.ethone.dev/logo.png"');
+    expect(output).toContain('referrerpolicy="no-referrer"');
+    expect(output).toContain('loading="eager"');
     expect(output).toContain('width="120"');
     expect(output).toContain('height="40"');
     expect(output).toContain('alt="Claude"');
+  });
+
+  it("résout les images cid avec les pièces jointes fournies", () => {
+    const input = '<img src="cid:claude-logo.png" alt="Logo">';
+    const attachments = [{ filename: "claude-logo.png", size: 1024, mime_type: "image/png", content: "iVBORw0KGgo=" }];
+    const output = sanitizeEmailHtml(input, attachments);
+    expect(output).toContain('src="data:image/png;base64,iVBORw0KGgo="');
   });
 
   it("garde les balises style dans le head", () => {
@@ -47,6 +56,7 @@ describe("isSafeUrl", () => {
   it("valide les URL http, https, mailto et tel", () => {
     expect(isSafeUrl("https://example.com")).toBe(true);
     expect(isSafeUrl("http://example.com/page")).toBe(true);
+    expect(isSafeUrl("//cdn.example.com/image.png")).toBe(true);
     expect(isSafeUrl("mailto:support@ethone.dev")).toBe(true);
     expect(isSafeUrl("tel:+33123456789")).toBe(true);
     expect(isSafeUrl("data:image/png;base64,iVBORw0KGgo=")).toBe(true);

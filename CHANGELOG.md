@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.74.9 — 2026-10-12
+
+**Messagerie : Rendu plein écran sans vide, chargement des images externes/CID et défilement fluide unifié**
+
+- **Occupation maximale de l'espace** : Suppression intégrale de la contrainte de largeur artificielle (`max-w-4xl mx-auto`) sur la vue de lecture d'e-mails (`MailDetailView`), permettant au visualiseur d'occuper 100% de la largeur et de la hauteur disponibles sans aucun vide noir résiduel.
+- **Bouton Plein écran / Agrandir** : Ajout d'une bascule d'affichage (`Maximize2` / `Minimize2`) dans la barre d'outils du lecteur de message permettant d'étendre la vue en pleine largeur en masquant la liste et la barre latérale en un clic pour une lecture immersive sur grand écran.
+- **Chargement garanti des images externes** : Injection systématique de la directive `referrerpolicy="no-referrer"` (balise `<meta name="referrer" content="no-referrer" />` dans l'iframe, attribut `referrerPolicy="no-referrer"` sur le conteneur et `referrerpolicy="no-referrer"` sur chaque balise `<img>`) empêchant le blocage anti-hotlinking de CDNs d'e-mails transactionnels (Claude.ai, SendGrid, Amazon SES).
+- **Prise en charge des images inline CID** : Résolution automatique des références `cid:...` vers les pièces jointes base64 (`msg.attachments`) ou URL d'annexes du message.
+- **Surclassement sécurisé des images & CSP** : Mise à niveau automatique des sources non sécurisées (`http://` et `//`) vers HTTPS et ajout de `upgrade-insecure-requests` dans l'en-tête CSP de l'iframe.
+- **Défilement fluide unifié** : Synchronisation dynamique de la hauteur du contenu de l'e-mail (`syncHeight` avec `ResizeObserver` et écoute des événements `load`/`error` d'images), éliminant les barres de défilement imbriquées et doubles pour une navigation fluide et naturelle.
+
 ## v1.74.8 — 2026-10-12
 
 **Dock & Ambiance : Réglages live de taille et hauteur, correction du rognage sans son et persistance Supabase**

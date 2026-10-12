@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { MailMessage } from "@/lib/hooks/useMail";
+import type { MailMessage, MailAttachment } from "@/lib/hooks/useMail";
 import { cn } from "@/lib/utils";
 import {
   ShieldCheck,
@@ -41,6 +41,9 @@ export function isSafeUrl(rawUrl: string): boolean {
   if (/^cid:/i.test(trimmed)) {
     return true;
   }
+  if (trimmed.startsWith("//")) {
+    return true;
+  }
   try {
     const parsed = new URL(trimmed, "https://ethone.invalid/");
     return SAFE_PROTOCOLS.includes(parsed.protocol);
@@ -49,15 +52,33 @@ export function isSafeUrl(rawUrl: string): boolean {
   }
 }
 
+function resolveCidUrl(rawCid: string, attachments?: MailAttachment[]): string | null {
+  if (!attachments || attachments.length === 0) return null;
+  const clean = rawCid.replace(/^cid:\s*/i, "").replace(/[<>]/g, "").trim().toLowerCase();
+  if (!clean) return null;
+  const found = attachments.find((a) => {
+    const fn = (a.filename || "").toLowerCase();
+    return fn === clean || fn.includes(clean) || clean.includes(fn);
+  });
+  if (!found) return null;
+  if (found.content) {
+    return `data:${found.mime_type || "image/png"};base64,${found.content}`;
+  }
+  if (found.url) {
+    return found.url;
+  }
+  return null;
+}
+
 function cleanStyleAttribute(styleValue: string): string {
   if (!styleValue) return "";
   if (/expression\s*\(|behavior\s*:|javascript\s*:/i.test(styleValue)) {
     return "";
   }
-  return styleValue;
+  return styleValue.replace(/url\(\s*['"]?http:\/\//gi, "url('https://");
 }
 
-function sanitizeEmailNode(node: Node) {
+function sanitizeEmailNode(node: Node, attachments?: MailAttachment[]) {
   if (node.nodeType === Node.COMMENT_NODE) {
     (node as ChildNode).remove();
     return;
@@ -96,9 +117,31 @@ function sanitizeEmailNode(node: Node) {
     }
   });
 
+  if (tag === "IMG") {
+    el.setAttribute("referrerpolicy", "no-referrer");
+    el.setAttribute("loading", "eager");
+    el.setAttribute("decoding", "async");
+    const src = el.getAttribute("src") || "";
+    if (src.startsWith("cid:")) {
+      const resolved = resolveCidUrl(src, attachments);
+      if (resolved) {
+        el.setAttribute("src", resolved);
+      }
+    } else if (src.startsWith("http://")) {
+      el.setAttribute("src", `https://${src.slice(7)}`);
+    } else if (src.startsWith("//")) {
+      el.setAttribute("src", `https:${src}`);
+    }
+    const srcset = el.getAttribute("srcset");
+    if (srcset && srcset.includes("http://")) {
+      el.setAttribute("srcset", srcset.replace(/http:\/\//gi, "https://"));
+    }
+  }
+
   if (tag === "A") {
     el.setAttribute("target", "_blank");
     el.setAttribute("rel", "noopener noreferrer");
+    el.setAttribute("referrerpolicy", "no-referrer");
   }
 
   if (tag === "STYLE") {
@@ -109,10 +152,10 @@ function sanitizeEmailNode(node: Node) {
     return;
   }
 
-  Array.from(el.childNodes).forEach((child) => sanitizeEmailNode(child));
+  Array.from(el.childNodes).forEach((child) => sanitizeEmailNode(child, attachments));
 }
 
-export function sanitizeEmailHtml(html: string): string {
+export function sanitizeEmailHtml(html: string, attachments?: MailAttachment[]): string {
   if (!html) return "";
   if (typeof window === "undefined" || typeof DOMParser === "undefined") {
     return html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "");
@@ -120,12 +163,12 @@ export function sanitizeEmailHtml(html: string): string {
   try {
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, "text/html");
-    sanitizeEmailNode(doc.body);
+    sanitizeEmailNode(doc.body, attachments);
     if (doc.head) {
       Array.from(doc.head.childNodes).forEach((child) => {
         const el = child as Element;
         if (el.tagName && el.tagName.toUpperCase() === "STYLE") {
-          sanitizeEmailNode(el);
+          sanitizeEmailNode(el, attachments);
         } else {
           el.remove();
         }
@@ -188,8 +231,9 @@ export default function MailBodyViewer({ msg }: { msg: MailMessage }) {
 
   const [viewMode, setViewMode] = useState<"html" | "text">(hasHtml ? "html" : "text");
   const [themeMode, setThemeMode] = useState<"light" | "dark">("light");
-  const [iframeHeight, setIframeHeight] = useState<number>(380);
+  const [iframeHeight, setIframeHeight] = useState<number>(550);
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setViewMode(hasHtml ? "html" : "text");
@@ -197,8 +241,8 @@ export default function MailBodyViewer({ msg }: { msg: MailMessage }) {
 
   const sanitizedHtml = useMemo(() => {
     if (!hasHtml) return "";
-    return sanitizeEmailHtml(rawHtml);
-  }, [rawHtml, hasHtml]);
+    return sanitizeEmailHtml(rawHtml, msg.attachments);
+  }, [rawHtml, hasHtml, msg.attachments]);
 
   const srcDoc = useMemo(() => {
     if (!hasHtml) return "";
@@ -214,11 +258,13 @@ export default function MailBodyViewer({ msg }: { msg: MailMessage }) {
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="referrer" content="no-referrer" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src * data: blob: cid: https: http:; style-src 'unsafe-inline'; font-src * data:; media-src *;" />
   <base target="_blank" />
   <style>
     html, body {
       margin: 0;
-      padding: 20px;
+      padding: 24px;
       box-sizing: border-box;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       color: ${text};
@@ -226,6 +272,7 @@ export default function MailBodyViewer({ msg }: { msg: MailMessage }) {
       line-height: 1.55;
       word-break: break-word;
       overflow-wrap: break-word;
+      min-height: 100%;
     }
     *, *:before, *:after {
       box-sizing: inherit;
@@ -234,16 +281,21 @@ export default function MailBodyViewer({ msg }: { msg: MailMessage }) {
       border-collapse: collapse;
       mso-table-lspace: 0pt;
       mso-table-rspace: 0pt;
+      max-width: 100% !important;
     }
     img {
-      max-width: 100%;
+      max-width: 100% !important;
       height: auto;
+      border-style: none;
+      display: inline-block;
+      vertical-align: middle;
     }
     td img {
-      max-width: 100%;
+      max-width: 100% !important;
     }
     a {
       color: ${linkColor};
+      word-break: break-all;
     }
     blockquote {
       margin: 1em 0;
@@ -253,6 +305,8 @@ export default function MailBodyViewer({ msg }: { msg: MailMessage }) {
     }
     pre, code {
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      white-space: pre-wrap;
+      word-break: break-all;
     }
   </style>
 </head>
@@ -270,10 +324,12 @@ export default function MailBodyViewer({ msg }: { msg: MailMessage }) {
       if (!doc) return;
       const bHeight = doc.body?.scrollHeight || 0;
       const dHeight = doc.documentElement?.scrollHeight || 0;
-      const measured = Math.max(bHeight, dHeight, 160);
-      setIframeHeight(measured + 24);
+      const contentHeight = Math.max(bHeight, dHeight);
+      const minH = containerRef.current ? Math.max(containerRef.current.clientHeight - 48, 520) : 520;
+      const finalHeight = Math.max(contentHeight + 24, minH);
+      setIframeHeight(finalHeight);
     } catch {
-      setIframeHeight(500);
+      setIframeHeight(600);
     }
   }, []);
 
@@ -287,11 +343,15 @@ export default function MailBodyViewer({ msg }: { msg: MailMessage }) {
       const imgs = doc.querySelectorAll("img");
       imgs.forEach((img) => {
         img.addEventListener("load", syncHeight);
+        img.addEventListener("error", syncHeight);
       });
       if (typeof ResizeObserver !== "undefined" && doc.body) {
         const ro = new ResizeObserver(() => syncHeight());
         ro.observe(doc.body);
       }
+      setTimeout(syncHeight, 100);
+      setTimeout(syncHeight, 350);
+      setTimeout(syncHeight, 800);
     } catch {}
   }, [syncHeight]);
 
@@ -308,7 +368,10 @@ export default function MailBodyViewer({ msg }: { msg: MailMessage }) {
   }, [hasHtml, srcDoc, rawText]);
 
   return (
-    <div className="flex flex-col overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-1)] shadow-sm">
+    <div
+      ref={containerRef}
+      className="flex flex-col flex-1 min-h-0 w-full overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-1)] shadow-sm"
+    >
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--panel-border)] bg-[var(--surface-2)]/60 px-3.5 py-2 text-xs select-none">
         <div className="flex items-center gap-2 text-[var(--text-muted)]">
           <ShieldCheck className="h-4 w-4 text-[var(--accent-primary)]" />
@@ -358,7 +421,7 @@ export default function MailBodyViewer({ msg }: { msg: MailMessage }) {
       {viewMode === "html" ? (
         <div
           className={cn(
-            "w-full transition-colors",
+            "w-full flex-1 min-h-0 transition-colors",
             themeMode === "light" ? "bg-white" : "bg-[#141518]"
           )}
         >
@@ -367,8 +430,10 @@ export default function MailBodyViewer({ msg }: { msg: MailMessage }) {
             title={`Message ${msg.id}`}
             srcDoc={srcDoc}
             sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin"
+            referrerPolicy="no-referrer"
             onLoad={handleIframeLoad}
             style={{
+              minHeight: "100%",
               height: `${iframeHeight}px`,
               width: "100%",
               border: "none",
@@ -377,7 +442,7 @@ export default function MailBodyViewer({ msg }: { msg: MailMessage }) {
           />
         </div>
       ) : (
-        <div className="p-5 text-[var(--text-primary)]">
+        <div className="p-5 text-[var(--text-primary)] flex-1 min-h-0 overflow-y-auto os-scroll">
           <PlainTextContent text={rawText || "Message vide"} />
         </div>
       )}

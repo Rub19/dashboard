@@ -51097,6 +51097,63 @@ const v1_74_8_de: ChangelogEntry = {
   ],
 };
 
+const v1_74_9_fr: ChangelogEntry = {
+  version: "v1.74.9",
+  date: "2026-10-12",
+  title: "Messagerie : Rendu plein écran sans vide, chargement des images externes/CID et défilement fluide unifié",
+  items: [
+    "Occupation maximale de l'espace : Suppression des contraintes de largeur (max-w-4xl) et expansion du visualiseur d'e-mails pour occuper 100% de la largeur et de la hauteur disponibles sans aucun vide noir résiduel",
+    "Bouton Agrandir / Plein écran : Nouveau raccourci dans la barre d'outils du lecteur de message permettant d'étendre la vue en pleine largeur en masquant la liste et la barre latérale en un clic",
+    "Chargement des images résolu : Injection des directives 'no-referrer' (meta, iframe et attributs img) et surclassement CSP/HTTPS permettant aux images externes (Claude, SendGrid, hébergeurs de newsletter) de charger sans blocage anti-hotlink",
+    "Prise en charge des images intégrées (CID) : Résolution automatique des URL inline 'cid:...' vers les pièces jointes base64 et URLs d'annexes du message",
+    "Défilement fluide unifié : Synchronisation dynamique de la hauteur du contenu de l'e-mail avec élimination des barres de défilement imbriquées et doubles pour une navigation continue et naturelle",
+  ],
+};
+
+const v1_74_9_en: ChangelogEntry = {
+  version: "v1.74.9",
+  date: "2026-10-12",
+  title: "Mail: Full-space reader view, external/CID image loading and unified seamless scrolling",
+  items: [
+    "Full available space: Removed restrictive max-w-4xl width clamps and expanded the email reading pane to fill 100% of available width and height with zero empty black gutters",
+    "Expand / Full width toggle: Added one-click maximize button in the email toolbar to collapse sidebars and read messages in complete widescreen mode",
+    "Image loading fix: Added no-referrer policy across meta, iframe, and img tags with HTTPS auto-upgrade, enabling external images (Claude, SendGrid, newsletters) to render without anti-hotlinking blocks",
+    "Inline CID image resolution: Automatic conversion of inline 'cid:...' attachments into base64 data URIs and attachment URLs",
+    "Unified smooth scrolling: Dynamic height synchronization eliminating nested inner scrollbars for a clean, natural reading flow",
+  ],
+};
+
+const v1_74_9_es: ChangelogEntry = {
+  version: "v1.74.9",
+  date: "2026-10-12",
+  title: "Correo: Vista de pantalla completa, carga de imágenes externas/CID y desplazamiento fluido",
+  items: [
+    "Ocupación máxima del espacio: Eliminación de restricciones de ancho (max-w-4xl) y expansión del visor de correos al 100% del espacio disponible",
+    "Botón de pantalla completa: Nuevo control en la barra de herramientas para maximizar la lectura en todo el ancho de la pantalla",
+    "Carga de imágenes solucionada: Política 'no-referrer' y actualización a HTTPS que permite cargar imágenes externas sin bloqueos",
+    "Soporte para imágenes CID: Resolución automática de referencias 'cid:...' hacia los archivos adjuntos en base64",
+    "Desplazamiento unificado: Eliminación de barras de desplazamiento anidadas para una lectura continua y suave",
+  ],
+};
+
+const v1_74_9_de: ChangelogEntry = {
+  version: "v1.74.9",
+  date: "2026-10-12",
+  title: "E-Mail: Vollbild-Ansicht ohne Leerräume, Laden externer/CID-Bilder und nahtloses Scrollen",
+  items: [
+    "Maximale Raumausnutzung: Entfernung künstlicher Breitenbegrenzungen (max-w-4xl) und Erweiterung des Mail-Viewers auf 100 % der verfügbaren Höhe und Breite",
+    "Vollbild-Umschalter: Neue Schaltfläche in der Symbolleiste zur Maximierung des Lesebereichs über die gesamte Fensterbreite",
+    "Bilder laden behoben: No-Referrer-Richtlinie und automatische HTTPS-Konvertierung für zuverlässiges Laden externer Bilder",
+    "CID-Anhänge unterstützt: Automatische Auflösung von 'cid:...'-Bildern zu Base64-Daten-URLs",
+    "Einheitliches Scrollen: Dynamische Höhenanpassung ohne störende doppelte Scrollbalken",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_74_9_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_74_9_en);
+CHANGELOG_BY_LANG.es.unshift(v1_74_9_es);
+CHANGELOG_BY_LANG.de.unshift(v1_74_9_de);
+
 CHANGELOG_BY_LANG.fr.unshift(v1_74_8_fr);
 CHANGELOG_BY_LANG.en.unshift(v1_74_8_en);
 CHANGELOG_BY_LANG.es.unshift(v1_74_8_es);

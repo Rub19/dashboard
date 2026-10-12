@@ -1699,12 +1699,29 @@ export default function BotLanding() {
             >
               {c.footer.support}
             </a>
-            <a href="/terms" className="transition-colors hover:text-white">
+            <Link href="/terms" className="transition-colors hover:text-white">
               {c.footer.terms}
-            </a>
-            <a href="/privacy" className="transition-colors hover:text-white">
+            </Link>
+            <Link href="/privacy" className="transition-colors hover:text-white">
               {c.footer.privacy}
-            </a>
+            </Link>
+            <Link href="/cookies" className="transition-colors hover:text-white">
+              {c.footer.cookies}
+            </Link>
+            <Link href="/legal" className="transition-colors hover:text-white">
+              {c.footer.legal}
+            </Link>
+            <button
+              type="button"
+              onClick={() => {
+                if (typeof window !== "undefined") {
+                  window.dispatchEvent(new CustomEvent("ethone:open-cookie-settings"));
+                }
+              }}
+              className="transition-colors hover:text-white cursor-pointer bg-transparent border-0 p-0 text-xs text-zinc-500"
+            >
+              {c.footer.cookieSettings}
+            </button>
             <VersionPill />
           </div>
         </div>

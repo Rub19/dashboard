@@ -84,19 +84,25 @@ export default function PrivacyContent() {
           </section>
 
           <section>
-            <h2 className="text-lg font-semibold text-[var(--text-primary)]">{i18n("privacyS5Title", "5. Vos droits")}</h2>
+            <h2 className="text-lg font-semibold text-[var(--text-primary)]">{i18n("privacyS5Title", "5. Vos droits (RGPD)")}</h2>
             <p className="mt-2">
-              {i18n("privacyS5Part1", "Vous pouvez à tout moment : déconnecter une intégration depuis la page Connexions, retirer le Bot d'un serveur, ou demander la suppression de votre compte et des données associées en nous contactant à")}{" "}
+              {i18n("privacyS5Part1", "Conformément au Règlement Général sur la Protection des Données (RGPD - Règlement UE 2016/679), vous bénéficiez de droits d'accès (art. 15), de rectification (art. 16), d'effacement (art. 17), de limitation du traitement (art. 18), de portabilité (art. 20) et d'opposition (art. 21). Vous pouvez à tout moment déconnecter une intégration depuis la page Connexions, retirer le Bot d'un serveur ou demander l'effacement complet de votre compte et données en nous contactant à")}{" "}
               <a href={SUPPORT_MAILTO} className="underline underline-offset-2">
                 {SUPPORT_EMAIL}
               </a>
-              . {i18n("privacyS5Part2", "Nous traiterons toute demande de suppression dans un délai raisonnable.")}
+              . {i18n("privacyS5Part2", "Nous traiterons toute demande de suppression dans un délai raisonnable. Vous disposez également du droit d'introduire une réclamation auprès d'une autorité de contrôle de l'Union européenne, telle que la CNIL en France (cnil.fr).")}
             </p>
           </section>
 
           <section>
             <h2 className="text-lg font-semibold text-[var(--text-primary)]">{i18n("privacyS6Title", "6. Cookies et stockage local")}</h2>
-            <p className="mt-2">{i18n("privacyS6Body", "Le Dashboard utilise le stockage local du navigateur (localStorage) pour retenir vos préférences d'affichage et votre session, ainsi que des cookies techniques nécessaires à l'authentification Supabase. Nous n'utilisons pas de cookies publicitaires ou de traceurs tiers.")}</p>
+            <p className="mt-2">
+              {i18n("privacyS6Body", "Le Dashboard utilise le stockage local du navigateur (localStorage) pour retenir vos préférences d'affichage et votre session, ainsi que des cookies techniques nécessaires à l'authentification Supabase. Nous n'utilisons pas de cookies publicitaires ou de traceurs tiers.")}{" "}
+              <Link href="/cookies" className="underline underline-offset-2 text-[var(--accent-primary)]">
+                Consultez notre Politique relative aux cookies et traceurs
+              </Link>
+              .
+            </p>
           </section>
 
           <section>
@@ -125,13 +131,18 @@ export default function PrivacyContent() {
             <p className="mt-2">{i18n("privacyS10Body", "L'extension ne lit une page que lorsque vous l'utilisez (bouton, raccourci, clic droit ou barre d'adresse) : elle récupère alors le titre, l'adresse et le texte sélectionné de l'onglet actif, ou la note que vous tapez, et les transmet à ethone.dev, qui les enregistre dans vos notes ou tâches avec votre session déjà ouverte. Elle ne stocke aucun mot de passe ni jeton, n'injecte aucun script dans les sites visités, ne suit pas votre navigation et ne vend ni ne partage ces données. Sa seule requête automatique vérifie la disponibilité du service (ethone.dev/version.json).")}</p>
           </section>
 
-          <p className="pt-4 text-sm text-[var(--text-muted)]">
-            {i18n("privacySeeAlsoPrefix", "Voir aussi nos")}{" "}
-            <a href="/terms" className="underline underline-offset-2 hover:text-[var(--text-primary)]">
+          <div className="pt-4 text-sm text-[var(--text-muted)] flex flex-wrap gap-4 border-t border-[var(--panel-border)]/60">
+            <span>{i18n("privacySeeAlsoPrefix", "Voir aussi :")}</span>
+            <Link href="/terms" className="underline underline-offset-2 hover:text-[var(--text-primary)]">
               {i18n("termsLinkText", "Conditions d'utilisation")}
-            </a>
-            {i18n("privacySeeAlsoSuffix", ".")}
-          </p>
+            </Link>
+            <Link href="/cookies" className="underline underline-offset-2 hover:text-[var(--text-primary)]">
+              Politique de cookies
+            </Link>
+            <Link href="/legal" className="underline underline-offset-2 hover:text-[var(--text-primary)]">
+              Mentions légales
+            </Link>
+          </div>
         </div>
       </div>
     </div>

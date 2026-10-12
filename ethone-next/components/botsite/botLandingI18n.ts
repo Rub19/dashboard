@@ -159,6 +159,9 @@ export interface BotCopy {
     support: string;
     terms: string;
     privacy: string;
+    cookies: string;
+    legal: string;
+    cookieSettings: string;
   };
 }
 
@@ -422,6 +425,9 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
       support: "Support Discord",
       terms: "Conditions",
       privacy: "Confidentialité",
+      cookies: "Cookies",
+      legal: "Mentions légales",
+      cookieSettings: "Gérer les cookies",
     },
   },
 
@@ -684,6 +690,9 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
       support: "Discord Support",
       terms: "Terms",
       privacy: "Privacy",
+      cookies: "Cookies",
+      legal: "Legal Notice",
+      cookieSettings: "Manage cookies",
     },
   },
 
@@ -946,6 +955,9 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
       support: "Soporte Discord",
       terms: "Términos",
       privacy: "Privacidad",
+      cookies: "Cookies",
+      legal: "Aviso Legal",
+      cookieSettings: "Gestionar cookies",
     },
   },
 
@@ -1208,6 +1220,9 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
       support: "Discord Support",
       terms: "Bedingungen",
       privacy: "Datenschutz",
+      cookies: "Cookies",
+      legal: "Impressum",
+      cookieSettings: "Cookies verwalten",
     },
   },
 };

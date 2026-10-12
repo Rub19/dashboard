@@ -66,6 +66,8 @@ export default function AuthScreen({ children }: { children: ReactNode }) {
           {[
             ["/terms", i18n("termsLinkText", "Conditions d'utilisation")],
             ["/privacy", i18n("privacyLinkText", "Politique de confidentialité")],
+            ["/cookies", i18n("cookiesLinkText", "Cookies")],
+            ["/legal", i18n("legalNoticeLinkText", "Mentions légales")],
           ].map(([href, label]) => (
             <Link
               key={href}

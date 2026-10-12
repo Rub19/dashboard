@@ -51970,6 +51970,63 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_5_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_5_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_5_de);
 
+const v1_75_6_fr: ChangelogEntry = {
+  version: "v1.75.6",
+  date: "2026-10-12",
+  title: "Conformité Européenne : Cookies (ePrivacy), Mentions Légales & RGPD",
+  items: [
+    "Bandeau de consentement aux cookies et stockage local conforme RGPD, ePrivacy et CNIL, actif sur le dashboard et la vitrine du bot (/bot) avec choix symétrique 'Tout accepter', 'Tout refuser' et paramétrage granulaire par finalité.",
+    "Nouvelle page dédiée Politique de cookies (/cookies) avec inventaire exhaustif des traceurs, durées de conservation et bouton interactif de modification du consentement.",
+    "Nouvelle page Mentions Légales (/legal) conforme à la LCEN (éditeur, hébergeur Cloudflare/Supabase, propriété intellectuelle et recours CNIL).",
+    "Renforcement de la Politique de confidentialité (/privacy) avec détail complet des droits RGPD (articles 15 à 22) et droit de saisine de l'autorité de contrôle compétente.",
+    "Accès direct à la gestion des cookies dans le menu du profil utilisateur, l'écran de connexion et les pieds de page du dashboard et de la vitrine bot.",
+  ],
+};
+
+const v1_75_6_en: ChangelogEntry = {
+  version: "v1.75.6",
+  date: "2026-10-12",
+  title: "European Compliance: Cookies (ePrivacy), Legal Notice & GDPR",
+  items: [
+    "GDPR and ePrivacy compliant cookie consent manager active across both dashboard and bot showcase (/bot) with equal 'Accept all', 'Reject all' and granular category controls.",
+    "New dedicated Cookie Policy page (/cookies) detailing all storage keys, retention periods, and interactive consent management.",
+    "New Legal Notice page (/legal) covering platform publisher, infrastructure providers (Cloudflare, Supabase), and intellectual property.",
+    "Strengthened Privacy Policy (/privacy) outlining complete GDPR rights (articles 15 to 22) and supervisory authority contact.",
+    "Direct cookie preference access via user profile dropdown, authentication screen, and footer navigation across the platform.",
+  ],
+};
+
+const v1_75_6_es: ChangelogEntry = {
+  version: "v1.75.6",
+  date: "2026-10-12",
+  title: "Conformidad Europea: Cookies (ePrivacy), Aviso Legal y RGPD",
+  items: [
+    "Gestor de consentimiento de cookies y almacenamiento conforme a RGPD y ePrivacy en panel y vitrina del bot (/bot), con opciones simétricas de aceptación y rechazo.",
+    "Nueva página de Política de cookies (/cookies) con inventario de rastreadores, plazos de conservación y gestión interactiva.",
+    "Nueva página de Aviso Legal (/legal) con detalles del editor, alojamiento y derechos de propiedad.",
+    "Actualización de la Política de privacidad (/privacy) con catálogo completo de derechos RGPD y autoridad de control.",
+    "Acceso directo a preferencias de cookies desde el menú de usuario, pantalla de acceso y pies de página.",
+  ],
+};
+
+const v1_75_6_de: ChangelogEntry = {
+  version: "v1.75.6",
+  date: "2026-10-12",
+  title: "Europäische Konformität: Cookies (ePrivacy), Impressum & DSGVO",
+  items: [
+    "DSGVO- und ePrivacy-konformes Cookie-Einwilligungsbanner auf Dashboard und Bot-Präsenz (/bot) mit 'Alle akzeptieren', 'Alle ablehnen' und Detailanpassung.",
+    "Neue dedizierte Cookie-Richtlinie (/cookies) mit vollständigem Speicherinventar und interaktiver Einstellungsverwaltung.",
+    "Neues Impressum (/legal) mit Angaben zu Betreiber, Cloudflare-/Supabase-Hosting und Urheberrecht.",
+    "Erweiterte Datenschutzerklärung (/privacy) mit umfassenden Betroffenenrechten (Art. 15 bis 22 DSGVO) und Aufsichtsbehördenkontakt.",
+    "Direkter Aufruf der Cookie-Einstellungen über Benutzermenü, Anmeldeseite und Footer-Links.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_6_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_6_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_6_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_6_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

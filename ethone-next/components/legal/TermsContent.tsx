@@ -81,13 +81,18 @@ export default function TermsContent() {
             </p>
           </section>
 
-          <p className="pt-4 text-sm text-[var(--text-muted)]">
-            {i18n("termsSeeAlsoPrefix", "Voir aussi notre")}{" "}
-            <a href="/privacy" className="underline underline-offset-2 hover:text-[var(--text-primary)]">
+          <div className="pt-4 text-sm text-[var(--text-muted)] flex flex-wrap gap-4 border-t border-[var(--panel-border)]/60">
+            <span>{i18n("termsSeeAlsoPrefix", "Voir aussi :")}</span>
+            <Link href="/privacy" className="underline underline-offset-2 hover:text-[var(--text-primary)]">
               {i18n("privacyLinkText", "Politique de confidentialité")}
-            </a>
-            {i18n("termsSeeAlsoSuffix", ".")}
-          </p>
+            </Link>
+            <Link href="/cookies" className="underline underline-offset-2 hover:text-[var(--text-primary)]">
+              Politique de cookies
+            </Link>
+            <Link href="/legal" className="underline underline-offset-2 hover:text-[var(--text-primary)]">
+              Mentions légales
+            </Link>
+          </div>
         </div>
       </div>
     </div>

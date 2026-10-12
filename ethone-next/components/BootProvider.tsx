@@ -56,7 +56,7 @@ export function useBoot() {
   return useContext(BootContext);
 }
 
-const PUBLIC_ROUTES = ["/login", "/password-recovery", "/reset-password", "/terms", "/privacy", "/bot", "/leaderboard", "/extension"];
+const PUBLIC_ROUTES = ["/login", "/password-recovery", "/reset-password", "/terms", "/privacy", "/cookies", "/legal", "/bot", "/leaderboard", "/extension"];
 
 const BOOT_TIMEOUT_MS = 8_000;
 // Kept short on purpose: this is only a floor for the progress-bar animation
@@ -70,7 +70,7 @@ const BOOT_FULL_HOLD_MS = 260;
 
 // Pages d'information (vitrine du bot, conditions, confidentialité) : lisibles par tous, connectés ou non. Contrairement
 // à /login, un utilisateur déjà connecté n'en est pas renvoyé vers l'accueil.
-const INFO_ROUTES = ["/terms", "/privacy", "/bot", "/leaderboard", "/extension"];
+const INFO_ROUTES = ["/terms", "/privacy", "/cookies", "/legal", "/bot", "/leaderboard", "/extension"];
 
 function isInfoRoute(pathname: string | null): boolean {
   if (!pathname) return false;

@@ -2,6 +2,31 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.6 — 2026-10-12
+
+**Conformité Européenne Complète : Gestionnaire de Cookies (ePrivacy), Mentions Légales & RGPD**
+
+- **Gestionnaire et Bandeau de Consentement aux Cookies Conforme UE (ePrivacy & RGPD)** :
+  - Déploiement global d'un gestionnaire de consentement aux traceurs et données locales (`CookieConsentBanner`), actif sur l'ensemble de l'écosystème : dashboard, console, écran de connexion et vitrine du bot (`/bot`).
+  - Respect strict des recommandations de la CNIL et du CEPD (EDPB) : symétrie visuelle et ergonomique entre « Tout accepter » et « Tout refuser », interdisant tout consentement tacite ou forcé.
+  - Modal de personnalisation granulaire par catégorie :
+    - *Traceurs strictement nécessaires* (authentification Supabase, session sécurisée du bot, protection anti-DDoS Cloudflare, synchronisation de version) toujours actifs.
+    - *Préférences & personnalisation* (thèmes, disposition d'interface, langue, volume son) activables au choix.
+    - *Diagnostics techniques anonymisés* (métriques d'anomalies internes, sans aucun tiers publicitaire).
+  - Enregistrement du choix sous `ethone:cookie-consent` pour une durée conforme de 6 mois, avec écoute globale de l'événement `ethone:open-cookie-settings` pour permettre la révision ou révocation du consentement à tout instant en un clic.
+- **Nouvelle Page Dédiée : Politique Relative aux Cookies et Traceurs (`/cookies`)** :
+  - Publication d'un inventaire complet et transparent de chaque traceur et clé de stockage (`sb-*-auth-token`, `etho_bot_session`, `cf_clearance`, `ethone:cookie-consent`, `ethone_settings_v8`, etc.) avec son émetteur, sa finalité précise et sa durée de rétention.
+  - Bouton interactif intégré permettant d'ouvrir directement le gestionnaire de cookies pour modifier ses choix à la volée.
+  - Rappel des bases juridiques européennes (Art. 5(3) Directive ePrivacy 2002/58/CE, Art. 6 RGPD) et guides de paramétrage des principaux navigateurs (Chrome, Firefox, Safari, Edge).
+- **Nouvelle Page Dédiée : Mentions Légales (`/legal`)** :
+  - Publication des mentions légales requises par la LCEN (Loi n° 2004-575 du 21 juin 2004) et le droit européen : éditeur (Rub19), hébergeur web & CDN (Cloudflare Inc.), base de données (Supabase Inc.), serveur bot dédié, propriété intellectuelle, et rappel des voies de recours auprès de la CNIL.
+- **Renforcement de la Politique de Confidentialité (`/privacy`)** :
+  - Énumération exhaustive des droits des personnes selon le RGPD (Articles 15 à 22 : accès, rectification, effacement / droit à l'oubli, limitation, portabilité, opposition) et mention formelle du droit de réclamation auprès de la CNIL.
+  - Maillage croisé des liens légaux (`/terms`, `/privacy`, `/cookies`, `/legal`).
+- **Accessibilité et Points d'Entrée Permanents** :
+  - Intégration de l'accès aux cookies et mentions légales dans le menu du profil utilisateur (`UserProfileDropdown`), dans le pied de page de connexion (`AuthScreen`), et dans le pied de page de la vitrine bot (`BotLanding`) dans les 4 langues (FR, EN, ES, DE).
+  - Inclusion des routes `/cookies` et `/legal` dans les routes publiques et consultables sans authentification (`BootProvider`).
+
 ## v1.75.5 — 2026-10-12
 
 **Correctif : Synchronisation Globale de la Bannière de Version & Pastille d'État**

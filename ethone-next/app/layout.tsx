@@ -17,6 +17,7 @@ import { SoundProvider } from "@/lib/sound";
 import { ToastProvider } from "@/context/ToastContext";
 import OfflineIndicator from "@/components/OfflineIndicator";
 import VersionUpdateToast from "@/components/VersionUpdateToast";
+import CookieConsentBanner from "@/components/legal/CookieConsentBanner";
 import HtmlLang from "@/components/HtmlLang";
 import CommandPaletteProvider from "@/components/CommandPaletteProvider";
 import OAuthHandler from "@/components/OAuthHandler";
@@ -194,6 +195,7 @@ export default function RootLayout({
                           <NotificationBridge />
                           <RawKeySync />
                           <VersionUpdateToast />
+                          <CookieConsentBanner />
                           <OAuthHandler />
                           <UploadQueueProvider>
                             <BootProvider>{children}</BootProvider>

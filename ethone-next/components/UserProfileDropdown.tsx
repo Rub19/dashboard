@@ -330,6 +330,20 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
               <span className="ethone-menu-hint font-mono">{VERSION_LABEL}</span>
             </button>
 
+            <button
+              type="button"
+              onClick={() => {
+                setOpen(false);
+                if (typeof window !== "undefined") {
+                  window.dispatchEvent(new CustomEvent("ethone:open-cookie-settings"));
+                }
+              }}
+              className="ethone-menu-item"
+            >
+              <Icon name="shield-check" />
+              <span>{i18n("tbCookieSettings", "Gestion des cookies")}</span>
+            </button>
+
             <div className="ethone-menu-sep" />
 
             {/* Déconnexion */}

@@ -28,6 +28,7 @@ const FORBIDDEN_PATH_RULES = Object.freeze([
 
 // Archives publiées volontairement (servies en téléchargement par le site), générées par extension/pack.py.
 const PUBLISHED_ARCHIVES = new Set(["ethone-next/public/downloads/ethone-extension.zip"]);
+const ALLOWED_APP_ROUTES = new Set(["ethone-next/app/cookies/page.tsx"]);
 
 function normalizedPath(file) {
   return String(file || "").replaceAll("\\", "/").replace(/^\.\//, "");
@@ -35,7 +36,7 @@ function normalizedPath(file) {
 
 export function forbiddenPathReason(file) {
   const relative = normalizedPath(file);
-  if (!relative || relative === ".env.example" || PUBLISHED_ARCHIVES.has(relative)) return null;
+  if (!relative || relative === ".env.example" || PUBLISHED_ARCHIVES.has(relative) || ALLOWED_APP_ROUTES.has(relative)) return null;
   for (const [pattern, reason] of FORBIDDEN_PATH_RULES) {
     if (pattern.test(relative)) return reason;
   }

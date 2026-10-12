@@ -1,4 +1,4 @@
-# ETHONE — passation & nouveautés (2026-10-12, version 1.74.14)
+# ETHONE — passation & nouveautés (2026-10-12, version 1.74.15)
 
 ## Projet
 - `ethone-next/` : site Next.js statique (ethone.dev, Cloudflare Pages, déploiement auto au push sur `main`).
@@ -25,9 +25,15 @@
 
 ---
 
-## Nouveautés majeures & Réalisations récentes (v1.73.0 → v1.74.14)
+## Nouveautés majeures & Réalisations récentes (v1.73.0 → v1.74.15)
 
-### 1. Discord AutoMod natif format Keeper (v1.74.14)
+### 1. Généralisation de la vue moderne & suppression définitive de la vue classique (v1.74.15)
+- **Suppression du mode classique** : Retrait complet de l'ancienne vue mono-colonne dans `ServerPicker.tsx`, des composants obsolètes (`ClassicAvatar`), des styles et classes CSS obsolètes (`rowClass`, `discordBtn`) et des branches conditionnelles de secours.
+- **Vue moderne en standard unique** : La grille responsive en 3 colonnes (`grid-cols-1 md:grid-cols-2 lg:grid-cols-3`) avec en-tête d'accueil personnalisé (`Bienvenue, [Nom]`), cartes compactes et statut d'installation en direct est désormais le standard unique et permanent.
+- **Suppression des bascules** : Retrait du bouton `Vue classique` dans l'en-tête bureau et du bouton `Classique` sur mobile, ainsi que du commutateur `Voir l'ancienne vitrine` dans le dashboard bot.
+- **Allègement du bundle** : Nettoyage de plus de 250 lignes de code mort et d'icônes obsolètes pour des performances accrues.
+
+### 2. Discord AutoMod natif format Keeper (v1.74.14)
 - **Navigation latérale** : Ajout de la catégorie `AutoMod` sous la section `Protection` de `HubSidebar.tsx` avec icône Filter émeraude, sélection active et fil d'Ariane synchronisé (`app/discord/page.tsx`).
 - **Vue liste fidèle à Keeper** : 6 règles standard intégrées sans aucun placeholder :
   1. `ETHONE • Protection Anti-Phishing Nitro` (Mots-clés · 7 mots-clés · bloque)

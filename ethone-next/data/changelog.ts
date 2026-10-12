@@ -51429,5 +51429,58 @@ CHANGELOG_BY_LANG.en.unshift(v1_74_14_en);
 CHANGELOG_BY_LANG.es.unshift(v1_74_14_es);
 CHANGELOG_BY_LANG.de.unshift(v1_74_14_de);
 
+const v1_74_15_fr: ChangelogEntry = {
+  version: "v1.74.15",
+  date: "2026-10-12",
+  title: "Discord : Généralisation définitive de la vue moderne et suppression de la vue classique",
+  items: [
+    "Suppression intégrale du mode classique : Retrait complet de l'ancienne vue mono-colonne, de ses composants obsolètes (ClassicAvatar) et de ses branches conditionnelles",
+    "Vue moderne par défaut permanent : La grille responsive en 3 colonnes avec en-tête personnalisé et cartes dynamiques devient la présentation exclusive",
+    "Nettoyage des boutons et bascules : Retrait du bouton « Vue classique » dans l'en-tête et du bouton « Classique » sur mobile",
+    "Allègement du bundle : Suppression de plus de 250 lignes de code obsolète et d'icônes inutilisées pour des temps de chargement réduits",
+  ],
+};
+
+const v1_74_15_en: ChangelogEntry = {
+  version: "v1.74.15",
+  date: "2026-10-12",
+  title: "Discord: Permanent modern view rollout and complete removal of classic view",
+  items: [
+    "Full removal of classic mode: Complete cleanup of legacy single-column view, dead helper components (ClassicAvatar), and conditional fallback branches",
+    "Permanent modern default: Responsive 3-column grid with customized greeting header and compact server cards is now the exclusive layout",
+    "Interface cleanup: Removed « Classic view » toggle in desktop header and « Classic » button on mobile devices",
+    "Bundle optimization: Removed over 250 lines of redundant code and unused icons for lighter bundle footprint",
+  ],
+};
+
+const v1_74_15_es: ChangelogEntry = {
+  version: "v1.74.15",
+  date: "2026-10-12",
+  title: "Discord: Generalización definitiva de la vista moderna y eliminación de la vista clásica",
+  items: [
+    "Eliminación total del modo clásico: Retiro completo de la vista de columna única, componentes obsoletos (ClassicAvatar) y ramas condicionales",
+    "Vista moderna permanente por defecto: La cuadrícula responsiva de 3 columnas con saludo personalizado es ahora el único diseño",
+    "Limpieza de controles: Eliminación del botón « Vista clásica » en el encabezado y del botón móvil « Clásico »",
+    "Optimización del paquete: Retiro de más de 250 líneas de código obsoleto e iconos no utilizados",
+  ],
+};
+
+const v1_74_15_de: ChangelogEntry = {
+  version: "v1.74.15",
+  date: "2026-10-12",
+  title: "Discord: Dauerhafte moderne Ansicht und vollständige Entfernung der klassischen Ansicht",
+  items: [
+    "Vollständige Entfernung des klassischen Modus: Löschung der veralteten einspaltigen Ansicht, Hilfskomponenten (ClassicAvatar) und Fallback-Zweige",
+    "Moderner Standard dauerhaft: Das responsive 3-Spalten-Grid mit Begrüßungskopf ist nun das exklusive Layout",
+    "Bereinigung der Bedienelemente: Entfernung der Schaltfläche « Klassische Ansicht » im Header und « Klassisch » auf Mobilgeräten",
+    "Bundle-Optimierung: Entfernung von über 250 Zeilen veraltetem Code und ungenutzten Icons",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_74_15_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_74_15_en);
+CHANGELOG_BY_LANG.es.unshift(v1_74_15_es);
+CHANGELOG_BY_LANG.de.unshift(v1_74_15_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

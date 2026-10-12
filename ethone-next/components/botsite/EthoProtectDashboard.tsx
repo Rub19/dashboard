@@ -10,8 +10,6 @@ import {
   Plus,
   ExternalLink,
   X,
-  Eye,
-  LayoutDashboard,
   ChevronRight,
   Home,
   BookOpen,
@@ -29,7 +27,6 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import DiscordLanguageDropdown from "@/components/discord/DiscordLanguageDropdown";
 import ClientImage from "@/components/ClientImage";
 import { useBotSessionUser } from "@/lib/hooks/useBotSessionUser";
-import BotLanding from "@/components/botsite/BotLanding";
 import BotInstallView from "@/components/discord/BotInstallView";
 
 const SUPPORT_DISCORD_URL = "https://discord.gg/WvEcyBuP45";
@@ -91,20 +88,6 @@ export default function EthoProtectDashboard() {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [installingGuild, setInstallingGuild] = useState<DiscordGuild | null>(null);
-  const [viewMode, setViewMode] = useState<"dashboard" | "legacy">(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("ethone:bot_view_mode");
-      if (saved === "legacy") return "legacy";
-    }
-    return "dashboard";
-  });
-
-  const setViewModeWithStorage = useCallback((mode: "dashboard" | "legacy") => {
-    setViewMode(mode);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("ethone:bot_view_mode", mode);
-    }
-  }, []);
 
   const { signOut } = useAuth();
 
@@ -198,24 +181,6 @@ export default function EthoProtectDashboard() {
     );
   }, [botUser, discordProfile?.user, storedUser, ethoneProfile?.avatarUrl]);
 
-  if (viewMode === "legacy") {
-    return (
-      <div className="relative min-h-screen bg-[var(--background)]">
-        <div className="fixed top-4 right-4 z-50">
-          <button
-            type="button"
-            onClick={() => setViewModeWithStorage("dashboard")}
-            className="flex items-center gap-2 rounded-sm border border-[var(--panel-border)] bg-[var(--surface-raised)]/90 px-4 py-2 text-xs font-semibold text-[var(--accent-primary)] shadow-xl backdrop-blur-md hover:border-[var(--accent-primary)] transition-all cursor-pointer"
-          >
-            <LayoutDashboard className="h-4 w-4" />
-            <span>Dashboard Serveurs</span>
-          </button>
-        </div>
-        <BotLanding />
-      </div>
-    );
-  }
-
   if (installingGuild) {
     return (
       <BotInstallView
@@ -254,21 +219,11 @@ export default function EthoProtectDashboard() {
     <div className="h-full min-h-dvh md:min-h-0 w-full bg-[var(--background)] text-[var(--text-primary)] flex flex-col md:flex-row antialiased overflow-hidden">
       <aside className="w-full md:w-64 shrink-0 border-b md:border-b-0 md:border-r border-[var(--panel-border)] bg-[var(--surface-raised)]/95 flex flex-col justify-between p-4 md:h-full md:max-h-full">
         <div className="space-y-4">
-          <div className="flex items-center justify-between px-2 pt-1">
-            <div className="flex items-center gap-2.5">
-              <div className="relative flex h-8 w-8 items-center justify-center rounded-sm bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/30">
-                <ShieldCheck className="h-4 w-4 text-[var(--accent-primary)]" />
-              </div>
-              <span className="font-bold text-base tracking-tight text-[var(--text-primary)]">Etho</span>
+          <div className="flex items-center gap-2.5 px-2 pt-1">
+            <div className="relative flex h-8 w-8 items-center justify-center rounded-sm bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/30">
+              <ShieldCheck className="h-4 w-4 text-[var(--accent-primary)]" />
             </div>
-            <button
-              type="button"
-              onClick={() => setViewModeWithStorage("legacy")}
-              className="md:hidden flex items-center gap-1 rounded-sm border border-[var(--panel-border)] bg-[var(--surface-raised)] px-2 py-1 text-[10px] text-[var(--text-muted)]"
-            >
-              <Eye className="h-3 w-3" />
-              <span>Vitrine</span>
-            </button>
+            <span className="font-bold text-base tracking-tight text-[var(--text-primary)]">Etho</span>
           </div>
 
           <button
@@ -290,7 +245,6 @@ export default function EthoProtectDashboard() {
               type="button"
               onClick={() => {
                 setSearchQuery("");
-                setViewModeWithStorage("dashboard");
               }}
               className="w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-[var(--text-primary)] hover:bg-[var(--surface-hover,var(--surface-raised))] transition-colors cursor-pointer font-medium text-left"
             >
@@ -389,19 +343,9 @@ export default function EthoProtectDashboard() {
               <ChevronRight className="h-3 w-3" />
               <span className="text-[var(--accent-primary)] font-medium">Mes serveurs</span>
             </div>
-            <div className="flex items-center gap-4">
-              <div className="hidden sm:flex items-center gap-2 text-xs text-[var(--text-muted)] select-none">
-                <CloudCheckIcon className="h-4 w-4 shrink-0 text-[var(--text-muted)]" />
-                <span className="font-normal text-[var(--text-muted)]">Tout est enregistré</span>
-              </div>
-              <button
-                type="button"
-                onClick={() => setViewModeWithStorage("legacy")}
-                className="flex items-center gap-1.5 rounded-sm border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-1 text-[11px] font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 transition-all cursor-pointer"
-              >
-                <Eye className="h-3 w-3" />
-                <span>Voir l'ancienne vitrine</span>
-              </button>
+            <div className="flex items-center gap-1.5 text-xs text-[var(--text-muted)] select-none">
+              <CloudCheckIcon className="h-4 w-4 shrink-0 text-[var(--text-muted)]" />
+              <span className="font-normal text-[var(--text-muted)]">Tout est enregistré</span>
             </div>
           </div>
 

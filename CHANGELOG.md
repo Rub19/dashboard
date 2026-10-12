@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.74.15 — 2026-10-12
+
+**Discord : Généralisation définitive de la vue moderne et suppression complète de la vue classique**
+
+- **Suppression intégrale du mode classique** : Retrait définitif de l'ancienne vue mono-colonne dans `ServerPicker.tsx`, des composants d'affichage associés (`ClassicAvatar`), des styles et classes CSS obsolètes (`rowClass`, `discordBtn`) et des branches conditionnelles de secours.
+- **Vue moderne en standard unique** : La grille responsive en 3 colonnes (`grid-cols-1 md:grid-cols-2 lg:grid-cols-3`) avec en-tête d'accueil personnalisé (`Bienvenue, [Nom]`), cartes de serveurs compactes et statut d'installation en temps réel est désormais l'expérience permanente et unique.
+- **Suppression des boutons et bascules de vue** : Retrait du bouton `Vue classique` dans l'en-tête bureau et du bouton `Classique` sur la barre latérale mobile, ainsi que du commutateur `Voir l'ancienne vitrine` dans le dashboard bot.
+- **Optimisation et allègement du bundle** : Nettoyage de plus de 250 lignes de code mort, de dépendances d'animation non utilisées (`choreography`, `revealUp`, `LightBorder`, `AnimatePresence`) et d'icônes obsolètes, accélérant le rendu initial de la page des serveurs.
+
 ## v1.74.14 — 2026-10-12
 
 **Discord AutoMod : Intégration et synchronisation complète de l'AutoMod natif format Keeper**

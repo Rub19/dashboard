@@ -2,18 +2,14 @@
 
 import { useMemo, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   ChevronRight,
   ExternalLink,
-  Plus,
   Search,
   ShieldCheck,
   Crown,
-  Eye,
-  Sliders,
   X,
-  LayoutDashboard,
   Home,
   BookOpen,
   Sun,
@@ -21,7 +17,6 @@ import {
   LogOut,
 } from "@/components/icons/ph";
 import DiscordIcon from "@/components/DiscordIcon";
-import LightBorder from "@/components/ui/LightBorder";
 import ClientImage from "@/components/ClientImage";
 import DiscordLanguageDropdown from "./DiscordLanguageDropdown";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
@@ -30,8 +25,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { useDayNightToggle } from "@/lib/hooks/useDayNightToggle";
 import { useAccountProfile } from "@/lib/profile/account-profile";
 import { cn } from "@/lib/utils";
-import { choreography, revealUp } from "@/lib/motion-variants";
-import { EASE_SNAP, SPRING_PILL, SPRING_PRESS } from "@/lib/ease";
+import { SPRING_PILL, SPRING_PRESS } from "@/lib/ease";
 import { useMotionPref } from "@/lib/hooks/useMotionPref";
 import { getStoredDiscordUser, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
 import { useBotSessionUser } from "@/lib/hooks/useBotSessionUser";
@@ -77,7 +71,6 @@ function getGuildInitials(name: string) {
   return name.slice(0, 2).toUpperCase() || "SV";
 }
 
-// ponytail: libellé fixe ; le nombre de protections actives par serveur demanderait une route bot dédiée.
 function getGuildProtectionText(_guildId: string): string {
   return "Etho installé";
 }
@@ -101,32 +94,6 @@ function LifeBuoyIcon({ className = "h-4 w-4" }: { className?: string }) {
       <line x1="14.83" y1="9.17" x2="19.07" y2="4.93" />
       <line x1="4.93" y1="19.07" x2="9.17" y2="14.83" />
     </svg>
-  );
-}
-
-function ClassicAvatar({ guild, dim, live }: { guild: DiscordGuild; dim?: boolean; live?: boolean }) {
-  return (
-    <span className="relative shrink-0">
-      <span
-        className={cn(
-          "flex h-11 w-11 items-center justify-center overflow-hidden rounded-sm bg-[var(--surface-raised)] text-sm font-bold text-[var(--text-primary)] ring-1 ring-[var(--panel-border)] transition-transform duration-300 [transition-timing-function:var(--ease-snap)] group-hover:scale-[1.06]",
-          dim && "grayscale"
-        )}
-      >
-        {guild.iconUrl ? (
-          <ClientImage src={guild.iconUrl} alt={guild.name} width={44} height={44} className="h-full w-full object-cover" />
-        ) : (
-          getGuildInitials(guild.name)
-        )}
-      </span>
-      {live && (
-        <span
-          className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-sm border-2 border-[var(--bg-card,var(--background))] bg-[var(--success)]"
-          title="Bot installé"
-          aria-label="Bot installé"
-        />
-      )}
-    </span>
   );
 }
 
@@ -165,23 +132,6 @@ export default function ServerPicker({
   }, [signOut, router]);
 
   const [query, setQuery] = useState("");
-  const [hovered, setHovered] = useState<string | null>(null);
-
-  const [viewMode, setViewMode] = useState<"modern" | "classic">(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("ethone:bot_picker_view");
-      if (saved === "classic" || saved === "modern") return saved;
-    }
-    return "modern";
-  });
-
-  const setViewModeWithStorage = useCallback((mode: "modern" | "classic") => {
-    setViewMode(mode);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("ethone:bot_picker_view", mode);
-    }
-  }, []);
-
   const { installedGuilds, uninstalledGuilds } = useMemo(() => {
     const installed: DiscordGuild[] = [];
     const uninstalled: DiscordGuild[] = [];
@@ -210,10 +160,6 @@ export default function ServerPicker({
     return uninstalledGuilds.filter((g) => g.name.toLowerCase().includes(q));
   }, [uninstalledGuilds, query]);
 
-  const q = query.trim().toLowerCase();
-  const visible = useMemo(() => (q ? guilds.filter((g) => g.name.toLowerCase().includes(q)) : guilds), [guilds, q]);
-  const showSearch = guilds.length > 6;
-
   const storedUser = useMemo(() => getStoredDiscordUser(), []);
   const botUser = useBotSessionUser();
   const currentDisplayName =
@@ -232,213 +178,6 @@ export default function ServerPicker({
     ethoneProfile?.avatarUrl ||
     null;
 
-  const rowClass =
-    "group relative flex w-full items-center gap-4 rounded-sm px-3 py-2.5 text-left outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50";
-  const discordBtn =
-    "btn-sheen relative mt-5 inline-flex h-10 cursor-pointer items-center gap-2 rounded-sm bg-[#5865F2] px-4 text-sm font-semibold text-white transition-[background-color,transform] duration-200 hover:-translate-y-0.5 hover:bg-[#4752C4] active:translate-y-0 disabled:opacity-50";
-
-  if (viewMode === "classic") {
-    return (
-      <div className="relative flex min-h-dvh w-full items-center justify-center overflow-x-clip px-4 py-10 bg-[var(--background)]">
-        <div className="fixed top-6 right-6 z-50">
-          <button
-            type="button"
-            onClick={() => setViewModeWithStorage("modern")}
-            className="flex items-center gap-2 rounded-sm border border-[var(--panel-border)] bg-[var(--surface-raised)]/95 px-4 py-2 text-xs font-semibold text-[var(--accent-primary)] shadow-xl backdrop-blur-md hover:border-[var(--accent-primary)] transition-all cursor-pointer"
-          >
-            <LayoutDashboard className="h-4 w-4" />
-            <span>Vue principale</span>
-          </button>
-        </div>
-
-        <div
-          aria-hidden
-          className="pointer-events-none absolute left-1/2 top-[38%] h-[44rem] w-[44rem] max-w-[140vw] -translate-x-1/2 -translate-y-1/2"
-          style={{ background: "radial-gradient(closest-side, color-mix(in srgb, var(--accent-primary) 9%, transparent), transparent)" }}
-        />
-
-        <motion.div variants={choreography} initial={reduced ? "animate" : "initial"} animate="animate" className="relative w-full max-w-[460px]">
-          <div className="mb-7 flex flex-col items-center text-center">
-            <motion.div
-              variants={{
-                initial: { opacity: 0, scale: 0.6, filter: "blur(8px)" },
-                animate: { opacity: 1, scale: 1, filter: "blur(0px)", transition: { duration: 0.7, ease: EASE_SNAP } },
-              }}
-              className="relative h-24 w-24"
-            >
-              <ClientImage src="/branding/etho-avatar.gif" alt="Etho" width={96} height={96} className="relative h-24 w-24 rounded-sm border-2 border-[var(--panel-border)] object-cover" />
-            </motion.div>
-            <motion.h1 variants={revealUp} className="mt-5 text-3xl font-bold tracking-tight text-[var(--text-primary)]">
-              Etho
-            </motion.h1>
-            <motion.p variants={revealUp} className="mt-1.5 text-sm text-[var(--text-muted)]">
-              {currentDisplayName ? (
-                <>
-                  Connecté en tant que <span className="font-semibold text-[var(--text-primary)]">{currentDisplayName}</span>
-                </>
-              ) : (
-                "Choisis un serveur à configurer"
-              )}
-            </motion.p>
-          </div>
-
-          {botAuthHref && (
-            <motion.a
-              variants={revealUp}
-              href={botAuthHref}
-              className="group mb-4 flex items-center gap-3 rounded-sm border border-[#5865F2]/30 bg-[#5865F2]/10 px-4 py-3 text-xs leading-relaxed text-[var(--text-muted)] transition-[background-color,border-color] duration-300 hover:border-[#5865F2]/50 hover:bg-[#5865F2]/[0.16]"
-            >
-              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-sm bg-[#5865F2]/20 text-[#aab3ff]">
-                <DiscordIcon className="h-4 w-4" />
-              </span>
-              <span className="min-w-0 flex-1">
-                <strong className="block font-semibold text-[var(--text-primary)]">Connecte le bot à ton compte Discord</strong>
-                Sans ça, le site ne voit ni les serveurs où le bot est actif, ni la musique en direct. Clique pour autoriser.
-              </span>
-              <ChevronRight className="h-4 w-4 shrink-0 text-[var(--text-muted)] transition-transform duration-300 group-hover:translate-x-0.5 group-hover:text-[var(--text-primary)]" />
-            </motion.a>
-          )}
-
-          <motion.div variants={revealUp}>
-            <LightBorder speed={10} className="shadow-[0_30px_80px_-30px_rgb(0_0_0/0.7)] rounded-sm" innerClassName="backdrop-blur-xl rounded-sm">
-              {showSearch && (
-                <div className="group flex items-center gap-2.5 border-b border-[var(--panel-border)] px-4">
-                  <Search className="h-4 w-4 shrink-0 text-[var(--text-muted)] transition-colors group-focus-within:text-[var(--accent-primary)]" />
-                  <input
-                    type="text"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Rechercher un serveur"
-                    aria-label="Rechercher un serveur"
-                    className="h-12 w-full bg-transparent text-sm text-[var(--text-primary)] outline-none placeholder:text-[var(--text-muted)]"
-                  />
-                </div>
-              )}
-
-              {guilds.length === 0 ? (
-                <div className="px-6 py-12 text-center">
-                  <span className="mx-auto mb-4 grid h-12 w-12 place-items-center rounded-sm bg-[#5865F2]/15 text-[#aab3ff]">
-                    <DiscordIcon className="h-5 w-5" />
-                  </span>
-                  <p className="text-sm font-semibold text-[var(--text-primary)]">
-                    {totalCount === 0 && !isConnected ? "Compte non connecté" : "Aucun serveur trouvé"}
-                  </p>
-                  <p className="mt-1 text-xs text-[var(--text-muted)]">
-                    {totalCount === 0 && !isConnected
-                      ? "Connectez votre compte Discord pour charger vos serveurs."
-                      : "Aucun serveur Discord associé à ce compte."}
-                  </p>
-                  {!isConnected ? (
-                    <button type="button" onClick={onConnect} disabled={connecting} className={discordBtn}>
-                      <DiscordIcon className="h-4 w-4" />
-                      Lier mon compte
-                    </button>
-                  ) : (
-                    <a href={inviteUrl} target="_blank" rel="noopener noreferrer" className={discordBtn}>
-                      <DiscordIcon className="h-4 w-4" />
-                      Inviter le bot
-                      <ExternalLink className="h-3.5 w-3.5" />
-                    </a>
-                  )}
-                </div>
-              ) : visible.length === 0 ? (
-                <p className="px-6 py-10 text-center text-sm text-[var(--text-muted)]">Aucun serveur ne correspond.</p>
-              ) : (
-                <ul className="max-h-[min(60vh,520px)] space-y-0.5 overflow-y-auto p-2 [scrollbar-width:thin]" onMouseLeave={() => setHovered(null)}>
-                  <AnimatePresence initial={!reduced} mode="popLayout">
-                    {visible.map((guild, i) => {
-                      const absent = botPresenceKnown && !botGuildIds.has(guild.id);
-                      const live = botPresenceKnown && !absent;
-                      const highlight = hovered === guild.id && (
-                        <motion.span layoutId="picker-row" transition={SPRING_PILL} className="absolute inset-0 rounded-sm bg-[var(--text-primary)]/[0.06]" />
-                      );
-                      return (
-                        <motion.li
-                          key={guild.id}
-                          layout={reduced ? false : "position"}
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0, transition: { duration: 0.4, ease: EASE_SNAP, delay: Math.min(i, 10) * 0.035 } }}
-                          exit={{ opacity: 0, transition: { duration: 0.12 } }}
-                          onMouseEnter={() => setHovered(guild.id)}
-                        >
-                          {absent ? (
-                            <button
-                              type="button"
-                              onClick={() => onPick(guild)}
-                              title="Installer le bot sur ce serveur"
-                              className={cn(rowClass, "cursor-pointer opacity-70 transition-opacity duration-300 hover:opacity-100")}
-                            >
-                              {highlight}
-                              <ClassicAvatar guild={guild} dim />
-                              <span className="relative min-w-0 flex-1 truncate text-[15px] font-medium text-[var(--text-muted)]">{guild.name}</span>
-                              <Plus className="relative h-5 w-5 shrink-0 text-[var(--accent-primary)] transition-transform duration-300 group-hover:rotate-90" aria-label="Ajouter le bot" />
-                            </button>
-                          ) : (
-                            <button type="button" onClick={() => onPick(guild)} className={cn(rowClass, "cursor-pointer")}>
-                              {highlight}
-                              <ClassicAvatar guild={guild} live={live} />
-                              <div className="relative min-w-0 flex-1 space-y-0.5">
-                                <div className="flex items-center gap-1.5 min-w-0">
-                                  <span className="truncate text-[15px] font-bold text-[var(--text-primary)]">{guild.name}</span>
-                                  {guild.owner && <Crown className="h-3.5 w-3.5 text-emerald-400 shrink-0" />}
-                                </div>
-                                <div className="flex items-center gap-1.5 text-xs text-[var(--text-muted)] font-medium">
-                                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shrink-0" />
-                                  <span>{getGuildProtectionText(guild.id)}</span>
-                                </div>
-                              </div>
-                              <ChevronRight className="relative h-5 w-5 shrink-0 text-[var(--text-muted)] transition-[transform,color] duration-300 [transition-timing-function:var(--ease-snap)] group-hover:translate-x-1 group-hover:text-[var(--text-primary)]" />
-                            </button>
-                          )}
-                        </motion.li>
-                      );
-                    })}
-                  </AnimatePresence>
-                </ul>
-              )}
-
-              {totalCount > 0 && (
-                <div className="flex items-center justify-between gap-3 border-t border-[var(--panel-border)] px-4 py-3">
-                  <span className="text-xs font-medium text-[var(--text-muted)]">Uniquement gérables</span>
-                  <button
-                    type="button"
-                    role="switch"
-                    aria-checked={onlyManageable}
-                    aria-label="Uniquement les serveurs gérables"
-                    onClick={onToggleManageable}
-                    className={cn(
-                      "relative h-5 w-10 shrink-0 cursor-pointer rounded-sm border border-[var(--panel-border)] outline-none transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50",
-                      onlyManageable ? "bg-[var(--accent-primary)]" : "bg-[var(--surface-raised)]"
-                    )}
-                  >
-                    <motion.span
-                      className="absolute left-0.5 top-0.5 h-3.5 w-4 rounded-sm bg-white shadow"
-                      initial={false}
-                      animate={{ x: onlyManageable ? 18 : 0 }}
-                      transition={SPRING_PILL}
-                    />
-                  </button>
-                </div>
-              )}
-            </LightBorder>
-          </motion.div>
-
-          <motion.div variants={revealUp} className="mt-5 text-center">
-            <a
-              href={inviteUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group inline-flex items-center gap-1.5 rounded-sm text-xs font-semibold text-[var(--text-muted)] outline-none transition-colors hover:text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
-            >
-              <Plus className="h-3.5 w-3.5 transition-transform duration-300 group-hover:rotate-90" />
-              Inviter le bot sur un autre serveur
-            </a>
-          </motion.div>
-        </motion.div>
-      </div>
-    );
-  }
-
   return (
     <div className="h-dvh min-h-dvh w-full bg-[var(--background)] text-[var(--text-primary)] flex flex-col md:flex-row antialiased overflow-hidden">
       <motion.aside
@@ -448,26 +187,16 @@ export default function ServerPicker({
         className="w-full md:w-64 shrink-0 border-b md:border-b-0 md:border-r border-[var(--panel-border)] bg-[var(--surface-raised)]/95 flex flex-col justify-between p-4 md:h-dvh md:max-h-dvh"
       >
         <div className="min-h-0 flex-1 space-y-4 overflow-y-auto [scrollbar-width:none]">
-          <div className="flex items-center justify-between px-2 pt-1">
-            <div className="flex items-center gap-2.5">
-              <motion.div
-                variants={consoleBrandMark}
-                whileHover={reduced ? undefined : { scale: 1.06 }}
-                transition={SPRING_PRESS}
-                className="relative flex h-8 w-8 items-center justify-center rounded-sm bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/30 cursor-pointer"
-              >
-                <ShieldCheck className="h-4 w-4 text-[var(--accent-primary)]" />
-              </motion.div>
-              <span className="font-bold text-base tracking-tight text-[var(--text-primary)]">Etho</span>
-            </div>
-            <button
-              type="button"
-              onClick={() => setViewModeWithStorage("classic")}
-              className="md:hidden flex items-center gap-1 rounded-sm border border-[var(--panel-border)] bg-[var(--surface-raised)] px-2 py-1 text-[10px] text-[var(--text-muted)]"
+          <div className="flex items-center gap-2.5 px-2 pt-1">
+            <motion.div
+              variants={consoleBrandMark}
+              whileHover={reduced ? undefined : { scale: 1.06 }}
+              transition={SPRING_PRESS}
+              className="relative flex h-8 w-8 items-center justify-center rounded-sm bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/30 cursor-pointer"
             >
-              <Eye className="h-3 w-3" />
-              <span>Classique</span>
-            </button>
+              <ShieldCheck className="h-4 w-4 text-[var(--accent-primary)]" />
+            </motion.div>
+            <span className="font-bold text-base tracking-tight text-[var(--text-primary)]">Etho</span>
           </div>
 
           <motion.button
@@ -594,19 +323,9 @@ export default function ServerPicker({
               <ChevronRight className="h-3 w-3" />
               <span className="text-[var(--accent-primary)] font-medium">{i18n("dMyServers", "Mes serveurs")}</span>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1.5 text-xs text-emerald-400 font-medium">
-                <ShieldCheck className="h-3.5 w-3.5" />
-                <span>{i18n("dAllSaved", "Tout est enregistré")}</span>
-              </div>
-              <button
-                type="button"
-                onClick={() => setViewModeWithStorage("classic")}
-                className="flex items-center gap-1.5 rounded-sm border border-[var(--panel-border)] bg-[var(--surface-raised)] px-2.5 py-1 text-[11px] font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 transition-all cursor-pointer"
-              >
-                <Sliders className="h-3 w-3" />
-                <span>Vue classique</span>
-              </button>
+            <div className="flex items-center gap-1.5 text-xs text-emerald-400 font-medium">
+              <ShieldCheck className="h-3.5 w-3.5" />
+              <span>{i18n("dAllSaved", "Tout est enregistré")}</span>
             </div>
           </motion.div>
 
@@ -616,6 +335,23 @@ export default function ServerPicker({
             animate="animate"
             className="space-y-6"
           >
+            {botAuthHref && (
+              <motion.a
+                variants={consoleFadeUp}
+                href={botAuthHref}
+                className="group flex items-center gap-3 rounded-xl border border-[#5865F2]/30 bg-[#5865F2]/10 px-4 py-3 text-xs leading-relaxed text-[var(--text-muted)] transition-all hover:border-[#5865F2]/50 hover:bg-[#5865F2]/[0.16]"
+              >
+                <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-[#5865F2]/20 text-[#aab3ff]">
+                  <DiscordIcon className="h-4 w-4" />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <strong className="block font-semibold text-[var(--text-primary)]">Connecte le bot à ton compte Discord</strong>
+                  Permet d'accéder à tous les réglages et serveurs en temps réel.
+                </span>
+                <ChevronRight className="h-4 w-4 shrink-0 text-[var(--text-muted)] transition-transform group-hover:translate-x-0.5 group-hover:text-[var(--text-primary)]" />
+              </motion.a>
+            )}
+
             <motion.div variants={consoleReveal} className="flex items-center gap-3.5">
               {currentAvatarUrl ? (
                 <ClientImage
@@ -706,6 +442,24 @@ export default function ServerPicker({
                   <DiscordIcon className="h-4 w-4" />
                   <span>Lier mon compte Discord</span>
                 </button>
+              </motion.div>
+            )}
+
+            {isConnected && filteredInstalled.length === 0 && filteredUninstalled.length === 0 && (
+              <motion.div variants={consoleFadeUp} className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-8 text-center space-y-3">
+                <p className="text-sm font-semibold text-[var(--text-primary)]">Aucun serveur Discord gérable trouvé</p>
+                <p className="text-xs text-[var(--text-muted)]">Vous devez disposer des permissions Administrateur ou Gérer le serveur.</p>
+                {inviteUrl && (
+                  <a
+                    href={inviteUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 rounded-xl bg-[var(--accent-primary)] px-4 py-2 text-xs font-bold text-[var(--accent-contrast)] hover:opacity-90 transition-all cursor-pointer"
+                  >
+                    <span>Inviter le bot sur un serveur</span>
+                    <ExternalLink className="h-3.5 w-3.5" />
+                  </a>
+                )}
               </motion.div>
             )}
 

@@ -52286,6 +52286,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_11_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_11_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_11_de);
 
+const v1_75_12_fr: ChangelogEntry = {
+  version: "v1.75.12",
+  date: "2026-10-13",
+  title: "Rétablissement de la Vitrine Publique sur discord.ethone.dev",
+  items: [
+    "Rétablissement de l'aiguillage racine de discord.ethone.dev vers la vitrine officielle du bot (/bot).",
+    "Correction de la redirection résiduelle qui envoyait par erreur la racine du sous-domaine vers /discord au lieu de la page de présentation Etho.",
+    "Navigation transparente entre la vitrine publique (/bot) et le tableau de bord de gestion Discord (/discord).",
+  ],
+};
+
+const v1_75_12_en: ChangelogEntry = {
+  version: "v1.75.12",
+  date: "2026-10-13",
+  title: "Restoration of Public Showcase on discord.ethone.dev",
+  items: [
+    "Restored root routing of discord.ethone.dev to the official bot presentation page (/bot).",
+    "Fixed stale redirect that routed the root subdomain to /discord instead of the Etho showcase landing.",
+    "Seamless navigation between the public landing (/bot) and the Discord management dashboard (/discord).",
+  ],
+};
+
+const v1_75_12_es: ChangelogEntry = {
+  version: "v1.75.12",
+  date: "2026-10-13",
+  title: "Restauración de la Página de Presentación en discord.ethone.dev",
+  items: [
+    "Restauración del enrutamiento de discord.ethone.dev hacia la vitrina oficial del bot (/bot).",
+    "Corrección de la redirección residual que enviaba la raíz del subdominio a /discord en lugar de la presentación de Etho.",
+    "Navegación fluida entre la vitrina pública (/bot) y el panel de control de Discord (/discord).",
+  ],
+};
+
+const v1_75_12_de: ChangelogEntry = {
+  version: "v1.75.12",
+  date: "2026-10-13",
+  title: "Wiederherstellung der Bot-Präsentationsseite auf discord.ethone.dev",
+  items: [
+    "Wiederherstellung des Root-Routings von discord.ethone.dev auf die offizielle Bot-Präsentationsseite (/bot).",
+    "Behebung der veralteten Weiterleitung, die die Subdomain auf /discord statt auf die Etho-Vitrine führte.",
+    "Nahtlose Navigation zwischen öffentlicher Präsentation (/bot) und Discord-Dashboard (/discord).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_12_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_12_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_12_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_12_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

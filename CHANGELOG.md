@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.12 — 2026-10-13
+
+**Rétablissement de la Vitrine Publique sur `discord.ethone.dev`**
+
+- **Aiguillage Racine Rétabli vers la Page de Présentation (`/bot`)** :
+  - Correction dans `app/layout.tsx` du script d'interception du sous-domaine `discord.ethone.dev` qui redirigeait par erreur vers `/discord` (console et sélecteur de serveurs) au lieu de `/bot` (vitrine publique officielle Etho avec animations Bleed & Keeper, simulateur de chat, défilement des modules et commandes).
+  - Navigation préservée : le bouton « Tableau de bord » de la barre de navigation de la vitrine continue de pointer vers `/discord` pour gérer ses serveurs.
+
 ## v1.75.11 — 2026-10-13
 
 **Refonte Intégrale du Centre de Contrôle du Bot (`/discord/bot`) au Format Keeper & Motion Design**

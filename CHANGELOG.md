@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.74.7 — 2026-10-12
+
+**Interface & Dock : Suppression du vide noir résiduel et ancrage direct contre le dashboard**
+
+- **Suppression du vide noir résiduel** : Retrait du padding desktop de 128px (`md:pb-32` repéré sous forme de bande verte d'inspecteur) sur le conteneur principal (`main#main-content`), éliminant la zone noire morte sous les cartes du dashboard et évitant toute coupure visuelle des pages.
+- **Ancrage direct du Dock contre le dashboard** : Repositionnement du dock à 44px (`bottom-[calc(2.75rem+env(safe-area-inset-bottom))]`) pour être posé immédiatement au-dessus de la barre de statut et en contact direct avec le bas du contenu.
+- **Harmonisation des popovers volants** : Réalignement vertical du Centre de contrôle (`DockControlCenter`) et de la vue Focus (`FocusPopover`) à 5.75rem pour s'ouvrir au ras du dock avec une respiration visuelle idéale.
+- **Préservation de la bot bar** : Maintien intégral de la barre de statut inférieure (`StatusBar`) ancrée au bas de l'écran avec version en direct, rôle, état de synchronisation et ping.
+
 ## v1.74.6 — 2026-10-12
 
 **Messagerie & Bloc-notes : Réponses rapides 1-clic, éditeur Markdown et double vue**

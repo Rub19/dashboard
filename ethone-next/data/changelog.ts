@@ -50997,5 +50997,58 @@ CHANGELOG_BY_LANG.en.unshift(v1_74_6_en);
 CHANGELOG_BY_LANG.es.unshift(v1_74_6_es);
 CHANGELOG_BY_LANG.de.unshift(v1_74_6_de);
 
+const v1_74_7_fr: ChangelogEntry = {
+  version: "v1.74.7",
+  date: "2026-10-12",
+  title: "Interface & Dock : Suppression du vide noir résiduel et ancrage direct contre le dashboard",
+  items: [
+    "Suppression du vide noir : Retrait du padding 128px de la zone principale, permettant au contenu de descendre naturellement sans coupure visuelle",
+    "Ancrage direct du Dock : Repositionnement du dock à 44px du bas immédiatement au-dessus de la barre d'état et au contact direct du dashboard",
+    "Harmonisation des fenêtres volantes : Réajustement des popovers du Centre de contrôle et du Focus pour s'ouvrir au ras du dock",
+    "Préservation de la barre d'état : Maintien intégral de la barre inférieure (version, rôle, synchronisation et ping) au bas de l'écran",
+  ],
+};
+
+const v1_74_7_en: ChangelogEntry = {
+  version: "v1.74.7",
+  date: "2026-10-12",
+  title: "Interface & Dock: Removal of bottom dead gap and direct docking against dashboard",
+  items: [
+    "Dead space elimination: Removed residual 128px bottom padding on main container, letting pages extend seamlessly without visual cuts",
+    "Direct Dock docking: Dock repositioned to 44px immediately above the status bar and flush against the bottom of the dashboard",
+    "Flyout window alignment: Adjusted Control Center and Focus popovers to open cleanly above the docked bar",
+    "Status bar preserved: Bottom bot bar kept fully intact (version, role, sync, ping and health) at screen edge",
+  ],
+};
+
+const v1_74_7_es: ChangelogEntry = {
+  version: "v1.74.7",
+  date: "2026-10-12",
+  title: "Interfaz y Dock: Eliminación del espacio vacío inferior y anclaje directo contra el panel",
+  items: [
+    "Eliminación del espacio muerto: Retirado el relleno residual de 128px en el contenedor principal para un flujo visual continuo",
+    "Anclaje directo del Dock: Reposicionamiento del dock a 44px justo encima de la barra de estado y contra el panel",
+    "Alineación de menús emergentes: Ajuste de ventanas de Centro de control y Focus para abrirse junto al dock",
+    "Barra de estado preservada: Barra inferior conservada intacta con versión, rol, sincronización y latencia",
+  ],
+};
+
+const v1_74_7_de: ChangelogEntry = {
+  version: "v1.74.7",
+  date: "2026-10-12",
+  title: "Oberfläche & Dock: Beseitigung des schwarzen Leerraums und direktes Andocken am Dashboard",
+  items: [
+    "Beseitigung des Leerraums: Entfernen des 128px Boden-Paddings im Hauptcontainer für nahtlose Seitenanzeige ohne Abschneiden",
+    "Direktes Docking: Dock auf 44px direkt über der Statusleiste und bündig an den Dashboard-Inhalten positioniert",
+    "Anpassung der Popover-Fenster: Kontrollzentrum und Focus-Popover öffnen sich harmonisch über dem Dock",
+    "Statusleiste erhalten: Untere Bot-Leiste mit Version, Rolle, Synchronisation und Ping bleibt vollständig bestehen",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_74_7_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_74_7_en);
+CHANGELOG_BY_LANG.es.unshift(v1_74_7_es);
+CHANGELOG_BY_LANG.de.unshift(v1_74_7_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

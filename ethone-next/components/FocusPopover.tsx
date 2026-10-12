@@ -113,7 +113,7 @@ export default function FocusPopover({
             exit={{ opacity: 0, y: 12, x: "-50%", scale: 0.96 }}
             transition={{ type: "spring", stiffness: 440, damping: 28, mass: 0.75 }}
             style={{ transformOrigin: "bottom center" }}
-            className="fixed bottom-[calc(7rem+env(safe-area-inset-bottom))] left-1/2 z-[var(--z-popover)] w-88 max-w-[calc(100vw-1.5rem)] overflow-hidden pointer-events-auto outline-none"
+            className="fixed bottom-[calc(5.75rem+env(safe-area-inset-bottom))] left-1/2 z-[var(--z-popover)] w-88 max-w-[calc(100vw-1.5rem)] overflow-hidden pointer-events-auto outline-none"
             role="dialog"
             aria-modal="false"
             aria-label={i18n("focus")}

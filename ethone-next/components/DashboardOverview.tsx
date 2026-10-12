@@ -499,7 +499,7 @@ export default function DashboardOverview() {
   return (
     <div className="flex h-full min-h-0 flex-col overflow-y-auto os-scroll">
       <PullToRefresh onRefresh={handleRefresh}>
-        <div className={cn("mx-auto w-full min-h-full px-2 pb-28 sm:px-4 space-y-4", maxWClass)}>
+        <div className={cn("mx-auto w-full min-h-full px-2 pb-14 sm:px-4 space-y-4", maxWClass)}>
           {/* 1. Intelligent OS Home 2026 Header */}
           <header className="shrink-0 flex flex-row items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)]/80 bg-[var(--panel-bg)]/80 p-3 md:gap-4 md:p-5 shadow-sm backdrop-blur-[var(--panel-blur)] select-none">
             <div className="min-w-0 space-y-1">

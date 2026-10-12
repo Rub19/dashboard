@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.74.16 — 2026-10-12
+
+**Bouclier Owner : Extinction en cascade des serveurs surveillés lorsque le bouclier est coupé**
+
+- **Désactivation des serveurs synchronisée** : Lorsque le bouclier principal est désactivé au sommet de la page, tous les commutateurs individuels de la grille « Serveurs surveillés » basculent immédiatement en inactif (OFF, grisés).
+- **Statut et filtres cohérents** : Le statut de chaque serveur affiche désormais « Bouclier coupé » en gris neutre au lieu de fausses mentions actives, le compteur de serveurs couverts affiche `0 / [total]` et l'onglet filtre passe dynamiquement en `Inactifs ([total])`.
+- **Réactivation intelligente par serveur** : Tenter d'activer la surveillance sur un serveur individuel alors que le bouclier maître est coupé réenclenche automatiquement le bouclier principal et sécurise immédiatement le serveur ciblé.
+
 ## v1.74.15 — 2026-10-12
 
 **Discord : Généralisation définitive de la vue moderne et suppression complète de la vue classique**

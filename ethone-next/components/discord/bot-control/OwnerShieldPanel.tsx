@@ -468,7 +468,14 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
     });
   };
 
+  const isMasterActive = Boolean(config.enabled);
+
   const handleToggleGuild = async (guildId: string) => {
+    if (!isMasterActive) {
+      const nextConfig: OwnerShieldConfig = { ...config, enabled: true };
+      setConfig(nextConfig);
+      await updateShieldConfig({ enabled: true });
+    }
     try {
       const res = await fetch(`${BOT_API_URL}/api/bot/owner-shield/guilds/${guildId}/toggle`, {
         method: "POST",
@@ -586,10 +593,11 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
     ].filter(Boolean) as string[];
 
   const sanctioned = guilds.filter((g) => sanctionsOf(g).length > 0).length;
-  const covered = guilds.filter((g) => !g.isIgnored).length;
+  const covered = isMasterActive ? guilds.filter((g) => !g.isIgnored).length : 0;
 
   const filteredGuilds = useMemo(() => {
     return guilds.filter((g) => {
+      const isProtected = isMasterActive && !g.isIgnored;
       if (statusFilter === "sanctioned") {
         return (
           g.ownerStatus.isBanned ||
@@ -599,14 +607,14 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
         );
       }
       if (statusFilter === "protected") {
-        return !g.isIgnored;
+        return isProtected;
       }
       if (statusFilter === "ignored") {
-        return g.isIgnored;
+        return !isProtected;
       }
       return true;
     });
-  }, [guilds, statusFilter]);
+  }, [guilds, statusFilter, isMasterActive]);
 
   if (!isOwner) {
     return (
@@ -617,8 +625,6 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
       </div>
     );
   }
-
-  const isMasterActive = Boolean(config.enabled);
 
   return (
     <motion.div
@@ -916,7 +922,7 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
                   : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
               )}
             >
-              Exclus ({guilds.length - covered})
+              {isMasterActive ? `Exclus (${guilds.length - covered})` : `Inactifs (${guilds.length})`}
             </button>
           </div>
         </div>
@@ -935,10 +941,16 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
               const issues = sanctionsOf(g);
               const h = HIERARCHY[g.botHierarchyLevel];
               const busy = actingGuildId === g.guildId;
+              const isGuildActive = isMasterActive && !g.isIgnored;
               return (
                 <div
                   key={g.guildId}
-                  className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/70 p-4 space-y-3 flex flex-col justify-between hover:border-[var(--accent-primary)]/30 transition-all shadow-xs"
+                  className={cn(
+                    "rounded-2xl border border-[var(--panel-border)] p-4 space-y-3 flex flex-col justify-between transition-all shadow-xs",
+                    !isMasterActive
+                      ? "bg-[var(--surface-raised)]/40 opacity-75 hover:opacity-100"
+                      : "bg-[var(--surface-raised)]/70 hover:border-[var(--accent-primary)]/30"
+                  )}
                 >
                   <div className="space-y-2.5">
                     <div className="flex items-start justify-between gap-2.5">
@@ -975,9 +987,16 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
                       <div className="flex items-center gap-1.5 shrink-0">
                         <ToggleSwitch
                           size="md"
-                          checked={!g.isIgnored}
+                          checked={isGuildActive}
+                          disabled={updatingConfig}
                           onChange={() => handleToggleGuild(g.guildId)}
-                          label={g.isIgnored ? `Protéger ${g.guildName}` : `Exclure ${g.guildName}`}
+                          label={
+                            !isMasterActive
+                              ? `Bouclier inactif sur ${g.guildName}`
+                              : g.isIgnored
+                              ? `Protéger ${g.guildName}`
+                              : `Exclure ${g.guildName}`
+                          }
                         />
                       </div>
                     </div>
@@ -988,14 +1007,18 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
                         <span
                           className={cn(
                             "font-semibold",
-                            issues.length > 0
+                            !isMasterActive
+                              ? "text-zinc-500"
+                              : issues.length > 0
                               ? "text-rose-400"
                               : !g.ownerStatus.isPresent && !g.ownerStatus.isBanned
                               ? "text-zinc-400"
                               : "text-emerald-400"
                           )}
                         >
-                          {!g.ownerStatus.isPresent && !g.ownerStatus.isBanned
+                          {!isMasterActive
+                            ? "Bouclier coupé"
+                            : !g.ownerStatus.isPresent && !g.ownerStatus.isBanned
                             ? "Absent du serveur"
                             : issues.length > 0
                             ? issues.join(", ")

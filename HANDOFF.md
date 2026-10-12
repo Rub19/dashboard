@@ -1,4 +1,4 @@
-# ETHONE — passation & nouveautés (2026-10-12, version 1.74.15)
+# ETHONE — passation & nouveautés (2026-10-12, version 1.74.16)
 
 ## Projet
 - `ethone-next/` : site Next.js statique (ethone.dev, Cloudflare Pages, déploiement auto au push sur `main`).
@@ -25,9 +25,14 @@
 
 ---
 
-## Nouveautés majeures & Réalisations récentes (v1.73.0 → v1.74.15)
+## Nouveautés majeures & Réalisations récentes (v1.73.0 → v1.74.16)
 
-### 1. Généralisation de la vue moderne & suppression définitive de la vue classique (v1.74.15)
+### 1. Bouclier Owner : Extinction en cascade des serveurs surveillés (v1.74.16)
+- **Extinction synchronisée des serveurs** : Lorsque le bouclier principal est désactivé au sommet de la page, tous les commutateurs de la grille « Serveurs surveillés » basculent immédiatement en inactif (OFF, grisés).
+- **Statut et filtres alignés** : Chaque carte de serveur affiche désormais « Bouclier coupé » en gris neutre, le compteur de serveurs couverts passe à `0 / [total]` et l'onglet filtre passe dynamiquement en `Inactifs ([total])`.
+- **Réactivation intelligente par serveur** : Tenter d'activer la surveillance sur un serveur individuel alors que le bouclier maître est coupé réenclenche automatiquement le bouclier principal et sécurise immédiatement le serveur ciblé.
+
+### 2. Généralisation de la vue moderne & suppression définitive de la vue classique (v1.74.15)
 - **Suppression du mode classique** : Retrait complet de l'ancienne vue mono-colonne dans `ServerPicker.tsx`, des composants obsolètes (`ClassicAvatar`), des styles et classes CSS obsolètes (`rowClass`, `discordBtn`) et des branches conditionnelles de secours.
 - **Vue moderne en standard unique** : La grille responsive en 3 colonnes (`grid-cols-1 md:grid-cols-2 lg:grid-cols-3`) avec en-tête d'accueil personnalisé (`Bienvenue, [Nom]`), cartes compactes et statut d'installation en direct est désormais le standard unique et permanent.
 - **Suppression des bascules** : Retrait du bouton `Vue classique` dans l'en-tête bureau et du bouton `Classique` sur mobile, ainsi que du commutateur `Voir l'ancienne vitrine` dans le dashboard bot.

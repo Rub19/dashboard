@@ -51482,5 +51482,54 @@ CHANGELOG_BY_LANG.en.unshift(v1_74_15_en);
 CHANGELOG_BY_LANG.es.unshift(v1_74_15_es);
 CHANGELOG_BY_LANG.de.unshift(v1_74_15_de);
 
+const v1_74_16_fr: ChangelogEntry = {
+  version: "v1.74.16",
+  date: "2026-10-12",
+  title: "Bouclier Owner : Extinction en cascade des serveurs surveillés lorsque le bouclier est coupé",
+  items: [
+    "Désactivation des serveurs synchronisée : Lorsque le bouclier principal est désactivé, tous les commutateurs des serveurs surveillés basculent immédiatement en inactif (OFF)",
+    "Statut et filtres cohérents : Le statut de chaque serveur affiche « Bouclier coupé » et le compteur des serveurs couverts passe à 0 avec filtre Inactifs",
+    "Réactivation intelligente : Cliquer sur le commutateur d'un serveur individuel réengage le bouclier principal et sécurise le serveur sélectionné",
+  ],
+};
+
+const v1_74_16_en: ChangelogEntry = {
+  version: "v1.74.16",
+  date: "2026-10-12",
+  title: "Owner Shield: Cascading deactivation of monitored servers when master shield is disabled",
+  items: [
+    "Synchronized server deactivation: When the master shield is turned off, all server monitoring switches immediately switch to inactive (OFF)",
+    "Consistent status and filters: Every server status card displays « Bouclier coupé » and the covered servers counter drops to 0 with Inactive filter",
+    "Intelligent reactivation: Toggling an individual server switch re-enables the master shield and activates protection for the chosen server",
+  ],
+};
+
+const v1_74_16_es: ChangelogEntry = {
+  version: "v1.74.16",
+  date: "2026-10-12",
+  title: "Escudo Owner: Desactivación en cascada de los servidores monitoreados cuando el escudo está apagado",
+  items: [
+    "Desactivación sincronizada de servidores: Cuando se desactiva el escudo principal, todos los interruptores de los servidores pasan inmediatamente a inactivo (OFF)",
+    "Estado y filtros consistentes: El estado de cada servidor muestra « Bouclier coupé » y el contador de servidores cubiertos pasa a 0 con filtro Inactivos",
+    "Reactivación inteligente: Hacer clic en el interruptor de un servidor reactiva el escudo maestro y protege el servidor seleccionado",
+  ],
+};
+
+const v1_74_16_de: ChangelogEntry = {
+  version: "v1.74.16",
+  date: "2026-10-12",
+  title: "Owner-Schild: Kaskadierende Deaktivierung überwachter Server bei ausgeschaltetem Hauptschild",
+  items: [
+    "Synchronisierte Server-Deaktivierung: Wenn der Hauptschild deaktiviert ist, schalten alle Schalter der überwachten Server sofort auf inaktiv (OFF)",
+    "Konsistenter Status und Filter: Jede Serverkarte zeigt den Status « Bouclier coupé » und der Zähler der abgedeckten Server sinkt auf 0 mit Inaktiv-Filter",
+    "Intelligente Reaktivierung: Das Umschalten eines einzelnen Servers schaltet den Hauptschild wieder ein und sichert den gewählten Server",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_74_16_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_74_16_en);
+CHANGELOG_BY_LANG.es.unshift(v1_74_16_es);
+CHANGELOG_BY_LANG.de.unshift(v1_74_16_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

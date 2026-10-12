@@ -1,79 +1,124 @@
-# ETHONE — passation (2026-10-11, version 1.72.0)
+# ETHONE — passation & nouveautés (2026-10-12, version 1.74.14)
 
 ## Projet
 - `ethone-next/` : site Next.js statique (ethone.dev, Cloudflare Pages, déploiement auto au push sur `main`).
 - `discord-bot/` : bot Etho (VPS `ssh vps`, pm2 `ethone-bot`, dossier `~/dashboard`).
 - `worker/` : Cloudflare Worker `raspy-fog-bf5b` (`npx wrangler deploy` depuis `worker/`, tests `node --test test/*.test.mjs`).
-- Supabase : projet `bvgifyzhpzkbrwdjrqsg` (tables mail = `ethone_mail_*`).
+- Supabase : projet `bvgifyzhpzkbrwdjrqsg` (tables mail = `ethone_mail_*`, sauvegardes `bot-backups`).
 
 ## Règles à respecter
-- Commits : `git -c user.name="Rub19" -c user.email="rub19.mailpro@gmail.com" commit …`, message « Migration Next.js : vX - … », **sans co-auteur IA**.
+- Commits : `git -c user.name="Rub19" -c user.email="rub19.mailpro@gmail.com" commit …`, message « Migration Next.js : vX - … » ou « Migration Next.js : description », **sans co-auteur IA**.
 - Ne jamais committer `discord-bot/scripts/etho-avatar-animated.gif` ni `.mcp.json`.
 - Pas de données inventées ni de placeholders dans le dashboard. Seuls les réglages que le bot applique vraiment sont affichés.
+- **Politique stricte zéro commentaire** : aucun commentaire (`//`, `/*`, `///`) dans le code source créé ou modifié.
 - Refuser les secrets collés dans le chat ; ne jamais taper d'identifiants sur un site.
 - Pendant les tests, ne pas modifier les vrais réglages du serveur de l'utilisateur (pas de toggles, owners, whitelist, blacklist). Keeper (keeper.jgl-bot.fr) se consulte en lecture seule.
 - Déploiements autorisés (« je te laisse tout faire ») : les annoncer ; sauvegarder les données du bot avant chaque déploiement bot.
 - Rapports finaux en français.
 
 ## Commandes utiles
-- Release site : `cd ethone-next && node scripts/release.js <ver> <date> <json>` (JSON `{fr,en,es,de:{title,items[]}}`), puis `npm install --package-lock-only`, mettre à jour `VERSION_LABEL` dans `components/UserProfileDropdown.tsx` et la 1re ligne de ce fichier. Vérifs : `npm run lint`, `npm run test:unit`, `npm run build`, `node scripts/audit-security.mjs` et `node ./scripts/precommit-upload-check.mjs` (depuis la racine).
+- Release site : `cd ethone-next && node scripts/release.js <ver> <date> <json>` (JSON `{fr,en,es,de:{title,items[]}}`), puis `npm install --package-lock-only`, synchroniser `public/version.json` et la 1re ligne de ce fichier. Vérifs : `npx tsc --noEmit`, `npm run lint`, `npm run test:unit`, `npm run build`, `node scripts/audit-security.mjs` et `node ./scripts/precommit-upload-check.mjs` (depuis la racine).
 - Attendre le site : `until curl -s https://ethone.dev/version.json | grep -qF <ver>; do sleep 10; done`
 - Déploiement bot :
   `ssh vps 'cp -r ~/dashboard/discord-bot/data ~/backups/data-$(date +%Y%m%d-%H%M) && cd ~/dashboard && git checkout -- discord-bot/package-lock.json; git pull -q origin main && pm2 restart ethone-bot >/dev/null && sleep 25 && pm2 logs ethone-bot --lines 60 --nostream 2>&1 | grep -iE "Connecté avec succès" | tail -1'`
 - Tests bot : `DISCORD_TOKEN=ci-placeholder-token CLIENT_ID=000000000000000000 npx tsx tests/<fichier>.ts` ; typecheck `npx tsc --noEmit -p .`.
 
+---
+
+## Nouveautés majeures & Réalisations récentes (v1.73.0 → v1.74.14)
+
+### 1. Discord AutoMod natif format Keeper (v1.74.14)
+- **Navigation latérale** : Ajout de la catégorie `AutoMod` sous la section `Protection` de `HubSidebar.tsx` avec icône Filter émeraude, sélection active et fil d'Ariane synchronisé (`app/discord/page.tsx`).
+- **Vue liste fidèle à Keeper** : 6 règles standard intégrées sans aucun placeholder :
+  1. `ETHONE • Protection Anti-Phishing Nitro` (Mots-clés · 7 mots-clés · bloque)
+  2. `ETHONE • Liens et Pub non autorisés` (Mots-clés · 2 mots-clés · bloque)
+  3. `ETHONE • Mots-clés malveillants` (Mots-clés · 5 mots-clés · bloque)
+  4. `ETHONE • Grossièretés & Insultes` (Listes de Discord · 3 listes · bloque)
+  5. `ETHONE • Spam de Mentions` (Mentions de masse · plus de 7 mentions · bloque)
+  6. `ETHONE • Détection Anti-Spam` (Spam · bloque)
+- **Commutateurs actifs en ligne** : Bascule immédiate ON/OFF branchée sur `PATCH /automod-native/:id/toggle`.
+- **Éditeur de règles complet** :
+  - Onglets Déclencheur : `Mots-clés`, `Mentions`, `Spam`, `Listes de Discord`.
+  - Gestion par puces/chips interactives des mots-clés avec compteurs de quotas Discord (1000 mots, 10 regex, 100 exceptions) et saisie assistée (Entrée / virgule).
+  - Stepper pour la limite de mentions et switch détection des raids.
+  - Interrupteurs pour les 3 listes natives Discord (Grossièretés, Sexuel, Haine).
+- **Simulateur de test temps réel** : Champ d'évaluation en direct vérifiant si un message saisi déclenche la règle (bannière rouge bloquée avec motif détecté / bannière verte autorisée).
+- **Actions, sanctions & exceptions** : Message de blocage personnalisé (150 car.), salon d'alerte, timeout (1m à 7j), rôles exemptés et salons exemptés.
+- **Synchronisation API réelle** : Branché sur `GET/POST/PUT/DELETE /automod-native` et bouton 1-clic d'installation recommandée (`POST /automod-native/recommended`).
+
+### 2. Bouclier Owner en cascade & Refonte visuelle (v1.74.13)
+- **Bascule maître en cascade intégrale** : Décocher l'interrupteur maître coupe immédiatement l'intégralité des 12 sous-protections (débannissement, timeout, rôles, vocal, pseudo, défense) à la fois dans l'interface et sur le serveur, garantissant qu'aucun voyant vert ne reste allumé quand le bouclier est inactif.
+- **Refonte Motion Design & Glassmorphism** : Carte d'état en verre dépoli avec aura réactive, séparation en 4 modules thématiques (`Sanctions & Bannissements`, `Rôles & Identité`, `Salons Vocaux`, `Défense d'Etho & Confidentialité`), grille responsive des serveurs et journal d'interceptions.
+
+### 3. Refonte intégrale de la Messagerie / Mail (v1.74.4 → v1.74.13)
+- **Fond synchronisé avec le thème utilisateur (v1.74.10)** : Élimination du blanc éblouissant, le fond des e-mails adopte la couleur exacte du thème sélectionné (Obsidian, Midnight, Dyno Rose, Arctic, etc.).
+- **Rendu sandboxé isolé sans vide (v1.74.4, v1.74.9)** : Composant `MailBodyViewer` en iframe sandboxée sécurisée, 100% largeur/hauteur, sans marge morte ni coupure. Bouton d'agrandissement plein écran (`Maximize2`/`Minimize2`).
+- **Images externes & CID fiabilisées (v1.74.9)** : Prise en charge `referrerpolicy="no-referrer"` anti-blocage hotlink, résolution des pièces jointes `cid:...`, surclassement HTTPS automatique.
+- **Réponses rapides 1-clic & Saisie fluide (v1.74.6, v1.74.13)** : Pastilles de réponses automatiques, zone de texte auto-extensible, conteneur `shrink-0` à défilement autonome (`max-h-[45vh] overflow-y-auto`) avec marge basse protectrice empêchant tout masquage des boutons d'envoi.
+- **Auto-masquage du Dock sur /mail (v1.74.13)** : Le dock flottant s'escamote automatiquement sur la page messagerie pour libérer tout l'espace d'écriture, avec bouton de rappel sur la barre d'état.
+
+### 4. Sélecteur de serveurs Discord en grille 3 colonnes (v1.74.12)
+- Remplacement de la liste étirée sur 1 colonne par une grille responsive en 3 colonnes (`grid-cols-1 md:grid-cols-2 lg:grid-cols-3`).
+- En-tête personnalisé avec avatar circulaire de l'utilisateur et salutation (`Bienvenue, [Nom]`).
+- Cartes épurées pour serveurs gérés (badge émeraude « Bot installé », couronne propriétaire 👑) et serveurs à inviter (« Inviter le bot ↗ »).
+
+### 5. Audio & Confort acoustique (v1.74.11)
+- Suppression complète de l'écouteur `mouseover` dans `SoundProvider` (`sound.tsx`) qui déclenchait un son systématique au survol de chaque bouton ou lien interactif.
+- Maintien du retour haptique sonore au clic (`onClick`) et sur les confirmations/alertes.
+
+### 6. Dock flottant, Ambiance & Ergonomie (v1.74.2 → v1.74.8)
+- **Réglages live d'élévation & d'échelle du Dock (v1.74.8)** : Curseurs tactiles dans le Centre de contrôle permettant de régler l'altitude (40px à 120px) et la taille (75% à 130%) avec sauvegarde en direct dans Supabase (`user_settings`).
+- **Égaliseur animé & Pastilles sonores (v1.74.5, v1.74.8)** : Mini-égaliseur à 4 barres animées dans la capsule sonore du dock lors de la lecture d'une ambiance, et pastilles sonores rapides dans le chronomètre Focus (`FocusTimer2026`).
+- **Restauration de la barre d'état (StatusBar, v1.74.2)** : Version en direct, statut de synchro, ping et rôle, compatible avec le Mode Zen (`Ctrl+Shift+Z`).
+
+### 7. Modules Console avancés & Outils staff (v1.73.8 → v1.74.1)
+- **Économie** : Ajustement de solde staff via `POST /economy/wallets/:userId/adjust` avec audit.
+- **Formulaires** : Export 1-clic en formats CSV et JSON.
+- **Starboard** : Simulateur d'envoi de test sur Discord (`POST /starboard/test`).
+- **Messages épinglés & Tags** : Aperçus fidèles du rendu Discord et bouton d'envoi de test en direct.
+- **Tickets** : Onglet « Résolus » avec lecteur de transcripts HTML sécurisé en iframe.
+- **Sauvegardes** : Importateur de fichiers `.json` locaux vers l'API de restauration du bot.
+- **Télémétrie en direct** : Vrai ping WebSocket Gateway Discord (`client.ws.ping`) et allocation mémoire V8.
+
+### 8. Bot Discord Etho (v1.73.6 → v1.73.7)
+- **Avatar officiel** : Intégration de l'anneau pourpre éclatant dans tous les embeds (`ethone.png`, révision `r3`).
+- **Message d'accueil Keeper** : 4 points clés, détection intelligente du salon privé du staff et mention de l'inviteur.
+
+---
+
 ## Architecture console (/discord, format Keeper)
-- `app/discord/page.tsx` : état `consoleView` (settings, access, logs, whitelist, blacklist, members, commands, tools, protections), liens `?view=`, `?module=`, `?p=` (protection choisie).
+- `app/discord/page.tsx` : état `consoleView` (`settings`, `access`, `logs`, `whitelist`, `blacklist`, `members`, `commands`, `tools`, `protections`, `automod`), liens `?view=`, `?module=`, `?p=` (protection choisie).
 - Kit commun : `components/discord/console/kit.tsx`. Icônes console = `lucide-react`.
-- Modules natifs (`components/discord/console/modules/*`, table `NATIVE` de `ModuleEmbed.tsx`) : Économie, Jeux, Niveaux, Giveaways, Musique, Tickets, Bienvenue, Modération, Suggestions, Rôles, Invitations, Sondages, Formulaires, Vocal, Starboard (1.58.0), AFK, Anniversaires, Tags, Rappels, Compteur, Messages épinglés, Salons compteurs, Highlights (1.59.0), Statistiques, Rôles de stats, Rôles sécurisés, Événements (1.60.0), Alertes streamers, Sauvegardes (1.61.0), Serveur, IA (1.62.0), Commandes personnalisées, Analytics, AutoMod Discord, Calendrier (vue de Événements) (1.63.0). Seuls `overview` (redirigé vers l'accueil console) et `bot` (panneau global réservé au propriétaire du bot) restent dans `PAGES`. Le module « logs » ouvre `ConsoleLogs` sur l'onglet Journal. Le module « settings » affiche `ConsoleSettings` (paramètres du bot fusionnés dans Réglages). Hook `useMemberNames` du kit pour afficher les noms à partir d'ID. Les autres modules sont encore l'ancienne page dans `.console-embed`.
+- Modules natifs (`components/discord/console/modules/*`, table `NATIVE` de `ModuleEmbed.tsx`) : AutoMod Discord (v1.74.14), Économie, Jeux, Niveaux, Giveaways, Musique, Tickets, Bienvenue, Modération, Suggestions, Rôles, Invitations, Sondages, Formulaires, Vocal, Starboard, AFK, Anniversaires, Tags, Rappels, Compteur, Messages épinglés, Salons compteurs, Highlights, Statistiques, Rôles de stats, Rôles sécurisés, Événements, Alertes streamers, Sauvegardes, Serveur, IA, Commandes personnalisées, Analytics.
+- Seuls `overview` (redirigé vers l'accueil console) et `bot` (panneau global réservé au propriétaire du bot) restent dans `PAGES`.
 
-## Protections (livré dans la 1.57.0, à vérifier en vrai)
-- Bot : `discord-bot/src/modules/protections/`
-  - `catalog.ts` : les 45 protections (clés, catégories, défauts, phrase `describeProtection`), `RECOMMENDED_PROTECTIONS`.
-  - `protectionStore.ts` : réglages par serveur dans `data/protections.json` (schéma zod borné). Au 1er démarrage, reprise de l'ancien anti-nuke et des volets anti-raid remplacés (spam, mentions, bots, comptes récents, serverNuke, massMod), puis ces volets sont coupés dans l'anti-raid. Nouveau serveur = tout désactivé.
-  - `protectionEngine.ts` : détection via `GuildAuditLogEntryCreate` (seuil par auteur, réparation de toute la rafale, punition unique, verrouillage optionnel avec restauration, alertes salon/rôles/@everyone/MP propriétaire, whitelist owners Etho + globale + seuil dédié + membres/rôles/salons/catégories) ; messages (`onMessage`, `onMessageDelete` pour le ghost ping) ; arrivées (anti-alt) ; Rollback = captures périodiques via le module Sauvegardes.
-  - `detectors.ts` : liens, mots interdits, emojis, pavés, doublons, arnaques, toxicité (lexique local FR/EN).
-  - `automodSync.ts` : mode « AutoMod Discord » pour Anti-lien et Anti-BadWord.
-  - `protectionCommand.ts` : `/protection` (liste, voir, activer, desactiver, punition, seuil, salon, deverrouiller). `/antinuke` et `antiNukeService` supprimés.
-  - Routes : `src/server/routes/protectionRoutes.ts` (`GET /api/guilds/:id/protections`, `PATCH /:key`, `POST /lockdown/lift`, `POST /rollback/now`).
-  - Le module « anti-nuke » du registre s'appelle maintenant « Protections » (allumé = au moins une protection active).
-  - La configuration assistée (`protectionSetupService.ts`) active ces protections.
-  - Tests : `tests/test_protections_v1.ts`, `tests/test_protection_setup_v1.ts`, `tests/test_modules_passive_v1.ts`.
-- Site : `components/discord/console/ConsoleProtections.tsx` réécrite (liste par catégorie, filtres, recherche, détail en 4 sections). La vue d'ensemble compte via `/protections`.
+---
 
-## Sécurité (2026-10-09)
-- Toutes les routes `/api/guilds/:guildId/*` passent par `createGuildAuthMiddleware` (propriétaire, owner Etho, admin ou « Gérer le serveur ») : un membre normal n'a accès à rien dans le dashboard.
-- Casino : cagnotte refusée si casino ou économie coupé, plafond 10 000 000, ajouts journalisés ; `PATCH /games/config` validé (jackpotPool non modifiable).
-- Accès : un admin Discord est en lecture seule (`readOnlyBlocked` dans `guildAuth.ts`) ; seuls propriétaire et owners Etho écrivent.
-- IA : `PUT /ai/settings` et `/ai/channels` validés ; `dailyBudgetTokens` plafonné mais NON appliqué par le moteur (pas affiché). Aucune clé IA payante sur le VPS (fournisseur BUILTIN).
-- Commandes personnalisées : `update` ne peut plus changer guildId/id/usageCount ; `GET /:id` vérifie le serveur. Suggestions : `router.param('id')` vérifie le serveur.
-- Rôles sensibles : `utils/roleSafety.ts` (`isSensitiveRole`) bloque tout rôle avec permissions de modération/admin dans les attributions automatiques (panneau de rôles, auto-rôle, niveaux, invitations, boutique, commandes perso). Test : `tests/test_role_safety_v1.ts`.
-- Événements : `updateEvent` fige id/guildId/organizer/stats. Préférences vocales : userId toujours celui de la session.
-- Formulaires : le repli web (page staff-only) est remplacé par un message ; limite connue : un membre ne peut répondre que par la fenêtre Discord.
-- Sauvegardes : `PUT /backups/settings` validé (rétention ≤ 30 sauvegardes / 90 jours).
-- Formulaires et événements : examinateur / organisateur = `req.user`, jamais une valeur du client.
-- Accès VPS depuis le PC Windows : clé `~/.ssh/id_ed25519_ethone`, alias `vps` (ubuntu@141.94.237.150).
+## Protections & AutoMod
+- Bot : `discord-bot/src/modules/protections/` (45 protections modulaires) et `discord-bot/src/modules/nativeAutomod/` (AutoMod natif Discord).
+- Schéma de validation Zod complet : quotas respectés (6 règles mots-clés, 1 liste prédéfinie, 1 spam de mentions, 1 spam suspect, 1 profil de membre).
+- Tolérance zéro envers les règles supprimées par des bots tiers (`confirmRuleKept`).
+- Intégration complète Dashboard ↔ Discord API Gateway.
 
-## Reste à faire
-1. **Vérifier la 1.57.0 en production** : le commit/push et le déploiement du bot n'ont peut-être pas été faits (voir `git status` et `git log`). Si besoin : lancer les vérifs, committer, pousser, déployer le bot (sauvegarde avant).
-2. **Protections testées (2026-10-10)** : `tests/test_protections_scenarios_v1.ts` (11 scénarios : salon/rôle supprimés recréés, bot banni, webhook supprimé, rafale de bans annulée, lien, spam, ghost ping, anti-alt, verrouillage + levée). En vrai : Rollback OK (capture visible dans Sauvegardes). Impossible de tester depuis le compte de l'utilisateur : propriétaire du serveur et du bot toujours ignorés. Sur le serveur de test, **Keeper supprime les règles AutoMod d'Etho** (anti-AutoMod de Keeper) : Etho le signale maintenant (`confirmRuleKept`). **Test réel avec un 2e compte (Lynn, rôle Mod, 2026-10-10)** : création/suppression de salon, création/suppression de rôle, webhook, lien, spam → tous réparés en 0–2 s par Etho (journal d'audit), sanction « derank » appliquée. Keeper a été retiré du serveur de test ; le rôle « Ethone Bot » doit être tout en haut. 2e série : @everyone supprimé, ghost ping signalé dans le salon, renommage de salon annulé, verrouillage puis levée (5 rôles, permissions revenues à l'identique). Réglages des protections remis à l'identique après le test.
-3. **Page Protections vérifiée dans Chrome (1.66.0)** : chargement, recherche, sélection `?p=`, « Préparer les réglages », aucune erreur console ; mobile vérifié dans le code (liste max-h-80 au-dessus du détail).
-4. Points connus à améliorer :
-   - Anti-réorganisation : Discord ne journalise pas l'auteur → remise en place sans sanction.
-   - Anti-toxicité : lexique local simple (pas d'IA) ; anti-token grab : texte et liens seulement (pas d'analyse d'image).
-   - Fait en 1.66.0 : l'onglet Incidents de Logs fusionne `/security/incidents` (incidents `PROTECTION`) ; compteur « Protections X/45 » dans le HubSidebar (événement `etho:protections-changed`) ; Whitelist : la liste « anti-nuke » du bot (celle que lisent les protections) s'affiche « Protections ».
-   - Ménage fait en 1.67.0 : la page racine de chaque module natif (`app/discord/<module>/page.tsx`, et les onglets `app/discord/server/*`) n'est plus qu'une redirection (`LegacyModuleRedirect`) vers `/discord/?guildId=…&module=…` ; les anciens écrans `*CenterClient.tsx` et 8 composants orphelins sont supprimés. Gardés : les sous-pages encore visées par des liens (détail d'événement, vote/résultats de sondage, tickets/[id], modération cases/users/reports/automod, formulaires), `bot`, `setup`, `overview`, `security`, `scan`, `owner-shield`, `emojis`, et `statroles/StatrolesCenterClient.tsx` (GroupEditor réutilisé par la console). Le lien « Pleine page » est masqué pour les modules natifs (`hasNativePage`).
-   - 1.68.0 :
-     - Copie hors VPS : `src/services/offsiteBackupService.ts` envoie chaque jour `data/` (JSON gzip) dans le bucket Supabase privé `bot-backups` (14 copies gardées). Restauration : `npx tsx scripts/restore-offsite-backup.ts [fichier]` → écrit dans `data-restore/` (jamais data/).
-     - Surveillance du bot : `worker/src/services/bot-monitor.js`, appelé par le cron du worker (`triggers.crons` = chaque minute, contrôle toutes les 5 min) ; mail via Resend à `SUPPORT_FORWARD_TO` après 2 échecs, puis mail de retour. État dans le KV `GAME_OVERRIDES` (clé `monitor:bot`).
-     - Budget IA appliqué dans `AIProviderService.generate` (`aiDailyBudget.ts`, fichier `data/ai_daily_usage.json`) ; visible dans la console seulement si une clé payante existe.
-     - Rapport hebdo (`weeklySecurityReportService.ts`, option `weeklyReport` dans Réglages, lundi ≥ 9 h UTC).
-     - « Tester la protection » : `POST /protections/:key/test` (`protectionCheck.ts`).
-     - Anti-spam : `spamUntil` supprime les messages suivants pendant la fenêtre après sanction.
-     - Membres jamais renvoyés vers le dashboard : `/form open` (avertissement), sondages (plus de vote web, 10 choix max), événements (plus de bouton Détails). Rôles du votant lus aussi sur un membre en cache (bug corrigé).
-     - Console : fiche membre + signalements (`ModerationRecords.tsx`), détail des sondages (`PollInsights.tsx`). Anciennes sous-pages (events, forms, polls, tickets, moderation cases/users, invites, voice, backups) redirigées vers la console ; gardées : `moderation/automod` et `moderation/reports` (installation du bouton Signaler), sans équivalent console.
-     - Entrée pm2 `lavalink` (arrêtée) laissée : le Lavalink actif sur 2333 n'est pas visible avec le compte ubuntu (conteneur ou autre utilisateur ?), à identifier avant de la supprimer.
-   - Failles npm du site : 5 restantes, toutes `braces` via eslint-config-next (pas de version corrigée publiée, outil de dev uniquement). `patch-package` retiré (aucun patch), `js-yaml` forcé en v4 sous `@istanbuljs/load-nyc-config`.
-5. **Mail** : corrigé le 2026-10-09 (liste > 64 Ko = 502 ; objets =?UTF-8?…?= décodés via postal-mime). La redirection marche ; le mail reçu le 2026-10-09 à 11:40 est bien dans la boîte ETHONE (non lu) et copié sur Gmail. Si l'utilisateur ne le voit pas dans ETHONE, regarder le rafraîchissement de la liste et les notifications temps réel de `app/mail/page.tsx`.
-6. **Modules** : tous au format Keeper (1.63.0). Éditeurs avancés aussi dans la console (1.64.0-1.65.0) : restauration guidée, AutoMod Discord, commandes personnalisées (`CustomCommandEditor.tsx`), formulaires (`FormEditor.tsx`, 5 questions texte max = fenêtre Discord), sondages avancés (`AdvancedPollForm.tsx`), participants d'événements (`EventDetails.tsx`). Les anciennes pages existent encore mais ne sont plus liées.
-7. Commandes : `/help` est à jour (catégorie Sécurité = `/protection`, `/antiraid`, `/automod`, `/verification`, `/logs`). Les réponses en texte brut de `/games` et `/bienvenue` sont passées en embeds ; `/tag` reste en texte (contenu du tag).
+---
+
+## État des tests & Qualité au 2026-10-12
+- Tests unitaires Next.js : **329/329 tests passent**.
+- TypeScript : **`npx tsc --noEmit` passe sans aucune erreur**.
+- Lint : **`npm run lint` passe sans aucune erreur**.
+- Audits de sécurité : `audit-security.mjs` et `precommit-upload-check.mjs` passent (0 avertissement, 1893 fichiers audités).
+- Build Next.js : **Export statique 100% vert**, toutes les routes pré-rendues.
+- Déploiement : commit `351e97cc` poussé sur la branche `main` (déploiement automatique Cloudflare Pages).
+
+---
+
+## Reste à faire / Prochaines étapes
+1. **Tests réels sur Discord avec le bot** :
+   - Tester l'activation/désactivation en direct d'une règle AutoMod depuis le dashboard et constater la prise d'effet immédiate dans `Paramètres du serveur > AutoMod` sur Discord.
+   - Tester le simulateur de test avec de nouvelles expressions régulières complexes.
+2. **Vérification mobile des pages de la console** :
+   - Contrôler sur petits écrans (< 390px) que le menu d'onglets mobiles de la console (`MobileTabs`) affiche lisiblement tous les blocs sans débordement horizontal.
+3. **Optimisation des balises `<img>` restantes** :
+   - 22 avertissements mineurs du linter sur des balises `<img>` dans des composants trackers de jeux (LoL, Valorant) : les migrer progressivement vers `ClientImage` ou `next/image`.
+4. **Surveillance & Maintenance VPS** :
+   - Vérifier périodiquement l'état du bot via `pm2 logs ethone-bot` et les sauvegardes automatiques dans Supabase `bot-backups`.

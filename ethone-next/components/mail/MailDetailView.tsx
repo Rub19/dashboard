@@ -451,7 +451,7 @@ export default function MailDetailView({
       </div>
 
       {onQuickReplySend && (
-        <div className="border-t border-[var(--panel-border)] p-3 space-y-2 select-none bg-[var(--surface-base,var(--bg-main))]/40">
+        <div className="shrink-0 border-t border-[var(--panel-border)] p-3 space-y-2 select-none bg-[var(--surface-base,var(--bg-main))]/90 backdrop-blur-md max-h-[45vh] overflow-y-auto os-scroll">
           <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
             <span className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)] shrink-0 mr-1">
               <Sparkles className="h-3 w-3 text-[var(--accent-primary)]" />
@@ -482,11 +482,11 @@ export default function MailDetailView({
               rows={quickReplyText.includes("\n") || quickReplyText.length > 70 ? 3 : 1}
               placeholder={`Répondre rapidement à ${sender}…`}
               disabled={sendingQuick}
-              className="w-full resize-none rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-3 py-2 text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none transition-all leading-relaxed"
+              className="w-full resize-none rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-3 py-2 text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none transition-all leading-relaxed max-h-24 overflow-y-auto os-scroll"
             />
           </div>
 
-          <div className="flex items-center justify-between gap-2 pt-0.5">
+          <div className="flex items-center justify-between gap-2 pt-0.5 shrink-0">
             <span className="text-[10px] text-[var(--text-muted)] hidden sm:inline">
               Entrée pour envoyer · Maj+Entrée nouvelle ligne
             </span>

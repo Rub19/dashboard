@@ -539,7 +539,7 @@ export default function MailPage() {
 
   if (aliasesLoading) {
     return (
-      <div role="status" aria-busy="true" aria-label="Chargement de la messagerie…" className="skeleton-delay flex h-full min-h-0 w-full gap-3 p-3">
+      <div role="status" aria-busy="true" aria-label="Chargement de la messagerie…" className="skeleton-delay flex h-full min-h-0 w-full gap-3 p-3 pb-[calc(2.5rem+0.75rem+env(safe-area-inset-bottom))]">
         <div className="hidden w-56 shrink-0 flex-col gap-2 md:flex">
           <div className="skeleton-shimmer h-10 rounded-[var(--inset-radius)]" />
           {[0, 1, 2, 3, 4].map((i) => (
@@ -569,7 +569,7 @@ export default function MailPage() {
   }
 
   return (
-    <div className="flex h-full min-h-0 w-full gap-2.5 overflow-hidden p-2 select-none">
+    <div className="flex h-full min-h-0 w-full gap-2.5 overflow-hidden p-2 pb-[calc(2.5rem+0.75rem+env(safe-area-inset-bottom))] select-none">
       <div className={cn("hidden h-full", isMaximized ? "lg:hidden" : "lg:flex")}>
         <MailSidebar
           active={folder as MailFolder}

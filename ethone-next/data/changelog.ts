@@ -51319,5 +51319,58 @@ CHANGELOG_BY_LANG.en.unshift(v1_74_12_en);
 CHANGELOG_BY_LANG.es.unshift(v1_74_12_es);
 CHANGELOG_BY_LANG.de.unshift(v1_74_12_de);
 
+const v1_74_13_fr: ChangelogEntry = {
+  version: "v1.74.13",
+  date: "2026-10-12",
+  title: "Sécurité & Messagerie : Cascade du Bouclier Owner et dégagement parfait des réponses Mail",
+  items: [
+    "Bouclier Owner en cascade intégrale : Dès que le commutateur maître est décoché en haut, l'intégralité des 12 sous-protections (débannissement, timeout, rôles, vocal, pseudo) bascule immédiatement en OFF côté interface et serveur",
+    "Refonte visuelle et motion design du Bouclier Owner : Carte statut en verre avec aura dynamique, grille thématique en 4 modules spécialisés, matrice de serveurs responsive et journal d'interceptions en direct",
+    "Dégagement et défilement de la messagerie : Ajout d'une marge basse protectrice sur la page Mail au-dessus de la barre d'état et conteneur de réponse rapide shrink-0 à défilement autonome garantissant l'accès permanent aux boutons d'envoi",
+    "Auto-masquage du Dock en messagerie : Intégration de la route Mail aux pages masquant automatiquement le dock flottant pour dégager intégralement le champ de saisie",
+  ],
+};
+
+const v1_74_13_en: ChangelogEntry = {
+  version: "v1.74.13",
+  date: "2026-10-12",
+  title: "Security & Mail: Owner Shield master cascade and unobstructed Mail quick reply layout",
+  items: [
+    "Owner Shield full master cascade: Unchecking the master shield switch instantly turns off all 12 sub-protections across UI state and backend configuration",
+    "Owner Shield visual & motion design revamp: Glassmorphism status hero with dynamic aura, 4-category protection grid, responsive server cards, and live interception timeline",
+    "Mail quick reply clearance: Protective bottom clearance above the status bar and shrink-0 self-scrolling quick reply box ensuring send buttons are never clipped",
+    "Smart dock auto-hide on Mail: Mail route auto-hides the floating dock to prevent any input obstruction while retaining status bar toggle access",
+  ],
+};
+
+const v1_74_13_es: ChangelogEntry = {
+  version: "v1.74.13",
+  date: "2026-10-12",
+  title: "Seguridad y Correo: Cascada del Escudo de Propietario y ajuste de respuestas rápidas",
+  items: [
+    "Cascada completa del Escudo de Propietario: Al desactivar el interruptor maestro superior, todas las protecciones secundarias se apagan de inmediato",
+    "Rediseño y motion design del Escudo: Tarjeta de estado con aura dinámica, cuadrícula de 4 categorías, matriz de servidores y registro de eventos en vivo",
+    "Espaciado inferior en Correo: Altura protegida sobre la barra de estado y caja de respuesta rápida con scroll independiente sin recortes",
+    "Ocultación automática del Dock en Correo: Evita solapamientos con el área de redacción",
+  ],
+};
+
+const v1_74_13_de: ChangelogEntry = {
+  version: "v1.74.13",
+  date: "2026-10-12",
+  title: "Sicherheit & Mail: Master-Kaskade für das Owner-Schild und freies Mail-Antwortfeld",
+  items: [
+    "Owner-Schild Master-Kaskade: Beim Deaktivieren des Hauptschalters werden alle 12 Unterfunktionen sofort synchron auf AUS geschaltet",
+    "Komplettes Redesign und Motion Design: Glas-Statuskarte mit dynamischer Aura, 4 thematische Schutzkarten, responsive Server-Übersicht und Live-Ereignis-Timeline",
+    "Freigestelltes Mail-Antwortfeld: Schutzabstand zur Statusleiste und shrink-0 Schnellantwortbox mit eigenem Scrollbereich ohne Abschneiden der Buttons",
+    "Automatisches Dock-Ausblenden in Mails: Verhindert jede Überlagerung des Eingabefeldes",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_74_13_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_74_13_en);
+CHANGELOG_BY_LANG.es.unshift(v1_74_13_es);
+CHANGELOG_BY_LANG.de.unshift(v1_74_13_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

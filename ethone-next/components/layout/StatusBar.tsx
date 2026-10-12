@@ -214,10 +214,13 @@ function StatusPill({ icon, label, value, title, children, onClick, tone = "defa
   );
 }
 
+const AUTO_HIDE_ROUTES = ["/brain", "/focus", "/scratchpad", "/matches", "/mail"];
+
 export default function StatusBar() {
   const i18n = useI18n();
   const router = useRouter();
   const pathname = usePathname();
+  const isAutoHidePage = AUTO_HIDE_ROUTES.some((route) => pathname.startsWith(route));
   const { signOut } = useAuth();
   const { displayName } = useUserIdentity();
   const { isOpen, isMinimized, openLive, closeLive } = useLiveWidgetStore();
@@ -324,7 +327,7 @@ export default function StatusBar() {
           )}
 
           <AnimatePresence>
-            {!settings.dockVisible && (
+            {(!settings.dockVisible || isAutoHidePage) && (
               <motion.button
                 key="status-dock-btn"
                 initial={{ opacity: 0, scale: 0.85, y: 6 }}
@@ -334,7 +337,7 @@ export default function StatusBar() {
                 type="button"
                 onClick={() => {
                   hapticLightImpact();
-                  update({ dockVisible: true });
+                  window.dispatchEvent(new CustomEvent("ethone:toggle-dock"));
                 }}
                 className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/70 px-2.5 py-1 text-xs font-semibold text-[var(--text-muted)] transition-all hover:border-[var(--accent-primary)]/40 hover:bg-[var(--accent-primary)]/15 hover:text-[var(--text-primary)] hover:scale-105 active:scale-95 cursor-pointer shadow-xs"
                 aria-label={i18n("showDock", "Afficher le dock")}

@@ -1,12 +1,32 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { FlaskConical, RefreshCw, Zap } from "@/components/icons/ph";
-import { ConsolePage, EmptyLine, GhostButton, Panel, Row, Segmented, Switch } from "@/components/discord/console/kit";
+import { motion } from "framer-motion";
+import {
+  ShieldCheck,
+  ShieldOff,
+  UserX,
+  Clock,
+  ExternalLink,
+  ShieldAlert,
+  Crown,
+  User,
+  MicOff,
+  VolumeX,
+  Radio,
+  Zap,
+  Bell,
+  EyeOff,
+  RefreshCw,
+  FlaskConical,
+  AlertTriangle,
+} from "lucide-react";
 import { cleanLogText, sinceLabel } from "@/lib/discord/security-scan";
 import { useToast } from "@/components/ToastProvider";
 import { cn } from "@/lib/utils";
 import { formatApiError, errorReason } from "@/lib/format-error";
+import { hapticLightImpact, hapticMediumImpact } from "@/lib/haptics";
+import ClientImage from "@/components/ClientImage";
 
 export interface OwnerShieldConfig {
   enabled: boolean;
@@ -103,6 +123,167 @@ const DEFAULT_CONFIG: OwnerShieldConfig = {
   ignoredGuildIds: [],
 };
 
+const PROTECTION_CATEGORIES = [
+  {
+    id: "sanctions",
+    title: "Sanctions & Bannissements",
+    subtitle: "Annulation immédiate des expulsions et restrictions",
+    options: [
+      {
+        key: "autoUnban" as keyof OwnerShieldConfig,
+        label: "Débannissement",
+        hint: "Te débannit dès qu'un modérateur te bannit.",
+        icon: UserX,
+      },
+      {
+        key: "autoTimeoutRemove" as keyof OwnerShieldConfig,
+        label: "Exclusion temporaire",
+        hint: "Lève tout timeout dès qu'il est posé.",
+        icon: Clock,
+      },
+      {
+        key: "autoKickInvite" as keyof OwnerShieldConfig,
+        label: "Invitation après expulsion",
+        hint: "T'envoie en MP une invitation de retour valide.",
+        icon: ExternalLink,
+      },
+    ],
+  },
+  {
+    id: "roles",
+    title: "Rôles & Identité",
+    subtitle: "Restauration automatique des privilèges et du profil",
+    options: [
+      {
+        key: "autoMuteRolesRemove" as keyof OwnerShieldConfig,
+        label: "Rôles restrictifs",
+        hint: "Retire les rôles mute, prison ou silence qui te sont donnés.",
+        icon: ShieldAlert,
+      },
+      {
+        key: "autoRestoreRoles" as keyof OwnerShieldConfig,
+        label: "Rôles retirés",
+        hint: "Te réattribue les rôles dès qu'on te les enlève.",
+        icon: Crown,
+      },
+      {
+        key: "antiNicknameChange" as keyof OwnerShieldConfig,
+        label: "Pseudo d'origine",
+        hint: "Rétablit ton pseudo si un modérateur le change.",
+        icon: User,
+      },
+    ],
+  },
+  {
+    id: "voice",
+    title: "Salons Vocaux",
+    subtitle: "Protection de la parole, de l'écoute et du placement",
+    options: [
+      {
+        key: "autoVoiceUnmute" as keyof OwnerShieldConfig,
+        label: "Micro coupé",
+        hint: "Te rend la parole en salon vocal instantanément.",
+        icon: MicOff,
+      },
+      {
+        key: "autoVoiceUndeafen" as keyof OwnerShieldConfig,
+        label: "Sourdine casque",
+        hint: "Te rend l'écoute en salon vocal si on te met en sourdine.",
+        icon: VolumeX,
+      },
+      {
+        key: "antiVoiceMove" as keyof OwnerShieldConfig,
+        label: "Déplacement vocal",
+        hint: "Te ramène dans ton salon vocal si un modérateur te déplace.",
+        icon: Radio,
+      },
+    ],
+  },
+  {
+    id: "bot",
+    title: "Défense d'Etho & Alertes",
+    subtitle: "Riposte contre les abus et notifications privées",
+    options: [
+      {
+        key: "botSelfDefense" as keyof OwnerShieldConfig,
+        label: "Défense d'Etho",
+        hint: "Sanctionne un modérateur qui retire les rôles d'Etho.",
+        icon: Zap,
+      },
+      {
+        key: "dmAlerts" as keyof OwnerShieldConfig,
+        label: "Alertes en MP",
+        hint: "Pseudo, ID et raison de l'auteur de la sanction en MP.",
+        icon: Bell,
+      },
+      {
+        key: "stealthMode" as keyof OwnerShieldConfig,
+        label: "Mode discret",
+        hint: "Aucun message dans les salons de modération publics.",
+        icon: EyeOff,
+      },
+    ],
+  },
+];
+
+const HIERARCHY = {
+  SUPREME: { label: "Etho tout en haut", color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20" },
+  SUFFICIENT: { label: "Etho assez haut", color: "text-amber-400 bg-amber-500/10 border-amber-500/20" },
+  INSUFFICIENT: { label: "Etho trop bas pour agir", color: "text-rose-400 bg-rose-500/10 border-rose-500/20" },
+} as const;
+
+function ToggleSwitch({
+  checked,
+  onChange,
+  disabled,
+  label,
+  size = "md",
+}: {
+  checked: boolean;
+  onChange: (val: boolean) => void;
+  disabled?: boolean;
+  label: string;
+  size?: "md" | "lg";
+}) {
+  const isLarge = size === "lg";
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      aria-label={label}
+      disabled={disabled}
+      onClick={() => {
+        hapticLightImpact();
+        onChange(!checked);
+      }}
+      className={cn(
+        "relative shrink-0 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)]/40 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed",
+        isLarge ? "h-7 w-13" : "h-5 w-9.5",
+        checked
+          ? "bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.35)]"
+          : "bg-zinc-700/60 hover:bg-zinc-700"
+      )}
+    >
+      <motion.span
+        layout
+        transition={{ type: "spring", stiffness: 500, damping: 32 }}
+        className={cn(
+          "absolute rounded-full bg-white shadow-md block",
+          isLarge ? "top-1 h-5 w-5" : "top-0.5 h-4 w-4",
+          checked
+            ? isLarge
+              ? "left-7"
+              : "left-5"
+            : isLarge
+            ? "left-1"
+            : "left-0.5"
+        )}
+      />
+    </button>
+  );
+}
+
 export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
   const { success, error: showError } = useToast();
   const [loading, setLoading] = useState(true);
@@ -113,46 +294,47 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
   const [actingGuildId, setActingGuildId] = useState<string | null>(null);
   const [globalRescuing, setGlobalRescuing] = useState(false);
   const [updatingConfig, setUpdatingConfig] = useState(false);
-
-  // Filtres & Recherche
   const [statusFilter, setStatusFilter] = useState<"all" | "sanctioned" | "protected" | "ignored">("all");
+  const [simulating, setSimulating] = useState(false);
 
-  const fetchStatus = useCallback(async (notify = false) => {
-    if (!BOT_API_URL || !isOwner) return;
-    try {
-      setRefreshing(true);
-      const res = await fetch(`${BOT_API_URL}/api/bot/owner-shield/status`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-      });
+  const fetchStatus = useCallback(
+    async (notify = false) => {
+      if (!BOT_API_URL || !isOwner) return;
+      try {
+        setRefreshing(true);
+        const res = await fetch(`${BOT_API_URL}/api/bot/owner-shield/status`, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        });
 
-      if (!res.ok) throw new Error(`Erreur HTTP ${res.status}`);
-      const json = await res.json();
-      if (json.success && json.data) {
-        if (json.data.config) {
-          setConfig(json.data.config);
-        } else {
-          setConfig((prev) => ({ ...prev, enabled: Boolean(json.data.autoDefenseEnabled) }));
+        if (!res.ok) throw new Error(`Erreur HTTP ${res.status}`);
+        const json = await res.json();
+        if (json.success && json.data) {
+          if (json.data.config) {
+            setConfig(json.data.config);
+          } else {
+            setConfig((prev) => ({ ...prev, enabled: Boolean(json.data.autoDefenseEnabled) }));
+          }
+          setGuilds(json.data.guilds || []);
+          setHistory(json.data.history || []);
+          if (notify) success("Statut du Bouclier actualisé !");
         }
-        setGuilds(json.data.guilds || []);
-        setHistory(json.data.history || []);
-        if (notify) success("Statut du Bouclier actualisé !");
+      } catch (err: any) {
+        if (notify) showError("Erreur de synchronisation", errorReason(err, "Le bot n'a pas répondu."));
+      } finally {
+        setLoading(false);
+        setRefreshing(false);
       }
-    } catch (err: any) {
-      if (notify) showError("Erreur de synchronisation", errorReason(err, "Le bot n'a pas répondu."));
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  }, [isOwner, success, showError]);
+    },
+    [isOwner, success, showError]
+  );
 
   useEffect(() => {
     fetchStatus();
   }, [fetchStatus]);
 
-  // Polling automatique en arrière-plan toutes les 20 secondes
   useEffect(() => {
     if (!isOwner) return;
     const timer = setInterval(() => {
@@ -161,7 +343,6 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
     return () => clearInterval(timer);
   }, [isOwner, fetchStatus]);
 
-  // Met à jour un ou plusieurs paramètres de la config
   const updateShieldConfig = async (partial: Partial<OwnerShieldConfig>) => {
     setUpdatingConfig(true);
     try {
@@ -187,24 +368,43 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
     }
   };
 
-  // Désactiver totalement le bouclier
   const handleDisableAll = async () => {
     setUpdatingConfig(true);
+    hapticMediumImpact();
+    const disabledState: OwnerShieldConfig = {
+      ...config,
+      enabled: false,
+      autoUnban: false,
+      autoTimeoutRemove: false,
+      autoMuteRolesRemove: false,
+      autoVoiceUnmute: false,
+      autoVoiceUndeafen: false,
+      autoKickInvite: false,
+      autoRestoreRoles: false,
+      antiNicknameChange: false,
+      antiVoiceMove: false,
+      botSelfDefense: false,
+      stealthMode: false,
+      dmAlerts: false,
+    };
+    setConfig(disabledState);
     try {
-      const res = await fetch(`${BOT_API_URL}/api/bot/owner-shield/disable-all`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-      });
-      const json = await res.json();
-      if (res.ok && json.success) {
-        setConfig(json.config);
-        success("Bouclier totalement désactivé", "Le bot n'interviendra plus lors des sanctions.");
-      } else {
-        throw new Error(formatApiError(json?.error, "Le bot a refusé l'action."));
+      if (BOT_API_URL) {
+        await Promise.allSettled([
+          fetch(`${BOT_API_URL}/api/bot/owner-shield/config`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify(disabledState),
+          }),
+          fetch(`${BOT_API_URL}/api/bot/owner-shield/disable-all`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+          }),
+        ]);
       }
+      success("Bouclier totalement désactivé", "Toutes les protections automatiques sont coupées.");
     } catch (err: any) {
       showError("Erreur désactivation", errorReason(err, "Le bot n'a pas répondu."));
     } finally {
@@ -212,24 +412,42 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
     }
   };
 
-  // Réactiver totalement le bouclier
   const handleEnableAll = async () => {
     setUpdatingConfig(true);
+    hapticMediumImpact();
+    const enabledState: OwnerShieldConfig = {
+      ...config,
+      enabled: true,
+      autoUnban: true,
+      autoTimeoutRemove: true,
+      autoMuteRolesRemove: true,
+      autoVoiceUnmute: true,
+      autoVoiceUndeafen: true,
+      autoKickInvite: true,
+      autoRestoreRoles: true,
+      antiNicknameChange: true,
+      antiVoiceMove: true,
+      botSelfDefense: true,
+      dmAlerts: true,
+    };
+    setConfig(enabledState);
     try {
-      const res = await fetch(`${BOT_API_URL}/api/bot/owner-shield/enable-all`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-      });
-      const json = await res.json();
-      if (res.ok && json.success) {
-        setConfig(json.config);
-        success("Bouclier totalement réactivé", "Toutes les protections automatiques sont en service.");
-      } else {
-        throw new Error(formatApiError(json?.error, "Le bot a refusé l'action."));
+      if (BOT_API_URL) {
+        await Promise.allSettled([
+          fetch(`${BOT_API_URL}/api/bot/owner-shield/config`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify(enabledState),
+          }),
+          fetch(`${BOT_API_URL}/api/bot/owner-shield/enable-all`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+          }),
+        ]);
       }
+      success("Bouclier totalement réactivé", "Toutes les protections automatiques sont en service.");
     } catch (err: any) {
       showError("Erreur réactivation", errorReason(err, "Le bot n'a pas répondu."));
     } finally {
@@ -237,7 +455,19 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
     }
   };
 
-  // Basculer l'exclusion d'un serveur précis
+  const handleToggleSubOption = async (key: keyof OwnerShieldConfig, nextVal: boolean) => {
+    const nextConfig: OwnerShieldConfig = {
+      ...config,
+      [key]: nextVal,
+      enabled: nextVal ? true : config.enabled,
+    };
+    setConfig(nextConfig);
+    await updateShieldConfig({
+      [key]: nextVal,
+      ...(nextVal ? { enabled: true } : {}),
+    });
+  };
+
   const handleToggleGuild = async (guildId: string) => {
     try {
       const res = await fetch(`${BOT_API_URL}/api/bot/owner-shield/guilds/${guildId}/toggle`, {
@@ -262,7 +492,6 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
     }
   };
 
-  // Sauvetage ciblé sur un serveur
   const handleRescue = async (guildId: string, actions?: Record<string, boolean>) => {
     setActingGuildId(guildId);
     try {
@@ -293,9 +522,9 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
     }
   };
 
-  // Sauvetage global 1-clic
   const handleGlobalRescue = async () => {
     setGlobalRescuing(true);
+    hapticMediumImpact();
     try {
       const res = await fetch(`${BOT_API_URL}/api/bot/owner-shield/rescue`, {
         method: "POST",
@@ -320,8 +549,6 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
     }
   };
 
-  // Simuler une attaque de test
-  const [simulating, setSimulating] = useState(false);
   const handleSimulateAttack = async () => {
     setSimulating(true);
     try {
@@ -334,7 +561,10 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
       });
       const json = await res.json();
       if (res.ok && json.success) {
-        success("🧪 Simulation d'attaque réussie !", json.details || "Alerte de test envoyée en MP avec les boutons d'action.");
+        success(
+          "🧪 Simulation d'attaque réussie !",
+          json.details || "Alerte de test envoyée en MP avec les boutons d'action."
+        );
         await fetchStatus(false);
       } else {
         throw new Error(formatApiError(json?.error, "Échec"));
@@ -346,7 +576,18 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
     }
   };
 
-  // Filtrage des serveurs
+  const sanctionsOf = (g: OwnerGuildStatus) =>
+    [
+      g.ownerStatus.isBanned && "banni",
+      g.ownerStatus.isTimedOut && "exclu temporairement",
+      g.ownerStatus.isVoiceMuted && "rendu muet",
+      g.ownerStatus.isVoiceDeafened && "mis en sourdine",
+      g.ownerStatus.hasMuteRole && `rôle restrictif (${g.ownerStatus.muteRoleNames.join(", ")})`,
+    ].filter(Boolean) as string[];
+
+  const sanctioned = guilds.filter((g) => sanctionsOf(g).length > 0).length;
+  const covered = guilds.filter((g) => !g.isIgnored).length;
+
   const filteredGuilds = useMemo(() => {
     return guilds.filter((g) => {
       if (statusFilter === "sanctioned") {
@@ -369,217 +610,522 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
 
   if (!isOwner) {
     return (
-      <ConsolePage title="Bouclier de l'owner">
-        <Panel>
-          <EmptyLine>Réservé au propriétaire du bot.</EmptyLine>
-        </Panel>
-      </ConsolePage>
+      <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-12 text-center">
+        <ShieldOff className="mx-auto h-12 w-12 text-[var(--text-muted)]" />
+        <h3 className="mt-4 text-base font-bold text-[var(--text-primary)]">Accès Réservé</h3>
+        <p className="mt-1 text-xs text-[var(--text-muted)]">Cette console est strictement réservée au propriétaire du bot.</p>
+      </div>
     );
   }
 
-  const sanctionsOf = (g: OwnerGuildStatus) =>
-    [
-      g.ownerStatus.isBanned && "banni",
-      g.ownerStatus.isTimedOut && "exclu temporairement",
-      g.ownerStatus.isVoiceMuted && "rendu muet",
-      g.ownerStatus.isVoiceDeafened && "mis en sourdine",
-      g.ownerStatus.hasMuteRole && `rôle restrictif (${g.ownerStatus.muteRoleNames.join(", ")})`,
-    ].filter(Boolean) as string[];
-  const sanctioned = guilds.filter((g) => sanctionsOf(g).length > 0).length;
-  const covered = guilds.filter((g) => !g.isIgnored).length;
-  const HIERARCHY = {
-    SUPREME: { label: "Etho tout en haut", color: "var(--success)" },
-    SUFFICIENT: { label: "Etho assez haut", color: "var(--warning)" },
-    INSUFFICIENT: { label: "Etho trop bas pour agir", color: "var(--danger)" },
-  } as const;
+  const isMasterActive = Boolean(config.enabled);
 
   return (
-    <ConsolePage
-      title="Bouclier de l'owner"
-      actions={
-        <GhostButton onClick={() => fetchStatus(true)} disabled={refreshing}>
-          <RefreshCw className={cn("h-3.5 w-3.5", refreshing && "animate-spin")} />
-          Actualiser
-        </GhostButton>
-      }
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+      className="space-y-6"
     >
-      <Panel>
-        <div className="flex flex-wrap items-center justify-between gap-4 px-5 py-4">
-          <div className="min-w-0">
-            <p className="text-sm font-bold text-[var(--text-primary)]">{config.enabled ? "Bouclier actif" : "Bouclier coupé"}</p>
-            <p className="mt-0.5 text-xs text-[var(--text-muted)]">
-              Etho annule les sanctions prises contre ton compte sur les serveurs où il est présent. {covered}/{guilds.length} serveur
-              {guilds.length > 1 ? "s" : ""} couvert{covered > 1 ? "s" : ""}
-              {sanctioned ? `, ${sanctioned} avec une sanction en cours.` : ", aucune sanction en cours."}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/20 text-[var(--accent-primary)]">
+              Console d&apos;Élite · Sécurité Absolue
+            </span>
+          </div>
+          <h1 className="mt-1 text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--text-primary)]">
+            Bouclier de l&apos;Owner
+          </h1>
+          <p className="mt-0.5 text-xs sm:text-sm text-[var(--text-muted)]">
+            Annulation instantanée et inviolable des sanctions infligées à votre compte sur tous les serveurs Discord.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => fetchStatus(true)}
+          disabled={refreshing}
+          className="inline-flex items-center gap-2 self-start sm:self-auto rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3.5 py-2 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-raised)]/90 transition-all cursor-pointer shadow-xs"
+        >
+          <RefreshCw className={cn("h-3.5 w-3.5", refreshing && "animate-spin text-[var(--accent-primary)]")} />
+          <span>Actualiser</span>
+        </button>
+      </div>
+
+      <motion.div
+        layout
+        className={cn(
+          "relative overflow-hidden rounded-2xl border p-5 sm:p-6 transition-all duration-500 backdrop-blur-xl shadow-lg",
+          isMasterActive
+            ? "border-emerald-500/30 bg-gradient-to-br from-emerald-950/20 via-[var(--surface-raised)] to-[var(--surface-raised)] shadow-[0_0_50px_-15px_rgba(16,185,129,0.2)]"
+            : "border-[var(--panel-border)] bg-[var(--surface-raised)]/80"
+        )}
+      >
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+          <div className="flex items-start gap-4 min-w-0">
+            <div
+              className={cn(
+                "relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border transition-all duration-500",
+                isMasterActive
+                  ? "border-emerald-500/40 bg-emerald-500/15 text-emerald-400 shadow-[0_0_25px_rgba(16,185,129,0.35)]"
+                  : "border-zinc-700/50 bg-zinc-800/40 text-zinc-400"
+              )}
+            >
+              {isMasterActive ? (
+                <>
+                  <ShieldCheck className="h-7 w-7" />
+                  <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500" />
+                  </span>
+                </>
+              ) : (
+                <ShieldOff className="h-7 w-7" />
+              )}
+            </div>
+
+            <div className="min-w-0 space-y-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <h2 className="text-lg sm:text-xl font-bold tracking-tight text-[var(--text-primary)]">
+                  {isMasterActive ? "Bouclier actif" : "Bouclier coupé"}
+                </h2>
+                <span
+                  className={cn(
+                    "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold tracking-wide uppercase",
+                    isMasterActive
+                      ? "bg-emerald-500/15 border border-emerald-500/30 text-emerald-400"
+                      : "bg-zinc-800 border border-zinc-700 text-zinc-400"
+                  )}
+                >
+                  <span
+                    className={cn(
+                      "h-1.5 w-1.5 rounded-full",
+                      isMasterActive ? "bg-emerald-400 animate-pulse" : "bg-zinc-500"
+                    )}
+                  />
+                  {isMasterActive ? "Protection intégrale" : "Toutes protections coupées"}
+                </span>
+              </div>
+              <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed max-w-2xl">
+                {isMasterActive
+                  ? `Etho annule en temps réel toutes les sanctions (ban, timeout, mute, vol de rôles). ${covered}/${guilds.length} serveurs sous protection active.`
+                  : "Le bouclier est éteint. Toutes les réactions automatiques sont à l'arrêt complet sur l'ensemble de vos serveurs."}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4 shrink-0 bg-[var(--surface-2)]/40 border border-[var(--panel-border)] p-3 rounded-xl">
+            <div className="text-right hidden sm:block">
+              <p className="text-xs font-bold text-[var(--text-primary)]">
+                {isMasterActive ? "Bouclier activé" : "Bouclier désactivé"}
+              </p>
+              <p className="text-[11px] text-[var(--text-muted)]">
+                {isMasterActive ? "Cliquer pour tout couper" : "Cliquer pour tout activer"}
+              </p>
+            </div>
+            <ToggleSwitch
+              size="lg"
+              checked={isMasterActive}
+              disabled={updatingConfig || loading}
+              onChange={(next) => (next ? handleEnableAll() : handleDisableAll())}
+              label={isMasterActive ? "Couper le bouclier" : "Activer le bouclier"}
+            />
+          </div>
+        </div>
+
+        <div className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-4 border-t border-[var(--panel-border)]">
+          <div className="rounded-xl border border-[var(--panel-border)]/60 bg-[var(--surface-2)]/30 p-2.5">
+            <span className="text-[11px] text-[var(--text-muted)] font-medium">Serveurs couverts</span>
+            <p className="text-sm sm:text-base font-bold text-[var(--text-primary)] mt-0.5">
+              {covered} <span className="text-xs text-[var(--text-muted)] font-normal">/ {guilds.length}</span>
             </p>
           </div>
-          <Switch
-            checked={config.enabled}
-            disabled={updatingConfig || loading}
-            onChange={(v) => (v ? handleEnableAll() : handleDisableAll())}
-            label={config.enabled ? "Couper le bouclier" : "Activer le bouclier"}
-          />
+          <div className="rounded-xl border border-[var(--panel-border)]/60 bg-[var(--surface-2)]/30 p-2.5">
+            <span className="text-[11px] text-[var(--text-muted)] font-medium">Sanctions actives</span>
+            <p className={cn("text-sm sm:text-base font-bold mt-0.5", sanctioned > 0 ? "text-rose-400" : "text-emerald-400")}>
+              {sanctioned}
+            </p>
+          </div>
+          <div className="rounded-xl border border-[var(--panel-border)]/60 bg-[var(--surface-2)]/30 p-2.5">
+            <span className="text-[11px] text-[var(--text-muted)] font-medium">Interventions</span>
+            <p className="text-sm sm:text-base font-bold text-[var(--text-primary)] mt-0.5">
+              {history.length}
+            </p>
+          </div>
+          <div className="rounded-xl border border-[var(--panel-border)]/60 bg-[var(--surface-2)]/30 p-2.5">
+            <span className="text-[11px] text-[var(--text-muted)] font-medium">Statut global</span>
+            <p className={cn("text-sm sm:text-base font-bold mt-0.5", isMasterActive ? "text-emerald-400" : "text-zinc-400")}>
+              {isMasterActive ? "Protégé" : "Inactif"}
+            </p>
+          </div>
         </div>
-        <div className="flex flex-wrap gap-2 border-t border-[var(--panel-border)] px-5 py-3">
-          <GhostButton onClick={handleGlobalRescue} disabled={globalRescuing}>
-            <Zap className="h-3.5 w-3.5" />
-            {globalRescuing ? "Sauvetage…" : "Tout rétablir maintenant"}
-          </GhostButton>
-          <GhostButton onClick={handleSimulateAttack} disabled={simulating}>
-            <FlaskConical className="h-3.5 w-3.5" />
-            {simulating ? "Envoi…" : "Tester l'alerte en MP"}
-          </GhostButton>
+
+        <div className="mt-4 flex flex-wrap items-center gap-2 pt-2">
+          <button
+            type="button"
+            onClick={handleGlobalRescue}
+            disabled={globalRescuing}
+            className="inline-flex items-center gap-2 rounded-xl bg-[var(--accent-primary)] px-4 py-2 text-xs font-bold text-[var(--accent-contrast)] hover:opacity-90 active:scale-95 transition-all cursor-pointer shadow-sm disabled:opacity-50"
+          >
+            <Zap className={cn("h-3.5 w-3.5", globalRescuing && "animate-bounce")} />
+            <span>{globalRescuing ? "Rétablissement en cours…" : "Tout rétablir maintenant"}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={handleSimulateAttack}
+            disabled={simulating}
+            className="inline-flex items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-2)]/60 px-3.5 py-2 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-2)] active:scale-95 transition-all cursor-pointer disabled:opacity-50"
+          >
+            <FlaskConical className={cn("h-3.5 w-3.5", simulating && "animate-spin text-[var(--accent-primary)]")} />
+            <span>{simulating ? "Simulation en cours…" : "Tester l'alerte en MP"}</span>
+          </button>
         </div>
-      </Panel>
+      </motion.div>
 
-      <Panel
-        title="Réactions automatiques"
-        subtitle={config.enabled ? "Ce qu'Etho fait tout seul quand un modérateur te sanctionne." : "Bouclier coupé : ces réactions sont conservées et reprendront dès que tu le réactives."}
-        className={cn("transition-opacity", !config.enabled && "opacity-60")}
-      >
-        {SHIELD_OPTIONS.map((o) => (
-          <Row key={o.key} label={o.label} hint={o.hint}>
-            <div className="flex justify-end">
-              <Switch checked={Boolean(config[o.key])} disabled={updatingConfig} onChange={(v) => updateShieldConfig({ [o.key]: v })} label={o.label} />
-            </div>
-          </Row>
-        ))}
-      </Panel>
+      <div className="space-y-3">
+        <div className="flex items-center justify-between px-1">
+          <div>
+            <h3 className="text-base font-bold text-[var(--text-primary)]">Réactions automatiques</h3>
+            <p className="text-xs text-[var(--text-muted)]">
+              {isMasterActive
+                ? "Actions déclenchées automatiquement dès qu'un modérateur tente de vous sanctionner."
+                : "Toutes les réactions sont coupées. Réactivez le bouclier pour relancer la protection."}
+            </p>
+          </div>
+          {!isMasterActive && (
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-rose-500/10 border border-rose-500/20 text-rose-400">
+              <AlertTriangle className="h-3 w-3" />
+              Toutes en OFF
+            </span>
+          )}
+        </div>
 
-      <Panel
-        title="Serveurs"
-        subtitle="Position d'Etho et ta situation sur chaque serveur."
-        actions={
-          <Segmented
-            label="Filtrer"
-            value={statusFilter}
-            onChange={setStatusFilter}
-            options={[
-              ["all", `Tous · ${guilds.length}`],
-              ["sanctioned", `Sanctions · ${sanctioned}`],
-              ["ignored", `Exclus · ${guilds.length - covered}`],
-            ]}
-          />
-        }
-      >
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {PROTECTION_CATEGORIES.map((category) => (
+            <motion.div
+              key={category.id}
+              layout
+              className={cn(
+                "rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-4.5 space-y-3.5 transition-all duration-300 shadow-xs",
+                !isMasterActive && "opacity-60"
+              )}
+            >
+              <div className="border-b border-[var(--panel-border)]/60 pb-2.5">
+                <h4 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
+                  <span>{category.title}</span>
+                </h4>
+                <p className="text-[11px] text-[var(--text-muted)]">{category.subtitle}</p>
+              </div>
+
+              <div className="space-y-2">
+                {category.options.map((opt) => {
+                  const IconComponent = opt.icon;
+                  const isChecked = isMasterActive && Boolean(config[opt.key]);
+                  return (
+                    <div
+                      key={opt.key}
+                      className={cn(
+                        "group flex items-center justify-between gap-3 p-2.5 rounded-xl border border-transparent transition-all",
+                        isChecked
+                          ? "bg-[var(--surface-2)]/30 border-[var(--panel-border)]/40 hover:border-[var(--accent-primary)]/30"
+                          : "hover:bg-[var(--surface-2)]/20"
+                      )}
+                    >
+                      <div className="flex items-start gap-3 min-w-0">
+                        <div
+                          className={cn(
+                            "flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border transition-colors mt-0.5",
+                            isChecked
+                              ? "border-emerald-500/30 bg-emerald-500/15 text-emerald-400"
+                              : "border-[var(--panel-border)] bg-[var(--surface-2)] text-[var(--text-muted)]"
+                          )}
+                        >
+                          <IconComponent className="h-4 w-4" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="truncate text-xs font-bold text-[var(--text-primary)]">
+                            {opt.label}
+                          </p>
+                          <p className="text-[11px] text-[var(--text-muted)] line-clamp-1">
+                            {opt.hint}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="shrink-0 pl-2">
+                        <ToggleSwitch
+                          size="md"
+                          checked={isChecked}
+                          disabled={updatingConfig}
+                          onChange={(val) => handleToggleSubOption(opt.key, val)}
+                          label={opt.label}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 px-1">
+          <div>
+            <h3 className="text-base font-bold text-[var(--text-primary)]">Serveurs surveillés</h3>
+            <p className="text-xs text-[var(--text-muted)]">
+              Position d&apos;Etho dans la hiérarchie et état de votre compte par serveur.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-1.5 p-1 rounded-xl bg-[var(--surface-2)]/50 border border-[var(--panel-border)] self-start sm:self-auto text-xs">
+            <button
+              type="button"
+              onClick={() => setStatusFilter("all")}
+              className={cn(
+                "px-2.5 py-1 rounded-lg font-semibold transition-all cursor-pointer",
+                statusFilter === "all"
+                  ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-xs"
+                  : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+              )}
+            >
+              Tous ({guilds.length})
+            </button>
+            <button
+              type="button"
+              onClick={() => setStatusFilter("sanctioned")}
+              className={cn(
+                "px-2.5 py-1 rounded-lg font-semibold transition-all cursor-pointer",
+                statusFilter === "sanctioned"
+                  ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-xs"
+                  : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+              )}
+            >
+              Sanctions ({sanctioned})
+            </button>
+            <button
+              type="button"
+              onClick={() => setStatusFilter("ignored")}
+              className={cn(
+                "px-2.5 py-1 rounded-lg font-semibold transition-all cursor-pointer",
+                statusFilter === "ignored"
+                  ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-xs"
+                  : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+              )}
+            >
+              Exclus ({guilds.length - covered})
+            </button>
+          </div>
+        </div>
+
         {loading ? (
-          <EmptyLine>Chargement…</EmptyLine>
+          <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-10 text-center text-xs text-[var(--text-muted)]">
+            Chargement des serveurs Discord…
+          </div>
         ) : filteredGuilds.length === 0 ? (
-          <EmptyLine>Aucun serveur.</EmptyLine>
+          <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-10 text-center text-xs text-[var(--text-muted)]">
+            Aucun serveur ne correspond au filtre sélectionné.
+          </div>
         ) : (
-          <ul>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
             {filteredGuilds.map((g) => {
               const issues = sanctionsOf(g);
               const h = HIERARCHY[g.botHierarchyLevel];
               const busy = actingGuildId === g.guildId;
               return (
-                <li key={g.guildId} className="border-t border-[var(--panel-border)] px-5 py-3.5 first:border-t-0">
-                  <div className="flex flex-wrap items-center gap-3">
-                    {g.guildIcon ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={g.guildIcon} alt="" width={32} height={32} className="h-8 w-8 shrink-0 rounded-lg" />
-                    ) : (
-                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--surface-hover)] text-[11px] font-bold text-[var(--text-muted)]">
-                        {g.guildName.slice(0, 2).toUpperCase()}
-                      </span>
-                    )}
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-[13px] font-semibold text-[var(--text-primary)]">{g.guildName}</p>
-                      <p className="mt-0.5 flex flex-wrap items-center gap-x-2 text-[11px] text-[var(--text-muted)]">
-                        <span className="flex items-center gap-1.5">
-                          <span className="h-1.5 w-1.5 rounded-full" style={{ background: h.color }} />
-                          {h.label}
-                        </span>
-                        <span>·</span>
-                        <span className={issues.length ? "text-[var(--danger)]" : undefined}>
-                          {!g.ownerStatus.isPresent && !g.ownerStatus.isBanned ? "tu n'es pas sur le serveur" : issues.length ? issues.join(", ") : "aucune sanction"}
-                        </span>
-                      </p>
+                <div
+                  key={g.guildId}
+                  className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/70 p-4 space-y-3 flex flex-col justify-between hover:border-[var(--accent-primary)]/30 transition-all shadow-xs"
+                >
+                  <div className="space-y-2.5">
+                    <div className="flex items-start justify-between gap-2.5">
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        {g.guildIcon ? (
+                          <ClientImage
+                            src={g.guildIcon}
+                            alt=""
+                            width={38}
+                            height={38}
+                            className="h-9.5 w-9.5 shrink-0 rounded-xl object-cover border border-[var(--panel-border)]"
+                          />
+                        ) : (
+                          <div className="flex h-9.5 w-9.5 shrink-0 items-center justify-center rounded-xl bg-[var(--surface-2)] text-xs font-bold text-[var(--text-muted)] border border-[var(--panel-border)]">
+                            {g.guildName.slice(0, 2).toUpperCase()}
+                          </div>
+                        )}
+                        <div className="min-w-0">
+                          <h4 className="truncate text-xs font-bold text-[var(--text-primary)]">
+                            {g.guildName}
+                          </h4>
+                          <span
+                            className={cn(
+                              "inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-semibold border mt-0.5",
+                              h.color
+                            )}
+                          >
+                            <span className="h-1 w-1 rounded-full bg-current" />
+                            <span>{h.label}</span>
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <ToggleSwitch
+                          size="md"
+                          checked={!g.isIgnored}
+                          onChange={() => handleToggleGuild(g.guildId)}
+                          label={g.isIgnored ? `Protéger ${g.guildName}` : `Exclure ${g.guildName}`}
+                        />
+                      </div>
                     </div>
-                    <label className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
-                      Protégé
-                      <Switch checked={!g.isIgnored} onChange={() => handleToggleGuild(g.guildId)} label={g.isIgnored ? `Protéger ${g.guildName}` : `Exclure ${g.guildName}`} />
-                    </label>
+
+                    <div className="rounded-xl bg-[var(--surface-2)]/40 p-2 text-[11px] text-[var(--text-muted)] space-y-1">
+                      <div className="flex items-center justify-between">
+                        <span>Statut :</span>
+                        <span
+                          className={cn(
+                            "font-semibold",
+                            issues.length > 0
+                              ? "text-rose-400"
+                              : !g.ownerStatus.isPresent && !g.ownerStatus.isBanned
+                              ? "text-zinc-400"
+                              : "text-emerald-400"
+                          )}
+                        >
+                          {!g.ownerStatus.isPresent && !g.ownerStatus.isBanned
+                            ? "Absent du serveur"
+                            : issues.length > 0
+                            ? issues.join(", ")
+                            : "Aucune sanction"}
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="mt-2.5 flex flex-wrap gap-1.5 pl-11">
+
+                  <div className="flex flex-wrap gap-1.5 pt-1">
                     {g.ownerStatus.isBanned && (
-                      <GhostButton onClick={() => handleRescue(g.guildId, { unban: true })} disabled={busy}>
+                      <button
+                        type="button"
+                        onClick={() => handleRescue(g.guildId, { unban: true })}
+                        disabled={busy}
+                        className="rounded-lg bg-rose-500/15 border border-rose-500/30 px-2 py-1 text-[11px] font-semibold text-rose-300 hover:bg-rose-500/25 transition-all cursor-pointer"
+                      >
                         Débannir
-                      </GhostButton>
+                      </button>
                     )}
                     {g.ownerStatus.isTimedOut && (
-                      <GhostButton onClick={() => handleRescue(g.guildId, { removeTimeout: true })} disabled={busy}>
-                        Lever l&apos;exclusion
-                      </GhostButton>
+                      <button
+                        type="button"
+                        onClick={() => handleRescue(g.guildId, { removeTimeout: true })}
+                        disabled={busy}
+                        className="rounded-lg bg-amber-500/15 border border-amber-500/30 px-2 py-1 text-[11px] font-semibold text-amber-300 hover:bg-amber-500/25 transition-all cursor-pointer"
+                      >
+                        Lever timeout
+                      </button>
                     )}
                     {(g.ownerStatus.isVoiceMuted || g.ownerStatus.hasMuteRole) && (
-                      <GhostButton onClick={() => handleRescue(g.guildId, { unmute: true })} disabled={busy}>
-                        Rendre la parole
-                      </GhostButton>
+                      <button
+                        type="button"
+                        onClick={() => handleRescue(g.guildId, { unmute: true })}
+                        disabled={busy}
+                        className="rounded-lg bg-amber-500/15 border border-amber-500/30 px-2 py-1 text-[11px] font-semibold text-amber-300 hover:bg-amber-500/25 transition-all cursor-pointer"
+                      >
+                        Rendre parole
+                      </button>
                     )}
-                    <GhostButton onClick={() => handleRescue(g.guildId, { restoreRoles: true })} disabled={busy}>
-                      Rétablir mes rôles
-                    </GhostButton>
-                    <GhostButton onClick={() => handleRescue(g.guildId, { createInvite: true })} disabled={busy}>
-                      Copier une invitation
-                    </GhostButton>
-                    <GhostButton onClick={() => handleRescue(g.guildId, { giveAdminRole: true })} disabled={busy}>
-                      Rôle admin d&apos;urgence
-                    </GhostButton>
-                    <GhostButton onClick={() => handleRescue(g.guildId)} disabled={busy}>
-                      <Zap className="h-3.5 w-3.5" />
-                      Tout rétablir
-                    </GhostButton>
+                    <button
+                      type="button"
+                      onClick={() => handleRescue(g.guildId, { restoreRoles: true })}
+                      disabled={busy}
+                      className="rounded-lg border border-[var(--panel-border)] bg-[var(--surface-2)]/60 px-2 py-1 text-[11px] font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all cursor-pointer"
+                    >
+                      Rétablir rôles
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleRescue(g.guildId, { createInvite: true })}
+                      disabled={busy}
+                      className="rounded-lg border border-[var(--panel-border)] bg-[var(--surface-2)]/60 px-2 py-1 text-[11px] font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all cursor-pointer"
+                    >
+                      Invitation
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleRescue(g.guildId)}
+                      disabled={busy}
+                      className="inline-flex items-center gap-1 rounded-lg bg-[var(--accent-primary)]/15 border border-[var(--accent-primary)]/30 px-2 py-1 text-[11px] font-bold text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/25 transition-all cursor-pointer ml-auto"
+                    >
+                      <Zap className="h-3 w-3" />
+                      <span>Rétablir</span>
+                    </button>
                   </div>
-                </li>
+                </div>
               );
             })}
-          </ul>
+          </div>
         )}
-      </Panel>
+      </div>
 
-      <Panel title="Historique" subtitle="Les dernières interventions du bouclier.">
+      <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/70 p-5 space-y-3.5 shadow-xs">
+        <div className="flex items-center justify-between border-b border-[var(--panel-border)]/60 pb-3">
+          <div>
+            <h3 className="text-base font-bold text-[var(--text-primary)]">Historique des interventions</h3>
+            <p className="text-xs text-[var(--text-muted)]">Journal des sanctions neutralisées par Etho en temps réel.</p>
+          </div>
+          <span className="text-xs font-semibold text-[var(--text-muted)]">
+            {history.length} événement{history.length > 1 ? "s" : ""}
+          </span>
+        </div>
+
         {history.length === 0 ? (
-          <EmptyLine>Aucune intervention pour l&apos;instant.</EmptyLine>
+          <div className="py-8 text-center text-xs text-[var(--text-muted)]">
+            Aucune tentative de sanction n&apos;a été détectée pour le moment.
+          </div>
         ) : (
-          <ul>
+          <div className="space-y-2">
             {history.map((ev) => (
-              <li key={ev.id} className="flex items-start gap-3 border-t border-[var(--panel-border)] px-5 py-2.5 text-xs first:border-t-0">
-                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: ev.success ? "var(--success)" : "var(--danger)" }} />
-                <div className="min-w-0 flex-1">
-                  <p className="text-[var(--text-primary)]">
-                    <span className="font-semibold">{ev.guildName}</span> · {cleanLogText(ev.details)}
-                    {ev.type === "SIMULATED_ATTACK" && <span className="text-[var(--text-muted)]"> (test)</span>}
-                  </p>
-                  {(ev.moderatorTag || ev.reason) && (
-                    <p className="mt-0.5 text-[11px] text-[var(--text-muted)]">
-                      {ev.moderatorTag ? `par ${ev.moderatorTag}` : ""}
-                      {ev.moderatorTag && ev.reason ? " · " : ""}
-                      {ev.reason ?? ""}
+              <div
+                key={ev.id}
+                className="flex items-start justify-between gap-3 p-3 rounded-xl border border-[var(--panel-border)]/50 bg-[var(--surface-2)]/30 text-xs"
+              >
+                <div className="flex items-start gap-2.5 min-w-0">
+                  <span
+                    className={cn(
+                      "mt-1 h-2 w-2 shrink-0 rounded-full",
+                      ev.success ? "bg-emerald-400" : "bg-rose-400"
+                    )}
+                  />
+                  <div className="min-w-0">
+                    <p className="font-semibold text-[var(--text-primary)]">
+                      <span>{ev.guildName}</span>
+                      <span className="font-normal text-[var(--text-muted)]"> · {cleanLogText(ev.details)}</span>
+                      {ev.type === "SIMULATED_ATTACK" && (
+                        <span className="ml-1 text-[10px] uppercase font-bold text-amber-400 bg-amber-400/10 border border-amber-400/20 px-1.5 py-0.2 rounded">
+                          Test
+                        </span>
+                      )}
                     </p>
-                  )}
+                    {(ev.moderatorTag || ev.reason) && (
+                      <p className="mt-0.5 text-[11px] text-[var(--text-muted)]">
+                        {ev.moderatorTag ? `Auteur : ${ev.moderatorTag}` : ""}
+                        {ev.moderatorTag && ev.reason ? " · Motif : " : ""}
+                        {ev.reason ?? ""}
+                      </p>
+                    )}
+                  </div>
                 </div>
-                <span className="shrink-0 text-[11px] text-[var(--text-muted)]">{sinceLabel(ev.timestamp)}</span>
-              </li>
+
+                <span className="shrink-0 text-[11px] text-[var(--text-muted)] font-mono">
+                  {sinceLabel(ev.timestamp)}
+                </span>
+              </div>
             ))}
-          </ul>
+          </div>
         )}
-      </Panel>
-    </ConsolePage>
+      </div>
+    </motion.div>
   );
 }
-
-const SHIELD_OPTIONS: Array<{ key: keyof OwnerShieldConfig; label: string; hint: string }> = [
-  { key: "autoUnban", label: "Débannissement", hint: "Te débannit dès qu'un modérateur te bannit." },
-  { key: "autoTimeoutRemove", label: "Exclusion temporaire", hint: "Lève tout timeout dès qu'il est posé." },
-  { key: "autoMuteRolesRemove", label: "Rôles restrictifs", hint: "Retire les rôles mute, prison ou silence qu'on te donne." },
-  { key: "autoRestoreRoles", label: "Rôles retirés", hint: "Te rend les rôles qu'on t'enlève." },
-  { key: "antiNicknameChange", label: "Pseudo", hint: "Remet ton pseudo si un modérateur le change." },
-  { key: "autoVoiceUnmute", label: "Micro coupé", hint: "Te rend la parole en vocal." },
-  { key: "autoVoiceUndeafen", label: "Sourdine", hint: "Te rend l'écoute en vocal." },
-  { key: "antiVoiceMove", label: "Déplacement vocal", hint: "Te ramène dans ton salon vocal si on te déplace." },
-  { key: "autoKickInvite", label: "Invitation après expulsion", hint: "T'envoie en MP une invitation de retour." },
-  { key: "dmAlerts", label: "Alertes en MP", hint: "Pseudo, ID et raison de la personne qui t'a sanctionné." },
-  { key: "botSelfDefense", label: "Défense d'Etho", hint: "Neutralise un modérateur qui retire les rôles ou les pouvoirs d'Etho (timeout 28 j et retrait de rôles)." },
-  { key: "stealthMode", label: "Mode discret", hint: "Aucun log dans les salons de modération publics." },
-];

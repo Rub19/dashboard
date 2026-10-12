@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.74.13 — 2026-10-12
+
+**Sécurité & Messagerie : Cascade du Bouclier Owner et dégagement parfait des réponses Mail**
+
+- **Bouclier Owner en cascade intégrale** : Décocher le commutateur maître en haut bascule immédiatement l'intégralité des 12 sous-protections (débannissement, timeout, rôles, salons vocaux, pseudo, défense) en OFF dans l'interface et côté serveur, garantissant qu'aucun voyant vert ne reste actif lorsque le bouclier est coupé.
+- **Refonte visuelle et motion design du Bouclier Owner** : Carte d'état en verre dépoli avec aura dynamique et pulsation réactive, organisation thématique en 4 modules distincts (`Sanctions & Bannissements`, `Rôles & Identité`, `Salons Vocaux`, `Défense d'Etho & Confidentialité`), grille responsive des serveurs surveillés et timeline des interceptions en direct.
+- **Dégagement et défilement de la messagerie** : Ajout d'une marge basse protectrice sur la page Mail au-dessus de la barre d'état et conteneur de réponse rapide `shrink-0` à défilement autonome (`max-h-[45vh] overflow-y-auto`) garantissant que la zone de texte, les suggestions et les boutons d'envoi ne sont jamais rognés ni masqués.
+- **Auto-masquage du Dock en messagerie** : Intégration de la route `/mail` à la liste des pages masquant automatiquement le dock flottant pour un confort de saisie optimal, avec bouton de réaffichage accessible depuis la barre d'état.
+
 ## v1.74.12 — 2026-10-12
 
 **Discord : Grille 3 colonnes et design épuré pour la sélection des serveurs**

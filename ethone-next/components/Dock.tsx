@@ -52,8 +52,7 @@ const ICONS: Record<string, string> = {
   settings: "settings",
 };
 
-// Pages where the dock should auto-hide to avoid overlapping chat/focus/bottom input bars
-const AUTO_HIDE_ROUTES = ["/brain", "/focus", "/scratchpad", "/matches"];
+const AUTO_HIDE_ROUTES = ["/brain", "/focus", "/scratchpad", "/matches", "/mail"];
 
 type AppleDockItemProps = {
   icon: React.ComponentType<{ className?: string }>;
@@ -238,6 +237,20 @@ function Dock() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [launcherOpen]);
 
+  useEffect(() => {
+    function onToggleDock() {
+      if (!settings.dockVisible) {
+        update({ dockVisible: true });
+      } else if (isAutoHidePage) {
+        setPageOverrideShow((prev) => !prev);
+      } else {
+        update({ dockVisible: false });
+      }
+    }
+    window.addEventListener("ethone:toggle-dock", onToggleDock);
+    return () => window.removeEventListener("ethone:toggle-dock", onToggleDock);
+  }, [settings.dockVisible, isAutoHidePage, update]);
+
   function openFocus() {
     if (!pomodoroEl) return;
     setControlCenterOpen(false);
@@ -311,9 +324,8 @@ function Dock() {
 
   return (
     <>
-      {/* Discreet bottom unhide trigger when dock is auto-hidden or manually hidden */}
       <AnimatePresence>
-        {!isVisible && isAllowedByPreset && (
+        {!isVisible && isAllowedByPreset && !isAutoHidePage && (
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}

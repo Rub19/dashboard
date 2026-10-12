@@ -15,6 +15,8 @@ const HIDDEN_COMMANDS = new Set(['godmode', 'rescue']);
 const CATEGORY_MAP: Record<string, string> = {
   musique: 'Musique',
   music: 'Musique',
+  spotify: 'Spotify',
+  fun: 'Fun',
   modération: 'Modération',
   moderation: 'Modération',
   sécurité: 'Sécurité',

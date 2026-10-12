@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.2 — 2026-10-12
+
+**Vitrine Bot : Refonte Motion Design Format Bleed & Rétablissement de /bot**
+
+- Rétablissement officiel de la page vitrine sur `/bot` (accessible sur discord.ethone.dev/bot et ethone.dev/bot) avec métadonnées OpenGraph complètes.
+- Refonte intégrale en motion design inspirée de MultiBot, Keeper Protect et Bleed bot, avec ton sobre et direct sans jargon IA.
+- Simulateur de chat Discord interactif en direct avec 4 démos sélectionnables (Anti-Raid, Spotify avec vinyle animé, Fun Bleed et Bienvenue).
+- Grille bento interactive 6 modules avec commutateurs de sécurité ON/OFF en temps réel et prévisualisations concrètes.
+- Bande défilante des communautés Discord partenaires et compteurs de statistiques en direct.
+- Guide de mise en route en 3 étapes claires, catalogue de commandes avec filtres et copie de syntaxe en 1 clic.
+- Section questions fréquentes (FAQ) avec accordéons animés et bannière d'invitation finale.
+
 ## v1.75.1 — 2026-10-12
 
 **Catégorie Fun & Divertissement : Suite de Commandes Format Bleed & Studio Dashboard**

@@ -51742,10 +51742,70 @@ const v1_75_1_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v1_75_1_fr);
-CHANGELOG_BY_LANG.en.unshift(v1_75_1_en);
-CHANGELOG_BY_LANG.es.unshift(v1_75_1_es);
-CHANGELOG_BY_LANG.de.unshift(v1_75_1_de);
+const v1_75_2_fr: ChangelogEntry = {
+  version: "v1.75.2",
+  date: "2026-10-12",
+  title: "Vitrine Bot : Refonte Motion Design Format Bleed & Rétablissement de /bot",
+  items: [
+    "Rétablissement officiel de la page vitrine sur /bot (accessible sur discord.ethone.dev/bot et ethone.dev/bot) avec métadonnées OpenGraph complètes.",
+    "Refonte intégrale en motion design inspirée de MultiBot, Keeper Protect et Bleed bot, avec ton sobre et direct sans jargon IA.",
+    "Simulateur de chat Discord interactif en direct avec 4 démos sélectionnables (Anti-Raid, Spotify avec vinyle animé, Fun Bleed et Bienvenue).",
+    "Grille bento interactive 6 modules avec commutateurs de sécurité ON/OFF en temps réel et prévisualisations concrètes.",
+    "Bande défilante des communautés Discord partenaires et compteurs de statistiques en direct.",
+    "Guide de mise en route en 3 étapes claires, catalogue de commandes avec filtres et copie de syntaxe en 1 clic.",
+    "Section questions fréquentes (FAQ) avec accordéons animés et bannière d'invitation finale.",
+  ],
+};
+
+const v1_75_2_en: ChangelogEntry = {
+  version: "v1.75.2",
+  date: "2026-10-12",
+  title: "Bot Showcase: Bleed-Style Motion Design Redesign & /bot Restoration",
+  items: [
+    "Official restoration of the public bot showcase on /bot (accessible on discord.ethone.dev/bot and ethone.dev/bot) with complete OpenGraph metadata.",
+    "Complete motion design revamp inspired by MultiBot, Keeper Protect, and Bleed bot, featuring crisp authentic community copy without AI buzzwords.",
+    "Interactive live Discord chat simulator featuring 4 switchable demos (Anti-Raid, Spotify with animated vinyl, Bleed Fun, and Welcome).",
+    "Interactive 6-module bento grid with live toggleable ON/OFF security switches and rich previews.",
+    "Infinite marquee of partner Discord communities and animated live stat counters.",
+    "Clear 3-step onboarding guide, command explorer with category filters and 1-click syntax copying.",
+    "Interactive FAQ accordion section and high-impact closing invitation banner.",
+  ],
+};
+
+const v1_75_2_es: ChangelogEntry = {
+  version: "v1.75.2",
+  date: "2026-10-12",
+  title: "Vitrina del Bot: Rediseño Motion Design Estilo Bleed y Restauración de /bot",
+  items: [
+    "Restauración oficial de la página vitrina en /bot (accesible en discord.ethone.dev/bot y ethone.dev/bot) con metadatos completos.",
+    "Rediseño integral en motion design inspirado en MultiBot, Keeper Protect y Bleed bot, sin frases artificiales de IA.",
+    "Simulador interactivo de chat de Discord en vivo con 4 demos seleccionables (Anti-Raid, Spotify con vinilo animado, Bleed Fun y Bienvenida).",
+    "Rejilla bento interactiva de 6 módulos con interruptores ON/OFF en tiempo real y vistas previas enriquecidas.",
+    "Cinta continua de comunidades asociadas de Discord y contadores de estadísticas en vivo.",
+    "Guía de inicio en 3 pasos, explorador de comandos con filtros y copia de sintaxis con 1 clic.",
+    "Sección de preguntas frecuentes (FAQ) con acordeones animados y pancarta final de invitación.",
+  ],
+};
+
+const v1_75_2_de: ChangelogEntry = {
+  version: "v1.75.2",
+  date: "2026-10-12",
+  title: "Bot-Präsentation: Bleed-Style Motion Design Neugestaltung & Wiederherstellung von /bot",
+  items: [
+    "Offizielle Wiederherstellung der Bot-Präsentationsseite auf /bot (erreichbar unter discord.ethone.dev/bot und ethone.dev/bot) mit vollständigen Metadaten.",
+    "Vollständige Motion-Design-Überarbeitung inspiriert von MultiBot, Keeper Protect und Bleed bot, mit authentischen Texten ohne KI-Klischees.",
+    "Interaktiver Live-Discord-Chat-Simulator mit 4 auswählbaren Demos (Anti-Raid, Spotify mit animiertem Vinyl, Bleed Fun und Willkommen).",
+    "Interaktives 6-Modul-Bento-Grid mit echten umschaltbaren AN/AUS-Sicherheitsschaltern.",
+    "Laufband mit Partner-Discord-Communities und animierten Live-Statistikzählern.",
+    "3-Schritte-Einstiegsleitfaden, Befehlskatalog mit Filtern und 1-Klick-Syntaxkopieren.",
+    "Interaktive FAQ-Sektion mit Akkordeons und abschließendem Einladungsbanner.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_2_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_2_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_2_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_2_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

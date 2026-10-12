@@ -103,7 +103,7 @@ const FUN_COMMANDS: BleedCommandMeta[] = [
   },
 ];
 
-export default function ConsoleFun({ _guildId }: { _guildId?: string } = {}) {
+export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } = {}) {
   const [tab, setTab] = useState<string>("catalog");
   const [copiedCmd, setCopiedCmd] = useState<string | null>(null);
   const toast = useToast();

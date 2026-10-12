@@ -1,13 +1,17 @@
-"use client";
+import BotLanding from "@/components/botsite/BotLanding";
 
-import { useEffect } from "react";
-import ModuleSkeleton from "@/components/discord/ModuleSkeleton";
+export const metadata = {
+  title: "Etho — Le bot Discord tout-en-un pour votre communauté",
+  description:
+    "Protection anti-raid, modération rapide, musique, pont vocal Spotify et commandes fun. Tout ce dont votre serveur a besoin, sans superflu.",
+  openGraph: {
+    title: "Etho — Le bot Discord tout-en-un",
+    description:
+      "Protection anti-raid, modération avancée, musique, Spotify et commandes fun pour Discord.",
+    images: ["/branding/etho-discord-banner.png"],
+  },
+};
 
 export default function BotPage() {
-  useEffect(() => {
-    const search = typeof window !== "undefined" ? window.location.search : "";
-    window.location.replace(`/discord${search}`);
-  }, []);
-
-  return <ModuleSkeleton label="Ouverture de la console Discord…" />;
+  return <BotLanding />;
 }

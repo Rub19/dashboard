@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.74.11 — 2026-10-12
+
+**Audio : Suppression du son intempestif de survol sur les éléments cliquables**
+
+- **Élimination du bruit de survol** : Suppression de l'écouteur `mouseover` dans `SoundProvider` (`sound.tsx`) qui déclenchait un bip sonore systématique (`play("hover")`) dès que le curseur survolait un bouton, un lien ou tout élément interactif (`target.closest("button, a, [role='button']")`).
+- **Confort de navigation** : Le déplacement de la souris sur le dashboard, les barres d'outils, le dock et les menus est désormais parfaitement silencieux et apaisant.
+- **Préservation du retour tactile au clic** : Les effets sonores de clic (`onClick`) et les alertes/confirmations restent pleinement opérationnels et configurables selon les réglages sonores de l'utilisateur.
+
 ## v1.74.10 — 2026-10-12
 
 **Messagerie : Synchronisation du fond de l'e-mail avec le thème Ethone actif**

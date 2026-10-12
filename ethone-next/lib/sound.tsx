@@ -1347,28 +1347,18 @@ export function SoundProvider({ children }: { children: ReactNode }) {
       if (target.closest("button, a, [role='button']")) play("click");
     }
 
-    function onMouseOver(event: MouseEvent) {
-      if (typeof window !== "undefined" && window.innerWidth) {
-        lastPanRef.current = computePan(event.clientX, window.innerWidth);
-      }
-      const target = event.target as HTMLElement;
-      if (target.closest("button, a, [role='button']")) play("hover");
-    }
-
     function onMouseMove(event: MouseEvent) {
       if (typeof window === "undefined" || !window.innerWidth) return;
       lastPanRef.current = computePan(event.clientX, window.innerWidth);
     }
 
     document.addEventListener("click", onClick, { passive: true });
-    document.addEventListener("mouseover", onMouseOver, { passive: true });
     if (settings.soundSpatial) {
       document.addEventListener("mousemove", onMouseMove, { passive: true });
     }
 
     return () => {
       document.removeEventListener("click", onClick);
-      document.removeEventListener("mouseover", onMouseOver);
       if (settings.soundSpatial) {
         document.removeEventListener("mousemove", onMouseMove);
       }

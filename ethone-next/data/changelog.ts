@@ -51212,10 +51212,59 @@ const v1_74_10_de: ChangelogEntry = {
   ],
 };
 
+const v1_74_11_fr: ChangelogEntry = {
+  version: "v1.74.11",
+  date: "2026-10-12",
+  title: "Audio : Suppression du son intempestif de survol sur les éléments cliquables",
+  items: [
+    "Élimination du bruit de survol : Suppression de l'écouteur mouseover qui déclenchait un bip sonore systématique dès que le curseur passait sur un bouton, un lien ou un élément cliquable",
+    "Confort d'utilisation : Navigation désormais silencieuse et fluide à la souris dans l'ensemble du dashboard (navigation, barres d'outils, dock, listes)",
+    "Préservation du retour tactile au clic : Les sons de clic et confirmations restent parfaitement fonctionnels selon les préférences sonores de l'utilisateur",
+  ],
+};
+
+const v1_74_11_en: ChangelogEntry = {
+  version: "v1.74.11",
+  date: "2026-10-12",
+  title: "Audio: Removal of intrusive hover sounds on clickable elements",
+  items: [
+    "Hover noise elimination: Removed global mouseover listener that triggered an audio beep whenever hovering over buttons, links, or clickable components",
+    "Smooth browsing ergonomics: Cursor navigation is now silent and seamless across all dashboard areas, docks, toolbars, and views",
+    "Preserved tactile click feedback: Click audio and action confirmation feedback remain fully preserved per user sound preferences",
+  ],
+};
+
+const v1_74_11_es: ChangelogEntry = {
+  version: "v1.74.11",
+  date: "2026-10-12",
+  title: "Audio: Eliminación del sonido molesto al pasar el cursor sobre elementos interactivos",
+  items: [
+    "Eliminación del pitido al pasar el ratón: Eliminado el listener mouseover que emitía sonidos constantes al interactuar con botones o enlaces",
+    "Navegación silenciosa: Experiencia fluida y silenciosa en todo el panel de control",
+    "Retorno táctil preservado: Los clics y confirmaciones siguen respondiendo con sonido según la configuración del usuario",
+  ],
+};
+
+const v1_74_11_de: ChangelogEntry = {
+  version: "v1.74.11",
+  date: "2026-10-12",
+  title: "Audio: Entfernen des störenden Hover-Tons bei klickbaren Elementen",
+  items: [
+    "Beseitigung störender Hover-Geräusche: Der globale Mouseover-Listener wurde entfernt, sodass beim Überfahren von Schaltflächen keine Töne mehr abgespielt werden",
+    "Angenehme Navigation: Vollkommen geräuschloses und flüssiges Bewegen des Mauszeigers im gesamten Dashboard",
+    "Taktiles Klick-Feedback erhalten: Klicksounds und Aktionsbestätigungen bleiben gemäß den Audioeinstellungen unverändert erhalten",
+  ],
+};
+
 CHANGELOG_BY_LANG.fr.unshift(v1_74_10_fr);
 CHANGELOG_BY_LANG.en.unshift(v1_74_10_en);
 CHANGELOG_BY_LANG.es.unshift(v1_74_10_es);
 CHANGELOG_BY_LANG.de.unshift(v1_74_10_de);
+
+CHANGELOG_BY_LANG.fr.unshift(v1_74_11_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_74_11_en);
+CHANGELOG_BY_LANG.es.unshift(v1_74_11_es);
+CHANGELOG_BY_LANG.de.unshift(v1_74_11_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

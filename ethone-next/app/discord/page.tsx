@@ -58,6 +58,14 @@ function CloudCheckIcon({ className = "h-4 w-4" }: { className?: string }) {
   );
 }
 
+function SpotifyBrandIcon({ className = "h-4 w-4" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.502 17.308c-.217.355-.678.469-1.033.252-2.83-1.73-6.392-2.122-10.587-1.164-.405.093-.812-.16-.904-.565-.093-.404.16-.811.565-.904 4.593-1.05 8.528-.607 11.707 1.348.355.217.469.678.252 1.033zm1.47-3.264c-.273.444-.855.586-1.299.313-3.24-1.992-8.18-2.568-12.012-1.405-.498.151-1.03-.134-1.181-.632-.151-.498.134-1.03.632-1.181 4.385-1.332 9.824-.689 13.547 1.606.444.273.586.855.313 1.299zm.126-3.398C15.22 8.354 8.825 8.134 5.138 9.253c-.6-.182-.962-.815-.78-1.415.182-.6.815-.962 1.415-.78 4.24 1.288 11.3 1.536 15.753-1.108.536-.318 1.233-.146 1.551.39.318.536.146 1.233-.39 1.551-4.995 2.964-12.164 2.684-17.069 1.205z" />
+    </svg>
+  );
+}
+
 const BOT_CLIENT_ID = "1545139931154878464";
 const PICKED_STORAGE_KEY = "ethone:discord:picked";
 const LAST_GUILD_STORAGE_KEY = "ethone:discord:last-guild-id";
@@ -75,6 +83,7 @@ type ModuleType =
   | "moderation"
   | "logs"
   | "music"
+  | "spotify"
   | "invites"
   | "voice"
   | "backups"
@@ -113,7 +122,7 @@ interface BotModule {
 const MODULE_TINTS: Record<string, string> = {
   overview: "text-indigo-400", security: "text-[var(--accent-primary)]", commands: "text-sky-400", suggestions: "text-yellow-300",
   leveling: "text-amber-400", giveaways: "text-pink-400", tickets: "text-orange-400", welcome: "text-fuchsia-400",
-  moderation: "text-red-400", logs: "text-[var(--text-primary)]/85", music: "text-[var(--accent-primary)]", invites: "text-teal-400",
+  moderation: "text-red-400", logs: "text-[var(--text-primary)]/85", music: "text-[var(--accent-primary)]", spotify: "text-emerald-400", invites: "text-teal-400",
   voice: "text-cyan-400", backups: "text-blue-400", ai: "text-violet-400", forms: "text-lime-400",
   polls: "text-purple-400", roles: "text-rose-400", analytics: "text-indigo-300", events: "text-orange-300",
   server: "text-zinc-300", starboard: "text-yellow-400", sticky: "text-amber-300", reminders: "text-sky-300",
@@ -121,28 +130,25 @@ const MODULE_TINTS: Record<string, string> = {
   highlights: "text-lime-300", bot: "text-indigo-400", streamers: "text-purple-400", games: "text-amber-400",
 };
 
-/** Page complète de chaque module (le bouton ↗ de la carte). */
 const MODULE_PAGES: Record<string, string> = {
   overview: "/discord/overview", security: "/discord/security/anti-raid", commands: "/discord/commands", suggestions: "/discord/suggestions",
   leveling: "/discord/leveling", giveaways: "/discord/giveaways", tickets: "/discord/tickets", welcome: "/discord/welcome",
-  moderation: "/discord/moderation", logs: "/discord/logs", music: "/discord/music", invites: "/discord/invites", voice: "/discord/voice",
+  moderation: "/discord/moderation", logs: "/discord/logs", music: "/discord/music", spotify: "/discord/spotify", invites: "/discord/invites", voice: "/discord/voice",
   backups: "/discord/backups", ai: "/discord/ai", forms: "/discord/forms", polls: "/discord/polls", roles: "/discord/roles",
   analytics: "/discord/analytics", events: "/discord/events", server: "/discord/server", starboard: "/discord/starboard",
   sticky: "/discord/sticky", reminders: "/discord/reminders", afk: "/discord/afk", counting: "/discord/counting", stats: "/discord/stats", statroles: "/discord/statroles", secureroles: "/discord/secure-roles", settings: "/discord/settings", birthdays: "/discord/birthdays", tags: "/discord/tags",
   serverstats: "/discord/server-stats", automodnative: "/discord/automod-native", highlights: "/discord/highlights", bot: "/discord/bot", economy: "/discord/economy", calendar: "/discord/calendar", streamers: "/discord/streamers", games: "/discord/games",
 };
 
-/** Regroupement façon Dyno / MEE6 : l'utilisateur cherche par intention (protéger, animer, gérer), pas par nom technique. */
 const MODULE_CATEGORIES: NavigatorCategory[] = [
   { id: "protect", label: "Sécurité & modération", hint: "Protégez le serveur", modules: ["security", "secureroles", "moderation", "automodnative", "logs", "backups"] },
   { id: "community", label: "Communauté", hint: "Accueillez et animez vos membres", modules: ["welcome", "roles", "statroles", "leveling", "invites", "suggestions", "polls", "forms", "starboard", "highlights", "birthdays"] },
-  { id: "fun", label: "Animation & médias", hint: "Musique, jeux et événements", modules: ["streamers", "games", "music", "giveaways", "economy", "counting", "events", "calendar", "voice"] },
+  { id: "fun", label: "Animation & médias", hint: "Musique, jeux et événements", modules: ["streamers", "games", "music", "spotify", "giveaways", "economy", "counting", "events", "calendar", "voice"] },
   { id: "tools", label: "Outils du quotidien", hint: "Support et automatisations", modules: ["tickets", "commands", "tags", "reminders", "sticky", "afk", "serverstats"] },
   { id: "manage", label: "Gestion & intelligence", hint: "Vue globale, IA et bot", modules: ["overview", "server", "settings", "analytics", "stats", "ai", "bot"] },
 ];
 
-/** Sélection mise en avant par le filtre rapide « Recommandés » du hub (couvre sécurité, accueil, animation, support). */
-const RECOMMENDED_MODULE_IDS = ["security", "welcome", "moderation", "leveling", "tickets", "music"];
+const RECOMMENDED_MODULE_IDS = ["security", "welcome", "moderation", "leveling", "tickets", "music", "spotify"];
 
 const MODULE_ICONS = {
   overview: ethoneIcon("mod-overview"),
@@ -156,6 +162,7 @@ const MODULE_ICONS = {
   moderation: ethoneIcon("mod-moderation"),
   logs: ethoneIcon("mod-logs"),
   music: ethoneIcon("mod-music"),
+  spotify: SpotifyBrandIcon,
   invites: ethoneIcon("mod-invites"),
   voice: ethoneIcon("mod-voice"),
   backups: ethoneIcon("mod-backups"),
@@ -272,6 +279,14 @@ const MODULES: BotModule[] = [
     icon: MODULE_ICONS.music,
     color: "text-[var(--text-muted)]",
     badge: "Live Audio",
+  },
+  {
+    id: "spotify",
+    title: "Spotify Connect",
+    description: "Contrôlez votre lecteur Spotify personnel en direct, synchronisez vos titres favoris, vos appareils et diffusez en salon vocal.",
+    icon: MODULE_ICONS.spotify,
+    color: "text-emerald-400",
+    badge: "Spotify",
   },
   {
     id: "invites",

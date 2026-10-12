@@ -32,6 +32,7 @@ import { createAnalyticsRouter } from './routes/analyticsRoutes.js';
 import { createSuggestionRouter } from './routes/suggestionRoutes.js';
 import { createCustomCommandRouter } from './routes/customCommandRoutes.js';
 import { createMusicRouter } from './routes/musicRoutes.js';
+import { createSpotifyRouter } from './routes/spotifyRoutes.js';
 import { createInviteRouter } from './routes/inviteRoutes.js';
 import { createVoiceRouter } from './routes/voiceRoutes.js';
 import { createBackupRouter } from './routes/backupRoutes.js';
@@ -275,6 +276,12 @@ export function startWebServer(client: Client): http.Server {
     authMiddleware,
     createGuildAuthMiddleware(client),
     createMusicRouter(client)
+  );
+  app.use(
+    '/api/guilds/:guildId/spotify',
+    authMiddleware,
+    createGuildAuthMiddleware(client),
+    createSpotifyRouter(client)
   );
   app.use(
     '/api/guilds/:guildId/invites',

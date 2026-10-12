@@ -1,5 +1,17 @@
 [
   {
+    "version": "v1.75.0",
+    "date": "2026-10-12",
+    "title": "Intégration Complète Spotify : Commandes Bot & Dashboard Interactif Motion",
+    "items": [
+      "Suite de commandes Spotify pour le bot : 20 commandes slash et préfixes (/spotify nowplaying, play, pause, resume, next, previous, seek, volume, repeat, shuffle, queue, like, unlike, toptracks, topartists, device, devices, vc, login, logout).",
+      "Pont vocal Discord (/spotify vc) : diffusion directe du titre Spotify en cours d'écoute dans le salon vocal Discord du membre via le lecteur audio Etho.",
+      "Boutons interactifs Discord : commandes directes depuis l'embed d'écoute avec boutons Précédent, Lecture/Pause, Suivant, Like/Unlike et Diffuser en vocal.",
+      "Module Dashboard Spotify immersif (/discord?view=spotify) : vinyle animé en rotation Framer Motion, égaliseur sonore dynamique 5 bandes, barre de progression interactive et curseur de volume temps réel.",
+      "Zéro placeholder & actions réelles : recherche et ajout à la file d'attente, transfert d'appareil actif, gestion des favoris et statistiques de morceaux et artistes préférés."
+    ]
+  },
+  {
     "version": "v1.72.0",
     "date": "2026-10-11",
     "title": "Soundscape : studio d'ambiance repensé (motion design, boutons carrés, ergonomie studio)",
@@ -617,16 +629,6 @@
       "Nouvelle section « Animation » dans la barre latérale du serveur, au style Keeper : Musique, Jeux et casino, Giveaways, Événements, Niveaux, Économie, Alertes streamers.",
       "Section « Owner Etho », visible uniquement par le propriétaire du bot (le bot le vérifie) : état en direct (en ligne, version, uptime, ping, mémoire, incidents, relu toutes les 30 s), bouton « Redémarrer le bot » avec confirmation et attente du retour en ligne, et accès au centre de contrôle, à la présence, aux performances, aux erreurs, aux tâches planifiées, aux commandes et au bouclier owner.",
       "La section Owner apparaît aussi sur la page « Mes serveurs », et la barre latérale défile quand elle dépasse la hauteur de l'écran."
-    ]
-  },
-  {
-    "version": "v1.55.72",
-    "date": "2026-10-08",
-    "title": "Scan : titres clairs pour les points à régler ; barre latérale Discord sans chiffres inventés",
-    "items": [
-      "Scan de sécurité : un point à corriger décrit maintenant le problème (« Module Anti-raid désactivé », « La 2FA n'est pas exigée », « Aucun salon système configuré »…) au lieu de l'objectif.",
-      "Les longues listes (rôles au-dessus d'Etho…) s'arrêtent à 10 éléments avec « +N autres ».",
-      "Barre latérale de la console : « 1/30 protections », la jauge à 3 % et « 1 sans salon de log » étaient écrits en dur ; elle affiche maintenant les modules réellement actifs sur le vrai total."
     ]
   }
 ]

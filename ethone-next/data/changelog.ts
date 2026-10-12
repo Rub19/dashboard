@@ -51629,6 +51629,63 @@ CHANGELOG_BY_LANG.en.unshift(v1_74_18_en);
 CHANGELOG_BY_LANG.es.unshift(v1_74_18_es);
 CHANGELOG_BY_LANG.de.unshift(v1_74_18_de);
 
+const v1_75_0_fr: ChangelogEntry = {
+  version: "v1.75.0",
+  date: "2026-10-12",
+  title: "Intégration Complète Spotify : Commandes Bot & Dashboard Interactif Motion",
+  items: [
+    "Suite de commandes Spotify pour le bot : 20 commandes slash et préfixes (/spotify nowplaying, play, pause, resume, next, previous, seek, volume, repeat, shuffle, queue, like, unlike, toptracks, topartists, device, devices, vc, login, logout).",
+    "Pont vocal Discord (/spotify vc) : diffusion directe du titre Spotify en cours d'écoute dans le salon vocal Discord du membre via le lecteur audio Etho.",
+    "Boutons interactifs Discord : commandes directes depuis l'embed d'écoute avec boutons Précédent, Lecture/Pause, Suivant, Like/Unlike et Diffuser en vocal.",
+    "Module Dashboard Spotify immersif (/discord?view=spotify) : vinyle animé en rotation Framer Motion, égaliseur sonore dynamique 5 bandes, barre de progression interactive et curseur de volume temps réel.",
+    "Zéro placeholder & actions réelles : recherche et ajout à la file d'attente, transfert d'appareil actif, gestion des favoris et statistiques de morceaux et artistes préférés.",
+  ],
+};
+
+const v1_75_0_en: ChangelogEntry = {
+  version: "v1.75.0",
+  date: "2026-10-12",
+  title: "Full Spotify Integration: Bot Commands & Motion Dashboard",
+  items: [
+    "Complete Spotify command suite for the Discord bot: 20 slash and prefix commands (/spotify nowplaying, play, pause, resume, next, previous, seek, volume, repeat, shuffle, queue, like, unlike, toptracks, topartists, device, devices, vc, login, logout).",
+    "Voice channel bridge (/spotify vc): stream current Spotify playback directly into the user's Discord voice channel via Etho audio engine.",
+    "Interactive Discord buttons: instant playback controls right on the now playing embed (Previous, Play/Pause, Next, Like/Unlike, Stream to Voice).",
+    "Immersive Motion Dashboard (/discord?view=spotify): vinyl record rotating with Framer Motion, 5-bar rhythmic sound equalizer, tactile progress seek bar, and live volume control.",
+    "Zero placeholders & genuine actions: search, queue, live device transfer, track favorites, and top tracks / top artists stats.",
+  ],
+};
+
+const v1_75_0_es: ChangelogEntry = {
+  version: "v1.75.0",
+  date: "2026-10-12",
+  title: "Integración Completa de Spotify: Comandos del Bot y Dashboard con Motion",
+  items: [
+    "Suite completa de comandos de Spotify para el bot: 20 comandos slash y de prefijo (/spotify nowplaying, play, pause, resume, next, previous, seek, volume, repeat, shuffle, queue, like, unlike, toptracks, topartists, device, devices, vc, login, logout).",
+    "Puente de canal de voz (/spotify vc): reproducción directa de la pista de Spotify en el canal de voz de Discord a través del motor de audio de Etho.",
+    "Botones interactivos en Discord: controles directos en el embed (Anterior, Reproducir/Pausa, Siguiente, Me gusta y Transmitir a voz).",
+    "Dashboard inmersivo con Motion (/discord?view=spotify): vinilo giratorio con Framer Motion, ecualizador dinámico de 5 barras, barra de progreso táctil y control de volumen.",
+    "Cero marcadores de posición: búsqueda real, cola, cambio de dispositivo activo, favoritos y estadísticas de artistas y temas favoritos.",
+  ],
+};
+
+const v1_75_0_de: ChangelogEntry = {
+  version: "v1.75.0",
+  date: "2026-10-12",
+  title: "Vollständige Spotify-Integration: Bot-Befehle & Motion-Dashboard",
+  items: [
+    "Vollständige Spotify-Befehlssuite für den Discord-Bot: 20 Slash- und Präfix-Befehle (/spotify nowplaying, play, pause, resume, next, previous, seek, volume, repeat, shuffle, queue, like, unlike, toptracks, topartists, device, devices, vc, login, logout).",
+    "Sprachkanal-Brücke (/spotify vc): Direktes Streamen des Spotify-Titels in den Discord-Sprachkanal des Nutzers über das Etho-Audio-System.",
+    "Interaktive Discord-Buttons: Direktsteuerung auf dem Now-Playing-Embed (Vorheriger, Wiedergabe/Pause, Nächster, Like/Unlike und Sprach-Streaming).",
+    "Immersives Motion-Dashboard (/discord?view=spotify): Rotierende Vinyl-Schallplatte mit Framer Motion, 5-Balken-Equalizer, taktile Suchleiste und Lautstärkeregler.",
+    "Keine Platzhalter: Echte Suche, Warteschlange, Gerätesteuerung, Favoriten und Top-Titel/Künstler-Statistiken.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

@@ -90,6 +90,20 @@ import { logsCommand } from '../modules/logs/commands/logsCommand.js';
 import { highlightCommand } from '../modules/highlights/commands/highlightCommand.js';
 import { streamerCommand } from '../modules/streamers/commands/streamerCommand.js';
 import { blackjackCommand, rouletteCommand, diceCommand, casinoCommand } from '../modules/games/commands/gamesCommand.js';
+import { spotifyCommand } from '../commands/music/spotifyCommand.js';
+import {
+  spotifyLoginCommand,
+  spotifyLogoutCommand,
+  spotifyPlayCommand,
+  spotifyPauseCommand,
+  spotifyResumeCommand,
+  spotifyNextCommand,
+  spotifyPreviousCommand,
+  spotifyLikeCommand,
+  spotifyUnlikeCommand,
+  spotifyVcCommand,
+  spotifyQueueCommand,
+} from '../commands/music/spotifyShortcuts.js';
 
 import { config } from '../config.js';
 import { Command } from '../types/command.js';
@@ -181,6 +195,19 @@ class CommandRegistry {
     this.register(clearQueueCommand);
     this.register(playerCommand);
     this.register(playlistCommand);
+
+    this.register(spotifyCommand);
+    this.register(spotifyLoginCommand);
+    this.register(spotifyLogoutCommand);
+    this.register(spotifyPlayCommand);
+    this.register(spotifyPauseCommand);
+    this.register(spotifyResumeCommand);
+    this.register(spotifyNextCommand);
+    this.register(spotifyPreviousCommand);
+    this.register(spotifyLikeCommand);
+    this.register(spotifyUnlikeCommand);
+    this.register(spotifyVcCommand);
+    this.register(spotifyQueueCommand);
 
     // Sondages & Votes 2.0 (Polls Center)
     this.register(pollCommand);

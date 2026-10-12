@@ -36,6 +36,7 @@ export const DISCORD_MODULES: DiscordModuleMeta[] = [
   { id: "emojis", title: "Émojis du serveur", href: "/discord/emojis", keywords: ["emoji", "emote", "expression", "gif", "anime", "importer", "upload"], icon: "mod-emojis", tint: "text-yellow-300" },
   { id: "birthdays", title: "Anniversaires", href: "/discord/birthdays", keywords: ["anniversaire", "birthday", "fete"], icon: "mod-birthdays", tint: "text-pink-300" },
   { id: "music", title: "Lecteur Musique", href: "/discord/music", keywords: ["musique", "music", "play", "playlist", "dj", "spotify", "lavalink", "24/7"], icon: "mod-music", tint: "text-green-400" },
+  { id: "spotify", title: "Spotify Connect", href: "/discord/spotify", keywords: ["spotify", "musique", "lecteur", "connect", "titres", "artistes", "vocal", "diffusion", "bleed"], icon: "mod-music", tint: "text-emerald-400" },
   { id: "giveaways", title: "Tirages au sort", href: "/discord/giveaways", keywords: ["giveaway", "concours", "tirage", "cadeau"], icon: "mod-giveaways", tint: "text-pink-400" },
   { id: "economy", title: "Économie & Boutique", href: "/discord/economy", keywords: ["economie", "monnaie", "credits", "boutique", "shop", "daily", "pieces"], icon: "mod-economy", tint: "text-yellow-300" },
   { id: "events", title: "Événements & Calendrier", href: "/discord/events", keywords: ["evenement", "event", "inscription", "rsvp"], icon: "mod-events", tint: "text-orange-300" },

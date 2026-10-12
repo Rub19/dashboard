@@ -48,6 +48,7 @@ import { syncEngine } from '../services/syncEngine.js';
 import { BotCommandStatsService } from '../modules/botControl/services/botCommandStatsService.js';
 import { BotTelemetryService } from '../modules/botControl/services/botTelemetryService.js';
 import { handleEconomyButton, handleRankButton } from '../modules/economy/interactions/economyButtonHandler.js';
+import { handleSpotifyButton } from '../modules/spotify/ui/spotifyEmbed.js';
 import { handleModButton } from '../modules/moderation/interactions/modButtonHandler.js';
 import { BotConfigService } from '../modules/botControl/services/botConfigService.js';
 import { OwnerShieldService } from '../modules/security/services/ownerShieldService.js';
@@ -150,6 +151,10 @@ export async function onInteractionCreate(interaction: Interaction) {
   }
 
   if (interaction.isButton()) {
+    if (interaction.customId.startsWith('spotify:')) {
+      await safeHandleComponent(interaction, 'spotify_button', () => handleSpotifyButton(interaction));
+      return;
+    }
     if (interaction.customId.startsWith('captcha_')) {
       await safeHandleComponent(interaction, 'captcha_button', () => handleCaptchaButton(interaction));
       return;

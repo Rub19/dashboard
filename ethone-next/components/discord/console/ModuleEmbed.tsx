@@ -37,6 +37,7 @@ const NATIVE: Record<string, ComponentType<{ guildId: string }>> = {
   leveling: native(() => import("./modules/ConsoleLeveling")),
   giveaways: native(() => import("./modules/ConsoleGiveaways")),
   music: native(() => import("./modules/ConsoleMusic")),
+  spotify: native(() => import("./modules/ConsoleSpotify")),
   polls: native(() => import("./modules/ConsolePolls")),
   forms: native(() => import("./modules/ConsoleForms")),
   voice: native(() => import("./modules/ConsoleVoice")),

@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.0 — 2026-10-12
+
+**Intégration Complète Spotify : Commandes Bot & Dashboard Interactif Motion**
+
+- Suite de commandes Spotify pour le bot : 20 commandes slash et préfixes (/spotify nowplaying, play, pause, resume, next, previous, seek, volume, repeat, shuffle, queue, like, unlike, toptracks, topartists, device, devices, vc, login, logout).
+- Pont vocal Discord (/spotify vc) : diffusion directe du titre Spotify en cours d'écoute dans le salon vocal Discord du membre via le lecteur audio Etho.
+- Boutons interactifs Discord : commandes directes depuis l'embed d'écoute avec boutons Précédent, Lecture/Pause, Suivant, Like/Unlike et Diffuser en vocal.
+- Module Dashboard Spotify immersif (/discord?view=spotify) : vinyle animé en rotation Framer Motion, égaliseur sonore dynamique 5 bandes, barre de progression interactive et curseur de volume temps réel.
+- Zéro placeholder & actions réelles : recherche et ajout à la file d'attente, transfert d'appareil actif, gestion des favoris et statistiques de morceaux et artistes préférés.
+
 ## v1.74.18 — 2026-10-12
 
 **Console Discord : Résolution du blocage sur /bot et suppression de l'ancien dashboard**

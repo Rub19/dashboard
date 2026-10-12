@@ -1,6 +1,7 @@
 "use client";
 
-import { Radio, Wifi, AlertCircle, RefreshCw, ListRestart, Terminal, Search } from "@/components/icons/ph";
+import { Radio, Wifi, AlertCircle, RefreshCw, ListRestart, Terminal, Search, ExternalLink } from "@/components/icons/ph";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 import Card from "@/components/ui/Card";
 import type { BotTab } from "@/app/discord/bot/BotControlClient";
@@ -291,10 +292,19 @@ export default function OperationsGroup({
         <Card variant="default" padding="none" className="p-5 sm:p-6 space-y-4 shadow-sm">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
-                <Terminal className="w-5 h-5 text-[var(--accent-primary)]" />
-                Catalogue des Commandes Discord ({filteredCommands.length})
-              </h3>
+              <div className="flex flex-wrap items-center gap-2.5">
+                <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
+                  <Terminal className="w-5 h-5 text-[var(--accent-primary)]" />
+                  Catalogue des Commandes Discord ({filteredCommands.length})
+                </h3>
+                <Link
+                  href="/discord/bot/commands"
+                  className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] hover:bg-[var(--accent-primary)] hover:text-[var(--accent-contrast)] border border-[var(--accent-primary)]/20 text-[11px] font-semibold transition-all cursor-pointer active:scale-[0.97]"
+                >
+                  <span>Format Keeper dédié</span>
+                  <ExternalLink className="w-3 h-3" />
+                </Link>
+              </div>
               <p className="text-xs text-[var(--text-muted)] mt-0.5">
                 Commandes Slash (/) et préfixes (!) supportées nativement par le bot
               </p>

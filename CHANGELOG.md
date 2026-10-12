@@ -2,6 +2,24 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.8 — 2026-10-12
+
+**Refonte Intégrale des Commandes au Format Keeper & Motion Design**
+
+- **Page Dédiée Ultra-Épurée (`/discord/bot/commands`)** :
+  - Suppression totale du bandeau supérieur monolithique, des jauges de gateway redondantes, des 5 groupes d'onglets imbriqués et du panneau système propriétaire au profit d'un explorateur de commandes direct, aéré et immédiatement lisible.
+- **Motion Design & Micro-Interactions Fluides (Framer Motion)** :
+  - Animations d'entrée en cascade (`pageStagger`, `staggerItem`) sur l'ensemble du catalogue.
+  - Sélecteur de catégories dynamique avec indicateur de glissement physique fluide (`layoutId="keeper-category-pill"` et ressorts `SPRING_PILL`).
+  - Effets de survol élégants avec mise en valeur de bordure d'accentuation, micro-interaction de copie de commande (`Copier`) avec confirmation animée.
+  - Écoute réactive de la touche `/` pour focaliser instantanément la barre de recherche et de `Échap` pour fermer les tiroirs.
+- **Expérience Inspirée du Format Keeper** :
+  - Catalogue exhaustif et authentique de 40 commandes réparties en 7 modules d'action (Général, IA, Modération & Sécurité, Musique, Administration, Communauté & Jeux, Support & Outils).
+  - Trois modes de consultation interchangeables : **Grille Bento Keeper**, **Format Scindé Keeper** (liste latérale avec inspecteur en direct) et **Tableau Compact**.
+  - Inspecteur de commande détaillé avec décomposition analytique des arguments et paramètres (Nom, Type, Requis/Optionnel, Description).
+  - Simulateur en direct du rendu Discord reproduisant fidèlement l'embed, la couleur de thème et l'avatar du bot.
+  - Intégration de la télémétrie réelle d'utilisation en 24h et de la latence moyenne issue de l'API.
+
 ## v1.75.7 — 2026-10-12
 
 **Suppression Totale des Placeholders d'Incidents & Télémétrie 100% Authentique**

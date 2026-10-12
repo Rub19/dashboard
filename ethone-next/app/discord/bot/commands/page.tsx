@@ -1,8 +1,9 @@
 import { Suspense } from "react";
-import BotControlClient from "../BotControlClient";
+import BotCommandsClient from "./BotCommandsClient";
 
 export const metadata = {
-  title: "Commandes du Bot — Bot Control Center — ETHONE",
+  title: "Catalogue des Commandes — Bot Discord Etho — ETHONE",
+  description: "Catalogue officiel des commandes Slash et préfixes du bot Etho au format Keeper avec simulateur et motion design.",
 };
 
 export const dynamic = "force-static";
@@ -10,7 +11,7 @@ export const dynamic = "force-static";
 export default function BotCommandsPage() {
   return (
     <Suspense fallback={<div className="min-h-full bg-[var(--bg-main)]" />}>
-      <BotControlClient initialTab="commands" />
+      <BotCommandsClient />
     </Suspense>
   );
 }

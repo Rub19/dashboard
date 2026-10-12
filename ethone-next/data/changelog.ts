@@ -52076,6 +52076,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_7_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_7_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_7_de);
 
+const v1_75_8_fr: ChangelogEntry = {
+  version: "v1.75.8",
+  date: "2026-10-12",
+  title: "Refonte Complète des Commandes au Format Keeper & Motion Design",
+  items: [
+    "Refonte intégrale de la page commandes (/discord/bot/commands) : suppression des bannières et onglets encombrants au sommet au profit d'une interface ultra-épurée, directe et focalisée.",
+    "Format Keeper et Motion Design : animations Framer Motion soignées, sélecteur de catégories dynamique avec pill spring, grille Bento, vue scindée 2 colonnes avec inspecteur live et tableau compact.",
+    "Simulateur de réponse Discord intégré, détails exhaustifs des paramètres (requis/optionnels), raccourcis de copie instantanée et écoute du raccourci clavier /.",
+  ],
+};
+
+const v1_75_8_en: ChangelogEntry = {
+  version: "v1.75.8",
+  date: "2026-10-12",
+  title: "Complete Keeper-Style Commands Revamp & Motion Design",
+  items: [
+    "Full redesign of the bot commands page (/discord/bot/commands): removed heavy top banners and nested tabs for an ultra-clean, focused commands experience.",
+    "Keeper layout and Motion Design: smooth Framer Motion animations, animated category pills with spring physics, Bento cards grid, split 2-column view with live inspector, and compact table.",
+    "Integrated live Discord response simulator, detailed arguments breakdown (required/optional), instant copy shortcuts, and / keyboard shortcut focus.",
+  ],
+};
+
+const v1_75_8_es: ChangelogEntry = {
+  version: "v1.75.8",
+  date: "2026-10-12",
+  title: "Rediseño Completo de Comandos en Formato Keeper y Motion Design",
+  items: [
+    "Rediseño integral de la página de comandos (/discord/bot/commands): eliminación de encabezados pesados para una experiencia ultra limpia y directa.",
+    "Diseño Keeper y Motion Design: animaciones fluidas con Framer Motion, pestañas animadas, cuadrícula Bento, vista dividida de 2 columnas e inspector en vivo.",
+    "Simulador de respuesta de Discord integrado, desglose detallado de parámetros y atajos de teclado.",
+  ],
+};
+
+const v1_75_8_de: ChangelogEntry = {
+  version: "v1.75.8",
+  date: "2026-10-12",
+  title: "Vollständige Überarbeitung der Befehle im Keeper-Format & Motion Design",
+  items: [
+    "Komplettes Redesign der Bot-Befehlsseite (/discord/bot/commands): Entfernung schwerer Kopfleisten für ein ultra-klares, fokussiertes Erlebnis.",
+    "Keeper-Layout & Motion Design: flüssige Framer-Motion-Animationen, animierte Kategorie-Pills, Bento-Grid, geteilte 2-Spalten-Ansicht mit Live-Inspektor.",
+    "Integrierter Discord-Antwort-Simulator, detaillierte Argumenten-Übersicht und Tastaturkürzel.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_8_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_8_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_8_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_8_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

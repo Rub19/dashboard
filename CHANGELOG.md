@@ -2,6 +2,20 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.10 — 2026-10-12
+
+**Refonte Intégrale de la Page des Tâches Planifiées (`/discord/bot/jobs`) au Format Keeper & Motion Design**
+
+- **Page Dédiée Épurée & Clarté Immédiate (`/discord/bot/jobs`)** :
+  - Suppression complète de la console système propriétaire avec ruban rouge et clés d'accès root, des jauges monolithiques du bot et du double système d'onglets au profit d'un centre d'ordonnancement dédié, aéré et instantané.
+- **Motion Design Fluide & Format Keeper** :
+  - Animations d'entrée en cascade Framer Motion (`pageStagger`, `staggerItem`), indicateurs de filtres physiques (`SPRING_PILL`), et micro-interactions au survol.
+  - Trois modes d'affichage interchangeables : **Grille Bento Motion**, **Format Scindé Keeper** (liste hiérarchique avec inspecteur latéral et journal de run) et **Télémétrie & Horaires** (cadences ultra-rapides, régulières et périodiques).
+  - Inspecteur modal/tiroir détaillé affichant l'idempotence, le module d'appartenance, la fréquence et le journal des exécutions.
+- **Supervision & Déclenchement des 15 Tâches Authentiques du Bot** :
+  - Métriques 100% réelles issues de l'API Cloudflare Worker (`/api/bot/jobs` et `/api/bot/jobs/:id/run`) couvrant l'ensemble des tâches système : vidage de l'XP (`xp_buffer_flush`), buffer d'analyse (`analytics_buffer_flush`), mode raid (`raid_auto_exit`), sanctions expirées (`moderation_expirations`), planning de présence (`presence_schedule`), rappels (`reminders_tick`), salons compteurs (`server_stats_tick`), scan proactif (`security_autoscan_tick`), mode vocal 24h/24 (`voice_stay_watch`), rétention RGPD (`log_retention`), inactivité des tickets (`tickets_inactivity`), invitations (`invites_checks`) et sauvegardes automatiques (`backup_scheduler`).
+  - Déclenchement individuel d'une tâche ou exécution globale du cycle complet en 1 clic avec suivi séquentiel animé.
+
 ## v1.75.9 — 2026-10-12
 
 **Refonte de la Présence du Bot, Modes Rapides (Streamer, DND, Invi) & Extensions de Rotation**

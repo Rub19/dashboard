@@ -52176,7 +52176,61 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_9_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_9_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_9_de);
 
+const v1_75_10_fr: ChangelogEntry = {
+  version: "v1.75.10",
+  date: "2026-10-12",
+  title: "Ordonnanceur & Tâches Planifiées Épurées au Format Keeper",
+  items: [
+    "Refonte complète de la page des tâches planifiées (/discord/bot/jobs) : suppression totale de la console propriétaire, des doubles onglets et du bandeau supérieur monolithique.",
+    "Expérience Keeper & Motion Design : grille bento fluide, format scindé avec inspecteur latéral en direct et vue chronologique par cadence d'exécution.",
+    "Supervision temps réel et métriques des 15 tâches authentiques du bot (vidage d'XP, métriques, anti-raid, modération, sauvegardes, anniversaires, scans de sécurité).",
+    "Déclenchement direct par tâche et exécution séquentielle de l'ensemble du cycle ordonnancé avec journalisation des temps d'exécution.",
+  ],
+};
+
+const v1_75_10_en: ChangelogEntry = {
+  version: "v1.75.10",
+  date: "2026-10-12",
+  title: "Streamlined Job Scheduler & Queues in Keeper Motion Design",
+  items: [
+    "Complete overhaul of the scheduled jobs page (/discord/bot/jobs): removed bloated system console, redundant header tabs, and monolithic top banners.",
+    "Keeper & Motion Design experience: smooth bento grid, split view with live inspector drawer, and cadence timeline breakdown.",
+    "Real-time monitoring and telemetry for all 15 authentic bot jobs (XP buffer, metrics flush, anti-raid, moderation expiries, backups, security scan).",
+    "Single-task instant execution and one-click full cycle run with live execution duration logging.",
+  ],
+};
+
+const v1_75_10_es: ChangelogEntry = {
+  version: "v1.75.10",
+  date: "2026-10-12",
+  title: "Planificador de Tareas y Colas Limpio en Formato Keeper",
+  items: [
+    "Rediseño completo de la página de tareas programadas (/discord/bot/jobs): eliminación de la consola pesada y pestañas duplicadas.",
+    "Experiencia Keeper y Motion Design: cuadrícula bento fluida, vista dividida con inspector en vivo y cronología por frecuencia.",
+    "Monitorización en tiempo real de las 15 tareas auténticas del bot de Etho (buffer de XP, estadísticas, anti-raid, copias de seguridad).",
+    "Ejecución inmediata por tarea y ejecución completa del ciclo en 1 clic con registro de duración.",
+  ],
+};
+
+const v1_75_10_de: ChangelogEntry = {
+  version: "v1.75.10",
+  date: "2026-10-12",
+  title: "Schlanker Aufgaben-Planer & Warteschlangen im Keeper-Design",
+  items: [
+    "Komplette Neugestaltung der Seite für geplante Aufgaben (/discord/bot/jobs): Entfernung schwerer Konsolen und doppelter Tabs.",
+    "Keeper- und Motion-Design-Erlebnis: flüssiges Bento-Raster, Split-Ansicht mit Live-Inspektor und Taktungs-Zeitachse.",
+    "Echtzeit-Überwachung der 15 echten Bot-Hintergrundaufgaben (XP-Speicher, Metriken, Anti-Raid, Backups, Sicherheits-Scans).",
+    "Direktausführung einzelner Aufgaben und 1-Klick-Gesamtzyklus mit Protokollierung der Ausführungszeit.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_10_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_10_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_10_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_10_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
+
 
 
 

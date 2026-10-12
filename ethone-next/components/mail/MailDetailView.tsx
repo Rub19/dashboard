@@ -25,12 +25,13 @@ import {
   ChevronDown,
   ChevronUp,
   ChevronLeft,
+  Maximize2,
+  Sparkles,
 } from "@/components/icons/ph";
 import { useI18n } from "@/lib/hooks/useI18n";
 import type { MailMessage, MailAttachment } from "@/lib/hooks/useMail";
 import { cn } from "@/lib/utils";
 import Button from "@/components/ui/Button";
-import Input from "@/components/ui/Input";
 import MailAvatar from "./MailAvatar";
 
 function formatMailDate(iso: string) {
@@ -130,6 +131,14 @@ const SHORTCUTS: [string, string][] = [
   ["U", "Marquer lu"],
   ["Ctrl+U", "Composer"],
 ];
+
+const QUICK_SUGGESTIONS = [
+  "Bien reçu, merci !",
+  "Je regarde ça au plus vite.",
+  "C'est validé 👍",
+  "Merci pour votre retour !",
+  "Pouvez-vous préciser ce point ?",
+] as const;
 
 export default function MailDetailView({
   thread,
@@ -426,37 +435,73 @@ export default function MailDetailView({
         <div ref={endRef} />
       </div>
 
-      {/* Quick reply */}
       {onQuickReplySend && (
-        <div className="border-t border-[var(--panel-border)] p-3 select-none">
-          <div className="flex items-center gap-2">
-            <Input
-              type="text"
+        <div className="border-t border-[var(--panel-border)] p-3 space-y-2 select-none bg-[var(--surface-base,var(--bg-main))]/40">
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
+            <span className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)] shrink-0 mr-1">
+              <Sparkles className="h-3 w-3 text-[var(--accent-primary)]" />
+              Réponses rapides :
+            </span>
+            {QUICK_SUGGESTIONS.map((text) => (
+              <button
+                key={text}
+                type="button"
+                onClick={() => setQuickReplyText((prev) => (prev ? `${prev} ${text}` : text))}
+                className="shrink-0 rounded-full border border-[var(--panel-border)] bg-[var(--surface-2)]/60 px-2.5 py-1 text-[11px] font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-2)] hover:border-[var(--accent-primary)]/40 transition-all active:scale-95 cursor-pointer"
+              >
+                {text}
+              </button>
+            ))}
+          </div>
+
+          <div className="relative">
+            <textarea
               value={quickReplyText}
               onChange={(e) => setQuickReplyText(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
+                if (e.key === "Enter" && (e.ctrlKey || e.metaKey || !e.shiftKey)) {
                   e.preventDefault();
                   handleSendQuickReply();
                 }
               }}
-              placeholder={`Répondre à ${sender}…`}
+              rows={quickReplyText.includes("\n") || quickReplyText.length > 70 ? 3 : 1}
+              placeholder={`Répondre rapidement à ${sender}…`}
               disabled={sendingQuick}
-              inputSize="compact"
-              className="flex-1 text-xs"
+              className="w-full resize-none rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-3 py-2 text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none transition-all leading-relaxed"
             />
-            <Button
-              type="button"
-              variant="primary"
-              size="sm"
-              onClick={handleSendQuickReply}
-              disabled={!quickReplyText.trim() || sendingQuick}
-              isLoading={sendingQuick}
-              leftIcon={<Send className="h-3.5 w-3.5" />}
-              className="px-4"
-            >
-              Envoyer
-            </Button>
+          </div>
+
+          <div className="flex items-center justify-between gap-2 pt-0.5">
+            <span className="text-[10px] text-[var(--text-muted)] hidden sm:inline">
+              Entrée pour envoyer · Maj+Entrée nouvelle ligne
+            </span>
+            <div className="flex items-center gap-2 ml-auto">
+              {onReply && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={onReply}
+                  leftIcon={<Maximize2 className="h-3.5 w-3.5" />}
+                  className="text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                  title="Ouvrir dans l'éditeur complet"
+                >
+                  Éditeur complet
+                </Button>
+              )}
+              <Button
+                type="button"
+                variant="primary"
+                size="sm"
+                onClick={handleSendQuickReply}
+                disabled={!quickReplyText.trim() || sendingQuick}
+                isLoading={sendingQuick}
+                leftIcon={<Send className="h-3.5 w-3.5" />}
+                className="px-4"
+              >
+                Envoyer
+              </Button>
+            </div>
           </div>
         </div>
       )}

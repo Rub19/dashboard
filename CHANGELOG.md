@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.74.6 — 2026-10-12
+
+**Messagerie & Bloc-notes : Réponses rapides 1-clic, éditeur Markdown et double vue**
+
+- **Réponses rapides en messagerie** : Intégration d'une rangée de pastilles de suggestions instantanées (« Bien reçu, merci ! », « Je regarde ça au plus vite. », « C'est validé 👍 », « Merci pour votre retour ! », « Pouvez-vous préciser ce point ? ») permettant de répondre en un tap sans saisir manuellement de texte.
+- **Zone de réponse multi-lignes adaptative** : Remplacement de l'input plat par une zone de texte auto-extensible prenant en charge les retours à la ligne (`Maj+Entrée`) et l'envoi rapide (`Entrée`), accompagnée d'un raccourci direct vers l'éditeur complet (`Éditeur complet`).
+- **Modes d'affichage du bloc-notes rapide (`/scratchpad`)** : Nouveau sélecteur de mode intuitif permettant de basculer instantanément entre la vue Écriture pure, la Double vue côte à côte sur grand écran et l'Aperçu Markdown dynamique rendu en direct avec `MarkdownContent`.
+- **Barre d'outils de formatage et export** : Boutons rapides pour insérer au curseur gras, listes à puces, cases à cocher (`- [ ]`), blocs de code et horodatage automatique, accompagnés du téléchargement direct de la note au format Markdown (`.md`) et de l'estimation du temps de lecture.
+
 ## v1.74.5 — 2026-10-12
 
 **Messagerie, Audio Dock & Focus : Raccourcis, visualiseur d'égaliseur et ambiances instantanées**

@@ -50944,5 +50944,58 @@ CHANGELOG_BY_LANG.en.unshift(v1_74_5_en);
 CHANGELOG_BY_LANG.es.unshift(v1_74_5_es);
 CHANGELOG_BY_LANG.de.unshift(v1_74_5_de);
 
+const v1_74_6_fr: ChangelogEntry = {
+  version: "v1.74.6",
+  date: "2026-10-12",
+  title: "Messagerie & Bloc-notes : Réponses rapides 1-clic, éditeur Markdown et double vue",
+  items: [
+    "Réponses rapides en messagerie : Pastilles de suggestions instantanées pour répondre en un tap sans saisir de texte",
+    "Zone de réponse extensible : Zone de texte multi-lignes adaptative avec raccourci direct vers l'éditeur complet",
+    "Modes d'affichage Bloc-notes : Bascule immédiate entre Édition, Double vue côte à côte et Aperçu Markdown rendu",
+    "Barre d'outils et export : Insertion rapide de mise en forme (Gras, Puces, Tâches, Code, Horodatage) et téléchargement .md",
+  ],
+};
+
+const v1_74_6_en: ChangelogEntry = {
+  version: "v1.74.6",
+  date: "2026-10-12",
+  title: "Mail & Scratchpad: 1-Click quick replies, live Markdown preview & split view",
+  items: [
+    "Mail quick replies: Instant suggestion chips to reply in a single tap without manual typing",
+    "Expanding reply editor: Adaptive multi-line textarea with direct shortcut to the full composer",
+    "Scratchpad viewing modes: Instant toggle between Edit, Split view, and Live rendered Markdown preview",
+    "Formatting bar & export: 1-click syntax insertion (Bold, Bullets, Checklists, Code, Timestamp) and .md export",
+  ],
+};
+
+const v1_74_6_es: ChangelogEntry = {
+  version: "v1.74.6",
+  date: "2026-10-12",
+  title: "Correo y Bloc de notas: Respuestas rápidas en 1 clic, editor Markdown y vista dividida",
+  items: [
+    "Respuestas rápidas en correo: Sugerencias instantáneas para responder en un toque sin redactar",
+    "Editor de respuesta expandible: Área de texto multilínea adaptable con acceso al editor completo",
+    "Modos en Bloc de notas: Alternancia entre Edición, Vista dividida y Previsualización Markdown",
+    "Barra de formato y exportación: Inserción rápida de estilos y descarga en archivo Markdown (.md)",
+  ],
+};
+
+const v1_74_6_de: ChangelogEntry = {
+  version: "v1.74.6",
+  date: "2026-10-12",
+  title: "Mail & Notizblock: 1-Klick-Schnellantworten, Live-Markdown-Vorschau & geteilte Ansicht",
+  items: [
+    "Schnellantworten in Mail: Sofortige Antwortvorschläge für 1-Klick-Reaktionen ohne Tippen",
+    "Erweiterbarer Antwort-Editor: Adaptiver mehrzeiliger Textbereich mit direktem Wechsel zum Voll-Editor",
+    "Notizblock-Modi: Sofortiger Wechsel zwischen Bearbeiten, geteilter Ansicht und Live-Markdown-Vorschau",
+    "Formatierungsleiste & Export: 1-Klick-Syntaxeinfügung (Fett, Listen, Aufgaben, Code, Zeit) und .md-Download",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_74_6_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_74_6_en);
+CHANGELOG_BY_LANG.es.unshift(v1_74_6_es);
+CHANGELOG_BY_LANG.de.unshift(v1_74_6_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

@@ -582,7 +582,7 @@ export default function ServerPicker({
       </motion.aside>
 
       <main className="flex-1 min-w-0 p-4 md:p-8 lg:p-10 overflow-y-auto h-full md:h-dvh">
-        <div className="max-w-4xl mx-auto space-y-6">
+        <div className="max-w-6xl mx-auto space-y-6">
           <motion.div
             variants={consoleHeader}
             initial={reduced ? false : "initial"}
@@ -616,13 +616,28 @@ export default function ServerPicker({
             animate="animate"
             className="space-y-6"
           >
-            <motion.div variants={consoleReveal}>
-              <h1 className="text-2xl font-black tracking-tight text-[var(--text-primary)] sm:text-3xl">
-                Bonjour {currentDisplayName}
-              </h1>
-              <p className="mt-1 text-xs sm:text-sm text-[var(--text-muted)]">
-                Gérez vos serveurs ou configurez Etho en quelques clics.
-              </p>
+            <motion.div variants={consoleReveal} className="flex items-center gap-3.5">
+              {currentAvatarUrl ? (
+                <ClientImage
+                  src={currentAvatarUrl}
+                  alt={currentDisplayName}
+                  width={48}
+                  height={48}
+                  className="h-12 w-12 rounded-full object-cover border border-[var(--panel-border)] shrink-0 shadow-sm"
+                />
+              ) : (
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--surface-raised)] text-[var(--accent-primary)] font-bold text-sm border border-[var(--panel-border)] shrink-0 shadow-sm">
+                  {currentDisplayName.slice(0, 2).toUpperCase()}
+                </div>
+              )}
+              <div className="min-w-0">
+                <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[var(--text-primary)]">
+                  Bienvenue, {currentDisplayName}
+                </h1>
+                <p className="mt-0.5 text-xs sm:text-sm text-[var(--text-muted)]">
+                  Sélectionne un serveur pour configurer Etho.
+                </p>
+              </div>
             </motion.div>
 
             <motion.div variants={consoleFadeUp} className="flex flex-col sm:flex-row sm:items-center gap-3">
@@ -633,7 +648,7 @@ export default function ServerPicker({
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Rechercher un serveur..."
-                  className="w-full rounded-sm border border-[var(--panel-border)] bg-[var(--surface-raised)] pl-10 pr-4 py-2.5 text-xs sm:text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] outline-none focus:border-[var(--accent-primary)] focus:ring-1 focus:ring-[var(--accent-primary)]/40 transition-all"
+                  className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] pl-10 pr-4 py-2.5 text-xs sm:text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] outline-none focus:border-[var(--accent-primary)] focus:ring-1 focus:ring-[var(--accent-primary)]/40 transition-all"
                 />
                 {query && (
                   <button
@@ -647,7 +662,7 @@ export default function ServerPicker({
               </div>
 
               {totalCount > 0 && (
-                <div className="flex items-center gap-2 rounded-sm border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-2 shrink-0">
+                <div className="flex items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-2 shrink-0">
                   <span className="text-xs text-[var(--text-muted)]">Gérables</span>
                   <button
                     type="button"
@@ -656,12 +671,12 @@ export default function ServerPicker({
                     aria-label="Uniquement les serveurs gérables"
                     onClick={onToggleManageable}
                     className={cn(
-                      "relative h-5 w-10 shrink-0 cursor-pointer rounded-sm border border-[var(--panel-border)] outline-none transition-colors duration-300",
+                      "relative h-5 w-10 shrink-0 cursor-pointer rounded-full border border-[var(--panel-border)] outline-none transition-colors duration-300",
                       onlyManageable ? "bg-[var(--accent-primary)]" : "bg-[var(--surface-raised)]"
                     )}
                   >
                     <motion.span
-                      className="absolute left-0.5 top-0.5 h-3.5 w-4 rounded-sm bg-white shadow"
+                      className="absolute left-0.5 top-0.5 h-3.5 w-4 rounded-full bg-white shadow"
                       initial={false}
                       animate={{ x: onlyManageable ? 18 : 0 }}
                       transition={SPRING_PILL}
@@ -672,8 +687,8 @@ export default function ServerPicker({
             </motion.div>
 
             {!isConnected && (
-              <motion.div variants={consoleFadeUp} className="rounded-sm border border-[var(--accent-primary)]/30 bg-[var(--surface-raised)] p-5 text-center space-y-3">
-                <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-sm bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/30">
+              <motion.div variants={consoleFadeUp} className="rounded-xl border border-[var(--accent-primary)]/30 bg-[var(--surface-raised)] p-5 text-center space-y-3">
+                <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/30">
                   <DiscordIcon className="h-5 w-5" />
                 </div>
                 <div>
@@ -686,7 +701,7 @@ export default function ServerPicker({
                   type="button"
                   onClick={onConnect}
                   disabled={connecting}
-                  className="inline-flex items-center gap-2 rounded-sm bg-[var(--accent-primary)] px-4 py-2 text-xs font-bold text-[var(--accent-contrast)] hover:opacity-90 transition-all cursor-pointer"
+                  className="inline-flex items-center gap-2 rounded-xl bg-[var(--accent-primary)] px-4 py-2 text-xs font-bold text-[var(--accent-contrast)] hover:opacity-90 transition-all cursor-pointer"
                 >
                   <DiscordIcon className="h-4 w-4" />
                   <span>Lier mon compte Discord</span>
@@ -695,19 +710,19 @@ export default function ServerPicker({
             )}
 
             {filteredInstalled.length > 0 && (
-              <motion.div variants={consoleFadeUp} className="space-y-2.5">
-                <div className="flex items-center justify-between text-xs text-[var(--text-muted)] font-medium px-1">
-                  <span>Protégés par Etho · {filteredInstalled.length}</span>
+              <motion.div variants={consoleFadeUp} className="space-y-3">
+                <div className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] px-0.5">
+                  SERVEURS GÉRÉS ({filteredInstalled.length})
                 </div>
-                <motion.div variants={consoleList} className="space-y-1.5">
+                <motion.div variants={consoleList} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
                   {filteredInstalled.map((guild) => {
                     const protectionText = getGuildProtectionText(guild.id);
                     return (
                       <motion.div
                         key={guild.id}
                         variants={consoleRow}
-                        whileHover={reduced ? undefined : { y: -1, scale: 1.004 }}
-                        whileTap={reduced ? undefined : { scale: 0.995 }}
+                        whileHover={reduced ? undefined : { y: -2, scale: 1.01 }}
+                        whileTap={reduced ? undefined : { scale: 0.985 }}
                         transition={SPRING_PRESS}
                         role="button"
                         tabIndex={0}
@@ -719,34 +734,36 @@ export default function ServerPicker({
                             onPick(guild);
                           }
                         }}
-                        className="group flex items-center justify-between rounded-md border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-4 py-3 hover:border-emerald-500/40 hover:bg-[var(--surface-raised)] transition-all cursor-pointer shadow-sm"
+                        className="group flex items-center justify-between rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-3.5 hover:border-emerald-500/40 hover:bg-[var(--surface-raised)] transition-all cursor-pointer shadow-xs gap-3 min-w-0"
                       >
-                        <div className="flex items-center gap-3.5 min-w-0">
+                        <div className="flex items-center gap-3 min-w-0 flex-1">
                           {guild.iconUrl ? (
                             <ClientImage
                               src={guild.iconUrl}
                               alt={guild.name}
-                              width={40}
-                              height={40}
-                              className="h-10 w-10 rounded-md object-cover border border-[var(--panel-border)] shrink-0"
+                              width={44}
+                              height={44}
+                              className="h-11 w-11 rounded-xl object-cover border border-[var(--panel-border)] shrink-0"
                             />
                           ) : (
-                            <div className="flex h-10 w-10 items-center justify-center rounded-md bg-[var(--surface-raised)] text-emerald-400 font-bold text-xs border border-[var(--panel-border)] shrink-0">
+                            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--surface-raised)] text-emerald-400 font-bold text-xs border border-[var(--panel-border)] shrink-0">
                               {getGuildInitials(guild.name)}
                             </div>
                           )}
-                          <div className="min-w-0 space-y-0.5">
+                          <div className="min-w-0 flex-1 space-y-1">
                             <div className="flex items-center gap-1.5 min-w-0">
                               <h4 className="truncate text-sm font-bold text-[var(--text-primary)] group-hover:text-emerald-400 transition-colors">
                                 {guild.name}
                               </h4>
                               {guild.owner && (
-                                <Crown className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
+                                <Crown className="h-3.5 w-3.5 text-amber-400 shrink-0" />
                               )}
                             </div>
-                            <div className="flex items-center gap-1.5 text-xs text-[var(--text-muted)] font-medium">
-                              <span className="h-2 w-2 rounded-full bg-emerald-400 shrink-0" />
-                              <span>{protectionText}</span>
+                            <div>
+                              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-[10px] sm:text-[11px] font-semibold text-emerald-400">
+                                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shrink-0" />
+                                <span>{protectionText || "Bot installé"}</span>
+                              </span>
                             </div>
                           </div>
                         </div>
@@ -759,26 +776,26 @@ export default function ServerPicker({
               </motion.div>
             )}
 
-            <motion.div variants={consoleFadeUp} className="space-y-2.5">
-              <div className="flex items-center justify-between text-xs text-[var(--text-muted)] font-medium px-1">
-                <span>Sans Etho · {filteredUninstalled.length}</span>
+            <motion.div variants={consoleFadeUp} className="space-y-3">
+              <div className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] px-0.5">
+                INVITER SUR UN AUTRE SERVEUR ({filteredUninstalled.length})
               </div>
 
               {filteredUninstalled.length === 0 && guilds.length > 0 && (
-                <div className="rounded-sm border border-[var(--panel-border)] bg-[var(--surface-raised)] p-8 text-center text-xs text-[var(--text-muted)]">
+                <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-8 text-center text-xs text-[var(--text-muted)]">
                   {query
                     ? "Aucun serveur ne correspond à votre recherche."
                     : "Etho est déjà installé sur l'ensemble de vos serveurs !"}
                 </div>
               )}
 
-              <motion.div variants={consoleList} className="space-y-1.5">
+              <motion.div variants={consoleList} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
                 {filteredUninstalled.map((guild) => (
                   <motion.div
                     key={guild.id}
                     variants={consoleRow}
-                    whileHover={reduced ? undefined : { y: -1, scale: 1.004 }}
-                    whileTap={reduced ? undefined : { scale: 0.995 }}
+                    whileHover={reduced ? undefined : { y: -2, scale: 1.01 }}
+                    whileTap={reduced ? undefined : { scale: 0.985 }}
                     transition={SPRING_PRESS}
                     role="button"
                     tabIndex={0}
@@ -790,43 +807,40 @@ export default function ServerPicker({
                         onPick(guild);
                       }
                     }}
-                    className="group flex items-center justify-between rounded-sm border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-4 py-3 hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-raised)] transition-colors cursor-pointer"
+                    className="group flex items-center justify-between rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5 hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-raised)] transition-all cursor-pointer shadow-xs gap-3 min-w-0"
                   >
-                    <div className="flex items-center gap-3 min-w-0">
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
                       {guild.iconUrl ? (
                         <ClientImage
                           src={guild.iconUrl}
                           alt={guild.name}
-                          width={36}
-                          height={36}
-                          className="h-9 w-9 rounded-sm object-cover border border-[var(--panel-border)]"
+                          width={44}
+                          height={44}
+                          className="h-11 w-11 rounded-xl object-cover border border-[var(--panel-border)] shrink-0"
                         />
                       ) : (
-                        <div className="flex h-9 w-9 items-center justify-center rounded-sm bg-[var(--surface-raised)] text-[var(--text-muted)] font-bold text-xs border border-[var(--panel-border)]">
+                        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--surface-raised)] text-[var(--text-muted)] font-bold text-xs border border-[var(--panel-border)] shrink-0">
                           {getGuildInitials(guild.name)}
                         </div>
                       )}
-                      <div className="min-w-0">
-                        <h4 className="truncate text-sm font-semibold text-[var(--text-primary)] group-hover:text-[var(--accent-primary)] transition-colors">
-                          {guild.name}
-                        </h4>
+                      <div className="min-w-0 flex-1 space-y-1">
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          <h4 className="truncate text-sm font-bold text-[var(--text-primary)] group-hover:text-[var(--accent-primary)] transition-colors">
+                            {guild.name}
+                          </h4>
+                          {guild.owner && (
+                            <Crown className="h-3.5 w-3.5 text-amber-400 shrink-0" />
+                          )}
+                        </div>
+                        <div>
+                          <span className="text-[11px] text-[var(--text-muted)] group-hover:text-[var(--text-primary)] font-medium transition-colors">
+                            Inviter le bot
+                          </span>
+                        </div>
                       </div>
                     </div>
 
-                    <motion.button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onPick(guild);
-                      }}
-                      whileHover={reduced ? undefined : { scale: 1.04 }}
-                      whileTap={reduced ? undefined : { scale: 0.96 }}
-                      transition={SPRING_PRESS}
-                      className="flex items-center gap-1.5 rounded-sm border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-1.5 text-xs font-semibold text-[var(--text-muted)] hover:border-[var(--accent-primary)]/40 hover:text-[var(--text-primary)] transition-colors cursor-pointer"
-                    >
-                      <Plus className="h-3.5 w-3.5" />
-                      <span>Installer</span>
-                    </motion.button>
+                    <ExternalLink className="h-4 w-4 text-[var(--text-muted)] group-hover:text-[var(--text-primary)] transition-colors shrink-0" />
                   </motion.div>
                 ))}
               </motion.div>

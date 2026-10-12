@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.74.12 — 2026-10-12
+
+**Discord : Grille 3 colonnes et design épuré pour la sélection des serveurs**
+
+- **Refonte visuelle complète du sélecteur** : Remplacement des longues lignes étirées sur 1 colonne par une grille responsive moderne en 3 colonnes (`grid-cols-1 md:grid-cols-2 lg:grid-cols-3`) dans un conteneur aéré (`max-w-6xl mx-auto`).
+- **En-tête d'accueil personnalisé** : Affichage de l'avatar circulaire de l'utilisateur avec salutation personnalisée (`Bienvenue, [Nom]`) et invite explicite à choisir un serveur à configurer.
+- **Section « Serveurs gérés »** : Cartes compactes à coins arrondis avec icône/initiales du serveur, couronne ambrée (`👑`) pour les propriétaires de serveur, badge émeraude contrasté « Bot installé » et chevron de navigation.
+- **Section « Inviter sur un autre serveur »** : Cartes harmonisées avec icône serveur, couronne ambrée pour les propriétaires, label informatif « Inviter le bot » et icône de lien externe (`↗`) déclenchant immédiatement l'accueil et l'installation d'Etho.
+
 ## v1.74.11 — 2026-10-12
 
 **Audio : Suppression du son intempestif de survol sur les éléments cliquables**

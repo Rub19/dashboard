@@ -51266,5 +51266,58 @@ CHANGELOG_BY_LANG.en.unshift(v1_74_11_en);
 CHANGELOG_BY_LANG.es.unshift(v1_74_11_es);
 CHANGELOG_BY_LANG.de.unshift(v1_74_11_de);
 
+const v1_74_12_fr: ChangelogEntry = {
+  version: "v1.74.12",
+  date: "2026-10-12",
+  title: "Discord : Grille 3 colonnes et design épuré pour la sélection des serveurs",
+  items: [
+    "Refonte visuelle complète du sélecteur de serveurs : Passage d'une liste verticale étirée à une grille moderne et aérée en 3 colonnes responsive (1 col mobile, 2 col tablette, 3 col desktop)",
+    "En-tête d'accueil chaleureux : Affichage de l'avatar utilisateur avec message de bienvenue personnalisé et invitation claire à choisir un serveur",
+    "Section Serveurs Gérés : Cartes compactes avec icône serveur arrondie, couronne dorée pour les propriétaires, badge émeraude « Bot installé » et navigation fluide d'un clic",
+    "Section Inviter sur un autre serveur : Présentation unifiée avec intitulé clair, icône de lien externe et accès immédiat à la procédure d'installation",
+  ],
+};
+
+const v1_74_12_en: ChangelogEntry = {
+  version: "v1.74.12",
+  date: "2026-10-12",
+  title: "Discord: 3-column responsive grid and streamlined server selection design",
+  items: [
+    "Full server picker redesign: Transitioned from stretched 1-column rows to an ergonomic 3-column responsive grid",
+    "Personalized greeting header: Displays user avatar, custom greeting, and prompt to configure Etho",
+    "Managed Servers section: Compact cards featuring rounded server icons, owner crown indicator, emerald 'Bot installed' pill, and smooth interaction",
+    "Invite to Another Server section: Clean cards with external invite indication and instant onboarding access",
+  ],
+};
+
+const v1_74_12_es: ChangelogEntry = {
+  version: "v1.74.12",
+  date: "2026-10-12",
+  title: "Discord: Cuadrícula responsiva de 3 columnas y diseño renovado del selector de servidores",
+  items: [
+    "Rediseño del selector de servidores: Nueva cuadrícula moderna de 3 columnas adaptada a móviles, tabletas y ordenadores",
+    "Cabecera personalizada: Avatar de usuario con saludo de bienvenida y guía directa para seleccionar un servidor",
+    "Sección Servidores Gestionados: Tarjetas compactas con insignia esmeralda 'Bot instalado' y corona dorada para propietarios",
+    "Sección Invitar bot: Visualización clara con acceso directo al flujo de instalación",
+  ],
+};
+
+const v1_74_12_de: ChangelogEntry = {
+  version: "v1.74.12",
+  date: "2026-10-12",
+  title: "Discord: 3-Spalten-Raster und modernes Design für die Serverauswahl",
+  items: [
+    "Komplette Neugestaltung der Serverauswahl: Wechsel zu einem eleganten 3-Spalten-Raster für eine deutlich ergonomischere Übersicht",
+    "Begrüßungs-Header: Benutzer-Avatar mit persönlicher Willkommensnachricht und Hinweistext",
+    "Verwaltete Server: Kompakte Karten mit Server-Icon, Inhaber-Krone, smaragdgrünem 'Bot installiert'-Badge und flüssiger Interaktion",
+    "Auf weiteren Server einladen: Aufgeräumte Karten mit externem Link-Symbol und direktem Zugriff auf die Bot-Installation",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_74_12_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_74_12_en);
+CHANGELOG_BY_LANG.es.unshift(v1_74_12_es);
+CHANGELOG_BY_LANG.de.unshift(v1_74_12_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.74.17 — 2026-10-12
+
+**Bouclier Owner : Défilement fluide de la page et épuration des libellés**
+
+- **Défilement restauré** : Intégration du conteneur `os-scroll` et déverrouillage de la hauteur sur `/discord/owner-shield` et `/owner/shield` permettant de faire défiler l'intégralité de la console et des serveurs surveillés sans blocage.
+- **Nettoyage des formulations artificielles** : Suppression des mentions « Console d'élite » et « inviolable » au profit de libellés sobres et professionnels (« Protection Propriétaire », « Rétablissement automatique de vos rôles »).
+- **Espacement bas optimisé** : Ajout d'une marge de défilement inférieure (`pb-36`) évitant toute collision avec le bouton flottant de retour et le dock.
+
 ## v1.74.16 — 2026-10-12
 
 **Bouclier Owner : Extinction en cascade des serveurs surveillés lorsque le bouclier est coupé**

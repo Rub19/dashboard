@@ -201,13 +201,13 @@ const PROTECTION_CATEGORIES = [
   },
   {
     id: "bot",
-    title: "Défense d'Etho & Alertes",
-    subtitle: "Riposte contre les abus et notifications privées",
+    title: "Sécurité d'Etho & Alertes",
+    subtitle: "Protection du bot et notifications d'alerte",
     options: [
       {
         key: "botSelfDefense" as keyof OwnerShieldConfig,
-        label: "Défense d'Etho",
-        hint: "Sanctionne un modérateur qui retire les rôles d'Etho.",
+        label: "Auto-défense du bot",
+        hint: "Sanctionne un modérateur qui révoque les permissions d'Etho.",
         icon: Zap,
       },
       {
@@ -404,7 +404,7 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
           }),
         ]);
       }
-      success("Bouclier totalement désactivé", "Toutes les protections automatiques sont coupées.");
+      success("Bouclier désactivé", "Toutes les protections automatiques sont en pause.");
     } catch (err: any) {
       showError("Erreur désactivation", errorReason(err, "Le bot n'a pas répondu."));
     } finally {
@@ -447,7 +447,7 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
           }),
         ]);
       }
-      success("Bouclier totalement réactivé", "Toutes les protections automatiques sont en service.");
+      success("Bouclier activé", "Toutes les protections automatiques sont actives.");
     } catch (err: any) {
       showError("Erreur réactivation", errorReason(err, "Le bot n'a pas répondu."));
     } finally {
@@ -636,15 +636,15 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/20 text-[var(--accent-primary)]">
-              Console d&apos;Élite · Sécurité Absolue
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold tracking-wider uppercase bg-[var(--surface-raised)] border border-[var(--panel-border)] text-[var(--text-muted)]">
+              Protection Propriétaire
             </span>
           </div>
           <h1 className="mt-1 text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--text-primary)]">
             Bouclier de l&apos;Owner
           </h1>
           <p className="mt-0.5 text-xs sm:text-sm text-[var(--text-muted)]">
-            Annulation instantanée et inviolable des sanctions infligées à votre compte sur tous les serveurs Discord.
+            Annulation automatique des sanctions et restauration de vos permissions sur tous les serveurs Discord surveillés.
           </p>
         </div>
 
@@ -710,13 +710,13 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
                       isMasterActive ? "bg-emerald-400 animate-pulse" : "bg-zinc-500"
                     )}
                   />
-                  {isMasterActive ? "Protection intégrale" : "Toutes protections coupées"}
+                  {isMasterActive ? "Protection active" : "Protections coupées"}
                 </span>
               </div>
               <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed max-w-2xl">
                 {isMasterActive
-                  ? `Etho annule en temps réel toutes les sanctions (ban, timeout, mute, vol de rôles). ${covered}/${guilds.length} serveurs sous protection active.`
-                  : "Le bouclier est éteint. Toutes les réactions automatiques sont à l'arrêt complet sur l'ensemble de vos serveurs."}
+                  ? `Etho surveille et annule en temps réel les sanctions (ban, timeout, mute, retrait de rôles). ${covered}/${guilds.length} serveurs surveillés.`
+                  : "Le bouclier est éteint. Toutes les réactions automatiques sont en pause sur l'ensemble de vos serveurs."}
               </p>
             </div>
           </div>
@@ -727,7 +727,7 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
                 {isMasterActive ? "Bouclier activé" : "Bouclier désactivé"}
               </p>
               <p className="text-[11px] text-[var(--text-muted)]">
-                {isMasterActive ? "Cliquer pour tout couper" : "Cliquer pour tout activer"}
+                {isMasterActive ? "Cliquer pour désactiver" : "Cliquer pour activer"}
               </p>
             </div>
             <ToggleSwitch
@@ -796,14 +796,14 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
             <h3 className="text-base font-bold text-[var(--text-primary)]">Réactions automatiques</h3>
             <p className="text-xs text-[var(--text-muted)]">
               {isMasterActive
-                ? "Actions déclenchées automatiquement dès qu'un modérateur tente de vous sanctionner."
+                ? "Actions déclenchées automatiquement dès qu'un modérateur vous sanctionne."
                 : "Toutes les réactions sont coupées. Réactivez le bouclier pour relancer la protection."}
             </p>
           </div>
           {!isMasterActive && (
             <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-rose-500/10 border border-rose-500/20 text-rose-400">
               <AlertTriangle className="h-3 w-3" />
-              Toutes en OFF
+              Désactivées
             </span>
           )}
         </div>

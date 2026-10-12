@@ -51531,5 +51531,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_74_16_en);
 CHANGELOG_BY_LANG.es.unshift(v1_74_16_es);
 CHANGELOG_BY_LANG.de.unshift(v1_74_16_de);
 
+const v1_74_17_fr: ChangelogEntry = {
+  version: "v1.74.17",
+  date: "2026-10-12",
+  title: "Bouclier Owner : Défilement fluide de la page et épuration des libellés",
+  items: [
+    "Défilement restauré : Intégration du conteneur os-scroll et déverrouillage de la hauteur sur /discord/owner-shield et /owner/shield permettant de faire défiler l'intégralité de la console et des serveurs surveillés sans blocage",
+    "Nettoyage des formulations artificielles : Suppression des mentions « Console d'élite » et « inviolable » au profit de libellés sobres et professionnels (« Protection Propriétaire », « Rétablissement automatique de vos rôles »)",
+    "Espacement bas optimisé : Ajout d'une marge de défilement inférieure (pb-36) évitant toute collision avec le bouton flottant de retour et le dock",
+  ],
+};
+
+const v1_74_17_en: ChangelogEntry = {
+  version: "v1.74.17",
+  date: "2026-10-12",
+  title: "Owner Shield: Fluid page scrolling and cleanup of artificial phrasing",
+  items: [
+    "Restored scrolling: Added os-scroll container and height flexibility on /discord/owner-shield and /owner/shield allowing full uninterrupted scrolling across the entire dashboard and monitored servers",
+    "Natural phrasing: Removed artificial tags like « Elite Console » and « inviolable » in favor of clean administrator terminology (« Protection Propriétaire »)",
+    "Bottom clearance: Added generous bottom padding (pb-36) ensuring no collision with the floating dock or return button",
+  ],
+};
+
+const v1_74_17_es: ChangelogEntry = {
+  version: "v1.74.17",
+  date: "2026-10-12",
+  title: "Escudo Owner: Desplazamiento fluido y depuración de textos",
+  items: [
+    "Desplazamiento restaurado: Contenedor os-scroll con altura desbloqueada en /discord/owner-shield y /owner/shield permitiendo navegar por toda la lista de servidores sin bloqueos",
+    "Textos depurados: Eliminación de términos artificiales (« Consola de élite ») en favor de una terminología sobria y profesional",
+    "Margen inferior optimizado: Espaciado (pb-36) para evitar cualquier superposición con botones flotantes",
+  ],
+};
+
+const v1_74_17_de: ChangelogEntry = {
+  version: "v1.74.17",
+  date: "2026-10-12",
+  title: "Owner-Schild: Flüssiges Scrollen und Bereinigung künstlicher Formulierungen",
+  items: [
+    "Scrollen wiederhergestellt: os-scroll Container und flexible Höhe auf /discord/owner-shield und /owner/shield für unterbrechungsfreies Scrollen der gesamten Konsole",
+    "Natürliche Formulierungen: Entfernung übertriebener Tags wie « Elite-Konsole » zugunsten sachlicher Administrator-Begriffe",
+    "Optimierter Abstand: Zusätzliches Padding (pb-36) gegen Überlappung mit schwebenden Elementen",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_74_17_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_74_17_en);
+CHANGELOG_BY_LANG.es.unshift(v1_74_17_es);
+CHANGELOG_BY_LANG.de.unshift(v1_74_17_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
+
 

@@ -21,7 +21,7 @@ export default function DiscordOwnerShieldPage() {
   }
 
   return (
-    <div className="w-full px-4 py-6 sm:px-6">
+    <div className="h-full min-h-0 w-full flex-1 overflow-y-auto os-scroll [overscroll-behavior:contain] px-4 py-6 pb-36 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl space-y-6">
         <OwnerShieldPanel isOwner={true} />
       </div>

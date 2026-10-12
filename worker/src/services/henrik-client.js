@@ -179,7 +179,7 @@ export async function getValorantMatches(env, riotId, mode, apiKeyOverride, star
     dedupeKey: `henrik:matches:${region}:${name.toLowerCase()}:${tag.toLowerCase()}:${mode || "all"}:${startIndex}`,
     headers,
     retries: 1,
-    maxBytes: 8388608
+    maxBytes: 12582912
   });
   
   const requestedMode = String(mode || "all").toLowerCase().replace(/[^a-z0-9]/g, "");
@@ -321,7 +321,7 @@ export async function getValorantHistory(env, riotId, mode, apiKeyOverride, page
     dedupeKey: `henrik:stored:${region}:${name.toLowerCase()}:${tag.toLowerCase()}:${mode || "all"}:${page}:${size}`,
     headers: apiKey ? { Authorization: apiKey } : {},
     retries: 1,
-    maxBytes: 4194304
+    maxBytes: 12582912
   });
   const agentCatalogue = await loadAgentCatalogue(env);
 

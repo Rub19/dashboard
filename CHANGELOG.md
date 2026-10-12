@@ -2,6 +2,20 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.15 — 2026-10-13
+
+**Correction du Flux API HenrikDev & Affichage des Matchs Valorant**
+
+- **Résolution de l'Erreur 502 UPSTREAM_INVALID_RESPONSE sur le Worker Cloudflare** :
+  - La réponse JSON de l'API HenrikDev pour un historique complet de 25 parties avec 10 joueurs, rounds et statistiques détaillées atteint ~4.2 Mo (`4194328` octets).
+  - La fonction `readJson` dans `worker/src/utils/external-request.js` bornait strictement la taille maximale autorisée à 4 Mo (`4 * 1024 * 1024 = 4194304` octets), provoquant une coupure et un code 502 sur toute tentative de récupération d'historique.
+  - La limite maximale est désormais portée à 16 Mo, et les requêtes HenrikDev (`getValorantMatches` et `getValorantHistory`) allouent jusqu'à 12 Mo, permettant de lire l'intégralité du flux sans tronquage.
+- **Repli Transparent & Robuste sur le Worker Officiel** :
+  - Si le client n'a pas configuré de clé API Henrik personnelle dans le navigateur (ou si l'appel direct échoue / est bloqué par CORS), le client bascule instantanément sur le Worker Cloudflare équipé de la clé serveur officielle.
+  - Prise en charge de tous les formats de stockage local de clés d'API Henrik (`x-henrik-api-key`).
+- **Déploiement en Production Validé** :
+  - Worker Cloudflare redéployé avec succès (`https://raspy-fog-bf5b.rub19-mailpro.workers.dev`). Test en conditions réelles sur `rub19#boss` validé : 200 OK avec toutes les parties (Jett, Haven, Breeze, stats et rang Immortal 1).
+
 ## v1.75.14 — 2026-10-13
 
 **Refonte Épurée de la Topbar Vitrine, Studio Audio 8D & Commandes TikTok / Pinterest**

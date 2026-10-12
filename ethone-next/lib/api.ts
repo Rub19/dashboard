@@ -107,7 +107,11 @@ export async function fetchWorker(
       const lowerPath = path.toLowerCase();
       if (lowerPath.includes("/riot") || lowerPath.includes("/valorant")) {
         const riotKey = localStorage.getItem("ethone:cred:riot:riotApiKey") || localStorage.getItem("ethone:cred:riot:apiKey");
-        const henrikKey = localStorage.getItem("ethone:cred:riot:henrikApiKey") || localStorage.getItem("ethone:cred:valorant:apiKey");
+        const henrikKey =
+          localStorage.getItem("ethone:cred:riot:henrikApiKey") ||
+          localStorage.getItem("ethone:cred:valorant:apiKey") ||
+          localStorage.getItem("ethone:cred:henrik:apiKey") ||
+          localStorage.getItem("HENRIK_API_KEY");
         if (riotKey && !headers.has("x-riot-api-key")) headers.set("x-riot-api-key", riotKey);
         if (henrikKey && !headers.has("x-henrik-api-key")) headers.set("x-henrik-api-key", henrikKey);
       }

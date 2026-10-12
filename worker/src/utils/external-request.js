@@ -155,7 +155,7 @@ export function requestExternal(input, options = {}) {
           );
         }
 
-        const data = await readJson(response, Math.max(1024, Math.min(4 * 1024 * 1024, Number(options.maxBytes) || 1024 * 1024)));
+        const data = await readJson(response, Math.max(1024, Math.min(16 * 1024 * 1024, Number(options.maxBytes) || 1024 * 1024)));
         if (!response.ok) throw providerError(response, data);
         return Object.freeze({ data, attempts: attempt + 1, status: response.status });
       } catch (error) {

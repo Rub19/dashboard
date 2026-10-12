@@ -109,11 +109,15 @@ export default function ValorantTrackerView() {
       try {
         let validMatches: ValorantMatch[] = [];
 
-        // 1. Direct Henrik API call
         try {
-          validMatches = await fetchValorantMatchesDirect(cleanName, cleanTag, selectedMode, henrikApiKey);
+          if (henrikApiKey) {
+            validMatches = await fetchValorantMatchesDirect(cleanName, cleanTag, selectedMode, henrikApiKey);
+          }
         } catch {
-          // 2. Fallback to Cloudflare Worker
+          validMatches = [];
+        }
+
+        if (validMatches.length === 0) {
           try {
             const modeParam = selectedMode !== "all" ? `&mode=${encodeURIComponent(selectedMode)}` : "";
             const res = await fetchWorker(

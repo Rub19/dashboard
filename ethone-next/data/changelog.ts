@@ -52432,6 +52432,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_14_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_14_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_14_de);
 
+const v1_75_15_fr: ChangelogEntry = {
+  version: "v1.75.15",
+  date: "2026-10-13",
+  title: "Correction Réseau API HenrikDev & Tracker Valorant Immortel",
+  items: [
+    "Résolution du blocage 502 UPSTREAM_INVALID_RESPONSE sur le Worker Cloudflare : augmentation de la limite de taille des requêtes externes (readJson) à 16 Mo pour accueillir l'historique complet des 25 parties Valorant (~4.2 Mo).",
+    "Garantie de repli transparent sur le Worker officiel si aucune clé API Henrik personnelle n'est renseignée dans le navigateur ou si l'appel direct échoue.",
+    "Support étendu de tous les formats de stockage local de clés d'API (x-henrik-api-key) et déploiement immédiat en production.",
+  ],
+};
+
+const v1_75_15_en: ChangelogEntry = {
+  version: "v1.75.15",
+  date: "2026-10-13",
+  title: "HenrikDev API Fix & Immortal Valorant Match History Resolution",
+  items: [
+    "Resolved 502 UPSTREAM_INVALID_RESPONSE on Cloudflare Worker: expanded external request payload limit (readJson) to 16MB to comfortably process 25 comprehensive Valorant matches (~4.2MB).",
+    "Seamless fallback to official backend worker if no personal Henrik API key is configured or if direct client request encounters network issues.",
+    "Extended support for all local storage API key keys (x-henrik-api-key) and live production deployment.",
+  ],
+};
+
+const v1_75_15_es: ChangelogEntry = {
+  version: "v1.75.15",
+  date: "2026-10-13",
+  title: "Corrección API HenrikDev y Carga de Partidas Valorant",
+  items: [
+    "Solución al error 502 UPSTREAM_INVALID_RESPONSE en Cloudflare Worker: límite de carga aumentado a 16MB para procesar las 25 partidas completas de Valorant (~4.2MB).",
+    "Respaldo transparente hacia el Worker oficial sin necesidad de clave API Henrik personal.",
+    "Soporte ampliado para claves almacenadas localmente y despliegue inmediato en producción.",
+  ],
+};
+
+const v1_75_15_de: ChangelogEntry = {
+  version: "v1.75.15",
+  date: "2026-10-13",
+  title: "HenrikDev-API-Korrektur & Valorant-Matchverlauf behoben",
+  items: [
+    "502 UPSTREAM_INVALID_RESPONSE auf Cloudflare Worker behoben: Payload-Limit in readJson auf 16MB erweitert, um den vollständigen Verlauf von 25 Matches (~4.2MB) zu verarbeiten.",
+    "Nahtloses Fallback auf den offiziellen Worker bei fehlendem persönlichem Henrik-API-Schlüssel.",
+    "Erweiterte Unterstützung für lokale Schlüsselspeicher und sofortige Bereitstellung in der Produktion.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_15_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_15_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_15_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_15_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

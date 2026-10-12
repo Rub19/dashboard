@@ -705,7 +705,7 @@ export async function fetchValorantMatchesDirect(
 ): Promise<ValorantMatch[]> {
   const cleanName = name.trim();
   const cleanTag = tag.trim().replace(/^#/, "");
-  if (!cleanName || !cleanTag) return [];
+  if (!cleanName || !cleanTag || !apiKey) return [];
 
   const headers: Record<string, string> = {};
   if (apiKey) {

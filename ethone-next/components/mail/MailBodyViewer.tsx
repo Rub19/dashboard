@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { MailMessage, MailAttachment } from "@/lib/hooks/useMail";
 import { cn } from "@/lib/utils";
+import { useSettings } from "@/components/SettingsProvider";
+import { THEME_DEFINITIONS, resolveLegacyTheme } from "@/lib/theme-engine";
 import {
   ShieldCheck,
   Sun,
@@ -224,13 +226,22 @@ function PlainTextContent({ text }: { text: string }) {
 }
 
 export default function MailBodyViewer({ msg }: { msg: MailMessage }) {
+  const { settings } = useSettings();
   const rawHtml = msg.body_html || "";
   const rawText = msg.body_text || msg.snippet || "";
   const hasHtml = Boolean(rawHtml && /<\/?[a-z][\s\S]*/i.test(rawHtml));
   const hasBoth = Boolean(hasHtml && rawText.trim().length > 0);
 
+  const activeThemeDef = useMemo(() => {
+    const rawTheme = settings?.theme || "obsidian";
+    const custom = settings?.customThemes?.find((t) => t.id === rawTheme);
+    if (custom) return custom;
+    const legacyKey = resolveLegacyTheme(rawTheme);
+    return THEME_DEFINITIONS[legacyKey] || THEME_DEFINITIONS.obsidian;
+  }, [settings?.theme, settings?.customThemes]);
+
   const [viewMode, setViewMode] = useState<"html" | "text">(hasHtml ? "html" : "text");
-  const [themeMode, setThemeMode] = useState<"light" | "dark">("light");
+  const [themeMode, setThemeMode] = useState<"theme" | "light">("theme");
   const [iframeHeight, setIframeHeight] = useState<number>(550);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -244,14 +255,16 @@ export default function MailBodyViewer({ msg }: { msg: MailMessage }) {
     return sanitizeEmailHtml(rawHtml, msg.attachments);
   }, [rawHtml, hasHtml, msg.attachments]);
 
+  const isThemeMode = themeMode === "theme";
+  const bg = isThemeMode ? activeThemeDef.bgMain : "#ffffff";
+  const text = isThemeMode ? activeThemeDef.textPrimary : "#111827";
+  const linkColor = isThemeMode ? (activeThemeDef.accentPrimary || "#60a5fa") : "#2563eb";
+  const quoteBorder = isThemeMode ? (activeThemeDef.borderSubtle || "#334155") : "#cbd5e1";
+  const quoteText = isThemeMode ? (activeThemeDef.textMuted || "#94a3b8") : "#64748b";
+  const colorScheme = isThemeMode ? (activeThemeDef.colorScheme || "dark") : "light";
+
   const srcDoc = useMemo(() => {
     if (!hasHtml) return "";
-    const isLight = themeMode === "light";
-    const bg = isLight ? "#ffffff" : "#141518";
-    const text = isLight ? "#111827" : "#e5e7eb";
-    const linkColor = isLight ? "#2563eb" : "#60a5fa";
-    const quoteBorder = isLight ? "#cbd5e1" : "#334155";
-    const quoteText = isLight ? "#64748b" : "#94a3b8";
 
     return `<!DOCTYPE html>
 <html>
@@ -259,16 +272,20 @@ export default function MailBodyViewer({ msg }: { msg: MailMessage }) {
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="referrer" content="no-referrer" />
+  <meta name="color-scheme" content="${colorScheme}" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src * data: blob: cid: https: http:; style-src 'unsafe-inline'; font-src * data:; media-src *;" />
   <base target="_blank" />
   <style>
+    :root {
+      color-scheme: ${colorScheme};
+    }
     html, body {
       margin: 0;
       padding: 24px;
       box-sizing: border-box;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       color: ${text};
-      background-color: ${bg};
+      background-color: ${bg} !important;
       line-height: 1.55;
       word-break: break-word;
       overflow-wrap: break-word;
@@ -314,7 +331,7 @@ export default function MailBodyViewer({ msg }: { msg: MailMessage }) {
   ${sanitizedHtml}
 </body>
 </html>`;
-  }, [sanitizedHtml, hasHtml, themeMode]);
+  }, [sanitizedHtml, hasHtml, colorScheme, text, bg, linkColor, quoteBorder, quoteText]);
 
   const syncHeight = useCallback(() => {
     const frame = iframeRef.current;
@@ -398,12 +415,12 @@ export default function MailBodyViewer({ msg }: { msg: MailMessage }) {
           {viewMode === "html" && (
             <button
               type="button"
-              onClick={() => setThemeMode(themeMode === "light" ? "dark" : "light")}
+              onClick={() => setThemeMode(themeMode === "theme" ? "light" : "theme")}
               className="flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--surface-3)] hover:text-[var(--text-primary)]"
-              title={themeMode === "light" ? "Basculer en mode sombre" : "Basculer sur fond clair"}
+              title={themeMode === "theme" ? "Basculer sur fond clair (original)" : "Appliquer le thème Ethone"}
             >
-              {themeMode === "light" ? <Moon className="h-3.5 w-3.5" /> : <Sun className="h-3.5 w-3.5" />}
-              <span>{themeMode === "light" ? "Fond clair (original)" : "Mode sombre"}</span>
+              {themeMode === "theme" ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
+              <span>{themeMode === "theme" ? "Thème Ethone" : "Fond clair (original)"}</span>
             </button>
           )}
 
@@ -420,10 +437,8 @@ export default function MailBodyViewer({ msg }: { msg: MailMessage }) {
 
       {viewMode === "html" ? (
         <div
-          className={cn(
-            "w-full flex-1 min-h-0 transition-colors",
-            themeMode === "light" ? "bg-white" : "bg-[#141518]"
-          )}
+          className="w-full flex-1 min-h-0 transition-colors"
+          style={{ backgroundColor: bg }}
         >
           <iframe
             ref={iframeRef}
@@ -438,6 +453,7 @@ export default function MailBodyViewer({ msg }: { msg: MailMessage }) {
               width: "100%",
               border: "none",
               display: "block",
+              backgroundColor: bg,
             }}
           />
         </div>

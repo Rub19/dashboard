@@ -113,15 +113,21 @@ describe("MailBodyViewer Component", () => {
     expect(screen.getByText("Votre candidature à Claude Startups")).toBeTruthy();
   });
 
-  it("permet d'alterner entre le fond clair et le mode sombre", async () => {
+  it("permet d'alterner entre le thème Ethone et le fond clair original", async () => {
     await act(async () => {
       render(<MailBodyViewer msg={mockMessage} />);
     });
-    const themeButton = screen.getByTitle("Basculer en mode sombre");
+    expect(screen.getByText("Thème Ethone")).toBeTruthy();
+    const themeButton = screen.getByTitle("Basculer sur fond clair (original)");
     await act(async () => {
       fireEvent.click(themeButton);
     });
-    expect(screen.getByText("Mode sombre")).toBeTruthy();
+    expect(screen.getByText("Fond clair (original)")).toBeTruthy();
+    const returnButton = screen.getByTitle("Appliquer le thème Ethone");
+    await act(async () => {
+      fireEvent.click(returnButton);
+    });
+    expect(screen.getByText("Thème Ethone")).toBeTruthy();
   });
 
   it("affiche directement la vue texte quand aucun HTML n'est fourni", async () => {

@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.74.10 — 2026-10-12
+
+**Messagerie : Synchronisation du fond de l'e-mail avec le thème Ethone actif**
+
+- **Harmonisation des couleurs** : Remplacement du fond blanc brut par la couleur exacte du thème sélectionné par l'utilisateur (`activeThemeDef.bgMain` : Obsidian, Dyno Rose, Midnight, Arctic, thèmes personnalisés), unifiant le visualiseur de messagerie avec l'esthétique générale d'ETHONE OS.
+- **Intégration fluide des e-mails sombres** : Les courriels et tableaux centrés (Anthropic Claude, GitHub, Stripe, newsletters sombres) se fondent désormais naturellement dans l'interface sans aucun halo blanc éblouissant ni bordures cassées.
+- **Bascule instantanée** : Possibilité d'alterner à tout moment entre le thème actif d'ETHONE et le fond clair original (`Fond clair (original)`) en un clic depuis la barre d'outils du visualiseur.
+- **Rendu iframe sécurisé** : Injection dynamique du jeu de couleurs du thème (`color-scheme`) et des variables CSS adaptées pour garantir une lisibilité optimale des textes, liens et citations.
+
 ## v1.74.9 — 2026-10-12
 
 **Messagerie : Rendu plein écran sans vide, chargement des images externes/CID et défilement fluide unifié**

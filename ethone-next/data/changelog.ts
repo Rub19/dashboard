@@ -51149,20 +51149,73 @@ const v1_74_9_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v1_74_9_fr);
-CHANGELOG_BY_LANG.en.unshift(v1_74_9_en);
-CHANGELOG_BY_LANG.es.unshift(v1_74_9_es);
-CHANGELOG_BY_LANG.de.unshift(v1_74_9_de);
+CHANGELOG_BY_LANG.fr.unshift(v1_74_7_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_74_7_en);
+CHANGELOG_BY_LANG.es.unshift(v1_74_7_es);
+CHANGELOG_BY_LANG.de.unshift(v1_74_7_de);
 
 CHANGELOG_BY_LANG.fr.unshift(v1_74_8_fr);
 CHANGELOG_BY_LANG.en.unshift(v1_74_8_en);
 CHANGELOG_BY_LANG.es.unshift(v1_74_8_es);
 CHANGELOG_BY_LANG.de.unshift(v1_74_8_de);
 
-CHANGELOG_BY_LANG.fr.unshift(v1_74_7_fr);
-CHANGELOG_BY_LANG.en.unshift(v1_74_7_en);
-CHANGELOG_BY_LANG.es.unshift(v1_74_7_es);
-CHANGELOG_BY_LANG.de.unshift(v1_74_7_de);
+CHANGELOG_BY_LANG.fr.unshift(v1_74_9_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_74_9_en);
+CHANGELOG_BY_LANG.es.unshift(v1_74_9_es);
+CHANGELOG_BY_LANG.de.unshift(v1_74_9_de);
+
+const v1_74_10_fr: ChangelogEntry = {
+  version: "v1.74.10",
+  date: "2026-10-12",
+  title: "Messagerie : Synchronisation du fond de l'e-mail avec le thème Ethone actif",
+  items: [
+    "Harmonisation des couleurs : Remplacement du fond blanc brut par la couleur exacte du thème sélectionné par l'utilisateur (Obsidian, Dyno Rose, Midnight, Arctic, thèmes personnalisés)",
+    "Intégration fluide des e-mails sombres : Les courriels et tableaux centrés (Anthropic Claude, GitHub, newsletters sombres) se fondent naturellement dans l'interface sans halo blanc éblouissant",
+    "Bascule instantanée : Possibilité d'alterner à tout moment entre le thème Ethone et le fond clair original en un clic depuis la barre d'outils du visualiseur",
+    "Rendu iframe sécurisé : Injection dynamique du jeu de couleurs du thème et des variables CSS adaptées pour une lisibilité optimale des textes et citations",
+  ],
+};
+
+const v1_74_10_en: ChangelogEntry = {
+  version: "v1.74.10",
+  date: "2026-10-12",
+  title: "Mail: Email background synchronization with active Ethone theme",
+  items: [
+    "Color harmonization: Replaced raw white canvas with the exact background color of the user's active Ethone theme (Obsidian, Dyno Rose, Midnight, Arctic, custom themes)",
+    "Seamless dark email rendering: Centered dark cards (Anthropic Claude, GitHub, dark newsletters) blend cleanly into the dashboard without harsh blinding white borders",
+    "Instant toggle: Switch between active Ethone theme canvas and original white paper background in one click from the reader toolbar",
+    "Isolated iframe theme injection: Dynamic color-scheme and CSS tokens injected for optimal typography and quote readability",
+  ],
+};
+
+const v1_74_10_es: ChangelogEntry = {
+  version: "v1.74.10",
+  date: "2026-10-12",
+  title: "Correo: Sincronización del fondo del correo con el tema activo de Ethone",
+  items: [
+    "Armonización de color: Fondo del visor adaptado automáticamente al color del tema seleccionado (Obsidian, Dyno Rose, Midnight, etc.)",
+    "Visualización impecable de correos oscuros: Eliminación del marco blanco alrededor de correos oscuros (Claude, GitHub)",
+    "Alternancia rápida: Botón en la barra de herramientas para cambiar entre el tema de Ethone y el fondo blanco original",
+    "Inyección de tema en iframe: Variables y esquema de color dinámicos para una lectura óptima",
+  ],
+};
+
+const v1_74_10_de: ChangelogEntry = {
+  version: "v1.74.10",
+  date: "2026-10-12",
+  title: "E-Mail: Synchronisierung des Mail-Hintergrunds mit dem aktiven Ethone-Design",
+  items: [
+    "Farbharmonisierung: Ersatz der weißen Leinwand durch die exakte Hintergrundfarbe des gewählten Ethone-Themes",
+    "Nahtlose Anzeige dunkler E-Mails: Dunkle Mail-Karten (Claude, GitHub) fügen sich ohne blendende weiße Ränder ein",
+    "Schnell-Umschaltung: Ein-Klick-Wechsel zwischen Ethone-Theme und klassischem weißen Papierhintergrund",
+    "Sichere Theme-Injektion: Dynamisches Farbschema und CSS-Tokens für optimale Typografie und Lesbarkeit",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_74_10_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_74_10_en);
+CHANGELOG_BY_LANG.es.unshift(v1_74_10_es);
+CHANGELOG_BY_LANG.de.unshift(v1_74_10_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

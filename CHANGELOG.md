@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.74.2 — 2026-10-12
+
+**Interface : Restauration de la barre d'état inférieure (StatusBar) et réalignement du dock**
+
+- **Restauration de la StatusBar** : Réintégration complète du composant `<StatusBar />` au bas de l'interface avec rôle de session, statut de synchronisation en direct, latence/ping réseau, état système et accès profil.
+- **Réalignement du dock desktop** : Repositionnement naturel en élévation fluide (`bottom-[calc(4.5rem+env(safe-area-inset-bottom))]`) au-dessus de la barre de statut pour une disposition visuelle équilibrée et aérée.
+- **Ancrage des menus volants** : Réajustement dynamique de la hauteur des popovers (`DockControlCenter` et `FocusPopover`) pour s'ouvrir de manière ergonomique au-dessus du dock.
+- **Support Mode Zen** : Animation fluide de retrait vers le bas et fondu de la barre d'état lorsque le Mode Zen est activé, et réapparition immédiate à la sortie.
+
 ## v1.74.1 — 2026-10-12
 
 **Console : Ajustement de solde économie, export formulaires CSV/JSON, test Starboard, aperçus Discord et propositions**

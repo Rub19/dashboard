@@ -304,7 +304,7 @@ function Dock() {
             exit={{ opacity: 0, y: 15 }}
             transition={{ duration: 0.2 }}
             data-chrome="dock"
-            className="fixed bottom-2 left-1/2 z-[var(--z-dock)] -translate-x-1/2 hidden md:block"
+            className="fixed bottom-[calc(3.5rem+env(safe-area-inset-bottom))] left-1/2 z-[var(--z-dock)] -translate-x-1/2 hidden md:block"
           >
             <button
               type="button"
@@ -328,7 +328,7 @@ function Dock() {
             exit={{ y: 50, opacity: 0, scale: 0.94 }}
             transition={{ type: "spring", stiffness: 350, damping: 38 }}
             data-chrome="dock"
-            className="v8-floating-dock fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] inset-x-0 z-[var(--z-dock)] hidden md:flex pointer-events-none justify-center bg-transparent p-0 m-0 border-none shadow-none outline-none"
+            className="v8-floating-dock fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom))] inset-x-0 z-[var(--z-dock)] hidden md:flex pointer-events-none justify-center bg-transparent p-0 m-0 border-none shadow-none outline-none"
           >
             {/* Launchpad Mini Flyout */}
             <AnimatePresence>

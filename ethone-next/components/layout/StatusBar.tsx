@@ -268,12 +268,12 @@ export default function StatusBar() {
     <motion.footer
       data-v8-status-bar
       data-status-bar
-      className="fixed bottom-0 right-0 z-0 h-10 select-none border-t border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)] px-4 text-xs text-[var(--text-primary)] backdrop-blur-[var(--panel-blur)] pointer-events-none"
+      className="fixed bottom-0 right-0 z-[var(--v8-z-status,30)] h-10 select-none border-t border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)] px-4 text-xs text-[var(--text-primary)] backdrop-blur-[var(--panel-blur)] pointer-events-none"
       initial={reduced ? false : { y: 16, opacity: 0 }}
       animate={{
         left: open && !isMobile ? "var(--sidebar-width)" : "0rem",
-        y: 0,
-        opacity: 1,
+        y: settings.zenMode ? 40 : 0,
+        opacity: settings.zenMode ? 0 : 1,
       }}
       transition={{ duration: 0.32, ease: EASE_DRAWER, y: { duration: 0.5, ease: EASE_SNAP }, opacity: { duration: 0.5 } }}
     >

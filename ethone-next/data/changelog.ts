@@ -50732,5 +50732,58 @@ CHANGELOG_BY_LANG.en.unshift(v1_74_1_en);
 CHANGELOG_BY_LANG.es.unshift(v1_74_1_es);
 CHANGELOG_BY_LANG.de.unshift(v1_74_1_de);
 
+const v1_74_2_fr: ChangelogEntry = {
+  version: "v1.74.2",
+  date: "2026-10-12",
+  title: "Interface : Restauration de la barre d'état inférieure (StatusBar) et réalignement du dock",
+  items: [
+    "StatusBar : Restauration complète de la barre d'état inférieure avec rôle de session, état de synchronisation, latence réseau et accès profil",
+    "Dock : Repositionnement naturel flottant au-dessus de la barre de statut avec espacement fluide",
+    "Popovers : Ajustement dynamique de l'ancrage vertical du Centre de contrôle et du Focus pour s'ouvrir au-dessus du dock",
+    "Mode Zen : Animation fluide de retrait et d'apparition de la barre d'état lors de l'activation/désactivation du mode zen",
+  ],
+};
+
+const v1_74_2_en: ChangelogEntry = {
+  version: "v1.74.2",
+  date: "2026-10-12",
+  title: "UI: Restored bottom status bar (StatusBar) and dock alignment",
+  items: [
+    "StatusBar: Full restoration of the bottom status bar with session role, sync state, network latency, and quick profile access",
+    "Dock: Natural floating repositioning above the status bar with consistent spacing",
+    "Popovers: Dynamic vertical anchoring adjustment for Control Center and Focus to open cleanly above the dock",
+    "Zen Mode: Smooth animated slide and fade for the status bar when entering or exiting zen mode",
+  ],
+};
+
+const v1_74_2_es: ChangelogEntry = {
+  version: "v1.74.2",
+  date: "2026-10-12",
+  title: "Interfaz: Restauración de la barra de estado inferior (StatusBar) y alineación del dock",
+  items: [
+    "StatusBar: Restauración completa de la barra de estado inferior con rol de sesión, sincronización y latencia",
+    "Dock: Reposicionamiento flotante natural por encima de la barra de estado",
+    "Popovers: Ajuste vertical del Centro de control y Focus para abrirse sobre el dock",
+    "Modo Zen: Ocultación animada fluida de la barra de estado en modo zen",
+  ],
+};
+
+const v1_74_2_de: ChangelogEntry = {
+  version: "v1.74.2",
+  date: "2026-10-12",
+  title: "Oberfläche: Wiederherstellung der unteren Statusleiste (StatusBar) und Dock-Ausrichtung",
+  items: [
+    "StatusBar: Vollständige Wiederherstellung der unteren Statusleiste mit Sitzungsrolle, Sync-Status und Latenz",
+    "Dock: Natürliche schwebende Neupositionierung über der Statusleiste",
+    "Popovers: Vertikale Anpassung für Kontrollzentrum und Focus über dem Dock",
+    "Zen-Modus: Fließende Animation beim Ein- und Ausblenden der Statusleiste im Zen-Modus",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_74_2_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_74_2_en);
+CHANGELOG_BY_LANG.es.unshift(v1_74_2_es);
+CHANGELOG_BY_LANG.de.unshift(v1_74_2_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

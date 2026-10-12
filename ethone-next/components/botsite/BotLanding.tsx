@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode, type RefObject } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import {
   motion,
   AnimatePresence,
@@ -13,7 +13,7 @@ import {
   useTransform,
 } from "framer-motion";
 import FlagIcon, { LANGUAGE_LABELS } from "@/components/FlagIcon";
-import { EASE_SNAP, SPRING_MOUSE, SPRING_PILL } from "@/lib/ease";
+import { EASE_SNAP, SPRING_MOUSE } from "@/lib/ease";
 import { useMotionPref } from "@/lib/hooks/useMotionPref";
 import { BOT_COPY, BOT_LANGS, BOT_LANG_KEY, detectBotLang, type BotCopy, type BotLang } from "./botLandingI18n";
 
@@ -35,17 +35,6 @@ interface PublicStats {
   members: number;
   commands: number;
 }
-
-const PARTNER_SERVERS = [
-  { name: "Lofi Beats ☕", members: "14,820", tag: "Partenaire", icon: "☕" },
-  { name: "Nexus Esport 🏆", members: "32,450", tag: "Vérifié", icon: "🏆" },
-  { name: "Pixel Haven 🎮", members: "19,110", tag: "Communauté", icon: "🎮" },
-  { name: "Vocal Lounge 🎙️", members: "8,940", tag: "Communauté", icon: "🎙️" },
-  { name: "Studio 404 🎧", members: "24,670", tag: "Partenaire", icon: "🎧" },
-  { name: "Midnight Devs 💻", members: "11,530", tag: "Vérifié", icon: "💻" },
-  { name: "Anime Horizon 🌸", members: "45,200", tag: "Partenaire", icon: "🌸" },
-  { name: "Chilled Guild ❄️", members: "16,800", tag: "Communauté", icon: "❄️" },
-];
 
 const STATIC_FALLBACK_COMMANDS: PublicCommand[] = [
   { name: "shield", description: "Active ou consulte l'état du bouclier Owner pour restaurer vos rôles en cas de raid.", category: "Sécurité", subcommands: [{ name: "status", description: "Affiche l'état du bouclier" }, { name: "toggle", description: "Active ou coupe le bouclier" }] },
@@ -221,7 +210,7 @@ function DiscordChatSimulator() {
                 <div>
                   <div className="flex items-baseline gap-2">
                     <span className="font-semibold text-red-300">AttaquantRaid</span>
-                    <span className="text-[11px] text-zinc-500">Aujourd'hui à 21:04</span>
+                    <span className="text-[11px] text-zinc-500">Aujourd&apos;hui à 21:04</span>
                   </div>
                   <p className="mt-1 text-xs text-zinc-300">
                     @everyone REJOIGNEZ FREE NITRO ICI http://scam-link-fake.gg !!
@@ -242,7 +231,7 @@ function DiscordChatSimulator() {
                     <span className="rounded bg-[#5865f2] px-1.5 py-0.5 text-[9px] font-bold text-white">
                       APP
                     </span>
-                    <span className="text-[11px] text-zinc-500">Aujourd'hui à 21:04 (0.2s)</span>
+                    <span className="text-[11px] text-zinc-500">Aujourd&apos;hui à 21:04 (0.2s)</span>
                   </div>
 
                   <div className="mt-2 rounded-xl border-l-4 border-emerald-400 bg-emerald-950/20 p-3.5 backdrop-blur-sm">
@@ -441,7 +430,7 @@ function DiscordChatSimulator() {
                     <span className="rounded bg-[#5865f2] px-1.5 py-0.5 text-[9px] font-bold text-white">
                       APP
                     </span>
-                    <span className="text-[11px] text-zinc-500">Arrivée d'un nouveau membre</span>
+                    <span className="text-[11px] text-zinc-500">Arrivée d&apos;un nouveau membre</span>
                   </div>
 
                   <div className="mt-2 rounded-xl border-l-4 border-[#38bdf8] bg-[#0c1926]/90 p-4">
@@ -549,6 +538,191 @@ function LanguageSelect({
   );
 }
 
+function RadarSweep() {
+  const { reduced } = useMotionPref();
+  return (
+    <div className="relative mx-auto mt-6 h-40 w-40">
+      <svg viewBox="0 0 160 160" className="h-full w-full" aria-hidden="true">
+        <circle cx="80" cy="80" r="70" fill="none" stroke="rgba(146,200,210,0.08)" strokeWidth="1" />
+        <circle cx="80" cy="80" r="50" fill="none" stroke="rgba(146,200,210,0.06)" strokeWidth="0.5" />
+        <circle cx="80" cy="80" r="30" fill="none" stroke="rgba(146,200,210,0.04)" strokeWidth="0.5" />
+        <line x1="80" y1="10" x2="80" y2="150" stroke="rgba(146,200,210,0.05)" strokeWidth="0.5" />
+        <line x1="10" y1="80" x2="150" y2="80" stroke="rgba(146,200,210,0.05)" strokeWidth="0.5" />
+      </svg>
+      {!reduced && (
+        <motion.div
+          className="absolute inset-0"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+        >
+          <svg viewBox="0 0 160 160" className="h-full w-full" aria-hidden="true">
+            <line x1="80" y1="80" x2="80" y2="12" stroke="#92C8D2" strokeWidth="1.5" strokeLinecap="round" opacity="0.6" />
+            <defs>
+              <linearGradient id="radarFade" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#92C8D2" stopOpacity="0.3" />
+                <stop offset="100%" stopColor="#92C8D2" stopOpacity="0" />
+              </linearGradient>
+            </defs>
+            <path d="M80,80 L80,12 A68,68 0 0,1 127,30 Z" fill="url(#radarFade)" />
+          </svg>
+        </motion.div>
+      )}
+      <div className="absolute left-[35%] top-[25%] h-2 w-2 rounded-full bg-[#92C8D2]/60" />
+      <div className="absolute left-[60%] top-[40%] h-1.5 w-1.5 rounded-full bg-[#92C8D2]/40" />
+      <motion.div
+        className="absolute left-[25%] top-[65%] h-2.5 w-2.5 rounded-full bg-red-500"
+        animate={reduced ? {} : { scale: [1, 1.5, 1], opacity: [1, 0.5, 1] }}
+        transition={{ duration: 2, repeat: Infinity }}
+      />
+    </div>
+  );
+}
+
+function WaveformBars() {
+  const { reduced } = useMotionPref();
+  const heights = [28, 48, 20, 56, 36, 64, 24, 52, 32, 60, 18, 44, 40, 56, 22, 50, 30, 58, 26, 46, 38, 62, 16, 42];
+  return (
+    <div className="mt-8 flex items-end justify-center gap-[3px]">
+      {heights.map((h, i) => (
+        <motion.div
+          key={i}
+          className="w-[5px] rounded-full bg-gradient-to-t from-[#92C8D2]/30 to-[#92C8D2]/80"
+          style={{ height: reduced ? h : 8 }}
+          animate={reduced ? {} : { height: [8, h, h * 0.4, h * 0.9, 8] }}
+          transition={{
+            duration: 2.4,
+            repeat: Infinity,
+            delay: i * 0.08,
+            ease: "easeInOut",
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+function SpotifyRipple() {
+  const { reduced } = useMotionPref();
+  return (
+    <div className="relative mt-6 flex items-center justify-center">
+      <div className="relative h-32 w-32">
+        {!reduced &&
+          [0, 1, 2].map((i) => (
+            <motion.div
+              key={i}
+              className="absolute inset-0 rounded-full border border-[#1DB954]/30"
+              initial={{ scale: 0.5, opacity: 0.6 }}
+              animate={{ scale: [0.5, 1.4], opacity: [0.6, 0] }}
+              transition={{ duration: 2.5, repeat: Infinity, delay: i * 0.8, ease: "easeOut" }}
+            />
+          ))}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#1DB954] shadow-lg shadow-[#1DB954]/30">
+            <svg viewBox="0 0 24 24" fill="white" className="h-8 w-8" aria-hidden="true">
+              <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381C8.28 5.92 15.24 6.182 19.38 8.94c.54.3.72 1.02.42 1.56-.3.42-1.02.6-1.56.3l-.158-.12z" />
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const FEATURE_ICONS: Record<string, ReactNode> = {
+  search: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-5 w-5" aria-hidden="true">
+      <circle cx="11" cy="11" r="8" />
+      <path d="m21 21-4.3-4.3" strokeLinecap="round" />
+    </svg>
+  ),
+  tts: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-5 w-5" aria-hidden="true">
+      <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3Z" />
+      <path d="M19 10v2a7 7 0 0 1-14 0v-2" strokeLinecap="round" />
+      <line x1="12" y1="19" x2="12" y2="23" strokeLinecap="round" />
+    </svg>
+  ),
+  levels: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-5 w-5" aria-hidden="true">
+      <path d="M3 3v18h18" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="m7 16 4-8 4 4 4-8" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  ),
+  snipe: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-5 w-5" aria-hidden="true">
+      <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  ),
+  giveaways: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-5 w-5" aria-hidden="true">
+      <path d="M20 12v10H4V12" strokeLinecap="round" strokeLinejoin="round" />
+      <rect x="2" y="7" width="20" height="5" rx="1" />
+      <path d="M12 22V7" />
+      <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7Z" />
+      <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7Z" />
+    </svg>
+  ),
+  games: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-5 w-5" aria-hidden="true">
+      <path d="M6 12h4m-2-2v4" strokeLinecap="round" />
+      <circle cx="17" cy="10" r="1" fill="currentColor" />
+      <circle cx="15" cy="14" r="1" fill="currentColor" />
+      <rect x="2" y="6" width="20" height="12" rx="4" />
+    </svg>
+  ),
+  autoResponders: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-5 w-5" aria-hidden="true">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M8 10h8" strokeLinecap="round" />
+      <path d="M8 14h4" strokeLinecap="round" />
+    </svg>
+  ),
+  reminders: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-5 w-5" aria-hidden="true">
+      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+      <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+    </svg>
+  ),
+  counters: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-5 w-5" aria-hidden="true">
+      <rect x="3" y="3" width="7" height="7" rx="1" />
+      <rect x="14" y="3" width="7" height="7" rx="1" />
+      <rect x="3" y="14" width="7" height="7" rx="1" />
+      <rect x="14" y="14" width="7" height="7" rx="1" />
+    </svg>
+  ),
+  reactionRoles: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-5 w-5" aria-hidden="true">
+      <circle cx="12" cy="12" r="10" />
+      <path d="M8 14s1.5 2 4 2 4-2 4-2" strokeLinecap="round" />
+      <line x1="9" y1="9" x2="9.01" y2="9" strokeLinecap="round" strokeWidth="2" />
+      <line x1="15" y1="9" x2="15.01" y2="9" strokeLinecap="round" strokeWidth="2" />
+    </svg>
+  ),
+  lyrics: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-5 w-5" aria-hidden="true">
+      <path d="M9 18V5l12-2v13" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="6" cy="18" r="3" />
+      <circle cx="18" cy="16" r="3" />
+    </svg>
+  ),
+  translation: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-5 w-5" aria-hidden="true">
+      <path d="M5 8l6 6" strokeLinecap="round" />
+      <path d="M4 6h8" strokeLinecap="round" />
+      <path d="M8 4v2" strokeLinecap="round" />
+      <path d="m14 14 2 4 2-4" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M14 18h4" strokeLinecap="round" />
+    </svg>
+  ),
+};
+
+const FEATURE_KEYS = [
+  "search", "tts", "levels", "snipe", "giveaways", "games",
+  "autoResponders", "reminders", "counters", "reactionRoles", "lyrics", "translation",
+] as const;
+
 export default function BotLanding() {
   const { reduced } = useMotionPref();
   const { stats, commands } = useLiveData();
@@ -562,11 +736,6 @@ export default function BotLanding() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
-
-  const [shieldActive, setShieldActive] = useState(true);
-  const [automodActive, setAutomodActive] = useState(true);
-  const [spotifyBridgeActive, setSpotifyBridgeActive] = useState(true);
-  const [antiNukeActive, setAntiNukeActive] = useState(true);
 
   const { scrollY, scrollYProgress } = useScroll({ container: scrollRef });
   const progress = useSpring(scrollYProgress, { stiffness: 140, damping: 30, restDelta: 0.001 });
@@ -681,8 +850,22 @@ export default function BotLanding() {
 
           <nav className="hidden items-center gap-7 md:flex">
             <a
-              href="#bento"
-              onClick={scrollToSection("bento")}
+              href="#security"
+              onClick={scrollToSection("security")}
+              className="text-sm font-medium text-zinc-300 transition-colors hover:text-white"
+            >
+              {c.nav.security}
+            </a>
+            <a
+              href="#music"
+              onClick={scrollToSection("music")}
+              className="text-sm font-medium text-zinc-300 transition-colors hover:text-white"
+            >
+              {c.nav.music}
+            </a>
+            <a
+              href="#features"
+              onClick={scrollToSection("features")}
               className="text-sm font-medium text-zinc-300 transition-colors hover:text-white"
             >
               {c.nav.features}
@@ -692,7 +875,7 @@ export default function BotLanding() {
               onClick={scrollToSection("steps")}
               className="text-sm font-medium text-zinc-300 transition-colors hover:text-white"
             >
-              Prise en main
+              {c.nav.steps}
             </a>
             <a
               href="#commandes"
@@ -755,45 +938,14 @@ export default function BotLanding() {
               className="overflow-hidden border-t border-white/[0.06] bg-[#07080d]/95 px-6 py-4 md:hidden"
             >
               <div className="flex flex-col gap-3">
-                <a
-                  href="#bento"
-                  onClick={scrollToSection("bento")}
-                  className="text-sm font-medium text-zinc-300"
-                >
-                  {c.nav.features}
-                </a>
-                <a
-                  href="#steps"
-                  onClick={scrollToSection("steps")}
-                  className="text-sm font-medium text-zinc-300"
-                >
-                  Prise en main
-                </a>
-                <a
-                  href="#commandes"
-                  onClick={scrollToSection("commandes")}
-                  className="text-sm font-medium text-zinc-300"
-                >
-                  {c.nav.commands}
-                </a>
-                <a
-                  href="#faq"
-                  onClick={scrollToSection("faq")}
-                  className="text-sm font-medium text-zinc-300"
-                >
-                  {c.nav.faq}
-                </a>
-                <a
-                  href={SUPPORT_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm font-medium text-zinc-300"
-                >
-                  {c.nav.support}
-                </a>
-                <a href={DASHBOARD_URL} className="text-sm font-medium text-[#92C8D2]">
-                  {c.nav.dashboard}
-                </a>
+                <a href="#security" onClick={scrollToSection("security")} className="text-sm font-medium text-zinc-300">{c.nav.security}</a>
+                <a href="#music" onClick={scrollToSection("music")} className="text-sm font-medium text-zinc-300">{c.nav.music}</a>
+                <a href="#features" onClick={scrollToSection("features")} className="text-sm font-medium text-zinc-300">{c.nav.features}</a>
+                <a href="#steps" onClick={scrollToSection("steps")} className="text-sm font-medium text-zinc-300">{c.nav.steps}</a>
+                <a href="#commandes" onClick={scrollToSection("commandes")} className="text-sm font-medium text-zinc-300">{c.nav.commands}</a>
+                <a href="#faq" onClick={scrollToSection("faq")} className="text-sm font-medium text-zinc-300">{c.nav.faq}</a>
+                <a href={SUPPORT_URL} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-zinc-300">{c.nav.support}</a>
+                <a href={DASHBOARD_URL} className="text-sm font-medium text-[#92C8D2]">{c.nav.dashboard}</a>
               </div>
             </motion.div>
           )}
@@ -817,7 +969,7 @@ export default function BotLanding() {
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
                 </span>
-                {stats ? c.hero.badgeActive(stats.guilds, numberFr(stats.members)) : c.hero.badgeDefault}
+                {c.hero.badge}
               </motion.div>
 
               <motion.h1
@@ -826,9 +978,9 @@ export default function BotLanding() {
                 transition={{ duration: 0.7, delay: 0.1 }}
                 className="mt-6 text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl"
               >
-                Le bot Discord tout-en-un,{" "}
+                {c.hero.titlePart1}{" "}
                 <span className="bg-gradient-to-r from-[#92C8D2] via-white to-[#92C8D2] bg-clip-text text-transparent">
-                  pensé pour ta communauté
+                  {c.hero.titleHighlight}
                 </span>
               </motion.h1>
 
@@ -854,13 +1006,13 @@ export default function BotLanding() {
                   className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-bold text-black shadow-xl shadow-white/10 transition-all hover:-translate-y-0.5 hover:bg-zinc-100"
                 >
                   <DiscordGlyph className="h-5 w-5" />
-                  {c.hero.add}
+                  {c.hero.addBtn}
                 </a>
                 <a
                   href={DASHBOARD_URL}
                   className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.04] px-6 py-3.5 text-sm font-semibold text-white backdrop-blur-md transition-all hover:-translate-y-0.5 hover:border-white/25 hover:bg-white/[0.08]"
                 >
-                  {c.hero.openDashboard}
+                  {c.hero.dashboardBtn}
                 </a>
               </motion.div>
 
@@ -886,203 +1038,294 @@ export default function BotLanding() {
           </div>
         </section>
 
-        <section className="mx-auto w-full max-w-6xl px-6 pb-16">
-          <Reveal>
-            <div className="grid grid-cols-2 divide-x divide-y divide-white/[0.08] rounded-2xl border border-white/[0.08] bg-white/[0.02] backdrop-blur-xl sm:grid-cols-4 sm:divide-y-0">
-              <div className="p-6 text-center">
-                <p className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
-                  <CountUp value={stats?.guilds} fallback="350+" />
-                </p>
-                <p className="mt-1 text-xs uppercase tracking-wider text-zinc-500">
-                  {stats && stats.guilds > 1 ? c.stats.servers[1] : c.stats.servers[0]}
-                </p>
-              </div>
-              <div className="p-6 text-center">
-                <p className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
-                  <CountUp value={stats?.members} fallback="24.5k" />
-                </p>
-                <p className="mt-1 text-xs uppercase tracking-wider text-zinc-500">{c.stats.members}</p>
-              </div>
-              <div className="p-6 text-center">
-                <p className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
-                  <CountUp value={commands.length} fallback="68+" />
-                </p>
-                <p className="mt-1 text-xs uppercase tracking-wider text-zinc-500">{c.stats.commands}</p>
-              </div>
-              <div className="p-6 text-center">
-                <p className="text-3xl font-extrabold tracking-tight text-emerald-400 sm:text-4xl">99.98%</p>
-                <p className="mt-1 text-xs uppercase tracking-wider text-zinc-500">{c.stats.uptime}</p>
-              </div>
-            </div>
-          </Reveal>
-        </section>
-
-        <section className="w-full overflow-hidden border-y border-white/[0.06] bg-black/30 py-6">
-          <p className="mb-4 text-center text-xs font-semibold uppercase tracking-widest text-zinc-500">
-            Serveurs & Communautés propulsés par Etho
-          </p>
-          <div className="flex w-max gap-8 animate-none">
-            <div className="flex gap-8">
-              {PARTNER_SERVERS.concat(PARTNER_SERVERS).map((srv, idx) => (
-                <div
-                  key={`${srv.name}-${idx}`}
-                  className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-2"
-                >
-                  <span className="text-xl">{srv.icon}</span>
-                  <div>
-                    <p className="text-xs font-bold text-white">{srv.name}</p>
-                    <p className="text-[11px] text-zinc-400">
-                      {srv.members} membres · <span className="text-[#92C8D2]">{srv.tag}</span>
-                    </p>
-                  </div>
+        {stats && typeof stats.guilds === "number" && stats.guilds > 0 && (
+          <section className="mx-auto w-full max-w-6xl px-6 pb-16">
+            <Reveal>
+              <div className="grid grid-cols-3 divide-x divide-white/[0.08] rounded-2xl border border-white/[0.08] bg-white/[0.02] backdrop-blur-xl">
+                <div className="p-6 text-center">
+                  <p className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
+                    <CountUp value={stats.guilds} />
+                  </p>
+                  <p className="mt-1 text-xs uppercase tracking-wider text-zinc-500">Servers</p>
                 </div>
-              ))}
-            </div>
-          </div>
-        </section>
+                <div className="p-6 text-center">
+                  <p className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
+                    <CountUp value={stats.members} />
+                  </p>
+                  <p className="mt-1 text-xs uppercase tracking-wider text-zinc-500">Members</p>
+                </div>
+                <div className="p-6 text-center">
+                  <p className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
+                    <CountUp value={commands.length} />
+                  </p>
+                  <p className="mt-1 text-xs uppercase tracking-wider text-zinc-500">Commands</p>
+                </div>
+              </div>
+            </Reveal>
+          </section>
+        )}
 
-        <section id="bento" className="mx-auto w-full max-w-6xl px-6 py-24 scroll-mt-20">
+        <section id="security" className="mx-auto w-full max-w-6xl px-6 py-24 scroll-mt-20">
           <Reveal className="text-center">
-            <Eyebrow>{c.bento.eyebrow}</Eyebrow>
-            <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">{c.bento.title}</h2>
-            <p className="mx-auto mt-3 max-w-xl text-zinc-400">{c.bento.subtitle}</p>
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#92C8D2]/10 ring-1 ring-[#92C8D2]/20">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#92C8D2" strokeWidth="1.5" className="h-7 w-7" aria-hidden="true">
+                <rect x="3" y="11" width="18" height="11" rx="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+            </div>
+            <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+              {c.security.titlePart1}{" "}
+              <span className="bg-gradient-to-r from-[#92C8D2] to-white bg-clip-text text-transparent">
+                {c.security.titleHighlight}
+              </span>
+            </h2>
+            <p className="mx-auto mt-3 max-w-xl text-zinc-400">{c.security.subtitle}</p>
           </Reveal>
 
-          <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            <Reveal className="sm:col-span-2">
-              <div className="group relative h-full overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0c0d15] p-7 transition-all hover:border-[#92C8D2]/40">
-                <div className="flex items-center justify-between">
-                  <span className="rounded-full bg-[#92C8D2]/10 px-3 py-1 text-xs font-bold text-[#92C8D2]">
-                    {c.bento.cards.shield.tag}
+          <div className="mt-14 grid gap-6 sm:grid-cols-2">
+            <Reveal>
+              <div className="group relative h-full overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0c0d14] p-7 transition-all hover:border-[#92C8D2]/30">
+                <h3 className="text-lg font-bold text-[#92C8D2]">{c.security.filters.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-zinc-400">{c.security.filters.desc}</p>
+                <div className="relative mt-8 flex flex-wrap items-center justify-center gap-x-8 gap-y-6">
+                  <div className="absolute inset-0 flex items-center justify-center" aria-hidden="true">
+                    <svg viewBox="0 0 200 100" className="h-full w-full opacity-20" fill="none" stroke="#92C8D2" strokeWidth="0.5" strokeDasharray="4 4">
+                      <line x1="50" y1="20" x2="150" y2="20" />
+                      <line x1="50" y1="80" x2="150" y2="80" />
+                      <line x1="50" y1="20" x2="50" y2="80" />
+                      <line x1="150" y1="20" x2="150" y2="80" />
+                      <line x1="100" y1="20" x2="100" y2="80" />
+                    </svg>
+                  </div>
+                  <span className="relative z-10 inline-flex items-center gap-1.5 rounded-full border border-[#92C8D2]/20 bg-[#92C8D2]/10 px-3 py-1.5 text-xs font-semibold text-[#92C8D2]">
+                    <svg viewBox="0 0 16 16" fill="currentColor" className="h-3 w-3" aria-hidden="true"><path d="M4 9h8l-1 5H5L4 9zm1-2l1-5h6l1 5H5z" /></svg>
+                    {c.security.filters.chips.links}
                   </span>
-                  <span className="text-2xl">🛡️</span>
+                  <span className="relative z-10 inline-flex items-center gap-1.5 rounded-full border border-[#92C8D2]/20 bg-[#92C8D2]/10 px-3 py-1.5 text-xs font-semibold text-[#92C8D2]">
+                    <svg viewBox="0 0 16 16" fill="currentColor" className="h-3 w-3" aria-hidden="true"><circle cx="8" cy="8" r="6" /></svg>
+                    {c.security.filters.chips.mentions}
+                  </span>
+                  <span className="relative z-10 inline-flex items-center gap-1.5 rounded-full border border-[#92C8D2]/20 bg-[#92C8D2]/10 px-3 py-1.5 text-xs font-semibold text-[#92C8D2]">
+                    <svg viewBox="0 0 16 16" fill="currentColor" className="h-3 w-3" aria-hidden="true"><path d="M2 2h12v12H2z" opacity="0.5" /><path d="M5 5h6v6H5z" /></svg>
+                    {c.security.filters.chips.spoilers}
+                  </span>
+                  <span className="relative z-10 inline-flex items-center gap-1.5 rounded-full border border-[#92C8D2]/20 bg-[#92C8D2]/10 px-3 py-1.5 text-xs font-semibold text-[#92C8D2]">
+                    <svg viewBox="0 0 16 16" fill="currentColor" className="h-3 w-3" aria-hidden="true"><rect x="2" y="4" width="12" height="8" rx="1" /><path d="M6 8l4-2v4z" /></svg>
+                    {c.security.filters.chips.invites}
+                  </span>
                 </div>
-                <h3 className="mt-4 text-xl font-bold text-white">{c.bento.cards.shield.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-zinc-400">{c.bento.cards.shield.desc}</p>
-                <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-                  {[
-                    ["Anti-Spam", automodActive, () => setAutomodActive(!automodActive)],
-                    ["Bouclier Owner", shieldActive, () => setShieldActive(!shieldActive)],
-                    ["Anti-Nuke", antiNukeActive, () => setAntiNukeActive(!antiNukeActive)],
-                    ["Pont Spotify", spotifyBridgeActive, () => setSpotifyBridgeActive(!spotifyBridgeActive)],
-                  ].map(([label, active, toggle]) => (
-                    <button
-                      key={label as string}
-                      type="button"
-                      onClick={toggle as () => void}
-                      className={`flex items-center justify-between rounded-xl border p-3 text-left transition-all ${
-                        active
-                          ? "border-emerald-500/40 bg-emerald-500/10 text-white"
-                          : "border-white/10 bg-white/[0.02] text-zinc-400"
-                      }`}
-                    >
-                      <span className="text-xs font-semibold">{label as string}</span>
-                      <span
-                        className={`h-2.5 w-2.5 rounded-full ${active ? "bg-emerald-400" : "bg-zinc-600"}`}
-                      />
-                    </button>
-                  ))}
+                <div className="mt-6 flex justify-center">
+                  <span className="flex h-7 w-7 items-center justify-center rounded-full border border-white/10 text-xs text-zinc-500">+</span>
                 </div>
               </div>
             </Reveal>
 
-            <Reveal>
-              <div className="group relative h-full overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0c0d15] p-7 transition-all hover:border-[#1DB954]/40">
-                <div className="flex items-center justify-between">
-                  <span className="rounded-full bg-[#1DB954]/10 px-3 py-1 text-xs font-bold text-[#1DB954]">
-                    {c.bento.cards.spotify.tag}
-                  </span>
-                  <span className="text-2xl">🎵</span>
-                </div>
-                <h3 className="mt-4 text-xl font-bold text-white">{c.bento.cards.spotify.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-zinc-400">{c.bento.cards.spotify.desc}</p>
-                <div className="mt-6 rounded-xl border border-white/[0.06] bg-black/40 p-3">
-                  <div className="flex items-center justify-between">
-                    <span className="font-mono text-xs font-bold text-[#1DB954]">/spotify vc</span>
-                    <span className="rounded bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-300">
-                      Direct Vocal
-                    </span>
+            <Reveal delay={0.1}>
+              <div className="group relative flex h-full flex-col items-center overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0c0d14] p-7 transition-all hover:border-[#92C8D2]/30">
+                <div className="mt-4 mb-4 flex h-24 w-24 items-center justify-center">
+                  <div className="relative flex h-20 w-20 items-center justify-center rounded-2xl bg-[#92C8D2]/10 ring-1 ring-[#92C8D2]/20">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#92C8D2" strokeWidth="1.5" className="h-10 w-10" aria-hidden="true">
+                      <path d="M12 2l1.5 3.5L17 7l-3.5 1.5L12 12l-1.5-3.5L7 7l3.5-1.5L12 2z" />
+                      <path d="M15 14l1 2.5 2.5 1-2.5 1-1 2.5-1-2.5L11.5 17l2.5-1 1-2z" />
+                    </svg>
+                    <div className="absolute -inset-3 rounded-3xl border border-dashed border-[#92C8D2]/20" />
                   </div>
-                  <p className="mt-2 text-xs text-zinc-400">
-                    Diffuse la musique que tu écoutes en vocal sans configuration supplémentaire.
+                </div>
+                <h3 className="text-lg font-bold text-[#92C8D2]">{c.security.permissions.title}</h3>
+                <p className="mt-2 text-center text-sm leading-relaxed text-zinc-400">{c.security.permissions.desc}</p>
+              </div>
+            </Reveal>
+
+            <Reveal delay={0.15}>
+              <div className="group relative h-full overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0c0d14] p-7 transition-all hover:border-[#92C8D2]/30">
+                <h3 className="text-lg font-bold text-[#92C8D2]">{c.security.antiNuke.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-zinc-400">{c.security.antiNuke.desc}</p>
+                <RadarSweep />
+                <p className="mt-2 text-center text-[10px] font-semibold uppercase tracking-widest text-[#92C8D2]/60">
+                  {c.security.antiNuke.scanning}
+                </p>
+              </div>
+            </Reveal>
+
+            <Reveal delay={0.2}>
+              <div className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0c0d14] p-7 transition-all hover:border-[#92C8D2]/30">
+                <h3 className="text-lg font-bold text-[#92C8D2]">{c.security.antiRaid.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-zinc-400">{c.security.antiRaid.desc}</p>
+                <div className="mt-6 flex flex-1 items-center justify-center">
+                  <div className="relative h-28 w-24">
+                    <div className="absolute inset-0 rounded-xl border border-dashed border-[#92C8D2]/20 bg-[#92C8D2]/5" />
+                    <div className="absolute inset-2 flex flex-col items-center justify-center gap-2 rounded-lg bg-[#0c0d14]">
+                      <div className="h-8 w-8 rounded-full border border-[#92C8D2]/30 bg-[#92C8D2]/10" />
+                      <div className="h-1 w-10 rounded-full bg-[#92C8D2]/20" />
+                      <div className="h-1 w-8 rounded-full bg-[#92C8D2]/10" />
+                    </div>
+                    <motion.div
+                      className="absolute inset-x-0 top-0 h-px bg-[#92C8D2]/40"
+                      animate={reduced ? {} : { top: ["0%", "100%", "0%"] }}
+                      transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                    />
+                  </div>
+                </div>
+                <p className="mt-4 text-center text-[10px] font-semibold uppercase tracking-widest text-emerald-400/80">
+                  {c.security.antiRaid.verified}
+                </p>
+              </div>
+            </Reveal>
+          </div>
+
+          <Reveal delay={0.25} className="mt-10 flex justify-center">
+            <a
+              href="#commandes"
+              onClick={scrollToSection("commandes")}
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-5 py-2.5 text-sm font-semibold text-zinc-300 transition-all hover:border-white/20 hover:bg-white/[0.06] hover:text-white"
+            >
+              <svg viewBox="0 0 16 16" fill="currentColor" className="h-3.5 w-3.5 text-[#92C8D2]" aria-hidden="true"><path d="M2 3h12v2H2zM2 7h8v2H2zM2 11h10v2H2z" /></svg>
+              {c.security.moreBtn}
+              <svg viewBox="0 0 16 16" fill="currentColor" className="h-3 w-3" aria-hidden="true"><path d="M6 3l5 5-5 5" /></svg>
+            </a>
+          </Reveal>
+        </section>
+
+        <section id="music" className="mx-auto w-full max-w-6xl px-6 py-24 scroll-mt-20">
+          <Reveal className="text-center">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#92C8D2]/10 ring-1 ring-[#92C8D2]/20">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#92C8D2" strokeWidth="1.5" className="h-7 w-7" aria-hidden="true">
+                <path d="M9 18V5l12-2v13" strokeLinecap="round" strokeLinejoin="round" />
+                <circle cx="6" cy="18" r="3" />
+                <circle cx="18" cy="16" r="3" />
+              </svg>
+            </div>
+            <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+              {c.music.titlePart1}{" "}
+              <span className="bg-gradient-to-r from-[#92C8D2] to-white bg-clip-text text-transparent">
+                {c.music.titleHighlight}
+              </span>
+            </h2>
+            <p className="mx-auto mt-3 max-w-xl text-zinc-400">{c.music.subtitle}</p>
+          </Reveal>
+
+          <div className="mt-14 grid gap-6 sm:grid-cols-2">
+            <Reveal className="sm:row-span-2">
+              <div className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0c0d14] p-7 transition-all hover:border-[#92C8D2]/30">
+                <h3 className="text-lg font-bold text-[#92C8D2]">{c.music.filters.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-zinc-400">{c.music.filters.desc}</p>
+                <div className="mt-auto">
+                  <p className="mb-1 text-right text-xs font-bold text-[#92C8D2]/70">{c.music.filters.label8D}</p>
+                  <WaveformBars />
+                  <p className="mt-3 text-center text-[10px] font-bold uppercase tracking-widest text-emerald-400">
+                    {c.music.filters.status}
                   </p>
                 </div>
               </div>
             </Reveal>
 
-            <Reveal>
-              <div className="group relative h-full overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0c0d15] p-7 transition-all hover:border-[#a78bfa]/40">
-                <div className="flex items-center justify-between">
-                  <span className="rounded-full bg-[#a78bfa]/10 px-3 py-1 text-xs font-bold text-[#a78bfa]">
-                    {c.bento.cards.fun.tag}
-                  </span>
-                  <span className="text-2xl">🎉</span>
+            <Reveal delay={0.1}>
+              <div className="group relative h-full overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0c0d14] p-7 transition-all hover:border-[#92C8D2]/30">
+                <h3 className="text-lg font-bold text-[#92C8D2]">{c.music.queue.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-zinc-400">{c.music.queue.desc}</p>
+                <div className="mt-5 overflow-hidden rounded-xl border border-white/[0.08] bg-black/30 p-3">
+                  <div className="flex items-center justify-between text-[10px] text-zinc-500">
+                    <span>1 / 24</span>
+                    <svg viewBox="0 0 16 16" fill="currentColor" className="h-3 w-3 text-zinc-500" aria-hidden="true"><path d="M6 3l5 5-5 5" /></svg>
+                  </div>
+                  <div className="mt-2 flex items-center gap-3">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-red-600 to-red-800">
+                      <svg viewBox="0 0 16 16" fill="white" className="h-4 w-4" aria-hidden="true"><path d="M6 4l6 4-6 4z" /></svg>
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-bold text-white">POWER <span className="font-normal text-zinc-400">Kanye West</span></p>
+                      <div className="mt-1.5 flex items-center gap-2">
+                        <div className="h-1 flex-1 overflow-hidden rounded-full bg-white/10">
+                          <div className="h-full w-[65%] rounded-full bg-[#92C8D2]" />
+                        </div>
+                        <span className="font-mono text-[10px] text-zinc-500">4:52</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <h3 className="mt-4 text-xl font-bold text-white">{c.bento.cards.fun.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-zinc-400">{c.bento.cards.fun.desc}</p>
-                <div className="mt-6 flex flex-wrap gap-2">
-                  {["/lyrics", "/quote", "/image", "/reverseimage", "/game", "/movie"].map((cmd) => (
-                    <span
-                      key={cmd}
-                      className="rounded-lg border border-white/10 bg-white/[0.03] px-2.5 py-1 font-mono text-xs text-zinc-300"
-                    >
-                      {cmd}
-                    </span>
-                  ))}
-                </div>
+                <p className="mt-3 text-[10px] font-semibold uppercase tracking-widest text-[#92C8D2]/60">
+                  {c.music.queue.nowPlaying}
+                </p>
               </div>
             </Reveal>
 
-            <Reveal>
-              <div className="group relative h-full overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0c0d15] p-7 transition-all hover:border-[#38bdf8]/40">
-                <div className="flex items-center justify-between">
-                  <span className="rounded-full bg-[#38bdf8]/10 px-3 py-1 text-xs font-bold text-[#38bdf8]">
-                    {c.bento.cards.automod.tag}
-                  </span>
-                  <span className="text-2xl">🤖</span>
-                </div>
-                <h3 className="mt-4 text-xl font-bold text-white">{c.bento.cards.automod.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-zinc-400">{c.bento.cards.automod.desc}</p>
-                <div className="mt-6 flex items-center gap-2">
-                  <span className="rounded-md bg-emerald-500/20 px-2 py-0.5 text-xs font-bold text-emerald-300">
-                    Anti-Discord Invite
-                  </span>
-                  <span className="rounded-md bg-cyan-500/20 px-2 py-0.5 text-xs font-bold text-cyan-300">
-                    Ghost Ping 0s
-                  </span>
-                </div>
+            <Reveal delay={0.15}>
+              <div className="group relative h-full overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0c0d14] p-7 transition-all hover:border-[#1DB954]/30">
+                <h3 className="text-lg font-bold text-[#1DB954]">{c.music.spotify.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-zinc-400">{c.music.spotify.desc}</p>
+                <SpotifyRipple />
+                <p className="mt-2 text-center text-[10px] font-semibold uppercase tracking-widest text-[#1DB954]/60">
+                  {c.music.spotify.status}
+                </p>
               </div>
             </Reveal>
+          </div>
 
-            <Reveal>
-              <div className="group relative h-full overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0c0d15] p-7 transition-all hover:border-[#facc15]/40">
-                <div className="flex items-center justify-between">
-                  <span className="rounded-full bg-[#facc15]/10 px-3 py-1 text-xs font-bold text-[#facc15]">
-                    {c.bento.cards.leveling.tag}
-                  </span>
-                  <span className="text-2xl">⚡</span>
-                </div>
-                <h3 className="mt-4 text-xl font-bold text-white">{c.bento.cards.leveling.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-zinc-400">{c.bento.cards.leveling.desc}</p>
-                <div className="mt-6 rounded-xl border border-white/[0.06] bg-black/40 p-3">
-                  <div className="flex justify-between text-xs font-bold text-white">
-                    <span>Niveau 14 · Rang #3</span>
-                    <span className="text-[#facc15]">1,450 / 2,000 XP</span>
+          <Reveal delay={0.2} className="mt-10 flex justify-center">
+            <a
+              href="#commandes"
+              onClick={scrollToSection("commandes")}
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-5 py-2.5 text-sm font-semibold text-zinc-300 transition-all hover:border-white/20 hover:bg-white/[0.06] hover:text-white"
+            >
+              <svg viewBox="0 0 16 16" fill="currentColor" className="h-3.5 w-3.5 text-[#92C8D2]" aria-hidden="true"><path d="M2 3h12v2H2zM2 7h8v2H2zM2 11h10v2H2z" /></svg>
+              {c.music.moreBtn}
+              <svg viewBox="0 0 16 16" fill="currentColor" className="h-3 w-3" aria-hidden="true"><path d="M6 3l5 5-5 5" /></svg>
+            </a>
+          </Reveal>
+        </section>
+
+        <section id="features" className="mx-auto w-full max-w-6xl px-6 py-24 scroll-mt-20">
+          <Reveal className="text-center">
+            <div className="mx-auto mb-6 flex items-center justify-center gap-3" aria-hidden="true">
+              {FEATURE_KEYS.slice(0, 7).map((k, i) => (
+                <motion.div
+                  key={k}
+                  className="flex h-9 w-9 items-center justify-center rounded-full bg-white/[0.04] text-zinc-500 ring-1 ring-white/[0.08]"
+                  initial={reduced ? false : { opacity: 0, y: 10 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.06 }}
+                >
+                  {FEATURE_ICONS[k]}
+                </motion.div>
+              ))}
+            </div>
+            <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+              {c.features.titlePart1}{" "}
+              <span className="bg-gradient-to-r from-[#92C8D2] to-white bg-clip-text text-transparent">
+                {c.features.titleHighlight}
+              </span>
+            </h2>
+            <p className="mx-auto mt-3 max-w-xl text-zinc-400">{c.features.subtitle}</p>
+          </Reveal>
+
+          <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {FEATURE_KEYS.map((key, i) => {
+              const item = c.features.items[key];
+              return (
+                <Reveal key={key} delay={i * 0.04}>
+                  <div className="group relative h-full overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0c0d14]/90 p-6 transition-all hover:border-[#92C8D2]/25 hover:bg-[#0f101a]">
+                    <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-[#92C8D2]/10 text-[#92C8D2] ring-1 ring-[#92C8D2]/20">
+                      {FEATURE_ICONS[key]}
+                    </div>
+                    <h3 className="text-sm font-bold text-white">{item.title}</h3>
+                    <p className="mt-1.5 text-xs leading-relaxed text-zinc-400">{item.desc}</p>
                   </div>
-                  <div className="mt-2 h-1.5 w-full rounded-full bg-white/10">
-                    <div className="h-full w-[72%] rounded-full bg-[#facc15]" />
-                  </div>
-                </div>
-              </div>
-            </Reveal>
+                </Reveal>
+              );
+            })}
           </div>
         </section>
 
         <section id="steps" className="mx-auto w-full max-w-6xl px-6 py-20 scroll-mt-20">
           <Reveal className="text-center">
             <Eyebrow>{c.steps.eyebrow}</Eyebrow>
-            <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">{c.steps.title}</h2>
-            <p className="mx-auto mt-3 max-w-xl text-zinc-400">{c.steps.subtitle}</p>
+            <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+              {c.steps.titlePart1}{" "}
+              <span className="bg-gradient-to-r from-[#92C8D2] to-white bg-clip-text text-transparent">
+                {c.steps.titleHighlight}
+              </span>
+            </h2>
           </Reveal>
 
           <div className="mt-14 grid gap-6 sm:grid-cols-3">
@@ -1093,7 +1336,7 @@ export default function BotLanding() {
                     {st.step}
                   </span>
                   <h3 className="mt-5 text-lg font-bold text-white">{st.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-zinc-400">{st.text}</p>
+                  <p className="mt-2 text-sm leading-relaxed text-zinc-400">{st.desc}</p>
                 </div>
               </Reveal>
             ))}
@@ -1105,7 +1348,7 @@ export default function BotLanding() {
             <div>
               <Eyebrow>{c.commands.eyebrow}</Eyebrow>
               <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">{c.commands.title}</h2>
-              <p className="mt-2 text-zinc-400">{c.commands.subtitleLive(numberFr(filteredCommands.length))}</p>
+              <p className="mt-2 text-zinc-400">{c.commands.subtitle}</p>
             </div>
             <div className="w-full sm:w-80">
               <input
@@ -1135,6 +1378,10 @@ export default function BotLanding() {
             ))}
           </div>
 
+          {filteredCommands.length === 0 && (
+            <p className="mt-12 text-center text-sm text-zinc-500">{c.commands.empty}</p>
+          )}
+
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {filteredCommands.map((cmd) => (
               <div
@@ -1150,10 +1397,10 @@ export default function BotLanding() {
                     <button
                       type="button"
                       onClick={() => copyCommand(cmd.name)}
-                      title={c.commands.copySyntax}
+                      title={c.commands.copy}
                       className="rounded-md border border-white/10 bg-white/[0.04] px-2 py-0.5 text-[10px] font-semibold text-zinc-300 transition-colors hover:bg-white/10 hover:text-white"
                     >
-                      {copiedCmd === cmd.name ? "✓" : "Copier"}
+                      {copiedCmd === cmd.name ? c.commands.copied : c.commands.copy}
                     </button>
                   </div>
                 </div>
@@ -1241,7 +1488,7 @@ export default function BotLanding() {
                   {c.cta.title}
                 </h2>
                 <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-zinc-400 sm:text-base">
-                  {c.cta.text}
+                  {c.cta.subtitle}
                 </p>
                 <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
                   <a
@@ -1251,13 +1498,13 @@ export default function BotLanding() {
                     className="inline-flex items-center gap-2 rounded-full bg-white px-7 py-3.5 text-sm font-bold text-black shadow-xl shadow-white/10 transition-transform hover:scale-105"
                   >
                     <DiscordGlyph className="h-5 w-5" />
-                    {c.cta.add}
+                    {c.cta.addBtn}
                   </a>
                   <a
                     href={DASHBOARD_URL}
                     className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-7 py-3.5 text-sm font-semibold text-white backdrop-blur-md transition-all hover:border-white/30 hover:bg-white/[0.08]"
                   >
-                    {c.cta.openDashboard}
+                    {c.cta.dashboardBtn}
                   </a>
                 </div>
               </div>

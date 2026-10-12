@@ -2,6 +2,29 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.3 — 2026-10-12
+
+**Vitrine Bot : Bento Haute Fidélité, Zéro Faux Serveurs & Traduction Complète (FR/EN/ES/DE)**
+
+- **Suppression intégrale des faux serveurs et fausses stats** : retrait complet de la liste inventée de serveurs partenaires et des faux compteurs (350+ serveurs, 24k membres). Les statistiques réelles ne sont affichées que si l'API du bot en renvoie.
+- **Section Sécurité Haute Fidélité (4 cartes)** :
+  - Filtres automatisés avec arbre de nœuds connectés (Liens, Mass Mentions, Spoilers, Invitations).
+  - Sécurité des permissions avec bouclier en verre dépoli et cadre en pointillés.
+  - Anti-Nuke avec balayage radar SVG circulaire animé à 360° et indicateur de menace en direct.
+  - Anti-Raid avec badge d'identité scanné et faisceau lumineux vertical animé.
+  - Bouton interactif vers les 100+ commandes de sécurité.
+- **Section Expérience Audio & Musique (3 cartes)** :
+  - Filtres audio 8D avec visualiseur de spectre en barres animées réactives et badge d'état.
+  - Lecteur de file d'attente avec carte de morceau flottante (POWER — Kanye West, 1/24, barre de progression).
+  - Intégration Spotify native avec ondes acoustiques circulaires vertes en expansion continue et lecture vocale (/spotify vc).
+  - Bouton interactif vers les 20+ commandes musicales.
+- **Grille de 12 Fonctionnalités Complètes** :
+  - Constellation arquée de badges vectoriels supérieurs.
+  - 12 cartes en verre sombre avec glyphes SVG sobres (Recherche, Synthèse vocale TTS, Niveaux & XP, Audit & Snipe, Giveaways, Mini-Jeux, Réponses auto, Rappels programmés, Salons compteurs, Rôles de réaction, Paroles LRCLib, Traduction).
+- **Internationalisation Complète (i18n)** :
+  - Traduction exhaustive et naturelle en Français, Anglais, Espagnol et Allemand sans texte manquant.
+  - Sélecteur de langue avec drapeaux et persistance locale.
+
 ## v1.75.2 — 2026-10-12
 
 **Vitrine Bot : Refonte Motion Design Format Bleed & Rétablissement de /bot**

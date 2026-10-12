@@ -51807,6 +51807,63 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_2_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_2_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_2_de);
 
+const v1_75_3_fr: ChangelogEntry = {
+  version: "v1.75.3",
+  date: "2026-10-12",
+  title: "Vitrine Bot : Bento Haute Fidélité, Zéro Faux Serveurs & Traduction Complète (FR/EN/ES/DE)",
+  items: [
+    "Suppression totale de tous les faux serveurs et de toutes les fausses statistiques ou placeholders marketing.",
+    "Section Sécurité Haute Fidélité : filtres automatisés avec arbre de nœuds connectés, bouclier de permissions, radar SVG circulaire interactif avec balayage en temps réel et scanner d'identité anti-raid.",
+    "Section Musique & Son : visualiseur de fréquences spatialisées 8D animé, lecteur de file d'attente avec aperçu direct et intégration Spotify avec ondes acoustiques circulaires.",
+    "Grille de fonctionnalités de 12 modules avec icônes vectorielles épurées et constellation d'icônes supérieure.",
+    "Support multilingue intégral dynamique pour les 4 langues : Français, Anglais, Espagnol et Allemand.",
+  ],
+};
+
+const v1_75_3_en: ChangelogEntry = {
+  version: "v1.75.3",
+  date: "2026-10-12",
+  title: "Bot Showcase: High-Craft Bento, Zero Fake Data & Full Multilingual Support (FR/EN/ES/DE)",
+  items: [
+    "Complete removal of all fake servers, placeholder counts, and invented partner statistics.",
+    "High-Craft Security Bento: automated filters with connected node tree, permissions shield, interactive rotating SVG radar sweep, and anti-raid badge scanner.",
+    "Audio & Music Experience Bento: animated 8D spatial audio waveform visualizer, queue track card stack, and Spotify integration with expanding acoustic ripples.",
+    "12-module feature grid with clean monochrome SVG glyphs and arched constellation header.",
+    "Complete dynamic multilingual translation across English, French, Spanish, and German.",
+  ],
+};
+
+const v1_75_3_es: ChangelogEntry = {
+  version: "v1.75.3",
+  date: "2026-10-12",
+  title: "Vitrina del Bot: Bento de Alta Fidelidad, Cero Servidores Falsos y Traducción Completa (FR/EN/ES/DE)",
+  items: [
+    "Eliminación total de todos los servidores falsos, estadísticas inventadas y marcadores de posición.",
+    "Sección de Seguridad de Alta Fidelidad: filtros automáticos con árbol de nodos conectados, escudo de permisos, radar giratorio SVG en tiempo real y escáner de identidad anti-raid.",
+    "Experiencia Musical Bento: visualizador de ondas espaciales 8D animado, tarjeta de cola de reproducción e integración con Spotify con ondas acústicas expansivas.",
+    "Rejilla de 12 funcionalidades con iconos SVG limpios y constelación superior.",
+    "Soporte multilingüe completo y dinámico en 4 idiomas: francés, inglés, español y alemán.",
+  ],
+};
+
+const v1_75_3_de: ChangelogEntry = {
+  version: "v1.75.3",
+  date: "2026-10-12",
+  title: "Bot-Präsentation: High-Craft Bento, Keine gefälschten Server & Vollständige Lokalisierung (FR/EN/ES/DE)",
+  items: [
+    "Vollständige Entfernung aller gefälschten Server, Platzhalterzahlen und erfundenen Statistiken.",
+    "High-Craft Sicherheits-Bento: automatisierte Filter mit verbundenem Knotenbaum, Berechtigungsschild, interaktiver rotierender SVG-Radar-Scan und Anti-Raid-Scanner.",
+    "Musik-Erlebnis Bento: animierter 8D-Audio-Wellenform-Visualisierer, Queue-Kartenstapel und Spotify-Integration mit akustischen Ringen.",
+    "12-Modul-Feature-Grid mit sauberen SVG-Icons und gewölbter Icon-Konstellation.",
+    "Vollständige dynamische Übersetzung in 4 Sprachen: Französisch, Englisch, Spanisch und Deutsch.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_3_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_3_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_3_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_3_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

@@ -1,69 +1,129 @@
 export const BOT_LANGS = ["fr", "en", "es", "de"] as const;
 export type BotLang = (typeof BOT_LANGS)[number];
 
+export interface BotFeatureItem {
+  title: string;
+  desc: string;
+}
+
 export interface BotCopy {
-  meta: { title: string; description: string };
+  meta: {
+    title: string;
+    description: string;
+  };
   nav: {
     features: string;
-    bento: string;
-    dashboard: string;
+    security: string;
+    music: string;
+    steps: string;
     commands: string;
     faq: string;
     support: string;
     invite: string;
+    dashboard: string;
     openMenu: string;
     closeMenu: string;
-    mobileMenu: string;
-    mainNav: string;
-    footerNav: string;
     language: string;
   };
   hero: {
-    badgeDefault: string;
-    badgeActive: (guilds: number, members: string) => string;
-    title: string;
+    badge: string;
+    titlePart1: string;
+    titleHighlight: string;
     subtitle: string;
-    add: string;
-    openDashboard: string;
+    addBtn: string;
+    dashboardBtn: string;
+    onlineLabel: string;
     highlights: string[];
   };
-  stats: {
-    servers: [string, string];
-    members: string;
-    commands: string;
-    uptime: string;
-  };
-  bento: {
-    eyebrow: string;
-    title: string;
+  security: {
+    badge: string;
+    titlePart1: string;
+    titleHighlight: string;
     subtitle: string;
-    cards: {
-      shield: { title: string; desc: string; tag: string };
-      spotify: { title: string; desc: string; tag: string };
-      fun: { title: string; desc: string; tag: string };
-      automod: { title: string; desc: string; tag: string };
-      welcome: { title: string; desc: string; tag: string };
-      leveling: { title: string; desc: string; tag: string };
+    filters: {
+      title: string;
+      desc: string;
+      chips: {
+        links: string;
+        mentions: string;
+        spoilers: string;
+        invites: string;
+      };
+    };
+    permissions: {
+      title: string;
+      desc: string;
+    };
+    antiNuke: {
+      title: string;
+      desc: string;
+      scanning: string;
+    };
+    antiRaid: {
+      title: string;
+      desc: string;
+      verified: string;
+    };
+    moreBtn: string;
+  };
+  music: {
+    badge: string;
+    titlePart1: string;
+    titleHighlight: string;
+    subtitle: string;
+    filters: {
+      title: string;
+      desc: string;
+      label8D: string;
+      status: string;
+    };
+    queue: {
+      title: string;
+      desc: string;
+      nowPlaying: string;
+    };
+    spotify: {
+      title: string;
+      desc: string;
+      status: string;
+    };
+    moreBtn: string;
+  };
+  features: {
+    badge: string;
+    titlePart1: string;
+    titleHighlight: string;
+    subtitle: string;
+    items: {
+      search: BotFeatureItem;
+      tts: BotFeatureItem;
+      levels: BotFeatureItem;
+      snipe: BotFeatureItem;
+      giveaways: BotFeatureItem;
+      games: BotFeatureItem;
+      autoResponders: BotFeatureItem;
+      reminders: BotFeatureItem;
+      counters: BotFeatureItem;
+      reactionRoles: BotFeatureItem;
+      lyrics: BotFeatureItem;
+      translation: BotFeatureItem;
     };
   };
   steps: {
     eyebrow: string;
-    title: string;
-    subtitle: string;
-    items: Array<{ step: string; title: string; text: string }>;
+    titlePart1: string;
+    titleHighlight: string;
+    items: Array<{ step: string; title: string; desc: string }>;
   };
   commands: {
     eyebrow: string;
     title: string;
-    subtitleLive: (n: string) => string;
-    subtitleStatic: string;
+    subtitle: string;
     search: string;
     all: string;
-    copySyntax: string;
+    copy: string;
     copied: string;
-    unavailable: [string, string];
-    noMatch: (q: string) => string;
-    frenchNote: string;
+    empty: string;
   };
   faq: {
     eyebrow: string;
@@ -73,17 +133,16 @@ export interface BotCopy {
   };
   cta: {
     title: string;
-    text: string;
-    add: string;
-    openDashboard: string;
-    support: string;
+    subtitle: string;
+    addBtn: string;
+    dashboardBtn: string;
   };
   footer: {
     tagline: string;
-    terms: string;
-    privacy: string;
     dashboard: string;
     support: string;
+    terms: string;
+    privacy: string;
   };
 }
 
@@ -91,30 +150,30 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
   fr: {
     meta: {
       title: "Etho — Le bot Discord tout-en-un pour votre communauté",
-      description: "Protection anti-raid chirurgicale, modération instantanée, musique, pont vocal Spotify et commandes fun format Bleed. Tout ce dont votre serveur a besoin, sans superflu.",
+      description: "Modération chirurgicale, protection anti-raid, musique, pont vocal Spotify et catalogue complet de commandes fun. Tout pour votre serveur, sans superflu.",
     },
     nav: {
       features: "Fonctionnalités",
-      bento: "Modules",
-      dashboard: "Dashboard",
+      security: "Sécurité",
+      music: "Musique",
+      steps: "Prise en main",
       commands: "Commandes",
       faq: "FAQ",
       support: "Support",
       invite: "Ajouter Etho",
+      dashboard: "Dashboard",
       openMenu: "Ouvrir le menu",
       closeMenu: "Fermer le menu",
-      mobileMenu: "Menu mobile",
-      mainNav: "Navigation principale",
-      footerNav: "Liens de navigation",
       language: "Langue",
     },
     hero: {
-      badgeDefault: "Le bot Discord tout-en-un · Uptime 99.98%",
-      badgeActive: (g, m) => `Actif sur ${g} serveur${g > 1 ? "s" : ""} · ${m} membres`,
-      title: "Le bot Discord tout-en-un, pensé pour ta communauté",
-      subtitle: "Protection anti-raid chirurgicale, modération instantanée, musique, pont vocal Spotify et commandes fun format Bleed. Active ce dont tu as besoin, sans superflu.",
-      add: "Ajouter le bot ↗",
-      openDashboard: "Ouvrir le dashboard",
+      badge: "Le bot Discord tout-en-un",
+      titlePart1: "Le bot Discord tout-en-un,",
+      titleHighlight: "pensé pour ta communauté",
+      subtitle: "Modération chirurgicale, protection anti-raid, musique haute fidélité, pont vocal Spotify et commandes fun format Bleed. Active ce dont tu as besoin et configure tout depuis un dashboard clair, sans superflu.",
+      addBtn: "Ajouter le bot ↗",
+      dashboardBtn: "Ouvrir le dashboard",
+      onlineLabel: "En ligne 24/7",
       highlights: [
         "🛡️ Anti-Raid 0.2s",
         "🎵 Pont vocal Spotify",
@@ -122,83 +181,147 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
         "🎉 Commandes Fun Bleed",
       ],
     },
-    stats: {
-      servers: ["Serveur actif", "Serveurs actifs"],
-      members: "Membres protégés",
-      commands: "Commandes prêtes",
-      uptime: "Disponibilité 24/7",
+    security: {
+      badge: "SÉCURITÉ DU SERVEUR",
+      titlePart1: "Modération et Sécurité",
+      titleHighlight: "de premier ordre",
+      subtitle: "Les meilleurs outils pour maintenir votre communauté saine, verrouillée et protégée.",
+      filters: {
+        title: "Filtres Automatisés",
+        desc: "Gardez vos salons textuels propres grâce à nos options de filtrage instantané.",
+        chips: {
+          links: "Liens",
+          mentions: "Mass Mentions",
+          spoilers: "Spoilers",
+          invites: "Invitations",
+        },
+      },
+      permissions: {
+        title: "Sécurité des Permissions",
+        desc: "Supprimez et révoquez les permissions dangereuses susceptibles d'être exploitées via l'API.",
+      },
+      antiNuke: {
+        title: "Anti-Nuke",
+        desc: "Prévenez les suppressions massives de salons ou de rôles avec des seuils d'alerte personnalisables.",
+        scanning: "Analyse en direct",
+      },
+      antiRaid: {
+        title: "Anti-Raid",
+        desc: "Protégez votre serveur contre les raids coordonnés grâce aux filtres d'âge de compte et d'avatar.",
+        verified: "Identité vérifiée",
+      },
+      moreBtn: "100+ commandes de sécurité",
     },
-    bento: {
-      eyebrow: "FONCTIONNALITÉS",
-      title: "Tout ce qu'il faut, rien de superflu",
-      subtitle: "Chaque module s'active en 1 clic et se configure en temps réel depuis le dashboard.",
-      cards: {
-        shield: {
-          title: "Protection Anti-Raid & Bouclier Owner",
-          desc: "Détection des attaques en moins de 0.2s, anti-mass ban, anti-spam, bouclier Owner et restauration automatique des rôles compromis.",
-          tag: "Protection 0-seconde",
+    music: {
+      badge: "EXPÉRIENCE AUDIO",
+      titlePart1: "Fonctionnalités musicales",
+      titleHighlight: "pensées pour tous",
+      subtitle: "Qualité audio haute fidélité et commandes directes pour une expérience sonore exceptionnelle.",
+      filters: {
+        title: "Filtres Audio 8D",
+        desc: "Traitement spatialisé en direct pour transformer n'importe quel morceau en écoute immersive.",
+        label8D: "8D Spatial",
+        status: "ACTIF",
+      },
+      queue: {
+        title: "File d'attente fluide",
+        desc: "Écoutez titre après titre, sans interruption ni coupure toute la journée.",
+        nowPlaying: "Lecture en cours",
+      },
+      spotify: {
+        title: "Intégration Spotify",
+        desc: "Totalement intégré avec Spotify. Diffusez vos morceaux dans les salons vocaux avec /spotify vc.",
+        status: "Synchronisé",
+      },
+      moreBtn: "20+ commandes musicales",
+    },
+    features: {
+      badge: "CATALOGUE",
+      titlePart1: "Des dizaines de",
+      titleHighlight: "fonctionnalités",
+      subtitle: "Tout ce dont votre serveur a besoin réuni au même endroit, sans jamais devoir ajouter un autre bot.",
+      items: {
+        search: {
+          title: "Recherche Visuelle",
+          desc: "Recherchez des images sur DuckDuckGo et lancez des recherches inversées instantanées.",
         },
-        spotify: {
-          title: "Pont Vocal & Lecteur Spotify",
-          desc: "Diffusez vos titres Spotify en direct dans les salons vocaux avec /spotify vc, contrôlez la lecture et affichez les jaquettes avec vinyle animé.",
-          tag: "Intégration Spotify",
+        tts: {
+          title: "Synthèse Vocale",
+          desc: "Convertissez du texte en audio haute fidélité diffusé en direct dans votre salon vocal.",
         },
-        fun: {
-          title: "Suite Fun Format Bleed",
-          desc: "Recherche de paroles /lyrics avec LRCLib, générateur de citations /quote, recherche visuelle DuckDuckGo et reverse lookup instantané.",
-          tag: "Format Bleed",
+        levels: {
+          title: "Niveaux & XP",
+          desc: "Système de progression pour les membres avec cartes de rang et attribution de rôles.",
         },
-        automod: {
-          title: "AutoMod & Sécurité Granulaire",
-          desc: "Filtres de mots interdits, blocage des invitations non autorisées, protection contre les pings fantômes et sanctions automatiques modulables.",
-          tag: "AutoMod Natif",
+        snipe: {
+          title: "Audit & Snipe",
+          desc: "Retrouvez les messages récemment supprimés ou modifiés pour un suivi transparent.",
         },
-        welcome: {
-          title: "Bienvenue & Captcha Interactif",
-          desc: "Messages d'accueil riches en embeds, attribution automatique des rôles de départ et système de vérification des nouveaux membres.",
-          tag: "Onboarding fluide",
+        giveaways: {
+          title: "Giveaways & Tirages",
+          desc: "Organisez des concours facilement avec conditions de participation et reroll immédiat.",
         },
-        leveling: {
-          title: "Niveaux & Récompenses XP",
-          desc: "Gain d'expérience textuelle et vocale en direct, multiplicateurs de boost, rôles de récompense et classements personnalisables sur le web.",
-          tag: "Engagement 24/7",
+        games: {
+          title: "Mini-Jeux",
+          desc: "Divertissez vos membres avec des jeux interactifs et des fiches complètes de jeux vidéo.",
+        },
+        autoResponders: {
+          title: "Réponses Auto",
+          desc: "Configurez des réponses automatiques aux messages qui contiennent des mots-clés définis.",
+        },
+        reminders: {
+          title: "Rappels Programmés",
+          desc: "Programmez des rappels automatiques pour vos événements et rendez-vous de communauté.",
+        },
+        counters: {
+          title: "Salons Compteurs",
+          desc: "Affichez en temps réel le nombre de membres, de bots et de rôles dans des salons dédiés.",
+        },
+        reactionRoles: {
+          title: "Rôles de Réaction",
+          desc: "Attribution instantanée de rôles par clic sur bouton ou réaction pour un accueil propre.",
+        },
+        lyrics: {
+          title: "Paroles de Musique",
+          desc: "Recherche de paroles de chansons complètes en direct via LRCLib directement sur Discord.",
+        },
+        translation: {
+          title: "Traduction Rapide",
+          desc: "Traduisez rapidement des messages entre plus de 50 langues sans quitter votre salon.",
         },
       },
     },
     steps: {
       eyebrow: "PRISE EN MAIN",
-      title: "Prêt en trois étapes",
-      subtitle: "Une configuration simple, transparente et opérationnelle en moins d'une minute.",
+      titlePart1: "Prêt en",
+      titleHighlight: "trois étapes",
       items: [
         {
           step: "1",
           title: "Ajoute le bot",
-          text: "Invite Etho sur ton serveur en 1 clic en conservant les permissions recommandées.",
+          desc: "Invite Etho sur ton serveur en 1 clic avec les autorisations requises.",
         },
         {
           step: "2",
-          title: "Active tes modules",
-          text: "Depuis le dashboard, choisis uniquement les modules utiles à ta communauté.",
+          title: "Configure depuis le Dashboard",
+          desc: "Active uniquement les modules utiles à ta communauté sans toucher au code.",
         },
         {
           step: "3",
           title: "Profite",
-          text: "Ton serveur est surveillé, sécurisé et animé en continu 24h/24 sans interruption.",
+          desc: "Ton serveur est surveillé, sécurisé et animé en continu 24h/24 sans interruption.",
         },
       ],
     },
     commands: {
       eyebrow: "COMMANDES",
       title: "Catalogue des Commandes",
-      subtitleLive: (n) => `${n} commandes interactives prêtes à l'emploi.`,
-      subtitleStatic: "Explorez l'ensemble des commandes disponibles sur Etho.",
+      subtitle: "Explorez l'ensemble des commandes interactives prêtes à l'emploi.",
       search: "Rechercher une commande...",
       all: "Toutes",
-      copySyntax: "Copier la syntaxe",
+      copy: "Copier",
       copied: "Copié !",
-      unavailable: ["La liste des commandes est momentanément indisponible. Retrouvez-la avec ", " sur Discord."],
-      noMatch: (q) => `Aucune commande ne correspond à « ${q} ».`,
-      frenchNote: "",
+      empty: "Aucune commande ne correspond à votre recherche.",
     },
     faq: {
       eyebrow: "QUESTIONS FRÉQUENTES",
@@ -229,17 +352,16 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
     },
     cta: {
       title: "Prêt à transformer ton serveur Discord ?",
-      text: "Rejoins des centaines de communautés qui font confiance à Etho chaque jour pour leur sécurité, leur musique et leur animation.",
-      add: "Ajouter le bot ↗",
-      openDashboard: "Ouvrir le dashboard",
-      support: "Rejoindre le support",
+      subtitle: "Rejoins des centaines de communautés qui font confiance à Etho chaque jour pour leur sécurité, leur musique et leur animation.",
+      addBtn: "Ajouter le bot ↗",
+      dashboardBtn: "Ouvrir le dashboard",
     },
     footer: {
       tagline: "Le bot Discord tout-en-un pour votre communauté",
-      terms: "Conditions",
-      privacy: "Confidentialité",
       dashboard: "Dashboard",
       support: "Support Discord",
+      terms: "Conditions",
+      privacy: "Confidentialité",
     },
   },
 
@@ -250,26 +372,26 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
     },
     nav: {
       features: "Features",
-      bento: "Modules",
-      dashboard: "Dashboard",
+      security: "Security",
+      music: "Music",
+      steps: "Getting Started",
       commands: "Commands",
       faq: "FAQ",
       support: "Support",
       invite: "Add Etho",
+      dashboard: "Dashboard",
       openMenu: "Open menu",
       closeMenu: "Close menu",
-      mobileMenu: "Mobile menu",
-      mainNav: "Main navigation",
-      footerNav: "Navigation links",
       language: "Language",
     },
     hero: {
-      badgeDefault: "The All-in-One Discord Bot · 99.98% Uptime",
-      badgeActive: (g, m) => `Active on ${g} server${g > 1 ? "s" : ""} · ${m} members`,
-      title: "The all-in-one Discord bot, built for your community",
-      subtitle: "Surgical anti-raid defense, instant moderation, high-fidelity music, Spotify voice bridge, and Bleed-style fun commands. Enable what you need, nothing you don't.",
-      add: "Add to Discord ↗",
-      openDashboard: "Open Dashboard",
+      badge: "The all-in-one Discord bot",
+      titlePart1: "The all-in-one Discord bot,",
+      titleHighlight: "built for your community",
+      subtitle: "Surgical anti-raid defense, instant moderation, high-fidelity music, Spotify voice bridge, and Bleed-style fun commands. Enable what you need and configure everything from a clean dashboard.",
+      addBtn: "Add to Discord ↗",
+      dashboardBtn: "Open Dashboard",
+      onlineLabel: "Online 24/7",
       highlights: [
         "🛡️ 0.2s Anti-Raid",
         "🎵 Spotify Voice Bridge",
@@ -277,83 +399,147 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
         "🎉 Bleed Fun Commands",
       ],
     },
-    stats: {
-      servers: ["Active Server", "Active Servers"],
-      members: "Protected Members",
-      commands: "Ready Commands",
-      uptime: "24/7 Availability",
+    security: {
+      badge: "SERVER DEFENSE",
+      titlePart1: "Premium Moderation",
+      titleHighlight: "and Security",
+      subtitle: "We provide you with the best tools, to keep your community clean and secure.",
+      filters: {
+        title: "Automated Filters",
+        desc: "Keep any chat clean with our many automated filtering options.",
+        chips: {
+          links: "Links",
+          mentions: "Mass Mentions",
+          spoilers: "Spoilers",
+          invites: "Invites",
+        },
+      },
+      permissions: {
+        title: "Permission Security",
+        desc: "Remove all dangerous Discord permissions that can be used for malicious reasons through API.",
+      },
+      antiNuke: {
+        title: "Anti-Nuke",
+        desc: "Easily prevent your server from malicious attacks and griefing, with a customizable threshold set by you.",
+        scanning: "Real-time sweep",
+      },
+      antiRaid: {
+        title: "Anti-Raid",
+        desc: "Protect against targeted bot raids on your server, with our mass join, avatar and account age anti-raid filters.",
+        verified: "Identity verified",
+      },
+      moreBtn: "100+ security commands",
     },
-    bento: {
-      eyebrow: "FEATURES",
-      title: "Everything you need, nothing you don't",
-      subtitle: "Each module enables with a single click and configures live from the dashboard.",
-      cards: {
-        shield: {
-          title: "Anti-Raid Defense & Owner Shield",
-          desc: "Threat detection in under 0.2s, anti-mass ban, anti-spam, Owner Shield, and automatic restoration of revoked roles.",
-          tag: "0-Second Defense",
+    music: {
+      badge: "AUDIO EXPERIENCE",
+      titlePart1: "Music features built",
+      titleHighlight: "For Everyone",
+      subtitle: "Premium audio quality and commands for a superior music experience.",
+      filters: {
+        title: "Preset Audio Filters",
+        desc: "On-the-fly generation to transform any music into an immersive listening experience.",
+        label8D: "8D Spatial",
+        status: "ACTIVE",
+      },
+      queue: {
+        title: "Seamless Queue",
+        desc: "Listen to music after music, uninterrupted, all day without skips.",
+        nowPlaying: "Now Playing",
+      },
+      spotify: {
+        title: "Spotify Integration",
+        desc: "Fully integrated and capable, stream your current Spotify track into voice with /spotify vc.",
+        status: "Connected",
+      },
+      moreBtn: "20+ music commands",
+    },
+    features: {
+      badge: "FEATURES",
+      titlePart1: "Countless more",
+      titleHighlight: "Features",
+      subtitle: "Never worry about needing another bot for anything else, we've got all your needs covered.",
+      items: {
+        search: {
+          title: "Browser Searching",
+          desc: "Reverse search images, query high-resolution visuals, or search online for any website result.",
         },
-        spotify: {
-          title: "Spotify Voice Bridge & Player",
-          desc: "Stream your current Spotify track directly into Discord voice channels with /spotify vc, control playback, and display spinning vinyl covers.",
-          tag: "Spotify Integration",
+        tts: {
+          title: "Text To Speech",
+          desc: "Convert text into voice audio or stream high-fidelity voice announcements live in any channel.",
         },
-        fun: {
-          title: "Bleed-Style Fun Command Suite",
-          desc: "Live lyrics search /lyrics via LRCLib, styled quote generator /quote, DuckDuckGo image lookup, and reverse image search.",
-          tag: "Bleed Format",
+        levels: {
+          title: "Levels & XP",
+          desc: "Leveling system for users in your server to level up and track message and voice experience.",
         },
-        automod: {
-          title: "AutoMod & Granular Safety",
-          desc: "Custom blocked words, invite link filtering, ghost ping detection, and automated graduated actions.",
-          tag: "Native AutoMod",
+        snipe: {
+          title: "Message Snipe",
+          desc: "Advanced sniping system to inspect recently deleted or edited messages and reactions.",
         },
-        welcome: {
-          title: "Welcome & Interactive Captcha",
-          desc: "Rich embed welcome messages, automatic starter roles, and verification flows for new community arrivals.",
-          tag: "Smooth Onboarding",
+        giveaways: {
+          title: "Giveaways",
+          desc: "Host giveaways fast and easily with custom conditions and one-click rerolls.",
         },
-        leveling: {
-          title: "Levels & XP Rewards",
-          desc: "Live text and voice XP progression, server boost multipliers, automated rank rewards, and web leaderboards.",
-          tag: "24/7 Engagement",
+        games: {
+          title: "Games & Media",
+          desc: "Play games, search video game deals, movie lookups, and stylized quote cards.",
+        },
+        autoResponders: {
+          title: "Auto Responders",
+          desc: "Set up automatic replies to messages that match a custom trigger.",
+        },
+        reminders: {
+          title: "Bump & Reminders",
+          desc: "Get reminders to bump your server or send scheduled alerts for community events.",
+        },
+        counters: {
+          title: "Channel Counters",
+          desc: "Create dynamic voice counter channels for simple, real-time server statistics.",
+        },
+        reactionRoles: {
+          title: "Reaction Roles",
+          desc: "Instant role assignment on button clicks or reactions for clean member onboarding.",
+        },
+        lyrics: {
+          title: "Song Lyrics",
+          desc: "Live lyrics search and synced scrolling powered by LRCLib right inside Discord.",
+        },
+        translation: {
+          title: "Translation",
+          desc: "Translate messages quickly across more than 50 languages in real time.",
         },
       },
     },
     steps: {
       eyebrow: "GETTING STARTED",
-      title: "Ready in three steps",
-      subtitle: "A smooth, transparent setup running in less than 60 seconds.",
+      titlePart1: "Ready in",
+      titleHighlight: "three steps",
       items: [
         {
           step: "1",
           title: "Add the bot",
-          text: "Invite Etho to your server in 1 click with recommended permissions.",
+          desc: "Invite Etho to your server in 1 click with recommended permissions.",
         },
         {
           step: "2",
-          title: "Enable your modules",
-          text: "Select only the features and protections your community needs from the dashboard.",
+          title: "Configure via Dashboard",
+          desc: "Select only the features and protections your community needs from the dashboard.",
         },
         {
           step: "3",
           title: "Enjoy",
-          text: "Your server is monitored, protected, and animated around the clock.",
+          desc: "Your server is monitored, protected, and animated around the clock.",
         },
       ],
     },
     commands: {
       eyebrow: "COMMANDS",
       title: "Complete Command Catalog",
-      subtitleLive: (n) => `${n} ready-to-use interactive commands.`,
-      subtitleStatic: "Browse every command available on Etho.",
+      subtitle: "Browse every interactive slash command available on Etho.",
       search: "Search commands...",
       all: "All",
-      copySyntax: "Copy syntax",
+      copy: "Copy",
       copied: "Copied!",
-      unavailable: ["Command list temporarily unavailable. Discover all commands with ", " on Discord."],
-      noMatch: (q) => `No command matches "${q}".`,
-      frenchNote: "",
+      empty: "No command matches your search.",
     },
     faq: {
       eyebrow: "FREQUENTLY ASKED QUESTIONS",
@@ -384,17 +570,16 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
     },
     cta: {
       title: "Ready to elevate your Discord server?",
-      text: "Join hundreds of thriving communities relying on Etho every day for security, music, and fun.",
-      add: "Add to Discord ↗",
-      openDashboard: "Open Dashboard",
-      support: "Join Support",
+      subtitle: "Join hundreds of thriving communities relying on Etho every day for security, music, and fun.",
+      addBtn: "Add to Discord ↗",
+      dashboardBtn: "Open Dashboard",
     },
     footer: {
       tagline: "The all-in-one Discord bot for your community",
-      terms: "Terms",
-      privacy: "Privacy",
       dashboard: "Dashboard",
       support: "Discord Support",
+      terms: "Terms",
+      privacy: "Privacy",
     },
   },
 
@@ -405,26 +590,26 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
     },
     nav: {
       features: "Funcionalidades",
-      bento: "Módulos",
-      dashboard: "Panel",
+      security: "Seguridad",
+      music: "Música",
+      steps: "Primeros Pasos",
       commands: "Comandos",
       faq: "Preguntas",
       support: "Soporte",
       invite: "Añadir Etho",
+      dashboard: "Panel",
       openMenu: "Abrir menú",
       closeMenu: "Cerrar menú",
-      mobileMenu: "Menú móvil",
-      mainNav: "Navegación principal",
-      footerNav: "Enlaces",
       language: "Idioma",
     },
     hero: {
-      badgeDefault: "El bot de Discord todo en uno · Uptime 99.98%",
-      badgeActive: (g, m) => `Activo en ${g} servidor${g > 1 ? "es" : ""} · ${m} miembros`,
-      title: "El bot de Discord todo en uno, pensado para tu comunidad",
-      subtitle: "Defensa anti-raid quirúrgica, moderación inmediata, música, puente de voz de Spotify y comandos divertidos estilo Bleed. Activa lo que necesites, sin complicaciones.",
-      add: "Añadir el bot ↗",
-      openDashboard: "Abrir el panel",
+      badge: "El bot de Discord todo en uno",
+      titlePart1: "El bot de Discord todo en uno,",
+      titleHighlight: "pensado para tu comunidad",
+      subtitle: "Defensa anti-raid quirúrgica, moderación inmediata, música, puente de voz de Spotify y comandos divertidos estilo Bleed. Activa lo que necesites desde un panel claro y sin complicaciones.",
+      addBtn: "Añadir el bot ↗",
+      dashboardBtn: "Abrir el panel",
+      onlineLabel: "En línea 24/7",
       highlights: [
         "🛡️ Anti-Raid 0.2s",
         "🎵 Puente de voz Spotify",
@@ -432,83 +617,147 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
         "🎉 Comandos Bleed",
       ],
     },
-    stats: {
-      servers: ["Servidor activo", "Servidores activos"],
-      members: "Miembros protegidos",
-      commands: "Comandos listos",
-      uptime: "Disponibilidad 24/7",
+    security: {
+      badge: "DEFENSA DEL SERVIDOR",
+      titlePart1: "Moderación y Seguridad",
+      titleHighlight: "de primer nivel",
+      subtitle: "Las mejores herramientas para mantener tu comunidad limpia, protegida y segura.",
+      filters: {
+        title: "Filtros Automáticos",
+        desc: "Mantén limpio cualquier chat con nuestras opciones de filtrado automatizado.",
+        chips: {
+          links: "Enlaces",
+          mentions: "Menciones",
+          spoilers: "Spoilers",
+          invites: "Invitaciones",
+        },
+      },
+      permissions: {
+        title: "Seguridad de Permisos",
+        desc: "Elimina y revoca permisos peligrosos que puedan explotarse mediante la API de Discord.",
+      },
+      antiNuke: {
+        title: "Anti-Nuke",
+        desc: "Evita ataques destructivos en tu servidor con umbrales de alerta totalmente personalizables.",
+        scanning: "Escaneo en vivo",
+      },
+      antiRaid: {
+        title: "Anti-Raid",
+        desc: "Protege tu servidor contra oleadas de bots con filtros de edad de cuenta y avatar.",
+        verified: "Identidad verificada",
+      },
+      moreBtn: "100+ comandos de seguridad",
     },
-    bento: {
-      eyebrow: "FUNCIONALIDADES",
-      title: "Todo lo necesario, nada superfluo",
-      subtitle: "Cada módulo se activa en 1 clic y se configura en tiempo real desde el panel.",
-      cards: {
-        shield: {
-          title: "Protección Anti-Raid y Escudo Owner",
-          desc: "Detección de ataques en menos de 0.2s, anti-mass ban, anti-spam, Escudo Owner y restauración automática de roles comprometidos.",
-          tag: "Defensa 0 segundos",
+    music: {
+      badge: "EXPERIENCIA DE AUDIO",
+      titlePart1: "Música creada",
+      titleHighlight: "para todos",
+      subtitle: "Calidad de audio premium, comandos en directo e integración nativa con Spotify.",
+      filters: {
+        title: "Filtros de Audio 8D",
+        desc: "Transforma cualquier música en una experiencia inmersiva y envolvente en tiempo real.",
+        label8D: "8D Espacial",
+        status: "ACTIVO",
+      },
+      queue: {
+        title: "Cola Continua",
+        desc: "Escucha música tras música todo el día sin cortes ni saltos.",
+        nowPlaying: "Reproduciendo",
+      },
+      spotify: {
+        title: "Integración Spotify",
+        desc: "Totalmente compatible con Spotify, transmite en voz con /spotify vc al instante.",
+        status: "Conectado",
+      },
+      moreBtn: "20+ comandos musicales",
+    },
+    features: {
+      badge: "CATÁLOGO",
+      titlePart1: "Innumerables",
+      titleHighlight: "Funciones",
+      subtitle: "Todo lo que tu comunidad necesita reunido en un solo lugar, sin necesidad de otro bot.",
+      items: {
+        search: {
+          title: "Búsqueda Visual",
+          desc: "Búsqueda de imágenes en DuckDuckGo y búsqueda inversa en Google Lens y TinEye.",
         },
-        spotify: {
-          title: "Puente de Voz y Reproductor Spotify",
-          desc: "Transmite tus pistas de Spotify en canales de voz con /spotify vc, controla la reproducción y muestra portadas con vinilo animado.",
-          tag: "Integración Spotify",
+        tts: {
+          title: "Texto a Voz",
+          desc: "Convierte texto en audio y reproduce sonido de alta calidad en canales de voz.",
         },
-        fun: {
-          title: "Suite de Comandos Estilo Bleed",
-          desc: "Búsqueda de letras /lyrics con LRCLib, citas personalizadas /quote, imágenes en DuckDuckGo y búsqueda inversa de imágenes.",
-          tag: "Formato Bleed",
+        levels: {
+          title: "Niveles y XP",
+          desc: "Sistema de niveles por mensajes y voz con tarjetas de rango y roles de premio.",
         },
-        automod: {
-          title: "AutoMod y Seguridad Granular",
-          desc: "Filtros de palabras prohibidas, bloqueo de enlaces de invitación no autorizados y acciones automáticas graduales.",
-          tag: "AutoMod Nativo",
+        snipe: {
+          title: "Inspección Snipe",
+          desc: "Recupera mensajes y reacciones eliminadas o editadas recientemente.",
         },
-        welcome: {
-          title: "Bienvenida y Captcha Interactivo",
-          desc: "Mensajes de bienvenida ricos en embeds, roles iniciales automáticos y verificación de nuevos miembros.",
-          tag: "Bienvenida fluida",
+        giveaways: {
+          title: "Sorteos",
+          desc: "Organiza sorteos fácilmente con condiciones personalizadas y relanzamiento en un clic.",
         },
-        leveling: {
-          title: "Niveles y Recompensas de XP",
-          desc: "Ganancia de experiencia por texto y voz, multiplicadores de boost, roles automáticos y tablas de clasificación en la web.",
-          tag: "Compromiso continuo",
+        games: {
+          title: "Juegos y Medios",
+          desc: "Juegos interactivos, ofertas de videojuegos, películas y generador de citas.",
+        },
+        autoResponders: {
+          title: "Respuestas Auto",
+          desc: "Configura respuestas automáticas a mensajes que coincidan con palabras clave.",
+        },
+        reminders: {
+          title: "Recordatorios",
+          desc: "Programa recordatorios y alertas automáticas para eventos de tu servidor.",
+        },
+        counters: {
+          title: "Canales Contadores",
+          desc: "Canales dinámicos que muestran miembros, bots y estadísticas en tiempo real.",
+        },
+        reactionRoles: {
+          title: "Roles por Reacción",
+          desc: "Asignación rápida de roles mediante clics en botones o reacciones.",
+        },
+        lyrics: {
+          title: "Letras de Canciones",
+          desc: "Búsqueda y visualización sincronizada de letras de canciones con LRCLib.",
+        },
+        translation: {
+          title: "Traducción Rápida",
+          desc: "Traduce mensajes rápidamente entre más de 50 idiomas en tiempo real.",
         },
       },
     },
     steps: {
       eyebrow: "PRIMEROS PASOS",
-      title: "Listo en tres pasos",
-      subtitle: "Configuración sencilla y lista para funcionar en menos de un minuto.",
+      titlePart1: "Listo en",
+      titleHighlight: "tres pasos",
       items: [
         {
           step: "1",
           title: "Añade el bot",
-          text: "Invita a Etho a tu servidor en 1 clic con los permisos recomendados.",
+          desc: "Invita a Etho a tu servidor en un clic con los permisos necesarios.",
         },
         {
           step: "2",
-          title: "Activa tus módulos",
-          text: "Elige desde el panel los módulos que tu comunidad realmente necesita.",
+          title: "Configura desde el Panel",
+          desc: "Activa únicamente los módulos que tu comunidad realmente necesita.",
         },
         {
           step: "3",
           title: "Disfruta",
-          text: "Tu servidor está protegido y animado las 24 horas del día.",
+          desc: "Tu servidor está protegido, moderado y animado las 24 horas del día.",
         },
       ],
     },
     commands: {
       eyebrow: "COMANDOS",
       title: "Catálogo de Comandos",
-      subtitleLive: (n) => `${n} comandos interactivos disponibles.`,
-      subtitleStatic: "Explora la lista completa de comandos en Etho.",
+      subtitle: "Explora la lista completa de comandos interactivos disponibles.",
       search: "Buscar comando...",
       all: "Todos",
-      copySyntax: "Copiar sintaxis",
+      copy: "Copiar",
       copied: "¡Copiado!",
-      unavailable: ["Lista de comandos no disponible temporalmente. Puedes verla con ", " en Discord."],
-      noMatch: (q) => `Ningún comando coincide con « ${q} ».`,
-      frenchNote: "",
+      empty: "Ningún comando coincide con tu búsqueda.",
     },
     faq: {
       eyebrow: "PREGUNTAS FRECUENTES",
@@ -539,17 +788,16 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
     },
     cta: {
       title: "¿Listo para transformar tu servidor de Discord?",
-      text: "Únete a cientos de comunidades que confían en Etho cada día para su seguridad y entretenimiento.",
-      add: "Añadir el bot ↗",
-      openDashboard: "Abrir el panel",
-      support: "Unirse al soporte",
+      subtitle: "Únete a cientos de comunidades que confían en Etho cada día para su seguridad y entretenimiento.",
+      addBtn: "Añadir el bot ↗",
+      dashboardBtn: "Abrir el panel",
     },
     footer: {
       tagline: "El bot de Discord todo en uno para tu comunidad",
-      terms: "Términos",
-      privacy: "Privacidad",
       dashboard: "Panel",
       support: "Soporte Discord",
+      terms: "Términos",
+      privacy: "Privacidad",
     },
   },
 
@@ -560,26 +808,26 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
     },
     nav: {
       features: "Funktionen",
-      bento: "Module",
-      dashboard: "Dashboard",
+      security: "Sicherheit",
+      music: "Musik",
+      steps: "Erste Schritte",
       commands: "Befehle",
       faq: "FAQ",
       support: "Support",
       invite: "Etho hinzufügen",
+      dashboard: "Dashboard",
       openMenu: "Menü öffnen",
       closeMenu: "Menü schließen",
-      mobileMenu: "Mobiles Menü",
-      mainNav: "Hauptnavigation",
-      footerNav: "Links",
       language: "Sprache",
     },
     hero: {
-      badgeDefault: "Der All-in-One Discord Bot · 99.98% Uptime",
-      badgeActive: (g, m) => `Aktiv auf ${g} Server${g > 1 ? "n" : ""} · ${m} Mitgliedern`,
-      title: "Der All-in-One Discord-Bot, gebaut für deine Community",
-      subtitle: "Chirurgischer Anti-Raid-Schutz, blitzschnelle Moderation, Musik, Spotify-Voice-Bridge und Bleed-Style Fun-Befehle. Aktiviere, was du brauchst, ohne Ballast.",
-      add: "Bot hinzufügen ↗",
-      openDashboard: "Dashboard öffnen",
+      badge: "Der All-in-One Discord-Bot",
+      titlePart1: "Der All-in-One Discord-Bot,",
+      titleHighlight: "gebaut für deine Community",
+      subtitle: "Chirurgischer Anti-Raid-Schutz, blitzschnelle Moderation, Musik, Spotify-Voice-Bridge und Bleed-Style Fun-Befehle. Aktiviere, was du brauchst, und passe alles im Dashboard an.",
+      addBtn: "Bot hinzufügen ↗",
+      dashboardBtn: "Dashboard öffnen",
+      onlineLabel: "Online 24/7",
       highlights: [
         "🛡️ 0.2s Anti-Raid",
         "🎵 Spotify Voice-Bridge",
@@ -587,83 +835,147 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
         "🎉 Bleed Fun-Befehle",
       ],
     },
-    stats: {
-      servers: ["Aktiver Server", "Aktive Server"],
-      members: "Geschützte Mitglieder",
-      commands: "Bereite Befehle",
-      uptime: "24/7 Verfügbarkeit",
+    security: {
+      badge: "SERVER-SCHUTZ",
+      titlePart1: "Erstklassige Moderation",
+      titleHighlight: "und Sicherheit",
+      subtitle: "Die besten Werkzeuge, um deine Community sauber, verriegelt und geschützt zu halten.",
+      filters: {
+        title: "Automatisierte Filter",
+        desc: "Halte jeden Textkanal mit flexiblen Filteroptionen sauber.",
+        chips: {
+          links: "Links",
+          mentions: "Mass-Mentions",
+          spoilers: "Spoiler",
+          invites: "Einladungen",
+        },
+      },
+      permissions: {
+        title: "Rechte-Sicherheit",
+        desc: "Entferne gefährliche Discord-Rechte, die über die API missbraucht werden könnten.",
+      },
+      antiNuke: {
+        title: "Anti-Nuke",
+        desc: "Verhindere Server-Zerstörungen mit anpassbaren Schwellenwerten für Rollen und Kanäle.",
+        scanning: "Echtzeit-Scan",
+      },
+      antiRaid: {
+        title: "Anti-Raid",
+        desc: "Schütze deinen Server vor organisierten Bot-Raids durch Account-Alter- und Avatar-Filter.",
+        verified: "Verifiziert",
+      },
+      moreBtn: "100+ Sicherheitsbefehle",
     },
-    bento: {
-      eyebrow: "FUNKTIONEN",
-      title: "Alles was du brauchst, nichts Überflüssiges",
-      subtitle: "Jedes Modul lässt sich mit 1 Klick aktivieren und im Dashboard live anpassen.",
-      cards: {
-        shield: {
-          title: "Anti-Raid-Schutz & Owner-Schild",
-          desc: "Erkennung von Angriffen unter 0.2s, Anti-Mass-Ban, Anti-Spam, Owner-Schild und automatische Rollenwiederherstellung.",
-          tag: "0-Sekunden Schutz",
+    music: {
+      badge: "AUDIO-ERLEBNIS",
+      titlePart1: "Musik geschaffen",
+      titleHighlight: "für jeden",
+      subtitle: "Erstklassige Klangqualität, Live-Steuerung und native Spotify-Integration.",
+      filters: {
+        title: "8D-Audiofilter",
+        desc: "Echtzeit-Soundeffekte für ein immersives und räumliches Hörerlebnis.",
+        label8D: "8D Raumklang",
+        status: "AKTIV",
+      },
+      queue: {
+        title: "Unterbrechungsfreie Queue",
+        desc: "Höre deine Lieblingstitel den ganzen Tag ohne Pause oder Ruckler.",
+        nowPlaying: "Aktueller Titel",
+      },
+      spotify: {
+        title: "Spotify-Integration",
+        desc: "Spotify nahtlos verknüpfen und direkt per /spotify vc in Sprachkanälen streamen.",
+        status: "Verbunden",
+      },
+      moreBtn: "20+ Musik-Befehle",
+    },
+    features: {
+      badge: "FUNKTIONEN",
+      titlePart1: "Zahllose weitere",
+      titleHighlight: "Funktionen",
+      subtitle: "Alles, was deine Community braucht, an einem einzigen Ort – ohne je einen weiteren Bot zu benötigen.",
+      items: {
+        search: {
+          title: "Web- & Bildsuche",
+          desc: "Bilder auf DuckDuckGo suchen und Bildrückwärtssuche auf Google Lens und TinEye nutzen.",
         },
-        spotify: {
-          title: "Spotify Voice-Bridge & Player",
-          desc: "Übertrage aktuelle Spotify-Tracks direkt in Sprachkanäle mit /spotify vc, steuere die Wiedergabe und zeige animierte Vinyls an.",
-          tag: "Spotify Integration",
+        tts: {
+          title: "Sprachausgabe",
+          desc: "Sprachkanäle mit hochwertigem Sound und Text-to-Speech-Ansagen versorgen.",
         },
-        fun: {
-          title: "Bleed-Style Fun-Befehlssuite",
-          desc: "Live-Songtext-Suche /lyrics via LRCLib, Zitate-Generator /quote, DuckDuckGo-Bildersuche und Bildrückwärtssuche.",
-          tag: "Bleed Format",
+        levels: {
+          title: "Level & XP",
+          desc: "XP-System für Nachrichten und Sprachkanäle mit Rang-Karten und automatischen Rollen.",
         },
-        automod: {
-          title: "AutoMod & Granulare Sicherheit",
-          desc: "Wortfilter, Blockieren unerwünschter Einladungslinks, Ghost-Ping-Erkennung und anpassbare automatische Sanktionen.",
-          tag: "Natives AutoMod",
+        snipe: {
+          title: "Nachrichten-Snipe",
+          desc: "Kürzlich gelöschte oder bearbeitete Nachrichten und Reaktionen transparent einsehen.",
         },
-        welcome: {
-          title: "Willkommen & Interaktives Captcha",
-          desc: "Detaillierte Willkommens-Embeds, automatische Startrollen und zuverlässige Mitglieder-Verifizierung.",
-          tag: "Reibungsloses Onboarding",
+        giveaways: {
+          title: "Gewinnspiele",
+          desc: "Gewinnspiele blitzschnell mit Teilnahmebedingungen und 1-Klick-Reroll veranstalten.",
         },
-        leveling: {
-          title: "Level & XP-Belohnungen",
-          desc: "Text- und Sprach-XP in Echtzeit, Server-Boost-Multiplikatoren, automatische Rollen und Web-Bestenlisten.",
-          tag: "24/7 Aktivität",
+        games: {
+          title: "Spiele & Medien",
+          desc: "Unterhaltsame Befehle: Film- und Spiele-Abfragen, Zitate-Generator und Mini-Spiele.",
+        },
+        autoResponders: {
+          title: "Auto-Antworten",
+          desc: "Schlüsselwort-Auslöser und programmierte Antworten zur Orientierung deiner Mitglieder.",
+        },
+        reminders: {
+          title: "Erinnerungen",
+          desc: "Erinnerungen und automatische Benachrichtigungen für Community-Events planen.",
+        },
+        counters: {
+          title: "Zähler-Kanäle",
+          desc: "Dynamische Sprachkanäle, die Mitglieder, Bots und Boosts live anzeigen.",
+        },
+        reactionRoles: {
+          title: "Reaktions-Rollen",
+          desc: "Sofortige Rollenvergabe per Klick auf Buttons oder Reaktionen für einen sauberen Empfang.",
+        },
+        lyrics: {
+          title: "Songtexte",
+          desc: "Live-Songtext-Suche und synchrones Scrollen via LRCLib direkt in Discord.",
+        },
+        translation: {
+          title: "Sofort-Übersetzung",
+          desc: "Nachrichten in Echtzeit blitzschnell zwischen über 50 Sprachen übersetzen.",
         },
       },
     },
     steps: {
       eyebrow: "ERSTE SCHRITTE",
-      title: "In drei Schritten startklar",
-      subtitle: "Einfaches Setup in weniger als 60 Sekunden.",
+      titlePart1: "In drei Schritten",
+      titleHighlight: "startklar",
       items: [
         {
           step: "1",
           title: "Bot hinzufügen",
-          text: "Lade Etho mit den empfohlenen Berechtigungen mit einem Klick auf deinen Server ein.",
+          desc: "Lade Etho mit einem Klick und den erforderlichen Berechtigungen auf deinen Server ein.",
         },
         {
           step: "2",
-          title: "Module aktivieren",
-          text: "Wähle im Dashboard genau die Funktionen aus, die deine Community benötigt.",
+          title: "Im Dashboard konfigurieren",
+          desc: "Wähle im Dashboard genau die Module aus, die deine Community wirklich braucht.",
         },
         {
           step: "3",
           title: "Genießen",
-          text: "Dein Server ist rund um die Uhr geschützt, moderiert und belebt.",
+          desc: "Dein Server ist rund um die Uhr geschützt, moderiert und belebt.",
         },
       ],
     },
     commands: {
       eyebrow: "BEFEHLE",
       title: "Befehlskatalog",
-      subtitleLive: (n) => `${n} interaktive Slash-Befehle einsatzbereit.`,
-      subtitleStatic: "Erkunde alle verfügbaren Befehle auf Etho.",
+      subtitle: "Erkunde alle interaktiven Slash-Befehle, die auf Etho bereitstehen.",
       search: "Befehl suchen...",
       all: "Alle",
-      copySyntax: "Syntax kopieren",
+      copy: "Kopieren",
       copied: "Kopiert!",
-      unavailable: ["Befehlsliste momentan nicht verfügbar. Siehe ", " auf Discord."],
-      noMatch: (q) => `Kein Befehl passt zu „${q}“.`,
-      frenchNote: "",
+      empty: "Kein Befehl passt zu deiner Suche.",
     },
     faq: {
       eyebrow: "HÄUFIG GESTELLTE FRAGEN",
@@ -694,17 +1006,16 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
     },
     cta: {
       title: "Bereit, deinen Discord-Server aufzuwerten?",
-      text: "Schließe dich hunderten Communities an, die Etho täglich für Sicherheit, Musik und Animation vertrauen.",
-      add: "Bot hinzufügen ↗",
-      openDashboard: "Dashboard öffnen",
-      support: "Support beitreten",
+      subtitle: "Schließe dich hunderten Communities an, die Etho täglich für Sicherheit, Musik und Animation vertrauen.",
+      addBtn: "Bot hinzufügen ↗",
+      dashboardBtn: "Dashboard öffnen",
     },
     footer: {
       tagline: "Der All-in-One Discord-Bot für deine Community",
-      terms: "Bedingungen",
-      privacy: "Datenschutz",
       dashboard: "Dashboard",
       support: "Discord Support",
+      terms: "Bedingungen",
+      privacy: "Datenschutz",
     },
   },
 };

@@ -69,6 +69,30 @@ export default function ConsoleBackups({ guildId }: { guildId: string }) {
   const [busy, setBusy] = useState<string | null>(null);
   const [note, setNote] = useState<string | null>(null);
   const [restoreFor, setRestoreFor] = useState<string | null>(null);
+  const importInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImportFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      setBusy("import");
+      const text = await file.text();
+      const payload = JSON.parse(text);
+      const res = await api(`/backups/import`, {
+        method: "POST",
+        json: { payload, allowCrossGuildMigration: true },
+      });
+      if (res) {
+        setNote(`Sauvegarde importée avec succès : ${payload.name || file.name}`);
+        void load();
+      }
+    } catch {
+      setNote("Fichier de sauvegarde invalide ou corrompu.");
+    } finally {
+      setBusy(null);
+      if (importInputRef.current) importInputRef.current.value = "";
+    }
+  };
 
   const load = useCallback(async () => {
     const [l, o, s] = await Promise.all([
@@ -152,6 +176,19 @@ export default function ConsoleBackups({ guildId }: { guildId: string }) {
             <Switch checked={protect} onChange={setProtect} label="Protéger" />
             Protéger
           </label>
+          <input
+            ref={importInputRef}
+            type="file"
+            accept=".json,.ethone-backup.json"
+            onChange={handleImportFile}
+            className="hidden"
+          />
+          <GhostButton
+            disabled={busy !== null}
+            onClick={() => importInputRef.current?.click()}
+          >
+            {busy === "import" ? "Importation…" : "Importer (.json)"}
+          </GhostButton>
           <button type="button" disabled={!name.trim() || busy === "create"} onClick={create} className="rounded-lg bg-[var(--accent-primary)] px-4 py-2 text-xs font-bold text-white hover:opacity-90 disabled:opacity-40">
             {busy === "create" ? "Sauvegarde…" : "Sauvegarder maintenant"}
           </button>

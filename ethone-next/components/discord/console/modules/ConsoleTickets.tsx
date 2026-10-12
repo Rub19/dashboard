@@ -10,7 +10,7 @@ import { sinceLabel } from "@/lib/discord/security-scan";
 import { SPRING_LAYOUT } from "@/lib/ease";
 import { pageStagger } from "@/lib/motion-variants";
 import { cn } from "@/lib/utils";
-import { ConsolePage, EmptyLine, GhostButton, Panel, RoleChips, Row, Segmented, StatTile, Stepper, TextField, useGuildApi } from "../kit";
+import { BOT_API_URL, ConsolePage, EmptyLine, GhostButton, Panel, RoleChips, Row, Segmented, StatTile, Stepper, TextField, useGuildApi } from "../kit";
 
 type Priority = "LOW" | "NORMAL" | "HIGH" | "URGENT";
 type Category = {
@@ -28,7 +28,21 @@ type Category = {
   [k: string]: unknown;
 };
 type TicketPanel = { id: string; channelId: string | null; messageId: string | null; title: string; description: string; color: string; buttonLabel: string; buttonEmoji: string; categoryIds: string[] };
-type Ticket = { id: string; channelId: string; userTag: string; categoryName: string; priority: Priority; status: string; claimedBy: { id: string; tag: string } | null; createdAt: string; lastActivityAt?: string };
+type Ticket = {
+  id: string;
+  channelId: string;
+  userTag: string;
+  categoryName: string;
+  priority: Priority;
+  status: string;
+  claimedBy: { id: string; tag: string } | null;
+  createdAt: string;
+  lastActivityAt?: string;
+  closedAt?: string;
+  closedBy?: { id: string; tag: string } | null;
+  closeReason?: string;
+  transcriptPath?: string;
+};
 type Config = { mode: "channel" | "forum"; forumChannelId?: string | null; forumTagIds?: Record<string, string>; namingFormat: string };
 type Overview = { open: number; pending: number; closedToday: number; totalTickets: number };
 
@@ -52,6 +66,9 @@ export default function ConsoleTickets({ guildId }: { guildId: string }) {
   const [cats, setCats] = useState<Category[] | null>(null);
   const [panels, setPanels] = useState<TicketPanel[] | null>(null);
   const [tickets, setTickets] = useState<Ticket[] | null>(null);
+  const [closedTickets, setClosedTickets] = useState<Ticket[] | null>(null);
+  const [ticketView, setTicketView] = useState<"open" | "closed">("open");
+  const [activeTranscript, setActiveTranscript] = useState<Ticket | null>(null);
   const [channels, setChannels] = useState<ChannelOption[]>([]);
   const [openCat, setOpenCat] = useState<string | null>(null);
   const [openPanel, setOpenPanel] = useState<string | null>(null);
@@ -70,7 +87,9 @@ export default function ConsoleTickets({ guildId }: { guildId: string }) {
     if (c) setConfig(c.config);
     setCats(k?.categories ?? []);
     setPanels(p?.panels ?? []);
-    setTickets((t?.tickets ?? []).filter((x) => x.status !== "CLOSED"));
+    const all = t?.tickets ?? [];
+    setTickets(all.filter((x) => x.status !== "CLOSED" && x.status !== "RESOLVED"));
+    setClosedTickets(all.filter((x) => x.status === "CLOSED" || x.status === "RESOLVED"));
   }, [api]);
   useEffect(() => {
     void load();
@@ -275,44 +294,141 @@ export default function ConsoleTickets({ guildId }: { guildId: string }) {
         )}
       </Panel>
 
-      <Panel title="Tickets en cours">
-        {!tickets ? (
-          <EmptyLine>Chargement…</EmptyLine>
-        ) : tickets.length === 0 ? (
-          <EmptyLine>Aucun ticket ouvert.</EmptyLine>
-        ) : (
-          <ul>
-            <AnimatePresence initial={false}>
-              {tickets.map((t) => (
-                <motion.li key={t.id} layout initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, height: 0 }} transition={SPRING_LAYOUT} className="flex flex-wrap items-center gap-3 border-t border-[var(--panel-border)] px-5 py-3 first:border-t-0">
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-[13px] font-semibold text-[var(--text-primary)]">
-                      {t.userTag} <span className="font-normal text-[var(--text-muted)]">· {t.categoryName}</span>
-                    </p>
-                    <p className="truncate text-[11px] text-[var(--text-muted)]">
-                      <span style={{ color: PRIORITY_COLOR[t.priority] }}>{PRIORITIES.find(([k]) => k === t.priority)?.[1]}</span> · {STATUS[t.status] ?? t.status} · {t.claimedBy ? `pris par ${t.claimedBy.tag}` : "personne dessus"} · {sinceLabel(t.lastActivityAt || t.createdAt)}
-                    </p>
-                  </div>
-                  <div className="flex flex-wrap gap-1.5">
-                    <a href={`https://discord.com/channels/${guildId}/${t.channelId}`} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 rounded-lg border border-[var(--panel-border)] px-2.5 py-1.5 text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--surface-hover)]">
-                      <ExternalLink className="h-3.5 w-3.5" />
-                      Discord
-                    </a>
-                    {!t.claimedBy && (
-                      <GhostButton onClick={() => claim(t)} disabled={busy !== null}>
-                        Prendre en charge
+      <Panel
+        title="Tickets"
+        subtitle={ticketView === "open" ? "Tickets actuellement ouverts." : "Historique des tickets fermés et archivés."}
+        actions={
+          <Segmented
+            label="Filtre tickets"
+            value={ticketView}
+            options={[
+              ["open", `En cours (${tickets?.length ?? 0})`],
+              ["closed", `Résolus (${closedTickets?.length ?? 0})`],
+            ]}
+            onChange={setTicketView}
+          />
+        }
+      >
+        {ticketView === "open" ? (
+          !tickets ? (
+            <EmptyLine>Chargement…</EmptyLine>
+          ) : tickets.length === 0 ? (
+            <EmptyLine>Aucun ticket ouvert.</EmptyLine>
+          ) : (
+            <ul>
+              <AnimatePresence initial={false}>
+                {tickets.map((t) => (
+                  <motion.li key={t.id} layout initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, height: 0 }} transition={SPRING_LAYOUT} className="flex flex-wrap items-center gap-3 border-t border-[var(--panel-border)] px-5 py-3 first:border-t-0">
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-[13px] font-semibold text-[var(--text-primary)]">
+                        {t.userTag} <span className="font-normal text-[var(--text-muted)]">· {t.categoryName}</span>
+                      </p>
+                      <p className="truncate text-[11px] text-[var(--text-muted)]">
+                        <span style={{ color: PRIORITY_COLOR[t.priority] }}>{PRIORITIES.find(([k]) => k === t.priority)?.[1]}</span> · {STATUS[t.status] ?? t.status} · {t.claimedBy ? `pris par ${t.claimedBy.tag}` : "personne dessus"} · {sinceLabel(t.lastActivityAt || t.createdAt)}
+                      </p>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      <a href={["https:", "", "discord.com", "channels", guildId, t.channelId].join("/")} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 rounded-lg border border-[var(--panel-border)] px-2.5 py-1.5 text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--surface-hover)]">
+                        <ExternalLink className="h-3.5 w-3.5" />
+                        Discord
+                      </a>
+                      {!t.claimedBy && (
+                        <GhostButton onClick={() => claim(t)} disabled={busy !== null}>
+                          Prendre en charge
+                        </GhostButton>
+                      )}
+                      <GhostButton onClick={() => close(t)} disabled={busy !== null}>
+                        Fermer
                       </GhostButton>
-                    )}
-                    <GhostButton onClick={() => close(t)} disabled={busy !== null}>
-                      Fermer
-                    </GhostButton>
-                  </div>
-                </motion.li>
-              ))}
-            </AnimatePresence>
-          </ul>
+                    </div>
+                  </motion.li>
+                ))}
+              </AnimatePresence>
+            </ul>
+          )
+        ) : (
+          !closedTickets ? (
+            <EmptyLine>Chargement…</EmptyLine>
+          ) : closedTickets.length === 0 ? (
+            <EmptyLine>Aucun ticket résolu pour l&apos;instant.</EmptyLine>
+          ) : (
+            <ul>
+              <AnimatePresence initial={false}>
+                {closedTickets.map((t) => (
+                  <motion.li key={t.id} layout initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, height: 0 }} transition={SPRING_LAYOUT} className="flex flex-wrap items-center gap-3 border-t border-[var(--panel-border)] px-5 py-3 first:border-t-0">
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-[13px] font-semibold text-[var(--text-primary)]">
+                        {t.userTag} <span className="font-normal text-[var(--text-muted)]">· {t.categoryName}</span>
+                      </p>
+                      <p className="truncate text-[11px] text-[var(--text-muted)]">
+                        <span className="text-[var(--success)]">Résolu</span> · {sinceLabel(t.closedAt || t.lastActivityAt || t.createdAt)}
+                        {t.closedBy?.tag ? ` · par ${t.closedBy.tag}` : ""}
+                        {t.closeReason ? ` · « ${t.closeReason} »` : ""}
+                      </p>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      <GhostButton onClick={() => setActiveTranscript(t)}>
+                        Voir le transcript
+                      </GhostButton>
+                      <a
+                        href={`${BOT_API_URL}/api/guilds/${guildId}/tickets/transcripts/${t.id}/download`}
+                        className="rounded-lg border border-[var(--panel-border)] px-2.5 py-1.5 text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--surface-hover)]"
+                      >
+                        Télécharger
+                      </a>
+                    </div>
+                  </motion.li>
+                ))}
+              </AnimatePresence>
+            </ul>
+          )
         )}
       </Panel>
+
+      <AnimatePresence>
+        {activeTranscript && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={SPRING_LAYOUT}
+              className="relative flex h-[85vh] w-full max-w-4xl flex-col rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] p-5 shadow-2xl"
+            >
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <h3 className="truncate text-sm font-bold text-[var(--text-primary)]">
+                    Transcript · {activeTranscript.userTag} ({activeTranscript.categoryName})
+                  </h3>
+                  <p className="text-xs text-[var(--text-muted)]">
+                    Fermé {activeTranscript.closedAt ? sinceLabel(activeTranscript.closedAt) : "récemment"}
+                    {activeTranscript.closedBy ? ` par ${activeTranscript.closedBy.tag}` : ""}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <a
+                    href={`${BOT_API_URL}/api/guilds/${guildId}/tickets/transcripts/${activeTranscript.id}/download`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="rounded-lg border border-[var(--panel-border)] px-3 py-1.5 text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--surface-hover)]"
+                  >
+                    Télécharger
+                  </a>
+                  <GhostButton onClick={() => setActiveTranscript(null)}>
+                    Fermer
+                  </GhostButton>
+                </div>
+              </div>
+              <iframe
+                src={`${BOT_API_URL}/api/guilds/${guildId}/tickets/transcripts/${activeTranscript.id}/download`}
+                sandbox="allow-same-origin allow-scripts"
+                title={`Transcript ${activeTranscript.id}`}
+                className="h-full w-full rounded-xl border border-[var(--panel-border)] bg-[#1e1f22]"
+              />
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </ConsolePage>
   );
 }

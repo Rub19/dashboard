@@ -8,7 +8,7 @@ import { fetchGuildRoles } from "../RolePicker";
 import { cleanLogText, sinceLabel } from "@/lib/discord/security-scan";
 import { SPRING_PILL } from "@/lib/ease";
 import { cn } from "@/lib/utils";
-import { ConsolePage, EmptyLine, GhostButton, Panel, useGuildApi } from "./kit";
+import { BOT_API_URL, ConsolePage, EmptyLine, GhostButton, Panel, useGuildApi } from "./kit";
 import DiscordIncidentsTimeline from "../DiscordIncidentsTimeline";
 
 type AuditEvent = {
@@ -78,8 +78,8 @@ export default function ConsoleLogs({ guildId, initialTab = "incidents" }: { gui
   const [gap, setGap] = useState<string[]>([]);
   const [bulkChannel, setBulkChannel] = useState("");
   const [names, setNames] = useState<{ roles: Record<string, string>; channels: Record<string, string> }>({ roles: {}, channels: {} });
+  const [isLive, setIsLive] = useState(false);
 
-  // Les incidents gardent les mentions Discord (<@&id>, <#id>) : on les remplace par les noms du serveur.
   useEffect(() => {
     let cancelled = false;
     Promise.all([fetchGuildRoles(guildId), fetchGuildChannels(guildId)]).then(([roles, channels]) => {
@@ -104,36 +104,52 @@ export default function ConsoleLogs({ guildId, initialTab = "incidents" }: { gui
     setGap(cov?.withoutChannel ?? []);
   }, [api]);
 
-  useEffect(() => {
-    void loadConfig();
-    let cancelled = false;
-    // Les protections écrivent leurs incidents à part (/security/incidents) : on les fusionne avec le journal des modules.
-    Promise.all([
+  const loadEvents = useCallback(async () => {
+    const [sec, ...lists] = await Promise.all([
       api<{ incidents: ProtectionIncident[] }>("/security/incidents", { silent: true }),
       ...INCIDENT_MODULES.map((m) => api<{ events: AuditEvent[] }>(`/logs/events?module=${m}&limit=40`, { silent: true })),
-    ]).then(([sec, ...lists]) => {
-      if (cancelled) return;
-      const fromProtections: AuditEvent[] = ((sec as { incidents?: ProtectionIncident[] } | null)?.incidents ?? []).map((i) => {
-        const detail = i.perpetratorTag && i.description.startsWith(`${i.perpetratorTag} · `) ? i.description.slice(i.perpetratorTag.length + 3) : i.description;
-        return {
-          id: `protection-${i.id}`,
-          module: "PROTECTION",
-          type: i.type,
-          severity: i.severity.toUpperCase(),
-          actor: i.perpetratorId ? { id: i.perpetratorId, tag: i.perpetratorTag } : undefined,
-          reason: `${i.title} : ${detail}`,
-          action: i.actionTaken || undefined,
-          timestamp: i.createdAt,
-        };
-      });
-      const all = [...fromProtections, ...(lists as ({ events: AuditEvent[] } | null)[]).flatMap((l) => l?.events ?? []).filter((e) => e.module !== "MODERATION" || /SANCTION|RAID|NUKE|AUTOMOD/.test(e.type))];
-      all.sort((a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp));
-      setEvents(all.slice(0, 60));
+    ]);
+    const fromProtections: AuditEvent[] = ((sec as { incidents?: ProtectionIncident[] } | null)?.incidents ?? []).map((i) => {
+      const detail = i.perpetratorTag && i.description.startsWith(`${i.perpetratorTag} · `) ? i.description.slice(i.perpetratorTag.length + 3) : i.description;
+      return {
+        id: `protection-${i.id}`,
+        module: "PROTECTION",
+        type: i.type,
+        severity: i.severity.toUpperCase(),
+        actor: i.perpetratorId ? { id: i.perpetratorId, tag: i.perpetratorTag } : undefined,
+        reason: `${i.title} : ${detail}`,
+        action: i.actionTaken || undefined,
+        timestamp: i.createdAt,
+      };
     });
-    return () => {
-      cancelled = true;
+    const all = [...fromProtections, ...(lists as ({ events: AuditEvent[] } | null)[]).flatMap((l) => l?.events ?? []).filter((e) => e.module !== "MODERATION" || /SANCTION|RAID|NUKE|AUTOMOD/.test(e.type))];
+    all.sort((a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp));
+    setEvents(all.slice(0, 60));
+  }, [api]);
+
+  useEffect(() => {
+    void loadConfig();
+    void loadEvents();
+  }, [loadConfig, loadEvents]);
+
+  useEffect(() => {
+    if (!BOT_API_URL || typeof window === "undefined" || !("EventSource" in window)) return;
+    const es = new EventSource(`${BOT_API_URL}/api/guilds/${guildId}/sync/stream`, { withCredentials: true });
+    es.onopen = () => setIsLive(true);
+    es.onerror = () => setIsLive(false);
+    const onEvt = () => {
+      void loadEvents();
+      void loadConfig();
     };
-  }, [api, loadConfig]);
+    es.addEventListener("CONFIG_UPDATED", onEvt);
+    es.addEventListener("DISCORD_EVENT", onEvt);
+    es.addEventListener("INCIDENT", onEvt);
+    es.addEventListener("message", onEvt);
+    return () => {
+      es.close();
+      setIsLive(false);
+    };
+  }, [guildId, loadConfig, loadEvents]);
 
   const channels = useMemo(() => config?.categoryChannels ?? {}, [config]);
   const effective = (key: string) => channels[key] || (key === "MODERATION" ? config?.routing?.moderationChannelId : null) || null;
@@ -162,7 +178,17 @@ export default function ConsoleLogs({ guildId, initialTab = "incidents" }: { gui
     <ConsolePage
       title="Logs"
       actions={
-        <div role="tablist" className="flex rounded-lg border border-[var(--panel-border)] p-0.5">
+        <div className="flex items-center gap-2">
+          {isLive && (
+            <div className="flex items-center gap-1.5 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-hover)] px-2.5 py-1 text-[11px] font-medium text-[var(--text-muted)]">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--success)] opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--success)]" />
+              </span>
+              <span>En direct</span>
+            </div>
+          )}
+          <div role="tablist" className="flex rounded-lg border border-[var(--panel-border)] p-0.5">
           {tabs.map((t) => (
             <button
               key={t.id}
@@ -178,6 +204,7 @@ export default function ConsoleLogs({ guildId, initialTab = "incidents" }: { gui
               </span>
             </button>
           ))}
+        </div>
         </div>
       }
     >

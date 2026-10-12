@@ -106,11 +106,40 @@ export default function ConsoleMusic({ guildId }: { guildId: string }) {
             <p className="truncate text-xs text-[var(--text-muted)]">{t ? `${t.artist}${t.requestedBy?.tag ? ` · demandé par ${t.requestedBy.tag}` : ""}` : "Lance un titre ci-dessous ou sur Discord."}</p>
             {t && (
               <div className="mt-2 flex items-center gap-2 text-[11px] tabular-nums text-[var(--text-muted)]">
-                {time(state?.position ?? 0)}
-                <span className="h-1 flex-1 overflow-hidden rounded-full bg-[var(--panel-border)]">
-                  <motion.span className="block h-full rounded-full bg-[var(--success)]" animate={{ width: state?.duration ? `${Math.min(100, ((state.position ?? 0) / state.duration) * 100)}%` : "0%" }} transition={{ duration: 0.4 }} />
-                </span>
-                {time(state?.duration ?? 0)}
+                <span>{time(state?.position ?? 0)}</span>
+                <div
+                  role="slider"
+                  tabIndex={0}
+                  aria-label="Position de lecture"
+                  aria-valuemin={0}
+                  aria-valuemax={state?.duration ?? 0}
+                  aria-valuenow={state?.position ?? 0}
+                  onClick={(e) => {
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+                    if (state?.duration) {
+                      void control("seek", { position: Math.round(ratio * state.duration) });
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    if (!state?.duration) return;
+                    if (e.key === "ArrowLeft") {
+                      void control("seek", { position: Math.max(0, (state.position ?? 0) - 5) });
+                    } else if (e.key === "ArrowRight") {
+                      void control("seek", { position: Math.min(state.duration, (state.position ?? 0) + 5) });
+                    }
+                  }}
+                  className="group relative flex h-4 flex-1 cursor-pointer items-center"
+                >
+                  <span className="relative h-1.5 w-full overflow-hidden rounded-full bg-[var(--panel-border)] transition-all group-hover:h-2">
+                    <motion.span
+                      className="block h-full rounded-full bg-[var(--accent-primary)] group-hover:bg-[var(--accent-primary)]/90"
+                      animate={{ width: state?.duration ? `${Math.min(100, ((state.position ?? 0) / state.duration) * 100)}%` : "0%" }}
+                      transition={{ duration: 0.3 }}
+                    />
+                  </span>
+                </div>
+                <span>{time(state?.duration ?? 0)}</span>
               </div>
             )}
           </div>
@@ -162,6 +191,30 @@ export default function ConsoleMusic({ guildId }: { guildId: string }) {
           <GhostButton onClick={search} disabled={!query.trim() || searching}>
             {searching ? "Recherche…" : "Chercher"}
           </GhostButton>
+        </div>
+        <div className="flex flex-wrap items-center gap-2 border-t border-[var(--panel-border)] px-5 py-3">
+          <span className="text-xs font-semibold text-[var(--text-muted)]">Flux d&apos;ambiance :</span>
+          <button
+            type="button"
+            onClick={() => play("Lofi Girl lofi hip hop radio")}
+            className="rounded-lg border border-[var(--panel-border)] px-2.5 py-1 text-xs font-medium text-[var(--text-primary)] transition-colors hover:border-[var(--accent-primary)]/50 hover:bg-[var(--surface-hover)]"
+          >
+            ☕ Lofi Girl
+          </button>
+          <button
+            type="button"
+            onClick={() => play("synthwave radio chill beats")}
+            className="rounded-lg border border-[var(--panel-border)] px-2.5 py-1 text-xs font-medium text-[var(--text-primary)] transition-colors hover:border-[var(--accent-primary)]/50 hover:bg-[var(--surface-hover)]"
+          >
+            🌆 Synthwave
+          </button>
+          <button
+            type="button"
+            onClick={() => play("deep focus study music binaural")}
+            className="rounded-lg border border-[var(--panel-border)] px-2.5 py-1 text-xs font-medium text-[var(--text-primary)] transition-colors hover:border-[var(--accent-primary)]/50 hover:bg-[var(--surface-hover)]"
+          >
+            🧠 Deep Focus
+          </button>
         </div>
         {!state?.voiceChannel && (
           <Row label="Salon vocal" hint="Où Etho doit se connecter.">

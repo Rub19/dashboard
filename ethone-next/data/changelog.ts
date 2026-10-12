@@ -50518,5 +50518,62 @@ CHANGELOG_BY_LANG.en.unshift(v1_73_7_en);
 CHANGELOG_BY_LANG.es.unshift(v1_73_7_es);
 CHANGELOG_BY_LANG.de.unshift(v1_73_7_de);
 
+const v1_73_8_fr: ChangelogEntry = {
+  version: "v1.73.8",
+  date: "2026-10-12",
+  title: "Console & Dashboard : Nouvelles fonctionnalités réelles (Sauvegardes, Transcripts, Musique, Logs en direct et Télémétrie)",
+  items: [
+    "Import de sauvegardes : sélecteur de fichier JSON local branché directement sur l'API de restauration du bot avec validation d'intégrité",
+    "Transcripts de tickets : onglet Résolus avec lecteur iframe isolé intégré et téléchargement direct du compte-rendu HTML",
+    "Scrubber musical & Flux d'ambiance : barre de progression cliquable vers /seek et boutons d'ambiance 24/7 (Lofi Girl, Synthwave, Deep Focus)",
+    "Flux SSE en direct dans les Logs : réactivité instantanée des incidents et alertes de sécurité sans rechargement de page",
+    "Télémétrie & Santé en direct : affichage du ping WebSocket Gateway Discord en millisecondes et de la mémoire vive Node.js (tas V8)",
+  ],
+};
+
+const v1_73_8_en: ChangelogEntry = {
+  version: "v1.73.8",
+  date: "2026-10-12",
+  title: "Console & Dashboard: Real-time features (Backups, Transcripts, Music, Live Logs & Telemetry)",
+  items: [
+    "Backup Import: Local JSON file picker wired directly to bot restore API with schema validation",
+    "Ticket Transcripts: Resolved tab with isolated iframe viewer and direct HTML report download",
+    "Music Scrubber & Ambient Presets: Clickable progress bar seeking to /seek and 24/7 ambiance streams",
+    "Real-time SSE Logs: Live security incident updates without needing a page refresh",
+    "Live Bot Telemetry: Real-time Discord WebSocket Gateway ping in ms and Node.js V8 heap metrics",
+  ],
+};
+
+const v1_73_8_es: ChangelogEntry = {
+  version: "v1.73.8",
+  date: "2026-10-12",
+  title: "Consola y Panel: Funciones en tiempo real (Copias de seguridad, Transcripciones, Música, Logs y Telemetría)",
+  items: [
+    "Importación de copias: Selector de archivo JSON local conectado directamente a la API del bot",
+    "Transcripciones de tickets: Pestaña Resueltos con visor iframe integrado y descarga HTML directa",
+    "Scrubber de música y presets: Barra de progreso con salto temporal a /seek y transmisiones 24/7",
+    "Logs SSE en tiempo real: Actualización instantánea de incidentes de seguridad",
+    "Telemetría del bot en vivo: Latencia WebSocket Gateway en ms y memoria Node.js V8",
+  ],
+};
+
+const v1_73_8_de: ChangelogEntry = {
+  version: "v1.73.8",
+  date: "2026-10-12",
+  title: "Konsole & Dashboard: Echtzeit-Funktionen (Backups, Transkripte, Musik, Live-Logs & Telemetrie)",
+  items: [
+    "Backup-Import: Lokale JSON-Dateiauswahl direkt mit der Bot-Wiederherstellungs-API verbunden",
+    "Ticket-Transkripte: Reiter Gelöst mit isoliertem Iframe-Viewer und direktem HTML-Download",
+    "Musik-Scrubber & Presets: Klickbare Fortschrittsleiste für /seek und 24/7-Ambient-Streams",
+    "Live-SSE-Logs: Sofortige Aktualisierung von Sicherheitsvorfällen ohne Neuladen der Seite",
+    "Live-Bot-Telemetrie: Discord WebSocket Gateway Ping in ms und Node.js V8-Speicher",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_73_8_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_73_8_en);
+CHANGELOG_BY_LANG.es.unshift(v1_73_8_es);
+CHANGELOG_BY_LANG.de.unshift(v1_73_8_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

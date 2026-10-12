@@ -29,6 +29,16 @@ type Overview = {
     activeModerationCases: number;
   };
   security: { score: number; status: string; factors: { title: string; impact: number; positive: boolean; description: string }[] };
+  health?: {
+    score: number;
+    status: string;
+    components: {
+      discordGateway?: { status: string; pingMs: number };
+      database?: { status: string; latencyMs: number };
+      realtime?: { status: string; connected: boolean };
+      memory?: { status: string; heapUsedMb: number; heapTotalMb: number };
+    };
+  };
   recentActivity: { id: string; timestamp: string; type: string; actor: { tag: string }; details?: string }[];
 };
 type Channel = { id: string; name: string; type: number; topic: string | null; nsfw: boolean; rateLimitPerUser: number; userLimit?: number };
@@ -120,6 +130,51 @@ function OverviewTab({ guildId }: { guildId: string }) {
           ))}
         </ul>
       </Panel>
+      {ov.health && (
+        <Panel
+          title={`Santé & Télémétrie d'Etho : ${ov.health.score}/100`}
+          subtitle={`Statut ${ov.health.status === "HEALTHY" ? "optimal" : ov.health.status === "DEGRADED" ? "dégradé" : "critique"} · Données système en direct`}
+        >
+          <div className="grid grid-cols-2 gap-3 p-5 sm:grid-cols-4">
+            <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-hover)] p-3">
+              <span className="block text-xs text-[var(--text-muted)]">Passerelle Discord</span>
+              <span className="mt-1 flex items-baseline gap-1 font-mono text-base font-bold text-[var(--text-primary)]">
+                {ov.health.components.discordGateway?.pingMs ?? "—"} <span className="text-xs font-normal text-[var(--text-muted)]">ms</span>
+              </span>
+              <span className={cn("mt-1 block text-[10px] font-semibold", (ov.health.components.discordGateway?.pingMs ?? 0) < 150 ? "text-[var(--success)]" : "text-[var(--warning)]")}>
+                {ov.health.components.discordGateway?.status === "HEALTHY" ? "Excellente" : "Latence élevée"}
+              </span>
+            </div>
+            <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-hover)] p-3">
+              <span className="block text-xs text-[var(--text-muted)]">Mémoire Node.js</span>
+              <span className="mt-1 flex items-baseline gap-1 font-mono text-base font-bold text-[var(--text-primary)]">
+                {ov.health.components.memory?.heapUsedMb ?? "—"} <span className="text-xs font-normal text-[var(--text-muted)]">/ {ov.health.components.memory?.heapTotalMb ?? "—"} Mo</span>
+              </span>
+              <span className="mt-1 block text-[10px] font-semibold text-[var(--success)]">
+                Tas V8 alloué
+              </span>
+            </div>
+            <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-hover)] p-3">
+              <span className="block text-xs text-[var(--text-muted)]">Base de données</span>
+              <span className="mt-1 flex items-baseline gap-1 font-mono text-base font-bold text-[var(--text-primary)]">
+                {ov.health.components.database?.latencyMs ?? "—"} <span className="text-xs font-normal text-[var(--text-muted)]">ms</span>
+              </span>
+              <span className="mt-1 block text-[10px] font-semibold text-[var(--success)]">
+                SQLite synchrone
+              </span>
+            </div>
+            <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-hover)] p-3">
+              <span className="block text-xs text-[var(--text-muted)]">Flux temps réel</span>
+              <span className="mt-1 flex items-baseline gap-1 font-mono text-base font-bold text-[var(--text-primary)]">
+                {ov.health.components.realtime?.connected ? "Actif" : "En attente"}
+              </span>
+              <span className="mt-1 block text-[10px] font-semibold text-[var(--success)]">
+                SSE / Synchronisé
+              </span>
+            </div>
+          </div>
+        </Panel>
+      )}
       <Panel title="Activité récente">
         {ov.recentActivity.length === 0 ? (
           <EmptyLine>Aucune activité enregistrée.</EmptyLine>

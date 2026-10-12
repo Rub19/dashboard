@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.73.8 — 2026-10-12
+
+**Console & Dashboard : Nouvelles fonctionnalités réelles (Sauvegardes, Transcripts, Musique, Logs en direct et Télémétrie)**
+
+- **Import de sauvegardes (.json)** : Sélecteur de fichier JSON local branché directement sur l'API de restauration du bot (`POST /api/guilds/:guildId/backups/import`) avec validation d'intégrité et rafraîchissement immédiat de la liste.
+- **Transcripts de tickets & Historique** : Onglet « Résolus » dans la console des tickets avec lecteur iframe isolé intégré (`GET /api/guilds/:guildId/tickets/transcripts/:id/download`) et bouton de téléchargement direct du compte-rendu HTML.
+- **Scrubber musical interactif & Préréglages d'ambiance 24/7** : Barre de progression de lecture cliquable et contrôlable au clavier vers `POST /music/seek`, accompagnée de 3 flux audio d'ambiance directs (Lofi Girl, Synthwave, Deep Focus).
+- **Flux SSE en direct dans les Logs** : Connexion temps réel à l'EventSource (`GET /api/guilds/:guildId/sync/stream`) pour recevoir instantanément les alertes et incidents de sécurité avec indicateur visuel « En direct ».
+- **Télémétrie & Santé du bot en temps réel** : Affichage transparent du vrai ping WebSocket Gateway Discord en millisecondes (`client.ws.ping`) et de l'allocation mémoire Node.js (tas V8) dans l'aperçu de la console serveur.
+
 ## v1.73.7 — 2026-10-12
 
 **Bot : Nouveau logo Etho (anneau pourpre éclatant) dans tous les embeds**

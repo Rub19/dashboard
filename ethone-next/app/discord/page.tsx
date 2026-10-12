@@ -107,6 +107,7 @@ type ModuleType =
   | "tags"
   | "serverstats"
   | "highlights"
+  | "fun"
   | "bot";
 
 interface BotModule {
@@ -127,7 +128,7 @@ const MODULE_TINTS: Record<string, string> = {
   polls: "text-purple-400", roles: "text-rose-400", analytics: "text-indigo-300", events: "text-orange-300",
   server: "text-zinc-300", starboard: "text-yellow-400", sticky: "text-amber-300", reminders: "text-sky-300",
   afk: "text-blue-300", counting: "text-teal-300", stats: "text-sky-300", statroles: "text-amber-300", secureroles: "text-[var(--accent-primary)]", settings: "text-[var(--text-primary)]/85", birthdays: "text-pink-300", tags: "text-cyan-300", serverstats: "text-[var(--accent-primary)]",
-  highlights: "text-lime-300", bot: "text-indigo-400", streamers: "text-purple-400", games: "text-amber-400",
+  highlights: "text-lime-300", bot: "text-indigo-400", streamers: "text-purple-400", games: "text-amber-400", fun: "text-amber-400",
 };
 
 const MODULE_PAGES: Record<string, string> = {
@@ -137,18 +138,18 @@ const MODULE_PAGES: Record<string, string> = {
   backups: "/discord/backups", ai: "/discord/ai", forms: "/discord/forms", polls: "/discord/polls", roles: "/discord/roles",
   analytics: "/discord/analytics", events: "/discord/events", server: "/discord/server", starboard: "/discord/starboard",
   sticky: "/discord/sticky", reminders: "/discord/reminders", afk: "/discord/afk", counting: "/discord/counting", stats: "/discord/stats", statroles: "/discord/statroles", secureroles: "/discord/secure-roles", settings: "/discord/settings", birthdays: "/discord/birthdays", tags: "/discord/tags",
-  serverstats: "/discord/server-stats", automodnative: "/discord/automod-native", highlights: "/discord/highlights", bot: "/discord/bot", economy: "/discord/economy", calendar: "/discord/calendar", streamers: "/discord/streamers", games: "/discord/games",
+  serverstats: "/discord/server-stats", automodnative: "/discord/automod-native", highlights: "/discord/highlights", bot: "/discord/bot", economy: "/discord/economy", calendar: "/discord/calendar", streamers: "/discord/streamers", games: "/discord/games", fun: "/discord/fun",
 };
 
 const MODULE_CATEGORIES: NavigatorCategory[] = [
   { id: "protect", label: "Sécurité & modération", hint: "Protégez le serveur", modules: ["security", "secureroles", "moderation", "automodnative", "logs", "backups"] },
   { id: "community", label: "Communauté", hint: "Accueillez et animez vos membres", modules: ["welcome", "roles", "statroles", "leveling", "invites", "suggestions", "polls", "forms", "starboard", "highlights", "birthdays"] },
-  { id: "fun", label: "Animation & médias", hint: "Musique, jeux et événements", modules: ["streamers", "games", "music", "spotify", "giveaways", "economy", "counting", "events", "calendar", "voice"] },
+  { id: "fun", label: "Fun & Divertissement", hint: "Paroles, médias, jeux et divertissement", modules: ["fun", "games", "spotify", "music", "streamers", "giveaways", "economy", "counting", "events", "calendar", "voice"] },
   { id: "tools", label: "Outils du quotidien", hint: "Support et automatisations", modules: ["tickets", "commands", "tags", "reminders", "sticky", "afk", "serverstats"] },
   { id: "manage", label: "Gestion & intelligence", hint: "Vue globale, IA et bot", modules: ["overview", "server", "settings", "analytics", "stats", "ai", "bot"] },
 ];
 
-const RECOMMENDED_MODULE_IDS = ["security", "welcome", "moderation", "leveling", "tickets", "music", "spotify"];
+const RECOMMENDED_MODULE_IDS = ["security", "welcome", "moderation", "leveling", "tickets", "music", "spotify", "fun"];
 
 const MODULE_ICONS = {
   overview: ethoneIcon("mod-overview"),
@@ -189,6 +190,7 @@ const MODULE_ICONS = {
   bot: ethoneIcon("mod-bot"),
   streamers: ethoneIcon("mod-events"),
   games: ethoneIcon("games"),
+  fun: ethoneIcon("games"),
 };
 
 const MODULES: BotModule[] = [
@@ -479,6 +481,14 @@ const MODULES: BotModule[] = [
     icon: MODULE_ICONS.bot,
     color: "text-[var(--text-muted)]",
     badge: "Bot Core",
+  },
+  {
+    id: "fun",
+    title: "Fun & Médias",
+    description: "Suite de commandes divertissement format Bleed : paroles, citations, recherche d'images, films, séries TV et fiches de jeux vidéo.",
+    icon: MODULE_ICONS.fun,
+    color: "text-[var(--text-muted)]",
+    badge: "Divertissement",
   },
 ];
 

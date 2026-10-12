@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.1 — 2026-10-12
+
+**Catégorie Fun & Divertissement : Suite de Commandes Format Bleed & Studio Dashboard**
+
+- Nouvelle catégorie Fun & Divertissement : ajout de la suite complète de commandes Bleed (/lyrics, /quote, /image, /duckduckgoimage, /reverseimage, /movie, /tvshow, /game) et commande maître /fun.
+- Recherche de paroles en direct (/lyrics) : moteur LRCLib avec durée, métadonnées d'album et affichage élégant des paroles complètes.
+- Générateur de citations (/quote) : création et prévisualisation instantanée de citations stylisées aux formats embed Discord.
+- Recherche d'images & inversée (/image, /duckduckgoimage, /reverseimage) : recherche de visuels haute résolution et liens directs vers Google Lens, Bing Visual, TinEye, Yandex et SauceNAO.
+- Cinéma, séries et jeux vidéo (/movie, /tvshow, /game) : intégration directe des bases TVMaze, Wikipédia, CheapShark et Steam avec jaquettes, notes et synopsis détaillés.
+- Module Dashboard interactif (/discord?view=fun) : catalogue avec cartes sombres animées au survol, copie en 1 clic de la syntaxe et studios de test en direct sans aucun placeholder.
+
 ## v1.75.0 — 2026-10-12
 
 **Intégration Complète Spotify : Commandes Bot & Dashboard Interactif Motion**

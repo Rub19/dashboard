@@ -1,4 +1,4 @@
-# ETHONE — passation & nouveautés (2026-10-12, version 1.75.0)
+# ETHONE — passation & nouveautés (2026-10-12, version 1.75.1)
 
 ## Projet
 - `ethone-next/` : site Next.js statique (ethone.dev, Cloudflare Pages, déploiement auto au push sur `main`).
@@ -25,9 +25,20 @@
 
 ---
 
-## Nouveautés majeures & Réalisations récentes (v1.73.0 → v1.75.0)
+## Nouveautés majeures & Réalisations récentes (v1.73.0 → v1.75.1)
 
-### 1. Intégration Complète Spotify : Commandes Bot & Dashboard Interactif Motion (v1.75.0)
+### 1. Catégorie Fun & Divertissement : Suite de Commandes Format Bleed & Studio Dashboard (v1.75.1)
+- **Suite complète de commandes Bleed pour Etho** : 8 commandes Discord dédiées (`/lyrics`, `/quote`, `/image`, `/duckduckgoimage`, `/reverseimage`, `/tvshow`, `/movie`, `/game`) et commande d'aiguillage `/fun <subcommand>`.
+- **Recherche de paroles en direct (`/lyrics`)** : Moteur LRCLib gratuit sans clé, support des requêtes artiste + titre, affichage des paroles synchronisées ou brutes, durée et pochette d'album.
+- **Générateur de citations stylisées (`/quote`)** : Rendu esthétique instantané aux couleurs de Discord avec support des auteurs, texte et date.
+- **Recherche visuelle & Recherche inversée (`/image`, `/duckduckgoimage`, `/reverseimage`)** : Recherche d'images haute résolution via Wikimedia Commons et génération de liens profonds directs vers Google Lens, Bing Visual Search, TinEye, Yandex et SauceNAO.
+- **Bases culturelles en temps réel (`/tvshow`, `/movie`, `/game`)** : Requêtes en direct sur TVMaze (séries TV), Wikipédia REST API (films), CheapShark & Steam (jeux vidéo avec réductions, évaluations et prix).
+- **Module Dashboard Fun interactif (`/discord?view=fun`)** :
+  - Catalogue style Bleed : cartes sombres avec badges d'arguments et permissions `none`, bouton de copie en un clic avec animation de coche.
+  - Studios interactifs en direct : onglets Paroles, Citations, Recherche d'images, Recherche inversée, Cinéma & Séries et Jeux vidéo sans aucun placeholder ni fausse donnée.
+- **Zéro commentaire & zéro placeholder** : Conforme aux règles strictes du projet (0 commentaire dans le code source, données 100 % réelles).
+
+### 2. Intégration Complète Spotify : Commandes Bot & Dashboard Interactif Motion (v1.75.0)
 - **Suite de commandes Spotify pour le bot** : 20 commandes slash et préfixes (`/spotify nowplaying`, `play`, `pause`, `resume`, `next`, `previous`, `seek`, `volume`, `repeat`, `shuffle`, `queue`, `like`, `unlike`, `toptracks`, `topartists`, `device`, `devices`, `vc`, `login`, `logout`) avec raccourcis directs.
 - **Pont vocal Discord (`/spotify vc`)** : diffusion directe du titre Spotify en cours d'écoute dans le salon vocal Discord du membre via le lecteur audio Etho.
 - **Boutons interactifs Discord** : commandes directes depuis l'embed d'écoute avec boutons Précédent, Lecture/Pause, Suivant, Like/Unlike et Diffuser en vocal.

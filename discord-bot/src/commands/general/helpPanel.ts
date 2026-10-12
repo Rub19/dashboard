@@ -93,6 +93,14 @@ export const HELP_CATEGORIES: HelpCategoryMeta[] = [
     commandNames: ['settings', 'prefix', 'language', 'permissions', 'ai-setup', 'module', 'serverstats', 'godmode'],
   },
   {
+    id: 'fun',
+    name: 'Divertissement & Médias',
+    emoji: '🎮',
+    color: 0xf59e0b,
+    description: "Paroles de chansons, citations, recherche d'images, films, séries TV et fiches de jeux vidéo",
+    commandNames: ['lyrics', 'quote', 'image', 'duckduckgoimage', 'reverseimage', 'tvshow', 'movie', 'game', 'fun'],
+  },
+  {
     id: 'general',
     name: 'Général & Utilitaires',
     emoji: '⚡',
@@ -102,7 +110,6 @@ export const HELP_CATEGORIES: HelpCategoryMeta[] = [
   },
 ];
 
-/** Icône d'application (bot-icons) de chaque catégorie ; repli Unicode = `emoji`. */
 const CATEGORY_ICONS: Record<string, string> = {
   ai: 'ai',
   moderation: 'moderation',
@@ -112,6 +119,7 @@ const CATEGORY_ICONS: Record<string, string> = {
   voice_music: 'music',
   support: 'ticket',
   admin: 'logs',
+  fun: 'giveaway',
   general: 'ethone',
 };
 

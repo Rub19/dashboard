@@ -671,18 +671,20 @@ export default function ConsoleSpotify({ guildId }: { guildId: string }) {
         actions={
           <div className="flex items-center gap-2">
             <Segmented
+              label="Type de statistiques"
               options={[
-                { value: "tracks", label: "Top Titres" },
-                { value: "artists", label: "Top Artistes" },
+                ["tracks", "Top Titres"],
+                ["artists", "Top Artistes"],
               ]}
               value={topTab}
               onChange={(v) => setTopTab(v as "tracks" | "artists")}
             />
             <Segmented
+              label="Période"
               options={[
-                { value: "short_term", label: "4 sem." },
-                { value: "medium_term", label: "6 mois" },
-                { value: "long_term", label: "Complet" },
+                ["short_term", "4 sem."],
+                ["medium_term", "6 mois"],
+                ["long_term", "Complet"],
               ]}
               value={timeRange}
               onChange={(v) => setTimeRange(v as any)}

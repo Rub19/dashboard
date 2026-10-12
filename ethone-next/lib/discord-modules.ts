@@ -61,4 +61,5 @@ export const DISCORD_MODULES: DiscordModuleMeta[] = [
   { id: "automodnative", title: "AutoMod natif Discord", href: "/discord/automod-native", keywords: ["automod", "regles", "discord natif", "filtre", "spam", "mentions"], icon: "mod-security", tint: "text-red-300" },
   { id: "streamers", title: "Alertes Streamers", href: "/discord/streamers", keywords: ["stream", "streamer", "twitch", "youtube", "kick", "live", "notification", "alerte"], icon: "mod-events", tint: "text-purple-400" },
   { id: "games", title: "Mini-Jeux & Casino", href: "/discord/games", keywords: ["casino", "jeux", "mini jeux", "blackjack", "roulette", "des", "jackpot", "ethone coin", "pari"], icon: "games", tint: "text-amber-400" },
+  { id: "fun", title: "Fun & Médias", href: "/discord/fun", keywords: ["fun", "lyrics", "paroles", "quote", "citation", "image", "duckduckgo", "reverse", "movie", "tvshow", "game", "bleed", "cinema"], icon: "games", tint: "text-amber-400" },
 ];

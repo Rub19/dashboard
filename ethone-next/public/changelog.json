@@ -1,5 +1,18 @@
 [
   {
+    "version": "v1.75.1",
+    "date": "2026-10-12",
+    "title": "Catégorie Fun & Divertissement : Suite de Commandes Format Bleed & Studio Dashboard",
+    "items": [
+      "Nouvelle catégorie Fun & Divertissement : ajout de la suite complète de commandes Bleed (/lyrics, /quote, /image, /duckduckgoimage, /reverseimage, /movie, /tvshow, /game) et commande maître /fun.",
+      "Recherche de paroles en direct (/lyrics) : moteur LRCLib avec durée, métadonnées d'album et affichage élégant des paroles complètes.",
+      "Générateur de citations (/quote) : création et prévisualisation instantanée de citations stylisées aux formats embed Discord.",
+      "Recherche d'images & inversée (/image, /duckduckgoimage, /reverseimage) : recherche de visuels haute résolution et liens directs vers Google Lens, Bing Visual, TinEye, Yandex et SauceNAO.",
+      "Cinéma, séries et jeux vidéo (/movie, /tvshow, /game) : intégration directe des bases TVMaze, Wikipédia, CheapShark et Steam avec jaquettes, notes et synopsis détaillés.",
+      "Module Dashboard interactif (/discord?view=fun) : catalogue avec cartes sombres animées au survol, copie en 1 clic de la syntaxe et studios de test en direct sans aucun placeholder."
+    ]
+  },
+  {
     "version": "v1.75.0",
     "date": "2026-10-12",
     "title": "Intégration Complète Spotify : Commandes Bot & Dashboard Interactif Motion",
@@ -619,16 +632,6 @@
       "Vue d'ensemble : le point « N protections actives sans salon de log » apparaît dans « À régler » avec un bouton « Choisir un salon » qui ouvre directement le routage de la page Logs.",
       "Barre latérale : la ligne « N sans salon de log » revient, cette fois calculée par le bot (cliquable).",
       "Le scan de sécurité contrôle aussi ce point."
-    ]
-  },
-  {
-    "version": "v1.55.73",
-    "date": "2026-10-08",
-    "title": "Console Discord : section Animation et espace Owner Etho dans la barre latérale",
-    "items": [
-      "Nouvelle section « Animation » dans la barre latérale du serveur, au style Keeper : Musique, Jeux et casino, Giveaways, Événements, Niveaux, Économie, Alertes streamers.",
-      "Section « Owner Etho », visible uniquement par le propriétaire du bot (le bot le vérifie) : état en direct (en ligne, version, uptime, ping, mémoire, incidents, relu toutes les 30 s), bouton « Redémarrer le bot » avec confirmation et attente du retour en ligne, et accès au centre de contrôle, à la présence, aux performances, aux erreurs, aux tâches planifiées, aux commandes et au bouclier owner.",
-      "La section Owner apparaît aussi sur la page « Mes serveurs », et la barre latérale défile quand elle dépasse la hauteur de l'écran."
     ]
   }
 ]

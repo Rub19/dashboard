@@ -104,6 +104,17 @@ import {
   spotifyVcCommand,
   spotifyQueueCommand,
 } from '../commands/music/spotifyShortcuts.js';
+import {
+  lyricsCommand,
+  quoteCommand,
+  imageCommand,
+  duckduckgoimageCommand,
+  reverseimageCommand,
+  tvshowCommand,
+  movieCommand,
+  gameCommand,
+  funMasterCommand,
+} from '../commands/fun/funCommands.js';
 
 import { config } from '../config.js';
 import { Command } from '../types/command.js';
@@ -262,6 +273,15 @@ class CommandRegistry {
     this.register(rouletteCommand);
     this.register(diceCommand);
     this.register(casinoCommand);
+    this.register(lyricsCommand);
+    this.register(quoteCommand);
+    this.register(imageCommand);
+    this.register(duckduckgoimageCommand);
+    this.register(reverseimageCommand);
+    this.register(tvshowCommand);
+    this.register(movieCommand);
+    this.register(gameCommand);
+    this.register(funMasterCommand);
   }
 
   public register(command: Command) {

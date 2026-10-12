@@ -51686,6 +51686,67 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_0_de);
 
+const v1_75_1_fr: ChangelogEntry = {
+  version: "v1.75.1",
+  date: "2026-10-12",
+  title: "Catégorie Fun & Divertissement : Suite de Commandes Format Bleed & Studio Dashboard",
+  items: [
+    "Nouvelle catégorie Fun & Divertissement : ajout de la suite complète de commandes Bleed (/lyrics, /quote, /image, /duckduckgoimage, /reverseimage, /movie, /tvshow, /game) et commande maître /fun.",
+    "Recherche de paroles en direct (/lyrics) : moteur LRCLib avec durée, métadonnées d'album et affichage élégant des paroles complètes.",
+    "Générateur de citations (/quote) : création et prévisualisation instantanée de citations stylisées aux formats embed Discord.",
+    "Recherche d'images & inversée (/image, /duckduckgoimage, /reverseimage) : recherche de visuels haute résolution et liens directs vers Google Lens, Bing Visual, TinEye, Yandex et SauceNAO.",
+    "Cinéma, séries et jeux vidéo (/movie, /tvshow, /game) : intégration directe des bases TVMaze, Wikipédia, CheapShark et Steam avec jaquettes, notes et synopsis détaillés.",
+    "Module Dashboard interactif (/discord?view=fun) : catalogue avec cartes sombres animées au survol, copie en 1 clic de la syntaxe et studios de test en direct sans aucun placeholder.",
+  ],
+};
+
+const v1_75_1_en: ChangelogEntry = {
+  version: "v1.75.1",
+  date: "2026-10-12",
+  title: "Fun & Media Category: Bleed-Style Command Suite & Interactive Dashboard Studio",
+  items: [
+    "New Fun & Entertainment category: complete Bleed-style command suite (/lyrics, /quote, /image, /duckduckgoimage, /reverseimage, /movie, /tvshow, /game) and /fun command.",
+    "Live lyrics lookup (/lyrics): powered by LRCLib with track duration, album metadata, and formatted lyric scroll.",
+    "Quote generator (/quote): instant preview and creation of styled Discord quote embeds.",
+    "Image and reverse search (/image, /duckduckgoimage, /reverseimage): high-resolution visual search and deep links to Google Lens, Bing Visual, TinEye, Yandex, and SauceNAO.",
+    "Movies, TV shows and games (/movie, /tvshow, /game): live TVMaze, Wikipedia, CheapShark, and Steam queries with official covers, scores, and plots.",
+    "Interactive Dashboard Module (/discord?view=fun): dark animated cards with hover lift, 1-click syntax copy, and genuine live test runners.",
+  ],
+};
+
+const v1_75_1_es: ChangelogEntry = {
+  version: "v1.75.1",
+  date: "2026-10-12",
+  title: "Categoría Fun y Medios: Suite de Comandos Estilo Bleed y Estudio Interactivo",
+  items: [
+    "Nueva categoría Fun y Entretenimiento: suite completa de comandos estilo Bleed (/lyrics, /quote, /image, /duckduckgoimage, /reverseimage, /movie, /tvshow, /game) y comando maestro /fun.",
+    "Búsqueda de letras (/lyrics): con LRCLib, duración, álbum y visualización completa de letras.",
+    "Generador de citas (/quote): creación y vista previa de citas con estilo Discord.",
+    "Búsqueda de imágenes e inversa (/image, /duckduckgoimage, /reverseimage): búsqueda de imágenes y enlaces a Google Lens, Bing, TinEye y Yandex.",
+    "Cine, series y videojuegos (/movie, /tvshow, /game): consultas en vivo a TVMaze, Wikipedia, CheapShark y Steam con portadas, notas y sinopsis.",
+    "Módulo interactivo en el dashboard (/discord?view=fun): tarjetas oscuras animadas, copia de sintaxis con 1 clic y probadores en vivo sin marcadores de posición.",
+  ],
+};
+
+const v1_75_1_de: ChangelogEntry = {
+  version: "v1.75.1",
+  date: "2026-10-12",
+  title: "Fun- & Medien-Kategorie: Bleed-Befehlssuite & Interaktives Dashboard-Studio",
+  items: [
+    "Neue Fun- und Unterhaltungs-Kategorie: Vollständige Bleed-Befehlssuite (/lyrics, /quote, /image, /duckduckgoimage, /reverseimage, /movie, /tvshow, /game) und /fun-Hauptbefehl.",
+    "Live-Songtext-Suche (/lyrics): LRCLib-gestützt mit Spieldauer, Album-Metadaten und vollständigen Texten.",
+    "Zitate-Generator (/quote): Sofortige Vorschau und Erstellung von stilvollen Discord-Zitaten.",
+    "Bilder- und Bildrückwärtssuche (/image, /duckduckgoimage, /reverseimage): Hochauflösende Bildersuche und Direktlinks zu Google Lens, Bing Visual, TinEye und Yandex.",
+    "Filme, Serien und Videospiele (/movie, /tvshow, /game): TVMaze-, Wikipedia-, CheapShark- und Steam-Abfragen mit Covern, Bewertungen und Synopsen.",
+    "Interaktives Dashboard-Modul (/discord?view=fun): Dunkle animierte Karten mit Hover-Effekten, 1-Klick-Kopieren und echten Live-Playgrounds.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_1_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_1_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_1_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_1_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

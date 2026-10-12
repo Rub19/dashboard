@@ -444,6 +444,7 @@ export default function MailPage() {
     handleArchive,
     handleTrash,
     handleToggleStarThread,
+    handleToggleRead,
     openThread,
     closeThread,
   });
@@ -456,11 +457,11 @@ export default function MailPage() {
     handleArchive,
     handleTrash,
     handleToggleStarThread,
+    handleToggleRead,
     openThread,
     closeThread,
   };
 
-  // Keyboard Navigation & Shortcuts
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       const target = e.target as HTMLElement;
@@ -475,6 +476,7 @@ export default function MailPage() {
         handleArchive: doHandleArchive,
         handleTrash: doHandleTrash,
         handleToggleStarThread: doToggleStar,
+        handleToggleRead: doToggleRead,
         openThread: doOpenThread,
         closeThread: doCloseThread,
       } = keydownDepsRef.current;
@@ -502,6 +504,9 @@ export default function MailPage() {
       } else if (e.key === "s" && currentActiveThread) {
         e.preventDefault();
         doToggleStar();
+      } else if (e.key === "u" && currentActiveThread) {
+        e.preventDefault();
+        doToggleRead();
       } else if (e.key === "Escape") {
         if (isComposeOpen) setComposeOpen(false);
         else if (currentActiveThread) doCloseThread();

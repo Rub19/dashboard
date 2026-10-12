@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.74.5 — 2026-10-12
+
+**Messagerie, Audio Dock & Focus : Raccourcis, visualiseur d'égaliseur et ambiances instantanées**
+
+- **Raccourci messagerie clavier (`U`)** : Ajout du raccourci clavier `U` dans la vue du client messagerie pour marquer instantanément une conversation active comme lue ou non lue, avec synchronisation immédiate et mise à jour de la liste.
+- **Téléchargement d'annexes distantes et aperçus d'images** : Prise en charge transparente du téléchargement des pièces jointes hébergées à distance (`attachment.url`) en plus des flux base64 locaux, accompagnée d'un aperçu miniature visuel soigné pour les images.
+- **Visualiseur audio dynamique dans le dock** : Intégration d'un égaliseur à 4 barres animées en boucle avec rebonds asynchrones (`motion.span`) dans la capsule sonore du dock (`DockSoundFlyout`) lorsque la lecture audio d'ambiance est active.
+- **Sélecteur d'ambiance 1-clic dans le Focus Timer** : Intégration ergonomique d'une rangée de pastilles sonores rapides (« Pluie », « Forêt », « Océan », « Feu », « Café », « Couper ») directement sous les contrôles du chronomètre Focus (`FocusTimer2026`), permettant de lancer l'immersion sonore sans quitter son espace de travail.
+
 ## v1.74.4 — 2026-10-12
 
 **Messagerie : Rendu haute-fidélité des e-mails en sandbox isolée, mode fond clair et texte brut**

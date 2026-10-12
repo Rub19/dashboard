@@ -4,6 +4,7 @@ import { useId } from "react";
 import { motion } from "framer-motion";
 import { Icon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
+import { useSound } from "@/lib/sound";
 
 interface FocusTimer2026Props {
   progress: number;
@@ -31,6 +32,7 @@ export default function FocusTimer2026({
   onAdjustTime,
   activeTaskTitle,
 }: FocusTimer2026Props) {
+  const { ambientSound, playAmbient, stopAmbient } = useSound();
   const isBreak = phase === "shortBreak" || phase === "longBreak";
   const isIdle = phase === "idle";
   const isRunning = !paused && !isIdle;
@@ -208,6 +210,54 @@ export default function FocusTimer2026({
         >
           +5 min
         </button>
+      </div>
+
+      <div className="mt-5 flex flex-wrap items-center justify-center gap-1.5 pt-2 border-t border-[var(--panel-border)]/50 max-w-sm">
+        <span className="text-[11px] font-semibold text-[var(--text-muted)] flex items-center gap-1 mr-1">
+          <Icon name="waveform" pack="phosphor" className="h-3 w-3 text-[var(--accent-primary)]" />
+          Ambiance :
+        </span>
+        {(["rain", "forest", "ocean", "fireplace", "cafe"] as const).map((soundKey) => {
+          const isActive = ambientSound === soundKey;
+          const labels: Record<string, string> = {
+            rain: "Pluie",
+            forest: "Forêt",
+            ocean: "Océan",
+            fireplace: "Feu",
+            cafe: "Café",
+          };
+          return (
+            <button
+              key={soundKey}
+              type="button"
+              onClick={() => {
+                if (isActive) {
+                  stopAmbient();
+                } else {
+                  playAmbient(soundKey, 65);
+                }
+              }}
+              className={cn(
+                "rounded-full px-2.5 py-1 text-[11px] font-medium transition-all active:scale-95 cursor-pointer",
+                isActive
+                  ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-sm shadow-[var(--accent-primary)]/30 font-semibold"
+                  : "bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]"
+              )}
+            >
+              {labels[soundKey]}
+            </button>
+          );
+        })}
+        {ambientSound !== "none" && (
+          <button
+            type="button"
+            onClick={() => stopAmbient()}
+            className="rounded-full px-2 py-1 text-[10px] text-[var(--danger)] hover:bg-[var(--danger)]/15 transition-colors font-medium ml-0.5 cursor-pointer"
+            title="Couper le son"
+          >
+            Couper
+          </button>
+        )}
       </div>
     </div>
   );

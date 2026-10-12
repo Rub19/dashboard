@@ -50891,5 +50891,58 @@ CHANGELOG_BY_LANG.en.unshift(v1_74_4_en);
 CHANGELOG_BY_LANG.es.unshift(v1_74_4_es);
 CHANGELOG_BY_LANG.de.unshift(v1_74_4_de);
 
+const v1_74_5_fr: ChangelogEntry = {
+  version: "v1.74.5",
+  date: "2026-10-12",
+  title: "Messagerie, Audio Dock & Focus : Raccourcis, visualiseur d'égaliseur et ambiances instantanées",
+  items: [
+    "Raccourci messagerie U : Bascule instantanée de l'état lu/non lu du fil actif au clavier avec synchronisation immédiate",
+    "Téléchargement et aperçus pièces jointes : Prise en charge des URL distantes et aperçu miniature direct des images",
+    "Égaliseur audio dynamique : Animation d'ondes audio synchronisée dans la capsule sonore du dock lors de la lecture",
+    "Sélecteur d'ambiance Focus : Barre de pastilles sonores intégrée au chronomètre Focus pour lancer la pluie, l'océan ou la forêt en un clic",
+  ],
+};
+
+const v1_74_5_en: ChangelogEntry = {
+  version: "v1.74.5",
+  date: "2026-10-12",
+  title: "Mail, Audio Dock & Focus: Shortcuts, equalizer visualizer & instant soundscapes",
+  items: [
+    "Mail shortcut U: Instant keyboard toggle for read/unread state on active thread with live sync",
+    "Attachment downloads & previews: Remote URL download support and instant image thumbnail previews",
+    "Dynamic audio equalizer: Animated multi-bar waveform indicator in the dock audio capsule during playback",
+    "Focus soundscape selector: 1-tap ambient sound pills under the Focus timer for instant focus environments",
+  ],
+};
+
+const v1_74_5_es: ChangelogEntry = {
+  version: "v1.74.5",
+  date: "2026-10-12",
+  title: "Correo, Dock Audio y Focus: Atajos, ecualizador visual y ambientes instantáneos",
+  items: [
+    "Atajo de correo U: Alternancia rápida de leído/no leído en el hilo activo mediante el teclado con sincronización en vivo",
+    "Descargas y previsualizaciones: Soporte para enlaces remotos de adjuntos y miniaturas visuales de imágenes",
+    "Ecualizador dinámico en Dock: Indicador animado de ondas sonoras en la cápsula de audio durante la reproducción",
+    "Selector de ambientes en Focus: Botones rápidos bajo el temporizador para activar lluvia, bosque u océano al instante",
+  ],
+};
+
+const v1_74_5_de: ChangelogEntry = {
+  version: "v1.74.5",
+  date: "2026-10-12",
+  title: "Mail, Audio-Dock & Focus: Tastenkürzel, Equalizer-Visualisierung & Sofort-Klangwelten",
+  items: [
+    "Mail-Tastenkürzel U: Schnelles Umschalten von Gelesen/Ungelesen im aktiven Thread per Tastatur mit Live-Synchronisierung",
+    "Anhang-Downloads & Vorschau: Unterstützung von Remote-URLs und direkte Bild-Thumbnail-Vorschau",
+    "Dynamischer Dock-Equalizer: Animierte Wellenform-Balken in der Audio-Kapsel des Docks während der Wiedergabe",
+    "Focus-Klangwelten-Auswahl: 1-Klick-Sound-Pills unter dem Focus-Timer für sofortige Konzentrationsatmosphäre",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_74_5_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_74_5_en);
+CHANGELOG_BY_LANG.es.unshift(v1_74_5_es);
+CHANGELOG_BY_LANG.de.unshift(v1_74_5_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

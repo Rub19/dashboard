@@ -233,6 +233,30 @@ export default function DockSoundFlyout() {
                     </div>
 
                     <div className="flex items-center gap-1.5">
+                      {isPlaying && (
+                        <div className="flex items-end gap-0.5 h-3 px-1 mr-0.5" aria-hidden="true">
+                          <motion.span
+                            animate={{ scaleY: [0.3, 1, 0.4] }}
+                            transition={{ repeat: Infinity, duration: 0.8, ease: "easeInOut" }}
+                            className="w-0.5 h-full origin-bottom rounded-full bg-emerald-400"
+                          />
+                          <motion.span
+                            animate={{ scaleY: [0.7, 0.2, 0.9] }}
+                            transition={{ repeat: Infinity, duration: 0.65, ease: "easeInOut", delay: 0.1 }}
+                            className="w-0.5 h-full origin-bottom rounded-full bg-emerald-400"
+                          />
+                          <motion.span
+                            animate={{ scaleY: [0.2, 0.8, 0.3] }}
+                            transition={{ repeat: Infinity, duration: 0.75, ease: "easeInOut", delay: 0.2 }}
+                            className="w-0.5 h-full origin-bottom rounded-full bg-emerald-400"
+                          />
+                          <motion.span
+                            animate={{ scaleY: [0.5, 0.3, 1] }}
+                            transition={{ repeat: Infinity, duration: 0.7, ease: "easeInOut", delay: 0.15 }}
+                            className="w-0.5 h-full origin-bottom rounded-full bg-emerald-400"
+                          />
+                        </div>
+                      )}
                       <span
                         className={cn(
                           "rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider",

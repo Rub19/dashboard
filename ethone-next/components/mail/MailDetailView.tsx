@@ -85,8 +85,20 @@ function AttachmentCard({ attachment }: { attachment: MailAttachment }) {
       link.href = `data:${attachment.mime_type || "application/octet-stream"};base64,${attachment.content}`;
       link.download = attachment.filename;
       link.click();
+    } else if (attachment.url) {
+      const link = document.createElement("a");
+      link.href = attachment.url;
+      link.download = attachment.filename;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.click();
     }
   }
+
+  const isImage = (attachment.mime_type || "").startsWith("image/");
+  const previewSrc = attachment.content
+    ? `data:${attachment.mime_type || "image/png"};base64,${attachment.content}`
+    : attachment.url || undefined;
 
   return (
     <button
@@ -95,11 +107,15 @@ function AttachmentCard({ attachment }: { attachment: MailAttachment }) {
       className="group flex items-center gap-3 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-2)]/40 p-2.5 text-left transition-colors hover:bg-[var(--surface-2)]"
       title={`Télécharger ${attachment.filename}`}
     >
-      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--surface-2)]">
-        {getAttachmentIcon(attachment.mime_type || "", attachment.filename)}
+      <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-[var(--surface-2)] border border-[var(--panel-border)]/60">
+        {isImage && previewSrc ? (
+          <img src={previewSrc} alt={attachment.filename} className="h-full w-full object-cover" />
+        ) : (
+          getAttachmentIcon(attachment.mime_type || "", attachment.filename)
+        )}
       </span>
       <span className="min-w-0 flex-1">
-        <span className="block truncate text-xs font-medium text-[var(--text-primary)]">{attachment.filename}</span>
+        <span className="block truncate text-xs font-semibold text-[var(--text-primary)]">{attachment.filename}</span>
         <span className="block text-[11px] text-[var(--text-muted)]">{formatFileSize(attachment.size || 0)}</span>
       </span>
       <Download className="h-3.5 w-3.5 shrink-0 text-[var(--text-muted)] transition-colors group-hover:text-[var(--accent-primary)]" />
@@ -111,6 +127,7 @@ const SHORTCUTS: [string, string][] = [
   ["J / K", "Naviguer"],
   ["R", "Répondre"],
   ["E", "Archiver"],
+  ["U", "Marquer lu"],
   ["Ctrl+U", "Composer"],
 ];
 

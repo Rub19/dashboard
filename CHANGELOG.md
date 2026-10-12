@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.74.3 — 2026-10-12
+
+**Console Discord : Agrandissement et mise à l'échelle typographique de la barre latérale**
+
+- **Largeur de la barre latérale** : Élargissement ergonomique de 256px (`w-64`) à 320px (`w-80`) pour refléter fidèlement le gabarit de référence des consoles Discord modernes et éliminer toute impression de tassement.
+- **Typographie & ergonomie de navigation** : Mise à l'échelle de l'ensemble des libellés (`text-sm font-semibold`), icônes (`h-4.5 w-4.5`), en-têtes de rubriques en majuscules aérées (`text-[11px] font-bold`) et cibles tactiles élargies (`px-3 py-2`).
+- **Sélecteur de serveur enrichi** : Icône de serveur agrandie à 38px, typographie du nom et du rôle rehaussée, et popover de sélection élargi (`w-[18.5rem]`).
+- **Section bot propriétaire** : Carte de statut et télémétrie redimensionnée avec padding généreux, métriques lisibles (latence, mémoire, uptime) et boutons d'action agrandis.
+
 ## v1.74.2 — 2026-10-12
 
 **Interface : Restauration de la barre d'état inférieure (StatusBar) et réalignement du dock**

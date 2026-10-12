@@ -50785,5 +50785,58 @@ CHANGELOG_BY_LANG.en.unshift(v1_74_2_en);
 CHANGELOG_BY_LANG.es.unshift(v1_74_2_es);
 CHANGELOG_BY_LANG.de.unshift(v1_74_2_de);
 
+const v1_74_3_fr: ChangelogEntry = {
+  version: "v1.74.3",
+  date: "2026-10-12",
+  title: "Console Discord : Agrandissement et mise à l'échelle typographique de la barre latérale",
+  items: [
+    "Barre latérale : Largeur élargie de 256px à 320px pour un confort de lecture optimal et un équilibre visuel parfait avec la console centrale",
+    "Typographie et icônes : Agrandissement proportionnel de la taille des polices, des titres de catégories, des icônes d'action et des cibles de clic",
+    "Sélecteur de serveur : Icône de guilde augmentée (38px), typographie des noms et rôles rehaussée et popover élargi",
+    "Contrôleur du bot propriétaire : Espacement aéré, métriques système clarifiées et boutons d'action agrandis",
+  ],
+};
+
+const v1_74_3_en: ChangelogEntry = {
+  version: "v1.74.3",
+  date: "2026-10-12",
+  title: "Discord Console: Expanded sidebar width and typographic scale",
+  items: [
+    "Sidebar: Expanded width from 256px to 320px for optimal readability and balanced console layout",
+    "Typography & icons: Proportionally enlarged text sizes, category headers, action icons, and click targets",
+    "Server switcher: Increased guild icon size (38px), enhanced typography for server names and roles, and wider dropdown popover",
+    "Owner bot section: Comfortable spacing, clearer system telemetry metrics, and enlarged control buttons",
+  ],
+};
+
+const v1_74_3_es: ChangelogEntry = {
+  version: "v1.74.3",
+  date: "2026-10-12",
+  title: "Consola de Discord: Ampliación de la barra lateral y escala tipográfica",
+  items: [
+    "Barra lateral: Ancho ampliado de 256px a 320px para una legibilidad óptima y equilibrio visual con la consola central",
+    "Tipografía e iconos: Aumento proporcional de fuentes, títulos de categorías, iconos y áreas de clic",
+    "Selector de servidor: Icono de servidor ampliado (38px), tipografía mejorada y menú desplegable más ancho",
+    "Controlador del bot: Espaciado más amplio, métricas de telemetría claras y botones de acción aumentados",
+  ],
+};
+
+const v1_74_3_de: ChangelogEntry = {
+  version: "v1.74.3",
+  date: "2026-10-12",
+  title: "Discord-Konsole: Breitere Seitenleiste und typografische Skalierung",
+  items: [
+    "Seitenleiste: Verbreiterung von 256px auf 320px für optimale Lesbarkeit und harmonisches Konsolen-Layout",
+    "Typografie & Symbole: Proportionale Vergrößerung von Schriftgrößen, Kategorie-Headern, Symbolen und Klickflächen",
+    "Server-Umschalter: Größeres Server-Icon (38px), verbesserte Typografie für Servernamen und Rollen sowie breiteres Dropdown",
+    "Owner-Bot-Bereich: Großzügigerer Abstand, klarere Systemmetriken und vergrößerte Steuerungsbuttons",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_74_3_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_74_3_en);
+CHANGELOG_BY_LANG.es.unshift(v1_74_3_es);
+CHANGELOG_BY_LANG.de.unshift(v1_74_3_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

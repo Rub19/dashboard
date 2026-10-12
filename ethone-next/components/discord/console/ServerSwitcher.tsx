@@ -92,24 +92,24 @@ export default function ServerSwitcher({
         aria-expanded={open}
         aria-haspopup="listbox"
         className={cn(
-          "flex w-full items-center gap-2.5 rounded-lg border p-2 text-left transition-colors",
+          "flex w-full items-center gap-3 rounded-lg border p-2.5 text-left transition-colors",
           open
             ? "border-[var(--text-primary)]/15 bg-[var(--surface-hover)]"
             : "border-transparent hover:bg-[var(--surface-hover)]",
         )}
       >
-        <GuildIcon name={guildName} url={guildIconUrl} size={32} />
+        <GuildIcon name={guildName} url={guildIconUrl} size={38} />
         <span className="min-w-0 flex-1">
-          <span className="block truncate text-[13px] font-semibold text-[var(--text-primary)]">
+          <span className="block truncate text-sm font-semibold text-[var(--text-primary)]">
             {guildName}
           </span>
-          <span className="flex items-center gap-1.5 text-[11px] text-[var(--text-muted)]">
+          <span className="flex items-center gap-1.5 text-xs text-[var(--text-muted)]">
             <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--success)]" />
             <span className="truncate">{roleLabel}</span>
           </span>
         </span>
         <ChevronsUpDown
-          className="h-3.5 w-3.5 shrink-0 text-[var(--text-muted)]"
+          className="h-4 w-4 shrink-0 text-[var(--text-muted)]"
           strokeWidth={1.75}
         />
       </button>
@@ -131,7 +131,7 @@ export default function ServerSwitcher({
                   top: pos.top,
                   left: pos.left,
                 }}
-                className="z-[var(--z-modal)] w-[17rem] overflow-hidden rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] shadow-2xl"
+                className="z-[var(--z-modal)] w-[18.5rem] overflow-hidden rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] shadow-2xl"
               >
                 <input
                   autoFocus

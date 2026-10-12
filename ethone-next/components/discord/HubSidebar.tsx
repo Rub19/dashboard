@@ -245,21 +245,21 @@ export default function HubSidebar({
         initial={false}
         animate="animate"
         className={cn(
-          "fixed inset-y-0 left-0 z-50 w-64 shrink-0 border-r border-[var(--panel-border)] bg-[var(--surface-raised)]/95 flex flex-col justify-between p-4 h-dvh max-h-dvh transition-transform duration-300 md:static md:translate-x-0",
+          "fixed inset-y-0 left-0 z-50 w-80 shrink-0 border-r border-[var(--panel-border)] bg-[var(--surface-raised)]/95 flex flex-col justify-between p-4.5 h-dvh max-h-dvh transition-transform duration-300 md:static md:translate-x-0",
           open ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         )}
       >
-        <div className="min-h-0 flex-1 space-y-3 overflow-y-auto pr-0.5 [scrollbar-width:none]">
-          <div className="flex items-center gap-2.5 px-2 pt-1 pb-1">
+        <div className="min-h-0 flex-1 space-y-3.5 overflow-y-auto pr-0.5 [scrollbar-width:none]">
+          <div className="flex items-center gap-3 px-2 pt-1 pb-1">
             <motion.div
               variants={consoleBrandMark}
               whileHover={reduced ? undefined : { scale: 1.06 }}
               transition={SPRING_PRESS}
-              className="relative flex h-8 w-8 items-center justify-center rounded-sm bg-emerald-500/10 border border-emerald-500/30 cursor-pointer"
+              className="relative flex h-9.5 w-9.5 items-center justify-center rounded-xl bg-emerald-500/10 border border-emerald-500/30 cursor-pointer shadow-xs"
             >
-              <ShieldCheck className="h-4 w-4 text-emerald-400" />
+              <ShieldCheck className="h-5 w-5 text-emerald-400" />
             </motion.div>
-            <span className="font-bold text-base tracking-tight text-[var(--text-primary)]">
+            <span className="font-bold text-lg tracking-tight text-[var(--text-primary)]">
               Etho Protect
             </span>
           </div>
@@ -282,53 +282,53 @@ export default function HubSidebar({
             variants={consoleSidebarItem}
             type="button"
             onClick={() => openCommandPalette(true)}
-            className="w-full flex items-center justify-between rounded-sm border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-2 text-xs text-[var(--text-muted)] hover:border-[var(--accent-primary)]/40 hover:text-[var(--text-primary)] transition-all cursor-pointer"
+            className="w-full flex items-center justify-between rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3.5 py-2.5 text-sm text-[var(--text-muted)] hover:border-[var(--accent-primary)]/40 hover:text-[var(--text-primary)] transition-all cursor-pointer shadow-xs"
           >
-            <div className="flex items-center gap-2">
-              <Search className="h-3.5 w-3.5" />
+            <div className="flex items-center gap-2.5">
+              <Search className="h-4 w-4" />
               <span>{i18n("dSearchPlaceholder", "Rechercher un réglage... Ctrl K").replace(" Ctrl K", "")}</span>
             </div>
-            <kbd className="rounded-sm border border-[var(--panel-border)] bg-[var(--background)] px-1.5 py-0.5 text-[10px] font-mono text-[var(--text-muted)]">
+            <kbd className="rounded-md border border-[var(--panel-border)] bg-[var(--background)] px-2 py-0.5 text-xs font-mono text-[var(--text-muted)]">
               Ctrl K
             </kbd>
           </motion.button>
 
-          <OwnerBotSection itemClass="w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors cursor-pointer text-left" />
+          <OwnerBotSection itemClass="w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors cursor-pointer text-left" />
 
-          <div className="space-y-0.5 text-xs">
+          <div className="space-y-0.5 text-sm">
             <button
               type="button"
               onClick={onHome}
               className={cn(
-                "w-full flex items-center gap-2.5 rounded px-2.5 py-2 font-semibold transition-colors cursor-pointer text-left",
+                "w-full flex items-center gap-3 rounded-lg px-3 py-2.5 font-semibold text-sm transition-colors cursor-pointer text-left",
                 isOverviewActive
                   ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400"
                   : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
               )}
             >
-              <LLayoutGrid className="h-4 w-4 shrink-0" strokeWidth={1.75} />
+              <LLayoutGrid className="h-4.5 w-4.5 shrink-0" strokeWidth={1.75} />
               <span>{i18n("dOverview", "Vue d'ensemble")}</span>
             </button>
           </div>
 
-          <div className="space-y-1 pt-2">
-            <span className="block px-2 text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+          <div className="space-y-1.5 pt-2">
+            <span className="block px-2 text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
               {i18n("dProtection", "Protection")}
             </span>
-            <div className="space-y-0.5 text-xs">
+            <div className="space-y-1 text-sm">
               <button
                 type="button"
                 onClick={() => (onOpenView ? onOpenView("protections") : router.push(`/discord/?guildId=${selectedGuildId}&view=protections`))}
                 aria-current={view === "protections" ? "page" : undefined}
                 className={cn(
-                  "w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-xs transition-colors cursor-pointer text-left",
+                  "w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors cursor-pointer text-left",
                   view === "protections" ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold" : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
                 )}
               >
-                <LShield strokeWidth={1.75} className="h-3.5 w-3.5 shrink-0" />
+                <LShield strokeWidth={1.75} className="h-4.5 w-4.5 shrink-0" />
                 <span>{i18n("dProtections", "Protections")}</span>
                 {protCount && (
-                  <span className={cn("ml-auto font-mono text-[10px] tabular-nums", protCount.on ? "text-emerald-400" : "text-[var(--text-muted)]")}>
+                  <span className={cn("ml-auto font-mono text-xs tabular-nums", protCount.on ? "text-emerald-400" : "text-[var(--text-muted)]")}>
                     {protCount.on}/{protCount.total}
                   </span>
                 )}
@@ -344,13 +344,13 @@ export default function HubSidebar({
                   }
                 }}
                 className={cn(
-                  "w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-xs transition-colors cursor-pointer text-left",
+                  "w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors cursor-pointer text-left",
                   isScanActive
                     ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold"
                     : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
                 )}
               >
-                <LScanFace strokeWidth={1.75} className="h-3.5 w-3.5 shrink-0" />
+                <LScanFace strokeWidth={1.75} className="h-4.5 w-4.5 shrink-0" />
                 <span>{i18n("dSecurityScan", "Scan de sécurité")}</span>
               </button>
 
@@ -364,33 +364,33 @@ export default function HubSidebar({
                   }
                 }}
                 className={cn(
-                  "w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-xs transition-colors cursor-pointer text-left",
+                  "w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors cursor-pointer text-left",
                   isSetupActive
                     ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold"
                     : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
                 )}
               >
-                <LWandSparkles strokeWidth={1.75} className="h-3.5 w-3.5 shrink-0" />
+                <LWandSparkles strokeWidth={1.75} className="h-4.5 w-4.5 shrink-0" />
                 <span>{i18n("dAssistedSetup", "Configuration assistée")}</span>
               </button>
             </div>
           </div>
 
-          <div className="space-y-1 pt-2">
-            <span className="block px-2 text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+          <div className="space-y-1.5 pt-2">
+            <span className="block px-2 text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
               {i18n("dMembers", "Membres")}
             </span>
-            <div className="space-y-0.5 text-xs">
+            <div className="space-y-1 text-sm">
               <button
                 type="button"
                 onClick={() => (onOpenView ? onOpenView("whitelist") : router.push(`/discord/security?tab=whitelist&guildId=${selectedGuildId}`))}
                 aria-current={view === "whitelist" ? "page" : undefined}
                 className={cn(
-                  "w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-xs transition-colors cursor-pointer text-left",
+                  "w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors cursor-pointer text-left",
                   view === "whitelist" ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold" : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
                 )}
               >
-                <LUsersRound strokeWidth={1.75} className="h-3.5 w-3.5 shrink-0" />
+                <LUsersRound strokeWidth={1.75} className="h-4.5 w-4.5 shrink-0" />
                 <span>{i18n("dWhitelist", "Whitelist")}</span>
               </button>
 
@@ -399,11 +399,11 @@ export default function HubSidebar({
                 onClick={() => (onOpenView ? onOpenView("blacklist") : router.push(`/discord/security?tab=blacklist&guildId=${selectedGuildId}`))}
                 aria-current={view === "blacklist" ? "page" : undefined}
                 className={cn(
-                  "w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-xs transition-colors cursor-pointer text-left",
+                  "w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors cursor-pointer text-left",
                   view === "blacklist" ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold" : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
                 )}
               >
-                <LBan strokeWidth={1.75} className="h-3.5 w-3.5 shrink-0" />
+                <LBan strokeWidth={1.75} className="h-4.5 w-4.5 shrink-0" />
                 <span>{i18n("dBlacklist", "Blacklist")}</span>
               </button>
 
@@ -412,11 +412,11 @@ export default function HubSidebar({
                 onClick={() => (onOpenView ? onOpenView("members") : router.push(`/discord/server/roles?guildId=${selectedGuildId}`))}
                 aria-current={view === "members" ? "page" : undefined}
                 className={cn(
-                  "w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-xs transition-colors cursor-pointer text-left",
+                  "w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors cursor-pointer text-left",
                   view === "members" ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold" : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
                 )}
               >
-                <LSquareUserRound strokeWidth={1.75} className="h-3.5 w-3.5 shrink-0" />
+                <LSquareUserRound strokeWidth={1.75} className="h-4.5 w-4.5 shrink-0" />
                 <span>{i18n("dRolesAndMembers", "Rôles et membres")}</span>
               </button>
 
@@ -425,21 +425,21 @@ export default function HubSidebar({
                 onClick={() => (onOpenView ? onOpenView("commands") : router.push(`/discord/?guildId=${selectedGuildId}&view=commands`))}
                 aria-current={view === "commands" ? "page" : undefined}
                 className={cn(
-                  "w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-xs transition-colors cursor-pointer text-left",
+                  "w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors cursor-pointer text-left",
                   view === "commands" ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold" : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
                 )}
               >
-                <LGavel strokeWidth={1.75} className="h-3.5 w-3.5 shrink-0" />
+                <LGavel strokeWidth={1.75} className="h-4.5 w-4.5 shrink-0" />
                 <span>{i18n("dCommands", "Commandes")}</span>
               </button>
             </div>
           </div>
 
-          <div className="space-y-1 pt-2">
-            <span className="block px-2 text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+          <div className="space-y-1.5 pt-2">
+            <span className="block px-2 text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
               {i18n("dAnimation", "Animation")}
             </span>
-            <div className="space-y-0.5 text-xs">
+            <div className="space-y-1 text-sm">
               {ANIMATION_LINKS.map(({ id, path, key, label, icon: Icon }) => (
                 <button
                   key={path}
@@ -447,11 +447,11 @@ export default function HubSidebar({
                   onClick={() => (onSelect ? onSelect(id) : router.push(`${path}?guildId=${selectedGuildId}`))}
                   aria-current={activeId === id ? "page" : undefined}
                   className={cn(
-                    "w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-xs transition-colors cursor-pointer text-left",
+                    "w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors cursor-pointer text-left",
                     activeId === id ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold" : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
                   )}
                 >
-                  <Icon strokeWidth={1.75} className="h-3.5 w-3.5 shrink-0" />
+                  <Icon strokeWidth={1.75} className="h-4.5 w-4.5 shrink-0" />
                   <span>{i18n(key, label)}</span>
                 </button>
               ))}
@@ -461,32 +461,32 @@ export default function HubSidebar({
                   onClick={onAllModules}
                   aria-current={view === "modules" ? "page" : undefined}
                   className={cn(
-                    "w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-xs transition-colors cursor-pointer text-left",
+                    "w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors cursor-pointer text-left",
                     view === "modules" ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold" : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
                   )}
                 >
-                  <LLayoutGrid strokeWidth={1.75} className="h-3.5 w-3.5 shrink-0" />
+                  <LLayoutGrid strokeWidth={1.75} className="h-4.5 w-4.5 shrink-0" />
                   <span>{i18n("dAllModules", "Tous les modules")}</span>
                 </button>
               )}
             </div>
           </div>
 
-          <div className="space-y-1 pt-2">
-            <span className="block px-2 text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+          <div className="space-y-1.5 pt-2">
+            <span className="block px-2 text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
               {i18n("dServer", "Serveur")}
             </span>
-            <div className="space-y-0.5 text-xs">
+            <div className="space-y-1 text-sm">
               <button
                 type="button"
                 onClick={() => (onOpenView ? onOpenView("logs") : router.push(`/discord/logs?guildId=${selectedGuildId}`))}
                 aria-current={view === "logs" ? "page" : undefined}
                 className={cn(
-                  "w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-xs transition-colors cursor-pointer text-left",
+                  "w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors cursor-pointer text-left",
                   view === "logs" ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold" : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
                 )}
               >
-                <LHistory strokeWidth={1.75} className="h-3.5 w-3.5 shrink-0" />
+                <LHistory strokeWidth={1.75} className="h-4.5 w-4.5 shrink-0" />
                 <span>{i18n("dLogs", "Logs")}</span>
               </button>
 
@@ -495,11 +495,11 @@ export default function HubSidebar({
                 onClick={() => (onOpenView ? onOpenView("tools") : router.push(`/discord/?guildId=${selectedGuildId}&view=tools`))}
                 aria-current={view === "tools" ? "page" : undefined}
                 className={cn(
-                  "w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-xs transition-colors cursor-pointer text-left",
+                  "w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors cursor-pointer text-left",
                   view === "tools" ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold" : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
                 )}
               >
-                <LBriefcaseBusiness strokeWidth={1.75} className="h-3.5 w-3.5 shrink-0" />
+                <LBriefcaseBusiness strokeWidth={1.75} className="h-4.5 w-4.5 shrink-0" />
                 <span>{i18n("dTools", "Outils")}</span>
               </button>
 
@@ -508,11 +508,11 @@ export default function HubSidebar({
                 onClick={() => (onOpenView ? onOpenView("settings") : router.push(`/discord/server/settings?guildId=${selectedGuildId}`))}
                 aria-current={view === "settings" ? "page" : undefined}
                 className={cn(
-                  "w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-xs transition-colors cursor-pointer text-left",
+                  "w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors cursor-pointer text-left",
                   view === "settings" ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold" : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
                 )}
               >
-                <LSettings strokeWidth={1.75} className="h-3.5 w-3.5 shrink-0" />
+                <LSettings strokeWidth={1.75} className="h-4.5 w-4.5 shrink-0" />
                 <span>{i18n("dSettings", "Réglages")}</span>
               </button>
 
@@ -521,11 +521,11 @@ export default function HubSidebar({
                 onClick={() => (onOpenView ? onOpenView("access") : router.push(`/discord/server/permissions?guildId=${selectedGuildId}`))}
                 aria-current={view === "access" ? "page" : undefined}
                 className={cn(
-                  "w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-xs transition-colors cursor-pointer text-left",
+                  "w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors cursor-pointer text-left",
                   view === "access" ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold" : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
                 )}
               >
-                <LUserRoundCog strokeWidth={1.75} className="h-3.5 w-3.5 shrink-0" />
+                <LUserRoundCog strokeWidth={1.75} className="h-4.5 w-4.5 shrink-0" />
                 <span>{i18n("dAccess", "Accès")}</span>
               </button>
             </div>
@@ -534,14 +534,14 @@ export default function HubSidebar({
         </div>
 
         {totalModuleCount ? (
-          <div className="px-2 pt-2 pb-1 space-y-1.5 text-xs text-[var(--text-muted)] shrink-0">
-            <div className="flex items-center justify-between text-[11px]">
-              <span>{i18n("dActiveModules", "Modules actifs")}</span>
-              <span className="font-mono text-[10px] text-[var(--text-primary)]">
+          <div className="px-2.5 pt-2.5 pb-1 space-y-2 text-xs text-[var(--text-muted)] shrink-0">
+            <div className="flex items-center justify-between text-xs">
+              <span className="font-medium">{i18n("dActiveModules", "Modules actifs")}</span>
+              <span className="font-mono text-xs font-semibold text-[var(--text-primary)]">
                 {activeModuleCount ?? 0}/{totalModuleCount}
               </span>
             </div>
-            <div className="h-1 w-full rounded-full bg-[var(--panel-border)] overflow-hidden">
+            <div className="h-1.5 w-full rounded-full bg-[var(--panel-border)] overflow-hidden">
               <motion.div
                 className="h-full rounded-full bg-[var(--success)]"
                 initial={false}
@@ -554,7 +554,7 @@ export default function HubSidebar({
                 type="button"
                 onClick={() => (onOpenView ? onOpenView("logs", { logsTab: "channels" }) : router.push(`/discord/logs?guildId=${selectedGuildId}&tab=routing`))}
                 title={logGap.join(", ")}
-                className="flex items-center gap-1.5 text-[10px] text-[var(--warning)] hover:underline"
+                className="flex items-center gap-2 text-[11px] text-[var(--warning)] hover:underline"
               >
                 <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--warning)]" />
                 {logGap.length} sans salon de log
@@ -564,44 +564,44 @@ export default function HubSidebar({
         ) : null}
 
         <div className="space-y-4 pt-3 border-t border-[var(--panel-border)] shrink-0">
-          <motion.div variants={consoleSidebarItem} className="space-y-0.5 text-xs">
+          <motion.div variants={consoleSidebarItem} className="space-y-1 text-sm">
             <button
               type="button"
               onClick={onChangeGuild}
-              className="w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-[var(--text-primary)] hover:bg-[var(--surface-hover,var(--surface-raised))] transition-colors cursor-pointer font-medium text-left"
+              className="w-full flex items-center gap-3 rounded-lg px-3 py-2 text-[var(--text-primary)] hover:bg-[var(--surface-hover,var(--surface-raised))] transition-colors cursor-pointer font-medium text-left text-sm"
             >
-              <Home className="h-4 w-4" />
+              <Home className="h-4.5 w-4.5" />
               <span>{i18n("dMyServers", "Mes serveurs")}</span>
             </button>
             <a
               href={DOCS_URL}
               target="_blank"
               rel="noreferrer"
-              className="flex items-center justify-between rounded px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors"
+              className="flex items-center justify-between rounded-lg px-3 py-2 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors text-sm"
             >
-              <div className="flex items-center gap-2.5">
-                <BookOpen className="h-4 w-4" />
+              <div className="flex items-center gap-3">
+                <BookOpen className="h-4.5 w-4.5" />
                 <span>{i18n("dDocumentation", "Documentation")}</span>
               </div>
-              <ExternalLink className="h-3.5 w-3.5 opacity-60" />
+              <ExternalLink className="h-4 w-4 opacity-60" />
             </a>
             <a
               href={SUPPORT_DISCORD_URL}
               target="_blank"
               rel="noreferrer"
-              className="flex items-center justify-between rounded px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors"
+              className="flex items-center justify-between rounded-lg px-3 py-2 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors text-sm"
             >
-              <div className="flex items-center gap-2.5">
-                <LifeBuoyIcon className="h-4 w-4" />
+              <div className="flex items-center gap-3">
+                <LifeBuoyIcon className="h-4.5 w-4.5" />
                 <span>{i18n("dSupport", "Support")}</span>
               </div>
-              <ExternalLink className="h-3.5 w-3.5 opacity-60" />
+              <ExternalLink className="h-4 w-4 opacity-60" />
             </a>
           </motion.div>
 
           <motion.div variants={consoleSidebarItem} className="pt-2 border-t border-[var(--panel-border)]">
-            <div className="flex items-center justify-between p-1.5">
-              <div className="flex items-center gap-2.5 min-w-0">
+            <div className="flex items-center justify-between p-2">
+              <div className="flex items-center gap-3 min-w-0">
                 {currentAvatarUrl ? (
                   <ClientImage
                     candidates={[
@@ -612,21 +612,21 @@ export default function HubSidebar({
                     ].filter(Boolean) as string[]}
                     src={currentAvatarUrl}
                     alt={currentDisplayName}
-                    width={30}
-                    height={30}
+                    width={36}
+                    height={36}
                     fallback={
-                      <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--surface-raised)] text-[var(--accent-primary)] font-bold text-xs border border-[var(--panel-border)] shrink-0">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--surface-raised)] text-[var(--accent-primary)] font-bold text-xs border border-[var(--panel-border)] shrink-0">
                         {currentDisplayName.slice(0, 2).toUpperCase()}
                       </div>
                     }
-                    className="h-7 w-7 rounded-full object-cover border border-[var(--panel-border)] shrink-0"
+                    className="h-8 w-8 rounded-full object-cover border border-[var(--panel-border)] shrink-0"
                   />
                 ) : (
-                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--surface-raised)] text-[var(--accent-primary)] font-bold text-xs border border-[var(--panel-border)] shrink-0">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--surface-raised)] text-[var(--accent-primary)] font-bold text-xs border border-[var(--panel-border)] shrink-0">
                     {currentDisplayName.slice(0, 2).toUpperCase()}
                   </div>
                 )}
-                <span className="truncate text-xs font-bold text-[var(--text-primary)]">
+                <span className="truncate text-sm font-semibold text-[var(--text-primary)]">
                   {currentDisplayName}
                 </span>
               </div>
@@ -635,11 +635,11 @@ export default function HubSidebar({
                 <button
                   type="button"
                   onClick={toggleTheme}
-                  className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] rounded hover:bg-[var(--surface-hover,var(--surface-raised))] transition-colors cursor-pointer"
+                  className="p-2 text-[var(--text-muted)] hover:text-[var(--text-primary)] rounded-lg hover:bg-[var(--surface-hover,var(--surface-raised))] transition-colors cursor-pointer"
                   title={i18n(isDark ? "dThemeToggleLight" : "dThemeToggleDark", isDark ? "Activer le mode clair" : "Activer le mode sombre")}
                   aria-label={i18n(isDark ? "dThemeToggleLight" : "dThemeToggleDark", isDark ? "Activer le mode clair" : "Activer le mode sombre")}
                 >
-                  {isDark ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4 text-amber-400" />}
+                  {isDark ? <Moon className="h-4.5 w-4.5" /> : <Sun className="h-4.5 w-4.5 text-amber-400" />}
                 </button>
 
                 <DiscordLanguageDropdown align="right" />
@@ -647,11 +647,11 @@ export default function HubSidebar({
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="p-1.5 text-[var(--text-muted)] hover:text-rose-400 rounded hover:bg-[var(--surface-hover,var(--surface-raised))] transition-colors cursor-pointer"
+                  className="p-2 text-[var(--text-muted)] hover:text-rose-400 rounded-lg hover:bg-[var(--surface-hover,var(--surface-raised))] transition-colors cursor-pointer"
                   title={i18n("dLogout", "Déconnexion")}
                   aria-label={i18n("dLogout", "Déconnexion")}
                 >
-                  <LogOut className="h-4 w-4" />
+                  <LogOut className="h-4.5 w-4.5" />
                 </button>
               </div>
             </div>

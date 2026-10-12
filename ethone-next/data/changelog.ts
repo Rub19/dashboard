@@ -50575,5 +50575,54 @@ CHANGELOG_BY_LANG.en.unshift(v1_73_8_en);
 CHANGELOG_BY_LANG.es.unshift(v1_73_8_es);
 CHANGELOG_BY_LANG.de.unshift(v1_73_8_de);
 
+const v1_73_9_fr: ChangelogEntry = {
+  version: "v1.73.9",
+  date: "2026-10-12",
+  title: "Console & Dashboard : Modération des salons vocaux, gestion des participants de concours & simulateur de streams",
+  items: [
+    "Salons vocaux temporaires : bouton de bascule Verrouiller / Déverrouiller en direct modifiant les permissions Discord sans fermer le salon",
+    "Gestion des participants de concours : déploiement de la liste complète des inscrits avec bouton de disqualification en 1 clic et mise à jour dynamique de l'annonce Discord",
+    "Simulateur d'alerte streamer : modale de test d'alerte en direct vérifiant le salon cible, le rendu de l'embed et l'attribution du rôle @En Live",
+  ],
+};
+
+const v1_73_9_en: ChangelogEntry = {
+  version: "v1.73.9",
+  date: "2026-10-12",
+  title: "Console & Dashboard: Live voice room moderation, giveaway participants manager & live stream simulator",
+  items: [
+    "Temporary Voice Rooms: Live Lock / Unlock toggle updating Discord permissions instantly without terminating the session",
+    "Giveaway Participants Manager: Expandable participants list with 1-click disqualification and live Discord embed update",
+    "Live Stream Alert Simulator: Interactive test modal validating target channel, embed preview, and @Live role assignment",
+  ],
+};
+
+const v1_73_9_es: ChangelogEntry = {
+  version: "v1.73.9",
+  date: "2026-10-12",
+  title: "Consola y Panel: Moderación de salas de voz, participantes de sorteos y simulador de directos",
+  items: [
+    "Salas de voz temporales: Bloqueo y desbloqueo en tiempo real de permisos de Discord sin cerrar la sala",
+    "Gestión de participantes de sorteos: Lista detallada con descalificación en un clic y actualización del mensaje en Discord",
+    "Simulador de alertas de streamer: Prueba de envío de alerta con previsualización del embed y rol En Directo",
+  ],
+};
+
+const v1_73_9_de: ChangelogEntry = {
+  version: "v1.73.9",
+  date: "2026-10-12",
+  title: "Konsole & Dashboard: Live-Sprachkanal-Moderation, Giveaway-Teilnehmerverwaltung & Stream-Simulator",
+  items: [
+    "Temporäre Sprachkanäle: Live-Sperren/Entsperren-Schalter zur Aktualisierung der Discord-Rechte ohne Kanalbeendigung",
+    "Giveaway-Teilnehmerverwaltung: Ausklappbare Teilnehmerliste mit 1-Klick-Disqualifikation und Live-Discord-Update",
+    "Stream-Alert-Simulator: Interaktives Test-Modal zur Überprüfung des Zielkanals und der @Live-Rollenzuweisung",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_73_9_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_73_9_en);
+CHANGELOG_BY_LANG.es.unshift(v1_73_9_es);
+CHANGELOG_BY_LANG.de.unshift(v1_73_9_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

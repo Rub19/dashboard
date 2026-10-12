@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.73.9 — 2026-10-12
+
+**Console & Dashboard : Modération des salons vocaux, gestion des participants de concours & simulateur de streams**
+
+- **Salons vocaux temporaires** : Bouton de bascule Verrouiller / Déverrouiller en direct modifiant les permissions Discord (`VoicePermissionService.applyLock`) sans fermer la session vocale.
+- **Gestion des participants de concours** : Déploiement de la liste complète des inscrits avec bouton de disqualification en 1 clic (`DELETE /api/guilds/:guildId/giveaways/:id/participants/:userId`) et mise à jour dynamique de l'annonce Discord.
+- **Simulateur d'alerte streamer** : Modale de test d'alerte en direct (`POST /api/guilds/:guildId/streamers/simulate`) vérifiant le salon cible, le rendu de l'embed et l'attribution du rôle @En Live.
+
 ## v1.73.8 — 2026-10-12
 
 **Console & Dashboard : Nouvelles fonctionnalités réelles (Sauvegardes, Transcripts, Musique, Logs en direct et Télémétrie)**

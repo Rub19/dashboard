@@ -67,6 +67,7 @@ export default function ConsoleGiveaways({ guildId }: { guildId: string }) {
   const [form, setForm] = useState(EMPTY_FORM);
   const [creating, setCreating] = useState(false);
   const [busy, setBusy] = useState<string | null>(null);
+  const [viewingParticipants, setViewingParticipants] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     const [l, o] = await Promise.all([api<{ giveaways: Giveaway[] }>("/giveaways/list"), api<Overview>("/giveaways/overview", { silent: true })]);
@@ -113,6 +114,17 @@ export default function ConsoleGiveaways({ guildId }: { guildId: string }) {
     const r = await api(`/giveaways/${g.id}/${action}`, { method: "POST", json: action === "extend" ? { minutes: 1440 } : action === "reroll" ? { count: 1 } : {} });
     setBusy(null);
     if (r) void load();
+  };
+
+  const removeParticipant = async (g: Giveaway, p: Participant) => {
+    if (!(await confirmDialog(`Retirer ${p.username} de « ${g.prize} » ?`, { title: "Disqualifier", confirmLabel: "Disqualifier" }))) return;
+    setBusy(`disqualify:${p.userId}`);
+    const r = await api(`/giveaways/${g.id}/participants/${p.userId}`, { method: "DELETE" });
+    setBusy(null);
+    if (r) {
+      success("Participant retiré", `${p.username} a été disqualifié du tirage.`);
+      void load();
+    }
   };
 
   const channelName = (id: string) => channels.find((c) => c.id === id)?.name ?? "salon supprimé";
@@ -194,24 +206,59 @@ export default function ConsoleGiveaways({ guildId }: { guildId: string }) {
           <ul>
             <AnimatePresence initial={false}>
               {running.map((g) => (
-                <motion.li key={g.id} layout initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, height: 0 }} transition={SPRING_LAYOUT} className="flex flex-wrap items-center gap-3 border-t border-[var(--panel-border)] px-5 py-3 first:border-t-0">
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-[13px] font-semibold text-[var(--text-primary)]">{g.prize}</p>
-                    <p className="truncate text-[11px] text-[var(--text-muted)]">
-                      #{channelName(g.channelId)} · {g.participants.length} participant{g.participants.length > 1 ? "s" : ""} · {g.winnerCount} gagnant{g.winnerCount > 1 ? "s" : ""} · fin {untilLabel(g.endsAt)}
-                    </p>
+                <motion.li key={g.id} layout initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, height: 0 }} transition={SPRING_LAYOUT} className="border-t border-[var(--panel-border)] px-5 py-3 first:border-t-0">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-[13px] font-semibold text-[var(--text-primary)]">{g.prize}</p>
+                      <p className="truncate text-[11px] text-[var(--text-muted)]">
+                        #{channelName(g.channelId)} · {g.participants.length} participant{g.participants.length > 1 ? "s" : ""} · {g.winnerCount} gagnant{g.winnerCount > 1 ? "s" : ""} · fin {untilLabel(g.endsAt)}
+                      </p>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      <GhostButton onClick={() => setViewingParticipants((id) => (id === g.id ? null : g.id))}>
+                        Participants ({g.participants.length})
+                      </GhostButton>
+                      <GhostButton onClick={() => act(g, "extend")} disabled={busy !== null}>
+                        +1 jour
+                      </GhostButton>
+                      <GhostButton onClick={() => act(g, "end")} disabled={busy !== null}>
+                        Tirer maintenant
+                      </GhostButton>
+                      <GhostButton onClick={() => act(g, "cancel")} disabled={busy !== null}>
+                        Annuler
+                      </GhostButton>
+                    </div>
                   </div>
-                  <div className="flex flex-wrap gap-1.5">
-                    <GhostButton onClick={() => act(g, "extend")} disabled={busy !== null}>
-                      +1 jour
-                    </GhostButton>
-                    <GhostButton onClick={() => act(g, "end")} disabled={busy !== null}>
-                      Tirer maintenant
-                    </GhostButton>
-                    <GhostButton onClick={() => act(g, "cancel")} disabled={busy !== null}>
-                      Annuler
-                    </GhostButton>
-                  </div>
+                  <AnimatePresence initial={false}>
+                    {viewingParticipants === g.id && (
+                      <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={SPRING_LAYOUT} className="mt-3 overflow-hidden rounded-xl border border-[var(--panel-border)] bg-[var(--surface-hover)] p-3">
+                        <div className="mb-2 flex items-center justify-between text-xs font-semibold text-[var(--text-primary)]">
+                          <span>Participants enregistrés ({g.participants.length})</span>
+                          <span className="text-[11px] font-normal text-[var(--text-muted)]">Cliquer sur la croix pour disqualifier</span>
+                        </div>
+                        {g.participants.length === 0 ? (
+                          <p className="py-1 text-xs text-[var(--text-muted)]">Aucun participant pour le moment.</p>
+                        ) : (
+                          <div className="flex max-h-48 flex-wrap gap-1.5 overflow-y-auto">
+                            {g.participants.map((p) => (
+                              <span key={p.userId} className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-2.5 py-1 text-xs text-[var(--text-primary)]">
+                                <span>@{p.username}</span>
+                                <button
+                                  type="button"
+                                  title={`Disqualifier @${p.username}`}
+                                  disabled={busy !== null}
+                                  onClick={() => removeParticipant(g, p)}
+                                  className="text-[var(--text-muted)] transition-colors hover:text-[var(--danger)]"
+                                >
+                                  ×
+                                </button>
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </motion.li>
               ))}
             </AnimatePresence>

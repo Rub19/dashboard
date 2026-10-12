@@ -113,6 +113,16 @@ export default function ConsoleVoice({ guildId }: { guildId: string }) {
     if (!(await confirmDialog(`Retirer « ${h.name} » ? Le salon Discord #${channelName(h.channelId)} n'est pas supprimé.`, { title: "Retirer le salon", confirmLabel: "Retirer" }))) return;
     if (await api(`/voice/hubs/${h.id}`, { method: "DELETE" })) setHubs((l) => l?.filter((x) => x.id !== h.id) ?? null);
   };
+  const toggleLockRoom = async (r: Room) => {
+    const nextLocked = !r.isLocked;
+    const res = await api(`/voice/rooms/${r.id}/action`, {
+      method: "POST",
+      json: { action: nextLocked ? "lock" : "unlock" },
+    });
+    if (res) {
+      setRooms((l) => l.map((x) => (x.id === r.id ? { ...x, isLocked: nextLocked } : x)));
+    }
+  };
   const closeRoom = async (r: Room) => {
     if (!(await confirmDialog(`Fermer le salon « ${r.name} » ? Les membres présents seront déconnectés.`, { title: "Fermer le salon", confirmLabel: "Fermer" }))) return;
     if (await api(`/voice/rooms/${r.id}/action`, { method: "POST", json: { action: "delete" } })) setRooms((l) => l.filter((x) => x.id !== r.id));
@@ -242,7 +252,12 @@ export default function ConsoleVoice({ guildId }: { guildId: string }) {
                     {r.ownerTag} · {r.hubName} · ouvert {sinceLabel(r.createdAt)}
                   </p>
                 </div>
-                <GhostButton onClick={() => closeRoom(r)}>Fermer</GhostButton>
+                <div className="flex items-center gap-1.5">
+                  <GhostButton onClick={() => toggleLockRoom(r)}>
+                    {r.isLocked ? "Déverrouiller" : "Verrouiller"}
+                  </GhostButton>
+                  <GhostButton onClick={() => closeRoom(r)}>Fermer</GhostButton>
+                </div>
               </li>
             ))}
           </ul>

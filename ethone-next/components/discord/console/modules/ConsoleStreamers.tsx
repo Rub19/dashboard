@@ -75,6 +75,30 @@ export default function ConsoleStreamers({ guildId }: { guildId: string }) {
   const [username, setUsername] = useState("");
   const [busy, setBusy] = useState<string | null>(null);
   const [note, setNote] = useState<string | null>(null);
+  const [simulating, setSimulating] = useState(false);
+  const [simData, setSimData] = useState({
+    platform: "twitch" as Platform,
+    username: "Gotaga",
+    title: "[TEST] Live test alerte ETHONE",
+    game: "Just Chatting",
+    viewers: 4500,
+    assignLiveRole: false,
+  });
+
+  const runSimulation = async () => {
+    setBusy("simulate");
+    const r = await api<{ success: boolean; channelId?: string; messageId?: string; roleAssigned?: boolean }>("/streamers/simulate", {
+      method: "POST",
+      json: simData,
+    });
+    setBusy(null);
+    setSimulating(false);
+    if (r?.success) {
+      setNote(`Alerte simulée envoyée avec succès sur Discord${r.roleAssigned ? " (rôle @En Live attribué)" : ""}.`);
+    } else {
+      setNote("Échec de la simulation : vérifie que le salon par défaut est configuré et qu'Etho a les permissions d'écrire.");
+    }
+  };
 
   const load = useCallback(async () => {
     const [c, l] = await Promise.all([api<Config>("/streamers/config"), api<{ streamers: Streamer[] }>("/streamers/list", { silent: true })]);
@@ -153,7 +177,7 @@ export default function ConsoleStreamers({ guildId }: { guildId: string }) {
         <StatTile label="Vérification" value={`${cfg.checkIntervalMinutes} min`} />
       </motion.div>
 
-      <Panel title="Streamers">
+      <Panel title="Streamers" actions={<GhostButton onClick={() => setSimulating(true)}>Simuler un live</GhostButton>}>
         <div className="flex flex-wrap items-center gap-2 px-5 py-3">
           <Segmented label="Plateforme" value={platform} options={Object.entries(PLATFORM) as [Platform, string][]} onChange={setPlatform} />
           <input
@@ -292,6 +316,87 @@ export default function ConsoleStreamers({ guildId }: { guildId: string }) {
           </div>
         </Row>
       </Panel>
+
+      <AnimatePresence>
+        {simulating && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={SPRING_LAYOUT}
+              className="relative flex w-full max-w-lg flex-col rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] p-5 shadow-2xl"
+            >
+              <div className="mb-4 flex items-center justify-between">
+                <div>
+                  <h3 className="text-sm font-bold text-[var(--text-primary)]">Simulateur d&apos;alerte en direct</h3>
+                  <p className="text-xs text-[var(--text-muted)]">Envoie une alerte de test dans le salon configuré pour valider le rendu Discord.</p>
+                </div>
+                <GhostButton onClick={() => setSimulating(false)}>Fermer</GhostButton>
+              </div>
+              <div className="space-y-3">
+                <Row label="Plateforme">
+                  <Segmented
+                    label="Plateforme"
+                    value={simData.platform}
+                    options={Object.entries(PLATFORM) as [Platform, string][]}
+                    onChange={(p) => setSimData((s) => ({ ...s, platform: p }))}
+                  />
+                </Row>
+                <Row label="Nom du streamer">
+                  <input
+                    value={simData.username}
+                    onChange={(e) => setSimData((s) => ({ ...s, username: e.target.value }))}
+                    className="h-9 w-full rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-3 text-sm text-[var(--text-primary)] outline-none"
+                  />
+                </Row>
+                <Row label="Titre du live">
+                  <input
+                    value={simData.title}
+                    onChange={(e) => setSimData((s) => ({ ...s, title: e.target.value }))}
+                    className="h-9 w-full rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-3 text-sm text-[var(--text-primary)] outline-none"
+                  />
+                </Row>
+                <Row label="Jeu / Catégorie">
+                  <input
+                    value={simData.game}
+                    onChange={(e) => setSimData((s) => ({ ...s, game: e.target.value }))}
+                    className="h-9 w-full rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-3 text-sm text-[var(--text-primary)] outline-none"
+                  />
+                </Row>
+                <Row label="Spectateurs">
+                  <Stepper
+                    value={simData.viewers}
+                    min={1}
+                    max={500000}
+                    step={100}
+                    unit="viewers"
+                    onCommit={(n) => setSimData((s) => ({ ...s, viewers: n }))}
+                  />
+                </Row>
+                <Row label="Tester le rôle @En Live" hint="Vérifie si Etho peut attribuer le rôle configuré.">
+                  <Switch
+                    checked={simData.assignLiveRole}
+                    onChange={(v) => setSimData((s) => ({ ...s, assignLiveRole: v }))}
+                    label="Attribuer le rôle"
+                  />
+                </Row>
+              </div>
+              <div className="mt-5 flex justify-end gap-2 border-t border-[var(--panel-border)] pt-4">
+                <GhostButton onClick={() => setSimulating(false)}>Annuler</GhostButton>
+                <button
+                  type="button"
+                  disabled={busy === "simulate" || !simData.username.trim()}
+                  onClick={runSimulation}
+                  className="rounded-lg bg-[var(--accent-primary)] px-4 py-2 text-xs font-bold text-white transition-opacity hover:opacity-90 disabled:opacity-40"
+                >
+                  {busy === "simulate" ? "Envoi…" : "Déclencher l'alerte"}
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </ConsolePage>
   );
 }

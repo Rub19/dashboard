@@ -36,69 +36,6 @@ export interface DiscordIncident {
   timestamp: string;
 }
 
-const SAMPLE_INCIDENTS: DiscordIncident[] = [
-  {
-    id: "sample-1",
-    category: "ANTI_RAID",
-    severity: "DANGER",
-    status: "SANCTIONED",
-    title: "Anti-Raid · Détection de raid coordonné",
-    description: "Afflux anormal de 34 comptes créés il y a moins de 10 minutes avec le même motif d'avatar.",
-    actionTaken: "Verrouillage salon & Expulsion de masse",
-    actor: "Etho Anti-Raid Guard",
-    target: "34 nouveaux membres",
-    timestamp: new Date(Date.now() - 3 * 60 * 1000).toISOString(),
-  },
-  {
-    id: "sample-2",
-    category: "AUTOMOD",
-    severity: "DANGER",
-    status: "SANCTIONED",
-    title: "AutoMod · Lien de hameçonnage détecté",
-    description: "Publication d'une fausse invitation Steam Nitro dans #general.",
-    actionTaken: "Message supprimé & Timeout 24h",
-    actor: "Etho AutoMod Engine",
-    target: "Kev_09#4112",
-    timestamp: new Date(Date.now() - 14 * 60 * 1000).toISOString(),
-  },
-  {
-    id: "sample-3",
-    category: "DETECTION",
-    severity: "WARNING",
-    status: "IN_PROGRESS",
-    title: "Détection · Mention de masse (@everyone)",
-    description: "Tentative de mention globale par un compte ayant moins de 2 jours sur le serveur.",
-    actionTaken: "Alerte modération envoyée",
-    actor: "Etho Watchdog",
-    target: "crypto_drop#8821",
-    timestamp: new Date(Date.now() - 48 * 60 * 1000).toISOString(),
-  },
-  {
-    id: "sample-4",
-    category: "SANCTION",
-    severity: "DANGER",
-    status: "SANCTIONED",
-    title: "Sanction · Retrait de permissions Administrateur",
-    description: "Élévation de privilèges suspecte détectée hors des créneaux de maintenance autorisés.",
-    actionTaken: "Rôles retirés & Token bot révoqué",
-    actor: "Etho Privilege Shield",
-    target: "MusicBot#9901",
-    timestamp: new Date(Date.now() - 110 * 60 * 1000).toISOString(),
-  },
-  {
-    id: "sample-5",
-    category: "AUTOMOD",
-    severity: "INFO",
-    status: "RESOLVED",
-    title: "AutoMod · Filtre de flood textuel",
-    description: "Envoi répétitif de 12 messages en moins de 3 secondes.",
-    actionTaken: "Messages nettoyés & Avertissement doux",
-    actor: "Etho Rate Limiter",
-    target: "gamer_pro#1337",
-    timestamp: new Date(Date.now() - 210 * 60 * 1000).toISOString(),
-  },
-];
-
 interface DiscordIncidentsTimelineProps {
   events?: Array<{
     id: string;
@@ -127,7 +64,7 @@ export default function DiscordIncidentsTimeline({
 
   const normalizedIncidents = useMemo<DiscordIncident[]>(() => {
     if (!events || events.length === 0) {
-      return SAMPLE_INCIDENTS;
+      return [];
     }
 
     return events.map((e) => {
@@ -251,109 +188,126 @@ export default function DiscordIncidentsTimeline({
         </div>
       </div>
 
-      <div className="flex flex-col gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] p-4">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[var(--text-muted)]" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Rechercher par auteur, cible, motif ou action..."
-            className="w-full rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised,transparent)] py-2 pl-9 pr-8 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] outline-none focus:border-[var(--accent-primary)]/70"
-          />
-          {searchQuery && (
-            <button
-              type="button"
-              onClick={() => setSearchQuery("")}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-            >
-              <X className="h-3.5 w-3.5" />
-            </button>
-          )}
-        </div>
+      {normalizedIncidents.length > 0 && (
+        <div className="flex flex-col gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] p-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[var(--text-muted)]" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Rechercher par auteur, cible, motif ou action..."
+              className="w-full rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised,transparent)] py-2 pl-9 pr-8 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] outline-none focus:border-[var(--accent-primary)]/70"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery("")}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
+          </div>
 
-        <div className="flex flex-wrap items-center gap-2 pt-1 text-xs">
-          <span className="flex items-center gap-1 text-[var(--text-muted)]">
-            <Filter className="h-3 w-3" /> Module:
-          </span>
-          {(
-            [
-              ["ALL", "Tous"],
-              ["AUTOMOD", "AutoMod"],
-              ["ANTI_RAID", "Anti-Raid"],
-              ["SANCTION", "Sanctions"],
-              ["DETECTION", "Détections"],
-            ] as const
-          ).map(([val, label]) => (
-            <button
-              key={val}
-              type="button"
-              onClick={() => setCategoryFilter(val)}
-              className={cn(
-                "rounded-md px-2.5 py-1 text-[11px] font-semibold transition-all active:scale-[0.97]",
-                categoryFilter === val
-                  ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)]"
-                  : "bg-[var(--surface-hover)] text-[var(--text-muted)] hover:text-[var(--text-primary)]",
-              )}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
+          <div className="flex flex-wrap items-center gap-2 pt-1 text-xs">
+            <span className="flex items-center gap-1 text-[var(--text-muted)]">
+              <Filter className="h-3 w-3" /> Module:
+            </span>
+            {(
+              [
+                ["ALL", "Tous"],
+                ["AUTOMOD", "AutoMod"],
+                ["ANTI_RAID", "Anti-Raid"],
+                ["SANCTION", "Sanctions"],
+                ["DETECTION", "Détections"],
+              ] as const
+            ).map(([val, label]) => (
+              <button
+                key={val}
+                type="button"
+                onClick={() => setCategoryFilter(val)}
+                className={cn(
+                  "rounded-md px-2.5 py-1 text-[11px] font-semibold transition-all active:scale-[0.97]",
+                  categoryFilter === val
+                    ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)]"
+                    : "bg-[var(--surface-hover)] text-[var(--text-muted)] hover:text-[var(--text-primary)]",
+                )}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
 
-        <div className="flex flex-wrap items-center gap-2 text-xs">
-          <span className="text-[var(--text-muted)]">Sévérité:</span>
-          {(
-            [
-              ["ALL", "Toutes"],
-              ["DANGER", "Danger"],
-              ["WARNING", "Warning"],
-              ["INFO", "Info"],
-            ] as const
-          ).map(([val, label]) => (
-            <button
-              key={val}
-              type="button"
-              onClick={() => setSeverityFilter(val)}
-              className={cn(
-                "rounded-md px-2 py-0.5 text-[11px] font-medium transition-all active:scale-[0.97]",
-                severityFilter === val
-                  ? "bg-[var(--text-primary)]/15 font-semibold text-[var(--text-primary)]"
-                  : "text-[var(--text-muted)] hover:text-[var(--text-primary)]",
-              )}
-            >
-              {label}
-            </button>
-          ))}
+          <div className="flex flex-wrap items-center gap-2 text-xs">
+            <span className="text-[var(--text-muted)]">Sévérité:</span>
+            {(
+              [
+                ["ALL", "Toutes"],
+                ["DANGER", "Danger"],
+                ["WARNING", "Warning"],
+                ["INFO", "Info"],
+              ] as const
+            ).map(([val, label]) => (
+              <button
+                key={val}
+                type="button"
+                onClick={() => setSeverityFilter(val)}
+                className={cn(
+                  "rounded-md px-2 py-0.5 text-[11px] font-medium transition-all active:scale-[0.97]",
+                  severityFilter === val
+                    ? "bg-[var(--text-primary)]/15 font-semibold text-[var(--text-primary)]"
+                    : "text-[var(--text-muted)] hover:text-[var(--text-primary)]",
+                )}
+              >
+                {label}
+              </button>
+            ))}
 
-          <span className="ml-2 text-[var(--text-muted)]">Statut:</span>
-          {(
-            [
-              ["ALL", "Tous"],
-              ["SANCTIONED", "Sanctionné"],
-              ["RESOLVED", "Résolu"],
-              ["IN_PROGRESS", "En cours"],
-            ] as const
-          ).map(([val, label]) => (
-            <button
-              key={val}
-              type="button"
-              onClick={() => setStatusFilter(val)}
-              className={cn(
-                "rounded-md px-2 py-0.5 text-[11px] font-medium transition-all active:scale-[0.97]",
-                statusFilter === val
-                  ? "bg-[var(--text-primary)]/15 font-semibold text-[var(--text-primary)]"
-                  : "text-[var(--text-muted)] hover:text-[var(--text-primary)]",
-              )}
-            >
-              {label}
-            </button>
-          ))}
+            <span className="ml-2 text-[var(--text-muted)]">Statut:</span>
+            {(
+              [
+                ["ALL", "Tous"],
+                ["SANCTIONED", "Sanctionné"],
+                ["RESOLVED", "Résolu"],
+                ["IN_PROGRESS", "En cours"],
+              ] as const
+            ).map(([val, label]) => (
+              <button
+                key={val}
+                type="button"
+                onClick={() => setStatusFilter(val)}
+                className={cn(
+                  "rounded-md px-2 py-0.5 text-[11px] font-medium transition-all active:scale-[0.97]",
+                  statusFilter === val
+                    ? "bg-[var(--text-primary)]/15 font-semibold text-[var(--text-primary)]"
+                    : "text-[var(--text-muted)] hover:text-[var(--text-primary)]",
+                )}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] p-4">
-        {filteredIncidents.length === 0 ? (
+        {events === null ? (
+          <div className="flex flex-col items-center justify-center py-12 text-center text-[var(--text-muted)]">
+            <div className="h-6 w-6 animate-spin rounded-full border-2 border-[var(--accent-primary)] border-t-transparent" />
+            <p className="mt-3 text-xs font-medium">Chargement des incidents en cours…</p>
+          </div>
+        ) : normalizedIncidents.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-12 text-center text-[var(--text-muted)]">
+            <ShieldCheck className="h-9 w-9 text-emerald-400" />
+            <p className="mt-3 text-sm font-semibold text-[var(--text-primary)]">
+              Aucun incident enregistré
+            </p>
+            <p className="mt-1 text-xs text-[var(--text-muted)] max-w-sm">
+              Tous les modules de sécurité (AutoMod, Anti-Raid, Sanctions) sont opérationnels. Aucun incident n&apos;a été détecté sur ce serveur.
+            </p>
+          </div>
+        ) : filteredIncidents.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-center text-[var(--text-muted)]">
             <ShieldCheck className="h-8 w-8 text-emerald-400" />
             <p className="mt-3 text-sm font-semibold text-[var(--text-primary)]">

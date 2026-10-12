@@ -52027,6 +52027,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_6_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_6_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_6_de);
 
+const v1_75_7_fr: ChangelogEntry = {
+  version: "v1.75.7",
+  date: "2026-10-12",
+  title: "Suppression Totale des Placeholders & Données 100% Authentiques",
+  items: [
+    "Suppression définitive de la liste statique d'exemples fictifs (SAMPLE_INCIDENTS) dans la frise d'incidents du bot Discord : aucun faux membre, faux motif ni fausse sanction affichée.",
+    "Affichage exclusif des données réelles de sécurité : si aucun incident n'est enregistré sur le serveur, l'interface présente un état vide propre confirmant l'intégrité et la protection active du serveur.",
+    "Indicateur de chargement dynamique fluide pendant la récupération des événements réels depuis l'API Discord.",
+  ],
+};
+
+const v1_75_7_en: ChangelogEntry = {
+  version: "v1.75.7",
+  date: "2026-10-12",
+  title: "Total Placeholder Removal & 100% Genuine Security Data",
+  items: [
+    "Completely removed mock incident placeholders (SAMPLE_INCIDENTS) from Discord bot incident timeline: zero fake users, reasons, or sanctions displayed.",
+    "Exclusively genuine security telemetry: when a server has zero incidents, a clean empty state is displayed confirming system health and active protection.",
+    "Dynamic loading feedback while genuine incidents and security telemetry are retrieved from the Discord bot API.",
+  ],
+};
+
+const v1_75_7_es: ChangelogEntry = {
+  version: "v1.75.7",
+  date: "2026-10-12",
+  title: "Eliminación Total de Placeholders y Datos 100% Auténticos",
+  items: [
+    "Eliminación definitiva de la lista de incidentes ficticios (SAMPLE_INCIDENTS) en la línea de tiempo del bot: sin usuarios ni sanciones falsas.",
+    "Datos reales exclusivos: cuando no hay incidentes en el servidor, se muestra un estado limpio que confirma la protección activa.",
+    "Indicador de carga en tiempo real durante la consulta a la API del bot de Discord.",
+  ],
+};
+
+const v1_75_7_de: ChangelogEntry = {
+  version: "v1.75.7",
+  date: "2026-10-12",
+  title: "Vollständige Platzhalter-Entfernung & 100% Echte Daten",
+  items: [
+    "Statische Test-Vorfälle (SAMPLE_INCIDENTS) in der Discord-Bot-Incident-Timeline restlos entfernt: keine Fake-Nutzer oder falschen Sanktionen.",
+    "Ausschließlich echte Sicherheitsdaten: Wenn keine Vorfälle vorliegen, bestätigt ein sauberer Status die aktive Server-Sicherheit.",
+    "Nahtloser Ladeindikator beim Abruf echter Telemetriedaten von der Discord-Bot-API.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_7_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_7_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_7_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_7_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

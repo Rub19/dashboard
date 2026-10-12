@@ -2,6 +2,19 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.7 — 2026-10-12
+
+**Suppression Totale des Placeholders d'Incidents & Télémétrie 100% Authentique**
+
+- **Éradication des Faux Incidents & Exemples Statiques** :
+  - Suppression intégrale de la structure fictive `SAMPLE_INCIDENTS` dans la frise chronologique de sécurité du bot Discord (`DiscordIncidentsTimeline`).
+  - Élimination des faux pseudonymes (`Kev_09#4112`, `crypto_drop#8821`, `MusicBot#9901`, `gamer_pro#1337`), faux motifs de raid et sanctions de démonstration.
+- **Télémétrie et États Vides Authentiques** :
+  - Restitution exclusive des événements réels remontés par l'API Discord du bot (`useBotEvents`).
+  - Ajout d'un état vide propre et explicite avec badge bouclier (`ShieldCheck`) lorsque le serveur ne comporte aucun incident : confirmation que tous les modules de protection (AutoMod, Anti-Raid, Sanctions) sont opérationnels et qu'aucune menace n'a été détectée.
+  - Masquage automatique des filtres et de la barre de recherche lorsqu'aucun incident réel n'existe, éliminant tout artefact d'interface trompeur.
+  - Indicateur de chargement fluide durant la récupération des événements réels.
+
 ## v1.75.6 — 2026-10-12
 
 **Conformité Européenne Complète : Gestionnaire de Cookies (ePrivacy), Mentions Légales & RGPD**

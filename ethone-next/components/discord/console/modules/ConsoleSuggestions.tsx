@@ -8,6 +8,7 @@ import { sinceLabel } from "@/lib/discord/security-scan";
 import { SPRING_LAYOUT } from "@/lib/ease";
 import { pageStagger } from "@/lib/motion-variants";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/components/ToastProvider";
 import { ConsolePage, EmptyLine, GhostButton, Panel, Row, Segmented, StatTile, Switch, useGuildApi } from "../kit";
 
 type Status = "pending" | "under_review" | "planned" | "accepted" | "in_progress" | "completed" | "rejected" | "duplicate" | "on_hold";
@@ -44,6 +45,34 @@ export default function ConsoleSuggestions({ guildId }: { guildId: string }) {
   const [open, setOpen] = useState<string | null>(null);
   const [reply, setReply] = useState("");
   const [busy, setBusy] = useState(false);
+  const { success: toastSuccess } = useToast();
+  const [showCreate, setShowCreate] = useState(false);
+  const [newTitle, setNewTitle] = useState("");
+  const [newDesc, setNewDesc] = useState("");
+  const [newCategory, setNewCategory] = useState("Général");
+  const [createBusy, setCreateBusy] = useState(false);
+
+  const submitSuggestion = async () => {
+    if (!newTitle.trim() || !newDesc.trim() || createBusy) return;
+    setCreateBusy(true);
+    const r = await api<{ success: boolean; suggestion: Suggestion }>("/suggestions/create", {
+      method: "POST",
+      json: {
+        title: newTitle.trim(),
+        description: newDesc.trim(),
+        category: newCategory.trim() || "Général",
+      },
+    });
+    setCreateBusy(false);
+    if (r?.success && r.suggestion) {
+      toastSuccess("Suggestions", `Suggestion #${r.suggestion.numericId} publiée avec succès !`);
+      setList((prev) => [r.suggestion, ...(prev ?? [])]);
+      setNewTitle("");
+      setNewDesc("");
+      setShowCreate(false);
+      api<Overview>("/suggestions/overview", { silent: true }).then((o) => o && setOv(o));
+    }
+  };
 
   const load = useCallback(async () => {
     const [o, l] = await Promise.all([api<Overview>("/suggestions/overview", { silent: true }), api<{ suggestions: Suggestion[] }>("/suggestions/list")]);
@@ -113,19 +142,76 @@ export default function ConsoleSuggestions({ guildId }: { guildId: string }) {
       <Panel
         title="Idées"
         actions={
-          <Segmented
-            label="Filtre"
-            value={filter}
-            options={[
-              ["todo", "À traiter"],
-              ["yes", "Acceptées"],
-              ["no", "Refusées"],
-              ["all", "Toutes"],
-            ]}
-            onChange={setFilter}
-          />
+          <div className="flex flex-wrap items-center gap-2">
+            <Segmented
+              label="Filtre"
+              value={filter}
+              options={[
+                ["todo", "À traiter"],
+                ["yes", "Acceptées"],
+                ["no", "Refusées"],
+                ["all", "Toutes"],
+              ]}
+              onChange={setFilter}
+            />
+            <GhostButton onClick={() => setShowCreate((v) => !v)}>
+              {showCreate ? "Fermer" : "Nouvelle idée"}
+            </GhostButton>
+          </div>
         }
       >
+        <AnimatePresence initial={false}>
+          {showCreate && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={SPRING_LAYOUT}
+              className="overflow-hidden border-b border-[var(--panel-border)] bg-[var(--surface-hover)]/40 p-4"
+            >
+              <div className="space-y-3">
+                <p className="text-xs font-semibold text-[var(--text-primary)]">Déposer une idée ou proposition officielle</p>
+                <div className="grid gap-2 sm:grid-cols-3">
+                  <input
+                    type="text"
+                    value={newTitle}
+                    onChange={(e) => setNewTitle(e.target.value)}
+                    placeholder="Titre de l'idée"
+                    maxLength={100}
+                    className="h-8 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/70 sm:col-span-2"
+                  />
+                  <input
+                    type="text"
+                    value={newCategory}
+                    onChange={(e) => setNewCategory(e.target.value)}
+                    placeholder="Catégorie (ex: Général)"
+                    maxLength={32}
+                    className="h-8 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/70"
+                  />
+                </div>
+                <textarea
+                  value={newDesc}
+                  onChange={(e) => setNewDesc(e.target.value)}
+                  placeholder="Décris le projet ou la suggestion en détail…"
+                  maxLength={1000}
+                  rows={3}
+                  className="w-full rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-3 py-2 text-xs text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/70"
+                />
+                <div className="flex justify-end gap-2 pt-1">
+                  <GhostButton onClick={() => setShowCreate(false)}>Annuler</GhostButton>
+                  <button
+                    type="button"
+                    disabled={createBusy || !newTitle.trim() || !newDesc.trim()}
+                    onClick={submitSuggestion}
+                    className="rounded-lg bg-[var(--accent-primary)] px-3 py-1.5 text-xs font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-40"
+                  >
+                    {createBusy ? "Publication…" : "Publier sur Discord"}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
         {!list ? (
           <EmptyLine>Chargement…</EmptyLine>
         ) : shown.length === 0 ? (

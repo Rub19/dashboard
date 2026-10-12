@@ -8,7 +8,8 @@ import { sinceLabel } from "@/lib/discord/security-scan";
 import { SPRING_LAYOUT } from "@/lib/ease";
 import { pageStagger } from "@/lib/motion-variants";
 import { cn } from "@/lib/utils";
-import { ConsolePage, EmptyLine, GhostButton, Panel, Row, Segmented, StatTile, useGuildApi } from "../kit";
+import { useToast } from "@/components/ToastProvider";
+import { BOT_API_URL, ConsolePage, EmptyLine, GhostButton, Panel, Row, Segmented, StatTile, useGuildApi } from "../kit";
 import FormEditor, { type FullForm } from "./FormEditor";
 
 type FormStatus = "DRAFT" | "PUBLISHED" | "CLOSED" | "ARCHIVED";
@@ -128,6 +129,33 @@ export default function ConsoleForms({ guildId }: { guildId: string }) {
 
   const shown = (responses ?? []).filter((r) => FILTERS[filter](r.status)).sort((a, b) => b.submittedAt.localeCompare(a.submittedAt));
   const current = forms?.find((f) => f.id === formId) ?? null;
+  const { success: toastSuccess, error: toastError } = useToast();
+  const [exporting, setExporting] = useState(false);
+
+  const exportResponses = async (format: "csv" | "json") => {
+    if (!current || !BOT_API_URL) return;
+    setExporting(true);
+    try {
+      const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/forms/${current.id}/export?format=${format}`, {
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error(`Erreur d'exportation (${res.status})`);
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `formulaire-${current.title.toLowerCase().replace(/[^a-z0-9_-]/gi, "-")}.${format}`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      toastSuccess("Formulaires", `Export ${format.toUpperCase()} téléchargé avec succès.`);
+    } catch (err: unknown) {
+      toastError("Formulaires", err instanceof Error ? err.message : "Erreur de téléchargement");
+    } finally {
+      setExporting(false);
+    }
+  };
 
   return (
     <ConsolePage
@@ -225,17 +253,25 @@ export default function ConsoleForms({ guildId }: { guildId: string }) {
         <Panel
           title={`Réponses · ${current.title}`}
           actions={
-            <Segmented
-              label="Filtre"
-              value={filter}
-              options={[
-                ["todo", "À traiter"],
-                ["yes", "Acceptées"],
-                ["no", "Refusées"],
-                ["all", "Toutes"],
-              ]}
-              onChange={setFilter}
-            />
+            <div className="flex flex-wrap items-center gap-2">
+              <Segmented
+                label="Filtre"
+                value={filter}
+                options={[
+                  ["todo", "À traiter"],
+                  ["yes", "Acceptées"],
+                  ["no", "Refusées"],
+                  ["all", "Toutes"],
+                ]}
+                onChange={setFilter}
+              />
+              <GhostButton disabled={exporting || (responses?.length ?? 0) === 0} onClick={() => exportResponses("csv")}>
+                {exporting ? "Export…" : "Exporter CSV"}
+              </GhostButton>
+              <GhostButton disabled={exporting || (responses?.length ?? 0) === 0} onClick={() => exportResponses("json")}>
+                JSON
+              </GhostButton>
+            </div>
           }
         >
           {!responses ? (

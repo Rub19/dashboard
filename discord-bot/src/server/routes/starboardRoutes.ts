@@ -1,9 +1,11 @@
 import express, { Request, Response } from 'express';
-import { ChannelType, Client, PermissionFlagsBits } from 'discord.js';
+import { ChannelType, Client, EmbedBuilder, PermissionFlagsBits } from 'discord.js';
 import { starboardStorage } from '../../modules/starboard/storage/starboardStorage.js';
 import { StarboardConfigSchema } from '../../modules/starboard/types/starboard.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
-import { DESTINATION_CHANNEL_TYPES, canBotSendTo } from '../../utils/channelSend.js';
+import { DESTINATION_CHANNEL_TYPES, canBotSendTo, isSendableTarget, sendToConfiguredChannel } from '../../utils/channelSend.js';
+import { rateLimit } from '../middleware/antiAbuseMiddleware.js';
+import { handleRouteError } from '../utils/routeError.js';
 
 /**
  * API Dashboard du module Starboard.
@@ -67,6 +69,54 @@ export function createStarboardRouter(discordClient: Client) {
       })
       .sort((a, b) => a.name.localeCompare(b.name));
     res.json({ channels });
+  });
+
+  router.post('/test', rateLimit('CONFIG', { byGuild: true, actionName: 'starboard_test' }), async (req: Request, res: Response): Promise<void> => {
+    const guildId = String(req.params.guildId);
+    const config = starboardStorage.getConfig(guildId);
+    if (!config.channelId) {
+      res.status(400).json({ error: "Aucun salon d'honneur configuré." });
+      return;
+    }
+    const guild = discordClient.guilds.cache.get(guildId);
+    if (!guild) {
+      res.status(404).json({ error: 'Serveur introuvable.' });
+      return;
+    }
+    const channel = await guild.channels.fetch(config.channelId).catch(() => null);
+    if (!channel || !isSendableTarget(channel)) {
+      res.status(400).json({ error: 'Salon Discord introuvable ou inaccessible par Etho.' });
+      return;
+    }
+    const botMember = guild.members.me;
+    if (!canBotSendTo(channel, botMember)) {
+      res.status(403).json({ error: 'Etho n’a pas la permission d’envoyer des messages dans ce salon.' });
+      return;
+    }
+
+    const embed = new EmbedBuilder()
+      .setColor((config.color as `#${string}`) || '#F5B301')
+      .setAuthor({
+        name: req.user?.username || 'Équipe ETHONE',
+        iconURL: discordClient.user?.displayAvatarURL(),
+      })
+      .setTitle('⭐ Publication de test Starboard')
+      .setDescription(
+        `Ce message confirme que le salon <#${config.channelId}> est correctement configuré.\n` +
+        `Seuil requis : **${config.threshold}** réaction(s) ${config.emoji}.\n` +
+        `Auto-étoile : **${config.selfStarAllowed ? 'Autorisée' : 'Désactivée'}**.`
+      )
+      .setFooter({
+        text: `${config.threshold} ${config.emoji} • Test Dashboard`,
+      })
+      .setTimestamp();
+
+    try {
+      const sent = await sendToConfiguredChannel(channel, { embeds: [embed] }, { postTitle: '⭐ Test Starboard' });
+      res.json({ success: true, messageId: sent.id, channelName: 'name' in channel ? channel.name : 'salon-starboard' });
+    } catch (err: any) {
+      handleRouteError(err, res, 'Erreur lors de l’envoi du test');
+    }
   });
 
   return router;

@@ -6,7 +6,9 @@ import { Trash2 } from "@/components/icons/ph";
 import { sinceLabel } from "@/lib/discord/security-scan";
 import { SPRING_LAYOUT } from "@/lib/ease";
 import { pageStagger } from "@/lib/motion-variants";
-import { ConsolePage, EmptyLine, Panel, RoleAdder, Row, StatTile, Stepper, Switch, TextField, useGuildApi } from "../kit";
+import { cn } from "@/lib/utils";
+import { useToast } from "@/components/ToastProvider";
+import { ConsolePage, EmptyLine, GhostButton, Panel, RoleAdder, Row, StatTile, Stepper, Switch, TextField, useGuildApi } from "../kit";
 
 type EcoConfig = {
   enabled: boolean;
@@ -74,6 +76,33 @@ export default function ConsoleEconomy({ guildId }: { guildId: string }) {
   const [top, setTop] = useState<Wallet[] | null>(null);
   const [txs, setTxs] = useState<Tx[] | null>(null);
   const [activity, setActivity] = useState<Activity | null>(null);
+  const { success: toastSuccess } = useToast();
+  const [adjustingUser, setAdjustingUser] = useState<Wallet | null>(null);
+  const [manualUserId, setManualUserId] = useState("");
+  const [adjustAmount, setAdjustAmount] = useState(100);
+  const [adjustMode, setAdjustMode] = useState<"credit" | "debit">("credit");
+  const [adjustNote, setAdjustNote] = useState("");
+  const [adjustBusy, setAdjustBusy] = useState(false);
+  const [showManualInput, setShowManualInput] = useState(false);
+
+  const handleAdjust = async (targetUser: { userId: string; username?: string }) => {
+    if (!targetUser.userId || adjustAmount <= 0) return;
+    setAdjustBusy(true);
+    const delta = adjustMode === "credit" ? adjustAmount : -adjustAmount;
+    const res = await api<{ success: boolean; wallet: Wallet }>(`/economy/wallets/${targetUser.userId}/adjust`, {
+      method: "POST",
+      json: { amount: delta, note: adjustNote.trim() || undefined, username: targetUser.username },
+    });
+    setAdjustBusy(false);
+    if (res?.success) {
+      toastSuccess("Économie", `Solde de ${targetUser.username || targetUser.userId} mis à jour : ${fmt(res.wallet.balance)} ${cfg?.currencySymbol ?? ""}`);
+      setAdjustingUser(null);
+      setShowManualInput(false);
+      setManualUserId("");
+      setAdjustNote("");
+      void load();
+    }
+  };
 
   const load = useCallback(async () => {
     const [c, s, l, t, a] = await Promise.all([
@@ -259,7 +288,113 @@ export default function ConsoleEconomy({ guildId }: { guildId: string }) {
       </Panel>
 
       <div className="grid gap-5 lg:grid-cols-2">
-        <Panel title="Classement">
+        <Panel
+          title="Classement"
+          actions={
+            <GhostButton onClick={() => { setAdjustingUser(null); setShowManualInput((prev) => !prev); }}>
+              {showManualInput ? "Fermer" : "Ajuster un solde"}
+            </GhostButton>
+          }
+        >
+          <AnimatePresence initial={false}>
+            {(adjustingUser || showManualInput) && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={SPRING_LAYOUT}
+                className="overflow-hidden border-b border-[var(--panel-border)] bg-[var(--surface-hover)]/40 p-4"
+              >
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs font-semibold text-[var(--text-primary)]">
+                      {adjustingUser ? `Ajuster le solde de @${adjustingUser.username}` : "Ajuster un membre par identifiant"}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => { setAdjustingUser(null); setShowManualInput(false); }}
+                      aria-label="Fermer"
+                      className="rounded p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                    >
+                      <Trash2 className="h-3.5 w-3.5 rotate-45" />
+                    </button>
+                  </div>
+                  {!adjustingUser && (
+                    <input
+                      type="text"
+                      value={manualUserId}
+                      onChange={(e) => setManualUserId(e.target.value.trim())}
+                      placeholder="Identifiant Discord (ex: 123456789012345678)"
+                      className="h-8 w-full rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-2.5 font-mono text-xs text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/70"
+                    />
+                  )}
+                  {adjustingUser && (
+                    <p className="font-mono text-xs text-[var(--text-muted)]">
+                      Solde actuel : <span className="text-[var(--text-primary)]">{fmt(adjustingUser.balance)} {sym}</span>
+                    </p>
+                  )}
+                  <div className="flex flex-wrap items-center gap-2">
+                    <div className="flex rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] p-0.5">
+                      <button
+                        type="button"
+                        onClick={() => setAdjustMode("credit")}
+                        className={cn(
+                          "rounded-md px-2.5 py-1 text-xs font-semibold transition-colors",
+                          adjustMode === "credit" ? "bg-[var(--success)]/20 text-[var(--success)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                        )}
+                      >
+                        + Créditer
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setAdjustMode("debit")}
+                        className={cn(
+                          "rounded-md px-2.5 py-1 text-xs font-semibold transition-colors",
+                          adjustMode === "debit" ? "bg-[var(--danger)]/20 text-[var(--danger)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                        )}
+                      >
+                        − Débiter
+                      </button>
+                    </div>
+                    <Stepper value={adjustAmount} min={1} max={1000000} step={50} unit={sym} onCommit={(n) => setAdjustAmount(n)} />
+                  </div>
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    {[50, 100, 250, 500, 1000].map((preset) => (
+                      <button
+                        key={preset}
+                        type="button"
+                        onClick={() => setAdjustAmount(preset)}
+                        className="rounded-md border border-[var(--panel-border)] px-2 py-0.5 text-[11px] font-mono text-[var(--text-muted)] hover:border-[var(--accent-primary)]/50 hover:text-[var(--text-primary)]"
+                      >
+                        {preset} {sym}
+                      </button>
+                    ))}
+                  </div>
+                  <input
+                    type="text"
+                    value={adjustNote}
+                    onChange={(e) => setAdjustNote(e.target.value)}
+                    placeholder="Motif facultatif (ex: Récompense, Concours, Régularisation)"
+                    maxLength={100}
+                    className="h-8 w-full rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/70"
+                  />
+                  <div className="flex justify-end gap-2 pt-1">
+                    <GhostButton onClick={() => { setAdjustingUser(null); setShowManualInput(false); }}>
+                      Annuler
+                    </GhostButton>
+                    <button
+                      type="button"
+                      disabled={adjustBusy || (!adjustingUser && !manualUserId)}
+                      onClick={() => handleAdjust(adjustingUser || { userId: manualUserId })}
+                      className="rounded-lg bg-[var(--accent-primary)] px-3 py-1.5 text-xs font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-40"
+                    >
+                      {adjustBusy ? "En cours…" : "Confirmer"}
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
           {!top ? (
             <EmptyLine>Chargement…</EmptyLine>
           ) : top.length === 0 ? (
@@ -279,6 +414,13 @@ export default function ConsoleEconomy({ guildId }: { guildId: string }) {
                   <span className="shrink-0 font-mono text-xs tabular-nums text-[var(--text-primary)]">
                     {fmt(w.balance)} {sym}
                   </span>
+                  <button
+                    type="button"
+                    onClick={() => { setAdjustingUser(w); setShowManualInput(false); }}
+                    className="rounded-md border border-[var(--panel-border)] px-2 py-1 text-[11px] font-semibold text-[var(--text-muted)] transition-colors hover:border-[var(--accent-primary)]/50 hover:text-[var(--text-primary)]"
+                  >
+                    Ajuster
+                  </button>
                 </li>
               ))}
             </ol>

@@ -6,6 +6,7 @@ import ChannelPicker, { fetchGuildChannels, type ChannelOption } from "../../Cha
 import { confirmDialog } from "@/lib/confirmDialog";
 import { SPRING_LAYOUT } from "@/lib/ease";
 import { pageStagger } from "@/lib/motion-variants";
+import { useToast } from "@/components/ToastProvider";
 import { ConsolePage, EmptyLine, GhostButton, Panel, Row, StatTile, Stepper, Switch, TextField, useGuildApi } from "../kit";
 
 type Sticky = { channelId: string; content: string; asEmbed: boolean; title: string; color: string; enabled: boolean; cooldownSeconds: number; repostCount: number };
@@ -25,6 +26,7 @@ export default function ConsoleSticky({ guildId }: { guildId: string }) {
   const [draft, setDraft] = useState("");
   const [newChannel, setNewChannel] = useState("");
   const [newContent, setNewContent] = useState("");
+  const { success: toastSuccess } = useToast();
   const [busy, setBusy] = useState(false);
 
   const load = useCallback(async () => {
@@ -66,8 +68,12 @@ export default function ConsoleSticky({ guildId }: { guildId: string }) {
   };
   const repost = async (channelId: string) => {
     setBusy(true);
-    await api(`/sticky/config/${channelId}/repost`, { method: "POST" });
+    const r = await api(`/sticky/config/${channelId}/repost`, { method: "POST" });
     setBusy(false);
+    if (r) {
+      toastSuccess("Message épinglé", `Republié immédiatement dans #${channelName(channelId)}`);
+      void load();
+    }
   };
   const remove = async (channelId: string) => {
     if (!(await confirmDialog(`Retirer le message épinglé de #${channelName(channelId)} ?`, { title: "Retirer", confirmLabel: "Retirer" }))) return;
@@ -151,6 +157,29 @@ export default function ConsoleSticky({ guildId }: { guildId: string }) {
                             <Row label="Délai entre deux republications" hint="Évite de republier à chaque message d'une conversation rapide.">
                               <Stepper value={detail.cooldownSeconds} min={2} max={120} unit="secondes" onCommit={(n) => save(c.channelId, { cooldownSeconds: n })} />
                             </Row>
+                            <div className="border-t border-[var(--panel-border)] px-5 py-3">
+                              <p className="mb-2 text-[11px] font-semibold text-[var(--text-muted)]">Aperçu du rendu Discord</p>
+                              {detail.asEmbed ? (
+                                <div
+                                  className="rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] p-3"
+                                  style={{ borderLeftWidth: "4px", borderLeftColor: HEX.test(detail.color) ? detail.color : "#5865f2" }}
+                                >
+                                  {detail.title && (
+                                    <p className="mb-1 text-xs font-bold text-[var(--text-primary)]">{detail.title}</p>
+                                  )}
+                                  <p className="whitespace-pre-wrap text-xs text-[var(--text-primary)]">{draft || "Message épinglé…"}</p>
+                                  <p className="mt-2 text-[10px] text-[var(--text-muted)]">Épinglé en bas de #{channelName(c.channelId)}</p>
+                                </div>
+                              ) : (
+                                <div className="rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] p-3">
+                                  <div className="mb-1.5 flex items-center gap-1.5">
+                                    <span className="text-xs font-semibold text-[var(--text-primary)]">Etho</span>
+                                    <span className="rounded bg-[var(--accent-primary)]/20 px-1 py-0.5 text-[9px] font-bold text-[var(--accent-primary)]">BOT</span>
+                                  </div>
+                                  <p className="whitespace-pre-wrap text-xs text-[var(--text-primary)]">{draft || "Message épinglé…"}</p>
+                                </div>
+                              )}
+                            </div>
                             <div className="flex items-center gap-1.5 border-t border-[var(--panel-border)] px-5 py-3">
                               <GhostButton disabled={busy} onClick={() => repost(c.channelId)}>
                                 Republier maintenant

@@ -2,9 +2,11 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import ChannelPicker from "../../ChannelPicker";
 import { confirmDialog } from "@/lib/confirmDialog";
 import { SPRING_LAYOUT } from "@/lib/ease";
 import { pageStagger } from "@/lib/motion-variants";
+import { useToast } from "@/components/ToastProvider";
 import { ConsolePage, EmptyLine, GhostButton, Panel, Row, StatTile, useGuildApi } from "../kit";
 
 type Tag = { name: string; content: string; uses: number; updatedAt: string };
@@ -24,6 +26,9 @@ export default function ConsoleTags({ guildId }: { guildId: string }) {
   const [newName, setNewName] = useState("");
   const [newContent, setNewContent] = useState("");
   const [busy, setBusy] = useState(false);
+  const { success: toastSuccess } = useToast();
+  const [testChannel, setTestChannel] = useState("");
+  const [testingTag, setTestingTag] = useState(false);
 
   const load = useCallback(async () => {
     const r = await api<{ tags: Tag[] }>("/tags/list");
@@ -48,6 +53,18 @@ export default function ConsoleTags({ guildId }: { guildId: string }) {
     if (await upsert(newName, newContent.trim())) {
       setNewName("");
       setNewContent("");
+    }
+  };
+  const sendTestTag = async (tagName: string) => {
+    if (!testChannel) return;
+    setTestingTag(true);
+    const r = await api<{ success: boolean; channelName: string }>(`/tags/${encodeURIComponent(tagName)}/test`, {
+      method: "POST",
+      json: { channelId: testChannel },
+    });
+    setTestingTag(false);
+    if (r?.success) {
+      toastSuccess("Tags", `Tag "${tagName}" envoyé dans #${r.channelName} !`);
     }
   };
   const remove = async (t: Tag) => {
@@ -85,6 +102,16 @@ export default function ConsoleTags({ guildId }: { guildId: string }) {
         <Row label="Contenu" hint="2000 caractères au maximum.">
           <textarea value={newContent} maxLength={2000} rows={3} onChange={(e) => setNewContent(e.target.value)} aria-label="Contenu du tag" className={field} />
         </Row>
+        {newContent.trim() && (
+          <div className="mx-5 mb-3 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] p-3">
+            <div className="mb-1.5 flex items-center gap-1.5">
+              <span className="text-xs font-semibold text-[var(--text-primary)]">Etho</span>
+              <span className="rounded bg-[var(--accent-primary)]/20 px-1 py-0.5 text-[9px] font-bold text-[var(--accent-primary)]">BOT</span>
+              <span className="font-mono text-[11px] text-[var(--text-muted)]">/tag get {newName || "exemple"}</span>
+            </div>
+            <p className="whitespace-pre-wrap text-xs text-[var(--text-primary)]">{newContent}</p>
+          </div>
+        )}
         <div className="flex justify-end border-t border-[var(--panel-border)] px-5 py-3">
           <button type="button" disabled={!canCreate} onClick={create} className="rounded-lg bg-[var(--accent-primary)] px-4 py-2 text-xs font-bold text-white hover:opacity-90 disabled:opacity-40">
             Créer le tag
@@ -132,11 +159,25 @@ export default function ConsoleTags({ guildId }: { guildId: string }) {
                     <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={SPRING_LAYOUT} className="overflow-hidden">
                       <div className="space-y-3 border-t border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))]/40 px-5 py-4">
                         <textarea value={draft} maxLength={2000} rows={4} onChange={(e) => setDraft(e.target.value)} aria-label={`Contenu de ${t.name}`} className={field} />
-                        <div className="flex items-center gap-1.5">
+                        <div className="rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] p-3">
+                          <div className="mb-1.5 flex items-center gap-1.5">
+                            <span className="text-xs font-semibold text-[var(--text-primary)]">Etho</span>
+                            <span className="rounded bg-[var(--accent-primary)]/20 px-1 py-0.5 text-[9px] font-bold text-[var(--accent-primary)]">BOT</span>
+                            <span className="font-mono text-[11px] text-[var(--text-muted)]">/tag get {t.name}</span>
+                          </div>
+                          <p className="whitespace-pre-wrap text-xs text-[var(--text-primary)]">{draft || "Contenu du tag…"}</p>
+                        </div>
+                        <div className="flex flex-wrap items-center gap-2 pt-1">
+                          <div className="w-56">
+                            <ChannelPicker guildId={guildId} value={testChannel} filterTypes={[0, 5]} placeholder="Salon de test" onChange={(id) => setTestChannel(id)} />
+                          </div>
+                          <GhostButton disabled={testingTag || !testChannel} onClick={() => sendTestTag(t.name)}>
+                            {testingTag ? "Envoi…" : "Tester l'envoi"}
+                          </GhostButton>
+                          <span className="flex-1" />
                           <GhostButton disabled={busy || !draft.trim() || draft === t.content} onClick={() => upsert(t.name, draft.trim()).then((ok) => ok && setOpen(null))}>
                             Enregistrer
                           </GhostButton>
-                          <span className="flex-1" />
                           <GhostButton onClick={() => remove(t)}>Supprimer</GhostButton>
                         </div>
                       </div>

@@ -50675,6 +50675,62 @@ CHANGELOG_BY_LANG.fr.unshift(v1_74_0_fr);
 CHANGELOG_BY_LANG.en.unshift(v1_74_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_74_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_74_0_de);
+const v1_74_1_fr: ChangelogEntry = {
+  version: "v1.74.1",
+  date: "2026-10-12",
+  title: "Console : Ajustement de solde économie, export formulaires CSV/JSON, test Starboard, aperçus Discord et propositions",
+  items: [
+    "Économie : Ajustement manuel de solde staff (+/-) avec stepper, sélecteur de mode, motifs d'audit et rafraîchissement temps réel des mouvements",
+    "Formulaires : Téléchargement direct en un clic des réponses complètes au format CSV (Excel/Sheets) et JSON",
+    "Starboard : Simulateur de publication pour tester l'envoi d'un message étoilé sur Discord avec emoji et couleur configurés, et aperçu en direct",
+    "Messages épinglés (Sticky) & Tags : Aperçus interactifs du rendu Discord avec bordures colorées, embeds et bouton d'envoi de test dans un salon",
+    "Boîte à idées : Création de propositions et suggestions officielles directement depuis le dashboard sans commande Discord",
+  ],
+};
+
+const v1_74_1_en: ChangelogEntry = {
+  version: "v1.74.1",
+  date: "2026-10-12",
+  title: "Console: Economy balance adjustment, forms CSV/JSON export, Starboard test, Discord previews & official suggestions",
+  items: [
+    "Economy: Staff manual balance adjustment (+/-) with stepper, mode toggle, audit reasons and real-time transaction updates",
+    "Forms: One-click direct download for full form submissions in CSV (Excel/Sheets) and JSON formats",
+    "Starboard: Test publisher simulator dispatching sample starred messages to Discord with configured emoji and color, plus live card preview",
+    "Sticky Messages & Tags: Interactive Discord live rendering cards with embed color stripes and test dispatch to any channel",
+    "Suggestions: Official proposal submission form directly from the dashboard without needing Discord slash commands",
+  ],
+};
+
+const v1_74_1_es: ChangelogEntry = {
+  version: "v1.74.1",
+  date: "2026-10-12",
+  title: "Consola: Ajuste de saldo de economía, exportación CSV/JSON de formularios, prueba de Starboard y propuestas",
+  items: [
+    "Economía: Ajuste manual de saldo para el staff (+/-) con stepper, motivos de auditoría y actualización en tiempo real",
+    "Formularios: Descarga en un clic de respuestas en formato CSV (Excel/Sheets) y JSON",
+    "Starboard: Simulador de publicación de prueba en Discord con emoji y color configurados",
+    "Mensajes fijados y etiquetas: Previsualizaciones interactivas de mensajes de Discord y prueba de envío",
+    "Sugerencias: Publicación de propuestas oficiales directamente desde el panel",
+  ],
+};
+
+const v1_74_1_de: ChangelogEntry = {
+  version: "v1.74.1",
+  date: "2026-10-12",
+  title: "Konsole: Wirtschaft-Guthabenanpassung, Formulare CSV/JSON-Export, Starboard-Test & Vorschläge",
+  items: [
+    "Wirtschaft: Manuelle Guthaben-Anpassung (+/-) für Moderatoren mit Stepper, Prüfgründen und Echtzeit-Verlauf",
+    "Formulare: 1-Klick-Download vollständiger Antworten im CSV- und JSON-Format",
+    "Starboard: Veröffentlichungs-Simulator zum Testen von Sternen-Nachrichten auf Discord mit Vorschau",
+    "Fixierte Nachrichten & Tags: Interaktive Discord-Vorschaukarten und Testversand in ausgewählte Kanäle",
+    "Vorschläge: Offizielle Vorschlagserstellung direkt über das Web-Dashboard",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_74_1_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_74_1_en);
+CHANGELOG_BY_LANG.es.unshift(v1_74_1_es);
+CHANGELOG_BY_LANG.de.unshift(v1_74_1_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

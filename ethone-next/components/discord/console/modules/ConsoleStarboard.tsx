@@ -5,7 +5,8 @@ import { motion } from "framer-motion";
 import ChannelPicker, { fetchGuildChannels, type ChannelOption } from "../../ChannelPicker";
 import { sinceLabel } from "@/lib/discord/security-scan";
 import { pageStagger } from "@/lib/motion-variants";
-import { ChannelAdder, Chip, ConsolePage, EmptyLine, Panel, Row, StatTile, Stepper, Switch, TextField, useGuildApi } from "../kit";
+import { useToast } from "@/components/ToastProvider";
+import { ChannelAdder, Chip, ConsolePage, EmptyLine, GhostButton, Panel, Row, StatTile, Stepper, Switch, TextField, useGuildApi } from "../kit";
 
 type Config = {
   enabled: boolean;
@@ -42,6 +43,19 @@ export default function ConsoleStarboard({ guildId }: { guildId: string }) {
     void load();
     fetchGuildChannels(guildId).then(setChannels);
   }, [guildId, load]);
+
+  const { success: toastSuccess } = useToast();
+  const [testing, setTesting] = useState(false);
+
+  const testStarboard = async () => {
+    if (!cfg?.channelId) return;
+    setTesting(true);
+    const r = await api<{ success: boolean; channelName: string }>("/starboard/test", { method: "POST" });
+    setTesting(false);
+    if (r?.success) {
+      toastSuccess("Starboard", `Message de test envoyé dans #${r.channelName} !`);
+    }
+  };
 
   const save = async (patch: Partial<Config>) => {
     setCfg((c) => (c ? { ...c, ...patch } : c));
@@ -83,7 +97,16 @@ export default function ConsoleStarboard({ guildId }: { guildId: string }) {
         <StatTile label="Record" value={ov?.topMessage ? `${ov.topMessage.starCount} ${cfg.emoji}` : "—"} />
       </motion.div>
 
-      <Panel title="Mise en avant">
+      <Panel
+        title="Mise en avant"
+        actions={
+          cfg.channelId ? (
+            <GhostButton disabled={testing || !cfg.enabled} onClick={testStarboard}>
+              {testing ? "Publication…" : "Tester la publication"}
+            </GhostButton>
+          ) : undefined
+        }
+      >
         <Row label="Salon d'honneur" hint="Où Etho republie les messages qui atteignent le seuil.">
           <ChannelPicker guildId={guildId} value={cfg.channelId ?? ""} filterTypes={[0, 5, 15]} placeholder="Choisir un salon" onChange={(id) => save({ channelId: id || null })} />
         </Row>
@@ -99,6 +122,24 @@ export default function ConsoleStarboard({ guildId }: { guildId: string }) {
             <span className="font-mono text-xs text-[var(--text-muted)]">{cfg.color}</span>
           </span>
         </Row>
+        <div className="border-t border-[var(--panel-border)] px-5 py-3">
+          <p className="mb-2 text-[11px] font-semibold text-[var(--text-muted)]">Aperçu du rendu Discord</p>
+          <div
+            className="rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] p-3"
+            style={{ borderLeftWidth: "4px", borderLeftColor: HEX.test(cfg.color) ? cfg.color : "#f5b301" }}
+          >
+            <div className="flex items-center gap-2">
+              <span className="grid h-4 w-4 place-items-center rounded-full bg-[var(--accent-primary)]/30 text-[9px] font-bold text-[var(--accent-primary)]">E</span>
+              <span className="text-xs font-semibold text-[var(--text-primary)]">Membre du serveur</span>
+            </div>
+            <p className="mt-2 text-xs text-[var(--text-primary)]">
+              Un message qui a franchi le palier de {cfg.threshold} {cfg.emoji} !
+            </p>
+            <p className="mt-2 text-[11px] font-mono text-[var(--text-muted)]">
+              {cfg.threshold} {cfg.emoji} • #{channelName(cfg.channelId)}
+            </p>
+          </div>
+        </div>
       </Panel>
 
       <Panel title="Décompte">

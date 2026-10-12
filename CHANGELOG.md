@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.74.1 — 2026-10-12
+
+**Console : Ajustement de solde économie, export formulaires CSV/JSON, test Starboard, aperçus Discord et propositions**
+
+- **Ajustement manuel des soldes staff** : Nouvel endpoint `POST /api/guilds/:guildId/economy/wallets/:userId/adjust` et panneau interactif avec stepper, bascule crédit/débit, motifs d'audit et rafraîchissement temps réel des soldes et mouvements.
+- **Exportation 1-clic des formulaires** : Boutons directs « Exporter CSV » (compatible Excel/Sheets) et « Exporter JSON » dans l'en-tête du gestionnaire de réponses appelant l'API d'export du bot.
+- **Simulateur d'envoi Starboard** : Endpoint `POST /api/guilds/:guildId/starboard/test` et bouton de publication de démonstration pour valider les permissions Discord et la couleur de l'embed, avec prévisualisation en direct.
+- **Aperçus dynamiques Discord & Test des tags** : Cartes fidèles d'aperçu du rendu Discord dans les messages épinglés (`ConsoleSticky`) et les tags (`ConsoleTags`), accompagnées d'un sélecteur de salon et bouton d'envoi de test (`POST /api/guilds/:guildId/tags/:name/test`).
+- **Création de suggestions depuis le dashboard** : Formulaire officiel intégré dans la console des suggestions (`POST /api/guilds/:guildId/suggestions/create`) pour publier des idées staff directement sur Discord avec votes interactifs.
+
 ## v1.74.0 — 2026-10-12
 
 **Console : Simulateur de commandes perso, test d'annonces d'anniversaires, ajustement de compteur & déclencheur de rappels**

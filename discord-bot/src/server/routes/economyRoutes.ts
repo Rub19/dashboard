@@ -178,5 +178,41 @@ export function createEconomyRouter(discordClient: Client) {
     res.json({ success: true, item: result.item, balance: result.balance });
   });
 
+  router.post('/wallets/:userId/adjust', rateLimit('CONFIG', { byGuild: true, actionName: 'economy_adjust' }), async (req: Request, res: Response): Promise<void> => {
+    const guildId = String(req.params.guildId);
+    const userId = String(req.params.userId);
+    const amount = parseInt(String(req.body?.amount), 10);
+    const note = typeof req.body?.note === 'string' && req.body.note.trim() ? req.body.note.trim() : 'Ajustement dashboard';
+
+    if (!Number.isFinite(amount) || amount === 0) {
+      res.status(400).json({ error: 'Montant invalide (doit être un entier non nul).' });
+      return;
+    }
+
+    const guild = discordClient.guilds.cache.get(guildId);
+    const member = guild ? await guild.members.fetch(userId).catch(() => null) : null;
+    const username = member?.user.username || req.body?.username || `Membre ${userId.slice(-4)}`;
+    const avatarUrl = member?.user.displayAvatarURL() || null;
+
+    const currentWallet = economyStorage.getWallet(guildId, userId, { username, avatarUrl });
+    if (amount < 0 && currentWallet.balance + amount < 0) {
+      res.status(400).json({ error: `Solde insuffisant (solde actuel : ${currentWallet.balance}).` });
+      return;
+    }
+
+    const updatedWallet = economyStorage.applyDelta(guildId, userId, amount, {
+      username,
+      avatarUrl,
+      trackEarned: amount > 0,
+      trackSpent: amount < 0,
+    });
+
+    const tx = economyStorage.recordTransaction(guildId, userId, 'admin', amount, updatedWallet.balance, {
+      note,
+    });
+
+    res.json({ success: true, wallet: updatedWallet, transaction: tx });
+  });
+
   return router;
 }

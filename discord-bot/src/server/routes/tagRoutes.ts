@@ -3,6 +3,7 @@ import { Client } from 'discord.js';
 import { tagStorage, MAX_TAGS_PER_GUILD } from '../../modules/tags/storage/tagStorage.js';
 import { TAG_NAME_RE } from '../../modules/tags/types/tag.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
+import { isSendableTarget, sendToConfiguredChannel } from '../../utils/channelSend.js';
 
 /**
  * API Dashboard du module Tags.
@@ -49,6 +50,37 @@ export function createTagRouter(_client: Client) {
   router.delete('/:name', (req: Request, res: Response): void => {
     const ok = tagStorage.delete(String(req.params.guildId), String(req.params.name).toLowerCase());
     res.json({ success: ok });
+  });
+
+  router.post('/:name/test', async (req: Request, res: Response): Promise<void> => {
+    const guildId = String(req.params.guildId);
+    const name = String(req.params.name).toLowerCase();
+    const channelId = String(req.body?.channelId || '');
+    const tag = tagStorage.get(guildId, name);
+    if (!tag) {
+      res.status(404).json({ error: 'Tag introuvable.' });
+      return;
+    }
+    if (!channelId) {
+      res.status(400).json({ error: 'Salon de destination requis.' });
+      return;
+    }
+    const guild = _client.guilds.cache.get(guildId);
+    if (!guild) {
+      res.status(404).json({ error: 'Serveur introuvable.' });
+      return;
+    }
+    const channel = await guild.channels.fetch(channelId).catch(() => null);
+    if (!channel || !isSendableTarget(channel)) {
+      res.status(400).json({ error: 'Salon inaccessible par Etho.' });
+      return;
+    }
+    try {
+      const sent = await sendToConfiguredChannel(channel, { content: tag.content }, { postTitle: `🏷️ ${tag.name}` });
+      res.json({ success: true, messageId: sent.id, channelName: 'name' in channel ? channel.name : 'salon' });
+    } catch (err: any) {
+      res.status(500).json({ error: 'Impossible d’envoyer le tag dans ce salon.' });
+    }
   });
 
   return router;

@@ -85,23 +85,29 @@ export default function OperationsGroup({
             </div>
 
             <div className="stagger-children space-y-2 max-h-96 overflow-y-auto font-mono text-xs pr-1">
-              {recentEvents.map((evt) => (
-                <div
-                  key={evt.id}
-                  className="p-3.5 rounded-xl bg-[var(--bg-card)]/60 border border-[var(--panel-border)]/80 hover:border-[var(--text-primary)]/13 transition-all flex items-center justify-between gap-3"
-                >
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <span className="px-2 py-0.5 rounded text-[10px] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/20 shrink-0 font-semibold">
-                      {evt.source}
-                    </span>
-                    <span className="font-bold text-[var(--text-primary)] truncate">{evt.type}</span>
-                    <span className="text-[var(--text-muted)] truncate text-[11px]">{evt.detail}</span>
-                  </div>
-                  <span className="text-[11px] text-[var(--text-muted)] shrink-0 whitespace-nowrap">
-                    {new Date(evt.timestamp).toLocaleTimeString("fr-FR")}
-                  </span>
+              {recentEvents.length === 0 ? (
+                <div className="py-8 text-center text-xs text-[var(--text-muted)] font-sans">
+                  Aucun événement récent. En attente du flux SSE...
                 </div>
-              ))}
+              ) : (
+                recentEvents.map((evt) => (
+                  <div
+                    key={evt.id}
+                    className="p-3.5 rounded-xl bg-[var(--bg-card)]/60 border border-[var(--panel-border)]/80 hover:border-[var(--text-primary)]/13 transition-all flex items-center justify-between gap-3"
+                  >
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <span className="px-2 py-0.5 rounded text-[10px] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/20 shrink-0 font-semibold">
+                        {evt.source}
+                      </span>
+                      <span className="font-bold text-[var(--text-primary)] truncate">{evt.type}</span>
+                      <span className="text-[var(--text-muted)] truncate text-[11px]">{evt.detail}</span>
+                    </div>
+                    <span className="text-[11px] text-[var(--text-muted)] shrink-0 whitespace-nowrap">
+                      {new Date(evt.timestamp).toLocaleTimeString("fr-FR")}
+                    </span>
+                  </div>
+                ))
+              )}
             </div>
           </Card>
         </div>

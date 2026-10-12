@@ -354,16 +354,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
   // a guild the bot isn't in → 404 → the Modules tab stayed empty.
   const [servers, setServers] = useState<any[]>([]);
 
-  // Real Recent Discord Events
-  const [recentEvents, setRecentEvents] = useState<any[]>([
-    {
-      id: "evt_1",
-      type: "Gateway Ready",
-      detail: "Connexion Gateway Shard 0 établie avec succès",
-      timestamp: new Date().toISOString(),
-      source: "SYSTEM",
-    },
-  ]);
+  const [recentEvents, setRecentEvents] = useState<any[]>([]);
 
   // Real Incidents & Errors
   const [errors, setErrors] = useState<any[]>([]);
@@ -1589,8 +1580,12 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                   <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/25 text-xs font-semibold text-[var(--accent-primary)] mb-2">
                     <Sparkles className="w-3.5 h-3.5" />
                     <span>Console d&apos;Administration Discord</span>
-                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-primary)]" />
-                    <span className="font-mono text-[11px] text-[var(--text-muted)]">v{botCore.version || "2.4.0"}</span>
+                    {botCore.version && botCore.version !== "—" && (
+                      <>
+                        <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-primary)]" />
+                        <span className="font-mono text-[11px] text-[var(--text-muted)]">v{botCore.version}</span>
+                      </>
+                    )}
                   </div>
                   <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--text-primary)]">
                     Centre de Contrôle Etho

@@ -328,7 +328,7 @@ export default function OverviewGroup({
                     </div>
 
                     <div className="pt-3 border-t border-[var(--panel-border)] flex items-center justify-between text-[11px] text-[var(--text-muted)]">
-                      <span>Latence : {botCore?.pingMs || 96}ms</span>
+                      <span>Latence : {botCore?.pingMs !== undefined && botCore?.pingMs !== null ? `${botCore.pingMs}ms` : "—"}</span>
                       <button
                         type="button"
                         onClick={() => handleTabChange("diagnostics")}
@@ -389,8 +389,8 @@ export default function OverviewGroup({
                     </div>
 
                     <div className="pt-3 border-t border-[var(--panel-border)] flex items-center justify-between text-[11px] text-[var(--text-muted)]">
-                      <span>Total : {botCore?.userCount || 87} membres</span>
-                      <span className="text-emerald-400 font-medium">100% connectés</span>
+                      <span>Total : {botCore?.userCount !== undefined && botCore?.userCount !== null ? Number(botCore.userCount).toLocaleString("fr-FR") : "—"} membres</span>
+                      <span className="text-[var(--text-muted)] font-medium">{servers.length} serveur{servers.length > 1 ? "s" : ""}</span>
                     </div>
                   </Card>
                 </motion.div>

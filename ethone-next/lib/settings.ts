@@ -127,6 +127,8 @@ export type Settings = {
   dockItemsDefaultsVersion?: number;
   dockRadius: number;
   dockScale: DockScale;
+  dockSize: number;
+  dockElevation: number;
   dockAlign: DockAlign;
   dockGlass: DockGlass;
   dockAutoHide: boolean;
@@ -317,6 +319,8 @@ export const DEFAULTS: Settings = {
   dockItemsDefaultsVersion: 1,
   dockRadius: 16,
   dockScale: "normal",
+  dockSize: 100,
+  dockElevation: 60,
   dockAlign: "center",
   dockGlass: "vitrified",
   dockAutoHide: false,
@@ -526,6 +530,16 @@ export function migrateSettings(raw: Partial<Settings>): Partial<Settings> {
   }
   if (typeof raw.dockScale === "string" && !DOCK_SCALE_VALUES.includes(raw.dockScale as DockScale)) {
     next.dockScale = "normal";
+  }
+  if (typeof raw.dockElevation === "number" && Number.isFinite(raw.dockElevation)) {
+    next.dockElevation = Math.max(36, Math.min(160, Math.round(raw.dockElevation)));
+  } else if (raw.dockElevation === undefined) {
+    next.dockElevation = DEFAULTS.dockElevation;
+  }
+  if (typeof raw.dockSize === "number" && Number.isFinite(raw.dockSize)) {
+    next.dockSize = Math.max(70, Math.min(140, Math.round(raw.dockSize)));
+  } else if (raw.dockSize === undefined) {
+    next.dockSize = DEFAULTS.dockSize;
   }
   if (raw.dockItemsDefaultsVersion !== 1 || !Array.isArray(raw.dockItems)) {
     const current = Array.isArray(raw.dockItems) ? (raw.dockItems as string[]) : [];

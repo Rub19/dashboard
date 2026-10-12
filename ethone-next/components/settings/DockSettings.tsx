@@ -97,23 +97,28 @@ export default function DockSettings() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {/* Scale Selector */}
         <div className="flex flex-col gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
-          <label className="text-sm font-semibold text-[var(--text-primary)]">
-            {i18n("sDockSize", "Taille du Dock")}
-          </label>
+          <div className="flex items-center justify-between">
+            <label className="text-sm font-semibold text-[var(--text-primary)]">
+              {i18n("sDockSize", "Taille du Dock")}
+            </label>
+            <span className="font-mono text-xs text-[var(--text-muted)] tabular-nums">
+              {settings.dockSize ?? (settings.dockScale === "compact" ? 85 : settings.dockScale === "large" ? 115 : 100)}%
+            </span>
+          </div>
           <div className="grid grid-cols-3 gap-2">
             {(
               [
-                { id: "compact", label: i18n("sDockSizeCompact", "Compact") },
-                { id: "normal", label: i18n("sDockSizeNormal", "Normal") },
-                { id: "large", label: i18n("sDockSizeLarge", "Grand") },
+                { id: "compact", label: i18n("sDockSizeCompact", "Compact"), size: 85 },
+                { id: "normal", label: i18n("sDockSizeNormal", "Normal"), size: 100 },
+                { id: "large", label: i18n("sDockSizeLarge", "Grand"), size: 115 },
               ] as const
             ).map((s) => (
               <button
                 key={s.id}
                 type="button"
-                onClick={() => update({ dockScale: s.id as DockScale })}
+                onClick={() => update({ dockScale: s.id as DockScale, dockSize: s.size })}
                 className={cn(
-                  "rounded-xl py-2 text-xs font-semibold transition-all",
+                  "rounded-xl py-2 text-xs font-semibold transition-all cursor-pointer",
                   settings.dockScale === s.id
                     ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-md"
                     : "bg-[var(--surface-raised)] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
@@ -123,6 +128,42 @@ export default function DockSettings() {
               </button>
             ))}
           </div>
+          <input
+            type="range"
+            min={75}
+            max={130}
+            step={1}
+            value={settings.dockSize ?? (settings.dockScale === "compact" ? 85 : settings.dockScale === "large" ? 115 : 100)}
+            onChange={(e) => {
+              const val = Number(e.target.value);
+              const scale = val <= 88 ? "compact" : val >= 110 ? "large" : "normal";
+              update({ dockSize: val, dockScale: scale });
+            }}
+            className="w-full accent-[var(--accent-primary)] cursor-pointer mt-1"
+          />
+        </div>
+
+        <div className="flex flex-col gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
+          <div className="flex items-center justify-between">
+            <label className="text-sm font-semibold text-[var(--text-primary)]">
+              {i18n("dockElevation", "Hauteur du dock")}
+            </label>
+            <span className="font-mono text-xs text-[var(--text-muted)] tabular-nums">
+              {settings.dockElevation ?? 60}px
+            </span>
+          </div>
+          <p className="text-xs text-[var(--text-muted)]">
+            {i18n("dockElevationDesc", "Distance d'élévation au-dessus du bord inférieur")}
+          </p>
+          <input
+            type="range"
+            min={40}
+            max={120}
+            step={2}
+            value={settings.dockElevation ?? 60}
+            onChange={(e) => update({ dockElevation: Number(e.target.value) })}
+            className="w-full accent-[var(--accent-primary)] cursor-pointer mt-1"
+          />
         </div>
 
         {/* Glass Style Selector */}

@@ -261,7 +261,7 @@ export default function SettingsProvider({
   useEffect(() => {
     const root = document.documentElement;
     const prev = previousEffectSettingsRef.current;
-    const changed = prev && (prev.theme !== settings.theme || prev.accentColor !== settings.accentColor || prev.customAccent !== settings.customAccent || prev.densityMode !== settings.densityMode || prev.fontSize !== settings.fontSize || prev.radius !== settings.radius || prev.radiusStyle !== settings.radiusStyle || prev.iconRadius !== settings.iconRadius || prev.glassEnabled !== settings.glassEnabled || prev.fontFamily !== settings.fontFamily || prev.dockScale !== settings.dockScale || prev.dockAlign !== settings.dockAlign || prev.dockGlass !== settings.dockGlass || prev.layoutPreset !== settings.layoutPreset || prev.wallpaper !== settings.wallpaper || prev.aura !== settings.aura || prev.backgroundEffect !== settings.backgroundEffect || prev.backgroundSpeed !== settings.backgroundSpeed || prev.shadow !== settings.shadow);
+    const changed = prev && (prev.theme !== settings.theme || prev.accentColor !== settings.accentColor || prev.customAccent !== settings.customAccent || prev.densityMode !== settings.densityMode || prev.fontSize !== settings.fontSize || prev.radius !== settings.radius || prev.radiusStyle !== settings.radiusStyle || prev.iconRadius !== settings.iconRadius || prev.glassEnabled !== settings.glassEnabled || prev.fontFamily !== settings.fontFamily || prev.dockScale !== settings.dockScale || prev.dockElevation !== settings.dockElevation || prev.dockSize !== settings.dockSize || prev.dockAlign !== settings.dockAlign || prev.dockGlass !== settings.dockGlass || prev.layoutPreset !== settings.layoutPreset || prev.wallpaper !== settings.wallpaper || prev.aura !== settings.aura || prev.backgroundEffect !== settings.backgroundEffect || prev.backgroundSpeed !== settings.backgroundSpeed || prev.shadow !== settings.shadow);
 
     if (changed) {
       root.setAttribute("data-no-transitions", "true");
@@ -367,6 +367,17 @@ export default function SettingsProvider({
     root.style.setProperty("--v8-breathe-duration", "0s");
     root.style.setProperty("--v8-ambient-transition", settings.uiAnimations === "snappy" ? "100ms" : settings.uiAnimations === "reduced" ? "1ms" : "150ms");
     root.style.setProperty("--v8-accent", accent);
+    const dockElevation = settings.dockElevation ?? 60;
+    const dockScaleFactor =
+      (settings.dockSize ??
+        (settings.dockScale === "compact"
+          ? 85
+          : settings.dockScale === "large"
+          ? 115
+          : 100)) / 100;
+    root.style.setProperty("--dock-elevation", `${dockElevation}px`);
+    root.style.setProperty("--dock-scale", `${dockScaleFactor}`);
+    root.style.setProperty("--dock-popover-bottom", `${Math.round(dockElevation + 54 * dockScaleFactor)}px`);
     if (settings.reducedMotion || settings.uiAnimations === "reduced") {
       root.setAttribute("data-reduced-motion", "true");
     } else {

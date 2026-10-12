@@ -74,6 +74,8 @@ export const CATEGORY_KEYS: Record<string, (keyof Settings)[]> = {
     "dockAutoHide",
     "dockMagnify",
     "dockScale",
+    "dockSize",
+    "dockElevation",
     "dockAlign",
     "dockGlass",
     "dockRadius",

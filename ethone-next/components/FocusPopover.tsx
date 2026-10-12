@@ -7,6 +7,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { Icon } from "@/lib/icons";
 import { useLayer } from "@/components/LayerProvider";
 import { useFocus, type FocusPhase } from "./FocusProvider";
+import { useSettings } from "@/components/SettingsProvider";
 import { hapticLightImpact } from "@/lib/haptics";
 import { cn } from "@/lib/utils";
 
@@ -31,8 +32,19 @@ export default function FocusPopover({
   referenceRef: HTMLElement | null;
 }) {
   const i18n = useI18n();
+  const { settings } = useSettings();
   const { state, start, pause, resume, stop, skip } = useFocus();
   const panelRef = useRef<HTMLDivElement | null>(null);
+
+  const dockElevation = settings.dockElevation ?? 60;
+  const dockScaleFactor =
+    (settings.dockSize ??
+      (settings.dockScale === "compact"
+        ? 85
+        : settings.dockScale === "large"
+        ? 115
+        : 100)) / 100;
+  const popoverBottom = Math.round(dockElevation + 54 * dockScaleFactor);
 
   useLayer(open, onClose, {
     boundary: panelRef,
@@ -112,8 +124,11 @@ export default function FocusPopover({
             animate={{ opacity: 1, y: 0, x: "-50%", scale: 1 }}
             exit={{ opacity: 0, y: 12, x: "-50%", scale: 0.96 }}
             transition={{ type: "spring", stiffness: 440, damping: 28, mass: 0.75 }}
-            style={{ transformOrigin: "bottom center" }}
-            className="fixed bottom-[calc(5.75rem+env(safe-area-inset-bottom))] left-1/2 z-[var(--z-popover)] w-88 max-w-[calc(100vw-1.5rem)] overflow-hidden pointer-events-auto outline-none"
+            style={{
+              bottom: `calc(${popoverBottom}px + env(safe-area-inset-bottom))`,
+              transformOrigin: "bottom center",
+            }}
+            className="fixed left-1/2 z-[var(--z-popover)] w-88 max-w-[calc(100vw-1.5rem)] overflow-hidden pointer-events-auto outline-none"
             role="dialog"
             aria-modal="false"
             aria-label={i18n("focus")}

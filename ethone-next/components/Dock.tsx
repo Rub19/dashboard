@@ -172,6 +172,22 @@ function Dock() {
     isAllowedByPreset &&
     (!isAutoHidePage || pageOverrideShow);
 
+  const dockElevation = settings.dockElevation ?? 60;
+  const dockScaleFactor =
+    (settings.dockSize ??
+      (settings.dockScale === "compact"
+        ? 85
+        : settings.dockScale === "large"
+        ? 115
+        : 100)) / 100;
+
+  const glassClass =
+    settings.dockGlass === "ultra-blur"
+      ? "backdrop-blur-3xl bg-[var(--bg-surface,var(--panel-bg))]/60 border-[var(--panel-border)]/50"
+      : settings.dockGlass === "sober"
+      ? "backdrop-blur-none bg-[var(--bg-surface,var(--panel-bg))] border-[var(--panel-border)]"
+      : "backdrop-blur-3xl backdrop-saturate-150 border border-[var(--panel-border)] bg-[var(--bg-surface,var(--panel-bg))]/80";
+
   const allApps = useMemo(
     () =>
       Object.keys(ICONS)
@@ -304,7 +320,10 @@ function Dock() {
             exit={{ opacity: 0, y: 15 }}
             transition={{ duration: 0.2 }}
             data-chrome="dock"
-            className="fixed bottom-[calc(2.75rem+env(safe-area-inset-bottom))] left-1/2 z-[var(--z-dock)] -translate-x-1/2 hidden md:block"
+            style={{
+              bottom: `calc(${dockElevation}px + env(safe-area-inset-bottom))`,
+            }}
+            className="fixed left-1/2 z-[var(--z-dock)] -translate-x-1/2 hidden md:block"
           >
             <button
               type="button"
@@ -327,7 +346,10 @@ function Dock() {
             exit={{ y: 50, opacity: 0, scale: 0.94 }}
             transition={{ type: "spring", stiffness: 350, damping: 38 }}
             data-chrome="dock"
-            className="v8-floating-dock fixed bottom-[calc(2.75rem+env(safe-area-inset-bottom))] inset-x-0 z-[var(--z-dock)] hidden md:flex pointer-events-none justify-center bg-transparent p-0 m-0 border-none shadow-none outline-none"
+            style={{
+              bottom: `calc(${dockElevation}px + env(safe-area-inset-bottom))`,
+            }}
+            className="v8-floating-dock fixed inset-x-0 z-[var(--z-dock)] hidden md:flex pointer-events-none justify-center bg-transparent p-0 m-0 border-none shadow-none outline-none"
           >
             {/* Launchpad Mini Flyout */}
             <AnimatePresence>
@@ -435,8 +457,16 @@ function Dock() {
 
             {/* Apple-grade Floating Glass Dock Bar */}
             <nav
-              className="pointer-events-auto inline-flex items-center gap-1 overflow-x-auto no-scrollbar v8-dock px-2.5 py-2 select-none backdrop-blur-3xl backdrop-saturate-150 border border-[var(--panel-border)] bg-[var(--bg-surface,var(--panel-bg))]/80 shadow-[0_24px_60px_-12px_rgba(0,0,0,0.65),inset_0_1px_0_rgba(255,255,255,0.08)] rounded-[24px]"
+              className={cn(
+                "pointer-events-auto inline-flex items-center gap-1 overflow-x-auto no-scrollbar v8-dock px-2.5 py-2 select-none shadow-[0_24px_60px_-12px_rgba(0,0,0,0.65),inset_0_1px_0_rgba(255,255,255,0.08)] rounded-[24px]",
+                glassClass
+              )}
               aria-label={i18n("dock")}
+              style={{
+                transform: `scale(${dockScaleFactor})`,
+                transformOrigin: "bottom center",
+                borderRadius: settings.dockRadius ? `${settings.dockRadius}px` : undefined,
+              }}
             >
               <DockMediaFlyout
                 nowPlaying={spotifyNow}

@@ -84,27 +84,43 @@ function AppleToggle({ label, checked, onChange }: ToggleProps) {
   );
 }
 
-type AppleVolumeSliderProps = {
+type AppleRangeSliderProps = {
   label: string;
   value: number;
+  min?: number;
+  max?: number;
+  step?: number;
+  unit?: string;
   onChange: (v: number) => void;
 };
 
-function AppleVolumeSlider({ label, value, onChange }: AppleVolumeSliderProps) {
+function AppleRangeSlider({
+  label,
+  value,
+  min = 0,
+  max = 100,
+  step = 1,
+  unit = "%",
+  onChange,
+}: AppleRangeSliderProps) {
   const [dragging, setDragging] = useState(false);
   const [hovered, setHovered] = useState(false);
   const trackRef = useRef<HTMLDivElement>(null);
 
-  const pct = Math.max(0, Math.min(100, value));
+  const safeVal = Math.max(min, Math.min(max, value));
+  const range = Math.max(1, max - min);
+  const pct = Math.max(0, Math.min(100, ((safeVal - min) / range) * 100));
 
   const updateFromClientX = useCallback(
     (clientX: number) => {
       const rect = trackRef.current?.getBoundingClientRect();
       if (!rect) return;
-      const next = Math.min(100, Math.max(0, ((clientX - rect.left) / rect.width) * 100));
-      onChange(Math.round(next));
+      const ratio = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
+      const raw = min + ratio * (max - min);
+      const stepped = Math.round(raw / step) * step;
+      onChange(Math.max(min, Math.min(max, stepped)));
     },
-    [onChange]
+    [min, max, step, onChange]
   );
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -131,11 +147,11 @@ function AppleVolumeSlider({ label, value, onChange }: AppleVolumeSliderProps) {
     if (["ArrowRight", "ArrowUp"].includes(e.key)) {
       e.preventDefault();
       hapticLightImpact();
-      onChange(Math.min(100, value + 5));
+      onChange(Math.min(max, safeVal + step));
     } else if (["ArrowLeft", "ArrowDown"].includes(e.key)) {
       e.preventDefault();
       hapticLightImpact();
-      onChange(Math.max(0, value - 5));
+      onChange(Math.max(min, safeVal - step));
     }
   };
 
@@ -144,7 +160,8 @@ function AppleVolumeSlider({ label, value, onChange }: AppleVolumeSliderProps) {
       <div className="flex items-center justify-between text-xs px-2">
         <span className="font-medium text-[var(--text-primary)]">{label}</span>
         <span className="font-mono text-[var(--text-muted)] text-[11px] tabular-nums">
-          {pct}%
+          {safeVal}
+          {unit}
         </span>
       </div>
 
@@ -154,9 +171,9 @@ function AppleVolumeSlider({ label, value, onChange }: AppleVolumeSliderProps) {
           role="slider"
           tabIndex={0}
           aria-label={label}
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-valuenow={pct}
+          aria-valuemin={min}
+          aria-valuemax={max}
+          aria-valuenow={safeVal}
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
@@ -166,7 +183,6 @@ function AppleVolumeSlider({ label, value, onChange }: AppleVolumeSliderProps) {
           onKeyDown={handleKeyDown}
           className="relative h-2 flex-1 rounded-full bg-black/50 border border-white/[0.08] cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
         >
-          {/* Active filled track */}
           <div
             className={cn(
               "absolute inset-y-0 left-0 rounded-full bg-[var(--accent-primary)] shadow-[0_0_10px_var(--glow-color)]",
@@ -175,7 +191,6 @@ function AppleVolumeSlider({ label, value, onChange }: AppleVolumeSliderProps) {
             style={{ width: `${pct}%` }}
           />
 
-          {/* Draggable Knob */}
           <div
             className={cn(
               "pointer-events-none absolute top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white shadow-md transition-transform",
@@ -186,8 +201,9 @@ function AppleVolumeSlider({ label, value, onChange }: AppleVolumeSliderProps) {
           />
         </div>
 
-        <span className="font-mono text-xs text-[var(--text-muted)] tabular-nums w-8 text-right">
-          {pct}%
+        <span className="font-mono text-xs text-[var(--text-muted)] tabular-nums w-10 text-right">
+          {safeVal}
+          {unit}
         </span>
       </div>
     </div>
@@ -285,6 +301,16 @@ export default function DockControlCenter({
     onClose();
   }
 
+  const dockElevation = settings.dockElevation ?? 60;
+  const dockScaleFactor =
+    (settings.dockSize ??
+      (settings.dockScale === "compact"
+        ? 85
+        : settings.dockScale === "large"
+        ? 115
+        : 100)) / 100;
+  const popoverBottom = Math.round(dockElevation + 54 * dockScaleFactor);
+
   return (
     <FloatingPortal>
       <AnimatePresence>
@@ -295,8 +321,11 @@ export default function DockControlCenter({
             animate={{ opacity: 1, y: 0, x: "-50%", scale: 1 }}
             exit={{ opacity: 0, y: 12, x: "-50%", scale: 0.96 }}
             transition={{ type: "spring", stiffness: 440, damping: 28, mass: 0.75 }}
-            style={{ transformOrigin: "bottom center" }}
-            className="fixed bottom-[calc(5.75rem+env(safe-area-inset-bottom))] left-1/2 z-[var(--z-popover)] w-88 sm:w-[380px] max-w-[calc(100vw-1.5rem)] overflow-hidden pointer-events-auto"
+            style={{
+              bottom: `calc(${popoverBottom}px + env(safe-area-inset-bottom))`,
+              transformOrigin: "bottom center",
+            }}
+            className="fixed left-1/2 z-[var(--z-popover)] w-88 sm:w-[380px] max-w-[calc(100vw-1.5rem)] overflow-hidden pointer-events-auto"
             role="dialog"
             aria-modal="false"
             aria-label={i18n("controlCenter")}
@@ -432,6 +461,71 @@ export default function DockControlCenter({
                 />
               </section>
 
+              <section className="space-y-2 rounded-2xl border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.02] p-2.5 backdrop-blur-md">
+                <div className="flex items-center justify-between px-1">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                    {i18n("dockSettings", "Réglages du dock")}
+                  </p>
+                  <span className="text-[10px] text-[var(--accent-primary)] font-semibold">
+                    En direct
+                  </span>
+                </div>
+
+                <AppleRangeSlider
+                  label={i18n("dockElevation", "Hauteur du dock")}
+                  value={settings.dockElevation ?? 60}
+                  min={40}
+                  max={120}
+                  step={2}
+                  unit="px"
+                  onChange={(v) => update({ dockElevation: v })}
+                />
+
+                <AppleRangeSlider
+                  label={i18n("dockSize", "Taille du dock")}
+                  value={settings.dockSize ?? (settings.dockScale === "compact" ? 85 : settings.dockScale === "large" ? 115 : 100)}
+                  min={75}
+                  max={130}
+                  step={1}
+                  unit="%"
+                  onChange={(v) => {
+                    const scale = v <= 88 ? "compact" : v >= 110 ? "large" : "normal";
+                    update({ dockSize: v, dockScale: scale });
+                  }}
+                />
+
+                <div className="grid grid-cols-3 gap-1.5 pt-0.5">
+                  {(
+                    [
+                      { id: "compact", label: i18n("dockScaleCompact", "Compact"), size: 85 },
+                      { id: "normal", label: i18n("dockScaleNormal", "Normal"), size: 100 },
+                      { id: "large", label: i18n("dockScaleLarge", "Grand"), size: 115 },
+                    ] as const
+                  ).map((preset) => {
+                    const currentSize = settings.dockSize ?? (settings.dockScale === "compact" ? 85 : settings.dockScale === "large" ? 115 : 100);
+                    const active = settings.dockScale === preset.id || Math.abs(currentSize - preset.size) <= 3;
+                    return (
+                      <button
+                        key={preset.id}
+                        type="button"
+                        onClick={() => {
+                          hapticLightImpact();
+                          update({ dockScale: preset.id, dockSize: preset.size });
+                        }}
+                        className={cn(
+                          "rounded-xl py-1 text-[11px] font-semibold transition-all cursor-pointer border",
+                          active
+                            ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] shadow-sm"
+                            : "border-white/[0.06] bg-white/[0.03] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-white/[0.06]"
+                        )}
+                      >
+                        {preset.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </section>
+
               {/* Section 4: Sound Pack Bento */}
               <section className="space-y-1.5">
                 <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] px-0.5">
@@ -485,7 +579,7 @@ export default function DockControlCenter({
                   checked={settings.masterVolume}
                   onChange={(v) => update({ masterVolume: v })}
                 />
-                <AppleVolumeSlider
+                <AppleRangeSlider
                   label={i18n("soundVolume")}
                   value={settings.soundVolume}
                   onChange={(v) => update({ soundVolume: v })}
@@ -497,7 +591,7 @@ export default function DockControlCenter({
                 <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] px-0.5">
                   {i18n("ambience")}
                 </p>
-                <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.02] p-2 backdrop-blur-md">
+                <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.02] p-2.5 backdrop-blur-md">
                   <AmbientSoundControl compact />
                 </div>
               </section>

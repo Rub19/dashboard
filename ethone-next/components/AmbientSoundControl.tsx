@@ -95,7 +95,7 @@ export default function AmbientSoundControl({ value, onChange, compact }: Ambien
     <div
       className={cn(
         "flex w-full gap-2",
-        compact ? "overflow-x-auto no-scrollbar" : "grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6"
+        compact ? "overflow-x-auto no-scrollbar p-1 px-1.5" : "grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6"
       )}
     >
       {AMBIENT_SOUNDS.map((id) => {
@@ -108,8 +108,8 @@ export default function AmbientSoundControl({ value, onChange, compact }: Ambien
             type="button"
             onClick={() => toggle(id)}
             className={cn(
-              "group relative flex flex-col items-center justify-center rounded-[var(--inset-radius)] border p-2.5 transition-all active:scale-95",
-              compact ? "min-w-[4.5rem] flex-1" : "",
+              "group relative flex flex-col items-center justify-center rounded-xl border p-2.5 transition-all active:scale-95",
+              compact ? "min-w-[4.5rem] flex-1 shrink-0" : "",
               active
                 ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] shadow-[0_0_12px_-4px_var(--accent-primary)]"
                 : "border-[var(--panel-border)] bg-[var(--panel-bg)] text-[var(--text-muted)] hover:border-[var(--accent-primary)]/40 hover:text-[var(--text-primary)]"

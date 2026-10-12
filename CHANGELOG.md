@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.74.8 — 2026-10-12
+
+**Dock & Ambiance : Réglages live de taille et hauteur, correction du rognage sans son et persistance Supabase**
+
+- **Élévation naturelle du Dock** : Rehaussement de l'altitude par défaut du Dock à 60px au-dessus de la barre d'état (contre 44px précédemment), apportant une respiration confortable et éliminant tout chevauchement avec les widgets ou textes du bas de page.
+- **Correction du rognage sans son** : Dans le Centre de contrôle du dock (`AmbientSoundControl`), ajout d'un padding interne (`p-1 px-1.5`) et d'un conteneur parent élargi (`p-2.5`) éliminant le rognage de la bordure et de la lueur du bouton « Aucune » (sans son) par le rayon de coin de la carte.
+- **Réglages live du Dock dans le Centre de contrôle** : Ajout d'une section dédiée avec curseurs Apple tactiles permettant de moduler en temps réel la hauteur d'élévation (40px à 120px) et l'échelle (75% à 130%), complétée de préréglages rapides (Compact 85%, Normal 100%, Grand 115%).
+- **Persistance Supabase en direct** : Sauvegarde immédiate dans les paramètres utilisateur avec synchronisation automatique vers Supabase (`user_settings`) via `useSettings` et `saveSettingsAsync`.
+- **Suivi d'altitude dynamique des popovers** : Les fenêtres volantes du Centre de contrôle (`DockControlCenter`) et du chronomètre Focus (`FocusPopover`) suivent automatiquement la hauteur et la taille configurées en direct.
+
 ## v1.74.7 — 2026-10-12
 
 **Interface & Dock : Suppression du vide noir résiduel et ancrage direct contre le dashboard**

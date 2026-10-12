@@ -51045,6 +51045,63 @@ const v1_74_7_de: ChangelogEntry = {
   ],
 };
 
+const v1_74_8_fr: ChangelogEntry = {
+  version: "v1.74.8",
+  date: "2026-10-12",
+  title: "Dock & Ambiance : Réglages live de taille et hauteur, correction du rognage sans son et persistance Supabase",
+  items: [
+    "Élévation naturelle du Dock : Rehaussement de la hauteur par défaut à 60px au-dessus de la barre d'état pour une respiration optimale sans collision avec les widgets",
+    "Correction du Centre de contrôle : Élimination du rognage de bordure et de lueur sur l'option 'Aucune' (sans son) dans le sélecteur d'ambiances avec espacements aérés",
+    "Réglages live du Dock : Nouveaux curseurs en direct dans le Centre de contrôle et dans les réglages pour ajuster la hauteur (40px à 120px) et l'échelle (75% à 130%)",
+    "Persistance Supabase : Synchronisation instantanée et sauvegarde automatique sur Supabase de l'élévation et des dimensions du dock",
+    "Alignement dynamique des fenêtres : Les popovers du Centre de contrôle et du Focus suivent l'altitude exacte du dock en temps réel",
+  ],
+};
+
+const v1_74_8_en: ChangelogEntry = {
+  version: "v1.74.8",
+  date: "2026-10-12",
+  title: "Dock & Ambience: Live height and size controls, soundless button unclip and Supabase persistence",
+  items: [
+    "Natural Dock Elevation: Raised default dock height to 60px above status bar for clear breathing room without colliding with page widgets",
+    "Control Center fix: Eliminated border clipping and glow cutoffs on the 'None' ambient sound button with generous inner padding",
+    "Live Dock customization: Interactive real-time sliders in the Control Center and Settings to configure dock elevation (40px-120px) and scale (75%-130%)",
+    "Supabase persistence: Instant state update and automatic debounced sync to Supabase for dock elevation and scale preferences",
+    "Dynamic popover tracking: Control Center and Focus popovers dynamically track the dock's live altitude without gaps or overlaps",
+  ],
+};
+
+const v1_74_8_es: ChangelogEntry = {
+  version: "v1.74.8",
+  date: "2026-10-12",
+  title: "Dock y Ambiente: Ajustes en vivo de altura y tamaño, corrección del botón sin sonido y guardado en Supabase",
+  items: [
+    "Elevación natural del Dock: Aumento de la altura predeterminada a 60px sobre la barra de estado para evitar colisiones con widgets",
+    "Corrección en Centro de Control: Eliminado el recorte de bordes en el botón 'Ninguno' de ambiente sonoro con espaciado adecuado",
+    "Personalización en vivo: Deslizadores en tiempo real en Centro de control y Ajustes para regular altura (40px-120px) y escala (75%-130%)",
+    "Persistencia en Supabase: Guardado y sincronización automática en Supabase de la elevación y dimensiones del dock",
+    "Alineación dinámica de ventanas: Los menús emergentes siguen la altura del dock en tiempo real",
+  ],
+};
+
+const v1_74_8_de: ChangelogEntry = {
+  version: "v1.74.8",
+  date: "2026-10-12",
+  title: "Dock & Ambiente: Live-Höhen- und Größenregler, Fehlerbehebung des lautlosen Buttons und Supabase-Synchronisation",
+  items: [
+    "Natürliche Dock-Höhe: Standard-Dockhöhe auf 60px über der Statusleiste angehoben für klaren Freiraum ohne Überlagerung von Widgets",
+    "Korrektur Kontrollzentrum: Randabschneidung und Glüheffekte des 'Kein Sound'-Buttons im Ambient-Sound-Modul behoben",
+    "Live-Anpassung des Docks: Echtzeit-Schieberegler im Kontrollzentrum und in den Einstellungen für Höhe (40px-120px) und Größe (75%-130%)",
+    "Supabase-Persistenz: Sofortige Speicherung und automatische Synchronisierung von Höhe und Skalierung in Supabase",
+    "Dynamische Popover-Ausrichtung: Popover-Fenster folgen der Dock-Position in Echtzeit",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_74_8_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_74_8_en);
+CHANGELOG_BY_LANG.es.unshift(v1_74_8_es);
+CHANGELOG_BY_LANG.de.unshift(v1_74_8_de);
+
 CHANGELOG_BY_LANG.fr.unshift(v1_74_7_fr);
 CHANGELOG_BY_LANG.en.unshift(v1_74_7_en);
 CHANGELOG_BY_LANG.es.unshift(v1_74_7_es);

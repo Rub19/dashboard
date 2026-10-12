@@ -21,14 +21,6 @@ function formatBuildInfo(data: { commit?: string | null; buildAt?: string } | nu
   return parts.join(" · ");
 }
 
-/**
- * `currentData` vient de `builtVersion()` (voir useVersionChecker.ts) et n'a volontairement PAS de
- * `buildAt` — seul `newData` (version.json fraîchement récupéré) en a un. Comparer `a.buildAt !== b.buildAt`
- * sans exemption donnait donc TOUJOURS true (undefined !== "2026-...") dès le premier check réussi, faisant
- * passer la pastille en « mise à jour disponible » en permanence, même juste après un rechargement propre —
- * la bannière VersionUpdateToast (qui n'utilise que `hasUpdate`, lui correctement calculé via isNewerBuild)
- * ne montrait donc jamais rien pendant que la pastille clignotait en boucle. Même exemption qu'isNewerBuild.
- */
 function isDifferentBuild(a: VersionData | null, b: VersionData | null): boolean {
   if (!a || !b) return false;
   if (a.version !== b.version) return true;
@@ -43,7 +35,7 @@ export default function VersionPill() {
   const { currentData, newData, hasUpdate } = useVersionChecker();
 
   const showUpdate = hasUpdate || isDifferentBuild(currentData, newData);
-  const data = newData ?? currentData;
+  const data = (showUpdate && newData ? newData : currentData) ?? newData ?? currentData;
   const label = formatVersion(data?.version ?? null);
   const buildInfo = formatBuildInfo(data) || i18n("noBuildInfo", "Aucune information de build");
   const title =
@@ -53,7 +45,7 @@ export default function VersionPill() {
 
   function handleClick() {
     if (showUpdate) {
-      forceAppReload(data?.version ?? null, data);
+      forceAppReload(newData?.version ?? data?.version ?? null, newData ?? data);
       return;
     }
     show({

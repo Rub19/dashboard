@@ -31,6 +31,7 @@ export async function forceAppReload(newVersion?: string | null, newData?: Versi
 
   try {
     localStorage.removeItem("ethone:update-dismissed");
+    localStorage.removeItem("ethone:pending-update");
   } catch {}
 
   const url = new URL(window.location.href);

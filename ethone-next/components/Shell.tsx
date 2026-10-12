@@ -24,6 +24,7 @@ import AutomationRuntime from "@/components/AutomationRuntime";
 import Dock from "@/components/Dock";
 import SkipLink from "@/components/SkipLink";
 import StatusBar from "@/components/layout/StatusBar";
+import VersionPill from "@/components/layout/VersionPill";
 
 import ContextMenuProvider from "@/components/ContextMenuProvider";
 import NativeIntegration from "@/components/NativeIntegration";
@@ -63,6 +64,9 @@ export default function Shell({ children }: { children: ReactNode }) {
                   <CosmicBackground />
                   <RefreshSpinner />
                   <VisualHaptics />
+                  <div className="fixed bottom-4 left-4 z-50 pointer-events-auto">
+                    <VersionPill />
+                  </div>
                   <Link
                     href="/"
                     onClick={(e) => {

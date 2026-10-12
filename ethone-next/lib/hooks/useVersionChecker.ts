@@ -1,12 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 const STORAGE_KEY = "ethone:version";
+const PENDING_UPDATE_KEY = "ethone:pending-update";
 const DISMISS_KEY = "ethone:update-dismissed";
-const CHECK_INTERVAL = 5 * 60_000; // 5 minutes
-const COOLDOWN = 5_000; // 5 seconds
-const DISMISS_COOLDOWN = 60 * 60_000; // 1 hour
+const CHECK_INTERVAL = 5 * 60_000;
+const COOLDOWN = 5_000;
+const DISMISS_COOLDOWN = 60 * 60_000;
 
 export type VersionData = {
   version: string;
@@ -22,6 +23,12 @@ export type UseVersionChecker = {
   newData: VersionData | null;
   dismiss: () => void;
   check: () => void;
+};
+
+type VersionStoreState = {
+  hasUpdate: boolean;
+  currentData: VersionData | null;
+  newData: VersionData | null;
 };
 
 async function fetchVersion(): Promise<VersionData | null> {
@@ -46,15 +53,12 @@ async function fetchVersion(): Promise<VersionData | null> {
     }
   };
 
-  // /api/version n'existe qu'en développement : en production (export statique), Cloudflare y répondait par la page
-  // HTML entière (téléchargée pour rien) avant de retomber sur /version.json.
   if (process.env.NODE_ENV === "development") {
     return (await tryFetch("/api/version")) ?? (await tryFetch("/version.json"));
   }
   return tryFetch("/version.json");
 }
 
-// La pastille de version et le message de mise à jour vérifient en même temps : une seule requête partagée.
 let versionInFlight: Promise<VersionData | null> | null = null;
 function fetchVersionShared(): Promise<VersionData | null> {
   if (!versionInFlight) {
@@ -73,17 +77,12 @@ function parseBuildAt(value?: string): number {
   return Number.isNaN(ts) ? 0 : ts;
 }
 
-/**
- * Version et commit du code réellement chargé (embarqués au build). Vide en développement : on retombe alors sur la version
- * mémorisée. Le moment du build n'est pas comparé (il diffère entre le code et version.json d'un même déploiement).
- */
 export function builtVersion(): VersionData | null {
   const version = process.env.NEXT_PUBLIC_BUILD_VERSION;
   if (!version) return null;
   return { version, commit: process.env.NEXT_PUBLIC_BUILD_COMMIT || null };
 }
 
-/** Le déploiement en ligne est-il différent du code chargé ? Sans date de build côté courant, seules la version et le commit comptent. */
 export function isNewerBuild(current: VersionData, remote: VersionData): boolean {
   if (current.version !== remote.version) return true;
 
@@ -91,14 +90,12 @@ export function isNewerBuild(current: VersionData, remote: VersionData): boolean
   const remoteCommit = remote.commit ?? null;
   if (currentCommit !== remoteCommit) return true;
 
-  // Identité issue du build (pas de date) : version et commit identiques = même déploiement.
   if (!current.buildAt) return false;
 
   const currentAt = parseBuildAt(current.buildAt);
   const remoteAt = parseBuildAt(remote.buildAt);
 
   if (currentAt === 0 || remoteAt === 0) {
-    // cannot compare timestamps, fallback to string comparison to avoid false negatives
     if (current.buildAt !== remote.buildAt) return true;
   }
 
@@ -114,7 +111,6 @@ function loadStored(): VersionData | null {
     if (parsed && typeof parsed === "object" && "version" in parsed && typeof (parsed as VersionData).version === "string") {
       return parsed as VersionData;
     }
-    // legacy: a plain version string
     return { version: raw };
   } catch {
     return null;
@@ -128,114 +124,147 @@ function saveStored(data: VersionData) {
   } catch {}
 }
 
-export function useVersionChecker(): UseVersionChecker {
-  const [hasUpdate, setHasUpdate] = useState(false);
-  const [currentData, setCurrentData] = useState<VersionData | null>(null);
-  const [newData, setNewData] = useState<VersionData | null>(null);
+function loadPending(): VersionData | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = localStorage.getItem(PENDING_UPDATE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as unknown;
+    if (parsed && typeof parsed === "object" && "version" in parsed && typeof (parsed as VersionData).version === "string") {
+      return parsed as VersionData;
+    }
+  } catch {}
+  return null;
+}
 
-  const lastDataRef = useRef<VersionData | null>(null);
-  const newDataRef = useRef<VersionData | null>(null);
-  const checkingRef = useRef(false);
-  const lastCheckRef = useRef(0);
+function syncStoreFromStorage(): VersionStoreState {
+  if (typeof window === "undefined") {
+    return { hasUpdate: false, currentData: null, newData: null };
+  }
+  const built = builtVersion();
+  const current = built ?? loadStored();
+  const pending = loadPending();
+  let hasUpdate = false;
+  if (current && pending && isNewerBuild(current, pending)) {
+    const dismissedAt = Number(localStorage.getItem(DISMISS_KEY) || "0");
+    if (Date.now() - dismissedAt > DISMISS_COOLDOWN) {
+      hasUpdate = true;
+    }
+  }
+  return {
+    hasUpdate,
+    currentData: current,
+    newData: pending,
+  };
+}
+
+const subscribers = new Set<(state: VersionStoreState) => void>();
+let currentStoreState: VersionStoreState = syncStoreFromStorage();
+let lastCheckTimestamp = 0;
+
+function setStoreState(updater: (prev: VersionStoreState) => VersionStoreState) {
+  currentStoreState = updater(currentStoreState);
+  subscribers.forEach((fn) => {
+    try {
+      fn(currentStoreState);
+    } catch {}
+  });
+}
+
+if (typeof window !== "undefined") {
+  window.addEventListener("storage", (e) => {
+    if (e.key === PENDING_UPDATE_KEY || e.key === DISMISS_KEY || e.key === STORAGE_KEY) {
+      setStoreState(() => syncStoreFromStorage());
+    }
+  });
+}
+
+export function useVersionChecker(): UseVersionChecker {
+  const [state, setState] = useState<VersionStoreState>(() => currentStoreState);
+
+  useEffect(() => {
+    setState(currentStoreState);
+    const sub = (next: VersionStoreState) => setState(next);
+    subscribers.add(sub);
+    return () => {
+      subscribers.delete(sub);
+    };
+  }, []);
 
   const dismiss = useCallback(() => {
-    setHasUpdate(false);
     try {
       localStorage.setItem(DISMISS_KEY, Date.now().toString());
     } catch {}
+    setStoreState((prev) => ({ ...prev, hasUpdate: false }));
   }, []);
-
-  const setAsCurrent = useCallback((data: VersionData) => {
-    lastDataRef.current = data;
-    setCurrentData(data);
-    saveStored(data);
-  }, []);
-
-  const setAsRemote = useCallback((data: VersionData) => {
-    newDataRef.current = data;
-    setNewData(data);
-  }, []);
-
-  const setAsNew = useCallback((data: VersionData) => {
-    setAsRemote(data);
-    setHasUpdate(true);
-  }, [setAsRemote]);
 
   const check = useCallback(async () => {
-    if (checkingRef.current) return;
     if (typeof window === "undefined") return;
-
     const now = Date.now();
-    if (now - lastCheckRef.current < COOLDOWN) return;
-    lastCheckRef.current = now;
+    if (now - lastCheckTimestamp < COOLDOWN) return;
+    lastCheckTimestamp = now;
 
-    checkingRef.current = true;
     try {
       const remote = await fetchVersionShared();
       if (!remote?.version) return;
 
-      const current = lastDataRef.current;
+      const built = builtVersion();
+      const current = built ?? loadStored();
       if (!current) {
-        setAsCurrent(remote);
+        saveStored(remote);
+        setStoreState((prev) => ({ ...prev, currentData: remote }));
         return;
       }
 
       if (isNewerBuild(current, remote)) {
-        if (
-          newDataRef.current &&
-          newDataRef.current.version === remote.version &&
-          newDataRef.current.commit === remote.commit &&
-          newDataRef.current.buildAt === remote.buildAt
-        ) {
-          // same pending update already surfaced
-          return;
-        }
+        try {
+          localStorage.setItem(PENDING_UPDATE_KEY, JSON.stringify(remote));
+        } catch {}
 
         const dismissedAt = Number(localStorage.getItem(DISMISS_KEY) || "0");
-        if (now - dismissedAt > DISMISS_COOLDOWN) {
-          setAsNew(remote);
-        } else {
-          // dismissed recently, but still expose latest remote to the UI
-          setAsRemote(remote);
-        }
+        const hasUpdate = now - dismissedAt > DISMISS_COOLDOWN;
+        setStoreState((prev) => ({
+          ...prev,
+          currentData: current,
+          newData: remote,
+          hasUpdate,
+        }));
       } else {
-        setAsRemote(remote);
+        try {
+          localStorage.removeItem(PENDING_UPDATE_KEY);
+        } catch {}
+        setStoreState((prev) => ({
+          ...prev,
+          currentData: current,
+          newData: remote,
+          hasUpdate: false,
+        }));
       }
-    } finally {
-      checkingRef.current = false;
-    }
-  }, [setAsCurrent, setAsNew, setAsRemote]);
+    } catch {}
+  }, []);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    // Référence = le code réellement chargé ; la version mémorisée ne sert qu'en développement.
     const built = builtVersion();
-    const stored = built ?? loadStored();
-    if (stored) {
-      lastDataRef.current = stored;
-      setCurrentData(stored);
-      if (built) saveStored(built);
+    if (built) {
+      saveStored(built);
     }
 
-    const run = () => check();
-    run();
-    const interval = setInterval(run, CHECK_INTERVAL);
+    check();
+    const interval = setInterval(() => check(), CHECK_INTERVAL);
 
     function onVisibilityChange() {
-      if (document.visibilityState === "visible") run();
+      if (document.visibilityState === "visible") check();
     }
-
     function onWindowFocus() {
-      run();
+      check();
     }
-
     function onPageShow() {
-      run();
+      check();
     }
-
     function onOnline() {
-      run();
+      check();
     }
 
     document.addEventListener("visibilitychange", onVisibilityChange);
@@ -253,11 +282,11 @@ export function useVersionChecker(): UseVersionChecker {
   }, [check]);
 
   return {
-    hasUpdate,
-    currentVersion: currentData?.version ?? null,
-    newVersion: newData?.version ?? null,
-    currentData,
-    newData,
+    hasUpdate: state.hasUpdate,
+    currentVersion: state.currentData?.version ?? null,
+    newVersion: state.newData?.version ?? null,
+    currentData: state.currentData,
+    newData: state.newData,
     dismiss,
     check,
   };

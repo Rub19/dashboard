@@ -2,6 +2,22 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.5 — 2026-10-12
+
+**Correctif : Synchronisation Globale de la Bannière de Version & Pastille d'État**
+
+- **Résolution du Bug de Perte de Mise à Jour lors de la Navigation** :
+  - Mise en place d'un store singleton réactif avec persistance du statut de mise à jour en attente (`ethone:pending-update`).
+  - Synchronisation immédiate et bidirectionnelle de l'état de version entre la vitrine bot (`/bot`), la console (`/discord`), et le dashboard (`/`).
+  - La pastille de version en bas d'écran (`VersionPill`) ne se réinitialise plus en faux état "Version actuelle" lors d'un retour au dashboard : elle conserve immédiatement l'état ambre avec l'icône de mise à jour.
+- **Affichage de la Bannière sur la Vitrine Bot (`/bot`)** :
+  - Déblocage de la bannière `VersionUpdateToast` sur la page vitrine bot `/bot` afin qu'elle soit visible dans les deux sens de navigation.
+  - Intégration de la pastille `VersionPill` dans le pied de page de la vitrine `/bot` et dans la vue plein écran Discord.
+- **Navigation Fluide Client-Side** :
+  - Remplacement des liens HTML pleins vers le dashboard par les composants de navigation optimisés Next.js (`Link`), préservant le contexte d'exécution et l'état réactif de l'application sans rechargement lourd.
+- **Fiabilisation du Service Worker** :
+  - Contournement direct des requêtes `/version.json` dans le Service Worker pour garantir un retour réseau natif sans interférence ni collision de cache.
+
 ## v1.75.4 — 2026-10-12
 
 **Intégration Last.fm Complète & Section Plateformes Vitrine (Bleed Style)**

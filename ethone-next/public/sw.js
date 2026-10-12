@@ -316,7 +316,6 @@ self.addEventListener("fetch", (event) => {
   // /invite est une redirection serveur vers l'autorisation Discord du bot (bio Discord) : le service worker ne doit pas la traiter.
   if (new URL(event.request.url).pathname.replace(/\/$/, "") === "/invite") return;
   if (event.request.url.includes("/version.json")) {
-    event.respondWith(fetch(event.request, { cache: "no-store" }));
     return;
   }
   // Zip et fiche de l'extension : toujours la version publiée (le cache servait un ancien zip aux visiteurs déjà venus).

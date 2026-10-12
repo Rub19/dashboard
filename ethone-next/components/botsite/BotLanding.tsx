@@ -12,7 +12,10 @@ import {
   useSpring,
   useTransform,
 } from "framer-motion";
+import Link from "next/link";
+import Image from "next/image";
 import FlagIcon, { LANGUAGE_LABELS } from "@/components/FlagIcon";
+import VersionPill from "@/components/layout/VersionPill";
 import { EASE_SNAP, SPRING_MOUSE } from "@/lib/ease";
 import { useMotionPref } from "@/lib/hooks/useMotionPref";
 import { BOT_COPY, BOT_LANGS, BOT_LANG_KEY, detectBotLang, type BotLang } from "./botLandingI18n";
@@ -990,12 +993,12 @@ export default function BotLanding() {
           </nav>
 
           <div className="flex items-center gap-3">
-            <a
+            <Link
               href={DASHBOARD_URL}
               className="hidden rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-xs font-semibold text-zinc-200 transition-all hover:border-white/20 hover:bg-white/[0.08] sm:inline-flex"
             >
               {c.nav.dashboard}
-            </a>
+            </Link>
             <a
               href={INVITE_URL}
               target="_blank"
@@ -1034,7 +1037,7 @@ export default function BotLanding() {
                 <a href="#commandes" onClick={scrollToSection("commandes")} className="text-sm font-medium text-zinc-300">{c.nav.commands}</a>
                 <a href="#faq" onClick={scrollToSection("faq")} className="text-sm font-medium text-zinc-300">{c.nav.faq}</a>
                 <a href={SUPPORT_URL} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-zinc-300">{c.nav.support}</a>
-                <a href={DASHBOARD_URL} className="text-sm font-medium text-[#92C8D2]">{c.nav.dashboard}</a>
+                <Link href={DASHBOARD_URL} className="text-sm font-medium text-[#92C8D2]">{c.nav.dashboard}</Link>
               </div>
             </motion.div>
           )}
@@ -1097,12 +1100,12 @@ export default function BotLanding() {
                   <DiscordGlyph className="h-5 w-5" />
                   {c.hero.addBtn}
                 </a>
-                <a
+                <Link
                   href={DASHBOARD_URL}
                   className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.04] px-6 py-3.5 text-sm font-semibold text-white backdrop-blur-md transition-all hover:-translate-y-0.5 hover:border-white/25 hover:bg-white/[0.08]"
                 >
                   {c.hero.dashboardBtn}
-                </a>
+                </Link>
               </motion.div>
 
               <div className="mt-8 flex flex-wrap items-center gap-3">
@@ -1665,12 +1668,12 @@ export default function BotLanding() {
                     <DiscordGlyph className="h-5 w-5" />
                     {c.cta.addBtn}
                   </a>
-                  <a
+                  <Link
                     href={DASHBOARD_URL}
                     className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-7 py-3.5 text-sm font-semibold text-white backdrop-blur-md transition-all hover:border-white/30 hover:bg-white/[0.08]"
                   >
                     {c.cta.dashboardBtn}
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -1681,14 +1684,13 @@ export default function BotLanding() {
       <footer className="relative z-10 border-t border-white/[0.07] bg-black/40">
         <div className="mx-auto flex w-full max-w-6xl flex-col items-center justify-between gap-4 px-6 py-8 text-xs text-zinc-500 sm:flex-row">
           <div className="flex items-center gap-3">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/icons/ethone-icon-192.png" alt="" className="h-5 w-5 rounded-md opacity-80" />
+            <Image src="/icons/ethone-icon-192.png" alt="" width={20} height={20} className="h-5 w-5 rounded-md opacity-80" />
             <p>© {new Date().getFullYear()} Etho · {c.footer.tagline}</p>
           </div>
           <div className="flex flex-wrap items-center gap-6">
-            <a href={DASHBOARD_URL} className="transition-colors hover:text-white">
+            <Link href={DASHBOARD_URL} className="transition-colors hover:text-white">
               {c.footer.dashboard}
-            </a>
+            </Link>
             <a
               href={SUPPORT_URL}
               target="_blank"
@@ -1703,6 +1705,7 @@ export default function BotLanding() {
             <a href="/privacy" className="transition-colors hover:text-white">
               {c.footer.privacy}
             </a>
+            <VersionPill />
           </div>
         </div>
       </footer>

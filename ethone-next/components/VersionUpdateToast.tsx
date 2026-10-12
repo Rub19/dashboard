@@ -58,15 +58,7 @@ export default function VersionUpdateToast() {
     setShowChangelog(true);
   }
 
-  // Moved off the bottom-right corner and condensed to one row (2026-09-19):
-  // the old bottom-right card collided with the Dock toggle and the status
-  // bar on desktop, and with the sign-in card's "OU CONTINUER AVEC" row on
-  // /login. A full-height card anchored top-right also clipped the /login
-  // title (that card's heading starts ~136px down on a 768px-tall viewport).
-  // A single slim row fits the gap below the top bar on every page instead
-  // of needing one.
-  // Page vitrine publique : pas de bandeau d'application par-dessus.
-  if (pathname === "/bot" || pathname?.startsWith("/bot/") || pathname === "/leaderboard" || pathname === "/leaderboard/") return null;
+  if (pathname === "/leaderboard" || pathname === "/leaderboard/") return null;
 
   return (
     <>

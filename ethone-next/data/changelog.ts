@@ -51917,6 +51917,59 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_4_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_4_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_4_de);
 
+const v1_75_5_fr: ChangelogEntry = {
+  version: "v1.75.5",
+  date: "2026-10-12",
+  title: "Correctif : Synchronisation Globale de la Bannière de Version & Pastille d'État",
+  items: [
+    "Résolution du bug de persistance des mises à jour : synchronisation immédiate et globale de la détection de version entre la vitrine /bot, la console du bot et le dashboard.",
+    "Persistance de la mise à jour en attente (ethone:pending-update) : le bandeau et la pastille de version en bas d'écran conservent leur état lors des navigations dans les deux sens sans se réinitialiser.",
+    "Affichage du bandeau de mise à jour sur la vitrine bot (/bot) et intégration de la pastille de version dans le pied de page et le mode plein écran Discord.",
+    "Transition fluide sans rechargement complet de page entre la vitrine bot et le dashboard via les composants de navigation Next.js.",
+  ],
+};
+
+const v1_75_5_en: ChangelogEntry = {
+  version: "v1.75.5",
+  date: "2026-10-12",
+  title: "Fix: Global Version Banner & Status Pill Synchronization",
+  items: [
+    "Resolved update persistence issue: immediate and unified version check synchronization across the /bot showcase, bot console, and dashboard.",
+    "Persistent pending update state (ethone:pending-update): the top banner and bottom version indicator preserve their state during bi-directional navigation without resetting.",
+    "Enabled update banner on the bot showcase (/bot) and integrated the version pill into the footer and full-screen Discord view.",
+    "Seamless client-side navigation between the bot showcase and dashboard via Next.js navigation components.",
+  ],
+};
+
+const v1_75_5_es: ChangelogEntry = {
+  version: "v1.75.5",
+  date: "2026-10-12",
+  title: "Corrección: Sincronización Global del Banner de Versión y Píldora de Estado",
+  items: [
+    "Solución del problema de persistencia de actualizaciones: sincronización unificada de versiones entre la vitrina /bot, la consola del bot y el panel.",
+    "Persistencia del estado de actualización pendiente (ethone:pending-update): el banner y la píldora inferior mantienen su estado durante la navegación en ambos sentidos.",
+    "Banner de actualización habilitado en la vitrina del bot (/bot) e integración de la píldora de versión en el pie de página y la vista completa de Discord.",
+    "Navegación fluida del lado del cliente entre la vitrina del bot y el panel mediante componentes de navegación de Next.js.",
+  ],
+};
+
+const v1_75_5_de: ChangelogEntry = {
+  version: "v1.75.5",
+  date: "2026-10-12",
+  title: "Fix: Globale Synchronisierung von Versionsbanner & Status-Pille",
+  items: [
+    "Behebung des Persistenzfehlers bei Updates: Sofortige und einheitliche Versionserkennung zwischen /bot-Showcase, Bot-Konsole und Dashboard.",
+    "Persistenter Update-Status (ethone:pending-update): Der obere Banner und die Versions-Pille behalten ihren Status bei Navigation in beide Richtungen.",
+    "Update-Banner auf der Bot-Präsentationsseite (/bot) aktiviert und Versions-Pille in Footer und Discord-Vollbildansicht integriert.",
+    "Nahtlose clientseitige Navigation zwischen Bot-Showcase und Dashboard mittels Next.js-Komponenten.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_5_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_5_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_5_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_5_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

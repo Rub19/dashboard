@@ -51580,6 +51580,56 @@ CHANGELOG_BY_LANG.en.unshift(v1_74_17_en);
 CHANGELOG_BY_LANG.es.unshift(v1_74_17_es);
 CHANGELOG_BY_LANG.de.unshift(v1_74_17_de);
 
+const v1_74_18_fr: ChangelogEntry = {
+  version: "v1.74.18",
+  date: "2026-10-12",
+  title: "Console Discord : Résolution du blocage sur /bot et suppression de l'ancien dashboard",
+  items: [
+    "Suppression du dashboard fantôme : Retrait définitif de EthoProtectDashboard.tsx qui bloquait l'affichage (« Bonjour Compte », 0 serveur et écran noir)",
+    "Redirection instantanée vers la console officielle : discord.ethone.dev/bot et la racine de discord.ethone.dev redirigent immédiatement vers /discord",
+    "Expérience unifiée & connectée : Affichage direct de la session Discord sécurisée (BotSessionGate), des vrais serveurs en grille moderne à 3 colonnes et de la détection de présence",
+  ],
+};
+
+const v1_74_18_en: ChangelogEntry = {
+  version: "v1.74.18",
+  date: "2026-10-12",
+  title: "Discord Console: Fixed /bot freeze and removed obsolete duplicate dashboard",
+  items: [
+    "Removed broken duplicate: Completely deleted EthoProtectDashboard.tsx which caused the blank screen freeze",
+    "Clean redirect to official console: /bot and discord.ethone.dev now immediately route to /discord",
+    "Unified experience: Full integration with BotSessionGate, 3-column modern server grid, and real-time bot presence",
+  ],
+};
+
+const v1_74_18_es: ChangelogEntry = {
+  version: "v1.74.18",
+  date: "2026-10-12",
+  title: "Consola de Discord: Corrección del bloqueo en /bot y eliminación del panel obsoleto",
+  items: [
+    "Eliminación del panel roto: Supresión de EthoProtectDashboard.tsx que provocaba la pantalla vacía",
+    "Redirección a la consola oficial: /bot y discord.ethone.dev ahora dirigen directamente a /discord",
+    "Experiencia unificada: Acceso directo a BotSessionGate y la cuadrícula moderna de 3 columnas",
+  ],
+};
+
+const v1_74_18_de: ChangelogEntry = {
+  version: "v1.74.18",
+  date: "2026-10-12",
+  title: "Discord-Konsole: Behebung des /bot-Einfrierens und Entfernung veralteter Dashboards",
+  items: [
+    "Veraltetes Dashboard entfernt: Löschung von EthoProtectDashboard.tsx, das den leeren Bildschirm verursachte",
+    "Nahtlose Weiterleitung: /bot und discord.ethone.dev leiten nun direkt auf /discord weiter",
+    "Einheitliche Erfahrung: Direkte Integration von BotSessionGate und dem modernen 3-Spalten-Server-Grid",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_74_18_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_74_18_en);
+CHANGELOG_BY_LANG.es.unshift(v1_74_18_es);
+CHANGELOG_BY_LANG.de.unshift(v1_74_18_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
+
 
 

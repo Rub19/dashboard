@@ -168,8 +168,7 @@ export default function RootLayout({
         />
         <script
           dangerouslySetInnerHTML={{
-            // Sous-domaine optionnel de la page vitrine du bot : sa racine affiche /bot.
-            __html: `(function(){if(location.hostname==='discord.ethone.dev'&&(location.pathname==='/'||location.pathname==='/index.html'))location.replace('/bot');})();`,
+            __html: `(function(){if(location.hostname==='discord.ethone.dev'&&(location.pathname==='/'||location.pathname==='/index.html'))location.replace('/discord');})();`,
           }}
         />
         <script

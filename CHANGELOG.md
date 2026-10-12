@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.74.18 — 2026-10-12
+
+**Console Discord : Résolution du blocage sur /bot et suppression de l'ancien dashboard**
+
+- **Suppression du dashboard fantôme** : Retrait définitif de `EthoProtectDashboard.tsx` qui bloquait l'affichage (« Bonjour Compte », 0 serveur et écran noir).
+- **Redirection instantanée vers la console officielle** : `https://discord.ethone.dev/bot` et la racine de `discord.ethone.dev` redirigent immédiatement vers `/discord`.
+- **Expérience unifiée & connectée** : Affichage direct de la session Discord sécurisée (BotSessionGate), des vrais serveurs en grille moderne à 3 colonnes et de la détection de présence.
+
 ## v1.74.17 — 2026-10-12
 
 **Bouclier Owner : Défilement fluide de la page et épuration des libellés**

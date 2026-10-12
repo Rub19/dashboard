@@ -1,4 +1,4 @@
-# ETHONE — passation & nouveautés (2026-10-12, version 1.74.17)
+# ETHONE — passation & nouveautés (2026-10-12, version 1.74.18)
 
 ## Projet
 - `ethone-next/` : site Next.js statique (ethone.dev, Cloudflare Pages, déploiement auto au push sur `main`).
@@ -25,14 +25,19 @@
 
 ---
 
-## Nouveautés majeures & Réalisations récentes (v1.73.0 → v1.74.17)
+## Nouveautés majeures & Réalisations récentes (v1.73.0 → v1.74.18)
 
-### 1. Bouclier Owner : Défilement fluide de la page et épuration des libellés (v1.74.17)
+### 1. Console Discord : Résolution du blocage sur /bot et suppression de l'ancien dashboard (v1.74.18)
+- **Suppression du dashboard fantôme** : Retrait définitif de `EthoProtectDashboard.tsx` qui bloquait l'affichage (« Bonjour Compte », 0 serveur et écran noir).
+- **Redirection instantanée vers la console officielle** : `https://discord.ethone.dev/bot` et la racine de `discord.ethone.dev` redirigent immédiatement vers `/discord`.
+- **Expérience unifiée & connectée** : Affichage direct de la session Discord sécurisée (BotSessionGate), des vrais serveurs en grille moderne à 3 colonnes et de la détection de présence.
+
+### 2. Bouclier Owner : Défilement fluide de la page et épuration des libellés (v1.74.17)
 - **Défilement restauré** : Intégration du conteneur `os-scroll` et déverrouillage de la hauteur sur `/discord/owner-shield` et `/owner/shield` permettant de faire défiler l'intégralité de la console et des serveurs surveillés sans blocage ni coupure.
 - **Nettoyage des formulations artificielles** : Suppression des mentions « Console d'élite » et « inviolable » au profit de libellés sobres et professionnels (« Protection Propriétaire », « Rétablissement automatique de vos rôles »).
 - **Espacement bas optimisé** : Ajout d'une marge de défilement inférieure (`pb-36`) évitant toute collision avec le bouton flottant de retour et le dock.
 
-### 2. Bouclier Owner : Extinction en cascade des serveurs surveillés (v1.74.16)
+### 3. Bouclier Owner : Extinction en cascade des serveurs surveillés (v1.74.16)
 - **Extinction synchronisée des serveurs** : Lorsque le bouclier principal est désactivé au sommet de la page, tous les commutateurs de la grille « Serveurs surveillés » basculent immédiatement en inactif (OFF, grisés).
 - **Statut et filtres alignés** : Chaque carte de serveur affiche désormais « Bouclier coupé » en gris neutre, le compteur de serveurs couverts passe à `0 / [total]` et l'onglet filtre passe dynamiquement en `Inactifs ([total])`.
 - **Réactivation intelligente par serveur** : Tenter d'activer la surveillance sur un serveur individuel alors que le bouclier maître est coupé réenclenche automatiquement le bouclier principal et sécurise immédiatement le serveur ciblé.

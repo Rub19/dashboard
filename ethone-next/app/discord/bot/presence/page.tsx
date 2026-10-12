@@ -2,8 +2,8 @@ import { Suspense } from "react";
 import BotPresenceClient from "./BotPresenceClient";
 
 export const metadata = {
-  title: "Bot Presence & Identity Center — ETHONE",
-  description: "Gestion globale du statut, des activités, de la rotation et de l'identité du bot Discord ETHONE",
+  title: "Présence & Activités du Bot — Mode Streamer, DND & Rotation — ETHONE",
+  description: "Pilotage en temps réel du statut visible (En ligne, DND, Invisible), du mode streamer Twitch et de la rotation intelligente d'activités.",
 };
 
 export const dynamic = "force-static";

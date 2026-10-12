@@ -2,6 +2,22 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.9 — 2026-10-12
+
+**Refonte de la Présence du Bot, Modes Rapides (Streamer, DND, Invi) & Extensions de Rotation**
+
+- **Page Présence Épurée & Motion Design (`/discord/bot/presence`)** :
+  - Suppression intégrale des bandeaux d'alerte intrusifs (bandeau rouge de passerelle, avis jaune récurrent) et des en-têtes redondants.
+  - Interface directe avec navigation par onglets animés (Vue d'ensemble, Rotation, Planification, Multi-serveurs, Identité & Avatar, Historique).
+  - Inspecteur visuel Discord HUD reproduisant en temps réel le statut, l'activité, le badge de plateforme et le profil du bot.
+- **Bandeau 1-Clic de Modes Rapides** :
+  - Bascule instantanée entre **En Ligne** (statut vert opérationnel), **Ne Pas Déranger / DND** (pastille rouge), **Invisible / Invi** (statut hors ligne masqué) et **Mode Streamer** (badge violet officiel Discord « En direct sur Twitch »).
+  - Prise en charge directe de l'URL Twitch (`twitch.tv/ethone`) et aperçu fidèle de la diffusion en direct.
+- **Enrichissement des Extensions et Activités de Rotation** :
+  - 8 activités authentiques pré-configurées (Stream Twitch Live, Écoute Spotify Lo-Fi & Synthwave, Bouclier Anti-Raid 24/7, Session Minecraft Communautaire, Développement VS Code, Support Tickets & Modération, Compétition Esports Discord, Statistiques membres en direct).
+  - Sélecteur de templates en 1 clic dans le gestionnaire de rotation pour ajouter instantanément de nouveaux types d'activités (Streaming, Écoute, Jeu, Surveillance, Compétition).
+  - Profils de présence rapides étendus à 8 préréglages (Streamer Twitch, Ne Pas Déranger, Invisible, Normal, Maintenance Nocturne, Soirée Gaming, Événement Communautaire, Mode Raid).
+
 ## v1.75.8 — 2026-10-12
 
 **Refonte Intégrale des Commandes au Format Keeper & Motion Design**

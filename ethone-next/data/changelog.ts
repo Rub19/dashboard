@@ -52125,6 +52125,57 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_8_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_8_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_8_de);
 
+const v1_75_9_fr: ChangelogEntry = {
+  version: "v1.75.9",
+  date: "2026-10-12",
+  title: "Présence du Bot Épurée, Mode Streamer, DND & Extensions de Rotation",
+  items: [
+    "Refonte complète de la page présence (/discord/bot/presence) : suppression des alertes et bandeaux intrusifs au profit d'une interface directe avec motion design.",
+    "Bandeau 1-clic Modes Rapides : bascule instantanée vers En Ligne, DND (Ne Pas Déranger), Invisible (Invi) et Mode Streamer Twitch avec pastille violette.",
+    "Extensions et activités enrichies dans le moteur de rotation : Mode Streamer Twitch, Spotify Lo-Fi, bouclier Anti-Raid 24/7, dev VS Code, Minecraft communautaire et tournoi Esports.",
+    "Aperçu HUD Discord haute fidélité avec badge Streame officiel et statut invisible pour tester discrètement.",
+  ],
+};
+
+const v1_75_9_en: ChangelogEntry = {
+  version: "v1.75.9",
+  date: "2026-10-12",
+  title: "Streamlined Bot Presence, Streamer Mode, DND & Rich Rotation Extensions",
+  items: [
+    "Full revamp of the bot presence center (/discord/bot/presence): eliminated intrusive top banners in favor of a clean, focused motion design interface.",
+    "1-Click Quick Modes: instant toggle between Online, DND (Do Not Disturb), Invisible (Invi), and Twitch Streamer Mode with official purple badge.",
+    "Expanded rich activities in the rotation engine: Twitch Streaming, Spotify Lo-Fi, 24/7 Anti-Raid shield, VS Code dev, community Minecraft, and Esports competition.",
+    "High-fidelity Discord HUD preview with live Streamer badge and stealth invisible status for quiet updates.",
+  ],
+};
+
+const v1_75_9_es: ChangelogEntry = {
+  version: "v1.75.9",
+  date: "2026-10-12",
+  title: "Presencia Limpia, Modo Streamer, DND y Extensiones de Rotación",
+  items: [
+    "Rediseño completo de la página de presencia (/discord/bot/presence): eliminación de avisos pesados en favor de una interfaz limpia con motion design.",
+    "Modos rápidos en 1 clic: cambio instantáneo a En línea, DND (No molestar), Invisible y Modo Streamer de Twitch con insignia morada.",
+    "Nuevas actividades en el motor de rotación: Twitch Live, Spotify Lo-Fi, Anti-Raid 24/7, desarrollo en VS Code y Minecraft.",
+  ],
+};
+
+const v1_75_9_de: ChangelogEntry = {
+  version: "v1.75.9",
+  date: "2026-10-12",
+  title: "Schlanke Bot-Präsenz, Streamer-Modus, DND & Erweiterte Rotation",
+  items: [
+    "Komplette Überarbeitung der Präsenzseite (/discord/bot/presence): Entfernung schwerer Banner für ein klares Motion-Design-Interface.",
+    "1-Klick-Schnellmodi: Sofortiger Wechsel zu Online, DND (Bitte nicht stören), Unsichtbar und Twitch-Streamer-Modus mit violettem Badge.",
+    "Erweiterte Aktivitäten in der Rotations-Engine: Twitch Streaming, Spotify Lo-Fi, 24/7 Anti-Raid-Schild, VS Code und Minecraft.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_9_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_9_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_9_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_9_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

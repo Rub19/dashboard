@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.74.14 — 2026-10-12
+
+**Discord AutoMod : Intégration et synchronisation complète de l'AutoMod natif format Keeper**
+
+- **Catégorie AutoMod dans la barre latérale** : Ajout de la section `AutoMod` sous la catégorie `Protection` (icône Filter émeraude) avec routage direct vers `/discord?guildId=...&view=automod` et fil d'Ariane synchronisé.
+- **Les 6 règles standard format Keeper** : Intégration fidèle des règles `Protection Anti-Phishing Nitro`, `Liens et Pub non autorisés`, `Mots-clés malveillants`, `Grossièretés & Insultes`, `Spam de Mentions`, et `Détection Anti-Spam` avec badges informatifs (`Mots-clés · 7 mots-clés · bloque`), interrupteurs d'activation directe et bouton `Modifier`.
+- **Éditeur de règle complet & interactif** : Formulaire de configuration avec onglets dynamiques (`Mots-clés`, `Mentions`, `Spam`, `Listes de Discord`), gestion des tags chips avec compteurs de limites Discord (1000 mots-clés, 10 expressions régulières, 100 exceptions) et saisie assistée par Entrée/virgule.
+- **Simulateur de test en direct** : Zone interactive permettant de taper n'importe quel message pour tester instantanément la règle avant l'enregistrement, avec bannière dynamique rouge en cas d'interception ou verte si le message passe sans encombre.
+- **Actions, sanctions & exceptions** : Configuration du blocage avec message personnalisé (150 caractères), alerte dans un salon textuel du staff, exclusion temporaire (timeout avec sélecteur de durée), exceptions de rôles et salons, barre fixe d'enregistrement et suppression avec confirmation.
+- **Synchronisation réelle et sans placeholder** : Liaison directe avec les endpoints AutoMod Discord (`GET/POST/PUT/DELETE /automod-native`, `/toggle` et `/recommended`), garantissant un fonctionnement fluide et synchrone.
+
 ## v1.74.13 — 2026-10-12
 
 **Sécurité & Messagerie : Cascade du Bouclier Owner et dégagement parfait des réponses Mail**

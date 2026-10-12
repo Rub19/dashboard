@@ -29,6 +29,7 @@ import ConsoleMembers from "@/components/discord/console/ConsoleMembers";
 import ConsoleCommands from "@/components/discord/console/ConsoleCommands";
 import ConsoleTools from "@/components/discord/console/ConsoleTools";
 import ConsoleProtections from "@/components/discord/console/ConsoleProtections";
+import ConsoleAutomodNative from "@/components/discord/console/modules/ConsoleAutomodNative";
 import ModuleEmbed, { hasNativePage } from "@/components/discord/console/ModuleEmbed";
 import GuildOverviewScreen from "@/components/discord/GuildOverviewScreen";
 import GuildAssistedSetup from "@/components/discord/GuildAssistedSetup";
@@ -731,10 +732,9 @@ export default function DiscordDashboardPage() {
         setShowSetup(true);
       } else if (sp.get("view") === "scan" || sp.get("tab") === "scan") {
         setShowScan(true);
-      } else if (["settings", "access", "logs", "whitelist", "blacklist", "members", "commands", "tools", "protections"].includes(sp.get("view") ?? "")) {
+      } else if (["settings", "access", "logs", "whitelist", "blacklist", "members", "commands", "tools", "protections", "automod"].includes(sp.get("view") ?? "")) {
         setConsoleView(sp.get("view") as ConsoleView);
       } else if (sp.get("module") && sp.get("module") !== "overview" && INLINE_MODULE_IDS.has(sp.get("module")!)) {
-        // Lien direct vers un module affiché dans la console (?module=leveling).
         setActiveModule(sp.get("module") as ModuleType);
       }
     } catch {}
@@ -1209,6 +1209,8 @@ export default function DiscordDashboardPage() {
                     ? i18n("dTools", "Outils")
                     : view === "protections"
                     ? i18n("dProtections", "Protections")
+                    : view === "automod"
+                    ? "AutoMod"
                     : view === "scan"
                     ? i18n("dSecurityScan", "Scan de sécurité")
                     : view === "setup"
@@ -1311,6 +1313,7 @@ export default function DiscordDashboardPage() {
               {view === "commands" && <ConsoleCommands guildId={selectedGuild.id} />}
               {view === "tools" && <ConsoleTools guildId={selectedGuild.id} />}
               {view === "protections" && <ConsoleProtections guildId={selectedGuild.id} onOpenView={openConsoleView} onOpenSetup={goSetup} />}
+              {view === "automod" && <ConsoleAutomodNative guildId={selectedGuild.id} />}
 
               {view === "scan" && (
                 <GuildSecurityScan

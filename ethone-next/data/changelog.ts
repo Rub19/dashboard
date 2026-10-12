@@ -51372,5 +51372,62 @@ CHANGELOG_BY_LANG.en.unshift(v1_74_13_en);
 CHANGELOG_BY_LANG.es.unshift(v1_74_13_es);
 CHANGELOG_BY_LANG.de.unshift(v1_74_13_de);
 
+const v1_74_14_fr: ChangelogEntry = {
+  version: "v1.74.14",
+  date: "2026-10-12",
+  title: "Discord AutoMod : Intégration et synchronisation complète de l'AutoMod natif format Keeper",
+  items: [
+    "Catégorie AutoMod intégrée dans la barre latérale : Section dédiée sous Protection avec icône Filter émeraude, routage console instantané et fil d'Ariane",
+    "Liste des 6 règles standard format Keeper : Protection Anti-Phishing Nitro, Liens et Pub non autorisés, Mots-clés malveillants, Grossièretés & Insultes, Spam de Mentions, Détection Anti-Spam avec badges dynamiques, interrupteurs et bouton Modifier",
+    "Éditeur de règle complet : Configuration du nom, statut, déclencheurs (Mots-clés, Mentions, Spam, Listes de Discord), tags chips éditables avec limites Discord (1000 mots, 10 regex, 100 exceptions)",
+    "Simulateur de test temps réel : Zone de test interactive vérifiant instantanément la correspondance d'un message avec la règle (bannière rouge bloquée / verte autorisée) avant l'enregistrement",
+    "Actions et synchronisation directe : Blocage avec message personnalisé, alerte dans un salon, timeout ajustable, exceptions de rôles/salons, barre fixe inférieure et synchronisation sans placeholder avec l'API Discord",
+  ],
+};
+
+const v1_74_14_en: ChangelogEntry = {
+  version: "v1.74.14",
+  date: "2026-10-12",
+  title: "Discord AutoMod: Native Keeper-style AutoMod integration with full real-time synchronization",
+  items: [
+    "AutoMod sidebar category: Dedicated section under Protection with emerald Filter icon, instant console routing, and breadcrumb navigation",
+    "6 Keeper standard rules: Nitro Anti-Phishing, Unauthorized Links & Ads, Malicious Keywords, Profanity & Insults, Mention Spam, and Anti-Spam Detection with dynamic badges, switches, and Modifier button",
+    "Full interactive rule editor: Configure name, state, triggers (Keywords, Mentions, Spam, Discord Presets), editable chip tags respecting Discord limits (1000 keywords, 10 regexes, 100 exceptions)",
+    "Live rule tester simulator: Real-time message testing evaluating triggers and allowlists instantly with clear visual banners before saving",
+    "Actions, penalties and Discord sync: Custom block message, channel alerts, adjustable timeout, role/channel exemptions, sticky footer bar, and zero-placeholder Discord API synchronization",
+  ],
+};
+
+const v1_74_14_es: ChangelogEntry = {
+  version: "v1.74.14",
+  date: "2026-10-12",
+  title: "Discord AutoMod: Integración y sincronización completa del AutoMod nativo formato Keeper",
+  items: [
+    "Categoría AutoMod en la barra lateral: Sección dedicada bajo Protección con icono Filter esmeralda, enrutamiento rápido y migas de pan",
+    "6 reglas estándar estilo Keeper: Anti-Phishing Nitro, Enlaces y Publicidad, Palabras maliciosas, Groserías e Insultos, Spam de Menciones y Detección Anti-Spam con switches y botón Modificar",
+    "Editor de reglas interactivo: Configuración de nombre, estado, disparadores (Palabras clave, Menciones, Spam, Listas Discord), etiquetas chips editables con límites de Discord",
+    "Simulador de prueba en tiempo real: Evaluación instantánea de mensajes con banner visual antes de guardar",
+    "Acciones y sincronización directa: Bloqueo con mensaje personalizado, alerta en canal, timeout, excepciones de roles/canales, barra inferior y sincronización con Discord sin placeholders",
+  ],
+};
+
+const v1_74_14_de: ChangelogEntry = {
+  version: "v1.74.14",
+  date: "2026-10-12",
+  title: "Discord AutoMod: Vollständige Integration und Synchronisation des nativen Discord AutoMod im Keeper-Format",
+  items: [
+    "AutoMod-Seitenleistenkategorie: Eigener Bereich unter Schutz mit smaragdgrünem Filter-Icon, direktem Routing und Breadcrumbs",
+    "6 Keeper-Standardregeln: Nitro Anti-Phishing, Unerlaubte Links & Werbung, Bösartige Schlüsselwörter, Schimpfwörter & Beleidigungen, Erwähnungs-Spam und Anti-Spam-Erkennung mit aktiven Schaltern und Bearbeiten-Button",
+    "Vollständiger Regel-Editor: Konfiguration von Name, Status, Auslösern (Schlüsselwörter, Erwähnungen, Spam, Discord-Listen), editierbaren Chip-Tags unter Einhaltung der Discord-Limits",
+    "Live-Test-Simulator: Echtzeit-Prüfung von Nachrichten mit visuellen Erfolgs- und Warnbannern vor dem Speichern",
+    "Aktionen und direkte Synchronisation: Blockieren mit individueller Nachricht, Kanal-Alerts, einstellbarer Timeout, Rollen-/Kanal-Ausnahmen, fixierte Fußleiste und echte Discord-API-Synchronisation ohne Platzhalter",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_74_14_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_74_14_en);
+CHANGELOG_BY_LANG.es.unshift(v1_74_14_es);
+CHANGELOG_BY_LANG.de.unshift(v1_74_14_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

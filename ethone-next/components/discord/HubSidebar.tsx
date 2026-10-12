@@ -13,12 +13,12 @@ import {
   Moon,
   LogOut,
 } from "@/components/icons/ph";
-// Icônes de la console : les mêmes que Keeper (Lucide, trait fin).
 import {
   Ban as LBan,
   BriefcaseBusiness as LBriefcaseBusiness,
   CalendarDays as LCalendarDays,
   Coins as LCoins,
+  Filter as LFilter,
   Gamepad2 as LGamepad2,
   Gavel as LGavel,
   Gift as LGift,
@@ -56,8 +56,7 @@ import {
 } from "./consoleMotion";
 import type { NavigatorCategory, NavigatorModule } from "./ModuleNavigator";
 
-/** Pages de la console au format Keeper, affichées dans la console (même barre latérale). */
-export type ConsoleView = "settings" | "access" | "logs" | "whitelist" | "blacklist" | "members" | "commands" | "tools" | "protections";
+export type ConsoleView = "settings" | "access" | "logs" | "whitelist" | "blacklist" | "members" | "commands" | "tools" | "protections" | "automod";
 export type HubView = "home" | "modules" | "module" | "setup" | "scan" | ConsoleView;
 
 interface HubSidebarProps {
@@ -332,6 +331,19 @@ export default function HubSidebar({
                     {protCount.on}/{protCount.total}
                   </span>
                 )}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => (onOpenView ? onOpenView("automod") : router.push(`/discord/?guildId=${selectedGuildId}&view=automod`))}
+                aria-current={view === "automod" ? "page" : undefined}
+                className={cn(
+                  "w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors cursor-pointer text-left",
+                  view === "automod" ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold" : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
+                )}
+              >
+                <LFilter strokeWidth={1.75} className="h-4.5 w-4.5 shrink-0" />
+                <span>AutoMod</span>
               </button>
 
               <button

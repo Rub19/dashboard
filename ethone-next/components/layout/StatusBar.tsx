@@ -242,7 +242,7 @@ export default function StatusBar() {
       .join(", ")
   );
   const { open, isMobile } = useAnimatedSidebar();
-  const { settings, update } = useSettings();
+  const { settings } = useSettings();
 
   const systemOk = online;
   const alertCount = online ? 0 : 1;

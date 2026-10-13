@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.49 — 2026-10-13
+
+**Confidentialité de l'inventaire Valorant : restriction exclusive au propriétaire du dashboard**
+
+- Inventaire & boutique Valorant personnelle masqués pour les visiteurs et comptes tiers.
+- Onglet Inventaire Valorant visible uniquement par le propriétaire authentifié du dashboard.
+- Redirection automatique des accès directs non autorisés vers la vue statistiques publique.
+- Bannière d'accès aux skins quotidiens de la boutique conditionnée aux droits owner.
+
 ## v1.75.48 — 2026-10-13
 
 **Connexion Riot Games : Automatisation complète et suppression de l'ancienne méthode**

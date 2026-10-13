@@ -27,6 +27,8 @@ import Badge from "@/components/ui/Badge";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 import AnimatedFilterTabs, { type AnimatedFilterTab } from "@/components/ui/AnimatedFilterTabs";
+import { useAuth } from "@/components/AuthProvider";
+import { ADMIN_EMAIL } from "@/lib/admin";
 
 type ValorantSession = {
   accessToken: string;
@@ -312,6 +314,9 @@ const DEMO_NIGHT_MARKET: NightMarketItem[] = [
 ];
 
 export default function ValorantInventoryView() {
+  const { user, loading: authLoading } = useAuth();
+  const isOwner = Boolean(user?.email && user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase());
+
   const [session, setSession] = useState<ValorantSession | null>(null);
   const [isDemo, setIsDemo] = useState(false);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
@@ -520,6 +525,7 @@ export default function ValorantInventoryView() {
   }, []);
 
   useEffect(() => {
+    if (!isOwner) return;
     try {
       const stored = sessionStorage.getItem("ethone:valorant:session") || localStorage.getItem("ethone:valorant:session");
       if (stored) {
@@ -530,7 +536,7 @@ export default function ValorantInventoryView() {
         }
       }
     } catch {}
-  }, [loadPlayerData]);
+  }, [isOwner, loadPlayerData]);
 
   const executeTokenSync = useCallback(
     async (tokens: { accessToken: string; idToken: string }) => {
@@ -771,6 +777,10 @@ export default function ValorantInventoryView() {
     { id: "buddies", label: `Porte-bonheur (${ownedBuddies.length})` },
     { id: "cards", label: `Cartes de Joueur (${ownedCards.length})` },
   ];
+
+  if (authLoading || !isOwner) {
+    return null;
+  }
 
   return (
     <div className="flex min-h-0 w-full flex-1 flex-col gap-6 overflow-y-auto p-1 pr-2 pb-32">

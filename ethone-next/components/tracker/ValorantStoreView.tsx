@@ -437,14 +437,14 @@ export default function ValorantStoreView({ onOpenInventory }: { onOpenInventory
         )}
       </section>
 
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3.5 text-xs text-[var(--text-muted)]">
-        <div className="flex items-center gap-2">
-          <Info className="h-4 w-4 shrink-0 text-[var(--accent-primary)]" />
-          <span>
-            Envie de consulter vos 4 skins quotidiens personnels, votre Marché Nocturne et vos porte-bonheur ?
-          </span>
-        </div>
-        {onOpenInventory && (
+      {onOpenInventory && (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3.5 text-xs text-[var(--text-muted)]">
+          <div className="flex items-center gap-2">
+            <Info className="h-4 w-4 shrink-0 text-[var(--accent-primary)]" />
+            <span>
+              Envie de consulter vos 4 skins quotidiens personnels, votre Marché Nocturne et vos porte-bonheur ?
+            </span>
+          </div>
           <button
             type="button"
             onClick={onOpenInventory}
@@ -452,8 +452,8 @@ export default function ValorantStoreView({ onOpenInventory }: { onOpenInventory
           >
             Voir mon Inventaire & 4 Skins
           </button>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useTracker } from "@/lib/hooks/useTracker";
 import { EASE_OUT, EASE_SNAP } from "@/lib/ease";
@@ -22,37 +22,45 @@ import FormField from "@/components/FormField";
 import Button from "@/components/ui/Button";
 import { useSettings } from "@/components/SettingsProvider";
 import GameBrandIcon from "@/components/GameBrandIcon";
-
-// Real brand marks via GameBrandIcon (Simple Icons), same source used for
-// Discord Rich Presence game icons elsewhere in the app. Apex Legends has no
-// official mark in that icon set (checked directly against Iconify's Simple
-// Icons collection) so it — and "Autres jeux", which isn't one specific game
-// — fall through to GameBrandIcon's own generic Gamepad2 fallback rather
-// than a fabricated logo.
-const tabs = [
-  { id: "valorant", label: "Valorant", icon: <GameBrandIcon name="Valorant" className="h-4 w-4" /> },
-  { id: "valorant-inventory", label: "Inventaire Valorant", icon: <GameBrandIcon name="Valorant" className="h-4 w-4" /> },
-  { id: "valorant-store", label: "Boutique Valorant", icon: <GameBrandIcon name="Valorant" className="h-4 w-4" /> },
-  { id: "lol", label: "League of Legends", icon: <GameBrandIcon name="League of Legends" className="h-4 w-4" /> },
-  { id: "lol-rotation", label: "Rotation LoL", icon: <GameBrandIcon name="League of Legends" className="h-4 w-4" /> },
-  { id: "tft", label: "Teamfight Tactics", icon: <GameBrandIcon name="Teamfight Tactics" className="h-4 w-4" /> },
-  { id: "apex", label: "Apex Legends", icon: <GameBrandIcon name="Apex Legends" className="h-4 w-4" /> },
-  { id: "trackergg", label: "Autres jeux", icon: <GameBrandIcon name="" className="h-4 w-4" /> },
-];
+import { useAuth } from "@/components/AuthProvider";
+import { ADMIN_EMAIL } from "@/lib/admin";
 
 const APEX_PLATFORMS = ["origin", "xbl", "psn"] as const;
 
 export default function MatchesPage({ defaultTab }: { defaultTab?: string }) {
+  const { user } = useAuth();
+  const isOwner = Boolean(user?.email && user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase());
+
+  const tabs = useMemo(() => [
+    { id: "valorant", label: "Valorant", icon: <GameBrandIcon name="Valorant" className="h-4 w-4" /> },
+    ...(isOwner ? [{ id: "valorant-inventory", label: "Inventaire Valorant", icon: <GameBrandIcon name="Valorant" className="h-4 w-4" /> }] : []),
+    { id: "valorant-store", label: "Boutique Valorant", icon: <GameBrandIcon name="Valorant" className="h-4 w-4" /> },
+    { id: "lol", label: "League of Legends", icon: <GameBrandIcon name="League of Legends" className="h-4 w-4" /> },
+    { id: "lol-rotation", label: "Rotation LoL", icon: <GameBrandIcon name="League of Legends" className="h-4 w-4" /> },
+    { id: "tft", label: "Teamfight Tactics", icon: <GameBrandIcon name="Teamfight Tactics" className="h-4 w-4" /> },
+    { id: "apex", label: "Apex Legends", icon: <GameBrandIcon name="Apex Legends" className="h-4 w-4" /> },
+    { id: "trackergg", label: "Autres jeux", icon: <GameBrandIcon name="" className="h-4 w-4" /> },
+  ], [isOwner]);
+
   const i18n = useI18n();
   const { settings, update } = useSettings();
   const osReducedMotion = useReducedMotion();
   const skipEntranceAnimation = Boolean(settings.reducedMotion) || Boolean(osReducedMotion);
   const { success, error: showError } = useToast();
-  const [tab, setTab] = useState(defaultTab || "valorant");
+  const [tab, setTab] = useState(() => {
+    if (defaultTab === "valorant-inventory" && !isOwner) return "valorant";
+    return defaultTab || "valorant";
+  });
   const [name, setName] = useState(settings.liveTrackerRiotName);
   const [tag, setTag] = useState(settings.liveTrackerRiotTag);
   const [apexPlatform, setApexPlatform] = useState<"origin" | "xbl" | "psn">(settings.liveTrackerApexPlatform || "origin");
   const [apexIdentifier, setApexIdentifier] = useState(settings.liveTrackerApexIdentifier);
+
+  useEffect(() => {
+    if (!isOwner && tab === "valorant-inventory") {
+      setTab("valorant");
+    }
+  }, [isOwner, tab]);
 
   const path = useMemo(() => {
     if (tab === "apex") {
@@ -67,7 +75,6 @@ export default function MatchesPage({ defaultTab }: { defaultTab?: string }) {
 
   return (
     <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden gap-4 p-2 sm:p-4 md:flex-row">
-      {/* Liquid Sidebar for switching games */}
       <LiquidSidebar
         items={tabs}
         defaultActive="valorant"
@@ -75,7 +82,6 @@ export default function MatchesPage({ defaultTab }: { defaultTab?: string }) {
         onChange={setTab}
       />
 
-      {/* Main Workspace Area */}
       <div className="min-h-0 min-w-0 flex-1 flex flex-col overflow-hidden">
         <AnimatePresence mode="wait" initial={false}>
         <motion.div
@@ -88,12 +94,12 @@ export default function MatchesPage({ defaultTab }: { defaultTab?: string }) {
         >
         {tab === "valorant" ? (
           <ValorantTrackerView />
-        ) : tab === "valorant-inventory" ? (
+        ) : tab === "valorant-inventory" && isOwner ? (
           <ValorantInventoryView />
         ) : tab === "lol" ? (
           <LolTrackerView />
         ) : tab === "valorant-store" ? (
-          <ValorantStoreView onOpenInventory={() => setTab("valorant-inventory")} />
+          <ValorantStoreView onOpenInventory={isOwner ? () => setTab("valorant-inventory") : undefined} />
         ) : tab === "lol-rotation" ? (
           <LolRotationView />
         ) : tab === "tft" ? (

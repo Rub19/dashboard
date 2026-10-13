@@ -54162,4 +54162,57 @@ CHANGELOG_BY_LANG.en.unshift(v12890_en);
 CHANGELOG_BY_LANG.es.unshift(v12890_es);
 CHANGELOG_BY_LANG.de.unshift(v12890_de);
 
+const v12891_fr: ChangelogEntry = {
+  version: "v1.75.49",
+  date: "2026-10-13",
+  title: "Confidentialité de l'inventaire Valorant : restriction exclusive au propriétaire du dashboard",
+  items: [
+    "Inventaire & boutique Valorant personnelle masqués pour les visiteurs et comptes tiers",
+    "Onglet Inventaire Valorant visible uniquement par le propriétaire authentifié du dashboard",
+    "Redirection automatique des accès directs non autorisés vers la vue statistiques publique",
+    "Bannière d'accès aux skins quotidiens de la boutique conditionnée aux droits owner",
+  ],
+};
+
+const v12891_en: ChangelogEntry = {
+  version: "v1.75.49",
+  date: "2026-10-13",
+  title: "Valorant inventory privacy: exclusive restriction to dashboard owner",
+  items: [
+    "Personal Valorant inventory and daily store hidden from visitors and third-party accounts",
+    "Valorant Inventory tab visible only to the authenticated dashboard owner",
+    "Automatic redirection of unauthorized direct route access to the public stats view",
+    "Personal daily skins access banner in Valorant store conditioned on owner permissions",
+  ],
+};
+
+const v12891_es: ChangelogEntry = {
+  version: "v1.75.49",
+  date: "2026-10-13",
+  title: "Privacidad del inventario Valorant: restricción exclusiva al propietario del dashboard",
+  items: [
+    "Inventario y tienda diaria de Valorant ocultos para visitantes y cuentas de terceros",
+    "Pestaña de Inventario Valorant visible solo para el propietario autenticado del dashboard",
+    "Redirección automática de accesos directos no autorizados a la vista de estadísticas pública",
+    "Banner de acceso a skins diarios en la tienda condicionado a permisos de owner",
+  ],
+};
+
+const v12891_de: ChangelogEntry = {
+  version: "v1.75.49",
+  date: "2026-10-13",
+  title: "Datenschutz des Valorant-Inventars: Exklusive Einschränkung auf den Dashboard-Eigentümer",
+  items: [
+    "Persönliches Valorant-Inventar und Tages-Shop für Besucher und Drittkonten ausgeblendet",
+    "Reiter Valorant-Inventar nur für den authentifizierten Dashboard-Eigentümer sichtbar",
+    "Automatische Weiterleitung unbefugter Direktzugriffe auf die öffentliche Statistikansicht",
+    "Banner für persönliche Tagesskins im Valorant-Shop an Owner-Berechtigungen gekoppelt",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12891_fr);
+CHANGELOG_BY_LANG.en.unshift(v12891_en);
+CHANGELOG_BY_LANG.es.unshift(v12891_es);
+CHANGELOG_BY_LANG.de.unshift(v12891_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

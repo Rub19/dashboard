@@ -6,7 +6,6 @@ import Button from "@/components/ui/Button";
 import { useToast } from "@/components/ToastProvider";
 import { useSettings } from "@/components/SettingsProvider";
 import { getRiotOAuthStatus, getRiotAuthUrl, disconnectRiotOAuth, type RiotOAuthStatus } from "@/lib/riot-auth";
-import { recordRiotAudit } from "@/lib/riot-audit";
 import {
   ShieldCheck,
   Swords,
@@ -39,8 +38,20 @@ export default function RiotTrackerConnectModal({
   const [disconnecting, setDisconnecting] = useState(false);
   const [status, setStatus] = useState<RiotOAuthStatus | null>(null);
 
-  const [riotName, setRiotName] = useState(settings.liveTrackerRiotName || "");
-  const [riotTag, setRiotTag] = useState(settings.liveTrackerRiotTag || "");
+  const [riotName, setRiotName] = useState(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("ethone:tracker:riot_name");
+      if (stored) return stored;
+    }
+    return settings.liveTrackerRiotName || "";
+  });
+  const [riotTag, setRiotTag] = useState(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("ethone:tracker:riot_tag");
+      if (stored) return stored;
+    }
+    return settings.liveTrackerRiotTag || "";
+  });
   const [region, setRegion] = useState("eu");
   const [apiKey, setApiKey] = useState(settings.valorantApiKey || "");
   const [testingApi, setTestingApi] = useState(false);
@@ -70,7 +81,6 @@ export default function RiotTrackerConnectModal({
 
   const handleConnectRSO = async () => {
     try {
-      recordRiotAudit({ game: "valorant", actionType: "rso", description: "Tentative d'authentification RSO OAuth" });
       const url = await getRiotAuthUrl();
       if (url) {
         window.location.href = url;
@@ -89,7 +99,6 @@ export default function RiotTrackerConnectModal({
         approvalRequired: false,
         connected: false,
       });
-      recordRiotAudit({ game: "valorant", actionType: "rso", description: "Dissociation compte RSO" });
       success("Compte Riot dissocié avec succès");
     } catch (err) {
       showError(err instanceof Error ? err.message : "Erreur lors de la déconnexion");
@@ -106,25 +115,19 @@ export default function RiotTrackerConnectModal({
       showError("Veuillez renseigner un Nom Riot et un Tag valides");
       return;
     }
-    update({
-      liveTrackerRiotName: cleanName,
-      liveTrackerRiotTag: cleanTag,
-    });
-    recordRiotAudit({
-      game: "valorant",
-      actionType: "search",
-      description: `Connexion profil joueur : ${cleanName}#${cleanTag}`,
-    });
+    if (typeof window !== "undefined") {
+      localStorage.setItem("ethone:tracker:riot_name", cleanName);
+      localStorage.setItem("ethone:tracker:riot_tag", cleanTag);
+    }
     if (onRiotIdChanged) {
       onRiotIdChanged(cleanName, cleanTag);
     }
-    success(`Profil Riot configuré : ${cleanName}#${cleanTag}`);
+    success(`Profil Riot enregistré localement : ${cleanName}#${cleanTag}`);
     onClose();
   };
 
   const handleTestApi = () => {
     setTestingApi(true);
-    recordRiotAudit({ game: "valorant", actionType: "api", description: "Test de connectivité API Riot / Henrik" });
     const start = performance.now();
     setTimeout(() => {
       const duration = Math.round(performance.now() - start + 24);

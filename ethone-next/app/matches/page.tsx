@@ -25,7 +25,6 @@ import GameBrandIcon from "@/components/GameBrandIcon";
 import { useAuth } from "@/components/AuthProvider";
 import { ADMIN_EMAIL } from "@/lib/admin";
 import RiotTrackerHeader from "@/components/tracker/RiotTrackerHeader";
-import { recordRiotAudit } from "@/lib/riot-audit";
 
 const APEX_PLATFORMS = ["origin", "xbl", "psn"] as const;
 
@@ -55,8 +54,20 @@ export default function MatchesPage({ defaultTab }: { defaultTab?: string }) {
     if ((defaultTab === "valorant-inventory" || defaultTab === "valorant-store") && !isOwner) return "valorant";
     return defaultTab || "valorant";
   });
-  const [name, setName] = useState(settings.liveTrackerRiotName);
-  const [tag, setTag] = useState(settings.liveTrackerRiotTag);
+  const [name, setName] = useState(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("ethone:tracker:riot_name");
+      if (stored) return stored;
+    }
+    return settings.liveTrackerRiotName;
+  });
+  const [tag, setTag] = useState(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("ethone:tracker:riot_tag");
+      if (stored) return stored;
+    }
+    return settings.liveTrackerRiotTag;
+  });
   const [apexPlatform, setApexPlatform] = useState<"origin" | "xbl" | "psn">(settings.liveTrackerApexPlatform || "origin");
   const [apexIdentifier, setApexIdentifier] = useState(settings.liveTrackerApexIdentifier);
 
@@ -77,14 +88,6 @@ export default function MatchesPage({ defaultTab }: { defaultTab?: string }) {
   const trackerKind = "tracker-apex";
   const { items, loading, syncing, sync } = useTracker(path, trackerKind);
 
-  useEffect(() => {
-    recordRiotAudit({
-      game: tab === "lol" || tab === "lol-rotation" ? "lol" : tab === "tft" ? "tft" : "valorant",
-      actionType: "visit",
-      description: `Consultation Tracker : ${tab.toUpperCase()}`,
-    });
-  }, [tab]);
-
   return (
     <div className="flex h-full min-h-0 w-full flex-1 flex-col overflow-hidden">
       <RiotTrackerHeader
@@ -93,8 +96,14 @@ export default function MatchesPage({ defaultTab }: { defaultTab?: string }) {
         currentProfileName={name}
         currentProfileTag={tag}
         onRiotIdChanged={(newName, newTag) => {
-          setName(newName);
-          setTag(newTag);
+          const cleanName = newName.trim();
+          const cleanTag = newTag.trim().replace(/^#/, "");
+          setName(cleanName);
+          setTag(cleanTag);
+          if (typeof window !== "undefined") {
+            if (cleanName) localStorage.setItem("ethone:tracker:riot_name", cleanName);
+            if (cleanTag) localStorage.setItem("ethone:tracker:riot_tag", cleanTag);
+          }
         }}
       />
       <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden gap-4 p-2 sm:p-4 md:flex-row">

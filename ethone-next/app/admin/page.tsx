@@ -428,14 +428,14 @@ export default function AdminPage() {
                 <div>
                   <div className="flex items-center gap-2">
                     <h2 className="text-sm font-bold text-[var(--foreground)]">
-                      Audit & Fréquentation #RIOT TRACKER
+                      Confidentialité & Zéro Log #RIOT TRACKER
                     </h2>
                     <span className="rounded-full border border-emerald-500/40 bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold text-emerald-300">
-                      Zéro PII · RGPD
+                      Zéro Log Serveur · 100% Local
                     </span>
                   </div>
                   <p className="text-xs text-[var(--muted)]">
-                    Surveillance d'accès et connexions anonymisées (aucun IP, aucun cookie traceur, uniquement des métriques agrégées).
+                    Le tracker fonctionne sans aucun compte utilisateur et sans journalisation. Le Riot ID est mémorisé uniquement sur le navigateur du visiteur.
                   </p>
                 </div>
               </div>
@@ -528,7 +528,7 @@ export default function AdminPage() {
 
                     <div className="max-h-36 overflow-y-auto space-y-1.5 os-scroll pr-1">
                       {(!riotAudit?.recentLogs || riotAudit.recentLogs.length === 0) ? (
-                        <p className="text-xs text-[var(--muted)] italic py-2 text-center">Aucun passage enregistré pour le moment.</p>
+                        <p className="text-xs text-[var(--muted)] italic py-2 text-center">Zéro journal conservé : la page tracker fonctionne en mode sans log et 100% local.</p>
                       ) : (
                         riotAudit.recentLogs.map((log) => (
                           <div

@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.57 — 2026-10-13
+
+**Tracker Riot : mode 100% local, zéro log et mémorisation locale du Riot ID**
+
+- Suppression intégrale de tout journal ou log d'accès et d'audit : aucune télémétrie, aucune donnée d'accès ni historique n'est enregistré sur les serveurs ETHONE.
+- Fonctionnement autonome sans aucun compte utilisateur obligatoire : accès instantané au hub sans authentification requise.
+- Mémorisation locale et privée du Riot ID (nom et `#tag`) directement dans le stockage du navigateur (`localStorage`) pour préserver les identifiants sans synchronisation cloud.
+- Communication directe et sécurisée du client avec les points d'API publics (Riot Games DDragon et HenrikDev).
+
 ## v1.75.56 — 2026-10-13
 
 **Restauration du tableau de bord ETHONE OS et isolation dédiée du Tracker Riot sur /tracker**

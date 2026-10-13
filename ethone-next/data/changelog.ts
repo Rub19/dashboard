@@ -54555,9 +54555,57 @@ const v12898_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12898_fr, v12897_fr, v12896_fr, v12895_fr, v12894_fr, v12893_fr, v12892_fr);
-CHANGELOG_BY_LANG.en.unshift(v12898_en, v12897_en, v12896_en, v12895_en, v12894_en, v12893_en, v12892_en);
-CHANGELOG_BY_LANG.es.unshift(v12898_es, v12897_es, v12896_es, v12895_es, v12894_es, v12893_es, v12892_es);
-CHANGELOG_BY_LANG.de.unshift(v12898_de, v12897_de, v12896_de, v12895_de, v12894_de, v12893_de, v12892_de);
+const v12899_fr: ChangelogEntry = {
+  version: "v1.75.57",
+  date: "2026-10-13",
+  title: "Tracker Riot : mode 100% local, zéro log et mémorisation locale du Riot ID",
+  items: [
+    "Suppression de toute journalisation serveur : aucun log d'accès, d'audit ou de télémétrie n'est enregistré sur ETHONE",
+    "Fonctionnement 100% anonyme et sans compte utilisateur obligatoire pour l'accès au tracker",
+    "Mémorisation locale du Riot ID (nom et #tag) dans le navigateur (localStorage) pour conserver vos informations sans transfert externe",
+    "Requêtes d'API directes du client vers les serveurs publics de données de jeu en toute transparence",
+  ],
+};
+
+const v12899_en: ChangelogEntry = {
+  version: "v1.75.57",
+  date: "2026-10-13",
+  title: "Riot Tracker: 100% local mode, zero server logs and local Riot ID retention",
+  items: [
+    "Eliminated all server logging: zero visit, audit or telemetry logs recorded on ETHONE",
+    "Completely anonymous operation with zero user account required to access the tracker",
+    "Local retention of Riot ID (name and #tag) strictly in the client's browser (localStorage)",
+    "Direct client-side queries to public game data endpoints with total privacy",
+  ],
+};
+
+const v12899_es: ChangelogEntry = {
+  version: "v1.75.57",
+  date: "2026-10-13",
+  title: "Tracker Riot: modo 100% local, cero registros y retención local del Riot ID",
+  items: [
+    "Eliminación de cualquier registro en servidor: cero logs de visita, auditoría o telemetría en ETHONE",
+    "Funcionamiento 100% anónimo y sin necesidad de cuenta de usuario para acceder al tracker",
+    "Retención local del Riot ID (nombre y #tag) estrictamente en el navegador del usuario (localStorage)",
+    "Consultas directas del cliente a los endpoints públicos de datos de juego con total privacidad",
+  ],
+};
+
+const v12899_de: ChangelogEntry = {
+  version: "v1.75.57",
+  date: "2026-10-13",
+  title: "Riot Tracker: 100% lokaler Modus, null Server-Logs und lokale Riot-ID-Speicherung",
+  items: [
+    "Vollständiger Verzicht auf Server-Logging: keine Zugriffs-, Audit- oder Telemetrie-Logs auf ETHONE",
+    "100% anonymer Betrieb ohne erforderliches Benutzerkonto für den Zugriff auf den Tracker",
+    "Lokale Speicherung der Riot ID (Name und #Tag) ausschließlich im Browser des Nutzers (localStorage)",
+    "Direkte Client-Abfragen an öffentliche Spieldaten-Endpunkte bei maximaler Privatsphäre",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12899_fr, v12898_fr, v12897_fr, v12896_fr, v12895_fr, v12894_fr, v12893_fr, v12892_fr);
+CHANGELOG_BY_LANG.en.unshift(v12899_en, v12898_en, v12897_en, v12896_en, v12895_en, v12894_en, v12893_en, v12892_en);
+CHANGELOG_BY_LANG.es.unshift(v12899_es, v12898_es, v12897_es, v12896_es, v12895_es, v12894_es, v12893_es, v12892_es);
+CHANGELOG_BY_LANG.de.unshift(v12899_de, v12898_de, v12897_de, v12896_de, v12895_de, v12894_de, v12893_de, v12892_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

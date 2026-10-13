@@ -43,7 +43,6 @@ import {
 import GameBrandIcon from "@/components/GameBrandIcon";
 import RiotTrackerConnectModal from "@/components/tracker/RiotTrackerConnectModal";
 import RiotTrackerHeader from "@/components/tracker/RiotTrackerHeader";
-import { recordRiotAudit } from "@/lib/riot-audit";
 import ValorantAiCoachModal from "@/components/tracker/ValorantAiCoachModal";
 import ValorantFriendCompareModal from "@/components/tracker/ValorantFriendCompareModal";
 import { cn } from "@/lib/utils";
@@ -52,13 +51,25 @@ import { EASE_SNAP, EASE_OUT } from "@/lib/ease";
 type GameTab = "valorant" | "lol" | "tft";
 
 export default function RiotGamingHome() {
-  const { settings, update } = useSettings();
+  const { settings } = useSettings();
   const { success, error: showError } = useToast();
 
   const [activeGame, setActiveGame] = useState<GameTab>("valorant");
 
-  const [riotName, setRiotName] = useState(settings.liveTrackerRiotName || "");
-  const [riotTag, setRiotTag] = useState(settings.liveTrackerRiotTag || "");
+  const [riotName, setRiotName] = useState(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("ethone:tracker:riot_name");
+      if (stored) return stored;
+    }
+    return settings.liveTrackerRiotName || "";
+  });
+  const [riotTag, setRiotTag] = useState(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("ethone:tracker:riot_tag");
+      if (stored) return stored;
+    }
+    return settings.liveTrackerRiotTag || "";
+  });
 
   const [valorantProfile, setValorantProfile] = useState<ValorantAccountProfile | null>(null);
   const [valorantMatches, setValorantMatches] = useState<ValorantMatch[]>([]);
@@ -109,26 +120,30 @@ export default function RiotGamingHome() {
   );
 
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedName = localStorage.getItem("ethone:tracker:riot_name");
+      const storedTag = localStorage.getItem("ethone:tracker:riot_tag");
+      const targetName = storedName || riotName;
+      const targetTag = storedTag || riotTag;
+      if (targetName && targetName !== riotName) setRiotName(targetName);
+      if (targetTag && targetTag !== riotTag) setRiotTag(targetTag);
+      if (targetName && targetTag) {
+        loadPlayerData(targetName, targetTag, activeGame);
+        return;
+      }
+    }
     loadPlayerData(riotName, riotTag, activeGame);
-    recordRiotAudit({
-      game: activeGame,
-      actionType: "visit",
-      description: `Navigation Hub #RIOT TRACKER (${activeGame.toUpperCase()})`,
-    });
   }, [activeGame, loadPlayerData]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    update({
-      liveTrackerRiotName: riotName.trim(),
-      liveTrackerRiotTag: riotTag.trim().replace(/^#/, ""),
-    });
-    recordRiotAudit({
-      game: activeGame,
-      actionType: "search",
-      description: `Recherche Joueur Riot : ${riotName.trim()}#${riotTag.trim().replace(/^#/, "")}`,
-    });
-    loadPlayerData(riotName, riotTag, activeGame);
+    const cleanName = riotName.trim();
+    const cleanTag = riotTag.trim().replace(/^#/, "");
+    if (typeof window !== "undefined") {
+      if (cleanName) localStorage.setItem("ethone:tracker:riot_name", cleanName);
+      if (cleanTag) localStorage.setItem("ethone:tracker:riot_tag", cleanTag);
+    }
+    loadPlayerData(cleanName, cleanTag, activeGame);
   };
 
   const lolSummary = useMemo(() => {
@@ -159,9 +174,15 @@ export default function RiotGamingHome() {
         currentProfileName={valorantProfile?.name || riotName}
         currentProfileTag={valorantProfile?.tag || riotTag}
         onRiotIdChanged={(name, tag) => {
-          setRiotName(name);
-          setRiotTag(tag);
-          loadPlayerData(name, tag, activeGame);
+          const cleanName = name.trim();
+          const cleanTag = tag.trim().replace(/^#/, "");
+          setRiotName(cleanName);
+          setRiotTag(cleanTag);
+          if (typeof window !== "undefined") {
+            if (cleanName) localStorage.setItem("ethone:tracker:riot_name", cleanName);
+            if (cleanTag) localStorage.setItem("ethone:tracker:riot_tag", cleanTag);
+          }
+          loadPlayerData(cleanName, cleanTag, activeGame);
         }}
       />
       <div className="mx-auto w-full max-w-7xl px-3 py-4 sm:px-6 sm:py-6 space-y-5">
@@ -761,11 +782,11 @@ export default function RiotGamingHome() {
           <div className="flex items-center gap-2">
             <ShieldCheck className="h-4 w-4 text-emerald-400 shrink-0" />
             <span>
-              <strong>Engagement de Conformité Riot Games :</strong> Zéro Store Checker personnel, authentification OAuth 2.0 (RSO) officielle et accès public interactif.
+              <strong>Confidentialité & Zéro Log :</strong> Aucun compte requis, aucune donnée ni journal sauvegardé sur serveur. Votre Riot ID est conservé localement sur cet appareil.
             </span>
           </div>
           <span className="font-mono text-[10px] shrink-0 text-emerald-400">
-            ✓ Conforme aux Directives Développeurs Riot
+            ✓ 100% Local · Zéro Log Serveur
           </span>
         </div>
       </div>
@@ -774,9 +795,15 @@ export default function RiotGamingHome() {
         isOpen={connectModalOpen}
         onClose={() => setConnectModalOpen(false)}
         onRiotIdChanged={(name, tag) => {
-          setRiotName(name);
-          setRiotTag(tag);
-          loadPlayerData(name, tag, activeGame);
+          const cleanName = name.trim();
+          const cleanTag = tag.trim().replace(/^#/, "");
+          setRiotName(cleanName);
+          setRiotTag(cleanTag);
+          if (typeof window !== "undefined") {
+            if (cleanName) localStorage.setItem("ethone:tracker:riot_name", cleanName);
+            if (cleanTag) localStorage.setItem("ethone:tracker:riot_tag", cleanTag);
+          }
+          loadPlayerData(cleanName, cleanTag, activeGame);
         }}
       />
 

@@ -1,9 +1,11 @@
 "use client";
 
-import { useMemo, useState, useCallback } from "react";
+import { useMemo, useState, useCallback, useEffect } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
+  ArrowLeft,
   ChevronRight,
   ExternalLink,
   Search,
@@ -119,7 +121,32 @@ export default function ServerPicker({
   const { setOpen: openCommandPalette } = useCommandPalette();
   const { profile: ethoneProfile } = useAccountProfile();
   const router = useRouter();
-  const { signOut } = useAuth();
+  const { user, session, signOut } = useAuth();
+  const [hasEthoneOs, setHasEthoneOs] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const isEthoneDomain = !window.location.hostname.startsWith("discord.");
+    const hasToken = Boolean(
+      localStorage.getItem("sb-bvgifyzhpzkbrwdjrqsg-auth-token") ||
+      localStorage.getItem("ethone:session") ||
+      localStorage.getItem("ethone:active-profile") ||
+      localStorage.getItem("ethone:profiles")
+    );
+    if (user || session || ethoneProfile?.username || hasToken || isEthoneDomain) {
+      setHasEthoneOs(true);
+    }
+  }, [user, session, ethoneProfile]);
+
+  const handleReturnToDashboard = useCallback((e?: React.MouseEvent) => {
+    try {
+      sessionStorage.removeItem("ethone:discord:picked");
+    } catch {}
+    if (typeof window !== "undefined" && window.location.hostname.startsWith("discord.")) {
+      if (e) e.preventDefault();
+      window.location.assign("https://ethone.dev/dashboard");
+    }
+  }, []);
 
   const i18n = useI18n();
   const { isDark, toggle: toggleTheme } = useDayNightToggle();
@@ -241,6 +268,16 @@ export default function ServerPicker({
               <Home className="h-4 w-4" />
               <span>{i18n("dMyServers", "Mes serveurs")}</span>
             </button>
+            {hasEthoneOs && (
+              <Link
+                href="/dashboard"
+                onClick={handleReturnToDashboard}
+                className="flex items-center gap-2.5 rounded px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors text-xs font-medium cursor-pointer"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                <span>{i18n("dReturnToDashboard", "Retour au dashboard")}</span>
+              </Link>
+            )}
             <a
               href={DOCS_URL}
               target="_blank"

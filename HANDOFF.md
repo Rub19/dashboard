@@ -1,4 +1,4 @@
-# ETHONE — passation & nouveautés (2026-10-13, version 1.75.34)
+# ETHONE — passation & nouveautés (2026-10-13, version 1.75.35)
 
 ## Projet
 - `ethone-next/` : site Next.js statique (ethone.dev, Cloudflare Pages, déploiement auto au push sur `main`).
@@ -25,9 +25,15 @@
 
 ---
 
-## Nouveautés majeures & Réalisations récentes (v1.73.0 → v1.75.34)
+## Nouveautés majeures & Réalisations récentes (v1.73.0 → v1.75.35)
 
-### 0. Sélecteurs Déroulants Sur-Mesure Obsidian / Keeper (v1.75.34)
+### 0. Rétablissement du Bouton Retour au Dashboard pour les Utilisateurs ETHONE OS (v1.75.35)
+- **Rétablissement Multisupport** : Réintégration complète du lien et bouton « Retour au dashboard » pour les utilisateurs disposant d'un compte ETHONE OS (détecté via session Supabase, profil de compte, jetons locaux ou domaine hôte `ethone.dev`).
+- **Barre Latérale & Sélecteur de Serveurs** : Ajout du bouton « Retour au dashboard » avec icône fléchée sous « Mes serveurs » dans `HubSidebar` et dans `ServerPicker`.
+- **En-tête & Pastille Flottante** : Ajout du raccourci dans la barre d'en-tête de la console Discord aux côtés de la pastille de sauvegarde et en pastille flottante en bas à droite de l'écran avec nettoyage de l'état de session Discord sélectionné.
+- **Internationalisation Complète** : Traduction de la clé `dReturnToDashboard` en français, anglais, espagnol et allemand.
+
+### 1. Sélecteurs Déroulants Sur-Mesure Obsidian / Keeper (v1.75.34)
 - **Nouveau Composant `Select` Déroulant** : Création d'un composant de sélection sur-mesure dans `ethone-next/components/discord/console/kit.tsx` avec bordures fines, fond de surface sombre, icône fléchée animée, popover animé via Framer Motion (`SPRING_LAYOUT`), coche d'activation (`Check`) et fermeture au clic extérieur.
 - **Remplacement Global des `<select>` Natifs** : Élimination de 100 % des balises `<select>` natives du navigateur dans la console Discord (`ConsoleStreamers`, `ConsoleLeveling`, `ConsoleVoice`, `ConsoleServer`, `ConsoleSettings`, `ConsoleLogs`, `ConsoleCommands`, `ConsoleEvents`, `CustomCommandEditor`, `FormEditor`, `ConsoleProtections`), supprimant les fenêtres grises/blanches système et la surbrillance bleue agressive.
 - **Navigation au Clavier Complète** : Prise en charge des touches `Échap` (fermeture), `Flèche bas` / `Flèche haut` (navigation dans les options) et `Entrée` (sélection).

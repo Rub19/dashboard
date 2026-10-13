@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.35 — 2026-10-13
+
+**Console Discord : Rétablissement du Bouton Retour au Dashboard pour les Utilisateurs ETHONE OS**
+
+- Rétablissement du bouton « Retour au dashboard » pour tous les utilisateurs disposant d'un compte ETHONE OS (session, profil ou domaine).
+- Intégration dans la barre latérale (`HubSidebar`) et le sélecteur de serveurs (`ServerPicker`) directement sous « Mes serveurs ».
+- Raccourci dans la barre d'en-tête de la console et pastille flottante en bas à droite avec nettoyage de session.
+- Prise en charge multilingue complète (`dReturnToDashboard`) en français, anglais, espagnol et allemand.
+
 ## v1.75.34 — 2026-10-13
 
 **Sélecteurs Déroulants Sur-Mesure Obsidian (Keeper & Console Discord)**

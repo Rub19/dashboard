@@ -4,11 +4,14 @@ import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
+  ArrowLeft,
   ExternalLink,
   ChevronRight,
   Bot,
   Menu,
 } from "@/components/icons/ph";
+import { useAuth } from "@/components/AuthProvider";
+import { useAccountProfile } from "@/lib/profile/account-profile";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
 import { cn, formatApiError } from "@/lib/utils";
@@ -546,6 +549,34 @@ const DEFAULT_SETTINGS: GuildSettings = {
 
 export default function DiscordDashboardPage() {
   const i18n = useI18n();
+  const { user, session } = useAuth();
+  const { profile: ethoneProfile } = useAccountProfile();
+  const [hasEthoneOs, setHasEthoneOs] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const isEthoneDomain = !window.location.hostname.startsWith("discord.");
+    const hasToken = Boolean(
+      localStorage.getItem("sb-bvgifyzhpzkbrwdjrqsg-auth-token") ||
+      localStorage.getItem("ethone:session") ||
+      localStorage.getItem("ethone:active-profile") ||
+      localStorage.getItem("ethone:profiles")
+    );
+    if (user || session || ethoneProfile?.username || hasToken || isEthoneDomain) {
+      setHasEthoneOs(true);
+    }
+  }, [user, session, ethoneProfile]);
+
+  const handleReturnToDashboard = useCallback((e?: React.MouseEvent) => {
+    try {
+      sessionStorage.removeItem("ethone:discord:picked");
+    } catch {}
+    if (typeof window !== "undefined" && window.location.hostname.startsWith("discord.")) {
+      if (e) e.preventDefault();
+      window.location.assign("https://ethone.dev/dashboard");
+    }
+  }, []);
+
   const { success, info, error: showError } = useToast();
   const { profile, loading: discordLoading, connect } = useDiscordOAuth();
   const {
@@ -1250,6 +1281,17 @@ export default function DiscordDashboardPage() {
             </div>
 
             <div className="flex items-center gap-2">
+              {hasEthoneOs && (
+                <Link
+                  href="/dashboard"
+                  onClick={handleReturnToDashboard}
+                  className="hidden sm:inline-flex items-center gap-1.5 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-3 py-1.5 text-xs font-medium text-[var(--text-muted)] hover:border-[var(--accent-primary)]/50 hover:text-[var(--text-primary)] transition-colors"
+                  title={i18n("dReturnToDashboard", "Retour au dashboard")}
+                >
+                  <ArrowLeft className="h-3.5 w-3.5" />
+                  <span>{i18n("dReturnToDashboard", "Retour au dashboard")}</span>
+                </Link>
+              )}
               <button
                 type="button"
                 onClick={handleSaveSettings}
@@ -1430,6 +1472,18 @@ export default function DiscordDashboardPage() {
           </div>
         </div>
       </div>
+      {hasEthoneOs && (
+        <div className="fixed bottom-4 right-4 z-40 flex items-center gap-2 pointer-events-auto">
+          <Link
+            href="/dashboard"
+            onClick={handleReturnToDashboard}
+            className="flex items-center gap-2 border border-[var(--panel-border)] bg-[var(--surface-raised)]/95 backdrop-blur-md px-3 py-1.5 text-xs font-semibold text-[var(--text-primary)] hover:border-[var(--accent-primary)] hover:text-[var(--accent-primary)] shadow-lg transition-all rounded-lg cursor-pointer"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            <span>{i18n("dReturnToDashboard", "Retour au dashboard")}</span>
+          </Link>
+        </div>
+      )}
       {onboardingModal}
     </>
   );

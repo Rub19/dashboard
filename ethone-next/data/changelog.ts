@@ -53424,4 +53424,53 @@ CHANGELOG_BY_LANG.en.unshift(v12878_en);
 CHANGELOG_BY_LANG.es.unshift(v12878_es);
 CHANGELOG_BY_LANG.de.unshift(v12878_de);
 
+const v12879_fr: ChangelogEntry = {
+  version: "v1.75.35",
+  date: "2026-10-13",
+  title: "Console Discord — Rétablissement du bouton Retour au dashboard pour les utilisateurs ETHONE OS",
+  items: [
+    "Console Discord : rétablissement du bouton « Retour au dashboard » dans la barre latérale sous « Mes serveurs », dans la barre d'en-tête et en pastille flottante pour les utilisateurs disposant d'un compte ETHONE OS.",
+    "Sélecteur de serveurs : ajout de l'option « Retour au dashboard » sous « Mes serveurs » permettant un retour immédiat vers l'environnement ETHONE OS.",
+    "Internationalisation : support complet du libellé « Retour au dashboard » en 4 langues (français, anglais, espagnol, allemand).",
+  ],
+};
+
+const v12879_en: ChangelogEntry = {
+  version: "v1.75.35",
+  date: "2026-10-13",
+  title: "Discord Console — Restored Return to Dashboard button for ETHONE OS users",
+  items: [
+    "Discord Console: restored the 'Back to dashboard' button in the sidebar under 'My servers', in the header bar and as a floating badge for users with an ETHONE OS account.",
+    "Server Picker: added the 'Back to dashboard' link under 'My servers' allowing immediate navigation back to the ETHONE OS workspace.",
+    "Internationalization: full multilingual support for the 'Back to dashboard' label in 4 languages (French, English, Spanish, German).",
+  ],
+};
+
+const v12879_es: ChangelogEntry = {
+  version: "v1.75.35",
+  date: "2026-10-13",
+  title: "Consola Discord — Restablecimiento del botón Volver al panel para usuarios de ETHONE OS",
+  items: [
+    "Consola Discord: restablecimiento del botón «Volver al panel» en la barra lateral bajo «Mis servidores», en la barra superior y en pastilla flotante para usuarios con cuenta ETHONE OS.",
+    "Selector de servidores: adición del enlace «Volver al panel» bajo «Mis servidores» para regresar de inmediato al entorno ETHONE OS.",
+    "Internacionalización: soporte multilenguaje completo para la etiqueta «Volver al panel» en 4 idiomas (francés, inglés, español, alemán).",
+  ],
+};
+
+const v12879_de: ChangelogEntry = {
+  version: "v1.75.35",
+  date: "2026-10-13",
+  title: "Discord-Konsole — Wiederherstellung der Schaltfläche Zurück zum Dashboard für ETHONE OS-Nutzer",
+  items: [
+    "Discord-Konsole: Wiederherstellung der Schaltfläche «Zurück zum Dashboard» in der Seitenleiste unter «Meine Server», in der Kopfleiste und als schwebende Schaltfläche für Nutzer mit einem ETHONE OS-Konto.",
+    "Server-Auswahl: Hinzufügen des Links «Zurück zum Dashboard» unter «Meine Server» zur direkten Rückkehr in die ETHONE OS-Umgebung.",
+    "Internationalisierung: Vollständige mehrsprachige Unterstützung für «Zurück zum Dashboard» in 4 Sprachen (Französisch, Englisch, Spanisch, Deutsch).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12879_fr);
+CHANGELOG_BY_LANG.en.unshift(v12879_en);
+CHANGELOG_BY_LANG.es.unshift(v12879_es);
+CHANGELOG_BY_LANG.de.unshift(v12879_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

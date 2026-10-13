@@ -3,7 +3,9 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
 import {
+  ArrowLeft,
   ShieldCheck,
   Search,
   Home,
@@ -148,8 +150,34 @@ export default function HubSidebar({
   const router = useRouter();
   const i18n = useI18n();
   const { setOpen: openCommandPalette } = useCommandPalette();
-  const { signOut } = useAuth();
+  const { user, session, signOut } = useAuth();
   const { profile: ethoneProfile } = useAccountProfile();
+  const [hasEthoneOs, setHasEthoneOs] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const isEthoneDomain = !window.location.hostname.startsWith("discord.");
+    const hasToken = Boolean(
+      localStorage.getItem("sb-bvgifyzhpzkbrwdjrqsg-auth-token") ||
+      localStorage.getItem("ethone:session") ||
+      localStorage.getItem("ethone:active-profile") ||
+      localStorage.getItem("ethone:profiles")
+    );
+    if (user || session || ethoneProfile?.username || hasToken || isEthoneDomain) {
+      setHasEthoneOs(true);
+    }
+  }, [user, session, ethoneProfile]);
+
+  const handleReturnToDashboard = useCallback((e?: React.MouseEvent) => {
+    try {
+      sessionStorage.removeItem("ethone:discord:picked");
+    } catch {}
+    if (typeof window !== "undefined" && window.location.hostname.startsWith("discord.")) {
+      if (e) e.preventDefault();
+      window.location.assign("https://ethone.dev/dashboard");
+    }
+  }, []);
+
   const botUser = useBotSessionUser();
   const storedUser = useMemo(() => getStoredDiscordUser(), []);
   const { reduced } = useMotionPref();
@@ -605,6 +633,16 @@ export default function HubSidebar({
               <Home className="h-4.5 w-4.5" />
               <span>{i18n("dMyServers", "Mes serveurs")}</span>
             </button>
+            {hasEthoneOs && (
+              <Link
+                href="/dashboard"
+                onClick={handleReturnToDashboard}
+                className="w-full flex items-center gap-3 rounded-lg px-3 py-2 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors cursor-pointer font-medium text-left text-sm"
+              >
+                <ArrowLeft className="h-4.5 w-4.5" />
+                <span>{i18n("dReturnToDashboard", "Retour au dashboard")}</span>
+              </Link>
+            )}
             <a
               href={DOCS_URL}
               target="_blank"

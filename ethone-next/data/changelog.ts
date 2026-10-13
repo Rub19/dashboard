@@ -54747,9 +54747,62 @@ const v12902_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12902_fr, v12901_fr, v12900_fr, v12899_fr, v12898_fr, v12897_fr, v12896_fr, v12895_fr, v12894_fr, v12893_fr, v12892_fr);
-CHANGELOG_BY_LANG.en.unshift(v12902_en, v12901_en, v12900_en, v12899_en, v12898_en, v12897_en, v12896_en, v12895_en, v12894_en, v12893_en, v12892_en);
-CHANGELOG_BY_LANG.es.unshift(v12902_es, v12901_es, v12900_es, v12899_es, v12898_es, v12897_es, v12896_es, v12895_es, v12894_es, v12893_es, v12892_es);
-CHANGELOG_BY_LANG.de.unshift(v12902_de, v12901_de, v12900_de, v12899_de, v12898_de, v12897_de, v12896_de, v12895_de, v12894_de, v12893_de, v12892_de);
+const v12903_fr: ChangelogEntry = {
+  version: "v1.75.61",
+  date: "2026-10-14",
+  title: "Tracker Riot : données réelles branchées et suppression des éléments IA",
+  items: [
+    "Branchement complet des profils et historiques sur les APIs réelles (Valorant HenrikDev et League of Legends Riot Games)",
+    "Correction de l'extraction de profil Valorant (rang Immortel, niveau de compte, RR et carte de joueur)",
+    "Résolution du bug d'affichage du pourcentage de tir à la tête (suppression du undefined%)",
+    "Remplacement des cartes de marketing IA par les Top Agents réels et la télémétrie de combat authentique",
+    "Ajout de sélecteurs rapides (pills) pour basculer en un clic sur les profils vérifiés (Rub19#boss, Agurin#EUW)",
+  ],
+};
+
+const v12903_en: ChangelogEntry = {
+  version: "v1.75.61",
+  date: "2026-10-14",
+  title: "Riot Tracker: real live data integration and AI fluff removal",
+  items: [
+    "Fully connected profiles and match history to live real APIs (Valorant HenrikDev and League of Legends Riot Games)",
+    "Fixed Valorant profile parser (Immortal rank display, account level, RR and player card)",
+    "Resolved headshot percentage display bug (removed undefined%)",
+    "Replaced AI marketing buzzword cards with real Top Agents and authentic combat telemetry",
+    "Added quick profile pills to load verified players in one click (Rub19#boss, Agurin#EUW)",
+  ],
+};
+
+const v12903_es: ChangelogEntry = {
+  version: "v1.75.61",
+  date: "2026-10-14",
+  title: "Tracker Riot: datos reales conectados y eliminación de elementos de IA",
+  items: [
+    "Conexión completa de perfiles e historial a APIs reales (Valorant HenrikDev y League of Legends Riot Games)",
+    "Corrección del analizador de perfil de Valorant (rango Inmortal, nivel de cuenta, RR y tarjeta de jugador)",
+    "Resolución del error de visualización del porcentaje de disparos a la cabeza (eliminado undefined%)",
+    "Sustitución de las tarjetas de marketing IA por los Top Agentes reales y telemetría de combate auténtica",
+    "Adición de botones rápidos (pills) para cargar jugadores verificados en un clic (Rub19#boss, Agurin#EUW)",
+  ],
+};
+
+const v12903_de: ChangelogEntry = {
+  version: "v1.75.61",
+  date: "2026-10-14",
+  title: "Riot Tracker: Reale Datenanbindung und Bereinigung von KI-Elementen",
+  items: [
+    "Vollständige Anbindung von Spielerprofilen und Matchverläufen an echte APIs (Valorant HenrikDev und League of Legends)",
+    "Korrektur des Valorant-Profil-Parsers (Unsterblich-Rang, Kontostufe, RR und Spielerkarte)",
+    "Behebung des Anzeigefehlers bei der Kopfschussquote (Entfernung von undefined%)",
+    "Ersetzung der KI-Marketingkarten durch echte Top-Agenten und authentische Kampftelemetrie",
+    "Hinzufügen von Schnellwahltasten (Pills) für verifizierte Spielerprofile (Rub19#boss, Agurin#EUW)",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12903_fr, v12902_fr, v12901_fr, v12900_fr, v12899_fr, v12898_fr, v12897_fr, v12896_fr, v12895_fr, v12894_fr, v12893_fr, v12892_fr);
+CHANGELOG_BY_LANG.en.unshift(v12903_en, v12902_en, v12901_en, v12900_en, v12899_en, v12898_en, v12897_en, v12896_en, v12895_en, v12894_en, v12893_en, v12892_en);
+CHANGELOG_BY_LANG.es.unshift(v12903_es, v12902_es, v12901_es, v12900_es, v12899_es, v12898_es, v12897_es, v12896_es, v12895_es, v12894_es, v12893_es, v12892_es);
+CHANGELOG_BY_LANG.de.unshift(v12903_de, v12902_de, v12901_de, v12900_de, v12899_de, v12898_de, v12897_de, v12896_de, v12895_de, v12894_de, v12893_de, v12892_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
+

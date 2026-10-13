@@ -1,5 +1,5 @@
 import { fetchWorker } from "@/lib/api";
-import type { ValorantMatch } from "@/lib/valorant-tracker";
+import { getValorantTierName, type ValorantMatch } from "@/lib/valorant-tracker";
 
 export type ValorantDataProvenance = "riot_rso_official" | "henrikdev" | "unconfigured";
 
@@ -97,7 +97,7 @@ export async function fetchPlayerProfile(
     );
 
     const raw = res?.data || res;
-    if (!raw || (!raw.name && !raw.puuid && !raw.account_level && !raw.card)) {
+    if (!raw || (!raw.name && !raw.puuid && !raw.account_level && !raw.card && !raw.handle && !raw.identifier && !raw.avatarUrl && !raw.segments)) {
       return {
         data: null,
         provenance: "henrikdev",
@@ -107,16 +107,56 @@ export async function fetchPlayerProfile(
       };
     }
 
+    const overviewSeg = Array.isArray(raw.segments)
+      ? raw.segments.find((s: any) => s.type === "overview") || raw.segments[0]
+      : null;
+    const segStats = overviewSeg?.stats || {};
+
+    const nameFromHandle = raw.handle ? raw.handle.split("#")[0] : raw.identifier ? raw.identifier.split("#")[0] : cleanName;
+    const tagFromHandle = raw.handle ? raw.handle.split("#")[1] : raw.identifier ? raw.identifier.split("#")[1] : cleanTag;
+
+    const rankDisplay =
+      raw.current_tier_patched ||
+      raw.currenttier_patched ||
+      segStats.rank?.displayValue ||
+      (typeof raw.current_tier === "number" ? getValorantTierName(raw.current_tier) : null);
+
+    const level =
+      typeof raw.account_level === "number"
+        ? raw.account_level
+        : typeof segStats.level?.value === "number"
+        ? segStats.level.value
+        : typeof raw.level === "number"
+        ? raw.level
+        : null;
+
+    const rr =
+      typeof raw.ranking_in_tier === "number"
+        ? raw.ranking_in_tier
+        : typeof segStats.rr?.value === "number"
+        ? segStats.rr.value
+        : null;
+
+    const tier =
+      typeof raw.current_tier === "number"
+        ? raw.current_tier
+        : typeof segStats.rank?.value === "number"
+        ? segStats.rank.value
+        : null;
+
+    const cardSmall = raw.card?.small || raw.avatarUrl || null;
+    const cardLarge = raw.card?.large || raw.avatarUrl || null;
+
     const profile: ValorantAccountProfile = {
-      name: raw.name || cleanName,
-      tag: raw.tag || cleanTag,
+      name: raw.name || nameFromHandle,
+      tag: raw.tag || tagFromHandle,
       puuid: raw.puuid || null,
-      accountLevel: typeof raw.account_level === "number" ? raw.account_level : null,
-      cardSmall: raw.card?.small || null,
-      cardLarge: raw.card?.large || null,
-      currentTierPatched: raw.current_tier_patched || raw.currenttier_patched || null,
-      tier: typeof raw.current_tier === "number" ? raw.current_tier : null,
-      rr: typeof raw.ranking_in_tier === "number" ? raw.ranking_in_tier : null,
+      accountLevel: level,
+      cardSmall,
+      cardLarge,
+      currentTierPatched: rankDisplay,
+      tier,
+      rr,
       lastUpdated: new Date().toISOString(),
       provenance: "henrikdev",
     };

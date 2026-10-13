@@ -9,23 +9,22 @@ import {
   TrendingUp,
   User,
   Search,
-  ExternalLink,
   ChevronRight,
   Flame,
   Target,
   Trophy,
   Activity,
   Zap,
-  CheckCircle2,
   Share2,
-  RefreshCw,
   Key,
 } from "@/components/icons/ph";
 import { useSettings } from "@/components/SettingsProvider";
 import { useToast } from "@/components/ToastProvider";
+import { fetchWorker } from "@/lib/api";
 import {
   fetchPlayerProfile,
   calculateComputedStats,
+  calculateAgentStats,
   type ValorantAccountProfile,
   type ValorantComputedStats,
 } from "@/lib/valorant-provider";
@@ -43,7 +42,7 @@ import ValorantFriendCompareModal from "@/components/tracker/ValorantFriendCompa
 import { useAnimatedSidebar } from "@/components/motion/animated-sidebar";
 import { Icon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
-import { EASE_SNAP, EASE_OUT } from "@/lib/ease";
+import { EASE_SNAP } from "@/lib/ease";
 
 type GameTab = "valorant" | "lol" | "tft";
 
@@ -108,6 +107,10 @@ export default function RiotGamingHome() {
     return calculateComputedStats(valorantMatches, valorantProfile?.provenance || "henrikdev");
   }, [valorantMatches, valorantProfile]);
 
+  const topValorantAgents = useMemo(() => {
+    return calculateAgentStats(valorantMatches).slice(0, 3);
+  }, [valorantMatches]);
+
   const loadPlayerData = useCallback(
     async (targetName: string, targetTag: string, game: GameTab) => {
       const cleanName = targetName.trim();
@@ -118,20 +121,49 @@ export default function RiotGamingHome() {
 
       if (game === "valorant") {
         try {
-          const [profRes, matchRes] = await Promise.all([
+          const [profRes, matchData] = await Promise.all([
             fetchPlayerProfile(cleanName, cleanTag, false).catch(() => ({ data: null })),
-            fetchValorantMatchesDirect(cleanName, cleanTag, "all", 1, 6).catch(() => []),
+            fetchWorker(
+              `/api/stats/valorant-matches?name=${encodeURIComponent(cleanName)}&tag=${encodeURIComponent(cleanTag)}`
+            )
+              .then((res) => (Array.isArray(res) ? res : Array.isArray(res?.data) ? res.data : []))
+              .catch(async () => {
+                const localKey =
+                  typeof window !== "undefined"
+                    ? localStorage.getItem("ethone:cred:riot:henrikApiKey") ||
+                      localStorage.getItem("ethone:cred:valorant:apiKey") ||
+                      localStorage.getItem("HENRIK_API_KEY")
+                    : null;
+                if (localKey) {
+                  return fetchValorantMatchesDirect(cleanName, cleanTag, "all", localKey, 0).catch(() => []);
+                }
+                return [];
+              }),
           ]);
           if (profRes.data) setValorantProfile(profRes.data);
-          if (Array.isArray(matchRes)) setValorantMatches(matchRes);
+          if (Array.isArray(matchData)) setValorantMatches(matchData);
         } catch {
         } finally {
           setLoading(false);
         }
       } else if (game === "lol") {
         try {
-          const matches = await fetchLolMatchesDirect(cleanName, cleanTag, "all", 1, 6).catch(() => []);
-          if (Array.isArray(matches)) setLolMatches(matches);
+          const matchData = await fetchWorker(
+            `/api/stats/lol-matches?name=${encodeURIComponent(cleanName)}&tag=${encodeURIComponent(cleanTag)}`
+          )
+            .then((res) => (Array.isArray(res) ? res : Array.isArray(res?.data) ? res.data : []))
+            .catch(async () => {
+              const localKey =
+                typeof window !== "undefined"
+                  ? localStorage.getItem("ethone:cred:riot:riotApiKey") ||
+                    localStorage.getItem("ethone:cred:riot:apiKey")
+                  : null;
+              if (localKey) {
+                return fetchLolMatchesDirect(cleanName, cleanTag, "all", localKey, 0).catch(() => []);
+              }
+              return [];
+            });
+          if (Array.isArray(matchData)) setLolMatches(matchData);
         } catch {
         } finally {
           setLoading(false);
@@ -169,6 +201,41 @@ export default function RiotGamingHome() {
     }
     loadPlayerData(cleanName, cleanTag, activeGame);
   };
+
+  const applyQuickPlayer = (name: string, tag: string, game?: GameTab) => {
+    setRiotName(name);
+    setRiotTag(tag);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("ethone:tracker:riot_name", name);
+      localStorage.setItem("ethone:tracker:riot_tag", tag);
+    }
+    const targetGame = game || activeGame;
+    if (game && game !== activeGame) {
+      selectGameTab(game);
+    }
+    loadPlayerData(name, tag, targetGame);
+  };
+
+  const valorantCombatSummary = useMemo(() => {
+    let kills = 0;
+    let deaths = 0;
+    let assists = 0;
+    valorantMatches.forEach((m) => {
+      const seg = m.segments?.[0]?.stats;
+      kills += seg?.kills?.value || 0;
+      deaths += seg?.deaths?.value || 0;
+      assists += seg?.assists?.value || 0;
+    });
+    const kd = deaths > 0 ? (kills / deaths).toFixed(2) : String(kills);
+    return {
+      kills,
+      deaths,
+      assists,
+      kd,
+      adr: valorantStats.adr,
+      hs: valorantStats.headshotPercentage,
+    };
+  }, [valorantMatches, valorantStats]);
 
   const lolSummary = useMemo(() => {
     const total = lolMatches.length;
@@ -215,14 +282,11 @@ export default function RiotGamingHome() {
                 </button>
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/40 bg-rose-500/15 px-2.5 py-0.5 text-[10px] font-bold text-rose-300 uppercase tracking-wider">
                   <span className="h-1.5 w-1.5 rounded-full bg-rose-400 animate-pulse" />
-                  Riot Games Hub #1
+                  VALORANT · LoL · TFT
                 </span>
                 <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-300">
                   <ShieldCheck className="h-3 w-3" />
-                  RSO OAuth Conforme
-                </span>
-                <span className="hidden sm:inline-flex items-center gap-1 rounded-full border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-2 py-0.5 text-[10px] font-mono text-[var(--text-muted)]">
-                  Serveurs EUW · Live
+                  Données Live & Zéro Log
                 </span>
               </div>
 
@@ -230,7 +294,7 @@ export default function RiotGamingHome() {
                 RIOT GAMES <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-400 via-red-400 to-amber-300">Tracker</span>
               </h1>
               <p className="text-xs sm:text-sm text-[var(--text-muted)] max-w-2xl">
-                Suivi compétitif en temps réel et historiques officiels pour VALORANT, League of Legends et Teamfight Tactics.
+                Suivi compétitif en temps réel et historiques officiels de parties pour VALORANT et League of Legends.
               </p>
             </div>
 
@@ -241,7 +305,7 @@ export default function RiotGamingHome() {
                 className="flex items-center gap-1.5 rounded-xl border border-rose-500/40 bg-rose-500/20 px-3.5 py-2 text-xs font-bold text-rose-200 hover:bg-rose-500/30 active:scale-95 transition-all cursor-pointer shadow-md"
               >
                 <Key className="h-4 w-4 text-rose-400" />
-                <span>#RIOT TRACKER · Connexion & APIs</span>
+                <span>Identifiants & Clés API</span>
               </button>
             </div>
           </div>
@@ -292,34 +356,54 @@ export default function RiotGamingHome() {
             </button>
           </div>
 
-          <form onSubmit={handleSearch} className="flex items-center gap-2">
-            <div className="flex items-center gap-2 rounded-xl border border-[var(--input-border)] bg-[var(--bg-surface-elevated)] px-3 py-1.5">
-              <User className="h-3.5 w-3.5 text-[var(--text-muted)]" />
-              <input
-                type="text"
-                value={riotName}
-                onChange={(e) => setRiotName(e.target.value)}
-                aria-label="Nom Riot"
-                className="w-24 sm:w-28 bg-transparent text-xs font-bold text-[var(--text-primary)] outline-none"
-              />
-              <span className="text-xs text-[var(--text-muted)]">#</span>
-              <input
-                type="text"
-                value={riotTag}
-                onChange={(e) => setRiotTag(e.target.value)}
-                aria-label="Tag Riot"
-                className="w-12 bg-transparent font-mono text-xs font-bold text-[var(--text-primary)] outline-none"
-              />
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+            <form onSubmit={handleSearch} className="flex items-center gap-2">
+              <div className="flex items-center gap-2 rounded-xl border border-[var(--input-border)] bg-[var(--bg-surface-elevated)] px-3 py-1.5">
+                <User className="h-3.5 w-3.5 text-[var(--text-muted)]" />
+                <input
+                  type="text"
+                  value={riotName}
+                  onChange={(e) => setRiotName(e.target.value)}
+                  aria-label="Nom Riot"
+                  className="w-24 sm:w-28 bg-transparent text-xs font-bold text-[var(--text-primary)] outline-none"
+                />
+                <span className="text-xs text-[var(--text-muted)]">#</span>
+                <input
+                  type="text"
+                  value={riotTag}
+                  onChange={(e) => setRiotTag(e.target.value)}
+                  aria-label="Tag Riot"
+                  className="w-12 bg-transparent font-mono text-xs font-bold text-[var(--text-primary)] outline-none"
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={loading}
+                className="flex items-center gap-1 rounded-xl bg-[var(--accent-primary)] px-3 py-2 text-xs font-bold text-[var(--accent-contrast)] hover:opacity-90 active:scale-95 transition-all cursor-pointer disabled:opacity-40"
+              >
+                <Search className="h-3.5 w-3.5" />
+                <span>Analyser</span>
+              </button>
+            </form>
+
+            <div className="flex items-center gap-1.5 text-xs">
+              <span className="text-[10px] uppercase font-bold text-[var(--text-muted)]">Pills :</span>
+              <button
+                type="button"
+                onClick={() => applyQuickPlayer("Rub19", "boss", "valorant")}
+                className="rounded-lg border border-rose-500/40 bg-rose-500/15 px-2 py-1 text-[11px] font-bold text-rose-300 hover:bg-rose-500/25 active:scale-95 transition-all cursor-pointer"
+              >
+                Rub19 #boss
+              </button>
+              <button
+                type="button"
+                onClick={() => applyQuickPlayer("Agurin", "EUW", "lol")}
+                className="rounded-lg border border-amber-500/40 bg-amber-500/15 px-2 py-1 text-[11px] font-bold text-amber-300 hover:bg-amber-500/25 active:scale-95 transition-all cursor-pointer"
+              >
+                Agurin #EUW
+              </button>
             </div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="flex items-center gap-1 rounded-xl bg-[var(--accent-primary)] px-3 py-2 text-xs font-bold text-[var(--accent-contrast)] hover:opacity-90 active:scale-95 transition-all cursor-pointer disabled:opacity-40"
-            >
-              <Search className="h-3.5 w-3.5" />
-              <span>Analyser</span>
-            </button>
-          </form>
+          </div>
         </div>
 
         <AnimatePresence mode="wait">
@@ -332,7 +416,7 @@ export default function RiotGamingHome() {
             className="space-y-4"
           >
             {activeGame === "valorant" && (
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                 <motion.div
                   whileHover={{ y: -2 }}
                   className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/85 p-4 backdrop-blur-xl shadow-md space-y-3"
@@ -342,22 +426,22 @@ export default function RiotGamingHome() {
                       <img
                         src={valorantProfile.cardSmall}
                         alt={valorantProfile.name}
-                        className="h-12 w-12 rounded-xl object-cover border border-[var(--panel-border)] shadow-sm"
+                        className="h-12 w-12 rounded-xl object-cover border border-[var(--panel-border)] shadow-sm shrink-0"
                       />
                     ) : (
-                      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-rose-500/15 text-rose-400 font-bold border border-rose-500/30">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-rose-500/15 text-rose-400 font-bold border border-rose-500/30 shrink-0">
                         <User className="h-6 w-6" />
                       </div>
                     )}
                     <div className="min-w-0">
                       <h3 className="text-base font-black text-[var(--text-primary)] truncate">
-                        {valorantProfile?.name || riotName || ""}
+                        {valorantProfile?.name || riotName || "Joueur"}
                       </h3>
                       <p className="font-mono text-xs text-[var(--text-muted)]">
                         {riotTag ? `#${valorantProfile?.tag || riotTag}` : ""}
                       </p>
-                      <p className="text-xs font-bold text-rose-400">
-                        {valorantProfile?.currentTierPatched || (riotName ? "Non classé" : "")}
+                      <p className="text-xs font-bold text-rose-400 truncate">
+                        {valorantProfile?.currentTierPatched || (riotName ? "Non classé" : "En attente")}
                         {valorantProfile?.rr !== null && valorantProfile?.rr !== undefined ? ` · ${valorantProfile.rr} RR` : ""}
                       </p>
                     </div>
@@ -365,7 +449,7 @@ export default function RiotGamingHome() {
                   <div className="pt-2 border-t border-[var(--panel-border)]/50 flex items-center justify-between text-xs text-[var(--text-muted)]">
                     <span>Niveau de compte :</span>
                     <span className="font-mono font-bold text-[var(--text-primary)]">
-                      {valorantProfile?.accountLevel || ""}
+                      {valorantProfile?.accountLevel ?? "—"}
                     </span>
                   </div>
                 </motion.div>
@@ -380,14 +464,14 @@ export default function RiotGamingHome() {
                   </div>
                   <div className="my-2">
                     <p className="text-3xl font-black text-emerald-400">
-                      {valorantStats.kdRatio !== null ? valorantStats.kdRatio : ""}
+                      {valorantStats.kdRatio !== null ? valorantStats.kdRatio : "—"}
                     </p>
                     <p className="text-[11px] text-[var(--text-muted)] font-medium">
-                      {valorantStats.kdRatio !== null ? "Performance calculée" : ""}
+                      {valorantStats.matchesCount > 0 ? `${valorantStats.wins}V - ${valorantStats.losses}D` : "Performance"}
                     </p>
                   </div>
                   <div className="h-1.5 w-full rounded-full bg-[var(--surface-raised)] overflow-hidden">
-                    <div className="h-full bg-emerald-400 rounded-full" style={{ width: valorantStats.kdRatio ? `${Math.min(100, valorantStats.kdRatio * 50)}%` : "0%" }} />
+                    <div className="h-full bg-emerald-400 rounded-full" style={{ width: valorantStats.kdRatio ? `${Math.min(100, Math.round(valorantStats.kdRatio * 50))}%` : "0%" }} />
                   </div>
                 </motion.div>
 
@@ -401,10 +485,10 @@ export default function RiotGamingHome() {
                   </div>
                   <div className="my-2">
                     <p className="text-3xl font-black text-rose-400">
-                      {valorantStats.winRate !== null ? `${valorantStats.winRate}%` : ""}
+                      {valorantStats.winRate !== null ? `${valorantStats.winRate}%` : "—"}
                     </p>
                     <p className="text-[11px] text-[var(--text-muted)] font-medium">
-                      {valorantMatches.length > 0 ? `${valorantMatches.length} parties analysées` : ""}
+                      {valorantMatches.length > 0 ? `${valorantMatches.length} parties analysées` : "Historique"}
                     </p>
                   </div>
                   <div className="h-1.5 w-full rounded-full bg-[var(--surface-raised)] overflow-hidden">
@@ -417,48 +501,54 @@ export default function RiotGamingHome() {
                   className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/85 p-4 backdrop-blur-xl shadow-md flex flex-col justify-between"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Score ACS Moyen</span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                      {valorantStats.scoreSystem === "performance" ? "Score Performance" : "Score ACS Moyen"}
+                    </span>
                     <Target className="h-4 w-4 text-cyan-400" />
                   </div>
                   <div className="my-2">
                     <p className="text-3xl font-black text-cyan-400">
-                      {valorantStats.avgAcs !== null ? valorantStats.avgAcs : ""}
+                      {valorantStats.averageScore !== null ? valorantStats.averageScore : "—"}
                     </p>
                     <p className="text-[11px] text-[var(--text-muted)] font-medium">
-                      {valorantStats.headshotPct !== null ? `Tir à la tête : ${valorantStats.headshotPct}%` : ""}
+                      {valorantStats.headshotPercentage !== null
+                        ? `Tir à la tête : ${valorantStats.headshotPercentage}%`
+                        : valorantStats.adr !== null
+                        ? `ADR : ${valorantStats.adr}`
+                        : "Combat"}
                     </p>
                   </div>
                   <div className="h-1.5 w-full rounded-full bg-[var(--surface-raised)] overflow-hidden">
-                    <div className="h-full bg-cyan-400 rounded-full" style={{ width: valorantStats.headshotPct ? `${valorantStats.headshotPct}%` : "0%" }} />
+                    <div className="h-full bg-cyan-400 rounded-full" style={{ width: valorantStats.headshotPercentage ? `${valorantStats.headshotPercentage}%` : "0%" }} />
                   </div>
                 </motion.div>
               </div>
             )}
 
             {activeGame === "lol" && (
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                 <motion.div
                   whileHover={{ y: -2 }}
                   className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/85 p-4 backdrop-blur-xl shadow-md space-y-3"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-500/15 text-amber-400 font-bold border border-amber-500/30">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-500/15 text-amber-400 font-bold border border-amber-500/30 shrink-0">
                       <GameBrandIcon name="League of Legends" className="h-6 w-6" />
                     </div>
                     <div className="min-w-0">
                       <h3 className="text-base font-black text-[var(--text-primary)] truncate">
-                        {riotName || ""}
+                        {riotName || "Invocateur"}
                       </h3>
                       <p className="font-mono text-xs text-[var(--text-muted)]">{riotTag ? `#${riotTag}` : ""}</p>
                       <p className="text-xs font-bold text-amber-400">
-                        {lolMatches.length > 0 ? "Compétitif" : (riotName ? "Non classé" : "")}
+                        {lolMatches.length > 0 ? "Compétitif" : (riotName ? "Non classé" : "En attente")}
                       </p>
                     </div>
                   </div>
                   <div className="pt-2 border-t border-[var(--panel-border)]/50 flex items-center justify-between text-xs text-[var(--text-muted)]">
-                    <span>File : Solo/Duo</span>
+                    <span>Parties trouvées :</span>
                     <span className="font-mono font-bold text-[var(--text-primary)]">
-                      {lolMatches.length > 0 ? "Actif" : ""}
+                      {lolMatches.length}
                     </span>
                   </div>
                 </motion.div>
@@ -473,10 +563,10 @@ export default function RiotGamingHome() {
                   </div>
                   <div className="my-2">
                     <p className="text-3xl font-black text-amber-400">
-                      {lolSummary.total > 0 ? lolSummary.kda : ""}
+                      {lolSummary.total > 0 ? lolSummary.kda : "—"}
                     </p>
                     <p className="text-[11px] text-[var(--text-muted)] font-medium">
-                      {lolSummary.total > 0 ? `${lolSummary.kTotal}/${lolSummary.dTotal}/${lolSummary.aTotal}` : ""}
+                      {lolSummary.total > 0 ? `${lolSummary.kTotal}K / ${lolSummary.dTotal}D / ${lolSummary.aTotal}A` : "Télémétrie"}
                     </p>
                   </div>
                   <div className="h-1.5 w-full rounded-full bg-[var(--surface-raised)] overflow-hidden">
@@ -494,10 +584,10 @@ export default function RiotGamingHome() {
                   </div>
                   <div className="my-2">
                     <p className="text-3xl font-black text-emerald-400">
-                      {lolSummary.total > 0 ? `${lolSummary.winRate}%` : ""}
+                      {lolSummary.total > 0 ? `${lolSummary.winRate}%` : "—"}
                     </p>
                     <p className="text-[11px] text-[var(--text-muted)] font-medium">
-                      {lolSummary.total > 0 ? `${lolSummary.total} parties analysées` : ""}
+                      {lolSummary.total > 0 ? `${lolSummary.wins} victoires sur ${lolSummary.total}` : "Statistiques"}
                     </p>
                   </div>
                   <div className="h-1.5 w-full rounded-full bg-[var(--surface-raised)] overflow-hidden">
@@ -515,14 +605,14 @@ export default function RiotGamingHome() {
                   </div>
                   <div className="my-2">
                     <p className="text-3xl font-black text-cyan-400">
-                      {lolSummary.total > 0 ? `${lolSummary.total}` : ""}
+                      {lolSummary.total > 0 ? `${lolSummary.total}` : "—"}
                     </p>
                     <p className="text-[11px] text-[var(--text-muted)] font-medium">
-                      {lolSummary.total > 0 ? `${lolSummary.wins} victoires` : ""}
+                      {lolSummary.total > 0 ? `${lolSummary.wins}V - ${lolSummary.total - lolSummary.wins}D` : "Historique"}
                     </p>
                   </div>
                   <div className="h-1.5 w-full rounded-full bg-[var(--surface-raised)] overflow-hidden">
-                    <div className="h-full bg-cyan-400 rounded-full" style={{ width: lolSummary.total > 0 ? `${Math.min(100, lolSummary.total * 5)}%` : "0%" }} />
+                    <div className="h-full bg-cyan-400 rounded-full" style={{ width: lolSummary.total > 0 ? `${Math.min(100, lolSummary.total * 10)}%` : "0%" }} />
                   </div>
                 </motion.div>
               </div>
@@ -539,9 +629,9 @@ export default function RiotGamingHome() {
                       <GameBrandIcon name="Teamfight Tactics" className="h-6 w-6" />
                     </div>
                     <div className="min-w-0">
-                      <h3 className="text-base font-black text-[var(--text-primary)] truncate">{riotName || ""}</h3>
+                      <h3 className="text-base font-black text-[var(--text-primary)] truncate">{riotName || "Tacticien"}</h3>
                       <p className="font-mono text-xs text-[var(--text-muted)]">{riotTag ? `#${riotTag}` : ""}</p>
-                      <p className="text-xs font-bold text-yellow-400"></p>
+                      <p className="text-xs font-bold text-yellow-400">Mode Stratégique</p>
                     </div>
                   </div>
                 </motion.div>
@@ -551,7 +641,7 @@ export default function RiotGamingHome() {
                   className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/85 p-4 backdrop-blur-xl shadow-md flex flex-col justify-between"
                 >
                   <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Top 4 Rate</span>
-                  <p className="text-3xl font-black text-yellow-400 my-2"></p>
+                  <p className="text-3xl font-black text-yellow-400 my-2">—</p>
                   <div className="h-1.5 w-full rounded-full bg-[var(--surface-raised)] overflow-hidden">
                     <div className="h-full bg-yellow-400 rounded-full" style={{ width: "0%" }} />
                   </div>
@@ -562,7 +652,7 @@ export default function RiotGamingHome() {
                   className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/85 p-4 backdrop-blur-xl shadow-md flex flex-col justify-between"
                 >
                   <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Victoires (Top 1)</span>
-                  <p className="text-3xl font-black text-emerald-400 my-2"></p>
+                  <p className="text-3xl font-black text-emerald-400 my-2">—</p>
                   <div className="h-1.5 w-full rounded-full bg-[var(--surface-raised)] overflow-hidden">
                     <div className="h-full bg-emerald-400 rounded-full" style={{ width: "0%" }} />
                   </div>
@@ -575,20 +665,111 @@ export default function RiotGamingHome() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <motion.div
             whileHover={{ y: -2 }}
-            className="rounded-[var(--panel-radius)] border border-rose-500/30 bg-gradient-to-br from-rose-500/10 via-[var(--bg-main)]/90 to-transparent p-5 backdrop-blur-xl shadow-lg flex flex-col justify-between space-y-4"
+            className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/90 p-5 backdrop-blur-xl shadow-lg flex flex-col justify-between space-y-4"
           >
             <div>
-              <div className="flex items-center gap-2 text-rose-400 mb-2">
-                <Swords className="h-4 w-4" />
-                <h4 className="text-xs font-bold uppercase tracking-wider">Riot Games Live Feed</h4>
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2 text-rose-400">
+                  <Swords className="h-4 w-4" />
+                  <h4 className="text-xs font-bold uppercase tracking-wider">
+                    {activeGame === "valorant" ? "Top Agents Joués" : "Champions en Vedette"}
+                  </h4>
+                </div>
+                <span className="text-[10px] font-mono font-bold text-[var(--text-muted)]">
+                  {activeGame === "valorant" ? `${topValorantAgents.length} agents récents` : `${lolMatches.length} parties`}
+                </span>
               </div>
-              <p className="text-sm font-bold text-[var(--text-primary)]">
-                Suivi Compétitif Direct & Télémétrie Officielle
-              </p>
-              <p className="text-xs text-[var(--text-muted)] mt-1">
-                Statistiques en direct, historique des rounds, variations MMR et performances individuelles sans intermédiaire ni enregistrement de données.
-              </p>
+
+              {activeGame === "valorant" && topValorantAgents.length > 0 ? (
+                <div className="space-y-2.5">
+                  {topValorantAgents.map((ag) => (
+                    <div
+                      key={ag.agentName}
+                      className="flex items-center justify-between rounded-xl border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/50 p-2.5 transition-all hover:border-rose-500/30"
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        {ag.agentImageUrl ? (
+                          <img
+                            src={ag.agentImageUrl}
+                            alt={ag.agentName}
+                            className="h-9 w-9 rounded-lg object-cover border border-[var(--panel-border)] shrink-0"
+                          />
+                        ) : (
+                          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-rose-500/20 text-rose-300 font-bold shrink-0">
+                            {ag.agentName[0]}
+                          </div>
+                        )}
+                        <div className="min-w-0">
+                          <p className="text-xs font-black text-[var(--text-primary)] truncate">{ag.agentName}</p>
+                          <p className="text-[11px] text-[var(--text-muted)]">
+                            {ag.matches} match{ag.matches > 1 ? "s" : ""} · {ag.winRate ?? 0}% de victoires
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <p className="text-xs font-mono font-bold text-emerald-400">
+                          {ag.kdRatio !== null ? `${ag.kdRatio} KD` : "—"}
+                        </p>
+                        <p className="text-[10px] font-mono text-[var(--text-muted)]">
+                          {ag.kills}K / {ag.deaths}D
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : activeGame === "lol" && lolMatches.length > 0 ? (
+                <div className="space-y-2.5">
+                  {lolMatches.slice(0, 3).map((m, idx) => {
+                    const me = m.scoreboard?.players?.find((p) => p.isMe) || m.scoreboard?.players?.[0];
+                    return (
+                      <div
+                        key={m.id || idx}
+                        className="flex items-center justify-between rounded-xl border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/50 p-2.5"
+                      >
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          {m.metadata?.championImageUrl ? (
+                            <img
+                              src={m.metadata.championImageUrl}
+                              alt={m.metadata.championName || "Champion"}
+                              className="h-9 w-9 rounded-lg object-cover border border-[var(--panel-border)] shrink-0"
+                            />
+                          ) : (
+                            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-500/20 text-amber-300 font-bold shrink-0">
+                              LoL
+                            </div>
+                          )}
+                          <div className="min-w-0">
+                            <p className="text-xs font-black text-[var(--text-primary)] truncate">
+                              {me?.character || m.metadata?.championName || "Champion"}
+                            </p>
+                            <p className="text-[11px] text-[var(--text-muted)]">
+                              {m.metadata?.modeName || "Partie"} · {m.metadata?.result === "Victory" ? "Victoire" : "Défaite"}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <p className="text-xs font-mono font-bold text-amber-400">
+                            {me?.stats?.kda ? `${me.stats.kda} KDA` : "—"}
+                          </p>
+                          <p className="text-[10px] font-mono text-[var(--text-muted)]">
+                            {me?.stats?.kills ?? 0}/{me?.stats?.deaths ?? 0}/{me?.stats?.assists ?? 0}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-[var(--panel-border)] bg-[var(--surface-raised)]/30 py-6 px-4 text-center">
+                  <Swords className="h-6 w-6 text-rose-400/60 mb-2" />
+                  <p className="text-xs font-bold text-[var(--text-primary)]">Historique en attente</p>
+                  <p className="text-[11px] text-[var(--text-muted)] max-w-xs mt-1">
+                    Sélectionnez un profil ou lancez une analyse pour afficher les champions et agents les plus joués.
+                  </p>
+                </div>
+              )}
             </div>
+
             <div className="pt-2">
               <button
                 type="button"
@@ -596,28 +777,71 @@ export default function RiotGamingHome() {
                 className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 px-4 py-2 text-xs font-bold text-white shadow-md hover:from-rose-500 hover:to-red-500 active:scale-95 transition-all cursor-pointer"
               >
                 <Key className="h-3.5 w-3.5" />
-                <span>Configurer mes identifiants Riot</span>
+                <span>Configurer mes accès Riot</span>
               </button>
             </div>
           </motion.div>
 
           <motion.div
             whileHover={{ y: -2 }}
-            className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/85 p-5 backdrop-blur-xl shadow-md flex flex-col justify-between space-y-4"
+            className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/90 p-5 backdrop-blur-xl shadow-lg flex flex-col justify-between space-y-4"
           >
             <div>
-              <div className="flex items-center gap-2 text-rose-400 mb-2">
-                <Share2 className="h-4 w-4" />
-                <h4 className="text-xs font-bold uppercase tracking-wider">Comparateur de Profils</h4>
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2 text-rose-400">
+                  <Target className="h-4 w-4" />
+                  <h4 className="text-xs font-bold uppercase tracking-wider">Télémétrie de Combat</h4>
+                </div>
+                <span className="text-[10px] font-mono font-bold text-emerald-400">
+                  {valorantMatches.length > 0 ? "Données vérifiées" : "En attente"}
+                </span>
               </div>
-              <p className="text-sm font-bold text-[var(--text-primary)]">
-                Comparer deux joueurs Riot Games
-              </p>
-              <p className="text-xs text-[var(--text-muted)] mt-1">
-                Confrontez vos rangs, ratios de victoires, K/D et scores de combat avec un coéquipier ou un rival.
-              </p>
+
+              <div className="grid grid-cols-3 gap-2 text-center">
+                <div className="rounded-xl border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/40 p-2.5">
+                  <span className="text-[10px] font-bold uppercase text-[var(--text-muted)]">Kills</span>
+                  <p className="text-lg font-black text-[var(--text-primary)] mt-1">
+                    {activeGame === "valorant" ? valorantCombatSummary.kills : lolSummary.kTotal}
+                  </p>
+                </div>
+                <div className="rounded-xl border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/40 p-2.5">
+                  <span className="text-[10px] font-bold uppercase text-[var(--text-muted)]">Morts</span>
+                  <p className="text-lg font-black text-rose-400 mt-1">
+                    {activeGame === "valorant" ? valorantCombatSummary.deaths : lolSummary.dTotal}
+                  </p>
+                </div>
+                <div className="rounded-xl border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/40 p-2.5">
+                  <span className="text-[10px] font-bold uppercase text-[var(--text-muted)]">Passes</span>
+                  <p className="text-lg font-black text-cyan-400 mt-1">
+                    {activeGame === "valorant" ? valorantCombatSummary.assists : lolSummary.aTotal}
+                  </p>
+                </div>
+                <div className="rounded-xl border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/40 p-2.5">
+                  <span className="text-[10px] font-bold uppercase text-[var(--text-muted)]">Ratio K/D</span>
+                  <p className="text-lg font-black text-emerald-400 mt-1">
+                    {activeGame === "valorant" ? valorantCombatSummary.kd : lolSummary.kda}
+                  </p>
+                </div>
+                <div className="rounded-xl border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/40 p-2.5">
+                  <span className="text-[10px] font-bold uppercase text-[var(--text-muted)]">ADR / Dégâts</span>
+                  <p className="text-lg font-black text-amber-400 mt-1">
+                    {activeGame === "valorant"
+                      ? (valorantCombatSummary.adr ?? "—")
+                      : (lolMatches[0]?.scoreboard?.players?.[0]?.stats?.damagePerMin ? `${lolMatches[0].scoreboard.players[0].stats.damagePerMin}/m` : "—")}
+                  </p>
+                </div>
+                <div className="rounded-xl border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/40 p-2.5">
+                  <span className="text-[10px] font-bold uppercase text-[var(--text-muted)]">Tirs Tête</span>
+                  <p className="text-lg font-black text-violet-400 mt-1">
+                    {activeGame === "valorant" && valorantCombatSummary.hs !== null && valorantCombatSummary.hs !== undefined
+                      ? `${valorantCombatSummary.hs}%`
+                      : "—"}
+                  </p>
+                </div>
+              </div>
             </div>
-            <div className="pt-2">
+
+            <div className="pt-2 flex items-center gap-2">
               <button
                 type="button"
                 onClick={() => setCompareModalOpen(true)}
@@ -642,7 +866,7 @@ export default function RiotGamingHome() {
               href={`/tracker?tab=${activeGame}`}
               className="text-xs font-bold text-rose-400 hover:underline flex items-center gap-1"
             >
-              <span>Voir tout l'historique</span>
+              <span>Tout l'historique</span>
               <ChevronRight className="h-3 w-3" />
             </Link>
           </div>
@@ -651,10 +875,15 @@ export default function RiotGamingHome() {
             {activeGame === "valorant" && valorantMatches.slice(0, 3).map((m, idx) => {
               const isWin = m.metadata?.result?.toLowerCase() === "victory" || ((m.metadata?.score?.team || 0) > (m.metadata?.score?.opponent || 0));
               const myStats = m.segments?.[0]?.stats;
+              const kills = myStats?.kills?.value ?? 0;
+              const deaths = myStats?.deaths?.value ?? 0;
+              const assists = myStats?.assists?.value ?? 0;
+              const matchKd = (kills / Math.max(1, deaths)).toFixed(2);
+
               return (
                 <div
                   key={m.metadata?.matchId || idx}
-                  className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-3 space-y-2"
+                  className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-3 space-y-2 hover:border-rose-500/30 transition-all"
                 >
                   <div className="flex items-center justify-between">
                     <span className={cn(
@@ -668,12 +897,21 @@ export default function RiotGamingHome() {
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-xs">
-                    <span className="font-bold text-[var(--text-primary)]">{m.metadata?.mapName || ""}</span>
-                    <span className="text-[var(--text-muted)] font-medium">{m.metadata?.agentName || ""}</span>
+                    <div className="flex items-center gap-2 min-w-0">
+                      {m.metadata?.agentImageUrl && (
+                        <img
+                          src={m.metadata.agentImageUrl}
+                          alt={m.metadata.agentName || "Agent"}
+                          className="h-6 w-6 rounded-md object-cover border border-[var(--panel-border)] shrink-0"
+                        />
+                      )}
+                      <span className="font-bold text-[var(--text-primary)] truncate">{m.metadata?.mapName || "Partie"}</span>
+                    </div>
+                    <span className="text-[var(--text-muted)] font-medium shrink-0">{m.metadata?.agentName || ""}</span>
                   </div>
-                  <div className="text-[11px] font-mono text-[var(--text-muted)] flex items-center justify-between">
-                    <span>K/D/A : {myStats?.kills?.value ?? 0}/{myStats?.deaths?.value ?? 0}/{myStats?.assists?.value ?? 0}</span>
-                    <span className="text-emerald-400 font-bold">{myStats?.kd?.value ? `${myStats.kd.value} KD` : ""}</span>
+                  <div className="text-[11px] font-mono text-[var(--text-muted)] flex items-center justify-between pt-1 border-t border-[var(--panel-border)]/40">
+                    <span>{kills}/{deaths}/{assists}</span>
+                    <span className="text-emerald-400 font-bold">{matchKd} KD</span>
                   </div>
                 </div>
               );
@@ -684,7 +922,7 @@ export default function RiotGamingHome() {
                 <Swords className="h-8 w-8 text-rose-500/50 mb-2" />
                 <p className="text-xs font-bold text-[var(--text-primary)]">Aucun match VALORANT chargé</p>
                 <p className="text-[11px] text-[var(--text-muted)] max-w-sm mt-1">
-                  {riotName ? "Aucune partie récente trouvée pour ce compte ou données en attente. Cliquez sur Analyser ou connectez votre Riot ID." : "Renseignez votre Nom Riot et votre Tag ci-dessus pour afficher vos parties récentes."}
+                  {riotName ? "Aucune partie récente trouvée pour ce compte ou données en attente. Cliquez sur Analyser ou sur la pill Rub19 #boss." : "Renseignez votre Nom Riot et votre Tag ci-dessus pour afficher vos parties récentes."}
                 </p>
               </div>
             )}
@@ -692,8 +930,13 @@ export default function RiotGamingHome() {
             {activeGame === "lol" && lolMatches.length > 0 && lolMatches.slice(0, 3).map((m, idx) => {
               const me = m.scoreboard?.players?.find((p) => p.isMe) || m.scoreboard?.players?.[0];
               const isWin = m.metadata?.result?.toLowerCase() === "victory";
+              const kills = me?.stats?.kills ?? 0;
+              const deaths = me?.stats?.deaths ?? 0;
+              const assists = me?.stats?.assists ?? 0;
+              const kda = deaths > 0 ? ((kills + assists) / deaths).toFixed(2) : String(kills + assists);
+
               return (
-                <div key={m.metadata?.matchId || idx} className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-3 space-y-2">
+                <div key={m.metadata?.matchId || idx} className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-3 space-y-2 hover:border-amber-500/30 transition-all">
                   <div className="flex items-center justify-between">
                     <span className={cn(
                       "rounded-md px-2 py-0.5 text-[10px] font-bold uppercase",
@@ -704,12 +947,21 @@ export default function RiotGamingHome() {
                     <span className="font-mono text-xs text-[var(--text-muted)]">{m.metadata?.gameDuration || ""}</span>
                   </div>
                   <div className="flex items-center justify-between text-xs">
-                    <span className="font-bold text-[var(--text-primary)]">{me?.championName || ""}</span>
-                    <span className="text-[var(--text-muted)] font-medium">{m.metadata?.queue || ""}</span>
+                    <div className="flex items-center gap-2 min-w-0">
+                      {m.metadata?.agentImageUrl && (
+                        <img
+                          src={m.metadata.agentImageUrl}
+                          alt={me?.character || "Champion"}
+                          className="h-6 w-6 rounded-md object-cover border border-[var(--panel-border)] shrink-0"
+                        />
+                      )}
+                      <span className="font-bold text-[var(--text-primary)] truncate">{me?.character || m.metadata?.agentName || "Champion"}</span>
+                    </div>
+                    <span className="text-[var(--text-muted)] font-medium shrink-0">{m.metadata?.modeName || ""}</span>
                   </div>
-                  <div className="text-[11px] font-mono text-[var(--text-muted)] flex items-center justify-between">
-                    <span>K/D/A : {me?.stats?.kills ?? 0}/{me?.stats?.deaths ?? 0}/{me?.stats?.assists ?? 0}</span>
-                    <span className="text-amber-400 font-bold">{me?.stats?.damagePerMinute ? `${me.stats.damagePerMinute} DPM` : ""}</span>
+                  <div className="text-[11px] font-mono text-[var(--text-muted)] flex items-center justify-between pt-1 border-t border-[var(--panel-border)]/40">
+                    <span>{kills}/{deaths}/{assists}</span>
+                    <span className="text-amber-400 font-bold">{kda} KDA</span>
                   </div>
                 </div>
               );
@@ -720,7 +972,7 @@ export default function RiotGamingHome() {
                 <GameBrandIcon name="League of Legends" className="h-8 w-8 text-amber-500/50 mb-2" />
                 <p className="text-xs font-bold text-[var(--text-primary)]">Aucun match League of Legends chargé</p>
                 <p className="text-[11px] text-[var(--text-muted)] max-w-sm mt-1">
-                  {riotName ? "Aucune partie récente trouvée pour ce compte LoL." : "Renseignez votre Nom Riot et votre Tag ci-dessus pour analyser votre historique LoL."}
+                  {riotName ? "Aucune partie récente trouvée pour ce compte LoL. Cliquez sur la pill Agurin #EUW pour tester." : "Renseignez votre Nom Riot et votre Tag ci-dessus pour analyser votre historique LoL."}
                 </p>
               </div>
             )}

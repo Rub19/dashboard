@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.61 — 2026-10-14
+
+**Tracker Riot : données réelles branchées et suppression des éléments IA**
+
+- Branchement complet des profils et historiques sur les APIs réelles (Valorant HenrikDev et League of Legends Riot Games).
+- Correction de l'extraction de profil Valorant (rang Immortel, niveau de compte, RR et carte de joueur).
+- Résolution du bug d'affichage du pourcentage de tir à la tête (suppression du `undefined%`).
+- Remplacement des cartes de marketing IA par les Top Agents réels et la télémétrie de combat authentique.
+- Ajout de sélecteurs rapides (pills) pour basculer en un clic sur les profils vérifiés (`Rub19#boss`, `Agurin#EUW`).
+
 ## v1.75.60 — 2026-10-14
 
 **Tracker Riot : nouvelle barre latérale dédiée (Riot, Trackers, Brain & Notes)**

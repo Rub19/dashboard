@@ -472,58 +472,65 @@ export default function LolMatchRow({ match, index, allMatches }: LolMatchRowPro
               </div>
             </div>
 
-            {/* Scoreboard Tab Content (Separated Blue / Red Teams) */}
             {activeTab === "scoreboard" ? (
-              <div className="space-y-4 overflow-x-auto os-scroll">
-                {[
-                  {
-                    name: "Équipe Bleue",
-                    players: blueTeam.length > 0 ? blueTeam : players.slice(0, Math.ceil(players.length / 2)),
-                    isBlue: true,
-                    win: blueTeam.some((p) => p.win),
-                    stats: blueStats,
-                    badgeStyle: "border-cyan-500/30 bg-cyan-950/40 text-cyan-300",
-                  },
-                  {
-                    name: "Équipe Rouge",
-                    players: redTeam.length > 0 ? redTeam : players.slice(Math.ceil(players.length / 2)),
-                    isBlue: false,
-                    win: redTeam.some((p) => p.win),
-                    stats: redStats,
-                    badgeStyle: "border-rose-500/30 bg-rose-950/40 text-rose-300",
-                  },
-                ].map((teamGroup, gi) => {
-                  return (
-                    <div key={gi} className="space-y-1.5 min-w-[700px]">
-                      {/* Team Header Bar */}
-                      <div className={cn("flex items-center justify-between px-3 py-1.5 rounded-[var(--inset-radius)] border text-xs font-bold shadow-xs", teamGroup.badgeStyle)}>
-                        <div className="flex items-center gap-2">
-                          <span className="uppercase tracking-wider">{teamGroup.name}</span>
-                          <span className="text-[11px] font-medium opacity-80">
-                            {teamGroup.win ? "· Victoire" : "· Défaite"}
-                          </span>
+              <div className="overflow-x-auto os-scroll">
+                <div className="min-w-[820px] space-y-4">
+                  {[
+                    {
+                      name: "Équipe Bleue",
+                      players: blueTeam.length > 0 ? blueTeam : players.slice(0, Math.ceil(players.length / 2)),
+                      isBlue: true,
+                      win: blueTeam.some((p) => p.win),
+                      stats: blueStats,
+                      badgeStyle: "border-cyan-500/30 bg-cyan-950/40 text-cyan-300",
+                    },
+                    {
+                      name: "Équipe Rouge",
+                      players: redTeam.length > 0 ? redTeam : players.slice(Math.ceil(players.length / 2)),
+                      isBlue: false,
+                      win: redTeam.some((p) => p.win),
+                      stats: redStats,
+                      badgeStyle: "border-rose-500/30 bg-rose-950/40 text-rose-300",
+                    },
+                  ].map((teamGroup, gi) => {
+                    return (
+                      <div key={gi} className="space-y-1.5">
+                        <div className={cn("flex items-center justify-between px-3 py-1.5 rounded-[var(--inset-radius)] border text-xs font-bold shadow-xs", teamGroup.badgeStyle)}>
+                          <div className="flex items-center gap-2">
+                            <span className="uppercase tracking-wider">{teamGroup.name}</span>
+                            <span className="text-[11px] font-medium opacity-80">
+                              {teamGroup.win ? "· Victoire" : "· Défaite"}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-3 text-xs font-mono">
+                            <span>{teamGroup.stats.totalKills} Kills</span>
+                            <span>·</span>
+                            <span>{teamGroup.stats.totalGold.toLocaleString()} Or</span>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-3 text-xs font-mono">
-                          <span>{teamGroup.stats.totalKills} Kills</span>
-                          <span>·</span>
-                          <span>{teamGroup.stats.totalGold.toLocaleString()} Or</span>
-                        </div>
-                      </div>
 
-                      {/* Team Players Table */}
-                      <table className="w-full text-left text-xs">
-                        <thead>
-                          <tr className="border-b border-[var(--panel-border)] text-[10px] uppercase tracking-wider text-[var(--text-muted)]/80">
-                            <th className="pb-1.5 pl-2">Joueur / Champion</th>
-                            <th className="pb-1.5 text-center">Build</th>
-                            <th className="pb-1.5 text-center">TRS</th>
-                            <th className="pb-1.5 text-center">K / D / A</th>
-                            <th className="pb-1.5 text-center">Dégâts infligés</th>
-                            <th className="pb-1.5 text-center">CS (CS/M)</th>
-                            <th className="pb-1.5 text-center">Or</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-[var(--text-primary)]/5">
+                        <table className="w-full text-left text-xs table-fixed">
+                          <colgroup>
+                            <col className="w-[28%]" />
+                            <col className="w-[13%]" />
+                            <col className="w-[7%]" />
+                            <col className="w-[12%]" />
+                            <col className="w-[20%]" />
+                            <col className="w-[10%]" />
+                            <col className="w-[10%]" />
+                          </colgroup>
+                          <thead>
+                            <tr className="border-b border-[var(--panel-border)] text-[10px] uppercase tracking-wider text-[var(--text-muted)]/80">
+                              <th className="pb-1.5 pl-2">Joueur / Champion</th>
+                              <th className="pb-1.5 text-center">Build</th>
+                              <th className="pb-1.5 text-center">TRS</th>
+                              <th className="pb-1.5 text-center">K / D / A</th>
+                              <th className="pb-1.5 text-center">Dégâts infligés</th>
+                              <th className="pb-1.5 text-center">CS (CS/M)</th>
+                              <th className="pb-1.5 text-center">Or</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-[var(--text-primary)]/5">
                           {[...teamGroup.players]
                             .sort((a, b) => {
                               const trsA = calculateLolTRS(a);
@@ -650,7 +657,7 @@ export default function LolMatchRow({ match, index, allMatches }: LolMatchRowPro
                                 </td>
 
                                 {/* Dégâts infligés + Mini Barre */}
-                                <td className="py-2 text-center min-w-[100px]">
+                                <td className="py-2 text-center">
                                   <span className="font-mono text-xs font-bold text-[var(--text-primary)]/90 block">
                                     {p.stats.damage.toLocaleString()}
                                   </span>
@@ -662,13 +669,11 @@ export default function LolMatchRow({ match, index, allMatches }: LolMatchRowPro
                                   </div>
                                 </td>
 
-                                {/* CS (CS/M) */}
                                 <td className="py-2 text-center font-mono text-xs text-[var(--text-primary)]/85">
                                   <span>{p.stats.cs}</span>
                                   <span className="text-[10px] text-[var(--text-muted)]/80 block">({p.stats.csPerMin}/m)</span>
                                 </td>
 
-                                {/* Gold */}
                                 <td className="py-2 text-center font-mono text-xs font-bold text-amber-300">
                                   {(p.stats.gold / 1000).toFixed(1)}k
                                 </td>
@@ -680,6 +685,7 @@ export default function LolMatchRow({ match, index, allMatches }: LolMatchRowPro
                     </div>
                   );
                 })}
+                </div>
               </div>
             ) : (
               /* Charts Tab: Dégâts & Or comparison */

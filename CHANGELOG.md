@@ -2,6 +2,20 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.22 — 2026-10-13
+
+**Trackers LoL & Valorant : Alignement Strict et Homogène des Colonnes par Équipe**
+
+- **Alignement Rigoureux des Tableaux de Score Inter-Équipes** :
+  - Passage en mode `table-layout: fixed` avec définition stricte d'un `<colgroup>` proportionnel identique pour les deux équipes (Équipe Bleue / Équipe Rouge sur LoL, Team A / Team B sur Valorant).
+  - Résolution définitive du décalage visuel provoqué par la variabilité de la longueur des pseudonymes ou des badges de rang (ex: *Immortal 1* vs *Ascendant 1*).
+  - Largeurs de colonnes parfaitement calées au pixel près : Joueur/Agent, Rang/Build, TRS, ACS, K, D, A, +/-, K/D, DDΔ, Dégâts, ADR, HS%, CS et Or.
+- **Conteneur Défilant Synchronisé** :
+  - Harmonisation des deux équipes au sein d'un conteneur commun à largeur minimale fixe (`min-w-[820px]` pour League of Legends, `min-w-[880px]` pour Valorant).
+  - Élimination de tout déphasage horizontal lors du défilement tactile ou sur écrans étroits.
+- **Centrage et Lisibilité Améliorés** :
+  - Alignement vertical et centrage millimétré des badges, jauges de dégâts et valeurs chiffrées.
+
 ## v1.75.21 — 2026-10-13
 
 **Documentation & Wiki Etho Protect : Guides Pas à Pas, Cas Concrets & Référence Complète des Modules**

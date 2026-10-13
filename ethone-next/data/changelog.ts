@@ -52785,10 +52785,54 @@ const v1_75_21_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v1_75_21_fr);
-CHANGELOG_BY_LANG.en.unshift(v1_75_21_en);
-CHANGELOG_BY_LANG.es.unshift(v1_75_21_es);
-CHANGELOG_BY_LANG.de.unshift(v1_75_21_de);
+const v1_75_22_fr: ChangelogEntry = {
+  version: "v1.75.22",
+  date: "2026-10-13",
+  title: "Trackers LoL & Valorant : Alignement Strict et Homogène des Colonnes par Équipe",
+  items: [
+    "Alignement parfait des colonnes inter-équipes : application du mode table-fixed avec colgroup proportionnel strict garantissant que chaque colonne (Joueur, Rang/Build, TRS, ACS, KDA, Dégâts, CS, Or) a exactement la même largeur au pixel près pour les deux équipes.",
+    "Conteneur de défilement unifié : regroupement des deux équipes dans une largeur minimale synchronisée (min-w 820px sur LoL, min-w 880px sur Valorant) éliminant tout décalage visuel horizontal lors du scroll.",
+    "Centrage rigoureux des données : alignement vertical cohérent des badges de rang, jauges de dégâts et statistiques de combat sans rupture de flux.",
+  ],
+};
+
+const v1_75_22_en: ChangelogEntry = {
+  version: "v1.75.22",
+  date: "2026-10-13",
+  title: "LoL & Valorant Trackers: Strict Inter-Team Column Alignment",
+  items: [
+    "Pixel-perfect column alignment: implemented fixed table layouts with unified colgroup specifications ensuring all columns (Player, Rank/Build, TRS, ACS, KDA, Damage, CS, Gold) align across both teams.",
+    "Synchronized scroll container: unified minimum width wrapper across both teams preventing horizontal staggering.",
+    "Standardized cell centering: consistent centering and overflow protection for rank badges, damage meters, and combat metrics.",
+  ],
+};
+
+const v1_75_22_es: ChangelogEntry = {
+  version: "v1.75.22",
+  date: "2026-10-13",
+  title: "Trackers LoL y Valorant: Alineación Exacta de Columnas entre Equipos",
+  items: [
+    "Alineación perfecta entre equipos: implementación de tablas con diseño fijo y colgroup que garantizan la misma anchura de columnas en ambos equipos.",
+    "Contenedor sincronizado con ancho mínimo uniforme para evitar desfases visuales.",
+    "Centrado consistente de rangos, barras de daño y métricas de combate.",
+  ],
+};
+
+const v1_75_22_de: ChangelogEntry = {
+  version: "v1.75.22",
+  date: "2026-10-13",
+  title: "LoL- & Valorant-Tracker: Exakte spaltenübergreifende Ausrichtung beider Teams",
+  items: [
+    "Perfekte Spaltenausrichtung über beide Teams hinweg durch fixes Tabellenlayout mit einheitlichen colgroup-Breiten.",
+    "Synchronisierter Scroll-Container mit einheitlicher Mindestbreite zur Beseitigung horizontaler Verschiebungen.",
+    "Präzise Zentrierung von Rang-Abzeichen, Schadensbalken und Kampfstatistiken.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_22_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_22_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_22_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_22_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

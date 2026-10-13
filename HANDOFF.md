@@ -1,4 +1,4 @@
-# ETHONE — passation & nouveautés (2026-10-13, version 1.75.21)
+# ETHONE — passation & nouveautés (2026-10-13, version 1.75.22)
 
 ## Projet
 - `ethone-next/` : site Next.js statique (ethone.dev, Cloudflare Pages, déploiement auto au push sur `main`).

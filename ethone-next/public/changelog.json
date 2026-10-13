@@ -1,5 +1,15 @@
 [
   {
+    "version": "v1.75.22",
+    "date": "2026-10-13",
+    "title": "Trackers LoL & Valorant : Alignement Strict et Homogène des Colonnes par Équipe",
+    "items": [
+      "Alignement parfait des colonnes inter-équipes : application du mode table-fixed avec colgroup proportionnel strict garantissant que chaque colonne (Joueur, Rang/Build, TRS, ACS, KDA, Dégâts, CS, Or) a exactement la même largeur au pixel près pour les deux équipes.",
+      "Conteneur de défilement unifié : regroupement des deux équipes dans une largeur minimale synchronisée (min-w 820px sur LoL, min-w 880px sur Valorant) éliminant tout décalage visuel horizontal lors du scroll.",
+      "Centrage rigoureux des données : alignement vertical cohérent des badges de rang, jauges de dégâts et statistiques de combat sans rupture de flux."
+    ]
+  },
+  {
     "version": "v1.75.21",
     "date": "2026-10-13",
     "title": "Documentation & Wiki Etho Protect : Guides Pas à Pas, Cas Concrets & Référence Complète des Modules",

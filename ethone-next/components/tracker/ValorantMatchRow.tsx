@@ -537,61 +537,73 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
                 </div>
               </div>
             ) : activeTab === "scoreboard" ? (
-              /* Scoreboard Table (Separated by Team A and Team B matching Tracker.gg layout) */
-              <div className="space-y-4 overflow-x-auto os-scroll">
-                {[
-                  {
-                    name: "Team A",
-                    players: teamAPlayers.length > 0 ? teamAPlayers : players.slice(0, Math.ceil(players.length / 2)),
-                    isTeamA: true,
-                    roundsWon: meta.score.team ?? 7,
-                    badgeStyle: "border-emerald-500/30 bg-emerald-950/40 text-emerald-300",
-                    headerBg: "bg-emerald-950/20 text-emerald-400",
-                  },
-                  {
-                    name: "Team B",
-                    players: teamBPlayers.length > 0 ? teamBPlayers : players.slice(Math.ceil(players.length / 2)),
-                    isTeamA: false,
-                    roundsWon: meta.score.opponent ?? 13,
-                    badgeStyle: "border-rose-500/30 bg-rose-950/40 text-rose-300",
-                    headerBg: "bg-rose-950/20 text-rose-400",
-                  },
-                ].map((teamGroup, gi) => {
-                  const rankedGroup = teamGroup.players
-                    .map(getPlayerRank)
-                    .filter((r): r is string => Boolean(r && r.toLowerCase() !== "unrated" && r.toLowerCase() !== "unranked"));
-                  const avgRank = rankedGroup.length > 0 ? (rankedGroup[Math.floor(rankedGroup.length / 2)] || rankedGroup[0]) : "Non classé";
+              <div className="overflow-x-auto os-scroll">
+                <div className="min-w-[880px] space-y-4">
+                  {[
+                    {
+                      name: "Team A",
+                      players: teamAPlayers.length > 0 ? teamAPlayers : players.slice(0, Math.ceil(players.length / 2)),
+                      isTeamA: true,
+                      roundsWon: meta.score.team ?? 7,
+                      badgeStyle: "border-emerald-500/30 bg-emerald-950/40 text-emerald-300",
+                      headerBg: "bg-emerald-950/20 text-emerald-400",
+                    },
+                    {
+                      name: "Team B",
+                      players: teamBPlayers.length > 0 ? teamBPlayers : players.slice(Math.ceil(players.length / 2)),
+                      isTeamA: false,
+                      roundsWon: meta.score.opponent ?? 13,
+                      badgeStyle: "border-rose-500/30 bg-rose-950/40 text-rose-300",
+                      headerBg: "bg-rose-950/20 text-rose-400",
+                    },
+                  ].map((teamGroup, gi) => {
+                    const rankedGroup = teamGroup.players
+                      .map(getPlayerRank)
+                      .filter((r): r is string => Boolean(r && r.toLowerCase() !== "unrated" && r.toLowerCase() !== "unranked"));
+                    const avgRank = rankedGroup.length > 0 ? (rankedGroup[Math.floor(rankedGroup.length / 2)] || rankedGroup[0]) : "Non classé";
 
-                  return (
-                    <div key={gi} className="space-y-1.5 min-w-[800px]">
-                      {/* Team Header Bar */}
-                      <div className={cn("flex items-center justify-between px-3 py-1.5 rounded-[var(--inset-radius)] border text-xs font-bold shadow-xs", teamGroup.badgeStyle)}>
-                        <div className="flex items-center gap-2">
-                          <span className="uppercase tracking-wider">{teamGroup.name}</span>
-                          <span className="text-[11px] font-medium opacity-80">· Rang Moyen : {avgRank}</span>
+                    return (
+                      <div key={gi} className="space-y-1.5">
+                        <div className={cn("flex items-center justify-between px-3 py-1.5 rounded-[var(--inset-radius)] border text-xs font-bold shadow-xs", teamGroup.badgeStyle)}>
+                          <div className="flex items-center gap-2">
+                            <span className="uppercase tracking-wider">{teamGroup.name}</span>
+                            <span className="text-[11px] font-medium opacity-80">· Rang Moyen : {avgRank}</span>
+                          </div>
+                          <span className="font-mono text-xs opacity-90">{teamGroup.roundsWon} Manches</span>
                         </div>
-                        <span className="font-mono text-xs opacity-90">{teamGroup.roundsWon} Manches</span>
-                      </div>
 
-                      {/* Team Players Table */}
-                      <table className="w-full text-left text-xs">
-                        <thead>
-                          <tr className="border-b border-[var(--panel-border)] text-[10px] uppercase tracking-wider text-[var(--text-muted)]/80">
-                            <th className="pb-1.5 pl-2">Joueur / Agent</th>
-                            <th className="pb-1.5 text-center">Rang</th>
-                            <th className="pb-1.5 text-center">TRS</th>
-                            <th className="pb-1.5 text-center">{scoreLabel}</th>
-                            <th className="pb-1.5 text-center">K</th>
-                            <th className="pb-1.5 text-center">D</th>
-                            <th className="pb-1.5 text-center">A</th>
-                            <th className="pb-1.5 text-center">+/-</th>
-                            <th className="pb-1.5 text-center">K/D</th>
-                            <th className="pb-1.5 text-center">DDΔ</th>
-                            <th className="pb-1.5 text-center">ADR</th>
-                            <th className="pb-1.5 text-center">HS%</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-[var(--text-primary)]/5">
+                        <table className="w-full text-left text-xs table-fixed">
+                          <colgroup>
+                            <col className="w-[24%]" />
+                            <col className="w-[14%]" />
+                            <col className="w-[7%]" />
+                            <col className="w-[7%]" />
+                            <col className="w-[5%]" />
+                            <col className="w-[5%]" />
+                            <col className="w-[5%]" />
+                            <col className="w-[6%]" />
+                            <col className="w-[7%]" />
+                            <col className="w-[8%]" />
+                            <col className="w-[6%]" />
+                            <col className="w-[6%]" />
+                          </colgroup>
+                          <thead>
+                            <tr className="border-b border-[var(--panel-border)] text-[10px] uppercase tracking-wider text-[var(--text-muted)]/80">
+                              <th className="pb-1.5 pl-2">Joueur / Agent</th>
+                              <th className="pb-1.5 text-center">Rang</th>
+                              <th className="pb-1.5 text-center">TRS</th>
+                              <th className="pb-1.5 text-center">{scoreLabel}</th>
+                              <th className="pb-1.5 text-center">K</th>
+                              <th className="pb-1.5 text-center">D</th>
+                              <th className="pb-1.5 text-center">A</th>
+                              <th className="pb-1.5 text-center">+/-</th>
+                              <th className="pb-1.5 text-center">K/D</th>
+                              <th className="pb-1.5 text-center">DDΔ</th>
+                              <th className="pb-1.5 text-center">ADR</th>
+                              <th className="pb-1.5 text-center">HS%</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-[var(--text-primary)]/5">
                           {[...teamGroup.players]
                             .sort((a, b) => {
                               const scoreA = a.stats.score || (a.stats.kills * 150);
@@ -787,6 +799,7 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
                     </div>
                   );
                 })}
+                </div>
               </div>
             ) : (
               /* Performance Tab: Duel & Damage Efficiency */

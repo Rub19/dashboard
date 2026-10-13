@@ -10,6 +10,10 @@ import {
   User,
   Key,
   ExternalLink,
+  TrendingUp,
+  Share2,
+  ShieldCheck,
+  Sparkles,
 } from "@/components/icons/ph";
 import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
@@ -22,13 +26,21 @@ import {
   fetchValorantMatchesDirect,
   enrichMatchesWithRealRanks,
   VALORANT_QUEUES, matchScoreValue, PERFORMANCE_SCORE_MAX } from "@/lib/valorant-tracker";
+import {
+  fetchPlayerProfile,
+  calculateComputedStats,
+  type ValorantAccountProfile,
+} from "@/lib/valorant-provider";
 import ValorantMatchRow from "@/components/tracker/ValorantMatchRow";
 import ValorantDayHeader from "@/components/tracker/ValorantDayHeader";
 import TrackerModeDropdown from "@/components/tracker/TrackerModeDropdown";
+import ValorantPerformanceTrends from "@/components/tracker/ValorantPerformanceTrends";
+import ValorantRiotConnectModal from "@/components/tracker/ValorantRiotConnectModal";
+import ValorantFriendCompareModal from "@/components/tracker/ValorantFriendCompareModal";
+import ValorantAiCoachModal from "@/components/tracker/ValorantAiCoachModal";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { EASE_SNAP } from "@/lib/ease";
-
 import DailyReportModal from "@/components/tracker/DailyReportModal";
 
 const VALORANT_CACHE_TTL_MS = 15 * 60 * 1000; // 15 minutes cache
@@ -46,13 +58,18 @@ export default function ValorantTrackerView() {
   const [riotTag, setRiotTag] = useState(settings.liveTrackerRiotTag || "");
   const [selectedMode, setSelectedMode] = useState<string>("all");
 
+  const [playerProfile, setPlayerProfile] = useState<ValorantAccountProfile | null>(null);
+  const [activeTab, setActiveTab] = useState<"matches" | "analytics">("matches");
+  const [riotConnectModalOpen, setRiotConnectModalOpen] = useState(false);
+  const [friendCompareModalOpen, setFriendCompareModalOpen] = useState(false);
+  const [aiCoachModalOpen, setAiCoachModalOpen] = useState(false);
+
   const [matches, setMatches] = useState<ValorantMatch[]>([]);
   const [loading, setLoading] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [historyPage, setHistoryPage] = useState(1);
   const [historyEnd, setHistoryEnd] = useState(false);
-  // Nouveau compte ou nouveau mode : l'historique repart de la page 1.
   useEffect(() => {
     setHistoryPage(1);
     setHistoryEnd(false);
@@ -60,6 +77,11 @@ export default function ValorantTrackerView() {
   const [lastSyncTime, setLastSyncTime] = useState<Date | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [activeReportIndex, setActiveReportIndex] = useState<number | null>(null);
+
+  const computedStats = useMemo(
+    () => calculateComputedStats(matches, playerProfile?.provenance || "henrikdev"),
+    [matches, playerProfile]
+  );
 
   const cacheKey = useMemo(
     () => `ethone-valo-cache:${riotName.toLowerCase().trim()}:${riotTag.toLowerCase().trim()}:${selectedMode}`,
@@ -73,10 +95,16 @@ export default function ValorantTrackerView() {
 
       if (!cleanName || !cleanTag) {
         setMatches([]);
+        setPlayerProfile(null);
         return;
       }
 
-      // Check LocalStorage cache if not forced
+      fetchPlayerProfile(cleanName, cleanTag, force)
+        .then((res) => {
+          if (res.data) setPlayerProfile(res.data);
+        })
+        .catch(() => {});
+
       if (!force) {
         try {
           const cachedRaw = localStorage.getItem(cacheKey);
@@ -351,7 +379,125 @@ export default function ValorantTrackerView() {
 
   return (
     <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden space-y-4">
-      {/* Top Search & Filter Bar */}
+      <div className="shrink-0 flex flex-col md:flex-row md:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/90 p-3.5 backdrop-blur-2xl shadow-lg">
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-1">
+            <button
+              type="button"
+              onClick={() => setActiveTab("matches")}
+              className={cn(
+                "flex items-center gap-1.5 rounded-[var(--inset-radius)] px-3 py-1.5 text-xs font-bold transition-all cursor-pointer",
+                activeTab === "matches"
+                  ? "bg-rose-600 text-white shadow-sm"
+                  : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+              )}
+            >
+              <Swords className="h-3.5 w-3.5" />
+              <span>Parties</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("analytics")}
+              className={cn(
+                "flex items-center gap-1.5 rounded-[var(--inset-radius)] px-3 py-1.5 text-xs font-bold transition-all cursor-pointer",
+                activeTab === "analytics"
+                  ? "bg-rose-600 text-white shadow-sm"
+                  : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+              )}
+            >
+              <TrendingUp className="h-3.5 w-3.5" />
+              <span>Analyses & Tendances</span>
+            </button>
+          </div>
+
+          <span className="hidden sm:inline-flex items-center gap-1 rounded-md border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 px-2 py-1 text-[10px] font-mono text-[var(--text-muted)]">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+            <span>{playerProfile?.provenance === "riot_rso_official" ? "Riot Sign On" : "HenrikDev API v3"}</span>
+          </span>
+        </div>
+
+        <div className="flex items-center gap-2 overflow-x-auto os-scroll">
+          <button
+            type="button"
+            onClick={() => setRiotConnectModalOpen(true)}
+            className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-rose-500/30 bg-rose-500/10 px-3 py-1.5 text-xs font-bold text-rose-300 hover:bg-rose-500/20 active:scale-95 transition-all cursor-pointer"
+          >
+            <ShieldCheck className="h-3.5 w-3.5 text-rose-400" />
+            <span>Lier Riot Games</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setFriendCompareModalOpen(true)}
+            className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-cyan-500/30 bg-cyan-500/10 px-3 py-1.5 text-xs font-bold text-cyan-300 hover:bg-cyan-500/20 active:scale-95 transition-all cursor-pointer"
+          >
+            <Share2 className="h-3.5 w-3.5 text-cyan-400" />
+            <span>Comparer</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setAiCoachModalOpen(true)}
+            className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-amber-500/30 bg-amber-500/10 px-3 py-1.5 text-xs font-bold text-amber-300 hover:bg-amber-500/20 active:scale-95 transition-all cursor-pointer"
+          >
+            <Sparkles className="h-3.5 w-3.5 text-amber-400" />
+            <span>Coach IA</span>
+          </button>
+        </div>
+      </div>
+
+      {playerProfile && (
+        <div className="shrink-0 flex items-center justify-between rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/70 p-3 backdrop-blur-xl shadow-md">
+          <div className="flex items-center gap-3">
+            {playerProfile.cardSmall ? (
+              <img
+                src={playerProfile.cardSmall}
+                alt={playerProfile.name}
+                className="h-10 w-10 rounded-[var(--inset-radius)] border border-[var(--panel-border)] object-cover shadow-sm"
+              />
+            ) : (
+              <div className="flex h-10 w-10 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-rose-500/10 text-rose-400 font-bold">
+                <User className="h-5 w-5" />
+              </div>
+            )}
+            <div>
+              <div className="flex items-center gap-1.5">
+                <h3 className="text-sm font-black text-[var(--text-primary)]">
+                  {playerProfile.name}
+                </h3>
+                <span className="font-mono text-xs font-bold text-[var(--text-muted)]">
+                  #{playerProfile.tag}
+                </span>
+                {playerProfile.accountLevel !== null && (
+                  <span className="rounded-md border border-[var(--panel-border)] bg-[var(--surface-raised)]/80 px-1.5 py-0.5 font-mono text-[9px] font-bold text-[var(--text-muted)]">
+                    Niv. {playerProfile.accountLevel}
+                  </span>
+                )}
+              </div>
+              <p className="text-[11px] font-semibold text-rose-400">
+                {playerProfile.currentTierPatched || "Non classé"}
+                {playerProfile.rr !== null ? ` · ${playerProfile.rr} RR` : ""}
+              </p>
+            </div>
+          </div>
+
+          <div className="hidden sm:flex items-center gap-3 text-right">
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Taux de victoire</span>
+              <p className="text-sm font-black text-[var(--text-primary)]">
+                {computedStats.winRate !== null ? `${computedStats.winRate}%` : "—"}
+              </p>
+            </div>
+            <div className="border-l border-[var(--panel-border)]/60 pl-3">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Ratio K/D</span>
+              <p className="text-sm font-black text-emerald-400">
+                {computedStats.kdRatio !== null ? computedStats.kdRatio : "—"}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="shrink-0 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/90 p-4 backdrop-blur-2xl shadow-lg">
         <form onSubmit={handleSearchSubmit} className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           {/* Riot ID Input */}
@@ -434,11 +580,16 @@ export default function ValorantTrackerView() {
         </form>
       </div>
 
-      {/* Overview Stats & Top Agents Banner */}
-      {matches.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
+      {activeTab === "analytics" ? (
+        <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll pr-1 pb-6 [overscroll-behavior:contain]">
+          <ValorantPerformanceTrends matches={matches} />
+        </div>
+      ) : (
+        <>
+          {matches.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, ease: EASE_SNAP }}
           className="shrink-0 grid grid-cols-1 sm:grid-cols-3 gap-3"
         >
@@ -637,8 +788,9 @@ export default function ValorantTrackerView() {
           </div>
         )}
       </div>
+        </>
+      )}
 
-      {/* Daily Report Modal with Animations */}
       {activeReportIndex !== null && dayGroups[activeReportIndex] && (
         <DailyReportModal
           isOpen={true}
@@ -648,6 +800,29 @@ export default function ValorantTrackerView() {
           previousGroup={dayGroups[activeReportIndex + 1] || null}
         />
       )}
+
+      <ValorantRiotConnectModal
+        isOpen={riotConnectModalOpen}
+        onClose={() => setRiotConnectModalOpen(false)}
+        onOpenApiKeyModal={() => setApiKeyModalOpen(true)}
+        hasApiKey={hasApiKey}
+      />
+
+      <ValorantFriendCompareModal
+        isOpen={friendCompareModalOpen}
+        onClose={() => setFriendCompareModalOpen(false)}
+        myProfile={playerProfile}
+        myStats={computedStats}
+        myMatches={matches}
+      />
+
+      <ValorantAiCoachModal
+        isOpen={aiCoachModalOpen}
+        onClose={() => setAiCoachModalOpen(false)}
+        profile={playerProfile}
+        stats={computedStats}
+        matches={matches}
+      />
 
       {/* Henrik API Key Modal */}
       <Modal

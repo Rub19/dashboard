@@ -50,6 +50,13 @@ import {
   discordOAuthRefreshRoute,
   discordOAuthUrlRoute,
 } from "./routes/discord-oauth.js";
+import {
+  riotOAuthStatusRoute,
+  riotOAuthUrlRoute,
+  riotOAuthCallbackRoute,
+  riotOAuthExchangeRoute,
+  riotOAuthDisconnectRoute,
+} from "./routes/riot-oauth.js";
 import { blueskyProfileRoute } from "./routes/bluesky.js";
 import { catalogProfileRoute } from "./routes/catalog-connector.js";
 import { lastFmRoute } from "./routes/lastfm.js";
@@ -219,6 +226,11 @@ export const ROUTES = Object.freeze([
   route("discord.oauth.profile", "/api/discord/oauth/profile", discordOAuthProfileRoute, { service: "discord", rateLimit: "standard" }),
   route("discord.oauth.refresh", "/api/discord/oauth/refresh", discordOAuthRefreshRoute, { service: "discord", rateLimit: "standard" }),
   route("discord.oauth.disconnect", "/api/discord/oauth/disconnect", discordOAuthDisconnectRoute, { method: "POST", service: "discord", rateLimit: "strict" }),
+  route("riot.oauth.status", "/api/riot/oauth/status", riotOAuthStatusRoute, { service: "riot", rateLimit: "standard" }),
+  route("riot.oauth.url", "/api/riot/oauth/url", riotOAuthUrlRoute, { service: "riot", rateLimit: "standard" }),
+  route("riot.oauth.callback", "/api/riot/oauth/callback", riotOAuthCallbackRoute, { public: true, service: "riot", rateLimit: "edge" }),
+  route("riot.oauth.exchange", "/api/riot/oauth/exchange", riotOAuthExchangeRoute, { method: "POST", service: "riot", rateLimit: "strict" }),
+  route("riot.oauth.disconnect", "/api/riot/oauth/disconnect", riotOAuthDisconnectRoute, { method: "POST", service: "riot", rateLimit: "strict" }),
   route("google-calendar.oauth.exchange", "/api/google-calendar/oauth/exchange", googleCalendarOAuthExchangeRoute, { method: "POST", service: "google-calendar", rateLimit: "strict" }),
   route("google-calendar.events", "/api/google-calendar/events", googleCalendarEventsRoute, { service: "google-calendar" }),
   route("google-calendar.oauth.disconnect", "/api/google-calendar/oauth/disconnect", googleCalendarOAuthDisconnectRoute, { method: "POST", service: "google-calendar", rateLimit: "strict" }),

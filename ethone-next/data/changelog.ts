@@ -54215,4 +54215,61 @@ CHANGELOG_BY_LANG.en.unshift(v12891_en);
 CHANGELOG_BY_LANG.es.unshift(v12891_es);
 CHANGELOG_BY_LANG.de.unshift(v12891_de);
 
+const v12892_fr: ChangelogEntry = {
+  version: "v1.75.50",
+  date: "2026-10-13",
+  title: "Intégration Complète Valorant : Authentification RSO, Analytics de Performance, Social et Coach IA",
+  items: [
+    "Service d'authentification Riot Sign On (RSO) sécurisé avec détection automatique d'approbation Riot Games",
+    "Fournisseur de données Valorant avec traçabilité de provenance (API Henrik / RSO officiel) et distinction stricte des valeurs indisponibles",
+    "Module d'analyses de performance : filtrage temporel (7j, 14j, 30j, tout), courbe d'évolution K/D et forces/faiblesses factuelles",
+    "Comparaison sociale de statistiques entre ami(e)s et partage 1-clic avec respect de la vie privée",
+    "Coach Gaming IA (ETHONE Brain) générant des bilans et routines personnalisés basés exclusivement sur les statistiques réelles",
+  ],
+};
+
+const v12892_en: ChangelogEntry = {
+  version: "v1.75.50",
+  date: "2026-10-13",
+  title: "Complete Valorant Integration: RSO Authentication, Performance Analytics, Social and AI Coach",
+  items: [
+    "Secure Riot Sign On (RSO) authentication service with Riot Games developer approval gating",
+    "Valorant data provider abstraction with data provenance tracking and strict null/zero distinction",
+    "Performance analytics module: date filtering (7d, 14d, 30d, all), K/D trend sparkline and evidence-based insights",
+    "Social friend comparisons and 1-click stat card sharing respecting user privacy",
+    "AI Gaming Coach (ETHONE Brain) providing custom training routines based strictly on factual telemetry",
+  ],
+};
+
+const v12892_es: ChangelogEntry = {
+  version: "v1.75.50",
+  date: "2026-10-13",
+  title: "Integración Completa de Valorant: Autenticación RSO, Analítica de Rendimiento, Social y Entrenador IA",
+  items: [
+    "Servicio de autenticación Riot Sign On (RSO) seguro con control de aprobación de Riot Games",
+    "Abstracción de proveedor de datos de Valorant con trazabilidad de procedencia y distinción estricta de valores nulos",
+    "Módulo de analítica de rendimiento: filtrado por fecha, curva de evolución K/D y puntos fuertes basados en datos",
+    "Comparación social de estadísticas con amigos y compartición en 1 clic respetando la privacidad",
+    "Entrenador Gaming IA (ETHONE Brain) que ofrece rutinas de entrenamiento basadas exclusivamente en datos reales",
+  ],
+};
+
+const v12892_de: ChangelogEntry = {
+  version: "v1.75.50",
+  date: "2026-10-13",
+  title: "Vollständige Valorant-Integration: RSO-Authentifizierung, Leistungsanalysen, Social und KI-Coach",
+  items: [
+    "Sicherer Riot Sign On (RSO) Authentifizierungsdienst mit Freigabeprüfung für Riot Games",
+    "Valorant-Datenanbieter-Abstraktion mit Herkunftsnachweis und strikter Unterscheidung von Nullwerten",
+    "Leistungsanalyse-Modul: Datumsfilterung (7T, 14T, 30T, alle), K/D-Trendkurve und faktenbasierte Stärken/Schwächen",
+    "Sozialer Statistikvergleich mit Freunden und 1-Klick-Teilen unter Wahrung der Privatsphäre",
+    "KI-Gaming-Coach (ETHONE Brain) mit maßgeschneiderten Trainingsroutinen ausschließlich basierend auf echten Daten",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12892_fr);
+CHANGELOG_BY_LANG.en.unshift(v12892_en);
+CHANGELOG_BY_LANG.es.unshift(v12892_es);
+CHANGELOG_BY_LANG.de.unshift(v12892_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

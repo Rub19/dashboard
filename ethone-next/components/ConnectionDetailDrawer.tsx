@@ -23,7 +23,9 @@ import {
   Radio,
   CheckCircle2,
   Bot,
+  Swords,
 } from "@/components/icons/ph";
+import { getRiotOAuthStatus, getRiotAuthUrl, disconnectRiotOAuth, type RiotOAuthStatus } from "@/lib/riot-auth";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useFocusTrap } from "@/lib/hooks/useFocusTrap";
 import { useSettings } from "@/components/SettingsProvider";
@@ -99,6 +101,9 @@ export default function ConnectionDetailDrawer({
   const [showPassword, setShowPassword] = useState<Record<string, boolean>>({});
   const [copied, setCopied] = useState<string | null>(null);
   const [discordMode, setDiscordMode] = useState<"oauth" | "lanyard">("oauth");
+  const [riotStatus, setRiotStatus] = useState<RiotOAuthStatus | null>(null);
+  const [loadingRiot, setLoadingRiot] = useState(false);
+  const [disconnectingRiot, setDisconnectingRiot] = useState(false);
   const [mounted, setMounted] = useState(false);
   const trapRef = useFocusTrap<HTMLDivElement>(isOpen);
   const titleId = useId();
@@ -106,6 +111,15 @@ export default function ConnectionDetailDrawer({
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (!isOpen || integration.id !== "riot") return;
+    setLoadingRiot(true);
+    getRiotOAuthStatus()
+      .then((st) => setRiotStatus(st))
+      .catch(() => {})
+      .finally(() => setLoadingRiot(false));
+  }, [isOpen, integration.id]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -382,6 +396,86 @@ export default function ConnectionDetailDrawer({
                       ? "Connexion officielle avec le même Bot Discord que sur la page Bot (/discord) pour gérer vos serveurs et profil."
                       : "Synchronisation temps réel de votre statut, musique Spotify et jeu en cours via Lanyard sans permission invasive."}
                   </p>
+                </div>
+              )}
+
+              {integration.id === "riot" && (
+                <div className="space-y-3 rounded-[var(--panel-radius)] border border-rose-500/30 bg-rose-500/10 p-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-rose-300 flex items-center gap-1.5">
+                      <Swords className="h-4 w-4" /> Authentification Riot Sign On (RSO)
+                    </span>
+                    {riotStatus?.approvalRequired && (
+                      <span className="rounded-full border border-amber-500/40 bg-amber-500/20 px-2 py-0.5 text-[9px] font-bold text-amber-300">
+                        Approbation requise
+                      </span>
+                    )}
+                  </div>
+
+                  {loadingRiot ? (
+                    <div className="flex items-center gap-2 py-2 text-xs text-[var(--text-muted)]">
+                      <Loader2 className="h-3.5 w-3.5 animate-spin text-rose-400" />
+                      <span>Vérification du statut Riot Games...</span>
+                    </div>
+                  ) : riotStatus?.connected ? (
+                    <div className="space-y-2 rounded-[var(--inset-radius)] border border-emerald-500/30 bg-emerald-500/10 p-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold text-emerald-300">Compte Riot Officiel Associé</span>
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            setDisconnectingRiot(true);
+                            try {
+                              await disconnectRiotOAuth();
+                              setRiotStatus({ available: true, approvalRequired: false, connected: false });
+                              success("Compte Riot dissocié");
+                            } catch {
+                              showError("Erreur lors de la déconnexion Riot");
+                            } finally {
+                              setDisconnectingRiot(false);
+                            }
+                          }}
+                          disabled={disconnectingRiot}
+                          className="text-[10px] font-bold text-rose-300 hover:underline"
+                        >
+                          {disconnectingRiot ? "Déconnexion..." : "Dissocier"}
+                        </button>
+                      </div>
+                      <p className="text-xs font-mono font-bold text-[var(--text-primary)]">
+                        {riotStatus.riotId || "Compte Riot"}
+                      </p>
+                    </div>
+                  ) : riotStatus?.approvalRequired ? (
+                    <div className="space-y-1.5 rounded-[var(--inset-radius)] border border-amber-500/30 bg-amber-500/10 p-3">
+                      <p className="text-xs font-bold text-amber-300">
+                        Bientôt disponible — En attente d&apos;approbation Riot Games
+                      </p>
+                      <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">
+                        L&apos;authentification Riot Sign On (RSO) nécessite la validation d&apos;une clé de production par le portail développeur Riot Games. En attendant, renseignez votre Riot ID et votre clé Henrik ci-dessous.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">
+                        Liez votre compte Riot Games officiel de façon sécurisée en 1 clic via le portail officiel auth.riotgames.com.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          try {
+                            const url = await getRiotAuthUrl();
+                            if (url) window.location.href = url;
+                          } catch (err) {
+                            showError(err instanceof Error ? err.message : "Erreur Riot OAuth");
+                          }
+                        }}
+                        className="inline-flex w-full items-center justify-center gap-2 rounded-[var(--inset-radius)] bg-gradient-to-r from-rose-600 to-red-600 px-3.5 py-2 text-xs font-bold text-white shadow-md transition-all hover:from-rose-500 hover:to-red-500"
+                      >
+                        <Swords className="h-4 w-4" />
+                        <span>Se connecter avec Riot Games (RSO)</span>
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
 

@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.50 — 2026-10-13
+
+**Intégration Complète Valorant : Authentification RSO, Analytics de Performance, Social et Coach IA**
+
+- Service d'authentification Riot Sign On (RSO) sécurisé avec détection automatique d'approbation Riot Games.
+- Fournisseur de données Valorant avec traçabilité de provenance (API Henrik / RSO officiel) et distinction stricte des valeurs indisponibles.
+- Module d'analyses de performance : filtrage temporel (7j, 14j, 30j, tout), courbe d'évolution K/D et forces/faiblesses factuelles.
+- Comparaison sociale de statistiques entre ami(e)s et partage 1-clic avec respect de la vie privée.
+- Coach Gaming IA (ETHONE Brain) générant des bilans et routines personnalisés basés exclusivement sur les statistiques réelles.
+
 ## v1.75.49 — 2026-10-13
 
 **Confidentialité de l'inventaire Valorant : restriction exclusive au propriétaire du dashboard**

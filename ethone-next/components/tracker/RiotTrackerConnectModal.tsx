@@ -39,8 +39,8 @@ export default function RiotTrackerConnectModal({
   const [disconnecting, setDisconnecting] = useState(false);
   const [status, setStatus] = useState<RiotOAuthStatus | null>(null);
 
-  const [riotName, setRiotName] = useState(settings.liveTrackerRiotName || "TenZ");
-  const [riotTag, setRiotTag] = useState(settings.liveTrackerRiotTag || "0505");
+  const [riotName, setRiotName] = useState(settings.liveTrackerRiotName || "");
+  const [riotTag, setRiotTag] = useState(settings.liveTrackerRiotTag || "");
   const [region, setRegion] = useState("eu");
   const [apiKey, setApiKey] = useState(settings.valorantApiKey || "");
   const [testingApi, setTestingApi] = useState(false);
@@ -339,28 +339,6 @@ export default function RiotTrackerConnectModal({
                   <option value="kr">Corée (KR)</option>
                   <option value="ap">Asie-Pacifique (AP)</option>
                 </select>
-              </div>
-
-              <div className="pt-2 flex flex-wrap items-center gap-2">
-                <span className="text-[11px] text-[var(--text-muted)]">Exemples rapides :</span>
-                {[
-                  { name: "TenZ", tag: "0505" },
-                  { name: "Faker", tag: "KR1" },
-                  { name: "Boaster", tag: "FNC" },
-                  { name: "Caps", tag: "EUW" },
-                ].map((p) => (
-                  <button
-                    key={`${p.name}#${p.tag}`}
-                    type="button"
-                    onClick={() => {
-                      setRiotName(p.name);
-                      setRiotTag(p.tag);
-                    }}
-                    className="rounded-full border border-[var(--panel-border)] bg-[var(--surface-raised)] px-2.5 py-0.5 text-[10px] font-bold text-[var(--text-muted)] hover:text-white hover:border-amber-500/50 cursor-pointer"
-                  >
-                    {p.name}#{p.tag}
-                  </button>
-                ))}
               </div>
             </div>
 

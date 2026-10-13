@@ -54459,9 +54459,57 @@ const v12896_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12896_fr, v12895_fr, v12894_fr, v12893_fr, v12892_fr);
-CHANGELOG_BY_LANG.en.unshift(v12896_en, v12895_en, v12894_en, v12893_en, v12892_en);
-CHANGELOG_BY_LANG.es.unshift(v12896_es, v12895_es, v12894_es, v12893_es, v12892_es);
-CHANGELOG_BY_LANG.de.unshift(v12896_de, v12895_de, v12894_de, v12893_de, v12892_de);
+const v12897_fr: ChangelogEntry = {
+  version: "v1.75.55",
+  date: "2026-10-13",
+  title: "Suppression des redirections vers l'écran de login et retrait des profils démo non fonctionnels",
+  items: [
+    "Suppression de l'ensemble des redirections vers l'écran de connexion (/login) afin de rendre l'expérience publique et directement orientée vers Riot Games",
+    "Nettoyage complet des profils de démonstration (TenZ, Boaster, Faker, Caps) et des données factices dans l'accueil et les modules de tracking",
+    "Affichage propre et neutre des métriques compétitives avec synchronisation dynamique sur le Riot ID ou RSO de l'utilisateur",
+    "Mise à jour des boutons de déconnexion et des routes publiques pour préserver l'accès direct au Hub Riot",
+  ],
+};
+
+const v12897_en: ChangelogEntry = {
+  version: "v1.75.55",
+  date: "2026-10-13",
+  title: "Removal of login screen redirects and removal of non-functional demo profiles",
+  items: [
+    "Removed all redirects to /login to ensure a direct, public experience focused solely on Riot Games",
+    "Cleaned up mock demo player buttons (TenZ, Boaster, Faker, Caps) and hardcoded statistics across home and tracker views",
+    "Clean neutral display for competitive metrics waiting for actual player search or RSO connection",
+    "Updated sign out handlers and public links to smoothly return to the Riot Hub",
+  ],
+};
+
+const v12897_es: ChangelogEntry = {
+  version: "v1.75.55",
+  date: "2026-10-13",
+  title: "Eliminación de redirecciones a pantalla de login y retirada de perfiles demo",
+  items: [
+    "Eliminación de todas las redirecciones a /login para una experiencia pública y directa enfocada en Riot Games",
+    "Retirada de botones de jugadores demo (TenZ, Boaster, Faker, Caps) y estadísticas simuladas en la vista de inicio y seguimiento",
+    "Presentación limpia y neutral de estadísticas competitivas a la espera de búsqueda de Riot ID o conexión RSO",
+    "Actualización de enlaces y cierre de sesión para volver fluidamente al Hub de Riot",
+  ],
+};
+
+const v12897_de: ChangelogEntry = {
+  version: "v1.75.55",
+  date: "2026-10-13",
+  title: "Entfernung der Weiterleitungen zum Login-Bildschirm und Bereinigung der Demo-Profile",
+  items: [
+    "Entfernung aller Weiterleitungen zu /login für einen direkten, öffentlichen Zugang mit alleinigem Fokus auf Riot Games",
+    "Vollständige Entfernung von Demo-Spieler-Chips (TenZ, Boaster, Faker, Caps) und hardcodierten Mock-Statistiken",
+    "Saubere, neutrale Anzeige von Leistungsdaten bis zur Eingabe einer Riot ID oder RSO-Verbindung",
+    "Abmelde- und Navigationslinks leiten nun direkt und reibungslos zurück zum Riot Hub",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12897_fr, v12896_fr, v12895_fr, v12894_fr, v12893_fr, v12892_fr);
+CHANGELOG_BY_LANG.en.unshift(v12897_en, v12896_en, v12895_en, v12894_en, v12893_en, v12892_en);
+CHANGELOG_BY_LANG.es.unshift(v12897_es, v12896_es, v12895_es, v12894_es, v12893_es, v12892_es);
+CHANGELOG_BY_LANG.de.unshift(v12897_de, v12896_de, v12895_de, v12894_de, v12893_de, v12892_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

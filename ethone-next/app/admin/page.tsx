@@ -504,10 +504,6 @@ export default function AdminPage() {
                     <h3 className="text-xs font-bold text-[var(--foreground)]">Actions Détectées (Compteurs Anonymes)</h3>
                     <div className="space-y-1.5 text-xs">
                       <div className="flex items-center justify-between">
-                        <span className="text-[var(--muted)]">Profils de Démonstration 1-Clic :</span>
-                        <span className="font-mono font-bold text-[var(--foreground)]">{riotAudit?.actionsCount.demoClicks || 0}</span>
-                      </div>
-                      <div className="flex items-center justify-between">
                         <span className="text-[var(--muted)]">Recherches de Joueurs Riot :</span>
                         <span className="font-mono font-bold text-[var(--foreground)]">{riotAudit?.actionsCount.searchQueries || 0}</span>
                       </div>

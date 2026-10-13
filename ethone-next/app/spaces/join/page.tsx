@@ -43,7 +43,7 @@ function JoinContent() {
   useEffect(() => {
     if (authLoading || !token) return;
     if (!session) {
-      router.replace(`/login?next=${encodeURIComponent(`/spaces/join?token=${token}`)}`);
+      router.replace("/");
     }
   }, [authLoading, session, token, router]);
 

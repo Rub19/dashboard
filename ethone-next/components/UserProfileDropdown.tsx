@@ -141,7 +141,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
       if (targetEmail.toLowerCase() === (email || "").toLowerCase()) return;
       setOpen(false);
       await signOut();
-      router.push(`/login?email=${encodeURIComponent(targetEmail)}`);
+      router.push("/");
     },
     [email, signOut, router]
   );
@@ -149,7 +149,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
   const handleAddAccount = useCallback(async () => {
     setOpen(false);
     await signOut();
-    router.push("/login?switch=1");
+    router.push("/");
   }, [signOut, router]);
 
   const handleSignOut = useCallback(async () => {
@@ -157,7 +157,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
     setIsChangelogOpen(false);
     setConfirmSignOut(false);
     await signOut();
-    router.push("/login");
+    router.push("/");
   }, [signOut, router]);
 
   const copyEmail = useCallback(
@@ -185,7 +185,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
     return CHANGELOG_BY_LANG[settings.language] || CHANGELOG;
   }, [settings.language]);
 
-  const VERSION_LABEL = changelog[0]?.version || "v1.75.54";
+  const VERSION_LABEL = changelog[0]?.version || "v1.75.55";
 
   const isOwner = Boolean(email && email.toLowerCase() === ADMIN_EMAIL.toLowerCase());
   const mod = useModKey();

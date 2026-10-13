@@ -80,9 +80,9 @@ export default function ProfilePage() {
       <div className="grid h-full place-items-center p-6 text-center">
         <div className="max-w-sm space-y-3">
           <h1 className="text-2xl font-semibold tracking-tight text-[var(--text-primary)]">Votre profil</h1>
-          <p className="text-sm text-[var(--text-muted)]">Connectez-vous pour choisir un avatar, un statut et retrouver votre profil sur tous vos appareils.</p>
-          <Link href="/login" className="inline-flex h-10 items-center rounded-xl bg-[var(--accent-primary)] px-4 text-sm font-semibold text-[var(--accent-contrast)]">
-            Se connecter
+          <p className="text-sm text-[var(--text-muted)]">Configurez votre identifiant Riot Games pour retrouver vos statistiques compétitives sur tous vos appareils.</p>
+          <Link href="/" className="inline-flex h-10 items-center rounded-xl bg-[var(--accent-primary)] px-4 text-sm font-semibold text-[var(--accent-contrast)]">
+            Accéder au Hub Riot
           </Link>
         </div>
       </div>

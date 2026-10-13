@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.55 — 2026-10-13
+
+**Suppression des redirections vers l'écran de login et retrait des profils démo non fonctionnels**
+
+- Suppression de l'ensemble des redirections vers l'écran de connexion (`/login`) afin de rendre l'expérience publique et directement orientée vers Riot Games sans friction d'authentification préalable.
+- Nettoyage complet des profils de démonstration (TenZ, Boaster, Faker, Caps, Agurin) et des données factices dans l'accueil et les modules de tracking Valorant et League of Legends.
+- Affichage propre et neutre des statistiques compétitives (attente d'analyse avec Riot ID ou synchronisation RSO OAuth 2.0).
+- Mise à jour des boutons de déconnexion et des routes publiques pour préserver l'accès direct au Hub Riot Gaming (`/`).
+
 ## v1.75.54 — 2026-10-13
 
 **Audit Fréquentation #RIOT TRACKER dans Admin, masquage Topbar/Spotlight et Hub Connexion & APIs**

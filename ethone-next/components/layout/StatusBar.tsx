@@ -264,7 +264,7 @@ export default function StatusBar() {
   async function handleSignOut() {
     setMenuOpen(false);
     await signOut();
-    router.push("/login");
+    router.push("/");
   }
 
   return (

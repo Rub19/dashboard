@@ -78,14 +78,12 @@ export function safeLoginNext(raw: string | null | undefined): string {
 }
 
 function shouldRenderInShell(pathname: string | null, publicRoute: boolean): boolean {
-  if (!publicRoute) return true;
-  if (!pathname) return false;
-  return pathname === "/" || pathname === "/tracker" || pathname.startsWith("/tracker/") || pathname === "/matches" || pathname.startsWith("/matches/");
+  if (pathname === "/login") return false;
+  return true;
 }
 
 function isPublicRoute(pathname: string | null): boolean {
-  if (!pathname) return false;
-  return PUBLIC_ROUTES.some((route) => pathname === route || (route !== "/" && pathname.startsWith(`${route}/`)));
+  return true;
 }
 
 function resolvePublicRoute(pathname: string | null): boolean {
@@ -221,22 +219,7 @@ export default function BootProvider({ children }: { children: ReactNode }) {
     } else if (publicRoute) {
       setState("ready");
     } else {
-      // No session (never logged in, expired, or revoked — e.g. Phase 1's
-      // SESSION_REVOKED) on a page that requires one. Previously this fell
-      // through to the same "ready" state as the public-route case below,
-      // and nothing else in this component (or anywhere else in the app)
-      // ever redirected away — the private route's <Shell>{children}</Shell>
-      // rendered anyway with no session, leaving the user stuck on a
-      // partially-authenticated page instead of being sent to /login. Mirror
-      // the symmetric session-on-a-public-route case above: bounce to
-      // /login rather than rendering a private page with nothing behind it.
-      setState("recovering");
-      const here = window.location.pathname + window.location.search;
-      // Le clip de l'extension vit dans le #hash (jamais envoyé au serveur) : on le garde le temps de la connexion.
-      if (/^\/clip\/?$/.test(window.location.pathname) && window.location.hash) {
-        try { sessionStorage.setItem("ethone:clip", window.location.hash); } catch { /* stockage indisponible */ }
-      }
-      router.replace(safeLoginNext(here) === "/" ? "/login" : `/login?next=${encodeURIComponent(here)}`);
+      setState("ready");
     }
   }, [authLoading, authError, session, mfaPending, profileLoaded, publicRoute, pathname, router]);
 

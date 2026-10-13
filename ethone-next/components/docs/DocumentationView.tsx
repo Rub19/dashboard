@@ -273,10 +273,10 @@ export default function DocumentationView() {
             </div>
 
             <Link
-              href="/login"
+              href="/"
               className="hidden sm:inline-flex rounded-lg px-3 py-1.5 text-xs font-semibold text-zinc-300 hover:text-white hover:bg-white/5 transition-colors"
             >
-              Connexion
+              Hub Gaming
             </Link>
 
             <Link

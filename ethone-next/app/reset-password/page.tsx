@@ -56,7 +56,7 @@ export default function ResetPasswordPage() {
       showError(error.message);
     } else {
       success(i18n("resetSuccess"));
-      setTimeout(() => router.push("/login/"), 1500);
+      setTimeout(() => router.push("/"), 1500);
     }
   }
 

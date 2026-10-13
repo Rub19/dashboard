@@ -226,7 +226,7 @@ export default function HubSidebar({
     try {
       await signOut();
     } catch {}
-    router.push("/login");
+    router.push("/");
   }, [signOut, router]);
 
   const identity = useUserIdentity();

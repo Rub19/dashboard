@@ -49,11 +49,6 @@ export default function LolTrackerView() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [activeReportIndex, setActiveReportIndex] = useState<number | null>(null);
 
-  const cacheKey = useMemo(
-    () => `ethone-lol-cache:${riotName.toLowerCase().trim()}:${riotTag.toLowerCase().trim()}:${selectedQueue}`,
-    [riotName, riotTag, selectedQueue]
-  );
-
   const fetchMatches = useCallback(
     async (force = false, overrideName?: string, overrideTag?: string) => {
       const cleanName = (overrideName !== undefined ? overrideName : riotName).trim();
@@ -154,22 +149,6 @@ export default function LolTrackerView() {
   useEffect(() => {
     fetchMatches(false);
   }, [fetchMatches]);
-
-  const SAMPLE_SUMMONERS = [
-    { name: "Faker", tag: "KR1", label: "Faker #KR1", tier: "Challenger" },
-    { name: "Caps", tag: "EUW", label: "Caps #EUW", tier: "Grandmaster" },
-    { name: "Agurin", tag: "EUW", label: "Agurin #EUW", tier: "Challenger" },
-  ];
-
-  const handleSelectSample = (name: string, tag: string) => {
-    setRiotName(name);
-    setRiotTag(tag);
-    update({
-      liveTrackerRiotName: name,
-      liveTrackerRiotTag: tag,
-    });
-    fetchMatches(false, name, tag);
-  };
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -320,27 +299,6 @@ export default function LolTrackerView() {
             </button>
           </div>
         </form>
-
-        <div className="mt-3 flex flex-wrap items-center gap-2 pt-2.5 border-t border-[var(--panel-border)]/50">
-          <span className="text-[11px] font-semibold text-[var(--text-muted)]">Invocateurs démo :</span>
-          {SAMPLE_SUMMONERS.map((sample) => (
-            <button
-              key={`${sample.name}#${sample.tag}`}
-              type="button"
-              onClick={() => handleSelectSample(sample.name, sample.tag)}
-              className={cn(
-                "flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-bold transition-all active:scale-95 cursor-pointer",
-                riotName.toLowerCase() === sample.name.toLowerCase() && riotTag.toLowerCase() === sample.tag.toLowerCase()
-                  ? "border-amber-500/60 bg-amber-500/20 text-amber-300"
-                  : "border-[var(--panel-border)] bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:border-amber-500/40 hover:text-[var(--text-primary)]"
-              )}
-            >
-              <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
-              <span>{sample.label}</span>
-              <span className="text-[9px] font-normal text-amber-400/80">({sample.tier})</span>
-            </button>
-          ))}
-        </div>
       </div>
 
       {/* Top Global Summary Banner (Matching Screenshot) */}

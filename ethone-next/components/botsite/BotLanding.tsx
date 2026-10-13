@@ -166,6 +166,8 @@ function DiscordChatSimulator() {
   const [activeTab, setActiveTab] = useState<"shield" | "spotify" | "fun" | "welcome">("shield");
   const [isPlaying, setIsPlaying] = useState(true);
   const [liked, setLiked] = useState(false);
+  const [vcActive, setVcActive] = useState(false);
+  const [lyricsCopied, setLyricsCopied] = useState(false);
 
   return (
     <div className="relative mx-auto w-full max-w-xl overflow-hidden rounded-2xl border border-white/[0.09] bg-[#0c0d14]/95 p-1 shadow-[0_32px_80px_-20px_rgba(0,0,0,0.9)] backdrop-blur-2xl">
@@ -212,27 +214,36 @@ function DiscordChatSimulator() {
               transition={{ duration: 0.25 }}
               className="space-y-4"
             >
-              <div className="flex items-start gap-3 opacity-70">
-                <div className="h-9 w-9 shrink-0 rounded-full bg-red-950/80 p-1 text-center font-bold text-red-300">
+              <div className="relative flex items-start gap-3 rounded-xl border border-red-500/20 bg-red-950/20 p-2.5">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-red-500/30 bg-red-900/30 text-sm font-bold text-red-300">
                   ⚠️
                 </div>
-                <div>
-                  <div className="flex items-baseline gap-2">
-                    <span className="font-semibold text-red-300">AttaquantRaid</span>
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-baseline gap-2">
+                    <span className="font-semibold text-red-300 line-through">AttaquantRaid</span>
+                    <span className="rounded bg-red-500/25 px-1.5 py-0.5 text-[9px] font-bold text-red-200">
+                      BANNI & PURGÉ
+                    </span>
                     <span className="text-[11px] text-zinc-500">Aujourd&apos;hui à 21:04</span>
                   </div>
-                  <p className="mt-1 text-xs text-zinc-300">
+                  <p className="mt-1 text-xs text-zinc-400 line-through decoration-red-400/60">
                     @everyone REJOIGNEZ FREE NITRO ICI http://scam-link-fake.gg !!
                   </p>
+                  <div className="mt-1.5 flex items-center gap-1.5 text-[10px] font-medium text-red-300">
+                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-red-400" />
+                    Message purgé en 0.2s · Salons verrouillés
+                  </div>
                 </div>
               </div>
 
               <div className="flex items-start gap-3">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/icons/ethone-icon-192.png"
+                <Image
+                  src="/branding/ethone-discord-avatar-v2.png"
                   alt="Etho"
-                  className="h-9 w-9 shrink-0 rounded-full ring-1 ring-emerald-400/40"
+                  width={36}
+                  height={36}
+                  unoptimized
+                  className="h-9 w-9 shrink-0 rounded-full object-cover ring-1 ring-white/10"
                 />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-baseline gap-2">
@@ -243,26 +254,48 @@ function DiscordChatSimulator() {
                     <span className="text-[11px] text-zinc-500">Aujourd&apos;hui à 21:04 (0.2s)</span>
                   </div>
 
-                  <div className="mt-2 rounded-xl border-l-4 border-emerald-400 bg-emerald-950/20 p-3.5 backdrop-blur-sm">
+                  <div className="mt-2 rounded-xl border-l-4 border-emerald-400 bg-emerald-950/25 p-4 backdrop-blur-sm shadow-lg shadow-black/40">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-emerald-300">
+                      <span className="flex items-center gap-1.5 text-xs font-bold text-emerald-300">
+                        <span className="h-2 w-2 rounded-full bg-emerald-400" />
                         🛡️ Anti-Raid · Sanction Immédiate
                       </span>
-                      <span className="rounded bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-300">
-                        0.2s réaction
+                      <span className="rounded-lg border border-emerald-500/30 bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-300">
+                        ⚡ 0.2s réaction
                       </span>
                     </div>
-                    <p className="mt-2 text-xs leading-relaxed text-zinc-300">
-                      Attaque neutralisée. Membre expulsé, messages récents purgés, salons sécurisés. Bouclier
-                      Owner actif. Aucun rôle compromis.
+                    <p className="mt-2 text-xs leading-relaxed text-zinc-200">
+                      Raid neutralisé avec succès. Attaquant banni, 14 messages récents purgés, salons sécurisés. Bouclier Owner actif. Aucun rôle compromis.
                     </p>
-                    <div className="mt-3 flex items-center gap-2">
-                      <span className="inline-flex items-center gap-1.5 rounded-md bg-white/[0.06] px-2.5 py-1 text-[11px] font-medium text-emerald-200">
-                        ✓ Rôles protégés
-                      </span>
-                      <span className="inline-flex items-center gap-1.5 rounded-md bg-white/[0.06] px-2.5 py-1 text-[11px] font-medium text-zinc-300">
-                        ✓ Salons verrouillés
-                      </span>
+                    <div className="mt-3 grid grid-cols-2 gap-2 text-[11px]">
+                      <div className="rounded-lg border border-white/[0.06] bg-black/30 p-2">
+                        <span className="block text-[10px] text-zinc-400">Sanction appliquée</span>
+                        <span className="font-semibold text-red-300">Bannissement & Purge</span>
+                      </div>
+                      <div className="rounded-lg border border-white/[0.06] bg-black/30 p-2">
+                        <span className="block text-[10px] text-zinc-400">Statut de sécurité</span>
+                        <span className="font-semibold text-emerald-300">Bouclier Owner Actif</span>
+                      </div>
+                    </div>
+                    <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-white/[0.06] pt-3">
+                      <button
+                        type="button"
+                        className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 text-xs font-semibold text-emerald-300 transition-colors hover:bg-emerald-500/20"
+                      >
+                        🛡️ Bouclier Owner (Actif)
+                      </button>
+                      <button
+                        type="button"
+                        className="rounded-xl border border-white/10 bg-white/[0.06] px-3 py-1.5 text-xs font-semibold text-zinc-300 transition-colors hover:bg-white/10"
+                      >
+                        🔒 Salons sécurisés
+                      </button>
+                      <button
+                        type="button"
+                        className="rounded-xl border border-white/10 bg-white/[0.06] px-3 py-1.5 text-xs font-semibold text-zinc-300 transition-colors hover:bg-white/10"
+                      >
+                        📋 Audit en direct
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -280,11 +313,13 @@ function DiscordChatSimulator() {
               className="space-y-4"
             >
               <div className="flex items-start gap-3">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/icons/ethone-icon-192.png"
+                <Image
+                  src="/branding/ethone-discord-avatar-v2.png"
                   alt="Etho"
-                  className="h-9 w-9 shrink-0 rounded-full ring-1 ring-emerald-400/40"
+                  width={36}
+                  height={36}
+                  unoptimized
+                  className="h-9 w-9 shrink-0 rounded-full object-cover ring-1 ring-white/10"
                 />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-baseline gap-2">
@@ -295,7 +330,7 @@ function DiscordChatSimulator() {
                     <span className="font-mono text-xs text-zinc-400">/spotify nowplaying</span>
                   </div>
 
-                  <div className="mt-2 rounded-xl border-l-4 border-[#1DB954] bg-[#121b15]/90 p-4">
+                  <div className="mt-2 rounded-xl border-l-4 border-[#1DB954] bg-[#121b15]/95 p-4 shadow-lg shadow-black/40">
                     <div className="flex items-center justify-between">
                       <span className="flex items-center gap-2 text-xs font-bold text-[#1DB954]">
                         <span className="h-2 w-2 animate-pulse rounded-full bg-[#1DB954]" />
@@ -313,25 +348,38 @@ function DiscordChatSimulator() {
                       </div>
                     </div>
 
-                    <div className="mt-3 flex items-center gap-3">
-                      <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-black ring-1 ring-white/10">
+                    <div className="mt-3 flex items-center gap-3.5">
+                      <div className="relative h-14 w-14 shrink-0 rounded-full bg-neutral-950 ring-1 ring-white/20 shadow-md shadow-black/80 flex items-center justify-center select-none">
                         <motion.div
                           animate={{ rotate: isPlaying ? 360 : 0 }}
                           transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
-                          className="flex h-full w-full items-center justify-center rounded-full bg-gradient-to-tr from-neutral-900 to-neutral-700"
+                          className="relative flex h-full w-full items-center justify-center rounded-full bg-gradient-to-tr from-neutral-950 via-neutral-900 to-neutral-950 overflow-hidden"
                         >
-                          <span className="h-4 w-4 rounded-full bg-[#1DB954]" />
+                          <div className="absolute inset-1 rounded-full border border-white/[0.08]" />
+                          <div className="absolute inset-2.5 rounded-full border border-white/[0.06]" />
+                          <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br from-red-600 via-purple-700 to-indigo-900 ring-1 ring-white/20 shadow-inner">
+                            <span className="h-1.5 w-1.5 rounded-full bg-neutral-950 ring-1 ring-white/40" />
+                          </div>
                         </motion.div>
+                        <div className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#1DB954] ring-2 ring-[#121b15]">
+                          <svg className="h-2.5 w-2.5 text-black" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z" />
+                          </svg>
+                        </div>
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-bold text-white">Starboy</p>
-                        <p className="truncate text-xs text-zinc-400">The Weeknd, Daft Punk</p>
+                        <p className="truncate text-sm font-bold text-white hover:underline cursor-pointer">Starboy</p>
+                        <p className="truncate text-xs text-zinc-300">The Weeknd, Daft Punk</p>
                         <div className="mt-2 flex items-center gap-2">
-                          <span className="font-mono text-[10px] text-zinc-500">1:42</span>
-                          <div className="h-1 flex-1 overflow-hidden rounded-full bg-white/10">
-                            <div className="h-full w-[45%] rounded-full bg-[#1DB954]" />
+                          <span className="font-mono text-[10px] text-zinc-400">1:42</span>
+                          <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/10">
+                            <motion.div
+                              className="h-full rounded-full bg-[#1DB954]"
+                              animate={{ width: isPlaying ? ["45%", "48%", "45%"] : "45%" }}
+                              transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                            />
                           </div>
-                          <span className="font-mono text-[10px] text-zinc-500">3:50</span>
+                          <span className="font-mono text-[10px] text-zinc-400">3:50</span>
                         </div>
                       </div>
                     </div>
@@ -340,22 +388,32 @@ function DiscordChatSimulator() {
                       <button
                         type="button"
                         onClick={() => setIsPlaying(!isPlaying)}
-                        className="rounded-lg bg-white/10 px-2.5 py-1 text-xs font-semibold text-white transition-colors hover:bg-white/20"
+                        className="rounded-xl border border-white/10 bg-white/[0.08] px-3 py-1.5 text-xs font-semibold text-white transition-all hover:bg-white/15 active:scale-95"
                       >
                         {isPlaying ? "⏸ Pause" : "▶ Lecture"}
                       </button>
                       <button
                         type="button"
                         onClick={() => setLiked(!liked)}
-                        className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-colors ${
-                          liked ? "bg-pink-500/20 text-pink-300" : "bg-white/10 text-zinc-300 hover:bg-white/20"
+                        className={`rounded-xl border px-3 py-1.5 text-xs font-semibold transition-all active:scale-95 ${
+                          liked
+                            ? "border-pink-500/40 bg-pink-500/20 text-pink-300"
+                            : "border-white/10 bg-white/[0.06] text-zinc-300 hover:bg-white/10"
                         }`}
                       >
                         {liked ? "❤️ Liké" : "🤍 Like"}
                       </button>
-                      <span className="rounded-lg bg-[#1DB954]/20 px-2.5 py-1 text-xs font-semibold text-[#1DB954]">
-                        🔊 Diffuser en vocal (/spotify vc)
-                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setVcActive(!vcActive)}
+                        className={`rounded-xl border px-3 py-1.5 text-xs font-semibold transition-all active:scale-95 ${
+                          vcActive
+                            ? "border-[#1DB954]/50 bg-[#1DB954]/25 text-[#1DB954]"
+                            : "border-[#1DB954]/30 bg-[#1DB954]/10 text-[#1DB954] hover:bg-[#1DB954]/20"
+                        }`}
+                      >
+                        {vcActive ? "🔊 En diffusion dans #Général Vocal" : "🔊 Diffuser en vocal (/spotify vc)"}
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -373,11 +431,13 @@ function DiscordChatSimulator() {
               className="space-y-4"
             >
               <div className="flex items-start gap-3">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/icons/ethone-icon-192.png"
+                <Image
+                  src="/branding/ethone-discord-avatar-v2.png"
                   alt="Etho"
-                  className="h-9 w-9 shrink-0 rounded-full ring-1 ring-purple-400/40"
+                  width={36}
+                  height={36}
+                  unoptimized
+                  className="h-9 w-9 shrink-0 rounded-full object-cover ring-1 ring-white/10"
                 />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-baseline gap-2">
@@ -388,28 +448,38 @@ function DiscordChatSimulator() {
                     <span className="font-mono text-xs text-zinc-400">/lyrics query:FE!N Travis Scott</span>
                   </div>
 
-                  <div className="mt-2 rounded-xl border-l-4 border-[#a78bfa] bg-[#161224]/90 p-4">
+                  <div className="mt-2 rounded-xl border-l-4 border-[#a78bfa] bg-[#161224]/90 p-4 shadow-lg shadow-black/40">
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-bold text-[#c084fc]">
                         🎵 Paroles · FE!N — Travis Scott feat. Playboi Carti
                       </span>
-                      <span className="rounded bg-[#a78bfa]/20 px-2 py-0.5 text-[10px] font-bold text-[#c084fc]">
+                      <span className="rounded-lg border border-[#a78bfa]/30 bg-[#a78bfa]/20 px-2 py-0.5 text-[10px] font-bold text-[#c084fc]">
                         LRCLib 3:11
                       </span>
                     </div>
-                    <div className="mt-3 max-h-24 overflow-hidden rounded-lg bg-black/40 p-3 font-mono text-xs leading-relaxed text-zinc-300">
+                    <div className="mt-3 max-h-24 overflow-hidden rounded-lg bg-black/40 p-3 font-mono text-xs leading-relaxed text-zinc-300 border border-white/[0.04]">
                       <p className="text-zinc-500">Just come outside for the night (yeah)</p>
                       <p className="text-white">Take your time, get your light (yeah)</p>
                       <p className="text-[#c084fc]">Johnny Dang, huh-uh</p>
                       <p className="text-zinc-500">I been in this room for too long...</p>
                     </div>
-                    <div className="mt-3 flex items-center gap-2">
-                      <span className="rounded-md bg-white/[0.08] px-2.5 py-1 text-xs font-semibold text-zinc-300">
-                        📋 Copier les paroles
-                      </span>
-                      <span className="rounded-md bg-white/[0.08] px-2.5 py-1 text-xs font-semibold text-zinc-300">
+                    <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-white/[0.06] pt-3">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setLyricsCopied(true);
+                          setTimeout(() => setLyricsCopied(false), 2000);
+                        }}
+                        className="rounded-xl border border-white/10 bg-white/[0.06] px-3 py-1.5 text-xs font-semibold text-zinc-300 transition-colors hover:bg-white/10 active:scale-95"
+                      >
+                        {lyricsCopied ? "✓ Paroles copiées !" : "📋 Copier les paroles"}
+                      </button>
+                      <button
+                        type="button"
+                        className="rounded-xl border border-white/10 bg-white/[0.06] px-3 py-1.5 text-xs font-semibold text-zinc-300 transition-colors hover:bg-white/10 active:scale-95"
+                      >
                         🔍 Voir sur Genius
-                      </span>
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -427,11 +497,13 @@ function DiscordChatSimulator() {
               className="space-y-4"
             >
               <div className="flex items-start gap-3">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/icons/ethone-icon-192.png"
+                <Image
+                  src="/branding/ethone-discord-avatar-v2.png"
                   alt="Etho"
-                  className="h-9 w-9 shrink-0 rounded-full ring-1 ring-cyan-400/40"
+                  width={36}
+                  height={36}
+                  unoptimized
+                  className="h-9 w-9 shrink-0 rounded-full object-cover ring-1 ring-white/10"
                 />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-baseline gap-2">
@@ -442,16 +514,16 @@ function DiscordChatSimulator() {
                     <span className="text-[11px] text-zinc-500">Arrivée d&apos;un nouveau membre</span>
                   </div>
 
-                  <div className="mt-2 rounded-xl border-l-4 border-[#38bdf8] bg-[#0c1926]/90 p-4">
+                  <div className="mt-2 rounded-xl border-l-4 border-[#38bdf8] bg-[#0c1926]/90 p-4 shadow-lg shadow-black/40">
                     <p className="text-sm font-bold text-white">Bienvenue sur le serveur, Alex ! 🎉</p>
                     <p className="mt-1 text-xs text-zinc-300">
                       Tu es le <span className="font-semibold text-[#38bdf8]">1 428e membre</span>. Prends tes rôles dans le salon dédié et profite de la communauté.
                     </p>
-                    <div className="mt-3 flex items-center gap-2">
-                      <span className="rounded-md bg-[#38bdf8]/20 px-2 py-0.5 text-[11px] font-bold text-[#38bdf8]">
+                    <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-white/[0.06] pt-3">
+                      <span className="rounded-xl border border-[#38bdf8]/30 bg-[#38bdf8]/20 px-3 py-1 text-xs font-bold text-[#38bdf8]">
                         @Membre
                       </span>
-                      <span className="rounded-md bg-[#38bdf8]/20 px-2 py-0.5 text-[11px] font-bold text-[#38bdf8]">
+                      <span className="rounded-xl border border-[#38bdf8]/30 bg-[#38bdf8]/20 px-3 py-1 text-xs font-bold text-[#38bdf8]">
                         @AccèsGénéral
                       </span>
                     </div>

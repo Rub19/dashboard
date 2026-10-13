@@ -1,5 +1,16 @@
 [
   {
+    "version": "v1.75.19",
+    "date": "2026-10-13",
+    "title": "Vitrine Bot : Correction Avatar Discord, Lecteur Spotify et Démo Anti-Raid",
+    "items": [
+      "Avatar Discord circulaire haute résolution : remplacement de l'icône de l'application par l'avatar officiel Discord d'Etho, éliminant les artéfacts de bordure et les coupures horizontales dans le simulateur.",
+      "Lecteur Spotify réaliste et interactif : disque vinyle circulaire authentique avec microsillons, centre de macaron dynamique, badge Spotify officiel et boutons interactifs réactifs (lecture/pause, like, diffusion vocale).",
+      "Démo Anti-Raid fidèle et dynamique : mise en valeur visuelle de la purge éclair en 0.2s sur le message malveillant (barré, marquage banni/purgé) et boutons d'action interactifs style Keeper Protect (Bouclier Owner, Salons sécurisés, Audit).",
+      "Purge complète des références tierces : suppression intégrale de toute mention d'autres bots tiers sur l'ensemble de la vitrine publique."
+    ]
+  },
+  {
     "version": "v1.75.18",
     "date": "2026-10-13",
     "title": "Correction Détection Duo / Groupes Premades LoL & Valorant",

@@ -2,6 +2,22 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.19 — 2026-10-13
+
+**Vitrine Bot : Correction Avatar Discord, Lecteur Spotify et Démo Anti-Raid**
+
+- **Avatar Discord Circulaire Haute Résolution** :
+  - Remplacement de l'icône carrée de l'application (`/icons/ethone-icon-192.png`) par l'avatar officiel Discord d'Etho (`/branding/ethone-discord-avatar-v2.png`), éliminant définitivement les artéfacts de tronquage et lignes parasites visibles sur les bords de l'avatar dans le simulateur de chat.
+  - Utilisation native du composant Next.js `Image` avec dimensionnement précis (36x36px) et bague de contour fine `ring-1 ring-white/10`.
+- **Refonte Authentique du Lecteur Spotify dans le Simulateur** :
+  - Transformation du lecteur en vinyle circulaire complet avec microsillons concentriques, macaron central animé en rotation durant la lecture, trou central réaliste et insigne officiel Spotify dans le coin inférieur.
+  - Contrôles interactifs complets réactifs au clic : bouton de pause/reprise, mention "J'aime" / "Liké" avec bascule visuelle, et déclenchement simulé de la diffusion vocale (`/spotify vc`).
+- **Valorisation Visuelle de l'Anti-Raid et Purge Éclair en 0.2s** :
+  - Mise en évidence concrète de la suppression instantanée du message de raid malveillant : texte barré en rouge, badge d'avertissement banni/purgé et indicateur de neutralisation en 0.2s.
+  - Boutons d'action Keeper Protect dans l'embed de sanction (Bouclier Owner actif, Salons sécurisés, Audit en direct).
+- **Épuration Rigoureuse des Mentions Tierces** :
+  - Vérification et garantie d'absence totale de tout nom de bot concurrent ou tiers dans l'ensemble du code source, des fichiers de métadonnées et des présentations publiques.
+
 ## v1.75.18 — 2026-10-13
 
 **Correction Détection Duo / Groupes Premades LoL & Valorant**

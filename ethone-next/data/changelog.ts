@@ -52632,6 +52632,59 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_18_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_18_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_18_de);
 
+const v1_75_19_fr: ChangelogEntry = {
+  version: "v1.75.19",
+  date: "2026-10-13",
+  title: "Vitrine Bot : Correction Avatar Discord, Lecteur Spotify et Démo Anti-Raid",
+  items: [
+    "Avatar Discord circulaire haute résolution : remplacement de l'icône de l'application par l'avatar officiel Discord d'Etho, éliminant les artéfacts de bordure et les coupures horizontales dans le simulateur.",
+    "Lecteur Spotify réaliste et interactif : disque vinyle circulaire authentique avec microsillons, centre de macaron dynamique, badge Spotify officiel et boutons interactifs réactifs (lecture/pause, like, diffusion vocale).",
+    "Démo Anti-Raid fidèle et dynamique : mise en valeur visuelle de la purge éclair en 0.2s sur le message malveillant (barré, marquage banni/purgé) et boutons d'action interactifs style Keeper Protect (Bouclier Owner, Salons sécurisés, Audit).",
+    "Purge complète des références tierces : suppression intégrale de toute mention d'autres bots tiers sur l'ensemble de la vitrine publique.",
+  ],
+};
+
+const v1_75_19_en: ChangelogEntry = {
+  version: "v1.75.19",
+  date: "2026-10-13",
+  title: "Bot Landing Showcase: Avatar, Spotify Player & Anti-Raid Demo Fixes",
+  items: [
+    "High-resolution circular Discord avatar: replaced app squircle with official Discord bot avatar, eliminating edge clipping and scanline artifacts across the showcase simulator.",
+    "Realistic interactive Spotify player: authentic circular vinyl record with grooves, dynamic label art, official Spotify badge and responsive action controls (play/pause, like, voice bridge).",
+    "Instant 0.2s Anti-Raid purge demo: visual strike-through and purge badges on attack messages with Keeper Protect style interactive action buttons.",
+    "Complete elimination of third-party bot names across all showcase copy and landing pages.",
+  ],
+};
+
+const v1_75_19_es: ChangelogEntry = {
+  version: "v1.75.19",
+  date: "2026-10-13",
+  title: "Escaparate Bot: Corrección Avatar Discord, Reproductor Spotify y Demo Anti-Raid",
+  items: [
+    "Avatar de Discord circular de alta resolución: reemplazo del icono de la app por el avatar oficial de Discord, eliminando artefactos de borde en el simulador.",
+    "Reproductor de Spotify realista e interactivo: disco de vinilo circular con surcos concéntricos, etiqueta dinámica, insignia de Spotify y controles interactivos.",
+    "Demostración de purga Anti-Raid en 0.2s: tachado visual en el mensaje de ataque y botones de acción interactivos estilo Keeper Protect.",
+    "Eliminación total de referencias a otros bots de terceros en todo el escaparate.",
+  ],
+};
+
+const v1_75_19_de: ChangelogEntry = {
+  version: "v1.75.19",
+  date: "2026-10-13",
+  title: "Bot-Landingpage: Discord-Avatar, Spotify-Player & Anti-Raid Demo behoben",
+  items: [
+    "Hochauflösender runder Discord-Avatar: App-Icon durch offiziellen Discord-Bot-Avatar ersetzt, Artefakte und horizontale Kanten im Chat-Simulator beseitigt.",
+    "Realistischer interaktiver Spotify-Player: authentische Vinyl-Schallplatte mit Rillen, dynamischem Label, Spotify-Badge und reaktiven Bedienelementen.",
+    "Anschauliche Anti-Raid-Purge-Demo in 0.2s: durchgestrichene Angreifer-Nachricht mit Purge-Badges und interaktiven Keeper Protect Aktions-Buttons.",
+    "Vollständige Entfernung von Drittanbieter-Bot-Namen auf der gesamten Landingpage.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_19_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_19_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_19_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_19_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

@@ -1,4 +1,4 @@
-import { authenticateValorantRiot, fetchValorantStorefront, fetchValorantInventory } from "../services/riot-valorant-client.js";
+import { authenticateValorantRiot, exchangeValorantToken, fetchValorantStorefront, fetchValorantInventory } from "../services/riot-valorant-client.js";
 import { routeResult } from "../utils/response.js";
 import { httpError } from "../middleware/errors.js";
 
@@ -19,7 +19,18 @@ async function readJsonBody(request, maxFields = 10) {
 
 export async function valorantAuthRoute({ request }) {
   const body = await readJsonBody(request, 10);
-  const { username, password, cookies, action, mfaCode } = body;
+  const { username, password, cookies, action, mfaCode, accessToken, idToken } = body;
+
+  if (action === "exchange_token" || action === "oauth" || (accessToken && !username && !password)) {
+    if (!accessToken) {
+      throw httpError("INVALID_PARAMETER", 400, { detail: "accessToken is required" });
+    }
+    const result = await exchangeValorantToken({
+      accessToken: String(accessToken).trim(),
+      idToken: idToken ? String(idToken).trim() : "",
+    });
+    return routeResult(result, { source: "riot", cached: false });
+  }
 
   if (action !== "mfa" && (!username || !password)) {
     throw httpError("INVALID_PARAMETER", 400, { detail: "username and password are required" });

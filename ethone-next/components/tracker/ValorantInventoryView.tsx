@@ -6,15 +6,20 @@ import { fetchWorker } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { EASE_SNAP } from "@/lib/ease";
 import RiotGamesLogo from "@/components/icons/RiotGamesLogo";
+import GoogleIcon from "@/components/icons/GoogleIcon";
 import ClientImage from "@/components/ClientImage";
 import {
+  CircleCheck,
+  ClipboardPaste,
   Clock,
   Coins,
   CreditCard,
+  ExternalLink,
   Lock,
   LogOut,
   RefreshCw,
   SearchX,
+  ShieldCheck,
   Sparkles,
   X,
 } from "@/components/icons/ph";
@@ -214,8 +219,11 @@ export default function ValorantInventoryView() {
   const [session, setSession] = useState<ValorantSession | null>(null);
   const [isDemo, setIsDemo] = useState(false);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [authMode, setAuthMode] = useState<"oauth" | "credentials">("oauth");
   const [activeTab, setActiveTab] = useState<"store" | "skins" | "buddies" | "cards">("store");
 
+  const [redirectUrlInput, setRedirectUrlInput] = useState("");
+  const [detectedTokens, setDetectedTokens] = useState<{ accessToken: string; idToken: string } | null>(null);
   const [usernameInput, setUsernameInput] = useState("");
   const [passwordInput, setPasswordInput] = useState("");
   const [shardInput, setShardInput] = useState("eu");
@@ -239,16 +247,50 @@ export default function ValorantInventoryView() {
   const [categoryFilter, setCategoryFilter] = useState("Tous");
   const [dataLoading, setDataLoading] = useState(false);
 
-  useEffect(() => {
+  const extractTokensFromInput = useCallback((input: string): { accessToken: string; idToken: string } | null => {
+    const clean = input.trim();
+    if (!clean) return null;
+    if (clean.includes("access_token=")) {
+      try {
+        const hashPart = clean.includes("#") ? clean.split("#")[1] : clean.includes("?") ? clean.split("?")[1] : clean;
+        const params = new URLSearchParams(hashPart);
+        const accessToken = params.get("access_token");
+        const idToken = params.get("id_token") || "";
+        if (accessToken) return { accessToken, idToken };
+      } catch {}
+    }
+    if (clean.startsWith("ey") && clean.split(".").length >= 3) {
+      return { accessToken: clean, idToken: "" };
+    }
+    return null;
+  }, []);
+
+  const handleRedirectUrlChange = useCallback((value: string) => {
+    setRedirectUrlInput(value);
+    const tokens = extractTokensFromInput(value);
+    setDetectedTokens(tokens);
+    if (loginError) setLoginError(null);
+  }, [extractTokensFromInput, loginError]);
+
+  const handlePasteClipboard = useCallback(async () => {
     try {
-      const stored = sessionStorage.getItem("ethone:valorant:session");
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (parsed?.accessToken) {
-          setSession(parsed);
+      if (typeof navigator !== "undefined" && navigator.clipboard) {
+        const text = await navigator.clipboard.readText();
+        if (text) {
+          handleRedirectUrlChange(text);
         }
       }
     } catch {}
+  }, [handleRedirectUrlChange]);
+
+  const handleOpenRiotOAuth = useCallback(() => {
+    const url = "https://auth.riotgames.com/authorize?redirect_uri=https%3A%2F%2Fplayvalorant.com%2Fopt_in&client_id=play-valorant-web-prod&response_type=token%20id_token&scope=account%20openid&nonce=1";
+    if (typeof window !== "undefined") {
+      const popup = window.open(url, "RiotAuthWindow", "width=520,height=760,menubar=no,toolbar=no,location=yes,status=no");
+      if (!popup || popup.closed || typeof popup.closed === "undefined") {
+        window.open(url, "_blank");
+      }
+    }
   }, []);
 
   useEffect(() => {
@@ -399,6 +441,70 @@ export default function ValorantInventoryView() {
     }
   }, []);
 
+  useEffect(() => {
+    try {
+      const stored = sessionStorage.getItem("ethone:valorant:session") || localStorage.getItem("ethone:valorant:session");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed?.accessToken && parsed.accessToken !== "demo-access-token") {
+          setSession(parsed);
+          void loadPlayerData(parsed);
+        }
+      }
+    } catch {}
+  }, [loadPlayerData]);
+
+  const handleOAuthSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const tokens = detectedTokens || extractTokensFromInput(redirectUrlInput);
+    if (!tokens || !tokens.accessToken) {
+      setLoginError("Aucun jeton d'accès Riot valide détecté. Veuillez coller l'URL de redirection ou le jeton.");
+      return;
+    }
+
+    setLoginError(null);
+    setLoginLoading(true);
+
+    try {
+      const res = await fetchWorker("/api/stats/valorant-auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "exchange_token",
+          accessToken: tokens.accessToken,
+          idToken: tokens.idToken,
+        }),
+      });
+
+      const data = res?.data;
+      if (data?.accessToken && data?.puuid) {
+        const newSession: ValorantSession = {
+          accessToken: data.accessToken,
+          idToken: data.idToken || tokens.idToken,
+          entitlementsToken: data.entitlementsToken,
+          puuid: data.puuid,
+          shard: shardInput,
+          username: data.userInfo?.sub ? `Joueur (${data.userInfo.sub.slice(0, 8)})` : (usernameInput || "Riot Player"),
+          country: data.userInfo?.country,
+        };
+        setSession(newSession);
+        setIsDemo(false);
+        sessionStorage.setItem("ethone:valorant:session", JSON.stringify(newSession));
+        localStorage.setItem("ethone:valorant:session", JSON.stringify(newSession));
+        setLoginModalOpen(false);
+        setRedirectUrlInput("");
+        setDetectedTokens(null);
+        void loadPlayerData(newSession);
+      } else {
+        setLoginError("Échec de synchronisation avec Riot Games. Vérifiez la validité du jeton.");
+      }
+    } catch (err: unknown) {
+      setLoginError(err instanceof Error ? err.message : "Erreur de validation du jeton Riot Games.");
+    } finally {
+      setLoginLoading(false);
+    }
+  };
+
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoginError(null);
@@ -437,6 +543,7 @@ export default function ValorantInventoryView() {
         setSession(newSession);
         setIsDemo(false);
         sessionStorage.setItem("ethone:valorant:session", JSON.stringify(newSession));
+        localStorage.setItem("ethone:valorant:session", JSON.stringify(newSession));
         setLoginModalOpen(false);
         void loadPlayerData(newSession);
       } else {
@@ -480,6 +587,7 @@ export default function ValorantInventoryView() {
         setSession(newSession);
         setIsDemo(false);
         sessionStorage.setItem("ethone:valorant:session", JSON.stringify(newSession));
+        localStorage.setItem("ethone:valorant:session", JSON.stringify(newSession));
         setMfaOpen(false);
         setLoginModalOpen(false);
         void loadPlayerData(newSession);
@@ -559,6 +667,7 @@ export default function ValorantInventoryView() {
     setSession(null);
     setIsDemo(false);
     sessionStorage.removeItem("ethone:valorant:session");
+    localStorage.removeItem("ethone:valorant:session");
   };
 
   const filteredSkins = useMemo(() => {
@@ -709,7 +818,7 @@ export default function ValorantInventoryView() {
                 className="rounded-xl px-6 font-bold bg-[#EB0029] hover:bg-[#D13639] text-white shadow-xl shadow-[#EB0029]/25"
                 leftIcon={<RiotGamesLogo className="h-4 w-4 shrink-0" />}
               >
-                Connexion Riot Games
+                Connexion Officielle Riot Games
               </Button>
             </motion.div>
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
@@ -725,10 +834,10 @@ export default function ValorantInventoryView() {
             </motion.div>
           </div>
 
-          <div className="mt-8 flex items-center gap-2.5 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-bg)]/80 px-3.5 py-2 text-xs text-[var(--text-secondary)] shadow-sm backdrop-blur-sm">
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-2.5 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-bg)]/80 px-3.5 py-2 text-xs text-[var(--text-secondary)] shadow-sm backdrop-blur-sm">
             <span className="flex h-2 w-2 rounded-sm bg-emerald-500/80 ring-2 ring-emerald-500/20" />
             <span className="font-medium">
-              <strong className="font-semibold text-[var(--text-primary)]">Sécurité locale</strong> : aucun mot de passe n&apos;est stocké sur nos serveurs. Jetons conservés uniquement dans votre navigateur.
+              <strong className="font-semibold text-[var(--text-primary)]">Flux officiel RSO</strong> : compatible Google, Apple, Facebook et Riot ID. Jetons conservés uniquement dans votre navigateur.
             </span>
           </div>
         </motion.section>
@@ -1059,13 +1168,172 @@ export default function ValorantInventoryView() {
               </button>
             </div>
 
-            {!mfaOpen ? (
+            {!mfaOpen && (
+              <div className="flex border-b border-[var(--panel-border)] bg-[var(--surface-bg)]/40 p-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAuthMode("oauth");
+                    setLoginError(null);
+                  }}
+                  className={cn(
+                    "flex flex-1 items-center justify-center gap-1.5 rounded-xl py-2 text-xs font-semibold transition",
+                    authMode === "oauth"
+                      ? "bg-[var(--panel-bg)] text-[var(--text-primary)] shadow-sm"
+                      : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                  )}
+                >
+                  <ShieldCheck className="h-3.5 w-3.5 text-[#EB0029]" />
+                  <span>Officiel (OAuth)</span>
+                  <span className="rounded-md bg-[#EB0029]/15 px-1.5 py-0.5 text-[10px] font-bold text-[#EB0029]">
+                    Recommandé
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAuthMode("credentials");
+                    setLoginError(null);
+                  }}
+                  className={cn(
+                    "flex flex-1 items-center justify-center gap-1.5 rounded-xl py-2 text-xs font-semibold transition",
+                    authMode === "credentials"
+                      ? "bg-[var(--panel-bg)] text-[var(--text-primary)] shadow-sm"
+                      : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                  )}
+                >
+                  <Lock className="h-3.5 w-3.5" />
+                  <span>Identifiants</span>
+                </button>
+              </div>
+            )}
+
+            {!mfaOpen && authMode === "oauth" ? (
+              <form onSubmit={handleOAuthSubmit} className="space-y-4 p-5 sm:p-6">
+                {loginError && (
+                  <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-300">
+                    {loginError}
+                  </div>
+                )}
+
+                <div className="space-y-2">
+                  <span className="block text-xs font-semibold text-[var(--text-muted)]">
+                    Étape 1 • Connectez-vous sur la page officielle Riot
+                  </span>
+                  <Button
+                    type="button"
+                    variant="primary"
+                    onClick={handleOpenRiotOAuth}
+                    className="w-full rounded-xl font-bold bg-[#EB0029] hover:bg-[#D13639] text-white shadow-lg shadow-[#EB0029]/20"
+                    leftIcon={<RiotGamesLogo className="h-4 w-4 shrink-0" />}
+                    rightIcon={<ExternalLink className="h-4 w-4 shrink-0" />}
+                  >
+                    Ouvrir Riot Games (auth.riotgames.com)
+                  </Button>
+                  <div className="flex flex-wrap items-center justify-center gap-1.5 pt-1 text-[11px] text-[var(--text-muted)]">
+                    <span>Compatible :</span>
+                    <span className="inline-flex items-center gap-1 rounded-md bg-[var(--surface-bg)] px-1.5 py-0.5 font-medium text-[var(--text-primary)]">
+                      <GoogleIcon className="h-3 w-3" /> Google
+                    </span>
+                    <span className="rounded-md bg-[var(--surface-bg)] px-1.5 py-0.5 font-medium text-[var(--text-primary)]">
+                      Apple
+                    </span>
+                    <span className="rounded-md bg-[var(--surface-bg)] px-1.5 py-0.5 font-medium text-[var(--text-primary)]">
+                      Facebook
+                    </span>
+                    <span className="rounded-md bg-[var(--surface-bg)] px-1.5 py-0.5 font-medium text-[var(--text-primary)]">
+                      Riot ID
+                    </span>
+                    <span className="rounded-md bg-[var(--surface-bg)] px-1.5 py-0.5 font-medium text-[var(--text-primary)]">
+                      2FA
+                    </span>
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-xs font-semibold text-[var(--text-muted)]">
+                      Étape 2 • Collez l&apos;URL ou le jeton de redirection
+                    </label>
+                    <button
+                      type="button"
+                      onClick={handlePasteClipboard}
+                      className="inline-flex items-center gap-1 text-[11px] font-semibold text-[var(--accent-primary)] hover:underline"
+                    >
+                      <ClipboardPaste className="h-3 w-3" />
+                      <span>Coller</span>
+                    </button>
+                  </div>
+                  <Input
+                    type="text"
+                    value={redirectUrlInput}
+                    onChange={(e) => handleRedirectUrlChange(e.target.value)}
+                    placeholder="https://playvalorant.com/opt_in#access_token=... ou jeton"
+                  />
+                  <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">
+                    Copiez l&apos;URL de la barre d&apos;adresse de la page finale après connexion et collez-la ici.
+                  </p>
+                </div>
+
+                {detectedTokens ? (
+                  <div className="flex items-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-2.5 text-xs text-emerald-400">
+                    <CircleCheck className="h-4 w-4 shrink-0 text-emerald-400" />
+                    <span className="font-medium">Jeton Riot Games détecté avec succès !</span>
+                  </div>
+                ) : null}
+
+                <div>
+                  <label className="mb-1.5 block text-xs font-semibold text-[var(--text-muted)]">
+                    Serveur / Région de jeu
+                  </label>
+                  <select
+                    value={shardInput}
+                    onChange={(e) => setShardInput(e.target.value)}
+                    className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--bg-surface,var(--panel-bg))] px-3.5 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]"
+                  >
+                    {SHARDS.map((s) => (
+                      <option key={s.id} value={s.id}>
+                        {s.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="rounded-lg border border-[var(--panel-border)] bg-[var(--surface-bg)]/80 p-3 text-[11px] leading-relaxed text-[var(--text-secondary)]">
+                  <ShieldCheck className="mb-0.5 inline h-3.5 w-3.5 mr-1.5 text-emerald-400" />
+                  Sécurité garantie : vos identifiants restent sur Riot Games. Seul le jeton de lecture temporaire est utilisé localement.
+                </div>
+
+                <div className="flex gap-2 pt-2">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    className="flex-1 rounded-xl"
+                    onClick={handleStartDemo}
+                  >
+                    Mode Démo
+                  </Button>
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    disabled={loginLoading || (!detectedTokens && !redirectUrlInput.trim())}
+                    className="flex-1 rounded-xl font-bold bg-[#EB0029] hover:bg-[#D13639] text-white shadow-lg shadow-[#EB0029]/20 disabled:opacity-50"
+                  >
+                    {loginLoading ? "Synchronisation…" : "Synchroniser mon compte"}
+                  </Button>
+                </div>
+              </form>
+            ) : !mfaOpen ? (
               <form onSubmit={handleLoginSubmit} className="space-y-4 p-5 sm:p-6">
                 {loginError && (
                   <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-300">
                     {loginError}
                   </div>
                 )}
+
+                <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-2.5 text-[11px] leading-relaxed text-amber-300">
+                  Riot Games protège ses API directes par Cloudflare Turnstile. En cas d&apos;erreur auth_failure, utilisez l&apos;onglet Officiel ci-dessus.
+                </div>
 
                 <div>
                   <label className="mb-1.5 block text-xs font-semibold text-[var(--text-muted)]">

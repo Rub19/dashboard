@@ -164,6 +164,57 @@ async function handleAuthResponse(data, cookies) {
   };
 }
 
+export async function exchangeValorantToken({ accessToken, idToken = "" }) {
+  if (!accessToken) {
+    throw httpError("INVALID_PARAMETER", 400, { detail: "accessToken is required" });
+  }
+
+  const entitlementsRes = await fetch(`${RIOT_ENTITLEMENTS_ORIGIN}/api/token/v1`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify({}),
+  });
+
+  if (!entitlementsRes.ok) {
+    throw httpError("AUTH_REJECTED", 401, { detail: "Invalid or expired Riot access token." });
+  }
+
+  const entitlementsData = await entitlementsRes.json();
+  const entitlementsToken = entitlementsData?.entitlements_token;
+
+  if (!entitlementsToken) {
+    throw httpError("AUTH_FAILED", 502, { detail: "Failed to retrieve Riot entitlements token." });
+  }
+
+  const userInfoRes = await fetch(`${RIOT_AUTH_ORIGIN}/userinfo`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  let userInfo = null;
+  let puuid = "";
+  if (userInfoRes.ok) {
+    userInfo = await userInfoRes.json();
+    puuid = userInfo?.sub || "";
+  }
+
+  return {
+    status: "authenticated",
+    accessToken,
+    idToken,
+    entitlementsToken,
+    puuid,
+    userInfo: {
+      sub: puuid,
+      country: userInfo?.country || "FRA",
+    },
+  };
+}
+
 export async function fetchValorantStorefront({ accessToken, entitlementsToken, puuid, shard = "eu" }) {
   const cleanShard = VALID_SHARDS.has(shard.toLowerCase()) ? shard.toLowerCase() : "eu";
   const clientVersion = await getLiveClientVersion();

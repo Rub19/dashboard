@@ -53999,5 +53999,61 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_45_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_45_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_45_de);
 
-export const CHANGELOG = CHANGELOG_BY_LANG.fr;
+const v12888_fr: ChangelogEntry = {
+  version: "v1.75.46",
+  date: "2026-10-13",
+  title: "Connexion Officielle Riot Games (OAuth / RSO) et Support Comptes Sociaux",
+  items: [
+    "Flux d'authentification officiel Riot Games (RSO) : ouverture directe du portail officiel auth.riotgames.com.",
+    "Support complet des comptes liés : connexion avec Google, Apple, Facebook et identifiants Riot ID.",
+    "Résolution du blocage Cloudflare Turnstile : validation native dans le navigateur éliminant l'erreur auth_failure.",
+    "Synchronisation automatique et extraction intelligente : détection instantanée de l'access token et de l'id token depuis l'URL de redirection.",
+    "Persistance de la session Valorant dans le stockage local et rafraîchissement automatique au rechargement.",
+  ],
+};
 
+const v12888_en: ChangelogEntry = {
+  version: "v1.75.46",
+  date: "2026-10-13",
+  title: "Official Riot Games OAuth Sign-On & Social Account Support",
+  items: [
+    "Official Riot Sign-On (RSO) authorization flow directly via auth.riotgames.com.",
+    "Full support for linked social accounts: Google, Apple, Facebook, and standard Riot ID.",
+    "Cloudflare Turnstile compatibility: in-browser verification eliminating direct auth_failure errors.",
+    "Automatic synchronization & smart token parsing: instant extraction of access and ID tokens from redirect URLs.",
+    "Local storage session persistence and automatic store refresh upon page reload.",
+  ],
+};
+
+const v12888_es: ChangelogEntry = {
+  version: "v1.75.46",
+  date: "2026-10-13",
+  title: "Inicio de Sesión Oficial Riot Games (OAuth) y Soporte de Cuentas Sociales",
+  items: [
+    "Flujo de autorización oficial Riot Sign-On (RSO) directamente a través de auth.riotgames.com.",
+    "Soporte completo para cuentas sociales vinculadas: Google, Apple, Facebook y Riot ID.",
+    "Compatibilidad con Cloudflare Turnstile que elimina los errores de auth_failure.",
+    "Extracción automática e inteligente de tokens de acceso desde la URL de redirección.",
+    "Persistencia de sesión en almacenamiento local y actualización automática al recargar.",
+  ],
+};
+
+const v12888_de: ChangelogEntry = {
+  version: "v1.75.46",
+  date: "2026-10-13",
+  title: "Offizieller Riot Games OAuth-Login & Unterstützung sozialer Konten",
+  items: [
+    "Offizieller Riot Sign-On (RSO) Autorisierungs-Workflow über auth.riotgames.com.",
+    "Vollständige Unterstützung für verknüpfte Konten: Google, Apple, Facebook und Riot ID.",
+    "Cloudflare Turnstile-Kompatibilität zur Behebung von auth_failure Fehlern.",
+    "Automatische Token-Erkennung und -Extraktion aus der Weiterleitungs-URL.",
+    "Sitzungspersistenz im lokalen Speicher und automatische Aktualisierung beim Neuladen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12888_fr);
+CHANGELOG_BY_LANG.en.unshift(v12888_en);
+CHANGELOG_BY_LANG.es.unshift(v12888_es);
+CHANGELOG_BY_LANG.de.unshift(v12888_de);
+
+export const CHANGELOG = CHANGELOG_BY_LANG.fr;

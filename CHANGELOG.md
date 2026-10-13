@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.46 — 2026-10-13
+
+**Connexion Officielle Riot Games (OAuth / RSO) et Support Comptes Sociaux**
+
+- Flux d'authentification officiel Riot Games (RSO) : ouverture directe du portail officiel auth.riotgames.com.
+- Support complet des comptes liés : connexion avec Google, Apple, Facebook et identifiants Riot ID.
+- Résolution du blocage Cloudflare Turnstile : validation native dans le navigateur éliminant l'erreur auth_failure.
+- Synchronisation automatique et extraction intelligente : détection instantanée de l'access token et de l'id token depuis l'URL de redirection.
+- Persistance de la session Valorant dans le stockage local et rafraîchissement automatique au rechargement.
+
 ## v1.75.45 — 2026-10-13
 
 **Boutons rectangulaires, logo Riot horizontal et motion design des trackers**

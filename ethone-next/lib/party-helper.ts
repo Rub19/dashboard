@@ -216,7 +216,7 @@ export function computePartyMap<T extends { party_id?: string; team?: string; is
   if (Array.isArray(allMatches) && allMatches.length > 0) {
     matchesToInspect.push(...allMatches);
   } else {
-    matchesToInspect.push(...getStoredMatches<T>());
+    matchesToInspect.push(...getStoredMatches());
   }
 
   const confirmedPairs = buildConfirmedDuoPairs<T>(matchesToInspect);

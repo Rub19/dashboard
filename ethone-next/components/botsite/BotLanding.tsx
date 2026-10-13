@@ -661,25 +661,113 @@ function RadarSweep() {
   );
 }
 
-function WaveformBars() {
+function WaveformScanner() {
   const { reduced } = useMotionPref();
   const heights = [28, 48, 20, 56, 36, 64, 24, 52, 32, 60, 18, 44, 40, 56, 22, 50, 30, 58, 26, 46, 38, 62, 16, 42];
   return (
-    <div className="flex h-16 items-end justify-center gap-1 sm:gap-1.5">
-      {heights.map((h, i) => (
+    <div className="relative mx-auto mt-8 flex h-52 w-full items-center justify-center overflow-hidden rounded-2xl border border-white/[0.06] bg-black/40 px-6 backdrop-blur-md">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background: "radial-gradient(circle at 50% 50%, rgba(146, 200, 210, 0.12), transparent 70%)",
+        }}
+      />
+      <div className="flex h-32 items-end justify-center gap-1.5 sm:gap-2">
+        {heights.map((h, i) => (
+          <motion.div
+            key={i}
+            className="w-1.5 rounded-full bg-gradient-to-t from-[#92C8D2]/30 via-[#92C8D2] to-cyan-200"
+            style={{ height: reduced ? h : 12 }}
+            animate={reduced ? {} : { height: [12, h, Math.max(12, h * 0.35), Math.max(16, h * 0.85), 12] }}
+            transition={{
+              duration: 2.4,
+              repeat: Infinity,
+              delay: i * 0.08,
+              ease: "easeInOut",
+            }}
+          />
+        ))}
+      </div>
+      {!reduced && (
         <motion.div
-          key={i}
-          className="w-1 rounded-full bg-gradient-to-t from-[#92C8D2]/40 via-[#92C8D2] to-emerald-400 sm:w-1.5"
-          style={{ height: reduced ? h : 8 }}
-          animate={reduced ? {} : { height: [8, h, Math.max(8, h * 0.35), Math.max(12, h * 0.85), 8] }}
-          transition={{
-            duration: 2.2,
-            repeat: Infinity,
-            delay: i * 0.07,
-            ease: "easeInOut",
-          }}
-        />
-      ))}
+          className="pointer-events-none absolute inset-y-3 flex flex-col items-center justify-between"
+          animate={{ left: ["15%", "85%"] }}
+          transition={{ duration: 4.5, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
+        >
+          <span className="rounded-full border border-[#92C8D2]/40 bg-[#0c141d] px-2 py-0.5 text-[10px] font-bold text-[#92C8D2] shadow-[0_0_12px_rgba(146,200,210,0.4)]">
+            8D
+          </span>
+          <div className="h-full w-[2px] bg-gradient-to-b from-[#92C8D2] via-white to-[#92C8D2] shadow-[0_0_14px_#92C8D2]" />
+          <span className="text-[10px] font-bold tracking-widest text-[#92C8D2]">
+            ON
+          </span>
+        </motion.div>
+      )}
+    </div>
+  );
+}
+
+function QueueDeck() {
+  return (
+    <div className="relative mt-6 pt-3 pb-8">
+      <div
+        className="absolute inset-x-5 top-9 flex items-center justify-between rounded-2xl border border-white/[0.04] bg-[#0c141d]/50 p-3.5 backdrop-blur-sm"
+        style={{ transform: "scale(0.92) translateY(18px)", filter: "blur(2px)", opacity: 0.4 }}
+      >
+        <div className="flex items-center gap-3">
+          <div className="h-9 w-9 rounded-lg bg-red-900/40" />
+          <div className="h-3 w-24 rounded bg-white/10" />
+        </div>
+        <span className="font-mono text-[10px] text-zinc-600">3:12</span>
+      </div>
+
+      <div
+        className="absolute inset-x-2.5 top-5 flex items-center justify-between rounded-2xl border border-white/[0.06] bg-[#0c141d]/75 p-3.5 backdrop-blur-md"
+        style={{ transform: "scale(0.96) translateY(9px)", filter: "blur(1px)", opacity: 0.65 }}
+      >
+        <div className="flex items-center gap-3">
+          <div className="h-9 w-9 rounded-lg bg-red-800/60" />
+          <div className="h-3 w-28 rounded bg-white/20" />
+        </div>
+        <span className="font-mono text-[10px] text-zinc-500">3:58</span>
+      </div>
+
+      <div className="relative rounded-2xl border border-white/[0.09] bg-[#0c141d]/95 p-4 shadow-2xl backdrop-blur-xl">
+        <div className="flex items-center justify-between text-[11px] text-zinc-400">
+          <span className="font-medium text-zinc-500">1 / 24</span>
+          <button
+            type="button"
+            aria-label="Skip track"
+            className="flex h-6 w-6 items-center justify-center rounded-full bg-white/[0.06] text-zinc-400 transition-colors hover:bg-white/[0.12] hover:text-white"
+          >
+            <svg viewBox="0 0 16 16" fill="currentColor" className="h-3 w-3" aria-hidden="true">
+              <path d="M12.5 3.5a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-1 0V4a.5.5 0 0 1 .5-.5zM3.854 4.146a.5.5 0 0 1 .708 0l5 5a.5.5 0 0 1 0 .708l-5 5a.5.5 0 0 1-.708-.708L8.293 9.5 3.854 5.061a.5.5 0 0 1 0-.708z" />
+            </svg>
+          </button>
+        </div>
+
+        <div className="mt-3 flex items-center gap-3.5">
+          <div className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-red-600 via-rose-700 to-amber-700 shadow-lg shadow-red-900/30">
+            <div className="absolute inset-1 rounded-lg border border-amber-300/40 bg-red-950/80 flex items-center justify-center">
+              <div className="h-3.5 w-3.5 rounded-full bg-emerald-400/90 shadow-sm" />
+            </div>
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="flex items-baseline gap-2">
+              <p className="truncate text-sm font-bold text-white">POWER</p>
+              <span className="truncate text-xs font-medium text-[#92C8D2]">Kanye West</span>
+            </div>
+            <div className="mt-2 flex items-center gap-2.5">
+              <div className="relative h-1 flex-1 rounded-full bg-white/10">
+                <div className="absolute inset-y-0 left-0 w-[65%] rounded-full bg-[#92C8D2]" />
+                <div className="absolute top-1/2 left-[65%] h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#92C8D2] shadow-[0_0_8px_#92C8D2]" />
+              </div>
+              <span className="font-mono text-[11px] text-zinc-400">4:52</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -687,25 +775,28 @@ function WaveformBars() {
 function SpotifyRipple() {
   const { reduced } = useMotionPref();
   return (
-    <div className="relative mt-6 flex items-center justify-center">
-      <div className="relative h-32 w-32">
-        {!reduced &&
-          [0, 1, 2].map((i) => (
-            <motion.div
-              key={i}
-              className="absolute inset-0 rounded-full border border-[#1DB954]/30"
-              initial={{ scale: 0.5, opacity: 0.6 }}
-              animate={{ scale: [0.5, 1.4], opacity: [0.6, 0] }}
-              transition={{ duration: 2.5, repeat: Infinity, delay: i * 0.8, ease: "easeOut" }}
-            />
-          ))}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#1DB954] shadow-lg shadow-[#1DB954]/30">
-            <svg viewBox="0 0 24 24" fill="white" className="h-8 w-8" aria-hidden="true">
-              <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381C8.28 5.92 15.24 6.182 19.38 8.94c.54.3.72 1.02.42 1.56-.3.42-1.02.6-1.56.3l-.158-.12z" />
-            </svg>
-          </div>
-        </div>
+    <div className="relative mt-6 flex h-40 w-full items-center justify-center overflow-hidden">
+      <div className="absolute h-48 w-48 rounded-full border border-[#1DB954]/15" />
+      <div className="absolute h-36 w-36 rounded-full border border-[#1DB954]/25" />
+      <div className="absolute h-24 w-24 rounded-full border border-[#1DB954]/35" />
+      {!reduced && (
+        <motion.div
+          className="absolute h-24 w-24 rounded-full border border-[#1DB954]/50"
+          animate={{ scale: [1, 2], opacity: [0.6, 0] }}
+          transition={{ duration: 3, repeat: Infinity, ease: "easeOut" }}
+        />
+      )}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute h-32 w-32 rounded-full"
+        style={{
+          background: "radial-gradient(circle, rgba(29, 185, 84, 0.28) 0%, transparent 70%)",
+        }}
+      />
+      <div className="relative flex h-14 w-14 items-center justify-center rounded-full bg-[#1DB954] shadow-[0_0_30px_rgba(29,185,84,0.5)]">
+        <svg viewBox="0 0 24 24" fill="black" className="h-8 w-8" aria-hidden="true">
+          <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381C8.28 5.92 15.24 6.182 19.38 8.94c.54.3.72 1.02.42 1.56-.3.42-1.02.6-1.56.3l-.158-.12z" />
+        </svg>
       </div>
     </div>
   );
@@ -714,96 +805,128 @@ function SpotifyRipple() {
 const FEATURE_ICONS: Record<string, ReactNode> = {
   search: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-5 w-5" aria-hidden="true">
-      <circle cx="11" cy="11" r="8" />
-      <path d="m21 21-4.3-4.3" strokeLinecap="round" />
+      <circle cx="12" cy="12" r="9" />
+      <path d="M3.6 9h16.8M3.6 15h16.8" />
+      <path d="M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18" />
     </svg>
   ),
   tts: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-5 w-5" aria-hidden="true">
-      <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3Z" />
-      <path d="M19 10v2a7 7 0 0 1-14 0v-2" strokeLinecap="round" />
-      <line x1="12" y1="19" x2="12" y2="23" strokeLinecap="round" />
+      <path d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4" strokeLinecap="round" />
     </svg>
   ),
   levels: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-5 w-5" aria-hidden="true">
-      <path d="M3 3v18h18" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="m7 16 4-8 4 4 4-8" strokeLinecap="round" strokeLinejoin="round" />
+      <rect x="4" y="14" width="4" height="7" rx="1" />
+      <rect x="10" y="9" width="4" height="12" rx="1" />
+      <rect x="16" y="4" width="4" height="17" rx="1" />
     </svg>
   ),
   snipe: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-5 w-5" aria-hidden="true">
-      <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+      <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z" strokeLinecap="round" strokeLinejoin="round" />
       <circle cx="12" cy="12" r="3" />
     </svg>
   ),
   giveaways: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-5 w-5" aria-hidden="true">
-      <path d="M20 12v10H4V12" strokeLinecap="round" strokeLinejoin="round" />
-      <rect x="2" y="7" width="20" height="5" rx="1" />
-      <path d="M12 22V7" />
-      <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7Z" />
-      <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7Z" />
+      <rect x="3" y="8" width="18" height="4" rx="1" />
+      <path d="M12 8v13M5 12v9h14v-9" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M7.5 8a2.5 2.5 0 0 1 0-5C10 3 12 8 12 8s2-5 4.5-5a2.5 2.5 0 0 1 0 5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   ),
   games: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-5 w-5" aria-hidden="true">
-      <path d="M6 12h4m-2-2v4" strokeLinecap="round" />
-      <circle cx="17" cy="10" r="1" fill="currentColor" />
-      <circle cx="15" cy="14" r="1" fill="currentColor" />
       <rect x="2" y="6" width="20" height="12" rx="4" />
+      <path d="M6 12h4m-2-2v4" strokeLinecap="round" />
+      <circle cx="15.5" cy="10.5" r="1" fill="currentColor" />
+      <circle cx="18" cy="13.5" r="1" fill="currentColor" />
     </svg>
   ),
   autoResponders: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-5 w-5" aria-hidden="true">
-      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M8 10h8" strokeLinecap="round" />
-      <path d="M8 14h4" strokeLinecap="round" />
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M8 9h8m-8 4h5" strokeLinecap="round" />
     </svg>
   ),
-  reminders: (
+  bumpReminder: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-5 w-5" aria-hidden="true">
-      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-      <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+      <rect x="4" y="4" width="16" height="16" rx="4" />
+      <path d="M9 12h6m-3-3l3 3-3 3" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   ),
   counters: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-5 w-5" aria-hidden="true">
-      <rect x="3" y="3" width="7" height="7" rx="1" />
-      <rect x="14" y="3" width="7" height="7" rx="1" />
-      <rect x="3" y="14" width="7" height="7" rx="1" />
-      <rect x="14" y="14" width="7" height="7" rx="1" />
+      <rect x="3" y="3" width="18" height="18" rx="3" />
+      <path d="M7 8h3v8M14 8h3l-3 4h3" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  ),
+  reactionTriggers: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-5 w-5" aria-hidden="true">
+      <circle cx="12" cy="12" r="10" />
+      <path d="M8 14s1.5 2.5 4 2.5 4-2.5 4-2.5" strokeLinecap="round" />
+      <circle cx="9" cy="9.5" r="1" fill="currentColor" />
+      <circle cx="15" cy="9.5" r="1" fill="currentColor" />
+    </svg>
+  ),
+  imageManipulation: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-5 w-5" aria-hidden="true">
+      <rect x="3" y="3" width="18" height="18" rx="3" />
+      <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor" />
+      <path d="m21 15-5-5L5 21" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  ),
+  translation: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-5 w-5" aria-hidden="true">
+      <path d="M5 8l6 6m-7-8h8m-4-2v2m6 10l2 4 2-4m-2 4h4" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  ),
+  reminders: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-5 w-5" aria-hidden="true">
+      <rect x="4" y="4" width="16" height="16" rx="4" />
+      <path d="M9 12h6m-3-3l3 3-3 3" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   ),
   reactionRoles: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-5 w-5" aria-hidden="true">
       <circle cx="12" cy="12" r="10" />
-      <path d="M8 14s1.5 2 4 2 4-2 4-2" strokeLinecap="round" />
-      <line x1="9" y1="9" x2="9.01" y2="9" strokeLinecap="round" strokeWidth="2" />
-      <line x1="15" y1="9" x2="15.01" y2="9" strokeLinecap="round" strokeWidth="2" />
+      <path d="M8 14s1.5 2.5 4 2.5 4-2.5 4-2.5" strokeLinecap="round" />
+      <circle cx="9" cy="9.5" r="1" fill="currentColor" />
+      <circle cx="15" cy="9.5" r="1" fill="currentColor" />
     </svg>
   ),
   lyrics: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-5 w-5" aria-hidden="true">
-      <path d="M9 18V5l12-2v13" strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx="6" cy="18" r="3" />
-      <circle cx="18" cy="16" r="3" />
-    </svg>
-  ),
-  translation: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-5 w-5" aria-hidden="true">
-      <path d="M5 8l6 6" strokeLinecap="round" />
-      <path d="M4 6h8" strokeLinecap="round" />
-      <path d="M8 4v2" strokeLinecap="round" />
-      <path d="m14 14 2 4 2-4" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M14 18h4" strokeLinecap="round" />
+      <rect x="3" y="3" width="18" height="18" rx="3" />
+      <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor" />
+      <path d="m21 15-5-5L5 21" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   ),
 };
 
 const FEATURE_KEYS = [
-  "search", "tts", "levels", "snipe", "giveaways", "games",
-  "autoResponders", "reminders", "counters", "reactionRoles", "lyrics", "translation",
+  "search",
+  "tts",
+  "levels",
+  "snipe",
+  "giveaways",
+  "games",
+  "autoResponders",
+  "bumpReminder",
+  "counters",
+  "reactionTriggers",
+  "imageManipulation",
+  "translation",
+] as const;
+
+const HALO_ICONS = [
+  { key: "bumpReminder", y: 22, primary: false },
+  { key: "autoResponders", y: 8, primary: false },
+  { key: "levels", y: -6, primary: false },
+  { key: "giveaways", y: -18, primary: true },
+  { key: "tts", y: -6, primary: false },
+  { key: "translation", y: 8, primary: false },
+  { key: "imageManipulation", y: 22, primary: false },
 ] as const;
 
 interface PlatformConfigItem {
@@ -1005,6 +1128,7 @@ export default function BotLanding() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [showCommands, setShowCommands] = useState(false);
 
   const handleDashboardClick = async (e?: React.MouseEvent) => {
     if (e) e.preventDefault();
@@ -1092,6 +1216,13 @@ export default function BotLanding() {
   const scrollToSection = (id: string) => (e: React.MouseEvent) => {
     e.preventDefault();
     setMenuOpen(false);
+    if (id === "commandes") {
+      setShowCommands(true);
+      setTimeout(() => {
+        document.getElementById("commandes")?.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
+      }, 60);
+      return;
+    }
     document.getElementById(id)?.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
   };
 
@@ -1485,7 +1616,7 @@ export default function BotLanding() {
 
         <section id="music" className="mx-auto w-full max-w-6xl px-6 py-24 scroll-mt-20">
           <Reveal className="text-center">
-            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#92C8D2]/10 ring-1 ring-[#92C8D2]/20">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#0c131b] border border-[#92C8D2]/30 shadow-[0_0_25px_rgba(146,200,210,0.2)]">
               <svg viewBox="0 0 24 24" fill="none" stroke="#92C8D2" strokeWidth="1.5" className="h-7 w-7" aria-hidden="true">
                 <path d="M9 18V5l12-2v13" strokeLinecap="round" strokeLinejoin="round" />
                 <circle cx="6" cy="18" r="3" />
@@ -1503,92 +1634,51 @@ export default function BotLanding() {
 
           <div className="mt-14 grid gap-6 sm:grid-cols-2">
             <Reveal className="sm:row-span-2">
-              <div className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0c0d14] p-7 transition-all hover:border-[#92C8D2]/30">
-                <h3 className="text-lg font-bold text-[#92C8D2]">{c.music.filters.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-zinc-400">{c.music.filters.desc}</p>
-                <div className="mt-auto pt-6">
-                  <div className="rounded-2xl border border-white/[0.08] bg-black/40 p-4 backdrop-blur-md">
-                    <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
-                      <div className="flex items-center gap-2">
-                        <span className="relative flex h-2 w-2">
-                          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                          <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
-                        </span>
-                        <span className="text-xs font-semibold tracking-wide text-[#92C8D2]">
-                          {c.music.filters.label8D}
-                        </span>
-                      </div>
-                      <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold tracking-widest text-emerald-400">
-                        {c.music.filters.status}
-                      </span>
-                    </div>
-
-                    <div className="py-4">
-                      <WaveformBars />
-                    </div>
-
-                    <div className="flex items-center justify-between border-t border-white/[0.04] pt-2 text-[10px] font-mono text-zinc-500">
-                      <span>L ◄ 32 Hz</span>
-                      <span className="text-zinc-400">Surround 360°</span>
-                      <span>16 kHz ► R</span>
-                    </div>
-                  </div>
+              <div className="group relative flex h-full flex-col justify-between overflow-hidden rounded-3xl border border-white/[0.08] bg-[#0c0d14]/90 p-7 sm:p-8 backdrop-blur-xl transition-all hover:border-[#92C8D2]/30">
+                <div>
+                  <h3 className="text-xl font-bold tracking-tight text-[#92C8D2]">{c.music.filters.title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-zinc-400">{c.music.filters.desc}</p>
+                </div>
+                <div className="my-auto">
+                  <WaveformScanner />
                 </div>
               </div>
             </Reveal>
 
             <Reveal delay={0.1}>
-              <div className="group relative h-full overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0c0d14] p-7 transition-all hover:border-[#92C8D2]/30">
-                <h3 className="text-lg font-bold text-[#92C8D2]">{c.music.queue.title}</h3>
+              <div className="group relative h-full overflow-hidden rounded-3xl border border-white/[0.08] bg-[#0c0d14]/90 p-7 backdrop-blur-xl transition-all hover:border-[#92C8D2]/30">
+                <h3 className="text-xl font-bold tracking-tight text-[#92C8D2]">{c.music.queue.title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-zinc-400">{c.music.queue.desc}</p>
-                <div className="mt-5 overflow-hidden rounded-xl border border-white/[0.08] bg-black/30 p-3">
-                  <div className="flex items-center justify-between text-[10px] text-zinc-500">
-                    <span>1 / 24</span>
-                    <svg viewBox="0 0 16 16" fill="currentColor" className="h-3 w-3 text-zinc-500" aria-hidden="true"><path d="M6 3l5 5-5 5" /></svg>
-                  </div>
-                  <div className="mt-2 flex items-center gap-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-red-600 to-red-800">
-                      <svg viewBox="0 0 16 16" fill="white" className="h-4 w-4" aria-hidden="true"><path d="M6 4l6 4-6 4z" /></svg>
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-bold text-white">POWER <span className="font-normal text-zinc-400">Kanye West</span></p>
-                      <div className="mt-1.5 flex items-center gap-2">
-                        <div className="h-1 flex-1 overflow-hidden rounded-full bg-white/10">
-                          <div className="h-full w-[65%] rounded-full bg-[#92C8D2]" />
-                        </div>
-                        <span className="font-mono text-[10px] text-zinc-500">4:52</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <p className="mt-3 text-[10px] font-semibold uppercase tracking-widest text-[#92C8D2]/60">
-                  {c.music.queue.nowPlaying}
-                </p>
+                <QueueDeck />
               </div>
             </Reveal>
 
             <Reveal delay={0.15}>
-              <div className="group relative h-full overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0c0d14] p-7 transition-all hover:border-[#1DB954]/30">
-                <h3 className="text-lg font-bold text-[#1DB954]">{c.music.spotify.title}</h3>
+              <div className="group relative h-full overflow-hidden rounded-3xl border border-white/[0.08] bg-[#0c0d14]/90 p-7 backdrop-blur-xl transition-all hover:border-[#1DB954]/30">
+                <h3 className="text-xl font-bold tracking-tight text-[#92C8D2]">{c.music.spotify.title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-zinc-400">{c.music.spotify.desc}</p>
                 <SpotifyRipple />
-                <p className="mt-2 text-center text-[10px] font-semibold uppercase tracking-widest text-[#1DB954]/60">
-                  {c.music.spotify.status}
-                </p>
               </div>
             </Reveal>
           </div>
 
           <Reveal delay={0.2} className="mt-10 flex justify-center">
-            <a
-              href="#commandes"
-              onClick={scrollToSection("commandes")}
-              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-5 py-2.5 text-sm font-semibold text-zinc-300 transition-all hover:border-white/20 hover:bg-white/[0.06] hover:text-white"
+            <button
+              type="button"
+              onClick={() => {
+                setShowCommands(true);
+                setTimeout(() => {
+                  document.getElementById("commandes")?.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
+                }, 60);
+              }}
+              className="group inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-white/[0.03] px-6 py-2.5 text-sm font-semibold text-zinc-300 backdrop-blur-xl transition-all hover:border-[#92C8D2]/40 hover:bg-[#92C8D2]/10 hover:text-white"
             >
-              <svg viewBox="0 0 16 16" fill="currentColor" className="h-3.5 w-3.5 text-[#92C8D2]" aria-hidden="true"><path d="M2 3h12v2H2zM2 7h8v2H2zM2 11h10v2H2z" /></svg>
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4 w-4 text-[#92C8D2]" aria-hidden="true">
+                <path d="M3 4l4 4-4 4M9 12h4" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
               {c.music.moreBtn}
-              <svg viewBox="0 0 16 16" fill="currentColor" className="h-3 w-3" aria-hidden="true"><path d="M6 3l5 5-5 5" /></svg>
-            </a>
+              <svg viewBox="0 0 16 16" fill="currentColor" className="h-3 w-3 text-zinc-400 transition-colors group-hover:text-white" aria-hidden="true"><path d="M6 3l5 5-5 5" /></svg>
+            </button>
           </Reveal>
         </section>
 
@@ -1650,19 +1740,32 @@ export default function BotLanding() {
 
         <section id="features" className="mx-auto w-full max-w-6xl px-6 py-24 scroll-mt-20">
           <Reveal className="text-center">
-            <div className="mx-auto mb-6 flex items-center justify-center gap-3" aria-hidden="true">
-              {FEATURE_KEYS.slice(0, 7).map((k, i) => (
-                <motion.div
-                  key={k}
-                  className="flex h-9 w-9 items-center justify-center rounded-full bg-white/[0.04] text-zinc-500 ring-1 ring-white/[0.08]"
-                  initial={reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.06 }}
-                >
-                  {FEATURE_ICONS[k]}
-                </motion.div>
-              ))}
+            <div className="relative mx-auto mb-8 flex h-24 max-w-lg items-center justify-center" aria-hidden="true">
+              <div
+                className="pointer-events-none absolute inset-0 -top-6 rounded-full blur-2xl"
+                style={{
+                  background: "radial-gradient(circle, rgba(146, 200, 210, 0.15) 0%, transparent 70%)",
+                }}
+              />
+              <div className="relative flex items-center justify-center gap-2.5 sm:gap-4">
+                {HALO_ICONS.map((h, i) => (
+                  <motion.div
+                    key={h.key}
+                    style={{ translateY: h.y }}
+                    className={`flex items-center justify-center rounded-full backdrop-blur-md transition-all ${
+                      h.primary
+                        ? "h-12 w-12 sm:h-14 sm:w-14 border border-[#92C8D2]/40 bg-[#0c1622] text-[#92C8D2] shadow-[0_0_25px_rgba(146,200,210,0.35)] ring-2 ring-[#92C8D2]/20"
+                        : "h-9 w-9 sm:h-10 sm:w-10 border border-white/10 bg-white/[0.04] text-zinc-400 hover:text-white hover:border-white/20"
+                    }`}
+                    initial={reduced ? {} : { opacity: 0, y: h.y + 12 }}
+                    whileInView={{ opacity: 1, y: h.y }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.05, duration: 0.5 }}
+                  >
+                    {FEATURE_ICONS[h.key]}
+                  </motion.div>
+                ))}
+              </div>
             </div>
             <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
               {c.features.titlePart1}{" "}
@@ -1676,10 +1779,11 @@ export default function BotLanding() {
           <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {FEATURE_KEYS.map((key, i) => {
               const item = c.features.items[key];
+              if (!item) return null;
               return (
-                <Reveal key={key} delay={i * 0.04}>
-                  <div className="group relative h-full overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0c0d14]/90 p-6 transition-all hover:border-[#92C8D2]/25 hover:bg-[#0f101a]">
-                    <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-[#92C8D2]/10 text-[#92C8D2] ring-1 ring-[#92C8D2]/20">
+                <Reveal key={key} delay={i * 0.03}>
+                  <div className="group relative h-full overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0c0d14]/90 p-6 transition-all hover:border-[#92C8D2]/30 hover:bg-[#0f101a]">
+                    <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-white/[0.04] text-[#92C8D2] ring-1 ring-white/[0.08] transition-colors group-hover:bg-[#92C8D2]/15">
                       {FEATURE_ICONS[key]}
                     </div>
                     <h3 className="text-sm font-bold text-white">{item.title}</h3>
@@ -1689,6 +1793,148 @@ export default function BotLanding() {
               );
             })}
           </div>
+
+          <div className="relative mt-16 flex items-center justify-center">
+            <div className="absolute inset-0 flex items-center" aria-hidden="true">
+              <div className="w-full border-t border-white/[0.08]" />
+            </div>
+            <div className="relative bg-[#07080d] px-6">
+              <span className="text-sm font-medium tracking-wide text-zinc-400">
+                {c.features.commandsDivider.before}{" "}
+                <span className="font-bold text-[#92C8D2]">{c.features.commandsDivider.count}</span>{" "}
+                {c.features.commandsDivider.after}
+              </span>
+            </div>
+          </div>
+
+          <div className="mt-6 flex justify-center">
+            <button
+              type="button"
+              onClick={() => setShowCommands((v) => !v)}
+              className="group inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/[0.04] px-6 py-3 text-sm font-semibold text-zinc-200 shadow-xl backdrop-blur-xl transition-all hover:border-[#92C8D2]/40 hover:bg-[#92C8D2]/10 hover:text-white"
+            >
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4 w-4 text-[#92C8D2]" aria-hidden="true">
+                <path d="M3 4l4 4-4 4M9 12h4" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <span>{showCommands ? c.features.hideCommandsBtn : c.features.allCommandsBtn}</span>
+              <motion.svg
+                animate={{ rotate: showCommands ? 90 : 0 }}
+                viewBox="0 0 16 16"
+                fill="currentColor"
+                className="h-3.5 w-3.5 text-zinc-400 transition-colors group-hover:text-white"
+                aria-hidden="true"
+              >
+                <path d="M6 3l5 5-5 5" />
+              </motion.svg>
+            </button>
+          </div>
+
+          <AnimatePresence>
+            {showCommands && (
+              <motion.div
+                id="commandes"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.4, ease: EASE_SNAP }}
+                className="overflow-hidden pt-12 scroll-mt-20"
+              >
+                <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between border-t border-white/[0.06] pt-10">
+                  <div>
+                    <Eyebrow>{c.commands.eyebrow}</Eyebrow>
+                    <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">{c.commands.title}</h2>
+                    <p className="mt-2 text-zinc-400">{c.commands.subtitle}</p>
+                  </div>
+                  <div className="w-full sm:w-80">
+                    <input
+                      type="text"
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                      placeholder={c.commands.search}
+                      className="h-11 w-full rounded-full border border-white/10 bg-white/[0.04] px-5 text-sm text-white placeholder-zinc-500 outline-none transition-all focus:border-[#92C8D2]/60 focus:bg-white/[0.06]"
+                    />
+                  </div>
+                </div>
+
+                <div className="mt-8 flex flex-wrap gap-2">
+                  {categories.map((cat) => (
+                    <button
+                      key={cat}
+                      type="button"
+                      onClick={() => setSelectedCategory(cat)}
+                      className={`rounded-full px-4 py-1.5 text-xs font-semibold transition-all ${
+                        selectedCategory === cat
+                          ? "bg-[#92C8D2] text-black shadow-md shadow-[#92C8D2]/20"
+                          : "border border-white/10 bg-white/[0.02] text-zinc-400 hover:text-white"
+                      }`}
+                    >
+                      {cat === "all" ? c.commands.all : cat}
+                    </button>
+                  ))}
+                </div>
+
+                {filteredCommands.length === 0 && (
+                  <p className="mt-12 text-center text-sm text-zinc-500">{c.commands.empty}</p>
+                )}
+
+                <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {filteredCommands.map((cmd) => (
+                    <div
+                      key={cmd.name}
+                      className="group relative rounded-2xl border border-white/[0.08] bg-[#0c0d15] p-5 transition-all hover:border-[#92C8D2]/30 hover:bg-[#0f101a]"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="font-mono text-sm font-bold text-white">/{cmd.name}</span>
+                        <div className="flex items-center gap-2">
+                          <span className="rounded-md bg-white/[0.05] px-2 py-0.5 text-[10px] uppercase tracking-wider text-zinc-400">
+                            {cmd.category}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => copyCommand(cmd.name)}
+                            title={c.commands.copy}
+                            className="rounded-md border border-white/10 bg-white/[0.04] px-2 py-0.5 text-[10px] font-semibold text-zinc-300 transition-colors hover:bg-white/10 hover:text-white"
+                          >
+                            {copiedCmd === cmd.name ? c.commands.copied : c.commands.copy}
+                          </button>
+                        </div>
+                      </div>
+
+                      <p className="mt-2 text-xs leading-relaxed text-zinc-400">{cmd.description}</p>
+
+                      {cmd.subcommands.length > 0 && (
+                        <div className="mt-3 flex flex-wrap gap-1.5 border-t border-white/[0.05] pt-3">
+                          {cmd.subcommands.map((s) => (
+                            <span
+                              key={s.name}
+                              title={s.description}
+                              className="rounded-md bg-white/[0.04] px-2 py-0.5 font-mono text-[10px] text-zinc-400"
+                            >
+                              {s.name}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-10 flex justify-center pb-4">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowCommands(false);
+                      document.getElementById("features")?.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
+                    }}
+                    className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-5 py-2 text-xs font-semibold text-zinc-400 transition-colors hover:border-white/20 hover:text-white"
+                  >
+                    <span>{c.features.hideCommandsBtn}</span>
+                    <svg viewBox="0 0 16 16" fill="currentColor" className="h-3 w-3" aria-hidden="true"><path d="M8 4l5 5H3z" /></svg>
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </section>
 
         <section id="steps" className="mx-auto w-full max-w-6xl px-6 py-20 scroll-mt-20">
@@ -1713,88 +1959,6 @@ export default function BotLanding() {
                   <p className="mt-2 text-sm leading-relaxed text-zinc-400">{st.desc}</p>
                 </div>
               </Reveal>
-            ))}
-          </div>
-        </section>
-
-        <section id="commandes" className="mx-auto w-full max-w-6xl px-6 py-20 scroll-mt-20">
-          <Reveal className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <Eyebrow>{c.commands.eyebrow}</Eyebrow>
-              <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">{c.commands.title}</h2>
-              <p className="mt-2 text-zinc-400">{c.commands.subtitle}</p>
-            </div>
-            <div className="w-full sm:w-80">
-              <input
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder={c.commands.search}
-                className="h-11 w-full rounded-full border border-white/10 bg-white/[0.04] px-5 text-sm text-white placeholder-zinc-500 outline-none transition-all focus:border-[#92C8D2]/60 focus:bg-white/[0.06]"
-              />
-            </div>
-          </Reveal>
-
-          <div className="mt-8 flex flex-wrap gap-2">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                type="button"
-                onClick={() => setSelectedCategory(cat)}
-                className={`rounded-full px-4 py-1.5 text-xs font-semibold transition-all ${
-                  selectedCategory === cat
-                    ? "bg-[#92C8D2] text-black shadow-md shadow-[#92C8D2]/20"
-                    : "border border-white/10 bg-white/[0.02] text-zinc-400 hover:text-white"
-                }`}
-              >
-                {cat === "all" ? c.commands.all : cat}
-              </button>
-            ))}
-          </div>
-
-          {filteredCommands.length === 0 && (
-            <p className="mt-12 text-center text-sm text-zinc-500">{c.commands.empty}</p>
-          )}
-
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {filteredCommands.map((cmd) => (
-              <div
-                key={cmd.name}
-                className="group relative rounded-2xl border border-white/[0.08] bg-[#0c0d15] p-5 transition-all hover:border-[#92C8D2]/30 hover:bg-[#0f101a]"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-sm font-bold text-white">/{cmd.name}</span>
-                  <div className="flex items-center gap-2">
-                    <span className="rounded-md bg-white/[0.05] px-2 py-0.5 text-[10px] uppercase tracking-wider text-zinc-400">
-                      {cmd.category}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => copyCommand(cmd.name)}
-                      title={c.commands.copy}
-                      className="rounded-md border border-white/10 bg-white/[0.04] px-2 py-0.5 text-[10px] font-semibold text-zinc-300 transition-colors hover:bg-white/10 hover:text-white"
-                    >
-                      {copiedCmd === cmd.name ? c.commands.copied : c.commands.copy}
-                    </button>
-                  </div>
-                </div>
-
-                <p className="mt-2 text-xs leading-relaxed text-zinc-400">{cmd.description}</p>
-
-                {cmd.subcommands.length > 0 && (
-                  <div className="mt-3 flex flex-wrap gap-1.5 border-t border-white/[0.05] pt-3">
-                    {cmd.subcommands.map((s) => (
-                      <span
-                        key={s.name}
-                        title={s.description}
-                        className="rounded-md bg-white/[0.04] px-2 py-0.5 font-mono text-[10px] text-zinc-400"
-                      >
-                        {s.name}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
             ))}
           </div>
         </section>

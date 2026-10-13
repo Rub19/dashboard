@@ -279,7 +279,7 @@ export default function HubSidebar({
               <ShieldCheck className="h-5 w-5 text-emerald-400" />
             </motion.div>
             <span className="font-bold text-lg tracking-tight text-[var(--text-primary)]">
-              Etho Protect
+              Etho
             </span>
           </div>
 

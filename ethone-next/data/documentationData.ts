@@ -141,7 +141,7 @@ export const STEP_BY_STEP_GUIDES: DocGuide[] = [
   },
   {
     id: "etho-ultra",
-    title: "Etho Ultra / Mode Haute Sécurité",
+    title: "Etho Ultra",
     description: "Les protections les plus poussées, avec nos modules exclusifs et isolation de crise instantanée.",
     category: "guides",
     readTime: "3 min",

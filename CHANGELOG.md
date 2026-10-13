@@ -2,6 +2,38 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.28 — 2026-10-13
+
+**Documentation Etho : Harmonisation de Marque, Fond Sombre et Refonte de la Barre Latérale**
+
+- **Harmonisation de Marque (Etho)** :
+  - Transition globale de « Etho Protect » vers « Etho » dans la barre supérieure, l'en-tête hero, le footer de la documentation, les métadonnées de page (`/docs` et `/documentation`) et la barre latérale de gestion du serveur Discord (`HubSidebar`).
+  - Alignement du guide « Etho Ultra » sur la dénomination concise.
+- **Thème Sombre Inspiré du Site de Référence Keeper** :
+  - Adoption du fond sombre obsidian profond (`#090d0b`), surfaces de cartes profilées (`#0d1410`), bordures fines (`#18231c`) et touches émeraude (`#22c55e` / `emerald-400`).
+  - Remplacement des teintes cyan d'accentuation par les finitions vertes du thème de protection haute disponibilité.
+- **Refonte Complète de la Barre Latérale Gauche** :
+  - Élargissement de la zone latérale (`w-76 xl:w-80`) offrant une mise en page aérée et élégante.
+  - Champ de recherche intégré directement en tête de barre latérale (`Rechercher…`) avec icône loupe et effacement rapide.
+  - Rail vertical hiérarchique avec indicateur actif vert à gauche (`Accueil`, guides pas à pas, fiches de sécurité, commandes, et tous les modules par catégorie : Sanctions, Salons, Rôles, Bots, Vocal, Serveur, Messages, Membres, Sauvegarde, Supplémentaires).
+  - Barre de défilement discrète et fluide adaptée aux longues listes de catégories.
+
+## v1.75.27 — 2026-10-13
+
+**Refonte Musique, Bento Features et Catalogue de Commandes sur Demande**
+
+- **Section Musique Restructurée** :
+  - Ajout du scanner spatial 8D animé avec balayage horizontal fluide et badges verticaux `8D` / `ON`.
+  - Deck de lecture physique à 3 cartes superposées avec profondeur de champ : carte active en verre (POWER - Kanye West, barre de progression à 65% avec curseur lumineux et chronomètre 4:52) et 2 cartes arrières floutées.
+  - Radar concentrique Spotify avec pulsation radiale et badge vert émeraude illuminé.
+  - Bouton d'accès direct `20+ commandes musique` déployant le catalogue interactif.
+- **Section Features & Bento 12 Fonctions** :
+  - Halo flottant supérieur composé de 7 icônes circulaires incurvées au-dessus du titre.
+  - Grille responsive de 12 cartes de fonctionnalités : Recherche en ligne, Synthèse vocale TTS, Niveaux & XP, Snipe & Historique, Giveaways & Concours, Mini-Jeux, Réponses automatiques, Rappels de Bump, Salons compteurs, Déclencheurs de réactions, Manipulation d'images et Traduction instantanée.
+- **Catalogue de Commandes sur Demande (Zéro Scroll Forcé)** :
+  - Intégration du séparateur horizontal `Plus de 800+ Commandes` et du bouton interactif `Toutes les commandes ->`.
+  - Masquage par défaut du catalogue de 50+ commandes : déploiement fluide au clic avec recherche, filtres par catégorie, cartes copiables et bouton inférieur de repli rapide.
+
 ## v1.75.26 — 2026-10-13
 
 **Stabilisation de la Carte Spotify Vitrine : Suppression des Soubresauts de l'Égaliseur**

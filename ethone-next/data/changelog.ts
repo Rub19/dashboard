@@ -52997,6 +52997,102 @@ const v1_75_26_de: ChangelogEntry = {
   ],
 };
 
+const v1_75_27_fr: ChangelogEntry = {
+  version: "v1.75.27",
+  date: "2026-10-13",
+  title: "Refonte Musique, Bento Features et Catalogue de Commandes sur Demande",
+  items: [
+    "Refonte de la section Musique : visualiseur 8D spatial avec balayage animé ON/8D, deck de lecture physique à 3 cartes empilées (POWER - Kanye West), et radar concentrique Spotify.",
+    "Section Features enrichie : arc supérieur flottant de 7 icônes en halo, grille complète de 12 cartes fonctionnelles.",
+    "Catalogue des commandes sur demande : séparateur stylisé et bouton interactif permettant de déployer ou masquer le catalogue à volonté, évitant le défilement imposé.",
+  ],
+};
+
+const v1_75_27_en: ChangelogEntry = {
+  version: "v1.75.27",
+  date: "2026-10-13",
+  title: "Music Section Redesign, Features Bento & On-Demand Commands Catalog",
+  items: [
+    "Redesigned Music Section: animated 8D spatial scanner, 3-card stacked queue deck (POWER - Kanye West), and concentric Spotify radar rings.",
+    "Features bento upgrade: 7 floating halo icons arc and 12-feature grid.",
+    "On-demand Command Catalog: elegant divider and toggle button to reveal or collapse the catalog as desired, eliminating forced scrolling.",
+  ],
+};
+
+const v1_75_27_es: ChangelogEntry = {
+  version: "v1.75.27",
+  date: "2026-10-13",
+  title: "Rediseño de Música, Bento de Funciones y Catálogo de Comandos a Petición",
+  items: [
+    "Rediseño de la sección de música: escáner espacial 8D, baraja de 3 tarjetas apiladas y radar concéntrico de Spotify.",
+    "Bento de funciones: arco flotante de 7 iconos en halo y cuadrícula de 12 funciones.",
+    "Catálogo de comandos a petición: divisor elegante y botón interactivo para desplegar o plegar el catálogo sin scroll forzado.",
+  ],
+};
+
+const v1_75_27_de: ChangelogEntry = {
+  version: "v1.75.27",
+  date: "2026-10-13",
+  title: "Musik-Redesign, Features-Bento und Befehlskatalog auf Abruf",
+  items: [
+    "Neugestaltung des Musikbereichs: animierter 8D-Raumklang-Scanner, 3-Karten-Queue-Stapel und konzentrische Spotify-Radarringe.",
+    "Features-Bento: schwebender Bogen mit 7 Halo-Symbolen und 12 Funktionskarten.",
+    "Befehlskatalog auf Abruf: eleganter Trenner und Umschaltknopf zum flexiblen Ein- und Ausklappen ohne erzwungenes Scrollen.",
+  ],
+};
+
+const v1_75_28_fr: ChangelogEntry = {
+  version: "v1.75.28",
+  date: "2026-10-13",
+  title: "Documentation Etho : Harmonisation de Marque, Fond Sombre et Refonte de la Barre Latérale",
+  items: [
+    "Harmonisation de marque : transition de 'Etho Protect' vers 'Etho' sur toute la documentation et la console Discord.",
+    "Thème sombre inspiré de Keeper : fond obsidian profond (#090d0b) aux nuances émeraude (#22c55e), surfaces profilées et contrastes nets.",
+    "Refonte de la barre latérale gauche : champ de recherche en tête, arborescence continue à rail vertical avec indicateur vert d'état actif, intégration des catégories et modules, et défilement fluide.",
+  ],
+};
+
+const v1_75_28_en: ChangelogEntry = {
+  version: "v1.75.28",
+  date: "2026-10-13",
+  title: "Etho Documentation: Brand Streamlining, Dark Theme & Sidebar Redesign",
+  items: [
+    "Brand alignment: streamlined 'Etho Protect' to 'Etho' across documentation views and Discord console.",
+    "Keeper-inspired dark aesthetic: deep obsidian background (#090d0b) with emerald accents (#22c55e) and refined surfaces.",
+    "Complete left sidebar overhaul: top-level search input, vertical tree rails with active indicators, comprehensive category and module navigation, and slim scrollbars.",
+  ],
+};
+
+const v1_75_28_es: ChangelogEntry = {
+  version: "v1.75.28",
+  date: "2026-10-13",
+  title: "Documentación de Etho: Alineación de Marca, Fondo Oscuro y Rediseño de Barra Lateral",
+  items: [
+    "Alineación de marca: unificación de 'Etho Protect' a 'Etho' en toda la documentación y la consola.",
+    "Tema oscuro estilo Keeper: fondo obsidiana (#090d0b) con detalles esmeralda (#22c55e) y tarjetas refinadas.",
+    "Rediseño de la barra lateral: búsqueda superior, riel vertical con indicador activo, listado completo de módulos y desplazamiento fluido.",
+  ],
+};
+
+const v1_75_28_de: ChangelogEntry = {
+  version: "v1.75.28",
+  date: "2026-10-13",
+  title: "Etho Dokumentation: Marken-Harmonisierung, Dark-Theme & Sidebar-Redesign",
+  items: [
+    "Marken-Harmonisierung: Umstellung von 'Etho Protect' auf 'Etho' in der Dokumentation und im Discord-Hub.",
+    "Keeper-inspiriertes Dark-Theme: tiefer Obsidian-Hintergrund (#090d0b) mit Smaragd-Akzenten (#22c55e).",
+    "Vollständiges Sidebar-Redesign: integrierte Suche oben, vertikale Navigations-Schienen mit aktivem Indikator und nahtloses Scrollen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_28_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_28_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_28_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_28_de);
+CHANGELOG_BY_LANG.fr.unshift(v1_75_27_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_27_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_27_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_27_de);
 CHANGELOG_BY_LANG.fr.unshift(v1_75_26_fr);
 CHANGELOG_BY_LANG.en.unshift(v1_75_26_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_26_es);

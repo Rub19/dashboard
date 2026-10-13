@@ -110,6 +110,13 @@ export interface BotCopy {
     titlePart1: string;
     titleHighlight: string;
     subtitle: string;
+    commandsDivider: {
+      before: string;
+      count: string;
+      after: string;
+    };
+    allCommandsBtn: string;
+    hideCommandsBtn: string;
     items: {
       search: BotFeatureItem;
       tts: BotFeatureItem;
@@ -118,11 +125,14 @@ export interface BotCopy {
       giveaways: BotFeatureItem;
       games: BotFeatureItem;
       autoResponders: BotFeatureItem;
-      reminders: BotFeatureItem;
+      bumpReminder: BotFeatureItem;
       counters: BotFeatureItem;
-      reactionRoles: BotFeatureItem;
-      lyrics: BotFeatureItem;
+      reactionTriggers: BotFeatureItem;
+      imageManipulation: BotFeatureItem;
       translation: BotFeatureItem;
+      reminders?: BotFeatureItem;
+      reactionRoles?: BotFeatureItem;
+      lyrics?: BotFeatureItem;
     };
   };
   steps: {
@@ -233,26 +243,26 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
     },
     music: {
       badge: "EXPÉRIENCE AUDIO",
-      titlePart1: "Fonctionnalités musicales",
-      titleHighlight: "pensées pour tous",
-      subtitle: "Qualité audio haute fidélité et commandes directes pour une expérience sonore exceptionnelle.",
+      titlePart1: "Fonctionnalités musicales conçues",
+      titleHighlight: "pour tous",
+      subtitle: "Qualité audio supérieure et commandes complètes pour une expérience musicale incomparable.",
       filters: {
-        title: "Filtres Audio 8D",
-        desc: "Traitement spatialisé en direct pour transformer n'importe quel morceau en écoute immersive.",
+        title: "Filtres Préconfigurés",
+        desc: "Génération à la volée pour transformer n'importe quelle musique en écoute immersive.",
         label8D: "8D Spatial",
         status: "ACTIF",
       },
       queue: {
         title: "File d'attente fluide",
-        desc: "Écoutez titre après titre, sans interruption ni coupure toute la journée.",
+        desc: "Écoutez titre après titre, sans interruption, toute la journée.",
         nowPlaying: "Lecture en cours",
       },
       spotify: {
-        title: "Intégration Spotify",
-        desc: "Totalement intégré avec Spotify. Diffusez vos morceaux dans les salons vocaux avec /spotify vc.",
+        title: "Spotify",
+        desc: "Entièrement intégré et pilotable directement avec Spotify.",
         status: "Synchronisé",
       },
-      moreBtn: "20+ commandes musicales",
+      moreBtn: "20+ commandes musique",
     },
     platforms: {
       badge: "INTÉGRATIONS",
@@ -299,57 +309,76 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
     },
     features: {
       badge: "CATALOGUE",
-      titlePart1: "Des dizaines de",
-      titleHighlight: "fonctionnalités",
-      subtitle: "Tout ce dont votre serveur a besoin réuni au même endroit, sans jamais devoir ajouter un autre bot.",
+      titlePart1: "D'innombrables fonctionnalités",
+      titleHighlight: "en plus",
+      subtitle: "Ne vous souciez plus jamais d'avoir besoin d'un autre bot, tous vos besoins sont couverts.",
+      commandsDivider: {
+        before: "Plus de",
+        count: "800+",
+        after: "Commandes",
+      },
+      allCommandsBtn: "Toutes les commandes",
+      hideCommandsBtn: "Masquer les commandes",
       items: {
         search: {
-          title: "Recherche Visuelle",
-          desc: "Recherchez des images sur DuckDuckGo et lancez des recherches inversées instantanées.",
+          title: "Recherche en ligne",
+          desc: "Recherche d'images inversée, requêtes visuelles ou recherche en ligne pour n'importe quel résultat.",
         },
         tts: {
-          title: "Synthèse Vocale",
-          desc: "Convertissez du texte en audio haute fidélité diffusé en direct dans votre salon vocal.",
+          title: "Synthèse vocale (TTS)",
+          desc: "Convertissez du texte en fichier audio ou faites parler Etho en direct dans vos salons. Plus de 80+ voix.",
         },
         levels: {
-          title: "Niveaux & XP",
-          desc: "Système de progression pour les membres avec cartes de rang et attribution de rôles.",
+          title: "Système de niveaux",
+          desc: "Système d'XP et de niveaux pour vos membres afin de monter en grade et suivre leur progression.",
         },
         snipe: {
-          title: "Audit & Snipe",
-          desc: "Retrouvez les messages récemment supprimés ou modifiés pour un suivi transparent.",
+          title: "Snipe & Historique",
+          desc: "Système avancé pour récupérer messages, images, vidéos, modifications et réactions supprimées.",
         },
         giveaways: {
-          title: "Giveaways & Tirages",
-          desc: "Organisez des concours facilement avec conditions de participation et reroll immédiat.",
+          title: "Giveaways & Concours",
+          desc: "Organisez des tirages au sort rapides et faciles pour les membres de votre serveur.",
         },
         games: {
           title: "Mini-Jeux",
-          desc: "Divertissez vos membres avec des jeux interactifs et des fiches complètes de jeux vidéo.",
+          desc: "Jouez à Blacktea, au Morpion et à de nombreux mini-jeux entre amis.",
         },
         autoResponders: {
-          title: "Réponses Auto",
-          desc: "Configurez des réponses automatiques aux messages qui contiennent des mots-clés définis.",
+          title: "Réponses automatiques",
+          desc: "Configurez des réponses automatiques aux messages correspondant à des déclencheurs.",
         },
-        reminders: {
-          title: "Rappels Programmés",
-          desc: "Programmez des rappels automatiques pour vos événements et rendez-vous de communauté.",
+        bumpReminder: {
+          title: "Rappels de Bump",
+          desc: "Recevez des rappels programmés pour faire /bump sur votre serveur sur Disboard.",
         },
         counters: {
-          title: "Salons Compteurs",
-          desc: "Affichez en temps réel le nombre de membres, de bots et de rôles dans des salons dédiés.",
+          title: "Salons compteurs",
+          desc: "Créez des salons compteurs pour afficher les statistiques du serveur en direct.",
         },
-        reactionRoles: {
-          title: "Rôles de Réaction",
-          desc: "Attribution instantanée de rôles par clic sur bouton ou réaction pour un accueil propre.",
+        reactionTriggers: {
+          title: "Déclencheurs de réactions",
+          desc: "Configurez des déclencheurs avancés sur les messages ou messages précédents.",
         },
-        lyrics: {
-          title: "Paroles de Musique",
-          desc: "Recherche de paroles de chansons complètes en direct via LRCLib directement sur Discord.",
+        imageManipulation: {
+          title: "Manipulation d'images",
+          desc: "Transformez facilement images, vidéos et GIFs en mèmes percutants.",
         },
         translation: {
-          title: "Traduction Rapide",
-          desc: "Traduisez rapidement des messages entre plus de 50 langues sans quitter votre salon.",
+          title: "Traduction instantanée",
+          desc: "Traduisez rapidement du texte dans plus de 100 langues.",
+        },
+        reminders: {
+          title: "Rappels de Bump",
+          desc: "Recevez des rappels programmés pour faire /bump sur votre serveur sur Disboard.",
+        },
+        reactionRoles: {
+          title: "Déclencheurs de réactions",
+          desc: "Configurez des déclencheurs avancés sur les messages ou messages précédents.",
+        },
+        lyrics: {
+          title: "Manipulation d'images",
+          desc: "Transformez facilement images, vidéos et GIFs en mèmes percutants.",
         },
       },
     },
@@ -501,22 +530,22 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
       titleHighlight: "For Everyone",
       subtitle: "Premium audio quality and commands for a superior music experience.",
       filters: {
-        title: "Preset Audio Filters",
+        title: "Preset Filters",
         desc: "On-the-fly generation to transform any music into an immersive listening experience.",
         label8D: "8D Spatial",
         status: "ACTIVE",
       },
       queue: {
-        title: "Seamless Queue",
-        desc: "Listen to music after music, uninterrupted, all day without skips.",
+        title: "Queue",
+        desc: "Listen to music after music, uninterrupted, all day.",
         nowPlaying: "Now Playing",
       },
       spotify: {
-        title: "Spotify Integration",
-        desc: "Fully integrated and capable, stream your current Spotify track into voice with /spotify vc.",
-        status: "Connected",
+        title: "Spotify",
+        desc: "Fully integrated and capable, with Spotify.",
+        status: "Synced",
       },
-      moreBtn: "20+ music commands",
+      moreBtn: "20+ more commands",
     },
     platforms: {
       badge: "PLATFORMS",
@@ -566,54 +595,73 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
       titlePart1: "Countless more",
       titleHighlight: "Features",
       subtitle: "Never worry about needing another bot for anything else, we've got all your needs covered.",
+      commandsDivider: {
+        before: "Over",
+        count: "800+",
+        after: "Commands",
+      },
+      allCommandsBtn: "All Commands",
+      hideCommandsBtn: "Hide Commands",
       items: {
         search: {
           title: "Browser Searching",
-          desc: "Reverse search images, query high-resolution visuals, or search online for any website result.",
+          desc: "Reverse search images, query images or search online for any website result.",
         },
         tts: {
           title: "Text To Speech",
-          desc: "Convert text into voice audio or stream high-fidelity voice announcements live in any channel.",
+          desc: "Convert text into a generated voice audio file, or have Etho speak live in any channel. Over 80+ voices.",
         },
         levels: {
-          title: "Levels & XP",
-          desc: "Leveling system for users in your server to level up and track message and voice experience.",
+          title: "Levels",
+          desc: "Leveling system for the users in your server to level up and track experience.",
         },
         snipe: {
-          title: "Message Snipe",
-          desc: "Advanced sniping system to inspect recently deleted or edited messages and reactions.",
+          title: "Snipe",
+          desc: "Advanced sniping system to get images, videos, edits & reactions.",
         },
         giveaways: {
           title: "Giveaways",
-          desc: "Host giveaways fast and easily with custom conditions and one-click rerolls.",
+          desc: "Host giveaways fast and easily for your server's members.",
         },
         games: {
-          title: "Games & Media",
-          desc: "Play games, search video game deals, movie lookups, and stylized quote cards.",
+          title: "Games",
+          desc: "Play blacktea and tic-tac-toe with your friends.",
         },
         autoResponders: {
           title: "Auto Responders",
-          desc: "Set up automatic replies to messages that match a custom trigger.",
+          desc: "Set up automatic replies to messages that match a trigger.",
         },
-        reminders: {
-          title: "Bump & Reminders",
-          desc: "Get reminders to bump your server or send scheduled alerts for community events.",
+        bumpReminder: {
+          title: "Bump Reminder",
+          desc: "Get reminders to /bump your server on Disboard.",
         },
         counters: {
-          title: "Channel Counters",
-          desc: "Create dynamic voice counter channels for simple, real-time server statistics.",
+          title: "Counters",
+          desc: "Create counter channels for simple server statistics.",
         },
-        reactionRoles: {
-          title: "Reaction Roles",
-          desc: "Instant role assignment on button clicks or reactions for clean member onboarding.",
+        reactionTriggers: {
+          title: "Reaction Triggers",
+          desc: "Set up advanced triggers to messages or previous messages.",
         },
-        lyrics: {
-          title: "Song Lyrics",
-          desc: "Live lyrics search and synced scrolling powered by LRCLib right inside Discord.",
+        imageManipulation: {
+          title: "Image Manipulation",
+          desc: "Turn images, videos and GIFs into memes easily.",
         },
         translation: {
           title: "Translation",
-          desc: "Translate messages quickly across more than 50 languages in real time.",
+          desc: "Translate text quickly. Over 100+ languages.",
+        },
+        reminders: {
+          title: "Bump Reminder",
+          desc: "Get reminders to /bump your server on Disboard.",
+        },
+        reactionRoles: {
+          title: "Reaction Triggers",
+          desc: "Set up advanced triggers to messages or previous messages.",
+        },
+        lyrics: {
+          title: "Image Manipulation",
+          desc: "Turn images, videos and GIFs into memes easily.",
         },
       },
     },
@@ -761,26 +809,26 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
     },
     music: {
       badge: "EXPERIENCIA DE AUDIO",
-      titlePart1: "Música creada",
+      titlePart1: "Funciones musicales creadas",
       titleHighlight: "para todos",
-      subtitle: "Calidad de audio premium, comandos en directo e integración nativa con Spotify.",
+      subtitle: "Calidad de audio premium y comandos completos para una experiencia musical superior.",
       filters: {
-        title: "Filtros de Audio 8D",
-        desc: "Transforma cualquier música en una experiencia inmersiva y envolvente en tiempo real.",
+        title: "Filtros preestablecidos",
+        desc: "Generación en tiempo real para transformar cualquier música en una experiencia inmersiva.",
         label8D: "8D Espacial",
         status: "ACTIVO",
       },
       queue: {
-        title: "Cola Continua",
-        desc: "Escucha música tras música todo el día sin cortes ni saltos.",
+        title: "Cola de reproducción",
+        desc: "Escucha canción tras canción, sin interrupciones, todo el día.",
         nowPlaying: "Reproduciendo",
       },
       spotify: {
-        title: "Integración Spotify",
-        desc: "Totalmente compatible con Spotify, transmite en voz con /spotify vc al instante.",
-        status: "Conectado",
+        title: "Spotify",
+        desc: "Totalmente integrado y capaz con Spotify.",
+        status: "Sincronizado",
       },
-      moreBtn: "20+ comandos musicales",
+      moreBtn: "20+ más comandos",
     },
     platforms: {
       badge: "PLATAFORMAS",
@@ -827,57 +875,76 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
     },
     features: {
       badge: "CATÁLOGO",
-      titlePart1: "Innumerables",
-      titleHighlight: "Funciones",
-      subtitle: "Todo lo que tu comunidad necesita reunido en un solo lugar, sin necesidad de otro bot.",
+      titlePart1: "Innumerables funciones",
+      titleHighlight: "adicionales",
+      subtitle: "No te preocupes por necesitar otro bot para nada más, cubrimos todas tus necesidades.",
+      commandsDivider: {
+        before: "Más de",
+        count: "800+",
+        after: "Comandos",
+      },
+      allCommandsBtn: "Todos los comandos",
+      hideCommandsBtn: "Ocultar comandos",
       items: {
         search: {
-          title: "Búsqueda Visual",
-          desc: "Búsqueda de imágenes en DuckDuckGo y búsqueda inversa en Google Lens y TinEye.",
+          title: "Búsqueda web",
+          desc: "Búsqueda inversa de imágenes, consultas visuales o búsqueda en la web para cualquier resultado.",
         },
         tts: {
-          title: "Texto a Voz",
-          desc: "Convierte texto en audio y reproduce sonido de alta calidad en canales de voz.",
+          title: "Texto a voz (TTS)",
+          desc: "Convierte texto en audio o haz que Etho hable en directo en cualquier canal. Más de 80+ voces.",
         },
         levels: {
           title: "Niveles y XP",
-          desc: "Sistema de niveles por mensajes y voz con tarjetas de rango y roles de premio.",
+          desc: "Sistema de niveles para que los miembros de tu servidor suban de nivel y sigan su experiencia.",
         },
         snipe: {
-          title: "Inspección Snipe",
-          desc: "Recupera mensajes y reacciones eliminadas o editadas recientemente.",
+          title: "Snipe",
+          desc: "Sistema avanzado para recuperar imágenes, vídeos, ediciones y reacciones eliminadas.",
         },
         giveaways: {
           title: "Sorteos",
-          desc: "Organiza sorteos fácilmente con condiciones personalizadas y relanzamiento en un clic.",
+          desc: "Organiza sorteos rápidos y fáciles para los miembros de tu servidor.",
         },
         games: {
-          title: "Juegos y Medios",
-          desc: "Juegos interactivos, ofertas de videojuegos, películas y generador de citas.",
+          title: "Juegos",
+          desc: "Juega a blacktea, tres en raya y muchos minijuegos con tus amigos.",
         },
         autoResponders: {
-          title: "Respuestas Auto",
-          desc: "Configura respuestas automáticas a mensajes que coincidan con palabras clave.",
+          title: "Auto-respuestas",
+          desc: "Configura respuestas automáticas a mensajes que coincidan con un disparador.",
         },
-        reminders: {
-          title: "Recordatorios",
-          desc: "Programa recordatorios y alertas automáticas para eventos de tu servidor.",
+        bumpReminder: {
+          title: "Recordatorio de Bump",
+          desc: "Recibe recordatorios para hacer /bump de tu servidor en Disboard.",
         },
         counters: {
-          title: "Canales Contadores",
-          desc: "Canales dinámicos que muestran miembros, bots y estadísticas en tiempo real.",
+          title: "Canales contadores",
+          desc: "Crea canales contadores para estadísticas simples de tu servidor.",
         },
-        reactionRoles: {
-          title: "Roles por Reacción",
-          desc: "Asignación rápida de roles mediante clics en botones o reacciones.",
+        reactionTriggers: {
+          title: "Disparadores de reacción",
+          desc: "Configura disparadores avanzados en mensajes o mensajes anteriores.",
         },
-        lyrics: {
-          title: "Letras de Canciones",
-          desc: "Búsqueda y visualización sincronizada de letras de canciones con LRCLib.",
+        imageManipulation: {
+          title: "Manipulación de imágenes",
+          desc: "Convierte imágenes, vídeos y GIFs en memes fácilmente.",
         },
         translation: {
-          title: "Traducción Rápida",
-          desc: "Traduce mensajes rápidamente entre más de 50 idiomas en tiempo real.",
+          title: "Traducción",
+          desc: "Traduce texto rápidamente en más de 100 idiomas.",
+        },
+        reminders: {
+          title: "Recordatorio de Bump",
+          desc: "Recibe recordatorios para hacer /bump de tu servidor en Disboard.",
+        },
+        reactionRoles: {
+          title: "Disparadores de reacción",
+          desc: "Configura disparadores avanzados en mensajes o mensajes anteriores.",
+        },
+        lyrics: {
+          title: "Manipulación de imágenes",
+          desc: "Convierte imágenes, vídeos y GIFs en memes fácilmente.",
         },
       },
     },
@@ -1025,26 +1092,26 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
     },
     music: {
       badge: "AUDIO-ERLEBNIS",
-      titlePart1: "Musik geschaffen",
+      titlePart1: "Musikfunktionen gebaut",
       titleHighlight: "für jeden",
-      subtitle: "Erstklassige Klangqualität, Live-Steuerung und native Spotify-Integration.",
+      subtitle: "Erstklassige Audioqualität und Befehle für ein herausragendes Musikerlebnis.",
       filters: {
-        title: "8D-Audiofilter",
-        desc: "Echtzeit-Soundeffekte für ein immersives und räumliches Hörerlebnis.",
+        title: "Voreingestellte Filter",
+        desc: "Echtzeit-Verarbeitung für ein immersives Hörerlebnis jedes Titels.",
         label8D: "8D Raumklang",
         status: "AKTIV",
       },
       queue: {
-        title: "Unterbrechungsfreie Queue",
-        desc: "Höre deine Lieblingstitel den ganzen Tag ohne Pause oder Ruckler.",
-        nowPlaying: "Aktueller Titel",
+        title: "Warteschlange",
+        desc: "Höre Track für Track, ohne Unterbrechung, den ganzen Tag.",
+        nowPlaying: "Aktuelle Wiedergabe",
       },
       spotify: {
-        title: "Spotify-Integration",
-        desc: "Spotify nahtlos verknüpfen und direkt per /spotify vc in Sprachkanälen streamen.",
-        status: "Verbunden",
+        title: "Spotify",
+        desc: "Vollständig integriert und steuerbar mit Spotify.",
+        status: "Synchronisiert",
       },
-      moreBtn: "20+ Musik-Befehle",
+      moreBtn: "20+ weitere Befehle",
     },
     platforms: {
       badge: "PLATTFORMEN",
@@ -1093,55 +1160,74 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
       badge: "FUNKTIONEN",
       titlePart1: "Zahllose weitere",
       titleHighlight: "Funktionen",
-      subtitle: "Alles, was deine Community braucht, an einem einzigen Ort – ohne je einen weiteren Bot zu benötigen.",
+      subtitle: "Keine Sorge mehr, jemals einen anderen Bot zu benötigen – wir decken alle deine Bedürfnisse ab.",
+      commandsDivider: {
+        before: "Über",
+        count: "800+",
+        after: "Befehle",
+      },
+      allCommandsBtn: "Alle Befehle",
+      hideCommandsBtn: "Befehle ausblenden",
       items: {
         search: {
-          title: "Web- & Bildsuche",
-          desc: "Bilder auf DuckDuckGo suchen und Bildrückwärtssuche auf Google Lens und TinEye nutzen.",
+          title: "Browser-Suche",
+          desc: "Rückwärtssuche von Bildern, Bildabfragen oder Online-Suche nach jedem Website-Ergebnis.",
         },
         tts: {
-          title: "Sprachausgabe",
-          desc: "Sprachkanäle mit hochwertigem Sound und Text-to-Speech-Ansagen versorgen.",
+          title: "Text to Speech (TTS)",
+          desc: "Wandle Text in Sprachaudiodateien um oder lass Etho live in jedem Kanal sprechen. Über 80+ Stimmen.",
         },
         levels: {
-          title: "Level & XP",
-          desc: "XP-System für Nachrichten und Sprachkanäle mit Rang-Karten und automatischen Rollen.",
+          title: "Level-System",
+          desc: "Levelsystem für Servermitglieder zum Aufsteigen und Verfolgen von Erfahrung.",
         },
         snipe: {
-          title: "Nachrichten-Snipe",
-          desc: "Kürzlich gelöschte oder bearbeitete Nachrichten und Reaktionen transparent einsehen.",
+          title: "Snipe",
+          desc: "Erweitertes Snipe-System für gelöschte Bilder, Videos, Edits und Reaktionen.",
         },
         giveaways: {
-          title: "Gewinnspiele",
-          desc: "Gewinnspiele blitzschnell mit Teilnahmebedingungen und 1-Klick-Reroll veranstalten.",
+          title: "Giveaways",
+          desc: "Veranstalte Giveaways schnell und einfach für deine Servermitglieder.",
         },
         games: {
-          title: "Spiele & Medien",
-          desc: "Unterhaltsame Befehle: Film- und Spiele-Abfragen, Zitate-Generator und Mini-Spiele.",
+          title: "Spiele",
+          desc: "Spiele Blacktea, Tic-Tac-Toe und viele Minispiele mit deinen Freunden.",
         },
         autoResponders: {
-          title: "Auto-Antworten",
-          desc: "Schlüsselwort-Auslöser und programmierte Antworten zur Orientierung deiner Mitglieder.",
+          title: "Auto-Responder",
+          desc: "Richte automatische Antworten auf Nachrichten ein, die einem Trigger entsprechen.",
         },
-        reminders: {
-          title: "Erinnerungen",
-          desc: "Erinnerungen und automatische Benachrichtigungen für Community-Events planen.",
+        bumpReminder: {
+          title: "Bump-Erinnerung",
+          desc: "Erhalte Erinnerungen für /bump deines Servers auf Disboard.",
         },
         counters: {
           title: "Zähler-Kanäle",
-          desc: "Dynamische Sprachkanäle, die Mitglieder, Bots und Boosts live anzeigen.",
+          desc: "Erstelle Zähler-Kanäle für einfache Serverstatistiken.",
         },
-        reactionRoles: {
-          title: "Reaktions-Rollen",
-          desc: "Sofortige Rollenvergabe per Klick auf Buttons oder Reaktionen für einen sauberen Empfang.",
+        reactionTriggers: {
+          title: "Reaktions-Trigger",
+          desc: "Richte erweiterte Trigger auf Nachrichten oder vorherige Nachrichten ein.",
         },
-        lyrics: {
-          title: "Songtexte",
-          desc: "Live-Songtext-Suche und synchrones Scrollen via LRCLib direkt in Discord.",
+        imageManipulation: {
+          title: "Bildbearbeitung",
+          desc: "Verwandle Bilder, Videos und GIFs einfach in Memes.",
         },
         translation: {
-          title: "Sofort-Übersetzung",
-          desc: "Nachrichten in Echtzeit blitzschnell zwischen über 50 Sprachen übersetzen.",
+          title: "Übersetzung",
+          desc: "Übersetze Text schnell in über 100 Sprachen.",
+        },
+        reminders: {
+          title: "Bump-Erinnerung",
+          desc: "Erhalte Erinnerungen für /bump deines Servers auf Disboard.",
+        },
+        reactionRoles: {
+          title: "Reaktions-Trigger",
+          desc: "Richte erweiterte Trigger auf Nachrichten oder vorherige Nachrichten ein.",
+        },
+        lyrics: {
+          title: "Bildbearbeitung",
+          desc: "Verwandle Bilder, Videos und GIFs einfach in Memes.",
         },
       },
     },

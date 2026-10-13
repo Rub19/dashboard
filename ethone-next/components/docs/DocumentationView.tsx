@@ -72,11 +72,10 @@ function ChevronRightIcon({ className = "" }: { className?: string }) {
   );
 }
 
-function BookOpenIcon({ className = "" }: { className?: string }) {
+function ZapIcon({ className = "" }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" className={`h-4 w-4 shrink-0 ${className}`} aria-hidden="true">
-      <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-      <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
     </svg>
   );
 }
@@ -86,14 +85,6 @@ function TerminalIcon({ className = "" }: { className?: string }) {
     <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" className={`h-4 w-4 shrink-0 ${className}`} aria-hidden="true">
       <polyline points="4 17 10 11 4 5" />
       <line x1="12" y1="19" x2="20" y2="19" />
-    </svg>
-  );
-}
-
-function ZapIcon({ className = "" }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" className={`h-4 w-4 shrink-0 ${className}`} aria-hidden="true">
-      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
     </svg>
   );
 }
@@ -158,7 +149,7 @@ export default function DocumentationView() {
     function handleKeyDown(e: KeyboardEvent) {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
         e.preventDefault();
-        const input = document.getElementById("docs-search-input");
+        const input = document.getElementById("docs-sidebar-search-input") || document.getElementById("docs-search-input");
         if (input) input.focus();
       }
       if (e.key === "Escape") {
@@ -172,27 +163,28 @@ export default function DocumentationView() {
   }, [selectedGuide, selectedModule, searchQuery]);
 
   return (
-    <div className="relative h-dvh w-full overflow-x-hidden overflow-y-auto bg-[#07080d] text-zinc-200 antialiased selection:bg-[#92C8D2]/30 selection:text-white">
-      <header className="sticky top-0 z-40 border-b border-white/[0.08] bg-[#07080d]/85 backdrop-blur-xl">
-        <div className="mx-auto flex h-16 max-w-[1536px] items-center justify-between px-4 sm:px-6 lg:px-8">
+    <div className="relative min-h-dvh w-full overflow-x-hidden bg-[#090d0b] text-zinc-200 antialiased selection:bg-emerald-500/25 selection:text-white">
+      {/* Top Header */}
+      <header className="sticky top-0 z-40 border-b border-[#18231c] bg-[#090d0b]/90 backdrop-blur-xl">
+        <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-6">
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-zinc-400 hover:text-white lg:hidden"
+              className="flex h-9 w-9 items-center justify-center rounded-lg border border-[#1f2d24] bg-[#0d1410] text-zinc-400 hover:text-white lg:hidden"
               aria-label="Menu de navigation"
             >
               <MenuIcon />
             </button>
 
             <Link href="/bot" className="flex items-center gap-3 group">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#92C8D2]/10 ring-1 ring-[#92C8D2]/30 text-[#92C8D2] shadow-[0_0_15px_rgba(146,200,210,0.25)] transition-transform group-hover:scale-105">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 ring-1 ring-emerald-500/30 text-emerald-400 shadow-[0_0_15px_rgba(34,197,94,0.2)] transition-transform group-hover:scale-105">
                 <ShieldIcon className="h-5 w-5" />
               </div>
               <div className="flex flex-col">
                 <div className="flex items-center gap-2">
-                  <span className="font-bold tracking-tight text-white text-base">Etho Protect</span>
-                  <span className="rounded bg-[#92C8D2]/15 px-1.5 py-0.5 text-[10px] font-semibold text-[#92C8D2] border border-[#92C8D2]/25">
+                  <span className="font-bold tracking-tight text-white text-base">Etho</span>
+                  <span className="rounded bg-emerald-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-400 border border-emerald-500/25">
                     Docs
                   </span>
                 </div>
@@ -212,14 +204,14 @@ export default function DocumentationView() {
               <a href="#modules" className="rounded-lg px-3 py-1.5 transition-colors hover:text-white hover:bg-white/5">
                 Modules
               </a>
-              <Link href="/discord" className="rounded-lg px-3 py-1.5 text-[#92C8D2] font-semibold transition-colors hover:bg-[#92C8D2]/10">
+              <Link href="/discord" className="rounded-lg px-3 py-1.5 text-emerald-400 font-semibold transition-colors hover:bg-emerald-500/10">
                 Dashboard
               </Link>
             </nav>
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="relative hidden sm:flex items-center w-52 md:w-72">
+            <div className="relative hidden sm:flex items-center w-52 md:w-64">
               <SearchIcon className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
               <input
                 id="docs-search-input"
@@ -227,7 +219,7 @@ export default function DocumentationView() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Rechercher dans la doc..."
-                className="w-full rounded-xl border border-white/10 bg-[#0c0d14] py-1.5 pl-9 pr-14 text-xs text-zinc-200 placeholder-zinc-500 transition-colors focus:border-[#92C8D2] focus:outline-none focus:ring-1 focus:ring-[#92C8D2]"
+                className="w-full rounded-lg border border-[#1b261f] bg-[#0e1411] py-1.5 pl-9 pr-14 text-xs text-zinc-200 placeholder-zinc-500 transition-colors focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500/30"
               />
               {searchQuery ? (
                 <button
@@ -238,7 +230,7 @@ export default function DocumentationView() {
                   <CloseIcon className="h-3.5 w-3.5" />
                 </button>
               ) : (
-                <kbd className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 rounded border border-white/10 bg-white/5 px-1.5 py-0.5 text-[10px] font-mono text-zinc-400">
+                <kbd className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 rounded border border-[#1f2d24] bg-white/5 px-1.5 py-0.5 text-[10px] font-mono text-zinc-400">
                   Ctrl+K
                 </kbd>
               )}
@@ -246,14 +238,14 @@ export default function DocumentationView() {
 
             <Link
               href="/login"
-              className="hidden sm:inline-flex rounded-xl border border-white/10 px-3.5 py-1.5 text-xs font-semibold text-zinc-300 transition-colors hover:border-white/20 hover:bg-white/5 hover:text-white"
+              className="hidden sm:inline-flex rounded-lg border border-[#1f2d24] px-3.5 py-1.5 text-xs font-semibold text-zinc-300 transition-colors hover:border-zinc-700 hover:bg-white/5 hover:text-white"
             >
               Connexion
             </Link>
 
             <Link
               href="/discord"
-              className="inline-flex items-center gap-1.5 rounded-xl bg-[#92C8D2] px-3.5 py-1.5 text-xs font-bold text-[#07080d] shadow-[0_0_18px_rgba(146,200,210,0.35)] transition-all hover:bg-[#a5d5de] hover:scale-[1.02]"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-500 px-3.5 py-1.5 text-xs font-bold text-[#060a08] shadow-[0_0_18px_rgba(34,197,94,0.35)] transition-all hover:bg-emerald-400 hover:scale-[1.02]"
             >
               <span>+ Dashboard</span>
             </Link>
@@ -261,145 +253,247 @@ export default function DocumentationView() {
         </div>
       </header>
 
-      <div className="mx-auto flex max-w-[1536px] px-4 sm:px-6 lg:px-8">
+      {/* Main Container: Sidebar + Content */}
+      <div className="mx-auto flex max-w-[1440px] px-4 sm:px-6 lg:px-8">
+        {/* Left Sidebar (Keeper-style clean rail, wider and beautiful) */}
         <aside
-          className={`fixed inset-y-0 left-0 z-30 w-72 shrink-0 border-r border-white/[0.08] bg-[#07080d] pt-20 transition-transform lg:static lg:block lg:pt-6 lg:translate-x-0 xl:w-80 ${
+          className={`fixed inset-y-0 left-0 z-30 w-76 shrink-0 border-r border-[#18231c] bg-[#090d0b] pt-20 transition-transform lg:static lg:block lg:pt-6 lg:translate-x-0 lg:w-76 xl:w-80 ${
             mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         >
-          <div className="sticky top-20 flex h-[calc(100vh-5rem)] flex-col overflow-y-auto pr-4 pb-10">
-            <div className="mb-4 sm:hidden">
-              <div className="relative">
-                <SearchIcon className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
+          <div className="sticky top-20 flex h-[calc(100vh-5.5rem)] flex-col overflow-y-auto pr-3 pb-12 [scrollbar-width:thin] [scrollbar-color:#233228_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#233228] [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-[#34483a]">
+            {/* Search Input at Top of Sidebar */}
+            <div className="mb-3 px-1">
+              <label className="relative block">
+                <SearchIcon className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 h-3.5 w-3.5" />
                 <input
-                  type="text"
+                  id="docs-sidebar-search-input"
+                  type="search"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Rechercher..."
-                  className="w-full rounded-xl border border-white/10 bg-[#0c0d14] py-1.5 pl-9 pr-3 text-xs text-zinc-200 placeholder-zinc-500 focus:border-[#92C8D2] focus:outline-none"
+                  placeholder="Rechercher…"
+                  className="w-full rounded-md border border-[#1b261f] bg-[#0e1411] py-2 pl-9 pr-3 text-xs text-zinc-200 placeholder:text-zinc-500 outline-none transition-colors focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/30"
                 />
-              </div>
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white"
+                  >
+                    <CloseIcon className="h-3 w-3" />
+                  </button>
+                )}
+              </label>
             </div>
 
-            <div className="space-y-6 text-xs">
+            {/* Navigation Rail */}
+            <div className="space-y-4 text-xs">
+              {/* Accueil */}
+              <ul className="space-y-0.5">
+                <li>
+                  <a
+                    href="#accueil"
+                    onClick={() => {
+                      setActiveSection("accueil");
+                      setSelectedGuide(null);
+                      setSelectedModule(null);
+                      setMobileMenuOpen(false);
+                    }}
+                    className={`flex items-center justify-between gap-2 border-l-2 py-1.5 pl-3 pr-2 text-[13px] transition-colors ${
+                      activeSection === "accueil" && !selectedGuide && !selectedModule
+                        ? "border-emerald-500 font-semibold text-white"
+                        : "border-transparent text-zinc-400 hover:border-zinc-700 hover:text-zinc-200"
+                    }`}
+                  >
+                    <span className="truncate">Accueil</span>
+                  </a>
+                </li>
+              </ul>
+
+              {/* Guides */}
               <div>
-                <a
-                  href="#accueil"
-                  onClick={() => {
-                    setActiveSection("accueil");
-                    setMobileMenuOpen(false);
-                  }}
-                  className={`flex items-center gap-2 rounded-lg px-2.5 py-1.5 font-bold transition-colors ${
-                    activeSection === "accueil"
-                      ? "bg-[#92C8D2]/10 text-[#92C8D2]"
-                      : "text-zinc-400 hover:bg-white/5 hover:text-white"
-                  }`}
-                >
-                  <BookOpenIcon className="h-4 w-4" />
-                  <span>Accueil Docs</span>
-                </a>
+                <p className="mb-1 mt-4 px-3 text-[12px] font-semibold text-zinc-400">Guides</p>
+                <ul className="space-y-0.5">
+                  {STEP_BY_STEP_GUIDES.map((guide) => {
+                    const isActive = selectedGuide?.id === guide.id;
+                    return (
+                      <li key={guide.id}>
+                        <button
+                          type="button"
+                          title={guide.title}
+                          onClick={() => {
+                            setSelectedGuide(guide);
+                            setSelectedModule(null);
+                            setActiveSection(`guide-${guide.id}`);
+                            setMobileMenuOpen(false);
+                          }}
+                          className={`flex w-full items-center justify-between gap-2 border-l-2 py-1.5 pl-3 pr-2 text-[13px] text-left transition-colors ${
+                            isActive
+                              ? "border-emerald-500 font-semibold text-white"
+                              : "border-[#1c2820] text-zinc-400 hover:border-zinc-500 hover:text-zinc-100"
+                          }`}
+                        >
+                          <span className="truncate">{guide.title}</span>
+                          {guide.badge && (
+                            <span className="shrink-0 text-[10px] text-emerald-400 font-medium">
+                              {guide.badge}
+                            </span>
+                          )}
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
               </div>
 
+              {/* Sécurité Discord */}
               <div>
-                <div className="mb-2 px-2.5 text-[11px] font-bold uppercase tracking-wider text-zinc-500">
-                  Guides pas à pas
-                </div>
-                <div className="space-y-0.5">
-                  {STEP_BY_STEP_GUIDES.map((guide) => (
+                <p className="mb-1 mt-5 px-3 text-[12px] font-semibold text-zinc-400">Sécurité Discord</p>
+                <ul className="space-y-0.5">
+                  {PRACTICAL_SECURITY_GUIDES.map((guide) => {
+                    const isActive = selectedGuide?.id === guide.id;
+                    return (
+                      <li key={guide.id}>
+                        <button
+                          type="button"
+                          title={guide.title}
+                          onClick={() => {
+                            setSelectedGuide(guide);
+                            setSelectedModule(null);
+                            setActiveSection(`guide-${guide.id}`);
+                            setMobileMenuOpen(false);
+                          }}
+                          className={`flex w-full items-center justify-between gap-2 border-l-2 py-1.5 pl-3 pr-2 text-[13px] text-left transition-colors ${
+                            isActive
+                              ? "border-emerald-500 font-semibold text-white"
+                              : "border-[#1c2820] text-zinc-400 hover:border-zinc-500 hover:text-zinc-100"
+                          }`}
+                        >
+                          <span className="truncate">{guide.title}</span>
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+
+              {/* Référence */}
+              <div>
+                <p className="mb-1 mt-5 px-3 text-[12px] font-semibold text-zinc-400">Référence</p>
+                <ul className="space-y-0.5">
+                  <li>
                     <button
-                      key={guide.id}
                       type="button"
-                      title={guide.title}
                       onClick={() => {
-                        setSelectedGuide(guide);
+                        const slashGuide = STEP_BY_STEP_GUIDES.find((g) => g.id === "commandes-slash");
+                        if (slashGuide) {
+                          setSelectedGuide(slashGuide);
+                          setSelectedModule(null);
+                          setActiveSection("commands");
+                        }
                         setMobileMenuOpen(false);
                       }}
-                      className="flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-left text-zinc-400 transition-colors hover:bg-white/5 hover:text-white group"
+                      className={`flex w-full items-center justify-between gap-2 border-l-2 py-1.5 pl-3 pr-2 text-[13px] text-left transition-colors ${
+                        activeSection === "commands"
+                          ? "border-emerald-500 font-semibold text-white"
+                          : "border-[#1c2820] text-zinc-400 hover:border-zinc-500 hover:text-zinc-100"
+                      }`}
                     >
-                      <span className="truncate pr-1">{guide.title}</span>
-                      {guide.badge && (
-                        <span className="ml-1 shrink-0 rounded bg-emerald-500/10 px-1 py-0.2 text-[9px] font-medium text-emerald-400 border border-emerald-500/20">
-                          {guide.badge}
-                        </span>
-                      )}
+                      <span className="truncate">Commandes</span>
                     </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <div className="mb-2 px-2.5 text-[11px] font-bold uppercase tracking-wider text-zinc-500">
-                  Sécurité Discord
-                </div>
-                <div className="space-y-0.5">
-                  {PRACTICAL_SECURITY_GUIDES.slice(0, 8).map((guide) => (
-                    <button
-                      key={guide.id}
-                      type="button"
-                      title={guide.title}
-                      onClick={() => {
-                        setSelectedGuide(guide);
-                        setMobileMenuOpen(false);
-                      }}
-                      className="flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-left text-zinc-400 transition-colors hover:bg-white/5 hover:text-white"
-                    >
-                      <span className="truncate">{guide.title}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <div className="mb-2 px-2.5 text-[11px] font-bold uppercase tracking-wider text-zinc-500">
-                  Modules par catégorie
-                </div>
-                <div className="space-y-0.5">
-                  {MODULE_CATEGORIES.map((cat) => (
+                  </li>
+                  <li>
                     <a
-                      key={cat.id}
-                      href={`#cat-${cat.id}`}
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="flex items-center justify-between rounded-lg px-2.5 py-1.5 text-zinc-400 transition-colors hover:bg-white/5 hover:text-white"
+                      href="#modules"
+                      onClick={() => {
+                        setActiveSection("modules");
+                        setSelectedGuide(null);
+                        setSelectedModule(null);
+                        setMobileMenuOpen(false);
+                      }}
+                      className={`flex items-center justify-between gap-2 border-l-2 py-1.5 pl-3 pr-2 text-[13px] transition-colors ${
+                        activeSection === "modules"
+                          ? "border-emerald-500 font-semibold text-white"
+                          : "border-[#1c2820] text-zinc-400 hover:border-zinc-500 hover:text-zinc-100"
+                      }`}
                     >
-                      <span>{cat.label}</span>
-                      <span className="rounded-full bg-white/5 px-1.5 py-0.2 text-[10px] text-zinc-500">
-                        {cat.count}
-                      </span>
+                      <span className="truncate">Tous les modules</span>
                     </a>
-                  ))}
-                </div>
+                  </li>
+                </ul>
               </div>
+
+              {/* Module Categories (Sanctions, Salons, Rôles, etc.) */}
+              {MODULE_CATEGORIES.map((cat) => (
+                <div key={cat.id}>
+                  <p className="mb-1 mt-5 px-3 text-[12px] font-semibold text-zinc-400">{cat.label}</p>
+                  <ul className="space-y-0.5">
+                    {cat.modules.map((mod) => {
+                      const isActive = selectedModule?.id === mod.id;
+                      return (
+                        <li key={mod.id}>
+                          <button
+                            type="button"
+                            title={mod.name}
+                            onClick={() => {
+                              setSelectedModule(mod);
+                              setSelectedGuide(null);
+                              setActiveSection(`mod-${mod.id}`);
+                              setMobileMenuOpen(false);
+                            }}
+                            className={`flex w-full items-center justify-between gap-2 border-l-2 py-1.5 pl-3 pr-2 text-[13px] text-left transition-colors ${
+                              isActive
+                                ? "border-emerald-500 font-semibold text-white"
+                                : "border-[#1c2820] text-zinc-400 hover:border-zinc-500 hover:text-zinc-100"
+                            }`}
+                          >
+                            <span className="truncate">{mod.name}</span>
+                            {mod.isPremium && (
+                              <span className="shrink-0 text-[10px] font-medium text-emerald-400">
+                                Premium
+                              </span>
+                            )}
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              ))}
             </div>
           </div>
         </aside>
 
+        {/* Mobile menu backdrop */}
         {mobileMenuOpen && (
           <div
             onClick={() => setMobileMenuOpen(false)}
-            className="fixed inset-0 z-20 bg-black/60 backdrop-blur-sm lg:hidden"
+            className="fixed inset-0 z-20 bg-black/70 backdrop-blur-sm lg:hidden"
             aria-hidden="true"
           />
         )}
 
-        <main className="min-w-0 flex-1 py-8 pl-0 lg:pl-8 xl:pl-10">
+        {/* Main Content Area */}
+        <main className="min-w-0 flex-1 py-8 pl-0 lg:pl-10 xl:pl-12">
+          {/* Search results banner if searching */}
           {searchResults ? (
             <section className="mb-12">
               <div className="mb-6 flex items-center justify-between">
                 <h2 className="text-xl font-bold text-white">
-                  Résultats de recherche pour <span className="text-[#92C8D2]">« {searchQuery} »</span>
+                  Résultats de recherche pour <span className="text-emerald-400">« {searchQuery} »</span>
                 </h2>
-                <span className="rounded-full bg-white/5 px-2.5 py-1 text-xs text-zinc-400">
+                <span className="rounded-full bg-[#121c16] border border-[#1f2d24] px-2.5 py-1 text-xs text-zinc-400">
                   {searchResults.total} résultat{searchResults.total > 1 ? "s" : ""}
                 </span>
               </div>
 
               {searchResults.total === 0 ? (
-                <div className="rounded-2xl border border-white/[0.08] bg-[#0c0d14]/70 p-8 text-center">
+                <div className="rounded-2xl border border-[#18231c] bg-[#0d1410]/70 p-8 text-center">
                   <p className="text-sm text-zinc-400">Aucun résultat trouvé pour cette recherche.</p>
                   <button
                     type="button"
                     onClick={() => setSearchQuery("")}
-                    className="mt-3 text-xs text-[#92C8D2] hover:underline"
+                    className="mt-3 text-xs text-emerald-400 hover:underline"
                   >
                     Effacer la recherche
                   </button>
@@ -408,13 +502,13 @@ export default function DocumentationView() {
                 <div className="space-y-6">
                   {searchResults.guides.length > 0 && (
                     <div>
-                      <h3 className="mb-3 text-xs font-bold uppercase tracking-wider text-zinc-500">Guides</h3>
+                      <h3 className="mb-3 text-xs font-bold uppercase tracking-wider text-zinc-400">Guides</h3>
                       <div className="grid gap-3 sm:grid-cols-2">
                         {searchResults.guides.map((g) => (
                           <div
                             key={g.id}
                             onClick={() => setSelectedGuide(g)}
-                            className="cursor-pointer rounded-xl border border-white/[0.08] bg-[#0c0d14] p-4 transition-all hover:border-[#92C8D2]/40 hover:bg-[#0f101a]"
+                            className="cursor-pointer rounded-xl border border-[#18231c] bg-[#0d1410] p-4 transition-all hover:border-emerald-500/40 hover:bg-[#121c15]"
                           >
                             <div className="text-sm font-bold text-white">{g.title}</div>
                             <div className="mt-1 text-xs text-zinc-400 line-clamp-2">{g.description}</div>
@@ -426,13 +520,13 @@ export default function DocumentationView() {
 
                   {searchResults.modules.length > 0 && (
                     <div>
-                      <h3 className="mb-3 text-xs font-bold uppercase tracking-wider text-zinc-500">Modules</h3>
+                      <h3 className="mb-3 text-xs font-bold uppercase tracking-wider text-zinc-400">Modules</h3>
                       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                         {searchResults.modules.map((m) => (
                           <div
                             key={m.id}
                             onClick={() => setSelectedModule(m)}
-                            className="cursor-pointer rounded-xl border border-white/[0.08] bg-[#0c0d14] p-4 transition-all hover:border-[#92C8D2]/40 hover:bg-[#0f101a]"
+                            className="cursor-pointer rounded-xl border border-[#18231c] bg-[#0d1410] p-4 transition-all hover:border-emerald-500/40 hover:bg-[#121c15]"
                           >
                             <div className="flex items-center justify-between">
                               <span className="text-sm font-bold text-white">{m.name}</span>
@@ -449,15 +543,16 @@ export default function DocumentationView() {
             </section>
           ) : null}
 
+          {/* Hero Header */}
           <section id="accueil" className="mb-14 scroll-mt-24">
             <div className="max-w-3xl">
-              <div className="inline-flex items-center gap-2 rounded-full border border-[#92C8D2]/30 bg-[#92C8D2]/10 px-3 py-1 text-xs font-semibold text-[#92C8D2]">
+              <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-400">
                 <ZapIcon className="h-3.5 w-3.5" />
-                <span>Documentation Officielle Etho Protect</span>
+                <span>Documentation Officielle Etho</span>
               </div>
 
               <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-white sm:text-4xl lg:text-5xl text-balance">
-                Documentation officielle d&apos;Etho Protect
+                Documentation officielle d&apos;Etho
               </h1>
 
               <p className="mt-3 text-sm leading-relaxed text-zinc-400 sm:text-base">
@@ -467,13 +562,13 @@ export default function DocumentationView() {
               <div className="mt-6 flex flex-wrap items-center gap-3">
                 <a
                   href="#guides"
-                  className="rounded-xl bg-[#92C8D2] px-4 py-2 text-xs font-bold text-[#07080d] shadow-[0_0_20px_rgba(146,200,210,0.3)] transition-all hover:bg-[#a5d5de] hover:scale-[1.02]"
+                  className="rounded-lg bg-emerald-500 px-5 py-2 text-xs font-bold text-[#060a08] shadow-[0_0_20px_rgba(34,197,94,0.3)] transition-all hover:bg-emerald-400 hover:scale-[1.02]"
                 >
                   Commencer
                 </a>
                 <a
                   href="#modules"
-                  className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold text-zinc-300 transition-all hover:border-white/20 hover:bg-white/10 hover:text-white"
+                  className="rounded-lg border border-[#1f2d24] bg-[#0d1410] px-5 py-2 text-xs font-semibold text-zinc-300 transition-all hover:border-zinc-700 hover:bg-[#121c15] hover:text-white"
                 >
                   Parcourir les modules
                 </a>
@@ -481,8 +576,9 @@ export default function DocumentationView() {
             </div>
           </section>
 
+          {/* Step-by-step guides section */}
           <section id="guides" className="mb-16 scroll-mt-24">
-            <div className="mb-6 flex items-center justify-between border-b border-white/[0.08] pb-4">
+            <div className="mb-6 flex items-center justify-between border-b border-[#18231c] pb-4">
               <div>
                 <h2 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
                   Guides pas à pas
@@ -496,7 +592,7 @@ export default function DocumentationView() {
               </span>
             </div>
 
-            <div className="divide-y divide-white/[0.06] rounded-2xl border border-white/[0.08] bg-[#0c0d14]/70 backdrop-blur-xl">
+            <div className="divide-y divide-[#18231c] rounded-xl border border-[#18231c] bg-[#0d1410]/70 backdrop-blur-xl">
               {STEP_BY_STEP_GUIDES.map((guide) => (
                 <div
                   key={guide.id}
@@ -504,7 +600,7 @@ export default function DocumentationView() {
                   className="group grid grid-cols-1 md:grid-cols-[280px_1fr_90px] items-center gap-3 md:gap-6 p-4 sm:p-5 transition-colors hover:bg-white/[0.03] cursor-pointer"
                 >
                   <div className="flex items-center gap-2 min-w-0">
-                    <span className="text-sm font-bold text-white group-hover:text-[#92C8D2] transition-colors truncate">
+                    <span className="text-sm font-bold text-white group-hover:text-emerald-400 transition-colors truncate">
                       {guide.title}
                     </span>
                     {guide.badge && (
@@ -527,8 +623,9 @@ export default function DocumentationView() {
             </div>
           </section>
 
+          {/* Security Discord section */}
           <section id="securite" className="mb-16 scroll-mt-24">
-            <div className="mb-6 border-b border-white/[0.08] pb-4">
+            <div className="mb-6 border-b border-[#18231c] pb-4">
               <h2 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
                 Protéger son serveur Discord
               </h2>
@@ -537,7 +634,7 @@ export default function DocumentationView() {
               </p>
             </div>
 
-            <div className="divide-y divide-white/[0.06] rounded-2xl border border-white/[0.08] bg-[#0c0d14]/70 backdrop-blur-xl">
+            <div className="divide-y divide-[#18231c] rounded-xl border border-[#18231c] bg-[#0d1410]/70 backdrop-blur-xl">
               {PRACTICAL_SECURITY_GUIDES.map((guide) => (
                 <div
                   key={guide.id}
@@ -545,11 +642,11 @@ export default function DocumentationView() {
                   className="group grid grid-cols-1 md:grid-cols-[320px_1fr_90px] items-center gap-3 md:gap-6 p-4 sm:p-5 transition-colors hover:bg-white/[0.03] cursor-pointer"
                 >
                   <div className="flex items-center gap-2 min-w-0">
-                    <span className="text-sm font-bold text-white group-hover:text-[#92C8D2] transition-colors truncate">
+                    <span className="text-sm font-bold text-white group-hover:text-emerald-400 transition-colors truncate">
                       {guide.title}
                     </span>
                     {guide.badge && (
-                      <span className="shrink-0 rounded bg-[#92C8D2]/10 px-1.5 py-0.5 text-[10px] font-semibold text-[#92C8D2] border border-[#92C8D2]/25">
+                      <span className="shrink-0 rounded bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-400 border border-emerald-500/25">
                         {guide.badge}
                       </span>
                     )}
@@ -568,8 +665,9 @@ export default function DocumentationView() {
             </div>
           </section>
 
+          {/* Modules by category section */}
           <section id="modules" className="mb-20 scroll-mt-24">
-            <div className="mb-6 border-b border-white/[0.08] pb-4">
+            <div className="mb-6 border-b border-[#18231c] pb-4">
               <h2 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
                 Les modules par catégorie
               </h2>
@@ -583,7 +681,7 @@ export default function DocumentationView() {
                 <div
                   key={cat.id}
                   id={`cat-${cat.id}`}
-                  className="rounded-2xl border border-white/[0.08] bg-[#0c0d14]/70 p-5 backdrop-blur-xl"
+                  className="rounded-xl border border-[#18231c] bg-[#0d1410]/70 p-5 backdrop-blur-xl"
                 >
                   <div className="mb-3 flex items-center justify-between">
                     <div className="flex items-center gap-2">
@@ -600,10 +698,10 @@ export default function DocumentationView() {
                         key={mod.id}
                         type="button"
                         onClick={() => setSelectedModule(mod)}
-                        className={`inline-flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-semibold transition-all hover:scale-[1.03] ${
+                        className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all hover:scale-[1.03] ${
                           mod.isPremium
                             ? "border-amber-500/30 bg-amber-500/10 text-amber-300 hover:border-amber-400"
-                            : "border-white/10 bg-white/5 text-zinc-300 hover:border-[#92C8D2]/40 hover:text-white"
+                            : "border-[#1b2720] bg-[#111914] text-zinc-300 hover:border-emerald-500/40 hover:text-white"
                         }`}
                       >
                         <span>{mod.name}</span>
@@ -622,6 +720,7 @@ export default function DocumentationView() {
         </main>
       </div>
 
+      {/* Guide Detail Modal */}
       <AnimatePresence>
         {selectedGuide && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -630,19 +729,19 @@ export default function DocumentationView() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setSelectedGuide(null)}
-              className="absolute inset-0 bg-black/70 backdrop-blur-md"
+              className="absolute inset-0 bg-black/75 backdrop-blur-md"
             />
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 15 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 15 }}
               transition={{ type: "spring", stiffness: 350, damping: 30 }}
-              className="relative max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-white/15 bg-[#0c0d14] p-6 shadow-2xl"
+              className="relative max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-[#1f2d24] bg-[#0d1410] p-6 shadow-2xl [scrollbar-width:thin] [scrollbar-color:#233228_transparent]"
             >
               <div className="flex items-start justify-between">
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-semibold text-[#92C8D2]">
+                    <span className="text-xs font-semibold text-emerald-400">
                       {selectedGuide.category === "guides" ? "Guide pas à pas" : "Sécurité Discord"}
                     </span>
                     <span className="text-xs text-zinc-500">• {selectedGuide.readTime}</span>
@@ -663,10 +762,10 @@ export default function DocumentationView() {
               </p>
 
               {selectedGuide.commandSnippet && (
-                <div className="mt-4 rounded-xl border border-white/10 bg-black/50 p-3">
+                <div className="mt-4 rounded-xl border border-[#1c2820] bg-black/60 p-3">
                   <div className="flex items-center justify-between text-xs text-zinc-400 mb-1.5">
                     <span className="flex items-center gap-1.5 font-mono text-[11px]">
-                      <TerminalIcon className="h-3.5 w-3.5 text-[#92C8D2]" />
+                      <TerminalIcon className="h-3.5 w-3.5 text-emerald-400" />
                       Commande associée
                     </span>
                     <button
@@ -687,7 +786,7 @@ export default function DocumentationView() {
                       )}
                     </button>
                   </div>
-                  <code className="font-mono text-xs text-[#92C8D2] block overflow-x-auto">
+                  <code className="font-mono text-xs text-emerald-400 block overflow-x-auto">
                     {selectedGuide.commandSnippet}
                   </code>
                 </div>
@@ -700,8 +799,8 @@ export default function DocumentationView() {
                   </div>
                   <div className="space-y-2">
                     {selectedGuide.steps.map((s) => (
-                      <div key={s.step} className="flex gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
-                        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-[#92C8D2]/15 text-xs font-bold text-[#92C8D2]">
+                      <div key={s.step} className="flex gap-3 rounded-xl border border-[#18231c] bg-[#111914]/50 p-3">
+                        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-emerald-500/15 text-xs font-bold text-emerald-400">
                           {s.step}
                         </span>
                         <div>
@@ -727,7 +826,7 @@ export default function DocumentationView() {
                 <button
                   type="button"
                   onClick={() => setSelectedGuide(null)}
-                  className="rounded-xl bg-white/10 px-4 py-2 text-xs font-semibold text-white hover:bg-white/15"
+                  className="rounded-lg bg-white/10 px-4 py-2 text-xs font-semibold text-white hover:bg-white/15"
                 >
                   Fermer
                 </button>
@@ -737,6 +836,7 @@ export default function DocumentationView() {
         )}
       </AnimatePresence>
 
+      {/* Module Detail Modal */}
       <AnimatePresence>
         {selectedModule && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -745,19 +845,19 @@ export default function DocumentationView() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setSelectedModule(null)}
-              className="absolute inset-0 bg-black/70 backdrop-blur-md"
+              className="absolute inset-0 bg-black/75 backdrop-blur-md"
             />
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 15 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 15 }}
               transition={{ type: "spring", stiffness: 350, damping: 30 }}
-              className="relative max-h-[85vh] w-full max-w-xl overflow-y-auto rounded-2xl border border-white/15 bg-[#0c0d14] p-6 shadow-2xl"
+              className="relative max-h-[85vh] w-full max-w-xl overflow-y-auto rounded-2xl border border-[#1f2d24] bg-[#0d1410] p-6 shadow-2xl [scrollbar-width:thin] [scrollbar-color:#233228_transparent]"
             >
               <div className="flex items-start justify-between">
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-semibold text-[#92C8D2]">{selectedModule.categoryLabel}</span>
+                    <span className="text-xs font-semibold text-emerald-400">{selectedModule.categoryLabel}</span>
                     {selectedModule.isPremium && (
                       <span className="rounded bg-amber-400/20 px-1.5 py-0.5 text-[10px] font-bold text-amber-300 border border-amber-400/30">
                         Ultra
@@ -776,13 +876,13 @@ export default function DocumentationView() {
               </div>
 
               <div className="mt-4 grid grid-cols-2 gap-3 text-xs">
-                <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-3">
+                <div className="rounded-xl border border-[#18231c] bg-[#111914]/50 p-3">
                   <div className="text-zinc-500 text-[11px]">Action par défaut</div>
                   <div className="mt-1 font-semibold text-zinc-200">{selectedModule.defaultAction}</div>
                 </div>
-                <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-3">
+                <div className="rounded-xl border border-[#18231c] bg-[#111914]/50 p-3">
                   <div className="text-zinc-500 text-[11px]">Temps de réaction</div>
-                  <div className="mt-1 font-semibold text-[#92C8D2]">{selectedModule.reactionTime}</div>
+                  <div className="mt-1 font-semibold text-emerald-400">{selectedModule.reactionTime}</div>
                 </div>
               </div>
 
@@ -790,10 +890,10 @@ export default function DocumentationView() {
                 {selectedModule.description}
               </p>
 
-              <div className="mt-4 rounded-xl border border-white/10 bg-black/50 p-3">
+              <div className="mt-4 rounded-xl border border-[#1c2820] bg-black/60 p-3">
                 <div className="flex items-center justify-between text-xs text-zinc-400 mb-1.5">
                   <span className="flex items-center gap-1.5 font-mono text-[11px]">
-                    <TerminalIcon className="h-3.5 w-3.5 text-[#92C8D2]" />
+                    <TerminalIcon className="h-3.5 w-3.5 text-emerald-400" />
                     Commande Slash
                   </span>
                   <button
@@ -814,7 +914,7 @@ export default function DocumentationView() {
                     )}
                   </button>
                 </div>
-                <code className="font-mono text-xs text-[#92C8D2] block overflow-x-auto">
+                <code className="font-mono text-xs text-emerald-400 block overflow-x-auto">
                   {selectedModule.commandSnippet}
                 </code>
               </div>
@@ -827,7 +927,7 @@ export default function DocumentationView() {
                   <ul className="space-y-1.5 text-xs text-zinc-400">
                     {selectedModule.details.map((d, i) => (
                       <li key={i} className="flex items-start gap-2">
-                        <span className="h-1.5 w-1.5 rounded-full bg-[#92C8D2] mt-1.5 shrink-0" />
+                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 mt-1.5 shrink-0" />
                         <span>{d}</span>
                       </li>
                     ))}
@@ -839,7 +939,7 @@ export default function DocumentationView() {
                 <button
                   type="button"
                   onClick={() => setSelectedModule(null)}
-                  className="rounded-xl bg-white/10 px-4 py-2 text-xs font-semibold text-white hover:bg-white/15"
+                  className="rounded-lg bg-white/10 px-4 py-2 text-xs font-semibold text-white hover:bg-white/15"
                 >
                   Fermer
                 </button>
@@ -849,11 +949,12 @@ export default function DocumentationView() {
         )}
       </AnimatePresence>
 
-      <footer className="border-t border-white/[0.08] bg-[#07080d] py-10 text-xs text-zinc-500">
-        <div className="mx-auto flex max-w-[1536px] flex-col items-center justify-between gap-4 px-4 sm:px-6 lg:px-8 sm:flex-row">
+      {/* Footer */}
+      <footer className="border-t border-[#18231c] bg-[#090d0b] py-10 text-xs text-zinc-500">
+        <div className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-4 px-4 sm:px-6 lg:px-8 sm:flex-row">
           <div className="flex items-center gap-2">
-            <ShieldIcon className="h-4 w-4 text-[#92C8D2]" />
-            <span className="font-bold text-zinc-300">Etho Protect Documentation</span>
+            <ShieldIcon className="h-4 w-4 text-emerald-400" />
+            <span className="font-bold text-zinc-300">Etho Documentation</span>
             <span>—</span>
             <span>Infrastructure haute disponibilité</span>
           </div>

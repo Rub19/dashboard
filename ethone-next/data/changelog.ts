@@ -54799,10 +54799,62 @@ const v12903_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12903_fr, v12902_fr, v12901_fr, v12900_fr, v12899_fr, v12898_fr, v12897_fr, v12896_fr, v12895_fr, v12894_fr, v12893_fr, v12892_fr);
-CHANGELOG_BY_LANG.en.unshift(v12903_en, v12902_en, v12901_en, v12900_en, v12899_en, v12898_en, v12897_en, v12896_en, v12895_en, v12894_en, v12893_en, v12892_en);
-CHANGELOG_BY_LANG.es.unshift(v12903_es, v12902_es, v12901_es, v12900_es, v12899_es, v12898_es, v12897_es, v12896_es, v12895_es, v12894_es, v12893_es, v12892_es);
-CHANGELOG_BY_LANG.de.unshift(v12903_de, v12902_de, v12901_de, v12900_de, v12899_de, v12898_de, v12897_de, v12896_de, v12895_de, v12894_de, v12893_de, v12892_de);
+const v12904_fr: ChangelogEntry = {
+  version: "v1.75.62",
+  date: "2026-10-14",
+  title: "Tracker Riot : suppression des trackers tiers, Tactical Coach IA et conformité 7/7 Riot Games",
+  items: [
+    "Suppression définitive des trackers tiers non-Riot (Apex Legends, Tracker GG, Jeux) et retrait strict des vérificateurs de boutique d'objets (Store Checker)",
+    "Intégration d'un module unique Tactical Coach IA avec diagnostic des rounds, First Bloods et rentabilité des achats d'équipe",
+    "Ajout d'un tableau de bord de télémétrie post-match approfondie et de plans d'entraînement personnalisés adaptés aux agents joués",
+    "Implémentation et démonstration du flux interactif Riot Sign On (RSO OAuth 2.0 PKCE) avec consentement joueur explicite",
+    "Audit et validation détaillée des 7 exigences officielles de Riot Games pour l'approbation de l'API VALORANT en production",
+  ],
+};
+
+const v12904_en: ChangelogEntry = {
+  version: "v1.75.62",
+  date: "2026-10-14",
+  title: "Riot Tracker: non-Riot trackers removal, Tactical AI Coach and 7/7 Riot Games API compliance",
+  items: [
+    "Permanent removal of non-Riot trackers (Apex Legends, Tracker GG, Games) and strict removal of item store checkers",
+    "Integrated a unique Tactical AI Coach providing in-depth round diagnostics, First Blood conversion and team economy analysis",
+    "Added a post-match telemetry dashboard and tailored training routines based on agent and map performance",
+    "Interactive Riot Sign On (RSO OAuth 2.0 PKCE) user flow demonstration with explicit user consent",
+    "Full audit and implementation of all 7 official Riot Games VALORANT API requirements for production approval",
+  ],
+};
+
+const v12904_es: ChangelogEntry = {
+  version: "v1.75.62",
+  date: "2026-10-14",
+  title: "Tracker Riot: eliminación de trackers de terceros, Tactical Coach IA y cumplimiento 7/7 de Riot Games",
+  items: [
+    "Eliminación definitiva de trackers no pertenecientes a Riot (Apex Legends, Tracker GG, Juegos) y supresión estricta de verificadores de tienda",
+    "Integración de un módulo único de Tactical Coach IA con diagnóstico de rondas, First Bloods y rentabilidad de economía de equipo",
+    "Añadido panel de telemetría post-partida y planes de entrenamiento personalizados según agentes jugados",
+    "Demostración interactiva del flujo Riot Sign On (RSO OAuth 2.0 PKCE) con consentimiento explícito del jugador",
+    "Auditoría y cumplimiento detallado de los 7 requisitos oficiales de Riot Games para la aprobación de la API de VALORANT",
+  ],
+};
+
+const v12904_de: ChangelogEntry = {
+  version: "v1.75.62",
+  date: "2026-10-14",
+  title: "Riot Tracker: Entfernung von Drittanbieter-Trackern, Tactical Coach KI und 7/7 Riot Games API-Konformität",
+  items: [
+    "Dauerhafte Entfernung von Nicht-Riot-Trackern (Apex Legends, Tracker GG, Spiele) und strikte Einhaltung des Verbots von Item Store Checkern",
+    "Integration eines maßgeschneiderten Tactical Coach KI-Moduls mit Rundenanalyse, First Blood Conversion und Team-Ökonomie",
+    "Neues Dashboard für detaillierte Post-Match-Telemetrie und personalisierte Trainingspläne basierend auf Agentenleistung",
+    "Interaktive Demonstration des offiziellen Riot Sign On (RSO OAuth 2.0 PKCE)-Workflows mit Spielereinwilligung",
+    "Vollständiger Nachweis und Erfüllung aller 7 offiziellen Prüfpunkte für die Riot Games VALORANT API-Zulassung",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12904_fr, v12903_fr, v12902_fr, v12901_fr, v12900_fr, v12899_fr, v12898_fr, v12897_fr, v12896_fr, v12895_fr, v12894_fr, v12893_fr, v12892_fr);
+CHANGELOG_BY_LANG.en.unshift(v12904_en, v12903_en, v12902_en, v12901_en, v12900_en, v12899_en, v12898_en, v12897_en, v12896_en, v12895_en, v12894_en, v12893_en, v12892_en);
+CHANGELOG_BY_LANG.es.unshift(v12904_es, v12903_es, v12902_es, v12901_es, v12900_es, v12899_es, v12898_es, v12897_es, v12896_es, v12895_es, v12894_es, v12893_es, v12892_es);
+CHANGELOG_BY_LANG.de.unshift(v12904_de, v12903_de, v12902_de, v12901_de, v12900_de, v12899_de, v12898_de, v12897_de, v12896_de, v12895_de, v12894_de, v12893_de, v12892_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

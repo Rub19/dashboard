@@ -36,14 +36,8 @@ export default function MatchesPage({ defaultTab }: { defaultTab?: string }) {
     { id: "valorant", label: "Valorant", icon: <GameBrandIcon name="Valorant" className="h-4 w-4" /> },
     { id: "lol", label: "League of Legends", icon: <GameBrandIcon name="League of Legends" className="h-4 w-4" /> },
     { id: "tft", label: "Teamfight Tactics", icon: <GameBrandIcon name="Teamfight Tactics" className="h-4 w-4" /> },
-    ...(isOwner ? [
-      { id: "valorant-store", label: "Boutique Valorant", icon: <GameBrandIcon name="Valorant" className="h-4 w-4" /> },
-      { id: "valorant-inventory", label: "Inventaire Valorant", icon: <GameBrandIcon name="Valorant" className="h-4 w-4" /> },
-    ] : []),
     { id: "lol-rotation", label: "Rotation LoL", icon: <GameBrandIcon name="League of Legends" className="h-4 w-4" /> },
-    { id: "apex", label: "Apex Legends", icon: <GameBrandIcon name="Apex Legends" className="h-4 w-4" /> },
-    { id: "trackergg", label: "Autres jeux", icon: <GameBrandIcon name="" className="h-4 w-4" /> },
-  ], [isOwner]);
+  ], []);
 
   const i18n = useI18n();
   const { settings, update } = useSettings();
@@ -53,12 +47,8 @@ export default function MatchesPage({ defaultTab }: { defaultTab?: string }) {
   const [tab, setTab] = useState(() => {
     if (typeof window !== "undefined") {
       const urlTab = new URLSearchParams(window.location.search).get("tab");
-      if (urlTab) {
-        if ((urlTab === "valorant-inventory" || urlTab === "valorant-store") && !isOwner) return "valorant";
-        return urlTab;
-      }
+      if (urlTab === "valorant" || urlTab === "lol" || urlTab === "tft" || urlTab === "lol-rotation") return urlTab;
     }
-    if ((defaultTab === "valorant-inventory" || defaultTab === "valorant-store") && !isOwner) return "valorant";
     return defaultTab || "valorant";
   });
 
@@ -66,17 +56,13 @@ export default function MatchesPage({ defaultTab }: { defaultTab?: string }) {
     if (typeof window === "undefined") return;
     const handleUrlTab = () => {
       const urlTab = new URLSearchParams(window.location.search).get("tab");
-      if (urlTab) {
-        if ((urlTab === "valorant-inventory" || urlTab === "valorant-store") && !isOwner) {
-          setTab("valorant");
-        } else {
-          setTab(urlTab);
-        }
+      if (urlTab === "valorant" || urlTab === "lol" || urlTab === "tft" || urlTab === "lol-rotation") {
+        setTab(urlTab);
       }
     };
     window.addEventListener("popstate", handleUrlTab);
     return () => window.removeEventListener("popstate", handleUrlTab);
-  }, [isOwner]);
+  }, []);
 
   const selectTab = (nextTab: string) => {
     setTab(nextTab);
@@ -158,18 +144,12 @@ export default function MatchesPage({ defaultTab }: { defaultTab?: string }) {
         >
         {tab === "valorant" ? (
           <ValorantTrackerView />
-        ) : tab === "valorant-inventory" && isOwner ? (
-          <ValorantInventoryView />
         ) : tab === "lol" ? (
           <LolTrackerView />
-        ) : tab === "valorant-store" && isOwner ? (
-          <ValorantStoreView onOpenInventory={isOwner ? () => setTab("valorant-inventory") : undefined} />
         ) : tab === "lol-rotation" ? (
           <LolRotationView />
         ) : tab === "tft" ? (
           <TftTrackerView />
-        ) : tab === "trackergg" ? (
-          <TrackerGgView />
         ) : (
           <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden space-y-4">
             <div className="shrink-0 space-y-4">

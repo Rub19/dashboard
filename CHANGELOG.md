@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.62 — 2026-10-14
+
+**Tracker Riot : suppression des trackers tiers, Tactical Coach IA et conformité 7/7 Riot Games**
+
+- Suppression définitive de tous les trackers non-Riot (Apex Legends, Tracker GG, Jeux) et retrait strict des vérificateurs de boutique d'objets (Store Checker).
+- Intégration d'un module unique Tactical Coach IA avec diagnostic approfondi des rounds, conversion de First Bloods et rentabilité économique.
+- Tableau de bord de télémétrie post-match détaillée et plans d'entraînement personnalisés basés sur les performances réelles.
+- Démonstration interactive du flux officiel Riot Sign On (RSO OAuth 2.0 PKCE) avec recueil du consentement joueur.
+- Audit et conformité exhaustive sur les 7 exigences officielles du portail développeur Riot Games pour l'accès API en production.
+
 ## v1.75.61 — 2026-10-14
 
 **Tracker Riot : données réelles branchées et suppression des éléments IA**

@@ -10,9 +10,11 @@ import {
   ImageOff,
   Palette,
   User,
-  Swords,
   Key,
   Target,
+  Brain,
+  ShieldCheck,
+  Activity,
 } from "@/components/icons/ph";
 import { ethoneIcon } from "@/components/EthoneIcon";
 import GameBrandIcon from "@/components/GameBrandIcon";
@@ -32,11 +34,6 @@ import {
   useAnimatedSidebarPanel,
 } from "@/components/motion/animated-sidebar";
 
-const BrainIcon = ethoneIcon("brain");
-const NotesIcon = ethoneIcon("notes");
-const TasksIcon = ethoneIcon("tasks");
-const ScratchpadIcon = ethoneIcon("focus");
-const GamesIcon = ethoneIcon("games");
 const HomeIcon = ethoneIcon("home");
 const SettingsIcon = ethoneIcon("settings");
 
@@ -61,7 +58,7 @@ const TRACKER_GROUPS: TrackerSidebarGroup[] = [
     items: [
       {
         id: "riot-home",
-        label: "Riot Tracker",
+        label: "Hub Riot Games",
         href: "/tracker",
         renderIcon: (colored) => (
           <GameBrandIcon
@@ -69,12 +66,12 @@ const TRACKER_GROUPS: TrackerSidebarGroup[] = [
             className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-rose-500")}
           />
         ),
-        badge: "Hub",
+        badge: "Live",
       },
       {
         id: "valorant",
         label: "VALORANT",
-        href: "/matches?tab=valorant",
+        href: "/tracker?tab=valorant",
         renderIcon: (colored) => (
           <GameBrandIcon
             name="Valorant"
@@ -85,7 +82,7 @@ const TRACKER_GROUPS: TrackerSidebarGroup[] = [
       {
         id: "lol",
         label: "League of Legends",
-        href: "/matches?tab=lol",
+        href: "/tracker?tab=lol",
         renderIcon: (colored) => (
           <GameBrandIcon
             name="League of Legends"
@@ -96,7 +93,7 @@ const TRACKER_GROUPS: TrackerSidebarGroup[] = [
       {
         id: "tft",
         label: "Teamfight Tactics",
-        href: "/matches?tab=tft",
+        href: "/tracker?tab=tft",
         renderIcon: (colored) => (
           <GameBrandIcon
             name="Teamfight Tactics"
@@ -104,116 +101,70 @@ const TRACKER_GROUPS: TrackerSidebarGroup[] = [
           />
         ),
       },
-      {
-        id: "matches",
-        label: "Matchs Directs",
-        href: "/matches",
-        renderIcon: (colored) => (
-          <Swords
-            className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-red-500")}
-            strokeWidth={1.9}
-          />
-        ),
-      },
-      {
-        id: "inventory",
-        label: "Inventaire Skins",
-        href: "/matches/inventory",
-        renderIcon: (colored) => (
-          <Key
-            className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-rose-400")}
-            strokeWidth={1.9}
-          />
-        ),
-      },
     ],
   },
   {
-    id: "trackers",
-    label: "Trackers & Jeux",
+    id: "coaching",
+    label: "Coaching & IA",
     items: [
       {
-        id: "trackergg",
-        label: "Tracker GG",
-        href: "/matches?tab=trackergg",
+        id: "coach",
+        label: "Coach IA Tactique",
+        href: "/tracker?tab=coach",
+        renderIcon: (colored) => (
+          <Brain
+            className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-purple-400")}
+          />
+        ),
+        badge: "IA",
+      },
+      {
+        id: "telemetry",
+        label: "Télémétrie de Combat",
+        href: "/tracker?tab=telemetry",
         renderIcon: (colored) => (
           <Target
             className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-cyan-400")}
-            strokeWidth={1.9}
           />
         ),
       },
       {
-        id: "apex",
-        label: "Apex Legends",
-        href: "/matches?tab=apex",
+        id: "training",
+        label: "Plan d'Entraînement",
+        href: "/tracker?tab=training",
         renderIcon: (colored) => (
-          <GameBrandIcon
-            name="Apex Legends"
-            className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-red-400")}
-          />
-        ),
-      },
-      {
-        id: "games",
-        label: "Jeux",
-        href: "/games",
-        renderIcon: (colored) => (
-          <GamesIcon
-            className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-purple-400")}
-            strokeWidth={1.9}
+          <Activity
+            className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-emerald-400")}
           />
         ),
       },
     ],
   },
   {
-    id: "workspace",
-    label: "Espace & IA",
+    id: "compliance",
+    label: "RSO & Conformité Riot",
     items: [
       {
-        id: "brain",
-        label: "Brain IA",
-        href: "/brain",
+        id: "rso",
+        label: "Connexion RSO OAuth",
+        href: "/tracker?tab=rso",
         renderIcon: (colored) => (
-          <BrainIcon
-            className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-pink-400")}
-            strokeWidth={1.9}
+          <Key
+            className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-amber-400")}
           />
         ),
+        badge: "OAuth",
       },
       {
-        id: "notes",
-        label: "Notes",
-        href: "/notes",
+        id: "compliance",
+        label: "Conformité API Riot",
+        href: "/tracker?tab=compliance",
         renderIcon: (colored) => (
-          <NotesIcon
-            className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-amber-300")}
-            strokeWidth={1.9}
-          />
-        ),
-      },
-      {
-        id: "tasks",
-        label: "Tâches",
-        href: "/tasks",
-        renderIcon: (colored) => (
-          <TasksIcon
+          <ShieldCheck
             className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-emerald-400")}
-            strokeWidth={1.9}
           />
         ),
-      },
-      {
-        id: "scratchpad",
-        label: "Scratchpad",
-        href: "/scratchpad",
-        renderIcon: (colored) => (
-          <ScratchpadIcon
-            className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-orange-400")}
-            strokeWidth={1.9}
-          />
-        ),
+        badge: "7/7",
       },
     ],
   },
@@ -228,7 +179,6 @@ const TRACKER_GROUPS: TrackerSidebarGroup[] = [
         renderIcon: (colored) => (
           <HomeIcon
             className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-sky-400")}
-            strokeWidth={1.9}
           />
         ),
       },
@@ -239,7 +189,6 @@ const TRACKER_GROUPS: TrackerSidebarGroup[] = [
         renderIcon: (colored) => (
           <SettingsIcon
             className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-slate-300")}
-            strokeWidth={1.9}
           />
         ),
       },
@@ -256,7 +205,7 @@ const TrackerSidebarBrand = memo(function TrackerSidebarBrand() {
         "flex h-10 items-center gap-2.5 text-[var(--text-primary)] outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)] transition-transform active:scale-95",
         collapsed && "justify-center"
       )}
-      aria-label="RIOT TRACKER"
+      aria-label="RIOT TRACKER & COACH"
     >
       <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-rose-600 to-red-600 text-white shadow-md">
         <GameBrandIcon name="Valorant" className="h-4.5 w-4.5" />
@@ -275,14 +224,14 @@ const TrackerSidebarBrand = memo(function TrackerSidebarBrand() {
       >
         <div className="flex items-center gap-1.5">
           <span className="text-xs font-black tracking-wider text-[var(--text-primary)] uppercase">
-            #RIOT TRACKER
+            #RIOT COACH
           </span>
           <span className="rounded-full border border-rose-500/40 bg-rose-500/15 px-1.5 py-0.2 text-[8px] font-bold text-rose-300">
             LIVE
           </span>
         </div>
         <span className="text-[10px] font-mono text-[var(--text-muted)] mt-0.5">
-          ETHONE GAMING
+          VALORANT & LOL
         </span>
       </motion.div>
     </Link>
@@ -366,9 +315,9 @@ const TrackerSidebarFooter = memo(function TrackerSidebarFooter() {
             title={settings.sidebarIcons ? "Masquer les icônes" : "Afficher les icônes"}
           >
             {settings.sidebarIcons ? (
-              <ImageIcon className="h-4 w-4" strokeWidth={1.85} />
+              <ImageIcon className="h-4 w-4" />
             ) : (
-              <ImageOff className="h-4 w-4" strokeWidth={1.85} />
+              <ImageOff className="h-4 w-4" />
             )}
           </button>
 
@@ -384,7 +333,7 @@ const TrackerSidebarFooter = memo(function TrackerSidebarFooter() {
               aria-label={settings.sidebarColoredIcons ? "Icônes monochromes" : "Icônes en couleur"}
               title={settings.sidebarColoredIcons ? "Icônes monochromes" : "Icônes en couleur"}
             >
-              <Palette className="h-4 w-4" strokeWidth={1.85} />
+              <Palette className="h-4 w-4" />
             </button>
           )}
         </div>
@@ -396,7 +345,7 @@ const TrackerSidebarFooter = memo(function TrackerSidebarFooter() {
           aria-label="Réduire la barre latérale"
           title="Réduire la barre latérale"
         >
-          <PanelLeftClose className="h-4 w-4" strokeWidth={1.85} />
+          <PanelLeftClose className="h-4 w-4" />
         </button>
       </div>
     </div>
@@ -432,7 +381,7 @@ export default function TrackerSidebar() {
   const isItemActive = useCallback(
     (item: TrackerSidebarItem) => {
       if (item.id === "riot-home") {
-        return pathname === "/tracker" && !currentTab;
+        return pathname === "/tracker" && (!currentTab || currentTab === "home");
       }
       if (item.id === "valorant") {
         return (pathname === "/matches" || pathname === "/tracker") && currentTab === "valorant";
@@ -443,32 +392,20 @@ export default function TrackerSidebar() {
       if (item.id === "tft") {
         return (pathname === "/matches" || pathname === "/tracker") && currentTab === "tft";
       }
-      if (item.id === "matches") {
-        return pathname === "/matches" && !currentTab;
+      if (item.id === "coach") {
+        return pathname === "/tracker" && currentTab === "coach";
       }
-      if (item.id === "inventory") {
-        return pathname === "/matches/inventory";
+      if (item.id === "telemetry") {
+        return pathname === "/tracker" && currentTab === "telemetry";
       }
-      if (item.id === "trackergg") {
-        return pathname === "/matches" && currentTab === "trackergg";
+      if (item.id === "training") {
+        return pathname === "/tracker" && currentTab === "training";
       }
-      if (item.id === "apex") {
-        return pathname === "/matches" && currentTab === "apex";
+      if (item.id === "rso") {
+        return pathname === "/tracker" && currentTab === "rso";
       }
-      if (item.id === "games") {
-        return pathname === "/games" || pathname.startsWith("/games/");
-      }
-      if (item.id === "brain") {
-        return pathname === "/brain" || pathname.startsWith("/brain/");
-      }
-      if (item.id === "notes") {
-        return pathname === "/notes" || pathname.startsWith("/notes/");
-      }
-      if (item.id === "tasks") {
-        return pathname === "/tasks" || pathname.startsWith("/tasks/");
-      }
-      if (item.id === "scratchpad") {
-        return pathname === "/scratchpad" || pathname.startsWith("/scratchpad/");
+      if (item.id === "compliance") {
+        return pathname === "/tracker" && currentTab === "compliance";
       }
       if (item.id === "home") {
         return pathname === "/";

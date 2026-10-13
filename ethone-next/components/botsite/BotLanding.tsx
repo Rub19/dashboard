@@ -19,6 +19,7 @@ import { supabase } from "@/lib/supabase";
 import { signInWithOAuth } from "@/lib/auth";
 import FlagIcon, { LANGUAGE_LABELS } from "@/components/FlagIcon";
 import VersionPill from "@/components/layout/VersionPill";
+import { ArrowUp } from "@/components/icons/ph";
 import { EASE_SNAP, SPRING_MOUSE } from "@/lib/ease";
 import { useMotionPref } from "@/lib/hooks/useMotionPref";
 import { BOT_COPY, BOT_LANGS, BOT_LANG_KEY, detectBotLang, type BotLang } from "./botLandingI18n";
@@ -1129,6 +1130,7 @@ export default function BotLanding() {
   const [scrolled, setScrolled] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [showCommands, setShowCommands] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
 
   const handleDashboardClick = async (e?: React.MouseEvent) => {
     if (e) e.preventDefault();
@@ -1156,7 +1158,18 @@ export default function BotLanding() {
 
   const { scrollY, scrollYProgress } = useScroll({ container: scrollRef });
   const progress = useSpring(scrollYProgress, { stiffness: 140, damping: 30, restDelta: 0.001 });
-  useMotionValueEvent(scrollY, "change", (v) => setScrolled(v > 12));
+  useMotionValueEvent(scrollY, "change", (v) => {
+    setScrolled(v > 12);
+    setShowScrollTop(v > 200);
+  });
+
+  const scrollToTop = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTo({ top: 0, behavior: reduced ? "auto" : "smooth" });
+    } else if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: reduced ? "auto" : "smooth" });
+    }
+  };
 
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
@@ -2041,54 +2054,107 @@ export default function BotLanding() {
         </section>
       </main>
 
-      <footer className="relative z-10 border-t border-white/[0.07] bg-black/40">
-        <div className="mx-auto flex w-full max-w-6xl flex-col items-center justify-between gap-4 px-6 py-8 text-xs text-zinc-500 sm:flex-row">
-          <div className="flex items-center gap-3">
-            <Image src="/icons/ethone-icon-192.png" alt="" width={20} height={20} className="h-5 w-5 rounded-md opacity-80" />
-            <p>© {new Date().getFullYear()} Etho · {c.footer.tagline}</p>
+      <footer className="relative z-10 border-t border-white/[0.07] bg-black/40 px-6 py-12 sm:px-10 lg:px-12">
+        <div className="mx-auto grid max-w-6xl grid-cols-1 gap-10 sm:grid-cols-3">
+          <div className="flex flex-col justify-between gap-6">
+            <div>
+              <Image
+                src="/icons/ethone-icon-192.png"
+                alt="Etho"
+                width={36}
+                height={36}
+                className="h-9 w-9 rounded-xl opacity-90"
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <p className="text-xs text-zinc-500">
+                Copyright © {new Date().getFullYear()} etho.dev, {c.footer.rightsReserved}
+              </p>
+              <div>
+                <VersionPill />
+              </div>
+            </div>
           </div>
-          <div className="flex flex-wrap items-center gap-6">
-            <button type="button" onClick={handleDashboardClick} className="transition-colors hover:text-white cursor-pointer">
-              {c.footer.dashboard}
-            </button>
-            <a
-              href={SUPPORT_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="transition-colors hover:text-white"
-            >
-              {c.footer.support}
-            </a>
-            <Link href="/docs" className="transition-colors hover:text-white">
-              Documentation
-            </Link>
-            <Link href="/terms" className="transition-colors hover:text-white">
-              {c.footer.terms}
-            </Link>
-            <Link href="/privacy" className="transition-colors hover:text-white">
-              {c.footer.privacy}
-            </Link>
-            <Link href="/cookies" className="transition-colors hover:text-white">
-              {c.footer.cookies}
-            </Link>
-            <Link href="/legal" className="transition-colors hover:text-white">
-              {c.footer.legal}
-            </Link>
-            <button
-              type="button"
-              onClick={() => {
-                if (typeof window !== "undefined") {
-                  window.dispatchEvent(new CustomEvent("ethone:open-cookie-settings"));
-                }
-              }}
-              className="transition-colors hover:text-white cursor-pointer bg-transparent border-0 p-0 text-xs text-zinc-500"
-            >
-              {c.footer.cookieSettings}
-            </button>
-            <VersionPill />
+
+          <div className="flex flex-col gap-3">
+            <h4 className="text-sm font-semibold text-white">{c.footer.botColTitle}</h4>
+            <div className="flex flex-col gap-2.5 text-xs text-zinc-400">
+              <a
+                href={INVITE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="transition-colors hover:text-white"
+              >
+                {c.nav.invite || "Invite"}
+              </a>
+              <Link href="/docs" className="transition-colors hover:text-white">
+                Documentation
+              </Link>
+              <a
+                href={SUPPORT_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="transition-colors hover:text-white"
+              >
+                {c.footer.support}
+              </a>
+              <button
+                type="button"
+                onClick={handleDashboardClick}
+                className="text-left transition-colors hover:text-white cursor-pointer bg-transparent border-0 p-0 text-xs text-zinc-400"
+              >
+                {c.footer.dashboard}
+              </button>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            <h4 className="text-sm font-semibold text-white">{c.footer.legalColTitle}</h4>
+            <div className="flex flex-col gap-2.5 text-xs text-zinc-400">
+              <Link href="/terms" className="transition-colors hover:text-white">
+                {c.footer.terms}
+              </Link>
+              <Link href="/privacy" className="transition-colors hover:text-white">
+                {c.footer.privacy}
+              </Link>
+              <Link href="/cookies" className="transition-colors hover:text-white">
+                {c.footer.cookies}
+              </Link>
+              <Link href="/legal" className="transition-colors hover:text-white">
+                {c.footer.legal}
+              </Link>
+              <button
+                type="button"
+                onClick={() => {
+                  if (typeof window !== "undefined") {
+                    window.dispatchEvent(new CustomEvent("ethone:open-cookie-settings"));
+                  }
+                }}
+                className="text-left transition-colors hover:text-white cursor-pointer bg-transparent border-0 p-0 text-xs text-zinc-400"
+              >
+                {c.footer.cookieSettings}
+              </button>
+            </div>
           </div>
         </div>
       </footer>
+
+      <AnimatePresence>
+        {showScrollTop && (
+          <motion.button
+            type="button"
+            onClick={scrollToTop}
+            aria-label="Retour en haut"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ duration: 0.2 }}
+            className="fixed bottom-6 right-6 z-50 flex h-11 w-11 items-center justify-center rounded-full bg-[#1e1f22]/90 border border-white/10 text-zinc-300 shadow-xl backdrop-blur-md transition-all hover:bg-[#2b2d31] hover:text-white hover:scale-105 active:scale-95 cursor-pointer"
+          >
+            <ArrowUp className="h-5 w-5" />
+          </motion.button>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

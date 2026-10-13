@@ -165,6 +165,9 @@ export interface BotCopy {
   };
   footer: {
     tagline: string;
+    botColTitle: string;
+    legalColTitle: string;
+    rightsReserved: string;
     dashboard: string;
     support: string;
     terms: string;
@@ -449,9 +452,12 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
     },
     footer: {
       tagline: "Le bot Discord tout-en-un pour votre communauté",
+      botColTitle: "Bot",
+      legalColTitle: "Légal",
+      rightsReserved: "Tous droits réservés.",
       dashboard: "Dashboard",
       support: "Support Discord",
-      terms: "Conditions",
+      terms: "Conditions d'utilisation",
       privacy: "Confidentialité",
       cookies: "Cookies",
       legal: "Mentions légales",
@@ -732,13 +738,16 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
     },
     footer: {
       tagline: "The all-in-one Discord bot for your community",
+      botColTitle: "Bot",
+      legalColTitle: "Legal",
+      rightsReserved: "All rights reserved.",
       dashboard: "Dashboard",
-      support: "Discord Support",
-      terms: "Terms",
-      privacy: "Privacy",
+      support: "Support Server",
+      terms: "Terms of Service",
+      privacy: "Privacy Policy",
       cookies: "Cookies",
       legal: "Legal Notice",
-      cookieSettings: "Manage cookies",
+      cookieSettings: "Cookie Settings",
     },
   },
 
@@ -1015,13 +1024,16 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
     },
     footer: {
       tagline: "El bot de Discord todo en uno para tu comunidad",
+      botColTitle: "Bot",
+      legalColTitle: "Legal",
+      rightsReserved: "Todos los derechos reservados.",
       dashboard: "Panel",
-      support: "Soporte Discord",
-      terms: "Términos",
-      privacy: "Privacidad",
+      support: "Servidor de Soporte",
+      terms: "Términos de Servicio",
+      privacy: "Política de Privacidad",
       cookies: "Cookies",
       legal: "Aviso Legal",
-      cookieSettings: "Gestionar cookies",
+      cookieSettings: "Configuración de cookies",
     },
   },
 
@@ -1298,13 +1310,16 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
     },
     footer: {
       tagline: "Der All-in-One Discord-Bot für deine Community",
+      botColTitle: "Bot",
+      legalColTitle: "Legal",
+      rightsReserved: "Alle Rechte vorbehalten.",
       dashboard: "Dashboard",
-      support: "Discord Support",
-      terms: "Bedingungen",
-      privacy: "Datenschutz",
+      support: "Support-Server",
+      terms: "Nutzungsbedingungen",
+      privacy: "Datenschutzerklärung",
       cookies: "Cookies",
       legal: "Impressum",
-      cookieSettings: "Cookies verwalten",
+      cookieSettings: "Cookie-Einstellungen",
     },
   },
 };

@@ -1,4 +1,4 @@
-# ETHONE — passation & nouveautés (2026-10-13, version 1.75.36)
+# ETHONE — passation & nouveautés (2026-10-13, version 1.75.37)
 
 ## Projet
 - `ethone-next/` : site Next.js statique (ethone.dev, Cloudflare Pages, déploiement auto au push sur `main`).
@@ -25,9 +25,17 @@
 
 ---
 
-## Nouveautés majeures & Réalisations récentes (v1.73.0 → v1.75.36)
+## Nouveautés majeures & Réalisations récentes (v1.73.0 → v1.75.37)
 
-### 0. Vitrine Bot : Épuration du Hero et Retrait des 3 Badges (v1.75.36)
+### 0. Vitrine Bot : Bouton Retour en Haut Flottant et Footer 3 Colonnes Style Bleed (v1.75.37)
+- **Bouton Flottant Circulaire** : Ajout d'un bouton circulaire en bas à droite (`ArrowUp`) qui s'affiche automatiquement dès que le défilement dépasse 200px et permet de remonter en haut de page en douceur avec animation Framer Motion.
+- **Footer 3 Colonnes Style Bleed** : Refonte totale du bas de page en grille 3 colonnes :
+  - Colonne 1 : Logo Etho, Copyright © 2026 etho.dev, Tous droits réservés, et VersionPill.
+  - Colonne 2 (Bot) : Liens Inviter, Documentation, Support Discord et Dashboard.
+  - Colonne 3 (Légal) : Conditions d'utilisation, Confidentialité, Cookies, Mentions légales et bouton Paramètres des cookies.
+- **Suppression du Slogan Inférieur** : Retrait définitif de « Le bot Discord tout-en-un pour votre communauté » du bas de page.
+
+### 1. Vitrine Bot : Épuration du Hero et Retrait des 3 Badges (v1.75.36)
 - **Hero Épuré** : Suppression des 3 badges secondaires sous les boutons d'appel à l'action (« Anti-Raid 0.2s », « Pont vocal Spotify », « Zéro latence ») dans `BotLanding.tsx`.
 - **Impact Visuel** : Mise en valeur directe des boutons d'action (« Ajouter le bot », « Ouvrir le dashboard ») et du simulateur Discord interactif sans distractions textuelles superflues.
 

@@ -53518,4 +53518,53 @@ CHANGELOG_BY_LANG.en.unshift(v12880_en);
 CHANGELOG_BY_LANG.es.unshift(v12880_es);
 CHANGELOG_BY_LANG.de.unshift(v12880_de);
 
+const v12881_fr: ChangelogEntry = {
+  version: "v1.75.37",
+  date: "2026-10-13",
+  title: "Bouton retour en haut et footer 3 colonnes sur la présentation du bot",
+  items: [
+    "Ajout d'un bouton flottant circulaire en bas à droite pour remonter en haut de la page de présentation en douceur.",
+    "Refonte du footer de la landing page avec une structure moderne à 3 colonnes (Logo et copyright, liens Bot, liens Légal).",
+    "Suppression du texte d'accroche 'Le bot Discord tout-en-un pour votre communauté' en bas de page.",
+  ],
+};
+
+const v12881_en: ChangelogEntry = {
+  version: "v1.75.37",
+  date: "2026-10-13",
+  title: "Scroll to top button and 3-column footer on bot landing page",
+  items: [
+    "Added floating circular scroll-to-top button at the bottom-right of the landing page.",
+    "Redesigned the footer with a clean 3-column layout (Logo and copyright, Bot links, Legal links).",
+    "Removed the bottom tagline 'Le bot Discord tout-en-un pour votre communauté'.",
+  ],
+};
+
+const v12881_es: ChangelogEntry = {
+  version: "v1.75.37",
+  date: "2026-10-13",
+  title: "Botón volver arriba y pie de página de 3 columnas en la presentación",
+  items: [
+    "Se agregó un botón flotante circular abajo a la derecha para desplazarse suavemente al inicio.",
+    "Rediseño del pie de página con un diseño moderno de 3 columnas (Logo y copyright, enlaces Bot, enlaces Legal).",
+    "Eliminado el lema 'Le bot Discord tout-en-un pour votre communauté' en el pie de página.",
+  ],
+};
+
+const v12881_de: ChangelogEntry = {
+  version: "v1.75.37",
+  date: "2026-10-13",
+  title: "Nach-oben-Scroll-Button und 3-Spalten-Footer auf der Bot-Landingpage",
+  items: [
+    "Schwebender runder Nach-oben-Button unten rechts für sanftes Scrollen hinzugefügt.",
+    "Neugestaltung des Footers mit modernem 3-Spalten-Layout (Logo & Copyright, Bot-Links, Legal-Links).",
+    "Entfernung des Slogans 'Le bot Discord tout-en-un pour votre communauté' am Seitenende.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12881_fr);
+CHANGELOG_BY_LANG.en.unshift(v12881_en);
+CHANGELOG_BY_LANG.es.unshift(v12881_es);
+CHANGELOG_BY_LANG.de.unshift(v12881_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

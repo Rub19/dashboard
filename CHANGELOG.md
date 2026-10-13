@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.37 — 2026-10-13
+
+**Vitrine Bot : Bouton Retour en Haut Flottant et Footer 3 Colonnes Style Bleed**
+
+- Bouton flottant circulaire en bas à droite (`ArrowUp`) pour remonter instantanément et avec fluidité en haut de la page de présentation (`/bot`).
+- Refonte complète du footer en grille moderne à 3 colonnes (Logo Etho & Copyright, Liens Bot, Liens Légal) inspirée de bleed.bot.
+- Suppression du slogan inférieur « Le bot Discord tout-en-un pour votre communauté » en bas de page.
+- Prise en charge multilingue complète (fr, en, es, de) pour les intitulés des colonnes et la mention de droits réservés.
+
 ## v1.75.36 — 2026-10-13
 
 **Vitrine Bot : Épuration du Hero et Retrait des 3 Badges Redondants**

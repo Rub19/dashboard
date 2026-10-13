@@ -35,8 +35,10 @@ export default function MatchesPage({ defaultTab }: { defaultTab?: string }) {
     { id: "valorant", label: "Valorant", icon: <GameBrandIcon name="Valorant" className="h-4 w-4" /> },
     { id: "lol", label: "League of Legends", icon: <GameBrandIcon name="League of Legends" className="h-4 w-4" /> },
     { id: "tft", label: "Teamfight Tactics", icon: <GameBrandIcon name="Teamfight Tactics" className="h-4 w-4" /> },
-    { id: "valorant-store", label: "Boutique Valorant", icon: <GameBrandIcon name="Valorant" className="h-4 w-4" /> },
-    ...(isOwner ? [{ id: "valorant-inventory", label: "Inventaire Valorant", icon: <GameBrandIcon name="Valorant" className="h-4 w-4" /> }] : []),
+    ...(isOwner ? [
+      { id: "valorant-store", label: "Boutique Valorant", icon: <GameBrandIcon name="Valorant" className="h-4 w-4" /> },
+      { id: "valorant-inventory", label: "Inventaire Valorant", icon: <GameBrandIcon name="Valorant" className="h-4 w-4" /> },
+    ] : []),
     { id: "lol-rotation", label: "Rotation LoL", icon: <GameBrandIcon name="League of Legends" className="h-4 w-4" /> },
     { id: "apex", label: "Apex Legends", icon: <GameBrandIcon name="Apex Legends" className="h-4 w-4" /> },
     { id: "trackergg", label: "Autres jeux", icon: <GameBrandIcon name="" className="h-4 w-4" /> },
@@ -48,7 +50,7 @@ export default function MatchesPage({ defaultTab }: { defaultTab?: string }) {
   const skipEntranceAnimation = Boolean(settings.reducedMotion) || Boolean(osReducedMotion);
   const { success, error: showError } = useToast();
   const [tab, setTab] = useState(() => {
-    if (defaultTab === "valorant-inventory" && !isOwner) return "valorant";
+    if ((defaultTab === "valorant-inventory" || defaultTab === "valorant-store") && !isOwner) return "valorant";
     return defaultTab || "valorant";
   });
   const [name, setName] = useState(settings.liveTrackerRiotName);
@@ -57,7 +59,7 @@ export default function MatchesPage({ defaultTab }: { defaultTab?: string }) {
   const [apexIdentifier, setApexIdentifier] = useState(settings.liveTrackerApexIdentifier);
 
   useEffect(() => {
-    if (!isOwner && tab === "valorant-inventory") {
+    if (!isOwner && (tab === "valorant-inventory" || tab === "valorant-store")) {
       setTab("valorant");
     }
   }, [isOwner, tab]);
@@ -98,7 +100,7 @@ export default function MatchesPage({ defaultTab }: { defaultTab?: string }) {
           <ValorantInventoryView />
         ) : tab === "lol" ? (
           <LolTrackerView />
-        ) : tab === "valorant-store" ? (
+        ) : tab === "valorant-store" && isOwner ? (
           <ValorantStoreView onOpenInventory={isOwner ? () => setTab("valorant-inventory") : undefined} />
         ) : tab === "lol-rotation" ? (
           <LolRotationView />

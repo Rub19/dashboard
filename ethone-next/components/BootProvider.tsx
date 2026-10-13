@@ -56,13 +56,13 @@ export function useBoot() {
   return useContext(BootContext);
 }
 
-const PUBLIC_ROUTES = ["/login", "/password-recovery", "/reset-password", "/terms", "/privacy", "/cookies", "/legal", "/bot", "/leaderboard", "/extension", "/discord", "/docs", "/documentation"];
+const PUBLIC_ROUTES = ["/login", "/password-recovery", "/reset-password", "/terms", "/privacy", "/cookies", "/legal", "/bot", "/leaderboard", "/extension", "/discord", "/docs", "/documentation", "/tracker", "/matches"];
 
 const BOOT_TIMEOUT_MS = 8_000;
 const BOOT_MIN_DURATION_MS = 160;
 const BOOT_FULL_HOLD_MS = 260;
 
-const INFO_ROUTES = ["/terms", "/privacy", "/cookies", "/legal", "/bot", "/leaderboard", "/extension", "/discord", "/docs", "/documentation"];
+const INFO_ROUTES = ["/terms", "/privacy", "/cookies", "/legal", "/bot", "/leaderboard", "/extension", "/discord", "/docs", "/documentation", "/tracker", "/matches"];
 
 function isInfoRoute(pathname: string | null): boolean {
   if (!pathname) return false;
@@ -72,7 +72,15 @@ function isInfoRoute(pathname: string | null): boolean {
 export function safeLoginNext(raw: string | null | undefined): string {
   const next = raw || "";
   if (/^\/discord(\/.*)?$/.test(next)) return next;
+  if (/^\/tracker(\/.*)?$/.test(next)) return next;
+  if (/^\/matches(\/.*)?$/.test(next)) return next;
   return /^\/clip\/?$/.test(next) || next.startsWith("/spaces/join") ? next : "/";
+}
+
+function shouldRenderInShell(pathname: string | null, publicRoute: boolean): boolean {
+  if (!publicRoute) return true;
+  if (!pathname) return false;
+  return pathname === "/tracker" || pathname.startsWith("/tracker/") || pathname === "/matches" || pathname.startsWith("/matches/");
 }
 
 function isPublicRoute(pathname: string | null): boolean {
@@ -130,16 +138,16 @@ export default function BootProvider({ children }: { children: ReactNode }) {
   const warmRef = useRef(warm);
 
   const publicRoute = resolvePublicRoute(pathname);
+  const renderInShell = shouldRenderInShell(pathname, publicRoute);
 
   useEffect(() => {
-    if (publicRoute || shellLoadedRef.current) return;
+    if ((publicRoute && !renderInShell) || shellLoadedRef.current) return;
     const done = () => {
       shellLoadedRef.current = true;
       setShellLoaded(true);
     };
-    // En cas d'échec, next/dynamic réessaiera au rendu : on ne bloque pas le démarrage.
     loadShell().then(done, done);
-  }, [publicRoute]);
+  }, [publicRoute, renderInShell]);
 
   useEffect(() => {
     bootReadyRef.current = bootReady;
@@ -431,13 +439,11 @@ export default function BootProvider({ children }: { children: ReactNode }) {
           ? "Chargement de ton profil…"
           : "Préparation de ton espace…";
 
-  // Arrivée sur une page privée depuis une page publique (après la connexion) : on attend aussi le module de l'app.
-  const showApp = bootReady && (publicRoute || shellLoaded);
+  const showApp = bootReady && (!renderInShell || shellLoaded);
 
-  // L'app se monte sous l'écran de démarrage, qui s'efface ensuite en la dévoilant (au lieu de disparaître d'un coup).
   return (
     <BootContext.Provider value={{ state, retry, continueOffline }}>
-      {showApp && (publicRoute ? children : <Shell>{children}</Shell>)}
+      {showApp && (renderInShell ? <Shell>{children}</Shell> : children)}
       <AnimatePresence>{!showApp && !warm && <Loading key="boot" message={message} progress={bootProgress} />}</AnimatePresence>
     </BootContext.Provider>
   );

@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.52 — 2026-10-13
+
+**Accès public démo pour l'évaluation Riot Games & profils rapides Valorant et LoL**
+
+- Accès public direct aux routes `/tracker` et `/matches` sans obligation de connexion ni compte préalable pour les évaluateurs Riot Games.
+- Intégration de puces de profils de démonstration en un clic (`TenZ#0505`, `Boaster#FNC`, `cNed#EU` pour Valorant ; `Faker#KR1`, `Caps#EUW`, `Agurin#EUW` pour LoL).
+- Préservation intégrale du shell premium d'ETHONE en navigation publique sur le hub de tracking avec navigation fluide.
+- Conformité stricte aux exigences de la politique Riot Games avec masquage garanti des fonctionnalités privées pour les tiers.
+
 ## v1.75.51 — 2026-10-13
 
 **Tracker Gaming #1 : Nouvel onglet prioritaire dans la sidebar (Valorant, LoL, TFT)**

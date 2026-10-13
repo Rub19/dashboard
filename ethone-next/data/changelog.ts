@@ -54315,9 +54315,57 @@ const v12893_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12893_fr, v12892_fr);
-CHANGELOG_BY_LANG.en.unshift(v12893_en, v12892_en);
-CHANGELOG_BY_LANG.es.unshift(v12893_es, v12892_es);
-CHANGELOG_BY_LANG.de.unshift(v12893_de, v12892_de);
+const v12894_fr: ChangelogEntry = {
+  version: "v1.75.52",
+  date: "2026-10-13",
+  title: "Accès public démo pour l'évaluation Riot Games & profils rapides Valorant et LoL",
+  items: [
+    "Accès public direct aux routes /tracker et /matches sans obligation de connexion ni compte préalable pour les évaluateurs Riot Games",
+    "Boutons de démonstration en un clic (TenZ, Boaster, cNed pour Valorant ; Faker, Caps, Agurin pour LoL)",
+    "Préservation intégrale du shell premium d'ETHONE en navigation publique sur le hub de tracking",
+    "Conformité stricte aux exigences de la politique Riot Games avec masquage garanti des éléments privés",
+  ],
+};
+
+const v12894_en: ChangelogEntry = {
+  version: "v1.75.52",
+  date: "2026-10-13",
+  title: "Public Demo Access for Riot Games Review & Quick Valorant and LoL Profiles",
+  items: [
+    "Zero-login public access to /tracker and /matches routes for Riot Games reviewers without requiring account creation",
+    "One-click demo profile chips (TenZ, Boaster, cNed for Valorant; Faker, Caps, Agurin for LoL)",
+    "Full ETHONE dashboard shell preservation during public review browsing",
+    "Strict adherence to Riot Games Developer policies with private features completely guarded",
+  ],
+};
+
+const v12894_es: ChangelogEntry = {
+  version: "v1.75.52",
+  date: "2026-10-13",
+  title: "Acceso demo público para revisión de Riot Games y perfiles rápidos de Valorant y LoL",
+  items: [
+    "Acceso público directo a las rutas /tracker y /matches sin necesidad de inicio de sesión para los revisores de Riot Games",
+    "Botones de perfiles de demostración en un clic (TenZ, Boaster, cNed en Valorant; Faker, Caps, Agurin en LoL)",
+    "Preservación completa del entorno y shell de ETHONE durante la navegación pública",
+    "Cumplimiento estricto de las directivas de Riot Games protegiendo funciones privadas",
+  ],
+};
+
+const v12894_de: ChangelogEntry = {
+  version: "v1.75.52",
+  date: "2026-10-13",
+  title: "Öffentlicher Demo-Zugang für Riot Games Review & Schnellprofile für Valorant und LoL",
+  items: [
+    "Direkter öffentlicher Zugriff auf /tracker und /matches ohne Login-Zwang für Riot Games Prüfer",
+    "Ein-Klick-Demoprofile (TenZ, Boaster, cNed für Valorant; Faker, Caps, Agurin für LoL)",
+    "Vollständige Einbindung des ETHONE Dashboard-Shells bei öffentlichen Besuchen",
+    "Strikte Konformität mit den Richtlinien von Riot Games unter Schutz privater Funktionen",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12894_fr, v12893_fr, v12892_fr);
+CHANGELOG_BY_LANG.en.unshift(v12894_en, v12893_en, v12892_en);
+CHANGELOG_BY_LANG.es.unshift(v12894_es, v12893_es, v12892_es);
+CHANGELOG_BY_LANG.de.unshift(v12894_de, v12893_de, v12892_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

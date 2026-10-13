@@ -54411,9 +54411,57 @@ const v12895_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12895_fr, v12894_fr, v12893_fr, v12892_fr);
-CHANGELOG_BY_LANG.en.unshift(v12895_en, v12894_en, v12893_en, v12892_en);
-CHANGELOG_BY_LANG.es.unshift(v12895_es, v12894_es, v12893_es, v12892_es);
-CHANGELOG_BY_LANG.de.unshift(v12895_de, v12894_de, v12893_de, v12892_de);
+const v12896_fr: ChangelogEntry = {
+  version: "v1.75.54",
+  date: "2026-10-13",
+  title: "Audit Fréquentation #RIOT TRACKER dans Admin, masquage Topbar/Spotlight et Hub Connexion & APIs",
+  items: [
+    "Module d'audit et télémétrie de fréquentation du Riot Tracker réservé à l'administrateur dans /admin, 100% anonymisé (zéro IP, zéro donnée personnelle)",
+    "Masquage complet de la Topbar générique et suppression de l'effet Spotlight sur les pages de tracking Riot (/, /tracker, /matches)",
+    "Nouveau bandeau d'en-tête dédié #RIOT TRACKER avec bascule de menu et surveillance live des serveurs de jeu",
+    "Modal de connexion tout-en-un #RIOT TRACKER : RSO OAuth 2.0, profil rapide par Riot ID, gestion des clés API et diagnostic de latence",
+  ],
+};
+
+const v12896_en: ChangelogEntry = {
+  version: "v1.75.54",
+  date: "2026-10-13",
+  title: "Admin #RIOT TRACKER Visit Audit, Topbar/Spotlight Hiding, and Connection & APIs Hub",
+  items: [
+    "Admin-only visit audit and telemetry for Riot Tracker in /admin, fully anonymized (zero IP, zero personal data, RGPD compliant)",
+    "Complete removal of generic TopBar and Spotlight glow on Riot gaming routes (/, /tracker, /matches)",
+    "New dedicated #RIOT TRACKER header with integrated menu toggle and live server latency monitoring",
+    "All-in-one #RIOT TRACKER connection modal: RSO OAuth 2.0, quick Riot ID switch, API key management, and server diagnostics",
+  ],
+};
+
+const v12896_es: ChangelogEntry = {
+  version: "v1.75.54",
+  date: "2026-10-13",
+  title: "Auditoría de visitas #RIOT TRACKER en Admin, ocultación de Topbar/Spotlight y Hub de Conexión & APIs",
+  items: [
+    "Módulo de auditoría de visitas en /admin exclusivo para el administrador, totalmente anónimo (cero IP, cero datos personales)",
+    "Ocultación completa de la Topbar genérica y Spotlight en las rutas de Riot (/, /tracker, /matches)",
+    "Nueva cabecera dedicada #RIOT TRACKER con botón de menú y estado de servidores en directo",
+    "Modal de conexión integral: RSO OAuth, Riot ID rápido, gestión de claves API y diagnósticos",
+  ],
+};
+
+const v12896_de: ChangelogEntry = {
+  version: "v1.75.54",
+  date: "2026-10-13",
+  title: "Admin #RIOT TRACKER Besuchs-Audit, Topbar/Spotlight Ausblendung und Verbindungs- & API-Hub",
+  items: [
+    "Admin-exklusives Besuchs-Audit und Telemetrie für Riot Tracker in /admin, vollständig anonymisiert (null IP, null personenbezogene Daten)",
+    "Vollständiges Ausblenden der generischen TopBar und des Spotlight-Effekts auf Riot-Routen (/, /tracker, /matches)",
+    "Neue dedizierte #RIOT TRACKER Kopfzeile mit Menü-Umschalter und Live-Serverlatenzanzeige",
+    "All-in-One #RIOT TRACKER Verbindungs-Modal: RSO OAuth 2.0, schneller Riot-ID-Wechsel, API-Schlüsselverwaltung und Serverdiagnose",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12896_fr, v12895_fr, v12894_fr, v12893_fr, v12892_fr);
+CHANGELOG_BY_LANG.en.unshift(v12896_en, v12895_en, v12894_en, v12893_en, v12892_en);
+CHANGELOG_BY_LANG.es.unshift(v12896_es, v12895_es, v12894_es, v12893_es, v12892_es);
+CHANGELOG_BY_LANG.de.unshift(v12896_de, v12895_de, v12894_de, v12893_de, v12892_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

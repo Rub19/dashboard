@@ -10,7 +10,8 @@ import { useToast } from "@/components/ToastProvider";
 import { ADMIN_EMAIL } from "@/lib/admin";
 import { Icon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
-import { RefreshCw, Lock, Users, Layers, HardDrive, Mail, Activity, BarChart3, Gamepad2, Upload, Trash2 } from "@/components/icons/ph";
+import { RefreshCw, Lock, Users, Layers, HardDrive, Mail, Activity, BarChart3, Gamepad2, Upload, Trash2, ShieldCheck, Swords, Radio, Key, Eye, EyeOff } from "@/components/icons/ph";
+import { getRiotAuditStats, clearRiotAuditStats, type RiotAuditStats } from "@/lib/riot-audit";
 
 const adminCardClass =
   "min-w-0 overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] transition-colors duration-150 hover:border-[var(--accent)]/30";
@@ -190,6 +191,19 @@ export default function AdminPage() {
     }
   }, [i18n, notifySuccess, notifyError, loadGameOverride]);
 
+  const [riotAudit, setRiotAudit] = useState<RiotAuditStats | null>(null);
+  const [auditHidden, setAuditHidden] = useState(false);
+
+  const refreshRiotAudit = useCallback(() => {
+    setRiotAudit(getRiotAuditStats());
+  }, []);
+
+  const handleClearRiotAudit = useCallback(() => {
+    clearRiotAuditStats();
+    setRiotAudit(getRiotAuditStats());
+    notifySuccess(i18n("auditCleared", "Journal d'audit Riot Tracker réinitialisé"));
+  }, [i18n, notifySuccess]);
+
   useEffect(() => {
     if (isAdmin) load();
   }, [isAdmin, load]);
@@ -197,6 +211,12 @@ export default function AdminPage() {
   useEffect(() => {
     if (isAdmin) loadGameOverride();
   }, [isAdmin, loadGameOverride]);
+
+  useEffect(() => {
+    if (isAdmin) {
+      setRiotAudit(getRiotAuditStats());
+    }
+  }, [isAdmin]);
 
   if (!isAdmin) {
     return (
@@ -395,6 +415,153 @@ export default function AdminPage() {
                 ? i18n("gameOverrideUploading", "Envoi en cours...")
                 : i18n("gameOverrideUploadButton", "Envoyer un fichier .html")}
             </button>
+          </div>
+        </div>
+
+        <div className={adminCardClass}>
+          <div className="space-y-4 p-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-rose-500/40 bg-rose-500/15 text-rose-400">
+                  <ShieldCheck className="h-5 w-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-sm font-bold text-[var(--foreground)]">
+                      Audit & Fréquentation #RIOT TRACKER
+                    </h2>
+                    <span className="rounded-full border border-emerald-500/40 bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold text-emerald-300">
+                      Zéro PII · RGPD
+                    </span>
+                  </div>
+                  <p className="text-xs text-[var(--muted)]">
+                    Surveillance d'accès et connexions anonymisées (aucun IP, aucun cookie traceur, uniquement des métriques agrégées).
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setAuditHidden(!auditHidden)}
+                  className="flex h-8 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-2.5 text-xs font-medium text-[var(--muted)] hover:text-[var(--foreground)] transition-colors cursor-pointer"
+                  title={auditHidden ? "Afficher les détails" : "Masquer les détails"}
+                >
+                  {auditHidden ? <Eye className="h-3.5 w-3.5" /> : <EyeOff className="h-3.5 w-3.5" />}
+                  <span>{auditHidden ? "Afficher" : "Masquer"}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={refreshRiotAudit}
+                  className="flex h-8 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-2.5 text-xs font-medium text-[var(--foreground)] hover:bg-[var(--text-primary)]/[0.06] transition-colors cursor-pointer"
+                  title="Actualiser les compteurs d'audit"
+                >
+                  <RefreshCw className="h-3.5 w-3.5" />
+                  <span>Actualiser</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleClearRiotAudit}
+                  className="flex h-8 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-2.5 text-xs font-medium text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
+                  title="Purger l'historique d'audit"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                  <span>Purger</span>
+                </button>
+              </div>
+            </div>
+
+            {!auditHidden && (
+              <div className="space-y-4 pt-1 border-t border-[var(--panel-border)]/50">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)]/60 p-3">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--muted)]">Visites Totales</p>
+                    <p className="text-2xl font-black text-[var(--foreground)] mt-1">{riotAudit?.totalVisits || 0}</p>
+                    <p className="text-[10px] text-emerald-400 font-medium">Pages Riot & Tracker</p>
+                  </div>
+
+                  <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)]/60 p-3">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--muted)]">Sessions Uniques</p>
+                    <p className="text-2xl font-black text-rose-400 mt-1">{riotAudit?.uniqueSessions || 0}</p>
+                    <p className="text-[10px] text-[var(--muted)] font-medium">Session ID éphémère</p>
+                  </div>
+
+                  <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)]/60 p-3">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--muted)]">Consultations VALORANT</p>
+                    <p className="text-2xl font-black text-rose-400 mt-1">{riotAudit?.gameVisits.valorant || 0}</p>
+                    <p className="text-[10px] text-[var(--muted)] font-medium">Hub #1</p>
+                  </div>
+
+                  <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)]/60 p-3">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--muted)]">Consultations LoL & TFT</p>
+                    <p className="text-2xl font-black text-amber-400 mt-1">{(riotAudit?.gameVisits.lol || 0) + (riotAudit?.gameVisits.tft || 0)}</p>
+                    <p className="text-[10px] text-[var(--muted)] font-medium">LoL: {riotAudit?.gameVisits.lol || 0} · TFT: {riotAudit?.gameVisits.tft || 0}</p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)]/40 p-3.5 space-y-2.5">
+                    <h3 className="text-xs font-bold text-[var(--foreground)]">Actions Détectées (Compteurs Anonymes)</h3>
+                    <div className="space-y-1.5 text-xs">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[var(--muted)]">Profils de Démonstration 1-Clic :</span>
+                        <span className="font-mono font-bold text-[var(--foreground)]">{riotAudit?.actionsCount.demoClicks || 0}</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-[var(--muted)]">Recherches de Joueurs Riot :</span>
+                        <span className="font-mono font-bold text-[var(--foreground)]">{riotAudit?.actionsCount.searchQueries || 0}</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-[var(--muted)]">Tests de Connectivité API :</span>
+                        <span className="font-mono font-bold text-cyan-400">{riotAudit?.actionsCount.apiTests || 0}</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-[var(--muted)]">Tentatives de Connexion RSO :</span>
+                        <span className="font-mono font-bold text-rose-400">{riotAudit?.actionsCount.rsoAttempts || 0}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)]/40 p-3.5 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-xs font-bold text-[var(--foreground)]">Journal d'Audit Récent</h3>
+                      <span className="text-[10px] text-[var(--muted)] font-mono">
+                        {riotAudit?.recentLogs.length || 0} entrées
+                      </span>
+                    </div>
+
+                    <div className="max-h-36 overflow-y-auto space-y-1.5 os-scroll pr-1">
+                      {(!riotAudit?.recentLogs || riotAudit.recentLogs.length === 0) ? (
+                        <p className="text-xs text-[var(--muted)] italic py-2 text-center">Aucun passage enregistré pour le moment.</p>
+                      ) : (
+                        riotAudit.recentLogs.map((log) => (
+                          <div
+                            key={log.id}
+                            className="flex items-center justify-between rounded-lg border border-[var(--panel-border)]/40 bg-[var(--panel-bg)]/70 p-1.5 text-[11px]"
+                          >
+                            <div className="flex items-center gap-1.5 min-w-0">
+                              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shrink-0" />
+                              <span className="font-medium text-[var(--foreground)] truncate">{log.event}</span>
+                            </div>
+                            <span className="text-[9px] font-mono text-[var(--muted)] shrink-0 ml-2">
+                              {new Date(log.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
+                            </span>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-3 text-[11px] text-[var(--muted)] flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <ShieldCheck className="h-4 w-4 text-emerald-400 shrink-0" />
+                    <span>Sécurité validée : Données anonymisées en conformité stricte avec les règles d'évaluation Riot Games et le RGPD.</span>
+                  </div>
+                  <span className="text-[10px] font-mono text-emerald-400 shrink-0">✓ Audit Actif</span>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

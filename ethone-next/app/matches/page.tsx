@@ -24,6 +24,8 @@ import { useSettings } from "@/components/SettingsProvider";
 import GameBrandIcon from "@/components/GameBrandIcon";
 import { useAuth } from "@/components/AuthProvider";
 import { ADMIN_EMAIL } from "@/lib/admin";
+import RiotTrackerHeader from "@/components/tracker/RiotTrackerHeader";
+import { recordRiotAudit } from "@/lib/riot-audit";
 
 const APEX_PLATFORMS = ["origin", "xbl", "psn"] as const;
 
@@ -75,9 +77,28 @@ export default function MatchesPage({ defaultTab }: { defaultTab?: string }) {
   const trackerKind = "tracker-apex";
   const { items, loading, syncing, sync } = useTracker(path, trackerKind);
 
+  useEffect(() => {
+    recordRiotAudit({
+      game: tab === "lol" || tab === "lol-rotation" ? "lol" : tab === "tft" ? "tft" : "valorant",
+      actionType: "visit",
+      description: `Consultation Tracker : ${tab.toUpperCase()}`,
+    });
+  }, [tab]);
+
   return (
-    <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden gap-4 p-2 sm:p-4 md:flex-row">
-      <LiquidSidebar
+    <div className="flex h-full min-h-0 w-full flex-1 flex-col overflow-hidden">
+      <RiotTrackerHeader
+        activeGame={tab === "lol" || tab === "lol-rotation" ? "lol" : tab === "tft" ? "tft" : "valorant"}
+        onSelectGame={(g) => setTab(g)}
+        currentProfileName={name}
+        currentProfileTag={tag}
+        onRiotIdChanged={(newName, newTag) => {
+          setName(newName);
+          setTag(newTag);
+        }}
+      />
+      <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden gap-4 p-2 sm:p-4 md:flex-row">
+        <LiquidSidebar
         items={tabs}
         defaultActive="valorant"
         active={tab}
@@ -240,6 +261,7 @@ export default function MatchesPage({ defaultTab }: { defaultTab?: string }) {
         </motion.div>
         </AnimatePresence>
       </div>
+    </div>
     </div>
   );
 }

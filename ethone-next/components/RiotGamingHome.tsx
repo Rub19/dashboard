@@ -22,6 +22,7 @@ import {
   Share2,
   RefreshCw,
   LayoutGrid,
+  Key,
 } from "@/components/icons/ph";
 import { useSettings } from "@/components/SettingsProvider";
 import { useToast } from "@/components/ToastProvider";
@@ -40,7 +41,9 @@ import {
   type LolMatch,
 } from "@/lib/lol-tracker";
 import GameBrandIcon from "@/components/GameBrandIcon";
-import ValorantRiotConnectModal from "@/components/tracker/ValorantRiotConnectModal";
+import RiotTrackerConnectModal from "@/components/tracker/RiotTrackerConnectModal";
+import RiotTrackerHeader from "@/components/tracker/RiotTrackerHeader";
+import { recordRiotAudit } from "@/lib/riot-audit";
 import ValorantAiCoachModal from "@/components/tracker/ValorantAiCoachModal";
 import ValorantFriendCompareModal from "@/components/tracker/ValorantFriendCompareModal";
 import DashboardOverview from "@/components/DashboardOverview";
@@ -126,6 +129,11 @@ export default function RiotGamingHome() {
 
   useEffect(() => {
     loadPlayerData(riotName, riotTag, activeGame);
+    recordRiotAudit({
+      game: activeGame,
+      actionType: "visit",
+      description: `Navigation Hub #RIOT TRACKER (${activeGame.toUpperCase()})`,
+    });
   }, [activeGame, loadPlayerData]);
 
   const handleSelectDemo = (player: DemoPlayer) => {
@@ -136,6 +144,11 @@ export default function RiotGamingHome() {
       liveTrackerRiotName: player.name,
       liveTrackerRiotTag: player.tag,
     });
+    recordRiotAudit({
+      game: player.game,
+      actionType: "demo",
+      description: `Sélection Profil Démo : ${player.label}`,
+    });
     loadPlayerData(player.name, player.tag, player.game);
   };
 
@@ -144,6 +157,11 @@ export default function RiotGamingHome() {
     update({
       liveTrackerRiotName: riotName.trim(),
       liveTrackerRiotTag: riotTag.trim().replace(/^#/, ""),
+    });
+    recordRiotAudit({
+      game: activeGame,
+      actionType: "search",
+      description: `Recherche Joueur Riot : ${riotName.trim()}#${riotTag.trim().replace(/^#/, "")}`,
     });
     loadPlayerData(riotName, riotTag, activeGame);
   };
@@ -190,6 +208,18 @@ export default function RiotGamingHome() {
 
   return (
     <div className="flex h-full min-h-0 w-full flex-col overflow-y-auto os-scroll [overscroll-behavior:contain]">
+      <RiotTrackerHeader
+        activeGame={activeGame}
+        onSelectGame={setActiveGame}
+        onOpenCoach={() => setAiCoachModalOpen(true)}
+        currentProfileName={valorantProfile?.name || riotName}
+        currentProfileTag={valorantProfile?.tag || riotTag}
+        onRiotIdChanged={(name, tag) => {
+          setRiotName(name);
+          setRiotTag(tag);
+          loadPlayerData(name, tag, activeGame);
+        }}
+      />
       <div className="mx-auto w-full max-w-7xl px-3 py-4 sm:px-6 sm:py-6 space-y-5">
         <motion.div
           initial={{ opacity: 0, y: -10 }}
@@ -230,8 +260,8 @@ export default function RiotGamingHome() {
                 onClick={() => setConnectModalOpen(true)}
                 className="flex items-center gap-1.5 rounded-xl border border-rose-500/40 bg-rose-500/20 px-3.5 py-2 text-xs font-bold text-rose-200 hover:bg-rose-500/30 active:scale-95 transition-all cursor-pointer shadow-md"
               >
-                <ShieldCheck className="h-4 w-4 text-rose-400" />
-                <span>Lier Riot Games (RSO)</span>
+                <Key className="h-4 w-4 text-rose-400" />
+                <span>#RIOT TRACKER · Connexion & APIs</span>
               </button>
 
               <button
@@ -808,11 +838,14 @@ export default function RiotGamingHome() {
         </div>
       </div>
 
-      <ValorantRiotConnectModal
+      <RiotTrackerConnectModal
         isOpen={connectModalOpen}
         onClose={() => setConnectModalOpen(false)}
-        onOpenApiKeyModal={() => {}}
-        hasApiKey={true}
+        onRiotIdChanged={(name, tag) => {
+          setRiotName(name);
+          setRiotTag(tag);
+          loadPlayerData(name, tag, activeGame);
+        }}
       />
 
       <ValorantAiCoachModal

@@ -48,6 +48,7 @@ export default function Shell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const { settings, update } = useSettings();
   const discordFullscreen = pathname === "/discord" || pathname === "/bot" || (pathname?.startsWith("/discord/") ?? false) || (pathname?.startsWith("/bot/") ?? false);
+  const isGamingTracker = pathname === "/" || pathname === "/tracker" || (pathname?.startsWith("/tracker/") ?? false) || pathname === "/matches" || (pathname?.startsWith("/matches/") ?? false);
 
   if (discordFullscreen) {
     return (
@@ -129,12 +130,12 @@ export default function Shell({ children }: { children: ReactNode }) {
                 data-v8-shell
                 className="flex min-h-0 min-w-0 flex-1 flex-col overflow-clip transition-colors duration-150"
               >
-                <TopBar />
+                {!isGamingTracker && <TopBar />}
                 <CommandPalette />
                 <DocumentMetadata />
                 <LiveWidget />
                 <CosmicBackground />
-                <Spotlight />
+                {!isGamingTracker && <Spotlight />}
                 <RefreshSpinner />
                 <VisualHaptics />
                 <PrivacyShield>

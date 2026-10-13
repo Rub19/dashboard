@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.54 — 2026-10-13
+
+**Audit Fréquentation #RIOT TRACKER dans Admin, masquage Topbar/Spotlight et Hub Connexion & APIs**
+
+- Nouveau module d'audit et télémétrie de fréquentation du Riot Tracker réservé exclusivement à l'administrateur dans `/admin`, 100% anonymisé (zéro IP, zéro donnée personnelle, métriques agrégées).
+- Masquage complet de la Topbar générique et suppression de l'effet Spotlight sur les pages de tracking Riot (`/`, `/tracker`, `/matches`) pour une expérience gaming épurée.
+- Nouveau bandeau d'en-tête immersif `#RIOT TRACKER` avec bascule de menu de la barre latérale et surveillance en temps réel de la latence des serveurs (EUW, NA, KR).
+- Modal de connexion tout-en-un `#RIOT TRACKER` : support RSO OAuth 2.0 officiel, configuration rapide par Riot ID, gestion des clés d'API (Henrik/Riot) et diagnostics de connectivité.
+
 ## v1.75.53 — 2026-10-13
 
 **Refonte Accueil Gaming Riot : Hub Valorant & LoL en direct, Coach IA et sidebar dédiée**

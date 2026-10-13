@@ -526,6 +526,35 @@ export function useNotifications() {
 
       setGlobalItems(next, true);
 
+      if (!existing && !duplicate && record.priority !== "silent" && typeof window !== "undefined") {
+        if (record.category === "mail") {
+          window.dispatchEvent(
+            new CustomEvent("ethone:island-mail", {
+              detail: {
+                id: record.id,
+                sender: record.message || "ETHONE Mail",
+                subject: record.title,
+                unreadCount: 1,
+                status: "received",
+              },
+            }),
+          );
+        } else {
+          window.dispatchEvent(
+            new CustomEvent("ethone:island-notification", {
+              detail: {
+                id: record.id,
+                title: record.title,
+                message: record.message,
+                icon: record.icon,
+                variant: record.priority === "critical" ? "error" : record.type === "success" ? "success" : "info",
+                priority: record.priority,
+              },
+            }),
+          );
+        }
+      }
+
       setTimeout(() => {
         postToWorker({ type: "PUSH_NOTIFICATION", item: record });
       }, 0);

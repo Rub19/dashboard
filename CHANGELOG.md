@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.38 — 2026-10-13
+
+**Dynamic Island Réactive : Prise en Charge des E-mails, Alertes Globales et Simulateur Interactif**
+
+- **E-mails Entrants en Temps Réel** : détection périodique des nouveaux e-mails non lus en arrière-plan et affichage interactif dans la Dynamic Island (`✉️ [Expéditeur] (1)` avec objet et badge non lu, clic pour ouvrir la messagerie).
+- **Routage Universel des Notifications** : toutes les notifications système, toasts, alertes et retours de presse-papiers déclenchent désormais la capsule Dynamic Island de façon temporaire et animée.
+- **Simulateur de Test en Direct Enrichi** : nouveau bouton « Tester sur la vraie Dynamic Island » dans les réglages permettant de déclencher immédiatement la capsule du haut pour tous les états (Mail, Alerte, Spotify, Upload, Sync, Brain, Focus, Presse-papiers, Batterie).
+- **Synchronisation Unifiée des Réglages** : alignement direct entre le store réactif (`useDynamicIslandStore`) et les préférences persistées (`settings.dynamicIslandVisible`).
+
 ## v1.75.37 — 2026-10-13
 
 **Vitrine Bot : Bouton Retour en Haut Flottant et Footer 3 Colonnes Style Bleed**

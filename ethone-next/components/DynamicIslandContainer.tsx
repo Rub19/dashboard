@@ -282,7 +282,7 @@ export default function DynamicIslandContainer() {
   // automatically, WITHOUT touching the persisted user preference, so it
   // reappears as before on every other route.
   const onTrackerRoute = pathname === "/matches" || (pathname?.startsWith("/matches/") ?? false);
-  const effectiveVisible = visible && !onTrackerRoute;
+  const effectiveVisible = (visible || settings.dynamicIslandVisible) && !onTrackerRoute;
   const { pendingCount, syncing, lastSync, syncError, sync } = useActivityJournal();
   const queue = useUploadQueue();
   const uploadingCount = queue.items.filter((it) => it.status === "uploading" || it.status === "queued").length;
@@ -1320,6 +1320,15 @@ export default function DynamicIslandContainer() {
                       <p className="text-sm font-medium text-[var(--text-primary)]">{note.title || i18n("notification", "Notification")}</p>
                       {note.message && <p className="text-xs text-[var(--text-muted)]">{note.message}</p>}
                     </div>
+                    {note.actionUrl && (
+                      <button
+                        type="button"
+                        onClick={() => router.push(note.actionUrl!)}
+                        className="mt-0.5 flex items-center gap-1.5 rounded-xl bg-[var(--accent-primary)] px-3.5 py-1.5 text-xs font-semibold text-[var(--accent-contrast)] transition-[filter] hover:brightness-110"
+                      >
+                        <span>{i18n("open", "Ouvrir")}</span>
+                      </button>
+                    )}
                   </div>
                 );
               })()}

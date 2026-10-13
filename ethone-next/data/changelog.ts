@@ -53562,9 +53562,58 @@ const v12881_de: ChangelogEntry = {
   ],
 };
 
+const v12882_fr: ChangelogEntry = {
+  version: "v1.75.38",
+  date: "2026-10-13",
+  title: "Dynamic Island réactive : réception des e-mails, alertes globales et simulateur de test interactif",
+  items: [
+    "Prise en charge active des e-mails entrants : détection périodique en arrière-plan et affichage interactif dans la Dynamic Island avec expéditeur, sujet, badge non lu et accès direct.",
+    "Routage universel des notifications système, alertes et presse-papiers dans la capsule avec micro-animations Framer Motion.",
+    "Simulateur enrichi dans les réglages avec bouton de test en direct sur la vraie Dynamic Island et synchronisation immédiate des préférences.",
+  ],
+};
+
+const v12882_en: ChangelogEntry = {
+  version: "v1.75.38",
+  date: "2026-10-13",
+  title: "Reactive Dynamic Island: incoming email alerts, global notifications and interactive test simulator",
+  items: [
+    "Active incoming email support: background polling and interactive Dynamic Island capsule display with sender, subject, unread badge, and quick access.",
+    "Universal system notifications, alert banners, and clipboard feedback piped into the Dynamic Island.",
+    "Enhanced settings simulator with live test button on the real Dynamic Island and unified preference store synchronization.",
+  ],
+};
+
+const v12882_es: ChangelogEntry = {
+  version: "v1.75.38",
+  date: "2026-10-13",
+  title: "Dynamic Island reactiva: recepción de correos, alertas globales y simulador interactivo",
+  items: [
+    "Soporte activo para correos entrantes con detección en segundo plano y visualización interactiva en la Dynamic Island.",
+    "Integración universal de notificaciones, alertas y portapapeles en la cápsula.",
+    "Simulador mejorado en ajustes con botón de prueba en vivo en la Dynamic Island real y sincronización.",
+  ],
+};
+
+const v12882_de: ChangelogEntry = {
+  version: "v1.75.38",
+  date: "2026-10-13",
+  title: "Reaktive Dynamic Island: E-Mail-Empfang, globale Benachrichtigungen und interaktiver Test-Simulator",
+  items: [
+    "Aktive Unterstützung für eingehende E-Mails mit Hintergrundabfrage und interaktiver Dynamic-Island-Kapsel.",
+    "Universelle Weiterleitung von Systembenachrichtigungen, Warnungen und Zwischenablage in die Insel.",
+    "Erweiterter Einstellungs-Simulator mit Live-Test-Button auf der echten Dynamic Island und Store-Synchronisierung.",
+  ],
+};
+
 CHANGELOG_BY_LANG.fr.unshift(v12881_fr);
 CHANGELOG_BY_LANG.en.unshift(v12881_en);
 CHANGELOG_BY_LANG.es.unshift(v12881_es);
 CHANGELOG_BY_LANG.de.unshift(v12881_de);
+
+CHANGELOG_BY_LANG.fr.unshift(v12882_fr);
+CHANGELOG_BY_LANG.en.unshift(v12882_en);
+CHANGELOG_BY_LANG.es.unshift(v12882_es);
+CHANGELOG_BY_LANG.de.unshift(v12882_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

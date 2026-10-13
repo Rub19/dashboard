@@ -162,6 +162,19 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
             source: "ETHONE",
           });
         }
+      } else if (typeof window !== "undefined" && title && type !== "loading") {
+        window.dispatchEvent(
+          new CustomEvent("ethone:island-notification", {
+            detail: {
+              id: input.dedupKey || `toast-${Date.now()}`,
+              title,
+              message: description,
+              variant: type === "success" ? "success" : "info",
+              priority: "normal",
+              duration: typeof duration === "number" && duration !== Infinity ? duration : 3000,
+            },
+          }),
+        );
       }
 
       const sound = SOUND_MAP[type];

@@ -17,21 +17,60 @@ export default function NotificationBridge() {
   const { settings } = useSettings();
   const { user } = useAuth();
 
-  // Listen for Island notification events
   useEffect(() => {
     function handleIslandNotification(e: Event) {
-      const customEvent = e as CustomEvent<{ id: string; title: string; message?: string; priority?: string }>;
+      const customEvent = e as CustomEvent<{
+        id?: string;
+        title: string;
+        message?: string;
+        subtitle?: string;
+        icon?: string;
+        pack?: string;
+        variant?: string;
+        priority?: string;
+        duration?: number;
+      }>;
       const notif = customEvent.detail;
       if (!notif || !settings.islandShowNotifications) return;
 
       register({
         id: notif.id || `notif-${Date.now()}`,
         type: "notification",
-        priority: notif.priority === "critical" ? 7 : 6,
-        duration: 4000,
+        priority: notif.priority === "critical" ? 8 : 6,
+        duration: notif.duration ?? 4500,
         content: {
           title: notif.title,
-          subtitle: notif.message,
+          message: notif.message || notif.subtitle,
+          icon: notif.icon,
+          pack: notif.pack,
+          variant: notif.variant,
+        },
+      });
+    }
+
+    function handleIslandMail(e: Event) {
+      const customEvent = e as CustomEvent<{
+        id?: string;
+        sender?: string;
+        subject?: string;
+        unreadCount?: number;
+        status?: "sending" | "sent" | "error" | "syncing" | "received";
+        duration?: number;
+      }>;
+      const d = customEvent.detail;
+      if (!d || !settings.islandShowNotifications) return;
+
+      register({
+        id: d.id || `mail-${Date.now()}`,
+        type: "mail",
+        priority: 7,
+        duration: d.duration ?? 7000,
+        content: {
+          title: d.sender || "Nouveau message",
+          sender: d.sender || "Nouveau message",
+          subject: d.subject || "",
+          unreadCount: d.unreadCount ?? 1,
+          status: d.status || "received",
         },
       });
     }
@@ -70,6 +109,7 @@ export default function NotificationBridge() {
     }
 
     window.addEventListener("ethone:island-notification", handleIslandNotification);
+    window.addEventListener("ethone:island-mail", handleIslandMail);
     window.addEventListener("ethone:island-upload-start", handleUploadIsland);
     window.addEventListener("ethone:new-notification", handleGenericNotification);
     window.addEventListener("v8:stop-focus", handleFocusEnd);
@@ -77,6 +117,7 @@ export default function NotificationBridge() {
 
     return () => {
       window.removeEventListener("ethone:island-notification", handleIslandNotification);
+      window.removeEventListener("ethone:island-mail", handleIslandMail);
       window.removeEventListener("ethone:island-upload-start", handleUploadIsland);
       window.removeEventListener("ethone:new-notification", handleGenericNotification);
       window.removeEventListener("v8:stop-focus", handleFocusEnd);
@@ -84,9 +125,6 @@ export default function NotificationBridge() {
     };
   }, [register, focusDigest, info, settings.islandShowNotifications, add]);
 
-  // Lecture des mails non lus : une fois par utilisateur connecté. Avant, l'effet dépendait aussi de `user` (objet
-  // recréé à chaque rafraîchissement de session) et de `i18n` : il se relançait souvent et, dans l'ancienne version,
-  // recréait une notification « Nouveau mail » à chaque fois.
   const addRef = useRef(add);
   addRef.current = add;
   const i18nRef = useRef(i18n);
@@ -94,14 +132,13 @@ export default function NotificationBridge() {
   const userId = user?.id ?? null;
 
   useEffect(() => {
-    // No signed-in user (e.g. the login page): the mail endpoint would 401.
-    // Skip the request entirely rather than logging a console error.
     if (!userId) return;
-    const add = addRef.current;
-    const i18n = i18nRef.current;
     let mounted = true;
+    const knownMailIds = new Set<string>();
+    let isInitial = true;
 
-    async function load() {
+    async function loadMails() {
+      if (typeof document !== "undefined" && document.visibilityState === "hidden") return;
       try {
         const res = await fetchWorker("/api/mail/notifications?unread=true&limit=20");
         if (!mounted || !res) return;
@@ -114,19 +151,30 @@ export default function NotificationBridge() {
               ? (res as { data: unknown[] }).data
               : [];
 
+        let latestIncoming: { sender: string; subject: string; id: string } | null = null;
+        let incomingCount = 0;
+
         for (const item of list) {
           if (!item || typeof item !== "object") continue;
           const raw = item as Record<string, unknown>;
           const text = (v: unknown) => (typeof v === "string" && v ? v : "");
-          const subject = text(raw.title) || text(raw.subject) || i18n("newMail", "Nouveau mail");
+          const subject = text(raw.title) || text(raw.subject) || i18nRef.current("newMail", "Nouveau mail");
           const from = text(raw.body) || text(raw.from) || text(raw.sender);
           const important = raw.important === true;
-          // Identifiant et date du serveur : la même notification de mail n'est plus recréée à chaque chargement
-          // (avant : une copie de plus par visite tant que le mail restait non lu).
           const serverId = text(raw.id) || text(raw.message_id);
           const at = Date.parse(text(raw.created_at));
 
-          add({
+          if (serverId) {
+            if (!knownMailIds.has(serverId)) {
+              knownMailIds.add(serverId);
+              if (!isInitial) {
+                incomingCount++;
+                latestIncoming = { sender: from, subject, id: serverId };
+              }
+            }
+          }
+
+          addRef.current({
             ...(serverId ? { id: `mail-${serverId}` } : {}),
             ...(Number.isFinite(at) ? { timestamp: at, createdAt: new Date(at).toISOString() } : {}),
             title: subject,
@@ -142,16 +190,36 @@ export default function NotificationBridge() {
             },
           });
         }
+
+        if (incomingCount > 0 && latestIncoming && settings.islandShowNotifications) {
+          register({
+            id: `mail-recv-${latestIncoming.id}`,
+            type: "mail",
+            priority: 7,
+            duration: 8000,
+            content: {
+              title: "Nouveau mail",
+              sender: latestIncoming.sender || "ETHONE Mail",
+              subject: latestIncoming.subject,
+              unreadCount: list.length,
+              status: "received",
+            },
+          });
+        }
+
+        isInitial = false;
       } catch {
-        // Silently handle offline / disconnected worker without console errors
       }
     }
 
-    load();
+    loadMails();
+    const interval = window.setInterval(loadMails, 30000);
+
     return () => {
       mounted = false;
+      window.clearInterval(interval);
     };
-  }, [userId]);
+  }, [userId, settings.islandShowNotifications, register]);
 
   return null;
 }

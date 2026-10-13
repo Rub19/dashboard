@@ -260,7 +260,7 @@ export default function RiotGamingHome() {
                 type="text"
                 value={riotName}
                 onChange={(e) => setRiotName(e.target.value)}
-                placeholder="Nom Riot"
+                aria-label="Nom Riot"
                 className="w-24 sm:w-28 bg-transparent text-xs font-bold text-[var(--text-primary)] outline-none"
               />
               <span className="text-xs text-[var(--text-muted)]">#</span>
@@ -268,7 +268,7 @@ export default function RiotGamingHome() {
                 type="text"
                 value={riotTag}
                 onChange={(e) => setRiotTag(e.target.value)}
-                placeholder="TAG"
+                aria-label="Tag Riot"
                 className="w-12 bg-transparent font-mono text-xs font-bold text-[var(--text-primary)] outline-none"
               />
             </div>
@@ -312,13 +312,13 @@ export default function RiotGamingHome() {
                     )}
                     <div className="min-w-0">
                       <h3 className="text-base font-black text-[var(--text-primary)] truncate">
-                        {valorantProfile?.name || riotName || "Joueur"}
+                        {valorantProfile?.name || riotName || ""}
                       </h3>
                       <p className="font-mono text-xs text-[var(--text-muted)]">
-                        {riotTag ? `#${valorantProfile?.tag || riotTag}` : "#----"}
+                        {riotTag ? `#${valorantProfile?.tag || riotTag}` : ""}
                       </p>
                       <p className="text-xs font-bold text-rose-400">
-                        {valorantProfile?.currentTierPatched || (riotName ? "Non classé" : "--")}
+                        {valorantProfile?.currentTierPatched || (riotName ? "Non classé" : "")}
                         {valorantProfile?.rr !== null && valorantProfile?.rr !== undefined ? ` · ${valorantProfile.rr} RR` : ""}
                       </p>
                     </div>
@@ -326,7 +326,7 @@ export default function RiotGamingHome() {
                   <div className="pt-2 border-t border-[var(--panel-border)]/50 flex items-center justify-between text-xs text-[var(--text-muted)]">
                     <span>Niveau de compte :</span>
                     <span className="font-mono font-bold text-[var(--text-primary)]">
-                      {valorantProfile?.accountLevel || "--"}
+                      {valorantProfile?.accountLevel || ""}
                     </span>
                   </div>
                 </motion.div>
@@ -341,10 +341,10 @@ export default function RiotGamingHome() {
                   </div>
                   <div className="my-2">
                     <p className="text-3xl font-black text-emerald-400">
-                      {valorantStats.kdRatio !== null ? valorantStats.kdRatio : "--"}
+                      {valorantStats.kdRatio !== null ? valorantStats.kdRatio : ""}
                     </p>
                     <p className="text-[11px] text-[var(--text-muted)] font-medium">
-                      {valorantStats.kdRatio !== null ? "Performance calculée" : "En attente de match"}
+                      {valorantStats.kdRatio !== null ? "Performance calculée" : ""}
                     </p>
                   </div>
                   <div className="h-1.5 w-full rounded-full bg-[var(--surface-raised)] overflow-hidden">
@@ -362,10 +362,10 @@ export default function RiotGamingHome() {
                   </div>
                   <div className="my-2">
                     <p className="text-3xl font-black text-rose-400">
-                      {valorantStats.winRate !== null ? `${valorantStats.winRate}%` : "--"}
+                      {valorantStats.winRate !== null ? `${valorantStats.winRate}%` : ""}
                     </p>
                     <p className="text-[11px] text-[var(--text-muted)] font-medium">
-                      {valorantMatches.length > 0 ? `${valorantMatches.length} parties analysées` : "Historique récent"}
+                      {valorantMatches.length > 0 ? `${valorantMatches.length} parties analysées` : ""}
                     </p>
                   </div>
                   <div className="h-1.5 w-full rounded-full bg-[var(--surface-raised)] overflow-hidden">
@@ -383,10 +383,10 @@ export default function RiotGamingHome() {
                   </div>
                   <div className="my-2">
                     <p className="text-3xl font-black text-cyan-400">
-                      {valorantStats.avgAcs !== null ? valorantStats.avgAcs : "--"}
+                      {valorantStats.avgAcs !== null ? valorantStats.avgAcs : ""}
                     </p>
                     <p className="text-[11px] text-[var(--text-muted)] font-medium">
-                      Tir à la tête : {valorantStats.headshotPct !== null ? `${valorantStats.headshotPct}%` : "--"}
+                      {valorantStats.headshotPct !== null ? `Tir à la tête : ${valorantStats.headshotPct}%` : ""}
                     </p>
                   </div>
                   <div className="h-1.5 w-full rounded-full bg-[var(--surface-raised)] overflow-hidden">
@@ -408,18 +408,18 @@ export default function RiotGamingHome() {
                     </div>
                     <div className="min-w-0">
                       <h3 className="text-base font-black text-[var(--text-primary)] truncate">
-                        {riotName || "Joueur LoL"}
+                        {riotName || ""}
                       </h3>
-                      <p className="font-mono text-xs text-[var(--text-muted)]">{riotTag ? `#${riotTag}` : "#----"}</p>
+                      <p className="font-mono text-xs text-[var(--text-muted)]">{riotTag ? `#${riotTag}` : ""}</p>
                       <p className="text-xs font-bold text-amber-400">
-                        {lolMatches.length > 0 ? "Compétitif" : (riotName ? "Non classé" : "--")}
+                        {lolMatches.length > 0 ? "Compétitif" : (riotName ? "Non classé" : "")}
                       </p>
                     </div>
                   </div>
                   <div className="pt-2 border-t border-[var(--panel-border)]/50 flex items-center justify-between text-xs text-[var(--text-muted)]">
                     <span>File : Solo/Duo</span>
                     <span className="font-mono font-bold text-[var(--text-primary)]">
-                      {lolMatches.length > 0 ? "Actif" : "--"}
+                      {lolMatches.length > 0 ? "Actif" : ""}
                     </span>
                   </div>
                 </motion.div>
@@ -434,14 +434,14 @@ export default function RiotGamingHome() {
                   </div>
                   <div className="my-2">
                     <p className="text-3xl font-black text-amber-400">
-                      {lolSummary.total > 0 ? lolSummary.kda : "--"}
+                      {lolSummary.total > 0 ? lolSummary.kda : ""}
                     </p>
                     <p className="text-[11px] text-[var(--text-muted)] font-medium">
-                      {lolSummary.total > 0 ? `${lolSummary.kTotal}/${lolSummary.dTotal}/${lolSummary.aTotal}` : "En attente"}
+                      {lolSummary.total > 0 ? `${lolSummary.kTotal}/${lolSummary.dTotal}/${lolSummary.aTotal}` : ""}
                     </p>
                   </div>
                   <div className="h-1.5 w-full rounded-full bg-[var(--surface-raised)] overflow-hidden">
-                    <div className="h-full bg-amber-400 rounded-full" style={{ width: lolSummary.total > 0 ? "70%" : "0%" }} />
+                    <div className="h-full bg-amber-400 rounded-full" style={{ width: lolSummary.total > 0 ? `${Math.min(100, Math.round(Number(lolSummary.kda) * 20))}%` : "0%" }} />
                   </div>
                 </motion.div>
 
@@ -455,10 +455,10 @@ export default function RiotGamingHome() {
                   </div>
                   <div className="my-2">
                     <p className="text-3xl font-black text-emerald-400">
-                      {lolSummary.total > 0 ? `${lolSummary.winRate}%` : "--"}
+                      {lolSummary.total > 0 ? `${lolSummary.winRate}%` : ""}
                     </p>
                     <p className="text-[11px] text-[var(--text-muted)] font-medium">
-                      {lolSummary.total > 0 ? `${lolSummary.total} parties analysées` : "En attente"}
+                      {lolSummary.total > 0 ? `${lolSummary.total} parties analysées` : ""}
                     </p>
                   </div>
                   <div className="h-1.5 w-full rounded-full bg-[var(--surface-raised)] overflow-hidden">
@@ -476,14 +476,14 @@ export default function RiotGamingHome() {
                   </div>
                   <div className="my-2">
                     <p className="text-3xl font-black text-cyan-400">
-                      {lolSummary.total > 0 ? `${lolSummary.total}` : "--"}
+                      {lolSummary.total > 0 ? `${lolSummary.total}` : ""}
                     </p>
                     <p className="text-[11px] text-[var(--text-muted)] font-medium">
-                      {lolSummary.total > 0 ? `${lolSummary.wins} victoires` : "En attente"}
+                      {lolSummary.total > 0 ? `${lolSummary.wins} victoires` : ""}
                     </p>
                   </div>
                   <div className="h-1.5 w-full rounded-full bg-[var(--surface-raised)] overflow-hidden">
-                    <div className="h-full bg-cyan-400 rounded-full" style={{ width: lolSummary.total > 0 ? "65%" : "0%" }} />
+                    <div className="h-full bg-cyan-400 rounded-full" style={{ width: lolSummary.total > 0 ? `${Math.min(100, lolSummary.total * 5)}%` : "0%" }} />
                   </div>
                 </motion.div>
               </div>
@@ -500,9 +500,9 @@ export default function RiotGamingHome() {
                       <GameBrandIcon name="Teamfight Tactics" className="h-6 w-6" />
                     </div>
                     <div className="min-w-0">
-                      <h3 className="text-base font-black text-[var(--text-primary)] truncate">{riotName || "Joueur TFT"}</h3>
-                      <p className="font-mono text-xs text-[var(--text-muted)]">{riotTag ? `#${riotTag}` : "#----"}</p>
-                      <p className="text-xs font-bold text-yellow-400">{riotName ? "Classé" : "--"}</p>
+                      <h3 className="text-base font-black text-[var(--text-primary)] truncate">{riotName || ""}</h3>
+                      <p className="font-mono text-xs text-[var(--text-muted)]">{riotTag ? `#${riotTag}` : ""}</p>
+                      <p className="text-xs font-bold text-yellow-400"></p>
                     </div>
                   </div>
                 </motion.div>
@@ -512,7 +512,7 @@ export default function RiotGamingHome() {
                   className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/85 p-4 backdrop-blur-xl shadow-md flex flex-col justify-between"
                 >
                   <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Top 4 Rate</span>
-                  <p className="text-3xl font-black text-yellow-400 my-2">--</p>
+                  <p className="text-3xl font-black text-yellow-400 my-2"></p>
                   <div className="h-1.5 w-full rounded-full bg-[var(--surface-raised)] overflow-hidden">
                     <div className="h-full bg-yellow-400 rounded-full" style={{ width: "0%" }} />
                   </div>
@@ -523,7 +523,7 @@ export default function RiotGamingHome() {
                   className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/85 p-4 backdrop-blur-xl shadow-md flex flex-col justify-between"
                 >
                   <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Victoires (Top 1)</span>
-                  <p className="text-3xl font-black text-emerald-400 my-2">--</p>
+                  <p className="text-3xl font-black text-emerald-400 my-2"></p>
                   <div className="h-1.5 w-full rounded-full bg-[var(--surface-raised)] overflow-hidden">
                     <div className="h-full bg-emerald-400 rounded-full" style={{ width: "0%" }} />
                   </div>
@@ -625,16 +625,16 @@ export default function RiotGamingHome() {
                       {isWin ? "Victoire" : "Défaite"}
                     </span>
                     <span className="font-mono text-xs font-bold text-[var(--text-primary)]">
-                      {m.metadata?.score?.team || 13} - {m.metadata?.score?.opponent || 8}
+                      {m.metadata?.score?.team ?? 0} - {m.metadata?.score?.opponent ?? 0}
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-xs">
-                    <span className="font-bold text-[var(--text-primary)]">{m.metadata?.mapName || "Ascent"}</span>
-                    <span className="text-[var(--text-muted)] font-medium">{m.metadata?.agentName || "Jett"}</span>
+                    <span className="font-bold text-[var(--text-primary)]">{m.metadata?.mapName || ""}</span>
+                    <span className="text-[var(--text-muted)] font-medium">{m.metadata?.agentName || ""}</span>
                   </div>
                   <div className="text-[11px] font-mono text-[var(--text-muted)] flex items-center justify-between">
-                    <span>K/D/A : {myStats?.kills?.value || 19}/{myStats?.deaths?.value || 11}/{myStats?.assists?.value || 4}</span>
-                    <span className="text-emerald-400 font-bold">{myStats?.kd?.value ? `${myStats.kd.value} KD` : "1.72 KD"}</span>
+                    <span>K/D/A : {myStats?.kills?.value ?? 0}/{myStats?.deaths?.value ?? 0}/{myStats?.assists?.value ?? 0}</span>
+                    <span className="text-emerald-400 font-bold">{myStats?.kd?.value ? `${myStats.kd.value} KD` : ""}</span>
                   </div>
                 </div>
               );
@@ -662,15 +662,15 @@ export default function RiotGamingHome() {
                     )}>
                       {isWin ? "Victoire" : "Défaite"}
                     </span>
-                    <span className="font-mono text-xs text-[var(--text-muted)]">{m.metadata?.gameDuration || "25:00"}</span>
+                    <span className="font-mono text-xs text-[var(--text-muted)]">{m.metadata?.gameDuration || ""}</span>
                   </div>
                   <div className="flex items-center justify-between text-xs">
-                    <span className="font-bold text-[var(--text-primary)]">{me?.championName || "Champion"}</span>
-                    <span className="text-[var(--text-muted)] font-medium">{m.metadata?.queue || "Solo/Duo"}</span>
+                    <span className="font-bold text-[var(--text-primary)]">{me?.championName || ""}</span>
+                    <span className="text-[var(--text-muted)] font-medium">{m.metadata?.queue || ""}</span>
                   </div>
                   <div className="text-[11px] font-mono text-[var(--text-muted)] flex items-center justify-between">
-                    <span>K/D/A : {me?.stats?.kills || 0}/{me?.stats?.deaths || 0}/{me?.stats?.assists || 0}</span>
-                    <span className="text-amber-400 font-bold">{me?.stats?.damagePerMinute ? `${me.stats.damagePerMinute} DPM` : "DPM --"}</span>
+                    <span>K/D/A : {me?.stats?.kills ?? 0}/{me?.stats?.deaths ?? 0}/{me?.stats?.assists ?? 0}</span>
+                    <span className="text-amber-400 font-bold">{me?.stats?.damagePerMinute ? `${me.stats.damagePerMinute} DPM` : ""}</span>
                   </div>
                 </div>
               );

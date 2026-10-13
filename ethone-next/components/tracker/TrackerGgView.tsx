@@ -235,9 +235,8 @@ export default function TrackerGgView() {
               type="text"
               value={identifier}
               onChange={(e) => setIdentifier(e.target.value)}
-              placeholder={game.idHint}
               aria-label={game.idLabel}
-              className="w-full bg-transparent text-xs font-bold text-[var(--text-primary)] placeholder-[var(--text-muted)] outline-none"
+              className="w-full bg-transparent text-xs font-bold text-[var(--text-primary)] outline-none"
             />
           </div>
 

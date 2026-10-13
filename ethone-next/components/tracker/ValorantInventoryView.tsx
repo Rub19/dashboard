@@ -941,8 +941,7 @@ export default function ValorantInventoryView() {
                   type="search"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Rechercher par nom…"
-                  aria-label="Rechercher"
+                  aria-label="Rechercher par nom"
                   clearable
                 />
               </div>
@@ -1508,7 +1507,7 @@ export default function ValorantInventoryView() {
                     type="text"
                     value={redirectUrlInput}
                     onChange={(e) => handleRedirectUrlChange(e.target.value)}
-                    placeholder="https://playvalorant.com/opt_in#access_token=... ou jeton"
+                    aria-label="URL ou jeton d'accès Riot"
                   />
                 </div>
 

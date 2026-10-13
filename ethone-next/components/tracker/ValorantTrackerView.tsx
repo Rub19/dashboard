@@ -509,8 +509,8 @@ export default function ValorantTrackerView() {
                 type="text"
                 value={riotName}
                 onChange={(e) => setRiotName(e.target.value)}
-                placeholder="Nom Riot (ex: Rub19)"
-                className="w-full bg-transparent text-xs font-bold text-[var(--text-primary)] placeholder-zinc-500 outline-none"
+                aria-label="Nom Riot"
+                className="w-full bg-transparent text-xs font-bold text-[var(--text-primary)] outline-none"
               />
             </div>
 
@@ -520,8 +520,8 @@ export default function ValorantTrackerView() {
                 type="text"
                 value={riotTag}
                 onChange={(e) => setRiotTag(e.target.value)}
-                placeholder="TAG" aria-label="TAG Riot (ex. EUW)"
-                className="w-full bg-transparent font-mono text-xs font-bold text-[var(--text-primary)] placeholder-zinc-500 outline-none"
+                aria-label="TAG Riot"
+                className="w-full bg-transparent font-mono text-xs font-bold text-[var(--text-primary)] outline-none"
               />
             </div>
 
@@ -845,8 +845,8 @@ export default function ValorantTrackerView() {
                 type="text"
                 value={apiKeyInput}
                 onChange={(e) => setApiKeyInput(e.target.value)}
-                placeholder="ex: HDEV-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-                className="w-full bg-transparent font-mono text-xs text-[var(--text-primary)] placeholder-zinc-500 outline-none"
+                aria-label="Clé API Henrik"
+                className="w-full bg-transparent font-mono text-xs text-[var(--text-primary)] outline-none"
               />
             </div>
             <p className="text-[11px] text-[var(--text-muted)] leading-relaxed mt-1">

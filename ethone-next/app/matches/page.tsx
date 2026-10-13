@@ -182,7 +182,7 @@ export default function MatchesPage({ defaultTab }: { defaultTab?: string }) {
                       type="text"
                       value={apexIdentifier}
                       onChange={(e) => setApexIdentifier(e.target.value)}
-                      placeholder={i18n("liveTrackerApexIdentifier")}
+                      aria-label={i18n("liveTrackerApexIdentifier")}
                       className="w-full"
                     />
                   </FormField>
@@ -204,7 +204,7 @@ export default function MatchesPage({ defaultTab }: { defaultTab?: string }) {
                       type="text"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      placeholder={i18n("liveTrackerRiotName")}
+                      aria-label={i18n("liveTrackerRiotName")}
                       className="w-full"
                     />
                   </FormField>
@@ -214,7 +214,7 @@ export default function MatchesPage({ defaultTab }: { defaultTab?: string }) {
                       type="text"
                       value={tag}
                       onChange={(e) => setTag(e.target.value)}
-                      placeholder="#1234"
+                      aria-label={i18n("liveTrackerRiotTag")}
                       className="w-full"
                     />
                   </FormField>

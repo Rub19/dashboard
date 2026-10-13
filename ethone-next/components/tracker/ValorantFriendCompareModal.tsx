@@ -108,8 +108,8 @@ export default function ValorantFriendCompareModal({
               type="text"
               value={friendName}
               onChange={(e) => setFriendName(e.target.value)}
-              placeholder="Pseudo de votre ami(e)"
-              className="w-full bg-transparent text-xs font-bold text-[var(--text-primary)] placeholder-zinc-500 outline-none"
+              aria-label="Pseudo de votre ami(e)"
+              className="w-full bg-transparent text-xs font-bold text-[var(--text-primary)] outline-none"
             />
           </div>
 
@@ -119,8 +119,8 @@ export default function ValorantFriendCompareModal({
               type="text"
               value={friendTag}
               onChange={(e) => setFriendTag(e.target.value)}
-              placeholder="TAG"
-              className="w-full bg-transparent font-mono text-xs font-bold text-[var(--text-primary)] placeholder-zinc-500 outline-none"
+              aria-label="TAG ami"
+              className="w-full bg-transparent font-mono text-xs font-bold text-[var(--text-primary)] outline-none"
             />
           </div>
 

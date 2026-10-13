@@ -317,7 +317,7 @@ export default function RiotTrackerConnectModal({
                     type="text"
                     value={riotName}
                     onChange={(e) => setRiotName(e.target.value)}
-                    placeholder="Nom Riot (ex: TenZ, Faker)"
+                    aria-label="Nom Riot"
                     className="w-full bg-transparent text-xs font-bold text-[var(--text-primary)] outline-none"
                     required
                   />
@@ -326,7 +326,7 @@ export default function RiotTrackerConnectModal({
                     type="text"
                     value={riotTag}
                     onChange={(e) => setRiotTag(e.target.value)}
-                    placeholder="0505"
+                    aria-label="Tag Riot"
                     className="w-16 bg-transparent font-mono text-xs font-bold text-[var(--text-primary)] outline-none"
                     required
                   />
@@ -379,7 +379,7 @@ export default function RiotTrackerConnectModal({
                   type="password"
                   value={apiKey}
                   onChange={(e) => setApiKey(e.target.value)}
-                  placeholder="HDEV-xxxxxxxx ou RGAPI-xxxxxxxx"
+                  aria-label="Clé API"
                   className="flex-1 rounded-xl border border-[var(--input-border)] bg-[var(--bg-surface-elevated)] px-3 py-2 text-xs font-mono text-[var(--text-primary)] outline-none"
                 />
                 <Button type="button" variant="secondary" size="sm" onClick={handleSaveApiKey}>

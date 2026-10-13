@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.59 — 2026-10-13
+
+**Tracker Riot : suppression intégrale des placeholders et données factices**
+
+- Suppression de l'intégralité des attributs `placeholder` sur les formulaires et champs de saisie (nom, tag, clé API, recherche).
+- Retrait des données factices et fallbacks de démo (scores par défaut, tags génériques et pseudos de substitution).
+- Remplacement par des labels d'accessibilité `aria-label` discrets pour préserver la conformité sans texte factice visible.
+- Affichage strict et exclusif des données réelles retournées par les APIs.
+
 ## v1.75.58 — 2026-10-13
 
 **Tracker Riot : isolation complète de l'interface, retrait du Dock, TopBar, Dynamic Island et Bot**

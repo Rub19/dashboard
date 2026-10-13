@@ -54651,9 +54651,57 @@ const v12900_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12900_fr, v12899_fr, v12898_fr, v12897_fr, v12896_fr, v12895_fr, v12894_fr, v12893_fr, v12892_fr);
-CHANGELOG_BY_LANG.en.unshift(v12900_en, v12899_en, v12898_en, v12897_en, v12896_en, v12895_en, v12894_en, v12893_en, v12892_en);
-CHANGELOG_BY_LANG.es.unshift(v12900_es, v12899_es, v12898_es, v12897_es, v12896_es, v12895_es, v12894_es, v12893_es, v12892_es);
-CHANGELOG_BY_LANG.de.unshift(v12900_de, v12899_de, v12898_de, v12897_de, v12896_de, v12895_de, v12894_de, v12893_de, v12892_de);
+const v12901_fr: ChangelogEntry = {
+  version: "v1.75.59",
+  date: "2026-10-13",
+  title: "Tracker Riot : suppression intégrale des placeholders et données factices",
+  items: [
+    "Suppression de l'ensemble des attributs placeholder sur les champs de saisie du Tracker et des fenêtres associées",
+    "Nettoyage des valeurs factices et textes de démonstration (nombres de scores par défaut, tags et noms génériques)",
+    "Remplacement par des labels d'accessibilité aria-label transparents pour les lecteurs d'écran",
+    "Affichage strictement fondé sur les données réelles récupérées via les APIs",
+  ],
+};
+
+const v12901_en: ChangelogEntry = {
+  version: "v1.75.59",
+  date: "2026-10-13",
+  title: "Riot Tracker: full elimination of placeholders and dummy data",
+  items: [
+    "Removed all placeholder attributes on input fields across the Tracker and related modals",
+    "Cleaned up all dummy fallback values and demo texts (default scores, generic tags and names)",
+    "Replaced with transparent aria-label accessibility attributes for screen readers",
+    "Strict presentation driven solely by real data retrieved from game APIs",
+  ],
+};
+
+const v12901_es: ChangelogEntry = {
+  version: "v1.75.59",
+  date: "2026-10-13",
+  title: "Tracker Riot: eliminación completa de marcadores de posición y datos ficticios",
+  items: [
+    "Eliminación de todos los atributos placeholder en los campos de entrada del Tracker y modales asociados",
+    "Limpieza de valores ficticios y textos de demostración (puntuaciones por defecto, nombres y tags genéricos)",
+    "Sustitución por etiquetas de accesibilidad aria-label transparentes para lectores de pantalla",
+    "Presentación estricta basada exclusivamente en datos reales obtenidos de las APIs",
+  ],
+};
+
+const v12901_de: ChangelogEntry = {
+  version: "v1.75.59",
+  date: "2026-10-13",
+  title: "Riot Tracker: Vollständige Entfernung von Platzhaltern und Testdaten",
+  items: [
+    "Entfernung aller Platzhalter-Attribute auf Eingabefeldern im Tracker und zugehörigen Modalfenstern",
+    "Bereinigung von Dummy-Werten und Beispieltexten (Standard-Scores, generische Tags und Namen)",
+    "Ersetzung durch transparente aria-label Zugänglichkeitsattribute für Screenreader",
+    "Strenge Anzeige ausschließlich auf Basis realer Daten aus den Spiel-APIs",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12901_fr, v12900_fr, v12899_fr, v12898_fr, v12897_fr, v12896_fr, v12895_fr, v12894_fr, v12893_fr, v12892_fr);
+CHANGELOG_BY_LANG.en.unshift(v12901_en, v12900_en, v12899_en, v12898_en, v12897_en, v12896_en, v12895_en, v12894_en, v12893_en, v12892_en);
+CHANGELOG_BY_LANG.es.unshift(v12901_es, v12900_es, v12899_es, v12898_es, v12897_es, v12896_es, v12895_es, v12894_es, v12893_es, v12892_es);
+CHANGELOG_BY_LANG.de.unshift(v12901_de, v12900_de, v12899_de, v12898_de, v12897_de, v12896_de, v12895_de, v12894_de, v12893_de, v12892_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

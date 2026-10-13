@@ -134,8 +134,8 @@ export default function TftTrackerView() {
                 type="text"
                 value={riotName}
                 onChange={(e) => setRiotName(e.target.value)}
-                placeholder="Riot Name (ex: Rub19)"
-                className="w-full bg-transparent text-xs font-bold text-[var(--text-primary)] placeholder-[var(--text-muted)] outline-none"
+                aria-label="Nom Riot"
+                className="w-full bg-transparent text-xs font-bold text-[var(--text-primary)] outline-none"
               />
             </div>
             <div className="flex items-center gap-1 rounded-[var(--panel-radius)] border border-[var(--input-border)] bg-[var(--bg-surface-elevated)] px-3 py-2 transition-colors focus-within:border-[var(--accent-primary)]/60 w-28 shrink-0">
@@ -144,8 +144,8 @@ export default function TftTrackerView() {
                 type="text"
                 value={riotTag}
                 onChange={(e) => setRiotTag(e.target.value)}
-                placeholder="TAG"
-                className="w-full bg-transparent font-mono text-xs font-bold text-[var(--text-primary)] placeholder-[var(--text-muted)] outline-none"
+                aria-label="TAG Riot"
+                className="w-full bg-transparent font-mono text-xs font-bold text-[var(--text-primary)] outline-none"
               />
             </div>
             <button

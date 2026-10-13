@@ -245,8 +245,8 @@ export default function LolTrackerView() {
                 type="text"
                 value={riotName}
                 onChange={(e) => setRiotName(e.target.value)}
-                placeholder="Riot Name (ex: Rub19)"
-                className="w-full bg-transparent text-xs font-bold text-[var(--text-primary)] placeholder-zinc-500 outline-none"
+                aria-label="Nom Riot"
+                className="w-full bg-transparent text-xs font-bold text-[var(--text-primary)] outline-none"
               />
             </div>
 
@@ -256,8 +256,8 @@ export default function LolTrackerView() {
                 type="text"
                 value={riotTag}
                 onChange={(e) => setRiotTag(e.target.value)}
-                placeholder="TAG" aria-label="TAG Riot (ex. EUW)"
-                className="w-full bg-transparent font-mono text-xs font-bold text-[var(--text-primary)] placeholder-zinc-500 outline-none"
+                aria-label="TAG Riot"
+                className="w-full bg-transparent font-mono text-xs font-bold text-[var(--text-primary)] outline-none"
               />
             </div>
 

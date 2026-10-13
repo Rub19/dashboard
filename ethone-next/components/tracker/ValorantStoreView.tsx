@@ -406,7 +406,6 @@ export default function ValorantStoreView({ onOpenInventory }: { onOpenInventory
                     type="search"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Rechercher un bundle…"
                     aria-label="Rechercher un bundle"
                     icon="search"
                     clearable

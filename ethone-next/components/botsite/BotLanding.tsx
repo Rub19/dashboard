@@ -18,7 +18,6 @@ import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { signInWithOAuth } from "@/lib/auth";
 import FlagIcon, { LANGUAGE_LABELS } from "@/components/FlagIcon";
-import VersionPill from "@/components/layout/VersionPill";
 import { ArrowUp } from "@/components/icons/ph";
 import { EASE_SNAP, SPRING_MOUSE } from "@/lib/ease";
 import { useMotionPref } from "@/lib/hooks/useMotionPref";
@@ -2066,13 +2065,10 @@ export default function BotLanding() {
                 className="h-9 w-9 rounded-xl opacity-90"
               />
             </div>
-            <div className="flex flex-col gap-2">
+            <div>
               <p className="text-xs text-zinc-500">
                 Copyright © {new Date().getFullYear()} etho.dev, {c.footer.rightsReserved}
               </p>
-              <div>
-                <VersionPill />
-              </div>
             </div>
           </div>
 

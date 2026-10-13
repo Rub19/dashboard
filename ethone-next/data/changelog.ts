@@ -53220,8 +53220,53 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_30_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_30_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_30_de);
 
+const v12875_fr: ChangelogEntry = {
+  version: "v1.75.31",
+  date: "2026-10-13",
+  title: "Mode Streamer & Pastille Violette Bot Discord",
+  items: [
+    "Ajout du statut visible 'Mode Streamer' dans le sélecteur de statut de présence Discord avec pastille violette Twitch.",
+    "Synchronisation automatique de l'activité Streaming, de l'URL de diffusion Twitch et de l'indicateur visuel sur le profil du bot.",
+    "Support natif du statut streamer dans le service de présence Gateway, les commandes /status et le panneau d'administration.",
+  ],
+};
+
+const v12875_en: ChangelogEntry = {
+  version: "v1.75.31",
+  date: "2026-10-13",
+  title: "Discord Bot Streamer Mode & Purple Status Dot",
+  items: [
+    "Added 'Streamer Mode' visible status option in the Discord bot presence selector with the Twitch purple dot.",
+    "Automatic synchronization of Streaming activity, Twitch stream URL, and visual live badge on the bot profile.",
+    "Native support for streaming status across Gateway presence service, /status commands, and owner panel.",
+  ],
+};
+
+const v12875_es: ChangelogEntry = {
+  version: "v1.75.31",
+  date: "2026-10-13",
+  title: "Modo Streamer y Punto Morado del Bot de Discord",
+  items: [
+    "Añadida la opción de estado visible 'Modo Streamer' en el selector de presencia de Discord con punto morado de Twitch.",
+    "Sincronización automática de la actividad Streaming, URL de Twitch y distintivo en vivo en el perfil del bot.",
+    "Compatibilidad nativa con el estado streaming en el servicio Gateway, comandos /status y panel de administración.",
+  ],
+};
+
+const v12875_de: ChangelogEntry = {
+  version: "v1.75.31",
+  date: "2026-10-13",
+  title: "Discord Bot Streamer-Modus & Violetter Statuspunkt",
+  items: [
+    "Neuer sichtbarer Status 'Streamer-Modus' im Discord-Bot-Präsenz-Selektor mit violettem Twitch-Statuspunkt.",
+    "Automatische Synchronisierung von Streaming-Aktivität, Twitch-Stream-URL und Live-Badge im Bot-Profil.",
+    "Native Unterstützung des Streaming-Status im Gateway-Präsenzdienst, /status-Befehl und Admin-Panel.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12875_fr);
+CHANGELOG_BY_LANG.en.unshift(v12875_en);
+CHANGELOG_BY_LANG.es.unshift(v12875_es);
+CHANGELOG_BY_LANG.de.unshift(v12875_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
-
-
-
-

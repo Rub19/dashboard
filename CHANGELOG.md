@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.31 — 2026-10-13
+
+**Mode Streamer & Pastille Violette Bot Discord**
+
+- Ajout du statut visible 'Mode Streamer' dans le sélecteur de statut de présence Discord avec pastille violette Twitch.
+- Synchronisation automatique de l'activité Streaming, de l'URL de diffusion Twitch et de l'indicateur visuel sur le profil du bot.
+- Support natif du statut streamer dans le service de présence Gateway, les commandes /status et le panneau d'administration.
+
 ## v1.75.30 — 2026-10-13
 
 **Documentation Etho : Sidebar Transparente Style Keeper, Catalogue Intégral des Commandes et Retrait des Tiers Payants**

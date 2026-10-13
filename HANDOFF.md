@@ -1,4 +1,4 @@
-# ETHONE — passation & nouveautés (2026-10-13, version 1.75.30)
+# ETHONE — passation & nouveautés (2026-10-13, version 1.75.31)
 
 ## Projet
 - `ethone-next/` : site Next.js statique (ethone.dev, Cloudflare Pages, déploiement auto au push sur `main`).
@@ -25,9 +25,14 @@
 
 ---
 
-## Nouveautés majeures & Réalisations récentes (v1.73.0 → v1.75.30)
+## Nouveautés majeures & Réalisations récentes (v1.73.0 → v1.75.31)
 
-### 0. Documentation Etho : Sidebar Transparente Style Keeper, Catalogue 50 Commandes & 100% Inclus (v1.75.30)
+### 0. Mode Streamer & Pastille Violette Bot Discord (v1.75.31)
+- **Sélecteur de statut visible étendu** : Ajout du 5e statut « Mode Streamer » dans la section « 1. Statut Visible sur Discord » avec pastille violette (`bg-purple-500`) et icône de lecture en direct.
+- **Synchronisation automatique de l'activité** : Le choix du Mode Streamer active automatiquement l'activité de type `Streaming`, charge l'URL de live Twitch par défaut (`https://www.twitch.tv/ethone`) et met à jour l'aperçu du profil du bot (pastille violette avec triangle de diffusion).
+- **Compatibilité Gateway & Bot** : Gestion transparente dans `PresenceService` (mappage sur la Gateway Discord avec `ActivityType.Streaming`), support dans la commande `/status` avec choix « 🟣 Mode Streamer » et statut dans le panneau d'administration.
+
+### 1. Documentation Etho : Sidebar Transparente Style Keeper, Catalogue 50 Commandes & 100% Inclus (v1.75.30)
 - **Alignement de marque** : Dénomination exclusive « Etho » dans l'en-tête, le hero et le footer (suppression de « Etho Protect »).
 - **Sidebar transparente style Keeper** : Suppression intégrale du fond encadré de la barre latérale pour une intégration directe sur fond obsidian (`#090d0b`), recherche intégrée en tête et arborescence continue sur rail vertical sans compteurs numériques ni bordures superflues.
 - **Catalogue complet des 50 commandes** : Section interactive dédiée listant l'ensemble des commandes d'Etho (Sécurité, Modération, Configuration, Musique, Spotify, Utilitaires, Fun) avec filtre instantané par catégorie, recherche temps réel, syntaxes, sous-commandes et copie en 1 clic.

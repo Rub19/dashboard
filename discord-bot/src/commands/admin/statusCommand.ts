@@ -30,6 +30,7 @@ export const statusCommand: Command = {
         .setRequired(false)
         .addChoices(
           { name: '🟢 En ligne', value: 'online' },
+          { name: '🟣 Mode Streamer', value: 'streaming' },
           { name: '🌙 Inactif', value: 'idle' },
           { name: '⛔ Ne pas déranger', value: 'dnd' },
           { name: '⚫ Invisible', value: 'invisible' }

@@ -1,4 +1,4 @@
-export type DiscordStatus = 'online' | 'idle' | 'dnd' | 'invisible';
+export type DiscordStatus = 'online' | 'idle' | 'dnd' | 'invisible' | 'streaming';
 
 export type DiscordActivityType = 'Playing' | 'Streaming' | 'Listening' | 'Watching' | 'Competing';
 

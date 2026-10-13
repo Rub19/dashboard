@@ -59,7 +59,7 @@ export type PresenceTab =
   | "identity"
   | "history";
 
-export type DiscordStatus = "online" | "idle" | "dnd" | "invisible";
+export type DiscordStatus = "online" | "idle" | "dnd" | "invisible" | "streaming";
 export type DiscordActivityType = "Playing" | "Streaming" | "Listening" | "Watching" | "Competing";
 
 const ACTIVITY_VERB: Record<DiscordActivityType, string> = {
@@ -99,7 +99,7 @@ const DEFAULT_PROFILES = [
   {
     id: "prof_streamer",
     name: "🟣 Mode Streamer (Twitch Live)",
-    status: "online",
+    status: "streaming",
     description: "Pastille violette de diffusion Twitch avec lien direct vers le live",
     activity: { type: "Streaming", name: "🔴 En direct sur Twitch • /help", url: "https://www.twitch.tv/ethone" },
   },
@@ -257,7 +257,13 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
         if (json?.success && json.data) {
           const { state, stats: s, rotationEnabled, nextRotationAt } = json.data;
           if (state) {
-            if (state.status) setCurrentStatus(state.status);
+            if (state.status) {
+              if (state.status === "streaming" || (state.status === "online" && state.activity?.type === "Streaming")) {
+                setCurrentStatus("streaming");
+              } else {
+                setCurrentStatus(state.status);
+              }
+            }
             if (state.activity) {
               if (state.activity.type) setActivityType(state.activity.type);
               if (state.activity.name) setActivityName(state.activity.name);
@@ -334,6 +340,11 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
       url: activityType === "Streaming" ? streamUrl : undefined,
     };
 
+    if (targetStatus === "streaming") {
+      targetActivity.type = "Streaming";
+      targetActivity.url = targetActivity.url || streamUrl || "https://www.twitch.tv/ethone";
+    }
+
     try {
       setSaving(true);
       setCurrentStatus(targetStatus);
@@ -371,7 +382,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
   const handleQuickMode = async (mode: "online" | "dnd" | "invisible" | "streamer") => {
     if (mode === "streamer") {
       await handleApplyPresence(
-        "online",
+        "streaming",
         {
           type: "Streaming",
           name: "🔴 En direct sur Twitch • /help",
@@ -595,6 +606,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
     idle: "bg-amber-400",
     dnd: "bg-rose-500",
     invisible: "bg-neutral-500",
+    streaming: "bg-purple-500",
   };
 
   const statusColorMap: Record<DiscordStatus, string> = {
@@ -602,6 +614,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
     idle: "text-amber-400",
     dnd: "text-rose-400",
     invisible: "text-neutral-400",
+    streaming: "text-purple-400",
   };
 
   return (
@@ -806,6 +819,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                           {currentStatus === "dnd" && <span className="w-2 h-0.5 bg-white rounded-full" />}
                           {currentStatus === "idle" && <Moon className="w-2.5 h-2.5 text-[#07090E]" />}
                           {currentStatus === "invisible" && <EyeOff className="w-2.5 h-2.5 text-white" />}
+                          {currentStatus === "streaming" && <Play className="w-2 h-2 text-white fill-white ml-0.5" />}
                         </span>
                       </div>
 
@@ -825,6 +839,8 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                               "px-2 py-0.5 rounded-full text-[10px] font-semibold border ml-1",
                               currentStatus === "online"
                                 ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/25"
+                                : currentStatus === "streaming"
+                                ? "bg-purple-500/10 text-purple-400 border-purple-500/25"
                                 : currentStatus === "dnd"
                                 ? "bg-rose-500/10 text-rose-400 border-rose-500/25"
                                 : currentStatus === "invisible"
@@ -832,7 +848,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                                 : "bg-amber-500/10 text-amber-400 border-amber-500/25"
                             )}
                           >
-                            {currentStatus === "online" ? "En Ligne" : currentStatus === "dnd" ? "Ne Pas Déranger" : currentStatus === "invisible" ? "Invisible" : "Inactif"}
+                            {currentStatus === "online" ? "En Ligne" : currentStatus === "streaming" ? "Mode Streamer" : currentStatus === "dnd" ? "Ne Pas Déranger" : currentStatus === "invisible" ? "Invisible" : "Inactif"}
                           </span>
                         </div>
 
@@ -926,9 +942,10 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                         </p>
                       </div>
 
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
                         {[
                           { id: "online", label: "En Ligne", dot: "bg-[var(--success)]", desc: "Disponible et actif" },
+                          { id: "streaming", label: "Mode Streamer", dot: "bg-purple-500", desc: "Pastille violette live" },
                           { id: "idle", label: "Inactif", dot: "bg-amber-400", desc: "Absence temporaire" },
                           { id: "dnd", label: "Ne Pas Déranger", dot: "bg-rose-500", desc: "Maintenance / DND" },
                           { id: "invisible", label: "Invisible (Invi)", dot: "bg-neutral-500", desc: "Hors ligne visuel" },
@@ -938,23 +955,37 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                             <button
                               key={s.id}
                               type="button"
-                              onClick={() => setCurrentStatus(s.id as DiscordStatus)}
+                              onClick={() => {
+                                setCurrentStatus(s.id as DiscordStatus);
+                                if (s.id === "streaming") {
+                                  setActivityType("Streaming");
+                                  if (!streamUrl) setStreamUrl("https://www.twitch.tv/ethone");
+                                } else if (activityType === "Streaming") {
+                                  setActivityType("Watching");
+                                }
+                              }}
                               className={cn(
                                 "p-3.5 rounded-xl border text-left transition-all relative cursor-pointer active:scale-[0.97]",
                                 isSelected
-                                  ? "bg-[var(--surface-raised)] border-[var(--accent-primary)] ring-2 ring-[var(--accent-primary)]/20 shadow-sm"
+                                  ? s.id === "streaming"
+                                    ? "bg-[var(--surface-raised)] border-purple-500 ring-2 ring-purple-500/20 shadow-sm"
+                                    : "bg-[var(--surface-raised)] border-[var(--accent-primary)] ring-2 ring-[var(--accent-primary)]/20 shadow-sm"
                                   : "bg-[var(--surface-raised)]/40 border-[var(--panel-border)] hover:bg-[var(--surface-raised)]/80"
                               )}
                             >
                               <div className="flex items-center gap-2 mb-1.5">
-                                <span className={cn("w-3 h-3 rounded-full", s.dot)} />
-                                <span className={cn("text-xs font-bold", isSelected ? "text-[var(--text-primary)]" : "text-[var(--text-muted)]")}>
+                                <span className={cn("w-3 h-3 rounded-full flex items-center justify-center shrink-0", s.dot)}>
+                                  {s.id === "streaming" && (
+                                    <Play className="w-1.5 h-1.5 text-white fill-white ml-0.5" />
+                                  )}
+                                </span>
+                                <span className={cn("text-xs font-bold", isSelected ? (s.id === "streaming" ? "text-purple-400" : "text-[var(--text-primary)]") : "text-[var(--text-muted)]")}>
                                   {s.label}
                                 </span>
                               </div>
                               <p className="text-[11px] text-[var(--text-muted)] line-clamp-1">{s.desc}</p>
                               {isSelected && (
-                                <span className="absolute top-2.5 right-2.5 text-[var(--accent-primary)]">
+                                <span className={cn("absolute top-2.5 right-2.5", s.id === "streaming" ? "text-purple-400" : "text-[var(--accent-primary)]")}>
                                   <Check className="w-3.5 h-3.5" />
                                 </span>
                               )}
@@ -979,12 +1010,13 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                         <button
                           type="button"
                           onClick={() => {
+                            setCurrentStatus("streaming");
                             setActivityType("Streaming");
                             if (!streamUrl) setStreamUrl("https://www.twitch.tv/ethone");
                           }}
                           className={cn(
                             "px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer",
-                            activityType === "Streaming"
+                            activityType === "Streaming" || currentStatus === "streaming"
                               ? "bg-purple-500/20 text-purple-300 border border-purple-500/40"
                               : "bg-[var(--surface-raised)] text-[var(--text-muted)] hover:text-purple-300 border border-[var(--panel-border)]"
                           )}
@@ -1008,7 +1040,15 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                             <button
                               key={item.type}
                               type="button"
-                              onClick={() => setActivityType(item.type as DiscordActivityType)}
+                              onClick={() => {
+                                setActivityType(item.type as DiscordActivityType);
+                                if (item.type === "Streaming") {
+                                  setCurrentStatus("streaming");
+                                  if (!streamUrl) setStreamUrl("https://www.twitch.tv/ethone");
+                                } else if (currentStatus === "streaming") {
+                                  setCurrentStatus("online");
+                                }
+                              }}
                               className={cn(
                                 "p-3 rounded-xl border text-center transition-all flex flex-col items-center gap-1.5 cursor-pointer active:scale-[0.97]",
                                 isSelected

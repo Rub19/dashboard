@@ -181,23 +181,28 @@ export class PresenceService {
     try {
       const resolvedName = this.parseDynamicVariables(activity.name) || 'ETHONE';
       const resolvedState = activity.state ? this.parseDynamicVariables(activity.state) : undefined;
+      const gatewayStatus: 'online' | 'idle' | 'dnd' | 'invisible' = (status as string) === 'streaming' ? 'online' : (status as 'online' | 'idle' | 'dnd' | 'invisible');
+      const isStreaming = activity.type === 'Streaming' || (status as string) === 'streaming';
+      const gatewayActivity = isStreaming && activity.type !== 'Streaming'
+        ? { ...activity, type: 'Streaming' as DiscordActivityType, url: activity.url || 'https://www.twitch.tv/ethone' }
+        : activity;
 
       // Streaming garde le type natif (bouton « Regarder » + lien). Pour les autres, Discord n'affichait
       // que le nom dans la liste des membres (« Spotify » au lieu de « Listening to Spotify ») : on passe
       // par le statut personnalisé, affiché tel quel, avec le verbe écrit par nous.
       const presenceData: PresenceData =
-        activity.type === 'Streaming'
+        gatewayActivity.type === 'Streaming'
           ? {
-              status,
-              activities: [{ name: resolvedName, type: ActivityType.Streaming, url: activity.url, state: resolvedState }],
+              status: gatewayStatus,
+              activities: [{ name: resolvedName, type: ActivityType.Streaming, url: gatewayActivity.url, state: resolvedState }],
             }
           : {
-              status,
+              status: gatewayStatus,
               activities: [
                 {
                   name: 'Custom Status',
                   type: ActivityType.Custom,
-                  state: PresenceService.formatActivityText(activity.type, resolvedName, resolvedState),
+                  state: PresenceService.formatActivityText(gatewayActivity.type, resolvedName, resolvedState),
                 },
               ],
             };
@@ -211,7 +216,8 @@ export class PresenceService {
 
       // Fallback de secours : maintenir au minimum le statut sans faire planter le bot
       try {
-        this.client.user.setPresence({ status });
+        const gatewayStatus: 'online' | 'idle' | 'dnd' | 'invisible' = (status as string) === 'streaming' ? 'online' : (status as 'online' | 'idle' | 'dnd' | 'invisible');
+        this.client.user.setPresence({ status: gatewayStatus });
         this.currentState.fallbackActive = true;
       } catch {
         // Silencieux
@@ -239,6 +245,14 @@ export class PresenceService {
   ): { success: boolean; state: BotPresenceState; rateLimited: boolean } {
     if (!force && !this.checkRateLimit()) {
       return { success: false, state: this.currentState, rateLimited: true };
+    }
+
+    if (status === 'streaming' && activity.type !== 'Streaming') {
+      activity = {
+        ...activity,
+        type: 'Streaming',
+        url: activity.url || 'https://www.twitch.tv/ethone',
+      };
     }
 
     // Validation spécifique pour Streaming

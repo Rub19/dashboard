@@ -36,6 +36,8 @@ export class DiscordOwnerPanel {
     const statusEmoji =
       current.status === 'online'
         ? '🟢 En Ligne'
+        : current.status === 'streaming'
+        ? '🟣 Mode Streamer'
         : current.status === 'idle'
         ? '🌙 Inactif'
         : current.status === 'dnd'

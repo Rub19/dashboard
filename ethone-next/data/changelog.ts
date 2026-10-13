@@ -54851,10 +54851,58 @@ const v12904_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12904_fr, v12903_fr, v12902_fr, v12901_fr, v12900_fr, v12899_fr, v12898_fr, v12897_fr, v12896_fr, v12895_fr, v12894_fr, v12893_fr, v12892_fr);
-CHANGELOG_BY_LANG.en.unshift(v12904_en, v12903_en, v12902_en, v12901_en, v12900_en, v12899_en, v12898_en, v12897_en, v12896_en, v12895_en, v12894_en, v12893_en, v12892_en);
-CHANGELOG_BY_LANG.es.unshift(v12904_es, v12903_es, v12902_es, v12901_es, v12900_es, v12899_es, v12898_es, v12897_es, v12896_es, v12895_es, v12894_es, v12893_es, v12892_es);
-CHANGELOG_BY_LANG.de.unshift(v12904_de, v12903_de, v12902_de, v12901_de, v12900_de, v12899_de, v12898_de, v12897_de, v12896_de, v12895_de, v12894_de, v12893_de, v12892_de);
+const v12905_fr: ChangelogEntry = {
+  version: "v1.75.63",
+  date: "2026-10-14",
+  title: "Correction de la redirection vers home et fiabilisation de la persistance des réglages",
+  items: [
+    "Résolution définitive du bug de redirection automatique vers la page d'accueil lors de la navigation interne (Notes, Tâches, Réglages, etc.)",
+    "Sauvegarde multi-clés locale et distante sur Supabase garantissant la persistance des préférences utilisateur (Dock, Spotlight, icônes colorées)",
+    "Suppression de l'écrasement des applications du dock par la synchronisation des profils et préservation des personnalisations",
+    "Fusion bidirectionnelle fiable entre le stockage local et la table Supabase user_settings sans perte lors des rechargements",
+  ],
+};
+
+const v12905_en: ChangelogEntry = {
+  version: "v1.75.63",
+  date: "2026-10-14",
+  title: "Fixed auto-redirect to home bug and ensured robust settings persistence",
+  items: [
+    "Fixed automatic redirect to home page when clicking on internal pages (Notes, Tasks, Settings, etc.)",
+    "Multi-key local and remote Supabase persistence ensuring user preferences (Dock, Spotlight, colored icons) are retained on reload",
+    "Prevented profile synchronization from overriding dock items, preserving user dock customizations",
+    "Reliable bidirectional merge between local storage and Supabase user_settings table on refresh",
+  ],
+};
+
+const v12905_es: ChangelogEntry = {
+  version: "v1.75.63",
+  date: "2026-10-14",
+  title: "Corrección de redirección a inicio y persistencia fiable de ajustes",
+  items: [
+    "Solución definitiva a la redirección automática a inicio al navegar a páginas internas (Notas, Tareas, Ajustes, etc.)",
+    "Persistencia multiclave local y en Supabase garantizando el guardado de preferencias (Dock, Spotlight, iconos de color)",
+    "Eliminada la sobreescritura de aplicaciones del dock en la sincronización de perfiles, preservando personalizaciones",
+    "Fusión bidireccional fiable entre almacenamiento local y la tabla Supabase user_settings",
+  ],
+};
+
+const v12905_de: ChangelogEntry = {
+  version: "v1.75.63",
+  date: "2026-10-14",
+  title: "Behebung der automatischen Startseiten-Weiterleitung und zuverlässige Einstellungspersistenz",
+  items: [
+    "Automatische Weiterleitung auf die Startseite bei Klicks auf interne Seiten (Notizen, Aufgaben, Einstellungen usw.) behoben",
+    "Zuverlässige Multi-Key-Speicherung lokal und in Supabase für anhaltende Benutzereinstellungen (Dock, Spotlight, Farbsymbole)",
+    "Überschreiben von Dock-Elementen durch Profil-Synchronisation entfernt, Anpassungen bleiben erhalten",
+    "Zuverlässige bidirektionale Synchronisation zwischen lokalem Speicher und Supabase user_settings-Tabelle",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12905_fr, v12904_fr, v12903_fr, v12902_fr, v12901_fr, v12900_fr, v12899_fr, v12898_fr, v12897_fr, v12896_fr, v12895_fr, v12894_fr, v12893_fr, v12892_fr);
+CHANGELOG_BY_LANG.en.unshift(v12905_en, v12904_en, v12903_en, v12902_en, v12901_en, v12900_en, v12899_en, v12898_en, v12897_en, v12896_en, v12895_en, v12894_en, v12893_en, v12892_en);
+CHANGELOG_BY_LANG.es.unshift(v12905_es, v12904_es, v12903_es, v12902_es, v12901_es, v12900_es, v12899_es, v12898_es, v12897_es, v12896_es, v12895_es, v12894_es, v12893_es, v12892_es);
+CHANGELOG_BY_LANG.de.unshift(v12905_de, v12904_de, v12903_de, v12902_de, v12901_de, v12900_de, v12899_de, v12898_de, v12897_de, v12896_de, v12895_de, v12894_de, v12893_de, v12892_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.63 — 2026-10-14
+
+**Correction de la redirection vers home et persistance des réglages (Dock, Spotlight, icônes colorées, Supabase)**
+
+- Résolution du bug de routage automatique ramenant les utilisateurs sur la page d'accueil (`/`) lors de la navigation interne (Notes, Tâches, Calendrier, Réglages, etc.).
+- Correction de la persistance multi-clés locale et distante sur Supabase garantissant le maintien des réglages (Spotlight, dock, icônes en couleur `sidebarColoredIcons`) lors du rafraîchissement.
+- Suppression de l'écrasement des applications du dock par la synchronisation des profils, préservant ainsi les sélections utilisateur.
+- Fusion bidirectionnelle robuste entre le stockage local et la table Supabase `user_settings`.
+
 ## v1.75.62 — 2026-10-14
 
 **Tracker Riot : suppression des trackers tiers, Tactical Coach IA et conformité 7/7 Riot Games**

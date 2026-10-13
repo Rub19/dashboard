@@ -541,17 +541,16 @@ export function migrateSettings(raw: Partial<Settings>): Partial<Settings> {
   } else if (raw.dockSize === undefined) {
     next.dockSize = DEFAULTS.dockSize;
   }
-  if (raw.dockItemsDefaultsVersion !== 1 || !Array.isArray(raw.dockItems)) {
-    const current = Array.isArray(raw.dockItems) ? (raw.dockItems as string[]) : [];
-    const missing = DEFAULTS.dockItems.filter((id) => !current.includes(id));
-    next.dockItems = missing.length ? [...current, ...missing] : current;
+  if (Array.isArray(raw.dockItems)) {
+    next.dockItems = raw.dockItems;
+    next.dockItemsDefaultsVersion = 1;
+  } else {
+    next.dockItems = DEFAULTS.dockItems;
     next.dockItemsDefaultsVersion = 1;
   }
   if (typeof raw.soundPack === "string" && !SOUND_PACKS.includes(raw.soundPack as SoundPack)) {
     next.soundPack = SOUND_PACK_LEGACY[raw.soundPack] ?? "ethone";
   }
-  // Accent : l'ancien défaut « dyno » (et « custom » posé automatiquement par les anciens
-  // sélecteurs de thème, avec exactement l'accent du thème) deviennent « auto » = suit le thème.
   if (raw.accentColor === "dyno") {
     next.accentColor = "auto";
   } else if (raw.accentColor === "custom" && typeof raw.customAccent === "string") {
@@ -586,11 +585,28 @@ export function localSettingsKey(profileId?: string, userId?: string): string {
 export function loadSettings(profileId?: string, userId?: string): Settings {
   if (typeof window === "undefined") return DEFAULTS;
   try {
-    const raw = localStorage.getItem(localSettingsKey(profileId, userId));
-    if (!raw) return DEFAULTS;
-    const parsed = JSON.parse(raw);
-    const migrated = migrateSettings(parsed);
-    return { ...DEFAULTS, ...migrated };
+    const candidateKeys = [
+      profileId && userId ? localSettingsKey(profileId, userId) : null,
+      userId ? localSettingsKey(undefined, userId) : null,
+      profileId ? localSettingsKey(profileId, undefined) : null,
+      KEY,
+      "ethone_settings_v8",
+      "dashboard_settings",
+    ].filter(Boolean) as string[];
+
+    for (const k of candidateKeys) {
+      const raw = localStorage.getItem(k);
+      if (raw) {
+        try {
+          const parsed = JSON.parse(raw);
+          if (parsed && typeof parsed === "object") {
+            const migrated = migrateSettings(parsed);
+            return { ...DEFAULTS, ...migrated };
+          }
+        } catch {}
+      }
+    }
+    return DEFAULTS;
   } catch {
     return DEFAULTS;
   }
@@ -598,8 +614,15 @@ export function loadSettings(profileId?: string, userId?: string): Settings {
 
 export function saveSettings(settings: Settings, profileId?: string, userId?: string) {
   if (typeof window === "undefined") return;
-  const key = localSettingsKey(profileId, userId);
-  localStorage.setItem(key, JSON.stringify(settings));
+  const serialized = JSON.stringify(settings);
+  const primaryKey = localSettingsKey(profileId, userId);
+  try {
+    localStorage.setItem(primaryKey, serialized);
+    localStorage.setItem(KEY, serialized);
+    localStorage.setItem("ethone_settings_v8", serialized);
+    if (profileId) localStorage.setItem(localSettingsKey(profileId, undefined), serialized);
+    if (userId) localStorage.setItem(localSettingsKey(undefined, userId), serialized);
+  } catch {}
   setWriteAt(Date.now(), profileId, userId);
 }
 
@@ -641,7 +664,6 @@ export async function saveSettingsAsync(settings: Settings, profileId?: string, 
   try {
     if (!userId) return;
 
-    // Keep frequently-queried columns in sync with the settings JSONB payload.
     const payload = {
       user_id: userId,
       settings,
@@ -660,9 +682,13 @@ export async function saveSettingsAsync(settings: Settings, profileId?: string, 
       .maybeSingle();
 
     if (error) throw error;
-    if (data?.updated_at) setWriteAt(new Date(data.updated_at).getTime(), profileId, userId);
+    if (data?.updated_at) {
+      const ts = new Date(data.updated_at).getTime();
+      setWriteAt(ts, profileId, userId);
+      setWriteAt(ts, undefined, userId);
+      setWriteAt(ts, profileId, undefined);
+    }
   } catch (err) {
-    // localStorage already holds the fallback for offline scenarios.
     throw err;
   }
 }

@@ -182,11 +182,16 @@ export default function SettingsProvider({
       .then(({ settings: remote, updatedAt }) => {
         setSettings((prev) => {
           const remoteTs = updatedAt ? new Date(updatedAt).getTime() : 0;
-          const remoteIsNewer = remoteTs > localWriteAt + CLOCK_SKEW_BUFFER_MS;
-          const next =
-            remoteIsNewer
-              ? { ...DEFAULTS, ...local, ...remote }
-              : { ...DEFAULTS, ...local };
+          const hasRemote = remote && Object.keys(remote).length > 0;
+          if (!hasRemote) return prev;
+          const remoteIsNewerOrEqual = remoteTs >= localWriteAt;
+          const next = remoteIsNewerOrEqual
+            ? { ...DEFAULTS, ...local, ...remote }
+            : { ...DEFAULTS, ...remote, ...local };
+          if (!deepEqual(next, local)) {
+            saveSettings(next, profileId, currentUserId);
+            if (updatedAt) setWriteAt(remoteTs, profileId, currentUserId);
+          }
           return deepEqual(next, prev) ? prev : next;
         });
         useSyncStore.getState().setStatus("user_settings", "idle");
@@ -223,6 +228,7 @@ export default function SettingsProvider({
                 if (partial) {
                   setSettings((prev) => {
                     const next = { ...DEFAULTS, ...prev, ...migrateSettings(partial) };
+                    saveSettings(next, active || undefined, currentUserId);
                     return deepEqual(next, prev) ? prev : next;
                   });
                 }

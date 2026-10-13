@@ -70,11 +70,11 @@ function isInfoRoute(pathname: string | null): boolean {
 }
 
 export function safeLoginNext(raw: string | null | undefined): string {
-  const next = raw || "";
-  if (/^\/discord(\/.*)?$/.test(next)) return next;
-  if (/^\/tracker(\/.*)?$/.test(next)) return next;
-  if (/^\/matches(\/.*)?$/.test(next)) return next;
-  return /^\/clip\/?$/.test(next) || next.startsWith("/spaces/join") ? next : "/";
+  const next = (raw || "").trim();
+  if (next.startsWith("/") && !next.startsWith("//") && !next.includes("\\") && !next.includes(":") && !next.startsWith("/login")) {
+    return next;
+  }
+  return "/";
 }
 
 function shouldRenderInShell(pathname: string | null, publicRoute: boolean): boolean {
@@ -83,13 +83,14 @@ function shouldRenderInShell(pathname: string | null, publicRoute: boolean): boo
 }
 
 function isPublicRoute(pathname: string | null): boolean {
-  return true;
+  if (!pathname) return false;
+  return PUBLIC_ROUTES.some((route) => pathname === route || (route !== "/" && pathname.startsWith(`${route}/`)));
 }
 
 function resolvePublicRoute(pathname: string | null): boolean {
   if (pathname) return isPublicRoute(pathname);
   if (typeof window !== "undefined") return isPublicRoute(window.location.pathname);
-  return true;
+  return false;
 }
 
 const MFA_CHALLENGE_ROUTE = "/login/verify";

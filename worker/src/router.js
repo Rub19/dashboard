@@ -62,6 +62,7 @@ import { steamRoute } from "./routes/steam.js";
 import { supabaseRoute } from "./routes/supabase.js";
 import { todoistOAuthDisconnectRoute, todoistOAuthExchangeRoute, todoistTasksRoute } from "./routes/todoist-oauth.js";
 import { trackerLolRoute, trackerRoute, trackerValorantRoute, trackerValorantMatchesRoute, trackerValorantMmrRoute, trackerLolMatchesRoute, trackerValorantStoreRoute, trackerLolRotationRoute, trackerTftMatchesRoute, trackerApexMatchesRoute, trackerGameProfileRoute, trackerGameMatchesRoute } from "./routes/tracker.js";
+import { valorantAuthRoute, valorantStorefrontRoute, valorantInventoryRoute } from "./routes/valorant-player.js";
 import {
   friendGameDinoRoute,
   gameDinoOverrideSetRoute,
@@ -176,6 +177,9 @@ export const ROUTES = Object.freeze([
   route("tracker.valorant-mmr", "/api/stats/valorant-mmr", trackerValorantMmrRoute, { public: true, service: "tracker", rateLimit: "edge" }),
   route("tracker.lol-matches", "/api/stats/lol-matches", trackerLolMatchesRoute, { public: true, service: "tracker", rateLimit: "edge" }),
   route("tracker.valorant-store", "/api/stats/valorant-store", trackerValorantStoreRoute, { public: true, service: "tracker", rateLimit: "edge" }),
+  route("tracker.valorant-auth", "/api/stats/valorant-auth", valorantAuthRoute, { method: "POST", public: true, service: "tracker", rateLimit: "strict" }),
+  route("tracker.valorant-player-store", "/api/stats/valorant-player-store", valorantStorefrontRoute, { method: "POST", public: true, service: "tracker", rateLimit: "standard" }),
+  route("tracker.valorant-inventory", "/api/stats/valorant-inventory", valorantInventoryRoute, { method: "POST", public: true, service: "tracker", rateLimit: "standard" }),
   route("tracker.lol-rotation", "/api/stats/lol-rotation", trackerLolRotationRoute, { public: true, service: "tracker", rateLimit: "edge" }),
   route("tracker.tft-matches", "/api/stats/tft-matches", trackerTftMatchesRoute, { public: true, service: "tracker", rateLimit: "edge" }),
   route("tracker.game-profile", "/api/stats/tracker-profile", trackerGameProfileRoute, { public: true, service: "tracker", rateLimit: "edge" }),

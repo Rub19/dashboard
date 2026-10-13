@@ -255,7 +255,7 @@ function CatalogueSkeleton() {
  * La boutique quotidienne PERSONNELLE de chaque joueur n'est pas proposée : Riot ne fournit aucune API publique pour elle
  * (elle exige les jetons de connexion du joueur, que ETHONE ne demande ni ne stocke).
  */
-export default function ValorantStoreView() {
+export default function ValorantStoreView({ onOpenInventory }: { onOpenInventory?: () => void } = {}) {
   const [featured, setFeatured] = useState<FeaturedBundle[] | null>(null);
   const [featuredError, setFeaturedError] = useState<string | null>(null);
   const [catalogue, setCatalogue] = useState<CatalogueBundle[] | null>(null);
@@ -437,11 +437,23 @@ export default function ValorantStoreView() {
         )}
       </section>
 
-      <p className="flex items-start gap-2 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 text-[11px] leading-relaxed text-[var(--text-muted)]">
-        <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-        La boutique quotidienne personnelle (4 skins du jour, Marché nocturne) n&apos;est pas affichée : Riot ne propose pas d&apos;API publique pour
-        elle, elle nécessiterait vos jetons de connexion Riot, qu&apos;ETHONE ne demande ni ne stocke.
-      </p>
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3.5 text-xs text-[var(--text-muted)]">
+        <div className="flex items-center gap-2">
+          <Info className="h-4 w-4 shrink-0 text-[var(--accent-primary)]" />
+          <span>
+            Envie de consulter vos 4 skins quotidiens personnels, votre Marché Nocturne et vos porte-bonheur ?
+          </span>
+        </div>
+        {onOpenInventory && (
+          <button
+            type="button"
+            onClick={onOpenInventory}
+            className="rounded-xl bg-[var(--accent-primary)] px-3 py-1.5 font-bold text-white shadow-md shadow-[var(--accent-primary)]/25 transition hover:brightness-110 active:scale-95"
+          >
+            Voir mon Inventaire & 4 Skins
+          </button>
+        )}
+      </div>
     </div>
   );
 }

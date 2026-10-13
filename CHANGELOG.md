@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.40 — 2026-10-13
+
+**Module Inventaire & Boutique Personnelle Valorant : Connexion Riot Games et Intégration valorant-api.com**
+
+- **Nouvelle vue Inventaire Valorant (`ValorantInventoryView`)** : onglet dédié dans la catégorie Tracker (`/matches/inventory` et `/matches?tab=valorant-inventory`).
+- **Connexion Riot Games directe & sécurisée** : modal d'authentification inspirée de l'interface officielle Riot avec gestion du 2FA par e-mail, sélection de serveur (Europe, Amérique du Nord, Asie-Pacifique, Corée) et stockage de session éphémère local.
+- **Boutique Quotidienne Personnelle (4 skins)** : affichage en direct des 4 skins du jour du joueur avec compte à rebours de renouvellement, prix en VP et Marché Nocturne interactif.
+- **Armes, Porte-bonheur & Cartes Débloqués** : inventaire complet synchronisé avec les assets haute définition 4K de `valorant-api.com` et filtres instantanés par catégorie d'arme (Vandal, Phantom, Couteaux, Operator...).
+- **Portefeuille en direct** : affichage en direct des soldes de VP (Valorant Points), Radianite (RP) et Crédits Kingdom (KC).
+- **Mode Démo Immédiat** : aperçu complet sans compte avec une collection de skins légendaires pour explorer l'interface instantanément.
+- **Endpoints Worker dédiés** : ajout de `/api/stats/valorant-auth`, `/api/stats/valorant-player-store` et `/api/stats/valorant-inventory`.
+
 ## v1.75.39 — 2026-10-13
 
 **Auto-Hide Dock & Dynamic Island par Route : Politique Centralisée**

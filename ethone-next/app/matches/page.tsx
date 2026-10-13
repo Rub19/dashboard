@@ -11,6 +11,7 @@ import LolTrackerView from "@/components/tracker/LolTrackerView";
 import TftTrackerView from "@/components/tracker/TftTrackerView";
 import TrackerGgView from "@/components/tracker/TrackerGgView";
 import ValorantStoreView from "@/components/tracker/ValorantStoreView";
+import ValorantInventoryView from "@/components/tracker/ValorantInventoryView";
 import LolRotationView from "@/components/tracker/LolRotationView";
 import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
@@ -30,8 +31,9 @@ import GameBrandIcon from "@/components/GameBrandIcon";
 // than a fabricated logo.
 const tabs = [
   { id: "valorant", label: "Valorant", icon: <GameBrandIcon name="Valorant" className="h-4 w-4" /> },
-  { id: "lol", label: "League of Legends", icon: <GameBrandIcon name="League of Legends" className="h-4 w-4" /> },
+  { id: "valorant-inventory", label: "Inventaire Valorant", icon: <GameBrandIcon name="Valorant" className="h-4 w-4" /> },
   { id: "valorant-store", label: "Boutique Valorant", icon: <GameBrandIcon name="Valorant" className="h-4 w-4" /> },
+  { id: "lol", label: "League of Legends", icon: <GameBrandIcon name="League of Legends" className="h-4 w-4" /> },
   { id: "lol-rotation", label: "Rotation LoL", icon: <GameBrandIcon name="League of Legends" className="h-4 w-4" /> },
   { id: "tft", label: "Teamfight Tactics", icon: <GameBrandIcon name="Teamfight Tactics" className="h-4 w-4" /> },
   { id: "apex", label: "Apex Legends", icon: <GameBrandIcon name="Apex Legends" className="h-4 w-4" /> },
@@ -40,13 +42,13 @@ const tabs = [
 
 const APEX_PLATFORMS = ["origin", "xbl", "psn"] as const;
 
-export default function MatchesPage() {
+export default function MatchesPage({ defaultTab }: { defaultTab?: string }) {
   const i18n = useI18n();
   const { settings, update } = useSettings();
   const osReducedMotion = useReducedMotion();
   const skipEntranceAnimation = Boolean(settings.reducedMotion) || Boolean(osReducedMotion);
   const { success, error: showError } = useToast();
-  const [tab, setTab] = useState("valorant");
+  const [tab, setTab] = useState(defaultTab || "valorant");
   const [name, setName] = useState(settings.liveTrackerRiotName);
   const [tag, setTag] = useState(settings.liveTrackerRiotTag);
   const [apexPlatform, setApexPlatform] = useState<"origin" | "xbl" | "psn">(settings.liveTrackerApexPlatform || "origin");
@@ -86,10 +88,12 @@ export default function MatchesPage() {
         >
         {tab === "valorant" ? (
           <ValorantTrackerView />
+        ) : tab === "valorant-inventory" ? (
+          <ValorantInventoryView />
         ) : tab === "lol" ? (
           <LolTrackerView />
         ) : tab === "valorant-store" ? (
-          <ValorantStoreView />
+          <ValorantStoreView onOpenInventory={() => setTab("valorant-inventory")} />
         ) : tab === "lol-rotation" ? (
           <LolRotationView />
         ) : tab === "tft" ? (

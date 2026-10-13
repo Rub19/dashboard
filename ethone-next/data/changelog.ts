@@ -53669,4 +53669,57 @@ CHANGELOG_BY_LANG.en.unshift(v12883_en);
 CHANGELOG_BY_LANG.es.unshift(v12883_es);
 CHANGELOG_BY_LANG.de.unshift(v12883_de);
 
+const v12884_fr: ChangelogEntry = {
+  version: "v1.75.40",
+  date: "2026-10-13",
+  title: "Inventaire et Boutique Valorant : connexion Riot et support valorant-api.com",
+  items: [
+    "Nouvelle vue Inventaire Valorant dans la categorie Tracker (/matches/inventory) avec consultation des 4 skins quotidiens personnels.",
+    "Authentification securisee Riot Games avec gestion du 2FA et stockage local ephemere.",
+    "Galerie complete des armes, skins, porte-bonheur et cartes de joueur avec visuels 4K de valorant-api.com.",
+    "Affichage en direct du portefeuille de points (VP, Radianite et Kingdom Credits).",
+  ],
+};
+
+const v12884_en: ChangelogEntry = {
+  version: "v1.75.40",
+  date: "2026-10-13",
+  title: "Valorant Inventory and Daily Store: Riot connection and valorant-api.com integration",
+  items: [
+    "New Valorant Inventory view in Tracker category (/matches/inventory) featuring personal daily 4 skins.",
+    "Secure direct Riot Games login modal with 2FA email support and ephemeral local storage.",
+    "Full weapons, buddies, and player cards gallery powered by valorant-api.com 4K assets.",
+    "Live wallet tracker with VP, Radianite, and Kingdom Credits balances.",
+  ],
+};
+
+const v12884_es: ChangelogEntry = {
+  version: "v1.75.40",
+  date: "2026-10-13",
+  title: "Inventario y Tienda Valorant: conexion Riot e integracion con valorant-api.com",
+  items: [
+    "Nueva vista de Inventario Valorant en el Tracker (/matches/inventory) con las 4 skins diarias personales.",
+    "Inicio de sesion directo y seguro con Riot Games compatible con 2FA por correo.",
+    "Galeria completa de armas, colgantes y tarjetas con imagenes 4K de valorant-api.com.",
+    "Monedero en vivo con saldos de VP, Radianita y Kingdom Credits.",
+  ],
+};
+
+const v12884_de: ChangelogEntry = {
+  version: "v1.75.40",
+  date: "2026-10-13",
+  title: "Valorant-Inventar und Tages-Shop: Riot-Login und valorant-api.com-Integration",
+  items: [
+    "Neue Valorant-Inventar-Ansicht im Tracker (/matches/inventory) mit den 4 personlichen Tagesskins.",
+    "Sicherer direkter Riot Games-Login mit 2FA-Unterstutzung und ephemerer lokaler Speicherung.",
+    "Vollstandige Galerie von Waffen, Gunbuddies und Spielerkarten mit 4K-Assets von valorant-api.com.",
+    "Live-Guthabenanzeige fur VP, Radianit und Kingdom Credits.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12884_fr);
+CHANGELOG_BY_LANG.en.unshift(v12884_en);
+CHANGELOG_BY_LANG.es.unshift(v12884_es);
+CHANGELOG_BY_LANG.de.unshift(v12884_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

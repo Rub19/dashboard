@@ -53616,4 +53616,57 @@ CHANGELOG_BY_LANG.en.unshift(v12882_en);
 CHANGELOG_BY_LANG.es.unshift(v12882_es);
 CHANGELOG_BY_LANG.de.unshift(v12882_de);
 
+const v12883_fr: ChangelogEntry = {
+  version: "v1.75.39",
+  date: "2026-10-13",
+  title: "Auto-hide Dock & Dynamic Island par route : politique centralisee",
+  items: [
+    "Nouvelle politique centralisee route-chrome-policy.ts : fichier unique determinant les pages ou le Dock et la Dynamic Island sont automatiquement masques.",
+    "Dynamic Island auto-hide etendu a /matches, /focus, /games, /soundscape, /scratchpad (avant : uniquement /matches).",
+    "Dock auto-hide etendu : ajout de /soundscape et /games aux routes existantes.",
+    "Restauration transparente : naviguer vers une page normale retablit automatiquement le Dock et l Island sans toucher aux preferences.",
+  ],
+};
+
+const v12883_en: ChangelogEntry = {
+  version: "v1.75.39",
+  date: "2026-10-13",
+  title: "Route-based Dock & Dynamic Island auto-hide: centralized policy",
+  items: [
+    "New centralized route-chrome-policy.ts file that determines which pages auto-hide the Dock and Dynamic Island.",
+    "Dynamic Island auto-hide extended to /matches, /focus, /games, /soundscape, /scratchpad (previously only /matches).",
+    "Dock auto-hide extended: added /soundscape and /games to existing routes.",
+    "Transparent restore: navigating to a normal page automatically restores the Dock and Island without touching persisted preferences.",
+  ],
+};
+
+const v12883_es: ChangelogEntry = {
+  version: "v1.75.39",
+  date: "2026-10-13",
+  title: "Auto-ocultacion del Dock y Dynamic Island por ruta: politica centralizada",
+  items: [
+    "Nuevo archivo centralizado route-chrome-policy.ts que determina las paginas donde se ocultan automaticamente el Dock y la Dynamic Island.",
+    "Auto-ocultacion de la Dynamic Island extendida a /matches, /focus, /games, /soundscape, /scratchpad.",
+    "Auto-ocultacion del Dock extendida: se anaden /soundscape y /games a las rutas existentes.",
+    "Restauracion transparente al navegar a una pagina normal sin modificar las preferencias del usuario.",
+  ],
+};
+
+const v12883_de: ChangelogEntry = {
+  version: "v1.75.39",
+  date: "2026-10-13",
+  title: "Routenbasiertes Dock- & Dynamic-Island-Auto-Hide: zentralisierte Richtlinie",
+  items: [
+    "Neue zentralisierte route-chrome-policy.ts-Datei zur Steuerung des automatischen Ausblendens von Dock und Dynamic Island pro Seite.",
+    "Dynamic-Island-Auto-Hide erweitert auf /matches, /focus, /games, /soundscape, /scratchpad.",
+    "Dock-Auto-Hide erweitert: /soundscape und /games zu bestehenden Routen hinzugefuegt.",
+    "Transparente Wiederherstellung beim Navigieren zu normalen Seiten ohne Aenderung der gespeicherten Einstellungen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12883_fr);
+CHANGELOG_BY_LANG.en.unshift(v12883_en);
+CHANGELOG_BY_LANG.es.unshift(v12883_es);
+CHANGELOG_BY_LANG.de.unshift(v12883_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

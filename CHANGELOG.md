@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.39 — 2026-10-13
+
+**Auto-Hide Dock & Dynamic Island par Route : Politique Centralisée**
+
+- **Politique centralisée `route-chrome-policy.ts`** : fichier unique qui détermine les pages où le Dock et la Dynamic Island sont automatiquement cachés, sans toucher aux préférences utilisateur.
+- **Dynamic Island auto-hide étendu** : masquage automatique sur `/matches`, `/focus`, `/games`, `/soundscape`, `/scratchpad` (avant : uniquement `/matches`).
+- **Dock auto-hide étendu** : ajout de `/soundscape` et `/games` aux routes existantes (`/brain`, `/focus`, `/scratchpad`, `/matches`, `/mail`).
+- **Restauration transparente** : navigation vers une page normale restaure automatiquement le Dock et l'Island sans toucher aux préférences persistées.
+
 ## v1.75.38 — 2026-10-13
 
 **Dynamic Island Réactive : Prise en Charge des E-mails, Alertes Globales et Simulateur Interactif**

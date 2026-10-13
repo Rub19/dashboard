@@ -29,6 +29,7 @@ import DockWeatherFlyout from "@/components/DockWeatherFlyout";
 import { hapticLightImpact } from "@/lib/haptics";
 import type { NowPlaying } from "@/lib/hooks/useLiveData";
 import { cn } from "@/lib/utils";
+import { shouldAutoHideDock } from "@/lib/route-chrome-policy";
 
 const ICONS: Record<string, string> = {
   home: "home",
@@ -52,7 +53,6 @@ const ICONS: Record<string, string> = {
   settings: "settings",
 };
 
-const AUTO_HIDE_ROUTES = ["/brain", "/focus", "/scratchpad", "/matches", "/mail"];
 
 type AppleDockItemProps = {
   icon: React.ComponentType<{ className?: string }>;
@@ -158,9 +158,7 @@ function Dock() {
     setPageOverrideShow(false);
   }, [pathname]);
 
-  const isAutoHidePage = useMemo(() => {
-    return AUTO_HIDE_ROUTES.some((route) => pathname.startsWith(route));
-  }, [pathname]);
+  const isAutoHidePage = shouldAutoHideDock(pathname);
 
   const isAllowedByPreset =
     settings.layoutPreset !== "sidebar-only" &&

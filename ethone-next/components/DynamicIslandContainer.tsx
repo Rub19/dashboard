@@ -24,6 +24,7 @@ import { useBrainActivityStore } from "@/lib/stores/brain-activity";
 import { useActivityJournal } from "@/lib/hooks/useActivityJournal";
 import { useSound, type SoundAmbient } from "@/lib/sound";
 import { cn } from "@/lib/utils";
+import { shouldAutoHideIsland } from "@/lib/route-chrome-policy";
 import VolumeSlider from "@/components/VolumeSlider";
 import UploadIslandView from "@/components/UploadIslandView";
 import { useDynamicIslandQueue, type IslandView, type IslandEvent } from "@/lib/hooks/useDynamicIslandQueue";
@@ -277,12 +278,8 @@ export default function DynamicIslandContainer() {
   const isThinking = useBrainActivityStore((s) => s.isThinking);
   const { visible } = useDynamicIslandStore();
   const pathname = usePathname();
-  // The tracker pages (/matches) are dense, full-width scoreboards — the
-  // floating island overlaps their top toolbar and adds noise. Hide it there
-  // automatically, WITHOUT touching the persisted user preference, so it
-  // reappears as before on every other route.
-  const onTrackerRoute = pathname === "/matches" || (pathname?.startsWith("/matches/") ?? false);
-  const effectiveVisible = (visible || settings.dynamicIslandVisible) && !onTrackerRoute;
+  const onAutoHideRoute = shouldAutoHideIsland(pathname ?? "");
+  const effectiveVisible = (visible || settings.dynamicIslandVisible) && !onAutoHideRoute;
   const { pendingCount, syncing, lastSync, syncError, sync } = useActivityJournal();
   const queue = useUploadQueue();
   const uploadingCount = queue.items.filter((it) => it.status === "uploading" || it.status === "queued").length;

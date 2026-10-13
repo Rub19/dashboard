@@ -62,7 +62,7 @@ interface ServerPickerProps {
 }
 
 const SUPPORT_DISCORD_URL = "https://discord.gg/WvEcyBuP45";
-const DOCS_URL = "https://ethone.dev/discord";
+const DOCS_URL = "/docs";
 
 function getGuildInitials(name: string) {
   const words = name.trim().split(/\s+/);

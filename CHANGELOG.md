@@ -2,6 +2,26 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.21 — 2026-10-13
+
+**Documentation & Wiki Etho Protect : Guides Pas à Pas, Cas Concrets & Référence Complète des Modules**
+
+- **Nouvelle Page de Documentation Wiki Interactive (`/docs` et `/documentation`)** :
+  - Conception d'une expérience wiki complète inspirée des standards de documentation modernes, fidèle à la charte graphique et au design cosmique sombre d'Ethone / Etho (accents cyan `#92C8D2`, verre poli, typographie épurée).
+  - Barre latérale fixe et réactive avec arborescence structurée : Accueil, Guides pas à pas, Sécurité Discord (problèmes concrets) et Référence des modules par catégorie avec compteurs dynamiques.
+  - Moteur de recherche temps réel ultra-rapide avec raccourci clavier universel (`Ctrl+K` / `Cmd+K`) et filtrage instantané parmi l'ensemble des guides et modules.
+- **Guides Pas à Pas & Prise en Main Rapide** :
+  - 10 guides exhaustifs couvrant l'installation en 2 minutes, le positionnement dans la hiérarchie des rôles, la configuration du mode strict, la gestion de la Whitelist/Bypass, l'analyse des logs et le sas d'arrivée (Gatekeeper).
+  - Tiroir / modale interactive de lecture détaillée avec étapes ordonnées, recommandations de sécurité et commande associée.
+- **Sécurité Discord : 12 Cas Concrets & Procédures d'Urgence** :
+  - Fiches d'intervention immédiate par problème concret : raid en cours, modérateur piraté, liens de phishing / faux Nitro, spam massif, usurpation d'identité et reprise de contrôle après attaque.
+- **Catalogue Exhaustif des Modules par Catégorie** :
+  - Vue d'ensemble des dizaines de modules défensifs répartis en 10 catégories (Sanctions, Salons, Rôles, Bots & Intégrations, Vocal, Serveur, Messages, Membres, Sauvegardes, Mode Ultra).
+  - Fiche détaillée pour chaque module incluant l'action par défaut, le temps de réaction (< 250ms), les points clés et la syntaxe `/slash` avec bouton de copie en un clic.
+- **Intégration & Navigation Directe** :
+  - Mise à jour du lien `Documentation` dans la barre latérale du dashboard (`HubSidebar.tsx`), `BotInstallView.tsx` et `ServerPicker.tsx` pour pointer directement vers `/docs`.
+  - Ajout des liens de navigation vers `/docs` sur la vitrine bot (`BotLanding.tsx`) dans le menu principal, le tiroir mobile et le pied de page.
+
 ## v1.75.20 — 2026-10-13
 
 **Vitrine Bot : Carrousel Défilant Continu des Intégrations & Épuration des Cartes**

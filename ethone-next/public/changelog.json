@@ -1,5 +1,17 @@
 [
   {
+    "version": "v1.75.21",
+    "date": "2026-10-13",
+    "title": "Documentation & Wiki Etho Protect : Guides Pas à Pas, Cas Concrets & Référence Complète des Modules",
+    "items": [
+      "Nouvelle page de documentation interactive (/docs et /documentation) : structure wiki complète inspirée des standards de référence avec barre latérale fixe, catégories et navigation fluide.",
+      "Guides pas à pas complets : installation en 2 minutes, hiérarchie des rôles, configuration du mode strict, sas d'arrivée (Gatekeeper) et pilotage depuis le dashboard web.",
+      "Guides de crise & scénarios d'urgence : fiches d'action immédiate pour neutraliser un raid en cours, gérer un compte modérateur compromis, bloquer le phishing/faux Nitro et restaurer le serveur.",
+      "Référence exhaustive des modules par catégorie : catalogue complet des protections (Sanctions, Salons, Rôles, Bots, Vocal, Serveur, Messages, Membres, Sauvegardes, Mode Ultra) avec seuils recommandés et temps de réaction (< 250ms).",
+      "Motion design & interactivité avancée : moteur de recherche temps réel avec raccourci Ctrl+K, modales interactives de détails pour chaque module et guide avec copie en un clic des commandes /slash."
+    ]
+  },
+  {
     "version": "v1.75.20",
     "date": "2026-10-13",
     "title": "Vitrine Bot : Carrousel Défilant Continu des Intégrations & Épuration des Cartes",

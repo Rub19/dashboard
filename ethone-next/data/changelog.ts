@@ -52733,10 +52733,62 @@ const v1_75_20_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v1_75_20_fr);
-CHANGELOG_BY_LANG.en.unshift(v1_75_20_en);
-CHANGELOG_BY_LANG.es.unshift(v1_75_20_es);
-CHANGELOG_BY_LANG.de.unshift(v1_75_20_de);
+const v1_75_21_fr: ChangelogEntry = {
+  version: "v1.75.21",
+  date: "2026-10-13",
+  title: "Documentation & Wiki Etho Protect : Guides Pas à Pas, Cas Concrets & Référence Complète des Modules",
+  items: [
+    "Nouvelle page de documentation interactive (/docs et /documentation) : structure wiki complète inspirée des standards de référence avec barre latérale fixe, catégories et navigation fluide.",
+    "Guides pas à pas complets : installation en 2 minutes, hiérarchie des rôles, configuration du mode strict, sas d'arrivée (Gatekeeper) et pilotage depuis le dashboard web.",
+    "Guides de crise & scénarios d'urgence : fiches d'action immédiate pour neutraliser un raid en cours, gérer un compte modérateur compromis, bloquer le phishing/faux Nitro et restaurer le serveur.",
+    "Référence exhaustive des modules par catégorie : catalogue complet des protections (Sanctions, Salons, Rôles, Bots, Vocal, Serveur, Messages, Membres, Sauvegardes, Mode Ultra) avec seuils recommandés et temps de réaction (< 250ms).",
+    "Motion design & interactivité avancée : moteur de recherche temps réel avec raccourci Ctrl+K, modales interactives de détails pour chaque module et guide avec copie en un clic des commandes /slash.",
+  ],
+};
+
+const v1_75_21_en: ChangelogEntry = {
+  version: "v1.75.21",
+  date: "2026-10-13",
+  title: "Etho Protect Documentation & Wiki: Step-by-Step Guides, Security Scenarios & Full Module Reference",
+  items: [
+    "New interactive documentation wiki page (/docs and /documentation): comprehensive wiki layout with sticky sidebar navigation, collapsible groups, and smooth motion design.",
+    "Step-by-step guides: 2-minute quickstart, role hierarchy setup, strict mode configuration, arrival gatekeeper captcha, and live web dashboard management.",
+    "Crisis & security playbooks: actionable guides to stop live raids, handle compromised moderator accounts, block fake Nitro phishing, and execute instant server rollback.",
+    "Comprehensive module catalogue: full breakdown across all categories (Sanctions, Channels, Roles, Bots, Voice, Server, Messages, Members, Backups, Ultra Mode) with reaction latencies (< 250ms).",
+    "Motion design & live search: real-time search with Ctrl+K shortcut, interactive detail modals for every guide and module with one-click /slash command copying.",
+  ],
+};
+
+const v1_75_21_es: ChangelogEntry = {
+  version: "v1.75.21",
+  date: "2026-10-13",
+  title: "Documentación y Wiki Etho Protect: Guías Paso a Paso, Escenarios de Crisis y Referencia de Módulos",
+  items: [
+    "Nueva página de documentación interactiva (/docs y /documentation): diseño estilo wiki con barra lateral fija y diseño de movimiento fluido.",
+    "Guías paso a paso completas: inicio rápido en 2 minutos, jerarquía de roles, modo estricto y panel web en tiempo real.",
+    "Guías prácticas de seguridad: procedimientos de emergencia ante raids activos, cuentas de moderador comprometidas y phishing.",
+    "Catálogo completo de módulos por categoría con tiempos de reacción inferiores a 250ms.",
+    "Búsqueda instantánea en tiempo real con atajo Ctrl+K y modales interactivos con copia de comandos en un clic.",
+  ],
+};
+
+const v1_75_21_de: ChangelogEntry = {
+  version: "v1.75.21",
+  date: "2026-10-13",
+  title: "Etho Protect Dokumentation & Wiki: Schritt-für-Schritt-Anleitungen & Modulreferenz",
+  items: [
+    "Neue interaktive Dokumentationsseite (/docs und /documentation): vollständiges Wiki-Layout mit permanenter Seitenleiste und flüssigem Motion Design.",
+    "Ausführliche Schritt-für-Schritt-Anleitungen: Schnellstart in 2 Minuten, Rollenhierarchie, Gatekeeper-Schutz und Web-Dashboard.",
+    "Krisenleitfäden für aktive Raids, kompromittierte Moderatorenkonten und Fake-Nitro-Phishing.",
+    "Vollständige Modulübersicht aller Kategorien mit Reaktionszeiten unter 250ms.",
+    "Echtzeit-Suche mit Tastaturkürzel Strg+K und interaktive Detail-Modals mit Befehlskopieren per Klick.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_21_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_21_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_21_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_21_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

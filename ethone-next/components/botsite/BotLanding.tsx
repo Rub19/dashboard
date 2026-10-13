@@ -1177,6 +1177,12 @@ export default function BotLanding() {
             >
               {c.nav.faq}
             </a>
+            <Link
+              href="/docs"
+              className="whitespace-nowrap text-xs font-medium text-zinc-400 transition-colors hover:text-[#92C8D2] xl:text-sm"
+            >
+              Docs
+            </Link>
           </nav>
 
           <div className="flex shrink-0 items-center gap-2.5 sm:gap-3">
@@ -1225,6 +1231,7 @@ export default function BotLanding() {
                 <a href="#steps" onClick={scrollToSection("steps")} className="text-sm font-medium text-zinc-300">{c.nav.steps}</a>
                 <a href="#commandes" onClick={scrollToSection("commandes")} className="text-sm font-medium text-zinc-300">{c.nav.commands}</a>
                 <a href="#faq" onClick={scrollToSection("faq")} className="text-sm font-medium text-zinc-300">{c.nav.faq}</a>
+                <Link href="/docs" className="text-sm font-medium text-zinc-300">Documentation</Link>
                 <a href={SUPPORT_URL} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-zinc-300">{c.nav.support}</a>
                 <button type="button" onClick={handleDashboardClick} className="text-left text-sm font-medium text-[#92C8D2] cursor-pointer">{c.nav.dashboard}</button>
               </div>
@@ -1897,6 +1904,9 @@ export default function BotLanding() {
             >
               {c.footer.support}
             </a>
+            <Link href="/docs" className="transition-colors hover:text-white">
+              Documentation
+            </Link>
             <Link href="/terms" className="transition-colors hover:text-white">
               {c.footer.terms}
             </Link>

@@ -89,7 +89,7 @@ interface HubSidebarProps {
 }
 
 const SUPPORT_DISCORD_URL = "https://discord.gg/WvEcyBuP45";
-const DOCS_URL = "https://ethone.dev/discord";
+const DOCS_URL = "/docs";
 
 function LifeBuoyIcon({ className = "h-4 w-4" }: { className?: string }) {
   return (

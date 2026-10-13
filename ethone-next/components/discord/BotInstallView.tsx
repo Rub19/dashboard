@@ -57,7 +57,7 @@ interface BotInstallViewProps {
 
 const BOT_CLIENT_ID = "1545139931154878464";
 const SUPPORT_DISCORD_URL = "https://discord.gg/WvEcyBuP45";
-const DOCS_URL = "https://ethone.dev/discord";
+const DOCS_URL = "/docs";
 
 function getGuildInitials(name: string) {
   const words = name.trim().split(/\s+/);

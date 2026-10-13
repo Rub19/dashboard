@@ -50,6 +50,7 @@ import { useAuth } from "@/components/AuthProvider";
 import { ADMIN_EMAIL } from "@/lib/admin";
 import { PREMIUM_THEMES, resolvePremiumTheme } from "@/lib/theme-engine";
 import { cn } from "@/lib/utils";
+import { shouldAutoHideDock } from "@/lib/route-chrome-policy";
 
 const VISIBLE_MOBILE_IDS = ["home", "brain", "focus", "activity", "files"];
 
@@ -177,9 +178,12 @@ export default function FloatingLiquidDock() {
     hapticLightImpact();
   };
 
+  if (shouldAutoHideDock(pathname)) {
+    return null;
+  }
+
   return (
     <>
-      {/* MOBILE BOTTOM NAVIGATION BAR */}
       <nav
         data-zen-hidden
         data-liquid-dock

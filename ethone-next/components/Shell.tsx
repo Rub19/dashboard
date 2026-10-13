@@ -48,7 +48,7 @@ export default function Shell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const { settings, update } = useSettings();
   const discordFullscreen = pathname === "/discord" || pathname === "/bot" || (pathname?.startsWith("/discord/") ?? false) || (pathname?.startsWith("/bot/") ?? false);
-  const isGamingTracker = pathname === "/" || pathname === "/tracker" || (pathname?.startsWith("/tracker/") ?? false) || pathname === "/matches" || (pathname?.startsWith("/matches/") ?? false);
+  const isGamingTracker = pathname === "/tracker" || (pathname?.startsWith("/tracker/") ?? false) || pathname === "/matches" || (pathname?.startsWith("/matches/") ?? false);
 
   if (discordFullscreen) {
     return (

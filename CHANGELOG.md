@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.56 — 2026-10-13
+
+**Restauration du tableau de bord ETHONE OS et isolation dédiée du Tracker Riot sur /tracker**
+
+- Restauration intégrale de l'expérience et du tableau de bord complet d'ETHONE OS sur la racine (`/`) : Bento grid, salutation interactive, météo, focus, notes, tâches, calendrier, fichiers, mail et statistiques.
+- Rétablissement complet de la barre latérale standard d'ETHONE OS avec l'intégralité des modules d'origine (Espace, Assistants, Suivi, Communauté, Système) et réattribution du libellé « Brain » (au lieu de Coach IA).
+- Isolation de l'expérience #RIOT TRACKER sur la route dédiée `/tracker` : masquage automatisé du Dock (desktop et mobile), de la Dynamic Island, du Spotlight et de la Topbar classique pour un affichage immersif et ciblé.
+- Navigation fluide et bidirectionnelle : bouton direct vers ETHONE OS depuis l'en-tête et les cartes de suivi Riot, et accès au Tracker Riot via la section Communauté de la barre latérale.
+
 ## v1.75.55 — 2026-10-13
 
 **Suppression des redirections vers l'écran de login et retrait des profils démo non fonctionnels**

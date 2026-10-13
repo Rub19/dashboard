@@ -54507,9 +54507,57 @@ const v12897_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12897_fr, v12896_fr, v12895_fr, v12894_fr, v12893_fr, v12892_fr);
-CHANGELOG_BY_LANG.en.unshift(v12897_en, v12896_en, v12895_en, v12894_en, v12893_en, v12892_en);
-CHANGELOG_BY_LANG.es.unshift(v12897_es, v12896_es, v12895_es, v12894_es, v12893_es, v12892_es);
-CHANGELOG_BY_LANG.de.unshift(v12897_de, v12896_de, v12895_de, v12894_de, v12893_de, v12892_de);
+const v12898_fr: ChangelogEntry = {
+  version: "v1.75.56",
+  date: "2026-10-13",
+  title: "Restauration du tableau de bord ETHONE OS et isolation dédiée du Tracker Riot sur /tracker",
+  items: [
+    "Restauration intégrale du dashboard ETHONE OS sur la racine (/) avec l'ensemble des widgets, bento grid, greeting et vue d'ensemble",
+    "Rétablissement complet de la barre latérale originale d'ETHONE OS (Espace, Assistants, Suivi, Communauté, Système) et réattribution de Brain",
+    "Isolation complète de l'application #RIOT TRACKER sur /tracker avec masquage automatique du Dock, de la Dynamic Island, du Spotlight et de la barre supérieure",
+    "Navigation fluide et bidirectionnelle entre ETHONE OS et le Tracker Riot compétitif (Valorant, LoL, TFT)",
+  ],
+};
+
+const v12898_en: ChangelogEntry = {
+  version: "v1.75.56",
+  date: "2026-10-13",
+  title: "Restoration of ETHONE OS Dashboard and dedicated isolation of Riot Tracker on /tracker",
+  items: [
+    "Full restoration of ETHONE OS dashboard on root (/) with complete widget set, bento grid, greeting and overview",
+    "Complete recovery of the original ETHONE OS sidebar (Workspace, Assistants, Insights, Community, System) and restoration of Brain label",
+    "Complete isolation of #RIOT TRACKER on /tracker with auto-hiding of Dock, Dynamic Island, Spotlight and TopBar",
+    "Smooth two-way navigation between ETHONE OS and competitive Riot Tracker (Valorant, LoL, TFT)",
+  ],
+};
+
+const v12898_es: ChangelogEntry = {
+  version: "v1.75.56",
+  date: "2026-10-13",
+  title: "Restauración del panel ETHONE OS y aislamiento dedicado del Tracker Riot en /tracker",
+  items: [
+    "Restauración completa del panel ETHONE OS en la raíz (/) con todos los widgets, bento grid, saludo y vista general",
+    "Recuperación integral de la barra lateral original de ETHONE OS (Espacio, Asistentes, Seguimiento, Comunidad, Sistema) y etiqueta Brain",
+    "Aislamiento completo de la aplicación #RIOT TRACKER en /tracker con ocultación automática de Dock, Dynamic Island, Spotlight y TopBar",
+    "Navegación bidireccional fluida entre ETHONE OS y el Tracker Riot competitivo (Valorant, LoL, TFT)",
+  ],
+};
+
+const v12898_de: ChangelogEntry = {
+  version: "v1.75.56",
+  date: "2026-10-13",
+  title: "Wiederherstellung des ETHONE OS Dashboards und dedizierte Isolation des Riot Trackers auf /tracker",
+  items: [
+    "Vollständige Wiederherstellung des ETHONE OS Dashboards auf der Root-Seite (/) mit allen Widgets, Bento-Raster und Übersicht",
+    "Vollständige Wiederherstellung der ursprünglichen ETHONE OS Seitenleiste (Bereich, Assistenten, Einblicke, Community, System) und Brain-Bezeichnung",
+    "Vollständige Isolierung von #RIOT TRACKER auf /tracker mit automatischem Ausblenden von Dock, Dynamic Island, Spotlight und TopBar",
+    "Reibungslose bidirektionale Navigation zwischen ETHONE OS und dem kompetitiven Riot Tracker (Valorant, LoL, TFT)",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12898_fr, v12897_fr, v12896_fr, v12895_fr, v12894_fr, v12893_fr, v12892_fr);
+CHANGELOG_BY_LANG.en.unshift(v12898_en, v12897_en, v12896_en, v12895_en, v12894_en, v12893_en, v12892_en);
+CHANGELOG_BY_LANG.es.unshift(v12898_es, v12897_es, v12896_es, v12895_es, v12894_es, v12893_es, v12892_es);
+CHANGELOG_BY_LANG.de.unshift(v12898_de, v12897_de, v12896_de, v12895_de, v12894_de, v12893_de, v12892_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

@@ -26,19 +26,6 @@ import { ADMIN_EMAIL } from "@/lib/admin";
 import { useSyncStore } from "@/lib/stores/sync";
 import { cn } from "@/lib/utils";
 import BrandMark from "@/components/BrandMark";
-import GameBrandIcon from "@/components/GameBrandIcon";
-
-function ValorantNavIcon({ className }: { className?: string }) {
-  return <GameBrandIcon name="Valorant" className={className || "h-5 w-5"} />;
-}
-
-function LolNavIcon({ className }: { className?: string }) {
-  return <GameBrandIcon name="League of Legends" className={className || "h-5 w-5"} />;
-}
-
-function TftNavIcon({ className }: { className?: string }) {
-  return <GameBrandIcon name="Teamfight Tactics" className={className || "h-5 w-5"} />;
-}
 import { ethoneIcon } from "@/components/EthoneIcon";
 import {
   AnimatedSidebar,
@@ -54,7 +41,6 @@ import {
 } from "@/components/motion/animated-sidebar";
 
 const SIDEBAR_ICONS = {
-  tracker: ethoneIcon("matches"),
   home: ethoneIcon("home"),
   notes: ethoneIcon("notes"),
   tasks: ethoneIcon("tasks"),
@@ -82,18 +68,28 @@ const SIDEBAR_ICONS = {
 };
 
 const APP_ICON_COLORS: Record<string, string> = {
-  valorant: "text-rose-500",
-  lol: "text-amber-400",
-  tft: "text-yellow-400",
-  tracker: "text-rose-400",
   home: "text-sky-400",
-  brain: "text-pink-400",
-  analytics: "text-violet-400",
   notes: "text-amber-300",
   tasks: "text-emerald-400",
+  habits: "text-rose-400",
   calendar: "text-red-400",
   files: "text-yellow-300",
   mail: "text-blue-400",
+  brain: "text-pink-400",
+  focus: "text-orange-400",
+  soundscape: "text-amber-400",
+  weather: "text-cyan-300",
+  activity: "text-green-400",
+  analytics: "text-violet-400",
+  interactions: "text-orange-500",
+  connections: "text-teal-400",
+  discord: "text-indigo-400",
+  plugins: "text-fuchsia-400",
+  games: "text-purple-400",
+  matches: "text-red-500",
+  spaces: "text-sky-500",
+  flows: "text-lime-300",
+  team: "text-cyan-400",
   admin: "text-lime-400",
   settings: "text-slate-300",
 };
@@ -105,38 +101,51 @@ type AppItem = {
 };
 
 const SHORTCUTS: Record<string, string> = {
-  home: "⌘H",
-  valorant: "⌘1",
-  lol: "⌘2",
-  tft: "⌘3",
-  tracker: "⌘4",
-  brain: "⌘B",
-  notes: "⌘N",
-  tasks: "⌘T",
-  settings: "⌘,",
+  home: "⌘1",
+  notes: "⌘2",
+  tasks: "⌘3",
+  calendar: "⌘4",
+  files: "⌘5",
+  mail: "⌘6",
+  brain: "⌘7",
+  focus: "⌘8",
+  weather: "⌘9",
+  discord: "⌘D",
 };
 
 const APPS: AppItem[] = [
   { id: "home", href: "/", icon: SIDEBAR_ICONS.home },
-  { id: "valorant", href: "/tracker?tab=valorant", icon: ValorantNavIcon },
-  { id: "lol", href: "/tracker?tab=lol", icon: LolNavIcon },
-  { id: "tft", href: "/tracker?tab=tft", icon: TftNavIcon },
-  { id: "tracker", href: "/tracker/", icon: SIDEBAR_ICONS.tracker },
-  { id: "brain", href: "/brain/", icon: SIDEBAR_ICONS.brain },
-  { id: "analytics", href: "/analytics/", icon: SIDEBAR_ICONS.analytics },
   { id: "notes", href: "/notes/", icon: SIDEBAR_ICONS.notes },
   { id: "tasks", href: "/tasks/", icon: SIDEBAR_ICONS.tasks },
+  { id: "habits", href: "/habits/", icon: SIDEBAR_ICONS.habits },
   { id: "calendar", href: "/calendar/", icon: SIDEBAR_ICONS.calendar },
   { id: "files", href: "/files/", icon: SIDEBAR_ICONS.files },
+  { id: "mail", href: "/mail/", icon: SIDEBAR_ICONS.mail },
+  { id: "brain", href: "/brain/", icon: SIDEBAR_ICONS.brain },
+  { id: "focus", href: "/focus/", icon: SIDEBAR_ICONS.focus },
+  { id: "soundscape", href: "/soundscape/", icon: SIDEBAR_ICONS.soundscape },
+  { id: "weather", href: "/weather/", icon: SIDEBAR_ICONS.weather },
+  { id: "activity", href: "/activity/", icon: SIDEBAR_ICONS.activity },
+  { id: "analytics", href: "/analytics/", icon: SIDEBAR_ICONS.analytics },
+  { id: "interactions", href: "/interactions/", icon: SIDEBAR_ICONS.interactions },
+  { id: "connections", href: "/connections/", icon: SIDEBAR_ICONS.connections },
+  { id: "discord", href: "/discord/", icon: SIDEBAR_ICONS.discord },
+  { id: "plugins", href: "/plugins/", icon: SIDEBAR_ICONS.plugins },
+  { id: "games", href: "/games/", icon: SIDEBAR_ICONS.games },
+  { id: "matches", href: "/tracker/", icon: SIDEBAR_ICONS.matches },
+  { id: "spaces", href: "/spaces/", icon: SIDEBAR_ICONS.spaces },
+  { id: "flows", href: "/flows/", icon: SIDEBAR_ICONS.flows },
+  { id: "team", href: "/team/", icon: SIDEBAR_ICONS.team },
   { id: "admin", href: "/admin/", icon: SIDEBAR_ICONS.admin },
   { id: "settings", href: "/settings/", icon: SIDEBAR_ICONS.settings },
 ];
 
 const NAV_GROUPS: { id: string; label?: string; items: string[] }[] = [
   { id: "main", items: ["home"] },
-  { id: "riot", label: "Riot Games", items: ["valorant", "lol", "tft", "tracker"] },
-  { id: "assist", label: "Intelligence IA", items: ["brain", "analytics"] },
-  { id: "workspace", label: "Espace", items: ["notes", "tasks", "calendar", "files"] },
+  { id: "workspace", label: "Espace", items: ["notes", "tasks", "habits", "calendar", "files", "mail"] },
+  { id: "assist", label: "Assistants", items: ["brain", "focus", "soundscape", "weather"] },
+  { id: "insights", label: "Suivi", items: ["activity", "analytics", "interactions", "connections"] },
+  { id: "community", label: "Communauté", items: ["discord", "plugins", "games", "matches", "spaces", "flows", "team"] },
   { id: "system", label: "Système", items: ["admin", "settings"] },
 ];
 
@@ -362,10 +371,8 @@ const SidebarNavList = memo(function SidebarNavList({
   const i18n = useI18n();
   const { settings, update } = useSettings();
   const { collapsed } = useAnimatedSidebarPanel();
-  const canHide = (id: string) => id !== "home" && id !== "settings" && id !== "admin" && id !== "tracker" && id !== "valorant" && id !== "lol" && id !== "tft";
+  const canHide = (id: string) => id !== "home" && id !== "settings" && id !== "admin";
   const hideApp = (id: string) => update({ sidebarItems: settings.sidebarItems.filter((item) => item !== id) });
-  // The icon rail (collapsed state) has nothing else to show per row, so the
-  // "hide icons" preference only applies while the sidebar is expanded.
   const showIcons = settings.sidebarIcons || collapsed;
 
   const renderItem = (app: AppItem) => {
@@ -388,26 +395,8 @@ const SidebarNavList = memo(function SidebarNavList({
           shortcut={SHORTCUTS[app.id] ? applyModKey(SHORTCUTS[app.id], mod) : undefined}
           onSelect={() => onSelect(app.href)}
         >
-          {i18n(
-            app.id,
-            app.id === "valorant"
-              ? "VALORANT"
-              : app.id === "lol"
-              ? "League of Legends"
-              : app.id === "tft"
-              ? "Teamfight Tactics"
-              : app.id === "tracker"
-              ? "Hub Tracker"
-              : app.id === "brain"
-              ? "Coach IA Gaming"
-              : app.id === "home"
-              ? "Accueil"
-              : app.id === "admin"
-              ? "Admin"
-              : app.id
-          )}
+          {i18n(app.id, app.id === "admin" ? "Admin" : app.id)}
         </AnimatedSidebarMenuButton>
-        {/* Au survol d'une ligne : icône à droite pour la masquer (réaffichable dans Réglages > Barre latérale) */}
         {!collapsed && canHide(app.id) && (
           <button
             type="button"
@@ -426,13 +415,12 @@ const SidebarNavList = memo(function SidebarNavList({
     );
   };
 
-  // Applications regroupées par section ; celles qui ne sont dans aucune section (ajouts futurs) vont en fin de liste.
   const grouped = new Set(NAV_GROUPS.flatMap((g) => g.items));
   const sections = NAV_GROUPS.map((g) => ({
     ...g,
     apps: g.items.map((id) => visibleApps.find((a) => a.id === id)).filter((a): a is AppItem => Boolean(a)),
   }));
-  const orphans = visibleApps.filter((a) => !grouped.has(a.id) && false);
+  const orphans = visibleApps.filter((a) => !grouped.has(a.id));
   if (orphans.length > 0) sections.push({ id: "other", label: "Autres", items: [], apps: orphans });
   const shown = sections.filter((g) => g.apps.length > 0);
 
@@ -456,25 +444,25 @@ function Sidebar() {
   const { user } = useAuth();
   const { settings } = useSettings();
   const isAdmin = useMemo(() => user?.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase(), [user?.email]);
-  // "home" and "settings" are never hideable — they're the sidebar's own
-  // built-in guarantee that the user can always reach the screen that lets
-  // them re-enable anything they hid.
   const visibleApps = useMemo(
     () =>
       APPS.filter((app) => app.id !== "admin" || isAdmin).filter(
-        (app) => app.id === "home" || app.id === "settings" || app.id === "tracker" || app.id === "valorant" || app.id === "lol" || app.id === "tft" || settings.sidebarItems.includes(app.id)
+        (app) => app.id === "home" || app.id === "settings" || settings.sidebarItems.includes(app.id)
       ),
     [isAdmin, settings.sidebarItems]
   );
 
   function isActive(app: AppItem) {
-    if (app.id === "home") return pathname === "/";
-    if (app.id === "valorant") return (pathname === "/tracker" || pathname === "/matches") && (typeof window !== "undefined" && new URLSearchParams(window.location.search).get("tab") === "valorant");
-    if (app.id === "lol") return (pathname === "/tracker" || pathname === "/matches") && (typeof window !== "undefined" && new URLSearchParams(window.location.search).get("tab") === "lol");
-    if (app.id === "tft") return (pathname === "/tracker" || pathname === "/matches") && (typeof window !== "undefined" && new URLSearchParams(window.location.search).get("tab") === "tft");
-    if (app.id === "tracker") return (pathname === "/tracker" || pathname === "/matches") && (typeof window !== "undefined" && (!new URLSearchParams(window.location.search).get("tab") || new URLSearchParams(window.location.search).get("tab") === "all"));
     if (app.href === "/") return pathname === "/";
     const base = app.href.replace(/\/$/, "");
+    if (app.id === "matches") {
+      return (
+        pathname === "/tracker" ||
+        pathname.startsWith("/tracker/") ||
+        pathname === "/matches" ||
+        pathname.startsWith("/matches/")
+      );
+    }
     return (
       pathname === app.href ||
       pathname.startsWith(base + "/") ||

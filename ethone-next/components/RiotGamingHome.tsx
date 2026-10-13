@@ -46,7 +46,6 @@ import RiotTrackerHeader from "@/components/tracker/RiotTrackerHeader";
 import { recordRiotAudit } from "@/lib/riot-audit";
 import ValorantAiCoachModal from "@/components/tracker/ValorantAiCoachModal";
 import ValorantFriendCompareModal from "@/components/tracker/ValorantFriendCompareModal";
-import DashboardOverview from "@/components/DashboardOverview";
 import { cn } from "@/lib/utils";
 import { EASE_SNAP, EASE_OUT } from "@/lib/ease";
 
@@ -56,7 +55,6 @@ export default function RiotGamingHome() {
   const { settings, update } = useSettings();
   const { success, error: showError } = useToast();
 
-  const [viewMode, setViewMode] = useState<"gaming" | "workspace">("gaming");
   const [activeGame, setActiveGame] = useState<GameTab>("valorant");
 
   const [riotName, setRiotName] = useState(settings.liveTrackerRiotName || "");
@@ -152,27 +150,6 @@ export default function RiotGamingHome() {
     return { total, wins, winRate, kda, kTotal, dTotal, aTotal };
   }, [lolMatches]);
 
-  if (viewMode === "workspace") {
-    return (
-      <div className="relative flex h-full min-h-0 flex-col overflow-hidden">
-        <div className="shrink-0 flex items-center justify-between border-b border-[var(--panel-border)] bg-[var(--surface-raised)]/70 px-4 py-2 backdrop-blur-md">
-          <span className="text-xs font-semibold text-[var(--text-muted)]">Mode Espace Classique</span>
-          <button
-            type="button"
-            onClick={() => setViewMode("gaming")}
-            className="flex items-center gap-1.5 rounded-full border border-rose-500/40 bg-rose-500/15 px-3 py-1 text-xs font-bold text-rose-300 hover:bg-rose-500/25 active:scale-95 transition-all cursor-pointer"
-          >
-            <Swords className="h-3.5 w-3.5" />
-            <span>Revenir au Hub Gaming Riot</span>
-          </button>
-        </div>
-        <div className="min-h-0 flex-1 overflow-y-auto">
-          <DashboardOverview />
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="flex h-full min-h-0 w-full flex-col overflow-y-auto os-scroll [overscroll-behavior:contain]">
       <RiotTrackerHeader
@@ -240,15 +217,14 @@ export default function RiotGamingHome() {
                 <span>Coach IA</span>
               </button>
 
-              <button
-                type="button"
-                onClick={() => setViewMode("workspace")}
+              <Link
+                href="/"
                 className="flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/80 px-3 py-2 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 transition-all cursor-pointer"
-                title="Basculer vers les widgets classiques de l'espace personnel"
+                title="Accéder au tableau de bord ETHONE OS"
               >
                 <LayoutGrid className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">Espace classique</span>
-              </button>
+                <span className="hidden sm:inline">ETHONE OS</span>
+              </Link>
             </div>
           </div>
         </motion.div>

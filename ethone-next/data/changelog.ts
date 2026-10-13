@@ -54267,9 +54267,57 @@ const v12892_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12892_fr);
-CHANGELOG_BY_LANG.en.unshift(v12892_en);
-CHANGELOG_BY_LANG.es.unshift(v12892_es);
-CHANGELOG_BY_LANG.de.unshift(v12892_de);
+const v12893_fr: ChangelogEntry = {
+  version: "v1.75.51",
+  date: "2026-10-13",
+  title: "Tracker Gaming #1 : Nouvel onglet prioritaire dans la sidebar (Valorant, LoL, TFT)",
+  items: [
+    "Création du nouvel onglet prioritaire Tracker Gaming en tête absolue de la barre latérale",
+    "Valorant, League of Legends et Teamfight Tactics positionnés en avant-garde du hub",
+    "Raccourci clavier numéro 1 (⌘1) assigné au Tracker Gaming et intégration dans le Dock",
+    "Accès rapide instantané depuis la carte Hero du tableau de bord",
+  ],
+};
+
+const v12893_en: ChangelogEntry = {
+  version: "v1.75.51",
+  date: "2026-10-13",
+  title: "Gaming Tracker #1: New premier sidebar tab (Valorant, LoL, TFT)",
+  items: [
+    "New premier Gaming Tracker tab positioned at the very top of the sidebar",
+    "Valorant, League of Legends, and Teamfight Tactics prominently featured upfront",
+    "Primary keyboard shortcut (⌘1) assigned to Gaming Tracker with Dock integration",
+    "Instant quick action link from the dashboard Hero card",
+  ],
+};
+
+const v12893_es: ChangelogEntry = {
+  version: "v1.75.51",
+  date: "2026-10-13",
+  title: "Tracker Gaming #1: Nueva pestaña prioritaria en la barra lateral (Valorant, LoL, TFT)",
+  items: [
+    "Nueva pestaña prioritaria Tracker Gaming ubicada en la cima de la barra lateral",
+    "Valorant, League of Legends y Teamfight Tactics destacados en primer lugar",
+    "Atajo de teclado número 1 (⌘1) asignado a Tracker Gaming e integración en el Dock",
+    "Acceso rápido directo desde la tarjeta Hero del panel principal",
+  ],
+};
+
+const v12893_de: ChangelogEntry = {
+  version: "v1.75.51",
+  date: "2026-10-13",
+  title: "Gaming Tracker #1: Neuer vorrangiger Sidebar-Tab (Valorant, LoL, TFT)",
+  items: [
+    "Neuer vorrangiger Gaming-Tracker-Tab ganz oben in der Seitenleiste",
+    "Valorant, League of Legends und Teamfight Tactics direkt an vorderster Stelle",
+    "Primäres Tastaturkürzel (⌘1) für den Gaming Tracker mit Dock-Integration",
+    "Schnellzugriff direkt von der Hero-Karte des Dashboards",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12893_fr, v12892_fr);
+CHANGELOG_BY_LANG.en.unshift(v12893_en, v12892_en);
+CHANGELOG_BY_LANG.es.unshift(v12893_es, v12892_es);
+CHANGELOG_BY_LANG.de.unshift(v12893_de, v12892_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

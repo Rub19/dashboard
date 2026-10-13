@@ -126,6 +126,7 @@ const HeroBriefingCard = memo(function HeroBriefingCard({
 
   const quickActions = useMemo(
     () => [
+      { id: "tracker", icon: "crosshair", label: i18n("tracker", "Tracker Gaming"), href: "/tracker" },
       { id: "task", icon: "circle-check", label: i18n("newTask", "Tâche"), href: "/tasks" },
       { id: "note", icon: "notebook-pen", label: i18n("newNote", "Note"), href: "/notes" },
       { id: "event", icon: "calendar", label: i18n("newEvent", "Événement"), href: "/calendar" },

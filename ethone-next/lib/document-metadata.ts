@@ -7,6 +7,7 @@ export const DOCUMENT_CONTEXT_LABELS: Record<string, string> = {
   profiles: "Profile Selection",
   onboarding: "Onboarding",
   error: "Unavailable",
+  tracker: "Tracker Gaming",
   home: "Dashboard",
   notes: "Notes",
   tasks: "Tasks",

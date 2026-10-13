@@ -152,6 +152,7 @@ export function useCommandItems(setOpen: (v: boolean) => void): CommandItem[] {
   return useMemo(() => {
     const base: CommandItem[] = [
       // 1. Navigation Principale
+      { id: "nav-tracker", label: "Ouvrir le Tracker Gaming #1", subtitle: "Valorant, LoL, TFT et trackers compétitifs", category: "Navigation", icon: <EthoneIcon name="matches" className="h-[18px] w-[18px]" />, shortcut: "T", contexts: ["/tracker/", "/matches/"], contextPriority: 100, keywords: ["tracker", "gaming", "valorant", "lol", "tft", "riot", "esport", "matches", "parties"], action: () => navigate("/tracker/") },
       { id: "nav-home", label: "Aller à l'Accueil", subtitle: "Tableau de bord principal", category: "Navigation", icon: <Icon name="home" />, shortcut: "H", keywords: ["home", "accueil", "dashboard", "bento", "tableau de bord"], action: () => navigate("/") },
       { id: "nav-brain", label: "Ouvrir ETHONE Brain", subtitle: "Assistant IA central et raisonnement", category: "Brain", icon: <Icon name="brain" />, shortcut: "B", contexts: ["/brain/", "/notes/"], contextPriority: 90, keywords: ["brain", "ia", "assistant", "chat", "llm", "intelligence", "ask brain"], action: () => navigate("/brain/") },
       { id: "nav-focus", label: "Ouvrir le Mode Focus", subtitle: "Session de travail et chronomètre", category: "Focus", icon: <Icon name="timer" />, shortcut: "F", contexts: ["/focus/"], contextPriority: 90, keywords: ["focus", "pomodoro", "timer", "chrono", "travail", "concentration", "deep work"], action: () => navigate("/focus/") },

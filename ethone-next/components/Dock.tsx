@@ -32,6 +32,7 @@ import { cn } from "@/lib/utils";
 import { shouldAutoHideDock } from "@/lib/route-chrome-policy";
 
 const ICONS: Record<string, string> = {
+  tracker: "matches",
   home: "home",
   notes: "notes",
   tasks: "tasks",

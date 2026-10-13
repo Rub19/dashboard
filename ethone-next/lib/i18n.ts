@@ -2,6 +2,7 @@ export const CATALOG: Record<string, Record<string, string>> = {
   "fr": {
     "games": "Jeux",
     "matches": "Tracker",
+    "tracker": "Tracker Gaming",
     "home": "Accueil",
     "notes": "Notes",
     "tasks": "Tâches",
@@ -1552,6 +1553,7 @@ export const CATALOG: Record<string, Record<string, string>> = {
   "en": {
     "games": "Games",
     "matches": "Tracker",
+    "tracker": "Gaming Tracker",
     "home": "Home",
     "notes": "Notes",
     "tasks": "Tasks",
@@ -3101,6 +3103,7 @@ export const CATALOG: Record<string, Record<string, string>> = {
   "es": {
     "games": "Juegos",
     "matches": "Tracker",
+    "tracker": "Tracker Gaming",
     "home": "Inicio",
     "notes": "Notas",
     "tasks": "Tareas",
@@ -4650,6 +4653,7 @@ export const CATALOG: Record<string, Record<string, string>> = {
   "de": {
     "games": "Spiele",
     "matches": "Tracker",
+    "tracker": "Gaming Tracker",
     "home": "Startseite",
     "notes": "Notizen",
     "tasks": "Aufgaben",

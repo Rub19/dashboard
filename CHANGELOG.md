@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.51 — 2026-10-13
+
+**Tracker Gaming #1 : Nouvel onglet prioritaire dans la sidebar (Valorant, LoL, TFT)**
+
+- Création du nouvel onglet prioritaire Tracker Gaming (`/tracker`) positionné en tête absolue de la barre latérale (#1).
+- Valorant, League of Legends et Teamfight Tactics mis en avant en premier rang dans l'arborescence des trackers.
+- Attribution du raccourci clavier principal (⌘1) au Tracker Gaming et intégration dans les raccourcis du Dock.
+- Ajout de l'accès direct en 1 clic dans les actions rapides de la carte Hero du tableau de bord.
+
 ## v1.75.50 — 2026-10-13
 
 **Intégration Complète Valorant : Authentification RSO, Analytics de Performance, Social et Coach IA**

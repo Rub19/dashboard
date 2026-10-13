@@ -2,6 +2,7 @@ const DOCK_AUTO_HIDE: string[] = [
   "/brain",
   "/focus",
   "/scratchpad",
+  "/tracker",
   "/matches",
   "/mail",
   "/soundscape",
@@ -9,6 +10,7 @@ const DOCK_AUTO_HIDE: string[] = [
 ];
 
 const ISLAND_AUTO_HIDE: string[] = [
+  "/tracker",
   "/matches",
   "/focus",
   "/games",

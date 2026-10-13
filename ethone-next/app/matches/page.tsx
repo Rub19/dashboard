@@ -33,11 +33,11 @@ export default function MatchesPage({ defaultTab }: { defaultTab?: string }) {
 
   const tabs = useMemo(() => [
     { id: "valorant", label: "Valorant", icon: <GameBrandIcon name="Valorant" className="h-4 w-4" /> },
-    ...(isOwner ? [{ id: "valorant-inventory", label: "Inventaire Valorant", icon: <GameBrandIcon name="Valorant" className="h-4 w-4" /> }] : []),
-    { id: "valorant-store", label: "Boutique Valorant", icon: <GameBrandIcon name="Valorant" className="h-4 w-4" /> },
     { id: "lol", label: "League of Legends", icon: <GameBrandIcon name="League of Legends" className="h-4 w-4" /> },
-    { id: "lol-rotation", label: "Rotation LoL", icon: <GameBrandIcon name="League of Legends" className="h-4 w-4" /> },
     { id: "tft", label: "Teamfight Tactics", icon: <GameBrandIcon name="Teamfight Tactics" className="h-4 w-4" /> },
+    { id: "valorant-store", label: "Boutique Valorant", icon: <GameBrandIcon name="Valorant" className="h-4 w-4" /> },
+    ...(isOwner ? [{ id: "valorant-inventory", label: "Inventaire Valorant", icon: <GameBrandIcon name="Valorant" className="h-4 w-4" /> }] : []),
+    { id: "lol-rotation", label: "Rotation LoL", icon: <GameBrandIcon name="League of Legends" className="h-4 w-4" /> },
     { id: "apex", label: "Apex Legends", icon: <GameBrandIcon name="Apex Legends" className="h-4 w-4" /> },
     { id: "trackergg", label: "Autres jeux", icon: <GameBrandIcon name="" className="h-4 w-4" /> },
   ], [isOwner]);

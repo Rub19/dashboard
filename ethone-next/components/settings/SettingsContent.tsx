@@ -212,6 +212,7 @@ const STATUSES = Object.entries(USER_STATUS_CONFIG).map(([id, config]) => ({
 }));
 
 const NAV_ITEMS = [
+  { id: "tracker", label: "tracker" },
   { id: "home", label: "home" },
   { id: "notes", label: "notes" },
   { id: "tasks", label: "tasks" },
@@ -236,6 +237,7 @@ const NAV_ITEMS = [
 // "settings" — those two must always stay reachable so hiding items here
 // can never lock the user out of the one screen that lets them undo it.
 const SIDEBAR_NAV_ITEMS = [
+  { id: "tracker", label: "tracker" },
   { id: "notes", label: "notes" },
   { id: "tasks", label: "tasks" },
   { id: "habits", label: "habits" },

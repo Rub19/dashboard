@@ -41,6 +41,7 @@ import {
 } from "@/components/motion/animated-sidebar";
 
 const SIDEBAR_ICONS = {
+  tracker: ethoneIcon("matches"),
   home: ethoneIcon("home"),
   notes: ethoneIcon("notes"),
   tasks: ethoneIcon("tasks"),
@@ -69,6 +70,7 @@ const SIDEBAR_ICONS = {
 
 /** Teinte de chaque application quand « icônes en couleur » est activé (nuances 300/400 : douces sur fond sombre). */
 const APP_ICON_COLORS: Record<string, string> = {
+  tracker: "text-rose-400",
   home: "text-sky-400",
   notes: "text-amber-300",
   tasks: "text-emerald-400",
@@ -102,7 +104,8 @@ type AppItem = {
 };
 
 const SHORTCUTS: Record<string, string> = {
-  home: "⌘1",
+  tracker: "⌘1",
+  home: "⌘H",
   notes: "⌘2",
   tasks: "⌘3",
   calendar: "⌘4",
@@ -115,6 +118,7 @@ const SHORTCUTS: Record<string, string> = {
 };
 
 const APPS: AppItem[] = [
+  { id: "tracker", href: "/tracker/", icon: SIDEBAR_ICONS.tracker },
   { id: "home", href: "/", icon: SIDEBAR_ICONS.home },
   { id: "notes", href: "/notes/", icon: SIDEBAR_ICONS.notes },
   { id: "tasks", href: "/tasks/", icon: SIDEBAR_ICONS.tasks },
@@ -143,11 +147,11 @@ const APPS: AppItem[] = [
 
 /** Sections de la barre latérale : l'ordre est fixe, une application masquée disparaît de sa section, une section vide disparaît. */
 const NAV_GROUPS: { id: string; label?: string; items: string[] }[] = [
-  { id: "main", items: ["home"] },
+  { id: "main", items: ["tracker", "home"] },
   { id: "workspace", label: "Espace", items: ["notes", "tasks", "habits", "calendar", "files", "mail"] },
   { id: "assist", label: "Assistants", items: ["brain", "focus", "soundscape", "weather"] },
   { id: "insights", label: "Suivi", items: ["activity", "analytics", "interactions", "connections"] },
-  { id: "community", label: "Communauté", items: ["discord", "plugins", "games", "matches", "spaces", "flows", "team"] },
+  { id: "community", label: "Communauté", items: ["discord", "plugins", "games", "spaces", "flows", "team"] },
   { id: "system", label: "Système", items: ["admin", "settings"] },
 ];
 
@@ -373,8 +377,7 @@ const SidebarNavList = memo(function SidebarNavList({
   const i18n = useI18n();
   const { settings, update } = useSettings();
   const { collapsed } = useAnimatedSidebarPanel();
-  // « Accueil » et « Paramètres » restent toujours visibles (de là on peut tout réafficher) ; « Admin » dépend du compte.
-  const canHide = (id: string) => id !== "home" && id !== "settings" && id !== "admin";
+  const canHide = (id: string) => id !== "home" && id !== "settings" && id !== "admin" && id !== "tracker";
   const hideApp = (id: string) => update({ sidebarItems: settings.sidebarItems.filter((item) => item !== id) });
   // The icon rail (collapsed state) has nothing else to show per row, so the
   // "hide icons" preference only applies while the sidebar is expanded.
@@ -457,12 +460,15 @@ function Sidebar() {
   const visibleApps = useMemo(
     () =>
       APPS.filter((app) => app.id !== "admin" || isAdmin).filter(
-        (app) => app.id === "home" || app.id === "settings" || settings.sidebarItems.includes(app.id)
+        (app) => app.id === "home" || app.id === "settings" || app.id === "tracker" || settings.sidebarItems.includes(app.id)
       ),
     [isAdmin, settings.sidebarItems]
   );
 
   function isActive(app: AppItem) {
+    if (app.id === "tracker" && (pathname === "/tracker" || pathname.startsWith("/tracker/") || pathname === "/matches" || pathname.startsWith("/matches/"))) {
+      return true;
+    }
     if (app.href === "/") return pathname === "/";
     const base = app.href.replace(/\/$/, "");
     return (

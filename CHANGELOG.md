@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.44 — 2026-10-13
+
+**Transition fluide des auras et interpolation cosmique**
+
+- Interpolation fluide des couleurs et teintes nébuleuses dans le fond cosmique sans réinitialisation de la scène.
+- Suppression des sauts et téléportations aléatoires d'étoiles et d'orbites lors du changement d'aura.
+- Indicateur de sélection d'aura physique avec ressort Framer Motion (layoutId) et halo lumineux dynamique.
+- Réduction du temps de transition d'ambiance à 600ms pour une réactivité instantanée et élégante.
+- Suppression des coupures de dégradé brutales sur le fond d'écran.
+
 ## v1.75.43 — 2026-10-13
 
 **Logo Riot Games Officiel, Design Épuré, Visuels Démo Valorant et Motion Design**

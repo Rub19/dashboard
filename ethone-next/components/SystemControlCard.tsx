@@ -1,6 +1,7 @@
 "use client";
 
 import { memo, useCallback } from "react";
+import { motion } from "framer-motion";
 import { useSettings } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { Icon } from "@/lib/icons";
@@ -112,25 +113,34 @@ const SystemControlCard = memo(function SystemControlCard({ className = "", scro
                   title={i18n(key)}
                   aria-label={i18n(key)}
                   style={{ backgroundColor: palette.background }}
-                  className={`group relative flex h-9 w-9 items-center justify-center rounded-[var(--inset-radius)] border transition-all duration-200 hover:scale-110 active:scale-95 cursor-pointer ${
+                  className={`group relative flex h-9 w-9 items-center justify-center rounded-[var(--inset-radius)] border transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer ${
                     active
-                      ? "border-[var(--input-border-hover)] ring-2 ring-inset ring-white/40 shadow-[0_0_12px_rgba(255,255,255,0.15)]"
+                      ? "border-[var(--input-border-hover)]"
                       : "border-[var(--panel-border)] opacity-75 hover:opacity-100 hover:border-[var(--input-border-hover)]"
                   }`}
                 >
-                  <span
-                    className={`h-3 w-3 rounded-full transition-all duration-200 ${
-                      active ? "scale-110 shadow-[0_0_8px_currentColor]" : "group-hover:scale-105"
-                    }`}
-                    style={{ backgroundColor: palette.accent, color: palette.accent }}
-                    aria-hidden="true"
-                  />
                   {active && (
-                    <span
-                      className="absolute inset-0 rounded-[var(--inset-radius)] border border-[var(--panel-border)] pointer-events-none"
+                    <motion.span
+                      layoutId="activeAuraSelector"
+                      transition={{ type: "spring", stiffness: 450, damping: 32 }}
+                      className="absolute inset-0 rounded-[var(--inset-radius)] pointer-events-none ring-2 ring-inset ring-white/40 shadow-sm"
+                      style={{
+                        boxShadow: `0 0 12px ${palette.accent}55, inset 0 0 6px ${palette.accent}33`,
+                      }}
                       aria-hidden="true"
                     />
                   )}
+                  <motion.span
+                    animate={{ scale: active ? 1.2 : 1 }}
+                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                    className="relative z-10 h-3 w-3 rounded-full transition-shadow duration-200"
+                    style={{
+                      backgroundColor: palette.accent,
+                      color: palette.accent,
+                      boxShadow: active ? `0 0 10px ${palette.accent}` : "none",
+                    }}
+                    aria-hidden="true"
+                  />
                 </button>
               );
             })}

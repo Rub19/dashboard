@@ -8,6 +8,30 @@ function lerp(a: number, b: number, t: number) {
   return a + (b - a) * t;
 }
 
+function hexToRgb(hex: string): [number, number, number] {
+  const clean = hex.replace("#", "");
+  const num = parseInt(clean, 16);
+  return [(num >> 16) & 255, (num >> 8) & 255, num & 255];
+}
+
+function rgbToHex(r: number, g: number, b: number): string {
+  const toHex = (n: number) => Math.max(0, Math.min(255, Math.round(n))).toString(16).padStart(2, "0");
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+}
+
+function lerpColor(curr: string, target: string, t: number): string {
+  const [r1, g1, b1] = hexToRgb(curr);
+  const [r2, g2, b2] = hexToRgb(target);
+  return rgbToHex(lerp(r1, r2, t), lerp(g1, g2, t), lerp(b1, b2, t));
+}
+
+function lerpHue(curr: number, target: number, t: number): number {
+  let diff = (target - curr) % 360;
+  if (diff < -180) diff += 360;
+  if (diff > 180) diff -= 360;
+  return (curr + diff * t + 360) % 360;
+}
+
 const AURA_CONFIGS: Record<string, { hues: number[]; accent: string; bgGlow: string }> = {
   classic: {
     hues: [265, 280, 250],
@@ -29,9 +53,9 @@ const AURA_CONFIGS: Record<string, { hues: number[]; accent: string; bgGlow: str
   },
   eclipse: {
     hues: [38, 48, 260],
-    accent: "#f59e0b",
+    accent: "#d4af37",
     bgGlow:
-      "radial-gradient(ellipse at 50% 85%, rgba(245, 158, 11, 0.18) 0%, transparent 60%), radial-gradient(ellipse at 50% 10%, rgba(99, 102, 241, 0.15) 0%, transparent 55%), rgb(7, 6, 10)",
+      "radial-gradient(ellipse at 50% 85%, rgba(212, 175, 55, 0.18) 0%, transparent 60%), radial-gradient(ellipse at 50% 10%, rgba(99, 102, 241, 0.15) 0%, transparent 55%), rgb(7, 6, 10)",
   },
   emerald: {
     hues: [150, 165, 140],
@@ -57,6 +81,11 @@ export default function CosmicBackground() {
 
   const currentAura = settings.aura || "classic";
   const auraConfig = AURA_CONFIGS[currentAura] || AURA_CONFIGS.classic;
+  const auraConfigRef = useRef(auraConfig);
+
+  useEffect(() => {
+    auraConfigRef.current = auraConfig;
+  }, [auraConfig]);
 
   useEffect(() => {
     if (quality === "static" || !settings.ambientEffectsEnabled) return;
@@ -68,7 +97,7 @@ export default function CosmicBackground() {
     let raf = 0;
     let running = true;
     let elapsed = 0;
-    let accent = auraConfig.accent;
+    let accent = auraConfigRef.current.accent;
 
     const densityByQuality = {
       high: { stars: 220, rings: 4, glows: 3, speed: 1 },
@@ -97,7 +126,6 @@ export default function CosmicBackground() {
       canvas.style.height = `${h}px`;
       context.setTransform(1, 0, 0, 1, 0, 0);
       context.scale(pixelRatio, pixelRatio);
-      accent = auraConfig.accent;
       initScene(w, h);
     }
 
@@ -124,7 +152,7 @@ export default function CosmicBackground() {
         };
       });
 
-      const possibleHues = auraConfig.hues;
+      const possibleHues = auraConfigRef.current.hues;
       glows = Array.from({ length: density.glows }, (_, i) => ({
         x: Math.random() * w,
         y: Math.random() * h * 0.6,
@@ -147,11 +175,17 @@ export default function CosmicBackground() {
       const h = canvas.height / pixelRatio;
       elapsed += 1;
 
+      const targetConfig = auraConfigRef.current;
+      accent = lerpColor(accent, targetConfig.accent, 0.05);
+
       context.fillStyle = "#08090d";
       context.fillRect(0, 0, w, h);
 
-      // Soft nebula glows matched to selected Aura
-      for (const glow of glows) {
+      for (let i = 0; i < glows.length; i++) {
+        const glow = glows[i];
+        const targetHue = targetConfig.hues[i % targetConfig.hues.length];
+        glow.hue = lerpHue(glow.hue, targetHue, 0.04);
+
         const x = glow.x + Math.sin(elapsed * 0.001 * glow.speed) * 25;
         const y = glow.y + Math.cos(elapsed * 0.001 * glow.speed) * 20;
         const gradient = context.createRadialGradient(x, y, 0, x, y, glow.r);
@@ -162,7 +196,6 @@ export default function CosmicBackground() {
         context.fillRect(0, 0, w, h);
       }
 
-      // Orbit rings
       context.lineWidth = 1.2;
       for (const ring of rings) {
         ring.angle += ring.speed * 0.005;
@@ -177,7 +210,6 @@ export default function CosmicBackground() {
         context.restore();
       }
 
-      // Twinkling Stars
       for (const star of stars) {
         star.pulse += 0.02 * star.speed;
         const twinkle = 0.6 + 0.4 * Math.sin(star.pulse);
@@ -209,7 +241,7 @@ export default function CosmicBackground() {
       document.removeEventListener("visibilitychange", onVisibility);
       cancelAnimationFrame(raf);
     };
-  }, [quality, isVisible, pixelRatio, settings.ambientEffectsEnabled, currentAura, auraConfig]);
+  }, [quality, isVisible, pixelRatio, settings.ambientEffectsEnabled]);
 
   if (!settings.ambientEffectsEnabled || quality === "static") {
     return (

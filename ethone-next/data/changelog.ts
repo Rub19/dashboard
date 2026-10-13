@@ -53885,5 +53885,62 @@ CHANGELOG_BY_LANG.en.unshift(v12887_en);
 CHANGELOG_BY_LANG.es.unshift(v12887_es);
 CHANGELOG_BY_LANG.de.unshift(v12887_de);
 
+const v1_75_44_fr: ChangelogEntry = {
+  version: "v1.75.44",
+  date: "2026-10-13",
+  title: "Transition fluide des auras et interpolation cosmique",
+  items: [
+    "Interpolation fluide des couleurs et teintes nébuleuses dans le fond cosmique sans réinitialisation de la scène.",
+    "Suppression des sauts et téléportations aléatoires d'étoiles et d'orbites lors du changement d'aura.",
+    "Indicateur de sélection d'aura physique avec ressort Framer Motion (layoutId) et halo lumineux dynamique.",
+    "Réduction du temps de transition d'ambiance à 600ms pour une réactivité instantanée et élégante.",
+    "Suppression des coupures de dégradé brutales sur le fond d'écran.",
+  ],
+};
+
+const v1_75_44_en: ChangelogEntry = {
+  version: "v1.75.44",
+  date: "2026-10-13",
+  title: "Smooth Aura Transitions and Cosmic Interpolation",
+  items: [
+    "Smooth color and nebula hue interpolation in the cosmic background canvas without scene resetting.",
+    "Eliminated jarring star jumps and orbit resets when switching between aura themes.",
+    "Physical Framer Motion spring layoutId indicator with dynamic colored aura glow on the selector.",
+    "Tuned ambient transition duration to 600ms for swift and seamless reactivity.",
+    "Removed abrupt body radial-gradient snapping across aura states.",
+  ],
+};
+
+const v1_75_44_es: ChangelogEntry = {
+  version: "v1.75.44",
+  date: "2026-10-13",
+  title: "Transición suave de auras e interpolación cósmica",
+  items: [
+    "Interpolación suave de tonos y colores nebulares en el fondo cósmico sin reinicio de escena.",
+    "Eliminado el salto brusco de estrellas y órbitas al cambiar entre auras.",
+    "Indicador de selección con física de resorte Framer Motion y resplandor de color dinámico.",
+    "Duración de transición de ambiente ajustada a 600ms para una reactividad instantánea.",
+    "Eliminados los cortes abruptos de degradado en el fondo al alternar auras.",
+  ],
+};
+
+const v1_75_44_de: ChangelogEntry = {
+  version: "v1.75.44",
+  date: "2026-10-13",
+  title: "Fließende Aura-Übergänge und kosmische Farbinterpolation",
+  items: [
+    "Sanfte Farb- und Nebel-Farbton-Interpolation im kosmischen Hintergrund-Canvas ohne Neuladen der Szene.",
+    "Kein abruptes Springen von Sternen und Umlaufbahnen mehr beim Wechseln der Aura.",
+    "Framer Motion Feder-Layout-Indikator mit dynamischem farbigem Leuchten im Auswahlbereich.",
+    "Optimierte Übergangsdauer von 600ms für sofortige und flüssige Reaktivität.",
+    "Entfernung harter Verlaufswechsel im Hintergrund beim Aura-Wechsel.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_44_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_44_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_44_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_44_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

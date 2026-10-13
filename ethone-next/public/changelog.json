@@ -1,5 +1,17 @@
 [
   {
+    "version": "v1.75.44",
+    "date": "2026-10-13",
+    "title": "Transition fluide des auras et interpolation cosmique",
+    "items": [
+      "Interpolation fluide des couleurs et teintes nébuleuses dans le fond cosmique sans réinitialisation de la scène.",
+      "Suppression des sauts et téléportations aléatoires d'étoiles et d'orbites lors du changement d'aura.",
+      "Indicateur de sélection d'aura physique avec ressort Framer Motion (layoutId) et halo lumineux dynamique.",
+      "Réduction du temps de transition d'ambiance à 600ms pour une réactivité instantanée et élégante.",
+      "Suppression des coupures de dégradé brutales sur le fond d'écran."
+    ]
+  },
+  {
     "version": "v1.75.30",
     "date": "2026-10-13",
     "title": "Documentation Etho : Sidebar Transparente Style Keeper, Catalogue Intégral des Commandes et Retrait des Tiers Payants",
@@ -621,15 +633,6 @@
       "Les écrans intermédiaires sont supprimés, avec leurs tuiles figées qui affichaient des chiffres inventés.",
       "Dans la console, les pages de modules prennent le format en blocs de Keeper, sans le lien « Retour » ni un second sélecteur de serveur.",
       "Le module Sécurité ouvre directement la page Protections, et l'en-tête de module devient une barre compacte avec l'interrupteur Activé / Désactivé."
-    ]
-  },
-  {
-    "version": "v1.55.83",
-    "date": "2026-10-08",
-    "title": "Soutiens : reconnaissance par statut perso",
-    "items": [
-      "Soutiens : un soutien se reconnaît maintenant au tag du serveur, à un texte dans son statut perso (ex. le lien d'invitation), ou à l'un ou l'autre.",
-      "Le rôle est donné ou retiré dès que le statut change."
     ]
   }
 ]

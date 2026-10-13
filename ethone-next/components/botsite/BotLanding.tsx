@@ -1437,17 +1437,6 @@ export default function BotLanding() {
                   {c.hero.dashboardBtn}
                 </button>
               </motion.div>
-
-              <div className="mt-8 flex flex-wrap items-center gap-3">
-                {c.hero.highlights.map((h) => (
-                  <span
-                    key={h}
-                    className="rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-1.5 text-xs font-semibold text-zinc-300"
-                  >
-                    {h}
-                  </span>
-                ))}
-              </div>
             </div>
 
             <motion.div

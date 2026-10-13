@@ -1,4 +1,4 @@
-# ETHONE — passation & nouveautés (2026-10-13, version 1.75.35)
+# ETHONE — passation & nouveautés (2026-10-13, version 1.75.36)
 
 ## Projet
 - `ethone-next/` : site Next.js statique (ethone.dev, Cloudflare Pages, déploiement auto au push sur `main`).
@@ -25,9 +25,13 @@
 
 ---
 
-## Nouveautés majeures & Réalisations récentes (v1.73.0 → v1.75.35)
+## Nouveautés majeures & Réalisations récentes (v1.73.0 → v1.75.36)
 
-### 0. Rétablissement du Bouton Retour au Dashboard pour les Utilisateurs ETHONE OS (v1.75.35)
+### 0. Vitrine Bot : Épuration du Hero et Retrait des 3 Badges (v1.75.36)
+- **Hero Épuré** : Suppression des 3 badges secondaires sous les boutons d'appel à l'action (« Anti-Raid 0.2s », « Pont vocal Spotify », « Zéro latence ») dans `BotLanding.tsx`.
+- **Impact Visuel** : Mise en valeur directe des boutons d'action (« Ajouter le bot », « Ouvrir le dashboard ») et du simulateur Discord interactif sans distractions textuelles superflues.
+
+### 1. Rétablissement du Bouton Retour au Dashboard pour les Utilisateurs ETHONE OS (v1.75.35)
 - **Rétablissement Multisupport** : Réintégration complète du lien et bouton « Retour au dashboard » pour les utilisateurs disposant d'un compte ETHONE OS (détecté via session Supabase, profil de compte, jetons locaux ou domaine hôte `ethone.dev`).
 - **Barre Latérale & Sélecteur de Serveurs** : Ajout du bouton « Retour au dashboard » avec icône fléchée sous « Mes serveurs » dans `HubSidebar` et dans `ServerPicker`.
 - **En-tête & Pastille Flottante** : Ajout du raccourci dans la barre d'en-tête de la console Discord aux côtés de la pastille de sauvegarde et en pastille flottante en bas à droite de l'écran avec nettoyage de l'état de session Discord sélectionné.

@@ -53473,4 +53473,49 @@ CHANGELOG_BY_LANG.en.unshift(v12879_en);
 CHANGELOG_BY_LANG.es.unshift(v12879_es);
 CHANGELOG_BY_LANG.de.unshift(v12879_de);
 
+const v12880_fr: ChangelogEntry = {
+  version: "v1.75.36",
+  date: "2026-10-13",
+  title: "Vitrine Bot — Épuration du hero et suppression des 3 badges redondants",
+  items: [
+    "Vitrine bot (/bot) : suppression des 3 badges secondaires sous les boutons d'appel à l'action pour un hero plus aéré et percutant.",
+    "Design & Clarté : mise en valeur directe des boutons d'invitation et d'ouverture de console avec le simulateur Discord.",
+  ],
+};
+
+const v12880_en: ChangelogEntry = {
+  version: "v1.75.36",
+  date: "2026-10-13",
+  title: "Bot Showcase — Hero refinement and removal of redundant badges",
+  items: [
+    "Bot showcase (/bot): removed the 3 secondary highlight badges under the hero action buttons for a cleaner, higher-impact first view.",
+    "Design & Clarity: streamlined hero layout putting direct focus on bot invitation and console actions alongside the interactive simulator.",
+  ],
+};
+
+const v12880_es: ChangelogEntry = {
+  version: "v1.75.36",
+  date: "2026-10-13",
+  title: "Vitrina del Bot — Depuración del hero y eliminación de 3 insignias redundantes",
+  items: [
+    "Vitrina del bot (/bot): eliminación de las 3 insignias secundarias bajo los botones de acción para un hero más limpio y directo.",
+    "Diseño y claridad: enfoque inmediato en los botones de invitación y panel junto al simulador interactivo de Discord.",
+  ],
+};
+
+const v12880_de: ChangelogEntry = {
+  version: "v1.75.36",
+  date: "2026-10-13",
+  title: "Bot-Showcase — Hero-Verfeinerung und Entfernung redundanter Badges",
+  items: [
+    "Bot-Showcase (/bot): Entfernung der 3 sekundären Highlight-Badges unter den Call-to-Action-Buttons für eine klarere, fokussiertere Ansicht.",
+    "Design & Klarheit: Direkter Fokus auf Bot-Einladung und Konsolen-Zugriff neben dem interaktiven Discord-Simulator.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12880_fr);
+CHANGELOG_BY_LANG.en.unshift(v12880_en);
+CHANGELOG_BY_LANG.es.unshift(v12880_es);
+CHANGELOG_BY_LANG.de.unshift(v12880_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

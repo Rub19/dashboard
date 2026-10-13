@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.36 — 2026-10-13
+
+**Vitrine Bot : Épuration du Hero et Retrait des 3 Badges Redondants**
+
+- Vitrine bot (`/bot`) : suppression des 3 badges secondaires sous les boutons d'appel à l'action (« Anti-Raid 0.2s », « Pont vocal Spotify », « Zéro latence »).
+- Design et clarté : épuration de la zone supérieure mettant en valeur directe l'invitation du bot, l'accès à la console et le simulateur interactif.
+
 ## v1.75.35 — 2026-10-13
 
 **Console Discord : Rétablissement du Bouton Retour au Dashboard pour les Utilisateurs ETHONE OS**

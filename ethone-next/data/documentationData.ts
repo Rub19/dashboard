@@ -4,7 +4,6 @@ export interface DocGuide {
   description: string;
   category: "guides" | "security";
   readTime: string;
-  badge?: string;
   commandSnippet?: string;
   steps?: { step: number; title: string; content: string }[];
   content: string[];
@@ -15,7 +14,6 @@ export interface DocModule {
   name: string;
   category: string;
   categoryLabel: string;
-  isPremium?: boolean;
   defaultAction: string;
   reactionTime: string;
   description: string;
@@ -37,7 +35,6 @@ export const STEP_BY_STEP_GUIDES: DocGuide[] = [
     description: "Inviter Etho, le placer correctement dans la hiérarchie des rôles Discord et avoir un serveur sécurisé en 2 minutes.",
     category: "guides",
     readTime: "2 min",
-    badge: "Recommandé",
     commandSnippet: "/setup quickstart",
     steps: [
       { step: 1, title: "Inviter le bot", content: "Ajoutez Etho sur votre serveur Discord avec les permissions Administrateur recommandées pour que la protection soit totale." },
@@ -118,7 +115,6 @@ export const STEP_BY_STEP_GUIDES: DocGuide[] = [
     description: "Filtrer les nouveaux comptes, vérifier les humains et encaisser une vague de raid en toute sérénité.",
     category: "guides",
     readTime: "4 min",
-    badge: "Essentiel",
     commandSnippet: "/gatekeeper enable min_age:7d captcha:button",
     content: [
       "Le module Gatekeeper analyse chaque nouvel arrivant : ancienneté du compte, présence d'avatar, numéro de téléphone vérifié et historique de réputation Discord.",
@@ -140,17 +136,16 @@ export const STEP_BY_STEP_GUIDES: DocGuide[] = [
     ]
   },
   {
-    id: "etho-ultra",
-    title: "Etho Ultra",
-    description: "Les protections les plus poussées, avec nos modules exclusifs et isolation de crise instantanée.",
+    id: "mode-haute-securite",
+    title: "Mode Haute Sécurité",
+    description: "Les protections les plus poussées, avec surveillance renforcée et isolation de crise instantanée.",
     category: "guides",
     readTime: "3 min",
-    badge: "Ultra",
-    commandSnippet: "/ultra enable panic_button:true",
+    commandSnippet: "/security mode strict:true panic_button:true",
     content: [
-      "Le mode Ultra active l'intelligence défensive avancée pour neutraliser les attaques coordonnées à haute fréquence.",
+      "Le mode Haute Sécurité active la détection renforcée pour neutraliser les attaques coordonnées à haute fréquence.",
       "Bénéficiez du bouton d'urgence (Panic Button) qui verrouille l'intégralité de la guilde en moins de 150 millisecondes en cas de compromission majeure.",
-      "Sauvegardes horaires automatiques avec restauration de salons, webhooks et permissions en 1 clic."
+      "Sauvegardes automatiques avec restauration de salons, webhooks et permissions en 1 clic, 100% gratuit et inclus pour tous."
     ]
   },
   {
@@ -187,7 +182,6 @@ export const PRACTICAL_SECURITY_GUIDES: DocGuide[] = [
     description: "Ce qu'est un raid Discord, comment l'anti-raid intervient en une seconde et met le serveur à l'abri.",
     category: "security",
     readTime: "3 min",
-    badge: "Anti-Raid",
     commandSnippet: "/antiraid enable auto_lockdown:true",
     content: [
       "Un raid Discord est une attaque coordonnée par des dizaines de comptes bots ou utilisateurs malveillants visant à inonder les salons de spam, mentionner tout le monde ou détruire l'arborescence.",
@@ -226,12 +220,11 @@ export const PRACTICAL_SECURITY_GUIDES: DocGuide[] = [
     description: "L'erreur arrive, un geste malheureux aussi : pourquoi une bonne sauvegarde protège et comment restaurer en un clic.",
     category: "security",
     readTime: "3 min",
-    badge: "Sauvegardes",
     commandSnippet: "/backup create name:'Sauvegarde Préventive'",
     content: [
       "Une sauvegarde complète capture l'intégralité de la structure : salons textuels et vocaux, catégories, rôles, permissions par salon, émojis et paramètres.",
       "En cas d'incident, tapez /backup restore ou cliquez sur Restaurer depuis le dashboard pour retrouver votre serveur à la seconde près.",
-      "Les sauvegardes Premium sont chiffrées de bout en bout et conservées en toute sécurité sur nos serveurs redondés."
+      "Les sauvegardes sont chiffrées de bout en bout et conservées en toute sécurité de bout en bout et conservées en toute sécurité sur nos serveurs redondés."
     ]
   },
   {
@@ -240,7 +233,6 @@ export const PRACTICAL_SECURITY_GUIDES: DocGuide[] = [
     description: "Des dizaines de comptes arrivent et spamment ? Les gestes à faire tout de suite pour arrêter une crise, puis comment éviter la prochaine.",
     category: "security",
     readTime: "2 min",
-    badge: "Urgence",
     commandSnippet: "/lockdown all reason:'Raid en cours'",
     content: [
       "1. Activez le confinement d'urgence : tapez /lockdown all pour fermer instantanément l'écriture dans tous les salons publics.",
@@ -280,7 +272,6 @@ export const PRACTICAL_SECURITY_GUIDES: DocGuide[] = [
     description: "Le compte de ton staff a été volé et s'en prend au serveur ? Comment réagir et comment faire pour qu'un seul compte ne puisse pas tout casser.",
     category: "security",
     readTime: "3 min",
-    badge: "Anti-Nuke",
     commandSnippet: "/antinuke set threshold:3 action:quarantine",
     content: [
       "Même un modérateur de confiance peut se faire voler son token via un malware ou une fausse vérification QR code.",
@@ -320,7 +311,6 @@ export const PRACTICAL_SECURITY_GUIDES: DocGuide[] = [
     description: "Permissions, rôles, 2FA, salons, logs et sauvegardes : la liste à cocher pour sécuriser un serveur Discord avant qu'un problème n'arrive.",
     category: "security",
     readTime: "4 min",
-    badge: "Checklist",
     commandSnippet: "/security audit report",
     content: [
       "1. Exiger l'authentification 2FA pour tous les membres ayant des permissions de modération.",
@@ -528,7 +518,6 @@ export const MODULE_CATEGORIES: ModuleCategoryGroup[] = [
         name: "Anti-réorganisation de rôles",
         category: "roles",
         categoryLabel: "Rôles",
-        isPremium: true,
         defaultAction: "Rétablissement de l'ordre hiérarchique",
         reactionTime: "< 260ms",
         description: "Détecte et bloque toute tentative de déplacement d'un rôle vers le haut de la hiérarchie pour contourner les restrictions Discord.",
@@ -540,7 +529,6 @@ export const MODULE_CATEGORIES: ModuleCategoryGroup[] = [
         name: "Anti-rôle de masse",
         category: "roles",
         categoryLabel: "Rôles",
-        isPremium: true,
         defaultAction: "Blocage de l'opération en masse",
         reactionTime: "< 210ms",
         description: "Empêche l'attribution ou le retrait simultané d'un rôle à des centaines de membres à la chaîne.",
@@ -675,7 +663,6 @@ export const MODULE_CATEGORIES: ModuleCategoryGroup[] = [
         name: "Anti-suppression de template",
         category: "serveur",
         categoryLabel: "Serveur",
-        isPremium: true,
         defaultAction: "Restauration immédiate",
         reactionTime: "< 200ms",
         description: "Protège les modèles de guilde et paramètres avancés d'intégration.",
@@ -738,7 +725,6 @@ export const MODULE_CATEGORIES: ModuleCategoryGroup[] = [
         name: "Anti-toxicité",
         category: "messages",
         categoryLabel: "Messages",
-        isPremium: true,
         defaultAction: "Avertissement discret et signalement",
         reactionTime: "< 250ms",
         description: "Détecte les comportements toxiques, le harcèlement passif et l'agressivité verbale via notre moteur d'analyse contextuelle.",
@@ -863,7 +849,6 @@ export const MODULE_CATEGORIES: ModuleCategoryGroup[] = [
         name: "Rollback instantané",
         category: "sauvegardes",
         categoryLabel: "Sauvegarde",
-        isPremium: true,
         defaultAction: "Restauration en un clic",
         reactionTime: "< 2.5s",
         description: "En cas d'attaque catastrophique, remontez dans le temps et restaurez l'état exact du serveur avant l'attaque en quelques secondes.",
@@ -879,7 +864,6 @@ export const MODULE_CATEGORIES: ModuleCategoryGroup[] = [
         name: "Sauvegarde planifiée",
         category: "sauvegardes",
         categoryLabel: "Sauvegarde",
-        isPremium: true,
         defaultAction: "Capture automatique horaire",
         reactionTime: "Automatique",
         description: "Prend un instantané complet chiffré de votre serveur toutes les heures et conserve l'historique sur 30 jours glissants.",
@@ -891,7 +875,6 @@ export const MODULE_CATEGORIES: ModuleCategoryGroup[] = [
         name: "Sauvegarde manuelle",
         category: "sauvegardes",
         categoryLabel: "Sauvegarde",
-        isPremium: true,
         defaultAction: "Création d'instantané",
         reactionTime: "< 1.5s",
         description: "Créez une archive instantanée de votre serveur avant toute opération de maintenance ou modification de structure importante.",
@@ -902,129 +885,597 @@ export const MODULE_CATEGORIES: ModuleCategoryGroup[] = [
   },
   {
     id: "supplementaires",
-    label: "Modules supplémentaires (Mode Ultra)",
+    label: "Modules supplémentaires",
     count: 10,
     modules: [
       {
         id: "anti-renommage-massif",
         name: "Anti-renommage massif de serveur",
         category: "supplementaires",
-        categoryLabel: "Mode Ultra",
-        isPremium: true,
+        categoryLabel: "Modules supplémentaires",
         defaultAction: "Annulation & Verrouillage du nom",
         reactionTime: "< 180ms",
         description: "Bloque les tentatives de raid par changement de nom d'affichage de dizaines d'utilisateurs simultanément.",
-        commandSnippet: "/ultra enable module:anti-mass-rename",
+        commandSnippet: "/security module enable module:anti-mass-rename",
         details: ["Empêche de renommer tous les membres avec le même pseudo de raid."]
       },
       {
         id: "anti-changement-icone",
         name: "Anti-changement d'icône",
         category: "supplementaires",
-        categoryLabel: "Mode Ultra",
-        isPremium: true,
+        categoryLabel: "Modules supplémentaires",
         defaultAction: "Restauration de l'icône originale",
         reactionTime: "< 210ms",
         description: "Verrouille l'icône et la bannière du serveur contre tout remplacement malveillant.",
-        commandSnippet: "/ultra enable module:lock-icon",
+        commandSnippet: "/security module enable module:lock-icon",
         details: ["Sauvegarde l'image haute définition dans le cloud de secours."]
       },
       {
         id: "anti-suppression-emojis",
         name: "Anti-suppression d'émojis",
         category: "supplementaires",
-        categoryLabel: "Mode Ultra",
-        isPremium: true,
+        categoryLabel: "Modules supplémentaires",
         defaultAction: "Ré-upload automatique des émojis effacés",
         reactionTime: "< 350ms",
         description: "Protège votre bibliothèque d'émojis personnalisés contre les suppressions massives.",
-        commandSnippet: "/ultra enable module:protect-emojis auto_reupload:true",
+        commandSnippet: "/security module enable module:protect-emojis auto_reupload:true",
         details: ["Conserve une archive compressée de chaque émoji pour ré-upload immédiat."]
       },
       {
         id: "anti-suppression-stickers",
         name: "Anti-suppression de stickers",
         category: "supplementaires",
-        categoryLabel: "Mode Ultra",
-        isPremium: true,
+        categoryLabel: "Modules supplémentaires",
         defaultAction: "Restauration des autocollants",
         reactionTime: "< 360ms",
         description: "Protège les autocollants de guilde contre la destruction intentionnelle.",
-        commandSnippet: "/ultra enable module:protect-stickers",
+        commandSnippet: "/security module enable module:protect-stickers",
         details: ["Rétablit les formats PNG, APNG et Lottie."]
       },
       {
         id: "anti-suppression-integration",
         name: "Anti-suppression d'intégration",
         category: "supplementaires",
-        categoryLabel: "Mode Ultra",
-        isPremium: true,
+        categoryLabel: "Modules supplémentaires",
         defaultAction: "Blocage de la déconnexion",
         reactionTime: "< 240ms",
         description: "Protège les intégrations externes liées au serveur contre les déconnexions sauvages.",
-        commandSnippet: "/ultra enable module:protect-integrations",
+        commandSnippet: "/security module enable module:protect-integrations",
         details: ["Sécurise les liaisons Patreon, YouTube et Twitch."]
       },
       {
         id: "anti-changement-afk",
         name: "Anti-changement de salon AFK",
         category: "supplementaires",
-        categoryLabel: "Mode Ultra",
-        isPremium: true,
+        categoryLabel: "Modules supplémentaires",
         defaultAction: "Rétablissement du salon AFK officiel",
         reactionTime: "< 200ms",
         description: "Empêche le détournement du salon AFK configuré dans les paramètres du serveur.",
-        commandSnippet: "/ultra enable module:lock-afk-channel",
+        commandSnippet: "/security module enable module:lock-afk-channel",
         details: ["Évite les déplacements intempestifs de membres inactifs vers des salons piégés."]
       },
       {
         id: "anti-suppression-soundboard",
         name: "Anti-suppression de soundboard",
         category: "supplementaires",
-        categoryLabel: "Mode Ultra",
-        isPremium: true,
+        categoryLabel: "Modules supplémentaires",
         defaultAction: "Restauration des sons",
         reactionTime: "< 340ms",
         description: "Protège les effets sonores de la table d'harmonie du serveur.",
-        commandSnippet: "/ultra enable module:protect-soundboard",
+        commandSnippet: "/security module enable module:protect-soundboard",
         details: ["Préserve les fichiers audio et réglages de volume."]
       },
       {
         id: "anti-bypass-quarantaine",
         name: "Anti-bypass de quarantaine",
         category: "supplementaires",
-        categoryLabel: "Mode Ultra",
-        isPremium: true,
+        categoryLabel: "Modules supplémentaires",
         defaultAction: "Rétablissement strict des restrictions",
         reactionTime: "< 140ms",
         description: "Empêche tout membre placé en quarantaine de contourner ses limitations via des rôles tiers.",
-        commandSnippet: "/ultra enable module:strict-quarantine",
+        commandSnippet: "/security module enable module:strict-quarantine",
         details: ["Surveillance permanente de la matrice des permissions effectives."]
       },
       {
         id: "anti-changement-widget",
         name: "Anti-changement de widget",
         category: "supplementaires",
-        categoryLabel: "Mode Ultra",
-        isPremium: true,
+        categoryLabel: "Modules supplémentaires",
         defaultAction: "Verrouillage du widget",
         reactionTime: "< 220ms",
         description: "Verrouille les réglages du widget public pour empêcher l'exposition d'invitations pirates.",
-        commandSnippet: "/ultra enable module:lock-widget",
+        commandSnippet: "/security module enable module:lock-widget",
         details: ["Sécurise les intégrations web tierces."]
       },
       {
         id: "anti-suppression-onboarding",
         name: "Anti-suppression d'onboarding",
         category: "supplementaires",
-        categoryLabel: "Mode Ultra",
-        isPremium: true,
+        categoryLabel: "Modules supplémentaires",
         defaultAction: "Rétablissement de l'accueil communautaire",
         reactionTime: "< 260ms",
         description: "Protège les questions de bienvenue, rôles de sélection et canaux par défaut configurés dans l'onboarding Discord.",
-        commandSnippet: "/ultra enable module:protect-onboarding",
+        commandSnippet: "/security module enable module:protect-onboarding",
         details: ["Garantit que les nouveaux membres arrivent toujours sur un parcours d'accueil propre."]
       }
     ]
+  }
+];
+
+export interface DocCommand {
+  name: string;
+  syntax: string;
+  category: "Sécurité" | "Modération" | "Configuration" | "Musique" | "Spotify" | "Utilitaires" | "Fun";
+  description: string;
+  permissions?: string;
+  subcommands?: { name: string; syntax?: string; description: string }[];
+}
+
+export const DOC_COMMANDS: DocCommand[] = [
+  {
+    name: "shield",
+    syntax: "/shield <status|toggle|restore>",
+    category: "Sécurité",
+    permissions: "Propriétaire (Owner)",
+    description: "Active ou consulte l'état du bouclier Owner pour restaurer vos rôles et permissions en cas de raid.",
+    subcommands: [
+      { name: "status", syntax: "/shield status", description: "Affiche l'état en temps réel du bouclier et la liste des rôles sauvegardés." },
+      { name: "toggle", syntax: "/shield toggle", description: "Active ou désactive la surveillance active du bouclier." },
+      { name: "restore", syntax: "/shield restore", description: "Rétablit immédiatement vos rôles d'administration en cas de révocation malveillante." }
+    ]
+  },
+  {
+    name: "antiraid",
+    syntax: "/antiraid <status|toggle|mode>",
+    category: "Sécurité",
+    permissions: "Administrateur",
+    description: "Interrupteur maître et gestion globale des détecteurs anti-raid du serveur.",
+    subcommands: [
+      { name: "status", syntax: "/antiraid status", description: "Consulte le statut d'activation (Actif / Inactif) et la sensibilité actuelle." },
+      { name: "toggle", syntax: "/antiraid toggle", description: "Active ou coupe immédiatement l'ensemble des protections anti-raid." },
+      { name: "mode", syntax: "/antiraid mode <standard|strict>", description: "Définit le mode de réaction face aux afflux suspects." }
+    ]
+  },
+  {
+    name: "automod",
+    syntax: "/automod <rules|action|exemptions>",
+    category: "Sécurité",
+    permissions: "Administrateur",
+    description: "Configure les filtres automatiques contre le spam, les insultes, les liens malveillants et les pings massifs.",
+    subcommands: [
+      { name: "rules", syntax: "/automod rules", description: "Affiche la liste des règles de filtrage actives sur le serveur." },
+      { name: "action", syntax: "/automod action <delete|mute|kick|ban>", description: "Définit la sanction automatique appliquée aux infractions." },
+      { name: "exemptions", syntax: "/automod exemptions <add|remove>", description: "Gère les rôles ou salons exemptés du filtrage automatique." }
+    ]
+  },
+  {
+    name: "security",
+    syntax: "/security <audit|mode|lockdown|panic>",
+    category: "Sécurité",
+    permissions: "Administrateur",
+    description: "Audit de sécurité, sensibilité des modules et mesures d'urgence.",
+    subcommands: [
+      { name: "audit", syntax: "/security audit", description: "Analyse les permissions vulnérables et génère un rapport de sécurité." },
+      { name: "mode", syntax: "/security mode <standard|strict>", description: "Ajuste la rapidité d'intervention et les seuils de tolérance." },
+      { name: "lockdown", syntax: "/security lockdown [channel|all]", description: "Verrouille l'envoi de messages dans les salons publics." },
+      { name: "panic", syntax: "/security panic", description: "Bouton d'urgence : isole le serveur et bloque toutes les modifications en 150ms." }
+    ]
+  },
+  {
+    name: "whitelist",
+    syntax: "/whitelist <add|remove|list>",
+    category: "Sécurité",
+    permissions: "Propriétaire (Owner)",
+    description: "Gestion des utilisateurs et rôles de confiance autorisés à effectuer des actions d'administration sans déclencher l'anti-nuke.",
+    subcommands: [
+      { name: "add", syntax: "/whitelist add <user|role>", description: "Ajoute un membre ou un rôle à la liste blanche." },
+      { name: "remove", syntax: "/whitelist remove <user|role>", description: "Retire un membre ou un rôle de la liste blanche." },
+      { name: "list", syntax: "/whitelist list", description: "Affiche tous les détenteurs de privilèges whitelist." }
+    ]
+  },
+  {
+    name: "rescue",
+    syntax: "/rescue <start|rollback>",
+    category: "Sécurité",
+    permissions: "Propriétaire (Owner)",
+    description: "Procédure d'extrême urgence pour reprendre le contrôle du serveur après un raid destructeur.",
+    subcommands: [
+      { name: "start", syntax: "/rescue start", description: "Isole tous les modérateurs suspects et révoque les tokens Gateway." },
+      { name: "rollback", syntax: "/rescue rollback", description: "Restaure automatiquement la dernière sauvegarde saine du serveur." }
+    ]
+  },
+  {
+    name: "godmode",
+    syntax: "/godmode <enable|disable>",
+    category: "Sécurité",
+    permissions: "Propriétaire (Owner)",
+    description: "Verrouille les modifications de permissions de rôles au seul propriétaire du serveur.",
+    subcommands: [
+      { name: "enable", syntax: "/godmode enable", description: "Active le verrouillage strict Owner-only." },
+      { name: "disable", syntax: "/godmode disable", description: "Désactive le verrouillage strict." }
+    ]
+  },
+  {
+    name: "ban",
+    syntax: "/ban <user> [reason] [delete_days]",
+    category: "Modération",
+    permissions: "Bannir des membres",
+    description: "Bannit définitivement un utilisateur du serveur avec motif et suppression optionnelle des messages récents (0 à 7 jours)."
+  },
+  {
+    name: "kick",
+    syntax: "/kick <user> [reason]",
+    category: "Modération",
+    permissions: "Expulser des membres",
+    description: "Expulse un utilisateur du serveur. Le membre conserve la possibilité de rejoindre à nouveau avec une invitation valide."
+  },
+  {
+    name: "timeout",
+    syntax: "/timeout <user> <duration> [reason]",
+    category: "Modération",
+    permissions: "Modérer les membres",
+    description: "Exclut temporairement un membre pour une durée déterminée (60s à 28 jours), lui retirant le droit de parler et d'interagir."
+  },
+  {
+    name: "clear",
+    syntax: "/clear <amount> [user] [filter]",
+    category: "Modération",
+    permissions: "Gérer les messages",
+    description: "Supprime rapidement un nombre de messages dans le salon (1 à 100), avec filtre optionnel par utilisateur, bots ou liens."
+  },
+  {
+    name: "unban",
+    syntax: "/unban <user_id> [reason]",
+    category: "Modération",
+    permissions: "Bannir des membres",
+    description: "Révoque le bannissement d'un utilisateur Discord à partir de son identifiant numérique."
+  },
+  {
+    name: "mute",
+    syntax: "/mute <user> [reason]",
+    category: "Modération",
+    permissions: "Rendre les membres muets",
+    description: "Rend muet un utilisateur connecté dans un salon vocal du serveur."
+  },
+  {
+    name: "unmute",
+    syntax: "/unmute <user> [reason]",
+    category: "Modération",
+    permissions: "Rendre les membres muets",
+    description: "Rétablit la voix d'un membre réduit au silence en salon vocal."
+  },
+  {
+    name: "deafen",
+    syntax: "/deafen <user> [reason]",
+    category: "Modération",
+    permissions: "Mettre les membres en sourdine",
+    description: "Assourdit un utilisateur connecté en salon vocal, l'empêchant d'entendre les autres participants."
+  },
+  {
+    name: "undeafen",
+    syntax: "/undeafen <user> [reason]",
+    category: "Modération",
+    permissions: "Mettre les membres en sourdine",
+    description: "Réactive l'écoute d'un membre assourdi en salon vocal."
+  },
+  {
+    name: "quarantine",
+    syntax: "/quarantine <user> [reason]",
+    category: "Modération",
+    permissions: "Modérer les membres",
+    description: "Assigne immédiatement le rôle de quarantaine à un utilisateur, bloquant son accès à l'ensemble des salons publics."
+  },
+  {
+    name: "setup",
+    syntax: "/setup [quickstart|interactive]",
+    category: "Configuration",
+    permissions: "Administrateur",
+    description: "Assistant d'initialisation et de configuration automatique d'Etho pour protéger votre serveur en deux minutes.",
+    subcommands: [
+      { name: "quickstart", syntax: "/setup quickstart", description: "Applique automatiquement les paramètres recommandés optimaux." },
+      { name: "interactive", syntax: "/setup interactive", description: "Guide pas à pas avec questions sur la sensibilité désirée." }
+    ]
+  },
+  {
+    name: "settings",
+    syntax: "/settings <view|set|reset>",
+    category: "Configuration",
+    permissions: "Administrateur",
+    description: "Consulte ou modifie les paramètres globaux de configuration d'Etho sur la guilde.",
+    subcommands: [
+      { name: "view", syntax: "/settings view", description: "Affiche un récapitulatif visuel complet des réglages actuels." },
+      { name: "set", syntax: "/settings set <key> <value>", description: "Modifie une valeur de paramètre spécifique." },
+      { name: "reset", syntax: "/settings reset", description: "Rétablit les paramètres d'usine par défaut." }
+    ]
+  },
+  {
+    name: "module",
+    syntax: "/module <list|enable|disable|info>",
+    category: "Configuration",
+    permissions: "Administrateur",
+    description: "Gestion granulaire et activation modulaire des protections et fonctionnalités.",
+    subcommands: [
+      { name: "list", syntax: "/module list", description: "Liste l'ensemble des modules avec leur état (Actif / Inactif)." },
+      { name: "enable", syntax: "/module enable <nom>", description: "Active un module spécifique." },
+      { name: "disable", syntax: "/module disable <nom>", description: "Désactive temporairement un module." },
+      { name: "info", syntax: "/module info <nom>", description: "Affiche la description détaillée et les seuils d'un module." }
+    ]
+  },
+  {
+    name: "logs",
+    syntax: "/logs <channel|type|status>",
+    category: "Configuration",
+    permissions: "Administrateur",
+    description: "Configure le salon récepteur des alertes d'intervention et des rapports d'audit en direct.",
+    subcommands: [
+      { name: "channel", syntax: "/logs channel <#salon>", description: "Définit le salon dédié aux alertes de sécurité." },
+      { name: "type", syntax: "/logs type <all|security|moderation|voice>", description: "Filtre les catégories d'alertes à transmettre." }
+    ]
+  },
+  {
+    name: "audit",
+    syntax: "/audit <track|export>",
+    category: "Configuration",
+    permissions: "Administrateur",
+    description: "Traçage temps réel des modifications de rôles, salons, permissions et webhooks avec horodatage milliseconde.",
+    subcommands: [
+      { name: "track", syntax: "/audit track <all|roles|channels|members>", description: "Active la surveillance ciblée d'événements." },
+      { name: "export", syntax: "/audit export [format:json|csv]", description: "Télécharge le journal d'audit pour archivage externe." }
+    ]
+  },
+  {
+    name: "status",
+    syntax: "/status",
+    category: "Configuration",
+    permissions: "Tout le monde",
+    description: "Affiche l'état opérationnel d'Etho, la latence des workers, le temps de disponibilité (uptime) et le nombre de serveurs protégés."
+  },
+  {
+    name: "play",
+    syntax: "/play <query|url>",
+    category: "Musique",
+    permissions: "Tout le monde",
+    description: "Joue un titre musical ou une playlist complète (Spotify, YouTube, SoundCloud) dans votre salon vocal avec qualité studio haute fidélité."
+  },
+  {
+    name: "pause",
+    syntax: "/pause",
+    category: "Musique",
+    permissions: "Tout le monde",
+    description: "Met en pause la lecture de la piste audio en cours."
+  },
+  {
+    name: "resume",
+    syntax: "/resume",
+    category: "Musique",
+    permissions: "Tout le monde",
+    description: "Reprend la lecture musicale mise en pause."
+  },
+  {
+    name: "skip",
+    syntax: "/skip",
+    category: "Musique",
+    permissions: "Tout le monde",
+    description: "Passe immédiatement au titre suivant dans la file d'attente."
+  },
+  {
+    name: "stop",
+    syntax: "/stop",
+    category: "Musique",
+    permissions: "Tout le monde",
+    description: "Arrête la lecture audio, vide l'ensemble de la file d'attente et déconnecte le bot du salon vocal."
+  },
+  {
+    name: "volume",
+    syntax: "/volume <1-150>",
+    category: "Musique",
+    permissions: "Tout le monde",
+    description: "Ajuste le volume d'écoute sonore de la diffusion musicale entre 1% et 150% sans distorsion."
+  },
+  {
+    name: "queue",
+    syntax: "/queue [page]",
+    category: "Musique",
+    permissions: "Tout le monde",
+    description: "Affiche la liste paginée de tous les titres en attente dans la file musicale actuelle."
+  },
+  {
+    name: "nowplaying",
+    syntax: "/nowplaying",
+    category: "Musique",
+    permissions: "Tout le monde",
+    description: "Affiche la fiche interactive du morceau en cours avec titre, artiste, pochette, barre de progression et boutons interactifs."
+  },
+  {
+    name: "loop",
+    syntax: "/loop <off|track|queue>",
+    category: "Musique",
+    permissions: "Tout le monde",
+    description: "Active la répétition en boucle du morceau actuel ou de l'ensemble de la file d'attente musicale."
+  },
+  {
+    name: "lyrics",
+    syntax: "/lyrics [query]",
+    category: "Musique",
+    permissions: "Tout le monde",
+    description: "Recherche et affiche les paroles synchronisées du morceau en cours de lecture ou du titre recherché."
+  },
+  {
+    name: "filters",
+    syntax: "/filters <bassboost|nightcore|8d|vaporwave|clear>",
+    category: "Musique",
+    permissions: "Tout le monde",
+    description: "Applique des filtres audio DSP en temps réel (Bassboost, Nightcore, Audio spatial 8D ou Vaporwave)."
+  },
+  {
+    name: "spotify",
+    syntax: "/spotify <vc|nowplaying|like|playlist>",
+    category: "Spotify",
+    permissions: "Tout le monde",
+    description: "Passerelle directe Spotify : synchronisez votre compte et partagez votre écoute en direct dans votre salon vocal.",
+    subcommands: [
+      { name: "vc", syntax: "/spotify vc", description: "Rejoint votre salon vocal et diffuse instantanément votre morceau Spotify en cours." },
+      { name: "nowplaying", syntax: "/spotify nowplaying", description: "Affiche votre titre en écoute avec pochette officielle et lien d'accès." },
+      { name: "like", syntax: "/spotify like", description: "Ajoute automatiquement le morceau diffusé à vos titres favoris Spotify." },
+      { name: "playlist", syntax: "/spotify playlist [nom]", description: "Parcourt et lance une de vos playlists Spotify personnelles." }
+    ]
+  },
+  {
+    name: "help",
+    syntax: "/help [category|command]",
+    category: "Utilitaires",
+    permissions: "Tout le monde",
+    description: "Centre d'aide officiel interactif répertoriant toutes les commandes disponibles, leur syntaxe et des exemples d'usage."
+  },
+  {
+    name: "ping",
+    syntax: "/ping",
+    category: "Utilitaires",
+    permissions: "Tout le monde",
+    description: "Mesure la latence en temps réel entre votre serveur Discord, l'API Discord Gateway et les workers d'Etho."
+  },
+  {
+    name: "bot",
+    syntax: "/bot <info|invite|support>",
+    category: "Utilitaires",
+    permissions: "Tout le monde",
+    description: "Informations générales sur Etho, lien d'invitation officiel et accès au serveur de support.",
+    subcommands: [
+      { name: "info", syntax: "/bot info", description: "Version d'Etho, technologies employées et statistiques d'infrastructure." },
+      { name: "invite", syntax: "/bot invite", description: "Génère le lien sécurisé pour ajouter Etho sur un autre serveur." },
+      { name: "support", syntax: "/bot support", description: "Lien d'invitation vers le serveur communautaire d'assistance." }
+    ]
+  },
+  {
+    name: "ticket",
+    syntax: "/ticket <create|close|panel>",
+    category: "Utilitaires",
+    permissions: "Tout le monde",
+    description: "Système complet de tickets de support privés avec salons textuels dédiés et relevés d'historique.",
+    subcommands: [
+      { name: "create", syntax: "/ticket create [motif]", description: "Ouvre un nouveau ticket d'assistance privé avec le staff." },
+      { name: "close", syntax: "/ticket close [raison]", description: "Ferme et archive le ticket avec génération de transcription." },
+      { name: "panel", syntax: "/ticket panel", description: "Déploie un panneau interactif avec bouton d'ouverture de ticket." }
+    ]
+  },
+  {
+    name: "form",
+    syntax: "/form <create|list|responses>",
+    category: "Utilitaires",
+    permissions: "Gérer le serveur",
+    description: "Création et gestion de formulaires de recrutement de staff ou de questionnaires pour les membres.",
+    subcommands: [
+      { name: "create", syntax: "/form create <titre>", description: "Crée un nouveau questionnaire à questions multiples." },
+      { name: "list", syntax: "/form list", description: "Liste tous les formulaires actifs sur le serveur." },
+      { name: "responses", syntax: "/form responses <id>", description: "Consulte les réponses soumises par les candidats." }
+    ]
+  },
+  {
+    name: "language",
+    syntax: "/language <fr|en|es|de>",
+    category: "Utilitaires",
+    permissions: "Gérer le serveur",
+    description: "Définit la langue d'interaction par défaut d'Etho sur votre guilde (Français, Anglais, Espagnol, Allemand)."
+  },
+  {
+    name: "ask",
+    syntax: "/ask <question>",
+    category: "Utilitaires",
+    permissions: "Tout le monde",
+    description: "Assistant d'aide intelligent répondant aux questions des membres sur les fonctionnalités et la sécurité."
+  },
+  {
+    name: "summarize",
+    syntax: "/summarize [channel] [limit]",
+    category: "Utilitaires",
+    permissions: "Gérer les messages",
+    description: "Synthétise automatiquement les conversations récentes d'un salon pour rattraper rapidement ce qui s'est dit."
+  },
+  {
+    name: "lastfm",
+    syntax: "/lastfm <nowplaying|recent|topartists|taste|login>",
+    category: "Fun",
+    permissions: "Tout le monde",
+    description: "Intégration Last.fm : affichez vos scrobbles en direct, tops artistes et comparez vos goûts musicaux entre membres.",
+    subcommands: [
+      { name: "nowplaying", syntax: "/lastfm nowplaying", description: "Affiche le titre que vous écoutez actuellement sur Last.fm." },
+      { name: "recent", syntax: "/lastfm recent", description: "Liste vos derniers morceaux écoutés." },
+      { name: "topartists", syntax: "/lastfm topartists [period]", description: "Affiche vos artistes les plus écoutés sur la période choisie." },
+      { name: "taste", syntax: "/lastfm taste <user>", description: "Compare vos goûts musicaux avec un autre membre du serveur." },
+      { name: "login", syntax: "/lastfm login <username>", description: "Associe votre pseudonyme Last.fm à votre compte Discord." }
+    ]
+  },
+  {
+    name: "tiktok",
+    syntax: "/tiktok <profile|video>",
+    category: "Fun",
+    permissions: "Tout le monde",
+    description: "Recherche de profils, inspection de vidéos et prévisualisation de créateurs TikTok sans quitter Discord.",
+    subcommands: [
+      { name: "profile", syntax: "/tiktok profile <nom>", description: "Affiche les statistiques (abonnés, likes, bio) d'un compte TikTok." },
+      { name: "video", syntax: "/tiktok video <url>", description: "Inspecte et prévisualise une vidéo TikTok." }
+    ]
+  },
+  {
+    name: "pinterest",
+    syntax: "/pinterest <search|pin|user>",
+    category: "Fun",
+    permissions: "Tout le monde",
+    description: "Recherche d'inspiration visuelle, épingles et tableaux créatifs Pinterest.",
+    subcommands: [
+      { name: "search", syntax: "/pinterest search <mots-clés>", description: "Recherche des épingles correspondant à votre requête." },
+      { name: "pin", syntax: "/pinterest pin <id_ou_url>", description: "Affiche l'image haute définition d'une épingle Pinterest." },
+      { name: "user", syntax: "/pinterest user <profil>", description: "Affiche les tableaux et le profil d'un créateur." }
+    ]
+  },
+  {
+    name: "instagram",
+    syntax: "/instagram <user|post>",
+    category: "Fun",
+    permissions: "Tout le monde",
+    description: "Inspection de profils publics et aperçu de publications Instagram avec photos haute résolution.",
+    subcommands: [
+      { name: "user", syntax: "/instagram user <compte>", description: "Affiche les informations et photos récentes d'un profil Instagram." },
+      { name: "post", syntax: "/instagram post <url>", description: "Affiche le détail et le média d'une publication Instagram." }
+    ]
+  },
+  {
+    name: "twitter",
+    syntax: "/twitter <user|post>",
+    category: "Fun",
+    permissions: "Tout le monde",
+    description: "Consultation de profils et partage enrichi de publications X (Twitter) dans vos salons.",
+    subcommands: [
+      { name: "user", syntax: "/twitter user <handle>", description: "Affiche la bio, abonnés et derniers tweets d'un profil." },
+      { name: "post", syntax: "/twitter post <url>", description: "Intègre proprement un tweet avec médias et texte complet." }
+    ]
+  },
+  {
+    name: "quote",
+    syntax: "/quote <message_id> [style]",
+    category: "Fun",
+    permissions: "Tout le monde",
+    description: "Génère un visuel de citation élégant et stylisé à partir d'un message marquant envoyé sur le serveur."
+  },
+  {
+    name: "image",
+    syntax: "/image <query>",
+    category: "Fun",
+    permissions: "Tout le monde",
+    description: "Recherche et affiche des images haute résolution adaptées au contexte Discord."
+  },
+  {
+    name: "reverseimage",
+    syntax: "/reverseimage <url|attachment>",
+    category: "Fun",
+    permissions: "Tout le monde",
+    description: "Recherche d'image inversée sur les moteurs majeurs (Google Lens, TinEye, SauceNAO) pour retrouver la source."
+  },
+  {
+    name: "imagine",
+    syntax: "/imagine <prompt> [style]",
+    category: "Fun",
+    permissions: "Tout le monde",
+    description: "Génère une illustration visuelle originale à partir d'une description textuelle."
   }
 ];

@@ -53167,6 +53167,59 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_29_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_29_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_29_de);
 
+const v1_75_30_fr: ChangelogEntry = {
+  version: "v1.75.30",
+  date: "2026-10-13",
+  title: "Documentation Etho : Sidebar Transparente Style Keeper, Catalogue Intégral des Commandes et Retrait des Tiers Payants",
+  items: [
+    "Alignement de marque : élimination définitive de 'Etho Protect' au profit de 'Etho' dans l'en-tête, le hero et les guides.",
+    "Sidebar transparente style Keeper : suppression du fond encadré de la barre latérale pour un rendu épuré sans conteneur, arborescence continue sur fond obsidian avec champ de recherche en tête.",
+    "Catalogue exhaustif de 50 commandes : intégration d'une section dédiée listant toutes les commandes (Sécurité, Modération, Configuration, Musique, Spotify, Utilitaires, Fun) avec syntaxes, sous-commandes et copie en 1 clic.",
+    "Suppression des placeholders et tiers payants : retrait de tous les badges et mentions Ultra, Premium, Essentiel et Recommandé ; toutes les fonctionnalités sont 100% gratuites et incluses pour tous.",
+  ],
+};
+
+const v1_75_30_en: ChangelogEntry = {
+  version: "v1.75.30",
+  date: "2026-10-13",
+  title: "Etho Documentation: Keeper-Style Seamless Sidebar, Full Commands Catalog & Free Tier Streamlining",
+  items: [
+    "Brand alignment: final transition from 'Etho Protect' to 'Etho' across header, hero, and guides.",
+    "Keeper-style seamless sidebar: removed sidebar container background for a flush obsidian layout with top search input.",
+    "Comprehensive 50-command catalog: dedicated section featuring all slash commands (Security, Moderation, Setup, Music, Spotify, Utility, Fun) with syntax, subcommands, and 1-click copy.",
+    "Removal of paywall placeholders: purged all Ultra, Premium, Essential, and Recommended badges; all features are 100% free and included.",
+  ],
+};
+
+const v1_75_30_es: ChangelogEntry = {
+  version: "v1.75.30",
+  date: "2026-10-13",
+  title: "Documentación de Etho: Barra Lateral Estilo Keeper, Catálogo Completo de Comandos y Eliminación de Tiers de Pago",
+  items: [
+    "Alineación de marca: reemplazo definitivo de 'Etho Protect' por 'Etho' en encabezado, hero y guías.",
+    "Barra lateral transparente estilo Keeper: eliminación del fondo enmarcado para un diseño limpio e integrado con búsqueda superior.",
+    "Catálogo exhaustivo de 50 comandos: sección dedicada con todos los comandos slash y copiado en 1 clic.",
+    "Eliminación de insignias Ultra/Premium: supresión de etiquetas de pago; todas las funciones son 100% gratuitas e incluidas.",
+  ],
+};
+
+const v1_75_30_de: ChangelogEntry = {
+  version: "v1.75.30",
+  date: "2026-10-13",
+  title: "Etho Dokumentation: Nahtlose Keeper-Sidebar, Vollständiger Befehlskatalog & Bereinigung von Bezahl-Badges",
+  items: [
+    "Marken-Harmonisierung: vollständiger Wechsel von 'Etho Protect' zu 'Etho' in Header, Hero und Anleitungen.",
+    "Keeper-Sidebar ohne Hintergrund: nahtlose Seitenleiste ohne Rahmen auf Obsidian-Hintergrund mit Suchfeld oben.",
+    "Umfassender 50-Befehle-Katalog: dedizierter Bereich für alle Slash-Commands mit Syntax und 1-Klick-Kopieren.",
+    "Entfernung von Ultra/Premium-Badges: alle Funktionen sind 100% kostenlos und für alle Server inklusive.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_30_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_30_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_30_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_30_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

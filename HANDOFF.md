@@ -1,4 +1,4 @@
-# ETHONE — passation & nouveautés (2026-10-13, version 1.75.29)
+# ETHONE — passation & nouveautés (2026-10-13, version 1.75.30)
 
 ## Projet
 - `ethone-next/` : site Next.js statique (ethone.dev, Cloudflare Pages, déploiement auto au push sur `main`).
@@ -25,9 +25,15 @@
 
 ---
 
-## Nouveautés majeures & Réalisations récentes (v1.73.0 → v1.75.29)
+## Nouveautés majeures & Réalisations récentes (v1.73.0 → v1.75.30)
 
-### 0. Sélecteur de Profil et Multi-Compte dans le Menu Utilisateur (v1.75.29)
+### 0. Documentation Etho : Sidebar Transparente Style Keeper, Catalogue 50 Commandes & 100% Inclus (v1.75.30)
+- **Alignement de marque** : Dénomination exclusive « Etho » dans l'en-tête, le hero et le footer (suppression de « Etho Protect »).
+- **Sidebar transparente style Keeper** : Suppression intégrale du fond encadré de la barre latérale pour une intégration directe sur fond obsidian (`#090d0b`), recherche intégrée en tête et arborescence continue sur rail vertical sans compteurs numériques ni bordures superflues.
+- **Catalogue complet des 50 commandes** : Section interactive dédiée listant l'ensemble des commandes d'Etho (Sécurité, Modération, Configuration, Musique, Spotify, Utilitaires, Fun) avec filtre instantané par catégorie, recherche temps réel, syntaxes, sous-commandes et copie en 1 clic.
+- **Élimination de tout placeholder payant** : Retrait définitif de toutes les mentions et badges « Ultra », « Premium », « Essentiel » et « Recommandé ». Etho n'a aucun abonnement payant et tout est 100% inclus pour chaque serveur.
+
+### 1. Sélecteur de Profil et Multi-Compte dans le Menu Utilisateur (v1.75.29)
 - **Sélecteur de profil direct** : Ajout d'un tiroir interactif « Changer de profil » directement dans `UserProfileDropdown` affichant le profil actif en badge et listant tous les profils configurés avec puce de couleur d'accent et indicateur d'espace.
 - **Bascule en 1 clic** : Changement instantané avec synchronisation réactive des paramètres via `useActiveProfile` et confirmation par toast sans rechargement de page.
 - **Prise en charge multi-compte** : Mémorisation des comptes connectés (`ethone_saved_accounts`), affichage des avatars/identifiants et bascule fluide entre comptes enregistrés.

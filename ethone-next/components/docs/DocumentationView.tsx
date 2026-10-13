@@ -7,6 +7,7 @@ import {
   STEP_BY_STEP_GUIDES,
   PRACTICAL_SECURITY_GUIDES,
   MODULE_CATEGORIES,
+  DOC_COMMANDS,
   type DocGuide,
   type DocModule,
 } from "@/data/documentationData";
@@ -99,6 +100,17 @@ function MenuIcon({ className = "" }: { className?: string }) {
   );
 }
 
+const COMMAND_CATEGORIES = [
+  "Toutes",
+  "Sécurité",
+  "Modération",
+  "Configuration",
+  "Musique",
+  "Spotify",
+  "Utilitaires",
+  "Fun",
+] as const;
+
 export default function DocumentationView() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedGuide, setSelectedGuide] = useState<DocGuide | null>(null);
@@ -106,6 +118,8 @@ export default function DocumentationView() {
   const [copiedText, setCopiedText] = useState<string | null>(null);
   const [activeSection, setActiveSection] = useState("accueil");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [selectedCommandCategory, setSelectedCommandCategory] = useState<string>("Toutes");
+  const [commandSearch, setCommandSearch] = useState("");
 
   const handleCopy = useCallback((text: string) => {
     navigator.clipboard.writeText(text);
@@ -138,33 +152,52 @@ export default function DocumentationView() {
         m.commandSnippet.toLowerCase().includes(q)
     );
 
+    const matchedCommands = DOC_COMMANDS.filter(
+      (cmd) =>
+        cmd.name.toLowerCase().includes(q) ||
+        cmd.syntax.toLowerCase().includes(q) ||
+        cmd.description.toLowerCase().includes(q) ||
+        cmd.category.toLowerCase().includes(q)
+    );
+
     return {
       guides: matchedGuides,
       modules: matchedModules,
-      total: matchedGuides.length + matchedModules.length,
+      commands: matchedCommands,
+      total: matchedGuides.length + matchedModules.length + matchedCommands.length,
     };
   }, [searchQuery, allModules]);
+
+  const filteredCommands = useMemo(() => {
+    return DOC_COMMANDS.filter((cmd) => {
+      const matchCat =
+        selectedCommandCategory === "Toutes" || cmd.category === selectedCommandCategory;
+      const q = commandSearch.trim().toLowerCase();
+      const matchSearch =
+        !q ||
+        cmd.name.toLowerCase().includes(q) ||
+        cmd.syntax.toLowerCase().includes(q) ||
+        cmd.description.toLowerCase().includes(q);
+      return matchCat && matchSearch;
+    });
+  }, [selectedCommandCategory, commandSearch]);
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
         e.preventDefault();
-        const input = document.getElementById("docs-sidebar-search-input") || document.getElementById("docs-search-input");
-        if (input) input.focus();
-      }
-      if (e.key === "Escape") {
-        if (selectedGuide) setSelectedGuide(null);
-        if (selectedModule) setSelectedModule(null);
-        if (searchQuery) setSearchQuery("");
+        const input =
+          document.getElementById("docs-search-input") ||
+          document.getElementById("docs-sidebar-search-input");
+        input?.focus();
       }
     }
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selectedGuide, selectedModule, searchQuery]);
+  }, []);
 
   return (
-    <div className="relative min-h-dvh w-full overflow-x-hidden bg-[#090d0b] text-zinc-200 antialiased selection:bg-emerald-500/25 selection:text-white">
-      {/* Top Header */}
+    <div className="min-h-screen bg-[#090d0b] text-zinc-100 selection:bg-emerald-500/30 selection:text-emerald-200">
       <header className="sticky top-0 z-40 border-b border-[#18231c] bg-[#090d0b]/90 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-6">
@@ -200,6 +233,9 @@ export default function DocumentationView() {
               </a>
               <a href="#securite" className="rounded-lg px-3 py-1.5 transition-colors hover:text-white hover:bg-white/5">
                 Sécurité
+              </a>
+              <a href="#commandes" className="rounded-lg px-3 py-1.5 transition-colors hover:text-white hover:bg-white/5">
+                Commandes
               </a>
               <a href="#modules" className="rounded-lg px-3 py-1.5 transition-colors hover:text-white hover:bg-white/5">
                 Modules
@@ -238,14 +274,14 @@ export default function DocumentationView() {
 
             <Link
               href="/login"
-              className="hidden sm:inline-flex rounded-lg border border-[#1f2d24] px-3.5 py-1.5 text-xs font-semibold text-zinc-300 transition-colors hover:border-zinc-700 hover:bg-white/5 hover:text-white"
+              className="hidden sm:inline-flex rounded-lg px-3 py-1.5 text-xs font-semibold text-zinc-300 hover:text-white hover:bg-white/5 transition-colors"
             >
               Connexion
             </Link>
 
             <Link
-              href="/discord"
-              className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-500 px-3.5 py-1.5 text-xs font-bold text-[#060a08] shadow-[0_0_18px_rgba(34,197,94,0.35)] transition-all hover:bg-emerald-400 hover:scale-[1.02]"
+              href="/bot"
+              className="inline-flex h-8 items-center justify-center gap-1.5 rounded-lg bg-emerald-500 px-3.5 text-xs font-bold text-[#060a08] shadow-[0_0_15px_rgba(34,197,94,0.3)] transition-all hover:bg-emerald-400 hover:scale-105"
             >
               <span>+ Dashboard</span>
             </Link>
@@ -253,16 +289,13 @@ export default function DocumentationView() {
         </div>
       </header>
 
-      {/* Main Container: Sidebar + Content */}
       <div className="mx-auto flex max-w-[1440px] px-4 sm:px-6 lg:px-8">
-        {/* Left Sidebar (Keeper-style clean rail, wider and beautiful) */}
         <aside
-          className={`fixed inset-y-0 left-0 z-30 w-76 shrink-0 border-r border-[#18231c] bg-[#090d0b] pt-20 transition-transform lg:static lg:block lg:pt-6 lg:translate-x-0 lg:w-76 xl:w-80 ${
+          className={`fixed inset-y-0 left-0 z-30 w-72 shrink-0 bg-[#090d0b] pt-20 transition-transform lg:static lg:block lg:pt-6 lg:translate-x-0 lg:w-72 xl:w-80 ${
             mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         >
           <div className="sticky top-20 flex h-[calc(100vh-5.5rem)] flex-col overflow-y-auto pr-3 pb-12 [scrollbar-width:thin] [scrollbar-color:#233228_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#233228] [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-[#34483a]">
-            {/* Search Input at Top of Sidebar */}
             <div className="mb-3 px-1">
               <label className="relative block">
                 <SearchIcon className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 h-3.5 w-3.5" />
@@ -286,9 +319,7 @@ export default function DocumentationView() {
               </label>
             </div>
 
-            {/* Navigation Rail */}
             <div className="space-y-4 text-xs">
-              {/* Accueil */}
               <ul className="space-y-0.5">
                 <li>
                   <a
@@ -301,7 +332,7 @@ export default function DocumentationView() {
                     }}
                     className={`flex items-center justify-between gap-2 border-l-2 py-1.5 pl-3 pr-2 text-[13px] transition-colors ${
                       activeSection === "accueil" && !selectedGuide && !selectedModule
-                        ? "border-emerald-500 font-semibold text-white"
+                        ? "border-emerald-500 font-semibold text-emerald-400"
                         : "border-transparent text-zinc-400 hover:border-zinc-700 hover:text-zinc-200"
                     }`}
                   >
@@ -310,7 +341,6 @@ export default function DocumentationView() {
                 </li>
               </ul>
 
-              {/* Guides */}
               <div>
                 <p className="mb-1 mt-4 px-3 text-[12px] font-semibold text-zinc-400">Guides</p>
                 <ul className="space-y-0.5">
@@ -329,16 +359,11 @@ export default function DocumentationView() {
                           }}
                           className={`flex w-full items-center justify-between gap-2 border-l-2 py-1.5 pl-3 pr-2 text-[13px] text-left transition-colors ${
                             isActive
-                              ? "border-emerald-500 font-semibold text-white"
+                              ? "border-emerald-500 font-semibold text-emerald-400"
                               : "border-[#1c2820] text-zinc-400 hover:border-zinc-500 hover:text-zinc-100"
                           }`}
                         >
                           <span className="truncate">{guide.title}</span>
-                          {guide.badge && (
-                            <span className="shrink-0 text-[10px] text-emerald-400 font-medium">
-                              {guide.badge}
-                            </span>
-                          )}
                         </button>
                       </li>
                     );
@@ -346,7 +371,6 @@ export default function DocumentationView() {
                 </ul>
               </div>
 
-              {/* Sécurité Discord */}
               <div>
                 <p className="mb-1 mt-5 px-3 text-[12px] font-semibold text-zinc-400">Sécurité Discord</p>
                 <ul className="space-y-0.5">
@@ -365,7 +389,7 @@ export default function DocumentationView() {
                           }}
                           className={`flex w-full items-center justify-between gap-2 border-l-2 py-1.5 pl-3 pr-2 text-[13px] text-left transition-colors ${
                             isActive
-                              ? "border-emerald-500 font-semibold text-white"
+                              ? "border-emerald-500 font-semibold text-emerald-400"
                               : "border-[#1c2820] text-zinc-400 hover:border-zinc-500 hover:text-zinc-100"
                           }`}
                         >
@@ -377,30 +401,26 @@ export default function DocumentationView() {
                 </ul>
               </div>
 
-              {/* Référence */}
               <div>
                 <p className="mb-1 mt-5 px-3 text-[12px] font-semibold text-zinc-400">Référence</p>
                 <ul className="space-y-0.5">
                   <li>
-                    <button
-                      type="button"
+                    <a
+                      href="#commandes"
                       onClick={() => {
-                        const slashGuide = STEP_BY_STEP_GUIDES.find((g) => g.id === "commandes-slash");
-                        if (slashGuide) {
-                          setSelectedGuide(slashGuide);
-                          setSelectedModule(null);
-                          setActiveSection("commands");
-                        }
+                        setActiveSection("commandes");
+                        setSelectedGuide(null);
+                        setSelectedModule(null);
                         setMobileMenuOpen(false);
                       }}
                       className={`flex w-full items-center justify-between gap-2 border-l-2 py-1.5 pl-3 pr-2 text-[13px] text-left transition-colors ${
-                        activeSection === "commands"
-                          ? "border-emerald-500 font-semibold text-white"
+                        activeSection === "commandes"
+                          ? "border-emerald-500 font-semibold text-emerald-400"
                           : "border-[#1c2820] text-zinc-400 hover:border-zinc-500 hover:text-zinc-100"
                       }`}
                     >
-                      <span className="truncate">Commandes</span>
-                    </button>
+                      <span className="truncate">Commandes ({DOC_COMMANDS.length})</span>
+                    </a>
                   </li>
                   <li>
                     <a
@@ -413,7 +433,7 @@ export default function DocumentationView() {
                       }}
                       className={`flex items-center justify-between gap-2 border-l-2 py-1.5 pl-3 pr-2 text-[13px] transition-colors ${
                         activeSection === "modules"
-                          ? "border-emerald-500 font-semibold text-white"
+                          ? "border-emerald-500 font-semibold text-emerald-400"
                           : "border-[#1c2820] text-zinc-400 hover:border-zinc-500 hover:text-zinc-100"
                       }`}
                     >
@@ -423,7 +443,6 @@ export default function DocumentationView() {
                 </ul>
               </div>
 
-              {/* Module Categories (Sanctions, Salons, Rôles, etc.) */}
               {MODULE_CATEGORIES.map((cat) => (
                 <div key={cat.id}>
                   <a
@@ -449,16 +468,11 @@ export default function DocumentationView() {
                             }}
                             className={`flex w-full items-center justify-between gap-2 border-l-2 py-1.5 pl-3 pr-2 text-[13px] text-left transition-colors ${
                               isActive
-                                ? "border-emerald-500 font-semibold text-white"
+                                ? "border-emerald-500 font-semibold text-emerald-400"
                                 : "border-[#1c2820] text-zinc-400 hover:border-zinc-500 hover:text-zinc-100"
                             }`}
                           >
                             <span className="truncate">{mod.name}</span>
-                            {mod.isPremium && (
-                              <span className="shrink-0 text-[10px] font-medium text-emerald-400">
-                                Premium
-                              </span>
-                            )}
                           </button>
                         </li>
                       );
@@ -470,7 +484,6 @@ export default function DocumentationView() {
           </div>
         </aside>
 
-        {/* Mobile menu backdrop */}
         {mobileMenuOpen && (
           <div
             onClick={() => setMobileMenuOpen(false)}
@@ -479,9 +492,7 @@ export default function DocumentationView() {
           />
         )}
 
-        {/* Main Content Area */}
         <main className="min-w-0 flex-1 py-8 pl-0 lg:pl-10 xl:pl-12">
-          {/* Search results banner if searching */}
           {searchResults ? (
             <section className="mb-12">
               <div className="mb-6 flex items-center justify-between">
@@ -544,12 +555,36 @@ export default function DocumentationView() {
                       </div>
                     </div>
                   )}
+
+                  {searchResults.commands.length > 0 && (
+                    <div>
+                      <h3 className="mb-3 text-xs font-bold uppercase tracking-wider text-zinc-400">Commandes</h3>
+                      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                        {searchResults.commands.map((cmd) => (
+                          <div
+                            key={cmd.name}
+                            onClick={() => {
+                              setSelectedCommandCategory(cmd.category);
+                              const el = document.getElementById("commandes");
+                              el?.scrollIntoView({ behavior: "smooth" });
+                            }}
+                            className="cursor-pointer rounded-xl border border-[#18231c] bg-[#0d1410] p-4 transition-all hover:border-emerald-500/40 hover:bg-[#121c15]"
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm font-mono font-bold text-emerald-400">/{cmd.name}</span>
+                              <span className="text-[10px] text-zinc-500">{cmd.category}</span>
+                            </div>
+                            <div className="mt-1 text-xs text-zinc-400 line-clamp-2">{cmd.description}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </section>
           ) : null}
 
-          {/* Hero Header */}
           <section id="accueil" className="mb-14 scroll-mt-24">
             <div className="max-w-3xl">
               <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-400">
@@ -573,6 +608,12 @@ export default function DocumentationView() {
                   Commencer
                 </a>
                 <a
+                  href="#commandes"
+                  className="rounded-lg border border-[#1f2d24] bg-[#0d1410] px-5 py-2 text-xs font-semibold text-zinc-300 transition-all hover:border-zinc-700 hover:bg-[#121c15] hover:text-white"
+                >
+                  Toutes les commandes
+                </a>
+                <a
                   href="#modules"
                   className="rounded-lg border border-[#1f2d24] bg-[#0d1410] px-5 py-2 text-xs font-semibold text-zinc-300 transition-all hover:border-zinc-700 hover:bg-[#121c15] hover:text-white"
                 >
@@ -582,7 +623,6 @@ export default function DocumentationView() {
             </div>
           </section>
 
-          {/* Step-by-step guides section */}
           <section id="guides" className="mb-16 scroll-mt-24">
             <div className="mb-6 flex items-center justify-between border-b border-[#18231c] pb-4">
               <div>
@@ -609,11 +649,6 @@ export default function DocumentationView() {
                     <span className="text-sm font-bold text-white group-hover:text-emerald-400 transition-colors truncate">
                       {guide.title}
                     </span>
-                    {guide.badge && (
-                      <span className="shrink-0 rounded bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-400 border border-emerald-500/20">
-                        {guide.badge}
-                      </span>
-                    )}
                   </div>
 
                   <div className="text-xs leading-relaxed text-zinc-400 sm:text-[13px] line-clamp-2 md:line-clamp-none">
@@ -629,7 +664,6 @@ export default function DocumentationView() {
             </div>
           </section>
 
-          {/* Security Discord section */}
           <section id="securite" className="mb-16 scroll-mt-24">
             <div className="mb-6 border-b border-[#18231c] pb-4">
               <h2 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
@@ -651,11 +685,6 @@ export default function DocumentationView() {
                     <span className="text-sm font-bold text-white group-hover:text-emerald-400 transition-colors truncate">
                       {guide.title}
                     </span>
-                    {guide.badge && (
-                      <span className="shrink-0 rounded bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-400 border border-emerald-500/25">
-                        {guide.badge}
-                      </span>
-                    )}
                   </div>
 
                   <div className="text-xs leading-relaxed text-zinc-400 sm:text-[13px] line-clamp-2 md:line-clamp-none">
@@ -671,7 +700,114 @@ export default function DocumentationView() {
             </div>
           </section>
 
-          {/* Modules by category section */}
+          <section id="commandes" className="mb-16 scroll-mt-24">
+            <div className="mb-6 border-b border-[#18231c] pb-4">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div>
+                  <h2 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
+                    Toutes les commandes d&apos;Etho
+                  </h2>
+                  <p className="mt-1 text-xs text-zinc-400">
+                    Syntaxe détaillée, permissions requises et sous-commandes de chaque commande slash disponible.
+                  </p>
+                </div>
+                <div className="relative w-full sm:w-64">
+                  <SearchIcon className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 h-3.5 w-3.5" />
+                  <input
+                    type="text"
+                    value={commandSearch}
+                    onChange={(e) => setCommandSearch(e.target.value)}
+                    placeholder="Filtrer les commandes…"
+                    className="w-full rounded-lg border border-[#1b261f] bg-[#0e1411] py-1.5 pl-9 pr-3 text-xs text-zinc-200 placeholder-zinc-500 transition-colors focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500/30"
+                  />
+                </div>
+              </div>
+
+              <div className="mt-4 flex flex-wrap gap-1.5 pt-1">
+                {COMMAND_CATEGORIES.map((cat) => {
+                  const isActive = selectedCommandCategory === cat;
+                  return (
+                    <button
+                      key={cat}
+                      type="button"
+                      onClick={() => setSelectedCommandCategory(cat)}
+                      className={`rounded-md px-3 py-1 text-xs font-semibold transition-colors ${
+                        isActive
+                          ? "bg-emerald-500 text-[#060a08]"
+                          : "bg-[#0d1410] border border-[#18231c] text-zinc-400 hover:text-white hover:border-zinc-700"
+                      }`}
+                    >
+                      {cat}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="grid gap-3.5 sm:grid-cols-2 lg:grid-cols-2">
+              {filteredCommands.map((cmd) => (
+                <div
+                  key={cmd.name}
+                  className="flex flex-col justify-between rounded-xl border border-[#18231c] bg-[#0d1410]/70 p-4 transition-all hover:border-emerald-500/30"
+                >
+                  <div>
+                    <div className="flex items-center justify-between gap-2 mb-2">
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono text-sm font-bold text-emerald-400">/{cmd.name}</span>
+                        <span className="rounded bg-white/5 px-2 py-0.5 text-[10px] font-medium text-zinc-400">
+                          {cmd.category}
+                        </span>
+                      </div>
+                      {cmd.permissions && (
+                        <span className="rounded border border-[#1f2d24] bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-400">
+                          {cmd.permissions}
+                        </span>
+                      )}
+                    </div>
+
+                    <p className="text-xs text-zinc-300 leading-relaxed mb-3">
+                      {cmd.description}
+                    </p>
+
+                    <div className="rounded-lg border border-[#18231c] bg-black/50 p-2.5 mb-2 flex items-center justify-between gap-2">
+                      <code className="font-mono text-[11px] text-emerald-300 truncate">
+                        {cmd.syntax}
+                      </code>
+                      <button
+                        type="button"
+                        onClick={() => handleCopy(cmd.syntax)}
+                        className="shrink-0 rounded p-1 text-zinc-400 hover:bg-white/10 hover:text-white transition-colors"
+                        title="Copier la syntaxe"
+                      >
+                        {copiedText === cmd.syntax ? (
+                          <CheckIcon className="h-3.5 w-3.5 text-emerald-400" />
+                        ) : (
+                          <CopyIcon className="h-3.5 w-3.5" />
+                        )}
+                      </button>
+                    </div>
+
+                    {cmd.subcommands && cmd.subcommands.length > 0 && (
+                      <div className="mt-2.5 pt-2 border-t border-[#18231c]/60">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 block mb-1.5">
+                          Sous-commandes
+                        </span>
+                        <div className="space-y-1">
+                          {cmd.subcommands.map((sub) => (
+                            <div key={sub.name} className="flex items-start justify-between gap-2 text-[11px]">
+                              <code className="font-mono text-zinc-300 shrink-0">.{sub.name}</code>
+                              <span className="text-zinc-500 truncate text-right">{sub.description}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
           <section id="modules" className="mb-20 scroll-mt-24">
             <div className="mb-6 border-b border-[#18231c] pb-4">
               <h2 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
@@ -704,18 +840,9 @@ export default function DocumentationView() {
                         key={mod.id}
                         type="button"
                         onClick={() => setSelectedModule(mod)}
-                        className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all hover:scale-[1.03] ${
-                          mod.isPremium
-                            ? "border-amber-500/30 bg-amber-500/10 text-amber-300 hover:border-amber-400"
-                            : "border-[#1b2720] bg-[#111914] text-zinc-300 hover:border-emerald-500/40 hover:text-white"
-                        }`}
+                        className="inline-flex items-center gap-1.5 rounded-lg border border-[#1b2720] bg-[#111914] px-3 py-1.5 text-xs font-semibold text-zinc-300 transition-all hover:scale-[1.03] hover:border-emerald-500/40 hover:text-white"
                       >
                         <span>{mod.name}</span>
-                        {mod.isPremium && (
-                          <span className="rounded bg-amber-400/20 px-1 py-0.2 text-[9px] font-bold uppercase text-amber-300">
-                            Ultra
-                          </span>
-                        )}
                       </button>
                     ))}
                   </div>
@@ -724,7 +851,6 @@ export default function DocumentationView() {
             </div>
           </section>
 
-          {/* CTA Banner matching Keeper */}
           <div className="mt-16 mb-8 flex flex-col gap-4 border-t border-[#18231c] pt-8 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="font-semibold text-white text-base">Prêt à protéger votre serveur ?</p>
@@ -747,7 +873,6 @@ export default function DocumentationView() {
         </main>
       </div>
 
-      {/* Guide Detail Modal */}
       <AnimatePresence>
         {selectedGuide && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -863,7 +988,6 @@ export default function DocumentationView() {
         )}
       </AnimatePresence>
 
-      {/* Module Detail Modal */}
       <AnimatePresence>
         {selectedModule && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -885,11 +1009,6 @@ export default function DocumentationView() {
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-semibold text-emerald-400">{selectedModule.categoryLabel}</span>
-                    {selectedModule.isPremium && (
-                      <span className="rounded bg-amber-400/20 px-1.5 py-0.5 text-[10px] font-bold text-amber-300 border border-amber-400/30">
-                        Ultra
-                      </span>
-                    )}
                   </div>
                   <h3 className="mt-1 text-xl font-bold text-white">{selectedModule.name}</h3>
                 </div>
@@ -976,7 +1095,6 @@ export default function DocumentationView() {
         )}
       </AnimatePresence>
 
-      {/* Footer */}
       <footer className="border-t border-[#18231c] bg-[#090d0b] py-10 text-xs text-zinc-500">
         <div className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-4 px-4 sm:px-6 lg:px-8 sm:flex-row">
           <div className="flex items-center gap-2">

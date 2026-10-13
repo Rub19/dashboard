@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.30 — 2026-10-13
+
+**Documentation Etho : Sidebar Transparente Style Keeper, Catalogue Intégral des Commandes et Retrait des Tiers Payants**
+
+- Alignement de marque : élimination définitive de 'Etho Protect' au profit de 'Etho' dans l'en-tête, le hero et les guides.
+- Sidebar transparente style Keeper : suppression du fond encadré de la barre latérale pour un rendu épuré sans conteneur, arborescence continue sur fond obsidian avec champ de recherche en tête.
+- Catalogue exhaustif de 50 commandes : intégration d'une section dédiée listant toutes les commandes (Sécurité, Modération, Configuration, Musique, Spotify, Utilitaires, Fun) avec syntaxes, sous-commandes et copie en 1 clic.
+- Suppression des placeholders et tiers payants : retrait de tous les badges et mentions Ultra, Premium, Essentiel et Recommandé ; toutes les fonctionnalités sont 100% gratuites et incluses pour tous.
+
 ## v1.75.29 — 2026-10-13
 
 **Sélecteur de Profil et Multi-Compte dans le Menu Utilisateur**

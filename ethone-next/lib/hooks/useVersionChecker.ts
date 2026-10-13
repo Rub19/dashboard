@@ -5,9 +5,10 @@ import { useCallback, useEffect, useState } from "react";
 const STORAGE_KEY = "ethone:version";
 const PENDING_UPDATE_KEY = "ethone:pending-update";
 const DISMISS_KEY = "ethone:update-dismissed";
+const DISMISSED_VERSION_KEY = "ethone:dismissed-version";
+const ACKNOWLEDGED_VERSION_KEY = "ethone:acknowledged-version";
 const CHECK_INTERVAL = 5 * 60_000;
 const COOLDOWN = 5_000;
-const DISMISS_COOLDOWN = 60 * 60_000;
 
 export type VersionData = {
   version: string;
@@ -25,7 +26,7 @@ export type UseVersionChecker = {
   check: () => void;
 };
 
-type VersionStoreState = {
+export type VersionStoreState = {
   hasUpdate: boolean;
   currentData: VersionData | null;
   newData: VersionData | null;
@@ -137,20 +138,67 @@ function loadPending(): VersionData | null {
   return null;
 }
 
-function syncStoreFromStorage(): VersionStoreState {
+function loadDismissedVersion(): string | null {
+  if (typeof window === "undefined") return null;
+  try {
+    return localStorage.getItem(DISMISSED_VERSION_KEY);
+  } catch {
+    return null;
+  }
+}
+
+function saveDismissedVersion(ver: string) {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(DISMISSED_VERSION_KEY, ver);
+  } catch {}
+}
+
+function loadAcknowledgedVersion(): string | null {
+  if (typeof window === "undefined") return null;
+  try {
+    return localStorage.getItem(ACKNOWLEDGED_VERSION_KEY);
+  } catch {
+    return null;
+  }
+}
+
+function saveAcknowledgedVersion(ver: string) {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(ACKNOWLEDGED_VERSION_KEY, ver);
+  } catch {}
+}
+
+export function syncStoreFromStorage(): VersionStoreState {
   if (typeof window === "undefined") {
     return { hasUpdate: false, currentData: null, newData: null };
   }
   const built = builtVersion();
   const current = built ?? loadStored();
   const pending = loadPending();
+  const dismissedVersion = loadDismissedVersion();
+  const acknowledgedVersion = loadAcknowledgedVersion();
+
   let hasUpdate = false;
-  if (current && pending && isNewerBuild(current, pending)) {
-    const dismissedAt = Number(localStorage.getItem(DISMISS_KEY) || "0");
-    if (Date.now() - dismissedAt > DISMISS_COOLDOWN) {
+  if (pending?.version) {
+    const isDismissed = Boolean(
+      (dismissedVersion && dismissedVersion === pending.version) ||
+      (acknowledgedVersion && acknowledgedVersion === pending.version)
+    );
+    if (!isDismissed) {
+      hasUpdate = true;
+    }
+  } else if (current && pending && isNewerBuild(current, pending)) {
+    const isDismissed = Boolean(
+      (dismissedVersion && dismissedVersion === pending.version) ||
+      (acknowledgedVersion && acknowledgedVersion === pending.version)
+    );
+    if (!isDismissed) {
       hasUpdate = true;
     }
   }
+
   return {
     hasUpdate,
     currentData: current,
@@ -173,7 +221,13 @@ function setStoreState(updater: (prev: VersionStoreState) => VersionStoreState) 
 
 if (typeof window !== "undefined") {
   window.addEventListener("storage", (e) => {
-    if (e.key === PENDING_UPDATE_KEY || e.key === DISMISS_KEY || e.key === STORAGE_KEY) {
+    if (
+      e.key === PENDING_UPDATE_KEY ||
+      e.key === DISMISS_KEY ||
+      e.key === DISMISSED_VERSION_KEY ||
+      e.key === ACKNOWLEDGED_VERSION_KEY ||
+      e.key === STORAGE_KEY
+    ) {
       setStoreState(() => syncStoreFromStorage());
     }
   });
@@ -194,8 +248,14 @@ export function useVersionChecker(): UseVersionChecker {
   }, []);
 
   const dismiss = useCallback(() => {
+    const targetVersion = currentStoreState.newData?.version || currentStoreState.currentData?.version || "";
     try {
+      if (targetVersion) {
+        saveDismissedVersion(targetVersion);
+        saveAcknowledgedVersion(targetVersion);
+      }
       localStorage.setItem(DISMISS_KEY, Date.now().toString());
+      localStorage.removeItem(PENDING_UPDATE_KEY);
     } catch {}
     setStoreState((prev) => ({ ...prev, hasUpdate: false }));
   }, []);
@@ -214,27 +274,42 @@ export function useVersionChecker(): UseVersionChecker {
       const current = built ?? loadStored();
       if (!current) {
         saveStored(remote);
+        saveAcknowledgedVersion(remote.version);
         setStoreState((prev) => ({ ...prev, currentData: remote }));
         return;
       }
 
-      if (isNewerBuild(current, remote)) {
+      const dismissedVersion = loadDismissedVersion();
+      const acknowledgedVersion = loadAcknowledgedVersion();
+      const pending = loadPending();
+
+      const isDismissed = Boolean(dismissedVersion && dismissedVersion === remote.version);
+      const isAcknowledged = Boolean(acknowledgedVersion && acknowledgedVersion === remote.version);
+      const isNewer = isNewerBuild(current, remote);
+
+      if (isNewer || (pending && pending.version === remote.version && !isDismissed && !isAcknowledged)) {
         try {
           localStorage.setItem(PENDING_UPDATE_KEY, JSON.stringify(remote));
         } catch {}
 
-        const dismissedAt = Number(localStorage.getItem(DISMISS_KEY) || "0");
-        const hasUpdate = now - dismissedAt > DISMISS_COOLDOWN;
+        const hasUpdate = !isDismissed && !isAcknowledged;
         setStoreState((prev) => ({
           ...prev,
           currentData: current,
           newData: remote,
           hasUpdate,
         }));
-      } else {
+      } else if (isDismissed || isAcknowledged) {
         try {
           localStorage.removeItem(PENDING_UPDATE_KEY);
         } catch {}
+        setStoreState((prev) => ({
+          ...prev,
+          currentData: current,
+          newData: remote,
+          hasUpdate: false,
+        }));
+      } else {
         setStoreState((prev) => ({
           ...prev,
           currentData: current,
@@ -286,7 +361,7 @@ export function useVersionChecker(): UseVersionChecker {
   return {
     hasUpdate: state.hasUpdate,
     currentVersion: state.currentData?.version ?? null,
-    newVersion: state.newData?.version ?? null,
+    newVersion: state.newData?.version ?? state.currentData?.version ?? null,
     currentData: state.currentData,
     newData: state.newData,
     dismiss,

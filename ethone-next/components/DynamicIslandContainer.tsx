@@ -1290,7 +1290,7 @@ export default function DynamicIslandContainer() {
 
             <DynamicIslandView id="notification" className="w-[min(92vw,260px)] sm:w-[320px]">
               {(() => {
-                const note = (top?.content as { icon?: string; pack?: string; title?: string; message?: string; variant?: string } | undefined) || {};
+                const note = (top?.content as { icon?: string; pack?: string; title?: string; message?: string; variant?: string; actionUrl?: string } | undefined) || {};
                 const noteVariant =
                   note.variant === "success"
                     ? { color: "text-[var(--success)]", bg: "bg-[var(--success)]/15" }

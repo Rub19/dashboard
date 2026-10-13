@@ -503,11 +503,12 @@ export function useNotifications() {
 
       const current = getGlobalItems();
       const existing = current.find((n) => n.id === record.id);
+      let duplicate: Notification | undefined;
       let next: Notification[];
       if (existing) {
         next = current.map((n) => (n.id === record.id ? mergeRecord(n, record) : n));
       } else {
-        const duplicate = current.find(
+        duplicate = current.find(
           (n) =>
             !n.archived &&
             n.title === record.title &&
@@ -518,7 +519,8 @@ export function useNotifications() {
             Math.abs(record.timestamp - n.timestamp) < DEDUPE_MS
         );
         if (duplicate) {
-          next = current.map((n) => (n.id === duplicate.id ? mergeRecord(n, record) : n));
+          const dupId = duplicate.id;
+          next = current.map((n) => (n.id === dupId ? mergeRecord(n, record) : n));
         } else {
           next = [record, ...current].slice(0, MAX_ITEMS);
         }

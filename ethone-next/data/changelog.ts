@@ -53722,4 +53722,53 @@ CHANGELOG_BY_LANG.en.unshift(v12884_en);
 CHANGELOG_BY_LANG.es.unshift(v12884_es);
 CHANGELOG_BY_LANG.de.unshift(v12884_de);
 
+const v12885_fr: ChangelogEntry = {
+  version: "v1.75.41",
+  date: "2026-10-13",
+  title: "Persistance de la notification et de la pastille de mise a jour au rechargement",
+  items: [
+    "Maintien actif de la pastille de version ambre et de la notification flottante apres un rechargement de page (F5 / refresh).",
+    "L'etat de mise a jour n'est plus supprime prematurement et persiste jusqu'a rejet explicite ou rechargement propre.",
+    "Gestion fine de l'etat d'acquittement et des versions rejetees dans useVersionChecker et forceAppReload.",
+  ],
+};
+
+const v12885_en: ChangelogEntry = {
+  version: "v1.75.41",
+  date: "2026-10-13",
+  title: "Update Notification and Version Pill Persistence Across Reloads",
+  items: [
+    "Preserved amber version pill and floating update toast across page reloads (F5 / refresh).",
+    "Pending update state is no longer prematurely cleared and persists until explicit dismissal or clean update.",
+    "Enhanced acknowledged and dismissed version handling in useVersionChecker and forceAppReload.",
+  ],
+};
+
+const v12885_es: ChangelogEntry = {
+  version: "v1.75.41",
+  date: "2026-10-13",
+  title: "Persistencia de la notificacion y pastilla de actualizacion al recargar",
+  items: [
+    "Mantenimiento de la pastilla de version ambar y de la notificacion flotante tras recargar la pagina (F5).",
+    "El estado de actualizacion ya no se borra prematuramente y persiste hasta el descarte explicito o recarga limpia.",
+    "Gestion precisa de versiones reconocidas y descartadas en useVersionChecker y forceAppReload.",
+  ],
+};
+
+const v12885_de: ChangelogEntry = {
+  version: "v1.75.41",
+  date: "2026-10-13",
+  title: "Dauerhafte Update-Benachrichtigung und Versions-Pille beim Neuladen",
+  items: [
+    "Beibehaltung der bernsteinfarbenen Versions-Pille und Update-Benachrichtigung nach einem Neuladen (F5).",
+    "Ausstehender Update-Status wird nicht mehr vorzeitig geloscht und bleibt bis zur expliziten Bestatigung aktiv.",
+    "Prazise Verwaltung von quittierten und abgelehnten Versionen in useVersionChecker und forceAppReload.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12885_fr);
+CHANGELOG_BY_LANG.en.unshift(v12885_en);
+CHANGELOG_BY_LANG.es.unshift(v12885_es);
+CHANGELOG_BY_LANG.de.unshift(v12885_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

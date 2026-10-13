@@ -41,6 +41,8 @@ export default function VersionPill() {
   }, []);
 
   if (!mounted) {
+    const fallbackVersion = typeof process !== "undefined" ? process.env.NEXT_PUBLIC_BUILD_VERSION : null;
+    const initialLabel = formatVersion(fallbackVersion ?? null);
     return (
       <button
         type="button"
@@ -49,14 +51,15 @@ export default function VersionPill() {
         className="flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[10px] font-mono font-medium transition-all bg-transparent text-[var(--text-muted)]"
       >
         <Tag className="h-3 w-3 text-[var(--text-muted)]" />
-        <span>—</span>
+        <span>{initialLabel || "—"}</span>
       </button>
     );
   }
 
   const showUpdate = hasUpdate || isDifferentBuild(currentData, newData);
   const data = (showUpdate && newData ? newData : currentData) ?? newData ?? currentData;
-  const label = formatVersion(data?.version ?? null);
+  const fallbackVersion = typeof process !== "undefined" ? process.env.NEXT_PUBLIC_BUILD_VERSION : null;
+  const label = formatVersion(data?.version ?? fallbackVersion ?? null);
   const buildInfo = formatBuildInfo(data) || i18n("noBuildInfo", "Aucune information de build");
   const title =
     (showUpdate

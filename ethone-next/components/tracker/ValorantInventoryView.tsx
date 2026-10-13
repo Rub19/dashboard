@@ -8,20 +8,13 @@ import {
   Coins,
   CreditCard,
   Flame,
-  Globe,
-  Info,
   Key,
   Lock,
   LogOut,
-  Percent,
   RefreshCw,
-  Search,
   SearchX,
   Shield,
-  ShoppingBag,
   Sparkles,
-  Tag,
-  User,
   X,
 } from "@/components/icons/ph";
 import Badge from "@/components/ui/Badge";
@@ -176,7 +169,7 @@ export default function ValorantInventoryView() {
 
   const [wallet, setWallet] = useState({ vp: 3250, radianite: 180, kingdomCredits: 8500 });
   const [dailyOffers, setDailyOffers] = useState<DailyOfferItem[]>(DEMO_DAILY_OFFERS);
-  const [nightMarket, setNightMarket] = useState<NightMarketItem[]>([]);
+  const [nightMarket] = useState<NightMarketItem[]>([]);
   const [ownedSkins, setOwnedSkins] = useState<SkinItem[]>([]);
   const [ownedBuddies, setOwnedBuddies] = useState<BuddyItem[]>([]);
   const [ownedCards, setOwnedCards] = useState<CardItem[]>([]);
@@ -215,7 +208,7 @@ export default function ValorantInventoryView() {
   const loadPlayerData = useCallback(async (currentSession: ValorantSession) => {
     setDataLoading(true);
     try {
-      const [skinsApiRes, buddiesApiRes, cardsApiRes] = await Promise.all([
+      const [skinsApiRes, _buddiesApiRes, _cardsApiRes] = await Promise.all([
         fetch("https://valorant-api.com/v1/weapons/skins?language=fr-FR").then((r) => r.json()),
         fetch("https://valorant-api.com/v1/buddies?language=fr-FR").then((r) => r.json()),
         fetch("https://valorant-api.com/v1/playercards?language=fr-FR").then((r) => r.json()),

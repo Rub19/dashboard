@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.41 — 2026-10-13
+
+**Persistance de la Notification et de la Pastille de Mise à Jour au Rechargement (F5)**
+
+- **Persistance au rafraîchissement (F5 / reload)** : la notification flottante (`VersionUpdateToast`) et la pastille ambre en barre de statut (`VersionPill`) ne disparaissent plus lors d'un rafraîchissement de page.
+- **Cycle de vie fiabilisé dans `useVersionChecker`** : maintien de la clé `PENDING_UPDATE_KEY` et de l'état `hasUpdate: true` tant que l'utilisateur n'a pas explicitement rejeté la notification (bouton `X` / Plus tard) ou effectué la mise à jour (`forceAppReload`).
+- **Gestion des versions acquittées et rejetées** : introduction de clés locales dédiées (`ethone:acknowledged-version` et `ethone:dismissed-version`) évitant toute réinitialisation prématurée sur égalité de version au rechargement.
+- **Affichage résilient dans `VersionPill`** : affichage immédiat de la version compilée en garde de montage et maintien des classes ambre et icône `ArrowUpCircle`.
+- **Tests unitaires de persistance** : suite de tests couvrant le maintien de `hasUpdate` lors des rechargements dans `useVersionChecker.test.ts`.
+
 ## v1.75.40 — 2026-10-13
 
 **Module Inventaire & Boutique Personnelle Valorant : Connexion Riot Games et Intégration valorant-api.com**

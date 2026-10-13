@@ -1,13 +1,21 @@
 import type { VersionData } from "@/lib/hooks/useVersionChecker";
 
 export async function forceAppReload(newVersion?: string | null, newData?: VersionData | null): Promise<void> {
+  const version = newVersion || newData?.version || null;
   if (newData) {
     try {
       localStorage.setItem("ethone:version", JSON.stringify(newData));
     } catch {}
-  } else if (newVersion) {
+  } else if (version) {
     try {
-      localStorage.setItem("ethone:version", newVersion);
+      localStorage.setItem("ethone:version", version);
+    } catch {}
+  }
+
+  if (version) {
+    try {
+      localStorage.setItem("ethone:acknowledged-version", version);
+      localStorage.setItem("ethone:dismissed-version", version);
     } catch {}
   }
 

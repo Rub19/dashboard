@@ -52583,6 +52583,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_17_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_17_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_17_de);
 
+const v1_75_18_fr: ChangelogEntry = {
+  version: "v1.75.18",
+  date: "2026-10-13",
+  title: "Correction Détection Duo / Groupes Premades LoL & Valorant",
+  items: [
+    "Correction du calcul de duo dans le tableau des scores LoL : suppression du faux découpage arbitraire par index d'équipe au profit d'une détection réelle des coéquipiers récurrents à travers l'historique des parties.",
+    "Liaison authentique des joueurs en duo : votre Riot ID et votre partenaire de jeu (DorEtDeBriar) sont désormais correctement identifiés et reliés par la barre de groupe cyan, tandis que les joueurs solo (ex: Mordekaiser) ne reçoivent aucun faux indicateur.",
+    "Persistance des duos confirmés : conservation des duos établis et synchronisation avec les données de match sans inventer de faux groupes.",
+  ],
+};
+
+const v1_75_18_en: ChangelogEntry = {
+  version: "v1.75.18",
+  date: "2026-10-13",
+  title: "Fix LoL & Valorant Premade Party / Duo Detection",
+  items: [
+    "Fixed duo party calculation in LoL scoreboard: replaced arbitrary index-based heuristic with real cross-match co-player premade detection.",
+    "Authentic duo pairing: you and your queued partner are now correctly linked with the cyan party trait bar, while solo players (e.g. Mordekaiser) remain solo without false group indicators.",
+    "Persistent confirmed duos: saved duo relationships across matches ensuring accurate squad recognition without placeholder data.",
+  ],
+};
+
+const v1_75_18_es: ChangelogEntry = {
+  version: "v1.75.18",
+  date: "2026-10-13",
+  title: "Corrección Detección Dúo / Grupos Premade LoL y Valorant",
+  items: [
+    "Corrección del cálculo de dúos en el marcador de LoL: eliminación de la heurística arbitraria por índice a favor de una detección real de compañeros de equipo en el historial.",
+    "Vinculación auténtica en dúo: tu cuenta y tu compañero quedan enlazados con la barra cian de grupo, mientras que los jugadores individuales permanecen en solo.",
+    "Persistencia de dúos confirmados: sincronización precisa sin datos ficticios.",
+  ],
+};
+
+const v1_75_18_de: ChangelogEntry = {
+  version: "v1.75.18",
+  date: "2026-10-13",
+  title: "Behebung der Duo- / Premade-Gruppenerkennung für LoL & Valorant",
+  items: [
+    "Korrektur der Duo-Erkennung in der LoL-Partieübersicht: willkürliche Index-Heuristik durch echte Partien-übergreifende Teampartner-Erkennung ersetzt.",
+    "Authentische Duo-Verbindung: Sie und Ihr Duo-Partner werden korrekt mit dem cyanfarbenen Gruppenstreifen verknüpft, während Solo-Spieler solo bleiben.",
+    "Persistenz bestätigter Duos über Match-Historien hinweg ohne erfundene Platzhalter-Daten.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_18_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_18_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_18_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_18_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

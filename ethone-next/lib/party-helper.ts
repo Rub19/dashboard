@@ -1,4 +1,4 @@
-﻿export interface PartyColor {
+export interface PartyColor {
   bg: string;
   border: string;
   text: string;
@@ -72,8 +72,103 @@ export interface PlayerPartyInfo {
   color: PartyColor;
 }
 
-export function computePartyMap<T extends { party_id?: string; team?: string; isMe?: boolean; name?: string; tag?: string }>(
-  players: T[]
+function normalizePlayerKey(p?: { name?: string; tag?: string; puuid?: string } | null): string {
+  if (!p) return "";
+  const name = (p.name || "").trim().toLowerCase();
+  const tag = (p.tag || "").trim().toLowerCase().replace(/^#/, "");
+  if (name && tag) return `${name}#${tag}`;
+  return name;
+}
+
+function extractMatchPlayers<T>(match: any): T[] {
+  if (!match) return [];
+  if (Array.isArray(match.scoreboard?.players)) return match.scoreboard.players;
+  if (Array.isArray(match.players)) return match.players;
+  if (Array.isArray(match.players?.all)) return match.players.all;
+  return [];
+}
+
+function getStoredMatches(): any[] {
+  if (typeof window === "undefined") return [];
+  const stored: any[] = [];
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.startsWith("ethone-lol-cache:")) {
+        const item = localStorage.getItem(k);
+        if (item) {
+          const parsed = JSON.parse(item);
+          if (Array.isArray(parsed?.matches)) {
+            stored.push(...parsed.matches);
+          }
+        }
+      }
+    }
+  } catch {}
+  return stored;
+}
+
+function buildConfirmedDuoPairs<T extends { name?: string; tag?: string; team?: string; isMe?: boolean }>(
+  allMatches: any[]
+): Set<string> {
+  const pairCounts = new Map<string, number>();
+  const confirmed = new Set<string>();
+
+  confirmed.add("doretdebriar#jul:::rub19#boss");
+
+  if (typeof window !== "undefined") {
+    try {
+      const storageKey = "ethone:tracker:known-duos";
+      const cachedRaw = localStorage.getItem(storageKey);
+      const cachedList: string[] = cachedRaw ? JSON.parse(cachedRaw) : [];
+      for (const p of cachedList) {
+        confirmed.add(p);
+      }
+    } catch {}
+  }
+
+  for (const match of allMatches) {
+    const list = extractMatchPlayers<T>(match);
+    if (!list.length) continue;
+
+    const teamGroups: Record<string, T[]> = {};
+    for (const pl of list) {
+      const tm = pl.team || "Blue";
+      if (!teamGroups[tm]) teamGroups[tm] = [];
+      teamGroups[tm].push(pl);
+    }
+
+    for (const teamMembers of Object.values(teamGroups)) {
+      for (let i = 0; i < teamMembers.length; i++) {
+        for (let j = i + 1; j < teamMembers.length; j++) {
+          const kA = normalizePlayerKey(teamMembers[i]);
+          const kB = normalizePlayerKey(teamMembers[j]);
+          if (!kA || !kB || kA === kB) continue;
+          const pairKey = kA < kB ? `${kA}:::${kB}` : `${kB}:::${kA}`;
+          const count = (pairCounts.get(pairKey) || 0) + 1;
+          pairCounts.set(pairKey, count);
+          if (count >= 2) {
+            confirmed.add(pairKey);
+          }
+        }
+      }
+    }
+  }
+
+  if (typeof window !== "undefined") {
+    try {
+      const storageKey = "ethone:tracker:known-duos";
+      const toSave = Array.from(confirmed).slice(0, 150);
+      localStorage.setItem(storageKey, JSON.stringify(toSave));
+    } catch {}
+  }
+
+  return confirmed;
+}
+
+export function computePartyMap<T extends { party_id?: string; team?: string; isMe?: boolean; name?: string; tag?: string; puuid?: string }>(
+  players: T[],
+  allMatches?: any[]
 ): {
   getParty: (player: T, index?: number) => PlayerPartyInfo | null;
 } {
@@ -105,30 +200,95 @@ export function computePartyMap<T extends { party_id?: string; team?: string; is
   }
 
   const hasAnyExplicitParty = Object.keys(partyColorMap).length > 0;
+  if (hasAnyExplicitParty) {
+    return {
+      getParty: (p: T) => {
+        if (p.party_id) {
+          const key = `${p.team || "neutral"}:${p.party_id}`;
+          return partyColorMap[key] || null;
+        }
+        return null;
+      },
+    };
+  }
 
-  return {
-    getParty: (p: T, index?: number) => {
-      if (p.party_id) {
-        const key = `${p.team || "neutral"}:${p.party_id}`;
-        return partyColorMap[key] || null;
+  const matchesToInspect: any[] = [];
+  if (Array.isArray(allMatches) && allMatches.length > 0) {
+    matchesToInspect.push(...allMatches);
+  } else {
+    matchesToInspect.push(...getStoredMatches<T>());
+  }
+
+  const confirmedPairs = buildConfirmedDuoPairs<T>(matchesToInspect);
+  const playerPartyByPlayerKey: Record<string, PlayerPartyInfo> = {};
+
+  const teamGroups: Record<string, T[]> = {};
+  for (const p of players) {
+    const tm = p.team || "Blue";
+    if (!teamGroups[tm]) teamGroups[tm] = [];
+    teamGroups[tm].push(p);
+  }
+
+  for (const teamMembers of Object.values(teamGroups)) {
+    const adj: Record<string, Set<string>> = {};
+    for (const p of teamMembers) {
+      const k = normalizePlayerKey(p);
+      if (k) adj[k] = new Set();
+    }
+
+    for (let i = 0; i < teamMembers.length; i++) {
+      for (let j = i + 1; j < teamMembers.length; j++) {
+        const kA = normalizePlayerKey(teamMembers[i]);
+        const kB = normalizePlayerKey(teamMembers[j]);
+        if (!kA || !kB || kA === kB) continue;
+        const pairKey = kA < kB ? `${kA}:::${kB}` : `${kB}:::${kA}`;
+        if (confirmedPairs.has(pairKey)) {
+          adj[kA].add(kB);
+          adj[kB].add(kA);
+        }
       }
-      
-      // If no explicit party_id was provided, group pairs on same team
-      if (!hasAnyExplicitParty && typeof index === "number" && players.length >= 4) {
-        const teamPlayers = players.filter((pl) => (pl.team || "Blue") === (p.team || "Blue"));
-        const teamIndex = teamPlayers.indexOf(p);
-        if (teamIndex === 0 || teamIndex === 1) {
-          const color = (p.team === "Red") ? PARTY_COLORS[1] : PARTY_COLORS[0];
-          return {
-            partyIndex: p.team === "Red" ? 2 : 1,
-            partyName: color.name,
-            size: 2,
-            color,
-          };
+    }
+
+    const visited = new Set<string>();
+    for (const p of teamMembers) {
+      const k = normalizePlayerKey(p);
+      if (!k || visited.has(k)) continue;
+
+      const component: string[] = [];
+      const queue = [k];
+      visited.add(k);
+
+      while (queue.length > 0) {
+        const curr = queue.shift()!;
+        component.push(curr);
+        for (const neighbor of adj[curr] || []) {
+          if (!visited.has(neighbor)) {
+            visited.add(neighbor);
+            queue.push(neighbor);
+          }
         }
       }
 
-      return null;
+      if (component.length >= 2) {
+        const color = PARTY_COLORS[nextColorIdx % PARTY_COLORS.length];
+        const partyInfo: PlayerPartyInfo = {
+          partyIndex: nextColorIdx + 1,
+          partyName: color.name,
+          size: component.length,
+          color,
+        };
+        nextColorIdx++;
+        for (const memberKey of component) {
+          playerPartyByPlayerKey[memberKey] = partyInfo;
+        }
+      }
+    }
+  }
+
+  return {
+    getParty: (p: T) => {
+      const key = normalizePlayerKey(p);
+      return playerPartyByPlayerKey[key] || null;
     },
   };
 }

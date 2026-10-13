@@ -1,5 +1,15 @@
 [
   {
+    "version": "v1.75.18",
+    "date": "2026-10-13",
+    "title": "Correction Détection Duo / Groupes Premades LoL & Valorant",
+    "items": [
+      "Correction du calcul de duo dans le tableau des scores LoL : suppression du faux découpage arbitraire par index d'équipe au profit d'une détection réelle des coéquipiers récurrents à travers l'historique des parties.",
+      "Liaison authentique des joueurs en duo : votre Riot ID et votre partenaire de jeu (DorEtDeBriar) sont désormais correctement identifiés et reliés par la barre de groupe cyan, tandis que les joueurs solo (ex: Mordekaiser) ne reçoivent aucun faux indicateur.",
+      "Persistance des duos confirmés : conservation des duos établis et synchronisation avec les données de match sans inventer de faux groupes."
+    ]
+  },
+  {
     "version": "v1.75.17",
     "date": "2026-10-13",
     "title": "Bypass Direct Auth Discord, Harmonisation Topbar & Refonte Onboarding Style Keeper",

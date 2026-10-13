@@ -42,9 +42,10 @@ import { useSettings } from "@/components/SettingsProvider";
 interface LolMatchRowProps {
   match: LolMatch;
   index: number;
+  allMatches?: LolMatch[];
 }
 
-export default function LolMatchRow({ match, index }: LolMatchRowProps) {
+export default function LolMatchRow({ match, index, allMatches }: LolMatchRowProps) {
   const [expanded, setExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState<"scoreboard" | "charts" | "matchups">("scoreboard");
   const { settings } = useSettings();
@@ -64,7 +65,7 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
   const isRemake = durationSec > 0 && durationSec < 270;
 
   const players = useMemo(() => match.scoreboard?.players || [], [match.scoreboard?.players]);
-  const partyMap = useMemo(() => computePartyMap(players), [players]);
+  const partyMap = useMemo(() => computePartyMap(players, allMatches), [players, allMatches]);
   const me: LolPlayer | undefined =
     players.find((p) => p.isMe) || players[0];
 

@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.18 — 2026-10-13
+
+**Correction Détection Duo / Groupes Premades LoL & Valorant**
+
+- **Résolution du Bug d'Attribution de Groupe dans le Tableau des Scores LoL** :
+  - Suppression définitive de la condition arbitraire par index d'équipe (`teamIndex === 0 || teamIndex === 1`) qui attribuait faussement un duo aux deux premiers joueurs bruts de la réponse API (reliant à tort Mordekaiser et DorEtDeBriar).
+  - Implémentation d'un algorithme robuste de détection des premades / duos fondé sur l'historique croisé des parties jouées ensemble dans la même équipe (`buildConfirmedDuoPairs`).
+  - Liaison authentique : l'utilisateur (`Rub19 #Boss`) et son véritable partenaire de duo (`DorEtDeBriar #JUL`) sont désormais fidèlement connectés par la barre de groupe cyan, tandis que les joueurs solo (`mouglie5000hp #1SH0T`) ne reçoivent aucun faux indicateur de groupe.
+- **Persistance et Respect Strict de l'Intégrité des Données** :
+  - Sauvegarde locale et mémoire persistante des duos avérés (`ethone:tracker:known-duos`) pour un affichage instantané et cohérent lors des changements de filtres de file.
+  - Absence totale d'indicateurs de groupe artificiels pour les parties composées exclusivement de joueurs solos.
+
 ## v1.75.17 — 2026-10-13
 
 **Bypass Direct Auth Discord, Harmonisation Topbar & Refonte Onboarding Style Keeper**

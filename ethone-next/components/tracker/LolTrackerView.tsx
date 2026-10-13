@@ -436,6 +436,7 @@ export default function LolTrackerView() {
                     key={match.id || `${gi}-${mi}`}
                     match={match}
                     index={mi}
+                    allMatches={matches}
                   />
                 ))}
               </div>

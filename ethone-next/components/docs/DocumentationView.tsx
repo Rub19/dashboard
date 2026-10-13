@@ -426,7 +426,13 @@ export default function DocumentationView() {
               {/* Module Categories (Sanctions, Salons, Rôles, etc.) */}
               {MODULE_CATEGORIES.map((cat) => (
                 <div key={cat.id}>
-                  <p className="mb-1 mt-5 px-3 text-[12px] font-semibold text-zinc-400">{cat.label}</p>
+                  <a
+                    href={`#cat-${cat.id}`}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="mb-1 mt-5 block px-3 text-[12px] font-semibold text-zinc-400 hover:text-white transition-colors"
+                  >
+                    {cat.label}
+                  </a>
                   <ul className="space-y-0.5">
                     {cat.modules.map((mod) => {
                       const isActive = selectedModule?.id === mod.id;
@@ -717,6 +723,27 @@ export default function DocumentationView() {
               ))}
             </div>
           </section>
+
+          {/* CTA Banner matching Keeper */}
+          <div className="mt-16 mb-8 flex flex-col gap-4 border-t border-[#18231c] pt-8 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="font-semibold text-white text-base">Prêt à protéger votre serveur ?</p>
+              <a
+                href="https://discord.gg"
+                target="_blank"
+                rel="noreferrer"
+                className="mt-1 inline-block text-xs text-zinc-400 underline underline-offset-4 hover:text-white transition-colors"
+              >
+                Besoin d&apos;aide ? Rejoignez notre serveur de support Discord.
+              </a>
+            </div>
+            <Link
+              href="/bot"
+              className="inline-flex h-10 shrink-0 items-center justify-center rounded-lg bg-emerald-500 px-5 text-xs font-bold text-[#060a08] transition-all hover:bg-emerald-400 shadow-[0_0_18px_rgba(34,197,94,0.3)] hover:scale-[1.02]"
+            >
+              Ajouter Etho
+            </Link>
+          </div>
         </main>
       </div>
 

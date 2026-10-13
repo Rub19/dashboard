@@ -1,4 +1,4 @@
-# ETHONE — passation & nouveautés (2026-10-13, version 1.75.22)
+# ETHONE — passation & nouveautés (2026-10-13, version 1.75.28)
 
 ## Projet
 - `ethone-next/` : site Next.js statique (ethone.dev, Cloudflare Pages, déploiement auto au push sur `main`).
@@ -25,9 +25,20 @@
 
 ---
 
-## Nouveautés majeures & Réalisations récentes (v1.73.0 → v1.75.2)
+## Nouveautés majeures & Réalisations récentes (v1.73.0 → v1.75.28)
 
-### 1. Vitrine Bot : Refonte Motion Design & Rétablissement de /bot (v1.75.2)
+### 0. Documentation Etho : Refonte style Keeper & Harmonisation de Marque (v1.75.28)
+- **Harmonisation globale de la marque** : Remplacement de « Etho Protect » par « Etho » dans toute la documentation (`/docs`, `/documentation`), métadonnées OpenGraph et barre latérale de gestion de serveurs (`HubSidebar`).
+- **Thème sombre inspiré de Keeper** : Fond obsidian sombre `#090d0b`, surfaces de cartes `#0d1410`, bordures fines `#18231c` et accents vert émeraude `#22c55e`.
+- **Barre latérale gauche élargie & Rail continu** : Largeur généreuse (`w-76 xl:w-80`), champ de recherche `Rechercher…` en tête avec raccourci Ctrl+K, arborescence à rail vertical continu avec indicateur actif vert, catégories de modules interactives avec navigation fluide et bandeau d'appel à l'action final.
+
+### 1. Refonte Musique, Bento Features & Commandes sur Demande (v1.75.27)
+- **Visualiseur spatial 8D & Deck physique** : Balayage horizontal continu avec badges ON/8D, paquet de cartes superposées avec flou de profondeur (POWER - Kanye West) et anneaux Spotify concentriques.
+- **Grille de 12 fonctionnalités** : Halo flottant de 7 icônes en arche et cartes concrètes sans jargon.
+- **Catalogue sur demande** : Séparateur et bouton de déploiement à la demande évitant tout défilement forcé.
+
+### 2. Stabilisation Carte Spotify & Hauteur d'Égaliseur (v1.75.26)
+- Hauteur fixe `h-5` (20px) éliminant tout soubresaut vertical dans le simulateur Discord.
 - **Rétablissement officiel de la vitrine sur `/bot`** : accessible directement sur `discord.ethone.dev/bot` et `ethone.dev/bot` avec métadonnées OpenGraph complètes et sans redirection cassée.
 - **Motion design inspiré de MultiBot et Keeper Protect** : esthétique sombre satinée (`#07080d`), halos cyan glacé `#92C8D2`, cartes en verre dépoli et spring transitions.
 - **Ton sobre et direct sans jargon IA** : élimination complète des formulations artificielles ("console d'élite", "IA ultime") au profit d'un texte clair, direct et orienté communauté.

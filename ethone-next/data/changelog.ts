@@ -53824,5 +53824,66 @@ CHANGELOG_BY_LANG.en.unshift(v12886_en);
 CHANGELOG_BY_LANG.es.unshift(v12886_es);
 CHANGELOG_BY_LANG.de.unshift(v12886_de);
 
+const v12887_fr: ChangelogEntry = {
+  version: "v1.75.43",
+  date: "2026-10-13",
+  title: "Logo Riot officiel, design épuré, correctifs démo et animations",
+  items: [
+    "Intégration du logo officiel Riot Games en remplacement de l'icône de bouclier générique.",
+    "Pastille de sécurité reconçue en badge rectangulaire fin et sobre aux couleurs adaptées au thème.",
+    "Restauration des visuels haute définition 4K dans le mode démo (armes, couteaux, porte-bonheur et cartes).",
+    "Prise en charge du Marché Nocturne en mode démo avec réductions exclusives et visuels complets.",
+    "Correction de la coupure de fin de page sur la boutique et l'inventaire avec espacement bas étendu.",
+    "Animations fluides Framer Motion sur les offres quotidiennes, les onglets et les fenêtres modales.",
+  ],
+};
+
+const v12887_en: ChangelogEntry = {
+  version: "v1.75.43",
+  date: "2026-10-13",
+  title: "Official Riot Logo, Refined Badge, Demo Assets and Motion Design",
+  items: [
+    "Added official Riot Games logo replacing generic shield iconography.",
+    "Redesigned security notice as a slim rectangular badge with refined neutral styling.",
+    "Restored high-definition weapon, melee, buddy and card assets in demo mode.",
+    "Enabled demo Night Market featuring discounted skins and official renders.",
+    "Fixed bottom clipping on store and inventory views with extended clearance.",
+    "Smooth Framer Motion transitions for daily offer cards, filter tabs and modal windows.",
+  ],
+};
+
+const v12887_es: ChangelogEntry = {
+  version: "v1.75.43",
+  date: "2026-10-13",
+  title: "Logo oficial de Riot, diseno sobrio, correccion de demo y animaciones",
+  items: [
+    "Integracion del logo oficial de Riot Games en lugar del escudo generico.",
+    "Notificacion de seguridad redisenada como insignia rectangular fina y discreta.",
+    "Restauracion de imagenes HD de armas, cuchillos, amuletos y tarjetas en modo demo.",
+    "Mercado Nocturno interactivo en modo demo con skins rebajadas y visores completos.",
+    "Correccion de corte inferior en la tienda e inventario con margen de espacio amplio.",
+    "Animaciones Framer Motion fluidas en ofertas diarias, pestanas y modales.",
+  ],
+};
+
+const v12887_de: ChangelogEntry = {
+  version: "v1.75.43",
+  date: "2026-10-13",
+  title: "Offizielles Riot-Logo, schlankes Design, Demo-Assets und Motion-Design",
+  items: [
+    "Offizielles Riot Games-Logo ersetzt das generische Schild-Symbol.",
+    "Sicherheitshinweis als schlankes rechteckiges Abzeichen in dezenten Farben neu gestaltet.",
+    "Wiederherstellung von HD-Grafiken fur Waffen, Nahkampf, Buddies und Spielerkarten im Demo-Modus.",
+    "Demo-Nachtmarkt mit reduzierten Skins und offiziellen Renderings aktiviert.",
+    "Korrektur des abgeschnittenen unteren Bereichs im Shop und Inventar mit erweitertem Abstand.",
+    "Framer Motion-Animationen fur tagliche Angebote, Registerkarten und Dialoge.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12887_fr);
+CHANGELOG_BY_LANG.en.unshift(v12887_en);
+CHANGELOG_BY_LANG.es.unshift(v12887_es);
+CHANGELOG_BY_LANG.de.unshift(v12887_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

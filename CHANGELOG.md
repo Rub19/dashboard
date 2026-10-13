@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.43 — 2026-10-13
+
+**Logo Riot Games Officiel, Design Épuré, Visuels Démo Valorant et Motion Design**
+
+- **Logo Officiel Riot Games** : remplacement de l'icône de bouclier générique par le logo officiel Riot Games (poing stylisé vectoriel) sur la carte d'accueil, le bouton d'authentification et l'en-tête de la modale de connexion.
+- **Badge de Sécurité Épuré** : transformation de la pastille arrondie néon en un badge rectangulaire fin et sobre (`rounded-lg`, bordures douces, fond de panneau sombre neutre et indicateur discret sans effet saturé).
+- **Visuels HD Démo Restaurés** : correction des URL d'assets de l'API officielle `valorant-api.com` pour l'ensemble des armes, couteaux de mêlée, porte-bonheur et cartes de joueur (résolution des erreurs 404).
+- **Marché Nocturne Démo** : activation d'un Marché Nocturne interactif en mode démo avec 6 skins exclusifs (Prime Vandal, Sovereign Sword, Magepunk Spectre, Forsaken Classic, Ion Sheriff, Sovereign Ghost) et calcul des remises.
+- **Dégagement Inférieur de la Boutique & de l'Inventaire** : correction de la troncature en bas de page par ajout d'un padding de dégagement étendu (`pb-32`) assurant un défilement complet au-dessus du Dock et de la barre d'état.
+- **Motion Design Framer Motion** : animations d'apparition et d'interaction progressives sur les offres du jour, transitions d'onglets animées et ouverture fluide de la modale de connexion.
+
 ## v1.75.42 — 2026-10-13
 
 **Optimisation Mail Batch, Tests Crypto Worker et Suites de Tests d'Utilitaires**

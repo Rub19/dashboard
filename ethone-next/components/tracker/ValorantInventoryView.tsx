@@ -1,19 +1,20 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { fetchWorker } from "@/lib/api";
 import { cn } from "@/lib/utils";
+import { EASE_SNAP } from "@/lib/ease";
+import RiotGamesLogo from "@/components/icons/RiotGamesLogo";
+import ClientImage from "@/components/ClientImage";
 import {
   Clock,
   Coins,
   CreditCard,
-  Flame,
-  Key,
   Lock,
   LogOut,
   RefreshCw,
   SearchX,
-  Shield,
   Sparkles,
   X,
 } from "@/components/icons/ph";
@@ -90,30 +91,30 @@ const WEAPON_CATEGORIES = [
 
 const DEMO_DAILY_OFFERS: DailyOfferItem[] = [
   {
-    uuid: "97af88da-4768-9e08-e4e3-738d3526f15d",
-    name: "Kuronami (Vandal)",
-    image: "https://media.valorant-api.com/weaponskinlevels/97af88da-4768-9e08-e4e3-738d3526f15d/displayicon.png",
+    uuid: "d8d5d7a1-4d81-8560-54bc-0692ab40f69b",
+    name: "Kuronami Vandal",
+    image: "https://media.valorant-api.com/weaponskins/d8d5d7a1-4d81-8560-54bc-0692ab40f69b/displayicon.png",
     price: 2375,
     weaponType: "Vandal",
   },
   {
-    uuid: "ec17ea15-46f9-0114-1925-fbbf62e316ab",
-    name: "Reaver (Karambit)",
-    image: "https://media.valorant-api.com/weaponskinlevels/ec17ea15-46f9-0114-1925-fbbf62e316ab/displayicon.png",
+    uuid: "b73d7b16-4652-bc5b-5c4c-068aabb19d0a",
+    name: "Reaver Karambit",
+    image: "https://media.valorant-api.com/weaponskins/b73d7b16-4652-bc5b-5c4c-068aabb19d0a/displayicon.png",
     price: 4350,
-    weaponType: "Mêlée",
+    weaponType: "Mêlée (Couteaux)",
   },
   {
-    uuid: "3f80c655-46eb-5d59-3fb6-7da85b307da8",
-    name: "Prime (Phantom)",
-    image: "https://media.valorant-api.com/weaponskinlevels/3f80c655-46eb-5d59-3fb6-7da85b307da8/displayicon.png",
+    uuid: "44b7b110-46bf-ccbb-2613-29a5df296461",
+    name: "Prime//2.0 Phantom",
+    image: "https://media.valorant-api.com/weaponskins/44b7b110-46bf-ccbb-2613-29a5df296461/displayicon.png",
     price: 1775,
     weaponType: "Phantom",
   },
   {
-    uuid: "b21844b2-4d15-d912-8877-66a93bfdf85c",
-    name: "Ion (Sheriff)",
-    image: "https://media.valorant-api.com/weaponskinlevels/b21844b2-4d15-d912-8877-66a93bfdf85c/displayicon.png",
+    uuid: "83778c03-45a3-67a2-3c89-6b8598327d58",
+    name: "Ion Sheriff",
+    image: "https://media.valorant-api.com/weaponskins/83778c03-45a3-67a2-3c89-6b8598327d58/displayicon.png",
     price: 1775,
     weaponType: "Sheriff",
   },
@@ -121,32 +122,91 @@ const DEMO_DAILY_OFFERS: DailyOfferItem[] = [
 
 const DEMO_BUDDIES: BuddyItem[] = [
   {
-    uuid: "b1",
+    uuid: "f2f07eae-4518-15eb-546b-018961e0dd60",
     displayName: "Porte-bonheur Force opérationnelle 809",
     displayIcon: "https://media.valorant-api.com/buddies/f2f07eae-4518-15eb-546b-018961e0dd60/displayicon.png",
   },
   {
-    uuid: "b2",
-    displayName: "Porte-bonheur Danse du lion",
-    displayIcon: "https://media.valorant-api.com/buddies/50901e16-419b-c408-dae1-dcb0d908ff1e/displayicon.png",
+    uuid: "bf997358-4a99-c1f8-37b0-5fa64200cdce",
+    displayName: "Porte-bonheur Beckoner",
+    displayIcon: "https://media.valorant-api.com/buddies/bf997358-4a99-c1f8-37b0-5fa64200cdce/displayicon.png",
   },
   {
-    uuid: "b3",
-    displayName: "Porte-bonheur Trophée VCT Champions",
-    displayIcon: "https://media.valorant-api.com/buddies/e9c1db44-4860-e4ca-19cb-e18e8df6ff85/displayicon.png",
+    uuid: "dce731f8-4560-5f30-6eb5-8ab2e36864ec",
+    displayName: "Porte-bonheur RGX 11z Pro",
+    displayIcon: "https://media.valorant-api.com/buddies/dce731f8-4560-5f30-6eb5-8ab2e36864ec/displayicon.png",
   },
 ];
 
 const DEMO_CARDS: CardItem[] = [
   {
-    uuid: "c1",
+    uuid: "1711d20d-4b1c-c64a-14be-d4ae58a457c6",
     displayName: "Carte Duo fluo",
     largeArt: "https://media.valorant-api.com/playercards/1711d20d-4b1c-c64a-14be-d4ae58a457c6/largeart.png",
+    wideArt: "https://media.valorant-api.com/playercards/1711d20d-4b1c-c64a-14be-d4ae58a457c6/wideart.png",
   },
   {
-    uuid: "c2",
-    displayName: "Carte Champions 2024",
-    largeArt: "https://media.valorant-api.com/playercards/3f296c07-64c3-494c-923b-fe692a4fa1bd/largeart.png",
+    uuid: "c8b2f5fd-4331-b172-f3b7-c8a26f356a1f",
+    displayName: "Carte Afternoon Asada",
+    largeArt: "https://media.valorant-api.com/playercards/c8b2f5fd-4331-b172-f3b7-c8a26f356a1f/largeart.png",
+    wideArt: "https://media.valorant-api.com/playercards/c8b2f5fd-4331-b172-f3b7-c8a26f356a1f/wideart.png",
+  },
+  {
+    uuid: "eef542d2-4724-bc47-f53f-239f8c9c2623",
+    displayName: "Carte Pass the Sticks",
+    largeArt: "https://media.valorant-api.com/playercards/eef542d2-4724-bc47-f53f-239f8c9c2623/largeart.png",
+    wideArt: "https://media.valorant-api.com/playercards/eef542d2-4724-bc47-f53f-239f8c9c2623/wideart.png",
+  },
+];
+
+const DEMO_NIGHT_MARKET: NightMarketItem[] = [
+  {
+    uuid: "b9ee2457-481c-6776-3f5b-0ca8e8f90c89",
+    name: "Prime Vandal",
+    image: "https://media.valorant-api.com/weaponskins/b9ee2457-481c-6776-3f5b-0ca8e8f90c89/displayicon.png",
+    originalPrice: 1775,
+    discountPrice: 1150,
+    discountPercent: 35,
+  },
+  {
+    uuid: "2e77ac95-4681-3d87-bbdc-93a50ff6b1f6",
+    name: "Sovereign Sword",
+    image: "https://media.valorant-api.com/weaponskins/2e77ac95-4681-3d87-bbdc-93a50ff6b1f6/displayicon.png",
+    originalPrice: 3550,
+    discountPrice: 2130,
+    discountPercent: 40,
+  },
+  {
+    uuid: "a3f8e1b3-4654-f3ea-15ba-9eb9fd6a0b0d",
+    name: "Magepunk Spectre",
+    image: "https://media.valorant-api.com/weaponskins/a3f8e1b3-4654-f3ea-15ba-9eb9fd6a0b0d/displayicon.png",
+    originalPrice: 1775,
+    discountPrice: 1242,
+    discountPercent: 30,
+  },
+  {
+    uuid: "c612138e-4007-6d0c-64ad-3690c65ee4a7",
+    name: "Forsaken Classic",
+    image: "https://media.valorant-api.com/weaponskins/c612138e-4007-6d0c-64ad-3690c65ee4a7/displayicon.png",
+    originalPrice: 1775,
+    discountPrice: 1065,
+    discountPercent: 40,
+  },
+  {
+    uuid: "83778c03-45a3-67a2-3c89-6b8598327d58",
+    name: "Ion Sheriff",
+    image: "https://media.valorant-api.com/weaponskins/83778c03-45a3-67a2-3c89-6b8598327d58/displayicon.png",
+    originalPrice: 1775,
+    discountPrice: 1242,
+    discountPercent: 30,
+  },
+  {
+    uuid: "a9890917-41ea-eb55-47e7-ee990a87fa4e",
+    name: "Sovereign Ghost",
+    image: "https://media.valorant-api.com/weaponskins/a9890917-41ea-eb55-47e7-ee990a87fa4e/displayicon.png",
+    originalPrice: 1775,
+    discountPrice: 1150,
+    discountPercent: 35,
   },
 ];
 
@@ -169,7 +229,7 @@ export default function ValorantInventoryView() {
 
   const [wallet, setWallet] = useState({ vp: 3250, radianite: 180, kingdomCredits: 8500 });
   const [dailyOffers, setDailyOffers] = useState<DailyOfferItem[]>(DEMO_DAILY_OFFERS);
-  const [nightMarket] = useState<NightMarketItem[]>([]);
+  const [nightMarket, setNightMarket] = useState<NightMarketItem[]>([]);
   const [ownedSkins, setOwnedSkins] = useState<SkinItem[]>([]);
   const [ownedBuddies, setOwnedBuddies] = useState<BuddyItem[]>([]);
   const [ownedCards, setOwnedCards] = useState<CardItem[]>([]);
@@ -208,7 +268,7 @@ export default function ValorantInventoryView() {
   const loadPlayerData = useCallback(async (currentSession: ValorantSession) => {
     setDataLoading(true);
     try {
-      const [skinsApiRes, _buddiesApiRes, _cardsApiRes] = await Promise.all([
+      const [skinsApiRes, buddiesApiRes, cardsApiRes] = await Promise.all([
         fetch("https://valorant-api.com/v1/weapons/skins?language=fr-FR").then((r) => r.json()),
         fetch("https://valorant-api.com/v1/buddies?language=fr-FR").then((r) => r.json()),
         fetch("https://valorant-api.com/v1/playercards?language=fr-FR").then((r) => r.json()),
@@ -224,6 +284,20 @@ export default function ValorantInventoryView() {
               if (lvl.uuid) skinCatalog.set(lvl.uuid.toLowerCase(), { name: skin.displayName, icon: lvl.displayIcon || icon });
             }
           }
+        }
+      }
+
+      const buddyCatalog: Map<string, { name: string; icon: string }> = new Map();
+      if (buddiesApiRes?.data) {
+        for (const b of buddiesApiRes.data) {
+          buddyCatalog.set(b.uuid?.toLowerCase(), { name: b.displayName, icon: b.displayIcon || "" });
+        }
+      }
+
+      const cardCatalog: Map<string, { name: string; largeArt: string; wideArt?: string }> = new Map();
+      if (cardsApiRes?.data) {
+        for (const c of cardsApiRes.data) {
+          cardCatalog.set(c.uuid?.toLowerCase(), { name: c.displayName, largeArt: c.largeArt || "", wideArt: c.wideArt });
         }
       }
 
@@ -265,11 +339,59 @@ export default function ValorantInventoryView() {
           });
           setDailyOffers(mappedOffers);
         }
+        if (Array.isArray(sData.nightMarketOffers)) {
+          const mappedNight: NightMarketItem[] = sData.nightMarketOffers.map((o: { skinUuid: string; originalCost: number; discountCost: number; discountPercent: number }) => {
+            const hit = skinCatalog.get(o.skinUuid?.toLowerCase());
+            return {
+              uuid: o.skinUuid,
+              name: hit?.name || "Skin Marché Nocturne",
+              image: hit?.icon || "",
+              originalPrice: o.originalCost,
+              discountPrice: o.discountCost,
+              discountPercent: o.discountPercent,
+            };
+          });
+          setNightMarket(mappedNight);
+        }
       }
 
       if (inventoryRes.status === "fulfilled" && inventoryRes.value?.data) {
         const invData = inventoryRes.value.data;
         if (invData.wallet) setWallet(invData.wallet);
+        if (Array.isArray(invData.guns)) {
+          const mappedSkins: SkinItem[] = invData.guns.map((g: { skinUuid: string }) => {
+            const hit = skinCatalog.get(g.skinUuid?.toLowerCase());
+            return {
+              uuid: g.skinUuid,
+              displayName: hit?.name || "Arme",
+              displayIcon: hit?.icon || "",
+            };
+          });
+          setOwnedSkins(mappedSkins);
+        }
+        if (Array.isArray(invData.buddies)) {
+          const mappedBuddies: BuddyItem[] = invData.buddies.map((b: { buddyUuid: string }) => {
+            const hit = buddyCatalog.get(b.buddyUuid?.toLowerCase());
+            return {
+              uuid: b.buddyUuid,
+              displayName: hit?.name || "Porte-bonheur",
+              displayIcon: hit?.icon || "",
+            };
+          });
+          setOwnedBuddies(mappedBuddies);
+        }
+        if (Array.isArray(invData.cards)) {
+          const mappedCards: CardItem[] = invData.cards.map((c: { cardUuid: string }) => {
+            const hit = cardCatalog.get(c.cardUuid?.toLowerCase());
+            return {
+              uuid: c.cardUuid,
+              displayName: hit?.name || "Carte",
+              largeArt: hit?.largeArt || "",
+              wideArt: hit?.wideArt,
+            };
+          });
+          setOwnedCards(mappedCards);
+        }
       }
     } catch {
     } finally {
@@ -383,48 +505,49 @@ export default function ValorantInventoryView() {
       country: "FRA",
     });
     setDailyOffers(DEMO_DAILY_OFFERS);
+    setNightMarket(DEMO_NIGHT_MARKET);
     setOwnedBuddies(DEMO_BUDDIES);
     setOwnedCards(DEMO_CARDS);
     setOwnedSkins([
       {
         uuid: "s1",
-        displayName: "Kuronami (Vandal)",
-        displayIcon: "https://media.valorant-api.com/weaponskinlevels/97af88da-4768-9e08-e4e3-738d3526f15d/displayicon.png",
+        displayName: "Kuronami Vandal",
+        displayIcon: "https://media.valorant-api.com/weaponskins/d8d5d7a1-4d81-8560-54bc-0692ab40f69b/displayicon.png",
         category: "Vandal",
         tier: "Exclusive",
       },
       {
         uuid: "s2",
-        displayName: "Prime (Phantom)",
-        displayIcon: "https://media.valorant-api.com/weaponskinlevels/3f80c655-46eb-5d59-3fb6-7da85b307da8/displayicon.png",
+        displayName: "Prime//2.0 Phantom",
+        displayIcon: "https://media.valorant-api.com/weaponskins/44b7b110-46bf-ccbb-2613-29a5df296461/displayicon.png",
         category: "Phantom",
         tier: "Premium",
       },
       {
         uuid: "s3",
-        displayName: "Reaver (Karambit)",
-        displayIcon: "https://media.valorant-api.com/weaponskinlevels/ec17ea15-46f9-0114-1925-fbbf62e316ab/displayicon.png",
+        displayName: "Reaver Karambit",
+        displayIcon: "https://media.valorant-api.com/weaponskins/b73d7b16-4652-bc5b-5c4c-068aabb19d0a/displayicon.png",
         category: "Mêlée (Couteaux)",
         tier: "Premium",
       },
       {
         uuid: "s4",
-        displayName: "Ion (Sheriff)",
-        displayIcon: "https://media.valorant-api.com/weaponskinlevels/b21844b2-4d15-d912-8877-66a93bfdf85c/displayicon.png",
+        displayName: "Ion Sheriff",
+        displayIcon: "https://media.valorant-api.com/weaponskins/83778c03-45a3-67a2-3c89-6b8598327d58/displayicon.png",
         category: "Sheriff",
         tier: "Premium",
       },
       {
         uuid: "s5",
-        displayName: "Sovereign (Ghost)",
-        displayIcon: "https://media.valorant-api.com/weaponskinlevels/8404a3ad-4e3f-dc90-1cfa-65b161f38e68/displayicon.png",
+        displayName: "Sovereign Ghost",
+        displayIcon: "https://media.valorant-api.com/weaponskins/a9890917-41ea-eb55-47e7-ee990a87fa4e/displayicon.png",
         category: "Ghost",
         tier: "Premium",
       },
       {
         uuid: "s6",
-        displayName: "Araxys (Operator)",
-        displayIcon: "https://media.valorant-api.com/weaponskinlevels/0c7c8c6f-45b6-5471-a0c5-5582377ebba9/displayicon.png",
+        displayName: "Araxys Operator",
+        displayIcon: "https://media.valorant-api.com/weaponskins/6db556e4-4255-6c2c-6a80-8a9dfac96aa9/displayicon.png",
         category: "Operator",
         tier: "Exclusive",
       },
@@ -465,11 +588,11 @@ export default function ValorantInventoryView() {
   ];
 
   return (
-    <div className="flex min-h-0 w-full flex-1 flex-col gap-6 overflow-y-auto p-1 pr-2">
+    <div className="flex min-h-0 w-full flex-1 flex-col gap-6 overflow-y-auto p-1 pr-2 pb-32">
       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[var(--text-primary)]/[0.08] pb-4">
         <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-rose-500/15 text-rose-400 ring-1 ring-rose-500/25">
-            <Flame className="h-6 w-6" />
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-[#EB0029]/20 bg-[#EB0029]/10 text-[#EB0029] shadow-sm">
+            <RiotGamesLogo className="h-6 w-6" />
           </div>
           <div>
             <div className="flex items-center gap-2">
@@ -537,9 +660,9 @@ export default function ValorantInventoryView() {
               variant="primary"
               size="sm"
               onClick={() => setLoginModalOpen(true)}
-              className="rounded-xl shadow-lg shadow-rose-500/20"
+              className="rounded-xl bg-[#EB0029] hover:bg-[#D13639] text-white shadow-lg shadow-[#EB0029]/20"
             >
-              <Lock className="h-3.5 w-3.5" />
+              <RiotGamesLogo className="h-3.5 w-3.5" />
               Se connecter avec Riot
             </Button>
           </div>
@@ -547,15 +670,20 @@ export default function ValorantInventoryView() {
       </div>
 
       {!session ? (
-        <section className="relative flex flex-col items-center justify-center overflow-hidden rounded-3xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-8 text-center sm:p-12">
-          <div className="pointer-events-none absolute -top-24 h-64 w-64 rounded-full bg-rose-500/10 blur-3xl" />
-          <div className="relative mb-4 flex h-16 w-16 items-center justify-center rounded-3xl border border-rose-500/30 bg-rose-500/10 text-rose-400 shadow-xl">
-            <Shield className="h-8 w-8" />
+        <motion.section
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35, ease: EASE_SNAP }}
+          className="relative flex flex-col items-center justify-center overflow-hidden rounded-3xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-8 text-center sm:p-14"
+        >
+          <div className="pointer-events-none absolute -top-24 h-64 w-64 rounded-full bg-[#EB0029]/10 blur-3xl" />
+          <div className="relative mb-5 flex h-16 w-16 items-center justify-center rounded-2xl border border-[#EB0029]/25 bg-[#EB0029]/10 text-[#EB0029] shadow-lg shadow-[#EB0029]/15">
+            <RiotGamesLogo className="h-9 w-9" />
           </div>
           <h2 className="text-2xl font-bold text-[var(--text-primary)] sm:text-3xl">
             Connectez votre compte Riot Games
           </h2>
-          <p className="mt-2 max-w-xl text-sm leading-relaxed text-[var(--text-muted)]">
+          <p className="mt-2.5 max-w-xl text-sm leading-relaxed text-[var(--text-muted)]">
             Accédez à vos 4 skins quotidiens en direct, aux offres exclusives du Marché Nocturne,
             à l&apos;ensemble de vos armes débloquées, porte-bonheur et cartes de joueur avec visuels HD officiels.
           </p>
@@ -565,9 +693,9 @@ export default function ValorantInventoryView() {
               variant="primary"
               size="lg"
               onClick={() => setLoginModalOpen(true)}
-              className="rounded-2xl px-6 font-bold shadow-xl shadow-rose-500/25"
+              className="rounded-2xl px-6 font-bold bg-[#EB0029] hover:bg-[#D13639] text-white shadow-xl shadow-[#EB0029]/25"
             >
-              <Key className="h-4 w-4" />
+              <RiotGamesLogo className="h-4 w-4" />
               Connexion Riot Games
             </Button>
             <Button
@@ -581,11 +709,13 @@ export default function ValorantInventoryView() {
             </Button>
           </div>
 
-          <div className="mt-8 flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-1.5 text-xs font-medium text-emerald-300">
-            <Shield className="h-3.5 w-3.5" />
-            <span>Sécurisé : aucun mot de passe n&apos;est stocké sur nos serveurs. Jetons conservés localement.</span>
+          <div className="mt-8 flex items-center gap-2.5 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-bg)]/80 px-3.5 py-2 text-xs text-[var(--text-secondary)] shadow-sm backdrop-blur-sm">
+            <span className="flex h-2 w-2 rounded-sm bg-emerald-500/80 ring-2 ring-emerald-500/20" />
+            <span className="font-medium">
+              <strong className="font-semibold text-[var(--text-primary)]">Sécurité locale</strong> : aucun mot de passe n&apos;est stocké sur nos serveurs. Jetons conservés uniquement dans votre navigateur.
+            </span>
           </div>
-        </section>
+        </motion.section>
       ) : (
         <>
           <div className="flex flex-wrap items-center justify-between gap-4">
@@ -601,241 +731,301 @@ export default function ValorantInventoryView() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Rechercher par nom…"
-                  icon="search"
+                  aria-label="Rechercher"
                   clearable
-                  inputSize="compact"
                 />
               </div>
             )}
           </div>
 
-          {activeTab === "store" && (
-            <div className="space-y-6">
-              <section className="space-y-4">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <div className="flex items-center gap-2">
-                    <Sparkles className="h-4 w-4 text-rose-400" />
-                    <h2 className="text-base font-bold text-[var(--text-primary)]">
-                      Boutique Quotidienne (4 skins du jour)
-                    </h2>
+          <AnimatePresence mode="wait">
+            {activeTab === "store" && (
+              <motion.div
+                key="tab-store"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.25, ease: EASE_SNAP }}
+                className="space-y-6"
+              >
+                <section className="space-y-3">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div className="flex items-center gap-2">
+                      <Sparkles className="h-4 w-4 text-rose-400" />
+                      <h2 className="text-base font-bold text-[var(--text-primary)]">
+                        Boutique Quotidienne (4 skins du jour)
+                      </h2>
+                    </div>
+                    <div className="flex items-center gap-1.5 rounded-full border border-amber-400/30 bg-amber-500/10 px-3 py-1 text-xs font-semibold text-amber-300">
+                      <Clock className="h-3.5 w-3.5" />
+                      <span>Rotation dans : {formatCountdown(remainingTime)}</span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-1.5 rounded-full border border-amber-400/30 bg-amber-500/10 px-3 py-1 text-xs font-semibold text-amber-300">
-                    <Clock className="h-3.5 w-3.5" />
-                    <span>Rotation dans : {formatCountdown(remainingTime)}</span>
-                  </div>
-                </div>
 
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                  {dailyOffers.map((item, index) => (
-                    <article
-                      key={`${item.uuid}-${index}`}
-                      className="group relative flex flex-col overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 transition-all duration-300 hover:-translate-y-1 hover:border-rose-500/40 hover:shadow-2xl hover:shadow-rose-500/10"
-                    >
-                      <div className="relative flex aspect-[16/10] w-full items-center justify-center overflow-hidden rounded-xl bg-gradient-to-b from-[var(--text-primary)]/[0.04] to-black/20 p-3">
-                        {item.image ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={item.image}
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                    {dailyOffers.map((item, index) => (
+                      <motion.article
+                        key={`${item.uuid}-${index}`}
+                        initial={{ opacity: 0, y: 14 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.32, delay: index * 0.05, ease: EASE_SNAP }}
+                        whileHover={{ y: -4, transition: { duration: 0.18 } }}
+                        className="group relative flex flex-col overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 transition-all hover:border-[#EB0029]/40 hover:shadow-2xl hover:shadow-[#EB0029]/10"
+                      >
+                        <div className="relative flex aspect-[16/10] w-full items-center justify-center overflow-hidden rounded-xl bg-gradient-to-b from-[var(--text-primary)]/[0.04] to-black/25 p-3">
+                          <ClientImage
+                            candidates={[item.image]}
                             alt={item.name}
                             className="max-h-full max-w-full object-contain drop-shadow-[0_8px_16px_rgba(0,0,0,0.6)] transition-transform duration-300 group-hover:scale-110"
-                            loading="lazy"
+                            fallback={<Sparkles className="h-8 w-8 text-[var(--text-muted)]" />}
                           />
-                        ) : (
-                          <Sparkles className="h-8 w-8 text-[var(--text-muted)]" />
-                        )}
-                      </div>
-                      <div className="mt-3 flex flex-1 flex-col justify-between">
-                        <div>
-                          <p className="text-sm font-bold text-[var(--text-primary)]">{item.name}</p>
-                          <p className="text-[11px] font-medium text-[var(--text-muted)]">
-                            {item.weaponType || "Skin arme"}
-                          </p>
                         </div>
-                        <div className="mt-4 flex items-center justify-between border-t border-[var(--text-primary)]/[0.06] pt-2.5">
-                          <span className="flex items-center gap-1 font-mono text-sm font-bold text-amber-300">
-                            <Coins className="h-3.5 w-3.5 text-amber-400" />
-                            {item.price.toLocaleString("fr-FR")} VP
-                          </span>
-                          <span className="rounded-lg bg-[var(--text-primary)]/[0.06] px-2 py-0.5 text-[10px] font-bold text-[var(--text-muted)]">
-                            Offre du jour
-                          </span>
+                        <div className="mt-3 flex flex-1 flex-col justify-between">
+                          <div>
+                            <p className="text-sm font-bold text-[var(--text-primary)]">{item.name}</p>
+                            <p className="text-[11px] font-medium text-[var(--text-muted)]">
+                              {item.weaponType || "Skin arme"}
+                            </p>
+                          </div>
+                          <div className="mt-4 flex items-center justify-between border-t border-[var(--text-primary)]/[0.06] pt-2.5">
+                            <span className="flex items-center gap-1 font-mono text-sm font-bold text-amber-300">
+                              <Coins className="h-3.5 w-3.5 text-amber-400" />
+                              {item.price.toLocaleString("fr-FR")} VP
+                            </span>
+                            <span className="rounded-lg bg-[var(--text-primary)]/[0.06] px-2 py-0.5 text-[10px] font-bold text-[var(--text-muted)]">
+                              Offre du jour
+                            </span>
+                          </div>
                         </div>
-                      </div>
-                    </article>
-                  ))}
-                </div>
-              </section>
-
-              {nightMarket.length > 0 && (
-                <section className="space-y-4 rounded-3xl border border-indigo-500/25 bg-gradient-to-b from-indigo-950/20 to-transparent p-5">
-                  <div className="flex items-center gap-2">
-                    <Sparkles className="h-4 w-4 text-indigo-400" />
-                    <h2 className="text-base font-bold text-[var(--text-primary)]">
-                      Marché Nocturne Actif
-                    </h2>
-                    <Badge variant="primary" size="sm">
-                      Réductions Exclusives
-                    </Badge>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-                    {nightMarket.map((item, idx) => (
-                      <div
-                        key={idx}
-                        className="rounded-xl border border-indigo-500/20 bg-indigo-950/30 p-3 text-center"
-                      >
-                        <p className="text-xs font-bold text-[var(--text-primary)]">{item.name}</p>
-                        <Badge variant="success" size="sm" className="mt-2">
-                          -{item.discountPercent}%
-                        </Badge>
-                      </div>
+                      </motion.article>
                     ))}
                   </div>
                 </section>
-              )}
-            </div>
-          )}
 
-          {activeTab === "skins" && (
-            <div className="space-y-4">
-              <div className="flex flex-wrap items-center gap-2">
-                {WEAPON_CATEGORIES.map((cat) => (
-                  <button
-                    key={cat}
-                    type="button"
-                    onClick={() => setCategoryFilter(cat)}
-                    className={cn(
-                      "rounded-xl px-3 py-1.5 text-xs font-semibold transition",
-                      categoryFilter === cat
-                        ? "bg-[var(--accent-primary)] text-white shadow-md shadow-[var(--accent-primary)]/20"
-                        : "border border-[var(--panel-border)] bg-[var(--panel-bg)] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-                    )}
-                  >
-                    {cat}
-                  </button>
-                ))}
-              </div>
+                {nightMarket.length > 0 && (
+                  <section className="space-y-4 rounded-3xl border border-indigo-500/25 bg-gradient-to-b from-indigo-950/20 to-transparent p-5">
+                    <div className="flex items-center gap-2">
+                      <Sparkles className="h-4 w-4 text-indigo-400" />
+                      <h2 className="text-base font-bold text-[var(--text-primary)]">
+                        Marché Nocturne Actif
+                      </h2>
+                      <Badge variant="primary" size="sm">
+                        Réductions Exclusives
+                      </Badge>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+                      {nightMarket.map((item, idx) => (
+                        <motion.div
+                          key={idx}
+                          initial={{ opacity: 0, y: 12 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.3, delay: idx * 0.04, ease: EASE_SNAP }}
+                          whileHover={{ y: -3, transition: { duration: 0.18 } }}
+                          className="group flex flex-col justify-between rounded-xl border border-indigo-500/20 bg-indigo-950/30 p-3 transition hover:border-indigo-400/40 hover:shadow-lg"
+                        >
+                          <div className="relative flex aspect-[16/10] w-full items-center justify-center rounded-lg bg-black/25 p-2">
+                            <ClientImage
+                              candidates={[item.image]}
+                              alt={item.name}
+                              className="max-h-full max-w-full object-contain transition group-hover:scale-105"
+                              fallback={<Sparkles className="h-6 w-6 text-indigo-400/50" />}
+                            />
+                          </div>
+                          <div className="mt-2.5">
+                            <p className="truncate text-xs font-bold text-[var(--text-primary)]" title={item.name}>
+                              {item.name}
+                            </p>
+                            <div className="mt-1 flex items-center justify-between text-[11px]">
+                              <span className="font-mono text-indigo-300 font-bold">{item.discountPrice} VP</span>
+                              <span className="text-[10px] text-[var(--text-muted)] line-through">{item.originalPrice}</span>
+                            </div>
+                            <Badge variant="success" size="sm" className="mt-2 w-full justify-center">
+                              -{item.discountPercent}%
+                            </Badge>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </section>
+                )}
+              </motion.div>
+            )}
 
-              {filteredSkins.length === 0 ? (
-                <div className="flex flex-col items-center justify-center rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-8 text-center">
-                  <SearchX className="h-8 w-8 text-[var(--text-muted)]" />
-                  <p className="mt-2 text-sm text-[var(--text-muted)]">Aucun skin ne correspond aux critères.</p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
-                  {filteredSkins.map((skin) => (
-                    <div
-                      key={skin.uuid}
-                      className="group flex flex-col overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3.5 transition hover:border-[var(--accent-primary)]/30 hover:shadow-lg"
+            {activeTab === "skins" && (
+              <motion.div
+                key="tab-skins"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.25, ease: EASE_SNAP }}
+                className="space-y-4"
+              >
+                <div className="flex flex-wrap items-center gap-2">
+                  {WEAPON_CATEGORIES.map((cat) => (
+                    <button
+                      key={cat}
+                      type="button"
+                      onClick={() => setCategoryFilter(cat)}
+                      className={cn(
+                        "rounded-xl px-3 py-1.5 text-xs font-semibold transition",
+                        categoryFilter === cat
+                          ? "bg-[var(--accent-primary)] text-white shadow-md shadow-[var(--accent-primary)]/20"
+                          : "border border-[var(--panel-border)] bg-[var(--panel-bg)] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                      )}
                     >
-                      <div className="flex aspect-[16/10] w-full items-center justify-center rounded-xl bg-black/25 p-2.5">
-                        {skin.displayIcon && (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={skin.displayIcon}
-                            alt=""
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+
+                {filteredSkins.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-8 text-center">
+                    <SearchX className="h-8 w-8 text-[var(--text-muted)]" />
+                    <p className="mt-2 text-sm text-[var(--text-muted)]">Aucun skin ne correspond aux critères.</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
+                    {filteredSkins.map((skin, idx) => (
+                      <motion.div
+                        key={skin.uuid}
+                        initial={{ opacity: 0, y: 12 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.28, delay: Math.min(idx * 0.03, 0.3), ease: EASE_SNAP }}
+                        whileHover={{ y: -3, transition: { duration: 0.18 } }}
+                        className="group flex flex-col overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3.5 transition hover:border-[var(--accent-primary)]/40 hover:shadow-lg"
+                      >
+                        <div className="flex aspect-[16/10] w-full items-center justify-center rounded-xl bg-black/25 p-2.5">
+                          <ClientImage
+                            candidates={[skin.displayIcon]}
+                            alt={skin.displayName}
                             className="max-h-full max-w-full object-contain transition group-hover:scale-105"
-                            loading="lazy"
+                            fallback={<Sparkles className="h-6 w-6 text-[var(--text-muted)]" />}
                           />
-                        )}
-                      </div>
-                      <div className="mt-3">
-                        <p className="truncate text-xs font-bold text-[var(--text-primary)]" title={skin.displayName}>
-                          {skin.displayName}
-                        </p>
-                        <div className="mt-1 flex items-center justify-between">
-                          <span className="text-[10px] text-[var(--text-muted)]">{skin.category}</span>
-                          {skin.tier && (
-                            <span className="rounded bg-rose-500/15 px-1.5 py-0.5 text-[9px] font-bold text-rose-300">
-                              {skin.tier}
-                            </span>
-                          )}
                         </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
+                        <div className="mt-3">
+                          <p className="truncate text-xs font-bold text-[var(--text-primary)]" title={skin.displayName}>
+                            {skin.displayName}
+                          </p>
+                          <div className="mt-1 flex items-center justify-between">
+                            <span className="text-[10px] text-[var(--text-muted)]">{skin.category}</span>
+                            {skin.tier && (
+                              <span className="rounded bg-[#EB0029]/15 px-1.5 py-0.5 text-[9px] font-bold text-rose-300">
+                                {skin.tier}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                )}
+              </motion.div>
+            )}
 
-          {activeTab === "buddies" && (
-            <div>
-              {filteredBuddies.length === 0 ? (
-                <div className="flex flex-col items-center justify-center rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-8 text-center">
-                  <SearchX className="h-8 w-8 text-[var(--text-muted)]" />
-                  <p className="mt-2 text-sm text-[var(--text-muted)]">Aucun porte-bonheur trouvé.</p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-                  {filteredBuddies.map((buddy) => (
-                    <div
-                      key={buddy.uuid}
-                      className="group flex flex-col items-center rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 text-center transition hover:border-[var(--accent-primary)]/40 hover:shadow-md"
-                    >
-                      <div className="flex aspect-square w-full items-center justify-center rounded-xl bg-black/20 p-3">
-                        {buddy.displayIcon && (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={buddy.displayIcon}
-                            alt=""
+            {activeTab === "buddies" && (
+              <motion.div
+                key="tab-buddies"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.25, ease: EASE_SNAP }}
+              >
+                {filteredBuddies.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-8 text-center">
+                    <SearchX className="h-8 w-8 text-[var(--text-muted)]" />
+                    <p className="mt-2 text-sm text-[var(--text-muted)]">Aucun porte-bonheur trouvé.</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+                    {filteredBuddies.map((buddy, idx) => (
+                      <motion.div
+                        key={buddy.uuid}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.25, delay: Math.min(idx * 0.03, 0.25), ease: EASE_SNAP }}
+                        whileHover={{ y: -3, transition: { duration: 0.18 } }}
+                        className="group flex flex-col items-center rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 text-center transition hover:border-[var(--accent-primary)]/40 hover:shadow-md"
+                      >
+                        <div className="flex aspect-square w-full items-center justify-center rounded-xl bg-black/20 p-3">
+                          <ClientImage
+                            candidates={[buddy.displayIcon]}
+                            alt={buddy.displayName}
                             className="max-h-full max-w-full object-contain transition group-hover:scale-110"
-                            loading="lazy"
+                            fallback={<Sparkles className="h-6 w-6 text-[var(--text-muted)]" />}
                           />
-                        )}
-                      </div>
-                      <p className="mt-2 line-clamp-2 text-[11px] font-semibold text-[var(--text-primary)]">
-                        {buddy.displayName}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
+                        </div>
+                        <p className="mt-2 line-clamp-2 text-[11px] font-semibold text-[var(--text-primary)]">
+                          {buddy.displayName}
+                        </p>
+                      </motion.div>
+                    ))}
+                  </div>
+                )}
+              </motion.div>
+            )}
 
-          {activeTab === "cards" && (
-            <div>
-              {filteredCards.length === 0 ? (
-                <div className="flex flex-col items-center justify-center rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-8 text-center">
-                  <SearchX className="h-8 w-8 text-[var(--text-muted)]" />
-                  <p className="mt-2 text-sm text-[var(--text-muted)]">Aucune carte trouvée.</p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-                  {filteredCards.map((card) => (
-                    <div
-                      key={card.uuid}
-                      className="group flex flex-col overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] transition hover:border-[var(--accent-primary)]/40 hover:shadow-xl"
-                    >
-                      <div className="relative aspect-[3/4] w-full overflow-hidden bg-black/30">
-                        {card.largeArt && (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={card.largeArt}
-                            alt=""
+            {activeTab === "cards" && (
+              <motion.div
+                key="tab-cards"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.25, ease: EASE_SNAP }}
+              >
+                {filteredCards.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-8 text-center">
+                    <SearchX className="h-8 w-8 text-[var(--text-muted)]" />
+                    <p className="mt-2 text-sm text-[var(--text-muted)]">Aucune carte trouvée.</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+                    {filteredCards.map((card, idx) => (
+                      <motion.div
+                        key={card.uuid}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.25, delay: Math.min(idx * 0.03, 0.25), ease: EASE_SNAP }}
+                        whileHover={{ y: -3, transition: { duration: 0.18 } }}
+                        className="group flex flex-col overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] transition hover:border-[var(--accent-primary)]/40 hover:shadow-xl"
+                      >
+                        <div className="relative aspect-[3/4] w-full overflow-hidden bg-black/30">
+                          <ClientImage
+                            candidates={[card.largeArt, card.wideArt]}
+                            alt={card.displayName}
                             className="h-full w-full object-cover transition group-hover:scale-105"
-                            loading="lazy"
+                            fallback={<Sparkles className="h-6 w-6 text-[var(--text-muted)]" />}
                           />
-                        )}
-                      </div>
-                      <p className="truncate p-2 text-center text-xs font-semibold text-[var(--text-primary)]">
-                        {card.displayName}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
+                        </div>
+                        <p className="truncate p-2 text-center text-xs font-semibold text-[var(--text-primary)]">
+                          {card.displayName}
+                        </p>
+                      </motion.div>
+                    ))}
+                  </div>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </>
       )}
 
       {loginModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-md">
-          <div className="relative w-full max-w-md overflow-hidden rounded-3xl border border-[var(--panel-border)] bg-[var(--panel-bg)] shadow-2xl">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-md"
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 8 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 8 }}
+            transition={{ duration: 0.25, ease: EASE_SNAP }}
+            className="relative w-full max-w-md overflow-hidden rounded-3xl border border-[var(--panel-border)] bg-[var(--panel-bg)] shadow-2xl"
+          >
             <div className="flex items-center justify-between border-b border-[var(--text-primary)]/[0.08] p-4 sm:p-5">
-              <div className="flex items-center gap-2">
-                <Flame className="h-5 w-5 text-rose-500" />
+              <div className="flex items-center gap-2.5">
+                <RiotGamesLogo className="h-5 w-5 text-[#EB0029]" />
                 <h3 className="text-base font-bold text-[var(--text-primary)]">
                   Connexion Riot Games
                 </h3>
@@ -902,9 +1092,9 @@ export default function ValorantInventoryView() {
                   </select>
                 </div>
 
-                <div className="rounded-xl border border-amber-500/25 bg-amber-500/10 p-3 text-[11px] leading-relaxed text-amber-200/90">
-                  <Shield className="mb-1 inline h-3.5 w-3.5 mr-1" />
-                  Vos données de session sont éphémères et conservées uniquement dans votre navigateur.
+                <div className="rounded-lg border border-[var(--panel-border)] bg-[var(--surface-bg)]/80 p-3 text-[11px] leading-relaxed text-[var(--text-secondary)]">
+                  <Lock className="mb-0.5 inline h-3.5 w-3.5 mr-1.5 text-zinc-400" />
+                  Vos données de session sont strictement éphémères et conservées uniquement dans votre navigateur.
                 </div>
 
                 <div className="flex gap-2 pt-2">
@@ -920,7 +1110,7 @@ export default function ValorantInventoryView() {
                     type="submit"
                     variant="primary"
                     disabled={loginLoading}
-                    className="flex-1 rounded-xl font-bold"
+                    className="flex-1 rounded-xl font-bold bg-[#EB0029] hover:bg-[#D13639] text-white shadow-lg shadow-[#EB0029]/20"
                   >
                     {loginLoading ? "Connexion…" : "Se connecter"}
                   </Button>
@@ -965,15 +1155,15 @@ export default function ValorantInventoryView() {
                     type="submit"
                     variant="primary"
                     disabled={loginLoading}
-                    className="flex-1 rounded-xl font-bold"
+                    className="flex-1 rounded-xl font-bold bg-[#EB0029] hover:bg-[#D13639] text-white"
                   >
                     {loginLoading ? "Vérification…" : "Valider le code"}
                   </Button>
                 </div>
               </form>
             )}
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       )}
     </div>
   );

@@ -54363,9 +54363,57 @@ const v12894_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12894_fr, v12893_fr, v12892_fr);
-CHANGELOG_BY_LANG.en.unshift(v12894_en, v12893_en, v12892_en);
-CHANGELOG_BY_LANG.es.unshift(v12894_es, v12893_es, v12892_es);
-CHANGELOG_BY_LANG.de.unshift(v12894_de, v12893_de, v12892_de);
+const v12895_fr: ChangelogEntry = {
+  version: "v1.75.53",
+  date: "2026-10-13",
+  title: "Refonte Accueil Gaming Riot : Hub Valorant & LoL en direct, Coach IA et sidebar dédiée",
+  items: [
+    "Transformation complète de la vue Accueil (/) en hub gaming Riot officiel avec statistiques en direct (Valorant, LoL, TFT)",
+    "Intégration du Coach IA Gaming avec débriefings tactiques automatisés basés sur les données réelles",
+    "Nouvelle catégorie dédiée Riot Games dans la sidebar (VALORANT, League of Legends, TFT, Hub Tracker) avec suppression des encombrements",
+    "Accès public direct à la racine (/) sans authentification requise, 100% conforme aux exigences de l'API Riot Games",
+  ],
+};
+
+const v12895_en: ChangelogEntry = {
+  version: "v1.75.53",
+  date: "2026-10-13",
+  title: "Riot Gaming Home Redesign: Live Valorant & LoL Hub, AI Coach, and Dedicated Sidebar",
+  items: [
+    "Full redesign of the Home view (/) into an official Riot gaming workspace with live player statistics (Valorant, LoL, TFT)",
+    "Integration of the AI Gaming Coach with real data-driven tactical briefings",
+    "New dedicated Riot Games category in the sidebar (VALORANT, League of Legends, TFT, Tracker Hub) eliminating clutter",
+    "Zero-login public access to root (/), 100% compliant with Riot Games review requirements",
+  ],
+};
+
+const v12895_es: ChangelogEntry = {
+  version: "v1.75.53",
+  date: "2026-10-13",
+  title: "Rediseño Inicio Gaming Riot: Hub Valorant y LoL en directo, Coach IA y barra lateral dedicada",
+  items: [
+    "Transformación completa de la vista de Inicio (/) en un hub de juegos Riot oficial con estadísticas en tiempo real",
+    "Integración del Coach IA Gaming con análisis tácticos basados en datos reales de partidas",
+    "Nueva categoría dedicada Riot Games en la barra lateral eliminando elementos innecesarios",
+    "Acceso público directo en la raíz (/) sin inicio de sesión, 100% conforme a los requisitos de Riot",
+  ],
+};
+
+const v12895_de: ChangelogEntry = {
+  version: "v1.75.53",
+  date: "2026-10-13",
+  title: "Neugestaltung Riot Gaming Home: Live Valorant & LoL Hub, KI-Coach und dedizierte Seitenleiste",
+  items: [
+    "Vollständige Neugestaltung der Startseite (/) in ein offizielles Riot Gaming Hub mit Live-Statistiken (Valorant, LoL, TFT)",
+    "Integration des KI-Gaming-Coaches mit faktenbasierten taktischen Briefings",
+    "Neue dedizierte Riot Games Kategorie in der Seitenleiste (VALORANT, League of Legends, TFT, Tracker Hub)",
+    "Öffentlicher direkter Zugriff auf (/), 100% konform mit den Riot Games Bewertungskriterien",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12895_fr, v12894_fr, v12893_fr, v12892_fr);
+CHANGELOG_BY_LANG.en.unshift(v12895_en, v12894_en, v12893_en, v12892_en);
+CHANGELOG_BY_LANG.es.unshift(v12895_es, v12894_es, v12893_es, v12892_es);
+CHANGELOG_BY_LANG.de.unshift(v12895_de, v12894_de, v12893_de, v12892_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

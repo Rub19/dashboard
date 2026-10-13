@@ -1,5 +1,5 @@
-import DashboardOverview from "@/components/DashboardOverview";
+import RiotGamingHome from "@/components/RiotGamingHome";
 
 export default function Home() {
-  return <DashboardOverview />;
+  return <RiotGamingHome />;
 }

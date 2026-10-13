@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.53 — 2026-10-13
+
+**Refonte Accueil Gaming Riot : Hub Valorant & LoL en direct, Coach IA et sidebar dédiée**
+
+- Transformation complète de la vue Accueil (`/`) en hub gaming Riot officiel avec statistiques en direct (`VALORANT`, `League of Legends`, `Teamfight Tactics`).
+- Intégration du Coach IA Gaming avec débriefings tactiques automatisés basés sur les données réelles et analyse approfondie.
+- Nouvelle catégorie dédiée Riot Games dans la barre latérale (`VALORANT`, `League of Legends`, `TFT`, `Hub Tracker`) et élimination des doublons et encombrements.
+- Accès public direct à la racine (`/`) sans authentification obligatoire, strictement conforme aux exigences d'évaluation de Riot Games.
+
 ## v1.75.52 — 2026-10-13
 
 **Accès public démo pour l'évaluation Riot Games & profils rapides Valorant et LoL**

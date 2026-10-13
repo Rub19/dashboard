@@ -47,14 +47,16 @@ const UserProfileDropdown = dynamic(() => import("@/components/UserProfileDropdo
 });
 
 const ROUTE_LABELS: Record<string, string> = {
-  "/": "Vue d'ensemble",
+  "/": "Hub Gaming Riot",
+  "/tracker": "Tracker Riot Games",
+  "/matches": "Tracker Riot Games",
   "/notes": "Notes",
   "/tasks": "Tâches",
   "/calendar": "Calendrier",
   "/files": "Fichiers",
   "/settings": "Réglages",
   "/profile": "Profil",
-  "/brain": "Brain",
+  "/brain": "Coach IA Gaming",
   "/focus": "Focus",
   "/mail": "Mail",
   "/team": "Équipe",

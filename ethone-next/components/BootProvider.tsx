@@ -56,31 +56,22 @@ export function useBoot() {
   return useContext(BootContext);
 }
 
-const PUBLIC_ROUTES = ["/login", "/password-recovery", "/reset-password", "/terms", "/privacy", "/cookies", "/legal", "/bot", "/leaderboard", "/extension"];
+const PUBLIC_ROUTES = ["/login", "/password-recovery", "/reset-password", "/terms", "/privacy", "/cookies", "/legal", "/bot", "/leaderboard", "/extension", "/discord"];
 
 const BOOT_TIMEOUT_MS = 8_000;
-// Kept short on purpose: this is only a floor for the progress-bar animation
-// to feel intentional, not a wait for real work — auth/profile resolution
-// still gates readiness independently via canShowApp below. A long floor
-// here means every cold load/refresh pays it even when session+profile are
-// already warm/cached.
 const BOOT_MIN_DURATION_MS = 160;
-// Temps pendant lequel la barre reste visible à 100 % avant la sortie animée.
 const BOOT_FULL_HOLD_MS = 260;
 
-// Pages d'information (vitrine du bot, conditions, confidentialité) : lisibles par tous, connectés ou non. Contrairement
-// à /login, un utilisateur déjà connecté n'en est pas renvoyé vers l'accueil.
-const INFO_ROUTES = ["/terms", "/privacy", "/cookies", "/legal", "/bot", "/leaderboard", "/extension"];
+const INFO_ROUTES = ["/terms", "/privacy", "/cookies", "/legal", "/bot", "/leaderboard", "/extension", "/discord"];
 
 function isInfoRoute(pathname: string | null): boolean {
   if (!pathname) return false;
   return INFO_ROUTES.some((route) => pathname === route || pathname.startsWith(`${route}/`));
 }
 
-// Où renvoyer après connexion : seulement des chemins internes attendus, jamais une URL arbitraire (pas d'open redirect).
 export function safeLoginNext(raw: string | null | undefined): string {
   const next = raw || "";
-  // trailingSlash: true dans next.config → /clip/ en production.
+  if (/^\/discord(\/.*)?$/.test(next)) return next;
   return /^\/clip\/?$/.test(next) || next.startsWith("/spaces/join") ? next : "/";
 }
 

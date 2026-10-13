@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { fetchWorker, WORKER_URL } from "@/lib/api";
 import { fetchWorkerCached } from "@/lib/hooks/useCachedFetch";
 import { supabase } from "@/lib/supabase";
+import { signInWithOAuth } from "@/lib/auth";
 
 export type DiscordConnection = {
   type: string;
@@ -49,7 +50,9 @@ export function useDiscordOAuth() {
   const [error, setError] = useState<string | null>(null);
 
   const redirectUri = `${WORKER_URL}/api/discord/oauth/callback`;
-  const returnTo = typeof window !== "undefined" ? `${window.location.origin}/settings?discord=connected` : "/settings?discord=connected";
+  const returnTo = typeof window !== "undefined"
+    ? (window.location.pathname.startsWith("/discord") ? `${window.location.origin}/discord` : `${window.location.origin}/settings?discord=connected`)
+    : "/settings?discord=connected";
 
   const connect = useCallback(async () => {
     setLoading(true);
@@ -57,7 +60,15 @@ export function useDiscordOAuth() {
     try {
       const { data } = await supabase.auth.getSession();
       const token = data.session?.access_token;
-      if (!token) throw new Error("Session requise");
+      if (!token) {
+        const target = typeof window !== "undefined" ? `${window.location.origin}/discord` : undefined;
+        const { ok, url } = await signInWithOAuth("discord", target);
+        if (ok && url) {
+          window.location.href = url;
+          return;
+        }
+        throw new Error("Lien de connexion Discord indisponible");
+      }
       const url = new URL("/api/discord/oauth/url", WORKER_URL);
       url.searchParams.set("redirect_uri", redirectUri);
       url.searchParams.set("return_to", returnTo);

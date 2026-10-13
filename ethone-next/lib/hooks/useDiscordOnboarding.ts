@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { getUserState, setUserState } from "@/lib/user-state";
 
-export const CURRENT_ONBOARDING_VERSION = 2;
+export const CURRENT_ONBOARDING_VERSION = 3;
 
 const STORAGE_KEYS = {
   COMPLETED: "discord_onboarding_completed",
@@ -102,7 +102,7 @@ export function useDiscordOnboarding() {
   }, []);
 
   const openOnboarding = useCallback((step: number = 0) => {
-    setCurrentStep(Math.max(0, Math.min(step, 7)));
+    setCurrentStep(Math.max(0, Math.min(step, 3)));
     setIsOpen(true);
   }, []);
 

@@ -1,5 +1,16 @@
 [
   {
+    "version": "v1.75.17",
+    "date": "2026-10-13",
+    "title": "Bypass Direct Auth Discord, Harmonisation Topbar & Refonte Onboarding Style Keeper",
+    "items": [
+      "Connexion Discord directe depuis la vitrine bot : le bouton Dashboard déclenche directement l'authentification Discord sans passer par le dashboard de bureau ETHONE OS, avec atterrissage immédiat sur la sélection de serveurs.",
+      "Bypass d'authentification dans BootProvider : prise en charge native de la console /discord et persistance du chemin cible après connexion.",
+      "Harmonisation de la barre de navigation vitrine : boutons Dashboard, Ajouter Etho et sélecteur de langue calibrés à la même hauteur (36px, h-9) avec coins arrondis Keeper (rounded-xl) et alignement optique soigné.",
+      "Refonte complète de l'Onboarding Bot : parcours resserré en 4 étapes clés, suppression totale de tout jargon IA et faux placeholders, boutons d'action carrés Keeper et animations Framer Motion soignées."
+    ]
+  },
+  {
     "version": "v1.75.16",
     "date": "2026-10-13",
     "title": "Nettoyage Vitrine Bot : Épuration du Hero & Harmonisation Fun & Médias",

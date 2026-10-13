@@ -52530,6 +52530,59 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_16_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_16_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_16_de);
 
+const v1_75_17_fr: ChangelogEntry = {
+  version: "v1.75.17",
+  date: "2026-10-13",
+  title: "Bypass Direct Auth Discord, Harmonisation Topbar & Refonte Onboarding Style Keeper",
+  items: [
+    "Connexion Discord directe depuis la vitrine bot : le bouton Dashboard déclenche directement l'authentification Discord sans passer par le dashboard de bureau ETHONE OS, avec atterrissage immédiat sur la sélection de serveurs.",
+    "Bypass d'authentification dans BootProvider : prise en charge native de la console /discord et persistance du chemin cible après connexion.",
+    "Harmonisation de la barre de navigation vitrine : boutons Dashboard, Ajouter Etho et sélecteur de langue calibrés à la même hauteur (36px, h-9) avec coins arrondis Keeper (rounded-xl) et alignement optique soigné.",
+    "Refonte complète de l'Onboarding Bot : parcours resserré en 4 étapes clés, suppression totale de tout jargon IA et faux placeholders, boutons d'action carrés Keeper et animations Framer Motion soignées.",
+  ],
+};
+
+const v1_75_17_en: ChangelogEntry = {
+  version: "v1.75.17",
+  date: "2026-10-13",
+  title: "Direct Discord Auth Bypass, Topbar Harmonization & Keeper-Style Onboarding Overhaul",
+  items: [
+    "Direct Discord login from showcase: clicking Dashboard initiates direct Discord OAuth authorization without showing the ETHONE OS desktop dashboard, routing straight to the server picker.",
+    "BootProvider routing bypass: native unauthenticated support for /discord console and resilient preservation of deep target routes.",
+    "Showcase navbar harmonization: Dashboard, Add Bot, and Language selector calibrated to the exact same 36px height (h-9) with Keeper-style rounded-xl corners and refined optical alignment.",
+    "Full Bot Onboarding Overhaul: streamlined 4-step walkthrough, complete elimination of AI buzzwords and placeholders, crisp square Keeper buttons, and fluid Framer Motion transitions.",
+  ],
+};
+
+const v1_75_17_es: ChangelogEntry = {
+  version: "v1.75.17",
+  date: "2026-10-13",
+  title: "Bypass Directo Auth Discord, Armonización Topbar y Renovación Onboarding Estilo Keeper",
+  items: [
+    "Inicio de sesión directo de Discord desde la vitrina: el botón Dashboard activa la autorización directa de Discord sin pasar por el escritorio ETHONE OS, con aterrizaje directo en la selección de servidores.",
+    "Bypass de enrutamiento en BootProvider: soporte directo para /discord y preservación de la ruta de destino.",
+    "Armonización de botones superiores: Dashboard, Añadir bot y selector de idioma alineados a la misma altura de 36px (h-9) con esquinas redondeadas estilo Keeper (rounded-xl).",
+    "Renovación completa del Onboarding: recorrido condensado en 4 pasos, eliminación total de menciones a IA y datos ficticios, botones cuadrados estilo Keeper y transiciones Framer Motion.",
+  ],
+};
+
+const v1_75_17_de: ChangelogEntry = {
+  version: "v1.75.17",
+  date: "2026-10-13",
+  title: "Direkter Discord-Auth-Bypass, Topbar-Harmonisierung & Keeper-Style Onboarding-Überarbeitung",
+  items: [
+    "Direkte Discord-Anmeldung aus der Präsentation: Dashboard-Button startet direkt die Discord-Autorisierung ohne Umweg über das ETHONE-OS-Desktop-Dashboard mit direktem Ziel auf der Serverauswahl.",
+    "BootProvider-Bypass: direkte Freigabe für /discord und Beibehaltung der Zielroute.",
+    "Harmonisierung der Topbar-Schaltflächen: Dashboard, Bot hinzufügen und Sprachauswahl auf einheitliche 36px Höhe (h-9) mit Keeper-Style rounded-xl Ecken ausgerichtet.",
+    "Vollständige Überarbeitung des Onboardings: kompakter 4-Schritte-Ablauf, vollständiger Verzicht auf KI-Jargon und Platzhalter, präzise eckige Keeper-Schaltflächen und flüssige Framer-Motion-Animationen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_17_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_17_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_17_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_17_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

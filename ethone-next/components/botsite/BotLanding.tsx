@@ -14,6 +14,9 @@ import {
 } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
+import { signInWithOAuth } from "@/lib/auth";
 import FlagIcon, { LANGUAGE_LABELS } from "@/components/FlagIcon";
 import VersionPill from "@/components/layout/VersionPill";
 import { EASE_SNAP, SPRING_MOUSE } from "@/lib/ease";
@@ -499,7 +502,7 @@ function LanguageSelect({
         aria-haspopup="listbox"
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
-        className="flex h-9 cursor-pointer items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] pl-2 pr-3 text-xs font-semibold uppercase text-zinc-200 outline-none transition-colors hover:border-white/25 hover:text-white"
+        className="flex h-9 cursor-pointer items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] pl-2.5 pr-3 text-xs font-semibold uppercase text-zinc-200 outline-none transition-colors hover:border-white/25 hover:text-white"
       >
         <span className="relative h-5 w-5 overflow-hidden rounded-full ring-1 ring-white/10">
           <FlagIcon
@@ -817,18 +820,44 @@ const STATS_LABELS: Record<BotLang, { servers: string; members: string; commands
 };
 
 export default function BotLanding() {
+  const router = useRouter();
   const { reduced } = useMotionPref();
   const { stats, commands } = useLiveData();
   const [lang, setLang] = useState<BotLang>("fr");
   const c = BOT_COPY[lang];
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  const [connectingDiscord, setConnectingDiscord] = useState(false);
   const [query, setQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [copiedCmd, setCopiedCmd] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+
+  const handleDashboardClick = async (e?: React.MouseEvent) => {
+    if (e) e.preventDefault();
+    setConnectingDiscord(true);
+    try {
+      const { data } = await supabase.auth.getSession();
+      const hasDiscord = typeof window !== "undefined" && (
+        localStorage.getItem("ethone:connected:discord") === "true" ||
+        localStorage.getItem("ethone:discord:profile") != null ||
+        data.session?.user?.app_metadata?.provider === "discord"
+      );
+      if (data?.session && hasDiscord) {
+        router.push(DASHBOARD_URL);
+        return;
+      }
+      const target = typeof window !== "undefined" ? `${window.location.origin}/discord` : "/discord";
+      const { ok, url } = await signInWithOAuth("discord", target);
+      if (ok && url) {
+        window.location.href = url;
+        return;
+      }
+    } catch {}
+    router.push(DASHBOARD_URL);
+  };
 
   const { scrollY, scrollYProgress } = useScroll({ container: scrollRef });
   const progress = useSpring(scrollYProgress, { stiffness: 140, damping: 30, restDelta: 0.001 });
@@ -982,17 +1011,19 @@ export default function BotLanding() {
           </nav>
 
           <div className="flex shrink-0 items-center gap-2.5 sm:gap-3">
-            <Link
-              href={DASHBOARD_URL}
-              className="hidden rounded-full border border-white/10 bg-white/[0.04] px-3.5 py-1.5 text-xs font-semibold text-zinc-200 transition-all hover:border-white/20 hover:bg-white/[0.08] hover:text-white sm:inline-flex"
+            <button
+              type="button"
+              onClick={handleDashboardClick}
+              disabled={connectingDiscord}
+              className="hidden h-9 cursor-pointer items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] px-4 text-xs font-semibold text-zinc-200 transition-all hover:border-[#92C8D2]/40 hover:bg-white/[0.08] hover:text-white disabled:opacity-60 sm:inline-flex"
             >
-              {c.nav.dashboard}
-            </Link>
+              {connectingDiscord ? "..." : c.nav.dashboard}
+            </button>
             <a
               href={INVITE_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-white via-zinc-100 to-white px-3.5 py-1.5 text-xs font-bold text-black shadow-lg shadow-white/10 transition-transform hover:scale-105"
+              className="inline-flex h-9 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-white via-zinc-100 to-white px-4 text-xs font-bold text-black shadow-lg shadow-white/10 transition-transform hover:scale-105"
             >
               <DiscordGlyph className="h-4 w-4" />
               {c.nav.invite}
@@ -1026,7 +1057,7 @@ export default function BotLanding() {
                 <a href="#commandes" onClick={scrollToSection("commandes")} className="text-sm font-medium text-zinc-300">{c.nav.commands}</a>
                 <a href="#faq" onClick={scrollToSection("faq")} className="text-sm font-medium text-zinc-300">{c.nav.faq}</a>
                 <a href={SUPPORT_URL} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-zinc-300">{c.nav.support}</a>
-                <Link href={DASHBOARD_URL} className="text-sm font-medium text-[#92C8D2]">{c.nav.dashboard}</Link>
+                <button type="button" onClick={handleDashboardClick} className="text-left text-sm font-medium text-[#92C8D2] cursor-pointer">{c.nav.dashboard}</button>
               </div>
             </motion.div>
           )}
@@ -1084,17 +1115,18 @@ export default function BotLanding() {
                   href={INVITE_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-bold text-black shadow-xl shadow-white/10 transition-all hover:-translate-y-0.5 hover:bg-zinc-100"
+                  className="inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3.5 text-sm font-bold text-black shadow-xl shadow-white/10 transition-all hover:-translate-y-0.5 hover:bg-zinc-100"
                 >
                   <DiscordGlyph className="h-5 w-5" />
                   {c.hero.addBtn}
                 </a>
-                <Link
-                  href={DASHBOARD_URL}
-                  className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.04] px-6 py-3.5 text-sm font-semibold text-white backdrop-blur-md transition-all hover:-translate-y-0.5 hover:border-white/25 hover:bg-white/[0.08]"
+                <button
+                  type="button"
+                  onClick={handleDashboardClick}
+                  className="inline-flex items-center gap-2 rounded-xl border border-white/12 bg-white/[0.04] px-6 py-3.5 text-sm font-semibold text-white backdrop-blur-md transition-all hover:-translate-y-0.5 hover:border-white/25 hover:bg-white/[0.08] cursor-pointer"
                 >
                   {c.hero.dashboardBtn}
-                </Link>
+                </button>
               </motion.div>
 
               <div className="mt-8 flex flex-wrap items-center gap-3">
@@ -1679,17 +1711,18 @@ export default function BotLanding() {
                     href={INVITE_URL}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 rounded-full bg-white px-7 py-3.5 text-sm font-bold text-black shadow-xl shadow-white/10 transition-transform hover:scale-105"
+                    className="inline-flex items-center gap-2 rounded-xl bg-white px-7 py-3.5 text-sm font-bold text-black shadow-xl shadow-white/10 transition-transform hover:scale-105"
                   >
                     <DiscordGlyph className="h-5 w-5" />
                     {c.cta.addBtn}
                   </a>
-                  <Link
-                    href={DASHBOARD_URL}
-                    className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-7 py-3.5 text-sm font-semibold text-white backdrop-blur-md transition-all hover:border-white/30 hover:bg-white/[0.08]"
+                  <button
+                    type="button"
+                    onClick={handleDashboardClick}
+                    className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/[0.04] px-7 py-3.5 text-sm font-semibold text-white backdrop-blur-md transition-all hover:border-white/30 hover:bg-white/[0.08] cursor-pointer"
                   >
                     {c.cta.dashboardBtn}
-                  </Link>
+                  </button>
                 </div>
               </div>
             </div>
@@ -1704,9 +1737,9 @@ export default function BotLanding() {
             <p>© {new Date().getFullYear()} Etho · {c.footer.tagline}</p>
           </div>
           <div className="flex flex-wrap items-center gap-6">
-            <Link href={DASHBOARD_URL} className="transition-colors hover:text-white">
+            <button type="button" onClick={handleDashboardClick} className="transition-colors hover:text-white cursor-pointer">
               {c.footer.dashboard}
-            </Link>
+            </button>
             <a
               href={SUPPORT_URL}
               target="_blank"

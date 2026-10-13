@@ -1,16 +1,13 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, useId, useRef } from "react";
-import { useRouter } from "next/navigation";
-import { X, ChevronLeft, ChevronRight, AlertCircle } from "@/components/icons/ph";
-import Screen0Hero from "./Screen0Hero";
-import Screen1Architecture from "./Screen1Architecture";
-import Screen2Features from "./Screen2Features";
-import Screen3Protection from "./Screen3Protection";
-import Screen4Automation from "./Screen4Automation";
-import Screen5ControlCenter from "./Screen5ControlCenter";
-import Screen6Customization from "./Screen6Customization";
-import Screen7GettingStarted from "./Screen7GettingStarted";
+import { X, ChevronLeft, ChevronRight, AlertCircle, Check } from "@/components/icons/ph";
+import { motion, AnimatePresence } from "framer-motion";
+import { SPRING_PRESS, EASE_SNAP } from "@/lib/ease";
+import Screen0Welcome from "./Screen0Welcome";
+import Screen1Security from "./Screen1Security";
+import Screen2Music from "./Screen2Music";
+import Screen3Community from "./Screen3Community";
 
 interface DiscordOnboardingModalProps {
   isOpen: boolean;
@@ -21,7 +18,7 @@ interface DiscordOnboardingModalProps {
   prefersReducedMotion?: boolean;
 }
 
-const TOTAL_SCREENS = 8;
+const TOTAL_SCREENS = 4;
 
 export default function DiscordOnboardingModal({
   isOpen,
@@ -29,7 +26,6 @@ export default function DiscordOnboardingModal({
   onStepChange,
   onComplete,
 }: DiscordOnboardingModalProps) {
-  const router = useRouter();
   const [showExitConfirm, setShowExitConfirm] = useState(false);
   const dialogRef = useRef<HTMLDivElement>(null);
   const previouslyFocusedRef = useRef<HTMLElement | null>(null);
@@ -37,7 +33,6 @@ export default function DiscordOnboardingModal({
   const continueIntroButtonRef = useRef<HTMLButtonElement>(null);
   const exitConfirmTitleId = useId();
 
-  // Move focus into the dialog on open and restore it to the trigger on close.
   useEffect(() => {
     if (isOpen) {
       previouslyFocusedRef.current = document.activeElement as HTMLElement | null;
@@ -48,8 +43,6 @@ export default function DiscordOnboardingModal({
     }
   }, [isOpen]);
 
-  // Move focus to the exit-confirmation dialog when it appears, and back to
-  // the button that opened it when it's dismissed.
   useEffect(() => {
     if (showExitConfirm) {
       continueIntroButtonRef.current?.focus();
@@ -58,7 +51,6 @@ export default function DiscordOnboardingModal({
     }
   }, [showExitConfirm]);
 
-  // Keyboard navigation
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
       if (!isOpen) return;
@@ -112,147 +104,150 @@ export default function DiscordOnboardingModal({
     onComplete();
   };
 
-  const handleStartSetup = () => {
-    onComplete();
-    router.push("/discord/setup");
-  };
-
   return (
-    <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-3 sm:p-6 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-      {/* Modal Dialog Card */}
+    <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
       <div
         ref={dialogRef}
         tabIndex={-1}
         role="dialog"
         aria-modal="true"
         aria-label="Etho Onboarding"
-        className="v8-panel relative w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden shadow-2xl outline-none"
+        className="relative w-full max-w-3xl max-h-[92vh] flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#07080d]/95 shadow-[0_32px_100px_-20px_rgba(0,0,0,0.9)] backdrop-blur-2xl outline-none"
       >
-        {/* Top Header Bar */}
-        <div className="relative z-10 flex items-center justify-between px-6 py-4 border-b border-[var(--panel-border)]">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-[var(--accent-primary)]" />
-            <span className="text-xs font-semibold tracking-wider uppercase text-[var(--text-muted)]">
+        <div className="relative z-10 flex items-center justify-between px-6 py-4 border-b border-white/[0.08] bg-white/[0.02]">
+          <div className="flex items-center gap-2.5">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#92C8D2] opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-[#92C8D2]" />
+            </span>
+            <span className="text-xs font-bold tracking-wider uppercase text-zinc-300">
               ETHO ONBOARDING
             </span>
           </div>
 
           <div className="flex items-center gap-3">
-            <span className="text-xs text-[var(--text-muted)]">
+            <span className="font-mono text-xs font-semibold text-zinc-400">
               {currentStep + 1} / {TOTAL_SCREENS}
             </span>
             <button
               ref={skipButtonRef}
+              type="button"
               onClick={handleSkipPrompt}
               aria-label="Fermer l'introduction"
-              className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-2)] transition-colors cursor-pointer"
+              className="p-1.5 rounded-xl border border-white/10 bg-white/[0.04] text-zinc-400 hover:text-white hover:border-white/20 transition-all cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
           </div>
         </div>
 
-        {/* Content Body */}
         <div className="relative z-10 flex-1 overflow-y-auto px-4 py-4 sm:px-8 sm:py-6 custom-scrollbar">
-          {currentStep === 0 && <Screen0Hero onNext={handleNext} onSkip={handleSkipPrompt} />}
-          {currentStep === 1 && <Screen1Architecture />}
-          {currentStep === 2 && <Screen2Features />}
-          {currentStep === 3 && <Screen3Protection />}
-          {currentStep === 4 && <Screen4Automation />}
-          {currentStep === 5 && <Screen5ControlCenter />}
-          {currentStep === 6 && <Screen6Customization />}
-          {currentStep === 7 && (
-            <Screen7GettingStarted
-              onStartSetup={handleStartSetup}
-              onExploreDashboard={onComplete}
-            />
-          )}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentStep}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.22, ease: EASE_SNAP }}
+            >
+              {currentStep === 0 && <Screen0Welcome onNext={handleNext} onSkip={handleSkipPrompt} />}
+              {currentStep === 1 && <Screen1Security onNext={handleNext} />}
+              {currentStep === 2 && <Screen2Music onNext={handleNext} />}
+              {currentStep === 3 && <Screen3Community onFinish={onComplete} onPrev={handlePrev} />}
+            </motion.div>
+          </AnimatePresence>
         </div>
 
-        {/* Bottom Navigation Bar */}
-        <div className="relative z-10 flex items-center justify-between px-6 py-4 border-t border-[var(--panel-border)]">
-          {/* Back Button */}
-          <button
+        <div className="relative z-10 flex items-center justify-between px-6 py-4 border-t border-white/[0.08] bg-white/[0.02]">
+          <motion.button
+            whileTap={SPRING_PRESS}
+            type="button"
             onClick={handlePrev}
             disabled={currentStep === 0}
-            className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-medium transition cursor-pointer ${
+            className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
               currentStep === 0
-                ? "text-[var(--text-muted)] cursor-not-allowed opacity-50"
-                : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-2)]"
+                ? "border-transparent text-zinc-600 cursor-not-allowed opacity-40"
+                : "border-white/10 bg-white/[0.04] text-zinc-300 hover:text-white hover:border-white/20"
             }`}
           >
             <ChevronLeft className="w-4 h-4" />
             <span>Retour</span>
-          </button>
+          </motion.button>
 
-          {/* Dots Indicator */}
           <div className="flex items-center gap-1.5" role="tablist">
             {Array.from({ length: TOTAL_SCREENS }).map((_, i) => (
               <button
                 key={i}
+                type="button"
                 onClick={() => onStepChange(i)}
                 aria-label={`Aller à l'écran ${i + 1}`}
-                className={`transition-all duration-300 rounded-full cursor-pointer ${
+                className={`transition-all duration-300 rounded-lg cursor-pointer h-1.5 ${
                   currentStep === i
-                    ? "w-6 h-2 bg-[var(--accent-primary)]"
-                    : "w-2 h-2 bg-[var(--surface-2)] hover:bg-[var(--text-muted)]/50"
+                    ? "w-8 bg-[#92C8D2]"
+                    : "w-2 bg-white/20 hover:bg-white/40"
                 }`}
               />
             ))}
           </div>
 
-          {/* Next / Finish Button */}
           {currentStep < TOTAL_SCREENS - 1 ? (
-            <button
+            <motion.button
+              whileTap={SPRING_PRESS}
+              type="button"
               onClick={handleNext}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[var(--accent-primary)] text-[var(--accent-contrast)] text-xs font-medium transition-[filter] hover:brightness-110 cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white text-black text-xs font-bold shadow-lg shadow-white/10 hover:bg-zinc-100 transition-all cursor-pointer"
             >
               <span>Continuer</span>
               <ChevronRight className="w-4 h-4" />
-            </button>
+            </motion.button>
           ) : (
-            <button
-              onClick={handleStartSetup}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[var(--success)] text-[var(--bg-main)] text-xs font-medium transition-[filter] hover:brightness-110 cursor-pointer"
+            <motion.button
+              whileTap={SPRING_PRESS}
+              type="button"
+              onClick={onComplete}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#92C8D2] text-black text-xs font-bold shadow-lg shadow-[#92C8D2]/20 hover:bg-[#a6d5de] transition-all cursor-pointer"
             >
-              <span>Configurer</span>
-              <ChevronRight className="w-4 h-4" />
-            </button>
+              <Check className="w-4 h-4" />
+              <span>Terminer</span>
+            </motion.button>
           )}
         </div>
 
-        {/* Soft Exit Confirmation Modal Overlay */}
         {showExitConfirm && (
           <div
-            className="absolute inset-0 z-30 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-150"
+            className="absolute inset-0 z-30 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-in fade-in duration-150"
             role="dialog"
             aria-modal="true"
             aria-labelledby={exitConfirmTitleId}
           >
-            <div className="v8-panel w-full max-w-sm p-6 shadow-2xl text-center">
-              <div className="w-10 h-10 rounded-full bg-[var(--surface-2)] text-[var(--accent-primary)] flex items-center justify-center mx-auto mb-3">
+            <div className="w-full max-w-sm p-6 rounded-2xl border border-white/10 bg-[#0c0d14] shadow-2xl text-center">
+              <div className="w-10 h-10 rounded-xl bg-[#92C8D2]/10 border border-[#92C8D2]/20 text-[#92C8D2] flex items-center justify-center mx-auto mb-3">
                 <AlertCircle className="w-5 h-5" />
               </div>
-              <h4 id={exitConfirmTitleId} className="text-base font-bold text-[var(--text-primary)] mb-1">
-                Passer l'introduction ?
+              <h4 id={exitConfirmTitleId} className="text-sm font-bold text-white mb-1">
+                Passer l&apos;introduction ?
               </h4>
-              <p className="text-xs text-[var(--text-muted)] mb-5 leading-relaxed">
-                Vous pourrez toujours revoir cette introduction à tout moment depuis les réglages du bot ou la page d'accueil.
+              <p className="text-xs text-zinc-400 mb-5 leading-relaxed">
+                Vous pourrez revoir cette introduction à tout moment depuis les réglages du bot.
               </p>
               <div className="flex gap-2">
-                <button
+                <motion.button
+                  whileTap={SPRING_PRESS}
+                  type="button"
                   onClick={handleConfirmExit}
-                  className="flex-1 py-2 px-3 rounded-xl bg-[var(--surface-2)] hover:bg-[var(--surface-2)]/70 text-[var(--text-muted)] hover:text-[var(--text-primary)] text-xs font-medium transition-colors cursor-pointer"
+                  className="flex-1 py-2 px-3 rounded-xl border border-white/10 bg-white/[0.04] text-zinc-400 hover:text-white hover:border-white/20 text-xs font-semibold transition-all cursor-pointer"
                 >
                   Quitter
-                </button>
-                <button
+                </motion.button>
+                <motion.button
+                  whileTap={SPRING_PRESS}
                   ref={continueIntroButtonRef}
+                  type="button"
                   onClick={() => setShowExitConfirm(false)}
-                  className="flex-1 py-2 px-3 rounded-xl bg-[var(--accent-primary)] text-[var(--accent-contrast)] text-xs font-medium transition-[filter] hover:brightness-110 cursor-pointer"
+                  className="flex-1 py-2 px-3 rounded-xl bg-white text-black text-xs font-bold hover:bg-zinc-100 transition-all cursor-pointer"
                 >
-                  Continuer l'intro
-                </button>
+                  Continuer l&apos;intro
+                </motion.button>
               </div>
             </div>
           </div>

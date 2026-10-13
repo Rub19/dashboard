@@ -233,13 +233,14 @@ export async function updatePassword(password: string) {
   return { ok: !error, error };
 }
 
-export async function signInWithOAuth(provider: Provider) {
+export async function signInWithOAuth(provider: Provider, redirectTo?: string) {
   const attempt = consumeAuthAttempt("oauth", provider);
   if (!attempt.allowed) return { ...rateLimitedResult(attempt.retryAfterMs), url: null };
 
+  const target = redirectTo || (typeof window !== "undefined" ? window.location.origin + "/" : undefined);
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider,
-    options: { redirectTo: typeof window !== "undefined" ? window.location.origin + "/" : undefined },
+    options: { redirectTo: target },
   });
   if (!error && data.url) resetAuthAttempt("oauth", provider);
   return { ok: !error && !!data.url, url: data.url, error };

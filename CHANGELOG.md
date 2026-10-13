@@ -2,6 +2,22 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.17 — 2026-10-13
+
+**Bypass Direct Auth Discord, Harmonisation Topbar & Refonte Onboarding Style Keeper**
+
+- **Bypass Direct de l'Authentification Discord depuis la Vitrine Bot (`/bot`)** :
+  - Le clic sur « Dashboard » depuis la vitrine bot déclenche désormais directement le flux d'autorisation OAuth2 Discord (`signInWithOAuth("discord", target)`) sans forcer l'utilisateur à transiter par le bureau ETHONE OS ou l'écran `/login`.
+  - Redirection directe et immédiate vers le sélecteur de serveurs (`/discord`) une fois authentifié.
+  - Dérogation dans `BootProvider` autorisant l'accès sans session préalable à `/discord` (`PUBLIC_ROUTES` et `INFO_ROUTES`) et préservation intégrale du chemin de retour vers la console de gestion Discord (`safeLoginNext`).
+- **Harmonisation de la Barre Supérieure de la Vitrine Bot** :
+  - Ajustement millimétré de l'ensemble des boutons de navigation de droite (« Dashboard », « Ajouter Etho » et sélecteur de langue) sur une hauteur unique de 36px (`h-9`).
+  - Remplacement des formes stadium par des rectangles arrondis élégants style Keeper Protect (`rounded-xl` / 12px), bordures translucides `border-white/10` et micro-interactions au survol et au clic (`SPRING_PRESS`).
+- **Refonte Complète de l'Onboarding Bot Style Keeper Protect** :
+  - Remplacement de l'ancien modal de 8 écrans saturé par un parcours dynamique en 4 étapes fluides animées via Framer Motion (`Screen0Welcome`, `Screen1Security`, `Screen2Music`, `Screen3Community`).
+  - Suppression totale de tout vocabulaire artificiel (« IA », « modérateur IA », faux scores) au profit des véritables fonctionnalités du bot : Anti-Raid 0.2s, Bouclier Owner, mode d'urgence `/antiraid lock`, pont vocal Spotify `/spotify vc`, scrobbles `/lastfm`, paroles LRCLib `/lyrics`, salons compteurs `/serverstats` et tags `/tag`.
+  - Boutons carrés et rectangulaires Keeper (`rounded-xl`) sur l'ensemble des étapes et barre de progression segmentée réactive.
+
 ## v1.75.16 — 2026-10-13
 
 **Épuration du Hero Vitrine Bot & Harmonisation Fun & Médias**

@@ -7,7 +7,7 @@ import { confirmDialog } from "@/lib/confirmDialog";
 import { sinceLabel } from "@/lib/discord/security-scan";
 import { SPRING_LAYOUT } from "@/lib/ease";
 import { pageStagger } from "@/lib/motion-variants";
-import { ConsolePage, EmptyLine, GhostButton, Panel, RoleChips, Row, Segmented, StatTile, Stepper, Switch, TextField, useGuildApi } from "../kit";
+import { ConsolePage, EmptyLine, GhostButton, Panel, RoleChips, Row, Segmented, Select, StatTile, Stepper, Switch, TextField, useGuildApi } from "../kit";
 
 type Platform = "twitch" | "youtube" | "kick";
 type PingMode = "default" | "none" | "here" | "everyone" | "role";
@@ -298,13 +298,7 @@ export default function ConsoleStreamers({ guildId }: { guildId: string }) {
           <Switch checked={cfg.showThumbnail} onChange={(v) => save({ showThumbnail: v })} label="Miniature du live" />
         </Row>
         <Row label="À la fin du live">
-          <select value={cfg.offlineAction} onChange={(e) => save({ offlineAction: e.target.value as Config["offlineAction"] })} aria-label="À la fin du live" className={`${field} h-9 w-auto py-0`}>
-            {OFFLINE.map(([v, label]) => (
-              <option key={v} value={v}>
-                {label}
-              </option>
-            ))}
-          </select>
+          <Select value={cfg.offlineAction} options={OFFLINE} onChange={(v) => save({ offlineAction: v })} aria-label="À la fin du live" />
         </Row>
         <Row label="Délai entre deux alertes" hint="Pour un même streamer (coupure puis reprise du live).">
           <Stepper value={cfg.cooldownMinutes} min={0} max={180} step={5} unit="minutes" onCommit={(n) => save({ cooldownMinutes: n })} />

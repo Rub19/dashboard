@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Radio } from "@/components/icons/ph";
 import ChannelPicker from "../ChannelPicker";
 import { useRaidMode } from "@/lib/hooks/useRaidMode";
-import { Chip, ConsolePage, EmptyLine, GhostButton, MemberPicker, Panel, RoleChips, Row, Segmented, Switch, useGuildApi, useMemberNames } from "./kit";
+import { Chip, ConsolePage, EmptyLine, GhostButton, MemberPicker, Panel, RoleChips, Row, Segmented, Select, Switch, useGuildApi, useMemberNames } from "./kit";
 
 type Settings = { prefix: string; systemChannelId: string | null; ownerDmAlerts: boolean; weeklyReport?: boolean; antiRaidEnabled?: boolean };
 type Mode = "admins" | "owner" | "custom";
@@ -37,8 +37,7 @@ const PREVIEW_CATEGORIES: [string, string][] = [
   ["automod", "AutoMod"],
   ["securite", "Sécurité et urgences"],
 ];
-const SELECT =
-  "h-9 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-3 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/70";
+
 
 /** Décalage UTC actuel d'un fuseau, ex. « UTC+02:00 ». */
 function offsetLabel(tz: string): string {
@@ -202,13 +201,13 @@ export default function ConsoleSettings({ guildId, onExport, onImport, onCopyId,
               <Segmented label="Langue du bot" value={cfg.language} options={LANGUAGES} onChange={(v) => saveCfg({ language: v })} />
             </Row>
             <Row label="Fuseau horaire" hint="Utilisé pour les rappels, événements et anniversaires.">
-              <select value={cfg.timezone} onChange={(e) => saveCfg({ timezone: e.target.value })} aria-label="Fuseau horaire" className={`${SELECT} w-full max-w-sm`}>
-                {zones.map((z) => (
-                  <option key={z} value={z}>
-                    ({offsetLabel(z)}) {z.replace(/_/g, " ")}
-                  </option>
-                ))}
-              </select>
+              <Select
+                value={cfg.timezone}
+                options={zones.map((z) => [z, `(${offsetLabel(z)}) ${z.replace(/_/g, " ")}`] as const)}
+                onChange={(v) => saveCfg({ timezone: v })}
+                aria-label="Fuseau horaire"
+                width="w-full max-w-sm"
+              />
             </Row>
             <Row label="Commandes /">
               <Switch checked={cfg.slashCommandsEnabled} onChange={(v) => saveCfg({ slashCommandsEnabled: v })} label="Commandes /" />
@@ -257,13 +256,7 @@ export default function ConsoleSettings({ guildId, onExport, onImport, onCopyId,
       <Panel title="Aperçu des messages" subtitle="Reçois en message privé un exemplaire des messages d'Etho, avec des données d'exemple. Rien ne change sur le serveur.">
         <Row label="Messages">
           <div className="flex flex-wrap items-center gap-2">
-            <select value={previewCategory} onChange={(e) => setPreviewCategory(e.target.value)} aria-label="Messages à recevoir" className={SELECT}>
-              {PREVIEW_CATEGORIES.map(([v, label]) => (
-                <option key={v} value={v}>
-                  {label}
-                </option>
-              ))}
-            </select>
+            <Select value={previewCategory} options={PREVIEW_CATEGORIES} onChange={(v) => setPreviewCategory(v)} aria-label="Messages à recevoir" />
             <GhostButton disabled={busy === "preview"} onClick={sendPreview}>
               {busy === "preview" ? "Envoi…" : "M'envoyer"}
             </GhostButton>

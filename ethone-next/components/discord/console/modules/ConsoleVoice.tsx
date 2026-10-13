@@ -7,7 +7,7 @@ import { confirmDialog } from "@/lib/confirmDialog";
 import { sinceLabel } from "@/lib/discord/security-scan";
 import { SPRING_LAYOUT } from "@/lib/ease";
 import { pageStagger } from "@/lib/motion-variants";
-import { ConsolePage, EmptyLine, GhostButton, Panel, RoleChips, Row, Segmented, StatTile, Stepper, Switch, TextField, useGuildApi } from "../kit";
+import { ConsolePage, EmptyLine, GhostButton, Panel, RoleChips, Row, Segmented, Select, StatTile, Stepper, Switch, TextField, useGuildApi } from "../kit";
 
 type Access = "public" | "locked" | "role_only" | "invite_only";
 type Hub = {
@@ -50,8 +50,7 @@ const STRATEGY: [Strategy, string][] = [
   ["OWNERLESS", "Personne (salon sans propriétaire)"],
   ["DELETE_ROOM", "Supprimer le salon"],
 ];
-const select =
-  "h-9 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-3 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/70";
+
 
 /** Salons vocaux temporaires (format Keeper) : salons « rejoindre pour créer », salons ouverts et règles. */
 export default function ConsoleVoice({ guildId }: { guildId: string }) {
@@ -276,13 +275,7 @@ export default function ConsoleVoice({ guildId }: { guildId: string }) {
               <Stepper value={settings.emptyDeletionDelaySeconds} min={0} max={3600} step={5} unit="secondes" onCommit={(n) => saveSettings({ emptyDeletionDelaySeconds: n })} />
             </Row>
             <Row label="Quand le propriétaire part">
-              <select value={settings.ownershipTransferStrategy} onChange={(e) => saveSettings({ ownershipTransferStrategy: e.target.value as Strategy })} aria-label="Quand le propriétaire part" className={select}>
-                {STRATEGY.map(([v, label]) => (
-                  <option key={v} value={v}>
-                    {label}
-                  </option>
-                ))}
-              </select>
+              <Select value={settings.ownershipTransferStrategy} options={STRATEGY} onChange={(v) => saveSettings({ ownershipTransferStrategy: v })} aria-label="Quand le propriétaire part" />
             </Row>
             <Row label="Salons par membre">
               <Stepper value={settings.maxRoomsPerUser} min={1} max={10} unit="salons" onCommit={(n) => saveSettings({ maxRoomsPerUser: n })} />

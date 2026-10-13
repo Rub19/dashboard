@@ -8,7 +8,7 @@ import { confirmDialog } from "@/lib/confirmDialog";
 import { sinceLabel } from "@/lib/discord/security-scan";
 import { pageStagger } from "@/lib/motion-variants";
 import { cn } from "@/lib/utils";
-import { ConsolePage, EmptyLine, GhostButton, Panel, Row, Segmented, StatTile, Stepper, Switch, TextField, roleColor, useGuildApi } from "../kit";
+import { ConsolePage, EmptyLine, GhostButton, Panel, Row, Segmented, Select, StatTile, Stepper, Switch, TextField, roleColor, useGuildApi } from "../kit";
 
 type Tab = "overview" | "channels" | "roles" | "emojis" | "webhooks" | "settings";
 type Overview = {
@@ -70,6 +70,8 @@ const TABS: [Tab, string][] = [
 ];
 const VERIFICATION = ["Aucune", "Faible (e-mail vérifié)", "Moyenne (inscrit depuis 5 min)", "Élevée (membre depuis 10 min)", "Maximale (téléphone vérifié)"];
 const FILTER = ["Désactivé", "Membres sans rôle", "Tous les membres"];
+const VERIFICATION_OPTIONS = VERIFICATION.map((label, i) => [i, label] as const);
+const FILTER_OPTIONS = FILTER.map((label, i) => [i, label] as const);
 const SELECT =
   "h-9 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-3 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/70";
 const INPUT = `${SELECT} w-full`;
@@ -584,22 +586,10 @@ function SettingsTab({ guildId }: { guildId: string }) {
       </Panel>
       <Panel title="Modération Discord">
         <Row label="Niveau de vérification" hint="Conditions avant de pouvoir écrire.">
-          <select value={s.verificationLevel} onChange={(e) => save({ verificationLevel: Number(e.target.value) })} aria-label="Niveau de vérification" className={SELECT}>
-            {VERIFICATION.map((label, i) => (
-              <option key={i} value={i}>
-                {label}
-              </option>
-            ))}
-          </select>
+          <Select value={s.verificationLevel} options={VERIFICATION_OPTIONS} onChange={(v) => save({ verificationLevel: v })} aria-label="Niveau de vérification" />
         </Row>
         <Row label="Filtre de contenu explicite" hint="Images analysées par Discord.">
-          <select value={s.explicitContentFilter} onChange={(e) => save({ explicitContentFilter: Number(e.target.value) })} aria-label="Filtre de contenu explicite" className={SELECT}>
-            {FILTER.map((label, i) => (
-              <option key={i} value={i}>
-                {label}
-              </option>
-            ))}
-          </select>
+          <Select value={s.explicitContentFilter} options={FILTER_OPTIONS} onChange={(v) => save({ explicitContentFilter: v })} aria-label="Filtre de contenu explicite" />
         </Row>
         <Row label="Notifications par défaut">
           <Segmented

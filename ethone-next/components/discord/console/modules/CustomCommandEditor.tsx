@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Plus, Trash2 } from "@/components/icons/ph";
 import ChannelPicker from "../../ChannelPicker";
 import { cn } from "@/lib/utils";
-import { GhostButton, RoleChips, Row, Segmented, Stepper, Switch, useGuildApi } from "../kit";
+import { GhostButton, RoleChips, Row, Segmented, Select, Stepper, Switch, useGuildApi } from "../kit";
 
 export type Trigger = "slash" | "prefix" | "both";
 type ArgType = "string" | "number" | "boolean" | "user" | "role" | "channel";
@@ -126,13 +126,13 @@ export default function CustomCommandEditor({ guildId, command, onSaved, footer 
                 aria-label="Nom de l'argument"
                 className={`${small} w-28 font-mono`}
               />
-              <select value={a.type} onChange={(e) => set({ arguments: c.arguments.map((x, j) => (j === i ? { ...x, type: e.target.value as ArgType } : x)) })} aria-label="Type" className={small}>
-                {ARG_TYPES.map(([v, l]) => (
-                  <option key={v} value={v}>
-                    {l}
-                  </option>
-                ))}
-              </select>
+              <Select
+                value={a.type}
+                options={ARG_TYPES}
+                onChange={(v) => set({ arguments: c.arguments.map((x, j) => (j === i ? { ...x, type: v as ArgType } : x)) })}
+                aria-label="Type"
+                size="sm"
+              />
               <input
                 value={a.description}
                 maxLength={100}
@@ -163,18 +163,13 @@ export default function CustomCommandEditor({ guildId, command, onSaved, footer 
             <div key={i} className="space-y-2 rounded-lg border border-[var(--panel-border)] p-3">
               <div className="flex flex-wrap items-center gap-1.5 text-xs">
                 <span className="font-semibold text-[var(--text-muted)]">Si le membre</span>
-                <select
+                <Select
                   value={b.condition.type}
-                  onChange={(e) => set({ conditions: c.conditions.map((x, j) => (j === i ? { ...x, condition: { type: e.target.value as CondType } } : x)) })}
+                  options={CONDITIONS}
+                  onChange={(v) => set({ conditions: c.conditions.map((x, j) => (j === i ? { ...x, condition: { type: v as CondType } } : x)) })}
                   aria-label="Condition"
-                  className={small}
-                >
-                  {CONDITIONS.map(([v, l]) => (
-                    <option key={v} value={v}>
-                      {l}
-                    </option>
-                  ))}
-                </select>
+                  size="sm"
+                />
                 <CondTarget guildId={guildId} block={b} args={c.arguments} onChange={(cond) => set({ conditions: c.conditions.map((x, j) => (j === i ? { ...x, condition: cond } : x)) })} />
                 <span className="flex-1" />
                 <IconRemove label="Retirer la condition" onClick={() => set({ conditions: c.conditions.filter((_, j) => j !== i) })} />
@@ -273,14 +268,13 @@ function CondTarget({ guildId, block, args, onChange }: { guildId: string; block
   if (cond.type === "arg_equals" || cond.type === "arg_contains")
     return (
       <>
-        <select value={cond.argName ?? ""} onChange={(e) => onChange({ ...cond, argName: e.target.value })} aria-label="Argument" className={small}>
-          <option value="">argument…</option>
-          {args.map((a) => (
-            <option key={a.name} value={a.name}>
-              {a.name}
-            </option>
-          ))}
-        </select>
+        <Select
+          value={cond.argName ?? ""}
+          options={[["", "argument…"], ...args.map((a) => [a.name, a.name] as const)]}
+          onChange={(v) => onChange({ ...cond, argName: v })}
+          aria-label="Argument"
+          size="sm"
+        />
         <input value={cond.value ?? ""} maxLength={100} onChange={(e) => onChange({ ...cond, value: e.target.value })} placeholder="valeur" aria-label="Valeur" className={`${small} w-32`} />
       </>
     );
@@ -295,21 +289,16 @@ function ActionList({ guildId, actions, onChange }: { guildId: string; actions: 
       {actions.map((a, i) => (
         <div key={i} className="space-y-1.5 rounded-lg bg-[var(--surface-base,var(--bg-main))]/60 p-2">
           <div className="flex flex-wrap items-center gap-1.5">
-            <select
+            <Select
               value={a.type}
-              onChange={(e) => {
-                const t = e.target.value as Action["type"];
-                update(i, t === "send_response" || t === "send_dm" ? { type: t, response: a.response ?? { content: "" } } : t === "add_role" || t === "remove_role" ? { type: t, roleId: a.roleId } : { type: t });
+              options={ACTIONS}
+              onChange={(t) => {
+                const actType = t as Action["type"];
+                update(i, actType === "send_response" || actType === "send_dm" ? { type: actType, response: a.response ?? { content: "" } } : actType === "add_role" || actType === "remove_role" ? { type: actType, roleId: a.roleId } : { type: actType });
               }}
               aria-label="Action"
-              className={small}
-            >
-              {ACTIONS.map(([v, l]) => (
-                <option key={v} value={v}>
-                  {l}
-                </option>
-              ))}
-            </select>
+              size="sm"
+            />
             {(a.type === "add_role" || a.type === "remove_role") && <RoleChips guildId={guildId} ids={a.roleId ? [a.roleId] : []} max={1} onChange={(ids) => update(i, { ...a, roleId: ids[0] })} />}
             <span className="flex-1" />
             <IconRemove label="Retirer l'action" onClick={() => onChange(actions.filter((_, j) => j !== i))} />

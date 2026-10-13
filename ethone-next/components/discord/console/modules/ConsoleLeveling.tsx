@@ -23,15 +23,14 @@ import {
 import { SPRING_LAYOUT } from "@/lib/ease";
 import { pageStagger } from "@/lib/motion-variants";
 import { cn } from "@/lib/utils";
-import { BOT_API_URL, ChannelAdder, Chip, ConsolePage, EmptyLine, GhostButton, Panel, RoleAdder, RoleChips, Row, Segmented, StatTile, Stepper, Switch, TextField, roleColor, useGuildApi } from "../kit";
+import { BOT_API_URL, ChannelAdder, Chip, ConsolePage, EmptyLine, GhostButton, Panel, RoleAdder, RoleChips, Row, Segmented, Select, StatTile, Stepper, Switch, TextField, roleColor, useGuildApi } from "../kit";
 
 type Overview = { activeMembersCount: number; totalXpDistributed: number; totalLevels: number; topUser?: { username: string; level: number } | null };
 type Member = { userId: string; username: string; avatarUrl: string | null; totalXp: number; level: number; rank: number; progressPercentage: number };
 type Reward = { id: string; level: number; roleId: string; message: string | null };
 
 const fmt = (n: number) => n.toLocaleString("fr-FR");
-const select =
-  "h-9 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/70";
+
 
 /** Niveaux (format Keeper) : annonces, gain d'XP, vocal, exclusions, récompenses, boosts, carte /rank et classement. */
 export default function ConsoleLeveling({ guildId }: { guildId: string }) {
@@ -113,13 +112,7 @@ export default function ConsoleLeveling({ guildId }: { guildId: string }) {
 
       <Panel title="Annonce d'un nouveau niveau">
         <Row label="Où annoncer">
-          <select value={cfg.levelUpChannelType} onChange={(e) => save({ levelUpChannelType: e.target.value as LevelingSettings["levelUpChannelType"] })} aria-label="Où annoncer" className={select}>
-            {LEVELUP_TYPES.map(([id, label]) => (
-              <option key={id} value={id}>
-                {label}
-              </option>
-            ))}
-          </select>
+          <Select value={cfg.levelUpChannelType} options={LEVELUP_TYPES} onChange={(v) => save({ levelUpChannelType: v })} aria-label="Où annoncer" />
         </Row>
         {cfg.levelUpChannelType === "specific_channel" && (
           <Row label="Salon">
@@ -232,13 +225,7 @@ export default function ConsoleLeveling({ guildId }: { guildId: string }) {
           />
         </Row>
         <Row label="Annonce">
-          <select value={cfg.rewardAnnounceType} onChange={(e) => save({ rewardAnnounceType: e.target.value as LevelingSettings["rewardAnnounceType"] })} aria-label="Annonce d'une récompense" className={select}>
-            {REWARD_TYPES.map(([id, label]) => (
-              <option key={id} value={id}>
-                {label}
-              </option>
-            ))}
-          </select>
+          <Select value={cfg.rewardAnnounceType} options={REWARD_TYPES} onChange={(v) => save({ rewardAnnounceType: v })} aria-label="Annonce d'une récompense" />
         </Row>
         {cfg.rewardAnnounceType === "specific_channel" && (
           <Row label="Salon des récompenses">
@@ -269,13 +256,7 @@ export default function ConsoleLeveling({ guildId }: { guildId: string }) {
           <ColorInput value={cfg.rankCard.textColor} onCommit={(v) => saveCard({ textColor: v })} />
         </Row>
         <Row label="Police">
-          <select value={cfg.rankCard.font} onChange={(e) => saveCard({ font: e.target.value as RankCardStyle["font"] })} aria-label="Police" className={select}>
-            {FONTS.map(([id, label]) => (
-              <option key={id} value={id}>
-                {label}
-              </option>
-            ))}
-          </select>
+          <Select value={cfg.rankCard.font} options={FONTS} onChange={(v) => saveCard({ font: v })} aria-label="Police" />
         </Row>
         <Row label="Avatar">
           <Segmented label="Forme de l'avatar" value={cfg.rankCard.avatarShape} options={SHAPES} onChange={(v) => saveCard({ avatarShape: v })} />

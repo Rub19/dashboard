@@ -1,4 +1,4 @@
-# ETHONE — passation & nouveautés (2026-10-13, version 1.75.33)
+# ETHONE — passation & nouveautés (2026-10-13, version 1.75.34)
 
 ## Projet
 - `ethone-next/` : site Next.js statique (ethone.dev, Cloudflare Pages, déploiement auto au push sur `main`).
@@ -25,9 +25,15 @@
 
 ---
 
-## Nouveautés majeures & Réalisations récentes (v1.73.0 → v1.75.33)
+## Nouveautés majeures & Réalisations récentes (v1.73.0 → v1.75.34)
 
-### 0. Économie : Pièce Officielle Etho, Sélecteur de Devises & Import Personnalisé (v1.75.33)
+### 0. Sélecteurs Déroulants Sur-Mesure Obsidian / Keeper (v1.75.34)
+- **Nouveau Composant `Select` Déroulant** : Création d'un composant de sélection sur-mesure dans `ethone-next/components/discord/console/kit.tsx` avec bordures fines, fond de surface sombre, icône fléchée animée, popover animé via Framer Motion (`SPRING_LAYOUT`), coche d'activation (`Check`) et fermeture au clic extérieur.
+- **Remplacement Global des `<select>` Natifs** : Élimination de 100 % des balises `<select>` natives du navigateur dans la console Discord (`ConsoleStreamers`, `ConsoleLeveling`, `ConsoleVoice`, `ConsoleServer`, `ConsoleSettings`, `ConsoleLogs`, `ConsoleCommands`, `ConsoleEvents`, `CustomCommandEditor`, `FormEditor`, `ConsoleProtections`), supprimant les fenêtres grises/blanches système et la surbrillance bleue agressive.
+- **Navigation au Clavier Complète** : Prise en charge des touches `Échap` (fermeture), `Flèche bas` / `Flèche haut` (navigation dans les options) et `Entrée` (sélection).
+- **Tailles & Alignements Précis** : Support des variantes `size="md"` (hauteur standard 36px) et `size="sm"` (hauteur compacte 32px pour filtres et actions), avec alignement dynamique `left` ou `right`.
+
+### 1. Économie : Pièce Officielle Etho, Sélecteur de Devises & Import Personnalisé (v1.75.33)
 - **Pièce Custom Officielle Etho (Défaut)** : Création d'une pièce dorée vectorielle avec frappe haute définition du sceau Etho, reflets métalliques, tranche cannelée et fond chaud, configurée comme monnaie native par défaut sur tout le dashboard et le bot.
 - **Sélecteur de Devises Interactif** : Panneau de choix complet permettant aux administrateurs de choisir entre la pièce Etho, 12 presets d'emojis populaires (pièce, diamant, bourse, étoile, cookie, éclair, couronne, trèfle, flamme, etc.) et une saisie libre d'emojis ou codes Discord personnalisés (`<:nom:id>`).
 - **Importation de Fichier Personnalisé & URL** : Zone de glisser-déposer et sélecteur de fichier acceptant les images transparentes (PNG, SVG, WebP, JPG) et les URL directes, avec aperçu en temps réel aux côtés d'un solde et bouton de restauration en 1 clic de la pièce Etho officielle.

@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.34 — 2026-10-13
+
+**Sélecteurs Déroulants Sur-Mesure Obsidian (Keeper & Console Discord)**
+
+- Nouveau composant `Select` avec thème obsidian, popover animé et coche de sélection.
+- Remplacement des balises `<select>` natives du navigateur dans tous les modules de la console Discord.
+- Navigation au clavier (`Échap`, `Flèches haut/bas`, `Entrée`) et fermeture automatique au clic extérieur.
+- Harmonisation visuelle des modules Streamers, Niveaux, Vocaux, Serveur, Réglages, Journal, Commandes et Formulaires.
+
 ## v1.75.33 — 2026-10-13
 
 **Économie : Pièce Officielle Etho, Sélecteur de Devises & Import de Pièce Personnalisée**

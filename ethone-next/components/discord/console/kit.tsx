@@ -2,7 +2,7 @@
 
 import { Children, isValidElement, useCallback, useEffect, useId, useRef, useState, type Dispatch, type ReactElement, type ReactNode, type SetStateAction } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { Hash, Loader2, Minus, Plus, Search, Volume2, X } from "@/components/icons/ph";
+import { Check, ChevronDown, Hash, Loader2, Minus, Plus, Search, Volume2, X } from "@/components/icons/ph";
 import { useToast } from "@/components/ToastProvider";
 import { SPRING_LAYOUT, SPRING_PILL, SPRING_PRESS } from "@/lib/ease";
 import { cn } from "@/lib/utils";
@@ -474,6 +474,167 @@ export function Segmented<T extends string | number>({
     </div>
   );
 }
+
+export type SelectOptionItem<T extends string | number = string> =
+  | readonly [value: T, label: ReactNode]
+  | readonly [value: T, label: ReactNode, hint?: ReactNode]
+  | { value: T; label: ReactNode; hint?: ReactNode; disabled?: boolean };
+
+export function Select<T extends string | number = string>({
+  value,
+  options,
+  onChange,
+  placeholder = "Sélectionner…",
+  disabled,
+  size = "md",
+  align = "left",
+  width,
+  className,
+  buttonClassName,
+  dropdownClassName,
+  "aria-label": ariaLabel,
+}: {
+  value: T;
+  options: ReadonlyArray<SelectOptionItem<T>>;
+  onChange: (value: T) => void;
+  placeholder?: string;
+  disabled?: boolean;
+  size?: "sm" | "md";
+  align?: "left" | "right";
+  width?: string;
+  className?: string;
+  buttonClassName?: string;
+  dropdownClassName?: string;
+  "aria-label"?: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: MouseEvent) => {
+      if (!containerRef.current?.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [open]);
+
+  const normalized = options.map((opt) => {
+    if (Array.isArray(opt)) {
+      return {
+        value: opt[0] as T,
+        label: opt[1] as ReactNode,
+        hint: opt[2] as ReactNode | undefined,
+        disabled: false,
+      };
+    }
+    const o = opt as { value: T; label: ReactNode; hint?: ReactNode; disabled?: boolean };
+    return {
+      value: o.value,
+      label: o.label,
+      hint: o.hint,
+      disabled: Boolean(o.disabled),
+    };
+  });
+
+  const selected = normalized.find((o) => o.value === value);
+
+  return (
+    <div ref={containerRef} className={cn("relative inline-block text-left", width, className)}>
+      <button
+        type="button"
+        role="combobox"
+        aria-expanded={open}
+        aria-haspopup="listbox"
+        aria-label={ariaLabel}
+        disabled={disabled}
+        onClick={() => setOpen((prev) => !prev)}
+        onKeyDown={(e) => {
+          if (e.key === "Escape") {
+            setOpen(false);
+          } else if (e.key === "ArrowDown") {
+            e.preventDefault();
+            if (!open) {
+              setOpen(true);
+            } else {
+              const idx = normalized.findIndex((o) => o.value === value);
+              const next = normalized[Math.min(normalized.length - 1, idx + 1)];
+              if (next && !next.disabled) onChange(next.value);
+            }
+          } else if (e.key === "ArrowUp") {
+            e.preventDefault();
+            if (!open) {
+              setOpen(true);
+            } else {
+              const idx = normalized.findIndex((o) => o.value === value);
+              const prev = normalized[Math.max(0, idx - 1)];
+              if (prev && !prev.disabled) onChange(prev.value);
+            }
+          }
+        }}
+        className={cn(
+          "flex items-center justify-between gap-2.5 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] text-[var(--text-primary)] transition-[border-color,background-color] duration-150 outline-none hover:border-[var(--accent-primary)]/50 focus:border-[var(--accent-primary)] disabled:cursor-not-allowed disabled:opacity-50",
+          size === "sm" ? "h-8 px-2.5 text-xs" : "h-9 px-3 text-xs",
+          width ? "w-full" : "min-w-36",
+          buttonClassName
+        )}
+      >
+        <span className="truncate font-medium">{selected ? selected.label : placeholder}</span>
+        <ChevronDown className={cn("h-3.5 w-3.5 shrink-0 text-[var(--text-muted)] transition-transform duration-200", open && "rotate-180 text-[var(--accent-primary)]")} />
+      </button>
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: -4, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -4, scale: 0.98 }}
+            transition={SPRING_LAYOUT}
+            style={{ transformOrigin: align === "right" ? "top right" : "top left" }}
+            className={cn(
+              "absolute z-50 mt-1.5 min-w-full overflow-hidden rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-1 shadow-2xl backdrop-blur-md",
+              align === "right" ? "right-0" : "left-0",
+              dropdownClassName
+            )}
+          >
+            <ul role="listbox" className="max-h-60 overflow-y-auto">
+              {normalized.map((opt) => {
+                const isSelected = opt.value === value;
+                return (
+                  <li key={String(opt.value)} role="option" aria-selected={isSelected}>
+                    <button
+                      type="button"
+                      disabled={opt.disabled}
+                      onClick={() => {
+                        onChange(opt.value);
+                        setOpen(false);
+                      }}
+                      className={cn(
+                        "flex w-full items-center justify-between gap-3 rounded-lg px-2.5 py-1.5 text-left text-xs transition-colors",
+                        isSelected
+                          ? "bg-[var(--accent-primary)]/10 font-semibold text-[var(--accent-primary)]"
+                          : "text-[var(--text-primary)] hover:bg-[var(--surface-hover)]",
+                        opt.disabled && "cursor-not-allowed opacity-40 hover:bg-transparent"
+                      )}
+                    >
+                      <span className="min-w-0 flex-1 truncate">
+                        <span className="block truncate">{opt.label}</span>
+                        {opt.hint && <span className="block truncate text-[10px] font-normal text-[var(--text-muted)]">{opt.hint}</span>}
+                      </span>
+                      {isSelected && <Check className="h-3.5 w-3.5 shrink-0 text-[var(--accent-primary)]" />}
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 
 /** Pastille retirable (rôle, salon). */
 export function Chip({ label, onRemove, children }: { label: string; onRemove: () => void; children?: ReactNode }) {

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { ArrowDown, ArrowUp, Plus, Trash2 } from "@/components/icons/ph";
-import { GhostButton, RoleChips, Row, Segmented, Stepper, Switch, useGuildApi } from "../kit";
+import { GhostButton, RoleChips, Row, Segmented, Select, Stepper, Switch, useGuildApi } from "../kit";
 
 /** Types qu'Etho affiche dans la fenêtre Discord (les autres demanderaient une page web, réservée au staff). */
 const TYPES: [string, string][] = [
@@ -81,14 +81,16 @@ export default function FormEditor({ guildId, form, onSaved, onCancel }: { guild
               <div className="flex flex-wrap items-center gap-1.5">
                 <span className="w-5 text-center text-xs font-bold text-[var(--text-muted)]">{i + 1}</span>
                 <input value={q.label} maxLength={45} onChange={(e) => setField(i, { label: e.target.value })} placeholder="Question" aria-label={`Question ${i + 1}`} className={`${small} min-w-0 flex-1 text-sm`} />
-                <select value={MODAL_TYPES.has(q.type) ? q.type : ""} onChange={(e) => setField(i, { type: e.target.value })} aria-label="Type de réponse" className={small}>
-                  {!MODAL_TYPES.has(q.type) && <option value="">Type non affiché par Discord</option>}
-                  {TYPES.map(([v, l]) => (
-                    <option key={v} value={v}>
-                      {l}
-                    </option>
-                  ))}
-                </select>
+                <Select
+                  value={MODAL_TYPES.has(q.type) ? q.type : ""}
+                  options={[
+                    ...(!MODAL_TYPES.has(q.type) ? [["", "Type non affiché par Discord"] as const] : []),
+                    ...TYPES,
+                  ]}
+                  onChange={(v) => setField(i, { type: v })}
+                  aria-label="Type de réponse"
+                  size="sm"
+                />
                 <button type="button" disabled={i === 0} onClick={() => move(i, -1)} aria-label="Monter" className="rounded p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] disabled:opacity-30">
                   <ArrowUp className="h-3.5 w-3.5" />
                 </button>

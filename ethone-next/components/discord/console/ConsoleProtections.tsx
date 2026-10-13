@@ -8,7 +8,7 @@ import { confirmDialog } from "@/lib/confirmDialog";
 import { useToast } from "@/components/ToastProvider";
 import { SPRING_LAYOUT, SPRING_PILL } from "@/lib/ease";
 import { cn } from "@/lib/utils";
-import { ChannelAdder, Chip, EmptyLine, GhostButton, MemberPicker, RoleChips, Segmented, Stepper, Switch, useGuildApi } from "./kit";
+import { ChannelAdder, Chip, EmptyLine, GhostButton, MemberPicker, RoleChips, Segmented, Select, Stepper, Switch, useGuildApi } from "./kit";
 import type { ConsoleView } from "../HubSidebar";
 import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
 
@@ -242,7 +242,7 @@ function DurationField({ seconds, onCommit, presets, max }: { seconds: number; o
   };
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <div className="flex h-9 overflow-hidden rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))]">
+      <div className="flex h-9 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))]">
         <input
           value={draft}
           inputMode="numeric"
@@ -250,24 +250,19 @@ function DurationField({ seconds, onCommit, presets, max }: { seconds: number; o
           onChange={(e) => setDraft(e.target.value.replace(/\D/g, "").slice(0, 4))}
           onBlur={() => commit(Number(draft) || 1, u)}
           onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()}
-          className="w-16 bg-transparent px-3 text-sm font-semibold tabular-nums text-[var(--text-primary)] outline-none"
+          className="w-16 rounded-l-lg bg-transparent px-3 text-sm font-semibold tabular-nums text-[var(--text-primary)] outline-none"
         />
-        <select
+        <Select
           value={u}
-          aria-label="Unité"
-          onChange={(e) => {
-            const next = Number(e.target.value);
+          options={UNITS}
+          onChange={(next) => {
             setU(next);
             commit(Number(draft) || 1, next);
           }}
-          className="border-l border-[var(--panel-border)] bg-transparent px-2 text-xs text-[var(--text-muted)] outline-none"
-        >
-          {UNITS.map(([v, l]) => (
-            <option key={v} value={v}>
-              {l}
-            </option>
-          ))}
-        </select>
+          aria-label="Unité"
+          size="sm"
+          buttonClassName="h-full rounded-none rounded-r-lg border-y-0 border-r-0 border-l border-[var(--panel-border)] bg-transparent px-2.5"
+        />
       </div>
       <div className="flex flex-wrap gap-1">
         {presets.map(([v, l]) => (

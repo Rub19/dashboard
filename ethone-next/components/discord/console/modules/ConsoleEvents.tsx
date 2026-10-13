@@ -8,7 +8,7 @@ import { SPRING_LAYOUT } from "@/lib/ease";
 import { pageStagger } from "@/lib/motion-variants";
 import { cn } from "@/lib/utils";
 import EventDetails from "./EventDetails";
-import { ConsolePage, EmptyLine, GhostButton, Panel, Row, Segmented, StatTile, Stepper, Switch, useGuildApi } from "../kit";
+import { ConsolePage, EmptyLine, GhostButton, Panel, Row, Segmented, Select, StatTile, Stepper, Switch, useGuildApi } from "../kit";
 
 type Category = "GAMING" | "TOURNAMENT" | "COMMUNITY" | "STAFF" | "WATCH_PARTY" | "GIVEAWAY" | "MEETING" | "VOICE" | "OTHER";
 type Status = "DRAFT" | "SCHEDULED" | "LIVE" | "COMPLETED" | "CANCELLED";
@@ -163,13 +163,13 @@ export default function ConsoleEvents({ guildId, initialView = "list" }: { guild
           <textarea value={description} maxLength={1000} rows={2} onChange={(e) => setDescription(e.target.value)} aria-label="Description" className={field} />
         </Row>
         <Row label="Catégorie">
-          <select value={category} onChange={(e) => setCategory(e.target.value as Category)} aria-label="Catégorie" className={`${field} h-9 w-48 py-0`}>
-            {Object.entries(CATEGORY).map(([v, label]) => (
-              <option key={v} value={v}>
-                {label}
-              </option>
-            ))}
-          </select>
+          <Select
+            value={category}
+            options={Object.entries(CATEGORY) as [Category, string][]}
+            onChange={(v) => setCategory(v as Category)}
+            aria-label="Catégorie"
+            width="w-48"
+          />
         </Row>
         <Row label="Début" hint="Heure de ton navigateur.">
           <input type="datetime-local" value={start} onChange={(e) => setStart(e.target.value)} aria-label="Début" className={`${field} h-9 w-56 py-0`} />

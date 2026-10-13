@@ -7,7 +7,7 @@ import { fetchGuildChannels, type ChannelOption } from "../ChannelPicker";
 import { SPRING_PILL } from "@/lib/ease";
 import { pageStagger } from "@/lib/motion-variants";
 import { cn } from "@/lib/utils";
-import { ChannelAdder, Chip, ConsolePage, EmptyLine, Panel, RoleChips, Row, Segmented, Switch, useGuildApi } from "./kit";
+import { ChannelAdder, Chip, ConsolePage, EmptyLine, Panel, RoleChips, Row, Segmented, Select, Switch, useGuildApi } from "./kit";
 
 type Rule = {
   enabled: boolean;
@@ -290,21 +290,17 @@ export default function ConsoleCommands({ guildId }: { guildId: string }) {
                       {cmd.rule.maxUses > 0 && (
                         <>
                           <NumberField key={`mu-${cmd.name}`} value={cmd.rule.maxUses} min={1} max={1000} onCommit={(n) => save({ maxUses: n })} />
-                          <select
+                          <Select
                             value={cmd.rule.maxUsesWindowMinutes}
-                            onChange={(e) => save({ maxUsesWindowMinutes: Number(e.target.value) })}
+                            options={[
+                              ...(!WINDOWS.some((w) => w.minutes === cmd.rule.maxUsesWindowMinutes)
+                                ? [[cmd.rule.maxUsesWindowMinutes, `par ${cmd.rule.maxUsesWindowMinutes} min`] as const]
+                                : []),
+                              ...WINDOWS.map((w) => [w.minutes, w.label] as const),
+                            ]}
+                            onChange={(v) => save({ maxUsesWindowMinutes: v })}
                             aria-label="Période"
-                            className="h-9 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/70"
-                          >
-                            {WINDOWS.some((w) => w.minutes === cmd.rule.maxUsesWindowMinutes) ? null : (
-                              <option value={cmd.rule.maxUsesWindowMinutes}>par {cmd.rule.maxUsesWindowMinutes} min</option>
-                            )}
-                            {WINDOWS.map((w) => (
-                              <option key={w.minutes} value={w.minutes}>
-                                {w.label}
-                              </option>
-                            ))}
-                          </select>
+                          />
                         </>
                       )}
                     </div>

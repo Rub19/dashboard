@@ -53371,4 +53371,57 @@ CHANGELOG_BY_LANG.en.unshift(v12877_en);
 CHANGELOG_BY_LANG.es.unshift(v12877_es);
 CHANGELOG_BY_LANG.de.unshift(v12877_de);
 
+const v12878_fr: ChangelogEntry = {
+  version: "v1.75.34",
+  date: "2026-10-13",
+  title: "Sélecteurs déroulants sur-mesure (Keeper & console Discord)",
+  items: [
+    "Nouveau composant Select avec thème obsidian, popover animé et coche de sélection",
+    "Remplacement des balises select natives du navigateur dans tous les modules de la console Discord",
+    "Navigation au clavier (Échap, Flèches haut/bas, Entrée) et fermeture au clic extérieur",
+    "Harmonisation visuelle des modules Streamers, Niveaux, Vocaux, Serveur, Réglages, Journal et Formulaires",
+  ],
+};
+
+const v12878_en: ChangelogEntry = {
+  version: "v1.75.34",
+  date: "2026-10-13",
+  title: "Custom Dropdown Selectors (Keeper & Discord Console)",
+  items: [
+    "New custom Select component with obsidian theme, animated popover, and checkmark indicator",
+    "Replaced browser-native select tags across all Discord console modules",
+    "Keyboard accessibility (Escape, Arrow keys, Enter) and click-outside dismissal",
+    "Visual consistency across Streamers, Leveling, Voice, Server, Settings, Logs, and Forms modules",
+  ],
+};
+
+const v12878_es: ChangelogEntry = {
+  version: "v1.75.34",
+  date: "2026-10-13",
+  title: "Selectores desplegables personalizados (Keeper y consola de Discord)",
+  items: [
+    "Nuevo componente Select con diseño obsidian, menú flotante animado e indicador de selección",
+    "Sustitución de etiquetas select nativas del navegador en todos los módulos de la consola",
+    "Navegación por teclado (Escape, Flechas arriba/abajo, Enter) y cierre al hacer clic fuera",
+    "Consistencia visual en módulos de Streamers, Niveles, Voz, Servidor, Ajustes, Registros y Formularios",
+  ],
+};
+
+const v12878_de: ChangelogEntry = {
+  version: "v1.75.34",
+  date: "2026-10-13",
+  title: "Benutzerdefinierte Dropdown-Menüs (Keeper & Discord-Konsole)",
+  items: [
+    "Neues Select-Element mit Obsidian-Theme, animiertem Popover und Häkchen-Indikator",
+    "Ersatz nativer Browser-Select-Tags in allen Modulen der Discord-Konsole",
+    "Tastaturnavigation (Escape, Pfeiltasten, Enter) und Schließen bei Klick außerhalb",
+    "Visuelle Einheitlichkeit in den Modulen Streamer, Level, Voice, Server, Einstellungen, Logs und Formulare",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12878_fr);
+CHANGELOG_BY_LANG.en.unshift(v12878_en);
+CHANGELOG_BY_LANG.es.unshift(v12878_es);
+CHANGELOG_BY_LANG.de.unshift(v12878_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

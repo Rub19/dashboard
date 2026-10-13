@@ -8,7 +8,7 @@ import { fetchGuildRoles } from "../RolePicker";
 import { cleanLogText, sinceLabel } from "@/lib/discord/security-scan";
 import { SPRING_PILL } from "@/lib/ease";
 import { cn } from "@/lib/utils";
-import { BOT_API_URL, ConsolePage, EmptyLine, GhostButton, Panel, useGuildApi } from "./kit";
+import { BOT_API_URL, ConsolePage, EmptyLine, GhostButton, Panel, Select, useGuildApi } from "./kit";
 import DiscordIncidentsTimeline from "../DiscordIncidentsTimeline";
 
 type AuditEvent = {
@@ -50,6 +50,10 @@ const SERVER_CATEGORIES = [
 ];
 const INCIDENT_MODULES = ["SECURITY", "AUTOMOD", "MODERATION"];
 const ALL_CATEGORIES = [...PROTECTION_CATEGORIES.filter((c) => c.key !== "RAID"), ...SERVER_CATEGORIES];
+const MODULE_OPTIONS: [string, string][] = [
+  ["ALL", "Toutes catégories"],
+  ...ALL_CATEGORIES.map((c) => [c.key, c.label] as [string, string]),
+];
 const PERIODS: [string, string][] = [
   ["24h", "24 h"],
   ["7d", "7 jours"],
@@ -331,28 +335,9 @@ function Journal({ guildId }: { guildId: string }) {
       actions={
         <div className="flex flex-wrap items-center justify-end gap-1.5">
           <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Rechercher" aria-label="Rechercher dans le journal" className={`${SELECT} w-32`} />
-          <select value={module} onChange={(e) => setModule(e.target.value)} aria-label="Catégorie" className={SELECT}>
-            <option value="ALL">Toutes catégories</option>
-            {ALL_CATEGORIES.map((c) => (
-              <option key={c.key} value={c.key}>
-                {c.label}
-              </option>
-            ))}
-          </select>
-          <select value={severity} onChange={(e) => setSeverity(e.target.value)} aria-label="Gravité" className={SELECT}>
-            {SEVERITIES.map(([v, l]) => (
-              <option key={v} value={v}>
-                {l}
-              </option>
-            ))}
-          </select>
-          <select value={period} onChange={(e) => setPeriod(e.target.value)} aria-label="Période" className={SELECT}>
-            {PERIODS.map(([v, l]) => (
-              <option key={v} value={v}>
-                {l}
-              </option>
-            ))}
-          </select>
+          <Select value={module} options={MODULE_OPTIONS} onChange={(v) => setModule(v)} aria-label="Catégorie" size="sm" align="right" />
+          <Select value={severity} options={SEVERITIES} onChange={(v) => setSeverity(v)} aria-label="Gravité" size="sm" align="right" />
+          <Select value={period} options={PERIODS} onChange={(v) => setPeriod(v)} aria-label="Période" size="sm" align="right" />
         </div>
       }
     >

@@ -54109,4 +54109,57 @@ CHANGELOG_BY_LANG.en.unshift(v12889_en);
 CHANGELOG_BY_LANG.es.unshift(v12889_es);
 CHANGELOG_BY_LANG.de.unshift(v12889_de);
 
+const v12890_fr: ChangelogEntry = {
+  version: "v1.75.48",
+  date: "2026-10-13",
+  title: "Connexion Riot Games : Automatisation complète et suppression de l'ancienne méthode",
+  items: [
+    "Suppression définitive de la méthode par identifiants et des onglets pour forcer l'authentification officielle Riot Sign-On.",
+    "Détection et synchronisation 100% automatiques : écoute active du retour sur la fenêtre (focus/visibilité) avec extraction instantanée du jeton depuis le presse-papier.",
+    "Capture universelle du presse-papier : collage instantané (Ctrl+V) et bouton dédié 'Détecter automatiquement' sans aucune friction.",
+    "Interface épurée et état de chargement dynamique avec élimination des blocages Cloudflare.",
+  ],
+};
+
+const v12890_en: ChangelogEntry = {
+  version: "v1.75.48",
+  date: "2026-10-13",
+  title: "Riot Games Connection: Full Automation & Legacy Method Removal",
+  items: [
+    "Permanently removed legacy credentials method and tabs to force the official Riot Sign-On flow.",
+    "100% automated detection & sync: active window focus/visibility listener that automatically reads tokens from the clipboard.",
+    "Universal clipboard capture: instant keyboard paste (Ctrl+V) and dedicated auto-detection button with zero friction.",
+    "Streamlined modal & dynamic loading state with elimination of Cloudflare Turnstile blocks.",
+  ],
+};
+
+const v12890_es: ChangelogEntry = {
+  version: "v1.75.48",
+  date: "2026-10-13",
+  title: "Conexión Riot Games: Automatización total y eliminación del método antiguo",
+  items: [
+    "Eliminación definitiva del método de credenciales directas y pestañas para forzar el flujo oficial de Riot Sign-On.",
+    "Detección y sincronización automáticas: escucha activa al regresar a la ventana con lectura inmediata del portapapeles.",
+    "Captura universal del portapapeles: pegado directo (Ctrl+V) y botón de detección automática sin fricción.",
+    "Interfaz simplificada y estado de carga dinámico con eliminación de bloqueos de Cloudflare.",
+  ],
+};
+
+const v12890_de: ChangelogEntry = {
+  version: "v1.75.48",
+  date: "2026-10-13",
+  title: "Riot Games Verbindung: Vollständige Automatisierung & Entfernung der alten Methode",
+  items: [
+    "Endgültige Entfernung der Anmeldedaten-Methode und Registerkarten, um das offizielle Riot Sign-On zu erzwingen.",
+    "100% automatische Erkennung & Synchronisierung: aktiver Fenster-Fokus-Listener mit sofortiger Token-Erkennung aus der Zwischenablage.",
+    "Universelle Zwischenablagen-Erfassung: direktes Einfügen (Strg+V) und dedizierte Ein-Klick-Erkennung ohne Reibung.",
+    "Schlanke Benutzeroberfläche mit dynamischen Ladeanimationen und Beseitigung von Cloudflare-Blockaden.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12890_fr);
+CHANGELOG_BY_LANG.en.unshift(v12890_en);
+CHANGELOG_BY_LANG.es.unshift(v12890_es);
+CHANGELOG_BY_LANG.de.unshift(v12890_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

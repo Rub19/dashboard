@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.48 — 2026-10-13
+
+**Connexion Riot Games : Automatisation complète et suppression de l'ancienne méthode**
+
+- Suppression définitive de la méthode par identifiants et des onglets pour forcer l'authentification officielle Riot Sign-On.
+- Détection et synchronisation 100% automatiques : écoute active du retour sur la fenêtre (focus/visibilité) avec extraction instantanée du jeton depuis le presse-papier.
+- Capture universelle du presse-papier : collage instantané (Ctrl+V) et bouton dédié 'Détecter automatiquement' sans aucune friction.
+- Interface épurée et état de chargement dynamique avec élimination des blocages Cloudflare.
+
 ## v1.75.47 — 2026-10-13
 
 **Tracker Valorant : Refonte visuelle des cartes et badges d'éditions**

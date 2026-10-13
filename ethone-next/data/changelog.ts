@@ -52913,6 +52913,54 @@ const v1_75_24_de: ChangelogEntry = {
   ],
 };
 
+const v1_75_25_fr: ChangelogEntry = {
+  version: "v1.75.25",
+  date: "2026-10-13",
+  title: "Perfectionnement UI & Layout Wiki : Alignement Strict et Correction SVG",
+  items: [
+    "Résolution du débordement SVG de l'icône de recherche : dimensions strictes et immuables 16x16px prévenant toute distorsion d'échelle.",
+    "Alignement strict des colonnes sur les guides et fiches de sécurité en CSS Grid : élimination de tout décalage entre lignes.",
+    "Élargissement du conteneur de documentation (max-w-[1536px]) et raccourci clavier Ctrl+K stylisé.",
+  ],
+};
+
+const v1_75_25_en: ChangelogEntry = {
+  version: "v1.75.25",
+  date: "2026-10-13",
+  title: "Wiki UI & Layout Polish: Strict Column Alignment and SVG Sizing",
+  items: [
+    "Search SVG icon scale fix: strict 16x16px bounding box preventing magnifying glass blowup.",
+    "CSS Grid strict column alignments across step-by-step guides and security emergency cases.",
+    "Expanded wide documentation container (max-w-[1536px]) with inline Ctrl+K keyboard shortcut badge.",
+  ],
+};
+
+const v1_75_25_es: ChangelogEntry = {
+  version: "v1.75.25",
+  date: "2026-10-13",
+  title: "Alineación de Columnas y Corrección SVG de la Documentación Wiki",
+  items: [
+    "Dimensiones fijas 16x16px para el icono de búsqueda en la cabecera.",
+    "Alineación estricta en cuadrícula CSS para guías y fichas de seguridad.",
+    "Contenedor ampliado a max-w-[1536px] e insignia de atajo Ctrl+K.",
+  ],
+};
+
+const v1_75_25_de: ChangelogEntry = {
+  version: "v1.75.25",
+  date: "2026-10-13",
+  title: "Wiki-Layout-Perfektion: Feste SVG-Dimensionen und CSS-Grid-Spalten",
+  items: [
+    "Feste 16x16px Dimensionen für Such-Icon zur Vermeidung von Verzerrungen.",
+    "Präzise Spaltenausrichtung via CSS Grid für alle Guides und Sicherheitskarten.",
+    "Erweiterter Container (max-w-[1536px]) mit Ctrl+K Tastatur-Badge.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_25_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_25_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_25_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_25_de);
 CHANGELOG_BY_LANG.fr.unshift(v1_75_24_fr);
 CHANGELOG_BY_LANG.en.unshift(v1_75_24_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_24_es);

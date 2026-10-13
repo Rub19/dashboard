@@ -2,6 +2,20 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.25 — 2026-10-13
+
+**Perfectionnement UI & Layout Wiki : Alignement Strict et Correction SVG**
+
+- **Résolution Définitive de l'Échelle de l'Icône de Recherche** :
+  - Définition stricte et immuable des dimensions 16x16px (`width="16" height="16"` et classes `h-4 w-4 shrink-0`) sur l'icône loupe et tous les composants SVG vectoriels, empêchant toute expansion indésirable du viewBox.
+  - Ajout d'une touche de raccourci visuelle intégrée `Ctrl+K` dans la barre de recherche et d'un bouton d'effacement rapide.
+- **Alignement Strict des Colonnes en CSS Grid** :
+  - Restructuration des cartes de guides pas à pas (`grid-cols-[280px_1fr_90px]`) et des fiches d'urgence sécurité (`grid-cols-[320px_1fr_90px]`).
+  - Alignement millimétré vertical et élimination de toute variation ou décalage entre les lignes de tableau.
+- **Élargissement du Conteneur Wiki & Typographie Soignée** :
+  - Passage au conteneur moderne large `max-w-[1536px]` avec marges adaptatives favorisant la lisibilité sur écrans larges et ultrawide.
+  - Équilibrage typographique du titre principal hero via `text-balance` pour éliminer les retours à la ligne orphelins.
+
 ## v1.75.24 — 2026-10-13
 
 **Accès Public Wiki Documentation & Défilement Unifié**

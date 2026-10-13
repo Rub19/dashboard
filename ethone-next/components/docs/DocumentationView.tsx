@@ -11,43 +11,43 @@ import {
   type DocModule,
 } from "@/data/documentationData";
 
-function ShieldIcon({ className = "h-5 w-5" }: { className?: string }) {
+function ShieldIcon({ className = "" }: { className?: string }) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className} aria-hidden="true">
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" className={`h-5 w-5 shrink-0 ${className}`} aria-hidden="true">
       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
     </svg>
   );
 }
 
-function SearchIcon({ className = "h-4 w-4" }: { className?: string }) {
+function SearchIcon({ className = "" }: { className?: string }) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className} aria-hidden="true">
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" className={`h-4 w-4 shrink-0 ${className}`} aria-hidden="true">
       <circle cx="11" cy="11" r="8" />
       <path d="m21 21-4.35-4.35" />
     </svg>
   );
 }
 
-function CopyIcon({ className = "h-4 w-4" }: { className?: string }) {
+function CopyIcon({ className = "" }: { className?: string }) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className} aria-hidden="true">
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" className={`h-4 w-4 shrink-0 ${className}`} aria-hidden="true">
       <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
       <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
     </svg>
   );
 }
 
-function CheckIcon({ className = "h-4 w-4" }: { className?: string }) {
+function CheckIcon({ className = "" }: { className?: string }) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className={className} aria-hidden="true">
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" className={`h-4 w-4 shrink-0 ${className}`} aria-hidden="true">
       <polyline points="20 6 9 17 4 12" />
     </svg>
   );
 }
 
-function ExternalIcon({ className = "h-4 w-4" }: { className?: string }) {
+function ExternalIcon({ className = "" }: { className?: string }) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className} aria-hidden="true">
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" className={`h-4 w-4 shrink-0 ${className}`} aria-hidden="true">
       <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
       <polyline points="15 3 21 3 21 9" />
       <line x1="10" y1="14" x2="21" y2="3" />
@@ -55,52 +55,52 @@ function ExternalIcon({ className = "h-4 w-4" }: { className?: string }) {
   );
 }
 
-function CloseIcon({ className = "h-4 w-4" }: { className?: string }) {
+function CloseIcon({ className = "" }: { className?: string }) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className} aria-hidden="true">
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" className={`h-4 w-4 shrink-0 ${className}`} aria-hidden="true">
       <line x1="18" y1="6" x2="6" y2="18" />
       <line x1="6" y1="6" x2="18" y2="18" />
     </svg>
   );
 }
 
-function ChevronRightIcon({ className = "h-4 w-4" }: { className?: string }) {
+function ChevronRightIcon({ className = "" }: { className?: string }) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className} aria-hidden="true">
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" className={`h-4 w-4 shrink-0 ${className}`} aria-hidden="true">
       <polyline points="9 18 15 12 9 6" />
     </svg>
   );
 }
 
-function BookOpenIcon({ className = "h-4 w-4" }: { className?: string }) {
+function BookOpenIcon({ className = "" }: { className?: string }) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className} aria-hidden="true">
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" className={`h-4 w-4 shrink-0 ${className}`} aria-hidden="true">
       <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
       <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
     </svg>
   );
 }
 
-function TerminalIcon({ className = "h-4 w-4" }: { className?: string }) {
+function TerminalIcon({ className = "" }: { className?: string }) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className} aria-hidden="true">
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" className={`h-4 w-4 shrink-0 ${className}`} aria-hidden="true">
       <polyline points="4 17 10 11 4 5" />
       <line x1="12" y1="19" x2="20" y2="19" />
     </svg>
   );
 }
 
-function ZapIcon({ className = "h-4 w-4" }: { className?: string }) {
+function ZapIcon({ className = "" }: { className?: string }) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className} aria-hidden="true">
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" className={`h-4 w-4 shrink-0 ${className}`} aria-hidden="true">
       <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
     </svg>
   );
 }
 
-function MenuIcon({ className = "h-5 w-5" }: { className?: string }) {
+function MenuIcon({ className = "" }: { className?: string }) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className} aria-hidden="true">
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" className={`h-5 w-5 shrink-0 ${className}`} aria-hidden="true">
       <line x1="4" y1="12" x2="20" y2="12" />
       <line x1="4" y1="6" x2="20" y2="6" />
       <line x1="4" y1="18" x2="20" y2="18" />
@@ -174,7 +174,7 @@ export default function DocumentationView() {
   return (
     <div className="relative h-dvh w-full overflow-x-hidden overflow-y-auto bg-[#07080d] text-zinc-200 antialiased selection:bg-[#92C8D2]/30 selection:text-white">
       <header className="sticky top-0 z-40 border-b border-white/[0.08] bg-[#07080d]/85 backdrop-blur-xl">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
+        <div className="mx-auto flex h-16 max-w-[1536px] items-center justify-between px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-6">
             <button
               type="button"
@@ -219,17 +219,17 @@ export default function DocumentationView() {
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="relative hidden sm:block w-48 md:w-64">
+            <div className="relative hidden sm:flex items-center w-52 md:w-72">
               <SearchIcon className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
               <input
                 id="docs-search-input"
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Rechercher... (Ctrl+K)"
-                className="w-full rounded-xl border border-white/10 bg-[#0c0d14] py-1.5 pl-9 pr-8 text-xs text-zinc-200 placeholder-zinc-500 transition-colors focus:border-[#92C8D2] focus:outline-none focus:ring-1 focus:ring-[#92C8D2]"
+                placeholder="Rechercher dans la doc..."
+                className="w-full rounded-xl border border-white/10 bg-[#0c0d14] py-1.5 pl-9 pr-14 text-xs text-zinc-200 placeholder-zinc-500 transition-colors focus:border-[#92C8D2] focus:outline-none focus:ring-1 focus:ring-[#92C8D2]"
               />
-              {searchQuery && (
+              {searchQuery ? (
                 <button
                   type="button"
                   onClick={() => setSearchQuery("")}
@@ -237,6 +237,10 @@ export default function DocumentationView() {
                 >
                   <CloseIcon className="h-3.5 w-3.5" />
                 </button>
+              ) : (
+                <kbd className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 rounded border border-white/10 bg-white/5 px-1.5 py-0.5 text-[10px] font-mono text-zinc-400">
+                  Ctrl+K
+                </kbd>
               )}
             </div>
 
@@ -257,13 +261,13 @@ export default function DocumentationView() {
         </div>
       </header>
 
-      <div className="mx-auto flex max-w-7xl">
+      <div className="mx-auto flex max-w-[1536px] px-4 sm:px-6 lg:px-8">
         <aside
-          className={`fixed inset-y-0 left-0 z-30 w-72 shrink-0 border-r border-white/[0.08] bg-[#07080d] pt-20 transition-transform lg:static lg:block lg:pt-6 lg:translate-x-0 ${
+          className={`fixed inset-y-0 left-0 z-30 w-72 shrink-0 border-r border-white/[0.08] bg-[#07080d] pt-20 transition-transform lg:static lg:block lg:pt-6 lg:translate-x-0 xl:w-80 ${
             mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         >
-          <div className="sticky top-20 flex h-[calc(100vh-5rem)] flex-col overflow-y-auto px-4 pb-10">
+          <div className="sticky top-20 flex h-[calc(100vh-5rem)] flex-col overflow-y-auto pr-4 pb-10">
             <div className="mb-4 sm:hidden">
               <div className="relative">
                 <SearchIcon className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
@@ -305,13 +309,14 @@ export default function DocumentationView() {
                     <button
                       key={guide.id}
                       type="button"
+                      title={guide.title}
                       onClick={() => {
                         setSelectedGuide(guide);
                         setMobileMenuOpen(false);
                       }}
                       className="flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-left text-zinc-400 transition-colors hover:bg-white/5 hover:text-white group"
                     >
-                      <span className="truncate">{guide.title}</span>
+                      <span className="truncate pr-1">{guide.title}</span>
                       {guide.badge && (
                         <span className="ml-1 shrink-0 rounded bg-emerald-500/10 px-1 py-0.2 text-[9px] font-medium text-emerald-400 border border-emerald-500/20">
                           {guide.badge}
@@ -331,6 +336,7 @@ export default function DocumentationView() {
                     <button
                       key={guide.id}
                       type="button"
+                      title={guide.title}
                       onClick={() => {
                         setSelectedGuide(guide);
                         setMobileMenuOpen(false);
@@ -375,7 +381,7 @@ export default function DocumentationView() {
           />
         )}
 
-        <main className="min-w-0 flex-1 px-4 py-8 sm:px-8 lg:px-12">
+        <main className="min-w-0 flex-1 py-8 pl-0 lg:pl-8 xl:pl-10">
           {searchResults ? (
             <section className="mb-12">
               <div className="mb-6 flex items-center justify-between">
@@ -450,12 +456,12 @@ export default function DocumentationView() {
                 <span>Documentation Officielle Etho Protect</span>
               </div>
 
-              <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-white sm:text-4xl lg:text-5xl">
-                Documentation de Etho Protect
+              <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-white sm:text-4xl lg:text-5xl text-balance">
+                Documentation officielle d&apos;Etho Protect
               </h1>
 
               <p className="mt-3 text-sm leading-relaxed text-zinc-400 sm:text-base">
-                Tout ce qu&apos;il faut savoir pour protéger ton serveur Discord : démarrer en deux minutes, comprendre chaque module avec une démo animée, et retrouver toutes les commandes.
+                Tout ce qu&apos;il faut savoir pour protéger votre serveur Discord : démarrer en deux minutes, comprendre chaque module avec sa configuration optimale, et retrouver toutes les commandes.
               </p>
 
               <div className="mt-6 flex flex-wrap items-center gap-3">
@@ -495,26 +501,24 @@ export default function DocumentationView() {
                 <div
                   key={guide.id}
                   onClick={() => setSelectedGuide(guide)}
-                  className="group flex flex-col justify-between gap-3 p-4 transition-colors hover:bg-white/[0.03] cursor-pointer sm:flex-row sm:items-center sm:gap-6 sm:p-5"
+                  className="group grid grid-cols-1 md:grid-cols-[280px_1fr_90px] items-center gap-3 md:gap-6 p-4 sm:p-5 transition-colors hover:bg-white/[0.03] cursor-pointer"
                 >
-                  <div className="sm:w-1/3 shrink-0">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-bold text-white group-hover:text-[#92C8D2] transition-colors">
-                        {guide.title}
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="text-sm font-bold text-white group-hover:text-[#92C8D2] transition-colors truncate">
+                      {guide.title}
+                    </span>
+                    {guide.badge && (
+                      <span className="shrink-0 rounded bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-400 border border-emerald-500/20">
+                        {guide.badge}
                       </span>
-                      {guide.badge && (
-                        <span className="rounded bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-400 border border-emerald-500/20">
-                          {guide.badge}
-                        </span>
-                      )}
-                    </div>
+                    )}
                   </div>
 
-                  <div className="flex-1 text-xs leading-relaxed text-zinc-400 sm:text-[13px]">
+                  <div className="text-xs leading-relaxed text-zinc-400 sm:text-[13px] line-clamp-2 md:line-clamp-none">
                     {guide.description}
                   </div>
 
-                  <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0 text-xs">
+                  <div className="flex items-center justify-between md:justify-end gap-2.5 text-xs shrink-0">
                     <span className="text-zinc-500 font-mono text-[11px]">{guide.readTime}</span>
                     <ChevronRightIcon className="text-zinc-600 transition-transform group-hover:translate-x-1 group-hover:text-zinc-300" />
                   </div>
@@ -538,26 +542,24 @@ export default function DocumentationView() {
                 <div
                   key={guide.id}
                   onClick={() => setSelectedGuide(guide)}
-                  className="group flex flex-col justify-between gap-3 p-4 transition-colors hover:bg-white/[0.03] cursor-pointer sm:flex-row sm:items-center sm:gap-6 sm:p-5"
+                  className="group grid grid-cols-1 md:grid-cols-[320px_1fr_90px] items-center gap-3 md:gap-6 p-4 sm:p-5 transition-colors hover:bg-white/[0.03] cursor-pointer"
                 >
-                  <div className="sm:w-2/5 shrink-0">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-bold text-white group-hover:text-[#92C8D2] transition-colors">
-                        {guide.title}
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="text-sm font-bold text-white group-hover:text-[#92C8D2] transition-colors truncate">
+                      {guide.title}
+                    </span>
+                    {guide.badge && (
+                      <span className="shrink-0 rounded bg-[#92C8D2]/10 px-1.5 py-0.5 text-[10px] font-semibold text-[#92C8D2] border border-[#92C8D2]/25">
+                        {guide.badge}
                       </span>
-                      {guide.badge && (
-                        <span className="rounded bg-[#92C8D2]/10 px-1.5 py-0.5 text-[10px] font-semibold text-[#92C8D2] border border-[#92C8D2]/25">
-                          {guide.badge}
-                        </span>
-                      )}
-                    </div>
+                    )}
                   </div>
 
-                  <div className="flex-1 text-xs leading-relaxed text-zinc-400 sm:text-[13px]">
+                  <div className="text-xs leading-relaxed text-zinc-400 sm:text-[13px] line-clamp-2 md:line-clamp-none">
                     {guide.description}
                   </div>
 
-                  <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0 text-xs">
+                  <div className="flex items-center justify-between md:justify-end gap-2.5 text-xs shrink-0">
                     <span className="text-zinc-500 font-mono text-[11px]">{guide.readTime}</span>
                     <ChevronRightIcon className="text-zinc-600 transition-transform group-hover:translate-x-1 group-hover:text-zinc-300" />
                   </div>
@@ -848,7 +850,7 @@ export default function DocumentationView() {
       </AnimatePresence>
 
       <footer className="border-t border-white/[0.08] bg-[#07080d] py-10 text-xs text-zinc-500">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 sm:flex-row sm:px-6">
+        <div className="mx-auto flex max-w-[1536px] flex-col items-center justify-between gap-4 px-4 sm:px-6 lg:px-8 sm:flex-row">
           <div className="flex items-center gap-2">
             <ShieldIcon className="h-4 w-4 text-[#92C8D2]" />
             <span className="font-bold text-zinc-300">Etho Protect Documentation</span>

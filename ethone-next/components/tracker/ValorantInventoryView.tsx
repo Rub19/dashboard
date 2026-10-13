@@ -1473,7 +1473,7 @@ export default function ValorantInventoryView() {
                   </div>
 
                   <p className="text-[11px] leading-relaxed text-[var(--text-muted)]">
-                    Connectez-vous sur Riot Games. Dès que la page finale s&apos;affiche, copiez l&apos;URL et revenez ici : la synchronisation se déclenche automatiquement.
+                    Connectez-vous sur Riot Games. Une fois connecté, la fenêtre affiche une page playvalorant.com (la mention « 404 » est tout à fait normale, votre jeton sécurisé se trouve dans la barre d&apos;adresse). Copiez simplement l&apos;URL complète et revenez ici : la détection se déclenche automatiquement.
                   </p>
 
                   <Button

@@ -50,6 +50,44 @@ export default function Shell({ children }: { children: ReactNode }) {
   const discordFullscreen = pathname === "/discord" || pathname === "/bot" || (pathname?.startsWith("/discord/") ?? false) || (pathname?.startsWith("/bot/") ?? false);
   const isGamingTracker = pathname === "/tracker" || (pathname?.startsWith("/tracker/") ?? false) || pathname === "/matches" || (pathname?.startsWith("/matches/") ?? false);
 
+  if (isGamingTracker) {
+    return (
+      <WindowManagerProvider>
+        <NativeIntegration />
+        <ContextMenuProvider>
+          <PresenceProvider>
+            <ShortcutsProvider>
+              <SkipLink />
+              <div data-v8-shell data-tracker-fullscreen className="flex h-dvh max-h-dvh w-screen max-w-full flex-col overflow-clip bg-[var(--background)]">
+                <CommandPalette />
+                <DocumentMetadata />
+                <CosmicBackground />
+                <RefreshSpinner />
+                <VisualHaptics />
+                <PrivacyShield>
+                  <main
+                    data-v8-main
+                    id="main-content"
+                    className="relative z-0 flex h-full min-h-0 min-w-0 flex-1 flex-col outline-none overflow-y-auto overflow-x-hidden bg-transparent [overscroll-behavior:contain]"
+                    tabIndex={-1}
+                  >
+                    <ActivityJournalProvider>
+                      <PageTransition>
+                        <div className="h-full min-h-0 w-full flex-1 flex flex-col overflow-y-auto">{children}</div>
+                      </PageTransition>
+                    </ActivityJournalProvider>
+                  </main>
+                </PrivacyShield>
+              </div>
+              <ShortcutsOverlay />
+              <KeyboardShortcuts />
+            </ShortcutsProvider>
+          </PresenceProvider>
+        </ContextMenuProvider>
+      </WindowManagerProvider>
+    );
+  }
+
   if (discordFullscreen) {
     return (
       <WindowManagerProvider>

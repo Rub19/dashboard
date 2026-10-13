@@ -6,7 +6,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Swords,
   ShieldCheck,
-  Sparkles,
   TrendingUp,
   User,
   Search,
@@ -16,12 +15,10 @@ import {
   Target,
   Trophy,
   Activity,
-  Bot,
   Zap,
   CheckCircle2,
   Share2,
   RefreshCw,
-  LayoutGrid,
   Key,
 } from "@/components/icons/ph";
 import { useSettings } from "@/components/SettingsProvider";
@@ -42,8 +39,6 @@ import {
 } from "@/lib/lol-tracker";
 import GameBrandIcon from "@/components/GameBrandIcon";
 import RiotTrackerConnectModal from "@/components/tracker/RiotTrackerConnectModal";
-import RiotTrackerHeader from "@/components/tracker/RiotTrackerHeader";
-import ValorantAiCoachModal from "@/components/tracker/ValorantAiCoachModal";
 import ValorantFriendCompareModal from "@/components/tracker/ValorantFriendCompareModal";
 import { cn } from "@/lib/utils";
 import { EASE_SNAP, EASE_OUT } from "@/lib/ease";
@@ -77,7 +72,6 @@ export default function RiotGamingHome() {
 
   const [loading, setLoading] = useState(false);
   const [connectModalOpen, setConnectModalOpen] = useState(false);
-  const [aiCoachModalOpen, setAiCoachModalOpen] = useState(false);
   const [compareModalOpen, setCompareModalOpen] = useState(false);
 
   const valorantStats = useMemo<ValorantComputedStats>(() => {
@@ -167,24 +161,6 @@ export default function RiotGamingHome() {
 
   return (
     <div className="flex h-full min-h-0 w-full flex-col overflow-y-auto os-scroll [overscroll-behavior:contain]">
-      <RiotTrackerHeader
-        activeGame={activeGame}
-        onSelectGame={setActiveGame}
-        onOpenCoach={() => setAiCoachModalOpen(true)}
-        currentProfileName={valorantProfile?.name || riotName}
-        currentProfileTag={valorantProfile?.tag || riotTag}
-        onRiotIdChanged={(name, tag) => {
-          const cleanName = name.trim();
-          const cleanTag = tag.trim().replace(/^#/, "");
-          setRiotName(cleanName);
-          setRiotTag(cleanTag);
-          if (typeof window !== "undefined") {
-            if (cleanName) localStorage.setItem("ethone:tracker:riot_name", cleanName);
-            if (cleanTag) localStorage.setItem("ethone:tracker:riot_tag", cleanTag);
-          }
-          loadPlayerData(cleanName, cleanTag, activeGame);
-        }}
-      />
       <div className="mx-auto w-full max-w-7xl px-3 py-4 sm:px-6 sm:py-6 space-y-5">
         <motion.div
           initial={{ opacity: 0, y: -10 }}
@@ -212,10 +188,10 @@ export default function RiotGamingHome() {
               </div>
 
               <h1 className="text-xl sm:text-3xl font-black tracking-tight text-[var(--text-primary)]">
-                ETHONE <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-400 via-red-400 to-amber-300">Gaming Workspace</span>
+                RIOT GAMES <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-400 via-red-400 to-amber-300">Tracker</span>
               </h1>
               <p className="text-xs sm:text-sm text-[var(--text-muted)] max-w-2xl">
-                Suivi compétitif en temps réel, analyses tactiques assistées par IA et historiques officiels pour VALORANT, League of Legends et Teamfight Tactics.
+                Suivi compétitif en temps réel et historiques officiels pour VALORANT, League of Legends et Teamfight Tactics.
               </p>
             </div>
 
@@ -228,24 +204,6 @@ export default function RiotGamingHome() {
                 <Key className="h-4 w-4 text-rose-400" />
                 <span>#RIOT TRACKER · Connexion & APIs</span>
               </button>
-
-              <button
-                type="button"
-                onClick={() => setAiCoachModalOpen(true)}
-                className="flex items-center gap-1.5 rounded-xl border border-amber-500/40 bg-amber-500/20 px-3.5 py-2 text-xs font-bold text-amber-200 hover:bg-amber-500/30 active:scale-95 transition-all cursor-pointer shadow-md"
-              >
-                <Sparkles className="h-4 w-4 text-amber-400" />
-                <span>Coach IA</span>
-              </button>
-
-              <Link
-                href="/"
-                className="flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/80 px-3 py-2 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 transition-all cursor-pointer"
-                title="Accéder au tableau de bord ETHONE OS"
-              >
-                <LayoutGrid className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">ETHONE OS</span>
-              </Link>
             </div>
           </div>
         </motion.div>
@@ -575,96 +533,58 @@ export default function RiotGamingHome() {
           </motion.div>
         </AnimatePresence>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <motion.div
             whileHover={{ y: -2 }}
-            className="lg:col-span-2 rounded-[var(--panel-radius)] border border-amber-500/30 bg-gradient-to-br from-amber-500/10 via-[var(--bg-main)]/90 to-transparent p-5 backdrop-blur-xl shadow-lg space-y-4"
+            className="rounded-[var(--panel-radius)] border border-rose-500/30 bg-gradient-to-br from-rose-500/10 via-[var(--bg-main)]/90 to-transparent p-5 backdrop-blur-xl shadow-lg flex flex-col justify-between space-y-4"
           >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-500/20 text-amber-300 border border-amber-500/40">
-                  <Sparkles className="h-5 w-5" />
-                </div>
-                <div>
-                  <h3 className="text-sm font-black text-[var(--text-primary)]">
-                    Coach IA Gaming · Débrief Tactique
-                  </h3>
-                  <p className="text-[11px] text-[var(--text-muted)]">
-                    Analyses générées automatiquement à partir de tes données de match réelles
-                  </p>
-                </div>
+            <div>
+              <div className="flex items-center gap-2 text-rose-400 mb-2">
+                <Swords className="h-4 w-4" />
+                <h4 className="text-xs font-bold uppercase tracking-wider">Riot Games Live Feed</h4>
               </div>
+              <p className="text-sm font-bold text-[var(--text-primary)]">
+                Suivi Compétitif Direct & Télémétrie Officielle
+              </p>
+              <p className="text-xs text-[var(--text-muted)] mt-1">
+                Statistiques en direct, historique des rounds, variations MMR et performances individuelles sans intermédiaire ni enregistrement de données.
+              </p>
+            </div>
+            <div className="pt-2">
               <button
                 type="button"
-                onClick={() => setAiCoachModalOpen(true)}
-                className="flex items-center gap-1.5 rounded-lg border border-amber-500/40 bg-amber-500/20 px-2.5 py-1 text-xs font-bold text-amber-200 hover:bg-amber-500/30 active:scale-95 transition-all cursor-pointer"
+                onClick={() => setConnectModalOpen(true)}
+                className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 px-4 py-2 text-xs font-bold text-white shadow-md hover:from-rose-500 hover:to-red-500 active:scale-95 transition-all cursor-pointer"
               >
-                <span>Ouvrir l'Analyse Complète</span>
-                <ChevronRight className="h-3.5 w-3.5" />
+                <Key className="h-3.5 w-3.5" />
+                <span>Configurer mes identifiants Riot</span>
               </button>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-3 space-y-1">
-                <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">Point Fort Détecté</span>
-                <p className="text-xs font-semibold text-[var(--text-primary)]">
-                  {activeGame === "valorant"
-                    ? "Duels d'ouverture agressifs et taux de conversion First Blood à 74%."
-                    : "Excellente gestion des vagues et tempo de décalage sur les objectifs neutres."}
-                </p>
-              </div>
-
-              <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-3 space-y-1">
-                <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider">Axe d'Amélioration</span>
-                <p className="text-xs font-semibold text-[var(--text-primary)]">
-                  {activeGame === "valorant"
-                    ? "Gestion de l'économie après round perdu : forcer trop souvent des demi-achats."
-                    : "Score de vision en mid-game : placer des balises de contrôle plus profondes."}
-                </p>
-              </div>
-
-              <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-3 space-y-1">
-                <span className="text-[10px] font-bold text-cyan-400 uppercase tracking-wider">Objectif du Jour</span>
-                <p className="text-xs font-semibold text-[var(--text-primary)]">
-                  {activeGame === "valorant"
-                    ? "Échauffement 10 min de tracking + patience sur les retakes de site."
-                    : "Maintenir 8.5 CS/min pendant les 15 premières minutes."}
-                </p>
-              </div>
             </div>
           </motion.div>
 
           <motion.div
             whileHover={{ y: -2 }}
-            className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/85 p-5 backdrop-blur-xl shadow-md flex flex-col justify-between space-y-3"
+            className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/85 p-5 backdrop-blur-xl shadow-md flex flex-col justify-between space-y-4"
           >
             <div>
               <div className="flex items-center gap-2 text-rose-400 mb-2">
-                <Swords className="h-4 w-4" />
-                <h4 className="text-xs font-bold uppercase tracking-wider">Hub Tracker Riot</h4>
+                <Share2 className="h-4 w-4" />
+                <h4 className="text-xs font-bold uppercase tracking-wider">Comparateur de Profils</h4>
               </div>
               <p className="text-sm font-bold text-[var(--text-primary)]">
-                Accéder au Tracker Compétitif Avancé
+                Comparer deux joueurs Riot Games
               </p>
               <p className="text-xs text-[var(--text-muted)] mt-1">
-                Historique complet, rounds par round, graphiques d'évolution MMR et comparateur social.
+                Confrontez vos rangs, ratios de victoires, K/D et scores de combat avec un coéquipier ou un rival.
               </p>
             </div>
-
-            <div className="space-y-2 pt-2">
-              <Link
-                href={`/tracker?tab=${activeGame}`}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 px-4 py-2.5 text-xs font-bold text-white shadow-md hover:from-rose-500 hover:to-red-500 active:scale-95 transition-all"
-              >
-                <span>Explorer {activeGame.toUpperCase()} dans le Tracker</span>
-                <ChevronRight className="h-3.5 w-3.5" />
-              </Link>
+            <div className="pt-2">
               <button
                 type="button"
                 onClick={() => setCompareModalOpen(true)}
-                className="flex w-full items-center justify-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-4 py-2 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
+                className="flex items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-4 py-2 text-xs font-semibold text-[var(--text-primary)] hover:border-rose-500/40 transition-colors cursor-pointer"
               >
-                <Share2 className="h-3.5 w-3.5" />
+                <Share2 className="h-3.5 w-3.5 text-rose-400" />
                 <span>Comparer avec un ami</span>
               </button>
             </div>
@@ -805,14 +725,6 @@ export default function RiotGamingHome() {
           }
           loadPlayerData(cleanName, cleanTag, activeGame);
         }}
-      />
-
-      <ValorantAiCoachModal
-        isOpen={aiCoachModalOpen}
-        onClose={() => setAiCoachModalOpen(false)}
-        profile={valorantProfile}
-        stats={valorantStats}
-        matches={valorantMatches}
       />
 
       <ValorantFriendCompareModal

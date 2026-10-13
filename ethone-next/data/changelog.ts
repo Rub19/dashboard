@@ -54603,9 +54603,57 @@ const v12899_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12899_fr, v12898_fr, v12897_fr, v12896_fr, v12895_fr, v12894_fr, v12893_fr, v12892_fr);
-CHANGELOG_BY_LANG.en.unshift(v12899_en, v12898_en, v12897_en, v12896_en, v12895_en, v12894_en, v12893_en, v12892_en);
-CHANGELOG_BY_LANG.es.unshift(v12899_es, v12898_es, v12897_es, v12896_es, v12895_es, v12894_es, v12893_es, v12892_es);
-CHANGELOG_BY_LANG.de.unshift(v12899_de, v12898_de, v12897_de, v12896_de, v12895_de, v12894_de, v12893_de, v12892_de);
+const v12900_fr: ChangelogEntry = {
+  version: "v1.75.58",
+  date: "2026-10-13",
+  title: "Tracker Riot : isolation complète de l'interface, retrait du Dock, TopBar, Dynamic Island et Bot",
+  items: [
+    "Isolation totale de la page /tracker avec shell dédié épuré sans dock latéral ou inférieur",
+    "Retrait de la Dynamic Island, de la TopBar globale, du Bot flottant et de la barre d'état sur le tracker",
+    "Nettoyage complet des composants non-Riot sur la page : suppression du lien ETHONE OS et du Coach IA",
+    "Conservation stricte du fonctionnement standard d'ETHONE OS sur toutes les autres pages du système",
+  ],
+};
+
+const v12900_en: ChangelogEntry = {
+  version: "v1.75.58",
+  date: "2026-10-13",
+  title: "Riot Tracker: full interface isolation, removal of Dock, TopBar, Dynamic Island and Bot",
+  items: [
+    "Complete isolation of the /tracker page with a clean dedicated shell without side or bottom docks",
+    "Removed Dynamic Island, global TopBar, floating Bot and status bar on the tracker route",
+    "Cleaned non-Riot elements from the page: eliminated ETHONE OS link and AI Coach features",
+    "Strict preservation of the standard ETHONE OS shell across all other system routes",
+  ],
+};
+
+const v12900_es: ChangelogEntry = {
+  version: "v1.75.58",
+  date: "2026-10-13",
+  title: "Tracker Riot: aislamiento total de interfaz, eliminación de Dock, TopBar, Dynamic Island y Bot",
+  items: [
+    "Aislamiento total de la página /tracker con shell dedicado limpio sin docks laterales ni inferiores",
+    "Eliminación de la Dynamic Island, TopBar global, Bot flotante y barra de estado en el tracker",
+    "Limpieza de elementos no relacionados con Riot en la página: eliminación del enlace ETHONE OS y Coach IA",
+    "Conservación estricta de la experiencia estándar de ETHONE OS en todas las demás páginas",
+  ],
+};
+
+const v12900_de: ChangelogEntry = {
+  version: "v1.75.58",
+  date: "2026-10-13",
+  title: "Riot Tracker: Vollständige Oberflächenisolation, Entfernung von Dock, TopBar, Dynamic Island und Bot",
+  items: [
+    "Vollständige Trennung der Seite /tracker mit dediziertem, sauberem Shell ohne seitliches oder unteres Dock",
+    "Entfernung der Dynamic Island, globalen TopBar, schwebenden Bots und Statusleiste auf der Tracker-Route",
+    "Bereinigung nicht-Riot-bezogener Elemente: Entfernung von ETHONE OS Links und KI-Coach",
+    "Strenge Beibehaltung des normalen ETHONE OS Verhaltens auf allen übrigen Systemseiten",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12900_fr, v12899_fr, v12898_fr, v12897_fr, v12896_fr, v12895_fr, v12894_fr, v12893_fr, v12892_fr);
+CHANGELOG_BY_LANG.en.unshift(v12900_en, v12899_en, v12898_en, v12897_en, v12896_en, v12895_en, v12894_en, v12893_en, v12892_en);
+CHANGELOG_BY_LANG.es.unshift(v12900_es, v12899_es, v12898_es, v12897_es, v12896_es, v12895_es, v12894_es, v12893_es, v12892_es);
+CHANGELOG_BY_LANG.de.unshift(v12900_de, v12899_de, v12898_de, v12897_de, v12896_de, v12895_de, v12894_de, v12893_de, v12892_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.58 — 2026-10-13
+
+**Tracker Riot : isolation complète de l'interface, retrait du Dock, TopBar, Dynamic Island et Bot**
+
+- Isolation totale de l'affichage sur `/tracker` via un layout dédié sans Dock latéral (Sidebar), sans Dock inférieur et sans barre d'état.
+- Retrait complet de la Dynamic Island, de la TopBar et du Bot flottant (LiveWidget) uniquement sur la page `/tracker`.
+- Épuration des éléments non liés à Riot Games dans le corps de page : suppression du lien ETHONE OS et du module Coach IA pour une expérience 100% Riot Games (Valorant, League of Legends, TFT).
+- Préservation absolue et intangible d'ETHONE OS sur toutes les autres routes du dashboard.
+
 ## v1.75.57 — 2026-10-13
 
 **Tracker Riot : mode 100% local, zéro log et mémorisation locale du Riot ID**

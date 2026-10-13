@@ -21,7 +21,7 @@ export type UploadTask = {
 };
 
 export function formatSpeed(bytesPerSecond: number): string {
-  if (!bytesPerSecond || !Number.isFinite(bytesPerSecond)) return "0 B/s";
+  if (!bytesPerSecond || !Number.isFinite(bytesPerSecond) || bytesPerSecond <= 0) return "0 B/s";
   const k = 1024;
   const sizes = ["B/s", "KB/s", "MB/s", "GB/s"];
   const i = Math.min(sizes.length - 1, Math.floor(Math.log(bytesPerSecond) / Math.log(k)));

@@ -2,6 +2,20 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.42 — 2026-10-13
+
+**Optimisation Mail Batch, Tests Crypto Worker et Suites de Tests d'Utilitaires**
+
+- **Parallélisation des opérations de messagerie (Worker Cloudflare)** : élimination des boucles séquentielles N+1 dans `mailMoveRoute`, `mailLabelsRoute` (PATCH) et `mailBulkRoute` au profit d'exécutions concurrentes via `Promise.all`.
+- **Parallélisation dans le hook `useMail`** : remplacement de la boucle séquentielle d'application de flags (`setFlags`) par `Promise.all` pour des mises à jour d'état instantanées.
+- **Couverture de tests unitaires cryptographiques du Worker** : création de `worker/test/crypto.test.mjs` validant exhaustivement `timingSafeEqual`, `stableDigest`, `base64UrlBytes`, `decodeJwtPart`, `base64Url` et `encodeJwtPart` (13/13 tests, 307 tests worker au vert).
+- **Suites de tests unitaires Next.js ajoutées et complétées** :
+  - `lib/format.test.ts` : validation du formateur de tailles `formatBytes` (octets, KB, MB, GB, valeurs négatives et non finies).
+  - `lib/date.test.ts` : validation des utilitaires d'expiration `isExpired` et `isExpiringSoon`.
+  - `lib/upload.test.ts` : validation de `formatSpeed`, `formatTimeLeft` et `fileExtension` avec sécurisation contre les vitesses négatives.
+  - `lib/rate-limiter.test.ts` : validation de `createRateLimiter` (limites, blocages, reset, destroy, bornes, horloge personnalisée) et `consumeAuthAttempt`.
+- **Nettoyage du Service Worker** : suppression du `console.log` résiduel lors de l'enregistrement de `sw.js`.
+
 ## v1.75.41 — 2026-10-13
 
 **Persistance de la Notification et de la Pastille de Mise à Jour au Rechargement (F5)**

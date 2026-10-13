@@ -373,9 +373,9 @@ export function useMail() {
   }
 
   async function setFlags(ids: string[], flags: { is_read?: boolean; is_starred?: boolean; is_important?: boolean }) {
-    for (const id of ids) {
-      await fetchWorker("/api/mail/read", { method: "POST", body: JSON.stringify({ id, ...flags }) });
-    }
+    await Promise.all(
+      ids.map((id) => fetchWorker("/api/mail/read", { method: "POST", body: JSON.stringify({ id, ...flags }) }))
+    );
     await fetchMessages();
   }
 

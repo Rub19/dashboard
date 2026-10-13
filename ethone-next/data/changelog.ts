@@ -53771,4 +53771,58 @@ CHANGELOG_BY_LANG.en.unshift(v12885_en);
 CHANGELOG_BY_LANG.es.unshift(v12885_es);
 CHANGELOG_BY_LANG.de.unshift(v12885_de);
 
+const v12886_fr: ChangelogEntry = {
+  version: "v1.75.42",
+  date: "2026-10-13",
+  title: "Optimisation mail batch, tests crypto worker et utilitaires",
+  items: [
+    "Parallélisation des opérations batch de messagerie dans le worker Cloudflare (déplacement, libellés, bulk) et dans le hook useMail.",
+    "Couverture complète des utilitaires cryptographiques worker (timingSafeEqual, stableDigest, encodage et décodage JWT, base64Url).",
+    "Suites de tests unitaires dédiées pour formatBytes, utilitaires de date/expiration, vitesse et temps restant d'upload, et rate limiter.",
+    "Suppression des logs résiduels lors de l'enregistrement du Service Worker.",
+  ],
+};
+
+const v12886_en: ChangelogEntry = {
+  version: "v1.75.42",
+  date: "2026-10-13",
+  title: "Batch Mail Optimization, Worker Crypto Tests and Utility Coverage",
+  items: [
+    "Parallelized mail batch operations in Cloudflare worker (move, labels, bulk) and in useMail hook.",
+    "Comprehensive test coverage for worker cryptographic utilities (timingSafeEqual, stableDigest, JWT encode/decode, base64Url).",
+    "Dedicated unit test suites for formatBytes, date/expiration helpers, upload speed & time calculations, and rate limiter.",
+    "Removed residual log statements during Service Worker registration.",
+  ],
+};
+
+const v12886_es: ChangelogEntry = {
+  version: "v1.75.42",
+  date: "2026-10-13",
+  title: "Optimizacion de correo por lotes, pruebas cripto y utilidades",
+  items: [
+    "Paralelizacion de operaciones por lotes de correo en Cloudflare worker (mover, etiquetas, bulk) y en el hook useMail.",
+    "Cobertura completa para utilidades criptograficas del worker (timingSafeEqual, stableDigest, codificacion JWT, base64Url).",
+    "Suites de pruebas unitarias para formatBytes, utilidades de fecha/expiracion, calculo de subida y limitador de velocidad.",
+    "Eliminacion de registros residuales en el registro del Service Worker.",
+  ],
+};
+
+const v12886_de: ChangelogEntry = {
+  version: "v1.75.42",
+  date: "2026-10-13",
+  title: "Batch-Mail-Optimierung, Worker-Krypto-Tests und Hilfsfunktionen",
+  items: [
+    "Parallelisierung von Mail-Batch-Operationen im Cloudflare Worker (Verschieben, Labels, Bulk) und im useMail Hook.",
+    "Vollstandige Testabdeckung fur kryptografische Worker-Hilfsprogramme (timingSafeEqual, stableDigest, JWT-Kodierung, base64Url).",
+    "Dedizierte Unit-Tests fur formatBytes, Datums-/Ablauf-Helfer, Upload-Berechnungen und Rate Limiter.",
+    "Entfernung verbleibender Protokolle bei der Service-Worker-Registrierung.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12886_fr);
+CHANGELOG_BY_LANG.en.unshift(v12886_en);
+CHANGELOG_BY_LANG.es.unshift(v12886_es);
+CHANGELOG_BY_LANG.de.unshift(v12886_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
+

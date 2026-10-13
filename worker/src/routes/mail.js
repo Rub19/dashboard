@@ -335,9 +335,9 @@ export async function mailMoveRoute({ request, env, auth }) {
   if (folder === "inbox" || folder === "archive" || folder === "spam") patch.deleted_at = null;
   if (folder === "spam") patch.is_spam = true;
 
-  for (const id of ids) {
-    await updateMailMessage(env, id, auth.userId, patch).catch(() => null);
-  }
+  await Promise.all(
+    ids.map((id) => updateMailMessage(env, id, auth.userId, patch).catch(() => null))
+  );
 
   return { data: { moved: ids.length } };
 }
@@ -386,17 +386,19 @@ export async function mailLabelsRoute({ request, env, auth }) {
   const remove = body.remove === true;
   if (!ids.length || !label) throw httpError("INVALID_PARAMETER", 400, { detail: "ids or label" });
 
-  for (const id of ids) {
-    const current = await supabaseRequest(env, `/rest/v1/ethone_mail_messages?id=eq.${encodeURIComponent(id)}&user_id=eq.${auth.userId}&select=labels`, {
-      method: "GET",
-      headers: { "Accept": "application/vnd.pgrst.object+json" },
-      maxBytes: 2048
-    }).then(firstRow);
-    const labels = new Set(Array.isArray(current?.labels) ? current.labels : []);
-    if (remove) labels.delete(label);
-    else labels.add(label);
-    await updateMailMessage(env, id, auth.userId, { labels: Array.from(labels) }).catch(() => null);
-  }
+  await Promise.all(
+    ids.map(async (id) => {
+      const current = await supabaseRequest(env, `/rest/v1/ethone_mail_messages?id=eq.${encodeURIComponent(id)}&user_id=eq.${auth.userId}&select=labels`, {
+        method: "GET",
+        headers: { "Accept": "application/vnd.pgrst.object+json" },
+        maxBytes: 2048
+      }).then(firstRow).catch(() => null);
+      const labels = new Set(Array.isArray(current?.labels) ? current.labels : []);
+      if (remove) labels.delete(label);
+      else labels.add(label);
+      await updateMailMessage(env, id, auth.userId, { labels: Array.from(labels) }).catch(() => null);
+    })
+  );
 
   return { data: { updated: ids.length } };
 }
@@ -870,34 +872,36 @@ export async function mailBulkActionRoute({ request, env, auth }) {
   const allowedActions = new Set(["move", "delete", "read", "unread", "star", "unstar", "important", "unimportant", "label", "unlabel"]);
   if (!allowedActions.has(action)) throw httpError("INVALID_PARAMETER", 400, { detail: "action" });
 
-  for (const id of ids) {
-    if (action === "move") {
-      const folder = allowedFolder(target);
-      const patch = { folder, is_spam: folder === "spam" };
-      if (folder === "trash") patch.deleted_at = new Date().toISOString();
-      else if (["inbox", "archive", "spam"].includes(folder)) patch.deleted_at = null;
-      await updateMailMessage(env, id, auth.userId, patch).catch(() => null);
-    } else if (action === "delete") {
-      await updateMailMessage(env, id, auth.userId, { folder: "trash", deleted_at: new Date().toISOString() }).catch(() => null);
-    } else if (action === "read" || action === "unread") {
-      await updateMailMessage(env, id, auth.userId, { is_read: action === "read" }).catch(() => null);
-    } else if (action === "star" || action === "unstar") {
-      await updateMailMessage(env, id, auth.userId, { is_starred: action === "star" }).catch(() => null);
-    } else if (action === "important" || action === "unimportant") {
-      await updateMailMessage(env, id, auth.userId, { is_important: action === "important" }).catch(() => null);
-    } else if (action === "label" || action === "unlabel") {
-      if (!target) continue;
-      const current = await supabaseRequest(env, `/rest/v1/ethone_mail_messages?id=eq.${encodeURIComponent(id)}&user_id=eq.${auth.userId}&select=labels`, {
-        method: "GET",
-        headers: { "Accept": "application/vnd.pgrst.object+json" },
-        maxBytes: 2048
-      }).then(firstRow).catch(() => null);
-      const labels = new Set(Array.isArray(current?.labels) ? current.labels : []);
-      if (action === "label") labels.add(target);
-      else labels.delete(target);
-      await updateMailMessage(env, id, auth.userId, { labels: Array.from(labels) }).catch(() => null);
-    }
-  }
+  await Promise.all(
+    ids.map(async (id) => {
+      if (action === "move") {
+        const folder = allowedFolder(target);
+        const patch = { folder, is_spam: folder === "spam" };
+        if (folder === "trash") patch.deleted_at = new Date().toISOString();
+        else if (["inbox", "archive", "spam"].includes(folder)) patch.deleted_at = null;
+        await updateMailMessage(env, id, auth.userId, patch).catch(() => null);
+      } else if (action === "delete") {
+        await updateMailMessage(env, id, auth.userId, { folder: "trash", deleted_at: new Date().toISOString() }).catch(() => null);
+      } else if (action === "read" || action === "unread") {
+        await updateMailMessage(env, id, auth.userId, { is_read: action === "read" }).catch(() => null);
+      } else if (action === "star" || action === "unstar") {
+        await updateMailMessage(env, id, auth.userId, { is_starred: action === "star" }).catch(() => null);
+      } else if (action === "important" || action === "unimportant") {
+        await updateMailMessage(env, id, auth.userId, { is_important: action === "important" }).catch(() => null);
+      } else if (action === "label" || action === "unlabel") {
+        if (!target) return;
+        const current = await supabaseRequest(env, `/rest/v1/ethone_mail_messages?id=eq.${encodeURIComponent(id)}&user_id=eq.${auth.userId}&select=labels`, {
+          method: "GET",
+          headers: { "Accept": "application/vnd.pgrst.object+json" },
+          maxBytes: 2048
+        }).then(firstRow).catch(() => null);
+        const labels = new Set(Array.isArray(current?.labels) ? current.labels : []);
+        if (action === "label") labels.add(target);
+        else labels.delete(target);
+        await updateMailMessage(env, id, auth.userId, { labels: Array.from(labels) }).catch(() => null);
+      }
+    })
+  );
 
   return { data: { updated: ids.length } };
 }

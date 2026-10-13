@@ -1,9 +1,9 @@
-function base64Url(value) {
+export function base64Url(value) {
   const base64 = btoa(value).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
   return base64;
 }
 
-function encodeJwtPart(part) {
+export function encodeJwtPart(part) {
   return base64Url(JSON.stringify(part));
 }
 

@@ -1,12 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Pause, Play, Search, SkipBack, SkipForward, Square, Trash2 } from "@/components/icons/ph";
+import { Music, Pause, Play, Search, SkipBack, SkipForward, Square, Trash2 } from "@/components/icons/ph";
 import ChannelPicker from "../../ChannelPicker";
 import { SPRING_LAYOUT } from "@/lib/ease";
 import { pageStagger } from "@/lib/motion-variants";
 import { ConsolePage, EmptyLine, GhostButton, Panel, RoleChips, Row, Segmented, StatTile, Stepper, Switch, useGuildApi } from "../kit";
+import { cn } from "@/lib/utils";
 
 type Track = { id: string; title: string; artist: string; duration: number; thumbnail: string; url: string; requestedBy?: { tag: string } };
 type State = {
@@ -88,6 +89,13 @@ export default function ConsoleMusic({ guildId }: { guildId: string }) {
   };
 
   const t = state?.currentTrack;
+  const [thumbError, setThumbError] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setThumbError(false);
+  }, [t?.id, t?.thumbnail]);
+
   const playing = state?.status === "PLAYING";
   const btn = "flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--panel-border)] text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-hover)] disabled:opacity-40";
 
@@ -95,11 +103,39 @@ export default function ConsoleMusic({ guildId }: { guildId: string }) {
     <ConsolePage title="Musique">
       <Panel title="Lecteur" subtitle={state?.voiceChannel ? `Connecté à ${state.voiceChannel.name}` : "Etho n'est dans aucun salon vocal."}>
         <div className="flex flex-wrap items-center gap-4 px-5 py-4">
-          {t?.thumbnail ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={t.thumbnail} alt="" width={64} height={64} className="h-16 w-16 shrink-0 rounded-lg object-cover" />
+          {t?.thumbnail && !thumbError ? (
+            <img
+              src={t.thumbnail}
+              alt={t.title || "Pochette"}
+              width={64}
+              height={64}
+              onError={() => setThumbError(true)}
+              className="h-16 w-16 shrink-0 rounded-xl object-cover border border-[var(--panel-border)] shadow-sm"
+            />
           ) : (
-            <span className="h-16 w-16 shrink-0 rounded-lg bg-[var(--surface-hover)]" />
+            <div
+              role={t ? undefined : "button"}
+              tabIndex={t ? undefined : 0}
+              onClick={t ? undefined : () => searchInputRef.current?.focus()}
+              onKeyDown={t ? undefined : (e) => e.key === "Enter" && searchInputRef.current?.focus()}
+              title={t ? undefined : "Cliquer pour chercher un titre"}
+              className={cn(
+                "relative flex h-16 w-16 shrink-0 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] shadow-inner overflow-hidden transition-all",
+                !t && "cursor-pointer hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-hover)] active:scale-95"
+              )}
+            >
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,var(--surface-hover)_0%,transparent_70%)] pointer-events-none" />
+              <div
+                className={cn(
+                  "relative flex h-11 w-11 items-center justify-center rounded-full border border-[var(--panel-border)]/80 bg-[var(--bg-main)]/70 shadow-sm",
+                  playing && "animate-[spin_6s_linear_infinite]"
+                )}
+              >
+                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-[var(--surface-hover)]/90 border border-[var(--panel-border)]/40">
+                  <Music className={cn("h-2.5 w-2.5", playing ? "text-[var(--accent-primary)]" : "text-[var(--text-muted)]")} />
+                </div>
+              </div>
+            </div>
           )}
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-semibold text-[var(--text-primary)]">{t ? t.title : "Rien en cours"}</p>
@@ -186,7 +222,7 @@ export default function ConsoleMusic({ guildId }: { guildId: string }) {
         <div className="flex flex-wrap items-center gap-2 px-5 py-4">
           <label className="flex h-9 min-w-0 flex-1 items-center gap-2 rounded-lg border border-[var(--panel-border)] px-3 focus-within:border-[var(--accent-primary)]/70">
             <Search className="h-4 w-4 shrink-0 text-[var(--text-muted)]" />
-            <input value={query} onChange={(e) => setQuery(e.target.value)} onKeyDown={(e) => e.key === "Enter" && search()} placeholder="Titre, artiste ou lien" aria-label="Titre à lancer" className="w-full bg-transparent text-sm text-[var(--text-primary)] outline-none" />
+            <input ref={searchInputRef} value={query} onChange={(e) => setQuery(e.target.value)} onKeyDown={(e) => e.key === "Enter" && search()} placeholder="Titre, artiste ou lien" aria-label="Titre à lancer" className="w-full bg-transparent text-sm text-[var(--text-primary)] outline-none" />
           </label>
           <GhostButton onClick={search} disabled={!query.trim() || searching}>
             {searching ? "Recherche…" : "Chercher"}
@@ -229,8 +265,13 @@ export default function ConsoleMusic({ guildId }: { guildId: string }) {
               ) : (
                 results.map((r) => (
                   <li key={r.id} className="flex items-center gap-3 border-t border-[var(--panel-border)] px-5 py-2 first:border-t-0">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={r.thumbnail} alt="" width={36} height={36} className="h-9 w-9 shrink-0 rounded object-cover" />
+                    {r.thumbnail ? (
+                      <img src={r.thumbnail} alt="" width={36} height={36} className="h-9 w-9 shrink-0 rounded-lg object-cover border border-[var(--panel-border)]" />
+                    ) : (
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[var(--panel-border)] bg-[var(--surface-hover)] text-[var(--text-muted)]">
+                        <Music className="h-4 w-4" />
+                      </div>
+                    )}
                     <span className="min-w-0 flex-1">
                       <span className="block truncate text-[13px] text-[var(--text-primary)]">{r.title}</span>
                       <span className="block truncate text-[11px] text-[var(--text-muted)]">

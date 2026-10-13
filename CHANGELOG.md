@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.32 — 2026-10-13
+
+**Lecteur Musique : Remplacement du Carré Vide par un Disque Vinyle Stylisé**
+
+- Remplacement du carré vide par un visuel de disque vinyle soigné avec macaron central et note musicale.
+- Animation de rotation du vinyle pendant la lecture et état apaisant au repos lorsque aucun titre n'est lancé.
+- Interaction directe : clic sur le visuel pour focaliser instantanément la recherche de titre, et gestion robuste des erreurs de pochette.
+
 ## v1.75.31 — 2026-10-13
 
 **Mode Streamer & Pastille Violette Bot Discord**

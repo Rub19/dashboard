@@ -53269,4 +53269,53 @@ CHANGELOG_BY_LANG.en.unshift(v12875_en);
 CHANGELOG_BY_LANG.es.unshift(v12875_es);
 CHANGELOG_BY_LANG.de.unshift(v12875_de);
 
+const v12876_fr: ChangelogEntry = {
+  version: "v1.75.32",
+  date: "2026-10-13",
+  title: "Lecteur Musique : Remplacement du Carré Vide par un Disque Vinyle Stylisé",
+  items: [
+    "Remplacement du carré vide par un visuel de disque vinyle soigné avec macaron central et note musicale.",
+    "Animation de rotation du vinyle pendant la lecture et état apaisant au repos lorsque aucun titre n'est lancé.",
+    "Interaction directe : clic sur le visuel pour focaliser instantanément la recherche de titre, et gestion robuste des erreurs de pochette.",
+  ],
+};
+
+const v12876_en: ChangelogEntry = {
+  version: "v1.75.32",
+  date: "2026-10-13",
+  title: "Music Player: Stylized Vinyl Disc Placeholder",
+  items: [
+    "Replaced blank square with a polished vinyl record artwork featuring center label and music icon.",
+    "Smooth spinning vinyl animation during playback and resting calm state when no song is playing.",
+    "Click-to-focus on search input and resilient thumbnail error fallbacks.",
+  ],
+};
+
+const v12876_es: ChangelogEntry = {
+  version: "v1.75.32",
+  date: "2026-10-13",
+  title: "Reproductor de Música: Disco de Vinilo Estilizado",
+  items: [
+    "Sustituido el cuadrado vacío por un elegante disco de vinilo con etiqueta central e icono musical.",
+    "Animación de giro durante la reproducción y estado sereno de reposo sin canciones activas.",
+    "Interacción directa para buscar canciones al hacer clic y gestión de errores de portada.",
+  ],
+};
+
+const v12876_de: ChangelogEntry = {
+  version: "v1.75.32",
+  date: "2026-10-13",
+  title: "Musik-Player: Stilisierte Vinyl-Schallplatte",
+  items: [
+    "Leeres Quadrat durch ein elegantes Vinyl-Schallplatten-Design mit Musiksymbol ersetzt.",
+    "Drehende Vinyl-Animation bei Wiedergabe und ruhiger Zustand im Leerlauf.",
+    "Klick zum Fokussieren der Suche und robuste Cover-Fehlerbehandlung.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12876_fr);
+CHANGELOG_BY_LANG.en.unshift(v12876_en);
+CHANGELOG_BY_LANG.es.unshift(v12876_es);
+CHANGELOG_BY_LANG.de.unshift(v12876_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

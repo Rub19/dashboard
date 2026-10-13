@@ -1,4 +1,4 @@
-# ETHONE — passation & nouveautés (2026-10-13, version 1.75.31)
+# ETHONE — passation & nouveautés (2026-10-13, version 1.75.32)
 
 ## Projet
 - `ethone-next/` : site Next.js statique (ethone.dev, Cloudflare Pages, déploiement auto au push sur `main`).
@@ -25,9 +25,14 @@
 
 ---
 
-## Nouveautés majeures & Réalisations récentes (v1.73.0 → v1.75.31)
+## Nouveautés majeures & Réalisations récentes (v1.73.0 → v1.75.32)
 
-### 0. Mode Streamer & Pastille Violette Bot Discord (v1.75.31)
+### 0. Lecteur Musique : Remplacement du Carré Vide par un Vinyle Stylisé (v1.75.32)
+- **Design Vinyle Apaisant** : Remplacement du bloc noir/carré vide stressant par un visuel de disque vinyle soigné avec jaquette, sillons et macaron central orné d'une note de musique (`Music`).
+- **Animation de Rotation Réactive** : Rotation fluide à 360° du disque vinyle (`animate-[spin_6s_linear_infinite]`) lorsque de la musique est en cours de lecture, et repos élégant et statique à l'état inactif (« Rien en cours »).
+- **Interaction et Robustesse** : Clic direct sur le visuel pour focaliser immédiatement le champ de recherche de titre (`searchInputRef`), et gestion d'erreur `onError` avec repli élégant pour toute miniature manquante ou corrompue dans le lecteur et la liste de résultats.
+
+### 1. Mode Streamer & Pastille Violette Bot Discord (v1.75.31)
 - **Sélecteur de statut visible étendu** : Ajout du 5e statut « Mode Streamer » dans la section « 1. Statut Visible sur Discord » avec pastille violette (`bg-purple-500`) et icône de lecture en direct.
 - **Synchronisation automatique de l'activité** : Le choix du Mode Streamer active automatiquement l'activité de type `Streaming`, charge l'URL de live Twitch par défaut (`https://www.twitch.tv/ethone`) et met à jour l'aperçu du profil du bot (pastille violette avec triangle de diffusion).
 - **Compatibilité Gateway & Bot** : Gestion transparente dans `PresenceService` (mappage sur la Gateway Discord avec `ActivityType.Streaming`), support dans la commande `/status` avec choix « 🟣 Mode Streamer » et statut dans le panneau d'administration.

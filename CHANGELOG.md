@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.47 — 2026-10-13
+
+**Tracker Valorant : Refonte visuelle des cartes et badges d'éditions**
+
+- Cartes d'armes et de boutique : conteneurs strictement délimités pour éliminer tout débordement d'image sur les cartes adjacentes.
+- Badges officiels d'éditions : intégration des icônes et teintes authentiques Valorant (Select, Deluxe, Premium, Exclusive, Ultra).
+- Design et rétroéclairage : ajout d'un rétroéclairage ambiant subtil assorti à la rareté de l'arme, préservant l'interface sombre obsidian d'Ethone.
+- Inventaire complet : harmonisation des cartes d'armes débloquées avec le système d'éditions et animations Framer Motion soignées.
+
 ## v1.75.46 — 2026-10-13
 
 **Connexion Officielle Riot Games (OAuth / RSO) et Support Comptes Sociaux**

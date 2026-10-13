@@ -54056,4 +54056,57 @@ CHANGELOG_BY_LANG.en.unshift(v12888_en);
 CHANGELOG_BY_LANG.es.unshift(v12888_es);
 CHANGELOG_BY_LANG.de.unshift(v12888_de);
 
+const v12889_fr: ChangelogEntry = {
+  version: "v1.75.47",
+  date: "2026-10-13",
+  title: "Tracker Valorant : Refonte visuelle des cartes et badges d'éditions",
+  items: [
+    "Cartes d'armes et de boutique : conteneurs strictement délimités pour éliminer tout débordement d'image sur les cartes adjacentes.",
+    "Badges officiels d'éditions : intégration des icônes et teintes authentiques Valorant (Select, Deluxe, Premium, Exclusive, Ultra).",
+    "Design et rétroéclairage : ajout d'un rétroéclairage ambiant subtil assorti à la rareté de l'arme, préservant l'interface sombre obsidian d'Ethone.",
+    "Inventaire complet : harmonisation des cartes d'armes débloquées avec le système d'éditions et animations Framer Motion soignées.",
+  ],
+};
+
+const v12889_en: ChangelogEntry = {
+  version: "v1.75.47",
+  date: "2026-10-13",
+  title: "Valorant Tracker: Visual Card Redesign and Edition Badges",
+  items: [
+    "Store & weapon cards: strictly constrained containers to eliminate any weapon artwork spilling over adjacent cards.",
+    "Official Edition Tier badges: authentic Valorant tier icons and styling (Select, Deluxe, Premium, Exclusive, Ultra).",
+    "Ambient tier backlighting: subtle weapon-edition backlight glow matching rarity while preserving Ethone's dark obsidian surface.",
+    "Weapons inventory: polished owned skin cards matching the Edition Tier system with smooth Framer Motion interactions.",
+  ],
+};
+
+const v12889_es: ChangelogEntry = {
+  version: "v1.75.47",
+  date: "2026-10-13",
+  title: "Tracker Valorant: Rediseño visual de tarjetas y emblemas de edición",
+  items: [
+    "Tarjetas de armas y tienda: contenedores estrictamente delimitados para evitar cualquier desbordamiento de imagen.",
+    "Emblemas oficiales de edición: iconos y colores auténticos de Valorant (Select, Deluxe, Premium, Exclusive, Ultra).",
+    "Retroiluminación ambiental por nivel: resplandor sutil según la rareza conservando el tema oscuro obsidian de Ethone.",
+    "Inventario de armas: armonización de las tarjetas de aspectos con el sistema de ediciones y animaciones fluidas.",
+  ],
+};
+
+const v12889_de: ChangelogEntry = {
+  version: "v1.75.47",
+  date: "2026-10-13",
+  title: "Valorant Tracker: Karten-Redesign und offizielle Editions-Abzeichen",
+  items: [
+    "Shop- und Waffenkarten: exakt begrenzte Behälter zur Beseitigung jeglicher Bildüberläufe auf benachbarte Karten.",
+    "Offizielle Editions-Abzeichen: authentische Valorant-Stufen-Symbole und Farben (Select, Deluxe, Premium, Exclusive, Ultra).",
+    "Subtiles Editions-Hintergrundleuchten: sanfter Glanz passend zur Seltenheitsstufe unter Beibehaltung des dunklen Ethone-Obsidian-Designs.",
+    "Waffeninventar: polierte Skin-Karten abgestimmt auf das Editionssystem mit flüssigen Framer-Motion-Animationen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12889_fr);
+CHANGELOG_BY_LANG.en.unshift(v12889_en);
+CHANGELOG_BY_LANG.es.unshift(v12889_es);
+CHANGELOG_BY_LANG.de.unshift(v12889_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

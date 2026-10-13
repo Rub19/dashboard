@@ -9,6 +9,7 @@ import RiotGamesLogo from "@/components/icons/RiotGamesLogo";
 import GoogleIcon from "@/components/icons/GoogleIcon";
 import ClientImage from "@/components/ClientImage";
 import {
+  ChevronRight,
   CircleCheck,
   ClipboardPaste,
   Clock,
@@ -44,6 +45,8 @@ type SkinItem = {
   displayIcon: string;
   category?: string;
   tier?: string;
+  tierIcon?: string;
+  tierColor?: string;
 };
 
 type BuddyItem = {
@@ -65,6 +68,9 @@ type DailyOfferItem = {
   image: string;
   price: number;
   weaponType?: string;
+  tier?: string;
+  tierIcon?: string;
+  tierColor?: string;
 };
 
 type NightMarketItem = {
@@ -74,7 +80,62 @@ type NightMarketItem = {
   originalPrice: number;
   discountPrice: number;
   discountPercent: number;
+  weaponType?: string;
+  tier?: string;
+  tierIcon?: string;
+  tierColor?: string;
 };
+
+type ValorantTierInfo = {
+  name: string;
+  color: string;
+  icon: string;
+};
+
+const VALORANT_TIERS: Record<string, ValorantTierInfo> = {
+  select: {
+    name: "Select",
+    color: "#5A9FE2",
+    icon: "https://media.valorant-api.com/contenttiers/12683d76-48d7-84a3-4e09-6985794f0445/displayicon.png",
+  },
+  deluxe: {
+    name: "Deluxe",
+    color: "#00D6BA",
+    icon: "https://media.valorant-api.com/contenttiers/0cebb8be-46d7-c12a-d306-e9907bfc5a25/displayicon.png",
+  },
+  premium: {
+    name: "Premium",
+    color: "#FF4655",
+    icon: "https://media.valorant-api.com/contenttiers/60bca009-4182-7998-dee7-b8a2558dc369/displayicon.png",
+  },
+  exclusive: {
+    name: "Exclusive",
+    color: "#F59E0B",
+    icon: "https://media.valorant-api.com/contenttiers/e046854e-406c-37f4-6607-19a9ba8426fc/displayicon.png",
+  },
+  ultra: {
+    name: "Ultra",
+    color: "#EBC837",
+    icon: "https://media.valorant-api.com/contenttiers/411e4a55-4e59-7757-41f0-86a53f101bb5/displayicon.png",
+  },
+};
+
+function getTierFromPriceOrName(price: number, name = ""): ValorantTierInfo {
+  const lower = name.toLowerCase();
+  if (lower.includes("kuronami") || lower.includes("araxys") || lower.includes("rgx") || lower.includes("chronovoid") || price >= 2175 || price === 4350) {
+    return VALORANT_TIERS.exclusive;
+  }
+  if (lower.includes("elderflame") || lower.includes("protocoll") || price >= 2475) {
+    return VALORANT_TIERS.ultra;
+  }
+  if (lower.includes("prime") || lower.includes("reaver") || lower.includes("sovereign") || lower.includes("ion") || lower.includes("forsaken") || lower.includes("magepunk") || price >= 1775) {
+    return VALORANT_TIERS.premium;
+  }
+  if (lower.includes("gelée") || lower.includes("terres") || lower.includes("luxe") || price >= 1275) {
+    return VALORANT_TIERS.deluxe;
+  }
+  return VALORANT_TIERS.select;
+}
 
 const SHARDS = [
   { id: "eu", label: "Europe (EU)" },
@@ -101,6 +162,9 @@ const DEMO_DAILY_OFFERS: DailyOfferItem[] = [
     image: "https://media.valorant-api.com/weaponskins/d8d5d7a1-4d81-8560-54bc-0692ab40f69b/displayicon.png",
     price: 2375,
     weaponType: "Vandal",
+    tier: "Exclusive",
+    tierColor: "#F59E0B",
+    tierIcon: "https://media.valorant-api.com/contenttiers/e046854e-406c-37f4-6607-19a9ba8426fc/displayicon.png",
   },
   {
     uuid: "b73d7b16-4652-bc5b-5c4c-068aabb19d0a",
@@ -108,6 +172,9 @@ const DEMO_DAILY_OFFERS: DailyOfferItem[] = [
     image: "https://media.valorant-api.com/weaponskins/b73d7b16-4652-bc5b-5c4c-068aabb19d0a/displayicon.png",
     price: 4350,
     weaponType: "Mêlée (Couteaux)",
+    tier: "Exclusive",
+    tierColor: "#F59E0B",
+    tierIcon: "https://media.valorant-api.com/contenttiers/e046854e-406c-37f4-6607-19a9ba8426fc/displayicon.png",
   },
   {
     uuid: "44b7b110-46bf-ccbb-2613-29a5df296461",
@@ -115,6 +182,9 @@ const DEMO_DAILY_OFFERS: DailyOfferItem[] = [
     image: "https://media.valorant-api.com/weaponskins/44b7b110-46bf-ccbb-2613-29a5df296461/displayicon.png",
     price: 1775,
     weaponType: "Phantom",
+    tier: "Premium",
+    tierColor: "#FF4655",
+    tierIcon: "https://media.valorant-api.com/contenttiers/60bca009-4182-7998-dee7-b8a2558dc369/displayicon.png",
   },
   {
     uuid: "83778c03-45a3-67a2-3c89-6b8598327d58",
@@ -122,6 +192,9 @@ const DEMO_DAILY_OFFERS: DailyOfferItem[] = [
     image: "https://media.valorant-api.com/weaponskins/83778c03-45a3-67a2-3c89-6b8598327d58/displayicon.png",
     price: 1775,
     weaponType: "Sheriff",
+    tier: "Premium",
+    tierColor: "#FF4655",
+    tierIcon: "https://media.valorant-api.com/contenttiers/60bca009-4182-7998-dee7-b8a2558dc369/displayicon.png",
   },
 ];
 
@@ -172,6 +245,10 @@ const DEMO_NIGHT_MARKET: NightMarketItem[] = [
     originalPrice: 1775,
     discountPrice: 1150,
     discountPercent: 35,
+    weaponType: "Vandal",
+    tier: "Premium",
+    tierColor: "#FF4655",
+    tierIcon: "https://media.valorant-api.com/contenttiers/60bca009-4182-7998-dee7-b8a2558dc369/displayicon.png",
   },
   {
     uuid: "2e77ac95-4681-3d87-bbdc-93a50ff6b1f6",
@@ -180,6 +257,10 @@ const DEMO_NIGHT_MARKET: NightMarketItem[] = [
     originalPrice: 3550,
     discountPrice: 2130,
     discountPercent: 40,
+    weaponType: "Mêlée (Couteaux)",
+    tier: "Premium",
+    tierColor: "#FF4655",
+    tierIcon: "https://media.valorant-api.com/contenttiers/60bca009-4182-7998-dee7-b8a2558dc369/displayicon.png",
   },
   {
     uuid: "a3f8e1b3-4654-f3ea-15ba-9eb9fd6a0b0d",
@@ -188,6 +269,10 @@ const DEMO_NIGHT_MARKET: NightMarketItem[] = [
     originalPrice: 1775,
     discountPrice: 1242,
     discountPercent: 30,
+    weaponType: "Spectre",
+    tier: "Premium",
+    tierColor: "#FF4655",
+    tierIcon: "https://media.valorant-api.com/contenttiers/60bca009-4182-7998-dee7-b8a2558dc369/displayicon.png",
   },
   {
     uuid: "c612138e-4007-6d0c-64ad-3690c65ee4a7",
@@ -196,6 +281,10 @@ const DEMO_NIGHT_MARKET: NightMarketItem[] = [
     originalPrice: 1775,
     discountPrice: 1065,
     discountPercent: 40,
+    weaponType: "Classic",
+    tier: "Premium",
+    tierColor: "#FF4655",
+    tierIcon: "https://media.valorant-api.com/contenttiers/60bca009-4182-7998-dee7-b8a2558dc369/displayicon.png",
   },
   {
     uuid: "83778c03-45a3-67a2-3c89-6b8598327d58",
@@ -204,6 +293,10 @@ const DEMO_NIGHT_MARKET: NightMarketItem[] = [
     originalPrice: 1775,
     discountPrice: 1242,
     discountPercent: 30,
+    weaponType: "Sheriff",
+    tier: "Premium",
+    tierColor: "#FF4655",
+    tierIcon: "https://media.valorant-api.com/contenttiers/60bca009-4182-7998-dee7-b8a2558dc369/displayicon.png",
   },
   {
     uuid: "a9890917-41ea-eb55-47e7-ee990a87fa4e",
@@ -212,6 +305,10 @@ const DEMO_NIGHT_MARKET: NightMarketItem[] = [
     originalPrice: 1775,
     discountPrice: 1150,
     discountPercent: 35,
+    weaponType: "Ghost",
+    tier: "Premium",
+    tierColor: "#FF4655",
+    tierIcon: "https://media.valorant-api.com/contenttiers/60bca009-4182-7998-dee7-b8a2558dc369/displayicon.png",
   },
 ];
 
@@ -372,11 +469,17 @@ export default function ValorantInventoryView() {
         if (Array.isArray(sData.dailyOffers)) {
           const mappedOffers: DailyOfferItem[] = sData.dailyOffers.map((uuid: string) => {
             const hit = skinCatalog.get(uuid?.toLowerCase());
+            const name = hit?.name || "Skin Valorant";
+            const tier = getTierFromPriceOrName(1775, name);
             return {
               uuid,
-              name: hit?.name || "Skin Valorant",
+              name,
               image: hit?.icon || "",
               price: 1775,
+              weaponType: "Skin",
+              tier: tier.name,
+              tierColor: tier.color,
+              tierIcon: tier.icon,
             };
           });
           setDailyOffers(mappedOffers);
@@ -384,13 +487,19 @@ export default function ValorantInventoryView() {
         if (Array.isArray(sData.nightMarketOffers)) {
           const mappedNight: NightMarketItem[] = sData.nightMarketOffers.map((o: { skinUuid: string; originalCost: number; discountCost: number; discountPercent: number }) => {
             const hit = skinCatalog.get(o.skinUuid?.toLowerCase());
+            const name = hit?.name || "Skin Marché Nocturne";
+            const tier = getTierFromPriceOrName(o.originalCost, name);
             return {
               uuid: o.skinUuid,
-              name: hit?.name || "Skin Marché Nocturne",
+              name,
               image: hit?.icon || "",
               originalPrice: o.originalCost,
               discountPrice: o.discountCost,
               discountPercent: o.discountPercent,
+              weaponType: "Skin",
+              tier: tier.name,
+              tierColor: tier.color,
+              tierIcon: tier.icon,
             };
           });
           setNightMarket(mappedNight);
@@ -403,10 +512,15 @@ export default function ValorantInventoryView() {
         if (Array.isArray(invData.guns)) {
           const mappedSkins: SkinItem[] = invData.guns.map((g: { skinUuid: string }) => {
             const hit = skinCatalog.get(g.skinUuid?.toLowerCase());
+            const name = hit?.name || "Arme";
+            const tier = getTierFromPriceOrName(0, name);
             return {
               uuid: g.skinUuid,
-              displayName: hit?.name || "Arme",
+              displayName: name,
               displayIcon: hit?.icon || "",
+              tier: tier.name,
+              tierColor: tier.color,
+              tierIcon: tier.icon,
             };
           });
           setOwnedSkins(mappedSkins);
@@ -623,6 +737,8 @@ export default function ValorantInventoryView() {
         displayIcon: "https://media.valorant-api.com/weaponskins/d8d5d7a1-4d81-8560-54bc-0692ab40f69b/displayicon.png",
         category: "Vandal",
         tier: "Exclusive",
+        tierColor: "#F59E0B",
+        tierIcon: "https://media.valorant-api.com/contenttiers/e046854e-406c-37f4-6607-19a9ba8426fc/displayicon.png",
       },
       {
         uuid: "s2",
@@ -630,13 +746,17 @@ export default function ValorantInventoryView() {
         displayIcon: "https://media.valorant-api.com/weaponskins/44b7b110-46bf-ccbb-2613-29a5df296461/displayicon.png",
         category: "Phantom",
         tier: "Premium",
+        tierColor: "#FF4655",
+        tierIcon: "https://media.valorant-api.com/contenttiers/60bca009-4182-7998-dee7-b8a2558dc369/displayicon.png",
       },
       {
         uuid: "s3",
         displayName: "Reaver Karambit",
         displayIcon: "https://media.valorant-api.com/weaponskins/b73d7b16-4652-bc5b-5c4c-068aabb19d0a/displayicon.png",
         category: "Mêlée (Couteaux)",
-        tier: "Premium",
+        tier: "Exclusive",
+        tierColor: "#F59E0B",
+        tierIcon: "https://media.valorant-api.com/contenttiers/e046854e-406c-37f4-6607-19a9ba8426fc/displayicon.png",
       },
       {
         uuid: "s4",
@@ -644,6 +764,8 @@ export default function ValorantInventoryView() {
         displayIcon: "https://media.valorant-api.com/weaponskins/83778c03-45a3-67a2-3c89-6b8598327d58/displayicon.png",
         category: "Sheriff",
         tier: "Premium",
+        tierColor: "#FF4655",
+        tierIcon: "https://media.valorant-api.com/contenttiers/60bca009-4182-7998-dee7-b8a2558dc369/displayicon.png",
       },
       {
         uuid: "s5",
@@ -651,6 +773,8 @@ export default function ValorantInventoryView() {
         displayIcon: "https://media.valorant-api.com/weaponskins/a9890917-41ea-eb55-47e7-ee990a87fa4e/displayicon.png",
         category: "Ghost",
         tier: "Premium",
+        tierColor: "#FF4655",
+        tierIcon: "https://media.valorant-api.com/contenttiers/60bca009-4182-7998-dee7-b8a2558dc369/displayicon.png",
       },
       {
         uuid: "s6",
@@ -658,6 +782,8 @@ export default function ValorantInventoryView() {
         displayIcon: "https://media.valorant-api.com/weaponskins/6db556e4-4255-6c2c-6a80-8a9dfac96aa9/displayicon.png",
         category: "Operator",
         tier: "Exclusive",
+        tierColor: "#F59E0B",
+        tierIcon: "https://media.valorant-api.com/contenttiers/e046854e-406c-37f4-6607-19a9ba8426fc/displayicon.png",
       },
     ]);
     setLoginModalOpen(false);
@@ -892,42 +1018,96 @@ export default function ValorantInventoryView() {
                   </div>
 
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                    {dailyOffers.map((item, index) => (
-                      <motion.article
-                        key={`${item.uuid}-${index}`}
-                        initial={{ opacity: 0, y: 14 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.32, delay: index * 0.05, ease: EASE_SNAP }}
-                        whileHover={{ y: -4, transition: { duration: 0.18 } }}
-                        className="group relative flex flex-col overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 transition-all hover:border-[#EB0029]/40 hover:shadow-2xl hover:shadow-[#EB0029]/10"
-                      >
-                        <div className="relative flex aspect-[16/10] w-full items-center justify-center overflow-hidden rounded-xl bg-gradient-to-b from-[var(--text-primary)]/[0.04] to-black/25 p-3">
-                          <ClientImage
-                            candidates={[item.image]}
-                            alt={item.name}
-                            className="max-h-full max-w-full object-contain drop-shadow-[0_8px_16px_rgba(0,0,0,0.6)] transition-transform duration-300 group-hover:scale-110"
-                            fallback={<Sparkles className="h-8 w-8 text-[var(--text-muted)]" />}
-                          />
-                        </div>
-                        <div className="mt-3 flex flex-1 flex-col justify-between">
-                          <div>
-                            <p className="text-sm font-bold text-[var(--text-primary)]">{item.name}</p>
-                            <p className="text-[11px] font-medium text-[var(--text-muted)]">
-                              {item.weaponType || "Skin arme"}
-                            </p>
+                    {dailyOffers.map((item, index) => {
+                      const tier = item.tierColor
+                        ? {
+                            name: item.tier || "Édition",
+                            color: item.tierColor,
+                            icon: item.tierIcon || "",
+                          }
+                        : getTierFromPriceOrName(item.price, item.name);
+
+                      return (
+                        <motion.article
+                          key={`${item.uuid}-${index}`}
+                          initial={{ opacity: 0, y: 14 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.32, delay: index * 0.05, ease: EASE_SNAP }}
+                          whileHover={{ y: -4, transition: { duration: 0.18 } }}
+                          className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 transition-all hover:border-[var(--text-primary)]/20 hover:shadow-2xl hover:shadow-black/40"
+                        >
+                          <div className="flex items-center justify-between pb-2">
+                            <div className="flex items-center gap-1.5">
+                              {tier.icon ? (
+                                <img
+                                  src={tier.icon}
+                                  alt={tier.name}
+                                  className="h-4 w-4 object-contain filter drop-shadow-sm"
+                                />
+                              ) : null}
+                              <span
+                                className="rounded-md border px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider"
+                                style={{
+                                  color: tier.color,
+                                  borderColor: `${tier.color}35`,
+                                  backgroundColor: `${tier.color}12`,
+                                }}
+                              >
+                                {tier.name}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <span className="text-[11px] font-semibold text-[var(--text-muted)]">
+                                {item.weaponType || "Arme"}
+                              </span>
+                              <ChevronRight
+                                className="h-3.5 w-3.5 opacity-60 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:opacity-100"
+                                style={{ color: tier.color }}
+                              />
+                            </div>
                           </div>
-                          <div className="mt-4 flex items-center justify-between border-t border-[var(--text-primary)]/[0.06] pt-2.5">
-                            <span className="flex items-center gap-1 font-mono text-sm font-bold text-amber-300">
-                              <Coins className="h-3.5 w-3.5 text-amber-400" />
-                              {item.price.toLocaleString("fr-FR")} VP
-                            </span>
-                            <span className="rounded-lg bg-[var(--text-primary)]/[0.06] px-2 py-0.5 text-[10px] font-bold text-[var(--text-muted)]">
-                              Offre du jour
-                            </span>
+
+                          <div className="relative flex h-36 sm:h-44 w-full items-center justify-center overflow-hidden rounded-xl bg-gradient-to-b from-[var(--text-primary)]/[0.03] to-black/35 p-3">
+                            <div
+                              className="pointer-events-none absolute inset-0 opacity-25 blur-xl transition-opacity duration-300 group-hover:opacity-45"
+                              style={{
+                                background: `radial-gradient(circle at center, ${tier.color}45 0%, transparent 70%)`,
+                              }}
+                            />
+                            <img
+                              src={item.image}
+                              alt={item.name}
+                              className="relative z-10 max-h-full max-w-full object-contain filter drop-shadow-[0_10px_20px_rgba(0,0,0,0.85)] transition-transform duration-300 group-hover:scale-105 select-none pointer-events-none"
+                              loading="lazy"
+                            />
                           </div>
-                        </div>
-                      </motion.article>
-                    ))}
+
+                          <div className="mt-3 flex flex-1 flex-col justify-between">
+                            <div>
+                              <h3 className="truncate text-sm font-bold text-[var(--text-primary)] transition-colors group-hover:text-white" title={item.name}>
+                                {item.name}
+                              </h3>
+                              <p className="mt-0.5 text-[11px] font-medium text-[var(--text-muted)]">
+                                {item.weaponType ? `Skin pour ${item.weaponType}` : "Édition Valorant"}
+                              </p>
+                            </div>
+                            <div className="mt-3.5 flex items-center justify-between border-t border-[var(--text-primary)]/[0.08] pt-2.5">
+                              <div className="flex items-center gap-1.5">
+                                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-amber-500/15 text-amber-400">
+                                  <Coins className="h-3.5 w-3.5" />
+                                </div>
+                                <span className="font-mono text-sm font-extrabold text-amber-300">
+                                  {item.price.toLocaleString("fr-FR")} <span className="text-xs font-semibold text-amber-400/80">VP</span>
+                                </span>
+                              </div>
+                              <span className="rounded-lg border border-[var(--panel-border)] bg-[var(--surface-bg)]/80 px-2.5 py-1 text-[10px] font-bold text-[var(--text-secondary)]">
+                                Offre du jour
+                              </span>
+                            </div>
+                          </div>
+                        </motion.article>
+                      );
+                    })}
                   </div>
                 </section>
 
@@ -943,37 +1123,76 @@ export default function ValorantInventoryView() {
                       </Badge>
                     </div>
                     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-                      {nightMarket.map((item, idx) => (
-                        <motion.div
-                          key={idx}
-                          initial={{ opacity: 0, y: 12 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.3, delay: idx * 0.04, ease: EASE_SNAP }}
-                          whileHover={{ y: -3, transition: { duration: 0.18 } }}
-                          className="group flex flex-col justify-between rounded-xl border border-indigo-500/20 bg-indigo-950/30 p-3 transition hover:border-indigo-400/40 hover:shadow-lg"
-                        >
-                          <div className="relative flex aspect-[16/10] w-full items-center justify-center rounded-lg bg-black/25 p-2">
-                            <ClientImage
-                              candidates={[item.image]}
-                              alt={item.name}
-                              className="max-h-full max-w-full object-contain transition group-hover:scale-105"
-                              fallback={<Sparkles className="h-6 w-6 text-indigo-400/50" />}
-                            />
-                          </div>
-                          <div className="mt-2.5">
-                            <p className="truncate text-xs font-bold text-[var(--text-primary)]" title={item.name}>
-                              {item.name}
-                            </p>
-                            <div className="mt-1 flex items-center justify-between text-[11px]">
-                              <span className="font-mono text-indigo-300 font-bold">{item.discountPrice} VP</span>
-                              <span className="text-[10px] text-[var(--text-muted)] line-through">{item.originalPrice}</span>
+                      {nightMarket.map((item, idx) => {
+                        const tier = item.tierColor
+                          ? {
+                              name: item.tier || "Édition",
+                              color: item.tierColor,
+                              icon: item.tierIcon || "",
+                            }
+                          : getTierFromPriceOrName(item.originalPrice, item.name);
+
+                        return (
+                          <motion.article
+                            key={`${item.uuid}-${idx}`}
+                            initial={{ opacity: 0, y: 12 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.3, delay: idx * 0.04, ease: EASE_SNAP }}
+                            whileHover={{ y: -3, transition: { duration: 0.18 } }}
+                            className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 transition-all hover:border-indigo-400/40 hover:shadow-xl hover:shadow-indigo-950/30"
+                          >
+                            <div className="flex items-center justify-between pb-1.5">
+                              <div className="flex items-center gap-1">
+                                {tier.icon && (
+                                  <img
+                                    src={tier.icon}
+                                    alt={tier.name}
+                                    className="h-3.5 w-3.5 object-contain"
+                                  />
+                                )}
+                                <span
+                                  className="text-[9px] font-bold uppercase tracking-wide"
+                                  style={{ color: tier.color }}
+                                >
+                                  {tier.name}
+                                </span>
+                              </div>
+                              <span className="rounded-md border border-emerald-500/35 bg-emerald-500/15 px-1.5 py-0.5 font-mono text-[10px] font-black text-emerald-400">
+                                -{item.discountPercent}%
+                              </span>
                             </div>
-                            <Badge variant="success" size="sm" className="mt-2 w-full justify-center">
-                              -{item.discountPercent}%
-                            </Badge>
-                          </div>
-                        </motion.div>
-                      ))}
+
+                            <div className="relative flex h-28 sm:h-32 w-full items-center justify-center overflow-hidden rounded-xl bg-gradient-to-b from-white/[0.02] to-black/35 p-2">
+                              <div
+                                className="pointer-events-none absolute inset-0 opacity-25 blur-lg transition-opacity duration-300 group-hover:opacity-40"
+                                style={{
+                                  background: `radial-gradient(circle at center, ${tier.color}35 0%, transparent 70%)`,
+                                }}
+                              />
+                              <img
+                                src={item.image}
+                                alt={item.name}
+                                className="relative z-10 max-h-full max-w-full object-contain filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.85)] transition-transform duration-300 group-hover:scale-105 select-none pointer-events-none"
+                                loading="lazy"
+                              />
+                            </div>
+
+                            <div className="mt-2.5">
+                              <p className="truncate text-xs font-bold text-[var(--text-primary)] transition-colors group-hover:text-white" title={item.name}>
+                                {item.name}
+                              </p>
+                              <div className="mt-1 flex items-center justify-between border-t border-[var(--text-primary)]/[0.06] pt-1.5 text-xs">
+                                <span className="font-mono font-bold text-emerald-400">
+                                  {item.discountPrice.toLocaleString("fr-FR")} VP
+                                </span>
+                                <span className="font-mono text-[10px] text-[var(--text-muted)] line-through">
+                                  {item.originalPrice.toLocaleString("fr-FR")}
+                                </span>
+                              </div>
+                            </div>
+                          </motion.article>
+                        );
+                      })}
                     </div>
                   </section>
                 )}
@@ -1014,38 +1233,76 @@ export default function ValorantInventoryView() {
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
-                    {filteredSkins.map((skin, idx) => (
-                      <motion.div
-                        key={skin.uuid}
-                        initial={{ opacity: 0, y: 12 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.28, delay: Math.min(idx * 0.03, 0.3), ease: EASE_SNAP }}
-                        whileHover={{ y: -3, transition: { duration: 0.18 } }}
-                        className="group flex flex-col overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3.5 transition hover:border-[var(--accent-primary)]/40 hover:shadow-lg"
-                      >
-                        <div className="flex aspect-[16/10] w-full items-center justify-center rounded-xl bg-black/25 p-2.5">
-                          <ClientImage
-                            candidates={[skin.displayIcon]}
-                            alt={skin.displayName}
-                            className="max-h-full max-w-full object-contain transition group-hover:scale-105"
-                            fallback={<Sparkles className="h-6 w-6 text-[var(--text-muted)]" />}
-                          />
-                        </div>
-                        <div className="mt-3">
-                          <p className="truncate text-xs font-bold text-[var(--text-primary)]" title={skin.displayName}>
-                            {skin.displayName}
-                          </p>
-                          <div className="mt-1 flex items-center justify-between">
-                            <span className="text-[10px] text-[var(--text-muted)]">{skin.category}</span>
-                            {skin.tier && (
-                              <span className="rounded bg-[#EB0029]/15 px-1.5 py-0.5 text-[9px] font-bold text-rose-300">
-                                {skin.tier}
+                    {filteredSkins.map((skin, idx) => {
+                      const tier = skin.tierColor
+                        ? {
+                            name: skin.tier || "Édition",
+                            color: skin.tierColor,
+                            icon: skin.tierIcon || "",
+                          }
+                        : getTierFromPriceOrName(0, skin.displayName);
+
+                      return (
+                        <motion.article
+                          key={skin.uuid}
+                          initial={{ opacity: 0, y: 12 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.28, delay: Math.min(idx * 0.03, 0.3), ease: EASE_SNAP }}
+                          whileHover={{ y: -3, transition: { duration: 0.18 } }}
+                          className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3.5 transition-all hover:border-[var(--accent-primary)]/40 hover:shadow-xl hover:shadow-black/40"
+                        >
+                          <div className="flex items-center justify-between pb-2">
+                            <div className="flex items-center gap-1.5">
+                              {tier.icon && (
+                                <img
+                                  src={tier.icon}
+                                  alt={tier.name}
+                                  className="h-3.5 w-3.5 object-contain"
+                                />
+                              )}
+                              <span
+                                className="text-[10px] font-bold uppercase tracking-wider"
+                                style={{ color: tier.color }}
+                              >
+                                {skin.tier || tier.name}
                               </span>
+                            </div>
+                            <span className="text-[10px] font-semibold text-[var(--text-muted)]">
+                              {skin.category || "Arme"}
+                            </span>
+                          </div>
+
+                          <div className="relative flex h-32 sm:h-36 w-full items-center justify-center overflow-hidden rounded-xl bg-gradient-to-b from-[var(--text-primary)]/[0.03] to-black/35 p-2.5">
+                            <div
+                              className="pointer-events-none absolute inset-0 opacity-25 blur-lg transition-opacity duration-300 group-hover:opacity-45"
+                              style={{
+                                background: `radial-gradient(circle at center, ${tier.color}40 0%, transparent 70%)`,
+                              }}
+                            />
+                            {skin.displayIcon ? (
+                              <img
+                                src={skin.displayIcon}
+                                alt={skin.displayName}
+                                className="relative z-10 max-h-full max-w-full object-contain filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.85)] transition-transform duration-300 group-hover:scale-105 select-none pointer-events-none"
+                                loading="lazy"
+                              />
+                            ) : (
+                              <Sparkles className="h-6 w-6 text-[var(--text-muted)]" />
                             )}
                           </div>
-                        </div>
-                      </motion.div>
-                    ))}
+
+                          <div className="mt-2.5">
+                            <p className="truncate text-xs font-bold text-[var(--text-primary)] transition-colors group-hover:text-white" title={skin.displayName}>
+                              {skin.displayName}
+                            </p>
+                            <div className="mt-1 flex items-center justify-between text-[11px] text-[var(--text-muted)]">
+                              <span className="text-[10px]">Débloqué</span>
+                              <span className="font-mono text-[10px] font-bold text-emerald-400">Possédé</span>
+                            </div>
+                          </div>
+                        </motion.article>
+                      );
+                    })}
                   </div>
                 )}
               </motion.div>
@@ -1075,7 +1332,7 @@ export default function ValorantInventoryView() {
                         whileHover={{ y: -3, transition: { duration: 0.18 } }}
                         className="group flex flex-col items-center rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 text-center transition hover:border-[var(--accent-primary)]/40 hover:shadow-md"
                       >
-                        <div className="flex aspect-square w-full items-center justify-center rounded-xl bg-black/20 p-3">
+                        <div className="flex aspect-square w-full items-center justify-center overflow-hidden rounded-xl bg-black/20 p-3">
                           <ClientImage
                             candidates={[buddy.displayIcon]}
                             alt={buddy.displayName}

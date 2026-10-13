@@ -1,4 +1,4 @@
-# ETHONE — passation & nouveautés (2026-10-13, version 1.75.32)
+# ETHONE — passation & nouveautés (2026-10-13, version 1.75.33)
 
 ## Projet
 - `ethone-next/` : site Next.js statique (ethone.dev, Cloudflare Pages, déploiement auto au push sur `main`).
@@ -25,9 +25,15 @@
 
 ---
 
-## Nouveautés majeures & Réalisations récentes (v1.73.0 → v1.75.32)
+## Nouveautés majeures & Réalisations récentes (v1.73.0 → v1.75.33)
 
-### 0. Lecteur Musique : Remplacement du Carré Vide par un Vinyle Stylisé (v1.75.32)
+### 0. Économie : Pièce Officielle Etho, Sélecteur de Devises & Import Personnalisé (v1.75.33)
+- **Pièce Custom Officielle Etho (Défaut)** : Création d'une pièce dorée vectorielle avec frappe haute définition du sceau Etho, reflets métalliques, tranche cannelée et fond chaud, configurée comme monnaie native par défaut sur tout le dashboard et le bot.
+- **Sélecteur de Devises Interactif** : Panneau de choix complet permettant aux administrateurs de choisir entre la pièce Etho, 12 presets d'emojis populaires (pièce, diamant, bourse, étoile, cookie, éclair, couronne, trèfle, flamme, etc.) et une saisie libre d'emojis ou codes Discord personnalisés (`<:nom:id>`).
+- **Importation de Fichier Personnalisé & URL** : Zone de glisser-déposer et sélecteur de fichier acceptant les images transparentes (PNG, SVG, WebP, JPG) et les URL directes, avec aperçu en temps réel aux côtés d'un solde et bouton de restauration en 1 clic de la pièce Etho officielle.
+- **Rendu Visuel Unifié** : Composant `CoinBadge` dynamique affichant la pièce active sur tous les soldes, classements, compteurs de volume et circulation, prix de la boutique et parties de casino.
+
+### 1. Lecteur Musique : Remplacement du Carré Vide par un Vinyle Stylisé (v1.75.32)
 - **Design Vinyle Apaisant** : Remplacement du bloc noir/carré vide stressant par un visuel de disque vinyle soigné avec jaquette, sillons et macaron central orné d'une note de musique (`Music`).
 - **Animation de Rotation Réactive** : Rotation fluide à 360° du disque vinyle (`animate-[spin_6s_linear_infinite]`) lorsque de la musique est en cours de lecture, et repos élégant et statique à l'état inactif (« Rien en cours »).
 - **Interaction et Robustesse** : Clic direct sur le visuel pour focaliser immédiatement le champ de recherche de titre (`searchInputRef`), et gestion d'erreur `onError` avec repli élégant pour toute miniature manquante ou corrompue dans le lecteur et la liste de résultats.

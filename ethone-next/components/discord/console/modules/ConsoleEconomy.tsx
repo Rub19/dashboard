@@ -1,8 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Trash2 } from "@/components/icons/ph";
+import { Check, Sparkles, Trash2, Upload } from "@/components/icons/ph";
+import EthoCoin from "@/components/icons/EthoCoin";
 import { sinceLabel } from "@/lib/discord/security-scan";
 import { SPRING_LAYOUT } from "@/lib/ease";
 import { pageStagger } from "@/lib/motion-variants";
@@ -14,6 +15,7 @@ type EcoConfig = {
   enabled: boolean;
   currencyName: string;
   currencySymbol: string;
+  currencyCustomIconUrl?: string | null;
   startingBalance: number;
   dailyAmountMin: number;
   dailyAmountMax: number;
@@ -46,6 +48,60 @@ type Wallet = { userId: string; username: string; avatarUrl: string | null; bala
 type Tx = { id: string; userId: string; type: string; amount: number; createdAt: string; note: string | null };
 type Activity = { transactions24h: number; volume24h: number; totalCirculating: number };
 
+const POPULAR_COINS = [
+  { symbol: "🪙", label: "Pièce d'or" },
+  { symbol: "🟡", label: "Jeton doré" },
+  { symbol: "💎", label: "Diamant" },
+  { symbol: "💰", label: "Bourse" },
+  { symbol: "⭐", label: "Étoile" },
+  { symbol: "🍪", label: "Cookie" },
+  { symbol: "⚡", label: "Éclair" },
+  { symbol: "👑", label: "Couronne" },
+  { symbol: "🍀", label: "Trèfle" },
+  { symbol: "🔥", label: "Flamme" },
+  { symbol: "🎮", label: "Gaming" },
+  { symbol: "⚔️", label: "Combat" },
+];
+
+const isEthoCoin = (sym?: string, url?: string | null) => {
+  return (!url && (!sym || sym === "🪙" || sym === "etho")) || url === "etho";
+};
+
+export function CoinBadge({
+  sym,
+  iconUrl,
+  size = 16,
+  className,
+}: {
+  sym?: string;
+  iconUrl?: string | null;
+  size?: number;
+  className?: string;
+}) {
+  const [imgErr, setImgErr] = useState(false);
+  useEffect(() => {
+    setImgErr(false);
+  }, [iconUrl]);
+
+  if (iconUrl && iconUrl !== "etho" && !imgErr) {
+    return (
+      <img
+        src={iconUrl}
+        alt=""
+        width={size}
+        height={size}
+        onError={() => setImgErr(true)}
+        className={cn("inline-block shrink-0 rounded-full object-cover align-middle border border-[var(--panel-border)]/60 shadow-xs", className)}
+        style={{ width: size, height: size }}
+      />
+    );
+  }
+  if (isEthoCoin(sym, iconUrl)) {
+    return <EthoCoin size={size} className={cn("inline-block shrink-0 align-middle", className)} />;
+  }
+  return <span className={cn("inline-block font-normal align-middle leading-none", className)}>{sym || "🪙"}</span>;
+}
+
 const TX_LABEL: Record<string, string> = {
   daily: "Bonus quotidien",
   passive: "Gain par message",
@@ -61,11 +117,11 @@ const TX_LABEL: Record<string, string> = {
   admin: "Ajustement",
 };
 const fmt = (n: number) => n.toLocaleString("fr-FR");
-const Amount = ({ n, sym }: { n: number; sym: string }) => (
-  <>
-    {fmt(n)}
-    <span className="ml-1.5 text-sm font-medium text-[var(--text-muted)]">{sym}</span>
-  </>
+const Amount = ({ n, sym, iconUrl }: { n: number; sym: string; iconUrl?: string | null }) => (
+  <span className="inline-flex items-center gap-1.5">
+    <span>{fmt(n)}</span>
+    <CoinBadge sym={sym} iconUrl={iconUrl} size={18} />
+  </span>
 );
 
 /** Économie (format Keeper) : monnaie, gains, paris et vols, boutique de rôles, classement et mouvements. */
@@ -76,7 +132,10 @@ export default function ConsoleEconomy({ guildId }: { guildId: string }) {
   const [top, setTop] = useState<Wallet[] | null>(null);
   const [txs, setTxs] = useState<Tx[] | null>(null);
   const [activity, setActivity] = useState<Activity | null>(null);
-  const { success: toastSuccess } = useToast();
+  const { success: toastSuccess, error: toastError } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [customUrlInput, setCustomUrlInput] = useState("");
+  const [coinTab, setCoinTab] = useState<"etho" | "emoji" | "custom">("etho");
   const [adjustingUser, setAdjustingUser] = useState<Wallet | null>(null);
   const [manualUserId, setManualUserId] = useState("");
   const [adjustAmount, setAdjustAmount] = useState(100);
@@ -84,6 +143,61 @@ export default function ConsoleEconomy({ guildId }: { guildId: string }) {
   const [adjustNote, setAdjustNote] = useState("");
   const [adjustBusy, setAdjustBusy] = useState(false);
   const [showManualInput, setShowManualInput] = useState(false);
+
+  useEffect(() => {
+    if (!cfg) return;
+    if (cfg.currencyCustomIconUrl && cfg.currencyCustomIconUrl !== "etho") {
+      setCoinTab("custom");
+    } else if (cfg.currencySymbol && cfg.currencySymbol !== "🪙" && cfg.currencySymbol !== "etho") {
+      setCoinTab("emoji");
+    } else {
+      setCoinTab("etho");
+    }
+  }, [cfg?.currencyCustomIconUrl, cfg?.currencySymbol]);
+
+  const handleSelectEtho = () => {
+    setCoinTab("etho");
+    void save({ currencySymbol: "🪙", currencyCustomIconUrl: null });
+    toastSuccess("Économie", "Pièce officielle Etho activée.");
+  };
+
+  const handleSelectEmoji = (emoji: string) => {
+    setCoinTab("emoji");
+    void save({ currencySymbol: emoji, currencyCustomIconUrl: null });
+    toastSuccess("Économie", `Pièce mise à jour : ${emoji}`);
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toastError("Économie", "Le fichier doit être une image valide (PNG, SVG, WebP, JPG).");
+      return;
+    }
+    if (file.size > 1024 * 1024) {
+      toastError("Économie", "L'image ne doit pas dépasser 1 Mo.");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const dataUrl = ev.target?.result as string;
+      if (dataUrl) {
+        setCoinTab("custom");
+        void save({ currencyCustomIconUrl: dataUrl });
+        toastSuccess("Économie", "Pièce personnalisée importée avec succès !");
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleApplyCustomUrl = () => {
+    const trimmed = customUrlInput.trim();
+    if (!trimmed) return;
+    setCoinTab("custom");
+    void save({ currencyCustomIconUrl: trimmed });
+    setCustomUrlInput("");
+    toastSuccess("Économie", "URL de la pièce personnalisée enregistrée.");
+  };
 
   const handleAdjust = async (targetUser: { userId: string; username?: string }) => {
     if (!targetUser.userId || adjustAmount <= 0) return;
@@ -156,21 +270,233 @@ export default function ConsoleEconomy({ guildId }: { guildId: string }) {
       )}
 
       <motion.div variants={pageStagger} className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatTile label="En circulation" value={activity ? <Amount n={activity.totalCirculating} sym={sym} /> : "—"} hint="Somme de tous les soldes" />
-        <StatTile label="Volume 24 h" value={activity ? <Amount n={activity.volume24h} sym={sym} /> : "—"} hint={activity ? `${activity.transactions24h} mouvement${activity.transactions24h > 1 ? "s" : ""}` : undefined} />
-        <StatTile label="Plus gros solde" value={top?.[0] ? <Amount n={top[0].balance} sym={sym} /> : "—"} hint={top?.[0]?.username} />
+        <StatTile label="En circulation" value={activity ? <Amount n={activity.totalCirculating} sym={sym} iconUrl={cfg.currencyCustomIconUrl} /> : "—"} hint="Somme de tous les soldes" />
+        <StatTile label="Volume 24 h" value={activity ? <Amount n={activity.volume24h} sym={sym} iconUrl={cfg.currencyCustomIconUrl} /> : "—"} hint={activity ? `${activity.transactions24h} mouvement${activity.transactions24h > 1 ? "s" : ""}` : undefined} />
+        <StatTile label="Plus gros solde" value={top?.[0] ? <Amount n={top[0].balance} sym={sym} iconUrl={cfg.currencyCustomIconUrl} /> : "—"} hint={top?.[0]?.username} />
         <StatTile label="Boutique" value={shop.length} hint={`article${shop.length > 1 ? "s" : ""} en vente`} />
       </motion.div>
 
-      <Panel title="Monnaie">
-        <Row label="Nom">
+      <Panel title="Monnaie" subtitle="Configuration de la devise, choix de la pièce et règles d'émission.">
+        <Row label="Nom de la monnaie" hint="Le nom complet affiché dans les commandes et soldes.">
           <TextField value={cfg.currencyName} maxLength={32} onCommit={(v) => save({ currencyName: v })} />
         </Row>
-        <Row label="Symbole" hint="Un emoji ou quelques caractères.">
-          <TextField value={cfg.currencySymbol} maxLength={8} width="w-24" onCommit={(v) => save({ currencySymbol: v })} />
+
+        <Row label="Pièce du serveur" hint="Choisis la pièce officielle Etho, un emoji populaire ou importe un fichier personnalisé.">
+          <div className="w-full space-y-3">
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setCoinTab("etho")}
+                className={cn(
+                  "flex items-center gap-2 rounded-lg border px-3 py-1.5 text-xs font-medium transition-all",
+                  coinTab === "etho"
+                    ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/15 text-[var(--text-primary)] shadow-xs"
+                    : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                )}
+              >
+                <EthoCoin size={16} />
+                <span>Pièce Etho (Défaut)</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setCoinTab("emoji")}
+                className={cn(
+                  "flex items-center gap-2 rounded-lg border px-3 py-1.5 text-xs font-medium transition-all",
+                  coinTab === "emoji"
+                    ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/15 text-[var(--text-primary)] shadow-xs"
+                    : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                )}
+              >
+                <Sparkles className="h-4 w-4" />
+                <span>Emojis & Symboles</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setCoinTab("custom")}
+                className={cn(
+                  "flex items-center gap-2 rounded-lg border px-3 py-1.5 text-xs font-medium transition-all",
+                  coinTab === "custom"
+                    ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/15 text-[var(--text-primary)] shadow-xs"
+                    : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                )}
+              >
+                <Upload className="h-4 w-4" />
+                <span>Importer un fichier / URL</span>
+              </button>
+            </div>
+
+            {coinTab === "etho" && (
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-4">
+                <div className="flex items-center gap-4">
+                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-amber-500/30 bg-gradient-to-br from-amber-500/10 to-amber-950/20 shadow-inner">
+                    <EthoCoin size={36} />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-semibold text-[var(--text-primary)]">Pièce Officielle Etho</p>
+                      <span className="rounded-full bg-amber-500/15 border border-amber-500/30 px-2 py-0.5 text-[10px] font-semibold text-amber-400">
+                        Par défaut
+                      </span>
+                    </div>
+                    <p className="mt-1 text-xs text-[var(--text-muted)]">
+                      Pièce métallique dorée frappée du monogramme Etho avec reflets et sillons gravés.
+                    </p>
+                    <div className="mt-2 flex items-center gap-2 font-mono text-xs text-[var(--text-primary)]">
+                      <span className="text-[var(--text-muted)]">Aperçu en direct :</span>
+                      <span className="font-semibold text-amber-400">1 500</span>
+                      <EthoCoin size={16} />
+                    </div>
+                  </div>
+                </div>
+                {isEthoCoin(cfg.currencySymbol, cfg.currencyCustomIconUrl) ? (
+                  <div className="flex items-center gap-1.5 rounded-lg border border-[var(--success)]/30 bg-[var(--success)]/10 px-3 py-1.5 text-xs font-medium text-[var(--success)] self-start sm:self-auto">
+                    <Check className="h-3.5 w-3.5" />
+                    <span>Active</span>
+                  </div>
+                ) : (
+                  <div className="self-start sm:self-auto">
+                    <GhostButton onClick={handleSelectEtho}>
+                      Activer la pièce Etho
+                    </GhostButton>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {coinTab === "emoji" && (
+              <div className="space-y-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-4">
+                <div>
+                  <p className="text-xs font-semibold text-[var(--text-primary)]">Pièces et devises populaires</p>
+                  <p className="text-[11px] text-[var(--text-muted)]">Clique sur une pièce pour l&apos;appliquer instantanément.</p>
+                </div>
+                <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                  {POPULAR_COINS.map((c) => {
+                    const isSelected = !cfg.currencyCustomIconUrl && cfg.currencySymbol === c.symbol;
+                    return (
+                      <button
+                        key={c.symbol}
+                        type="button"
+                        onClick={() => handleSelectEmoji(c.symbol)}
+                        className={cn(
+                          "flex items-center justify-center gap-1.5 rounded-lg border py-2 px-2 text-xs transition-all",
+                          isSelected
+                            ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/20 font-semibold text-[var(--text-primary)]"
+                            : "border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] text-[var(--text-muted)] hover:border-[var(--accent-primary)]/40 hover:text-[var(--text-primary)]"
+                        )}
+                      >
+                        <span className="text-base">{c.symbol}</span>
+                        <span className="truncate text-[11px]">{c.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+                <div className="pt-2 border-t border-[var(--panel-border)]">
+                  <p className="text-xs font-semibold text-[var(--text-primary)] mb-1.5">Emoji ou code personnalisé</p>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <input
+                      type="text"
+                      value={cfg.currencySymbol}
+                      maxLength={32}
+                      onChange={(e) => save({ currencySymbol: e.target.value, currencyCustomIconUrl: null })}
+                      placeholder="Ex: 💎, 🍪, <:monnaie:123> ou ETH"
+                      className="h-9 w-48 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-3 text-xs text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/70"
+                    />
+                    <div className="flex items-center gap-2 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-hover)] px-3 py-1.5 font-mono text-xs">
+                      <span className="text-[var(--text-muted)]">Aperçu :</span>
+                      <span className="font-semibold text-[var(--text-primary)]">1 500 {cfg.currencySymbol}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {coinTab === "custom" && (
+              <div className="space-y-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-4">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                  onChange={handleFileUpload}
+                  className="hidden"
+                />
+
+                <div
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => fileInputRef.current?.click()}
+                  onKeyDown={(e) => e.key === "Enter" && fileInputRef.current?.click()}
+                  className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] p-5 text-center transition-colors hover:border-[var(--accent-primary)]/60 cursor-pointer"
+                >
+                  <Upload className="h-6 w-6 text-[var(--text-muted)] mb-2" />
+                  <p className="text-xs font-semibold text-[var(--text-primary)]">
+                    Glisse une image ici ou clique pour parcourir
+                  </p>
+                  <p className="mt-1 text-[11px] text-[var(--text-muted)]">
+                    PNG, SVG, WebP ou JPG (recommandé : transparent, ratio 1:1, max 1 Mo)
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2">
+                  <input
+                    type="url"
+                    value={customUrlInput}
+                    onChange={(e) => setCustomUrlInput(e.target.value)}
+                    placeholder="Ou colle une URL directe (https://.../coin.png)"
+                    className="h-9 min-w-0 flex-1 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-3 text-xs text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/70"
+                  />
+                  <GhostButton onClick={handleApplyCustomUrl} disabled={!customUrlInput.trim()}>
+                    Appliquer l&apos;URL
+                  </GhostButton>
+                </div>
+
+                {cfg.currencyCustomIconUrl && cfg.currencyCustomIconUrl !== "etho" && (
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-hover)]/60 p-3">
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={cfg.currencyCustomIconUrl}
+                        alt="Pièce personnalisée"
+                        width={36}
+                        height={36}
+                        className="h-9 w-9 rounded-full object-cover border border-[var(--panel-border)] shadow-xs"
+                      />
+                      <div>
+                        <p className="text-xs font-semibold text-[var(--text-primary)]">Pièce personnalisée active</p>
+                        <div className="flex items-center gap-1.5 font-mono text-xs text-[var(--text-muted)] mt-0.5">
+                          <span>Aperçu :</span>
+                          <span className="font-semibold text-[var(--text-primary)]">1 500</span>
+                          <img
+                            src={cfg.currencyCustomIconUrl}
+                            alt=""
+                            width={16}
+                            height={16}
+                            className="inline-block h-4 w-4 rounded-full object-cover"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="self-start sm:self-auto">
+                      <GhostButton onClick={handleSelectEtho}>
+                        Rétablir la pièce Etho
+                      </GhostButton>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </Row>
+
         <Row label="Solde de départ" hint="Donné à chaque nouveau membre.">
-          <Stepper value={cfg.startingBalance} min={0} max={100000} step={10} unit={sym} onCommit={(n) => save({ startingBalance: n })} />
+          <Stepper
+            value={cfg.startingBalance}
+            min={0}
+            max={100000}
+            step={10}
+            unit={<CoinBadge sym={sym} iconUrl={cfg.currencyCustomIconUrl} size={14} />}
+            onCommit={(n) => save({ startingBalance: n })}
+          />
         </Row>
         <Row label="Virements entre membres" hint="Commande /pay.">
           <Switch checked={cfg.transfersEnabled} onChange={(v) => save({ transfersEnabled: v })} label="Virements entre membres" />
@@ -179,16 +505,37 @@ export default function ConsoleEconomy({ guildId }: { guildId: string }) {
 
       <Panel title="Bonus quotidien" subtitle="Commande /daily.">
         <Row label="Montant">
-          <Range min={cfg.dailyAmountMin} max={cfg.dailyAmountMax} limit={100000} unit={sym} onMin={(n) => save({ dailyAmountMin: n })} onMax={(n) => save({ dailyAmountMax: n })} />
+          <Range
+            min={cfg.dailyAmountMin}
+            max={cfg.dailyAmountMax}
+            limit={100000}
+            unit={<CoinBadge sym={sym} iconUrl={cfg.currencyCustomIconUrl} size={14} />}
+            onMin={(n) => save({ dailyAmountMin: n })}
+            onMax={(n) => save({ dailyAmountMax: n })}
+          />
         </Row>
         <Row label="Délai">
           <Stepper value={cfg.dailyCooldownHours} min={1} max={72} unit="h" onCommit={(n) => save({ dailyCooldownHours: n })} />
         </Row>
         <Row label="Bonus de série" hint="Ajouté par jour consécutif, jusqu'au plafond.">
           <div className="flex flex-wrap items-center gap-3">
-            <Stepper value={cfg.dailyStreakBonus} min={0} max={10000} step={5} unit={`${sym} / jour`} onCommit={(n) => save({ dailyStreakBonus: n })} />
+            <Stepper
+              value={cfg.dailyStreakBonus}
+              min={0}
+              max={10000}
+              step={5}
+              unit={<span className="inline-flex items-center gap-1"><CoinBadge sym={sym} iconUrl={cfg.currencyCustomIconUrl} size={14} /> / jour</span>}
+              onCommit={(n) => save({ dailyStreakBonus: n })}
+            />
             <span className="text-xs text-[var(--text-muted)]">plafond</span>
-            <Stepper value={cfg.dailyStreakMaxBonus} min={0} max={100000} step={10} unit={sym} onCommit={(n) => save({ dailyStreakMaxBonus: n })} />
+            <Stepper
+              value={cfg.dailyStreakMaxBonus}
+              min={0}
+              max={100000}
+              step={10}
+              unit={<CoinBadge sym={sym} iconUrl={cfg.currencyCustomIconUrl} size={14} />}
+              onCommit={(n) => save({ dailyStreakMaxBonus: n })}
+            />
           </div>
         </Row>
       </Panel>
@@ -199,7 +546,7 @@ export default function ConsoleEconomy({ guildId }: { guildId: string }) {
         </Row>
         <Collapse open={cfg.passiveEarnEnabled}>
           <Row label="Montant par message">
-            <Range min={cfg.passiveEarnMin} max={cfg.passiveEarnMax} limit={1000} unit={sym} onMin={(n) => save({ passiveEarnMin: n })} onMax={(n) => save({ passiveEarnMax: n })} />
+            <Range min={cfg.passiveEarnMin} max={cfg.passiveEarnMax} limit={1000} unit={<CoinBadge sym={sym} iconUrl={cfg.currencyCustomIconUrl} size={14} />} onMin={(n) => save({ passiveEarnMin: n })} onMax={(n) => save({ passiveEarnMax: n })} />
           </Row>
           <Row label="Délai entre deux gains">
             <Stepper value={cfg.passiveEarnCooldownSeconds} min={5} max={600} step={5} unit="s" onCommit={(n) => save({ passiveEarnCooldownSeconds: n })} />
@@ -213,7 +560,7 @@ export default function ConsoleEconomy({ guildId }: { guildId: string }) {
         </Row>
         <Collapse open={cfg.workEnabled}>
           <Row label="Montant">
-            <Range min={cfg.workAmountMin} max={cfg.workAmountMax} limit={100000} unit={sym} onMin={(n) => save({ workAmountMin: n })} onMax={(n) => save({ workAmountMax: n })} />
+            <Range min={cfg.workAmountMin} max={cfg.workAmountMax} limit={100000} unit={<CoinBadge sym={sym} iconUrl={cfg.currencyCustomIconUrl} size={14} />} onMin={(n) => save({ workAmountMin: n })} onMax={(n) => save({ workAmountMax: n })} />
           </Row>
           <Row label="Délai">
             <Stepper value={cfg.workCooldownMinutes} min={1} max={1440} step={5} unit="min" onCommit={(n) => save({ workCooldownMinutes: n })} />
@@ -223,7 +570,7 @@ export default function ConsoleEconomy({ guildId }: { guildId: string }) {
 
       <Panel title="Paris et vols">
         <Row label="Mise au pari" hint="Commande /gamble.">
-          <Range min={cfg.gambleMinBet} max={cfg.gambleMaxBet} limit={1000000} unit={sym} onMin={(n) => save({ gambleMinBet: n })} onMax={(n) => save({ gambleMaxBet: n })} />
+          <Range min={cfg.gambleMinBet} max={cfg.gambleMaxBet} limit={1000000} unit={<CoinBadge sym={sym} iconUrl={cfg.currencyCustomIconUrl} size={14} />} onMin={(n) => save({ gambleMinBet: n })} onMax={(n) => save({ gambleMaxBet: n })} />
         </Row>
         <Row label="Gain d'un pari réussi" hint="La mise est multipliée par ce nombre.">
           <Stepper value={cfg.gambleWinMultiplier} min={1} max={5} step={0.1} unit="×" onCommit={(n) => save({ gambleWinMultiplier: n })} />
@@ -245,7 +592,7 @@ export default function ConsoleEconomy({ guildId }: { guildId: string }) {
             <Stepper value={cfg.robCooldownMinutes} min={1} max={1440} step={5} unit="min" onCommit={(n) => save({ robCooldownMinutes: n })} />
           </Row>
           <Row label="Solde minimum de la cible" hint="Les membres plus pauvres ne peuvent pas être volés.">
-            <Stepper value={cfg.robMinTargetBalance} min={0} max={1000000} step={50} unit={sym} onCommit={(n) => save({ robMinTargetBalance: n })} />
+            <Stepper value={cfg.robMinTargetBalance} min={0} max={1000000} step={50} unit={<CoinBadge sym={sym} iconUrl={cfg.currencyCustomIconUrl} size={14} />} onCommit={(n) => save({ robMinTargetBalance: n })} />
           </Row>
         </Collapse>
       </Panel>
@@ -270,7 +617,7 @@ export default function ConsoleEconomy({ guildId }: { guildId: string }) {
                     <TextField value={item.label} maxLength={60} width="w-full max-w-xs" onCommit={(v) => saveItem({ ...item, label: v })} />
                     <p className="mt-1 text-[11px] text-[var(--text-muted)]">Rôle @{item.roleName}</p>
                   </div>
-                  <Stepper value={item.price} min={0} max={10000000} step={50} unit={sym} onCommit={(n) => saveItem({ ...item, price: n })} />
+                  <Stepper value={item.price} min={0} max={10000000} step={50} unit={<CoinBadge sym={sym} iconUrl={cfg.currencyCustomIconUrl} size={14} />} onCommit={(n) => saveItem({ ...item, price: n })} />
                   <Switch checked={item.enabled} onChange={(v) => saveItem({ ...item, enabled: v })} label={item.enabled ? `Retirer ${item.label} de la vente` : `Mettre ${item.label} en vente`} />
                   <button
                     type="button"
@@ -330,7 +677,7 @@ export default function ConsoleEconomy({ guildId }: { guildId: string }) {
                   )}
                   {adjustingUser && (
                     <p className="font-mono text-xs text-[var(--text-muted)]">
-                      Solde actuel : <span className="text-[var(--text-primary)]">{fmt(adjustingUser.balance)} {sym}</span>
+                      Solde actuel : <span className="text-[var(--text-primary)] inline-flex items-center gap-1">{fmt(adjustingUser.balance)} <CoinBadge sym={sym} iconUrl={cfg.currencyCustomIconUrl} size={14} /></span>
                     </p>
                   )}
                   <div className="flex flex-wrap items-center gap-2">
@@ -356,7 +703,7 @@ export default function ConsoleEconomy({ guildId }: { guildId: string }) {
                         − Débiter
                       </button>
                     </div>
-                    <Stepper value={adjustAmount} min={1} max={1000000} step={50} unit={sym} onCommit={(n) => setAdjustAmount(n)} />
+                    <Stepper value={adjustAmount} min={1} max={1000000} step={50} unit={<CoinBadge sym={sym} iconUrl={cfg.currencyCustomIconUrl} size={14} />} onCommit={(n) => setAdjustAmount(n)} />
                   </div>
                   <div className="flex flex-wrap items-center gap-1.5">
                     {[50, 100, 250, 500, 1000].map((preset) => (
@@ -364,9 +711,9 @@ export default function ConsoleEconomy({ guildId }: { guildId: string }) {
                         key={preset}
                         type="button"
                         onClick={() => setAdjustAmount(preset)}
-                        className="rounded-md border border-[var(--panel-border)] px-2 py-0.5 text-[11px] font-mono text-[var(--text-muted)] hover:border-[var(--accent-primary)]/50 hover:text-[var(--text-primary)]"
+                        className="rounded-md border border-[var(--panel-border)] px-2 py-0.5 text-[11px] font-mono text-[var(--text-muted)] hover:border-[var(--accent-primary)]/50 hover:text-[var(--text-primary)] inline-flex items-center gap-1"
                       >
-                        {preset} {sym}
+                        {preset} <CoinBadge sym={sym} iconUrl={cfg.currencyCustomIconUrl} size={12} />
                       </button>
                     ))}
                   </div>
@@ -405,14 +752,13 @@ export default function ConsoleEconomy({ guildId }: { guildId: string }) {
                 <li key={w.userId} className="flex items-center gap-3 border-t border-[var(--panel-border)] px-5 py-2.5 text-[13px] first:border-t-0">
                   <span className="w-5 shrink-0 text-right font-mono text-xs text-[var(--text-muted)]">{w.rank}</span>
                   {w.avatarUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
                     <img src={w.avatarUrl} alt="" width={24} height={24} className="h-6 w-6 shrink-0 rounded-full" />
                   ) : (
                     <span className="h-6 w-6 shrink-0 rounded-full bg-[var(--surface-hover)]" />
                   )}
                   <span className="min-w-0 flex-1 truncate text-[var(--text-primary)]">{w.username}</span>
-                  <span className="shrink-0 font-mono text-xs tabular-nums text-[var(--text-primary)]">
-                    {fmt(w.balance)} {sym}
+                  <span className="shrink-0 font-mono text-xs tabular-nums text-[var(--text-primary)] inline-flex items-center gap-1">
+                    {fmt(w.balance)} <CoinBadge sym={sym} iconUrl={cfg.currencyCustomIconUrl} size={14} />
                   </span>
                   <button
                     type="button"
@@ -444,9 +790,10 @@ export default function ConsoleEconomy({ guildId }: { guildId: string }) {
                         {who ?? `Membre ${t.userId.slice(-4)}`} · {sinceLabel(t.createdAt)}
                       </span>
                     </span>
-                    <span className="shrink-0 font-mono text-xs tabular-nums" style={{ color: t.amount >= 0 ? "var(--success)" : "var(--danger)" }}>
+                    <span className="shrink-0 font-mono text-xs tabular-nums inline-flex items-center gap-1" style={{ color: t.amount >= 0 ? "var(--success)" : "var(--danger)" }}>
                       {t.amount >= 0 ? "+" : ""}
                       {fmt(t.amount)}
+                      <CoinBadge sym={sym} iconUrl={cfg.currencyCustomIconUrl} size={13} />
                     </span>
                   </li>
                 );
@@ -459,8 +806,7 @@ export default function ConsoleEconomy({ guildId }: { guildId: string }) {
   );
 }
 
-/** Deux compteurs « de … à … » ; le minimum ne peut pas dépasser le maximum. */
-function Range({ min, max, limit, unit, onMin, onMax }: { min: number; max: number; limit: number; unit: string; onMin: (n: number) => void; onMax: (n: number) => void }) {
+function Range({ min, max, limit, unit, onMin, onMax }: { min: number; max: number; limit: number; unit: ReactNode; onMin: (n: number) => void; onMax: (n: number) => void }) {
   return (
     <div className="flex flex-wrap items-center gap-3">
       <span className="text-xs text-[var(--text-muted)]">de</span>
@@ -471,7 +817,6 @@ function Range({ min, max, limit, unit, onMin, onMax }: { min: number; max: numb
   );
 }
 
-/** Lignes de détail qui se déplient quand l'option est activée. */
 function Collapse({ open, children }: { open: boolean; children: React.ReactNode }) {
   return (
     <AnimatePresence initial={false}>

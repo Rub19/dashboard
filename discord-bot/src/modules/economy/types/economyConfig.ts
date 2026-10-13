@@ -4,6 +4,7 @@ export const EconomyConfigSchema = z.object({
   enabled: z.boolean().default(true),
   currencyName: z.string().default('Crédits ETHONE'),
   currencySymbol: z.string().default('🪙'),
+  currencyCustomIconUrl: z.string().nullable().optional().default(null),
   startingBalance: z.number().min(0).default(0),
   dailyAmountMin: z.number().min(0).default(50),
   dailyAmountMax: z.number().min(0).default(150),

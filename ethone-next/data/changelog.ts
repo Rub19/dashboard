@@ -53318,4 +53318,57 @@ CHANGELOG_BY_LANG.en.unshift(v12876_en);
 CHANGELOG_BY_LANG.es.unshift(v12876_es);
 CHANGELOG_BY_LANG.de.unshift(v12876_de);
 
+const v12877_fr: ChangelogEntry = {
+  version: "v1.75.33",
+  date: "2026-10-13",
+  title: "Économie : Pièce Officielle Etho, Sélecteur de Devises & Import de Pièce Personnalisée",
+  items: [
+    "Création de la pièce custom officielle Etho avec sceau doré haute fidélité, sillons et reflets métalliques, définie comme monnaie par défaut.",
+    "Sélecteur de devises complet pour les administrateurs : choix entre la pièce Etho, 12 presets d'emojis populaires et saisie libre d'emojis ou codes de serveurs.",
+    "Importation de pièce personnalisée : glisser-déposer de fichiers images (PNG, SVG, WebP, JPG) ou URL directe, avec prévisualisation immédiate et rétablissement en 1 clic.",
+    "Intégration visuelle globale : affichage de la pièce active sur tous les soldes, classements, boutiques de rôles et jeux du casino.",
+  ],
+};
+
+const v12877_en: ChangelogEntry = {
+  version: "v1.75.33",
+  date: "2026-10-13",
+  title: "Economy: Official Etho Coin, Currency Selector & Custom Coin Upload",
+  items: [
+    "Crafted official Etho Coin with high-relief gold emblem, milled edge and specular highlights, set as the default currency.",
+    "Comprehensive currency picker: choose between the Etho Coin, 12 popular emoji presets, or custom emoji/server symbols.",
+    "Custom coin upload: drag-and-drop image file import (PNG, SVG, WebP, JPG) or direct URL with live preview and 1-click restore.",
+    "Global visual integration: active coin badge rendered across balances, leaderboards, shop items, and casino games.",
+  ],
+};
+
+const v12877_es: ChangelogEntry = {
+  version: "v1.75.33",
+  date: "2026-10-13",
+  title: "Economía: Moneda Oficial de Etho, Selector de Divisas e Importación Personalizada",
+  items: [
+    "Diseño de la moneda oficial de Etho con relieve dorado y grabado metálico, establecida como divisa predeterminada.",
+    "Selector completo de divisas: moneda de Etho, 12 emojis populares o emojis/códigos personalizados.",
+    "Importación de moneda personalizada mediante archivo (PNG, SVG, WebP, JPG) o enlace con vista previa en directo.",
+    "Integración visual en balances, clasificaciones, tienda de roles y juegos de casino.",
+  ],
+};
+
+const v12877_de: ChangelogEntry = {
+  version: "v1.75.33",
+  date: "2026-10-13",
+  title: "Wirtschaft: Offizielle Etho-Münze, Währungsauswahl & Eigene Münzen Importieren",
+  items: [
+    "Offizielle Etho-Goldmünze mit Gravur und Metallreflexionen als Standardwährung entworfen.",
+    "Umfassende Währungsauswahl: Etho-Münze, 12 beliebte Emoji-Vorlagen oder benutzerdefinierte Symbole.",
+    "Eigene Münze importieren per Datei-Upload (PNG, SVG, WebP, JPG) oder URL mit Live-Vorschau.",
+    "Vollständige visuelle Integration in Guthaben, Bestenlisten, Rollen-Shop und Casino-Spiele.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12877_fr);
+CHANGELOG_BY_LANG.en.unshift(v12877_en);
+CHANGELOG_BY_LANG.es.unshift(v12877_es);
+CHANGELOG_BY_LANG.de.unshift(v12877_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

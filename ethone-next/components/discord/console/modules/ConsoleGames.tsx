@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { sinceLabel } from "@/lib/discord/security-scan";
 import { pageStagger } from "@/lib/motion-variants";
+import EthoCoin from "@/components/icons/EthoCoin";
 import { ConsolePage, EmptyLine, GhostButton, Panel, Row, StatTile, Stepper, Switch, useGuildApi } from "../kit";
 
 type GamesConfig = {
@@ -41,10 +42,14 @@ const GAMES: Array<{ key: keyof GamesConfig; label: string; hint: string }> = [
 ];
 const fmt = (n: number) => n.toLocaleString("fr-FR");
 const Amount = ({ n, sym }: { n: number; sym: string }) => (
-  <>
-    {fmt(n)}
-    <span className="ml-1.5 text-sm font-medium text-[var(--text-muted)]">{sym}</span>
-  </>
+  <span className="inline-flex items-center gap-1.5">
+    <span>{fmt(n)}</span>
+    {sym === "🪙" || sym === "etho" ? (
+      <EthoCoin size={16} className="inline-block shrink-0 align-middle" />
+    ) : (
+      <span className="text-sm font-medium text-[var(--text-muted)]">{sym}</span>
+    )}
+  </span>
 );
 
 /** Jeux et casino (format Keeper) : jeux actifs, mises, cagnotte, meilleurs joueurs et dernières parties. */

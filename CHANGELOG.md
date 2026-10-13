@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.33 — 2026-10-13
+
+**Économie : Pièce Officielle Etho, Sélecteur de Devises & Import de Pièce Personnalisée**
+
+- Création de la pièce custom officielle Etho avec sceau doré haute fidélité, sillons et reflets métalliques, définie comme monnaie par défaut.
+- Sélecteur de devises complet pour les administrateurs : choix entre la pièce Etho, 12 presets d'emojis populaires et saisie libre d'emojis ou codes de serveurs.
+- Importation de pièce personnalisée : glisser-déposer de fichiers images (PNG, SVG, WebP, JPG) ou URL directe, avec prévisualisation immédiate et rétablissement en 1 clic.
+- Intégration visuelle globale : affichage de la pièce active sur tous les soldes, classements, boutiques de rôles et jeux du casino.
+
 ## v1.75.32 — 2026-10-13
 
 **Lecteur Musique : Remplacement du Carré Vide par un Disque Vinyle Stylisé**

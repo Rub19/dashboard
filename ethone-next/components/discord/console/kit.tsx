@@ -544,7 +544,7 @@ export function Stepper({
   min: number;
   max: number;
   step?: number;
-  unit?: string;
+  unit?: ReactNode;
   onCommit: (n: number) => void;
   disabled?: boolean;
 }) {
@@ -585,7 +585,7 @@ export function Stepper({
           }}
           onBlur={() => commitSoon(Number(draft.replace(",", ".")), 0)}
           onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()}
-          aria-label={unit ?? "Valeur"}
+          aria-label={typeof unit === "string" ? unit : "Valeur"}
           style={{ width: `${Math.max(3, String(max).length + (decimals ? decimals + 1 : 0)) + 1.5}ch` }}
           className="h-8 border-x border-[var(--panel-border)] bg-transparent text-center font-mono text-sm text-[var(--text-primary)] outline-none disabled:opacity-50"
         />

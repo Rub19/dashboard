@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.24 — 2026-10-13
+
+**Accès Public Wiki Documentation & Défilement Unifié**
+
+- **Accès Public Total à la Documentation Wiki (`/docs` et `/documentation`)** :
+  - Ajout des routes `/docs` et `/documentation` aux listes blanches `PUBLIC_ROUTES` et `INFO_ROUTES` dans `BootProvider`.
+  - Consultation publique instantanée sans redirection forcée vers la page de connexion (`/login`).
+- **Défilement Intégré et Indépendant de la Documentation** :
+  - Ajustement du conteneur racine de `DocumentationView` (`relative h-dvh w-full overflow-x-hidden overflow-y-auto`) pour permettre le défilement vertical complet et indépendant du viewport `overflow-hidden` imposé par le layout parent.
+  - Expérience de lecture fluide sur mobile et bureau pour les 10 guides, les 12 scénarios d'urgence anti-raid et la référence complète des modules.
+
 ## v1.75.23 — 2026-10-13
 
 **Hydratation Vitrine Bot & Intégrations Complètes Instagram et X (Twitter)**

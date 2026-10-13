@@ -172,7 +172,7 @@ export default function DocumentationView() {
   }, [selectedGuide, selectedModule, searchQuery]);
 
   return (
-    <div className="min-h-screen bg-[#07080d] text-zinc-200 antialiased selection:bg-[#92C8D2]/30 selection:text-white">
+    <div className="relative h-dvh w-full overflow-x-hidden overflow-y-auto bg-[#07080d] text-zinc-200 antialiased selection:bg-[#92C8D2]/30 selection:text-white">
       <header className="sticky top-0 z-40 border-b border-white/[0.08] bg-[#07080d]/85 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
           <div className="flex items-center gap-6">

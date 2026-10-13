@@ -52873,6 +52873,50 @@ const v1_75_23_de: ChangelogEntry = {
   ],
 };
 
+const v1_75_24_fr: ChangelogEntry = {
+  version: "v1.75.24",
+  date: "2026-10-13",
+  title: "Accès Public à la Documentation Wiki (/docs) & Défilement Unifié",
+  items: [
+    "Ouverture publique de la documentation : ajout des routes /docs et /documentation à PUBLIC_ROUTES et INFO_ROUTES dans BootProvider pour consultation immédiate sans redirection de connexion.",
+    "Défilement unifié du wiki : intégration du conteneur vertical h-dvh overflow-y-auto pour une navigation fluide sur desktop et mobile.",
+  ],
+};
+
+const v1_75_24_en: ChangelogEntry = {
+  version: "v1.75.24",
+  date: "2026-10-13",
+  title: "Public Access to Wiki Documentation (/docs) & Unified Scrolling",
+  items: [
+    "Public documentation access: added /docs and /documentation to PUBLIC_ROUTES and INFO_ROUTES in BootProvider preventing login redirects.",
+    "Unified wiki scrolling: integrated h-dvh overflow-y-auto wrapper for smooth desktop and mobile reading.",
+  ],
+};
+
+const v1_75_24_es: ChangelogEntry = {
+  version: "v1.75.24",
+  date: "2026-10-13",
+  title: "Acceso Público a la Documentación Wiki (/docs) y Desplazamiento Unificado",
+  items: [
+    "Acceso público a la documentación: incorporación de /docs y /documentation a PUBLIC_ROUTES e INFO_ROUTES en BootProvider.",
+    "Desplazamiento unificado del wiki: integración del contenedor h-dvh overflow-y-auto.",
+  ],
+};
+
+const v1_75_24_de: ChangelogEntry = {
+  version: "v1.75.24",
+  date: "2026-10-13",
+  title: "Öffentlicher Zugriff auf Wiki-Dokumentation (/docs) & Einheitliches Scrollen",
+  items: [
+    "Öffentlicher Zugriff auf /docs und /documentation ohne Login-Weiterleitung via BootProvider.",
+    "Einheitlicher Scroll-Container h-dvh overflow-y-auto für flüssiges Lesen auf allen Geräten.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_24_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_24_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_24_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_24_de);
 CHANGELOG_BY_LANG.fr.unshift(v1_75_23_fr);
 CHANGELOG_BY_LANG.en.unshift(v1_75_23_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_23_es);

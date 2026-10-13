@@ -1,5 +1,17 @@
 [
   {
+    "version": "v1.75.45",
+    "date": "2026-10-13",
+    "title": "Boutons rectangulaires, logo Riot horizontal et motion design des trackers",
+    "items": [
+      "Boutons d'en-tête en haut à droite redessinés en format rectangulaire épuré (rounded-lg).",
+      "Alignement horizontal côte à côte du logo officiel Riot Games et des icônes à côté du texte sur tous les boutons.",
+      "Correction structurelle du composant Button assurant un flux inline-flex horizontal pour toutes les icônes enfants.",
+      "Motion design complet sur l'Inventaire & Boutique Valorant : logo Riot flottant, halo ambiant réactif et pulsation du compte à rebours.",
+      "Motion design sur le Tracker Valorant et le Tracker League of Legends : cartes de KPI animées à l'entrée et survol interactif des parties."
+    ]
+  },
+  {
     "version": "v1.75.44",
     "date": "2026-10-13",
     "title": "Transition fluide des auras et interpolation cosmique",
@@ -622,17 +634,6 @@
     "items": [
       "Les liens Animation de la barre latérale (Musique, Niveaux, Giveaways…) ouvrent le module dans la console au lieu de la pleine page.",
       "Nouveau lien « Tous les modules » pour atteindre les autres modules depuis la barre latérale."
-    ]
-  },
-  {
-    "version": "v1.55.84",
-    "date": "2026-10-08",
-    "title": "Console Discord : toutes les pages de modules dans la console",
-    "items": [
-      "Chaque module (Niveaux, Giveaways, Tickets, Musique…) s'ouvre maintenant dans la console, avec la barre latérale, au lieu de l'ancien écran intermédiaire.",
-      "Les écrans intermédiaires sont supprimés, avec leurs tuiles figées qui affichaient des chiffres inventés.",
-      "Dans la console, les pages de modules prennent le format en blocs de Keeper, sans le lien « Retour » ni un second sélecteur de serveur.",
-      "Le module Sécurité ouvre directement la page Protections, et l'en-tête de module devient une barre compacte avec l'interrupteur Activé / Désactivé."
     ]
   }
 ]

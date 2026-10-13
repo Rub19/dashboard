@@ -129,7 +129,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             {leftIcon}
           </span>
         )}
-        <span className="truncate">{children}</span>
+        <span className="inline-flex items-center gap-1.5 truncate">{children}</span>
         {!isLoading && rightIcon && (
           <span className="inline-flex shrink-0 items-center justify-center" aria-hidden="true">
             {rightIcon}

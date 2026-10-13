@@ -24,6 +24,8 @@ import LolDayHeader from "@/components/tracker/LolDayHeader";
 import DailyReportModal from "@/components/tracker/DailyReportModal";
 import TrackerModeDropdown from "@/components/tracker/TrackerModeDropdown";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
+import { EASE_SNAP } from "@/lib/ease";
 
 const LOL_CACHE_TTL_MS = 15 * 60 * 1000; // 15 minutes
 
@@ -306,9 +308,16 @@ export default function LolTrackerView() {
 
       {/* Top Global Summary Banner (Matching Screenshot) */}
       {matches.length > 0 && (
-        <div className="shrink-0 grid grid-cols-2 md:grid-cols-4 gap-3">
-          {/* Win Rate */}
-          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)]/85 p-3.5 backdrop-blur-xl">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, ease: EASE_SNAP }}
+          className="shrink-0 grid grid-cols-2 md:grid-cols-4 gap-3"
+        >
+          <motion.div
+            whileHover={{ y: -3, transition: { duration: 0.18 } }}
+            className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)]/85 p-3.5 backdrop-blur-xl transition-colors hover:border-amber-500/30 shadow-sm"
+          >
             <span className="block text-[11px] font-bold text-[var(--text-muted)]">
               Win Rate <span className="text-sm font-black text-[var(--text-primary)]">{winRate}%</span>
             </span>
@@ -321,38 +330,44 @@ export default function LolTrackerView() {
                 {totalLosses} L
               </span>
             </div>
-          </div>
+          </motion.div>
 
-          {/* Avg DPM */}
-          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)]/85 p-3.5 backdrop-blur-xl">
+          <motion.div
+            whileHover={{ y: -3, transition: { duration: 0.18 } }}
+            className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)]/85 p-3.5 backdrop-blur-xl transition-colors hover:border-amber-500/30 shadow-sm"
+          >
             <span className="block text-[11px] font-bold text-[var(--text-muted)]">
               Avg DPM <span className="text-sm font-black text-[var(--text-primary)]">{avgDpm}</span>
             </span>
             <span className="block mt-1 font-mono text-[10px] text-[var(--text-muted)]/80">
               {avgDmgMatch} Damage/Match
             </span>
-          </div>
+          </motion.div>
 
-          {/* Avg KDA */}
-          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)]/85 p-3.5 backdrop-blur-xl">
+          <motion.div
+            whileHover={{ y: -3, transition: { duration: 0.18 } }}
+            className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)]/85 p-3.5 backdrop-blur-xl transition-colors hover:border-amber-500/30 shadow-sm"
+          >
             <span className="block text-[11px] font-bold text-[var(--text-muted)]">
               Avg KDA <span className="text-sm font-black text-[var(--text-primary)]">{avgKda}</span>
             </span>
             <span className="block mt-1 font-mono text-[10px] text-[var(--text-muted)]/80">
               {avgKills} {"//"} {avgDeaths} {"//"} {avgAssists}
             </span>
-          </div>
+          </motion.div>
 
-          {/* Avg GPM */}
-          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)]/85 p-3.5 backdrop-blur-xl">
+          <motion.div
+            whileHover={{ y: -3, transition: { duration: 0.18 } }}
+            className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)]/85 p-3.5 backdrop-blur-xl transition-colors hover:border-amber-500/30 shadow-sm"
+          >
             <span className="block text-[11px] font-bold text-[var(--text-muted)]">
               Avg GPM <span className="text-sm font-black text-[var(--text-primary)]">{avgGpm}</span>
             </span>
             <span className="block mt-1 font-mono text-[10px] text-[var(--text-muted)]/80">
               {avgGoldMatch} Gold/Match
             </span>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       )}
 
       {/* Quick Champion Filter */}

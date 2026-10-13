@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.45 — 2026-10-13
+
+**Boutons rectangulaires, logo Riot horizontal et motion design des trackers**
+
+- Boutons d'en-tête en haut à droite redessinés en format rectangulaire épuré (rounded-lg).
+- Alignement horizontal côte à côte du logo officiel Riot Games et des icônes à côté du texte sur tous les boutons.
+- Correction structurelle du composant Button assurant un flux inline-flex horizontal pour toutes les icônes enfants.
+- Motion design complet sur l'Inventaire & Boutique Valorant : logo Riot flottant, halo ambiant réactif et pulsation du compte à rebours.
+- Motion design sur le Tracker Valorant et le Tracker League of Legends : cartes de KPI animées à l'entrée et survol interactif des parties.
+
 ## v1.75.44 — 2026-10-13
 
 **Transition fluide des auras et interpolation cosmique**

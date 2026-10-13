@@ -26,6 +26,8 @@ import ValorantMatchRow from "@/components/tracker/ValorantMatchRow";
 import ValorantDayHeader from "@/components/tracker/ValorantDayHeader";
 import TrackerModeDropdown from "@/components/tracker/TrackerModeDropdown";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
+import { EASE_SNAP } from "@/lib/ease";
 
 import DailyReportModal from "@/components/tracker/DailyReportModal";
 
@@ -434,9 +436,16 @@ export default function ValorantTrackerView() {
 
       {/* Overview Stats & Top Agents Banner */}
       {matches.length > 0 && (
-        <div className="shrink-0 grid grid-cols-1 sm:grid-cols-3 gap-3">
-          {/* Winrate & Match Stats */}
-          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/70 p-3.5 backdrop-blur-xl flex items-center justify-between shadow-md">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, ease: EASE_SNAP }}
+          className="shrink-0 grid grid-cols-1 sm:grid-cols-3 gap-3"
+        >
+          <motion.div
+            whileHover={{ y: -3, transition: { duration: 0.18 } }}
+            className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/70 p-3.5 backdrop-blur-xl flex items-center justify-between shadow-md transition-colors hover:border-rose-500/30"
+          >
             <div>
               <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Victoires / Ratio</p>
               <p className="text-lg font-black text-[var(--text-primary)]">{winRate}% <span className="text-xs font-normal text-[var(--text-muted)]">({totalWins}V - {totalLosses}D)</span></p>
@@ -444,10 +453,12 @@ export default function ValorantTrackerView() {
             <div className="flex h-10 w-10 items-center justify-center rounded-[var(--inset-radius)] bg-rose-500/15 text-rose-400 font-bold border border-rose-500/20">
               {winRate}%
             </div>
-          </div>
+          </motion.div>
 
-          {/* Score de performance moyen (0-500) — remplace l'ACS depuis le patch 13.06 */}
-          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/70 p-3.5 backdrop-blur-xl flex items-center justify-between shadow-md">
+          <motion.div
+            whileHover={{ y: -3, transition: { duration: 0.18 } }}
+            className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/70 p-3.5 backdrop-blur-xl flex items-center justify-between shadow-md transition-colors hover:border-cyan-500/30"
+          >
             <div>
               <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
                 {scoreSummary.system === "performance" ? "Score de performance moyen" : "Score de combat moyen (ACS, ancien)"}
@@ -466,10 +477,12 @@ export default function ValorantTrackerView() {
             <div className="flex h-10 w-10 items-center justify-center rounded-[var(--inset-radius)] bg-cyan-500/15 text-cyan-400 font-bold border border-cyan-500/20 text-[10px]">
               {scoreSummary.system === "performance" ? "PERF" : "ACS"}
             </div>
-          </div>
+          </motion.div>
 
-          {/* Top Agent */}
-          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/70 p-3.5 backdrop-blur-xl flex items-center justify-between shadow-md">
+          <motion.div
+            whileHover={{ y: -3, transition: { duration: 0.18 } }}
+            className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/70 p-3.5 backdrop-blur-xl flex items-center justify-between shadow-md transition-colors hover:border-emerald-500/30"
+          >
             <div className="min-w-0">
               <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Agent Principal</p>
               <p className="text-lg font-black text-[var(--text-primary)] truncate">{topAgents[0]?.name || "Valorant"}</p>
@@ -480,8 +493,8 @@ export default function ValorantTrackerView() {
                 <p className="text-[10px] text-[var(--text-muted)]">{topAgents[0].kda} KDA</p>
               </div>
             )}
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       )}
 
       {/* Quick Agent & Map Filters */}

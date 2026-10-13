@@ -53942,5 +53942,62 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_44_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_44_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_44_de);
 
+const v1_75_45_fr: ChangelogEntry = {
+  version: "v1.75.45",
+  date: "2026-10-13",
+  title: "Boutons rectangulaires, logo Riot horizontal et motion design des trackers",
+  items: [
+    "Boutons d'en-tête en haut à droite redessinés en format rectangulaire épuré (rounded-lg).",
+    "Alignement horizontal côte à côte du logo officiel Riot Games et des icônes à côté du texte sur tous les boutons.",
+    "Correction structurelle du composant Button assurant un flux inline-flex horizontal pour toutes les icônes enfants.",
+    "Motion design complet sur l'Inventaire & Boutique Valorant : logo Riot flottant, halo ambiant réactif et pulsation du compte à rebours.",
+    "Motion design sur le Tracker Valorant et le Tracker League of Legends : cartes de KPI animées à l'entrée et survol interactif des parties.",
+  ],
+};
+
+const v1_75_45_en: ChangelogEntry = {
+  version: "v1.75.45",
+  date: "2026-10-13",
+  title: "Rectangular Buttons, Inline Riot Logo and Extended Tracker Motion Design",
+  items: [
+    "Redesigned top-right header buttons into a crisp rectangular aesthetic (rounded-lg).",
+    "Positioned the official Riot Games logo and sparkles inline next to text labels on all action buttons.",
+    "Structural fix in the Button component ensuring horizontal inline-flex layout for all child icons.",
+    "Extended motion design across Valorant Inventory & Store: floating emblem, reactive ambient aura, countdown breathing.",
+    "Motion design on Valorant and League of Legends trackers: animated overview KPI cards and match row hover dynamics.",
+  ],
+};
+
+const v1_75_45_es: ChangelogEntry = {
+  version: "v1.75.45",
+  date: "2026-10-13",
+  title: "Botones rectangulares, logo de Riot alineado y motion design en trackers",
+  items: [
+    "Botones superiores en formato rectangular limpio (rounded-lg).",
+    "Alineación horizontal del logo oficial de Riot Games y los iconos junto al texto.",
+    "Corrección en el componente Button garantizando disposición horizontal inline-flex.",
+    "Motion design ampliado en la tienda e inventario Valorant con emblema flotante y resplandor dinámico.",
+    "Animaciones interactivas en los trackers de Valorant y League of Legends con tarjetas KPI y filas de partidas animadas.",
+  ],
+};
+
+const v1_75_45_de: ChangelogEntry = {
+  version: "v1.75.45",
+  date: "2026-10-13",
+  title: "Rechteckige Buttons, horizontales Riot-Logo und Tracker-Motion-Design",
+  items: [
+    "Schaltflächen oben rechts im Header auf rechteckiges Design (rounded-lg) umgestellt.",
+    "Horizontale Ausrichtung des offiziellen Riot Games-Logos und der Symbole neben dem Text.",
+    "Strukturelle Optimierung der Button-Komponente mit horizontalem inline-flex Layout.",
+    "Umfassendes Motion Design für Valorant-Shop und Inventar mit schwebendem Emblem und animiertem Timer.",
+    "Motion Design für die Valorant- und LoL-Tracker mit animierten KPI-Karten und interaktivem Zeilen-Hover.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_45_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_45_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_45_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_45_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

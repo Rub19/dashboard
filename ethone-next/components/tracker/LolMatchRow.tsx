@@ -127,6 +127,7 @@ export default function LolMatchRow({ match, index, allMatches }: LolMatchRowPro
           ? { duration: 0 }
           : { duration: 0.2, delay: Math.min(index * 0.03, 0.3), ease: EASE_OUT }
       }
+      whileHover={{ y: -2, transition: { duration: 0.16 } }}
       className="overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)]/85 backdrop-blur-[var(--panel-blur)] transition-all duration-200 hover:border-[var(--input-border-hover)] hover:bg-[var(--bg-surface)] shadow-sm"
     >
       {/* Main Row (Matching Screenshot 1 & 3 Pixel-Perfect) */}

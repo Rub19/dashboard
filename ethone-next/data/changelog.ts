@@ -53114,6 +53114,59 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_22_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_22_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_22_de);
 
+const v1_75_29_fr: ChangelogEntry = {
+  version: "v1.75.29",
+  date: "2026-10-13",
+  title: "Sélecteur de Profil et Multi-Compte dans le Menu Utilisateur",
+  items: [
+    "Sélecteur de profil direct : intégration d'un tiroir déroulant 'Changer de profil' dans le menu utilisateur affichant le profil actif et tous les profils configurés.",
+    "Changement de profil en 1 clic : bascule instantanée avec synchronisation immédiate des réglages (useActiveProfile) et notification toast de confirmation.",
+    "Prise en charge multi-compte : mémorisation locale des comptes utilisés avec détection d'avatars et bascule rapide entre comptes enregistrés.",
+    "Raccourcis de gestion : liens d'accès direct 'Gérer les profils' (/profile-selection) et 'Ajouter un compte' (/login?switch=1).",
+  ],
+};
+
+const v1_75_29_en: ChangelogEntry = {
+  version: "v1.75.29",
+  date: "2026-10-13",
+  title: "Profile Selector and Multi-Account Switcher in User Menu",
+  items: [
+    "Direct profile switcher: expandable drawer in the user menu displaying the active profile and all configured profiles.",
+    "1-click profile switching: instant switch with immediate settings synchronization (useActiveProfile) and toast feedback.",
+    "Multi-account support: local persistence of used accounts with avatar indicators and fast switching between saved logins.",
+    "Management shortcuts: quick access to 'Manage profiles' (/profile-selection) and 'Add account' (/login?switch=1).",
+  ],
+};
+
+const v1_75_29_es: ChangelogEntry = {
+  version: "v1.75.29",
+  date: "2026-10-13",
+  title: "Selector de Perfil y Cambio Multi-Cuenta en el Menú de Usuario",
+  items: [
+    "Selector de perfil directo: panel desplegable en el menú de usuario que muestra el perfil activo y todos los perfiles configurados.",
+    "Cambio de perfil en 1 clic: transición instantánea con sincronización de ajustes y confirmación visual.",
+    "Soporte multi-cuenta: almacenamiento local de cuentas previas con avatares y cambio rápido de cuenta.",
+    "Atajos de gestión: accesos directos a 'Administrar perfiles' (/profile-selection) y 'Añadir cuenta' (/login?switch=1).",
+  ],
+};
+
+const v1_75_29_de: ChangelogEntry = {
+  version: "v1.75.29",
+  date: "2026-10-13",
+  title: "Profilwähler und Multi-Account-Umschalter im Benutzermenü",
+  items: [
+    "Direkter Profilwähler: ausklappbares Menü im Benutzer-Dropdown mit Anzeige des aktiven Profils und aller konfigurierten Profile.",
+    "1-Klick Profilwechsel: sofortiger Wechsel mit direkter Einstellungssynchronisierung und Bestätigungsmeldung.",
+    "Multi-Account-Unterstützung: lokale Speicherung genutzter Konten mit Avatar-Anzeige und schnellem Umschalten.",
+    "Verwaltungs-Shortcuts: Direktlinks zu 'Profile verwalten' (/profile-selection) und 'Konto hinzufügen' (/login?switch=1).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_29_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_29_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_29_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_29_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

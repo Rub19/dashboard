@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.29 — 2026-10-13
+
+**Sélecteur de Profil et Multi-Compte dans le Menu Utilisateur**
+
+- Sélecteur de profil direct : intégration d'un tiroir déroulant 'Changer de profil' dans le menu utilisateur affichant le profil actif et tous les profils configurés.
+- Changement de profil en 1 clic : bascule instantanée avec synchronisation immédiate des réglages (useActiveProfile) et notification toast de confirmation.
+- Prise en charge multi-compte : mémorisation locale des comptes utilisés avec détection d'avatars et bascule rapide entre comptes enregistrés.
+- Raccourcis de gestion : liens d'accès direct 'Gérer les profils' (/profile-selection) et 'Ajouter un compte' (/login?switch=1).
+
 ## v1.75.28 — 2026-10-13
 
 **Documentation Etho : Harmonisation de Marque, Fond Sombre et Refonte de la Barre Latérale**

@@ -1,4 +1,4 @@
-# ETHONE — passation & nouveautés (2026-10-13, version 1.75.28)
+# ETHONE — passation & nouveautés (2026-10-13, version 1.75.29)
 
 ## Projet
 - `ethone-next/` : site Next.js statique (ethone.dev, Cloudflare Pages, déploiement auto au push sur `main`).
@@ -25,9 +25,15 @@
 
 ---
 
-## Nouveautés majeures & Réalisations récentes (v1.73.0 → v1.75.28)
+## Nouveautés majeures & Réalisations récentes (v1.73.0 → v1.75.29)
 
-### 0. Documentation Etho : Refonte style Keeper & Harmonisation de Marque (v1.75.28)
+### 0. Sélecteur de Profil et Multi-Compte dans le Menu Utilisateur (v1.75.29)
+- **Sélecteur de profil direct** : Ajout d'un tiroir interactif « Changer de profil » directement dans `UserProfileDropdown` affichant le profil actif en badge et listant tous les profils configurés avec puce de couleur d'accent et indicateur d'espace.
+- **Bascule en 1 clic** : Changement instantané avec synchronisation réactive des paramètres via `useActiveProfile` et confirmation par toast sans rechargement de page.
+- **Prise en charge multi-compte** : Mémorisation des comptes connectés (`ethone_saved_accounts`), affichage des avatars/identifiants et bascule fluide entre comptes enregistrés.
+- **Raccourcis intégrés** : Accès direct à la gestion des profils (`/profile-selection`) et à l'ajout de compte (`/login?switch=1`).
+
+### 1. Documentation Etho : Refonte style Keeper & Harmonisation de Marque (v1.75.28)
 - **Harmonisation globale de la marque** : Remplacement de « Etho Protect » par « Etho » dans toute la documentation (`/docs`, `/documentation`), métadonnées OpenGraph et barre latérale de gestion de serveurs (`HubSidebar`).
 - **Thème sombre inspiré de Keeper** : Fond obsidian sombre `#090d0b`, surfaces de cartes `#0d1410`, bordures fines `#18231c` et accents vert émeraude `#22c55e`.
 - **Barre latérale gauche élargie & Rail continu** : Largeur généreuse (`w-76 xl:w-80`), champ de recherche `Rechercher…` en tête avec raccourci Ctrl+K, arborescence à rail vertical continu avec indicateur actif vert, catégories de modules interactives avec navigation fluide et bandeau d'appel à l'action final.

@@ -1,7 +1,7 @@
 "use client";
 
 import { useModKey } from "@/lib/hooks/useModKey";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import ClientImage from "@/components/ClientImage";
 import { useRouter } from "next/navigation";
@@ -10,7 +10,8 @@ import { Icon } from "@/lib/icons";
 import { SUPPORT_MAILTO } from "@/lib/support";
 import { useAuth } from "@/components/AuthProvider";
 import { useUserIdentity } from "@/lib/hooks/useUserIdentity";
-import { useSettings } from "@/components/SettingsProvider";
+import { useSettings, useActiveProfile } from "@/components/SettingsProvider";
+import { useProfiles } from "@/lib/hooks/useProfiles";
 import { useFocus } from "@/components/FocusProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
@@ -29,6 +30,32 @@ import { USER_STATUS_CONFIG } from "@/lib/settings";
 import { ADMIN_EMAIL } from "@/lib/admin";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/motion/Popover";
 import { cn } from "@/lib/utils";
+
+type SavedAccount = {
+  id: string;
+  email: string;
+  displayName: string;
+  username: string;
+  avatarUrl?: string;
+  lastUsed: number;
+};
+
+const ACCENT_DOT_MAP: Record<string, string> = {
+  mint: "bg-emerald-400",
+  emerald: "bg-emerald-400",
+  green: "bg-emerald-400",
+  sky: "bg-sky-400",
+  blue: "bg-sky-400",
+  cyan: "bg-cyan-400",
+  amber: "bg-amber-400",
+  orange: "bg-amber-400",
+  rose: "bg-rose-400",
+  pink: "bg-pink-400",
+  red: "bg-red-400",
+  dyno: "bg-rose-500",
+  violet: "bg-violet-400",
+  purple: "bg-violet-400",
+};
 
 const STATUS_KEYS = [
   "online",
@@ -50,10 +77,14 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
   const [isAvatarPickerOpen, setIsAvatarPickerOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [confirmSignOut, setConfirmSignOut] = useState(false);
+  const [showProfileSwitcher, setShowProfileSwitcher] = useState(false);
+  const [savedAccounts, setSavedAccounts] = useState<SavedAccount[]>([]);
 
   const { signOut } = useAuth();
   const { displayName, username, avatarUrl, email, initials, bio, verified } = useUserIdentity();
   const { settings, update } = useSettings();
+  const { reload: reloadActiveProfile } = useActiveProfile();
+  const { profiles, active, activeProfile, select: selectProfile } = useProfiles();
 
   const isFocusRunning = focus.state.phase !== "idle";
   const currentStatus = isFocusRunning
@@ -61,6 +92,65 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
     : settings.status in USER_STATUS_CONFIG
     ? settings.status
     : "online";
+
+  useEffect(() => {
+    if (!email || typeof window === "undefined") return;
+    try {
+      const raw = localStorage.getItem("ethone_saved_accounts");
+      const list: SavedAccount[] = raw ? JSON.parse(raw) : [];
+      const idx = list.findIndex((a) => a.email.toLowerCase() === email.toLowerCase());
+      const current: SavedAccount = {
+        id: email,
+        email,
+        displayName: displayName || email.split("@")[0],
+        username: username || email.split("@")[0],
+        avatarUrl: avatarUrl || undefined,
+        lastUsed: Date.now(),
+      };
+      if (idx >= 0) {
+        list[idx] = current;
+      } else {
+        list.push(current);
+      }
+      localStorage.setItem("ethone_saved_accounts", JSON.stringify(list));
+      setSavedAccounts(list);
+    } catch {}
+  }, [email, displayName, username, avatarUrl]);
+
+  const handleSelectProfile = useCallback(
+    async (profileId: string) => {
+      if (profileId === active) return;
+      try {
+        await selectProfile(profileId);
+        await reloadActiveProfile();
+        const target = profiles.find((p) => p.id === profileId);
+        toast.success(
+          target
+            ? `${i18n("tbProfileSwitched", "Profil activé")} : ${target.name}`
+            : i18n("selected", "Profil sélectionné")
+        );
+      } catch (err) {
+        toast.error(String(err));
+      }
+    },
+    [active, selectProfile, reloadActiveProfile, profiles, toast, i18n]
+  );
+
+  const handleSwitchAccount = useCallback(
+    async (targetEmail: string) => {
+      if (targetEmail.toLowerCase() === (email || "").toLowerCase()) return;
+      setOpen(false);
+      await signOut();
+      router.push(`/login?email=${encodeURIComponent(targetEmail)}`);
+    },
+    [email, signOut, router]
+  );
+
+  const handleAddAccount = useCallback(async () => {
+    setOpen(false);
+    await signOut();
+    router.push("/login?switch=1");
+  }, [signOut, router]);
 
   const handleSignOut = useCallback(async () => {
     setOpen(false);
@@ -95,7 +185,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
     return CHANGELOG_BY_LANG[settings.language] || CHANGELOG;
   }, [settings.language]);
 
-  const VERSION_LABEL = changelog[0]?.version || "v1.72.0";
+  const VERSION_LABEL = changelog[0]?.version || "v1.75.29";
 
   const isOwner = Boolean(email && email.toLowerCase() === ADMIN_EMAIL.toLowerCase());
   const mod = useModKey();
@@ -194,11 +284,8 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
           </button>
         </PopoverTrigger>
 
-        <PopoverContent className="ethone-menu w-[304px] max-w-[calc(100vw-1.5rem)] overflow-hidden p-0 z-[var(--z-dropdown)]">
+        <PopoverContent className="ethone-menu w-[320px] max-w-[calc(100vw-1.5rem)] max-h-[85vh] overflow-y-auto os-scroll [scrollbar-width:thin] p-0 z-[var(--z-dropdown)]">
           <div data-testid={`${dataTestId}-menu`} data-open={open ? "true" : "false"} className="flex w-full select-none flex-col p-2.5">
-            {/* En-tête : avatar, nom, identifiant. Pas de pastille de statut ici : le sélecteur STATUT
-                juste en dessous montre déjà le statut actuel avec son libellé — la dupliquer sur l'avatar
-                (en plus de celle du bouton du topbar) faisait deux/trois pastilles pour la même info. */}
             <div className="flex items-center gap-3 px-1.5 pb-2.5 pt-1.5">
               <div className="relative h-12 w-12 shrink-0">
                 <button
@@ -237,6 +324,14 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
                     </span>
                   )}
                 </p>
+                {activeProfile && (
+                  <div className="mt-1.5 flex items-center gap-1.5">
+                    <span className="inline-flex items-center gap-1 rounded-md bg-[var(--menu-kbd-bg)] px-1.5 py-0.5 text-[10px] font-medium text-[var(--text-muted)]">
+                      <span className={cn("h-1.5 w-1.5 rounded-full shrink-0", ACCENT_DOT_MAP[activeProfile.accent] || "bg-emerald-400")} />
+                      <span className="truncate max-w-[14ch]">{activeProfile.name}</span>
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -295,6 +390,149 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
                 {item.badge && <span className="ethone-menu-hint">{item.badge}</span>}
               </button>
             ))}
+
+            <div className="ethone-menu-sep" />
+
+            <button
+              type="button"
+              onClick={() => setShowProfileSwitcher((prev) => !prev)}
+              className="ethone-menu-item justify-between"
+            >
+              <div className="flex items-center gap-2 min-w-0">
+                <Icon name="users" />
+                <span className="truncate">{i18n("tbSwitchProfile", "Changer de profil")}</span>
+              </div>
+              <div className="flex items-center gap-1.5 shrink-0">
+                <span className="ethone-menu-hint max-w-[12ch] truncate">
+                  {activeProfile?.name || "Personnel"}
+                </span>
+                <Icon
+                  name="caret-down"
+                  className={cn(
+                    "h-3 w-3 text-[var(--text-muted)] transition-transform duration-200",
+                    showProfileSwitcher ? "rotate-180" : ""
+                  )}
+                />
+              </div>
+            </button>
+
+            {showProfileSwitcher && (
+              <div className="mx-1 my-1 flex flex-col gap-1 rounded-xl bg-[var(--menu-tile)] p-2 border border-[var(--panel-border)]/50">
+                <div className="flex items-center justify-between px-1 pb-1 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+                  <span>{i18n("tbProfiles", "Profils")}</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setOpen(false);
+                      router.push("/profile-selection");
+                    }}
+                    className="text-[10px] text-[var(--accent-primary)] hover:underline cursor-pointer"
+                  >
+                    {i18n("tbManage", "Gérer")}
+                  </button>
+                </div>
+
+                <div className="flex flex-col gap-0.5">
+                  {profiles.map((p) => {
+                    const isActive = p.id === active;
+                    const dotClass = ACCENT_DOT_MAP[p.accent] || "bg-emerald-400";
+                    return (
+                      <button
+                        key={p.id}
+                        type="button"
+                        onClick={() => handleSelectProfile(p.id)}
+                        className={cn(
+                          "flex w-full items-center justify-between rounded-lg px-2 py-1.5 text-left text-xs transition-colors cursor-pointer",
+                          isActive
+                            ? "bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] font-medium"
+                            : "text-[var(--text-primary)] hover:bg-[var(--surface-hover)]"
+                        )}
+                      >
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span className={cn("h-2 w-2 rounded-full shrink-0", dotClass)} />
+                          <span className="truncate">{p.name}</span>
+                          {p.workspace && (
+                            <span className="shrink-0 text-[10px] text-[var(--text-muted)] capitalize">
+                              ({p.workspace})
+                            </span>
+                          )}
+                        </div>
+                        {isActive && (
+                          <Icon name="check" className="h-3.5 w-3.5 shrink-0 text-[var(--accent-primary)]" />
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {savedAccounts.length > 1 && (
+                  <>
+                    <div className="my-1 border-t border-[var(--panel-border)]/40" />
+                    <div className="px-1 pb-1 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+                      {i18n("tbSavedAccounts", "Comptes enregistrés")}
+                    </div>
+                    <div className="flex flex-col gap-0.5">
+                      {savedAccounts.map((acc) => {
+                        const isCurrent = acc.email.toLowerCase() === (email || "").toLowerCase();
+                        return (
+                          <button
+                            key={acc.id}
+                            type="button"
+                            onClick={() => !isCurrent && handleSwitchAccount(acc.email)}
+                            disabled={isCurrent}
+                            className={cn(
+                              "flex w-full items-center justify-between rounded-lg px-2 py-1.5 text-left text-xs transition-colors",
+                              isCurrent
+                                ? "opacity-80 cursor-default"
+                                : "text-[var(--text-primary)] hover:bg-[var(--surface-hover)] cursor-pointer"
+                            )}
+                          >
+                            <div className="flex items-center gap-2 min-w-0">
+                              <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[var(--surface-raised)] text-[10px] font-bold text-[var(--accent-primary)] overflow-hidden">
+                                {acc.avatarUrl ? (
+                                  <ClientImage src={acc.avatarUrl} alt="" width={20} height={20} className="h-full w-full object-cover" />
+                                ) : (
+                                  <span>{acc.displayName.slice(0, 1).toUpperCase()}</span>
+                                )}
+                              </div>
+                              <div className="flex flex-col min-w-0">
+                                <span className="truncate leading-tight font-medium">{acc.displayName}</span>
+                                <span className="truncate text-[10px] text-[var(--text-muted)] leading-tight">{acc.email}</span>
+                              </div>
+                            </div>
+                            {isCurrent && (
+                              <Icon name="check" className="h-3.5 w-3.5 shrink-0 text-[var(--accent-primary)]" />
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </>
+                )}
+
+                <div className="mt-1 pt-1 border-t border-[var(--panel-border)]/40 flex items-center justify-between gap-1">
+                  <button
+                    type="button"
+                    onClick={handleAddAccount}
+                    className="flex items-center gap-1.5 px-2 py-1 text-[11px] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
+                  >
+                    <Icon name="plus" className="h-3.5 w-3.5" />
+                    <span>{i18n("tbAddAccount", "Ajouter un compte")}</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setOpen(false);
+                      router.push("/profile-selection");
+                    }}
+                    className="flex items-center gap-1.5 px-2 py-1 text-[11px] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
+                  >
+                    <Icon name="settings" className="h-3.5 w-3.5" />
+                    <span>{i18n("tbManageProfiles", "Gérer les profils")}</span>
+                  </button>
+                </div>
+              </div>
+            )}
 
             <div className="ethone-menu-sep" />
 

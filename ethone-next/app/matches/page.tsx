@@ -51,9 +51,41 @@ export default function MatchesPage({ defaultTab }: { defaultTab?: string }) {
   const skipEntranceAnimation = Boolean(settings.reducedMotion) || Boolean(osReducedMotion);
   const { success, error: showError } = useToast();
   const [tab, setTab] = useState(() => {
+    if (typeof window !== "undefined") {
+      const urlTab = new URLSearchParams(window.location.search).get("tab");
+      if (urlTab) {
+        if ((urlTab === "valorant-inventory" || urlTab === "valorant-store") && !isOwner) return "valorant";
+        return urlTab;
+      }
+    }
     if ((defaultTab === "valorant-inventory" || defaultTab === "valorant-store") && !isOwner) return "valorant";
     return defaultTab || "valorant";
   });
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const handleUrlTab = () => {
+      const urlTab = new URLSearchParams(window.location.search).get("tab");
+      if (urlTab) {
+        if ((urlTab === "valorant-inventory" || urlTab === "valorant-store") && !isOwner) {
+          setTab("valorant");
+        } else {
+          setTab(urlTab);
+        }
+      }
+    };
+    window.addEventListener("popstate", handleUrlTab);
+    return () => window.removeEventListener("popstate", handleUrlTab);
+  }, [isOwner]);
+
+  const selectTab = (nextTab: string) => {
+    setTab(nextTab);
+    if (typeof window !== "undefined") {
+      const url = new URL(window.location.href);
+      url.searchParams.set("tab", nextTab);
+      window.history.replaceState({}, "", url.toString());
+    }
+  };
   const [name, setName] = useState(() => {
     if (typeof window !== "undefined") {
       const stored = localStorage.getItem("ethone:tracker:riot_name");
@@ -92,7 +124,7 @@ export default function MatchesPage({ defaultTab }: { defaultTab?: string }) {
     <div className="flex h-full min-h-0 w-full flex-1 flex-col overflow-hidden">
       <RiotTrackerHeader
         activeGame={tab === "lol" || tab === "lol-rotation" ? "lol" : tab === "tft" ? "tft" : "valorant"}
-        onSelectGame={(g) => setTab(g)}
+        onSelectGame={(g) => selectTab(g)}
         currentProfileName={name}
         currentProfileTag={tag}
         onRiotIdChanged={(newName, newTag) => {
@@ -111,7 +143,7 @@ export default function MatchesPage({ defaultTab }: { defaultTab?: string }) {
         items={tabs}
         defaultActive="valorant"
         active={tab}
-        onChange={setTab}
+        onChange={selectTab}
       />
 
       <div className="min-h-0 min-w-0 flex-1 flex flex-col overflow-hidden">

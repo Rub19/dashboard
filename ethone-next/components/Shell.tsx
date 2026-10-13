@@ -13,6 +13,7 @@ import { ShortcutsProvider } from "@/components/ShortcutsProvider";
 import ProfileSync from "@/components/ProfileSync";
 import { AnimatedSidebarProvider } from "@/components/motion/animated-sidebar";
 import Sidebar from "@/components/Sidebar";
+import TrackerSidebar from "@/components/tracker/TrackerSidebar";
 import TopBar from "@/components/TopBar";
 import CommandPalette from "@/components/CommandPalette";
 import RefreshSpinner from "@/components/RefreshSpinner";
@@ -58,27 +59,34 @@ export default function Shell({ children }: { children: ReactNode }) {
           <PresenceProvider>
             <ShortcutsProvider>
               <SkipLink />
-              <div data-v8-shell data-tracker-fullscreen className="flex h-dvh max-h-dvh w-screen max-w-full flex-col overflow-clip bg-[var(--background)]">
-                <CommandPalette />
-                <DocumentMetadata />
-                <CosmicBackground />
-                <RefreshSpinner />
-                <VisualHaptics />
-                <PrivacyShield>
-                  <main
-                    data-v8-main
-                    id="main-content"
-                    className="relative z-0 flex h-full min-h-0 min-w-0 flex-1 flex-col outline-none overflow-y-auto overflow-x-hidden bg-transparent [overscroll-behavior:contain]"
-                    tabIndex={-1}
-                  >
-                    <ActivityJournalProvider>
-                      <PageTransition>
-                        <div className="h-full min-h-0 w-full flex-1 flex flex-col overflow-y-auto">{children}</div>
-                      </PageTransition>
-                    </ActivityJournalProvider>
-                  </main>
-                </PrivacyShield>
-              </div>
+              <AnimatedSidebarProvider
+                defaultOpen={false}
+                style={{ "--sidebar-width": "18rem", "--sidebar-width-icon": "5rem" }}
+                className="h-dvh max-h-dvh w-screen max-w-full overflow-clip bg-[var(--background)] p-0"
+              >
+                <TrackerSidebar />
+                <div data-v8-shell data-tracker-fullscreen className="flex min-h-0 min-w-0 flex-1 flex-col overflow-clip bg-[var(--background)]">
+                  <CommandPalette />
+                  <DocumentMetadata />
+                  <CosmicBackground />
+                  <RefreshSpinner />
+                  <VisualHaptics />
+                  <PrivacyShield>
+                    <main
+                      data-v8-main
+                      id="main-content"
+                      className="relative z-0 flex h-full min-h-0 min-w-0 flex-1 flex-col outline-none overflow-y-auto overflow-x-hidden bg-transparent [overscroll-behavior:contain]"
+                      tabIndex={-1}
+                    >
+                      <ActivityJournalProvider>
+                        <PageTransition>
+                          <div className="h-full min-h-0 w-full flex-1 flex flex-col overflow-y-auto">{children}</div>
+                        </PageTransition>
+                      </ActivityJournalProvider>
+                    </main>
+                  </PrivacyShield>
+                </div>
+              </AnimatedSidebarProvider>
               <ShortcutsOverlay />
               <KeyboardShortcuts />
             </ShortcutsProvider>

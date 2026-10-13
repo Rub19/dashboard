@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.60 — 2026-10-14
+
+**Tracker Riot : nouvelle barre latérale dédiée (Riot, Trackers, Brain & Notes)**
+
+- Rétablissement et intégration d'une barre latérale dédiée (`TrackerSidebar`) spécifiquement sur le site Tracker.
+- Raccourcis directs vers l'écosystème Riot Games (Hub, VALORANT, League of Legends, Teamfight Tactics, Matchs direct, Inventaire skins).
+- Liens intégrés vers les trackers multi-jeux (Tracker GG, Apex Legends, Hub Jeux) et les espaces de travail (Brain IA, Notes, Tâches, Scratchpad).
+- Isolation stricte sur les routes du tracker sans réintroduire le Dock ni la Dynamic Island, et sans impacter ETHONE OS.
+
 ## v1.75.59 — 2026-10-13
 
 **Tracker Riot : suppression intégrale des placeholders et données factices**

@@ -40,6 +40,8 @@ import {
 import GameBrandIcon from "@/components/GameBrandIcon";
 import RiotTrackerConnectModal from "@/components/tracker/RiotTrackerConnectModal";
 import ValorantFriendCompareModal from "@/components/tracker/ValorantFriendCompareModal";
+import { useAnimatedSidebar } from "@/components/motion/animated-sidebar";
+import { Icon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import { EASE_SNAP, EASE_OUT } from "@/lib/ease";
 
@@ -48,8 +50,36 @@ type GameTab = "valorant" | "lol" | "tft";
 export default function RiotGamingHome() {
   const { settings } = useSettings();
   const { success, error: showError } = useToast();
+  const { open, setOpen } = useAnimatedSidebar();
 
-  const [activeGame, setActiveGame] = useState<GameTab>("valorant");
+  const [activeGame, setActiveGame] = useState<GameTab>(() => {
+    if (typeof window !== "undefined") {
+      const urlTab = new URLSearchParams(window.location.search).get("tab") || new URLSearchParams(window.location.search).get("game");
+      if (urlTab === "lol" || urlTab === "tft" || urlTab === "valorant") return urlTab;
+    }
+    return "valorant";
+  });
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const handleUrlTab = () => {
+      const urlTab = new URLSearchParams(window.location.search).get("tab") || new URLSearchParams(window.location.search).get("game");
+      if (urlTab === "lol" || urlTab === "tft" || urlTab === "valorant") {
+        setActiveGame(urlTab as GameTab);
+      }
+    };
+    window.addEventListener("popstate", handleUrlTab);
+    return () => window.removeEventListener("popstate", handleUrlTab);
+  }, []);
+
+  const selectGameTab = useCallback((game: GameTab) => {
+    setActiveGame(game);
+    if (typeof window !== "undefined") {
+      const url = new URL(window.location.href);
+      url.searchParams.set("tab", game);
+      window.history.replaceState({}, "", url.toString());
+    }
+  }, []);
 
   const [riotName, setRiotName] = useState(() => {
     if (typeof window !== "undefined") {
@@ -174,6 +204,15 @@ export default function RiotGamingHome() {
           <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div className="space-y-2 min-w-0">
               <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setOpen(!open)}
+                  className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)]/70 text-[var(--text-muted)] hover:border-rose-500/40 hover:text-[var(--text-primary)] transition-all active:scale-95 cursor-pointer shadow-sm"
+                  title={open ? "Réduire le menu" : "Ouvrir le menu"}
+                  aria-label="Basculer la barre latérale"
+                >
+                  <Icon name={open ? "sidebar-simple" : "sidebar"} className="h-3.5 w-3.5" />
+                </button>
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/40 bg-rose-500/15 px-2.5 py-0.5 text-[10px] font-bold text-rose-300 uppercase tracking-wider">
                   <span className="h-1.5 w-1.5 rounded-full bg-rose-400 animate-pulse" />
                   Riot Games Hub #1
@@ -212,7 +251,7 @@ export default function RiotGamingHome() {
           <div className="flex items-center gap-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/90 p-1 backdrop-blur-xl shadow-md">
             <button
               type="button"
-              onClick={() => setActiveGame("valorant")}
+              onClick={() => selectGameTab("valorant")}
               className={cn(
                 "flex items-center gap-2 rounded-[var(--inset-radius)] px-3.5 py-2 text-xs font-bold transition-all cursor-pointer",
                 activeGame === "valorant"
@@ -226,7 +265,7 @@ export default function RiotGamingHome() {
 
             <button
               type="button"
-              onClick={() => setActiveGame("lol")}
+              onClick={() => selectGameTab("lol")}
               className={cn(
                 "flex items-center gap-2 rounded-[var(--inset-radius)] px-3.5 py-2 text-xs font-bold transition-all cursor-pointer",
                 activeGame === "lol"
@@ -240,7 +279,7 @@ export default function RiotGamingHome() {
 
             <button
               type="button"
-              onClick={() => setActiveGame("tft")}
+              onClick={() => selectGameTab("tft")}
               className={cn(
                 "flex items-center gap-2 rounded-[var(--inset-radius)] px-3.5 py-2 text-xs font-bold transition-all cursor-pointer",
                 activeGame === "tft"

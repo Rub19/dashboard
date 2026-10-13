@@ -54699,9 +54699,57 @@ const v12901_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12901_fr, v12900_fr, v12899_fr, v12898_fr, v12897_fr, v12896_fr, v12895_fr, v12894_fr, v12893_fr, v12892_fr);
-CHANGELOG_BY_LANG.en.unshift(v12901_en, v12900_en, v12899_en, v12898_en, v12897_en, v12896_en, v12895_en, v12894_en, v12893_en, v12892_en);
-CHANGELOG_BY_LANG.es.unshift(v12901_es, v12900_es, v12899_es, v12898_es, v12897_es, v12896_es, v12895_es, v12894_es, v12893_es, v12892_es);
-CHANGELOG_BY_LANG.de.unshift(v12901_de, v12900_de, v12899_de, v12898_de, v12897_de, v12896_de, v12895_de, v12894_de, v12893_de, v12892_de);
+const v12902_fr: ChangelogEntry = {
+  version: "v1.75.60",
+  date: "2026-10-14",
+  title: "Tracker Riot : nouvelle barre latérale dédiée (Riot, Trackers, Brain & Notes)",
+  items: [
+    "Intégration d'une barre latérale dédiée sur la page tracker avec navigation fluide et rétractable",
+    "Accès rapide aux jeux Riot (Hub, Valorant, League of Legends, Teamfight Tactics, Matchs, Inventaire)",
+    "Raccourcis intégrés vers les trackers (Tracker GG, Apex Legends, Jeux) et espaces de productivité (Brain IA, Notes, Tâches)",
+    "Isolation stricte sur les routes du tracker sans impacter le comportement standard d'ETHONE OS",
+  ],
+};
+
+const v12902_en: ChangelogEntry = {
+  version: "v1.75.60",
+  date: "2026-10-14",
+  title: "Riot Tracker: dedicated sidebar restoration (Riot, Trackers, Brain & Notes)",
+  items: [
+    "Integrated a dedicated collapsible sidebar on the tracker page with smooth animated navigation",
+    "Quick access to Riot games (Hub, Valorant, League of Legends, Teamfight Tactics, Matches, Inventory)",
+    "Integrated shortcuts to gaming trackers (Tracker GG, Apex Legends, Games) and productivity tools (Brain AI, Notes, Tasks)",
+    "Strict isolation scoped to tracker routes without impacting standard ETHONE OS layout",
+  ],
+};
+
+const v12902_es: ChangelogEntry = {
+  version: "v1.75.60",
+  date: "2026-10-14",
+  title: "Tracker Riot: nueva barra lateral dedicada (Riot, Trackers, Brain y Notes)",
+  items: [
+    "Integración de una barra lateral dedicada en la página del tracker con navegación fluida y retráctil",
+    "Acceso rápido a juegos de Riot (Hub, Valorant, League of Legends, Teamfight Tactics, Partidas, Inventario)",
+    "Accesos directos integrados a trackers (Tracker GG, Apex Legends, Juegos) y herramientas de productividad (Brain IA, Notas, Tareas)",
+    "Aislamiento estricto en rutas del tracker sin afectar el comportamiento estándar de ETHONE OS",
+  ],
+};
+
+const v12902_de: ChangelogEntry = {
+  version: "v1.75.60",
+  date: "2026-10-14",
+  title: "Riot Tracker: Dedizierte Seitenleiste (Riot, Tracker, Brain und Notizen)",
+  items: [
+    "Integration einer dedizierten animierten Seitenleiste auf der Tracker-Seite mit flüssiger Ein-/Ausklappfunktion",
+    "Schnellzugriff auf Riot-Spiele (Hub, Valorant, League of Legends, Teamfight Tactics, Matches, Inventar)",
+    "Integrierte Verknüpfungen zu Gaming-Trackern (Tracker GG, Apex Legends, Spiele) und Produktivitäts-Tools (Brain KI, Notizen, Aufgaben)",
+    "Strenge Isolierung für Tracker-Routen ohne Beeinträchtigung des Standard-ETHONE-OS-Verhaltens",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12902_fr, v12901_fr, v12900_fr, v12899_fr, v12898_fr, v12897_fr, v12896_fr, v12895_fr, v12894_fr, v12893_fr, v12892_fr);
+CHANGELOG_BY_LANG.en.unshift(v12902_en, v12901_en, v12900_en, v12899_en, v12898_en, v12897_en, v12896_en, v12895_en, v12894_en, v12893_en, v12892_en);
+CHANGELOG_BY_LANG.es.unshift(v12902_es, v12901_es, v12900_es, v12899_es, v12898_es, v12897_es, v12896_es, v12895_es, v12894_es, v12893_es, v12892_es);
+CHANGELOG_BY_LANG.de.unshift(v12902_de, v12901_de, v12900_de, v12899_de, v12898_de, v12897_de, v12896_de, v12895_de, v12894_de, v12893_de, v12892_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

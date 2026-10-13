@@ -1,5 +1,16 @@
 [
   {
+    "version": "v1.75.20",
+    "date": "2026-10-13",
+    "title": "Vitrine Bot : Carrousel Défilant Continu des Intégrations & Épuration des Cartes",
+    "items": [
+      "Carrousel défilant continu (Marquee) : transformation de la grille statique des intégrations en un bandeau défilant fluide à défilement horizontal infini avec masques en dégradé sur les bords et mise en pause automatique au survol.",
+      "Épuration complète des cartes : suppression intégrale des mentions de statut inférieures ('Intégration native', 'Connecté') et des badges superflus pour une présentation épurée et authentique fidèle aux maquettes.",
+      "Alignement icône et titre : disposition horizontale moderne avec icône de marque et libellé sur la même ligne.",
+      "Descriptions enrichies avec mots-clés colorés : intégration de la suite complète de 9 plateformes (Spotify, Instagram, X, Pinterest, SoundCloud, TikTok, Last.fm, YouTube, Twitch) avec surbrillance dynamique des fonctionnalités clés."
+    ]
+  },
+  {
     "version": "v1.75.19",
     "date": "2026-10-13",
     "title": "Vitrine Bot : Correction Avatar Discord, Lecteur Spotify et Démo Anti-Raid",

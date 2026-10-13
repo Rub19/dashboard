@@ -2,6 +2,23 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.20 — 2026-10-13
+
+**Vitrine Bot : Carrousel Défilant Continu des Intégrations & Épuration des Cartes**
+
+- **Carrousel Défilant Continu (Marquee)** :
+  - Remplacement de la grille statique des intégrations par un bandeau défilant fluide à translation continue (`@keyframes platform-marquee-scroll`), sans saccade ni à-coup.
+  - Masquage progressif sur les bords gauche et droit (`bg-gradient-to-r` et `bg-gradient-to-l`) pour un fondu naturel à l'entrée et à la sortie de l'écran.
+  - Mise en pause automatique et instantanée du défilement au survol de la souris (`animation-play-state: paused`) pour une lecture aisée de chaque intégration.
+  - Respect strict des préférences d'accessibilité (`prefers-reduced-motion: reduce`).
+- **Épuration Complète des Cartes Plateforme** :
+  - Suppression intégrale de la barre inférieure superflue (*Intégration native*, *Connecté •*).
+  - Suppression des badges et tags supérieurs encombrants (*14+ commandes*, *20+ commandes*, etc.).
+  - Nouvelle disposition du haut de carte avec boîte d'icône carrée arrondie (`rounded-xl`) et nom de la plateforme alignés sur la même ligne.
+- **Suite Complète de 9 Plateformes avec Mots-Clés Colorés** :
+  - Ajout des plateformes Instagram et X au carrousel aux côtés de Spotify, Pinterest, SoundCloud, TikTok, Last.fm, YouTube et Twitch.
+  - Intégration de descriptions percutantes et fidèles avec surbrillance dynamique des mots-clés selon la couleur officielle de chaque marque (vert Spotify, rose Instagram, blanc X, rouge Pinterest, orange SoundCloud, cyan TikTok, pourpre Twitch, etc.).
+
 ## v1.75.19 — 2026-10-13
 
 **Vitrine Bot : Correction Avatar Discord, Lecteur Spotify et Démo Anti-Raid**

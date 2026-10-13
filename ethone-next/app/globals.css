@@ -3039,8 +3039,31 @@ html[data-zen-mode="true"] [data-v8-main] {
     text-overflow: ellipsis;
   }
 }
+@keyframes platform-marquee-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
 
+.platform-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: platform-marquee-scroll 38s linear infinite;
+  will-change: transform;
+}
 
+.platform-marquee-track:hover {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .platform-marquee-track {
+    animation: none;
+  }
+}
 
 /* =====================================================
    Login cosmic background — arrière-plan nébuleux/ethone

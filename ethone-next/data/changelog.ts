@@ -52685,6 +52685,59 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_19_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_19_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_19_de);
 
+const v1_75_20_fr: ChangelogEntry = {
+  version: "v1.75.20",
+  date: "2026-10-13",
+  title: "Vitrine Bot : Carrousel Défilant Continu des Intégrations & Épuration des Cartes",
+  items: [
+    "Carrousel défilant continu (Marquee) : transformation de la grille statique des intégrations en un bandeau défilant fluide à défilement horizontal infini avec masques en dégradé sur les bords et mise en pause automatique au survol.",
+    "Épuration complète des cartes : suppression intégrale des mentions de statut inférieures ('Intégration native', 'Connecté') et des badges superflus pour une présentation épurée et authentique fidèle aux maquettes.",
+    "Alignement icône et titre : disposition horizontale moderne avec icône de marque et libellé sur la même ligne.",
+    "Descriptions enrichies avec mots-clés colorés : intégration de la suite complète de 9 plateformes (Spotify, Instagram, X, Pinterest, SoundCloud, TikTok, Last.fm, YouTube, Twitch) avec surbrillance dynamique des fonctionnalités clés.",
+  ],
+};
+
+const v1_75_20_en: ChangelogEntry = {
+  version: "v1.75.20",
+  date: "2026-10-13",
+  title: "Bot Showcase: Seamless Auto-Scrolling Platform Carousel & Cleaned Cards",
+  items: [
+    "Continuous auto-scrolling carousel (Marquee): converted static platform grid into a smooth infinite horizontal marquee ticker with edge gradient fade masks and pause-on-hover.",
+    "Clean card layout: completely removed lower status bars ('Native integration', 'Connected') and extraneous badge tags for a minimalist, authentic look.",
+    "Side-by-side header: aligned brand icon container and platform title on the same horizontal row.",
+    "Vibrant highlight keywords: expanded full suite of 9 platforms (Spotify, Instagram, X, Pinterest, SoundCloud, TikTok, Last.fm, YouTube, Twitch) with colored keyword accents.",
+  ],
+};
+
+const v1_75_20_es: ChangelogEntry = {
+  version: "v1.75.20",
+  date: "2026-10-13",
+  title: "Escaparate Bot: Carrusel Continuo de Integraciones y Tarjetas Depuradas",
+  items: [
+    "Carrusel continuo automático: conversión de la cuadrícula estática en un carrusel de desplazamiento horizontal infinito con degradados en los bordes y pausa al pasar el cursor.",
+    "Depuración completa de tarjetas: eliminación total de las etiquetas inferiores ('Integración nativa', 'Conectado') y distintivos para un diseño limpio y auténtico.",
+    "Alineación de icono y título en la misma fila horizontal.",
+    "Suite completa de 9 plataformas (Spotify, Instagram, X, Pinterest, SoundCloud, TikTok, Last.fm, YouTube, Twitch) con palabras clave resaltadas en color.",
+  ],
+};
+
+const v1_75_20_de: ChangelogEntry = {
+  version: "v1.75.20",
+  date: "2026-10-13",
+  title: "Bot-Landingpage: Endlos scrollendes Integrations-Karussell & Bereinigte Karten",
+  items: [
+    "Endlos laufendes Marquee-Karussell: Umstellung des statischen Rasters auf ein nahtloses horizontales Laufband mit Rand-Farbverläufen und Pause beim Überfahren mit der Maus.",
+    "Vollständige Bereinigung der Karten: Entfernung aller Statuszeilen ('Native Integration', 'Verbunden') und Tags für eine aufgeräumte Optik.",
+    "Moderne horizontale Ausrichtung von Icon und Plattform-Titel in einer Zeile.",
+    "Vollständige Palette von 9 Plattformen (Spotify, Instagram, X, Pinterest, SoundCloud, TikTok, Last.fm, YouTube, Twitch) mit farblich hervorgehobenen Schlüsselwörtern.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_20_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_20_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_20_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_20_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

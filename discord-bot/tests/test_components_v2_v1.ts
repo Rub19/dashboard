@@ -41,7 +41,7 @@ for (const lang of ['fr', 'en', 'es', 'de']) {
 }
 const homeJson = JSON.stringify(HelpPanel.buildView({ guildConfig: conf, requesterTag: 't', commands: [] }).components[0].toJSON());
 ok(homeJson.includes('etho_moderation'), 'accueil : émoji d\'application utilisé quand dispo');
-ok(HELP_CATEGORIES.length === 9, 'catégories intactes');
+ok(HELP_CATEGORIES.length === 10, 'catégories intactes');
 
 // /bot en V2 (info, status, ping)
 for (const sub of ['info', 'status', 'ping']) {

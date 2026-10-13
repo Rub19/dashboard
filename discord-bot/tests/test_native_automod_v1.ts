@@ -191,7 +191,7 @@ const keywordRule = {
   const { guild, calls } = makeGuild();
   await nativeAutomodService.create(guild, { name: 'Spam existant', triggerType: 'spam', actions: [{ type: 'block_message' }] });
   const res = await nativeAutomodService.createRecommended(guild, { alertChannelId: ALERT });
-  assert(res.created.length === 2 && res.skipped.length === 1 && res.skipped[0].name.includes('Spam'), 'recommandées: crée 2, ignore le spam déjà présent');
+  assert(res.created.length === 5 && res.skipped.length === 1 && res.skipped[0].name.includes('Spam'), 'recommandées: crée 5, ignore le spam déjà présent');
   const preset = calls.find((c) => c[0] === 'create' && c[1].triggerType === AutoModerationRuleTriggerType.KeywordPreset)![1];
   assert(preset.triggerMetadata.presets.length === 3 && preset.actions.some((a: any) => a.type === AutoModerationActionType.SendAlertMessage), 'recommandées: 3 presets + alerte');
 }

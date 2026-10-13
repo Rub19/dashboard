@@ -179,8 +179,10 @@ if (typeof window !== "undefined") {
   });
 }
 
+const EMPTY_STORE_STATE: VersionStoreState = { hasUpdate: false, currentData: null, newData: null };
+
 export function useVersionChecker(): UseVersionChecker {
-  const [state, setState] = useState<VersionStoreState>(() => currentStoreState);
+  const [state, setState] = useState<VersionStoreState>(EMPTY_STORE_STATE);
 
   useEffect(() => {
     setState(currentStoreState);

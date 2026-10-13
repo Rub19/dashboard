@@ -52829,6 +52829,54 @@ const v1_75_22_de: ChangelogEntry = {
   ],
 };
 
+const v1_75_23_fr: ChangelogEntry = {
+  version: "v1.75.23",
+  date: "2026-10-13",
+  title: "Hydratation Vitrine Bot & Intégrations Complètes Instagram et X (Twitter)",
+  items: [
+    "Correction définitive de l'erreur d'hydratation React #418 sur la vitrine bot : synchronisation du state initial de useVersionChecker et protection de montage pour VersionPill évitant tout blocage d'opacité à 0.",
+    "Résilience de la vitrine bot : affichage garanti immédiat du hero, en-tête et simulateur dès le rendu SSR sans dépendance bloquante envers les animations client ou le mode reduced-motion.",
+    "Intégrations complètes Instagram et X (Twitter) dans le bot Discord : création des commandes dédiées /instagram et /twitter avec recherche de profils, extraction de posts et embeds interactifs officiels.",
+  ],
+};
+
+const v1_75_23_en: ChangelogEntry = {
+  version: "v1.75.23",
+  date: "2026-10-13",
+  title: "Bot Showcase Hydration Fix & Full Instagram & X (Twitter) Bot Integrations",
+  items: [
+    "Fixed React hydration mismatch error #418 on bot showcase: synchronized useVersionChecker initial state and added mount guards to VersionPill.",
+    "Resilient bot showcase rendering: hero elements, header, and chat simulator render with immediate visibility from SSR HTML without blocking on client animation triggers.",
+    "Complete Instagram and X (Twitter) Discord bot integrations: added dedicated /instagram and /twitter commands with profile lookup, post inspection, and official embeds.",
+  ],
+};
+
+const v1_75_23_es: ChangelogEntry = {
+  version: "v1.75.23",
+  date: "2026-10-13",
+  title: "Corrección de Hidratación en Vitrina del Bot e Integraciones Instagram y X (Twitter)",
+  items: [
+    "Corrección del error de hidratación React #418 en la vitrina del bot: sincronización del estado inicial de useVersionChecker y protección de montaje en VersionPill.",
+    "Visibilidad inmediata de elementos hero, encabezado y simulador desde el HTML SSR sin depender de disparadores de animación del cliente.",
+    "Integración de comandos dedicados /instagram y /twitter en el bot de Discord con búsqueda de perfiles e inspección de posts.",
+  ],
+};
+
+const v1_75_23_de: ChangelogEntry = {
+  version: "v1.75.23",
+  date: "2026-10-13",
+  title: "Hydrations-Korrektur Bot-Landingpage & Instagram- und X-Integrationen",
+  items: [
+    "Behebung des React-Hydrationsfehlers #418 auf der Bot-Landingpage durch konsistenten Initial-State in useVersionChecker und Mount-Guard in VersionPill.",
+    "Sofortige Sichtbarkeit aller Hero-Elemente und des Simulators direkt aus dem SSR-HTML.",
+    "Dedizierte Discord-Bot-Befehle /instagram und /twitter mit Profilsuche und Post-Inspektion.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_23_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_23_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_23_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_23_de);
 CHANGELOG_BY_LANG.fr.unshift(v1_75_22_fr);
 CHANGELOG_BY_LANG.en.unshift(v1_75_22_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_22_es);

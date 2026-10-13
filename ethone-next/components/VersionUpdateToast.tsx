@@ -58,7 +58,7 @@ export default function VersionUpdateToast() {
     setShowChangelog(true);
   }
 
-  if (pathname === "/leaderboard" || pathname === "/leaderboard/") return null;
+  if (pathname?.startsWith("/bot") || pathname?.startsWith("/docs") || pathname === "/leaderboard" || pathname === "/leaderboard/") return null;
 
   return (
     <>

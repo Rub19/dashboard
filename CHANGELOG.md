@@ -2,6 +2,19 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.23 — 2026-10-13
+
+**Hydratation Vitrine Bot & Intégrations Complètes Instagram et X (Twitter)**
+
+- **Correction Définitive de l'Hydratation React #418 & Opacité Vitrine** :
+  - Résolution de l'écart d'hydratation serveur/client : harmonisation de l'état initial de `useVersionChecker` et garde de montage sur `VersionPill`.
+  - Résilience garantie de la vitrine bot (`discord.ethone.dev/bot`) : affichage immédiat de l'en-tête, du titre hero, des boutons CTA et du simulateur de chat dès le flux HTML SSR (`initial={false}`), évitant tout écran noir ou blocage à `opacity: 0` même sous connexion lente ou mode `reduced-motion`.
+  - Ignorance automatique des bannières de mise à jour dashboard sur les routes vitrine et documentation (`/bot` et `/docs`).
+- **Intégrations Bot Discord Instagram & X (Twitter)** :
+  - Création des commandes Discord complètes `/instagram` (alias `!ig`, `!insta`) avec sous-commandes de recherche de profils créateurs et d'inspection de publications.
+  - Création des commandes Discord `/twitter` (alias `!x`, `!tweet`) avec recherche de comptes X, inspection de tweets et liens d'aperçu direct `fxtwitter`.
+  - Intégration des services respectifs et enregistrement dans le gestionnaire central des commandes (`commandHandler`).
+
 ## v1.75.22 — 2026-10-13
 
 **Trackers LoL & Valorant : Alignement Strict et Homogène des Colonnes par Équipe**

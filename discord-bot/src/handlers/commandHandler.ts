@@ -118,6 +118,8 @@ import {
 import { lastfmCommand, fmCommand } from '../commands/fun/lastfmCommands.js';
 import { tiktokCommand } from '../commands/fun/tiktokCommand.js';
 import { pinterestCommand } from '../commands/fun/pinterestCommand.js';
+import { instagramCommand } from '../commands/fun/instagramCommand.js';
+import { twitterCommand } from '../commands/fun/twitterCommand.js';
 
 import { config } from '../config.js';
 import { Command } from '../types/command.js';
@@ -289,6 +291,8 @@ class CommandRegistry {
     this.register(fmCommand);
     this.register(tiktokCommand);
     this.register(pinterestCommand);
+    this.register(instagramCommand);
+    this.register(twitterCommand);
   }
 
   public register(command: Command) {

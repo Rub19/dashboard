@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { ArrowUpCircle, Tag } from "@/components/icons/ph";
 import { useVersionChecker, type VersionData } from "@/lib/hooks/useVersionChecker";
 import { forceAppReload } from "@/lib/force-reload";
@@ -30,9 +31,28 @@ function isDifferentBuild(a: VersionData | null, b: VersionData | null): boolean
 }
 
 export default function VersionPill() {
+  const [mounted, setMounted] = useState(false);
   const i18n = useI18n();
   const { show } = useToast();
   const { currentData, newData, hasUpdate } = useVersionChecker();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <button
+        type="button"
+        tabIndex={-1}
+        aria-hidden="true"
+        className="flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[10px] font-mono font-medium transition-all bg-transparent text-[var(--text-muted)]"
+      >
+        <Tag className="h-3 w-3 text-[var(--text-muted)]" />
+        <span>—</span>
+      </button>
+    );
+  }
 
   const showUpdate = hasUpdate || isDifferentBuild(currentData, newData);
   const data = (showUpdate && newData ? newData : currentData) ?? newData ?? currentData;

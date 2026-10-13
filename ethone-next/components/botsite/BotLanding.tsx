@@ -49,6 +49,8 @@ const STATIC_FALLBACK_COMMANDS: PublicCommand[] = [
   { name: "lastfm", description: "Affiche vos statistiques d'écoute Last.fm et votre titre en direct.", category: "Fun", subcommands: [{ name: "nowplaying", description: "Titre en cours" }, { name: "recent", description: "Récents scrobbles" }, { name: "topartists", description: "Top artistes" }, { name: "taste", description: "Comparateur de goûts" }, { name: "login", description: "Associer son compte" }] },
   { name: "tiktok", description: "Recherche de profils, inspection de vidéos et liens de créateurs TikTok.", category: "Fun", subcommands: [{ name: "profile", description: "Affiche les infos d'un compte TikTok" }, { name: "video", description: "Inspecte une vidéo TikTok" }] },
   { name: "pinterest", description: "Recherche visuelle d'épingles, profils et tableaux d'inspiration Pinterest.", category: "Fun", subcommands: [{ name: "search", description: "Recherche visuelle de pins" }, { name: "pin", description: "Affiche le détail d'une épingle" }, { name: "user", description: "Affiche un profil créateur" }] },
+  { name: "instagram", description: "Recherche de profils, photos et inspection de publications Instagram.", category: "Fun", subcommands: [{ name: "user", description: "Affiche le profil et les photos" }, { name: "post", description: "Inspecte une publication Instagram" }] },
+  { name: "twitter", description: "Recherche de profils, tweets récents et inspection de posts X / Twitter.", category: "Fun", subcommands: [{ name: "user", description: "Affiche le profil d'un compte X" }, { name: "post", description: "Inspecte et partage un tweet" }] },
   { name: "lyrics", description: "Recherche les paroles complètes d'un morceau en direct avec synchronisation.", category: "Fun", subcommands: [] },
   { name: "quote", description: "Génère un visuel de citation stylisé aux couleurs de Discord.", category: "Fun", subcommands: [] },
   { name: "image", description: "Recherche des visuels et images haute résolution sur DuckDuckGo.", category: "Fun", subcommands: [] },
@@ -118,7 +120,7 @@ function Reveal({
   return (
     <motion.div
       className={className}
-      initial={reduced ? false : { opacity: 0, y, filter: "blur(6px)" }}
+      initial={reduced ? { opacity: 1, y: 0, filter: "none" } : { opacity: 0, y, filter: "blur(6px)" }}
       whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
       viewport={{ once: true, margin: "0px 0px -10% 0px" }}
       transition={{ duration: 0.7, ease: EASE_SNAP, delay }}
@@ -1118,7 +1120,7 @@ export default function BotLanding() {
       </div>
 
       <motion.header
-        initial={reduced ? false : { y: -20, opacity: 0 }}
+        initial={false}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: EASE_SNAP }}
         className={`sticky top-0 z-40 border-b backdrop-blur-xl transition-all duration-300 ${
@@ -1249,7 +1251,7 @@ export default function BotLanding() {
           <div className="grid items-center gap-12 lg:grid-cols-2">
             <div>
               <motion.div
-                initial={reduced ? false : { opacity: 0, y: 10 }}
+                initial={false}
                 animate={{ opacity: 1, y: 0 }}
                 className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3.5 py-1.5 text-xs font-semibold text-[#92C8D2] backdrop-blur-md"
               >
@@ -1261,7 +1263,7 @@ export default function BotLanding() {
               </motion.div>
 
               <motion.h1
-                initial={reduced ? false : { opacity: 0, y: 16 }}
+                initial={false}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, delay: 0.1 }}
                 className="mt-6 text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl"
@@ -1273,7 +1275,7 @@ export default function BotLanding() {
               </motion.h1>
 
               <motion.p
-                initial={reduced ? false : { opacity: 0, y: 16 }}
+                initial={false}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, delay: 0.2 }}
                 className="mt-6 text-base leading-relaxed text-zinc-400 sm:text-lg"
@@ -1282,7 +1284,7 @@ export default function BotLanding() {
               </motion.p>
 
               <motion.div
-                initial={reduced ? false : { opacity: 0, y: 16 }}
+                initial={false}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, delay: 0.3 }}
                 className="mt-8 flex flex-wrap items-center gap-4"
@@ -1318,7 +1320,7 @@ export default function BotLanding() {
             </div>
 
             <motion.div
-              initial={reduced ? false : { opacity: 0, scale: 0.95 }}
+              initial={false}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
@@ -1653,7 +1655,7 @@ export default function BotLanding() {
                 <motion.div
                   key={k}
                   className="flex h-9 w-9 items-center justify-center rounded-full bg-white/[0.04] text-zinc-500 ring-1 ring-white/[0.08]"
-                  initial={reduced ? false : { opacity: 0, y: 10 }}
+                  initial={reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.06 }}

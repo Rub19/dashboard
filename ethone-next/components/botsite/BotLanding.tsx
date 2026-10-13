@@ -333,12 +333,12 @@ function DiscordChatSimulator() {
                   </div>
 
                   <div className="mt-2 rounded-xl border-l-4 border-[#1DB954] bg-[#121b15]/95 p-4 shadow-lg shadow-black/40">
-                    <div className="flex items-center justify-between">
+                    <div className="flex h-5 items-center justify-between">
                       <span className="flex items-center gap-2 text-xs font-bold text-[#1DB954]">
                         <span className="h-2 w-2 animate-pulse rounded-full bg-[#1DB954]" />
                         En direct sur Spotify
                       </span>
-                      <div className="flex items-end gap-1">
+                      <div className="flex h-5 items-end gap-1 shrink-0">
                         {[0.6, 1.2, 0.4, 0.9, 0.7].map((h, i) => (
                           <motion.span
                             key={i}

@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.26 — 2026-10-13
+
+**Stabilisation de la Carte Spotify Vitrine : Suppression des Soubresauts de l'Égaliseur**
+
+- **Fixation de la Hauteur de l'Égaliseur Audio** :
+  - Définition d'une hauteur stricte `h-5` (20px) avec `items-end` sur le conteneur des barres animées de l'égaliseur et sur l'en-tête de carte.
+  - Élimination des variations d'échelle dynamiques (oscillations entre 172px et 177px) responsables des soubresauts verticaux du composant dans le simulateur Discord de la vitrine bot.
+
 ## v1.75.25 — 2026-10-13
 
 **Perfectionnement UI & Layout Wiki : Alignement Strict et Correction SVG**

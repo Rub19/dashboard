@@ -52957,6 +52957,50 @@ const v1_75_25_de: ChangelogEntry = {
   ],
 };
 
+const v1_75_26_fr: ChangelogEntry = {
+  version: "v1.75.26",
+  date: "2026-10-13",
+  title: "Stabilisation de la Carte Spotify : Suppression des Soubresauts de l'Égaliseur",
+  items: [
+    "Fixation de la hauteur de l'égaliseur audio Spotify : hauteur fixe h-5 (20px) sur le conteneur et l'en-tête de carte.",
+    "Élimination totale des variations d'échelle et des sursauts verticaux de la carte de prévisualisation dans le simulateur Discord.",
+  ],
+};
+
+const v1_75_26_en: ChangelogEntry = {
+  version: "v1.75.26",
+  date: "2026-10-13",
+  title: "Spotify Card Height Stabilization: Equalizer Bounce Elimination",
+  items: [
+    "Fixed h-5 (20px) height container for the animated audio equalizer bars.",
+    "Completely rock-solid Spotify Discord embed preview without vertical jumps.",
+  ],
+};
+
+const v1_75_26_es: ChangelogEntry = {
+  version: "v1.75.26",
+  date: "2026-10-13",
+  title: "Estabilización de la Tarjeta Spotify : Eliminación de Saltos del Ecualizador",
+  items: [
+    "Altura fija h-5 (20px) para el ecualizador y la cabecera de la tarjeta.",
+    "Eliminación total de saltos verticales en la vista previa del simulador Discord.",
+  ],
+};
+
+const v1_75_26_de: ChangelogEntry = {
+  version: "v1.75.26",
+  date: "2026-10-13",
+  title: "Stabilisierung der Spotify-Karte: Beseitigung von Equalizer-Sprüngen",
+  items: [
+    "Feste Höhe h-5 (20px) für Equalizer-Container und Kartenkopf.",
+    "Vollständig vibrationsfreie Spotify-Vorschaukarte im Discord-Simulator.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_26_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_26_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_26_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_26_de);
 CHANGELOG_BY_LANG.fr.unshift(v1_75_25_fr);
 CHANGELOG_BY_LANG.en.unshift(v1_75_25_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_25_es);

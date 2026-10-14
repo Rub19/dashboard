@@ -42,6 +42,7 @@ import {
 import {
   fetchLolMatchesDirect,
   type LolMatch,
+  getLolChampionIcon,
 } from "@/lib/lol-tracker";
 import GameBrandIcon from "@/components/GameBrandIcon";
 import RiotTrackerConnectModal from "@/components/tracker/RiotTrackerConnectModal";
@@ -1812,6 +1813,8 @@ export default function RiotGamingHome() {
                         const deaths = me?.stats?.deaths ?? 11;
                         const assists = me?.stats?.assists ?? 5;
                         const kda = deaths > 0 ? ((kills + assists) / deaths).toFixed(2) : String(kills + assists);
+                        const champName = me?.character || m.metadata?.agentName;
+                        const champIcon = m.metadata?.agentImageUrl || (champName ? getLolChampionIcon(champName) : null);
 
                         return (
                           <div
@@ -1825,11 +1828,14 @@ export default function RiotGamingHome() {
                                   isWin ? "bg-emerald-400" : "bg-rose-500"
                                 )}
                               />
-                              {m.metadata?.agentImageUrl && (
+                              {champIcon && (
                                 <img
-                                  src={m.metadata.agentImageUrl}
-                                  alt={me?.character || "Champion"}
+                                  src={champIcon}
+                                  alt={champName || "Champion"}
                                   className="h-8 w-8 rounded-md object-cover border border-white/10 shrink-0"
+                                  onError={(e) => {
+                                    (e.target as HTMLImageElement).style.display = "none";
+                                  }}
                                 />
                               )}
                               <div className="min-w-0">

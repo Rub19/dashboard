@@ -465,7 +465,7 @@ export default function TacticalCoachChatView({
   const { notify } = useToast();
 
   const playerName = valorantProfile?.name || riotName || (isEn ? "Player" : "Joueur");
-  const playerTag = valorantProfile?.tag || riotTag || "0001";
+  const playerTag = (valorantProfile?.tag || riotTag || "").replace(/^#/, "");
   const mainAgent = topValorantAgents[0]?.agentName || (isEn ? "Versatile" : "Polyvalent");
 
   const storageKey = useMemo(() => {
@@ -787,7 +787,7 @@ EXEMPLE STRICT DE SORTIE EN 4 CARTES (Respecte cette structure avec retours à l
                 </span>
                 {valorantProfile?.name && (
                   <span className="hidden md:inline-flex rounded bg-white/[0.06] border border-white/10 px-2 py-0.2 text-[10px] font-mono text-neutral-300">
-                    {valorantProfile.name} #{valorantProfile.tag || "0001"}
+                    {valorantProfile.name}{valorantProfile.tag ? ` #${valorantProfile.tag}` : ""}
                   </span>
                 )}
               </div>

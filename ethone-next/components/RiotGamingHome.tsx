@@ -198,8 +198,20 @@ export default function RiotGamingHome() {
     }
   }, []);
 
-  const [riotName, setRiotName] = useState("");
-  const [riotTag, setRiotTag] = useState("");
+  const [riotName, setRiotName] = useState(() => {
+    if (settings.liveTrackerRiotName) return settings.liveTrackerRiotName;
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("ethone:tracker:riotName") || "";
+    }
+    return "";
+  });
+  const [riotTag, setRiotTag] = useState(() => {
+    if (settings.liveTrackerRiotTag) return settings.liveTrackerRiotTag;
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("ethone:tracker:riotTag") || "";
+    }
+    return "";
+  });
 
   const [valorantProfile, setValorantProfile] = useState<ValorantAccountProfile | null>(null);
   const [valorantMatches, setValorantMatches] = useState<ValorantMatch[]>([]);
@@ -300,10 +312,14 @@ export default function RiotGamingHome() {
   }, []);
 
   useEffect(() => {
-    if (riotName && riotTag && (activeGame === "valorant" || activeGame === "lol")) {
-      loadPlayerData(riotName, riotTag, activeGame);
+    if (riotName && riotTag) {
+      if (activeGame === "valorant" || activeGame === "lol") {
+        loadPlayerData(riotName, riotTag, activeGame);
+      } else if (activeGame === "compare" && !valorantProfile && valorantMatches.length === 0) {
+        loadPlayerData(riotName, riotTag, "valorant");
+      }
     }
-  }, [activeGame, loadPlayerData, riotName, riotTag]);
+  }, [activeGame, loadPlayerData, riotName, riotTag, valorantProfile, valorantMatches.length]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();

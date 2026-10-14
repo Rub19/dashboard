@@ -35,6 +35,7 @@ import {
 import { fetchWorker } from "@/lib/api";
 import { fetchValorantMatchesDirect, type ValorantMatch } from "@/lib/valorant-tracker";
 import { useToast } from "@/components/ToastProvider";
+import { useSettings } from "@/components/SettingsProvider";
 import PlayerCardExportModal from "@/components/tracker/PlayerCardExportModal";
 import ValorantWeaponStatsCard from "@/components/tracker/ValorantWeaponStatsCard";
 import { cn } from "@/lib/utils";
@@ -73,6 +74,7 @@ function computeTelemetry(matches: ValorantMatch[], stats?: ValorantComputedStat
     return {
       totalKills: 0,
       totalDeaths: 0,
+      totalShots: 0,
       hsPct: hs,
       bsPct: bs,
       lsPct: ls,
@@ -163,6 +165,7 @@ function computeTelemetry(matches: ValorantMatch[], stats?: ValorantComputedStat
   return {
     totalKills,
     totalDeaths,
+    totalShots,
     hsPct,
     bsPct,
     lsPct,
@@ -190,13 +193,23 @@ export default function CompareWithFriendView({
       ? (localStorage.getItem("ethone:tracker:language") ?? "en") !== "fr"
       : true;
 
+  const { settings } = useSettings();
+
   const [p1Profile, setP1Profile] = useState<ValorantAccountProfile | null>(initialProfile || null);
   const [p1Stats, setP1Stats] = useState<ValorantComputedStats | null>(initialStats || null);
   const [p1Matches, setP1Matches] = useState<ValorantMatch[]>(initialMatches);
-  const [p1InputName, setP1InputName] = useState(myRiotName || "");
-  const [p1InputTag, setP1InputTag] = useState(myRiotTag || "");
+  const [p1InputName, setP1InputName] = useState(() => {
+    return myRiotName || settings.liveTrackerRiotName || (typeof window !== "undefined" ? localStorage.getItem("ethone:tracker:riotName") || "" : "");
+  });
+  const [p1InputTag, setP1InputTag] = useState(() => {
+    return myRiotTag || settings.liveTrackerRiotTag || (typeof window !== "undefined" ? localStorage.getItem("ethone:tracker:riotTag") || "" : "");
+  });
   const [p1Loading, setP1Loading] = useState(false);
   const [p1Editing, setP1Editing] = useState(false);
+
+  const hasPlayer1 = Boolean(p1Profile || p1Matches.length > 0);
+  const hasPlayer2 = Boolean(p2Profile || p2Matches.length > 0);
+  const hasBothPlayers = hasPlayer1 && hasPlayer2;
 
   const [p2InputName, setP2InputName] = useState("");
   const [p2InputTag, setP2InputTag] = useState("");
@@ -303,6 +316,12 @@ export default function CompareWithFriendView({
     },
     [isEn, showError, success]
   );
+
+  useEffect(() => {
+    if (!initialProfile && !p1Profile && p1InputName && p1InputTag && !p1Loading) {
+      handleFetchPlayer1(p1InputName, p1InputTag);
+    }
+  }, [initialProfile, p1Profile, p1InputName, p1InputTag, p1Loading, handleFetchPlayer1]);
 
   const handleFetchFriend = useCallback(
     async (name: string, tag: string) => {
@@ -429,8 +448,26 @@ export default function CompareWithFriendView({
   };
 
   const duoSynergy = useMemo(() => {
-    const p1Main = p1Agents[0]?.agentName || "Jett";
-    const p2Main = p2Agents[0]?.agentName || "Omen";
+    const p1Agent = p1Agents[0];
+    const p2Agent = p2Agents[0];
+
+    if (!p1Agent || !p2Agent) {
+      return {
+        available: false,
+        score: null,
+        title: isEn ? "Insufficient Match History" : "Données de Parties Insuffisantes",
+        desc: isEn
+          ? "Both players need recorded match telemetry to identify signature agents and determine duo synergy."
+          : "Les deux joueurs doivent avoir des parties enregistrées pour identifier leurs agents signatures et calculer la synergie.",
+        p1Role: p1Agent ? getAgentRole(p1Agent.agentName, isEn) : "—",
+        p2Role: p2Agent ? getAgentRole(p2Agent.agentName, isEn) : "—",
+        p1Main: p1Agent?.agentName || (isEn ? "Not enough matches" : "Parties insuffisantes"),
+        p2Main: p2Agent?.agentName || (isEn ? "Not enough matches" : "Parties insuffisantes"),
+      };
+    }
+
+    const p1Main = p1Agent.agentName;
+    const p2Main = p2Agent.agentName;
 
     const p1Role = getAgentRole(p1Main, isEn);
     const p2Role = getAgentRole(p2Main, isEn);
@@ -476,10 +513,21 @@ export default function CompareWithFriendView({
         : "Forte puissance sur ce rôle, mais attention au manque de diversité d'utilitaires sur les retakes.";
     }
 
-    return { score, title, desc, p1Role, p2Role, p1Main, p2Main };
+    return { available: true, score, title, desc, p1Role, p2Role, p1Main, p2Main };
   }, [p1Agents, p2Agents, isEn]);
 
   const advantageSummary = useMemo(() => {
+    if (!hasBothPlayers) {
+      return { p1Points: 0, p2Points: 0, leader: 0, hasData: false };
+    }
+
+    const p1HasData = p1Matches.length > 0 || p1Stats?.kdRatio !== null;
+    const p2HasData = p2Matches.length > 0 || p2Stats?.kdRatio !== null;
+
+    if (!p1HasData || !p2HasData) {
+      return { p1Points: 0, p2Points: 0, leader: 0, hasData: false };
+    }
+
     let p1Points = 0;
     let p2Points = 0;
 
@@ -507,33 +555,37 @@ export default function CompareWithFriendView({
     const leader =
       p1Points > p2Points ? 1 : p2Points > p1Points ? 2 : 0;
 
-    return { p1Points, p2Points, leader };
-  }, [p1Stats, p2Stats, p1Telemetry, p2Telemetry, p1Profile, p2Profile]);
+    return { p1Points, p2Points, leader, hasData: true };
+  }, [hasBothPlayers, p1Matches.length, p2Matches.length, p1Stats, p2Stats, p1Telemetry, p2Telemetry, p1Profile, p2Profile]);
 
   const handleCopySummary = async () => {
-    const p1Name = p1Profile?.name || myRiotName || (isEn ? "Player 1" : "Joueur 1");
-    const p1Tag = p1Profile?.tag || myRiotTag || "0001";
-    const p2Name = p2Profile?.name || (isEn ? "Player 2" : "Joueur 2");
-    const p2Tag = p2Profile?.tag || "0001";
+    if (!hasBothPlayers) {
+      showError(isEn ? "Load both players to export duel summary" : "Chargez les deux joueurs pour exporter le résumé du duel");
+      return;
+    }
+    const p1Name = p1Profile?.name || p1InputName || (isEn ? "Player 1" : "Joueur 1");
+    const p1Tag = p1Profile?.tag ? `#${p1Profile.tag}` : p1InputTag ? `#${p1InputTag}` : "";
+    const p2Name = p2Profile?.name || p2InputName || (isEn ? "Player 2" : "Joueur 2");
+    const p2Tag = p2Profile?.tag ? `#${p2Profile.tag}` : p2InputTag ? `#${p2InputTag}` : "";
 
     const text = isEn
       ? `⚔️ VALORANT HEAD-TO-HEAD DUEL on ETHONE TACTICAL:\n` +
-        `👤 ${p1Name}#${p1Tag} vs 👤 ${p2Name}#${p2Tag}\n\n` +
-        `• Rank: ${p1Profile?.currentTierPatched || "Unrated"} vs ${p2Profile?.currentTierPatched || "Unrated"}\n` +
+        `👤 ${p1Name}${p1Tag} vs 👤 ${p2Name}${p2Tag}\n\n` +
+        `• Rank: ${p1Profile?.currentTierPatched || "Unranked"} vs ${p2Profile?.currentTierPatched || "Unranked"}\n` +
         `• Win Rate: ${p1Stats?.winRate ?? "—"}% vs ${p2Stats?.winRate ?? "—"}%\n` +
         `• K/D Ratio: ${p1Stats?.kdRatio ?? "—"} vs ${p2Stats?.kdRatio ?? "—"}\n` +
         `• Headshot %: ${p1Telemetry.hsPct}% vs ${p2Telemetry.hsPct}%\n` +
         `• Damage/Round: ${p1Telemetry.adr} vs ${p2Telemetry.adr} ADR\n` +
-        `• Duo Synergy: ${duoSynergy.score}% (${duoSynergy.title})\n\n` +
+        (duoSynergy.available ? `• Duo Synergy: ${duoSynergy.score}% (${duoSynergy.title})\n\n` : "\n") +
         `Analyzed on ETHONE Tactical · 100% Local Fair-Play Vanguard`
       : `⚔️ DUEL VALORANT FACE-À-FACE sur ETHONE TACTICAL :\n` +
-        `👤 ${p1Name}#${p1Tag} vs 👤 ${p2Name}#${p2Tag}\n\n` +
+        `👤 ${p1Name}${p1Tag} vs 👤 ${p2Name}${p2Tag}\n\n` +
         `• Rang : ${p1Profile?.currentTierPatched || "Non classé"} vs ${p2Profile?.currentTierPatched || "Non classé"}\n` +
-        `• Win Rate : ${p1Stats?.winRate ?? "—"}% vs ${p2Stats?.winRate ?? "—"}%\n` +
+        `• Victoires : ${p1Stats?.winRate ?? "—"}% vs ${p2Stats?.winRate ?? "—"}%\n` +
         `• Ratio K/D : ${p1Stats?.kdRatio ?? "—"} vs ${p2Stats?.kdRatio ?? "—"}\n` +
-        `• Précision Tête : ${p1Telemetry.hsPct}% vs ${p2Telemetry.hsPct}%\n` +
+        `• Tirs Tête : ${p1Telemetry.hsPct}% vs ${p2Telemetry.hsPct}%\n` +
         `• Dégâts/Round : ${p1Telemetry.adr} vs ${p2Telemetry.adr} ADR\n` +
-        `• Synergie Duo : ${duoSynergy.score}% (${duoSynergy.title})\n\n` +
+        (duoSynergy.available ? `• Synergie Duo : ${duoSynergy.score}% (${duoSynergy.title})\n\n` : "\n") +
         `Analysé sur ETHONE Tactical · 100% Local Fair-Play Vanguard`;
 
     try {
@@ -840,7 +892,7 @@ export default function CompareWithFriendView({
             <div className="rounded-xl bg-black/25 border border-white/[0.05] p-2">
               <span className="text-[10px] font-mono text-neutral-400 block">{isEn ? "Headshot" : "Tête"}</span>
               <p className="text-sm font-bold font-mono text-cyan-300 mt-0.5">
-                {p1Telemetry.hsPct}%
+                {p1Matches.length > 0 && p1Telemetry.hsPct > 0 ? `${p1Telemetry.hsPct}%` : "—"}
               </p>
             </div>
           </div>
@@ -998,341 +1050,431 @@ export default function CompareWithFriendView({
             <div className="rounded-xl bg-black/25 border border-white/[0.05] p-2">
               <span className="text-[10px] font-mono text-neutral-400 block">{isEn ? "Headshot" : "Tête"}</span>
               <p className="text-sm font-bold font-mono text-cyan-300 mt-0.5">
-                {p2Telemetry.hsPct > 0 ? `${p2Telemetry.hsPct}%` : "—"}
+                {p2Matches.length > 0 && p2Telemetry.hsPct > 0 ? `${p2Telemetry.hsPct}%` : "—"}
               </p>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="rounded-3xl border border-white/[0.08] bg-white/[0.03] p-5 backdrop-blur-xl shadow-sm space-y-4">
-        <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
-          <div className="flex items-center gap-2">
-            <Trophy className="h-4 w-4 text-amber-400" />
-            <h3 className="font-mono text-sm font-bold text-white uppercase tracking-wider">
-              {isEn ? "Tactical Advantage & Duel Verdict" : "Avantage Tactique & Verdict du Duel"}
+      {!hasBothPlayers ? (
+        <div className="rounded-3xl border border-white/[0.08] bg-white/[0.02] p-8 sm:p-10 backdrop-blur-xl shadow-lg text-center space-y-6">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-purple-500/20 via-white/5 to-cyan-500/20 border border-white/10 mx-auto text-white shadow-xl shadow-cyan-500/10">
+            <Swords className="h-8 w-8 text-cyan-400" />
+          </div>
+
+          <div className="max-w-md mx-auto space-y-2">
+            <h3 className="text-lg font-bold font-mono uppercase tracking-wider text-white">
+              {isEn ? "1v1 Head-to-Head Arena Standby" : "Arène de Confrontation 1v1 Prête"}
             </h3>
-          </div>
-          <span className="rounded-full bg-white/[0.06] border border-white/10 px-2.5 py-0.5 text-[10px] font-mono text-neutral-300">
-            {advantageSummary.leader === 1
-              ? isEn
-                ? "Player 1 Advantage"
-                : "Avantage Joueur 1"
-              : advantageSummary.leader === 2
-              ? isEn
-                ? "Player 2 Advantage"
-                : "Avantage Joueur 2"
-              : isEn
-              ? "Equally Matched"
-              : "Équilibre Parfait"}
-          </span>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          <div className="rounded-2xl border border-white/[0.06] bg-black/30 p-3.5 space-y-1">
-            <span className="text-[10px] font-mono text-neutral-400 uppercase tracking-wider block">
-              {isEn ? "Aim & Headshot" : "Précision & Tête"}
-            </span>
-            <p className="text-sm font-bold font-mono text-white">
-              {p1Telemetry.hsPct > p2Telemetry.hsPct
-                ? `${p1Profile?.name || "P1"} (+${p1Telemetry.hsPct - p2Telemetry.hsPct}%)`
-                : p2Telemetry.hsPct > p1Telemetry.hsPct
-                ? `${p2Profile?.name || "P2"} (+${p2Telemetry.hsPct - p1Telemetry.hsPct}%)`
-                : isEn
-                ? "Tie"
-                : "Égalité"}
+            <p className="text-xs text-neutral-400 font-sans leading-relaxed">
+              {isEn
+                ? "Enter your friend or rival's Riot ID above to calculate direct duel advantage, bilateral accuracy bars, body hit placement, and duo synergy."
+                : "Renseignez le Riot ID d'un(e) ami(e) ou d'un rival ci-dessus pour calculer l'avantage du duel, les jauges de précision bilatérales, la répartition des tirs et la synergie de duo."}
             </p>
           </div>
 
-          <div className="rounded-2xl border border-white/[0.06] bg-black/30 p-3.5 space-y-1">
-            <span className="text-[10px] font-mono text-neutral-400 uppercase tracking-wider block">
-              {isEn ? "Survival & K/D" : "Survie & K/D"}
-            </span>
-            <p className="text-sm font-bold font-mono text-white">
-              {Number(p1Stats?.kdRatio ?? 0) > Number(p2Stats?.kdRatio ?? 0)
-                ? `${p1Profile?.name || "P1"} (${p1Stats?.kdRatio})`
-                : Number(p2Stats?.kdRatio ?? 0) > Number(p1Stats?.kdRatio ?? 0)
-                ? `${p2Profile?.name || "P2"} (${p2Stats?.kdRatio})`
-                : isEn
-                ? "Tie"
-                : "Égalité"}
-            </p>
-          </div>
-
-          <div className="rounded-2xl border border-white/[0.06] bg-black/30 p-3.5 space-y-1">
-            <span className="text-[10px] font-mono text-neutral-400 uppercase tracking-wider block">
-              {isEn ? "Combat ADR" : "Impact ADR"}
-            </span>
-            <p className="text-sm font-bold font-mono text-white">
-              {p1Telemetry.adr > p2Telemetry.adr
-                ? `${p1Profile?.name || "P1"} (+${p1Telemetry.adr - p2Telemetry.adr} dmg)`
-                : p2Telemetry.adr > p1Telemetry.adr
-                ? `${p2Profile?.name || "P2"} (+${p2Telemetry.adr - p1Telemetry.adr} dmg)`
-                : isEn
-                ? "Tie"
-                : "Égalité"}
-            </p>
-          </div>
-
-          <div className="rounded-2xl border border-white/[0.06] bg-black/30 p-3.5 space-y-1">
-            <span className="text-[10px] font-mono text-neutral-400 uppercase tracking-wider block">
-              {isEn ? "Win Rate %" : "Taux de Victoire"}
-            </span>
-            <p className="text-sm font-bold font-mono text-white">
-              {(p1Stats?.winRate ?? 0) > (p2Stats?.winRate ?? 0)
-                ? `${p1Profile?.name || "P1"} (${p1Stats?.winRate}%)`
-                : (p2Stats?.winRate ?? 0) > (p1Stats?.winRate ?? 0)
-                ? `${p2Profile?.name || "P2"} (${p2Stats?.winRate}%)`
-                : isEn
-                ? "Tie"
-                : "Égalité"}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div className="rounded-3xl border border-white/[0.08] bg-white/[0.03] p-5 backdrop-blur-xl shadow-sm space-y-4">
-        <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
-          <div className="flex items-center gap-2">
-            <Target className="h-4 w-4 text-cyan-400" />
-            <h3 className="font-mono text-sm font-bold text-white uppercase tracking-wider">
-              {isEn ? "Bilateral Metric Breakdown" : "Comparaison Métrique Bilatérale"}
-            </h3>
-          </div>
-          <span className="text-xs text-neutral-400 font-mono">
-            {p1Profile?.name || "P1"} vs {p2Profile?.name || "P2"}
-          </span>
-        </div>
-
-        <div className="space-y-3">
-          {metricRows.map((m) => {
-            const total = (m.p1Val || 0) + (m.p2Val || 0);
-            const p1Pct = total > 0 ? Math.round((m.p1Val / total) * 100) : 50;
-            const p2Pct = 100 - p1Pct;
-
-            const isP1Adv = m.p1Val > m.p2Val;
-            const isP2Adv = m.p2Val > m.p1Val;
-
-            return (
-              <div
-                key={m.id}
-                className="rounded-2xl border border-white/[0.06] bg-black/30 p-3.5 sm:p-4 space-y-2.5 transition-all hover:bg-black/40"
-              >
-                <div className="flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-2 min-w-0">
-                    <span
-                      className={cn(
-                        "font-mono font-bold text-sm",
-                        isP1Adv ? "text-purple-300" : "text-neutral-300"
-                      )}
-                    >
-                      {m.p1Display}
-                    </span>
-                    {isP1Adv && m.formatDiff && (
-                      <span className="rounded bg-purple-500/20 border border-purple-500/30 px-1.5 py-0.2 text-[10px] font-mono text-purple-300">
-                        {m.formatDiff(m.p1Val - m.p2Val)}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="flex items-center gap-1.5 text-neutral-300 font-medium">
-                    {m.icon}
-                    <span className="text-xs font-mono">{m.label}</span>
-                  </div>
-
-                  <div className="flex items-center gap-2 justify-end min-w-0">
-                    {isP2Adv && m.formatDiff && (
-                      <span className="rounded bg-cyan-500/20 border border-cyan-500/30 px-1.5 py-0.2 text-[10px] font-mono text-cyan-300">
-                        {m.formatDiff(m.p2Val - m.p1Val)}
-                      </span>
-                    )}
-                    <span
-                      className={cn(
-                        "font-mono font-bold text-sm",
-                        isP2Adv ? "text-cyan-300" : "text-neutral-300"
-                      )}
-                    >
-                      {m.p2Display}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="w-full bg-white/[0.06] rounded-full h-2 overflow-hidden flex">
-                  <div
-                    className={cn(
-                      "h-full transition-all duration-500",
-                      isP1Adv ? "bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.4)]" : "bg-purple-500/60"
-                    )}
-                    style={{ width: `${p1Pct}%` }}
-                  />
-                  <div
-                    className={cn(
-                      "h-full transition-all duration-500",
-                      isP2Adv ? "bg-cyan-400 shadow-[0_0_10px_rgba(6,182,212,0.4)]" : "bg-cyan-500/60"
-                    )}
-                    style={{ width: `${p2Pct}%` }}
-                  />
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="rounded-3xl border border-white/[0.08] bg-white/[0.03] p-5 backdrop-blur-xl shadow-sm space-y-4">
-          <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
-            <div className="flex items-center gap-2">
-              <Target className="h-4 w-4 text-rose-400" />
-              <h3 className="font-mono text-sm font-bold text-white uppercase tracking-wider">
-                {isEn ? "Anatomical Hit Placement" : "Répartition Anatomique des Tirs"}
-              </h3>
-            </div>
-            <span className="text-[10px] font-mono text-neutral-400 uppercase">
-              {isEn ? "Crosshair Height" : "Hauteur Réticule"}
-            </span>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="rounded-2xl border border-purple-500/20 bg-purple-500/[0.04] p-3.5 space-y-2">
-              <span className="text-xs font-mono font-bold text-purple-300 block truncate">
-                {p1Profile?.name || "Player 1"}
+          {recentFriends.length > 0 && (
+            <div className="pt-4 border-t border-white/[0.06] max-w-lg mx-auto">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-500 block mb-2.5">
+                {isEn ? "Quick Compare with Recent Players:" : "Comparer rapidement avec un joueur récent :"}
               </span>
-              <div className="space-y-1.5 text-xs font-mono">
-                <div className="flex items-center justify-between">
-                  <span className="text-neutral-400">{isEn ? "Head" : "Tête"}</span>
-                  <span className="font-bold text-rose-400">{p1Telemetry.hsPct}%</span>
-                </div>
-                <div className="w-full bg-white/[0.06] rounded-full h-1.5 overflow-hidden">
-                  <div className="bg-rose-500 h-full rounded-full" style={{ width: `${p1Telemetry.hsPct}%` }} />
-                </div>
-
-                <div className="flex items-center justify-between pt-1">
-                  <span className="text-neutral-400">{isEn ? "Body" : "Corps"}</span>
-                  <span className="font-bold text-sky-400">{p1Telemetry.bsPct}%</span>
-                </div>
-                <div className="w-full bg-white/[0.06] rounded-full h-1.5 overflow-hidden">
-                  <div className="bg-sky-500 h-full rounded-full" style={{ width: `${p1Telemetry.bsPct}%` }} />
-                </div>
-
-                <div className="flex items-center justify-between pt-1">
-                  <span className="text-neutral-400">{isEn ? "Legs" : "Jambes"}</span>
-                  <span className="font-bold text-neutral-400">{p1Telemetry.lsPct}%</span>
-                </div>
-                <div className="w-full bg-white/[0.06] rounded-full h-1.5 overflow-hidden">
-                  <div className="bg-neutral-500 h-full rounded-full" style={{ width: `${p1Telemetry.lsPct}%` }} />
-                </div>
+              <div className="flex flex-wrap items-center justify-center gap-2">
+                {recentFriends.map((f) => (
+                  <button
+                    key={`${f.name}#${f.tag}`}
+                    type="button"
+                    onClick={() => {
+                      setP2InputName(f.name);
+                      setP2InputTag(f.tag);
+                      handleFetchFriend(f.name, f.tag);
+                    }}
+                    className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.04] hover:bg-white/[0.08] hover:border-cyan-500/40 px-3 py-1.5 text-xs font-mono text-neutral-200 hover:text-white transition-all cursor-pointer"
+                  >
+                    <User className="h-3 w-3 text-cyan-400" />
+                    <span>{f.name}#{f.tag}</span>
+                  </button>
+                ))}
               </div>
             </div>
+          )}
 
-            <div className="rounded-2xl border border-cyan-500/20 bg-cyan-500/[0.04] p-3.5 space-y-2">
-              <span className="text-xs font-mono font-bold text-cyan-300 block truncate">
-                {p2Profile?.name || (isEn ? "Friend" : "Ami")}
+          {p1Matches.length > 0 && (
+            <div className="pt-6 border-t border-white/[0.06] text-left space-y-2">
+              <span className="text-xs font-mono font-bold text-purple-300 block">
+                {p1Profile?.name || p1InputName} — {isEn ? "Current Weapon Telemetry" : "Télémétrie de vos Armes"}
               </span>
-              <div className="space-y-1.5 text-xs font-mono">
-                <div className="flex items-center justify-between">
-                  <span className="text-neutral-400">{isEn ? "Head" : "Tête"}</span>
-                  <span className="font-bold text-rose-400">{p2Telemetry.hsPct}%</span>
-                </div>
-                <div className="w-full bg-white/[0.06] rounded-full h-1.5 overflow-hidden">
-                  <div className="bg-rose-500 h-full rounded-full" style={{ width: `${p2Telemetry.hsPct}%` }} />
-                </div>
-
-                <div className="flex items-center justify-between pt-1">
-                  <span className="text-neutral-400">{isEn ? "Body" : "Corps"}</span>
-                  <span className="font-bold text-sky-400">{p2Telemetry.bsPct}%</span>
-                </div>
-                <div className="w-full bg-white/[0.06] rounded-full h-1.5 overflow-hidden">
-                  <div className="bg-sky-500 h-full rounded-full" style={{ width: `${p2Telemetry.bsPct}%` }} />
-                </div>
-
-                <div className="flex items-center justify-between pt-1">
-                  <span className="text-neutral-400">{isEn ? "Legs" : "Jambes"}</span>
-                  <span className="font-bold text-neutral-400">{p2Telemetry.lsPct}%</span>
-                </div>
-                <div className="w-full bg-white/[0.06] rounded-full h-1.5 overflow-hidden">
-                  <div className="bg-neutral-500 h-full rounded-full" style={{ width: `${p2Telemetry.lsPct}%` }} />
-                </div>
-              </div>
+              <ValorantWeaponStatsCard matches={p1Matches} isEn={isEn} />
             </div>
-          </div>
+          )}
         </div>
-
-        <div className="rounded-3xl border border-white/[0.08] bg-white/[0.03] p-5 backdrop-blur-xl shadow-sm space-y-4">
-          <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
-            <div className="flex items-center gap-2">
-              <Users className="h-4 w-4 text-purple-400" />
-              <h3 className="font-mono text-sm font-bold text-white uppercase tracking-wider">
-                {isEn ? "Duo Chemistry & Tactical Synergy" : "Synergie & Alchimie du Duo"}
-              </h3>
+      ) : (
+        <>
+          <div className="rounded-3xl border border-white/[0.08] bg-white/[0.03] p-5 backdrop-blur-xl shadow-sm space-y-4">
+            <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
+              <div className="flex items-center gap-2">
+                <Trophy className="h-4 w-4 text-amber-400" />
+                <h3 className="font-mono text-sm font-bold text-white uppercase tracking-wider">
+                  {isEn ? "Tactical Advantage & Duel Verdict" : "Avantage Tactique & Verdict du Duel"}
+                </h3>
+              </div>
+              <span className="rounded-full bg-white/[0.06] border border-white/10 px-2.5 py-0.5 text-[10px] font-mono text-neutral-300">
+                {!advantageSummary.hasData
+                  ? isEn
+                    ? "Awaiting Match Data"
+                    : "En attente de données"
+                  : advantageSummary.leader === 1
+                  ? isEn
+                    ? `${p1Profile?.name || p1InputName} Advantage`
+                    : `Avantage ${p1Profile?.name || p1InputName}`
+                  : advantageSummary.leader === 2
+                  ? isEn
+                    ? `${p2Profile?.name || p2InputName} Advantage`
+                    : `Avantage ${p2Profile?.name || p2InputName}`
+                  : isEn
+                  ? "Equally Matched"
+                  : "Équilibre Parfait"}
+              </span>
             </div>
-            <span className="rounded-full bg-purple-500/20 border border-purple-500/30 px-2.5 py-0.5 text-xs font-mono font-bold text-purple-300">
-              {duoSynergy.score}% {isEn ? "Synergy" : "Synergie"}
-            </span>
-          </div>
 
-          <div className="rounded-2xl border border-white/[0.06] bg-black/30 p-4 space-y-3">
-            <div className="flex items-center justify-between">
-              <div>
-                <h4 className="text-sm font-bold text-white">
-                  {duoSynergy.title}
-                </h4>
-                <p className="text-xs text-neutral-400 mt-0.5">
-                  {duoSynergy.p1Main} ({duoSynergy.p1Role}) + {duoSynergy.p2Main} ({duoSynergy.p2Role})
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              <div className="rounded-2xl border border-white/[0.06] bg-black/30 p-3.5 space-y-1">
+                <span className="text-[10px] font-mono text-neutral-400 uppercase tracking-wider block">
+                  {isEn ? "Aim & Headshot" : "Précision & Tête"}
+                </span>
+                <p className="text-sm font-bold font-mono text-white">
+                  {p1Telemetry.hsPct > p2Telemetry.hsPct
+                    ? `${p1Profile?.name || p1InputName} (+${p1Telemetry.hsPct - p2Telemetry.hsPct}%)`
+                    : p2Telemetry.hsPct > p1Telemetry.hsPct
+                    ? `${p2Profile?.name || p2InputName} (+${p2Telemetry.hsPct - p1Telemetry.hsPct}%)`
+                    : p1Telemetry.hsPct === 0 && p2Telemetry.hsPct === 0
+                    ? "—"
+                    : isEn
+                    ? "Tie"
+                    : "Égalité"}
                 </p>
               </div>
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-500/20 text-purple-300 font-mono font-bold text-sm">
-                {duoSynergy.score}
+
+              <div className="rounded-2xl border border-white/[0.06] bg-black/30 p-3.5 space-y-1">
+                <span className="text-[10px] font-mono text-neutral-400 uppercase tracking-wider block">
+                  {isEn ? "Survival & K/D" : "Survie & K/D"}
+                </span>
+                <p className="text-sm font-bold font-mono text-white">
+                  {Number(p1Stats?.kdRatio ?? 0) > Number(p2Stats?.kdRatio ?? 0)
+                    ? `${p1Profile?.name || p1InputName} (${p1Stats?.kdRatio})`
+                    : Number(p2Stats?.kdRatio ?? 0) > Number(p1Stats?.kdRatio ?? 0)
+                    ? `${p2Profile?.name || p2InputName} (${p2Stats?.kdRatio})`
+                    : !p1Stats?.kdRatio && !p2Stats?.kdRatio
+                    ? "—"
+                    : isEn
+                    ? "Tie"
+                    : "Égalité"}
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-white/[0.06] bg-black/30 p-3.5 space-y-1">
+                <span className="text-[10px] font-mono text-neutral-400 uppercase tracking-wider block">
+                  {isEn ? "Combat ADR" : "Impact ADR"}
+                </span>
+                <p className="text-sm font-bold font-mono text-white">
+                  {p1Telemetry.adr > p2Telemetry.adr
+                    ? `${p1Profile?.name || p1InputName} (+${p1Telemetry.adr - p2Telemetry.adr} dmg)`
+                    : p2Telemetry.adr > p1Telemetry.adr
+                    ? `${p2Profile?.name || p2InputName} (+${p2Telemetry.adr - p1Telemetry.adr} dmg)`
+                    : p1Telemetry.adr === 0 && p2Telemetry.adr === 0
+                    ? "—"
+                    : isEn
+                    ? "Tie"
+                    : "Égalité"}
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-white/[0.06] bg-black/30 p-3.5 space-y-1">
+                <span className="text-[10px] font-mono text-neutral-400 uppercase tracking-wider block">
+                  {isEn ? "Win Rate %" : "Taux de Victoire"}
+                </span>
+                <p className="text-sm font-bold font-mono text-white">
+                  {(p1Stats?.winRate ?? 0) > (p2Stats?.winRate ?? 0)
+                    ? `${p1Profile?.name || p1InputName} (${p1Stats?.winRate}%)`
+                    : (p2Stats?.winRate ?? 0) > (p1Stats?.winRate ?? 0)
+                    ? `${p2Profile?.name || p2InputName} (${p2Stats?.winRate}%)`
+                    : p1Stats?.winRate === null && p2Stats?.winRate === null
+                    ? "—"
+                    : isEn
+                    ? "Tie"
+                    : "Égalité"}
+                </p>
               </div>
             </div>
-
-            <p className="text-xs text-neutral-300 leading-relaxed font-sans border-t border-white/[0.05] pt-2.5">
-              {duoSynergy.desc}
-            </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 text-xs font-mono">
-            <div className="rounded-xl border border-white/[0.06] bg-black/20 p-2.5">
-              <span className="text-[10px] text-neutral-400 block">{isEn ? "P1 Signature" : "Signature J1"}</span>
-              <p className="font-bold text-purple-300 mt-0.5 truncate">{duoSynergy.p1Main}</p>
+          <div className="rounded-3xl border border-white/[0.08] bg-white/[0.03] p-5 backdrop-blur-xl shadow-sm space-y-4">
+            <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
+              <div className="flex items-center gap-2">
+                <Target className="h-4 w-4 text-cyan-400" />
+                <h3 className="font-mono text-sm font-bold text-white uppercase tracking-wider">
+                  {isEn ? "Bilateral Metric Breakdown" : "Comparaison Métrique Bilatérale"}
+                </h3>
+              </div>
+              <span className="text-xs text-neutral-400 font-mono">
+                {p1Profile?.name || p1InputName} vs {p2Profile?.name || p2InputName}
+              </span>
             </div>
-            <div className="rounded-xl border border-white/[0.06] bg-black/20 p-2.5">
-              <span className="text-[10px] text-neutral-400 block">{isEn ? "P2 Signature" : "Signature J2"}</span>
-              <p className="font-bold text-cyan-300 mt-0.5 truncate">{duoSynergy.p2Main}</p>
+
+            <div className="space-y-3">
+              {metricRows.map((m) => {
+                const total = (m.p1Val || 0) + (m.p2Val || 0);
+                const p1Pct = total > 0 ? Math.round((m.p1Val / total) * 100) : 50;
+                const p2Pct = 100 - p1Pct;
+
+                const isP1Adv = m.p1Val > m.p2Val;
+                const isP2Adv = m.p2Val > m.p1Val;
+
+                return (
+                  <div
+                    key={m.id}
+                    className="rounded-2xl border border-white/[0.06] bg-black/30 p-3.5 sm:p-4 space-y-2.5 transition-all hover:bg-black/40"
+                  >
+                    <div className="flex items-center justify-between text-xs">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span
+                          className={cn(
+                            "font-mono font-bold text-sm",
+                            isP1Adv ? "text-purple-300" : "text-neutral-300"
+                          )}
+                        >
+                          {m.p1Display}
+                        </span>
+                        {isP1Adv && m.formatDiff && (
+                          <span className="rounded bg-purple-500/20 border border-purple-500/30 px-1.5 py-0.2 text-[10px] font-mono text-purple-300">
+                            {m.formatDiff(m.p1Val - m.p2Val)}
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="flex items-center gap-1.5 text-neutral-300 font-medium">
+                        {m.icon}
+                        <span className="text-xs font-mono">{m.label}</span>
+                      </div>
+
+                      <div className="flex items-center gap-2 justify-end min-w-0">
+                        {isP2Adv && m.formatDiff && (
+                          <span className="rounded bg-cyan-500/20 border border-cyan-500/30 px-1.5 py-0.2 text-[10px] font-mono text-cyan-300">
+                            {m.formatDiff(m.p2Val - m.p1Val)}
+                          </span>
+                        )}
+                        <span
+                          className={cn(
+                            "font-mono font-bold text-sm",
+                            isP2Adv ? "text-cyan-300" : "text-neutral-300"
+                          )}
+                        >
+                          {m.p2Display}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="w-full bg-white/[0.06] rounded-full h-2 overflow-hidden flex">
+                      <div
+                        className={cn(
+                          "h-full transition-all duration-500",
+                          isP1Adv ? "bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.4)]" : "bg-purple-500/60"
+                        )}
+                        style={{ width: `${p1Pct}%` }}
+                      />
+                      <div
+                        className={cn(
+                          "h-full transition-all duration-500",
+                          isP2Adv ? "bg-cyan-400 shadow-[0_0_10px_rgba(6,182,212,0.4)]" : "bg-cyan-500/60"
+                        )}
+                        style={{ width: `${p2Pct}%` }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
-        </div>
-      </div>
 
-      <div className="space-y-4">
-        <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
-          <div className="flex items-center gap-2">
-            <Target className="h-4 w-4 text-cyan-400" />
-            <h3 className="font-mono text-sm font-bold text-white uppercase tracking-wider">
-              {isEn ? "Weapon Efficiency & Arsenal Telemetry" : "Efficacité des Armes & Télémétrie"}
-            </h3>
-          </div>
-          <span className="text-[10px] font-mono text-neutral-400 uppercase">
-            Vandal · Phantom · Operator · Sheriff
-          </span>
-        </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="rounded-3xl border border-white/[0.08] bg-white/[0.03] p-5 backdrop-blur-xl shadow-sm space-y-4">
+              <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
+                <div className="flex items-center gap-2">
+                  <Target className="h-4 w-4 text-rose-400" />
+                  <h3 className="font-mono text-sm font-bold text-white uppercase tracking-wider">
+                    {isEn ? "Anatomical Hit Placement" : "Répartition Anatomique des Tirs"}
+                  </h3>
+                </div>
+                <span className="text-[10px] font-mono text-neutral-400 uppercase">
+                  {isEn ? "Crosshair Height" : "Hauteur Réticule"}
+                </span>
+              </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <span className="text-xs font-mono font-bold text-purple-300 block">
-              {p1Profile?.name || "Player 1"} {isEn ? "Arsenal" : "— Arsenal"}
-            </span>
-            <ValorantWeaponStatsCard matches={p1Matches} isEn={isEn} />
+              {(p1Telemetry.totalShots || 0) === 0 && (p2Telemetry.totalShots || 0) === 0 ? (
+                <div className="rounded-2xl border border-white/[0.06] bg-black/30 p-6 text-center space-y-2">
+                  <Target className="h-6 w-6 text-neutral-500 mx-auto" />
+                  <p className="text-xs font-mono text-neutral-300">
+                    {isEn ? "Detailed hit placement requires match logs with round kill telemetry." : "La répartition anatomique nécessite des parties avec télémétrie round par round."}
+                  </p>
+                  <p className="text-[10px] text-neutral-500 font-mono">
+                    {isEn ? "Fast summary mode from Riot API only records global K/D and score." : "Le mode résumé de l'API Riot enregistre uniquement le K/D et le score global."}
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="rounded-2xl border border-purple-500/20 bg-purple-500/[0.04] p-3.5 space-y-2">
+                    <span className="text-xs font-mono font-bold text-purple-300 block truncate">
+                      {p1Profile?.name || p1InputName}
+                    </span>
+                    <div className="space-y-1.5 text-xs font-mono">
+                      <div className="flex items-center justify-between">
+                        <span className="text-neutral-400">{isEn ? "Head" : "Tête"}</span>
+                        <span className="font-bold text-rose-400">{p1Telemetry.hsPct}%</span>
+                      </div>
+                      <div className="w-full bg-white/[0.06] rounded-full h-1.5 overflow-hidden">
+                        <div className="bg-rose-500 h-full rounded-full" style={{ width: `${p1Telemetry.hsPct}%` }} />
+                      </div>
+
+                      <div className="flex items-center justify-between pt-1">
+                        <span className="text-neutral-400">{isEn ? "Body" : "Corps"}</span>
+                        <span className="font-bold text-sky-400">{p1Telemetry.bsPct}%</span>
+                      </div>
+                      <div className="w-full bg-white/[0.06] rounded-full h-1.5 overflow-hidden">
+                        <div className="bg-sky-500 h-full rounded-full" style={{ width: `${p1Telemetry.bsPct}%` }} />
+                      </div>
+
+                      <div className="flex items-center justify-between pt-1">
+                        <span className="text-neutral-400">{isEn ? "Legs" : "Jambes"}</span>
+                        <span className="font-bold text-neutral-400">{p1Telemetry.lsPct}%</span>
+                      </div>
+                      <div className="w-full bg-white/[0.06] rounded-full h-1.5 overflow-hidden">
+                        <div className="bg-neutral-500 h-full rounded-full" style={{ width: `${p1Telemetry.lsPct}%` }} />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="rounded-2xl border border-cyan-500/20 bg-cyan-500/[0.04] p-3.5 space-y-2">
+                    <span className="text-xs font-mono font-bold text-cyan-300 block truncate">
+                      {p2Profile?.name || p2InputName}
+                    </span>
+                    <div className="space-y-1.5 text-xs font-mono">
+                      <div className="flex items-center justify-between">
+                        <span className="text-neutral-400">{isEn ? "Head" : "Tête"}</span>
+                        <span className="font-bold text-rose-400">{p2Telemetry.hsPct}%</span>
+                      </div>
+                      <div className="w-full bg-white/[0.06] rounded-full h-1.5 overflow-hidden">
+                        <div className="bg-rose-500 h-full rounded-full" style={{ width: `${p2Telemetry.hsPct}%` }} />
+                      </div>
+
+                      <div className="flex items-center justify-between pt-1">
+                        <span className="text-neutral-400">{isEn ? "Body" : "Corps"}</span>
+                        <span className="font-bold text-sky-400">{p2Telemetry.bsPct}%</span>
+                      </div>
+                      <div className="w-full bg-white/[0.06] rounded-full h-1.5 overflow-hidden">
+                        <div className="bg-sky-500 h-full rounded-full" style={{ width: `${p2Telemetry.bsPct}%` }} />
+                      </div>
+
+                      <div className="flex items-center justify-between pt-1">
+                        <span className="text-neutral-400">{isEn ? "Legs" : "Jambes"}</span>
+                        <span className="font-bold text-neutral-400">{p2Telemetry.lsPct}%</span>
+                      </div>
+                      <div className="w-full bg-white/[0.06] rounded-full h-1.5 overflow-hidden">
+                        <div className="bg-neutral-500 h-full rounded-full" style={{ width: `${p2Telemetry.lsPct}%` }} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="rounded-3xl border border-white/[0.08] bg-white/[0.03] p-5 backdrop-blur-xl shadow-sm space-y-4">
+              <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
+                <div className="flex items-center gap-2">
+                  <Users className="h-4 w-4 text-purple-400" />
+                  <h3 className="font-mono text-sm font-bold text-white uppercase tracking-wider">
+                    {isEn ? "Duo Chemistry & Tactical Synergy" : "Synergie & Alchimie du Duo"}
+                  </h3>
+                </div>
+                <span className={cn(
+                  "rounded-full border px-2.5 py-0.5 text-xs font-mono font-bold",
+                  duoSynergy.available
+                    ? "bg-purple-500/20 border-purple-500/30 text-purple-300"
+                    : "bg-white/[0.06] border-white/10 text-neutral-400"
+                )}>
+                  {duoSynergy.available ? `${duoSynergy.score}% ${isEn ? "Synergy" : "Synergie"}` : isEn ? "Awaiting Matches" : "En attente de parties"}
+                </span>
+              </div>
+
+              <div className="rounded-2xl border border-white/[0.06] bg-black/30 p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="text-sm font-bold text-white">
+                      {duoSynergy.title}
+                    </h4>
+                    <p className="text-xs text-neutral-400 mt-0.5">
+                      {duoSynergy.available
+                        ? `${duoSynergy.p1Main} (${duoSynergy.p1Role}) + ${duoSynergy.p2Main} (${duoSynergy.p2Role})`
+                        : duoSynergy.desc}
+                    </p>
+                  </div>
+                  {duoSynergy.available && (
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-500/20 text-purple-300 font-mono font-bold text-sm">
+                      {duoSynergy.score}
+                    </div>
+                  )}
+                </div>
+
+                {duoSynergy.available && (
+                  <p className="text-xs text-neutral-300 leading-relaxed font-sans border-t border-white/[0.05] pt-2.5">
+                    {duoSynergy.desc}
+                  </p>
+                )}
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 text-xs font-mono">
+                <div className="rounded-xl border border-white/[0.06] bg-black/20 p-2.5">
+                  <span className="text-[10px] text-neutral-400 block">{isEn ? "P1 Signature" : "Signature J1"}</span>
+                  <p className="font-bold text-purple-300 mt-0.5 truncate">{duoSynergy.p1Main}</p>
+                </div>
+                <div className="rounded-xl border border-white/[0.06] bg-black/20 p-2.5">
+                  <span className="text-[10px] text-neutral-400 block">{isEn ? "P2 Signature" : "Signature J2"}</span>
+                  <p className="font-bold text-cyan-300 mt-0.5 truncate">{duoSynergy.p2Main}</p>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div className="space-y-2">
-            <span className="text-xs font-mono font-bold text-cyan-300 block">
-              {p2Profile?.name || (isEn ? "Player 2" : "Joueur 2")} {isEn ? "Arsenal" : "— Arsenal"}
-            </span>
-            <ValorantWeaponStatsCard matches={p2Matches} isEn={isEn} />
+          <div className="space-y-4">
+            <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
+              <div className="flex items-center gap-2">
+                <Target className="h-4 w-4 text-cyan-400" />
+                <h3 className="font-mono text-sm font-bold text-white uppercase tracking-wider">
+                  {isEn ? "Weapon Efficiency & Arsenal Telemetry" : "Efficacité des Armes & Télémétrie"}
+                </h3>
+              </div>
+              <span className="text-[10px] font-mono text-neutral-400 uppercase">
+                Vandal · Phantom · Operator · Sheriff
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <span className="text-xs font-mono font-bold text-purple-300 block">
+                  {p1Profile?.name || p1InputName} {isEn ? "Arsenal" : "— Arsenal"}
+                </span>
+                <ValorantWeaponStatsCard matches={p1Matches} isEn={isEn} />
+              </div>
+
+              <div className="space-y-2">
+                <span className="text-xs font-mono font-bold text-cyan-300 block">
+                  {p2Profile?.name || p2InputName} {isEn ? "Arsenal" : "— Arsenal"}
+                </span>
+                <ValorantWeaponStatsCard matches={p2Matches} isEn={isEn} />
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </>
+      )}
 
       <PlayerCardExportModal
         isOpen={playerCardExportOpen}
@@ -1340,8 +1482,8 @@ export default function CompareWithFriendView({
         profile={playerCardTarget === 1 ? p1Profile : p2Profile}
         stats={playerCardTarget === 1 ? p1Stats : p2Stats}
         matches={playerCardTarget === 1 ? p1Matches : p2Matches}
-        riotName={playerCardTarget === 1 ? p1Profile?.name || myRiotName : p2Profile?.name || "Friend"}
-        riotTag={playerCardTarget === 1 ? p1Profile?.tag || myRiotTag : p2Profile?.tag || "0001"}
+        riotName={playerCardTarget === 1 ? p1Profile?.name || p1InputName || "Agent" : p2Profile?.name || p2InputName || "Agent"}
+        riotTag={playerCardTarget === 1 ? p1Profile?.tag || p1InputTag || "" : p2Profile?.tag || p2InputTag || ""}
         isEn={isEn}
       />
     </div>

@@ -55,7 +55,7 @@ export default function PlayerCardExportModal({
     return agentList.length > 0 ? agentList[0] : null;
   }, [matches]);
 
-  const hsPercent = useMemo(() => {
+  const hsPercent = useMemo<number | null>(() => {
     let hs = 0;
     let bs = 0;
     let ls = 0;
@@ -72,12 +72,14 @@ export default function PlayerCardExportModal({
     });
     const total = hs + bs + ls;
     if (total > 0) return Math.round((hs / total) * 100);
-    if (stats?.headshotPercentage) return Math.round(Number(stats.headshotPercentage));
-    return 24;
+    if (stats?.headshotPercentage !== null && stats?.headshotPercentage !== undefined) {
+      return Math.round(Number(stats.headshotPercentage));
+    }
+    return null;
   }, [matches, stats]);
 
-  const kdRatio = stats?.kdRatio !== null && stats?.kdRatio !== undefined ? String(stats.kdRatio) : "1.00";
-  const winRate = stats?.winRate !== null && stats?.winRate !== undefined ? `${stats.winRate}%` : "50%";
+  const kdRatio = stats?.kdRatio !== null && stats?.kdRatio !== undefined ? String(stats.kdRatio) : null;
+  const winRate = stats?.winRate !== null && stats?.winRate !== undefined ? `${stats.winRate}%` : null;
 
   const pickEmInfo = useMemo(() => {
     if (typeof window === "undefined") return { points: 0, label: isEn ? "Unranked" : "Non classé" };
@@ -273,16 +275,16 @@ export default function PlayerCardExportModal({
 
     ctx.fillStyle = "#ffffff";
     ctx.font = "bold 24px -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif";
-    ctx.fillText(topAgent ? topAgent.agentName : "Jett", bannerX + 20, bannerY + 62);
+    ctx.fillText(topAgent ? topAgent.agentName : isEn ? "No Match Data" : "Aucune Partie", bannerX + 20, bannerY + 62);
 
-    ctx.fillStyle = "#06b6d4";
+    ctx.fillStyle = topAgent ? "#06b6d4" : "rgba(255, 255, 255, 0.4)";
     ctx.font = "bold 12px 'SF Mono', Menlo, Consolas, monospace";
     ctx.fillText(
       topAgent
         ? `${topAgent.matches} ${isEn ? "matches" : "parties"} · ${topAgent.winRate}% ${isEn ? "win rate" : "victoires"}`
         : isEn
-        ? "Duelist Specialist"
-        : "Spécialiste Duel",
+        ? "Play matches to reveal agent"
+        : "Jouez des parties pour révéler l'agent",
       bannerX + 20,
       bannerY + 84
     );
@@ -296,24 +298,24 @@ export default function PlayerCardExportModal({
     const tiles = [
       {
         title: isEn ? "HEADSHOT RATIO" : "PRÉCISION TÊTE",
-        value: `${hsPercent}%`,
-        sub: isEn ? "Headshot hit placement" : "Tirs tête enregistrés",
+        value: hsPercent !== null ? `${hsPercent}%` : "—",
+        sub: hsPercent !== null ? (isEn ? "Headshot hit placement" : "Tirs tête enregistrés") : (isEn ? "No telemetry" : "Aucune télémétrie"),
         color: "#06b6d4",
         border: "rgba(6, 182, 212, 0.3)",
         bg: "rgba(6, 182, 212, 0.08)",
       },
       {
         title: isEn ? "K/D RATIO" : "RATIO K/D",
-        value: kdRatio,
-        sub: isEn ? "Kills / Deaths conversion" : "Éliminations / Morts",
+        value: kdRatio ?? "—",
+        sub: kdRatio ? (isEn ? "Kills / Deaths conversion" : "Éliminations / Morts") : (isEn ? "No matches recorded" : "Aucune partie enregistrée"),
         color: "#f43f5e",
         border: "rgba(244, 63, 94, 0.3)",
         bg: "rgba(244, 63, 94, 0.08)",
       },
       {
         title: isEn ? "WIN RATE" : "TAUX DE VICTOIRE",
-        value: winRate,
-        sub: isEn ? "Official match outcomes" : "Parties officielles",
+        value: winRate ?? "—",
+        sub: winRate ? (isEn ? "Official match outcomes" : "Parties officielles") : (isEn ? "No matches recorded" : "Aucune partie enregistrée"),
         color: "#10b981",
         border: "rgba(16, 185, 129, 0.3)",
         bg: "rgba(16, 185, 129, 0.08)",
@@ -458,10 +460,10 @@ export default function PlayerCardExportModal({
     const text = [
       `**🎮 ETHONE VALORANT TELEMETRY — ${cleanName}#${cleanTag}**`,
       `🏆 **Rang :** ${tierName} (${rankRating} RR) · Niv. ${level}`,
-      `🎯 **Précision Tête :** ${hsPercent}%`,
-      `⚔️ **K/D :** ${kdRatio} · **Winrate :** ${winRate}`,
+      hsPercent !== null ? `🎯 **Précision Tête :** ${hsPercent}%` : null,
+      (kdRatio || winRate) ? `⚔️ **K/D :** ${kdRatio ?? "—"} · **Winrate :** ${winRate ?? "—"}` : null,
       topAgent ? `⭐ **Agent Signature :** ${topAgent.agentName} (${topAgent.winRate}% WR)` : null,
-      `🔮 **Pick'ems VCT :** ${pickEmInfo.points} PTS (${pickEmInfo.label})`,
+      pickEmInfo.points > 0 ? `🔮 **Pick'ems VCT :** ${pickEmInfo.points} PTS (${pickEmInfo.label})` : null,
       `🔗 *Généré sur ETHONE Tracker — 100% Local Vanguard Fair-Play*`,
     ]
       .filter(Boolean)

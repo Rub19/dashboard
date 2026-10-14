@@ -1,6 +1,15 @@
 # Changelog
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
+## v1.75.81 — 2026-10-14
+
+**Valorant Tracker : Éradication Totale des Placeholders & Arène d'Attente 1v1**
+
+- **Suppression intégrale des placeholders et valeurs fictives** : Éradication de tous les mock strings (`0001`, `Jett` par défaut, `50%` winrate artificiel, `24%` headshot arbitraire). Tous les indicateurs non renseignés affichent un état authentique transparent (`—`) ou des libellés informatifs sur l'absence de télémétrie.
+- **Écran d'attente Arène 1v1 style Apple Dark** : Lorsqu'aucun rival n'a encore été saisi dans le comparateur, les métriques bilatérales, le verdict d'avantage, la précision anatomique et la synergie duo ne s'affichent plus avec de fausses égalités 50/50. L'arène affiche un écran de standby haut de gamme incitant à saisir un rival ou à sélectionner un joueur récent.
+- **Synchronisation automatique du Joueur 1** : Chargement direct du Riot ID configuré dans les paramètres ou le stockage local dès la navigation vers l'onglet `/tracker?tab=compare`.
+- **Export Player Card transparent** : Le canevas de carte joueur et le texte Discord n'affichent plus d'agent ou de pourcentages arbitraires lorsque les parties officielles n'ont pas encore été enregistrées.
+
 ## v1.75.80 — 2026-10-14
 
 **Valorant Tracker : Immersion Télémétrie Armes & Passerelle Rapide Arène 1v1**

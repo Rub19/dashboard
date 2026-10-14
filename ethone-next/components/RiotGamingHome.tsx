@@ -48,6 +48,7 @@ import RiotTrackerConnectModal from "@/components/tracker/RiotTrackerConnectModa
 import ValorantFriendCompareModal from "@/components/tracker/ValorantFriendCompareModal";
 import RiotAttributionModal from "@/components/tracker/RiotAttributionModal";
 import ValorantLiveMatchView from "@/components/tracker/ValorantLiveMatchView";
+import VctMatchesView from "@/components/tracker/VctMatchesView";
 import { AnimatedNumber } from "@/components/tracker/TrackerMotion";
 import { useAnimatedSidebar } from "@/components/motion/animated-sidebar";
 import { Icon } from "@/lib/icons";
@@ -57,6 +58,7 @@ import { EASE_SNAP, EASE_OUT, SPRING_PILL } from "@/lib/ease";
 type GameTab =
   | "valorant"
   | "live"
+  | "vct"
   | "lol"
   | "tft"
   | "coach"
@@ -99,6 +101,7 @@ export default function RiotGamingHome() {
       const urlTab = sp.get("tab") || sp.get("game");
       if (
         urlTab === "live" ||
+        urlTab === "vct" ||
         urlTab === "lol" ||
         urlTab === "tft" ||
         urlTab === "valorant" ||
@@ -119,6 +122,7 @@ export default function RiotGamingHome() {
       const urlTab = sp.get("tab") || sp.get("game");
       if (
         urlTab === "live" ||
+        urlTab === "vct" ||
         urlTab === "lol" ||
         urlTab === "tft" ||
         urlTab === "valorant" ||
@@ -134,6 +138,7 @@ export default function RiotGamingHome() {
       const targetTab = customEvt.detail?.tab;
       if (
         targetTab === "live" ||
+        targetTab === "vct" ||
         targetTab === "valorant" ||
         targetTab === "lol" ||
         targetTab === "tft" ||
@@ -158,6 +163,7 @@ export default function RiotGamingHome() {
     const tabParam = searchParams?.get("tab") || searchParams?.get("game");
     if (
       tabParam === "live" ||
+      tabParam === "vct" ||
       tabParam === "valorant" ||
       tabParam === "lol" ||
       tabParam === "tft" ||
@@ -363,16 +369,131 @@ export default function RiotGamingHome() {
     let kTotal = 0;
     let dTotal = 0;
     let aTotal = 0;
+    let dpmTotal = 0;
+    let dpmCount = 0;
+    let dmgTotal = 0;
+    let kpTotal = 0;
+    let kpCount = 0;
+
     lolMatches.forEach((m) => {
       const me = m.scoreboard?.players?.find((p) => p.isMe) || m.scoreboard?.players?.[0];
       kTotal += me?.stats?.kills || 0;
       dTotal += me?.stats?.deaths || 0;
       aTotal += me?.stats?.assists || 0;
+      if (me?.stats?.damagePerMin) {
+        dpmTotal += me.stats.damagePerMin;
+        dpmCount += 1;
+      }
+      if (me?.stats?.damage) {
+        dmgTotal += me.stats.damage;
+      }
+      if (typeof me?.stats?.killParticipation === "number") {
+        kpTotal += me.stats.killParticipation;
+        kpCount += 1;
+      }
     });
 
     const kda = dTotal > 0 ? ((kTotal + aTotal) / dTotal).toFixed(2) : (kTotal + aTotal).toFixed(2);
-    return { total, wins, winRate, kda, kTotal, dTotal, aTotal };
+    const avgDpm = dpmCount > 0 ? Math.round(dpmTotal / dpmCount) : 0;
+    const avgKp = kpCount > 0 ? Math.round(kpTotal / kpCount) : 0;
+
+    return { total, wins, winRate, kda, kTotal, dTotal, aTotal, avgDpm, dmgTotal, avgKp };
   }, [lolMatches]);
+
+  const telemetryMetrics = useMemo(() => {
+    if (valorantMatches.length === 0) return null;
+    let totalKills = 0;
+    let totalDeaths = 0;
+    let totalHeadshots = 0;
+    let totalBodyshots = 0;
+    let totalLegshots = 0;
+    let totalDamage = 0;
+    let totalRounds = 0;
+
+    valorantMatches.forEach((m) => {
+      const me = m.scoreboard?.players?.find((p) => p.isMe) || m.scoreboard?.players?.[0];
+      const seg = m.segments?.[0]?.stats;
+      const k = me?.stats?.kills ?? seg?.kills?.value ?? 0;
+      const d = me?.stats?.deaths ?? seg?.deaths?.value ?? 0;
+      totalKills += k;
+      totalDeaths += d;
+
+      const hs = me?.stats?.headshots ?? 0;
+      const bs = me?.stats?.bodyshots ?? 0;
+      const ls = me?.stats?.legshots ?? 0;
+      if (hs + bs + ls > 0) {
+        totalHeadshots += hs;
+        totalBodyshots += bs;
+        totalLegshots += ls;
+      }
+
+      const rounds = m.metadata?.score?.roundsPlayed || ((m.metadata?.score?.team ?? 0) + (m.metadata?.score?.opponent ?? 0)) || 0;
+      const dmg = me?.stats?.damageMade ?? 0;
+      if (dmg > 0 && rounds > 0) {
+        totalDamage += dmg;
+        totalRounds += rounds;
+      }
+    });
+
+    const totalShots = totalHeadshots + totalBodyshots + totalLegshots;
+    let hsPct = 0;
+    let bsPct = 0;
+    let lsPct = 0;
+
+    if (totalShots > 0) {
+      hsPct = Math.round((totalHeadshots / totalShots) * 100);
+      bsPct = Math.round((totalBodyshots / totalShots) * 100);
+      lsPct = Math.max(0, 100 - hsPct - bsPct);
+    } else if (valorantStats.headshotPercentage) {
+      hsPct = Math.min(100, Math.max(0, Math.round(Number(valorantStats.headshotPercentage))));
+      bsPct = Math.max(0, 100 - hsPct - 5);
+      lsPct = Math.max(0, 100 - hsPct - bsPct);
+    }
+
+    const duelWinrate = (totalKills + totalDeaths) > 0
+      ? Math.round((totalKills / (totalKills + totalDeaths)) * 100)
+      : 0;
+
+    const adr = totalRounds > 0
+      ? Math.round(totalDamage / totalRounds)
+      : (valorantCombatSummary.adr ? Math.round(Number(valorantCombatSummary.adr)) : 0);
+
+    return {
+      totalKills,
+      totalDeaths,
+      hsPct,
+      bsPct,
+      lsPct,
+      duelWinrate,
+      adr,
+    };
+  }, [valorantMatches, valorantStats, valorantCombatSummary]);
+
+  const realMapStats = useMemo(() => {
+    if (valorantMatches.length === 0) return [];
+    const mapMap = new Map<string, { wins: number; losses: number; kills: number; deaths: number; count: number }>();
+    valorantMatches.forEach((m) => {
+      const mapName = m.metadata?.mapName || "Inconnu";
+      const isWin = m.metadata?.result?.toLowerCase() === "victory";
+      const me = m.scoreboard?.players?.find((p) => p.isMe) || m.scoreboard?.players?.[0];
+      const seg = m.segments?.[0]?.stats;
+      const k = me?.stats?.kills ?? seg?.kills?.value ?? 0;
+      const d = me?.stats?.deaths ?? seg?.deaths?.value ?? 0;
+
+      const cur = mapMap.get(mapName) || { wins: 0, losses: 0, kills: 0, deaths: 0, count: 0 };
+      cur.count += 1;
+      if (isWin) cur.wins += 1;
+      else cur.losses += 1;
+      cur.kills += k;
+      cur.deaths += d;
+      mapMap.set(mapName, cur);
+    });
+    return Array.from(mapMap.entries()).map(([mapName, st]) => {
+      const winrate = Math.round((st.wins / st.count) * 100);
+      const kd = st.deaths > 0 ? (st.kills / st.deaths).toFixed(2) : String(st.kills);
+      return { mapName, winrate, kd, ...st };
+    }).sort((a, b) => b.count - a.count);
+  }, [valorantMatches]);
 
   const tierTone = useMemo(() => {
     return getTierTone(valorantProfile?.currentTierPatched);
@@ -458,6 +579,30 @@ export default function RiotGamingHome() {
                   <Flame className="relative z-10 h-3.5 w-3.5 text-orange-400" />
                   <span className="relative z-10">Partie en direct</span>
                   <span className="relative z-10 rounded bg-orange-500/30 px-1 py-0.2 text-[9px] font-mono font-bold text-orange-200">
+                    LIVE
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => selectGameTab("vct")}
+                  className={cn(
+                    "relative flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer",
+                    activeGame === "vct"
+                      ? "text-white"
+                      : "text-neutral-400 hover:text-neutral-200"
+                  )}
+                >
+                  {activeGame === "vct" && (
+                    <motion.div
+                      layoutId="tactical-game-pill"
+                      transition={SPRING_PILL}
+                      className="absolute inset-0 rounded-lg bg-amber-500/20 border border-amber-500/40 shadow-sm"
+                    />
+                  )}
+                  <Trophy className="relative z-10 h-3.5 w-3.5 text-amber-400" />
+                  <span className="relative z-10">VCT &amp; Pick&apos;ems</span>
+                  <span className="relative z-10 rounded bg-amber-500/30 px-1 py-0.2 text-[9px] font-mono font-bold text-amber-200">
                     LIVE
                   </span>
                 </button>
@@ -940,60 +1085,74 @@ export default function RiotGamingHome() {
                           </h3>
                         </div>
                         <span className="text-[10px] font-mono text-neutral-500">
-                          {valorantMatches.length} parties officielles
+                          {valorantMatches.length} {valorantMatches.length > 1 ? "parties officielles" : "partie officielle"}
                         </span>
                       </div>
 
-                      <div className="space-y-3">
-                        <div className="rounded-lg border border-white/[0.05] bg-black/30 p-3 space-y-2">
-                          <div className="flex items-center justify-between text-xs">
-                            <span className="text-neutral-300 font-medium">Répartition Anatomique des Impacts</span>
-                            <span className="font-mono text-neutral-400 text-[11px]">
-                              {valorantCombatSummary.hs ? `${valorantCombatSummary.hs}% Tête` : "—"}
-                            </span>
+                      {telemetryMetrics ? (
+                        <div className="space-y-3">
+                          <div className="rounded-lg border border-white/[0.05] bg-black/30 p-3 space-y-2">
+                            <div className="flex items-center justify-between text-xs">
+                              <span className="text-neutral-300 font-medium">Répartition Anatomique des Impacts</span>
+                              <span className="font-mono text-neutral-400 text-[11px]">
+                                {telemetryMetrics.hsPct > 0 ? `${telemetryMetrics.hsPct}% Tête` : "—"}
+                              </span>
+                            </div>
+                            <div className="h-2 w-full rounded-full bg-white/[0.06] overflow-hidden flex">
+                              <div className="h-full bg-purple-400" style={{ width: `${telemetryMetrics.hsPct}%` }} />
+                              <div className="h-full bg-cyan-400" style={{ width: `${telemetryMetrics.bsPct}%` }} />
+                              <div className="h-full bg-neutral-600" style={{ width: `${telemetryMetrics.lsPct}%` }} />
+                            </div>
+                            <div className="flex items-center justify-between text-[10px] font-mono text-neutral-400 pt-0.5">
+                              <span className="flex items-center gap-1">
+                                <span className="h-1.5 w-1.5 rounded-full bg-purple-400" />
+                                Tête ({telemetryMetrics.hsPct}%)
+                              </span>
+                              <span className="flex items-center gap-1">
+                                <span className="h-1.5 w-1.5 rounded-full bg-cyan-400" />
+                                Corps ({telemetryMetrics.bsPct}%)
+                              </span>
+                              <span className="flex items-center gap-1">
+                                <span className="h-1.5 w-1.5 rounded-full bg-neutral-600" />
+                                Jambes ({telemetryMetrics.lsPct}%)
+                              </span>
+                            </div>
                           </div>
-                          <div className="h-2 w-full rounded-full bg-white/[0.06] overflow-hidden flex">
-                            <div className="h-full bg-purple-400" style={{ width: valorantCombatSummary.hs ? `${valorantCombatSummary.hs}%` : "24%" }} />
-                            <div className="h-full bg-cyan-400" style={{ width: "71%" }} />
-                            <div className="h-full bg-neutral-600" style={{ width: "5%" }} />
-                          </div>
-                          <div className="flex items-center justify-between text-[10px] font-mono text-neutral-400 pt-0.5">
-                            <span className="flex items-center gap-1">
-                              <span className="h-1.5 w-1.5 rounded-full bg-purple-400" />
-                              Tête ({valorantCombatSummary.hs ? `${valorantCombatSummary.hs}%` : "24%"})
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <span className="h-1.5 w-1.5 rounded-full bg-cyan-400" />
-                              Corps (71%)
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <span className="h-1.5 w-1.5 rounded-full bg-neutral-600" />
-                              Jambes (5%)
-                            </span>
-                          </div>
-                        </div>
 
-                        <div className="grid grid-cols-3 gap-2 text-center">
-                          <div className="rounded-lg border border-white/[0.05] bg-black/30 p-2.5">
-                            <span className="text-[9px] font-mono uppercase text-neutral-400">Total Kills</span>
-                            <p className="text-base font-mono font-bold text-white mt-0.5">
-                              {valorantCombatSummary.kills}
-                            </p>
-                          </div>
-                          <div className="rounded-lg border border-white/[0.05] bg-black/30 p-2.5">
-                            <span className="text-[9px] font-mono uppercase text-neutral-400">ADR / Manche</span>
-                            <p className="text-base font-mono font-bold text-white mt-0.5">
-                              {valorantCombatSummary.adr || "—"}
-                            </p>
-                          </div>
-                          <div className="rounded-lg border border-white/[0.05] bg-black/30 p-2.5">
-                            <span className="text-[9px] font-mono uppercase text-neutral-400">Duel Winrate</span>
-                            <p className="text-base font-mono font-bold text-emerald-400 mt-0.5">
-                              64%
-                            </p>
+                          <div className="grid grid-cols-3 gap-2 text-center">
+                            <div className="rounded-lg border border-white/[0.05] bg-black/30 p-2.5">
+                              <span className="text-[9px] font-mono uppercase text-neutral-400">Total Kills</span>
+                              <p className="text-base font-mono font-bold text-white mt-0.5">
+                                {telemetryMetrics.totalKills}
+                              </p>
+                            </div>
+                            <div className="rounded-lg border border-white/[0.05] bg-black/30 p-2.5">
+                              <span className="text-[9px] font-mono uppercase text-neutral-400">ADR / Manche</span>
+                              <p className="text-base font-mono font-bold text-white mt-0.5">
+                                {telemetryMetrics.adr > 0 ? telemetryMetrics.adr : (valorantCombatSummary.adr || "—")}
+                              </p>
+                            </div>
+                            <div className="rounded-lg border border-white/[0.05] bg-black/30 p-2.5">
+                              <span className="text-[9px] font-mono uppercase text-neutral-400">Duel Winrate</span>
+                              <p className="text-base font-mono font-bold text-emerald-400 mt-0.5">
+                                {telemetryMetrics.duelWinrate > 0 ? `${telemetryMetrics.duelWinrate}%` : "—"}
+                              </p>
+                            </div>
                           </div>
                         </div>
-                      </div>
+                      ) : (
+                        <div className="rounded-lg border border-dashed border-white/10 bg-black/20 p-6 text-center space-y-2">
+                          <div className="mx-auto flex h-9 w-9 items-center justify-center rounded-lg bg-white/[0.04] text-neutral-400 border border-white/10">
+                            <Target className="h-4 w-4 text-neutral-400" />
+                          </div>
+                          <p className="text-xs font-mono font-bold text-neutral-300">
+                            Télémétrie non synchronisée
+                          </p>
+                          <p className="text-[11px] text-neutral-500 max-w-xs mx-auto">
+                            Recherchez un Riot ID avec des parties officielles pour analyser la précision anatomique et les duels.
+                          </p>
+                        </div>
+                      )}
                     </div>
 
                     <div className="pt-2 flex items-center justify-between border-t border-white/[0.06]">
@@ -1238,248 +1397,337 @@ export default function RiotGamingHome() {
 
             {activeGame === "coach" && (
               <div className="space-y-4">
-                <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/95 p-5 backdrop-blur-xl shadow-md space-y-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/[0.06] pb-4">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-300 shadow-sm shrink-0">
-                        <Brain className="h-6 w-6" />
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h2 className="text-base font-bold text-white tracking-wide">
-                            Diagnostic Tactique Coach IA
-                          </h2>
-                          <span className="rounded-full border border-purple-500/40 bg-purple-500/15 px-2 py-0.5 font-mono text-[10px] font-bold text-purple-300">
-                            Score 88/100
-                          </span>
-                        </div>
-                        <p className="text-xs text-neutral-400 font-mono mt-0.5">
-                          Évaluation télémétrique basée sur les 10 dernières parties de {valorantProfile?.name || riotName || "Joueur"} #{valorantProfile?.tag || riotTag || "0001"}
-                        </p>
-                      </div>
+                {valorantMatches.length === 0 ? (
+                  <div className="rounded-xl border border-dashed border-white/10 bg-[#10131B]/95 p-8 text-center space-y-3">
+                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-300">
+                      <Brain className="h-6 w-6" />
                     </div>
-
-                    <button
-                      type="button"
-                      onClick={() => selectGameTab("training")}
-                      className="inline-flex items-center gap-1.5 rounded-lg bg-white text-black px-3.5 py-2 text-xs font-semibold hover:bg-neutral-200 active:scale-95 transition-all cursor-pointer shadow-sm shrink-0"
-                    >
-                      <Activity className="h-3.5 w-3.5 text-black" />
-                      <span>Routine d'entraînement recommandée</span>
-                    </button>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    <div className="rounded-lg border border-white/[0.06] bg-black/40 p-3.5 space-y-1.5">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">Archétype</span>
-                        <Zap className="h-3.5 w-3.5 text-amber-400" />
-                      </div>
-                      <p className="text-sm font-bold text-white">Entry Fragger Agressif</p>
-                      <p className="text-xs text-neutral-400 leading-relaxed">
-                        Excellente prise d'espace sur Jett avec 78% de conversion de First Blood sur Split et Ascent.
-                      </p>
-                    </div>
-
-                    <div className="rounded-lg border border-white/[0.06] bg-black/40 p-3.5 space-y-1.5">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">Point Fort Majeur</span>
-                        <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
-                      </div>
-                      <p className="text-sm font-bold text-white">Efficacité des Duels (1.69 KD)</p>
-                      <p className="text-xs text-neutral-400 leading-relaxed">
-                        Les duels en 1v1 tournent à votre avantage dans 72% des engagements directs avec Vandal.
-                      </p>
-                    </div>
-
-                    <div className="rounded-lg border border-white/[0.06] bg-black/40 p-3.5 space-y-1.5">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">Axe d'Amélioration</span>
-                        <Target className="h-3.5 w-3.5 text-rose-400" />
-                      </div>
-                      <p className="text-sm font-bold text-white">Discipline sur les Bonus Rounds</p>
-                      <p className="text-xs text-neutral-400 leading-relaxed">
-                        Tendance à trop contester à longue distance avec SMG face aux rifles achetés au round 3.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="rounded-lg border border-white/[0.06] bg-black/40 p-4 space-y-3">
-                    <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-neutral-300">
-                      Recommandations Tactiques de Précision
+                    <h3 className="text-sm font-mono font-bold text-white uppercase tracking-wider">
+                      Diagnostic Tactique Coach IA en attente
                     </h3>
+                    <p className="max-w-md mx-auto text-xs text-neutral-400">
+                      Le Coach IA requiert au moins une partie compétitive enregistrée pour analyser votre style de jeu, l&apos;efficacité de vos engagements et la rentabilité de vos achats. Recherchez un Riot ID ci-dessus pour lancer l&apos;audit.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/95 p-5 backdrop-blur-xl shadow-md space-y-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/[0.06] pb-4">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-300 shadow-sm shrink-0">
+                          <Brain className="h-6 w-6" />
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <h2 className="text-base font-bold text-white tracking-wide">
+                              Diagnostic Tactique Coach IA
+                            </h2>
+                            <span className="rounded-full border border-purple-500/40 bg-purple-500/15 px-2 py-0.5 font-mono text-[10px] font-bold text-purple-300">
+                              {valorantStats.winRate ? `${valorantStats.winRate}% Victoires` : "Analyse active"}
+                            </span>
+                          </div>
+                          <p className="text-xs text-neutral-400 font-mono mt-0.5">
+                            Évaluation basée sur {valorantMatches.length} {valorantMatches.length > 1 ? "parties officielles" : "partie officielle"} de {valorantProfile?.name || riotName || "Joueur"} #{valorantProfile?.tag || riotTag || "0001"}
+                          </p>
+                        </div>
+                      </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                      <div className="rounded border border-white/[0.06] bg-white/[0.02] p-3 space-y-1">
-                        <p className="font-bold text-white flex items-center gap-1.5">
-                          <span className="h-1.5 w-1.5 rounded-full bg-rose-400" />
-                          Prise de Site A sur Split (Jett)
+                      <button
+                        type="button"
+                        onClick={() => selectGameTab("training")}
+                        className="inline-flex items-center gap-1.5 rounded-lg bg-white text-black px-3.5 py-2 text-xs font-semibold hover:bg-neutral-200 active:scale-95 transition-all cursor-pointer shadow-sm shrink-0"
+                      >
+                        <Activity className="h-3.5 w-3.5 text-black" />
+                        <span>Routine d&apos;entraînement</span>
+                      </button>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                      <div className="rounded-lg border border-white/[0.06] bg-black/40 p-3.5 space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">Archétype</span>
+                          <Zap className="h-3.5 w-3.5 text-amber-400" />
+                        </div>
+                        <p className="text-sm font-bold text-white">
+                          {topValorantAgents[0]
+                            ? `${getAgentRole(topValorantAgents[0].agentName)} (${topValorantAgents[0].agentName})`
+                            : "Joueur Polyvalent"}
                         </p>
-                        <p className="text-neutral-400 leading-relaxed">
-                          Déployez le Cloudburst au niveau des chevrons avant votre Tailwind. Cela brise la ligne ennemie et permet à vos initiateurs d'envoyer leurs utilitaires sans vous exposer.
+                        <p className="text-xs text-neutral-400 leading-relaxed">
+                          {topValorantAgents[0]
+                            ? `Profil orienté sur ${topValorantAgents[0].agentName} avec ${topValorantAgents[0].matches} ${topValorantAgents[0].matches > 1 ? "parties" : "partie"} et ${topValorantAgents[0].winRate ?? 0}% de victoires.`
+                            : "Données de rôle en cours de calcul."}
                         </p>
                       </div>
 
-                      <div className="rounded border border-white/[0.06] bg-white/[0.02] p-3 space-y-1">
-                        <p className="font-bold text-white flex items-center gap-1.5">
-                          <span className="h-1.5 w-1.5 rounded-full bg-cyan-400" />
-                          Gestion Économique & Blade Storm
+                      <div className="rounded-lg border border-white/[0.06] bg-black/40 p-3.5 space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">Point Fort Majeur</span>
+                          <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
+                        </div>
+                        <p className="text-sm font-bold text-white">
+                          {telemetryMetrics && telemetryMetrics.duelWinrate >= 50
+                            ? `Duels Positifs (${telemetryMetrics.duelWinrate}% win)`
+                            : valorantStats.kdRatio
+                            ? `Ratio KD de ${valorantStats.kdRatio}`
+                            : "Présence active en manche"}
                         </p>
-                        <p className="text-neutral-400 leading-relaxed">
-                          Votre ultime Jett (Blade Storm) est rentabilisé à 80% lorsqu'il est joué sur un round d'économie d'équipe. Il évite à vos alliés de dépenser des crédits et permet d'économiser jusqu'à 4 500 crédits pour le round suivant.
+                        <p className="text-xs text-neutral-400 leading-relaxed">
+                          {telemetryMetrics && telemetryMetrics.hsPct > 0
+                            ? `Précision de tir confirmée avec ${telemetryMetrics.hsPct}% d'impacts critiques à la tête.`
+                            : "Bonne implication dans les éliminations d'équipe."}
+                        </p>
+                      </div>
+
+                      <div className="rounded-lg border border-white/[0.06] bg-black/40 p-3.5 space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">Axe d&apos;Amélioration</span>
+                          <Target className="h-3.5 w-3.5 text-rose-400" />
+                        </div>
+                        <p className="text-sm font-bold text-white">
+                          {telemetryMetrics && telemetryMetrics.hsPct < 20
+                            ? "Placement de Réticule (HS < 20%)"
+                            : valorantCombatSummary.deaths > valorantCombatSummary.kills
+                            ? "Survie & Repli Tactique"
+                            : "Gestion de l'Avantage Numérique"}
+                        </p>
+                        <p className="text-xs text-neutral-400 leading-relaxed">
+                          {telemetryMetrics && telemetryMetrics.hsPct < 20
+                            ? "Travaillez l'alignement horizontal à hauteur de tête pour augmenter la létalité dès la première balle."
+                            : "Évitez les réengagements solitaires après une première élimination sécurisée."}
                         </p>
                       </div>
                     </div>
+
+                    <div className="rounded-lg border border-white/[0.06] bg-black/40 p-4 space-y-3">
+                      <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-neutral-300">
+                        Recommandations Tactiques Personnalisées
+                      </h3>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                        <div className="rounded border border-white/[0.06] bg-white/[0.02] p-3 space-y-1">
+                          <p className="font-bold text-white flex items-center gap-1.5">
+                            <span className="h-1.5 w-1.5 rounded-full bg-rose-400" />
+                            Maîtrise de l&apos;Agent ({topValorantAgents[0]?.agentName || "Principal"})
+                          </p>
+                          <p className="text-neutral-400 leading-relaxed">
+                            Concentrez l&apos;utilisation des capacités utilitaires pour créer un différentiel de vision ou d&apos;espace avant chaque prise de duel direct.
+                          </p>
+                        </div>
+
+                        <div className="rounded border border-white/[0.06] bg-white/[0.02] p-3 space-y-1">
+                          <p className="font-bold text-white flex items-center gap-1.5">
+                            <span className="h-1.5 w-1.5 rounded-full bg-cyan-400" />
+                            Gestion Économique des Armes
+                          </p>
+                          <p className="text-neutral-400 leading-relaxed">
+                            Synchronisez vos achats complets avec l&apos;équipe pour maximiser le taux de conversion sur les rounds décisifs et les bonus rounds.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             )}
 
             {activeGame === "telemetry" && (
               <div className="space-y-4">
-                <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/95 p-5 backdrop-blur-xl shadow-md space-y-4">
-                  <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
-                    <div className="flex items-center gap-2">
-                      <Target className="h-5 w-5 text-cyan-400" />
-                      <h2 className="text-sm font-mono font-bold text-white uppercase tracking-wider">
-                        Télémétrie de Combat Post-Match · VALORANT
-                      </h2>
+                {valorantMatches.length === 0 ? (
+                  <div className="rounded-xl border border-dashed border-white/10 bg-[#10131B]/95 p-8 text-center space-y-3">
+                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400">
+                      <Target className="h-6 w-6" />
                     </div>
-                    <span className="text-xs font-mono text-neutral-400">
-                      Base : {valorantMatches.length > 0 ? `${valorantMatches.length} Matchs Officiels` : "10 Matchs de Référence"}
-                    </span>
+                    <h3 className="text-sm font-mono font-bold text-white uppercase tracking-wider">
+                      Télémétrie en attente de données
+                    </h3>
+                    <p className="max-w-md mx-auto text-xs text-neutral-400">
+                      Aucune partie VALORANT n&apos;a été enregistrée pour ce joueur. Entrez un Riot ID valide ci-dessus pour calculer l&apos;analyse balistique, la précision anatomique et les ratios de duel réels.
+                    </p>
                   </div>
-
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-                    <div className="rounded-lg border border-white/[0.06] bg-black/40 p-3">
-                      <span className="text-[10px] font-mono uppercase text-neutral-400">Éliminations Totales</span>
-                      <p className="text-2xl font-mono font-bold text-white mt-1">144 Kills</p>
-                      <p className="text-[10px] font-mono text-neutral-500">Moyenne : 14.4 / partie</p>
+                ) : (
+                  <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/95 p-5 backdrop-blur-xl shadow-md space-y-4">
+                    <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
+                      <div className="flex items-center gap-2">
+                        <Target className="h-5 w-5 text-cyan-400" />
+                        <h2 className="text-sm font-mono font-bold text-white uppercase tracking-wider">
+                          Télémétrie de Combat Post-Match · VALORANT
+                        </h2>
+                      </div>
+                      <span className="text-xs font-mono text-neutral-400">
+                        Base : {valorantMatches.length} {valorantMatches.length > 1 ? "Matchs Officiels" : "Match Officiel"}
+                      </span>
                     </div>
-                    <div className="rounded-lg border border-white/[0.06] bg-black/40 p-3">
-                      <span className="text-[10px] font-mono uppercase text-neutral-400">Morts Totales</span>
-                      <p className="text-2xl font-mono font-bold text-white mt-1">85 Morts</p>
-                      <p className="text-[10px] font-mono text-neutral-500">Moyenne : 8.5 / partie</p>
-                    </div>
-                    <div className="rounded-lg border border-white/[0.06] bg-black/40 p-3">
-                      <span className="text-[10px] font-mono uppercase text-neutral-400">Précision Tête</span>
-                      <p className="text-2xl font-mono font-bold text-purple-300 mt-1">24.2%</p>
-                      <p className="text-[10px] font-mono text-neutral-500">Vandal & Phantom</p>
-                    </div>
-                    <div className="rounded-lg border border-white/[0.06] bg-black/40 p-3">
-                      <span className="text-[10px] font-mono uppercase text-neutral-400">ADR Global</span>
-                      <p className="text-2xl font-mono font-bold text-white mt-1">162</p>
-                      <p className="text-[10px] font-mono text-neutral-500">Dégâts / round</p>
-                    </div>
-                  </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="rounded-lg border border-white/[0.06] bg-black/40 p-4 space-y-2">
-                      <h4 className="text-xs font-mono font-bold text-white uppercase tracking-wider">
-                        Répartition Anatomique des Tirs
-                      </h4>
-                      <div className="space-y-2 text-xs">
-                        <div className="flex items-center justify-between">
-                          <span className="text-neutral-300">Tirs à la tête (HS)</span>
-                          <span className="font-mono font-bold text-purple-300">24%</span>
-                        </div>
-                        <div className="h-2 w-full rounded-full bg-white/[0.06] overflow-hidden">
-                          <div className="h-full bg-purple-400 rounded-full" style={{ width: "24%" }} />
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                          <span className="text-neutral-400">Tirs au corps</span>
-                          <span className="font-mono font-bold text-cyan-300">71%</span>
-                        </div>
-                        <div className="h-2 w-full rounded-full bg-white/[0.06] overflow-hidden">
-                          <div className="h-full bg-cyan-400 rounded-full" style={{ width: "71%" }} />
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                          <span className="text-neutral-500">Tirs aux jambes</span>
-                          <span className="font-mono font-bold text-neutral-400">5%</span>
-                        </div>
-                        <div className="h-2 w-full rounded-full bg-white/[0.06] overflow-hidden">
-                          <div className="h-full bg-neutral-600 rounded-full" style={{ width: "5%" }} />
-                        </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+                      <div className="rounded-lg border border-white/[0.06] bg-black/40 p-3">
+                        <span className="text-[10px] font-mono uppercase text-neutral-400">Éliminations Totales</span>
+                        <p className="text-2xl font-mono font-bold text-white mt-1">
+                          {telemetryMetrics?.totalKills ?? 0} Kills
+                        </p>
+                        <p className="text-[10px] font-mono text-neutral-500">
+                          Moyenne : {(((telemetryMetrics?.totalKills ?? 0) / valorantMatches.length)).toFixed(1)} / partie
+                        </p>
+                      </div>
+                      <div className="rounded-lg border border-white/[0.06] bg-black/40 p-3">
+                        <span className="text-[10px] font-mono uppercase text-neutral-400">Morts Totales</span>
+                        <p className="text-2xl font-mono font-bold text-white mt-1">
+                          {telemetryMetrics?.totalDeaths ?? 0} Morts
+                        </p>
+                        <p className="text-[10px] font-mono text-neutral-500">
+                          Moyenne : {(((telemetryMetrics?.totalDeaths ?? 0) / valorantMatches.length)).toFixed(1)} / partie
+                        </p>
+                      </div>
+                      <div className="rounded-lg border border-white/[0.06] bg-black/40 p-3">
+                        <span className="text-[10px] font-mono uppercase text-neutral-400">Précision Tête</span>
+                        <p className="text-2xl font-mono font-bold text-purple-300 mt-1">
+                          {telemetryMetrics?.hsPct ?? 0}%
+                        </p>
+                        <p className="text-[10px] font-mono text-neutral-500">Impacts confirmés</p>
+                      </div>
+                      <div className="rounded-lg border border-white/[0.06] bg-black/40 p-3">
+                        <span className="text-[10px] font-mono uppercase text-neutral-400">ADR Global</span>
+                        <p className="text-2xl font-mono font-bold text-white mt-1">
+                          {telemetryMetrics?.adr || (valorantCombatSummary.adr ? Math.round(Number(valorantCombatSummary.adr)) : "—")}
+                        </p>
+                        <p className="text-[10px] font-mono text-neutral-500">Dégâts / round</p>
                       </div>
                     </div>
 
-                    <div className="rounded-lg border border-white/[0.06] bg-black/40 p-4 space-y-2">
-                      <h4 className="text-xs font-mono font-bold text-white uppercase tracking-wider">
-                        Performance par Carte
-                      </h4>
-                      <div className="space-y-2 text-xs">
-                        <div className="flex items-center justify-between rounded bg-white/[0.02] border border-white/[0.06] p-2.5">
-                          <span className="font-bold text-white">Split</span>
-                          <span className="font-mono text-emerald-400 font-semibold">80% Winrate · 1.72 KD</span>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="rounded-lg border border-white/[0.06] bg-black/40 p-4 space-y-2">
+                        <h4 className="text-xs font-mono font-bold text-white uppercase tracking-wider">
+                          Répartition Anatomique des Tirs
+                        </h4>
+                        <div className="space-y-2 text-xs">
+                          <div className="flex items-center justify-between">
+                            <span className="text-neutral-300">Tirs à la tête (HS)</span>
+                            <span className="font-mono font-bold text-purple-300">{telemetryMetrics?.hsPct ?? 0}%</span>
+                          </div>
+                          <div className="h-2 w-full rounded-full bg-white/[0.06] overflow-hidden">
+                            <div className="h-full bg-purple-400 rounded-full" style={{ width: `${telemetryMetrics?.hsPct ?? 0}%` }} />
+                          </div>
+
+                          <div className="flex items-center justify-between">
+                            <span className="text-neutral-400">Tirs au corps</span>
+                            <span className="font-mono font-bold text-cyan-300">{telemetryMetrics?.bsPct ?? 0}%</span>
+                          </div>
+                          <div className="h-2 w-full rounded-full bg-white/[0.06] overflow-hidden">
+                            <div className="h-full bg-cyan-400 rounded-full" style={{ width: `${telemetryMetrics?.bsPct ?? 0}%` }} />
+                          </div>
+
+                          <div className="flex items-center justify-between">
+                            <span className="text-neutral-500">Tirs aux jambes</span>
+                            <span className="font-mono font-bold text-neutral-400">{telemetryMetrics?.lsPct ?? 0}%</span>
+                          </div>
+                          <div className="h-2 w-full rounded-full bg-white/[0.06] overflow-hidden">
+                            <div className="h-full bg-neutral-600 rounded-full" style={{ width: `${telemetryMetrics?.lsPct ?? 0}%` }} />
+                          </div>
                         </div>
-                        <div className="flex items-center justify-between rounded bg-white/[0.02] border border-white/[0.06] p-2.5">
-                          <span className="font-bold text-white">Ascent</span>
-                          <span className="font-mono text-emerald-400 font-semibold">67% Winrate · 1.64 KD</span>
-                        </div>
-                        <div className="flex items-center justify-between rounded bg-white/[0.02] border border-white/[0.06] p-2.5">
-                          <span className="font-bold text-white">Bind</span>
-                          <span className="font-mono text-neutral-300 font-semibold">60% Winrate · 1.45 KD</span>
+                      </div>
+
+                      <div className="rounded-lg border border-white/[0.06] bg-black/40 p-4 space-y-2">
+                        <h4 className="text-xs font-mono font-bold text-white uppercase tracking-wider">
+                          Performance par Carte
+                        </h4>
+                        <div className="space-y-2 text-xs">
+                          {realMapStats.length > 0 ? (
+                            realMapStats.slice(0, 4).map((ms) => (
+                              <div
+                                key={ms.mapName}
+                                className="flex items-center justify-between rounded bg-white/[0.02] border border-white/[0.06] p-2.5"
+                              >
+                                <span className="font-bold text-white">{ms.mapName}</span>
+                                <span className="font-mono text-emerald-400 font-semibold">
+                                  {ms.winrate}% Winrate · {ms.kd} KD ({ms.count} {ms.count > 1 ? "parties" : "partie"})
+                                </span>
+                              </div>
+                            ))
+                          ) : (
+                            <div className="rounded bg-white/[0.02] border border-white/[0.06] p-2.5 text-neutral-500">
+                              Aucune carte disponible
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                )}
               </div>
             )}
 
             {activeGame === "training" && (
               <div className="space-y-4">
-                <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/95 p-5 backdrop-blur-xl shadow-md space-y-4">
-                  <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
-                    <div className="flex items-center gap-2">
-                      <Activity className="h-5 w-5 text-emerald-400" />
-                      <h2 className="text-sm font-mono font-bold text-white uppercase tracking-wider">
-                        Plan d'Entraînement Personnalisé · Coach IA
-                      </h2>
+                {valorantMatches.length === 0 ? (
+                  <div className="rounded-xl border border-dashed border-white/10 bg-[#10131B]/95 p-8 text-center space-y-3">
+                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+                      <Activity className="h-6 w-6" />
                     </div>
-                    <span className="text-xs font-mono text-neutral-400">Routine 30 min / jour</span>
+                    <h3 className="text-sm font-mono font-bold text-white uppercase tracking-wider">
+                      Plan d&apos;Entraînement en Attente
+                    </h3>
+                    <p className="max-w-md mx-auto text-xs text-neutral-400">
+                      Synchronisez un profil VALORANT ci-dessus pour générer une routine d&apos;entraînement adaptée à votre agent favori et votre niveau actuel.
+                    </p>
                   </div>
-
-                  <div className="space-y-3">
-                    <div className="rounded-lg border border-white/[0.06] bg-black/40 p-4 space-y-1.5">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-white">
-                          Phase 1 : Calibrage Mécanique & Placement de Réticule (10 min)
-                        </span>
-                        <span className="text-[10px] font-mono font-semibold text-neutral-400 border border-white/10 rounded px-2 py-0.5 bg-white/[0.04]">The Range / Aim Lab</span>
+                ) : (
+                  <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/95 p-5 backdrop-blur-xl shadow-md space-y-4">
+                    <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
+                      <div className="flex items-center gap-2">
+                        <Activity className="h-5 w-5 text-emerald-400" />
+                        <h2 className="text-sm font-mono font-bold text-white uppercase tracking-wider">
+                          Plan d&apos;Entraînement Personnalisé · Coach IA
+                        </h2>
                       </div>
-                      <p className="text-xs text-neutral-400 leading-relaxed">
-                        Éliminez 50 bots en mode Entraînement avec Vandal sans vous accroupir. Focus sur le micro-ajustement horizontal à hauteur de tête avant de tirer la première balle.
-                      </p>
+                      <span className="text-xs font-mono text-neutral-400">
+                        Routine ciblée {topValorantAgents[0]?.agentName || "VALORANT"} (30 min / jour)
+                      </span>
                     </div>
 
-                    <div className="rounded-lg border border-white/[0.06] bg-black/40 p-4 space-y-1.5">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-white">
-                          Phase 2 : Prise d'Espace & Duels sous Pression (15 min)
-                        </span>
-                        <span className="text-[10px] font-mono font-semibold text-neutral-400 border border-white/10 rounded px-2 py-0.5 bg-white/[0.04]">2 Swiftplay / Deathmatch</span>
+                    <div className="space-y-3">
+                      <div className="rounded-lg border border-white/[0.06] bg-black/40 p-4 space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-bold text-white">
+                            Phase 1 : Calibrage Mécanique &amp; Placement de Réticule (10 min)
+                          </span>
+                          <span className="text-[10px] font-mono font-semibold text-neutral-400 border border-white/10 rounded px-2 py-0.5 bg-white/[0.04]">
+                            The Range / Aim Lab
+                          </span>
+                        </div>
+                        <p className="text-xs text-neutral-400 leading-relaxed">
+                          Éliminez 50 bots en mode Entraînement avec Vandal sans vous accroupir. Focus sur le micro-ajustement horizontal à hauteur de tête avant de tirer la première balle.
+                        </p>
                       </div>
-                      <p className="text-xs text-neutral-400 leading-relaxed">
-                        Sur Jett : entraînez les entrées de site agressives avec un Cloudburst posé et un dash immédiat dans la fumée pour perturber la ligne de visée ennemie et forcer un duel avantageux.
-                      </p>
-                    </div>
 
-                    <div className="rounded-lg border border-white/[0.06] bg-black/40 p-4 space-y-1.5">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-white">
-                          Phase 3 : Débriefing & Suivi des Crédits (5 min)
-                        </span>
-                        <span className="text-[10px] font-mono font-semibold text-neutral-400 border border-white/10 rounded px-2 py-0.5 bg-white/[0.04]">Dashboard ETHONE</span>
+                      <div className="rounded-lg border border-white/[0.06] bg-black/40 p-4 space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-bold text-white">
+                            Phase 2 : Prise d&apos;Espace &amp; Duels sous Pression (15 min)
+                          </span>
+                          <span className="text-[10px] font-mono font-semibold text-neutral-400 border border-white/10 rounded px-2 py-0.5 bg-white/[0.04]">
+                            2 Swiftplay / Deathmatch
+                          </span>
+                        </div>
+                        <p className="text-xs text-neutral-400 leading-relaxed">
+                          Sur {topValorantAgents[0]?.agentName || "votre agent principal"} : entraînez les entrées de site agressives avec vos capacités d&apos;utilitaires posées pour briser la ligne ennemie et forcer un duel avantageux.
+                        </p>
                       </div>
-                      <p className="text-xs text-neutral-400 leading-relaxed">
-                        Vérifiez vos rounds d'économie sur la télémétrie post-match. Assurez-vous d'avoir acheté au moins 3 utilitaires clés sur les rounds armés.
-                      </p>
+
+                      <div className="rounded-lg border border-white/[0.06] bg-black/40 p-4 space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-bold text-white">
+                            Phase 3 : Débriefing &amp; Suivi des Crédits (5 min)
+                          </span>
+                          <span className="text-[10px] font-mono font-semibold text-neutral-400 border border-white/10 rounded px-2 py-0.5 bg-white/[0.04]">
+                            Dashboard ETHONE
+                          </span>
+                        </div>
+                        <p className="text-xs text-neutral-400 leading-relaxed">
+                          Vérifiez vos rounds d&apos;économie sur la télémétrie post-match. Assurez-vous d&apos;avoir acheté au moins 3 utilitaires clés sur les rounds armés.
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
               </div>
             )}
 
@@ -1490,6 +1738,10 @@ export default function RiotGamingHome() {
                 valorantProfile={valorantProfile}
                 valorantMatches={valorantMatches}
               />
+            )}
+
+            {activeGame === "vct" && (
+              <VctMatchesView />
             )}
 
             {activeGame === "lol" && (
@@ -1546,14 +1798,17 @@ export default function RiotGamingHome() {
                     </div>
                     <div className="my-2">
                       <p className="text-3xl font-mono font-bold tracking-tight text-white">
-                        {lolMatches.length > 0 ? "831" : "—"}
+                        {lolSummary.avgDpm > 0 ? lolSummary.avgDpm : "—"}
                       </p>
                       <p className="text-[11px] font-mono text-neutral-400">
-                        {lolMatches.length > 0 ? "24 944 dégâts infligés" : "—"}
+                        {lolSummary.dmgTotal > 0 ? `${lolSummary.dmgTotal.toLocaleString()} dégâts infligés` : "—"}
                       </p>
                     </div>
                     <div className="h-1.5 w-full rounded-full bg-white/[0.06] overflow-hidden">
-                      <div className="h-full bg-cyan-400 rounded-full" style={{ width: lolMatches.length > 0 ? "75%" : "0%" }} />
+                      <div
+                        className="h-full bg-cyan-400 rounded-full"
+                        style={{ width: lolSummary.avgDpm > 0 ? `${Math.min(100, Math.round((lolSummary.avgDpm / 1000) * 100))}%` : "0%" }}
+                      />
                     </div>
                   </div>
 
@@ -1564,14 +1819,17 @@ export default function RiotGamingHome() {
                     </div>
                     <div className="my-2">
                       <p className="text-3xl font-mono font-bold tracking-tight text-white">
-                        {lolMatches.length > 0 ? "78%" : "—"}
+                        {lolSummary.avgKp > 0 ? `${lolSummary.avgKp}%` : "—"}
                       </p>
                       <p className="text-[11px] font-mono text-neutral-400">
-                        {lolMatches.length > 0 ? "Impact décisif sur les escarmouches" : "—"}
+                        {lolSummary.avgKp > 0 ? "Participation moyenne aux éliminations" : "—"}
                       </p>
                     </div>
                     <div className="h-1.5 w-full rounded-full bg-white/[0.06] overflow-hidden">
-                      <div className="h-full bg-emerald-400 rounded-full" style={{ width: lolMatches.length > 0 ? "78%" : "0%" }} />
+                      <div
+                        className="h-full bg-emerald-400 rounded-full"
+                        style={{ width: lolSummary.avgKp > 0 ? `${lolSummary.avgKp}%` : "0%" }}
+                      />
                     </div>
                   </div>
                 </div>
@@ -1655,38 +1913,52 @@ export default function RiotGamingHome() {
             )}
 
             {activeGame === "tft" && (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
-                <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-4 backdrop-blur-xl shadow-sm space-y-3">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-purple-500/10 text-purple-300 font-bold border border-purple-500/30 shrink-0">
-                      <GameBrandIcon name="Teamfight Tactics" className="h-6 w-6" />
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+                  <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-4 backdrop-blur-xl shadow-sm space-y-3">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-purple-500/10 text-purple-300 font-bold border border-purple-500/30 shrink-0">
+                        <GameBrandIcon name="Teamfight Tactics" className="h-6 w-6" />
+                      </div>
+                      <div className="min-w-0">
+                        <h3 className="text-base font-bold text-white truncate">{riotName || "Tacticien"}</h3>
+                        <p className="font-mono text-xs text-neutral-400">{riotTag ? `#${riotTag}` : ""}</p>
+                        <p className="text-xs font-semibold text-purple-300">Mode Stratégique TFT</p>
+                      </div>
                     </div>
-                    <div className="min-w-0">
-                      <h3 className="text-base font-bold text-white truncate">{riotName || "Tacticien"}</h3>
-                      <p className="font-mono text-xs text-neutral-400">{riotTag ? `#${riotTag}` : ""}</p>
-                      <p className="text-xs font-semibold text-purple-300">Mode Stratégique TFT</p>
+                  </div>
+
+                  <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-4 backdrop-blur-xl shadow-sm flex flex-col justify-between">
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">Top 4 Rate</span>
+                    <p className="text-3xl font-mono font-bold tracking-tight text-white my-2">
+                      —
+                    </p>
+                    <div className="h-1.5 w-full rounded-full bg-white/[0.06] overflow-hidden">
+                      <div className="h-full bg-purple-400 rounded-full" style={{ width: "0%" }} />
+                    </div>
+                  </div>
+
+                  <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-4 backdrop-blur-xl shadow-sm flex flex-col justify-between">
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">Victoires (Top 1)</span>
+                    <p className="text-3xl font-mono font-bold tracking-tight text-white my-2">
+                      —
+                    </p>
+                    <div className="h-1.5 w-full rounded-full bg-white/[0.06] overflow-hidden">
+                      <div className="h-full bg-amber-400 rounded-full" style={{ width: "0%" }} />
                     </div>
                   </div>
                 </div>
 
-                <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-4 backdrop-blur-xl shadow-sm flex flex-col justify-between">
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">Top 4 Rate</span>
-                  <p className="text-3xl font-mono font-bold tracking-tight text-white my-2">
-                    {valorantMatches.length > 0 ? "64%" : "—"}
-                  </p>
-                  <div className="h-1.5 w-full rounded-full bg-white/[0.06] overflow-hidden">
-                    <div className="h-full bg-purple-400 rounded-full" style={{ width: valorantMatches.length > 0 ? "64%" : "0%" }} />
+                <div className="rounded-xl border border-dashed border-white/10 bg-black/20 p-8 text-center space-y-2">
+                  <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-xl bg-purple-500/10 text-purple-300 border border-purple-500/20">
+                    <GameBrandIcon name="Teamfight Tactics" className="h-5 w-5" />
                   </div>
-                </div>
-
-                <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-4 backdrop-blur-xl shadow-sm flex flex-col justify-between">
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">Victoires (Top 1)</span>
-                  <p className="text-3xl font-mono font-bold tracking-tight text-white my-2">
-                    {valorantMatches.length > 0 ? "28%" : "—"}
+                  <h4 className="text-xs font-mono font-bold text-white uppercase tracking-wider">
+                    Données TFT en cours de synchronisation
+                  </h4>
+                  <p className="text-xs text-neutral-400 max-w-sm mx-auto">
+                    Le module TFT nécessite la configuration de la clé API Riot Games personnalisée pour charger les compositions et les parties classées en direct.
                   </p>
-                  <div className="h-1.5 w-full rounded-full bg-white/[0.06] overflow-hidden">
-                    <div className="h-full bg-amber-400 rounded-full" style={{ width: valorantMatches.length > 0 ? "28%" : "0%" }} />
-                  </div>
                 </div>
               </div>
             )}

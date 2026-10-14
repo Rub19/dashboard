@@ -14,6 +14,7 @@ import {
   Brain,
   Activity,
   Flame,
+  Trophy,
 } from "@/components/icons/ph";
 import BrandMark from "@/components/BrandMark";
 import GameBrandIcon from "@/components/GameBrandIcon";
@@ -84,6 +85,17 @@ const TRACKER_GROUPS: TrackerSidebarGroup[] = [
             className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-rose-500")}
           />
         ),
+      },
+      {
+        id: "vct",
+        label: "VCT & Pick'ems",
+        href: "/tracker?tab=vct",
+        renderIcon: (colored) => (
+          <Trophy
+            className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-amber-400")}
+          />
+        ),
+        badge: "Live",
       },
       {
         id: "lol",

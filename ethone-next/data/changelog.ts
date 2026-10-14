@@ -55331,10 +55331,58 @@ const v12914_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12914_fr, v12913_fr, v12912_fr, v12911_fr, v12910_fr, v12909_fr, v12908_fr, v12907_fr, v12906_fr, v12905_fr, v12904_fr, v12903_fr, v12902_fr, v12901_fr, v12900_fr, v12899_fr, v12898_fr, v12897_fr, v12896_fr, v12895_fr, v12894_fr, v12893_fr, v12892_fr);
-CHANGELOG_BY_LANG.en.unshift(v12914_en, v12913_en, v12912_en, v12911_en, v12910_en, v12909_en, v12908_en, v12907_en, v12906_en, v12905_en, v12904_en, v12903_en, v12902_en, v12901_en, v12900_en, v12899_en, v12898_en, v12897_en, v12896_en, v12895_en, v12894_en, v12893_en, v12892_en);
-CHANGELOG_BY_LANG.es.unshift(v12914_es, v12913_es, v12912_es, v12911_es, v12910_es, v12909_es, v12908_es, v12907_es, v12906_es, v12905_es, v12904_es, v12903_es, v12902_es, v12901_es, v12900_es, v12899_es, v12898_es, v12897_es, v12896_es, v12895_es, v12894_es, v12893_es, v12892_es);
-CHANGELOG_BY_LANG.de.unshift(v12914_de, v12913_de, v12912_de, v12911_de, v12910_de, v12909_de, v12908_de, v12907_de, v12906_de, v12905_de, v12904_de, v12903_de, v12902_de, v12901_de, v12900_de, v12899_de, v12898_de, v12897_de, v12896_de, v12895_de, v12894_de, v12893_de, v12892_de);
+const v12915_fr: ChangelogEntry = {
+  version: "v1.75.73",
+  date: "2026-10-14",
+  title: "Onglet VCT & Pick'ems et suppression des placeholders de télémétrie",
+  items: [
+    "Nouvel onglet esports VCT avec flux en direct d'API réelle (matchs à venir et résultats récents)",
+    "Système interactif de Pick'ems avec prédiction de victoires et scores de manches",
+    "Suppression intégrale des données simulées et placeholders dans la télémétrie et le Coach IA",
+    "Affichage conditionnel et honnête des statistiques de tir et des duels uniquement sur données réelles",
+  ],
+};
+
+const v12915_en: ChangelogEntry = {
+  version: "v1.75.73",
+  date: "2026-10-14",
+  title: "VCT & Pick'ems tab and telemetry placeholder elimination",
+  items: [
+    "New VCT esports tab powered by live real match and tournament results API",
+    "Interactive Pick'ems prediction system with point tracking and accuracy scores",
+    "Complete elimination of fake telemetry mock numbers and hardcoded AI Coach texts",
+    "Honest conditional states for combat telemetry, anatomical hit distribution, and map winrates",
+  ],
+};
+
+const v12915_es: ChangelogEntry = {
+  version: "v1.75.73",
+  date: "2026-10-14",
+  title: "Pestaña VCT y Pick'ems y eliminación de marcadores de posición de telemetría",
+  items: [
+    "Nueva pestaña de esports VCT con flujo en tiempo real de partidos y resultados oficiales",
+    "Sistema interactivo de Pick'ems con predicción de victorias y seguimiento de puntos",
+    "Eliminación total de marcadores de posición y datos ficticios en telemetría y Coach IA",
+    "Visualización honesta y condicional de estadísticas balísticas basada únicamente en datos reales",
+  ],
+};
+
+const v12915_de: ChangelogEntry = {
+  version: "v1.75.73",
+  date: "2026-10-14",
+  title: "VCT & Pick'ems Tab und Entfernung von Telemetrie-Platzhaltern",
+  items: [
+    "Neuer VCT-Esports-Tab mit Live-API-Feed für offizielle Matches und Turnierergebnisse",
+    "Interaktives Pick'ems-Vorhersagesystem mit Punktezähler und Treffsicherheitsbewertung",
+    "Vollständige Beseitigung aller Dummy-Daten und Platzhalter in Telemetrie und KI-Coach",
+    "Ehrliche zustandsabhängige Anzeige ballistischer Trefferstatistiken basierend auf echten Matches",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12915_fr, v12914_fr, v12913_fr, v12912_fr, v12911_fr, v12910_fr, v12909_fr, v12908_fr, v12907_fr, v12906_fr, v12905_fr, v12904_fr, v12903_fr, v12902_fr, v12901_fr, v12900_fr, v12899_fr, v12898_fr, v12897_fr, v12896_fr, v12895_fr, v12894_fr, v12893_fr, v12892_fr);
+CHANGELOG_BY_LANG.en.unshift(v12915_en, v12914_en, v12913_en, v12912_en, v12911_en, v12910_en, v12909_en, v12908_en, v12907_en, v12906_en, v12905_en, v12904_en, v12903_en, v12902_en, v12901_en, v12900_en, v12899_en, v12898_en, v12897_en, v12896_en, v12895_en, v12894_en, v12893_en, v12892_en);
+CHANGELOG_BY_LANG.es.unshift(v12915_es, v12914_es, v12913_es, v12912_es, v12911_es, v12910_es, v12909_es, v12908_es, v12907_es, v12906_es, v12905_es, v12904_es, v12903_es, v12902_es, v12901_es, v12900_es, v12899_es, v12898_es, v12897_es, v12896_es, v12895_es, v12894_es, v12893_es, v12892_es);
+CHANGELOG_BY_LANG.de.unshift(v12915_de, v12914_de, v12913_de, v12912_de, v12911_de, v12910_de, v12909_de, v12908_de, v12907_de, v12906_de, v12905_de, v12904_de, v12903_de, v12902_de, v12901_de, v12900_de, v12899_de, v12898_de, v12897_de, v12896_de, v12895_de, v12894_de, v12893_de, v12892_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

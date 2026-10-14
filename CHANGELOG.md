@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.73 — 2026-10-14
+
+**Onglet VCT & Pick'ems et suppression des placeholders de télémétrie**
+
+- Nouvel onglet VCT intégrant le flux API officiel des matchs e-sport à venir, en direct et des résultats récents (scores réels, logos, tournois).
+- Système de Pick'ems interactif permettant d'enregistrer ses pronostics de vainqueur et scores exacts avec calcul automatique des points et de la précision.
+- Élimination intégrale des statistiques simulées et des placeholders dans les modules de télémétrie balistique et de diagnostic Coach IA.
+- Affichage conditionnel rigoureux : répartition anatomique des impacts et taux de victoires par carte calculés exclusivement sur les parties officielles du joueur sélectionné.
+- Synchronisation de la barre latérale du tracker (`TrackerSidebar`) et prise en charge des paramètres d'URL (`?tab=vct`).
+
 ## v1.75.72 — 2026-10-14
 
 **Refonte visuelle et motion design d'ETHONE Tactical Tracker**

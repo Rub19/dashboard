@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.71 — 2026-10-14
+
+**Suppression des pseudos par défaut et état neutre pour la recherche de joueurs**
+
+- Élimination des pseudos et tags hardcodés par défaut (`Rub19`, `boss`) et nettoyage automatique des anciennes valeurs de test dans le stockage local du navigateur.
+- Remplacement des boutons rapides par des profils d'exemple compétitifs publics (`TenZ #SEN`, `Faker #KR1`).
+- Mise en place d'un affichage neutre par défaut sur la carte de joueur en l'absence de recherche.
+- Respect strict de la politique zéro commentaire.
+
 ## v1.75.70 — 2026-10-14
 
 **Intégration du logo officiel Ethone dans la barre latérale du tracker**

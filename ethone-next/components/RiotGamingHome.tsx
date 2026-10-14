@@ -153,16 +153,18 @@ export default function RiotGamingHome() {
   const [riotName, setRiotName] = useState(() => {
     if (typeof window !== "undefined") {
       const stored = localStorage.getItem("ethone:tracker:riot_name");
-      if (stored) return stored;
+      if (stored && stored !== "Rub19") return stored;
     }
-    return settings.liveTrackerRiotName || "Rub19";
+    const val = settings.liveTrackerRiotName || "";
+    return val === "Rub19" ? "" : val;
   });
   const [riotTag, setRiotTag] = useState(() => {
     if (typeof window !== "undefined") {
       const stored = localStorage.getItem("ethone:tracker:riot_tag");
-      if (stored) return stored;
+      if (stored && stored !== "boss" && stored !== "Boss") return stored;
     }
-    return settings.liveTrackerRiotTag || "boss";
+    const val = settings.liveTrackerRiotTag || "";
+    return val === "boss" || val === "Boss" ? "" : val;
   });
 
   const [valorantProfile, setValorantProfile] = useState<ValorantAccountProfile | null>(null);
@@ -240,15 +242,27 @@ export default function RiotGamingHome() {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const storedName = localStorage.getItem("ethone:tracker:riot_name") || "Rub19";
-      const storedTag = localStorage.getItem("ethone:tracker:riot_tag") || "boss";
+      const rawStoredName = localStorage.getItem("ethone:tracker:riot_name");
+      const rawStoredTag = localStorage.getItem("ethone:tracker:riot_tag");
+      if (rawStoredName === "Rub19") {
+        try {
+          localStorage.removeItem("ethone:tracker:riot_name");
+          localStorage.removeItem("ethone:tracker:riot_tag");
+        } catch {}
+      }
+      const storedName = rawStoredName === "Rub19" ? "" : (rawStoredName || "");
+      const storedTag = rawStoredName === "Rub19" ? "" : (rawStoredTag || "");
       if (storedName && storedName !== riotName) setRiotName(storedName);
       if (storedTag && storedTag !== riotTag) setRiotTag(storedTag);
-      loadPlayerData(storedName, storedTag, activeGame);
+      if (storedName && storedTag) {
+        loadPlayerData(storedName, storedTag, activeGame);
+      }
       return;
     }
-    loadPlayerData(riotName, riotTag, activeGame);
-  }, [activeGame, loadPlayerData]);
+    if (riotName && riotTag) {
+      loadPlayerData(riotName, riotTag, activeGame);
+    }
+  }, [activeGame, loadPlayerData, riotName, riotTag]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -492,6 +506,7 @@ export default function RiotGamingHome() {
                   type="text"
                   value={riotName}
                   onChange={(e) => setRiotName(e.target.value)}
+                  placeholder="Riot ID"
                   aria-label="Nom Riot"
                   className="w-24 sm:w-28 bg-transparent text-xs font-medium text-white outline-none placeholder:text-neutral-500"
                 />
@@ -500,6 +515,7 @@ export default function RiotGamingHome() {
                   type="text"
                   value={riotTag}
                   onChange={(e) => setRiotTag(e.target.value)}
+                  placeholder="TAG"
                   aria-label="Tag Riot"
                   className="w-12 bg-transparent font-mono text-xs font-medium text-white outline-none placeholder:text-neutral-500"
                 />
@@ -515,13 +531,13 @@ export default function RiotGamingHome() {
             </form>
 
             <div className="flex items-center gap-1.5 text-xs">
-              <span className="text-[10px] uppercase font-medium tracking-wider text-neutral-500">Profils :</span>
+              <span className="text-[10px] uppercase font-medium tracking-wider text-neutral-500">Exemples :</span>
               <button
                 type="button"
-                onClick={() => applyQuickPlayer("Rub19", "boss", "valorant")}
+                onClick={() => applyQuickPlayer("TenZ", "SEN", "valorant")}
                 className="rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-1 text-[11px] font-medium text-neutral-300 hover:text-white hover:bg-white/[0.08] active:scale-95 transition-all cursor-pointer"
               >
-                Rub19 #boss (Immortal)
+                TenZ #SEN (Valorant)
               </button>
               <button
                 type="button"
@@ -564,10 +580,10 @@ export default function RiotGamingHome() {
                       )}
                       <div className="min-w-0">
                         <h3 className="text-base font-semibold text-white truncate">
-                          {valorantProfile?.name || riotName || "Joueur"}
+                          {valorantProfile?.name || riotName || "Aucun joueur"}
                         </h3>
                         <p className="font-mono text-xs text-neutral-400">
-                          {riotTag ? `#${valorantProfile?.tag || riotTag}` : ""}
+                          {riotTag ? `#${valorantProfile?.tag || riotTag}` : (valorantProfile?.name || riotName ? "" : "Recherchez un Riot ID")}
                         </p>
                         <p className="text-xs font-medium text-neutral-300 truncate">
                           {valorantProfile?.currentTierPatched || "Non classé"}
@@ -1272,7 +1288,7 @@ export default function RiotGamingHome() {
                 <Swords className="h-8 w-8 text-neutral-500 mb-2" />
                 <p className="text-xs font-semibold text-white">Parties VALORANT</p>
                 <p className="text-[11px] text-neutral-400 max-w-sm mt-1">
-                  Cliquez sur la pill Rub19 #boss ci-dessus pour charger instantanément les 10 matchs récents.
+                  Recherchez un Riot ID ci-dessus pour charger l'historique des parties récentes.
                 </p>
               </div>
             )}

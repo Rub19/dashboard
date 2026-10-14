@@ -55235,10 +55235,58 @@ const v12912_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12912_fr, v12911_fr, v12910_fr, v12909_fr, v12908_fr, v12907_fr, v12906_fr, v12905_fr, v12904_fr, v12903_fr, v12902_fr, v12901_fr, v12900_fr, v12899_fr, v12898_fr, v12897_fr, v12896_fr, v12895_fr, v12894_fr, v12893_fr, v12892_fr);
-CHANGELOG_BY_LANG.en.unshift(v12912_en, v12911_en, v12910_en, v12909_en, v12908_en, v12907_en, v12906_en, v12905_en, v12904_en, v12903_en, v12902_en, v12901_en, v12900_en, v12899_en, v12898_en, v12897_en, v12896_en, v12895_en, v12894_en, v12893_en, v12892_en);
-CHANGELOG_BY_LANG.es.unshift(v12912_es, v12911_es, v12910_es, v12909_es, v12908_es, v12907_es, v12906_es, v12905_es, v12904_es, v12903_es, v12902_es, v12901_es, v12900_es, v12899_es, v12898_es, v12897_es, v12896_es, v12895_es, v12894_es, v12893_es, v12892_es);
-CHANGELOG_BY_LANG.de.unshift(v12912_de, v12911_de, v12910_de, v12909_de, v12908_de, v12907_de, v12906_de, v12905_de, v12904_de, v12903_de, v12902_de, v12901_de, v12900_de, v12899_de, v12898_de, v12897_de, v12896_de, v12895_de, v12894_de, v12893_de, v12892_de);
+const v12913_fr: ChangelogEntry = {
+  version: "v1.75.71",
+  date: "2026-10-14",
+  title: "Suppression des pseudos par défaut et état neutre pour la recherche de joueurs",
+  items: [
+    "Suppression définitive des valeurs de repli hardcodées et purge du stockage local existant",
+    "Remplacement des boutons de profil préconfigurés par des exemples génériques",
+    "Affichage neutre par défaut sur la carte de statistiques en l'absence de recherche",
+    "Respect strict de la politique zéro commentaire",
+  ],
+};
+
+const v12913_en: ChangelogEntry = {
+  version: "v1.75.71",
+  date: "2026-10-14",
+  title: "Removal of default usernames and neutral empty state for player lookup",
+  items: [
+    "Completely removed hardcoded default usernames and purged legacy local storage",
+    "Replaced preconfigured personal pills with generic competitive examples",
+    "Clean neutral empty state for the profile card when no lookup has been performed",
+    "Strict adherence to zero comments policy",
+  ],
+};
+
+const v12913_es: ChangelogEntry = {
+  version: "v1.75.71",
+  date: "2026-10-14",
+  title: "Eliminación de nombres de usuario por defecto y estado neutro de búsqueda",
+  items: [
+    "Eliminación completa de valores por defecto hardcodeados y purga de almacenamiento local",
+    "Sustitución de botones rápidos preconfigurados por ejemplos competitivos genéricos",
+    "Estado vacío limpio en la tarjeta de perfil sin búsqueda previa",
+    "Cumplimiento estricto de la política de cero comentarios",
+  ],
+};
+
+const v12913_de: ChangelogEntry = {
+  version: "v1.75.71",
+  date: "2026-10-14",
+  title: "Entfernung von Standard-Benutzernamen und neutraler Such-Leerzustand",
+  items: [
+    "Vollständige Entfernung hartcodierter Standard-Benutzernamen und Bereinigung des lokalen Speichers",
+    "Ersetzung vorkonfigurierter Profil-Pills durch generische Wettbewerbs-Beispiele",
+    "Sauberer neutraler Zustand der Profilkarte vor Durchführung einer Spielersuche",
+    "Strikte Einhaltung der Null-Kommentar-Richtlinie",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12913_fr, v12912_fr, v12911_fr, v12910_fr, v12909_fr, v12908_fr, v12907_fr, v12906_fr, v12905_fr, v12904_fr, v12903_fr, v12902_fr, v12901_fr, v12900_fr, v12899_fr, v12898_fr, v12897_fr, v12896_fr, v12895_fr, v12894_fr, v12893_fr, v12892_fr);
+CHANGELOG_BY_LANG.en.unshift(v12913_en, v12912_en, v12911_en, v12910_en, v12909_en, v12908_en, v12907_en, v12906_en, v12905_en, v12904_en, v12903_en, v12902_en, v12901_en, v12900_en, v12899_en, v12898_en, v12897_en, v12896_en, v12895_en, v12894_en, v12893_en, v12892_en);
+CHANGELOG_BY_LANG.es.unshift(v12913_es, v12912_es, v12911_es, v12910_es, v12909_es, v12908_es, v12907_es, v12906_es, v12905_es, v12904_es, v12903_es, v12902_es, v12901_es, v12900_es, v12899_es, v12898_es, v12897_es, v12896_es, v12895_es, v12894_es, v12893_es, v12892_es);
+CHANGELOG_BY_LANG.de.unshift(v12913_de, v12912_de, v12911_de, v12910_de, v12909_de, v12908_de, v12907_de, v12906_de, v12905_de, v12904_de, v12903_de, v12902_de, v12901_de, v12900_de, v12899_de, v12898_de, v12897_de, v12896_de, v12895_de, v12894_de, v12893_de, v12892_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

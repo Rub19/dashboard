@@ -534,8 +534,8 @@ export async function fetchLolMatchesDirect(
 }
 
 export function generateFallbackLolMatches(
-  _playerName = "Rub19",
-  _playerTag = "boss"
+  _playerName = "Player",
+  _playerTag = "EUW"
 ): LolMatch[] {
   return [];
 }

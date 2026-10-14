@@ -622,7 +622,7 @@ export const CONNECTION_GUIDES: Record<string, ConnectionGuide> = {
       steps: [
         "Pour Valorant : Rendez-vous sur https://dash.henrikdev.xyz, connectez-vous avec Discord et générez votre clé API Henrik gratuite.",
         "Pour League of Legends : Rendez-vous sur https://developer.riotgames.com/, connectez-vous avec votre compte Riot Games et générez votre clé API développeur (Development API Key).",
-        "Renseignez votre Pseudo Riot Games et votre Tagline (ex: Rub19 #boss).",
+        "Renseignez votre Pseudo Riot Games et votre Tagline (ex: Joueur #0001).",
         "Collez les deux clés respectives ci-dessus et cliquez sur 'Enregistrer les identifiants'.",
       ],
     },

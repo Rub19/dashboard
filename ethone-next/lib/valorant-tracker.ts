@@ -764,8 +764,8 @@ export async function fetchValorantMatchesDirect(
 }
 
 export function generateFallbackValorantMatches(
-  _playerName = "Rub19",
-  _playerTag = "boss"
+  _playerName = "Player",
+  _playerTag = "EUW"
 ): ValorantMatch[] {
   return [];
 }

@@ -427,7 +427,7 @@ export default function LolTrackerView() {
             </div>
             <h4 className="text-sm font-bold text-[var(--text-primary)]">Aucune partie trouvée</h4>
             <p className="mt-1 max-w-sm text-xs text-[var(--text-muted)]/80">
-              Vérifiez votre Riot ID (ex: Rub19#Boss) ci-dessus pour charger vos statistiques League of Legends officielles.
+              Vérifiez votre Riot ID (ex: Faker#KR1) ci-dessus pour charger vos statistiques League of Legends officielles.
             </p>
           </div>
         ) : (

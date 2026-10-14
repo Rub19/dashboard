@@ -18,7 +18,6 @@ import {
 import BrandMark from "@/components/BrandMark";
 import GameBrandIcon from "@/components/GameBrandIcon";
 import { useSettings } from "@/components/SettingsProvider";
-import { useUserIdentity } from "@/lib/hooks/useUserIdentity";
 import { cn } from "@/lib/utils";
 import {
   AnimatedSidebar,
@@ -191,17 +190,16 @@ const TrackerSidebarBrand = memo(function TrackerSidebarBrand() {
 
 const TrackerSidebarProfile = memo(function TrackerSidebarProfile({ collapsed }: { collapsed: boolean }) {
   const router = useRouter();
-  const { displayName } = useUserIdentity();
   const [riotName, setRiotName] = useState("");
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       const stored = localStorage.getItem("ethone:tracker:riot_name");
-      if (stored) setRiotName(stored);
+      if (stored && stored !== "Rub19") setRiotName(stored);
     }
   }, []);
 
-  const label = riotName || displayName || "Joueur";
+  const label = riotName || "Joueur";
 
   return (
     <button

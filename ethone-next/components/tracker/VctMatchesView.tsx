@@ -28,7 +28,6 @@ import {
   Shield,
   SlidersHorizontal,
 } from "@/components/icons/ph";
-import { useSettings } from "@/components/SettingsProvider";
 import { getTrackerI18n } from "@/lib/i18n-tracker";
 import { AnimatedNumber } from "./TrackerMotion";
 import { cn } from "@/lib/utils";
@@ -104,7 +103,7 @@ export function classifyTournament(name: string): TournamentMeta {
       tier: "game_changers",
       tierRank: 5,
       tierLabel: "Game Changers",
-      tierBadgeColor: "border-fuchsia-500/40 bg-fuchsia-500/15 text-fuchsia-300",
+      tierBadgeColor: "border-pink-500/30 bg-pink-500/10 text-pink-300",
     };
   }
 
@@ -122,7 +121,7 @@ export function classifyTournament(name: string): TournamentMeta {
       tier: "champions",
       tierRank: 1,
       tierLabel: "Champions",
-      tierBadgeColor: "border-amber-400/50 bg-amber-500/20 text-amber-300",
+      tierBadgeColor: "border-amber-400/30 bg-amber-500/10 text-amber-200",
     };
   }
 
@@ -131,7 +130,7 @@ export function classifyTournament(name: string): TournamentMeta {
       tier: "masters",
       tierRank: 2,
       tierLabel: "Masters",
-      tierBadgeColor: "border-purple-500/40 bg-purple-500/15 text-purple-300",
+      tierBadgeColor: "border-purple-400/30 bg-purple-500/10 text-purple-200",
     };
   }
 
@@ -150,14 +149,14 @@ export function classifyTournament(name: string): TournamentMeta {
         tier: "challengers",
         tierRank: 4,
         tierLabel: "Challengers",
-        tierBadgeColor: "border-cyan-500/40 bg-cyan-500/15 text-cyan-300",
+        tierBadgeColor: "border-sky-400/30 bg-sky-500/10 text-sky-200",
       };
     }
     return {
       tier: "international",
       tierRank: 3,
       tierLabel: "VCT League",
-      tierBadgeColor: "border-rose-500/40 bg-rose-500/15 text-rose-300",
+      tierBadgeColor: "border-rose-400/30 bg-rose-500/10 text-rose-200",
     };
   }
 
@@ -166,7 +165,7 @@ export function classifyTournament(name: string): TournamentMeta {
       tier: "challengers",
       tierRank: 4,
       tierLabel: "Challengers",
-      tierBadgeColor: "border-cyan-500/40 bg-cyan-500/15 text-cyan-300",
+      tierBadgeColor: "border-sky-400/30 bg-sky-500/10 text-sky-200",
     };
   }
 
@@ -231,11 +230,11 @@ export function isMatchLocked(m: VlrMatch): boolean {
 }
 
 export function getRankTier(points: number, isEn: boolean) {
-  if (points >= 100) return { title: isEn ? "Radiant Predictor" : "Pronostiqueur Radiant", badge: "border-amber-400 bg-amber-500/20 text-amber-300", min: 100, next: 150 };
-  if (points >= 60) return { title: isEn ? "Immortal Predictor" : "Pronostiqueur Immortel", badge: "border-rose-500 bg-rose-500/20 text-rose-300", min: 60, next: 100 };
-  if (points >= 30) return { title: isEn ? "Ascendant Predictor" : "Pronostiqueur Ascendant", badge: "border-emerald-500 bg-emerald-500/20 text-emerald-300", min: 30, next: 60 };
-  if (points >= 15) return { title: isEn ? "Diamond Predictor" : "Pronostiqueur Diamant", badge: "border-cyan-500 bg-cyan-500/20 text-cyan-300", min: 15, next: 30 };
-  return { title: isEn ? "Gold Predictor" : "Pronostiqueur Or", badge: "border-yellow-500 bg-yellow-500/20 text-yellow-300", min: 0, next: 15 };
+  if (points >= 100) return { title: isEn ? "Radiant Predictor" : "Pronostiqueur Radiant", badge: "border-amber-400/30 bg-amber-500/10 text-amber-200", min: 100, next: 150 };
+  if (points >= 60) return { title: isEn ? "Immortal Predictor" : "Pronostiqueur Immortel", badge: "border-rose-400/30 bg-rose-500/10 text-rose-200", min: 60, next: 100 };
+  if (points >= 30) return { title: isEn ? "Ascendant Predictor" : "Pronostiqueur Ascendant", badge: "border-emerald-400/30 bg-emerald-500/10 text-emerald-200", min: 30, next: 60 };
+  if (points >= 15) return { title: isEn ? "Diamond Predictor" : "Pronostiqueur Diamant", badge: "border-sky-400/30 bg-sky-500/10 text-sky-200", min: 15, next: 30 };
+  return { title: isEn ? "Gold Predictor" : "Pronostiqueur Or", badge: "border-yellow-400/30 bg-yellow-500/10 text-yellow-200", min: 0, next: 15 };
 }
 
 export function getMatchDateGroup(m: VlrMatch, isEn: boolean): string {
@@ -280,8 +279,134 @@ export function formatMatchLocalTime(m: VlrMatch, isEn: boolean): string {
   }).format(new Date(ts));
 }
 
+export function TeamLogoBadge({
+  src,
+  alt,
+  name,
+  size = "md",
+  className,
+}: {
+  src?: string | null;
+  alt?: string;
+  name?: string;
+  size?: "xs" | "sm" | "md" | "lg";
+  className?: string;
+}) {
+  const [hasError, setHasError] = useState(false);
+
+  useEffect(() => {
+    setHasError(false);
+  }, [src]);
+
+  const initials = useMemo(() => {
+    const raw = (name || alt || "?").trim();
+    if (!raw) return "TBD";
+    const parts = raw.split(/\s+/).filter(Boolean);
+    if (parts.length > 1) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return raw.slice(0, 3).toUpperCase();
+  }, [name, alt]);
+
+  const sizeClasses = {
+    xs: "h-5 w-5 rounded text-[8px]",
+    sm: "h-6 w-6 rounded-md text-[9px]",
+    md: "h-8 w-8 rounded-lg text-xs",
+    lg: "h-11 w-11 sm:h-12 sm:w-12 rounded-xl text-sm",
+  }[size];
+
+  const padClasses = {
+    xs: "p-0.5",
+    sm: "p-0.5",
+    md: "p-1",
+    lg: "p-1.5",
+  }[size];
+
+  if (!src || hasError) {
+    return (
+      <div
+        className={cn(
+          "relative flex items-center justify-center font-mono font-bold shrink-0 select-none",
+          "border border-white/15 bg-white/[0.08] text-neutral-200 shadow-inner",
+          sizeClasses,
+          className
+        )}
+        title={name || alt}
+      >
+        <span className="tracking-tight">{initials}</span>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className={cn(
+        "relative flex items-center justify-center shrink-0 overflow-hidden",
+        "border border-white/15 bg-white/[0.08] hover:bg-white/[0.12] transition-colors shadow-inner",
+        sizeClasses,
+        padClasses,
+        className
+      )}
+      title={name || alt}
+    >
+      <img
+        src={src}
+        alt={alt || name || "Team Logo"}
+        onError={() => setHasError(true)}
+        className="h-full w-full object-contain filter drop-shadow-[0_0_1.5px_rgba(255,255,255,0.75)]"
+        loading="lazy"
+      />
+    </div>
+  );
+}
+
+export function TournamentLogoBadge({
+  src,
+  alt,
+  className,
+}: {
+  src?: string | null;
+  alt?: string;
+  className?: string;
+}) {
+  const [hasError, setHasError] = useState(false);
+
+  useEffect(() => {
+    setHasError(false);
+  }, [src]);
+
+  if (!src || hasError) {
+    return (
+      <div
+        className={cn(
+          "flex h-5 w-5 items-center justify-center rounded border border-white/10 bg-white/[0.06] text-neutral-400 shrink-0",
+          className
+        )}
+      >
+        <Trophy className="h-3 w-3" />
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className={cn(
+        "relative flex h-5 w-5 items-center justify-center rounded border border-white/10 bg-white/[0.06] p-0.5 shrink-0 overflow-hidden",
+        className
+      )}
+    >
+      <img
+        src={src}
+        alt={alt || "Tournament"}
+        onError={() => setHasError(true)}
+        className="h-full w-full object-contain filter drop-shadow-[0_0_1px_rgba(255,255,255,0.6)]"
+        loading="lazy"
+      />
+    </div>
+  );
+}
+
 export default function VctMatchesView({ lang }: { lang?: string } = {}) {
-  const { settings } = useSettings();
   const effectiveLang =
     lang ||
     (typeof window !== "undefined"
@@ -917,58 +1042,58 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
       )}
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
-        <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-3.5 sm:p-4 backdrop-blur-xl shadow-sm flex items-center justify-between">
+        <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-3.5 sm:p-4 backdrop-blur-xl shadow-sm flex items-center justify-between">
           <div className="min-w-0">
             <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">
               {tr.vctScorePickems}
             </span>
-            <p className="text-xl sm:text-2xl font-mono font-bold text-amber-300 mt-1 tabular-nums">
+            <p className="text-xl sm:text-2xl font-mono font-bold text-white mt-1 tabular-nums">
               <AnimatedNumber value={pickEmStats.scoreTotal} suffix=" pts" />
             </p>
             <p className="text-[11px] font-mono text-neutral-400 mt-0.5 truncate">
               {pickEmStats.correct} {isEn ? (pickEmStats.correct > 1 ? "correct picks" : "correct pick") : (pickEmStats.correct > 1 ? "bons pronostics" : "bon pronostic")} ({pickEmStats.exactScores} {isEn ? "exact" : "exacts"})
             </p>
           </div>
-          <div className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 shrink-0">
+          <div className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-white/[0.06] border border-white/10 text-amber-300 shrink-0">
             <Trophy className="h-5 w-5" />
           </div>
         </div>
 
-        <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-3.5 sm:p-4 backdrop-blur-xl shadow-sm flex items-center justify-between">
+        <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-3.5 sm:p-4 backdrop-blur-xl shadow-sm flex items-center justify-between">
           <div className="min-w-0">
             <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">
               {tr.vctAccuracy}
             </span>
-            <p className="text-xl sm:text-2xl font-mono font-bold text-emerald-400 mt-1 tabular-nums">
+            <p className="text-xl sm:text-2xl font-mono font-bold text-white mt-1 tabular-nums">
               <AnimatedNumber value={pickEmStats.accuracy} suffix={isEn ? "%" : " %"} locale={isEn ? "en" : "fr"} />
             </p>
             <p className="text-[11px] font-mono text-neutral-400 mt-0.5 truncate">
               {pickEmStats.evaluated} {isEn ? "evaluated" : "évalués"} ({pickEmStats.missedCount} {isEn ? "missed" : "manqués"})
             </p>
           </div>
-          <div className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 shrink-0">
+          <div className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-white/[0.06] border border-white/10 text-emerald-400 shrink-0">
             <Target className="h-5 w-5" />
           </div>
         </div>
 
-        <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-3.5 sm:p-4 backdrop-blur-xl shadow-sm flex items-center justify-between">
+        <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-3.5 sm:p-4 backdrop-blur-xl shadow-sm flex items-center justify-between">
           <div className="min-w-0">
             <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">
               {isEn ? "Pending Picks" : "Pronos en attente"}
             </span>
-            <p className="text-xl sm:text-2xl font-mono font-bold text-rose-400 mt-1 tabular-nums">
+            <p className="text-xl sm:text-2xl font-mono font-bold text-white mt-1 tabular-nums">
               <AnimatedNumber value={pickEmStats.pendingCount} />
             </p>
             <p className="text-[11px] font-mono text-neutral-400 mt-0.5 truncate">
               {pickEmStats.activeCount} {isEn ? "saved total" : "enregistrés au total"}
             </p>
           </div>
-          <div className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 shrink-0">
+          <div className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-white/[0.06] border border-white/10 text-neutral-300 shrink-0">
             <Clock className="h-5 w-5" />
           </div>
         </div>
 
-        <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-3.5 sm:p-4 backdrop-blur-xl shadow-sm flex items-center justify-between">
+        <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-3.5 sm:p-4 backdrop-blur-xl shadow-sm flex items-center justify-between">
           <div className="min-w-0">
             <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">
               {isEn ? "Predictor Rank" : "Rang Prono"}
@@ -984,13 +1109,13 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
                 : isEn ? "Max tier reached" : "Palier max atteint"}
             </p>
           </div>
-          <div className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-400 shrink-0">
+          <div className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-white/[0.06] border border-white/10 text-neutral-300 shrink-0">
             <Award className="h-5 w-5" />
           </div>
         </div>
       </div>
 
-      <div className="rounded-2xl border border-white/[0.08] bg-[#10131B]/95 p-2.5 sm:p-3 backdrop-blur-xl shadow-md">
+      <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-2 sm:p-2.5 backdrop-blur-xl shadow-md">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-2.5">
           <div className="flex items-center gap-1 overflow-x-auto os-scroll pb-1 md:pb-0">
             <button
@@ -1004,11 +1129,11 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
               {activeView === "overview" && (
                 <motion.div
                   layoutId="vct-active-view-tab"
-                  className="absolute inset-0 rounded-xl bg-rose-600 shadow-sm"
+                  className="absolute inset-0 rounded-xl bg-white/[0.12] border border-white/15 shadow-sm"
                   transition={{ type: "spring", stiffness: 350, damping: 30 }}
                 />
               )}
-              <Zap className="relative z-10 h-3.5 w-3.5 text-rose-300" />
+              <Zap className="relative z-10 h-3.5 w-3.5 text-neutral-300" />
               <span className="relative z-10">{isEn ? "Overview" : "Vue d'ensemble"}</span>
             </button>
 
@@ -1023,13 +1148,13 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
               {activeView === "events" && (
                 <motion.div
                   layoutId="vct-active-view-tab"
-                  className="absolute inset-0 rounded-xl bg-rose-600 shadow-sm"
+                  className="absolute inset-0 rounded-xl bg-white/[0.12] border border-white/15 shadow-sm"
                   transition={{ type: "spring", stiffness: 350, damping: 30 }}
                 />
               )}
-              <Trophy className="relative z-10 h-3.5 w-3.5 text-amber-300" />
+              <Trophy className="relative z-10 h-3.5 w-3.5 text-neutral-300" />
               <span className="relative z-10">{isEn ? "Tournaments" : "Événements"}</span>
-              <span className="relative z-10 rounded-full bg-black/40 px-1.5 py-0.2 text-[10px]">
+              <span className="relative z-10 rounded-full bg-white/[0.08] px-1.5 py-0.2 text-[10px] text-neutral-300">
                 {tournamentsCatalog.length}
               </span>
             </button>
@@ -1045,18 +1170,18 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
               {activeView === "matches" && (
                 <motion.div
                   layoutId="vct-active-view-tab"
-                  className="absolute inset-0 rounded-xl bg-rose-600 shadow-sm"
+                  className="absolute inset-0 rounded-xl bg-white/[0.12] border border-white/15 shadow-sm"
                   transition={{ type: "spring", stiffness: 350, damping: 30 }}
                 />
               )}
-              <Swords className="relative z-10 h-3.5 w-3.5 text-cyan-300" />
+              <Swords className="relative z-10 h-3.5 w-3.5 text-neutral-300" />
               <span className="relative z-10">{isEn ? "Matches & Calendar" : "Matchs & Calendrier"}</span>
               {liveCount > 0 ? (
-                <span className="relative z-10 rounded-full bg-rose-500 px-1.5 py-0.2 text-[10px] font-bold text-white animate-pulse">
+                <span className="relative z-10 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40 px-1.5 py-0.2 text-[10px] font-bold animate-pulse">
                   {liveCount} {tr.live}
                 </span>
               ) : (
-                <span className="relative z-10 rounded-full bg-black/40 px-1.5 py-0.2 text-[10px]">
+                <span className="relative z-10 rounded-full bg-white/[0.08] px-1.5 py-0.2 text-[10px] text-neutral-300">
                   {upcomingMatches.length + resultsMatches.length}
                 </span>
               )}
@@ -1067,19 +1192,19 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
               onClick={() => setActiveView("pickems")}
               className={cn(
                 "relative flex items-center gap-2 rounded-xl px-3 sm:px-4 py-2 text-xs font-mono font-semibold transition-all cursor-pointer shrink-0",
-                activeView === "pickems" ? "text-black font-bold" : "text-neutral-400 hover:text-neutral-200"
+                activeView === "pickems" ? "text-white" : "text-neutral-400 hover:text-neutral-200"
               )}
             >
               {activeView === "pickems" && (
                 <motion.div
                   layoutId="vct-active-view-tab"
-                  className="absolute inset-0 rounded-xl bg-amber-400 shadow-sm"
+                  className="absolute inset-0 rounded-xl bg-white/[0.12] border border-white/15 shadow-sm"
                   transition={{ type: "spring", stiffness: 350, damping: 30 }}
                 />
               )}
-              <Target className="relative z-10 h-3.5 w-3.5" />
+              <Target className="relative z-10 h-3.5 w-3.5 text-neutral-300" />
               <span className="relative z-10">{tr.vctMyPickemsTab}</span>
-              <span className="relative z-10 rounded-full bg-black/20 px-1.5 py-0.2 text-[10px]">
+              <span className="relative z-10 rounded-full bg-white/[0.08] px-1.5 py-0.2 text-[10px] text-neutral-300">
                 {pickEmStats.activeCount}
               </span>
             </button>
@@ -1095,11 +1220,11 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
               {activeView === "leaderboard" && (
                 <motion.div
                   layoutId="vct-active-view-tab"
-                  className="absolute inset-0 rounded-xl bg-purple-600 shadow-sm"
+                  className="absolute inset-0 rounded-xl bg-white/[0.12] border border-white/15 shadow-sm"
                   transition={{ type: "spring", stiffness: 350, damping: 30 }}
                 />
               )}
-              <BarChart3 className="relative z-10 h-3.5 w-3.5 text-purple-300" />
+              <BarChart3 className="relative z-10 h-3.5 w-3.5 text-neutral-300" />
               <span className="relative z-10">{isEn ? "Rank & Analytics" : "Classement & Analyses"}</span>
             </button>
           </div>
@@ -1141,10 +1266,10 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
         </div>
       ) : activeView === "overview" ? (
         <div className="space-y-5">
-          <div className="rounded-2xl border border-amber-400/30 bg-gradient-to-r from-amber-950/30 via-[#131622] to-[#131622] p-4 sm:p-5 backdrop-blur-xl shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5 backdrop-blur-xl shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <span className="rounded bg-amber-400/20 text-amber-300 border border-amber-400/40 px-2 py-0.5 text-[10px] font-mono font-bold uppercase">
+                <span className="rounded bg-white/[0.08] text-neutral-200 border border-white/10 px-2 py-0.5 text-[10px] font-mono font-bold uppercase">
                   {isEn ? "Rapid Prediction Mode" : "Fonctionnalité Prioritaire"}
                 </span>
                 <span className="text-neutral-400 text-xs font-mono">• 30s</span>
@@ -1161,7 +1286,7 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
             <button
               type="button"
               onClick={() => handleLaunchQuickPicks()}
-              className="inline-flex items-center gap-2 rounded-xl bg-amber-400 text-black px-4 py-2.5 text-xs font-mono font-bold hover:bg-amber-300 active:scale-95 transition-all cursor-pointer shrink-0 shadow-md"
+              className="inline-flex items-center gap-2 rounded-xl bg-white text-black px-4 py-2.5 text-xs font-mono font-bold hover:bg-neutral-200 active:scale-95 transition-all cursor-pointer shrink-0 shadow-sm"
             >
               <Zap className="h-4 w-4 text-black" />
               <span>{isEn ? "Start Quick Picks →" : "Lancer les Pick'ems Rapides →"}</span>
@@ -1169,10 +1294,10 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
           </div>
 
           {urgentUnpredictedMatches.length > 0 && (
-            <div className="rounded-2xl border border-rose-500/30 bg-gradient-to-r from-rose-950/40 via-[#121520] to-[#121520] p-4 sm:p-5 backdrop-blur-xl shadow-lg space-y-3">
+            <div className="rounded-2xl border border-rose-500/20 bg-rose-500/[0.04] p-4 sm:p-5 backdrop-blur-xl shadow-sm space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-rose-500/20 text-rose-400 border border-rose-500/30">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-rose-500/15 text-rose-300 border border-rose-500/30">
                     <Flame className="h-4 w-4" />
                   </div>
                   <div>
@@ -1190,7 +1315,7 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
                     setActiveView("matches");
                     setMatchStatusFilter("upcoming");
                   }}
-                  className="hidden sm:inline-flex items-center gap-1.5 text-xs font-mono text-rose-300 hover:text-rose-200 transition-colors cursor-pointer"
+                  className="hidden sm:inline-flex items-center gap-1.5 text-xs font-mono text-neutral-300 hover:text-white transition-colors cursor-pointer"
                 >
                   <span>{isEn ? "View all matches →" : "Voir tous les matchs →"}</span>
                 </button>
@@ -1207,7 +1332,7 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
                   return (
                     <div
                       key={m.id}
-                      className="rounded-xl border border-white/[0.08] bg-[#0c0f17]/90 p-3.5 space-y-3 flex flex-col justify-between"
+                      className="rounded-xl border border-white/[0.08] bg-black/40 p-3.5 space-y-3 flex flex-col justify-between"
                     >
                       <div className="flex items-center justify-between text-[11px] font-mono">
                         <span className="text-neutral-400 truncate max-w-[140px]" title={m.tournament}>
@@ -1219,7 +1344,7 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
                             {isEn ? "LIVE" : "DIRECT"}
                           </span>
                         ) : (
-                          <span className="text-amber-400 font-medium">
+                          <span className="text-neutral-300 font-medium">
                             {m.in || (isEn ? "Starting soon" : "Bientôt")}
                           </span>
                         )}
@@ -1232,17 +1357,11 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
                           className={cn(
                             "flex flex-col items-center justify-center p-2 rounded-lg border transition-all cursor-pointer text-center",
                             pred?.winner?.toLowerCase() === team1?.name?.toLowerCase()
-                              ? "border-amber-400 bg-amber-500/20 text-white ring-1 ring-amber-400/50"
-                              : "border-white/[0.08] bg-black/40 hover:border-white/20 text-neutral-200"
+                              ? "border-white/30 bg-white/[0.12] text-white shadow-sm ring-1 ring-white/20"
+                              : "border-white/[0.08] bg-white/[0.02] hover:border-white/20 text-neutral-200"
                           )}
                         >
-                          <div className="h-8 w-8 mb-1 flex items-center justify-center overflow-hidden">
-                            {team1?.logo ? (
-                              <img src={team1.logo} alt={team1.name} className="h-full w-full object-contain" />
-                            ) : (
-                              <span className="font-mono text-xs font-bold text-neutral-400">{team1?.name?.[0] || "1"}</span>
-                            )}
-                          </div>
+                          <TeamLogoBadge src={team1?.logo} alt={team1?.name} name={team1?.name} size="md" className="mb-1" />
                           <span className="font-mono text-xs font-bold truncate max-w-full">{team1?.name || "TBD"}</span>
                         </button>
 
@@ -1252,17 +1371,11 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
                           className={cn(
                             "flex flex-col items-center justify-center p-2 rounded-lg border transition-all cursor-pointer text-center",
                             pred?.winner?.toLowerCase() === team2?.name?.toLowerCase()
-                              ? "border-amber-400 bg-amber-500/20 text-white ring-1 ring-amber-400/50"
-                              : "border-white/[0.08] bg-black/40 hover:border-white/20 text-neutral-200"
+                              ? "border-white/30 bg-white/[0.12] text-white shadow-sm ring-1 ring-white/20"
+                              : "border-white/[0.08] bg-white/[0.02] hover:border-white/20 text-neutral-200"
                           )}
                         >
-                          <div className="h-8 w-8 mb-1 flex items-center justify-center overflow-hidden">
-                            {team2?.logo ? (
-                              <img src={team2.logo} alt={team2.name} className="h-full w-full object-contain" />
-                            ) : (
-                              <span className="font-mono text-xs font-bold text-neutral-400">{team2?.name?.[0] || "2"}</span>
-                            )}
-                          </div>
+                          <TeamLogoBadge src={team2?.logo} alt={team2?.name} name={team2?.name} size="md" className="mb-1" />
                           <span className="font-mono text-xs font-bold truncate max-w-full">{team2?.name || "TBD"}</span>
                         </button>
                       </div>
@@ -1270,7 +1383,7 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
                       <div className="flex items-center justify-between pt-1 border-t border-white/[0.06] text-[10px] font-mono">
                         <span className="text-neutral-500">{format}</span>
                         {pred?.winner ? (
-                          <span className="text-amber-400 font-bold truncate">
+                          <span className="text-emerald-400 font-bold truncate">
                             ✓ {isEn ? "Picks:" : "Choisi:"} {pred.winner}
                           </span>
                         ) : (
@@ -1287,7 +1400,7 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Trophy className="h-4 w-4 text-amber-400" />
+                <Trophy className="h-4 w-4 text-neutral-300" />
                 <h3 className="font-mono text-sm font-bold text-white uppercase tracking-wide">
                   {isEn ? "Featured Competitions" : "Compétitions Majeures en cours"}
                 </h3>
@@ -1295,7 +1408,7 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
               <button
                 type="button"
                 onClick={() => setActiveView("events")}
-                className="text-xs font-mono text-amber-400 hover:text-amber-300 underline underline-offset-4 transition-colors cursor-pointer"
+                className="text-xs font-mono text-neutral-300 hover:text-white underline underline-offset-4 transition-colors cursor-pointer"
               >
                 {isEn ? "View tournament catalog →" : "Catalogue complet des tournois →"}
               </button>
@@ -1310,21 +1423,12 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
                 return (
                   <div
                     key={tour.name}
-                    className="group rounded-2xl border border-white/[0.08] bg-[#10131B]/95 p-4 backdrop-blur-xl shadow-md hover:border-white/20 transition-all flex flex-col justify-between space-y-3"
+                    className="group rounded-2xl border border-white/[0.08] bg-white/[0.03] p-4 backdrop-blur-xl shadow-sm hover:border-white/20 transition-all flex flex-col justify-between space-y-3"
                   >
                     <div>
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex items-center gap-2 min-w-0">
-                          {tour.img && (
-                            <img
-                              src={tour.img}
-                              alt={tour.name}
-                              className="h-6 w-6 object-contain shrink-0"
-                              onError={(e) => {
-                                (e.target as HTMLImageElement).style.display = "none";
-                              }}
-                            />
-                          )}
+                          <TournamentLogoBadge src={tour.img} alt={tour.name} className="h-6 w-6" />
                           <span className={cn("rounded px-2 py-0.5 text-[10px] font-mono font-bold uppercase shrink-0 border", tour.meta.tierBadgeColor)}>
                             {tour.meta.tierLabel}
                           </span>
@@ -1350,17 +1454,13 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
 
                       <div className="flex items-center gap-1.5 mt-2 overflow-hidden h-6">
                         {tour.teams.slice(0, 6).map((tm) => (
-                          <div
+                          <TeamLogoBadge
                             key={tm.name}
-                            className="h-5 w-5 rounded-md border border-white/10 bg-black/40 flex items-center justify-center p-0.5 overflow-hidden"
-                            title={tm.name}
-                          >
-                            {tm.logo ? (
-                              <img src={tm.logo} alt={tm.name} className="h-full w-full object-contain" />
-                            ) : (
-                              <span className="text-[9px] font-mono text-neutral-400">{tm.name[0]}</span>
-                            )}
-                          </div>
+                            src={tm.logo}
+                            alt={tm.name}
+                            name={tm.name}
+                            size="xs"
+                          />
                         ))}
                         {tour.teams.length > 6 && (
                           <span className="text-[10px] font-mono text-neutral-500 pl-1">
@@ -1558,21 +1658,12 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
                     initial={reducedMotion ? false : { opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.2, delay: Math.min(idx * 0.03, 0.2), ease: EASE_OUT }}
-                    className="rounded-2xl border border-white/[0.08] bg-[#10131B]/95 p-4 sm:p-5 backdrop-blur-xl shadow-md hover:border-white/20 transition-all flex flex-col justify-between space-y-4"
+                    className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-4 sm:p-5 backdrop-blur-xl shadow-sm hover:border-white/20 transition-all flex flex-col justify-between space-y-4"
                   >
                     <div className="space-y-3">
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex items-center gap-2 min-w-0">
-                          {tour.img && (
-                            <img
-                              src={tour.img}
-                              alt={tour.name}
-                              className="h-6 w-6 object-contain shrink-0"
-                              onError={(e) => {
-                                (e.target as HTMLImageElement).style.display = "none";
-                              }}
-                            />
-                          )}
+                          <TournamentLogoBadge src={tour.img} alt={tour.name} className="h-6 w-6" />
                           <span className={cn("rounded px-2 py-0.5 text-[10px] font-mono font-bold uppercase shrink-0 border", tour.meta.tierBadgeColor)}>
                             {tour.meta.tierLabel}
                           </span>
@@ -1608,17 +1699,13 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
                         </span>
                         <div className="flex items-center gap-1.5 flex-wrap">
                           {tour.teams.slice(0, 8).map((tm) => (
-                            <div
+                            <TeamLogoBadge
                               key={tm.name}
-                              className="h-6 w-6 rounded-md border border-white/10 bg-black/50 flex items-center justify-center p-0.5 overflow-hidden"
-                              title={tm.name}
-                            >
-                              {tm.logo ? (
-                                <img src={tm.logo} alt={tm.name} className="h-full w-full object-contain" />
-                              ) : (
-                                <span className="text-[9px] font-mono text-neutral-300 font-bold">{tm.name[0]}</span>
-                              )}
-                            </div>
+                              src={tm.logo}
+                              alt={tm.name}
+                              name={tm.name}
+                              size="sm"
+                            />
                           ))}
                           {tour.teams.length > 8 && (
                             <span className="text-[11px] font-mono text-neutral-400 pl-1">
@@ -1632,13 +1719,13 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
                     <div className="pt-3 border-t border-white/[0.06] space-y-2.5">
                       <div className="flex items-center justify-between text-xs font-mono">
                         <span className="text-neutral-400">{isEn ? "Pick'em progress" : "Pronostics enregistrés"}</span>
-                        <span className="font-bold text-amber-300">
+                        <span className="font-bold text-white">
                           {predictedInTour}/{totalUpcoming} ({progressPct}%)
                         </span>
                       </div>
                       <div className="w-full bg-white/[0.06] rounded-full h-1.5 overflow-hidden">
                         <div
-                          className="bg-amber-400 h-full rounded-full transition-all duration-300"
+                          className="bg-white h-full rounded-full transition-all duration-300"
                           style={{ width: `${progressPct}%` }}
                         />
                       </div>
@@ -1646,7 +1733,7 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
                         <button
                           type="button"
                           onClick={() => handleSelectTournamentAndJump(tour.name)}
-                          className="w-full rounded-xl border border-white/10 bg-white/[0.04] hover:bg-white/[0.08] text-white py-2 text-xs font-mono font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                          className="w-full rounded-xl border border-white/10 bg-white/[0.04] hover:bg-white/[0.08] text-white py-2 text-xs font-mono font-semibold transition-all cursor-pointer flex items-center justify-center gap-1.5"
                         >
                           <span>{isEn ? "Matches" : "Matchs"}</span>
                           <ArrowRight className="h-3.5 w-3.5" />
@@ -1654,9 +1741,9 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
                         <button
                           type="button"
                           onClick={() => handleLaunchQuickPicks(tour.name)}
-                          className="w-full rounded-xl border border-amber-400/40 bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 py-2 text-xs font-mono font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                          className="w-full rounded-xl border border-white/15 bg-white/[0.08] hover:bg-white/[0.12] text-white py-2 text-xs font-mono font-semibold transition-all cursor-pointer flex items-center justify-center gap-1.5"
                         >
-                          <Zap className="h-3.5 w-3.5" />
+                          <Zap className="h-3.5 w-3.5 text-neutral-300" />
                           <span>{isEn ? "Quick Picks" : "Pronos Rapides"}</span>
                         </button>
                       </div>
@@ -1809,9 +1896,9 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
 
           {matchDisplayMode === "quick" ? (
             <div className="space-y-3">
-              <div className="sticky top-2 z-20 rounded-xl border border-amber-400/40 bg-[#10131B]/95 p-3.5 backdrop-blur-xl shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="sticky top-2 z-20 rounded-xl border border-white/10 bg-[#10131B]/95 p-3.5 backdrop-blur-xl shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-2">
-                  <Zap className="h-4 w-4 text-amber-400" />
+                  <Zap className="h-4 w-4 text-white" />
                   <span className="font-mono text-xs font-bold text-white">
                     {isEn ? "Quick Picks Stream" : "Flux Pick'ems Rapides"}
                   </span>
@@ -1839,7 +1926,7 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
                     type="button"
                     onClick={handleSaveAllDrafts}
                     disabled={unsavedCount === 0}
-                    className="inline-flex items-center gap-1.5 rounded-lg bg-amber-400 text-black px-4 py-1.5 text-xs font-mono font-bold hover:bg-amber-300 active:scale-95 transition-all cursor-pointer disabled:opacity-50 disabled:pointer-events-none shadow-sm"
+                    className="inline-flex items-center gap-1.5 rounded-lg bg-white text-black px-4 py-1.5 text-xs font-mono font-bold hover:bg-neutral-200 active:scale-95 transition-all cursor-pointer disabled:opacity-40 disabled:pointer-events-none shadow-sm"
                   >
                     <CheckCheck className="h-4 w-4 text-black" />
                     <span>{isEn ? "Save All Picks" : "Enregistrer tous les choix"}</span>
@@ -1862,8 +1949,8 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
                     <div
                       key={m.id}
                       className={cn(
-                        "rounded-xl border p-3 bg-[#0d1017]/90 backdrop-blur-xl transition-all flex flex-col md:flex-row md:items-center justify-between gap-3",
-                        currentPred?.winner ? "border-amber-400/40 bg-amber-500/[0.03]" : "border-white/[0.06]"
+                        "rounded-xl border p-3 bg-black/40 backdrop-blur-xl transition-all flex flex-col md:flex-row md:items-center justify-between gap-3",
+                        currentPred?.winner ? "border-white/20 bg-white/[0.03]" : "border-white/[0.06]"
                       )}
                     >
                       <div className="flex items-center gap-2.5 min-w-0 md:w-56 shrink-0">
@@ -1886,22 +1973,16 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
                           className={cn(
                             "flex items-center justify-between gap-2 p-2 rounded-lg border transition-all cursor-pointer text-left",
                             isT1Picked
-                              ? "border-amber-400 bg-amber-500/20 text-white shadow-xs"
-                              : "border-white/[0.08] bg-black/40 hover:border-white/20 text-neutral-200",
+                              ? "border-white/30 bg-white/[0.12] text-white shadow-sm ring-1 ring-white/20"
+                              : "border-white/[0.08] bg-white/[0.02] hover:border-white/20 text-neutral-200",
                             isLocked && "opacity-60 cursor-not-allowed"
                           )}
                         >
                           <div className="flex items-center gap-2 min-w-0">
-                            <div className="h-6 w-6 rounded bg-black/50 p-0.5 flex items-center justify-center shrink-0 overflow-hidden">
-                              {team1?.logo ? (
-                                <img src={team1.logo} alt={team1.name} className="h-full w-full object-contain" />
-                              ) : (
-                                <span className="font-mono text-[10px] text-neutral-400">{team1?.name?.[0] || "1"}</span>
-                              )}
-                            </div>
+                            <TeamLogoBadge src={team1?.logo} alt={team1?.name} name={team1?.name} size="sm" />
                             <span className="font-mono text-xs font-bold truncate">{team1?.name || "TBD"}</span>
                           </div>
-                          {isT1Picked && <CheckCircle2 className="h-3.5 w-3.5 text-amber-400 shrink-0" />}
+                          {isT1Picked && <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 shrink-0" />}
                         </button>
 
                         <button
@@ -1911,22 +1992,16 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
                           className={cn(
                             "flex items-center justify-between gap-2 p-2 rounded-lg border transition-all cursor-pointer text-left",
                             isT2Picked
-                              ? "border-amber-400 bg-amber-500/20 text-white shadow-xs"
-                              : "border-white/[0.08] bg-black/40 hover:border-white/20 text-neutral-200",
+                              ? "border-white/30 bg-white/[0.12] text-white shadow-sm ring-1 ring-white/20"
+                              : "border-white/[0.08] bg-white/[0.02] hover:border-white/20 text-neutral-200",
                             isLocked && "opacity-60 cursor-not-allowed"
                           )}
                         >
                           <div className="flex items-center gap-2 min-w-0">
-                            <div className="h-6 w-6 rounded bg-black/50 p-0.5 flex items-center justify-center shrink-0 overflow-hidden">
-                              {team2?.logo ? (
-                                <img src={team2.logo} alt={team2.name} className="h-full w-full object-contain" />
-                              ) : (
-                                <span className="font-mono text-[10px] text-neutral-400">{team2?.name?.[0] || "2"}</span>
-                              )}
-                            </div>
+                            <TeamLogoBadge src={team2?.logo} alt={team2?.name} name={team2?.name} size="sm" />
                             <span className="font-mono text-xs font-bold truncate">{team2?.name || "TBD"}</span>
                           </div>
-                          {isT2Picked && <CheckCircle2 className="h-3.5 w-3.5 text-amber-400 shrink-0" />}
+                          {isT2Picked && <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 shrink-0" />}
                         </button>
                       </div>
 
@@ -1942,8 +2017,8 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
                                 className={cn(
                                   "rounded px-2 py-0.5 text-[10px] font-mono transition-all cursor-pointer",
                                   currentPred.score === sc
-                                    ? "bg-amber-400 text-black font-bold shadow-xs scale-105"
-                                    : "bg-white/[0.05] text-neutral-300 hover:bg-white/10"
+                                    ? "bg-white text-black font-bold shadow-sm"
+                                    : "bg-white/[0.06] text-neutral-300 hover:bg-white/10"
                                 )}
                               >
                                 {sc}
@@ -2116,16 +2191,7 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
                     >
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/[0.06] pb-3 text-xs">
                         <div className="flex items-center gap-2 min-w-0">
-                          {m.img && (
-                            <img
-                              src={m.img}
-                              alt={m.tournament}
-                              className="h-5 w-5 object-contain shrink-0"
-                              onError={(e) => {
-                                (e.target as HTMLImageElement).style.display = "none";
-                              }}
-                            />
-                          )}
+                          <TournamentLogoBadge src={m.img} alt={m.tournament} />
                           <span className={cn("rounded px-2 py-0.2 text-[10px] font-mono font-bold uppercase shrink-0 border", tourMeta.tierBadgeColor)}>
                             {tourMeta.tierLabel}
                           </span>
@@ -2182,31 +2248,16 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
                             className={cn(
                               "group relative flex items-center justify-between gap-3 rounded-xl border p-3.5 sm:p-4 transition-all text-left",
                               isT1Picked
-                                ? "border-amber-400 bg-amber-500/15 text-white ring-1 ring-amber-400/60 shadow-[0_0_20px_rgba(251,191,36,0.18)]"
-                                : "border-white/[0.08] bg-[#0c0f17]/90 hover:border-white/20 hover:bg-[#121622] text-neutral-200",
+                                ? "border-white/30 bg-white/[0.12] text-white ring-1 ring-white/20 shadow-md"
+                                : "border-white/[0.08] bg-black/40 hover:border-white/20 hover:bg-white/[0.04] text-neutral-200",
                               isLocked ? "cursor-not-allowed opacity-80" : "cursor-pointer"
                             )}
                           >
                             <div className="flex items-center gap-3 min-w-0">
-                              <div className="relative flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-black/50 p-1.5 shadow-inner overflow-hidden">
-                                {team1?.logo ? (
-                                  <img
-                                    src={team1.logo}
-                                    alt={team1.name}
-                                    className="h-full w-full object-contain"
-                                    onError={(e) => {
-                                      (e.target as HTMLImageElement).style.display = "none";
-                                    }}
-                                  />
-                                ) : (
-                                  <span className="font-mono font-bold text-sm text-neutral-300">
-                                    {team1?.name?.[0] || "1"}
-                                  </span>
-                                )}
-                              </div>
+                              <TeamLogoBadge src={team1?.logo} alt={team1?.name} name={team1?.name} size="lg" />
                               <div className="min-w-0">
                                 <div className="flex items-center gap-2">
-                                  <span className="font-bold text-sm sm:text-base text-white truncate group-hover:text-amber-200 transition-colors">
+                                  <span className="font-bold text-sm sm:text-base text-white truncate group-hover:text-neutral-200 transition-colors">
                                     {team1?.name || "TBD"}
                                   </span>
                                   {team1?.country && (
@@ -2223,7 +2274,7 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
 
                             <div className="shrink-0">
                               {isT1Picked ? (
-                                <span className="inline-flex items-center gap-1 rounded-md bg-amber-400 text-black px-2.5 py-1 text-[11px] font-mono font-bold shadow-sm">
+                                <span className="inline-flex items-center gap-1 rounded-md bg-white text-black px-2.5 py-1 text-[11px] font-mono font-bold shadow-sm">
                                   <CheckCircle2 className="h-3.5 w-3.5 text-black" />
                                   {isEn ? "MY PICK" : "MON CHOIX"}
                                 </span>
@@ -2244,22 +2295,7 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
                             )}
                           >
                             <div className="flex items-center gap-3 min-w-0">
-                              <div className="relative flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-black/50 p-1.5 overflow-hidden">
-                                {team1?.logo ? (
-                                  <img
-                                    src={team1.logo}
-                                    alt={team1.name}
-                                    className="h-full w-full object-contain"
-                                    onError={(e) => {
-                                      (e.target as HTMLImageElement).style.display = "none";
-                                    }}
-                                  />
-                                ) : (
-                                  <span className="font-mono font-bold text-sm text-neutral-300">
-                                    {team1?.name?.[0] || "1"}
-                                  </span>
-                                )}
-                              </div>
+                              <TeamLogoBadge src={team1?.logo} alt={team1?.name} name={team1?.name} size="lg" />
                               <div className="min-w-0">
                                 <span className={cn("font-bold text-sm sm:text-base truncate block", t1Won ? "text-white" : "text-neutral-400")}>
                                   {team1?.name || "TBD"}
@@ -2288,7 +2324,7 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
                           {isUpcoming ? (
                             <>
                               <div className="flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-full border border-white/15 bg-gradient-to-b from-neutral-800 to-neutral-900 shadow-md">
-                                <span className="font-mono text-xs sm:text-sm font-black text-rose-400 tracking-wider">VS</span>
+                                <span className="font-mono text-xs sm:text-sm font-black text-white/70 tracking-wider">VS</span>
                               </div>
                               <span className="text-[10px] font-mono text-neutral-400 uppercase mt-1 tracking-wider">{format}</span>
                             </>
@@ -2323,31 +2359,16 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
                             className={cn(
                               "group relative flex items-center justify-between gap-3 rounded-xl border p-3.5 sm:p-4 transition-all text-left",
                               isT2Picked
-                                ? "border-amber-400 bg-amber-500/15 text-white ring-1 ring-amber-400/60 shadow-[0_0_20px_rgba(251,191,36,0.18)]"
-                                : "border-white/[0.08] bg-[#0c0f17]/90 hover:border-white/20 hover:bg-[#121622] text-neutral-200",
+                                ? "border-white/30 bg-white/[0.12] text-white ring-1 ring-white/20 shadow-md"
+                                : "border-white/[0.08] bg-black/40 hover:border-white/20 hover:bg-white/[0.04] text-neutral-200",
                               isLocked ? "cursor-not-allowed opacity-80" : "cursor-pointer"
                             )}
                           >
                             <div className="flex items-center gap-3 min-w-0">
-                              <div className="relative flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-black/50 p-1.5 shadow-inner overflow-hidden">
-                                {team2?.logo ? (
-                                  <img
-                                    src={team2.logo}
-                                    alt={team2.name}
-                                    className="h-full w-full object-contain"
-                                    onError={(e) => {
-                                      (e.target as HTMLImageElement).style.display = "none";
-                                    }}
-                                  />
-                                ) : (
-                                  <span className="font-mono font-bold text-sm text-neutral-300">
-                                    {team2?.name?.[0] || "2"}
-                                  </span>
-                                )}
-                              </div>
+                              <TeamLogoBadge src={team2?.logo} alt={team2?.name} name={team2?.name} size="lg" />
                               <div className="min-w-0">
                                 <div className="flex items-center gap-2">
-                                  <span className="font-bold text-sm sm:text-base text-white truncate group-hover:text-amber-200 transition-colors">
+                                  <span className="font-bold text-sm sm:text-base text-white truncate group-hover:text-neutral-200 transition-colors">
                                     {team2?.name || "TBD"}
                                   </span>
                                   {team2?.country && (
@@ -2364,7 +2385,7 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
 
                             <div className="shrink-0">
                               {isT2Picked ? (
-                                <span className="inline-flex items-center gap-1 rounded-md bg-amber-400 text-black px-2.5 py-1 text-[11px] font-mono font-bold shadow-sm">
+                                <span className="inline-flex items-center gap-1 rounded-md bg-white text-black px-2.5 py-1 text-[11px] font-mono font-bold shadow-sm">
                                   <CheckCircle2 className="h-3.5 w-3.5 text-black" />
                                   {isEn ? "MY PICK" : "MON CHOIX"}
                                 </span>
@@ -2385,22 +2406,7 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
                             )}
                           >
                             <div className="flex items-center gap-3 min-w-0">
-                              <div className="relative flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-black/50 p-1.5 overflow-hidden">
-                                {team2?.logo ? (
-                                  <img
-                                    src={team2.logo}
-                                    alt={team2.name}
-                                    className="h-full w-full object-contain"
-                                    onError={(e) => {
-                                      (e.target as HTMLImageElement).style.display = "none";
-                                    }}
-                                  />
-                                ) : (
-                                  <span className="font-mono font-bold text-sm text-neutral-300">
-                                    {team2?.name?.[0] || "2"}
-                                  </span>
-                                )}
-                              </div>
+                              <TeamLogoBadge src={team2?.logo} alt={team2?.name} name={team2?.name} size="lg" />
                               <div className="min-w-0">
                                 <span className={cn("font-bold text-sm sm:text-base truncate block", t2Won ? "text-white" : "text-neutral-400")}>
                                   {team2?.name || "TBD"}
@@ -2429,9 +2435,9 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
                       {isUpcoming && pred?.winner && scoreOptions.length > 0 && !isLocked && (
                         <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-white/[0.06] text-xs">
                           <div className="flex items-center gap-2">
-                            <Target className="h-3.5 w-3.5 text-amber-400" />
+                            <Target className="h-3.5 w-3.5 text-neutral-300" />
                             <span className="font-mono text-neutral-300">
-                              {isEn ? "Exact score" : "Score exact"} <span className="text-amber-300">({isEn ? "+5 pts bonus" : "+5 pts bonus"})</span> :
+                              {isEn ? "Exact score" : "Score exact"} <span className="text-neutral-400">({isEn ? "+5 pts bonus" : "+5 pts bonus"})</span> :
                             </span>
                           </div>
                           <div className="flex items-center gap-1.5">
@@ -2449,8 +2455,8 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
                                 className={cn(
                                   "rounded px-2.5 py-1 text-[11px] font-mono transition-all cursor-pointer",
                                   pred.score === sc
-                                    ? "bg-amber-400 text-black font-bold shadow-xs scale-105"
-                                    : "bg-white/[0.05] text-neutral-300 hover:bg-white/10"
+                                    ? "bg-white text-black font-bold shadow-sm"
+                                    : "bg-white/[0.06] text-neutral-300 hover:bg-white/10"
                                 )}
                               >
                                 {sc}
@@ -2560,7 +2566,7 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
                   className={cn(
                     "rounded-lg px-2.5 py-1 text-[11px] font-mono transition-all cursor-pointer shrink-0",
                     pickemFilter === f.id
-                      ? "bg-amber-400 text-black font-bold shadow-xs"
+                      ? "bg-white text-black font-bold shadow-sm"
                       : "bg-white/[0.04] text-neutral-300 hover:text-white"
                   )}
                 >
@@ -2579,7 +2585,7 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
                     initial={reducedMotion ? false : { opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.18, delay: Math.min(idx * 0.03, 0.2), ease: EASE_OUT }}
-                    className="rounded-2xl border border-white/[0.08] bg-[#10131B]/95 p-4 sm:p-5 backdrop-blur-xl shadow-md space-y-3"
+                    className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-4 sm:p-5 backdrop-blur-xl shadow-sm space-y-3"
                   >
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/[0.06] pb-3 text-xs">
                       <div className="flex items-center gap-2 min-w-0">
@@ -2619,7 +2625,7 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
                     <div className="flex flex-wrap items-center justify-between gap-3">
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className="text-xs text-neutral-400 font-mono">{isEn ? "Winner pick:" : "Vainqueur choisi :"}</span>
-                        <span className="rounded-md bg-amber-400 text-black px-2.5 py-0.5 text-xs font-mono font-bold">
+                        <span className="rounded-md bg-white/[0.12] border border-white/15 text-white px-2.5 py-0.5 text-xs font-mono font-bold shadow-xs">
                           {pred.winner}
                         </span>
                         {pred.score && (
@@ -2658,8 +2664,8 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
                           </span>
                         </div>
                       ) : (
-                        <span className="inline-flex items-center gap-1.5 text-amber-300 text-xs font-mono">
-                          <Clock className="h-3.5 w-3.5" />
+                        <span className="inline-flex items-center gap-1.5 text-neutral-300 text-xs font-mono">
+                          <Clock className="h-3.5 w-3.5 text-neutral-400" />
                           {isEn ? "Pending match completion" : "En attente du résultat"}
                         </span>
                       )}
@@ -2690,12 +2696,12 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
       ) : (
         <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <div className="rounded-2xl border border-white/[0.08] bg-[#10131B]/95 p-4 sm:p-5 backdrop-blur-xl shadow-md space-y-3">
+            <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-4 sm:p-5 backdrop-blur-xl shadow-sm space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">
                   {isEn ? "Predictor Profile" : "Profil Pronostiqueur"}
                 </span>
-                <Award className="h-4 w-4 text-amber-400" />
+                <Award className="h-4 w-4 text-neutral-300" />
               </div>
               <div>
                 <span className={cn("inline-block rounded-md border px-2.5 py-1 font-mono text-xs font-bold", rankTier.badge)}>
@@ -2712,7 +2718,7 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
                 </div>
                 <div className="w-full bg-white/[0.06] rounded-full h-1.5 overflow-hidden">
                   <div
-                    className="bg-amber-400 h-full rounded-full transition-all duration-300"
+                    className="bg-white h-full rounded-full transition-all duration-300"
                     style={{
                       width: `${Math.min(100, Math.round(((pickEmStats.scoreTotal - rankTier.min) / Math.max(1, rankTier.next - rankTier.min)) * 100))}%`,
                     }}
@@ -2721,7 +2727,7 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-white/[0.08] bg-[#10131B]/95 p-4 sm:p-5 backdrop-blur-xl shadow-md space-y-3">
+            <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-4 sm:p-5 backdrop-blur-xl shadow-sm space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">
                   {isEn ? "Win Streaks" : "Séries de Réussite"}
@@ -2729,15 +2735,15 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
                 <TrendingUp className="h-4 w-4 text-emerald-400" />
               </div>
               <div className="grid grid-cols-2 gap-2 pt-1">
-                <div className="rounded-xl border border-white/[0.06] bg-black/40 p-3">
+                <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-3">
                   <span className="text-[10px] font-mono text-neutral-400 block">{isEn ? "Active Streak" : "Série active"}</span>
-                  <p className="text-xl font-mono font-bold text-emerald-400 mt-1 tabular-nums">
+                  <p className="text-xl font-mono font-bold text-white mt-1 tabular-nums">
                     {pickEmStats.currentStreak} 🔥
                   </p>
                 </div>
-                <div className="rounded-xl border border-white/[0.06] bg-black/40 p-3">
+                <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-3">
                   <span className="text-[10px] font-mono text-neutral-400 block">{isEn ? "Best Streak" : "Record série"}</span>
-                  <p className="text-xl font-mono font-bold text-amber-300 mt-1 tabular-nums">
+                  <p className="text-xl font-mono font-bold text-white mt-1 tabular-nums">
                     {pickEmStats.bestStreak} 🏆
                   </p>
                 </div>
@@ -2747,15 +2753,15 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
               </p>
             </div>
 
-            <div className="rounded-2xl border border-white/[0.08] bg-[#10131B]/95 p-4 sm:p-5 backdrop-blur-xl shadow-md space-y-3">
+            <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-4 sm:p-5 backdrop-blur-xl shadow-sm space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">
                   {isEn ? "Exact Score Conversion" : "Précision Score Exact"}
                 </span>
-                <Target className="h-4 w-4 text-cyan-400" />
+                <Target className="h-4 w-4 text-neutral-300" />
               </div>
               <div>
-                <p className="text-2xl font-mono font-bold text-cyan-300 tabular-nums">
+                <p className="text-2xl font-mono font-bold text-white tabular-nums">
                   {pickEmStats.exactScores}{" "}
                   <span className="text-xs font-normal text-neutral-400">
                     / {pickEmStats.correct} {isEn ? "correct picks" : "bons pronos"}
@@ -2773,10 +2779,10 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-white/[0.08] bg-[#10131B]/95 p-4 sm:p-5 backdrop-blur-xl shadow-md space-y-4">
+          <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-4 sm:p-5 backdrop-blur-xl shadow-sm space-y-4">
             <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
               <div className="flex items-center gap-2">
-                <BarChart3 className="h-4 w-4 text-purple-400" />
+                <BarChart3 className="h-4 w-4 text-neutral-300" />
                 <h3 className="font-mono text-sm font-bold text-white uppercase tracking-wide">
                   {isEn ? "Performance Breakdown by Competition Circuit" : "Analyse de Précision par Circuit Compétitif"}
                 </h3>
@@ -2788,11 +2794,11 @@ export default function VctMatchesView({ lang }: { lang?: string } = {}) {
 
             <div className="space-y-3">
               {[
-                { key: "champions" as VctTier, label: "VALORANT Champions", color: "bg-amber-400", border: "border-amber-400/40" },
-                { key: "masters" as VctTier, label: "Masters & Premier Events", color: "bg-purple-500", border: "border-purple-500/40" },
-                { key: "international" as VctTier, label: "VCT Leagues (Americas, EMEA, Pacific, China)", color: "bg-rose-500", border: "border-rose-500/40" },
-                { key: "challengers" as VctTier, label: "Challengers & Regional Ascension", color: "bg-cyan-500", border: "border-cyan-500/40" },
-                { key: "game_changers" as VctTier, label: "Game Changers Championship", color: "bg-fuchsia-500", border: "border-fuchsia-500/40" },
+                { key: "champions" as VctTier, label: "VALORANT Champions", color: "bg-amber-400/90", border: "border-amber-400/40" },
+                { key: "masters" as VctTier, label: "Masters & Premier Events", color: "bg-purple-400/90", border: "border-purple-400/40" },
+                { key: "international" as VctTier, label: "VCT Leagues (Americas, EMEA, Pacific, China)", color: "bg-rose-400/90", border: "border-rose-400/40" },
+                { key: "challengers" as VctTier, label: "Challengers & Regional Ascension", color: "bg-sky-400/90", border: "border-sky-400/40" },
+                { key: "game_changers" as VctTier, label: "Game Changers Championship", color: "bg-pink-400/90", border: "border-pink-400/40" },
               ].map((tier) => {
                 const data = pickEmStats.tierBreakdown[tier.key];
                 const pct = data.evaluated > 0 ? Math.round((data.correct / data.evaluated) * 100) : null;

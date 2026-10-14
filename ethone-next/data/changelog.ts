@@ -55475,10 +55475,58 @@ const v12917_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12917_fr, v12916_fr, v12915_fr, v12914_fr, v12913_fr, v12912_fr, v12911_fr, v12910_fr, v12909_fr, v12908_fr, v12907_fr, v12906_fr, v12905_fr, v12904_fr, v12903_fr, v12902_fr, v12901_fr, v12900_fr, v12899_fr, v12898_fr, v12897_fr, v12896_fr, v12895_fr, v12894_fr, v12893_fr, v12892_fr);
-CHANGELOG_BY_LANG.en.unshift(v12917_en, v12916_en, v12915_en, v12914_en, v12913_en, v12912_en, v12911_en, v12910_en, v12909_en, v12908_en, v12907_en, v12906_en, v12905_en, v12904_en, v12903_en, v12902_en, v12901_en, v12900_en, v12899_en, v12898_en, v12897_en, v12896_en, v12895_en, v12894_en, v12893_en, v12892_en);
-CHANGELOG_BY_LANG.es.unshift(v12917_es, v12916_es, v12915_es, v12914_es, v12913_es, v12912_es, v12911_es, v12910_es, v12909_es, v12908_es, v12907_es, v12906_es, v12905_es, v12904_es, v12903_es, v12902_es, v12901_es, v12900_es, v12899_es, v12898_es, v12897_es, v12896_es, v12895_es, v12894_es, v12893_es, v12892_es);
-CHANGELOG_BY_LANG.de.unshift(v12917_de, v12916_de, v12915_de, v12914_de, v12913_de, v12912_de, v12911_de, v12910_de, v12909_de, v12908_de, v12907_de, v12906_de, v12905_de, v12904_de, v12903_de, v12902_de, v12901_de, v12900_de, v12899_de, v12898_de, v12897_de, v12896_de, v12895_de, v12894_de, v12893_de, v12892_de);
+const v12918_fr: ChangelogEntry = {
+  version: "v1.75.76",
+  date: "2026-10-14",
+  title: "Pick'ems Apple Design : logos haute lisibilité et footer bilingue",
+  items: [
+    "Harmonisation sobre Apple Design des Pick'ems : palette graphite unifiée et suppression des teintes bariolées",
+    "Badges de logos haute lisibilité avec conteneur frosted glass et lueur de contour pour logos sombres (Vitality, MIBR, T1)",
+    "Récupération automatique sur erreur d'image avec fallback d'initiales d'équipes dynamiques",
+    "Pied de page tracker bilingue garanti en anglais avec synchronisation sans conflit",
+  ],
+};
+
+const v12918_en: ChangelogEntry = {
+  version: "v1.75.76",
+  date: "2026-10-14",
+  title: "Pick'ems Apple Design: high-contrast logos and bilingual footer",
+  items: [
+    "Apple Design Pick'ems restyle: restrained monochromatic graphite palette and muted neutral surfaces",
+    "High-contrast team logo badges with frosted glass container and perimeter glow for dark team logos (Vitality, MIBR, T1)",
+    "Automatic broken image recovery with dynamic team initials fallback",
+    "Bilingual tracker footer with guaranteed English legal and privacy strings",
+  ],
+};
+
+const v12918_es: ChangelogEntry = {
+  version: "v1.75.76",
+  date: "2026-10-14",
+  title: "Pick'ems Apple Design: logotipos de alto contraste y pie de página bilingüe",
+  items: [
+    "Rediseño Apple Design de Pick'ems: paleta de grafito unificada y superficies neutras sobrias",
+    "Insignias de logotipos de equipos de alto contraste con resplandor perimetral para logos oscuros",
+    "Recuperación automática de imágenes rotas con iniciales de equipo dinámicas",
+    "Pie de página del tracker bilingüe garantizado en inglés",
+  ],
+};
+
+const v12918_de: ChangelogEntry = {
+  version: "v1.75.76",
+  date: "2026-10-14",
+  title: "Pick'ems Apple Design: kontrastreiche Logos und zweisprachige Fußzeile",
+  items: [
+    "Apple Design Überarbeitung der Pick'ems: einheitliche Grafit-Farbpalette und dezente neutrale Oberflächen",
+    "Kontrastreiche Team-Logo-Badges mit Kontur-Glow für dunkle Logos und Milchglas-Hintergrund",
+    "Automatische Wiederherstellung bei defekten Team-Bildern mit dynamischen Namensinitialen",
+    "Zweisprachige Tracker-Fußzeile mit garantierten englischen Texten",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12918_fr, v12917_fr, v12916_fr, v12915_fr, v12914_fr, v12913_fr, v12912_fr, v12911_fr, v12910_fr, v12909_fr, v12908_fr, v12907_fr, v12906_fr, v12905_fr, v12904_fr, v12903_fr, v12902_fr, v12901_fr, v12900_fr, v12899_fr, v12898_fr, v12897_fr, v12896_fr, v12895_fr, v12894_fr, v12893_fr, v12892_fr);
+CHANGELOG_BY_LANG.en.unshift(v12918_en, v12917_en, v12916_en, v12915_en, v12914_en, v12913_en, v12912_en, v12911_en, v12910_en, v12909_en, v12908_en, v12907_en, v12906_en, v12905_en, v12904_en, v12903_en, v12902_en, v12901_en, v12900_en, v12899_en, v12898_en, v12897_en, v12896_en, v12895_en, v12894_en, v12893_en, v12892_en);
+CHANGELOG_BY_LANG.es.unshift(v12918_es, v12917_es, v12916_es, v12915_es, v12914_es, v12913_es, v12912_es, v12911_es, v12910_es, v12909_es, v12908_es, v12907_es, v12906_es, v12905_es, v12904_es, v12903_es, v12902_es, v12901_es, v12900_es, v12899_es, v12898_es, v12897_es, v12896_es, v12895_es, v12894_es, v12893_es, v12892_es);
+CHANGELOG_BY_LANG.de.unshift(v12918_de, v12917_de, v12916_de, v12915_de, v12914_de, v12913_de, v12912_de, v12911_de, v12910_de, v12909_de, v12908_de, v12907_de, v12906_de, v12905_de, v12904_de, v12903_de, v12902_de, v12901_de, v12900_de, v12899_de, v12898_de, v12897_de, v12896_de, v12895_de, v12894_de, v12893_de, v12892_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

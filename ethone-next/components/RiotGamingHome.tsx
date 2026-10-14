@@ -72,12 +72,12 @@ type GameTab =
   | "telemetry"
   | "training";
 
-function getAgentRole(agentName: string): string {
+function getAgentRole(agentName: string, isEn: boolean = false): string {
   const n = agentName.toLowerCase();
-  if (["jett", "reyna", "raze", "phoenix", "yoru", "neon", "iso"].includes(n)) return "Duelliste";
-  if (["sova", "fade", "breach", "skye", "kay/o", "kayo", "gekko"].includes(n)) return "Initiateur";
-  if (["omen", "brimstone", "viper", "astra", "clove", "harbor"].includes(n)) return "Contrôleur";
-  if (["killjoy", "cypher", "sage", "chamber", "deadlock", "vyse"].includes(n)) return "Sentinelle";
+  if (["jett", "reyna", "raze", "phoenix", "yoru", "neon", "iso"].includes(n)) return isEn ? "Duelist" : "Duelliste";
+  if (["sova", "fade", "breach", "skye", "kay/o", "kayo", "gekko"].includes(n)) return isEn ? "Initiator" : "Initiateur";
+  if (["omen", "brimstone", "viper", "astra", "clove", "harbor"].includes(n)) return isEn ? "Controller" : "Contrôleur";
+  if (["killjoy", "cypher", "sage", "chamber", "deadlock", "vyse"].includes(n)) return isEn ? "Sentinel" : "Sentinelle";
   return "Agent";
 }
 
@@ -478,7 +478,8 @@ export default function RiotGamingHome() {
         const urlLang = sp.get("lang");
         if (urlLang === "en" || urlLang === "fr") return urlLang;
         const stored = localStorage.getItem("ethone:tracker:language");
-        if (stored === "en" || stored === "fr") return stored;
+        if (stored === "en") return "en";
+        if (stored === "fr") return "fr";
       } catch {}
     }
     return "en";
@@ -490,18 +491,17 @@ export default function RiotGamingHome() {
 
   const toggleLang = useCallback(
     (lang: "fr" | "en") => {
-      if (lang !== trackerLang) {
-        setTrackerLang(lang);
-        if (typeof window !== "undefined") {
-          try {
-            localStorage.setItem("ethone:tracker:language", lang);
-            window.dispatchEvent(new CustomEvent("ethone:tracker:lang-change", { detail: { lang } }));
-          } catch {}
-        }
-        notify.language(lang);
+      setTrackerLang(lang);
+      if (typeof window !== "undefined") {
+        try {
+          localStorage.setItem("ethone:tracker:language", lang);
+          window.dispatchEvent(new CustomEvent("ethone:tracker:lang-change", { detail: { lang } }));
+        } catch {}
       }
+      update({ language: lang });
+      notify.language(lang);
     },
-    [trackerLang, notify]
+    [update, notify]
   );
 
   useEffect(() => {
@@ -1090,7 +1090,7 @@ export default function RiotGamingHome() {
                       <div className="space-y-2">
                         {topValorantAgents.length > 0 ? (
                           topValorantAgents.map((ag) => {
-                            const role = getAgentRole(ag.agentName);
+                            const role = getAgentRole(ag.agentName, isEn);
                             return (
                               <div
                                 key={ag.agentName}
@@ -2169,17 +2169,27 @@ export default function RiotGamingHome() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-[11px] leading-relaxed text-neutral-400 font-mono">
             <div className="rounded-lg border border-white/[0.05] bg-black/30 p-3">
-              <span className="font-semibold text-neutral-200 block mb-1">{tr.footerNoticeTitle}</span>
-              {tr.footerNoticeBody}
+              <span className="font-semibold text-neutral-200 block mb-1">
+                {isEn ? "Legal Notice:" : tr.footerNoticeTitle}
+              </span>
+              {isEn
+                ? "ETHONE isn't endorsed by Riot Games and doesn't reflect the views or opinions of Riot Games or anyone officially involved in producing or managing Riot Games properties. Riot Games, and all associated properties are trademarks or registered trademarks of Riot Games, Inc."
+                : tr.footerNoticeBody}
             </div>
 
             <div className="rounded-lg border border-white/[0.05] bg-black/30 p-3 flex flex-col justify-between">
               <div>
-                <span className="font-semibold text-neutral-200 block mb-1">{tr.footerPrivacyTitle}</span>
-                {tr.footerPrivacyBody}
+                <span className="font-semibold text-neutral-200 block mb-1">
+                  {isEn ? "Privacy & Local Storage:" : tr.footerPrivacyTitle}
+                </span>
+                {isEn
+                  ? "No mandatory account, zero trace on external servers. Profile data and Riot ID are stored exclusively in the user's local browser."
+                  : tr.footerPrivacyBody}
               </div>
               <div className="pt-2 text-[10px] text-emerald-400 font-bold">
-                {tr.footerPrivacyBadge}
+                {isEn
+                  ? "✓ 100% Local · Zero Log · Vanguard Fair-Play Compliant"
+                  : tr.footerPrivacyBadge}
               </div>
             </div>
           </div>

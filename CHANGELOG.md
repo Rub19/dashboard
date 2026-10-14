@@ -1,6 +1,14 @@
 # Changelog
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
+## v1.75.76 — 2026-10-14
+
+**Pick'ems Apple Design : logos haute lisibilité et footer bilingue**
+
+- Harmonisation sobre Apple Design des Pick'ems : palette graphite unifiée, suppression des teintes bariolées et surfaces translucides raffinées.
+- Badges de logos d'équipes haute lisibilité (`TeamLogoBadge`) intégrant un conteneur frosted glass et une lueur de contour blanche pour faire ressortir nettement les logos noirs ou très sombres (Team Vitality, MIBR, T1, RRQ).
+- Récupération d'erreurs d'images avec fallback automatique sur des initiales textuelles stylisées (`EDG`, `FPX`, `VIT`) évitant toute icône de fichier cassé du navigateur.
+- Pied de page tracker bilingue avec chaînes légales et de confidentialité garanties en anglais (`Legal Notice:`, `Privacy & Local Storage:`, `✓ 100% Local · Zero Log · Vanguard Fair-Play Compliant`) et synchronisation sans écrasement par les paramètres ETHONE OS.
 
 ## v1.75.75 — 2026-10-14
 

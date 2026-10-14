@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.87 — 2026-10-15
+
+**iOS Native : Icône officielle ETHONE & Refonte Login Liquid Glass**
+
+- **Icône officielle ETHONE pour l'IPA iOS** : Remplacement de l'icône Capacitor par défaut par le logo officiel d'ETHONE en résolution Retina 1024x1024, doté du contour néon signal multi-teintes et de la surface profonde sombre.
+- **Refonte de l'écran de connexion inspiré du web** : Intégration du composant vectoriel `BrandMarkView` avec le monogramme « E » emblématique, structure par onglets (*Mot de passe*, *Code OTP*, *S'inscrire*), champs avec icônes de statut et bascule de visibilité.
+- **Connecteurs OAuth et Clé de sécurité** : Prise en charge unifiée des boutons Google, GitHub et Discord dans une rangée Liquid Glass avec bouton d'accès direct aux clés de sécurité (Passkey).
+
 ## v1.75.86 — 2026-10-15
 
 **Riot Developer API : Déploiement de la vérification de domaine riot.txt**

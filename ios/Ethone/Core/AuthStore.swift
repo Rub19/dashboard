@@ -209,6 +209,38 @@ final class AuthStore {
         }
     }
 
+    func signInWithOtp(email: String) async -> String {
+        do {
+            var request = URLRequest(url: Config.supabaseURL.appendingPathComponent("auth/v1/otp"))
+            request.httpMethod = "POST"
+            request.httpBody = try JSONSerialization.data(withJSONObject: ["email": email])
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.setValue(Config.supabaseAnonKey, forHTTPHeaderField: "apikey")
+            let (data, http) = try await HTTP.send(request)
+            guard (200..<300).contains(http.statusCode) else { throw HTTP.failure(status: http.statusCode, data: data) }
+            return "Un code temporaire a été envoyé à votre adresse e-mail."
+        } catch {
+            return (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+        }
+    }
+
+    func verifyOtp(email: String, token: String) async {
+        await run {
+            var request = URLRequest(url: Config.supabaseURL.appendingPathComponent("auth/v1/verify"))
+            request.httpMethod = "POST"
+            request.httpBody = try JSONSerialization.data(withJSONObject: ["email": email, "token": token, "type": "email"])
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.setValue(Config.supabaseAnonKey, forHTTPHeaderField: "apikey")
+            let (data, http) = try await HTTP.send(request)
+            guard (200..<300).contains(http.statusCode) else {
+                throw HTTP.failure(status: http.statusCode, data: data)
+            }
+            let response = try JSONDecoder().decode(TokenResponse.self, from: data)
+            self.store(response.session)
+            await self.registerDevice()
+        }
+    }
+
     private func run(_ work: @escaping () async throws -> Void) async {
         isBusy = true
         errorMessage = nil

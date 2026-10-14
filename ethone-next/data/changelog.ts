@@ -55985,10 +55985,54 @@ const v12928_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12928_fr, v12927_fr, v12926_fr, v12925_fr, v12924_fr, v12923_fr, v12922_fr, v12921_fr, v12920_fr, v12919_fr, v12918_fr, v12917_fr, v12916_fr, v12915_fr, v12914_fr, v12913_fr, v12912_fr, v12911_fr, v12910_fr, v12909_fr, v12908_fr, v12907_fr, v12906_fr, v12905_fr, v12904_fr, v12903_fr, v12902_fr, v12901_fr, v12900_fr, v12899_fr, v12898_fr, v12897_fr, v12896_fr, v12895_fr, v12894_fr, v12893_fr, v12892_fr);
-CHANGELOG_BY_LANG.en.unshift(v12928_en, v12927_en, v12926_en, v12925_en, v12924_en, v12923_en, v12922_en, v12921_en, v12920_en, v12919_en, v12918_en, v12917_en, v12916_en, v12915_en, v12914_en, v12913_en, v12912_en, v12911_en, v12910_en, v12909_en, v12908_en, v12907_en, v12906_en, v12905_en, v12904_en, v12903_en, v12902_en, v12901_en, v12900_en, v12899_en, v12898_en, v12897_en, v12896_en, v12895_en, v12894_en, v12893_en, v12892_en);
-CHANGELOG_BY_LANG.es.unshift(v12928_es, v12927_es, v12926_es, v12925_es, v12924_es, v12923_es, v12922_es, v12921_es, v12920_es, v12919_es, v12918_es, v12917_es, v12916_es, v12915_es, v12914_es, v12913_es, v12912_es, v12911_es, v12910_es, v12909_es, v12908_es, v12907_es, v12906_es, v12905_es, v12904_es, v12903_es, v12902_es, v12901_es, v12900_es, v12899_es, v12898_es, v12897_es, v12896_es, v12895_es, v12894_es, v12893_es, v12892_es);
-CHANGELOG_BY_LANG.de.unshift(v12928_de, v12927_de, v12926_de, v12925_de, v12924_de, v12923_de, v12922_de, v12921_de, v12920_de, v12919_de, v12918_de, v12917_de, v12916_de, v12915_de, v12914_de, v12913_de, v12912_de, v12911_de, v12910_de, v12909_de, v12908_de, v12907_de, v12906_de, v12905_de, v12904_de, v12903_de, v12902_de, v12901_de, v12900_de, v12899_de, v12898_de, v12897_de, v12896_de, v12895_de, v12894_de, v12893_de, v12892_de);
+const v12929_fr: ChangelogEntry = {
+  version: "v1.75.87",
+  date: "2026-10-15",
+  title: "iOS Native : Icône officielle ETHONE & Refonte Login Liquid Glass",
+  items: [
+    "Remplacement de l'icône de l'application IPA par le logo officiel ETHONE (1024x1024) avec contour de signal néon et surface sombre",
+    "Refonte complète de l'écran de connexion inspiré du portail web : onglets Mot de passe, Code OTP et Inscription",
+    "Intégration du composant BrandMark natif, boutons Google/GitHub/Discord et prise en charge des clés de sécurité",
+  ],
+};
+
+const v12929_en: ChangelogEntry = {
+  version: "v1.75.87",
+  date: "2026-10-15",
+  title: "iOS Native: Official ETHONE App Icon & Liquid Glass Login Redesign",
+  items: [
+    "Replaced the IPA app icon with the official ETHONE emblem (1024x1024) featuring the neon signal rim and dark surface",
+    "Complete redesign of the login screen inspired by the web portal: Password, OTP Code, and Sign Up tabs",
+    "Integrated native BrandMark component, Google/GitHub/Discord providers, and security key support",
+  ],
+};
+
+const v12929_es: ChangelogEntry = {
+  version: "v1.75.87",
+  date: "2026-10-15",
+  title: "iOS Nativo: Icono oficial de ETHONE y Rediseño de Login Liquid Glass",
+  items: [
+    "Reemplazo del icono de la aplicación IPA por el emblema oficial de ETHONE (1024x1024) con borde de señal de neón",
+    "Rediseño completo de la pantalla de inicio de sesión inspirada en el portal web: pestañas Contraseña, Código OTP y Registro",
+    "Integración del componente BrandMark nativo, proveedores Google/GitHub/Discord y soporte para llaves de seguridad",
+  ],
+};
+
+const v12929_de: ChangelogEntry = {
+  version: "v1.75.87",
+  date: "2026-10-15",
+  title: "iOS Nativ: Offizielles ETHONE-App-Icon & Liquid Glass Login-Redesign",
+  items: [
+    "Ersetzung des IPA-App-Icons durch das offizielle ETHONE-Emblem (1024x1024) mit Neon-Signalrand und dunkler Oberfläche",
+    "Vollständiges Redesign des Login-Bildschirms nach dem Vorbild des Web-Portals: Tabs für Passwort, OTP-Code und Registrierung",
+    "Integration der nativen BrandMark-Komponente, Google/GitHub/Discord-Provider und Unterstützung für Sicherheitsschlüssel",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12929_fr, v12928_fr, v12927_fr, v12926_fr, v12925_fr, v12924_fr, v12923_fr, v12922_fr, v12921_fr, v12920_fr, v12919_fr, v12918_fr, v12917_fr, v12916_fr, v12915_fr, v12914_fr, v12913_fr, v12912_fr, v12911_fr, v12910_fr, v12909_fr, v12908_fr, v12907_fr, v12906_fr, v12905_fr, v12904_fr, v12903_fr, v12902_fr, v12901_fr, v12900_fr, v12899_fr, v12898_fr, v12897_fr, v12896_fr, v12895_fr, v12894_fr, v12893_fr, v12892_fr);
+CHANGELOG_BY_LANG.en.unshift(v12929_en, v12928_en, v12927_en, v12926_en, v12925_en, v12924_en, v12923_en, v12922_en, v12921_en, v12920_en, v12919_en, v12918_en, v12917_en, v12916_en, v12915_en, v12914_en, v12913_en, v12912_en, v12911_en, v12910_en, v12909_en, v12908_en, v12907_en, v12906_en, v12905_en, v12904_en, v12903_en, v12902_en, v12901_en, v12900_en, v12899_en, v12898_en, v12897_en, v12896_en, v12895_en, v12894_en, v12893_en, v12892_en);
+CHANGELOG_BY_LANG.es.unshift(v12929_es, v12928_es, v12927_es, v12926_es, v12925_es, v12924_es, v12923_es, v12922_es, v12921_es, v12920_es, v12919_es, v12918_es, v12917_es, v12916_es, v12915_es, v12914_es, v12913_es, v12912_es, v12911_es, v12910_es, v12909_es, v12908_es, v12907_es, v12906_es, v12905_es, v12904_es, v12903_es, v12902_es, v12901_es, v12900_es, v12899_es, v12898_es, v12897_es, v12896_es, v12895_es, v12894_es, v12893_es, v12892_es);
+CHANGELOG_BY_LANG.de.unshift(v12929_de, v12928_de, v12927_de, v12926_de, v12925_de, v12924_de, v12923_de, v12922_de, v12921_de, v12920_de, v12919_de, v12918_de, v12917_de, v12916_de, v12915_de, v12914_de, v12913_de, v12912_de, v12911_de, v12910_de, v12909_de, v12908_de, v12907_de, v12906_de, v12905_de, v12904_de, v12903_de, v12902_de, v12901_de, v12900_de, v12899_de, v12898_de, v12897_de, v12896_de, v12895_de, v12894_de, v12893_de, v12892_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

@@ -211,7 +211,7 @@ const TrackerSidebarProfile = memo(function TrackerSidebarProfile({ collapsed }:
     }
   }, []);
 
-  const label = riotName || "Joueur";
+  const label = riotName || "Profil Tracker";
 
   return (
     <button
@@ -231,7 +231,13 @@ const TrackerSidebarProfile = memo(function TrackerSidebarProfile({ collapsed }:
         )}
       >
         <User className="h-4 w-4" />
-        <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-[var(--background)] bg-emerald-400" aria-hidden="true" />
+        <span
+          className={cn(
+            "absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-[var(--background)]",
+            riotName ? "bg-emerald-400" : "bg-neutral-500"
+          )}
+          aria-hidden="true"
+        />
       </div>
       <motion.div
         initial={false}
@@ -245,8 +251,10 @@ const TrackerSidebarProfile = memo(function TrackerSidebarProfile({ collapsed }:
           collapsed && "hidden"
         )}
       >
-        <div className="truncate font-bold">{label}</div>
-        <div className="text-[9px] font-mono text-[var(--text-muted)] truncate">Riot Games · Connecté</div>
+        <div className="truncate font-bold">{riotName || "Aucun profil"}</div>
+        <div className="text-[9px] font-mono text-[var(--text-muted)] truncate">
+          {riotName ? "Riot Games · Connecté" : "Non connecté"}
+        </div>
       </motion.div>
     </button>
   );

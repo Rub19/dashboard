@@ -21,6 +21,7 @@ import {
   CheckCircle2,
   ExternalLink,
   Heart,
+  Key,
   RefreshCw,
   Sparkles,
 } from "@/components/icons/ph";
@@ -186,22 +187,8 @@ export default function RiotGamingHome() {
     }
   }, []);
 
-  const [riotName, setRiotName] = useState(() => {
-    if (typeof window !== "undefined") {
-      const stored = localStorage.getItem("ethone:tracker:riot_name");
-      if (stored && stored !== "Rub19") return stored;
-    }
-    const val = settings.liveTrackerRiotName || "";
-    return val === "Rub19" ? "" : val;
-  });
-  const [riotTag, setRiotTag] = useState(() => {
-    if (typeof window !== "undefined") {
-      const stored = localStorage.getItem("ethone:tracker:riot_tag");
-      if (stored && stored !== "boss" && stored !== "Boss") return stored;
-    }
-    const val = settings.liveTrackerRiotTag || "";
-    return val === "boss" || val === "Boss" ? "" : val;
-  });
+  const [riotName, setRiotName] = useState("");
+  const [riotTag, setRiotTag] = useState("");
 
   const [valorantProfile, setValorantProfile] = useState<ValorantAccountProfile | null>(null);
   const [valorantMatches, setValorantMatches] = useState<ValorantMatch[]>([]);
@@ -294,24 +281,15 @@ export default function RiotGamingHome() {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const rawStoredName = localStorage.getItem("ethone:tracker:riot_name");
-      const rawStoredTag = localStorage.getItem("ethone:tracker:riot_tag");
-      if (rawStoredName === "Rub19") {
-        try {
-          localStorage.removeItem("ethone:tracker:riot_name");
-          localStorage.removeItem("ethone:tracker:riot_tag");
-        } catch {}
-      }
-      const storedName = rawStoredName === "Rub19" ? "" : (rawStoredName || "");
-      const storedTag = rawStoredName === "Rub19" ? "" : (rawStoredTag || "");
-      if (storedName && storedName !== riotName) setRiotName(storedName);
-      if (storedTag && storedTag !== riotTag) setRiotTag(storedTag);
-      if (storedName && storedTag) {
-        loadPlayerData(storedName, storedTag, activeGame);
-      }
-      return;
+      try {
+        localStorage.removeItem("ethone:tracker:riot_name");
+        localStorage.removeItem("ethone:tracker:riot_tag");
+      } catch {}
     }
-    if (riotName && riotTag) {
+  }, []);
+
+  useEffect(() => {
+    if (riotName && riotTag && (activeGame === "valorant" || activeGame === "lol")) {
       loadPlayerData(riotName, riotTag, activeGame);
     }
   }, [activeGame, loadPlayerData, riotName, riotTag]);
@@ -320,10 +298,7 @@ export default function RiotGamingHome() {
     e.preventDefault();
     const cleanName = riotName.trim();
     const cleanTag = riotTag.trim().replace(/^#/, "");
-    if (typeof window !== "undefined") {
-      if (cleanName) localStorage.setItem("ethone:tracker:riot_name", cleanName);
-      if (cleanTag) localStorage.setItem("ethone:tracker:riot_tag", cleanTag);
-    }
+    if (!cleanName || !cleanTag) return;
     loadPlayerData(cleanName, cleanTag, activeGame);
   };
 
@@ -487,6 +462,8 @@ export default function RiotGamingHome() {
   }, [valorantProfile?.currentTierPatched]);
 
   const rrValue = valorantProfile?.rr ?? 0;
+  const hasValorantData = Boolean(valorantProfile || valorantMatches.length > 0);
+  const hasLolData = lolMatches.length > 0;
   const hasProfile = Boolean(valorantProfile?.name || riotName);
 
   return (
@@ -723,7 +700,21 @@ export default function RiotGamingHome() {
           >
             {activeGame === "valorant" && (
               <div className="space-y-5">
-                <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-4 sm:p-5 backdrop-blur-xl shadow-md">
+                {loading ? (
+                  <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-12 backdrop-blur-xl shadow-md text-center space-y-3">
+                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400">
+                      <RefreshCw className="h-6 w-6 animate-spin" />
+                    </div>
+                    <h3 className="text-base font-bold text-white tracking-wide">
+                      Analyse du profil en cours...
+                    </h3>
+                    <p className="text-xs text-neutral-400 font-mono">
+                      Synchronisation des statistiques compétitives et des matchs récents via l&apos;API officielle.
+                    </p>
+                  </div>
+                ) : hasValorantData ? (
+                  <>
+                    <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-4 sm:p-5 backdrop-blur-xl shadow-md">
                   <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
                     <div className="flex items-center gap-4 min-w-0">
                       <div className="relative shrink-0">
@@ -1341,14 +1332,63 @@ export default function RiotGamingHome() {
                           Aucun match trouvé
                         </p>
                         <p className="text-[11px] text-neutral-400 max-w-sm mt-1">
-                          Recherchez un Riot ID ci-dessus ou cliquez sur un exemple e-sport pour charger l'historique complet des parties.
+                          Recherchez un Riot ID ci-dessus pour charger l'historique complet des parties.
                         </p>
                       </div>
                     )}
                   </div>
                 </div>
+              </>
+            ) : (
+              <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-8 sm:p-12 backdrop-blur-xl shadow-md text-center space-y-6">
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400">
+                  <Target className="h-7 w-7" />
+                </div>
+
+                <div className="space-y-2 max-w-lg mx-auto">
+                  <h3 className="text-lg font-bold tracking-tight text-white">
+                    Aucun profil VALORANT sélectionné
+                  </h3>
+                  <p className="text-xs text-neutral-400 leading-relaxed">
+                    Saisissez votre Riot ID et votre TAG dans la barre ci-dessus puis cliquez sur <span className="text-white font-semibold">« Analyser »</span> pour charger vos statistiques compétitives officielles, votre télémétrie de tir et votre historique de parties.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 max-w-3xl mx-auto pt-2 text-left">
+                  <div className="rounded-lg border border-white/[0.06] bg-black/40 p-4 space-y-1.5">
+                    <div className="flex items-center gap-2 text-rose-400">
+                      <Flame className="h-4 w-4" />
+                      <span className="text-xs font-mono font-bold uppercase tracking-wider text-white">Performances</span>
+                    </div>
+                    <p className="text-xs text-neutral-400 leading-relaxed">
+                      ACS officiel, ratio K/D, taux de victoire et suivi précis de la progression de rang et des RR.
+                    </p>
+                  </div>
+
+                  <div className="rounded-lg border border-white/[0.06] bg-black/40 p-4 space-y-1.5">
+                    <div className="flex items-center gap-2 text-cyan-400">
+                      <Target className="h-4 w-4" />
+                      <span className="text-xs font-mono font-bold uppercase tracking-wider text-white">Télémétrie</span>
+                    </div>
+                    <p className="text-xs text-neutral-400 leading-relaxed">
+                      Précision anatomique calculée (tête, corps, jambes) et analyse des engagements round par round.
+                    </p>
+                  </div>
+
+                  <div className="rounded-lg border border-white/[0.06] bg-black/40 p-4 space-y-1.5">
+                    <div className="flex items-center gap-2 text-purple-400">
+                      <Brain className="h-4 w-4" />
+                      <span className="text-xs font-mono font-bold uppercase tracking-wider text-white">Coach Tactique</span>
+                    </div>
+                    <p className="text-xs text-neutral-400 leading-relaxed">
+                      Diagnostic de style de jeu, détection des points faibles et plan d&apos;entraînement adapté.
+                    </p>
+                  </div>
+                </div>
               </div>
             )}
+          </div>
+        )}
 
             {activeGame === "coach" && (
               <div className="space-y-4">
@@ -1701,224 +1741,258 @@ export default function RiotGamingHome() {
 
             {activeGame === "lol" && (
               <div className="space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
-                  <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-4 backdrop-blur-xl shadow-sm space-y-3">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-500/10 text-amber-300 font-bold border border-amber-500/30 shrink-0">
-                        <GameBrandIcon name="League of Legends" className="h-6 w-6" />
-                      </div>
-                      <div className="min-w-0">
-                        <h3 className="text-base font-bold text-white truncate">
-                          {riotName || "Invocateur"}
-                        </h3>
-                        <p className="font-mono text-xs text-neutral-400">{riotTag ? `#${riotTag}` : ""}</p>
-                        <p className="text-xs font-semibold text-amber-300">
-                          {lolMatches.length > 0 ? "Compétitif SoloQ" : "SoloQ / Flex"}
-                        </p>
-                      </div>
+                {loading ? (
+                  <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-12 backdrop-blur-xl shadow-md text-center space-y-3">
+                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300">
+                      <RefreshCw className="h-6 w-6 animate-spin" />
                     </div>
-                    <div className="pt-2 border-t border-white/[0.06] flex items-center justify-between text-xs text-neutral-400">
-                      <span>Parties analysées :</span>
-                      <span className="font-mono font-bold text-white">
-                        {lolMatches.length}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-4 backdrop-blur-xl shadow-sm flex flex-col justify-between">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">KDA Moyen</span>
-                      <Flame className="h-4 w-4 text-amber-400" />
-                    </div>
-                    <div className="my-2">
-                      <p className="text-3xl font-mono font-bold tracking-tight text-white">
-                        {lolSummary.total > 0 ? lolSummary.kda : "—"}
-                      </p>
-                      <p className="text-[11px] font-mono text-neutral-400">
-                        {lolSummary.total > 0 ? `${lolSummary.kTotal}K / ${lolSummary.dTotal}D / ${lolSummary.aTotal}A` : "0 partie analysée"}
-                      </p>
-                    </div>
-                    <div className="h-1.5 w-full rounded-full bg-white/[0.06] overflow-hidden">
-                      <div
-                        className="h-full bg-amber-400 rounded-full"
-                        style={{ width: lolSummary.total > 0 ? `${Math.min(100, Math.round(Number(lolSummary.kda || 0) * 20))}%` : "0%" }}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-4 backdrop-blur-xl shadow-sm flex flex-col justify-between">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">Dégâts / Minute</span>
-                      <Trophy className="h-4 w-4 text-cyan-400" />
-                    </div>
-                    <div className="my-2">
-                      <p className="text-3xl font-mono font-bold tracking-tight text-white">
-                        {lolSummary.avgDpm > 0 ? lolSummary.avgDpm : "—"}
-                      </p>
-                      <p className="text-[11px] font-mono text-neutral-400">
-                        {lolSummary.dmgTotal > 0 ? `${lolSummary.dmgTotal.toLocaleString()} dégâts infligés` : "—"}
-                      </p>
-                    </div>
-                    <div className="h-1.5 w-full rounded-full bg-white/[0.06] overflow-hidden">
-                      <div
-                        className="h-full bg-cyan-400 rounded-full"
-                        style={{ width: lolSummary.avgDpm > 0 ? `${Math.min(100, Math.round((lolSummary.avgDpm / 1000) * 100))}%` : "0%" }}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-4 backdrop-blur-xl shadow-sm flex flex-col justify-between">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">Kill Participation</span>
-                      <Target className="h-4 w-4 text-emerald-400" />
-                    </div>
-                    <div className="my-2">
-                      <p className="text-3xl font-mono font-bold tracking-tight text-white">
-                        {lolSummary.avgKp > 0 ? `${lolSummary.avgKp}%` : "—"}
-                      </p>
-                      <p className="text-[11px] font-mono text-neutral-400">
-                        {lolSummary.avgKp > 0 ? "Participation moyenne aux éliminations" : "—"}
-                      </p>
-                    </div>
-                    <div className="h-1.5 w-full rounded-full bg-white/[0.06] overflow-hidden">
-                      <div
-                        className="h-full bg-emerald-400 rounded-full"
-                        style={{ width: lolSummary.avgKp > 0 ? `${lolSummary.avgKp}%` : "0%" }}
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-4 sm:p-5 backdrop-blur-xl shadow-sm space-y-3">
-                  <div className="flex items-center justify-between border-b border-white/[0.06] pb-2.5">
-                    <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-white">
-                      Parties Récentes League of Legends
+                    <h3 className="text-base font-bold text-white tracking-wide">
+                      Analyse de l&apos;Invocateur en cours...
                     </h3>
-                    <span className="text-[10px] font-mono text-neutral-500">{lolMatches.length} parties</span>
+                    <p className="text-xs text-neutral-400 font-mono">
+                      Récupération de l&apos;historique de match SoloQ et Flex via l&apos;API Riot Games.
+                    </p>
                   </div>
+                ) : hasLolData ? (
+                  <>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+                      <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-4 backdrop-blur-xl shadow-sm space-y-3">
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-500/10 text-amber-300 font-bold border border-amber-500/30 shrink-0">
+                            <GameBrandIcon name="League of Legends" className="h-6 w-6" />
+                          </div>
+                          <div className="min-w-0">
+                            <h3 className="text-base font-bold text-white truncate">
+                              {riotName || "Invocateur"}
+                            </h3>
+                            <p className="font-mono text-xs text-neutral-400">{riotTag ? `#${riotTag}` : ""}</p>
+                            <p className="text-xs font-semibold text-amber-300">
+                              {lolMatches.length > 0 ? "Compétitif SoloQ" : "SoloQ / Flex"}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="pt-2 border-t border-white/[0.06] flex items-center justify-between text-xs text-neutral-400">
+                          <span>Parties analysées :</span>
+                          <span className="font-mono font-bold text-white">
+                            {lolMatches.length}
+                          </span>
+                        </div>
+                      </div>
 
-                  <div className="space-y-2">
-                    {lolMatches.length > 0 ? (
-                      lolMatches.slice(0, 5).map((m, idx) => {
-                        const me = m.scoreboard?.players?.find((p) => p.isMe) || m.scoreboard?.players?.[0];
-                        const isWin = m.metadata?.result?.toLowerCase() === "victory";
-                        const kills = me?.stats?.kills ?? 9;
-                        const deaths = me?.stats?.deaths ?? 11;
-                        const assists = me?.stats?.assists ?? 5;
-                        const kda = deaths > 0 ? ((kills + assists) / deaths).toFixed(2) : String(kills + assists);
-                        const champName = me?.character || m.metadata?.agentName;
-                        const champIcon = m.metadata?.agentImageUrl || (champName ? getLolChampionIcon(champName) : null);
-
-                        return (
+                      <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-4 backdrop-blur-xl shadow-sm flex flex-col justify-between">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">KDA Moyen</span>
+                          <Flame className="h-4 w-4 text-amber-400" />
+                        </div>
+                        <div className="my-2">
+                          <p className="text-3xl font-mono font-bold tracking-tight text-white">
+                            {lolSummary.total > 0 ? lolSummary.kda : "—"}
+                          </p>
+                          <p className="text-[11px] font-mono text-neutral-400">
+                            {lolSummary.total > 0 ? `${lolSummary.kTotal}K / ${lolSummary.dTotal}D / ${lolSummary.aTotal}A` : "0 partie analysée"}
+                          </p>
+                        </div>
+                        <div className="h-1.5 w-full rounded-full bg-white/[0.06] overflow-hidden">
                           <div
-                            key={m.metadata?.matchId || idx}
-                            className="flex items-center justify-between rounded-lg border border-white/[0.06] bg-black/30 p-3 hover:border-white/10 transition-all"
-                          >
-                            <div className="flex items-center gap-3 min-w-0">
-                              <div
-                                className={cn(
-                                  "h-8 w-1 rounded-full shrink-0",
-                                  isWin ? "bg-emerald-400" : "bg-rose-500"
-                                )}
-                              />
-                              {champIcon && (
-                                <img
-                                  src={champIcon}
-                                  alt={champName || "Champion"}
-                                  className="h-8 w-8 rounded-md object-cover border border-white/10 shrink-0"
-                                  onError={(e) => {
-                                    (e.target as HTMLImageElement).style.display = "none";
-                                  }}
+                            className="h-full bg-amber-400 rounded-full"
+                            style={{ width: lolSummary.total > 0 ? `${Math.min(100, Math.round(Number(lolSummary.kda || 0) * 20))}%` : "0%" }}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-4 backdrop-blur-xl shadow-sm flex flex-col justify-between">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">Dégâts / Minute</span>
+                          <Trophy className="h-4 w-4 text-cyan-400" />
+                        </div>
+                        <div className="my-2">
+                          <p className="text-3xl font-mono font-bold tracking-tight text-white">
+                            {lolSummary.avgDpm > 0 ? lolSummary.avgDpm : "—"}
+                          </p>
+                          <p className="text-[11px] font-mono text-neutral-400">
+                            {lolSummary.dmgTotal > 0 ? `${lolSummary.dmgTotal.toLocaleString()} dégâts infligés` : "—"}
+                          </p>
+                        </div>
+                        <div className="h-1.5 w-full rounded-full bg-white/[0.06] overflow-hidden">
+                          <div
+                            className="h-full bg-cyan-400 rounded-full"
+                            style={{ width: lolSummary.avgDpm > 0 ? `${Math.min(100, Math.round((lolSummary.avgDpm / 1000) * 100))}%` : "0%" }}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-4 backdrop-blur-xl shadow-sm flex flex-col justify-between">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">Kill Participation</span>
+                          <Target className="h-4 w-4 text-emerald-400" />
+                        </div>
+                        <div className="my-2">
+                          <p className="text-3xl font-mono font-bold tracking-tight text-white">
+                            {lolSummary.avgKp > 0 ? `${lolSummary.avgKp}%` : "—"}
+                          </p>
+                          <p className="text-[11px] font-mono text-neutral-400">
+                            {lolSummary.avgKp > 0 ? "Participation moyenne aux éliminations" : "—"}
+                          </p>
+                        </div>
+                        <div className="h-1.5 w-full rounded-full bg-white/[0.06] overflow-hidden">
+                          <div
+                            className="h-full bg-emerald-400 rounded-full"
+                            style={{ width: lolSummary.avgKp > 0 ? `${lolSummary.avgKp}%` : "0%" }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-4 sm:p-5 backdrop-blur-xl shadow-sm space-y-3">
+                      <div className="flex items-center justify-between border-b border-white/[0.06] pb-2.5">
+                        <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-white">
+                          Parties Récentes League of Legends
+                        </h3>
+                        <span className="text-[10px] font-mono text-neutral-500">{lolMatches.length} parties</span>
+                      </div>
+
+                      <div className="space-y-2">
+                        {lolMatches.slice(0, 5).map((m, idx) => {
+                          const me = m.scoreboard?.players?.find((p) => p.isMe) || m.scoreboard?.players?.[0];
+                          const isWin = m.metadata?.result?.toLowerCase() === "victory";
+                          const kills = me?.stats?.kills ?? 9;
+                          const deaths = me?.stats?.deaths ?? 11;
+                          const assists = me?.stats?.assists ?? 5;
+                          const kda = deaths > 0 ? ((kills + assists) / deaths).toFixed(2) : String(kills + assists);
+                          const champName = me?.character || m.metadata?.agentName;
+                          const champIcon = m.metadata?.agentImageUrl || (champName ? getLolChampionIcon(champName) : null);
+
+                          return (
+                            <div
+                              key={m.metadata?.matchId || idx}
+                              className="flex items-center justify-between rounded-lg border border-white/[0.06] bg-black/30 p-3 hover:border-white/10 transition-all"
+                            >
+                              <div className="flex items-center gap-3 min-w-0">
+                                <div
+                                  className={cn(
+                                    "h-8 w-1 rounded-full shrink-0",
+                                    isWin ? "bg-emerald-400" : "bg-rose-500"
+                                  )}
                                 />
-                              )}
-                              <div className="min-w-0">
-                                <div className="flex items-center gap-2">
-                                  <span className="text-xs font-bold text-white truncate">
-                                    {me?.character || m.metadata?.agentName || "Champion"}
-                                  </span>
-                                  <span
-                                    className={cn(
-                                      "rounded px-1.5 py-0.2 text-[9px] font-mono font-bold uppercase",
-                                      isWin ? "bg-emerald-500/15 text-emerald-300 border border-emerald-500/30" : "bg-rose-500/15 text-rose-300 border border-rose-500/30"
-                                    )}
-                                  >
-                                    {isWin ? "Victoire" : "Défaite"}
-                                  </span>
+                                {champIcon && (
+                                  <img
+                                    src={champIcon}
+                                    alt={champName || "Champion"}
+                                    className="h-8 w-8 rounded-md object-cover border border-white/10 shrink-0"
+                                    onError={(e) => {
+                                      (e.target as HTMLImageElement).style.display = "none";
+                                    }}
+                                  />
+                                )}
+                                <div className="min-w-0">
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-xs font-bold text-white truncate">
+                                      {me?.character || m.metadata?.agentName || "Champion"}
+                                    </span>
+                                    <span
+                                      className={cn(
+                                        "rounded px-1.5 py-0.2 text-[9px] font-mono font-bold uppercase",
+                                        isWin ? "bg-emerald-500/15 text-emerald-300 border border-emerald-500/30" : "bg-rose-500/15 text-rose-300 border border-rose-500/30"
+                                      )}
+                                    >
+                                      {isWin ? "Victoire" : "Défaite"}
+                                    </span>
+                                  </div>
+                                  <p className="text-[10px] font-mono text-neutral-400 mt-0.5">
+                                    {m.metadata?.modeName || "Normal Draft"} · {m.metadata?.gameDuration || "28m"}
+                                  </p>
                                 </div>
-                                <p className="text-[10px] font-mono text-neutral-400 mt-0.5">
-                                  {m.metadata?.modeName || "Normal Draft"} · {m.metadata?.gameDuration || "28m"}
+                              </div>
+
+                              <div className="text-right shrink-0">
+                                <p className="text-xs font-mono font-bold text-white">
+                                  {kills}/{deaths}/{assists}
                                 </p>
+                                <p className="text-[10px] font-mono text-neutral-400">{kda} KDA</p>
                               </div>
                             </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-8 sm:p-12 backdrop-blur-xl shadow-md text-center space-y-6">
+                    <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-300">
+                      <GameBrandIcon name="League of Legends" className="h-7 w-7" />
+                    </div>
 
-                            <div className="text-right shrink-0">
-                              <p className="text-xs font-mono font-bold text-white">
-                                {kills}/{deaths}/{assists}
-                              </p>
-                              <p className="text-[10px] font-mono text-neutral-400">{kda} KDA</p>
-                            </div>
-                          </div>
-                        );
-                      })
-                    ) : (
-                      <div className="rounded-lg border border-dashed border-white/10 bg-black/20 p-6 text-center">
-                        <p className="text-xs text-neutral-400">
-                          Recherchez un Invocateur LoL pour charger les matchs récents.
+                    <div className="space-y-2 max-w-lg mx-auto">
+                      <h3 className="text-lg font-bold tracking-tight text-white">
+                        Aucun invocateur League of Legends sélectionné
+                      </h3>
+                      <p className="text-xs text-neutral-400 leading-relaxed">
+                        Saisissez votre Riot ID et votre TAG dans la barre ci-dessus puis cliquez sur <span className="text-white font-semibold">« Analyser »</span> pour charger votre KDA moyen, vos dégâts par minute et l&apos;historique de vos parties récentes.
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 max-w-3xl mx-auto pt-2 text-left">
+                      <div className="rounded-lg border border-white/[0.06] bg-black/40 p-4 space-y-1.5">
+                        <div className="flex items-center gap-2 text-amber-400">
+                          <Flame className="h-4 w-4" />
+                          <span className="text-xs font-mono font-bold uppercase tracking-wider text-white">KDA &amp; Impact</span>
+                        </div>
+                        <p className="text-xs text-neutral-400 leading-relaxed">
+                          Ratio KDA moyen, éliminations, morts et assistances cumulées sur les dernières parties.
                         </p>
                       </div>
-                    )}
+
+                      <div className="rounded-lg border border-white/[0.06] bg-black/40 p-4 space-y-1.5">
+                        <div className="flex items-center gap-2 text-cyan-400">
+                          <Trophy className="h-4 w-4" />
+                          <span className="text-xs font-mono font-bold uppercase tracking-wider text-white">Dégâts / Minute</span>
+                        </div>
+                        <p className="text-xs text-neutral-400 leading-relaxed">
+                          Volume de dégâts infligés aux champions calculé par minute de jeu.
+                        </p>
+                      </div>
+
+                      <div className="rounded-lg border border-white/[0.06] bg-black/40 p-4 space-y-1.5">
+                        <div className="flex items-center gap-2 text-emerald-400">
+                          <Target className="h-4 w-4" />
+                          <span className="text-xs font-mono font-bold uppercase tracking-wider text-white">Kill Participation</span>
+                        </div>
+                        <p className="text-xs text-neutral-400 leading-relaxed">
+                          Taux d&apos;implication dans les prises d&apos;objectifs et les éliminations collectives.
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             )}
 
             {activeGame === "tft" && (
               <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
-                  <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-4 backdrop-blur-xl shadow-sm space-y-3">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-purple-500/10 text-purple-300 font-bold border border-purple-500/30 shrink-0">
-                        <GameBrandIcon name="Teamfight Tactics" className="h-6 w-6" />
-                      </div>
-                      <div className="min-w-0">
-                        <h3 className="text-base font-bold text-white truncate">{riotName || "Tacticien"}</h3>
-                        <p className="font-mono text-xs text-neutral-400">{riotTag ? `#${riotTag}` : ""}</p>
-                        <p className="text-xs font-semibold text-purple-300">Mode Stratégique TFT</p>
-                      </div>
-                    </div>
+                <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-8 sm:p-12 backdrop-blur-xl shadow-md text-center space-y-6">
+                  <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-purple-500/10 border border-purple-500/20 text-purple-300">
+                    <GameBrandIcon name="Teamfight Tactics" className="h-7 w-7" />
                   </div>
 
-                  <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-4 backdrop-blur-xl shadow-sm flex flex-col justify-between">
-                    <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">Top 4 Rate</span>
-                    <p className="text-3xl font-mono font-bold tracking-tight text-white my-2">
-                      —
+                  <div className="space-y-2 max-w-lg mx-auto">
+                    <h3 className="text-lg font-bold tracking-tight text-white">
+                      Module Teamfight Tactics
+                    </h3>
+                    <p className="text-xs text-neutral-400 leading-relaxed">
+                      L&apos;intégration des données de match TFT (compositions d&apos;unités, synergies d&apos;équipe et classements de fin de manche) requiert la configuration d&apos;une clé API Riot Games personnalisée.
                     </p>
-                    <div className="h-1.5 w-full rounded-full bg-white/[0.06] overflow-hidden">
-                      <div className="h-full bg-purple-400 rounded-full" style={{ width: "0%" }} />
-                    </div>
                   </div>
 
-                  <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-4 backdrop-blur-xl shadow-sm flex flex-col justify-between">
-                    <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">Victoires (Top 1)</span>
-                    <p className="text-3xl font-mono font-bold tracking-tight text-white my-2">
-                      —
-                    </p>
-                    <div className="h-1.5 w-full rounded-full bg-white/[0.06] overflow-hidden">
-                      <div className="h-full bg-amber-400 rounded-full" style={{ width: "0%" }} />
-                    </div>
+                  <div className="flex items-center justify-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setConnectModalOpen(true)}
+                      className="inline-flex items-center gap-2 rounded-lg bg-white text-black px-4 py-2 text-xs font-semibold hover:bg-neutral-200 active:scale-95 transition-all cursor-pointer shadow-sm"
+                    >
+                      <Key className="h-3.5 w-3.5 text-black" />
+                      <span>Configurer la Clé API Riot</span>
+                    </button>
                   </div>
-                </div>
-
-                <div className="rounded-xl border border-dashed border-white/10 bg-black/20 p-8 text-center space-y-2">
-                  <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-xl bg-purple-500/10 text-purple-300 border border-purple-500/20">
-                    <GameBrandIcon name="Teamfight Tactics" className="h-5 w-5" />
-                  </div>
-                  <h4 className="text-xs font-mono font-bold text-white uppercase tracking-wider">
-                    Données TFT en cours de synchronisation
-                  </h4>
-                  <p className="text-xs text-neutral-400 max-w-sm mx-auto">
-                    Le module TFT nécessite la configuration de la clé API Riot Games personnalisée pour charger les compositions et les parties classées en direct.
-                  </p>
                 </div>
               </div>
             )}

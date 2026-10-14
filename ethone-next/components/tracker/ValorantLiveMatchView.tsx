@@ -21,7 +21,7 @@ export default function ValorantLiveMatchView({
   const [checking, setChecking] = useState(false);
   const [checkMessage, setCheckMessage] = useState<string | null>(null);
 
-  const playerName = valorantProfile?.name || riotName || "Joueur";
+  const playerName = valorantProfile?.name || riotName || "";
   const playerTag = valorantProfile?.tag || riotTag || "";
   const fullRiotId = playerTag ? `${playerName}#${playerTag}` : playerName;
 
@@ -52,7 +52,11 @@ export default function ValorantLiveMatchView({
               Partie en Direct (Bêta)
             </h2>
             <p className="text-xs text-neutral-400">
-              Suivi de session en temps réel pour <strong className="text-white font-medium">{fullRiotId}</strong>.
+              {fullRiotId ? (
+                <>Suivi de session en temps réel pour <strong className="text-white font-medium">{fullRiotId}</strong>.</>
+              ) : (
+                <>Suivi de session en temps réel via le client local VALORANT.</>
+              )}
             </p>
           </div>
 

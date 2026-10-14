@@ -15,6 +15,7 @@ import {
   Activity,
   Flame,
 } from "@/components/icons/ph";
+import BrandMark from "@/components/BrandMark";
 import GameBrandIcon from "@/components/GameBrandIcon";
 import { useSettings } from "@/components/SettingsProvider";
 import { useUserIdentity } from "@/lib/hooks/useUserIdentity";
@@ -159,9 +160,7 @@ const TrackerSidebarBrand = memo(function TrackerSidebarBrand() {
       )}
       aria-label="RIOT TRACKER & COACH"
     >
-      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-rose-600 to-red-600 text-white shadow-md">
-        <GameBrandIcon name="Valorant" className="h-4.5 w-4.5" />
-      </div>
+      <BrandMark size={32} className="shrink-0 drop-shadow-md" />
       <motion.div
         initial={false}
         animate={{

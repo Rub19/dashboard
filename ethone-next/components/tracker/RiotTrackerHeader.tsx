@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useAnimatedSidebar } from "@/components/motion/animated-sidebar";
 import { Icon } from "@/lib/icons";
 import { Sparkles, Key, Heart } from "@/components/icons/ph";
+import BrandMark from "@/components/BrandMark";
 import GameBrandIcon from "@/components/GameBrandIcon";
 import RiotTrackerConnectModal from "./RiotTrackerConnectModal";
 import RiotAttributionModal from "./RiotAttributionModal";
@@ -53,9 +54,7 @@ export default function RiotTrackerHeader({
               href="/tracker"
               className="flex items-center gap-2 outline-none group cursor-pointer"
             >
-              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-rose-600 to-red-600 text-white shadow-md">
-                <GameBrandIcon name="Valorant" className="h-4 w-4" />
-              </div>
+              <BrandMark size={28} className="shrink-0 drop-shadow-md" />
               <div className="flex flex-col">
                 <div className="flex items-center gap-1.5">
                   <span className="text-xs font-black tracking-wider text-[var(--text-primary)] group-hover:text-rose-400 transition-colors uppercase">

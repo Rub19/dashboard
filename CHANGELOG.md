@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.70 — 2026-10-14
+
+**Intégration du logo officiel Ethone dans la barre latérale du tracker**
+
+- Remplacement du conteneur rouge dégradé et de l'icône de marque par le composant SVG vectoriel officiel `BrandMark` d'Ethone dans `TrackerSidebar`.
+- Harmonisation du logo officiel haute fidélité également dans l'en-tête du tracker (`RiotTrackerHeader`).
+- Respect strict de la politique zéro commentaire.
+
 ## v1.75.69 — 2026-10-14
 
 **Isolation du Tracker Gaming et suppression des paramètres dans la barre latérale**

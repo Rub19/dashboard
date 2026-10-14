@@ -38,7 +38,7 @@ const WEAPON_ICONS: Record<string, string> = {
 };
 
 export default function ValorantWeaponStatsCard({
-  matches,
+  matches = [],
   isEn = false,
   className,
 }: ValorantWeaponStatsCardProps) {
@@ -47,11 +47,14 @@ export default function ValorantWeaponStatsCard({
     let totalTrackedKills = 0;
     let hasWeaponTelemetry = false;
 
-    matches.forEach((m) => {
+    const list = Array.isArray(matches) ? matches : [];
+    list.forEach((m) => {
+      if (!m) return;
       const wStats = m.scoreboard?.weaponStats;
       if (Array.isArray(wStats) && wStats.length > 0) {
         hasWeaponTelemetry = true;
         wStats.forEach((w) => {
+          if (!w) return;
           const name = w.weapon || "Unknown";
           counts[name] = (counts[name] || 0) + (w.kills || 0);
           totalTrackedKills += w.kills || 0;

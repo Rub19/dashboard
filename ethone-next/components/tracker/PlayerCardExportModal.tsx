@@ -489,7 +489,15 @@ export default function PlayerCardExportModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={isEn ? "Export Player Card" : "Exporter ma Player Card"}
+      hideFooter
+      hideCloseButton
+      size="lg"
+      className="p-0 border-none bg-transparent shadow-none"
+    >
       <div className="w-full max-w-4xl rounded-3xl border border-white/10 bg-[#0d1117] p-6 shadow-2xl backdrop-blur-2xl space-y-5 text-white">
         <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
           <div className="flex items-center gap-3">

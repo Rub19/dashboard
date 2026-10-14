@@ -1,6 +1,16 @@
 # Changelog
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
+
+## v1.75.84 — 2026-10-15
+
+**Correction Comparateur 1v1 & Robustesse Télémétrie**
+
+- **Résolution de l'exception d'initialisation sur le comparateur 1v1** : Correction de l'ordre des déclarations d'état dans `CompareWithFriendView.tsx` pour éliminer l'erreur de portée lexicale (TDZ) qui déclenchait l'écran d'erreur Next.js lors de la navigation vers `https://ethone.dev/tracker/?tab=compare`.
+- **Blindage défensif des calculs de télémétrie** : Protection contre les valeurs `null` ou non-tableaux dans `computeTelemetry`, `duoSynergy`, `advantageSummary` et `ValorantWeaponStatsCard`.
+- **Validation stricte de la modale Player Card** : Ajout des propriétés requises sur `Modal` dans `PlayerCardExportModal.tsx`.
+- **Nettoyage i18n & tests unitaires** : Suppression des clés dupliquées dans `lib/i18n.ts` et enrichissement de la suite Jest pour valider le rendu du comparateur et de la télémétrie.
+
 ## v1.75.83 — 2026-10-15
 
 **Accès Hybride : Portail Principal sous Login & Tracker Valorant Public Libre**

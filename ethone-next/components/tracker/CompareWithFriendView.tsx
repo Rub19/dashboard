@@ -57,7 +57,8 @@ interface StoredFriend {
   avatar?: string;
 }
 
-function getAgentRole(agentName: string, isEn: boolean = false): string {
+function getAgentRole(agentName?: string | null, isEn: boolean = false): string {
+  if (!agentName) return "Agent";
   const n = agentName.toLowerCase();
   if (["jett", "reyna", "raze", "phoenix", "yoru", "neon", "iso"].includes(n)) return isEn ? "Duelist" : "Duelliste";
   if (["sova", "fade", "breach", "skye", "kay/o", "kayo", "gekko"].includes(n)) return isEn ? "Initiator" : "Initiateur";
@@ -66,8 +67,8 @@ function getAgentRole(agentName: string, isEn: boolean = false): string {
   return "Agent";
 }
 
-function computeTelemetry(matches: ValorantMatch[], stats?: ValorantComputedStats | null) {
-  if (!matches || matches.length === 0) {
+function computeTelemetry(matches?: ValorantMatch[] | null, stats?: ValorantComputedStats | null) {
+  if (!matches || !Array.isArray(matches) || matches.length === 0) {
     const hs = stats?.headshotPercentage ? Math.round(Number(stats.headshotPercentage)) : 0;
     const bs = hs > 0 ? Math.max(0, 100 - hs - 10) : 0;
     const ls = hs > 0 ? Math.max(0, 100 - hs - bs) : 0;
@@ -95,7 +96,8 @@ function computeTelemetry(matches: ValorantMatch[], stats?: ValorantComputedStat
   let scoreMatches = 0;
 
   matches.forEach((m) => {
-    const me = m.scoreboard?.players?.find((p) => p.isMe) || m.scoreboard?.players?.[0];
+    if (!m) return;
+    const me = m.scoreboard?.players?.find((p) => p?.isMe) || m.scoreboard?.players?.[0];
     const seg = m.segments?.[0]?.stats;
     const k = me?.stats?.kills ?? seg?.kills?.value ?? 0;
     const d = me?.stats?.deaths ?? seg?.deaths?.value ?? 0;
@@ -197,19 +199,15 @@ export default function CompareWithFriendView({
 
   const [p1Profile, setP1Profile] = useState<ValorantAccountProfile | null>(initialProfile || null);
   const [p1Stats, setP1Stats] = useState<ValorantComputedStats | null>(initialStats || null);
-  const [p1Matches, setP1Matches] = useState<ValorantMatch[]>(initialMatches);
+  const [p1Matches, setP1Matches] = useState<ValorantMatch[]>(initialMatches || []);
   const [p1InputName, setP1InputName] = useState(() => {
-    return myRiotName || settings.liveTrackerRiotName || (typeof window !== "undefined" ? localStorage.getItem("ethone:tracker:riotName") || "" : "");
+    return myRiotName || settings?.liveTrackerRiotName || (typeof window !== "undefined" ? localStorage.getItem("ethone:tracker:riotName") || "" : "");
   });
   const [p1InputTag, setP1InputTag] = useState(() => {
-    return myRiotTag || settings.liveTrackerRiotTag || (typeof window !== "undefined" ? localStorage.getItem("ethone:tracker:riotTag") || "" : "");
+    return myRiotTag || settings?.liveTrackerRiotTag || (typeof window !== "undefined" ? localStorage.getItem("ethone:tracker:riotTag") || "" : "");
   });
   const [p1Loading, setP1Loading] = useState(false);
   const [p1Editing, setP1Editing] = useState(false);
-
-  const hasPlayer1 = Boolean(p1Profile || p1Matches.length > 0);
-  const hasPlayer2 = Boolean(p2Profile || p2Matches.length > 0);
-  const hasBothPlayers = hasPlayer1 && hasPlayer2;
 
   const [p2InputName, setP2InputName] = useState("");
   const [p2InputTag, setP2InputTag] = useState("");
@@ -217,6 +215,10 @@ export default function CompareWithFriendView({
   const [p2Stats, setP2Stats] = useState<ValorantComputedStats | null>(null);
   const [p2Matches, setP2Matches] = useState<ValorantMatch[]>([]);
   const [p2Loading, setP2Loading] = useState(false);
+
+  const hasPlayer1 = Boolean(p1Profile || (p1Matches && p1Matches.length > 0));
+  const hasPlayer2 = Boolean(p2Profile || (p2Matches && p2Matches.length > 0));
+  const hasBothPlayers = hasPlayer1 && hasPlayer2;
 
   const [playerCardExportOpen, setPlayerCardExportOpen] = useState(false);
   const [playerCardTarget, setPlayerCardTarget] = useState<1 | 2>(1);
@@ -621,8 +623,8 @@ export default function CompareWithFriendView({
       icon: <Trophy className="h-4 w-4 text-emerald-400" />,
       p1Display: p1Stats?.winRate !== null && p1Stats?.winRate !== undefined ? `${p1Stats.winRate}%` : "—",
       p2Display: p2Stats?.winRate !== null && p2Stats?.winRate !== undefined ? `${p2Stats.winRate}%` : "—",
-      p1Val: p1Stats?.winRate ?? 0,
-      p2Val: p2Stats?.winRate ?? 0,
+      p1Val: Number(p1Stats?.winRate ?? 0),
+      p2Val: Number(p2Stats?.winRate ?? 0),
       formatDiff: (diff: number) => `${diff > 0 ? "+" : ""}${diff.toFixed(1)}%`,
     },
     {
@@ -639,50 +641,50 @@ export default function CompareWithFriendView({
       id: "hs",
       label: isEn ? "Headshot Precision" : "Précision Headshot",
       icon: <Target className="h-4 w-4 text-cyan-400" />,
-      p1Display: `${p1Telemetry.hsPct}%`,
-      p2Display: `${p2Telemetry.hsPct}%`,
-      p1Val: p1Telemetry.hsPct,
-      p2Val: p2Telemetry.hsPct,
+      p1Display: `${p1Telemetry?.hsPct ?? 0}%`,
+      p2Display: `${p2Telemetry?.hsPct ?? 0}%`,
+      p1Val: p1Telemetry?.hsPct ?? 0,
+      p2Val: p2Telemetry?.hsPct ?? 0,
       formatDiff: (diff: number) => `${diff > 0 ? "+" : ""}${diff}%`,
     },
     {
       id: "adr",
       label: isEn ? "Average Damage / Round (ADR)" : "Dégâts par Round (ADR)",
       icon: <Flame className="h-4 w-4 text-orange-400" />,
-      p1Display: p1Telemetry.adr > 0 ? `${p1Telemetry.adr}` : "—",
-      p2Display: p2Telemetry.adr > 0 ? `${p2Telemetry.adr}` : "—",
-      p1Val: p1Telemetry.adr,
-      p2Val: p2Telemetry.adr,
+      p1Display: (p1Telemetry?.adr ?? 0) > 0 ? `${p1Telemetry.adr}` : "—",
+      p2Display: (p2Telemetry?.adr ?? 0) > 0 ? `${p2Telemetry.adr}` : "—",
+      p1Val: p1Telemetry?.adr ?? 0,
+      p2Val: p2Telemetry?.adr ?? 0,
       formatDiff: (diff: number) => `${diff > 0 ? "+" : ""}${diff} dmg`,
     },
     {
       id: "acs",
       label: isEn ? "Average Combat Score (ACS)" : "Score de Combat Moyen (ACS)",
       icon: <Zap className="h-4 w-4 text-purple-400" />,
-      p1Display: p1Telemetry.acs > 0 ? `${p1Telemetry.acs}` : "—",
-      p2Display: p2Telemetry.acs > 0 ? `${p2Telemetry.acs}` : "—",
-      p1Val: p1Telemetry.acs,
-      p2Val: p2Telemetry.acs,
+      p1Display: (p1Telemetry?.acs ?? 0) > 0 ? `${p1Telemetry.acs}` : "—",
+      p2Display: (p2Telemetry?.acs ?? 0) > 0 ? `${p2Telemetry.acs}` : "—",
+      p1Val: p1Telemetry?.acs ?? 0,
+      p2Val: p2Telemetry?.acs ?? 0,
       formatDiff: (diff: number) => `${diff > 0 ? "+" : ""}${diff} pts`,
     },
     {
       id: "duel",
       label: isEn ? "Opening & 1v1 Duel Win Rate" : "Taux de Victoire en Duel 1v1",
       icon: <Target className="h-4 w-4 text-sky-400" />,
-      p1Display: p1Telemetry.duelWinrate > 0 ? `${p1Telemetry.duelWinrate}%` : "—",
-      p2Display: p2Telemetry.duelWinrate > 0 ? `${p2Telemetry.duelWinrate}%` : "—",
-      p1Val: p1Telemetry.duelWinrate,
-      p2Val: p2Telemetry.duelWinrate,
+      p1Display: (p1Telemetry?.duelWinrate ?? 0) > 0 ? `${p1Telemetry.duelWinrate}%` : "—",
+      p2Display: (p2Telemetry?.duelWinrate ?? 0) > 0 ? `${p2Telemetry.duelWinrate}%` : "—",
+      p1Val: p1Telemetry?.duelWinrate ?? 0,
+      p2Val: p2Telemetry?.duelWinrate ?? 0,
       formatDiff: (diff: number) => `${diff > 0 ? "+" : ""}${diff}%`,
     },
     {
       id: "matches",
       label: isEn ? "Analyzed Matches" : "Parties Analysées",
       icon: <Percent className="h-4 w-4 text-neutral-400" />,
-      p1Display: `${p1Matches.length}`,
-      p2Display: `${p2Matches.length}`,
-      p1Val: p1Matches.length,
-      p2Val: p2Matches.length,
+      p1Display: `${p1Matches?.length || 0}`,
+      p2Display: `${p2Matches?.length || 0}`,
+      p1Val: p1Matches?.length || 0,
+      p2Val: p2Matches?.length || 0,
       formatDiff: null,
     },
   ];

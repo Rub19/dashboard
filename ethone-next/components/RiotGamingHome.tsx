@@ -326,20 +326,6 @@ export default function RiotGamingHome() {
     loadPlayerData(cleanName, cleanTag, activeGame);
   };
 
-  const applyQuickPlayer = (name: string, tag: string, game?: GameTab) => {
-    setRiotName(name);
-    setRiotTag(tag);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("ethone:tracker:riot_name", name);
-      localStorage.setItem("ethone:tracker:riot_tag", tag);
-    }
-    const targetGame = game || activeGame;
-    if (game && game !== activeGame) {
-      selectGameTab(game);
-    }
-    loadPlayerData(name, tag, targetGame);
-  };
-
   const valorantCombatSummary = useMemo(() => {
     let kills = 0;
     let deaths = 0;
@@ -695,65 +681,40 @@ export default function RiotGamingHome() {
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-white/[0.06]">
-              <form onSubmit={handleSearch} className="flex items-center gap-2 flex-1 max-w-md">
-                <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 focus-within:border-white/20 transition-all flex-1">
-                  <User className="h-3.5 w-3.5 text-neutral-400 shrink-0" />
-                  <input
-                    type="text"
-                    value={riotName}
-                    onChange={(e) => setRiotName(e.target.value)}
-                    placeholder="Riot ID"
-                    aria-label="Nom Riot"
-                    className="w-full bg-transparent text-xs font-medium text-white outline-none placeholder:text-neutral-500"
-                  />
-                  <span className="text-xs font-mono text-neutral-500">#</span>
-                  <input
-                    type="text"
-                    value={riotTag}
-                    onChange={(e) => setRiotTag(e.target.value)}
-                    placeholder="TAG"
-                    aria-label="Tag Riot"
-                    className="w-16 bg-transparent font-mono text-xs font-medium text-white outline-none placeholder:text-neutral-500 uppercase"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="flex items-center gap-1.5 rounded-lg bg-white text-black font-semibold px-3.5 py-1.5 text-xs hover:bg-neutral-200 active:scale-95 transition-all cursor-pointer disabled:opacity-40 shadow-sm shrink-0"
-                >
-                  <Search className="h-3.5 w-3.5 text-black" />
-                  <span>{loading ? "Scan..." : "Analyser"}</span>
-                </button>
-              </form>
-
-              <div className="flex items-center gap-1.5 text-xs overflow-x-auto os-scroll">
-                <span className="text-[10px] uppercase font-mono font-medium tracking-wider text-neutral-500 shrink-0">
-                  Pros :
-                </span>
-                <button
-                  type="button"
-                  onClick={() => applyQuickPlayer("TenZ", "SEN", "valorant")}
-                  className="rounded-md border border-white/10 bg-white/[0.03] px-2 py-0.5 text-[11px] font-mono text-neutral-300 hover:text-white hover:bg-white/[0.07] active:scale-95 transition-all cursor-pointer shrink-0"
-                >
-                  TenZ #SEN
-                </button>
-                <button
-                  type="button"
-                  onClick={() => applyQuickPlayer("Boaster", "FNC", "valorant")}
-                  className="rounded-md border border-white/10 bg-white/[0.03] px-2 py-0.5 text-[11px] font-mono text-neutral-300 hover:text-white hover:bg-white/[0.07] active:scale-95 transition-all cursor-pointer shrink-0"
-                >
-                  Boaster #FNC
-                </button>
-                <button
-                  type="button"
-                  onClick={() => applyQuickPlayer("Faker", "KR1", "lol")}
-                  className="rounded-md border border-white/10 bg-white/[0.03] px-2 py-0.5 text-[11px] font-mono text-neutral-300 hover:text-white hover:bg-white/[0.07] active:scale-95 transition-all cursor-pointer shrink-0"
-                >
-                  Faker #KR1
-                </button>
+            {activeGame !== "vct" && (
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-white/[0.06]">
+                <form onSubmit={handleSearch} className="flex items-center gap-2 flex-1 max-w-md">
+                  <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 focus-within:border-white/20 transition-all flex-1">
+                    <User className="h-3.5 w-3.5 text-neutral-400 shrink-0" />
+                    <input
+                      type="text"
+                      value={riotName}
+                      onChange={(e) => setRiotName(e.target.value)}
+                      placeholder="Riot ID"
+                      aria-label="Nom Riot"
+                      className="w-full bg-transparent text-xs font-medium text-white outline-none placeholder:text-neutral-500"
+                    />
+                    <span className="text-xs font-mono text-neutral-500">#</span>
+                    <input
+                      type="text"
+                      value={riotTag}
+                      onChange={(e) => setRiotTag(e.target.value)}
+                      placeholder="TAG"
+                      aria-label="Tag Riot"
+                      className="w-16 bg-transparent font-mono text-xs font-medium text-white outline-none placeholder:text-neutral-500 uppercase"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="flex items-center gap-1.5 rounded-lg bg-white text-black font-semibold px-3.5 py-1.5 text-xs hover:bg-neutral-200 active:scale-95 transition-all cursor-pointer disabled:opacity-40 shadow-sm shrink-0"
+                  >
+                    <Search className="h-3.5 w-3.5 text-black" />
+                    <span>{loading ? "Scan..." : "Analyser"}</span>
+                  </button>
+                </form>
               </div>
-            </div>
+            )}
           </div>
         </header>
 

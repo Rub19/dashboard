@@ -55379,10 +55379,58 @@ const v12915_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12915_fr, v12914_fr, v12913_fr, v12912_fr, v12911_fr, v12910_fr, v12909_fr, v12908_fr, v12907_fr, v12906_fr, v12905_fr, v12904_fr, v12903_fr, v12902_fr, v12901_fr, v12900_fr, v12899_fr, v12898_fr, v12897_fr, v12896_fr, v12895_fr, v12894_fr, v12893_fr, v12892_fr);
-CHANGELOG_BY_LANG.en.unshift(v12915_en, v12914_en, v12913_en, v12912_en, v12911_en, v12910_en, v12909_en, v12908_en, v12907_en, v12906_en, v12905_en, v12904_en, v12903_en, v12902_en, v12901_en, v12900_en, v12899_en, v12898_en, v12897_en, v12896_en, v12895_en, v12894_en, v12893_en, v12892_en);
-CHANGELOG_BY_LANG.es.unshift(v12915_es, v12914_es, v12913_es, v12912_es, v12911_es, v12910_es, v12909_es, v12908_es, v12907_es, v12906_es, v12905_es, v12904_es, v12903_es, v12902_es, v12901_es, v12900_es, v12899_es, v12898_es, v12897_es, v12896_es, v12895_es, v12894_es, v12893_es, v12892_es);
-CHANGELOG_BY_LANG.de.unshift(v12915_de, v12914_de, v12913_de, v12912_de, v12911_de, v12910_de, v12909_de, v12908_de, v12907_de, v12906_de, v12905_de, v12904_de, v12903_de, v12902_de, v12901_de, v12900_de, v12899_de, v12898_de, v12897_de, v12896_de, v12895_de, v12894_de, v12893_de, v12892_de);
+const v12916_fr: ChangelogEntry = {
+  version: "v1.75.74",
+  date: "2026-10-14",
+  title: "Refonte VCT Pick'ems : sélection d'édition, confrontation et scores",
+  items: [
+    "Sélecteur d'édition dynamique avec menu déroulant et filtres rapides par tournoi officiel",
+    "Présentation des matchs repensée en arène de confrontation face-à-face avec logos et scores nets",
+    "Navigation fluide entre matchs à venir / en direct et scores des anciens matchs terminés",
+    "Suppression de la barre de pros en en-tête et masquage de la recherche individuelle sur l'onglet VCT",
+  ],
+};
+
+const v12916_en: ChangelogEntry = {
+  version: "v1.75.74",
+  date: "2026-10-14",
+  title: "VCT Pick'ems overhaul: edition selector, head-to-head confrontation and match history",
+  items: [
+    "Dynamic edition selector with dropdown and quick tournament chips",
+    "Match cards redesigned into a premier head-to-head confrontation arena with team wings",
+    "Seamless toggling between upcoming / live matches and past completed results with Pick'em evaluation",
+    "Header cleanup: removed quick pros bar and hidden individual player search on the VCT tab",
+  ],
+};
+
+const v12916_es: ChangelogEntry = {
+  version: "v1.75.74",
+  date: "2026-10-14",
+  title: "Revisión de VCT Pick'ems: selector de edición, confrontación de equipos e historial",
+  items: [
+    "Selector dinámico de edición con menú desplegable y accesos directos por torneo oficial",
+    "Tarjetas de partidos rediseñadas en arena de confrontación directa cara a cara",
+    "Alternancia fluida entre partidos próximos / en vivo y resultados anteriores con evaluación de Pick'ems",
+    "Limpieza del encabezado y ocultación de la barra de búsqueda en la pestaña VCT",
+  ],
+};
+
+const v12916_de: ChangelogEntry = {
+  version: "v1.75.74",
+  date: "2026-10-14",
+  title: "VCT Pick'ems Überarbeitung: Editionsauswahl, Team-Konfrontation und Match-Historie",
+  items: [
+    "Dynamische Editionsauswahl mit Dropdown-Menü und Schnellfiltern für offizielle Turniere",
+    "Neugestaltung der Match-Karten als Head-to-Head-Konfrontationsarena mit klaren Team-Bereichen",
+    "Nahtlose Umschaltung zwischen bevorstehenden / Live-Spielen und vergangenen Ergebnissen",
+    "Header-Bereinigung und automatisches Ausblenden der Spielersuche im VCT-Tab",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12916_fr, v12915_fr, v12914_fr, v12913_fr, v12912_fr, v12911_fr, v12910_fr, v12909_fr, v12908_fr, v12907_fr, v12906_fr, v12905_fr, v12904_fr, v12903_fr, v12902_fr, v12901_fr, v12900_fr, v12899_fr, v12898_fr, v12897_fr, v12896_fr, v12895_fr, v12894_fr, v12893_fr, v12892_fr);
+CHANGELOG_BY_LANG.en.unshift(v12916_en, v12915_en, v12914_en, v12913_en, v12912_en, v12911_en, v12910_en, v12909_en, v12908_en, v12907_en, v12906_en, v12905_en, v12904_en, v12903_en, v12902_en, v12901_en, v12900_en, v12899_en, v12898_en, v12897_en, v12896_en, v12895_en, v12894_en, v12893_en, v12892_en);
+CHANGELOG_BY_LANG.es.unshift(v12916_es, v12915_es, v12914_es, v12913_es, v12912_es, v12911_es, v12910_es, v12909_es, v12908_es, v12907_es, v12906_es, v12905_es, v12904_es, v12903_es, v12902_es, v12901_es, v12900_es, v12899_es, v12898_es, v12897_es, v12896_es, v12895_es, v12894_es, v12893_es, v12892_es);
+CHANGELOG_BY_LANG.de.unshift(v12916_de, v12915_de, v12914_de, v12913_de, v12912_de, v12911_de, v12910_de, v12909_de, v12908_de, v12907_de, v12906_de, v12905_de, v12904_de, v12903_de, v12902_de, v12901_de, v12900_de, v12899_de, v12898_de, v12897_de, v12896_de, v12895_de, v12894_de, v12893_de, v12892_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

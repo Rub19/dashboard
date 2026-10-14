@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.74 — 2026-10-14
+
+**Refonte VCT Pick'ems : sélection d'édition, confrontation d'équipes et scores**
+
+- Sélecteur d'édition dynamique avec menu déroulant et filtres rapides par tournoi officiel (Champions, Game Changers, VCT Americas, EMEA, Pacific, etc.).
+- Présentation des matchs repensée en arène de confrontation face-à-face (logos haute définition, badges régionaux, nexus VS central et scores exacts).
+- Navigation fluide entre matchs à venir / en direct et scores des anciens matchs terminés avec validation des points Pick'ems.
+- Suppression de la barre des pros en en-tête et masquage automatique de la recherche de joueur sur l'onglet VCT pour une interface épurée.
+
 ## v1.75.73 — 2026-10-14
 
 **Onglet VCT & Pick'ems et suppression des placeholders de télémétrie**

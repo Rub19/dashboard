@@ -59,6 +59,7 @@ export default function Shell({ children }: { children: ReactNode }) {
           <PresenceProvider>
             <ShortcutsProvider>
               <SkipLink />
+              <ProfileSync />
               <AnimatedSidebarProvider
                 defaultOpen={false}
                 style={{ "--sidebar-width": "18rem", "--sidebar-width-icon": "5rem" }}

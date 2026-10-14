@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.64 — 2026-10-14
+
+**Correction de l'écran noir sur le tracker et fiabilisation de la barre latérale**
+
+- Résolution définitive du crash d'écran noir sur `/tracker` et `/matches` causé par l'accès au contexte `AnimatedSidebarPanelContext` hors du composant `<AnimatedSidebar>`.
+- Isolation de la navigation `TrackerSidebarNavList` directement sous `<AnimatedSidebarContent>` pour un branchement propre du contexte.
+- Sécurisation résiliente des hooks `useAnimatedSidebar` et `useAnimatedSidebarPanel` avec des valeurs de repli par défaut afin d'éviter tout crash React fatal en cas d'utilisation hors provider.
+- Intégration de `ProfileSync` dans l'arborescence de rendu du tracker pour synchroniser harmonieusement les préférences et profils avec Supabase.
+
 ## v1.75.63 — 2026-10-14
 
 **Correction de la redirection vers home et persistance des réglages (Dock, Spotlight, icônes colorées, Supabase)**

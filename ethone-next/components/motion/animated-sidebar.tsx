@@ -146,12 +146,28 @@ interface AnimatedSidebarPanelContextValue {
 const AnimatedSidebarPanelContext =
   createContext<AnimatedSidebarPanelContextValue | null>(null);
 
+const defaultAnimatedSidebarContext: AnimatedSidebarContextValue = {
+  isMobile: false,
+  layoutId: "default",
+  open: false,
+  openMobile: false,
+  reduce: false,
+  setOpen: () => {},
+  setOpenMobile: () => {},
+  state: "collapsed",
+  toggleSidebar: () => {},
+};
+
+const defaultAnimatedSidebarPanelContext: AnimatedSidebarPanelContextValue = {
+  collapsed: false,
+  collapsible: "none",
+  side: "left",
+};
+
 export function useAnimatedSidebar() {
   const context = useContext(AnimatedSidebarContext);
   if (!context) {
-    throw new Error(
-      "useAnimatedSidebar must be used inside AnimatedSidebarProvider.",
-    );
+    return defaultAnimatedSidebarContext;
   }
   return context;
 }
@@ -159,9 +175,7 @@ export function useAnimatedSidebar() {
 export function useAnimatedSidebarPanel() {
   const context = useContext(AnimatedSidebarPanelContext);
   if (!context) {
-    throw new Error(
-      "Animated Sidebar parts must be used inside AnimatedSidebar.",
-    );
+    return defaultAnimatedSidebarPanelContext;
   }
   return context;
 }

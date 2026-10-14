@@ -352,31 +352,18 @@ const TrackerSidebarFooter = memo(function TrackerSidebarFooter() {
   );
 });
 
-export default function TrackerSidebar() {
-  const router = useRouter();
-  const pathname = usePathname() ?? "/tracker";
-  const { setOpen } = useAnimatedSidebar();
+const TrackerSidebarNavList = memo(function TrackerSidebarNavList({
+  currentTab,
+  pathname,
+  onSelect,
+}: {
+  currentTab: string | null;
+  pathname: string;
+  onSelect: (href: string) => void;
+}) {
   const { collapsed } = useAnimatedSidebarPanel();
   const { settings } = useSettings();
-
-  const [currentSearch, setCurrentSearch] = useState("");
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setCurrentSearch(window.location.search);
-      const onPopState = () => setCurrentSearch(window.location.search);
-      window.addEventListener("popstate", onPopState);
-      return () => window.removeEventListener("popstate", onPopState);
-    }
-  }, [pathname]);
-
-  const currentTab = useMemo(() => {
-    if (typeof window !== "undefined") {
-      const sp = new URLSearchParams(currentSearch);
-      return sp.get("tab") || sp.get("game");
-    }
-    return null;
-  }, [currentSearch]);
+  const showIcons = settings.sidebarIcons || collapsed;
 
   const isItemActive = useCallback(
     (item: TrackerSidebarItem) => {
@@ -418,6 +405,73 @@ export default function TrackerSidebar() {
     [pathname, currentTab]
   );
 
+  return (
+    <div className="flex flex-col">
+      {TRACKER_GROUPS.map((group, groupIndex) => (
+        <div key={group.id}>
+          {groupIndex > 0 && (
+            collapsed ? (
+              <div className="ethone-nav-divider" />
+            ) : (
+              <p className="ethone-nav-label">{group.label}</p>
+            )
+          )}
+          <AnimatedSidebarMenu>
+            {group.items.map((item) => (
+              <AnimatedSidebarMenuItem key={item.id} className="group/item">
+                <AnimatedSidebarMenuButton
+                  isActive={isItemActive(item)}
+                  icon={showIcons ? item.renderIcon(settings.sidebarColoredIcons) : undefined}
+                  badge={item.badge}
+                  onSelect={() => onSelect(item.href)}
+                >
+                  {item.label}
+                </AnimatedSidebarMenuButton>
+              </AnimatedSidebarMenuItem>
+            ))}
+          </AnimatedSidebarMenu>
+        </div>
+      ))}
+    </div>
+  );
+});
+
+export default function TrackerSidebar() {
+  const router = useRouter();
+  const pathname = usePathname() ?? "/tracker";
+  const { setOpen } = useAnimatedSidebar();
+
+  const [currentSearch, setCurrentSearch] = useState("");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setCurrentSearch(window.location.search);
+      const onPopState = () => setCurrentSearch(window.location.search);
+      window.addEventListener("popstate", onPopState);
+      return () => window.removeEventListener("popstate", onPopState);
+    }
+  }, [pathname]);
+
+  const currentTab = useMemo(() => {
+    if (typeof window !== "undefined") {
+      const sp = new URLSearchParams(currentSearch);
+      return sp.get("tab") || sp.get("game");
+    }
+    return null;
+  }, [currentSearch]);
+
+  const handleSelect = useCallback(
+    (href: string) => {
+      router.push(href);
+      if (typeof window !== "undefined") {
+        setTimeout(() => {
+          setCurrentSearch(window.location.search);
+        }, 50);
+      }
+    },
+    [router]
+  );
+
   const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handlePointerEnter = useCallback(() => {
@@ -433,8 +487,6 @@ export default function TrackerSidebar() {
       setOpen(false);
     }, 180);
   }, [setOpen]);
-
-  const showIcons = settings.sidebarIcons || collapsed;
 
   return (
     <div
@@ -454,40 +506,11 @@ export default function TrackerSidebar() {
         </AnimatedSidebarHeader>
 
         <AnimatedSidebarContent>
-          <div className="flex flex-col">
-            {TRACKER_GROUPS.map((group, groupIndex) => (
-              <div key={group.id}>
-                {groupIndex > 0 && (
-                  collapsed ? (
-                    <div className="ethone-nav-divider" />
-                  ) : (
-                    <p className="ethone-nav-label">{group.label}</p>
-                  )
-                )}
-                <AnimatedSidebarMenu>
-                  {group.items.map((item) => (
-                    <AnimatedSidebarMenuItem key={item.id} className="group/item">
-                      <AnimatedSidebarMenuButton
-                        isActive={isItemActive(item)}
-                        icon={showIcons ? item.renderIcon(settings.sidebarColoredIcons) : undefined}
-                        badge={item.badge}
-                        onSelect={() => {
-                          router.push(item.href);
-                          if (typeof window !== "undefined") {
-                            setTimeout(() => {
-                              setCurrentSearch(window.location.search);
-                            }, 50);
-                          }
-                        }}
-                      >
-                        {item.label}
-                      </AnimatedSidebarMenuButton>
-                    </AnimatedSidebarMenuItem>
-                  ))}
-                </AnimatedSidebarMenu>
-              </div>
-            ))}
-          </div>
+          <TrackerSidebarNavList
+            currentTab={currentTab}
+            pathname={pathname}
+            onSelect={handleSelect}
+          />
         </AnimatedSidebarContent>
 
         <AnimatedSidebarFooter className="mb-3 border-t border-[var(--panel-border)] pt-3">

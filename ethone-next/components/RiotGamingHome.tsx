@@ -483,6 +483,7 @@ export default function RiotGamingHome() {
   const hasProfile = Boolean(valorantProfile?.name || riotName);
 
   const currentLang = (settings.language || "fr").startsWith("en") ? "en" : "fr";
+  const isEn = currentLang === "en";
   const tr = useMemo(() => getTrackerI18n(currentLang), [currentLang]);
 
   const toggleLang = useCallback(

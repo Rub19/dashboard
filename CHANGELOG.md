@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.85 — 2026-10-15
+
+**CI/CD : Migration vers Node 24 & Actions GitHub v7**
+
+- **Mise à niveau des actions GitHub officielles** : Migration de toutes les actions GitHub vers leurs versions compatibles Node 24 (`actions/checkout@v7`, `actions/upload-artifact@v7`, `actions/setup-node@v7`, `actions/setup-java@v6`, `actions/cache@v6`).
+- **Suppression du warning d'obsolescence Node 20** : Élimination définitive de l'avertissement de deprecation Node 20 affiché sur les runners macOS (Xcode 27) et Ubuntu.
+- **Pérennité des workflows CI** : Prévention des ruptures lors du retrait complet du runtime Node 20 par GitHub Actions.
+
 ## v1.75.84 — 2026-10-15
 
 **Correction Comparateur 1v1 & Robustesse Télémétrie**

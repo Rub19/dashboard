@@ -55897,10 +55897,54 @@ const v12926_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12926_fr, v12925_fr, v12924_fr, v12923_fr, v12922_fr, v12921_fr, v12920_fr, v12919_fr, v12918_fr, v12917_fr, v12916_fr, v12915_fr, v12914_fr, v12913_fr, v12912_fr, v12911_fr, v12910_fr, v12909_fr, v12908_fr, v12907_fr, v12906_fr, v12905_fr, v12904_fr, v12903_fr, v12902_fr, v12901_fr, v12900_fr, v12899_fr, v12898_fr, v12897_fr, v12896_fr, v12895_fr, v12894_fr, v12893_fr, v12892_fr);
-CHANGELOG_BY_LANG.en.unshift(v12926_en, v12925_en, v12924_en, v12923_en, v12922_en, v12921_en, v12920_en, v12919_en, v12918_en, v12917_en, v12916_en, v12915_en, v12914_en, v12913_en, v12912_en, v12911_en, v12910_en, v12909_en, v12908_en, v12907_en, v12906_en, v12905_en, v12904_en, v12903_en, v12902_en, v12901_en, v12900_en, v12899_en, v12898_en, v12897_en, v12896_en, v12895_en, v12894_en, v12893_en, v12892_en);
-CHANGELOG_BY_LANG.es.unshift(v12926_es, v12925_es, v12924_es, v12923_es, v12922_es, v12921_es, v12920_es, v12919_es, v12918_es, v12917_es, v12916_es, v12915_es, v12914_es, v12913_es, v12912_es, v12911_es, v12910_es, v12909_es, v12908_es, v12907_es, v12906_es, v12905_es, v12904_es, v12903_es, v12902_es, v12901_es, v12900_es, v12899_es, v12898_es, v12897_es, v12896_es, v12895_es, v12894_es, v12893_es, v12892_es);
-CHANGELOG_BY_LANG.de.unshift(v12926_de, v12925_de, v12924_de, v12923_de, v12922_de, v12921_de, v12920_de, v12919_de, v12918_de, v12917_de, v12916_de, v12915_de, v12914_de, v12913_de, v12912_de, v12911_de, v12910_de, v12909_de, v12908_de, v12907_de, v12906_de, v12905_de, v12904_de, v12903_de, v12902_de, v12901_de, v12900_de, v12899_de, v12898_de, v12897_de, v12896_de, v12895_de, v12894_de, v12893_de, v12892_de);
+const v12927_fr: ChangelogEntry = {
+  version: "v1.75.85",
+  date: "2026-10-15",
+  title: "CI/CD : Migration vers Node 24 & Actions GitHub v7",
+  items: [
+    "Mise à niveau des actions GitHub (checkout@v7, upload-artifact@v7, setup-node@v7, setup-java@v6, cache@v6)",
+    "Élimination des avertissements d'obsolescence Node 20 sur les runners macOS Xcode 27 et Ubuntu",
+    "Compatibilité native certifiée avec l'environnement d'exécution Node.js 24",
+  ],
+};
+
+const v12927_en: ChangelogEntry = {
+  version: "v1.75.85",
+  date: "2026-10-15",
+  title: "CI/CD: Migration to Node 24 & GitHub Actions v7",
+  items: [
+    "Upgraded GitHub actions (checkout@v7, upload-artifact@v7, setup-node@v7, setup-java@v6, cache@v6)",
+    "Eliminated Node 20 deprecation warnings on macOS Xcode 27 and Ubuntu runners",
+    "Certified native compatibility with Node.js 24 runtime environment",
+  ],
+};
+
+const v12927_es: ChangelogEntry = {
+  version: "v1.75.85",
+  date: "2026-10-15",
+  title: "CI/CD: Migración a Node 24 y Acciones GitHub v7",
+  items: [
+    "Actualización de acciones de GitHub (checkout@v7, upload-artifact@v7, setup-node@v7, setup-java@v6, cache@v6)",
+    "Eliminación de advertencias de obsolescencia de Node 20 en ejecutores macOS Xcode 27 y Ubuntu",
+    "Compatibilidad nativa certificada con el entorno de ejecución Node.js 24",
+  ],
+};
+
+const v12927_de: ChangelogEntry = {
+  version: "v1.75.85",
+  date: "2026-10-15",
+  title: "CI/CD: Migration zu Node 24 & GitHub Actions v7",
+  items: [
+    "Upgrade der GitHub Actions (checkout@v7, upload-artifact@v7, setup-node@v7, setup-java@v6, cache@v6)",
+    "Beseitigung von Node-20-Deprecation-Warnungen auf macOS Xcode 27- und Ubuntu-Runnern",
+    "Zertifizierte native Kompatibilität mit der Node.js 24-Laufzeitumgebung",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12927_fr, v12926_fr, v12925_fr, v12924_fr, v12923_fr, v12922_fr, v12921_fr, v12920_fr, v12919_fr, v12918_fr, v12917_fr, v12916_fr, v12915_fr, v12914_fr, v12913_fr, v12912_fr, v12911_fr, v12910_fr, v12909_fr, v12908_fr, v12907_fr, v12906_fr, v12905_fr, v12904_fr, v12903_fr, v12902_fr, v12901_fr, v12900_fr, v12899_fr, v12898_fr, v12897_fr, v12896_fr, v12895_fr, v12894_fr, v12893_fr, v12892_fr);
+CHANGELOG_BY_LANG.en.unshift(v12927_en, v12926_en, v12925_en, v12924_en, v12923_en, v12922_en, v12921_en, v12920_en, v12919_en, v12918_en, v12917_en, v12916_en, v12915_en, v12914_en, v12913_en, v12912_en, v12911_en, v12910_en, v12909_en, v12908_en, v12907_en, v12906_en, v12905_en, v12904_en, v12903_en, v12902_en, v12901_en, v12900_en, v12899_en, v12898_en, v12897_en, v12896_en, v12895_en, v12894_en, v12893_en, v12892_en);
+CHANGELOG_BY_LANG.es.unshift(v12927_es, v12926_es, v12925_es, v12924_es, v12923_es, v12922_es, v12921_es, v12920_es, v12919_es, v12918_es, v12917_es, v12916_es, v12915_es, v12914_es, v12913_es, v12912_es, v12911_es, v12910_es, v12909_es, v12908_es, v12907_es, v12906_es, v12905_es, v12904_es, v12903_es, v12902_es, v12901_es, v12900_es, v12899_es, v12898_es, v12897_es, v12896_es, v12895_es, v12894_es, v12893_es, v12892_es);
+CHANGELOG_BY_LANG.de.unshift(v12927_de, v12926_de, v12925_de, v12924_de, v12923_de, v12922_de, v12921_de, v12920_de, v12919_de, v12918_de, v12917_de, v12916_de, v12915_de, v12914_de, v12913_de, v12912_de, v12911_de, v12910_de, v12909_de, v12908_de, v12907_de, v12906_de, v12905_de, v12904_de, v12903_de, v12902_de, v12901_de, v12900_de, v12899_de, v12898_de, v12897_de, v12896_de, v12895_de, v12894_de, v12893_de, v12892_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

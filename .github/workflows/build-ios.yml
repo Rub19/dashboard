@@ -27,7 +27,7 @@ jobs:
     name: IPA — Xcode 27 (iOS 26 + iOS 27)
     runs-on: xcode-27
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Xcode et SDK
         run: |
           xcodebuild -version
@@ -66,13 +66,13 @@ jobs:
           { echo "### Erreurs (Xcode 27)"; echo '```'; grep -E "error:" build.log | sort -u | head -60 || true; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
       - name: Journal
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: build-log-xcode27
           path: ios/build/build.log
           if-no-files-found: ignore
       - name: IPA
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ETHONE-iOS-IPA
           path: ios/build/ETHONE.ipa
@@ -85,7 +85,7 @@ jobs:
     if: ${{ failure() }}
     runs-on: macos-26
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: XcodeGen
         run: brew list xcodegen >/dev/null 2>&1 || brew install xcodegen
       - name: Version (identique à celle du site)
@@ -112,7 +112,7 @@ jobs:
           cp -R Ethone.xcarchive/Products/Applications/*.app Payload/
           zip -qry ETHONE.ipa Payload
       - name: IPA
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ETHONE-iOS-IPA
           path: ios/build/ETHONE.ipa

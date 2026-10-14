@@ -130,7 +130,7 @@ export default function BotInstallView({
     try {
       await signOut();
     } catch {}
-    router.push("/");
+    router.push("/login");
   }, [signOut, router]);
 
   const [isChecking, setIsChecking] = useState(false);

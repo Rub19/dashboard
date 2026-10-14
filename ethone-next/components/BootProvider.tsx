@@ -56,17 +56,42 @@ export function useBoot() {
   return useContext(BootContext);
 }
 
-const PUBLIC_ROUTES = ["/", "/login", "/password-recovery", "/reset-password", "/terms", "/privacy", "/cookies", "/legal", "/bot", "/leaderboard", "/extension", "/discord", "/docs", "/documentation", "/tracker", "/matches"];
+const PUBLIC_ROUTES = [
+  "/login",
+  "/password-recovery",
+  "/reset-password",
+  "/terms",
+  "/privacy",
+  "/cookies",
+  "/legal",
+  "/bot",
+  "/leaderboard",
+  "/extension",
+  "/discord",
+  "/docs",
+  "/documentation",
+];
 
 const BOOT_TIMEOUT_MS = 8_000;
 const BOOT_MIN_DURATION_MS = 160;
 const BOOT_FULL_HOLD_MS = 260;
 
-const INFO_ROUTES = ["/", "/terms", "/privacy", "/cookies", "/legal", "/bot", "/leaderboard", "/extension", "/discord", "/docs", "/documentation", "/tracker", "/matches"];
+const INFO_ROUTES = [
+  "/terms",
+  "/privacy",
+  "/cookies",
+  "/legal",
+  "/bot",
+  "/leaderboard",
+  "/extension",
+  "/discord",
+  "/docs",
+  "/documentation",
+];
 
 function isInfoRoute(pathname: string | null): boolean {
   if (!pathname) return false;
-  return INFO_ROUTES.some((route) => pathname === route || (route !== "/" && pathname.startsWith(`${route}/`)));
+  return INFO_ROUTES.some((route) => pathname === route || pathname.startsWith(`${route}/`));
 }
 
 export function safeLoginNext(raw: string | null | undefined): string {
@@ -78,13 +103,14 @@ export function safeLoginNext(raw: string | null | undefined): string {
 }
 
 function shouldRenderInShell(pathname: string | null, publicRoute: boolean): boolean {
-  if (pathname === "/login") return false;
-  return true;
+  if (!publicRoute) return true;
+  if (!pathname) return false;
+  return false;
 }
 
 function isPublicRoute(pathname: string | null): boolean {
   if (!pathname) return false;
-  return PUBLIC_ROUTES.some((route) => pathname === route || (route !== "/" && pathname.startsWith(`${route}/`)));
+  return PUBLIC_ROUTES.some((route) => pathname === route || pathname.startsWith(`${route}/`));
 }
 
 function resolvePublicRoute(pathname: string | null): boolean {
@@ -220,7 +246,12 @@ export default function BootProvider({ children }: { children: ReactNode }) {
     } else if (publicRoute) {
       setState("ready");
     } else {
-      setState("ready");
+      setState("recovering");
+      const here = window.location.pathname + window.location.search;
+      if (/^\/clip\/?$/.test(window.location.pathname) && window.location.hash) {
+        try { sessionStorage.setItem("ethone:clip", window.location.hash); } catch {}
+      }
+      router.replace(safeLoginNext(here) === "/" ? "/login" : `/login?next=${encodeURIComponent(here)}`);
     }
   }, [authLoading, authError, session, mfaPending, profileLoaded, publicRoute, pathname, router]);
 

@@ -156,7 +156,7 @@ export default function ServerPicker({
     try {
       await signOut();
     } catch {}
-    router.push("/");
+    router.push("/login");
   }, [signOut, router]);
 
   const [query, setQuery] = useState("");

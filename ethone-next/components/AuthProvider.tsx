@@ -384,7 +384,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     // identity, which a same-page state clear alone cannot guarantee.
     if (typeof window !== "undefined") {
       try {
-        window.location.href = "/";
+        window.location.href = "/login";
       } catch {
         // Navigation API unavailable (e.g. non-browser test environment) —
         // local state is already cleared above, nothing else to do.

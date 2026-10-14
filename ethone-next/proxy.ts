@@ -40,7 +40,21 @@ export async function proxy(request: NextRequest) {
   // Rafraîchit la session si un refresh token est présent
   await supabase.auth.getUser();
 
-  const publicRoutes = ["/login", "/password-recovery", "/reset-password"];
+  const publicRoutes = [
+    "/login",
+    "/password-recovery",
+    "/reset-password",
+    "/terms",
+    "/privacy",
+    "/cookies",
+    "/legal",
+    "/bot",
+    "/leaderboard",
+    "/extension",
+    "/discord",
+    "/docs",
+    "/documentation",
+  ];
   const isPublicRoute = publicRoutes.some(
     (route) => pathname === route || pathname.startsWith(`${route}/`)
   );
@@ -49,7 +63,11 @@ export async function proxy(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (user && isPublicRoute) {
+  if (!user && !isPublicRoute) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+
+  if (user && isPublicRoute && (pathname === "/login" || pathname === "/login/")) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 

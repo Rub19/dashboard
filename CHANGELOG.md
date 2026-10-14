@@ -1,6 +1,15 @@
 # Changelog
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
+## v1.75.82 — 2026-10-14
+
+**Sécurité & Authentification : Rétablissement de la Page de Connexion & Redirection Stricte**
+
+- **Redirection obligatoire vers la page de connexion** : Rétablissement de la redirection vers `/login` pour tout visiteur non connecté accédant à `ethone.dev` ou à n'importe quelle section privée de l'application.
+- **Verrouillage strict des routes privées** : Correction de `BootProvider.tsx` pour empêcher le chargement du shell applicatif (`Shell`) sans session Supabase active et orienter immédiatement vers le flux de connexion sécurisé.
+- **Redirection de déconnexion et d'invalidation** : Tous les boutons de déconnexion, de changement de compte et de reprise de session réorientent explicitement vers `/login`.
+- **Préservation de la destination `next`** : Maintien sécurisé de l'URL demandée pour rediriger automatiquement l'utilisateur après identification réussie.
+
 ## v1.75.81 — 2026-10-14
 
 **Valorant Tracker : Éradication Totale des Placeholders & Arène d'Attente 1v1**

@@ -119,7 +119,7 @@ export function resolveSmartModelId(promptText: string, requestedModelId: string
  * Enhanced Autonomous AI Engine for ETHONE OS Brain
  */
 export async function askBrainAI(options: AIEngineOptions): Promise<AIEngineResponse> {
-  const { messages, modelId = "auto", systemPrompt, temperature = 0.7, liveContext } = options;
+  const { messages, modelId = "auto", systemPrompt, temperature = 0.7, maxTokens = 1200, liveContext } = options;
   const lastUserPrompt = messages.filter((m) => m.role === "user").slice(-1)[0]?.content || "";
   const effectiveModelId = resolveSmartModelId(lastUserPrompt, modelId);
 
@@ -133,7 +133,6 @@ export async function askBrainAI(options: AIEngineOptions): Promise<AIEngineResp
 
   const creds = getLocalCredentials();
 
-  // 1. Google Gemini API (ultra-fast & top quality)
   if (creds.gemini) {
     try {
       const geminiModel = effectiveModelId.includes("1.5") ? "gemini-1.5-flash" : "gemini-2.0-flash";
@@ -149,7 +148,7 @@ export async function askBrainAI(options: AIEngineOptions): Promise<AIEngineResp
           body: JSON.stringify({
             contents,
             systemInstruction: { parts: [{ text: systemPrompt || defaultSystem }] },
-            generationConfig: { temperature, maxOutputTokens: 2000 },
+            generationConfig: { temperature, maxOutputTokens: maxTokens },
           }),
         }
       );
@@ -243,13 +242,13 @@ export async function askBrainAI(options: AIEngineOptions): Promise<AIEngineResp
     } catch {}
   }
 
-  // 5. Direct Cloudflare Worker backend /api/brain/complete
   try {
     const workerRes = await fetchWorker("/api/brain/complete", {
       method: "POST",
       body: JSON.stringify({
         messages: fullMessages,
         model: effectiveModelId,
+        maxTokens,
       }),
     });
     const content =
@@ -263,7 +262,6 @@ export async function askBrainAI(options: AIEngineOptions): Promise<AIEngineResp
     }
   } catch {}
 
-  // 6. Free Public AI Network (Pollinations Text API)
   const preferredPollinations = effectiveModelId.includes("r1") || effectiveModelId.includes("qwen")
     ? ["deepseek", "openai", "mistral"]
     : ["openai", "mistral", "deepseek"];
@@ -271,7 +269,7 @@ export async function askBrainAI(options: AIEngineOptions): Promise<AIEngineResp
   for (const polModel of preferredPollinations) {
     try {
       const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 4000);
+      const timer = setTimeout(() => controller.abort(), 7000);
 
       const polRes = await fetch("https://text.pollinations.ai/", {
         method: "POST",

@@ -20,15 +20,20 @@ function sanitizeMessages(messages) {
   const list = Array.isArray(messages) ? messages.slice(-12) : [];
   return list
     .map((entry) => ({
-      role: entry?.role === "assistant" ? "assistant" : "user",
-      content: typeof entry?.content === "string" ? entry.content.slice(0, 2400) : ""
+      role: entry?.role === "assistant" ? "assistant" : entry?.role === "system" ? "system" : "user",
+      content: typeof entry?.content === "string" ? entry.content.slice(0, 3200) : ""
     }))
     .filter((entry) => entry.content);
 }
 
 function normalizeWorkersAiMessages(messages, contextJson) {
-  const system = { role: "system", content: `${SYSTEM_PROMPT}\n\nContexte : ${contextJson}` };
-  return [system, ...messages];
+  const existingSystem = messages.find((m) => m.role === "system");
+  const nonSystemMessages = messages.filter((m) => m.role !== "system");
+  const systemContent = existingSystem?.content
+    ? (contextJson && contextJson !== "{}" ? `${existingSystem.content}\n\nContexte : ${contextJson}` : existingSystem.content)
+    : `${SYSTEM_PROMPT}\n\nContexte : ${contextJson}`;
+  const system = { role: "system", content: systemContent };
+  return [system, ...nonSystemMessages];
 }
 
 function parseWorkersAiResponse(data, requestedModel) {
@@ -58,7 +63,7 @@ async function callWorkersAiBinding(env, { model, messages }) {
   if (!binding || typeof binding.run !== "function") {
     throw httpError("SERVICE_NOT_CONFIGURED", 501, { detail: "AI binding unavailable" });
   }
-  const result = await binding.run(model, { messages });
+  const result = await binding.run(model, { messages, max_tokens: 1500 });
   return parseWorkersAiResponse(result, model);
 }
 
@@ -79,7 +84,7 @@ async function callWorkersAiRest(env, { model, messages }) {
       authorization: `Bearer ${apiToken}`,
       "content-type": "application/json",
     },
-    body: JSON.stringify({ messages }),
+    body: JSON.stringify({ messages, max_tokens: 1500 }),
     timeoutMs: 15000,
     maxBytes: 512 * 1024,
     retries: 0,

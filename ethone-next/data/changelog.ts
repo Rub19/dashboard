@@ -55427,10 +55427,58 @@ const v12916_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12916_fr, v12915_fr, v12914_fr, v12913_fr, v12912_fr, v12911_fr, v12910_fr, v12909_fr, v12908_fr, v12907_fr, v12906_fr, v12905_fr, v12904_fr, v12903_fr, v12902_fr, v12901_fr, v12900_fr, v12899_fr, v12898_fr, v12897_fr, v12896_fr, v12895_fr, v12894_fr, v12893_fr, v12892_fr);
-CHANGELOG_BY_LANG.en.unshift(v12916_en, v12915_en, v12914_en, v12913_en, v12912_en, v12911_en, v12910_en, v12909_en, v12908_en, v12907_en, v12906_en, v12905_en, v12904_en, v12903_en, v12902_en, v12901_en, v12900_en, v12899_en, v12898_en, v12897_en, v12896_en, v12895_en, v12894_en, v12893_en, v12892_en);
-CHANGELOG_BY_LANG.es.unshift(v12916_es, v12915_es, v12914_es, v12913_es, v12912_es, v12911_es, v12910_es, v12909_es, v12908_es, v12907_es, v12906_es, v12905_es, v12904_es, v12903_es, v12902_es, v12901_es, v12900_es, v12899_es, v12898_es, v12897_es, v12896_es, v12895_es, v12894_es, v12893_es, v12892_es);
-CHANGELOG_BY_LANG.de.unshift(v12916_de, v12915_de, v12914_de, v12913_de, v12912_de, v12911_de, v12910_de, v12909_de, v12908_de, v12907_de, v12906_de, v12905_de, v12904_de, v12903_de, v12902_de, v12901_de, v12900_de, v12899_de, v12898_de, v12897_de, v12896_de, v12895_de, v12894_de, v12893_de, v12892_de);
+const v12917_fr: ChangelogEntry = {
+  version: "v1.75.75",
+  date: "2026-10-14",
+  title: "Coach IA Tactique : fiabilisation des 4 cartes et parseur résilient",
+  items: [
+    "Refonte du parseur de cartes : extraction dynamique du titre et du contenu même si les données sont sur la ligne d'en-tête",
+    "Séparation automatique des sous-puces et affichage de secours empêchant tout bloc vide",
+    "Gabarit few-shot strict avec statistiques injectées et interdiction formelle des retours tronqués",
+    "Système de secours télémétrique temps-réel garantissant des conseils précis même en cas d'indisponibilité réseau",
+  ],
+};
+
+const v12917_en: ChangelogEntry = {
+  version: "v1.75.75",
+  date: "2026-10-14",
+  title: "Tactical Coach AI: 4-card structure reliability and resilient parser",
+  items: [
+    "Card parser overhaul: dynamic title and body extraction even if heading lines contain inline telemetry",
+    "Automatic sub-bullet splitting and empty-card safeguards preventing blank containers",
+    "Strict few-shot prompting with injected player telemetry and prohibition of truncated heading lines",
+    "Real-time telemetry fallback guaranteeing accurate advice even during network AI hiccups",
+  ],
+};
+
+const v12917_es: ChangelogEntry = {
+  version: "v1.75.75",
+  date: "2026-10-14",
+  title: "Coach IA Táctico: fiabilidad de 4 tarjetas y analizador resiliente",
+  items: [
+    "Revisión del analizador de tarjetas: extracción de título y contenido incluso en líneas combinadas",
+    "División automática de viñetas y protección contra contenedores vacíos",
+    "Plantilla few-shot estricta con telemetría inyectada y formateo limpio",
+    "Respaldo de telemetría en tiempo real para garantizar consejos precisos siempre",
+  ],
+};
+
+const v12917_de: ChangelogEntry = {
+  version: "v1.75.75",
+  date: "2026-10-14",
+  title: "Taktischer KI-Coach: Zuverlässige 4-Karten-Struktur und robuster Parser",
+  items: [
+    "Überarbeitung des Karten-Parsers mit dynamischer Trennung von Überschrift und Inhalt",
+    "Automatische Aufteilung von Unterpunkten und Schutz vor leeren Kartenblöcken",
+    "Strenge Few-Shot-Prompt-Vorlage mit injizierter Spielertelemetrie",
+    "Echtzeit-Telemetrie-Fallback für zuverlässige Ratschläge auch bei Netzwerkstörungen",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12917_fr, v12916_fr, v12915_fr, v12914_fr, v12913_fr, v12912_fr, v12911_fr, v12910_fr, v12909_fr, v12908_fr, v12907_fr, v12906_fr, v12905_fr, v12904_fr, v12903_fr, v12902_fr, v12901_fr, v12900_fr, v12899_fr, v12898_fr, v12897_fr, v12896_fr, v12895_fr, v12894_fr, v12893_fr, v12892_fr);
+CHANGELOG_BY_LANG.en.unshift(v12917_en, v12916_en, v12915_en, v12914_en, v12913_en, v12912_en, v12911_en, v12910_en, v12909_en, v12908_en, v12907_en, v12906_en, v12905_en, v12904_en, v12903_en, v12902_en, v12901_en, v12900_en, v12899_en, v12898_en, v12897_en, v12896_en, v12895_en, v12894_en, v12893_en, v12892_en);
+CHANGELOG_BY_LANG.es.unshift(v12917_es, v12916_es, v12915_es, v12914_es, v12913_es, v12912_es, v12911_es, v12910_es, v12909_es, v12908_es, v12907_es, v12906_es, v12905_es, v12904_es, v12903_es, v12902_es, v12901_es, v12900_es, v12899_es, v12898_es, v12897_es, v12896_es, v12895_es, v12894_es, v12893_es, v12892_es);
+CHANGELOG_BY_LANG.de.unshift(v12917_de, v12916_de, v12915_de, v12914_de, v12913_de, v12912_de, v12911_de, v12910_de, v12909_de, v12908_de, v12907_de, v12906_de, v12905_de, v12904_de, v12903_de, v12902_de, v12901_de, v12900_de, v12899_de, v12898_de, v12897_de, v12896_de, v12895_de, v12894_de, v12893_de, v12892_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

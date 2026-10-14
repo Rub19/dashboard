@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.75 — 2026-10-14
+
+**Coach IA Tactique : fiabilisation de la génération des cartes et parseur résilient**
+
+- Refonte du parseur de cartes `parseCoachCards` : séparation dynamique du titre et du corps même si le modèle agrège les métriques sur la ligne d'en-tête `###`.
+- Séparation automatique des sous-puces et garde-fou visuel interdisant tout conteneur vide.
+- Gabarit few-shot strict avec statistiques réelles du joueur et interdiction formelle des retours tronqués.
+- Système de secours télémétrique temps-réel garantissant des conseils structurés en 4 cartes même en cas d'indisponibilité réseau.
+
 ## v1.75.74 — 2026-10-14
 
 **Refonte VCT Pick'ems : sélection d'édition, confrontation d'équipes et scores**

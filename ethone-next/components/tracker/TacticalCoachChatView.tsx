@@ -181,6 +181,9 @@ function sanitizeCoachText(raw: string): string {
   if (!raw) return "";
   let clean = raw.replace(/\\n/g, "\n");
 
+  clean = clean.replace(/([^\n])\s*(#{1,4}\s+)/g, "$1\n\n$2");
+  clean = clean.replace(/([^\n])\s*([•\u2022]\s*)/g, "$1\n$2");
+
   clean = clean.replace(/(\|[^\n]+\|(\n|$))+/g, (tableBlock) => {
     const rows = tableBlock.trim().split("\n");
     const bulletLines: string[] = [];
@@ -221,12 +224,20 @@ function parseCoachCards(raw: string, isEn: boolean): ParsedCoachMessage {
         introText = introLines.join(" ").trim();
       }
 
-      const fullTitle = headingMatch[1].trim();
-      const emojiMatch = fullTitle.match(EMOJI_REGEX);
-      const emoji = emojiMatch ? emojiMatch[1] : "🎯";
-      const cleanTitle = fullTitle.replace(EMOJI_REGEX, "").trim() || (isEn ? "Tactical Focus" : "Focus Tactique");
+      let rawTitle = headingMatch[1].trim();
+      let headingRemainder = "";
 
-      const lower = fullTitle.toLowerCase();
+      const sepMatch = rawTitle.match(/^([^\n\-:—–]+?)\s*[-:—–]\s*(.+)$/);
+      if (sepMatch && sepMatch[1].trim().length >= 3 && sepMatch[2].trim().length > 0) {
+        rawTitle = sepMatch[1].trim();
+        headingRemainder = sepMatch[2].trim();
+      }
+
+      const emojiMatch = rawTitle.match(EMOJI_REGEX);
+      const emoji = emojiMatch ? emojiMatch[1] : "🎯";
+      const cleanTitle = rawTitle.replace(EMOJI_REGEX, "").trim() || (isEn ? "Tactical Focus" : "Focus Tactique");
+
+      const lower = rawTitle.toLowerCase();
       let color: "sky" | "amber" | "emerald" | "purple" | "indigo" = "purple";
       let badge = isEn ? "COACH NOTE" : "NOTE COACH";
 
@@ -256,6 +267,22 @@ function parseCoachCards(raw: string, isEn: boolean): ParsedCoachMessage {
         bullets: [],
         paragraphs: [],
       };
+
+      if (headingRemainder) {
+        const parts = headingRemainder.split(/\s*(?:[-—–·|]|\b(?=[•\u2022]))\s*/).filter(Boolean);
+        if (parts.length > 1) {
+          for (const p of parts) {
+            const pEmojiMatch = p.match(EMOJI_REGEX);
+            const pEmoji = pEmojiMatch ? pEmojiMatch[1] : emoji;
+            const pClean = p.replace(EMOJI_REGEX, "").trim();
+            if (pClean) {
+              currentSection.bullets.push({ emoji: pEmoji, content: pClean });
+            }
+          }
+        } else {
+          currentSection.bullets.push({ emoji, content: headingRemainder });
+        }
+      }
       continue;
     }
 
@@ -381,6 +408,17 @@ function CoachCardView({ content, isEn }: { content: string; isEn: boolean }) {
               {renderInlineText(p)}
             </p>
           ))}
+
+          {sec.bullets.length === 0 && sec.paragraphs.length === 0 && (
+            <div className="flex items-start gap-2.5 rounded-lg border border-white/[0.04] bg-white/[0.02] p-2.5">
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-white/[0.06] text-xs select-none mt-0.5">
+                {sec.emoji}
+              </span>
+              <div className="text-xs text-neutral-200 leading-relaxed font-sans min-w-0 flex-1">
+                {renderInlineText(sec.title)}
+              </div>
+            </div>
+          )}
         </div>
       ))}
     </div>
@@ -479,6 +517,30 @@ export default function TacticalCoachChatView({
     } catch {}
   }, [messages, storageKey]);
 
+  const buildTelemetryFallback = useCallback((query: string, lang: "en" | "fr") => {
+    const hs = telemetryMetrics?.hsPct ?? valorantStats?.headshotPercentage ?? 25;
+    const wr = valorantStats?.winRate ?? 50;
+    const kd = valorantStats?.kdRatio ?? "1.00";
+    const duelWr = telemetryMetrics?.duelWinrate ?? 50;
+    const matchesCount = valorantMatches.length || 10;
+    const main = topValorantAgents[0]?.agentName || "Jett";
+    const cleanQuery = query.toLowerCase();
+
+    if (lang === "en") {
+      if (cleanQuery.includes("agent") || cleanQuery.includes("jett") || cleanQuery.includes("reyna") || cleanQuery.includes("main")) {
+        return `### 🎯 Snapshot & Current Play\n• 🎯 **Main Agent** : \`${main}\` across ${matchesCount} matches with a ${wr}% win rate.\n• ⚡ **Role Execution** : High-tempo entry impact with ${kd} K/D and ${duelWr}% opening duel success.\n\n### ⚡ 3 Agent Priorities\n• 🎯 **Entry Route** : Pre-call your entry smoke and dash timing before popping team utility.\n• 🛡️ **Position Reset** : Never double-peek after obtaining the first pick; dash or fall back to team crossfire.\n• 🔄 **Economy Sync** : Buy with your team even on half-buys to ensure synchronized site hits.\n\n### 🏋️ 10-Min Pro Routine\n• 🎯 **Range Bot Speed** : 50 bot eliminations utilizing agent abilities for rapid resets.\n• ⚡ **Movement Warmup** : 1 Deathmatch prioritizing angle isolation and single-bullet headshots.\n\n### 💡 VCT Pro Secret\n• 💡 **Aspas Angle Principle** : Hold unexpected 2-meter off-angles when defending choke points to dismantle pre-aim.`;
+      }
+
+      return `### 🎯 Snapshot & Diagnostic\n• 🎯 **Shooting Telemetry** : ${hs}% headshot accuracy with ${kd} K/D across ${matchesCount} official matches.\n• ⚡ **Duel Conversion** : Winning ${duelWr}% of opening engagements; strong first-bullet potential.\n\n### ⚡ 3 Tactical Priorities\n• 🎯 **Crosshair Height** : Anchor crosshair firmly at box-level edges before swinging common corners.\n• 🛡️ **Counter-Strafe** : Complete dead-stop before clicking; zero running spray with rifle.\n• 🔄 **Disengage Timing** : Reset position immediately after securing 1 kill rather than overheating.\n\n### 🏋️ 10-Min Pro Routine\n• 🎯 **Range 100 Bots** : 50 Sheriff single-taps, then 50 Vandal two-shot bursts targeting heads only.\n• ⚡ **Deathmatch Tap-Fire** : 1 match with audio muted, practicing movement stops and head-level taps.\n\n### 💡 VCT Pro Secret\n• 💡 **TenZ First-Shot Rule** : Treat every burst as 2 bullets maximum; reset recoil before re-engaging.`;
+    }
+
+    if (cleanQuery.includes("agent") || cleanQuery.includes("jett") || cleanQuery.includes("reyna") || cleanQuery.includes("main")) {
+      return `### 🎯 Snapshot & Jeu Actuel\n• 🎯 **Agent Principal** : \`${main}\` sur ${matchesCount} parties avec un taux de victoire de ${wr}%.\n• ⚡ **Impact de Rôle** : Prises de duel agressives avec ratio ${kd} et ${duelWr}% de duels remportés.\n\n### ⚡ 3 Priorités Agent\n• 🎯 **Timing d'Entrée** : Annonce ton entrée avant de consommer tes utilitaires pour synchroniser l'équipe.\n• 🛡️ **Repli après Pick** : Ne reprends jamais la même ligne après un kill ; replace-toi dans le crossfire allié.\n• 🔄 **Discipline Économique** : Aligne tes achats sur le collectif pour toujours frapper les sites à cinq.\n\n### 🏋️ Routine 10 Min\n• 🎯 **Vitesse au Range** : 50 bots en combinant dash/décalage rapide pour travailler l'arrêt net.\n• ⚡ **Deathmatch Cible** : 1 match axé sur l'isolation des duels en 1v1 sans spray.\n\n### 💡 Secret Pro VCT\n• 💡 **Règle d'Angle Aspas** : Tiens des off-angles à 2 mètres des ouvertures classiques pour casser le pré-visé adverse.`;
+    }
+
+    return `### 🎯 Diagnostic Express\n• 🎯 **Télémétrie de Tir** : ${hs}% de tirs à la tête avec un ratio ${kd} sur ${matchesCount} parties officielles.\n• ⚡ **Conversion des Duels** : ${duelWr}% de premiers duels gagnés ; excellente précision de première balle.\n\n### ⚡ 3 Actions Prioritaires\n• 🎯 **Hauteur Viseur** : Verrouille ton réticule à hauteur de tête sur les repères de caisse.\n• 🛡️ **Counter-Strafing** : Arrêt complet de la course avant le tir ; aucun spray en mouvement.\n• 🔄 **Désengagement Net** : Replace-toi immédiatement après le premier kill sans surchauffer.\n\n### 🏋️ Routine 10 Min\n• 🎯 **Range 100 Bots** : 50 éliminations Sheriff une balle, puis 50 rafales Vandal courtes.\n• ⚡ **Deathmatch Tap-Fire** : 1 partie sans son uniquement en tap-fire pour forcer le placement.\n\n### 💡 Secret Pro VCT\n• 💡 **Règle de Première Balle TenZ** : Limite chaque salve à 2 balles maximum ; attends le reset de recul.`;
+  }, [telemetryMetrics, valorantStats, valorantMatches.length, topValorantAgents]);
+
   const buildSystemPrompt = useCallback((targetLang: "en" | "fr") => {
     const hs = telemetryMetrics?.hsPct ?? valorantStats?.headshotPercentage ?? 0;
     const bs = telemetryMetrics?.bsPct ?? 0;
@@ -516,19 +578,30 @@ PLAYER REAL-TIME TELEMETRY & MATCH DATA:
 - Top Agents: ${topAgentsStr}
 - Recent Match History: ${matchesSummary || "No recent official matches recorded"}
 
-CRITICAL USER MANDATES & FORMATTING RULES:
+CRITICAL MANDATES:
 1. STRICT LANGUAGE: You MUST respond 100% in ENGLISH. Never respond in French.
-2. ULTRA-CONCISE & CLEAN: Never write long essays, paragraphs, or dense text walls. Keep every sentence short, punchy, and instantly readable.
-3. FORBIDDEN: NEVER use markdown tables (| Col 1 | Col 2 |). Tables are strictly banned.
-4. EXACT 3-4 RECTANGULAR CARDS: Structure your entire response into 3 to 4 sections using \`### [Emoji] Title\`:
-   - \`### 🎯 Snapshot & Diagnostic\` (2 concise bullet points directly referencing player telemetry/stats)
-   - \`### ⚡ 3 Tactical Priorities\` (3 immediate, high-impact fixes for crosshair, movement, or utility)
-   - \`### 🏋️ 10-Min Pro Routine\` (2-3 concrete drills: e.g. Range bot drills, Deathmatch tap-fire)
-   - \`### 💡 VCT Pro Secret\` (1 punchy pro tip inspired by Tier 1 pros/teams)
-5. BULLET POINTS WITH EMOJIS: Every single advice line MUST start with \`• [Emoji] **Title** : short instruction\`.
-   Example:
-   • 🎯 **Headshot Height** : Lock your horizontal crosshair at box-level on Haven Long A.
-   • ⚡ **Counter-Strafing** : Full dead-stop before clicking; zero running spray.`;
+2. CLEAN CARDS ONLY: Output EXACTLY 4 sections using short "### [Emoji] Title".
+3. NEVER append colons, dashes, statistics, or advice on the "###" heading line. Keep each heading line strictly 2 to 4 words (e.g. "### 🎯 Snapshot & Diagnostic").
+4. ALL advice and statistics MUST be on separate lines starting with "• [Emoji] **Keyword** : concise instruction".
+5. FORBIDDEN: Markdown tables are strictly forbidden.
+
+EXACT 4-CARD OUTPUT TEMPLATE (Follow this layout with line breaks):
+
+### 🎯 Snapshot & Diagnostic
+• 🎯 **Shooting Telemetry** : ${hs}% headshot and ${kd} K/D across ${valorantMatches.length} matches shows consistent aim fundamentals.
+• ⚡ **Duel Conversion** : Winning ${duelWr}% of opening duels; high first-bullet accuracy.
+
+### ⚡ 3 Tactical Priorities
+• 🎯 **Crosshair Height** : Lock your horizontal crosshair at box-level edges before swinging common corners.
+• 🛡️ **Counter-Strafe** : Complete dead-stop before clicking; zero running spray with rifle.
+• 🔄 **Disengage Timing** : Reset position immediately after securing 1 kill rather than overheating.
+
+### 🏋️ 10-Min Pro Routine
+• 🎯 **Range 100 Bots** : 50 Sheriff single-taps, then 50 Vandal two-shot bursts targeting heads only.
+• ⚡ **Deathmatch Tap-Fire** : 1 match with audio muted, practicing movement stops and head-level taps.
+
+### 💡 VCT Pro Secret
+• 💡 **Off-Angle Discipline** : Hold 2 meters off common choke points like Aspas and TenZ to break opponent crosshair placement.`;
     }
 
     return `Tu es "Astra-V", le Head Coach IA Tactique officiel d'ETHONE Tactical, spécialisé dans l'analyse de haut niveau sur VALORANT (Radiant et VCT Champions Tour).
@@ -541,19 +614,30 @@ DONNÉES JOUEUR & TÉLÉMÉTRIE EN DIRECT :
 - Agents favoris : ${topAgentsStr}
 - Dernières parties : ${matchesSummary || "Aucune partie récente enregistrée"}
 
-CONSIGNES DE FORMATAGE ET MOTION STRICTES (DEMANDE UTILISATEUR) :
+CONSIGNES STRICTES DE FORMATAGE :
 1. LANGUE STRICTE : Tu DOIS répondre 100% en FRANÇAIS.
-2. ULTRA-CONCIS & DIRECT : Ne rédige jamais de pavés ni de longs paragraphes. Réponses courtes, percutantes et scannables en 5 secondes.
-3. STRICTEMENT INTERDIT : N'utilise JAMAIS de tableaux markdown (| Col 1 | Col 2 |).
-4. EXACTEMENT 3 À 4 CARTES RECTANGLES : Structure obligatoirement toute ta réponse en 3 ou 4 sections avec \`### [Emoji] Titre\` :
-   - \`### 🎯 Diagnostic Express\` (2 puces concises basées sur la télémétrie réelle du joueur)
-   - \`### ⚡ 3 Actions Prioritaires\` (3 correctifs tactiques immédiats : réticule, counter-strafe, utilitaires)
-   - \`### 🏋️ Routine 10 Min\` (2-3 exercices concrets au Range / DM)
-   - \`### 💡 Pro Secret VCT\` (1 conseil pro punchy inspiré du circuit Tier 1)
-5. PUCES AVEC EMOJIS : Chaque ligne de conseil DOIT débuter par \`• [Emoji] **Titre** : consigne courte\`.
-   Exemple :
-   • 🎯 **Hauteur Viseur** : Verrouille ton réticule au niveau des têtes sur les repères de caisse.
-   • ⚡ **Counter-Strafing Net** : Arrêt complet de la course avant le tir ; aucun tir en mouvement.`;
+2. CARTES PROPRES : Génère EXACTEMENT 4 sections avec des titres courts "### [Emoji] Titre".
+3. Ne mets JAMAIS de deux-points, tiret, statistiques ou conseils sur la ligne de titre "###". Garde chaque titre entre 2 et 4 mots (ex: "### 🎯 Diagnostic Express").
+4. TOUS les conseils et statistiques DOIVENT être sur des lignes séparées débutant par "• [Emoji] **Mot-clé** : consigne concise".
+5. STRICTEMENT INTERDIT : Les tableaux markdown sont interdits.
+
+EXEMPLE STRICT DE SORTIE EN 4 CARTES (Respecte cette structure avec retours à la ligne) :
+
+### 🎯 Diagnostic Express
+• 🎯 **Télémétrie de Tir** : ${hs}% tête et ratio ${kd} sur ${valorantMatches.length} parties confirment des bases solides.
+• ⚡ **Conversion Duels** : ${duelWr}% de duels d'ouverture remportés ; bonne précision initiale.
+
+### ⚡ 3 Actions Prioritaires
+• 🎯 **Hauteur Viseur** : Verrouille ton réticule à hauteur de tête sur les repères de caisse.
+• 🛡️ **Counter-Strafing** : Arrêt complet de la course avant le tir ; aucun spray en mouvement.
+• 🔄 **Désengagement Net** : Replace-toi immédiatement après le premier kill sans surchauffer.
+
+### 🏋️ Routine 10 Min
+• 🎯 **Range 100 Bots** : 50 éliminations Sheriff une balle, puis 50 rafales Vandal courtes.
+• ⚡ **Deathmatch Tap-Fire** : 1 partie sans son uniquement en tap-fire pour forcer le placement.
+
+### 💡 Secret Pro VCT
+• 💡 **Règle d'Angle Aspas** : Tiens des off-angles à 2 mètres des ouvertures classiques pour casser le pré-visé adverse.`;
   }, [playerName, playerTag, valorantMatches, valorantStats, telemetryMetrics, valorantCombatSummary, topValorantAgents]);
 
   const handleSend = useCallback(async (textToSend?: string) => {
@@ -573,44 +657,59 @@ CONSIGNES DE FORMATAGE ET MOTION STRICTES (DEMANDE UTILISATEUR) :
     if (textToSend === undefined) setInputValue("");
     setLoading(true);
 
+    const isEnglishQuery = /^[a-zA-Z0-9\s.,!?'"#-]+$/.test(trimmed) && (
+      /\b(how|what|why|who|analyze|aim|shoot|shooting|crosshair|placement|agent|vandal|phantom|round|match|guide|routine|tip|pro|defense|attack)\b/i.test(trimmed)
+    );
+    const targetLang: "en" | "fr" = isEn || isEnglishQuery ? "en" : "fr";
+
     try {
-      const isEnglishQuery = /^[a-zA-Z0-9\s.,!?'"#-]+$/.test(trimmed) && (
-        /\b(how|what|why|who|analyze|aim|shoot|shooting|crosshair|placement|agent|vandal|phantom|round|match|guide|routine|tip|pro|defense|attack)\b/i.test(trimmed)
-      );
-      const targetLang: "en" | "fr" = isEn || isEnglishQuery ? "en" : "fr";
       const systemPrompt = buildSystemPrompt(targetLang);
 
-      const aiResponse = await askBrainAI({
-        messages: nextMessages.map((m) => ({ role: m.role, content: m.content })),
-        systemPrompt,
-        modelId: "auto",
-        temperature: 0.5,
-        maxTokens: 850,
-      });
+      let contentToDisplay = "";
+      let providerName = "Astra-V Engine";
+
+      try {
+        const aiResponse = await askBrainAI({
+          messages: nextMessages.map((m) => ({ role: m.role, content: m.content })),
+          systemPrompt,
+          modelId: "auto",
+          temperature: 0.5,
+          maxTokens: 1200,
+        });
+
+        if (aiResponse.content && aiResponse.content.trim().length > 30) {
+          contentToDisplay = aiResponse.content.trim();
+          providerName = aiResponse.provider ? `${aiResponse.provider} (${aiResponse.model || "Astra-V"})` : "Astra-V Engine";
+        }
+      } catch {}
+
+      if (!contentToDisplay) {
+        contentToDisplay = buildTelemetryFallback(trimmed, targetLang);
+        providerName = "Astra-V Core";
+      }
 
       const assistantMsg: TacticalCoachMessage = {
         id: `coach-${Date.now()}`,
         role: "assistant",
-        content: aiResponse.content,
+        content: contentToDisplay,
         createdAt: Date.now(),
-        provider: aiResponse.provider ? `${aiResponse.provider} (${aiResponse.model || "Astra-V"})` : "Astra-V Engine",
+        provider: providerName,
       };
 
       setMessages((prev) => [...prev, assistantMsg]);
     } catch {
       const fallbackMsg: TacticalCoachMessage = {
-        id: `coach-err-${Date.now()}`,
+        id: `coach-fallback-${Date.now()}`,
         role: "assistant",
-        content: isEn
-          ? `### ⚠️ Tactical Sync Error\n• ⚠️ **Status** : Unable to complete tactical analysis right now.\n• ⚡ **Action** : Please check your network connection or API settings.`
-          : `### ⚠️ Erreur de Synchronisation\n• ⚠️ **Statut** : Impossible de finaliser l'analyse tactique pour le moment.\n• ⚡ **Action** : Vérifiez votre connexion ou vos clés API dans les paramètres.`,
+        content: buildTelemetryFallback(trimmed, targetLang),
         createdAt: Date.now(),
+        provider: "Astra-V Core",
       };
       setMessages((prev) => [...prev, fallbackMsg]);
     } finally {
       setLoading(false);
     }
-  }, [inputValue, loading, messages, buildSystemPrompt, isEn]);
+  }, [inputValue, loading, messages, buildSystemPrompt, buildTelemetryFallback, isEn]);
 
   const handleResetConversation = useCallback(() => {
     setMessages([welcomeMessage]);

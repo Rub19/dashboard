@@ -1,6 +1,14 @@
 # Changelog
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
+## v1.75.80 — 2026-10-14
+
+**Valorant Tracker : Immersion Télémétrie Armes & Passerelle Rapide Arène 1v1**
+
+- **Télémétrie des armes en vue directe** : Intégration du module complet `ValorantWeaponStatsCard` directement au sommet de l'historique des parties dans la vue principale, offrant une visibilité immédiate sur les éliminations Vandal, Phantom, Operator et Sheriff ainsi que le ratio Vandal vs Phantom dès le chargement du profil sans nécessiter de basculer d'onglet.
+- **Passerelle rapide vers l'Arène 1v1 complète** : Ajout d'un bouton d'accès direct vers l'Arène 1v1 libre (`/tracker?tab=compare`) dans le modal de comparaison rapide d'ami(e), permettant de passer instantanément de la comparaison simplifiée à l'arène de duels pro avec inversion et télémétrie complète.
+- **Cohérence des actions sociales** : Harmonisation des déclencheurs de cartes joueurs et consolidation du cache local des statistiques de duels.
+
 ## v1.75.79 — 2026-10-14
 
 **Export Player Card, Comparateur 1v1 libre et Télémétrie des armes (Vandal / Phantom / Op / Sheriff)**

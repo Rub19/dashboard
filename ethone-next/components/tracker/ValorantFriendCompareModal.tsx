@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
 import { useToast } from "@/components/ToastProvider";
@@ -208,9 +209,14 @@ export default function ValorantFriendCompareModal({
         </div>
 
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2 border-t border-[var(--panel-border)]">
-          <p className="text-[11px] text-[var(--text-muted)] text-center sm:text-left">
-            {isEnglish ? "🔒 Only authorized public statistics are compared." : "🔒 Seules les statistiques publiques autorisées sont comparées."}
-          </p>
+          <Link
+            href="/tracker?tab=compare"
+            onClick={onClose}
+            className="flex items-center justify-center gap-1.5 rounded-xl border border-cyan-500/30 bg-cyan-500/10 px-3 py-1.5 text-xs font-bold text-cyan-300 hover:bg-cyan-500/20 active:scale-95 transition-all cursor-pointer w-full sm:w-auto"
+          >
+            <Swords className="h-3.5 w-3.5 text-cyan-400" />
+            <span>{isEnglish ? "Open Full 1v1 Arena" : "Ouvrir l'Arène 1v1 Complète"}</span>
+          </Link>
 
           <div className="flex items-center gap-2 w-full sm:w-auto">
             <Button
@@ -221,7 +227,7 @@ export default function ValorantFriendCompareModal({
               className="flex items-center justify-center gap-1.5 text-xs font-bold w-full sm:w-auto"
             >
               {copied ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
-              <span>{isEnglish ? (copied ? "Copied!" : "Copy Player Card") : (copied ? "Copié !" : "Copier ma fiche")}</span>
+              <span>{isEnglish ? (copied ? "Copied!" : "Copy Summary") : (copied ? "Copié !" : "Copier le résumé")}</span>
             </Button>
             <Button type="button" variant="primary" size="sm" onClick={onClose} className="w-full sm:w-auto">
               {isEnglish ? "Close" : "Fermer"}

@@ -769,26 +769,29 @@ export default function ValorantTrackerView() {
             </p>
           </div>
         ) : (
-          dayGroups.map((group, gi) => (
-            <div key={group.rawDate || gi} className="rise-in space-y-2" style={{ animationDelay: `${Math.min(gi, 6) * 60}ms` }}>
-              {/* Day Header Group Matching Screenshot */}
-              <ValorantDayHeader
-                group={group}
-                onViewReport={() => setActiveReportIndex(gi)}
-              />
+          <>
+            <ValorantWeaponStatsCard matches={matches} isEn={isEn} />
+            {dayGroups.map((group, gi) => (
+              <div key={group.rawDate || gi} className="rise-in space-y-2" style={{ animationDelay: `${Math.min(gi, 6) * 60}ms` }}>
+                {/* Day Header Group Matching Screenshot */}
+                <ValorantDayHeader
+                  group={group}
+                  onViewReport={() => setActiveReportIndex(gi)}
+                />
 
-              {/* Match Rows */}
-              <div className="space-y-2">
-                {group.matches.map((match, mi) => (
-                  <ValorantMatchRow
-                    key={match.id || `${gi}-${mi}`}
-                    match={match}
-                    index={mi}
-                  />
-                ))}
+                {/* Match Rows */}
+                <div className="space-y-2">
+                  {group.matches.map((match, mi) => (
+                    <ValorantMatchRow
+                      key={match.id || `${gi}-${mi}`}
+                      match={match}
+                      index={mi}
+                    />
+                  ))}
+                </div>
               </div>
-            </div>
-          ))
+            ))}
+          </>
         )}
 
         {!loading && !errorMsg && matches.length > 0 && (

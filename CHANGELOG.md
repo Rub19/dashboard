@@ -1,6 +1,15 @@
 # Changelog
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
+## v1.75.77 — 2026-10-14
+
+**Coach IA : suggestions tactiques agrandies, sublimées et sans scrollbar**
+
+- Mise en valeur et agrandissement significatif des pistes de questions du Coach IA tactique (`TacticalCoachChatView`).
+- Transformation des puces de prompts en cartes frosted glass tactiles, avec badge d'émoji illuminé en relief (`🎯`, `⚡`, `🛡️`, `🏆`, `💰`), typographie contrastée et flèche d'action dynamique.
+- Élimination intégrale de la barre de défilement brute du système d'exploitation avec masquage moderne de scrollbar et ajout de flèches de navigation fluide latérale.
+- Harmonisation du champ de saisie textuel et du bouton d'envoi dégradé au standard Apple Design.
+
 ## v1.75.76 — 2026-10-14
 
 **Pick'ems Apple Design : logos haute lisibilité et footer bilingue**

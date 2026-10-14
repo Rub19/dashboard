@@ -16,6 +16,9 @@ import {
   Activity,
   ChevronDown,
   ChevronUp,
+  ChevronLeft,
+  ChevronRight,
+  ArrowUpRight,
 } from "@/components/icons/ph";
 import { askBrainAI } from "@/lib/brain/ai-engine";
 import { getTrackerI18n } from "@/lib/i18n-tracker";
@@ -23,6 +26,16 @@ import { useToast } from "@/components/ToastProvider";
 import { cn } from "@/lib/utils";
 import { EASE_OUT } from "@/lib/ease";
 import type { ValorantAccountProfile } from "@/lib/valorant-provider";
+
+function parsePrompt(promptStr: string) {
+  const match = promptStr.match(
+    /^(\p{Extended_Pictographic}\uFE0F?|\p{Emoji_Presentation}\uFE0F?|[\u2600-\u27BF]\uFE0F?)\s*(.*)$/u
+  );
+  if (match) {
+    return { icon: match[1], text: match[2] };
+  }
+  return { icon: "✨", text: promptStr };
+}
 import type { ValorantMatch } from "@/lib/valorant-tracker";
 
 interface TacticalCoachMessage {
@@ -746,6 +759,15 @@ EXEMPLE STRICT DE SORTIE EN 4 CARTES (Respecte cette structure avec retours à l
     tr.coachPrompt5,
   ], [tr]);
 
+  const promptScrollRef = useRef<HTMLDivElement>(null);
+
+  const scrollPrompts = useCallback((direction: "left" | "right") => {
+    if (promptScrollRef.current) {
+      const amount = direction === "left" ? -280 : 280;
+      promptScrollRef.current.scrollBy({ left: amount, behavior: "smooth" });
+    }
+  }, []);
+
   return (
     <div className="space-y-4">
       <div className="relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[#10131B]/95 backdrop-blur-xl shadow-xl flex flex-col min-h-[620px] max-h-[85vh]">
@@ -972,23 +994,70 @@ EXEMPLE STRICT DE SORTIE EN 4 CARTES (Respecte cette structure avec retours à l
           )}
         </div>
 
-        <div className="border-t border-white/[0.08] bg-black/50 p-3 sm:p-4 space-y-3">
-          <div className="flex items-center gap-1.5 overflow-x-auto os-scroll pb-1">
-            <span className="text-[10px] font-mono uppercase text-neutral-500 shrink-0 mr-1 flex items-center gap-1">
-              <Sparkles className="h-3 w-3 text-purple-400" />
-              {tr.coachChatPromptsLabel}
-            </span>
-            {quickPrompts.map((p, idx) => (
-              <button
-                key={idx}
-                type="button"
-                onClick={() => handleSend(p)}
-                disabled={loading}
-                className="rounded-full border border-white/10 bg-white/[0.04] hover:bg-white/[0.08] hover:border-purple-500/40 px-3 py-1 text-xs font-mono text-neutral-300 hover:text-white transition-all cursor-pointer shrink-0 disabled:opacity-40"
+        <div className="border-t border-white/[0.08] bg-black/60 p-3.5 sm:p-4.5 space-y-3.5 backdrop-blur-xl">
+          <div className="space-y-2.5">
+            <div className="flex items-center justify-between gap-2 px-1">
+              <div className="flex items-center gap-2">
+                <span className="flex h-5 w-5 items-center justify-center rounded-md bg-purple-500/20 text-purple-300">
+                  <Sparkles className="h-3 w-3" />
+                </span>
+                <span className="text-[11px] sm:text-xs font-semibold tracking-wider text-neutral-300 uppercase font-mono">
+                  {isEn ? "Tactical Presets" : "Suggestions Tactiques"}
+                </span>
+                <span className="rounded-full bg-white/[0.06] border border-white/10 px-2 py-0.5 text-[10px] font-mono text-neutral-400">
+                  {quickPrompts.length} {isEn ? "ready" : "prêts"}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => scrollPrompts("left")}
+                  className="inline-flex h-6 w-6 items-center justify-center rounded-md border border-white/10 bg-white/[0.04] hover:bg-white/[0.1] text-neutral-400 hover:text-white transition-all cursor-pointer active:scale-90"
+                  aria-label={isEn ? "Scroll left" : "Défiler à gauche"}
+                  title={isEn ? "Scroll left" : "Défiler à gauche"}
+                >
+                  <ChevronLeft className="h-3.5 w-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => scrollPrompts("right")}
+                  className="inline-flex h-6 w-6 items-center justify-center rounded-md border border-white/10 bg-white/[0.04] hover:bg-white/[0.1] text-neutral-400 hover:text-white transition-all cursor-pointer active:scale-90"
+                  aria-label={isEn ? "Scroll right" : "Défiler à droite"}
+                  title={isEn ? "Scroll right" : "Défiler à droite"}
+                >
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            </div>
+
+            <div className="relative">
+              <div
+                ref={promptScrollRef}
+                className="flex items-center gap-2.5 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden scroll-smooth py-1 px-1"
               >
-                {p}
-              </button>
-            ))}
+                {quickPrompts.map((p, idx) => {
+                  const parsed = parsePrompt(p);
+                  return (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => handleSend(p)}
+                      disabled={loading}
+                      className="group rounded-2xl border border-white/[0.12] bg-white/[0.04] hover:bg-white/[0.09] hover:border-purple-400/40 p-1.5 pr-4 flex items-center gap-3 transition-all cursor-pointer shadow-sm hover:shadow-[0_4px_16px_rgba(168,85,247,0.15)] active:scale-[0.98] shrink-0 disabled:opacity-40"
+                    >
+                      <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/[0.08] border border-white/10 text-base shrink-0 group-hover:scale-105 group-hover:bg-purple-500/20 group-hover:border-purple-400/30 transition-all shadow-inner">
+                        {parsed.icon}
+                      </span>
+                      <span className="text-xs sm:text-[13px] font-medium text-neutral-200 group-hover:text-white transition-colors tracking-tight whitespace-nowrap">
+                        {parsed.text}
+                      </span>
+                      <ArrowUpRight className="h-3.5 w-3.5 text-neutral-500 group-hover:text-purple-300 opacity-40 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all shrink-0" />
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
           </div>
 
           <form
@@ -996,27 +1065,27 @@ EXEMPLE STRICT DE SORTIE EN 4 CARTES (Respecte cette structure avec retours à l
               e.preventDefault();
               handleSend();
             }}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2.5 pt-0.5"
           >
-            <div className="flex-1 relative rounded-xl border border-white/10 bg-[#121622]/80 focus-within:border-purple-500/50 focus-within:ring-1 focus-within:ring-purple-500/30 transition-all shadow-inner">
+            <div className="flex-1 relative rounded-2xl border border-white/10 bg-[#121622]/90 focus-within:border-purple-500/60 focus-within:ring-2 focus-within:ring-purple-500/20 focus-within:bg-[#121622] transition-all shadow-inner flex items-center min-h-[46px]">
               <input
                 type="text"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 placeholder={tr.coachChatPlaceholder}
                 disabled={loading}
-                className="w-full bg-transparent px-4 py-2.5 text-xs text-white placeholder:text-neutral-500 outline-none"
+                className="w-full bg-transparent px-4 py-2.5 text-xs sm:text-sm text-white placeholder:text-neutral-500 outline-none"
               />
             </div>
 
             <button
               type="submit"
               disabled={loading || !inputValue.trim()}
-              className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white px-4 py-2.5 text-xs font-semibold shadow-md active:scale-95 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
+              className="inline-flex h-[46px] items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white px-5 text-xs sm:text-sm font-semibold shadow-md shadow-purple-600/20 active:scale-95 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
               aria-label={tr.coachChatSend}
             >
-              <Send className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">{tr.coachChatSend}</span>
+              <Send className="h-4 w-4" />
+              <span className="hidden sm:inline font-medium">{tr.coachChatSend}</span>
             </button>
           </form>
         </div>

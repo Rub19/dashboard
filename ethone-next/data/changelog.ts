@@ -55523,10 +55523,58 @@ const v12918_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12918_fr, v12917_fr, v12916_fr, v12915_fr, v12914_fr, v12913_fr, v12912_fr, v12911_fr, v12910_fr, v12909_fr, v12908_fr, v12907_fr, v12906_fr, v12905_fr, v12904_fr, v12903_fr, v12902_fr, v12901_fr, v12900_fr, v12899_fr, v12898_fr, v12897_fr, v12896_fr, v12895_fr, v12894_fr, v12893_fr, v12892_fr);
-CHANGELOG_BY_LANG.en.unshift(v12918_en, v12917_en, v12916_en, v12915_en, v12914_en, v12913_en, v12912_en, v12911_en, v12910_en, v12909_en, v12908_en, v12907_en, v12906_en, v12905_en, v12904_en, v12903_en, v12902_en, v12901_en, v12900_en, v12899_en, v12898_en, v12897_en, v12896_en, v12895_en, v12894_en, v12893_en, v12892_en);
-CHANGELOG_BY_LANG.es.unshift(v12918_es, v12917_es, v12916_es, v12915_es, v12914_es, v12913_es, v12912_es, v12911_es, v12910_es, v12909_es, v12908_es, v12907_es, v12906_es, v12905_es, v12904_es, v12903_es, v12902_es, v12901_es, v12900_es, v12899_es, v12898_es, v12897_es, v12896_es, v12895_es, v12894_es, v12893_es, v12892_es);
-CHANGELOG_BY_LANG.de.unshift(v12918_de, v12917_de, v12916_de, v12915_de, v12914_de, v12913_de, v12912_de, v12911_de, v12910_de, v12909_de, v12908_de, v12907_de, v12906_de, v12905_de, v12904_de, v12903_de, v12902_de, v12901_de, v12900_de, v12899_de, v12898_de, v12897_de, v12896_de, v12895_de, v12894_de, v12893_de, v12892_de);
+const v12919_fr: ChangelogEntry = {
+  version: "v1.75.77",
+  date: "2026-10-14",
+  title: "Coach IA : suggestions tactiques agrandies, sublimées et sans scrollbar",
+  items: [
+    "Mise en valeur et agrandissement de la barre des suggestions tactiques de l'IA Coach",
+    "Puces tactiques premium avec conteneur frosted glass, badge d'icône illuminé et flèche d'action",
+    "Suppression de la barre de défilement brute du système d'exploitation avec masquage automatique et flèches de navigation fluide",
+    "Zone de saisie et bouton d'envoi redimensionnés et sublimés au standard Apple Design",
+  ],
+};
+
+const v12919_en: ChangelogEntry = {
+  version: "v1.75.77",
+  date: "2026-10-14",
+  title: "AI Coach: enlarged, elevated tactical prompt presets with clean navigation",
+  items: [
+    "Tactical AI Coach preset prompts bar overhaul: elevated, enlarged, and refined",
+    "Premium tactical prompt chips featuring frosted glass cards, illuminated emoji badges, and subtle action indicators",
+    "Elimination of raw OS scrollbar with smooth hidden horizontal rail and sleek navigation controls",
+    "Enlarged, Apple-grade input container and high-contrast glowing send button",
+  ],
+};
+
+const v12919_es: ChangelogEntry = {
+  version: "v1.75.77",
+  date: "2026-10-14",
+  title: "Coach IA: sugerencias tácticas ampliadas, destacadas y navegación limpia",
+  items: [
+    "Rediseño de la barra de sugerencias tácticas del Coach IA: destacada, ampliada y más atractiva",
+    "Fichas tácticas premium con tarjetas de vidrio esmerilado, insignias de emoji iluminadas e indicador de acción",
+    "Eliminación de la barra de desplazamiento del sistema con navegación suave y controles sutiles",
+    "Campo de entrada y botón de envío ampliados al estándar Apple Design",
+  ],
+};
+
+const v12919_de: ChangelogEntry = {
+  version: "v1.75.77",
+  date: "2026-10-14",
+  title: "KI-Coach: vergrößerte taktische Presets, Apple Design und saubere Navigation",
+  items: [
+    "Überarbeitung der taktischen Prompt-Presets des KI-Coaches: hervorgehoben, vergrößert und ästhetisch verfeinert",
+    "Premium-Taktikchips mit Milchglaskarten, beleuchteten Emoji-Badges und subtilem Aktionspfeil",
+    "Entfernung der unschönen System-Scrollleiste durch elegantes, nahtloses horizontales Scrollen mit Steuerungspfeilen",
+    "Vergrößertes Eingabefeld und moderner Sendebutton nach Apple-Design-Standard",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12919_fr, v12918_fr, v12917_fr, v12916_fr, v12915_fr, v12914_fr, v12913_fr, v12912_fr, v12911_fr, v12910_fr, v12909_fr, v12908_fr, v12907_fr, v12906_fr, v12905_fr, v12904_fr, v12903_fr, v12902_fr, v12901_fr, v12900_fr, v12899_fr, v12898_fr, v12897_fr, v12896_fr, v12895_fr, v12894_fr, v12893_fr, v12892_fr);
+CHANGELOG_BY_LANG.en.unshift(v12919_en, v12918_en, v12917_en, v12916_en, v12915_en, v12914_en, v12913_en, v12912_en, v12911_en, v12910_en, v12909_en, v12908_en, v12907_en, v12906_en, v12905_en, v12904_en, v12903_en, v12902_en, v12901_en, v12900_en, v12899_en, v12898_en, v12897_en, v12896_en, v12895_en, v12894_en, v12893_en, v12892_en);
+CHANGELOG_BY_LANG.es.unshift(v12919_es, v12918_es, v12917_es, v12916_es, v12915_es, v12914_es, v12913_es, v12912_es, v12911_es, v12910_es, v12909_es, v12908_es, v12907_es, v12906_es, v12905_es, v12904_es, v12903_es, v12902_es, v12901_es, v12900_es, v12899_es, v12898_es, v12897_es, v12896_es, v12895_es, v12894_es, v12893_es, v12892_es);
+CHANGELOG_BY_LANG.de.unshift(v12919_de, v12918_de, v12917_de, v12916_de, v12915_de, v12914_de, v12913_de, v12912_de, v12911_de, v12910_de, v12909_de, v12908_de, v12907_de, v12906_de, v12905_de, v12904_de, v12903_de, v12902_de, v12901_de, v12900_de, v12899_de, v12898_de, v12897_de, v12896_de, v12895_de, v12894_de, v12893_de, v12892_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

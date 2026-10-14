@@ -506,20 +506,13 @@ export default function RiotGamingHome() {
                   <Icon name={open ? "sidebar-simple" : "sidebar"} className="h-4 w-4" />
                 </button>
 
-                <div className="flex items-center gap-2 min-w-0">
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    <span className="font-mono text-xs font-black tracking-wider text-white uppercase">
-                      ETHONE
-                    </span>
-                    <span className="text-neutral-500 font-mono text-xs">/</span>
-                    <span className="text-xs font-semibold uppercase tracking-wider text-rose-400">
-                      TACTICAL
-                    </span>
-                  </div>
-
-                  <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.03] px-2 py-0.5 text-[10px] font-mono text-neutral-300">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.8)]" />
-                    Riot API Live
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <span className="font-mono text-xs font-black tracking-wider text-white uppercase">
+                    ETHONE
+                  </span>
+                  <span className="text-neutral-500 font-mono text-xs">/</span>
+                  <span className="text-xs font-semibold uppercase tracking-wider text-rose-400">
+                    TACTICAL
                   </span>
                 </div>
               </div>

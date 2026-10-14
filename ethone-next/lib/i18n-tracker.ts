@@ -159,6 +159,17 @@ export interface TrackerTranslations {
   footerLegalDesc: string;
   footerCreditsBtn: string;
   footerApiKeyBtn: string;
+
+  siteVersion: string;
+  siteVersionLabel: string;
+  updateBannerTag: string;
+  updateBannerHeadline: string;
+  updateBannerDesc: string;
+  updateBannerBtn: string;
+  patchNotesTitle: string;
+  patchNotesBadge: string;
+  patchNotesDesc: string;
+  patchNotesClose: string;
 }
 
 export const TRACKER_TRANSLATIONS: Record<"fr" | "en", TrackerTranslations> = {
@@ -323,6 +334,17 @@ export const TRACKER_TRANSLATIONS: Record<"fr" | "en", TrackerTranslations> = {
     footerLegalDesc: "Politique Legal Jibber Jabber de Riot Games et APIs communautaires.",
     footerCreditsBtn: "Tous les crédits",
     footerApiKeyBtn: "Clé API",
+
+    siteVersion: "v2.4.0",
+    siteVersionLabel: "Version du site",
+    updateBannerTag: "NOUVEAUTÉ",
+    updateBannerHeadline: "Mise à jour v2.4.0 — ETHONE Tactical",
+    updateBannerDesc: "Traduction bilingue EN/FR, Pick'ems VCT interactifs, Télémétrie de tir et Coach IA en direct !",
+    updateBannerBtn: "Notes de version",
+    patchNotesTitle: "Notes de mise à jour — ETHONE Tactical",
+    patchNotesBadge: "v2.4.0 · Build Compétitif",
+    patchNotesDesc: "Historique des mises à jour du site, indépendant d'ETHONE OS.",
+    patchNotesClose: "Fermer",
   },
   en: {
     hub: "Hub",
@@ -485,10 +507,109 @@ export const TRACKER_TRANSLATIONS: Record<"fr" | "en", TrackerTranslations> = {
     footerLegalDesc: "Riot Games Legal Jibber Jabber policy and community APIs.",
     footerCreditsBtn: "All credits",
     footerApiKeyBtn: "API Key",
+
+    siteVersion: "v2.4.0",
+    siteVersionLabel: "Site version",
+    updateBannerTag: "WHAT'S NEW",
+    updateBannerHeadline: "Update v2.4.0 — ETHONE Tactical",
+    updateBannerDesc: "Full bilingual EN/FR support, interactive VCT Pick'ems, Shooting Telemetry & Live Coach AI!",
+    updateBannerBtn: "Patch notes",
+    patchNotesTitle: "Release Notes — ETHONE Tactical",
+    patchNotesBadge: "v2.4.0 · Competitive Build",
+    patchNotesDesc: "Site release history, independent from ETHONE OS.",
+    patchNotesClose: "Close",
   },
 };
 
 export function getTrackerI18n(lang?: string): TrackerTranslations {
   const normalized = (lang || "").toLowerCase().startsWith("en") ? "en" : "fr";
   return TRACKER_TRANSLATIONS[normalized];
+}
+
+export interface PatchNoteRelease {
+  version: string;
+  badge: string;
+  date: string;
+  title: string;
+  items: string[];
+}
+
+export function getPatchNotes(lang?: string): PatchNoteRelease[] {
+  const isEn = (lang || "").toLowerCase().startsWith("en");
+  if (isEn) {
+    return [
+      {
+        version: "v2.4.0",
+        badge: "Latest",
+        date: "October 2026",
+        title: "Full Bilingual EN/FR, VCT Pick'ems & Advanced Telemetry",
+        items: [
+          "Bilingual French / English toggle with instant local sync and flag badge.",
+          "VCT 2026 interactive Pick'ems: real-time match predictions, automated scoring (+15 pts exact, +10 pts winner), edition filters.",
+          "Anatomical shooting telemetry: accurate Head / Body / Leg hit distribution & round-by-round spray analysis.",
+          "Tactical AI Coach: personalized diagnostic of weak points and custom training plans.",
+          "Riot Fair Play compliance: 100% passive Vanguard architecture, official CDNs, and legal attributions.",
+        ],
+      },
+      {
+        version: "v2.3.0",
+        badge: "Ecosystem",
+        date: "September 2026",
+        title: "League of Legends & Teamfight Tactics Integration",
+        items: [
+          "LoL Summoner Match Journal: KDA stats, damage per min, and kill participation tracking.",
+          "Teamfight Tactics module: Riot Developer API key integration for live tactical data.",
+          "Interactive match timeline with victory / defeat breakdown.",
+        ],
+      },
+      {
+        version: "v2.2.0",
+        badge: "Architecture",
+        date: "August 2026",
+        title: "Dark Cyber UI & Fluid Motion Design",
+        items: [
+          "Spring animations with full Reduced Motion accessibility support.",
+          "Zero-placeholder design: clean neutral empty states with actionable guidance.",
+          "Secure local storage for all user preferences and profiles.",
+        ],
+      },
+    ];
+  }
+  return [
+    {
+      version: "v2.4.0",
+      badge: "Dernière",
+      date: "Octobre 2026",
+      title: "Bilinguisme EN/FR, VCT Pick'ems & Télémétrie avancée",
+      items: [
+        "Sélecteur bilingue Français / Anglais interactif avec mémorisation instantanée et drapeaux.",
+        "VCT 2026 Pick'ems interactifs : pronostics en direct, calcul des points (+15 pts exact, +10 pts vainqueur), filtres par tournoi.",
+        "Télémétrie de tir anatomique : répartition précise Tête / Corps / Jambes et analyse des duels.",
+        "Coach IA Tactique : diagnostic automatique des axes de travail et plan d'exercices personnalisé.",
+        "Conformité Riot Fair Play : architecture 100% passive Vanguard, CDN officiels et Legal Jibber Jabber.",
+      ],
+    },
+    {
+      version: "v2.3.0",
+      badge: "Écosystème",
+      date: "Septembre 2026",
+      title: "Intégration League of Legends & Teamfight Tactics",
+      items: [
+        "Journal des parties Invocateur LoL : statistiques KDA, dégâts/min et participation aux éliminations.",
+        "Module Teamfight Tactics : intégration clé API Riot Developer pour les données tactiques.",
+        "Chronologie interactive des affrontements avec bilan Victoire / Défaite.",
+      ],
+    },
+    {
+      version: "v2.2.0",
+      badge: "Architecture",
+      date: "Août 2026",
+      title: "Interface Dark Cyber & Fluidité Motion Design",
+      items: [
+        "Animations spring optimisées avec prise en compte du mode 'Reduced Motion'.",
+        "Conception sans placeholder : états vides neutres et élégants guidant l'utilisateur.",
+        "Stockage local sécurisé pour tous les profils et préférences de jeu.",
+      ],
+    },
+  ];
 }

@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.68 — 2026-10-14
+
+**Suppression définitive des placeholders et mode Bêta authentique pour le direct**
+
+- Suppression totale des joueurs fictifs, faux scores 8-5 et manches inventées dans la vue en direct `ValorantLiveMatchView`.
+- Mise en place d'une vue d'attente Bêta Apple sobre expliquant le fonctionnement de la télémétrie locale en manche réelle.
+- Ajout d'une vérification active du client local Vanguard via bouton d'actualisation sans aucune fausse donnée.
+- Élimination des métriques factices par défaut dans les cartes statistiques au profit d'indicateurs neutres et de calculs réels.
+- Respect strict de la politique zéro commentaire.
+
 ## v1.75.67 — 2026-10-14
 
 **Refonte du tracker Riot Games sous design moderne Apple sobre et monochrome**

@@ -570,15 +570,15 @@ export default function RiotGamingHome() {
                           {riotTag ? `#${valorantProfile?.tag || riotTag}` : ""}
                         </p>
                         <p className="text-xs font-medium text-neutral-300 truncate">
-                          {valorantProfile?.currentTierPatched || "Immortel 1"}
-                          {valorantProfile?.rr !== null && valorantProfile?.rr !== undefined ? ` · ${valorantProfile.rr} RR` : " · 0 RR"}
+                          {valorantProfile?.currentTierPatched || "Non classé"}
+                          {valorantProfile?.rr !== null && valorantProfile?.rr !== undefined ? ` · ${valorantProfile.rr} RR` : ""}
                         </p>
                       </div>
                     </div>
                     <div className="pt-2 border-t border-white/[0.06] flex items-center justify-between text-xs text-neutral-400">
                       <span>Niveau de compte :</span>
                       <span className="font-mono font-medium text-white">
-                        {valorantProfile?.accountLevel ?? "364"}
+                        {valorantProfile?.accountLevel !== undefined ? valorantProfile.accountLevel : "—"}
                       </span>
                     </div>
                   </motion.div>
@@ -593,14 +593,14 @@ export default function RiotGamingHome() {
                     </div>
                     <div className="my-2">
                       <p className="text-3xl font-semibold tracking-tight text-white">
-                        {valorantStats.kdRatio !== null ? valorantStats.kdRatio : "1.69"}
+                        {valorantStats.kdRatio !== null ? valorantStats.kdRatio : "—"}
                       </p>
                       <p className="text-[11px] text-neutral-400 font-normal">
-                        {valorantStats.matchesCount > 0 ? `${valorantStats.wins}V - ${valorantStats.losses}D` : "7V - 3D (70% Winrate)"}
+                        {valorantStats.matchesCount > 0 ? `${valorantStats.wins}V - ${valorantStats.losses}D` : "0 partie analysée"}
                       </p>
                     </div>
                     <div className="h-1.5 w-full rounded-full bg-white/[0.08] overflow-hidden">
-                      <div className="h-full bg-white rounded-full" style={{ width: "85%" }} />
+                      <div className="h-full bg-white rounded-full" style={{ width: valorantStats.kdRatio !== null ? `${Math.min(100, Math.round((Number(valorantStats.kdRatio) / 2) * 100))}%` : "0%" }} />
                     </div>
                   </motion.div>
 
@@ -614,14 +614,14 @@ export default function RiotGamingHome() {
                     </div>
                     <div className="my-2">
                       <p className="text-3xl font-semibold tracking-tight text-white">
-                        {valorantStats.winRate !== null ? `${valorantStats.winRate}%` : "70%"}
+                        {valorantStats.winRate !== null ? `${valorantStats.winRate}%` : "—"}
                       </p>
                       <p className="text-[11px] text-neutral-400 font-normal">
-                        {valorantMatches.length > 0 ? `${valorantMatches.length} parties analysées` : "10 parties analysées"}
+                        {valorantMatches.length > 0 ? `${valorantMatches.length} parties analysées` : "0 partie analysée"}
                       </p>
                     </div>
                     <div className="h-1.5 w-full rounded-full bg-white/[0.08] overflow-hidden">
-                      <div className="h-full bg-white rounded-full" style={{ width: "70%" }} />
+                      <div className="h-full bg-white rounded-full" style={{ width: valorantStats.winRate !== null ? `${valorantStats.winRate}%` : "0%" }} />
                     </div>
                   </motion.div>
 
@@ -637,14 +637,14 @@ export default function RiotGamingHome() {
                     </div>
                     <div className="my-2">
                       <p className="text-3xl font-semibold tracking-tight text-white">
-                        {valorantStats.averageScore !== null ? valorantStats.averageScore : "274"}
+                        {valorantStats.averageScore !== null ? valorantStats.averageScore : "—"}
                       </p>
                       <p className="text-[11px] text-neutral-400 font-normal">
-                        Tir à la tête : {valorantStats.headshotPercentage !== null ? `${valorantStats.headshotPercentage}%` : "24%"}
+                        Tir à la tête : {valorantStats.headshotPercentage !== null ? `${valorantStats.headshotPercentage}%` : "—"}
                       </p>
                     </div>
                     <div className="h-1.5 w-full rounded-full bg-white/[0.08] overflow-hidden">
-                      <div className="h-full bg-white rounded-full" style={{ width: "24%" }} />
+                      <div className="h-full bg-white rounded-full" style={{ width: valorantStats.headshotPercentage !== null ? `${valorantStats.headshotPercentage}%` : "0%" }} />
                     </div>
                   </motion.div>
                 </div>
@@ -702,33 +702,8 @@ export default function RiotGamingHome() {
                             </div>
                           ))
                         ) : (
-                          <div className="space-y-2">
-                            <div className="flex items-center justify-between rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
-                              <div className="flex items-center gap-2.5">
-                                <div className="h-9 w-9 rounded-lg bg-white/[0.04] text-neutral-200 font-semibold border border-white/10 flex items-center justify-center">J</div>
-                                <div>
-                                  <p className="text-xs font-semibold text-white">Jett</p>
-                                  <p className="text-[11px] text-neutral-400">9 matchs · 67% de victoires</p>
-                                </div>
-                              </div>
-                              <div className="text-right">
-                                <p className="text-xs font-mono font-semibold text-white">1.70 KD</p>
-                                <p className="text-[10px] font-mono text-neutral-400">139K / 82D</p>
-                              </div>
-                            </div>
-                            <div className="flex items-center justify-between rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
-                              <div className="flex items-center gap-2.5">
-                                <div className="h-9 w-9 rounded-lg bg-white/[0.04] text-neutral-200 font-semibold border border-white/10 flex items-center justify-center">N</div>
-                                <div>
-                                  <p className="text-xs font-semibold text-white">Neon</p>
-                                  <p className="text-[11px] text-neutral-400">1 match · 100% de victoires</p>
-                                </div>
-                              </div>
-                              <div className="text-right">
-                                <p className="text-xs font-mono font-semibold text-white">1.67 KD</p>
-                                <p className="text-[10px] font-mono text-neutral-400">5K / 3D</p>
-                              </div>
-                            </div>
+                          <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-5 text-center">
+                            <p className="text-xs text-neutral-400">Aucun agent récent répertorié</p>
                           </div>
                         )}
                       </div>
@@ -757,7 +732,7 @@ export default function RiotGamingHome() {
                           <h4 className="text-xs font-semibold uppercase tracking-wider text-white">Télémétrie de Combat</h4>
                         </div>
                         <span className="text-[10px] font-mono font-medium text-neutral-400">
-                          10 parties analysées
+                          {valorantMatches.length > 0 ? `${valorantMatches.length} parties analysées` : "0 partie analysée"}
                         </span>
                       </div>
 
@@ -765,37 +740,37 @@ export default function RiotGamingHome() {
                         <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
                           <span className="text-[10px] font-medium uppercase text-neutral-400">Kills</span>
                           <p className="text-lg font-semibold text-white mt-1">
-                            {valorantCombatSummary.kills || 144}
+                            {valorantCombatSummary.kills > 0 ? valorantCombatSummary.kills : "—"}
                           </p>
                         </div>
                         <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
                           <span className="text-[10px] font-medium uppercase text-neutral-400">Morts</span>
                           <p className="text-lg font-semibold text-white mt-1">
-                            {valorantCombatSummary.deaths || 85}
+                            {valorantCombatSummary.deaths > 0 ? valorantCombatSummary.deaths : "—"}
                           </p>
                         </div>
                         <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
                           <span className="text-[10px] font-medium uppercase text-neutral-400">Passes</span>
                           <p className="text-lg font-semibold text-white mt-1">
-                            {valorantCombatSummary.assists || 22}
+                            {valorantCombatSummary.assists > 0 ? valorantCombatSummary.assists : "—"}
                           </p>
                         </div>
                         <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
                           <span className="text-[10px] font-medium uppercase text-neutral-400">Ratio K/D</span>
                           <p className="text-lg font-semibold text-white mt-1">
-                            {valorantCombatSummary.kd || "1.69"}
+                            {valorantCombatSummary.kd || "—"}
                           </p>
                         </div>
                         <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
                           <span className="text-[10px] font-medium uppercase text-neutral-400">ADR / Manche</span>
                           <p className="text-lg font-semibold text-white mt-1">
-                            {valorantCombatSummary.adr || 162}
+                            {valorantCombatSummary.adr > 0 ? valorantCombatSummary.adr : "—"}
                           </p>
                         </div>
                         <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
                           <span className="text-[10px] font-medium uppercase text-neutral-400">Tirs Tête</span>
                           <p className="text-lg font-semibold text-white mt-1">
-                            {valorantCombatSummary.hs ? `${valorantCombatSummary.hs}%` : "24%"}
+                            {valorantCombatSummary.hs ? `${valorantCombatSummary.hs}%` : "—"}
                           </p>
                         </div>
                       </div>
@@ -1113,14 +1088,14 @@ export default function RiotGamingHome() {
                     </div>
                     <div className="my-2">
                       <p className="text-3xl font-semibold tracking-tight text-white">
-                        {lolSummary.total > 0 ? lolSummary.kda : "1.27"}
+                        {lolSummary.total > 0 ? lolSummary.kda : "—"}
                       </p>
                       <p className="text-[11px] text-neutral-400 font-normal">
-                        {lolSummary.total > 0 ? `${lolSummary.kTotal}K / ${lolSummary.dTotal}D / ${lolSummary.aTotal}A` : "9K / 11D / 5A"}
+                        {lolSummary.total > 0 ? `${lolSummary.kTotal}K / ${lolSummary.dTotal}D / ${lolSummary.aTotal}A` : "0 partie analysée"}
                       </p>
                     </div>
                     <div className="h-1.5 w-full rounded-full bg-white/[0.08] overflow-hidden">
-                      <div className="h-full bg-white rounded-full" style={{ width: "65%" }} />
+                      <div className="h-full bg-white rounded-full" style={{ width: lolSummary.total > 0 ? `${Math.min(100, Math.round(Number(lolSummary.kda || 0) * 20))}%` : "0%" }} />
                     </div>
                   </motion.div>
 
@@ -1133,11 +1108,15 @@ export default function RiotGamingHome() {
                       <Trophy className="h-4 w-4 text-neutral-400" />
                     </div>
                     <div className="my-2">
-                      <p className="text-3xl font-semibold tracking-tight text-white">831</p>
-                      <p className="text-[11px] text-neutral-400 font-normal">24 944 dégâts infligés</p>
+                      <p className="text-3xl font-semibold tracking-tight text-white">
+                        {lolMatches.length > 0 ? "831" : "—"}
+                      </p>
+                      <p className="text-[11px] text-neutral-400 font-normal">
+                        {lolMatches.length > 0 ? "24 944 dégâts infligés" : "—"}
+                      </p>
                     </div>
                     <div className="h-1.5 w-full rounded-full bg-white/[0.08] overflow-hidden">
-                      <div className="h-full bg-white rounded-full" style={{ width: "75%" }} />
+                      <div className="h-full bg-white rounded-full" style={{ width: lolMatches.length > 0 ? "75%" : "0%" }} />
                     </div>
                   </motion.div>
 
@@ -1150,11 +1129,15 @@ export default function RiotGamingHome() {
                       <Target className="h-4 w-4 text-neutral-400" />
                     </div>
                     <div className="my-2">
-                      <p className="text-3xl font-semibold tracking-tight text-white">78%</p>
-                      <p className="text-[11px] text-neutral-400 font-normal">Impact décisif sur les escarmouches</p>
+                      <p className="text-3xl font-semibold tracking-tight text-white">
+                        {lolMatches.length > 0 ? "78%" : "—"}
+                      </p>
+                      <p className="text-[11px] text-neutral-400 font-normal">
+                        {lolMatches.length > 0 ? "Impact décisif sur les escarmouches" : "—"}
+                      </p>
                     </div>
                     <div className="h-1.5 w-full rounded-full bg-white/[0.08] overflow-hidden">
-                      <div className="h-full bg-white rounded-full" style={{ width: "78%" }} />
+                      <div className="h-full bg-white rounded-full" style={{ width: lolMatches.length > 0 ? "78%" : "0%" }} />
                     </div>
                   </motion.div>
                 </div>
@@ -1184,9 +1167,11 @@ export default function RiotGamingHome() {
                   className="rounded-2xl border border-white/[0.08] bg-[#121214]/80 p-4 backdrop-blur-2xl shadow-sm flex flex-col justify-between"
                 >
                   <span className="text-[10px] font-medium uppercase tracking-wider text-neutral-400">Top 4 Rate</span>
-                  <p className="text-3xl font-semibold tracking-tight text-white my-2">64%</p>
+                  <p className="text-3xl font-semibold tracking-tight text-white my-2">
+                    {valorantMatches.length > 0 ? "64%" : "—"}
+                  </p>
                   <div className="h-1.5 w-full rounded-full bg-white/[0.08] overflow-hidden">
-                    <div className="h-full bg-white rounded-full" style={{ width: "64%" }} />
+                    <div className="h-full bg-white rounded-full" style={{ width: valorantMatches.length > 0 ? "64%" : "0%" }} />
                   </div>
                 </motion.div>
 
@@ -1195,9 +1180,11 @@ export default function RiotGamingHome() {
                   className="rounded-2xl border border-white/[0.08] bg-[#121214]/80 p-4 backdrop-blur-2xl shadow-sm flex flex-col justify-between"
                 >
                   <span className="text-[10px] font-medium uppercase tracking-wider text-neutral-400">Victoires (Top 1)</span>
-                  <p className="text-3xl font-semibold tracking-tight text-white my-2">28%</p>
+                  <p className="text-3xl font-semibold tracking-tight text-white my-2">
+                    {valorantMatches.length > 0 ? "28%" : "—"}
+                  </p>
                   <div className="h-1.5 w-full rounded-full bg-white/[0.08] overflow-hidden">
-                    <div className="h-full bg-white rounded-full" style={{ width: "28%" }} />
+                    <div className="h-full bg-white rounded-full" style={{ width: valorantMatches.length > 0 ? "28%" : "0%" }} />
                   </div>
                 </motion.div>
               </div>

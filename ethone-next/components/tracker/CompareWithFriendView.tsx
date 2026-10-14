@@ -21,6 +21,8 @@ import {
   Percent,
   ArrowRight,
   Flame,
+  Share2,
+  Search,
 } from "@/components/icons/ph";
 import {
   fetchPlayerProfile,
@@ -33,6 +35,8 @@ import {
 import { fetchWorker } from "@/lib/api";
 import { fetchValorantMatchesDirect, type ValorantMatch } from "@/lib/valorant-tracker";
 import { useToast } from "@/components/ToastProvider";
+import PlayerCardExportModal from "@/components/tracker/PlayerCardExportModal";
+import ValorantWeaponStatsCard from "@/components/tracker/ValorantWeaponStatsCard";
 import { cn } from "@/lib/utils";
 import { EASE_OUT } from "@/lib/ease";
 
@@ -189,6 +193,10 @@ export default function CompareWithFriendView({
   const [p1Profile, setP1Profile] = useState<ValorantAccountProfile | null>(initialProfile || null);
   const [p1Stats, setP1Stats] = useState<ValorantComputedStats | null>(initialStats || null);
   const [p1Matches, setP1Matches] = useState<ValorantMatch[]>(initialMatches);
+  const [p1InputName, setP1InputName] = useState(myRiotName || "");
+  const [p1InputTag, setP1InputTag] = useState(myRiotTag || "");
+  const [p1Loading, setP1Loading] = useState(false);
+  const [p1Editing, setP1Editing] = useState(false);
 
   const [p2InputName, setP2InputName] = useState("");
   const [p2InputTag, setP2InputTag] = useState("");
@@ -196,6 +204,9 @@ export default function CompareWithFriendView({
   const [p2Stats, setP2Stats] = useState<ValorantComputedStats | null>(null);
   const [p2Matches, setP2Matches] = useState<ValorantMatch[]>([]);
   const [p2Loading, setP2Loading] = useState(false);
+
+  const [playerCardExportOpen, setPlayerCardExportOpen] = useState(false);
+  const [playerCardTarget, setPlayerCardTarget] = useState<1 | 2>(1);
 
   const [recentFriends, setRecentFriends] = useState<StoredFriend[]>(() => {
     if (typeof window === "undefined") return [];
@@ -220,6 +231,78 @@ export default function CompareWithFriendView({
 
   const p1Agents = useMemo(() => calculateAgentStats(p1Matches).slice(0, 3), [p1Matches]);
   const p2Agents = useMemo(() => calculateAgentStats(p2Matches).slice(0, 3), [p2Matches]);
+
+  const handleFetchPlayer1 = useCallback(
+    async (name: string, tag: string) => {
+      const cleanName = name.trim();
+      const cleanTag = tag.trim().replace(/^#/, "");
+
+      if (!cleanName || !cleanTag) {
+        showError(
+          isEn
+            ? "Please provide Player 1's Riot name and tag"
+            : "Veuillez renseigner le nom et le tag du joueur 1"
+        );
+        return;
+      }
+
+      setP1Loading(true);
+
+      try {
+        const [profRes, matchRes] = await Promise.all([
+          fetchPlayerProfile(cleanName, cleanTag, true).catch(() => ({ data: null })),
+          fetchWorker(
+            `/api/stats/valorant-matches?name=${encodeURIComponent(cleanName)}&tag=${encodeURIComponent(cleanTag)}`
+          )
+            .then((res) => (Array.isArray(res) ? res : Array.isArray(res?.data) ? res.data : []))
+            .catch(async () => {
+              const localKey =
+                typeof window !== "undefined"
+                  ? localStorage.getItem("ethone:cred:riot:henrikApiKey") ||
+                    localStorage.getItem("ethone:cred:valorant:apiKey") ||
+                    localStorage.getItem("HENRIK_API_KEY")
+                  : null;
+              if (localKey) {
+                return fetchValorantMatchesDirect(cleanName, cleanTag, "all", localKey, 0).catch(
+                  () => []
+                );
+              }
+              return [];
+            }),
+        ]);
+
+        if (profRes.data) {
+          setP1Profile(profRes.data);
+        } else {
+          setP1Profile({
+            name: cleanName,
+            tag: cleanTag,
+            puuid: null,
+            accountLevel: null,
+            cardSmall: null,
+            cardLarge: null,
+            currentTierPatched: isEn ? "Unranked" : "Non classé",
+            tier: 0,
+            rr: null,
+            lastUpdated: new Date().toISOString(),
+            provenance: "henrikdev",
+          });
+        }
+
+        const validMatches = Array.isArray(matchRes) ? matchRes : [];
+        setP1Matches(validMatches);
+        const computed = calculateComputedStats(validMatches, "henrikdev");
+        setP1Stats(computed);
+        setP1Editing(false);
+        success(isEn ? `Player 1 loaded: ${cleanName}#${cleanTag}` : `Joueur 1 chargé : ${cleanName}#${cleanTag}`);
+      } catch (err: any) {
+        showError(err?.message || (isEn ? "Failed to load Player 1" : "Échec du chargement du Joueur 1"));
+      } finally {
+        setP1Loading(false);
+      }
+    },
+    [isEn, showError, success]
+  );
 
   const handleFetchFriend = useCallback(
     async (name: string, tag: string) => {
@@ -585,6 +668,18 @@ export default function CompareWithFriendView({
 
           <button
             type="button"
+            onClick={() => {
+              setPlayerCardTarget(1);
+              setPlayerCardExportOpen(true);
+            }}
+            className="inline-flex items-center gap-1.5 rounded-xl border border-purple-500/30 bg-purple-500/10 hover:bg-purple-500/20 px-3.5 py-2 text-xs font-mono text-purple-300 hover:text-white transition-all cursor-pointer active:scale-95 shadow-sm"
+          >
+            <Share2 className="h-3.5 w-3.5 text-purple-400" />
+            <span>{isEn ? "Player Card" : "Exporter Carte"}</span>
+          </button>
+
+          <button
+            type="button"
             onClick={handleCopySummary}
             className="inline-flex items-center gap-1.5 rounded-xl bg-white text-black hover:bg-neutral-200 px-4 py-2 text-xs font-semibold shadow-md active:scale-95 transition-all cursor-pointer"
           >
@@ -598,46 +693,136 @@ export default function CompareWithFriendView({
         <div className="lg:col-span-5 rounded-3xl border border-white/[0.1] bg-gradient-to-b from-purple-500/[0.07] via-white/[0.03] to-transparent p-5 backdrop-blur-2xl shadow-lg relative overflow-hidden flex flex-col justify-between space-y-4">
           <div className="flex items-center justify-between">
             <span className="rounded-full bg-purple-500/20 border border-purple-500/30 px-2.5 py-0.5 text-[10px] font-mono font-bold text-purple-300 uppercase tracking-wider">
-              {isEn ? "Player 1 (You)" : "Joueur 1 (Vous)"}
+              {isEn ? "Player 1 (Left Duelist)" : "Joueur 1 (Dueliste Gauche)"}
             </span>
-            <span className="text-xs font-mono text-neutral-400">
-              {p1Profile?.accountLevel ? `Niv. ${p1Profile.accountLevel}` : "Tactical Core"}
-            </span>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-purple-500/15 border border-purple-500/30 text-purple-300 overflow-hidden shadow-inner">
-              {p1Profile?.cardSmall ? (
-                <img
-                  src={p1Profile.cardSmall}
-                  alt={p1Profile.name}
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                <User className="h-7 w-7 text-purple-400" />
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-mono text-neutral-400">
+                {p1Profile?.accountLevel ? `Niv. ${p1Profile.accountLevel}` : isEn ? "Searchable" : "Recherchable"}
+              </span>
+              {initialProfile && p1Profile?.name !== initialProfile.name && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setP1Profile(initialProfile);
+                    setP1Stats(initialStats || null);
+                    setP1Matches(initialMatches);
+                    setP1Editing(false);
+                  }}
+                  className="text-[10px] font-mono text-purple-300 hover:text-purple-200 underline cursor-pointer"
+                >
+                  {isEn ? "Reset to me" : "Mon compte"}
+                </button>
               )}
             </div>
+          </div>
 
-            <div className="min-w-0 flex-1">
-              <h3 className="text-base sm:text-lg font-bold text-white tracking-tight truncate">
-                {p1Profile?.name || myRiotName || (isEn ? "Player 1" : "Joueur 1")}
-                <span className="text-neutral-500 font-mono text-sm ml-1">
-                  #{p1Profile?.tag || myRiotTag || "0001"}
-                </span>
-              </h3>
-              <div className="flex items-center gap-2 mt-1">
-                <span className="inline-flex items-center gap-1.5 rounded-md bg-white/[0.06] border border-white/10 px-2 py-0.5 text-xs font-mono text-neutral-200">
-                  <Award className="h-3 w-3 text-amber-400" />
-                  {p1Profile?.currentTierPatched || (isEn ? "Unranked" : "Non classé")}
-                </span>
-                {typeof p1Profile?.rr === "number" && (
-                  <span className="text-[11px] font-mono text-purple-300">
-                    {p1Profile.rr} RR
-                  </span>
+          {p1Profile && !p1Editing ? (
+            <div className="flex items-center gap-4">
+              <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-purple-500/15 border border-purple-500/30 text-purple-300 overflow-hidden shadow-inner">
+                {p1Profile.cardSmall ? (
+                  <img
+                    src={p1Profile.cardSmall}
+                    alt={p1Profile.name}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <User className="h-7 w-7 text-purple-400" />
                 )}
               </div>
+
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center justify-between gap-2">
+                  <h3 className="text-base sm:text-lg font-bold text-white tracking-tight truncate">
+                    {p1Profile.name}
+                    <span className="text-neutral-500 font-mono text-sm ml-1">
+                      #{p1Profile.tag}
+                    </span>
+                  </h3>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPlayerCardTarget(1);
+                        setPlayerCardExportOpen(true);
+                      }}
+                      className="text-[10px] font-mono text-neutral-400 hover:text-white inline-flex items-center gap-1 cursor-pointer"
+                    >
+                      <Share2 className="h-3 w-3" />
+                      <span>{isEn ? "Card" : "Carte"}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setP1InputName(p1Profile.name);
+                        setP1InputTag(p1Profile.tag);
+                        setP1Editing(true);
+                      }}
+                      className="text-[10px] font-mono text-neutral-400 hover:text-white underline cursor-pointer"
+                    >
+                      {isEn ? "Change" : "Modifier"}
+                    </button>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="inline-flex items-center gap-1.5 rounded-md bg-white/[0.06] border border-white/10 px-2 py-0.5 text-xs font-mono text-neutral-200">
+                    <Award className="h-3 w-3 text-amber-400" />
+                    {p1Profile.currentTierPatched || (isEn ? "Unranked" : "Non classé")}
+                  </span>
+                  {typeof p1Profile.rr === "number" && (
+                    <span className="text-[11px] font-mono text-purple-300">
+                      {p1Profile.rr} RR
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
-          </div>
+          ) : (
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleFetchPlayer1(p1InputName, p1InputTag);
+              }}
+              className="space-y-3"
+            >
+              <div className="flex items-center gap-2">
+                <div className="flex-1 relative rounded-xl border border-white/10 bg-black/40 px-3 py-2 flex items-center gap-2 focus-within:border-purple-500/50 transition-all">
+                  <User className="h-3.5 w-3.5 text-neutral-500 shrink-0" />
+                  <input
+                    type="text"
+                    value={p1InputName}
+                    onChange={(e) => setP1InputName(e.target.value)}
+                    placeholder={isEn ? "Player 1 Riot ID" : "Riot ID du Joueur 1"}
+                    aria-label={isEn ? "Player 1 Riot ID" : "Riot ID du Joueur 1"}
+                    className="w-full bg-transparent text-xs text-white placeholder:text-neutral-500 outline-none font-medium"
+                  />
+                </div>
+
+                <div className="w-24 rounded-xl border border-white/10 bg-black/40 px-3 py-2 flex items-center gap-1 focus-within:border-purple-500/50 transition-all shrink-0">
+                  <span className="text-xs text-neutral-500 font-mono">#</span>
+                  <input
+                    type="text"
+                    value={p1InputTag}
+                    onChange={(e) => setP1InputTag(e.target.value)}
+                    placeholder="TAG"
+                    aria-label={isEn ? "Tag" : "Tag"}
+                    className="w-full bg-transparent text-xs font-mono text-white placeholder:text-neutral-500 outline-none"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={p1Loading}
+                  className="rounded-xl bg-purple-500 hover:bg-purple-600 disabled:opacity-40 px-4 py-2 text-xs font-bold text-white shadow-md active:scale-95 transition-all cursor-pointer shrink-0"
+                >
+                  {p1Loading ? (
+                    <RefreshCw className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <span>{isEn ? "Search" : "Rechercher"}</span>
+                  )}
+                </button>
+              </div>
+            </form>
+          )}
 
           <div className="grid grid-cols-3 gap-2 pt-2 border-t border-white/[0.06] text-center">
             <div className="rounded-xl bg-black/25 border border-white/[0.05] p-2">
@@ -701,13 +886,26 @@ export default function CompareWithFriendView({
                       #{p2Profile.tag}
                     </span>
                   </h3>
-                  <button
-                    type="button"
-                    onClick={() => setP2Profile(null)}
-                    className="text-[10px] font-mono text-neutral-400 hover:text-white underline cursor-pointer shrink-0"
-                  >
-                    {isEn ? "Change" : "Modifier"}
-                  </button>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPlayerCardTarget(2);
+                        setPlayerCardExportOpen(true);
+                      }}
+                      className="text-[10px] font-mono text-neutral-400 hover:text-white inline-flex items-center gap-1 cursor-pointer"
+                    >
+                      <Share2 className="h-3 w-3" />
+                      <span>{isEn ? "Card" : "Carte"}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setP2Profile(null)}
+                      className="text-[10px] font-mono text-neutral-400 hover:text-white underline cursor-pointer shrink-0"
+                    >
+                      {isEn ? "Change" : "Modifier"}
+                    </button>
+                  </div>
                 </div>
                 <div className="flex items-center gap-2 mt-1">
                   <span className="inline-flex items-center gap-1.5 rounded-md bg-white/[0.06] border border-white/10 px-2 py-0.5 text-xs font-mono text-neutral-200">
@@ -1105,6 +1303,47 @@ export default function CompareWithFriendView({
           </div>
         </div>
       </div>
+
+      <div className="space-y-4">
+        <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
+          <div className="flex items-center gap-2">
+            <Target className="h-4 w-4 text-cyan-400" />
+            <h3 className="font-mono text-sm font-bold text-white uppercase tracking-wider">
+              {isEn ? "Weapon Efficiency & Arsenal Telemetry" : "Efficacité des Armes & Télémétrie"}
+            </h3>
+          </div>
+          <span className="text-[10px] font-mono text-neutral-400 uppercase">
+            Vandal · Phantom · Operator · Sheriff
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <span className="text-xs font-mono font-bold text-purple-300 block">
+              {p1Profile?.name || "Player 1"} {isEn ? "Arsenal" : "— Arsenal"}
+            </span>
+            <ValorantWeaponStatsCard matches={p1Matches} isEn={isEn} />
+          </div>
+
+          <div className="space-y-2">
+            <span className="text-xs font-mono font-bold text-cyan-300 block">
+              {p2Profile?.name || (isEn ? "Player 2" : "Joueur 2")} {isEn ? "Arsenal" : "— Arsenal"}
+            </span>
+            <ValorantWeaponStatsCard matches={p2Matches} isEn={isEn} />
+          </div>
+        </div>
+      </div>
+
+      <PlayerCardExportModal
+        isOpen={playerCardExportOpen}
+        onClose={() => setPlayerCardExportOpen(false)}
+        profile={playerCardTarget === 1 ? p1Profile : p2Profile}
+        stats={playerCardTarget === 1 ? p1Stats : p2Stats}
+        matches={playerCardTarget === 1 ? p1Matches : p2Matches}
+        riotName={playerCardTarget === 1 ? p1Profile?.name || myRiotName : p2Profile?.name || "Friend"}
+        riotTag={playerCardTarget === 1 ? p1Profile?.tag || myRiotTag : p2Profile?.tag || "0001"}
+        isEn={isEn}
+      />
     </div>
   );
 }

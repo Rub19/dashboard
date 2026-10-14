@@ -1,6 +1,16 @@
 # Changelog
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
+## v1.75.79 — 2026-10-14
+
+**Export Player Card, Comparateur 1v1 libre et Télémétrie des armes (Vandal / Phantom / Op / Sheriff)**
+
+- **Exporteur Player Card (Discord & X)** : Génération d'une carte récapitulative haute définition (1200x675 HD) au design Apple sombre et épuré. Rendu direct Canvas sans dépendance externe intégrant Riot ID, rang compétitif et RR, agent signature, % de tir à la tête, ratio K/D, taux de victoire et score officiel VCT Pick'ems.
+- Boutons d'exportation complets : Téléchargement PNG direct, écriture directe de l'image dans le presse-papier (`navigator.clipboard.write`), partage Twitter/X et export formaté Discord.
+- **Comparateur 1v1 libre & sans restriction** : Possibilité d'entrer et de rechercher n'importe quel Riot ID pour le Joueur 1 comme pour le Joueur 2, permettant de comparer n'importe quel duel de pros ou d'amis avec inversion (`RotateCcw`) et restauration immédiate du compte local.
+- **Télémétrie des armes** : Module complet analysant la répartition réelle des éliminations entre Vandal, Phantom, Operator et Sheriff, calcul du ratio de préférence de fusils (Vandal vs Phantom) et diagnostic tactique sur le style d'engagement.
+- Intégration de la télémétrie des armes et de l'export Player Card dans le Tracker Valorant et dans l'arène de comparaison.
+
 ## v1.75.78 — 2026-10-14
 
 **Section Compare with Friend : duel télémétrique face-à-face et calcul de synergie duo**

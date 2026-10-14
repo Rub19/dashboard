@@ -1,5 +1,11 @@
 import { fetchWorker } from "@/lib/api";
 
+export interface ValorantWeaponStat {
+  weapon: string;
+  kills: number;
+  headshots?: number;
+}
+
 export interface ValorantPlayerStats {
   score: number;
   kills: number;
@@ -61,6 +67,7 @@ export interface ValorantMatch {
       Blue?: { roundsWon: number | null };
     };
     players: ValorantPlayer[];
+    weaponStats?: ValorantWeaponStat[];
   };
   segments?: Array<{
     type: string;
@@ -673,6 +680,22 @@ export function convertHenrikMatchToValorantMatch(
         Blue: { roundsWon: teams.blue?.rounds_won ?? 0 },
       },
       players,
+      weaponStats: (() => {
+        const rawKills: any[] = Array.isArray(rawMatch.kills) ? rawMatch.kills : [];
+        const weaponCounts: Record<string, number> = {};
+        for (const k of rawKills) {
+          const kName = String(k.killer_display_name || k.killer_name || "").toLowerCase();
+          const kTag = String(k.killer_tag || "").toLowerCase().replace(/^#/, "");
+          const isMe =
+            (kName === cleanName.toLowerCase() && (!kTag || !cleanTag || kTag === cleanTag.toLowerCase())) ||
+            Boolean(k.killer_puuid && myPlayer.puuid && k.killer_puuid === myPlayer.puuid);
+          if (isMe) {
+            const wName = String(k.damage_weapon_name || "Unknown");
+            weaponCounts[wName] = (weaponCounts[wName] || 0) + 1;
+          }
+        }
+        return Object.entries(weaponCounts).map(([weapon, kills]) => ({ weapon, kills }));
+      })(),
     },
     segments: [
       {

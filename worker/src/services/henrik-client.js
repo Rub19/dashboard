@@ -261,7 +261,22 @@ export async function getValorantMatches(env, riotId, mode, apiKeyOverride, star
               performanceScore: perfScore
             })
           });
-        })
+        }),
+        weaponStats: Object.freeze((() => {
+          const rawKills = Array.isArray(match.kills) ? match.kills : [];
+          const weaponCounts = {};
+          for (const k of rawKills) {
+            const kName = safeText(k.killer_display_name || k.killer_name).toLowerCase();
+            const kTag = safeText(k.killer_tag).toLowerCase().replace(/^#/, "");
+            const isMe = (kName === name.toLowerCase() && (!kTag || !tag || kTag === tag.toLowerCase())) ||
+              Boolean(k.killer_puuid && me?.puuid && k.killer_puuid === me.puuid);
+            if (isMe) {
+              const wName = safeText(k.damage_weapon_name) || "Unknown";
+              weaponCounts[wName] = (weaponCounts[wName] || 0) + 1;
+            }
+          }
+          return Object.entries(weaponCounts).map(([weapon, kills]) => Object.freeze({ weapon, kills }));
+        })())
       }),
       metadata: Object.freeze({
         modeName: safeText(meta.mode),

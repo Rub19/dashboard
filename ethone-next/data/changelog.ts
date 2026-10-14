@@ -55623,10 +55623,60 @@ const v12920_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12920_fr, v12919_fr, v12918_fr, v12917_fr, v12916_fr, v12915_fr, v12914_fr, v12913_fr, v12912_fr, v12911_fr, v12910_fr, v12909_fr, v12908_fr, v12907_fr, v12906_fr, v12905_fr, v12904_fr, v12903_fr, v12902_fr, v12901_fr, v12900_fr, v12899_fr, v12898_fr, v12897_fr, v12896_fr, v12895_fr, v12894_fr, v12893_fr, v12892_fr);
-CHANGELOG_BY_LANG.en.unshift(v12920_en, v12919_en, v12918_en, v12917_en, v12916_en, v12915_en, v12914_en, v12913_en, v12912_en, v12911_en, v12910_en, v12909_en, v12908_en, v12907_en, v12906_en, v12905_en, v12904_en, v12903_en, v12902_en, v12901_en, v12900_en, v12899_en, v12898_en, v12897_en, v12896_en, v12895_en, v12894_en, v12893_en, v12892_en);
-CHANGELOG_BY_LANG.es.unshift(v12920_es, v12919_es, v12918_es, v12917_es, v12916_es, v12915_es, v12914_es, v12913_es, v12912_es, v12911_es, v12910_es, v12909_es, v12908_es, v12907_es, v12906_es, v12905_es, v12904_es, v12903_es, v12902_es, v12901_es, v12900_es, v12899_es, v12898_es, v12897_es, v12896_es, v12895_es, v12894_es, v12893_es, v12892_es);
-CHANGELOG_BY_LANG.de.unshift(v12920_de, v12919_de, v12918_de, v12917_de, v12916_de, v12915_de, v12914_de, v12913_de, v12912_de, v12911_de, v12910_de, v12909_de, v12908_de, v12907_de, v12906_de, v12905_de, v12904_de, v12903_de, v12902_de, v12901_de, v12900_de, v12899_de, v12898_de, v12897_de, v12896_de, v12895_de, v12894_de, v12893_de, v12892_de);
+const v12921_fr: ChangelogEntry = {
+  version: "v1.75.79",
+  date: "2026-10-14",
+  title: "Export Player Card, Comparateur 1v1 libre et Télémétrie des armes (Vandal / Phantom / Op / Sheriff)",
+  items: [
+    "Exporteur Player Card Discord / X au design Apple sombre (1200x675 HD) avec rang, agent signature, % tête et score Pick'ems",
+    "Génération directe sur Canvas haute résolution sans dépendance externe avec téléchargement PNG, copie presse-papier et partage X",
+    "Comparateur 1v1 libre : possibilité d'entrer n'importe quel Riot ID pour le Joueur 1 et le Joueur 2 avec boutons d'inversion et de restauration",
+    "Télémétrie des armes : répartition réelle des éliminations Vandal, Phantom, Operator et Sheriff, ratio de préférence des fusils et conseils de style de tir",
+    "Transmission des événements d'armes depuis l'API HenrikDev et affichage contextuel transparent si seules les synthèses sont présentes",
+  ],
+};
+
+const v12921_en: ChangelogEntry = {
+  version: "v1.75.79",
+  date: "2026-10-14",
+  title: "Player Card Export, Free 1v1 Duel Comparator & Weapon Telemetry (Vandal / Phantom / Op / Sheriff)",
+  items: [
+    "Apple Dark Design Player Card exporter for Discord and X (1200x675 HD) featuring rank, signature agent, HS% and Pick'ems score",
+    "Client-side high-DPI canvas engine with instant PNG download, clipboard image write, and X (Twitter) intent sharing",
+    "Unrestricted 1v1 Head-to-Head comparator: enter any custom Riot ID for Player 1 and Player 2 with fast swap and reset controls",
+    "Weapon Telemetry module: true kill distribution for Vandal, Phantom, Operator, and Sheriff with rifle preference ratio and tactical insights",
+    "HenrikDev API weapon events forwarding with graceful fallback notice when viewing compressed historical summaries",
+  ],
+};
+
+const v12921_es: ChangelogEntry = {
+  version: "v1.75.79",
+  date: "2026-10-14",
+  title: "Exportación Player Card, Comparador 1v1 libre y Telemetría de armas (Vandal / Phantom / Op / Sheriff)",
+  items: [
+    "Exportador de Player Card para Discord y X con diseño Apple oscuro (1200x675 HD), rango, agente destacado, % cabeza y Pick'ems",
+    "Generación directa en lienzo de alta resolución con descarga PNG, copia al portapapeles y compartición en X",
+    "Comparador 1v1 sin restricciones: ingrese cualquier Riot ID para el Jugador 1 y Jugador 2 con cambio rápido y restablecimiento",
+    "Telemetría de armas: desglose real de bajas con Vandal, Phantom, Operator y Sheriff, ratio de rifles y consejos tácticos",
+  ],
+};
+
+const v12921_de: ChangelogEntry = {
+  version: "v1.75.79",
+  date: "2026-10-14",
+  title: "Player Card Export, Freier 1v1-Duellvergleich & Waffentelemetrie (Vandal / Phantom / Op / Sheriff)",
+  items: [
+    "Apple Dark Design Player Card Exporter für Discord und X (1200x675 HD) mit Rang, Top-Agent, Kopfschussrate und Pick'ems-Score",
+    "Direktes Canvas-Rendering mit hochauflösendem PNG-Download, Zwischenablage-Kopie und X-Teilen",
+    "Uneingeschränkter 1v1-Vergleich: beliebige Riot-IDs für Spieler 1 und Spieler 2 eingebbar mit schnellem Tausch und Reset",
+    "Waffentelemetrie-Modul: reale Kills-Aufteilung für Vandal, Phantom, Operator und Sheriff mit Gewehr-Verhältnis und Taktik-Tipps",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12921_fr, v12920_fr, v12919_fr, v12918_fr, v12917_fr, v12916_fr, v12915_fr, v12914_fr, v12913_fr, v12912_fr, v12911_fr, v12910_fr, v12909_fr, v12908_fr, v12907_fr, v12906_fr, v12905_fr, v12904_fr, v12903_fr, v12902_fr, v12901_fr, v12900_fr, v12899_fr, v12898_fr, v12897_fr, v12896_fr, v12895_fr, v12894_fr, v12893_fr, v12892_fr);
+CHANGELOG_BY_LANG.en.unshift(v12921_en, v12920_en, v12919_en, v12918_en, v12917_en, v12916_en, v12915_en, v12914_en, v12913_en, v12912_en, v12911_en, v12910_en, v12909_en, v12908_en, v12907_en, v12906_en, v12905_en, v12904_en, v12903_en, v12902_en, v12901_en, v12900_en, v12899_en, v12898_en, v12897_en, v12896_en, v12895_en, v12894_en, v12893_en, v12892_en);
+CHANGELOG_BY_LANG.es.unshift(v12921_es, v12920_es, v12919_es, v12918_es, v12917_es, v12916_es, v12915_es, v12914_es, v12913_es, v12912_es, v12911_es, v12910_es, v12909_es, v12908_es, v12907_es, v12906_es, v12905_es, v12904_es, v12903_es, v12902_es, v12901_es, v12900_es, v12899_es, v12898_es, v12897_es, v12896_es, v12895_es, v12894_es, v12893_es, v12892_es);
+CHANGELOG_BY_LANG.de.unshift(v12921_de, v12920_de, v12919_de, v12918_de, v12917_de, v12916_de, v12915_de, v12914_de, v12913_de, v12912_de, v12911_de, v12910_de, v12909_de, v12908_de, v12907_de, v12906_de, v12905_de, v12904_de, v12903_de, v12902_de, v12901_de, v12900_de, v12899_de, v12898_de, v12897_de, v12896_de, v12895_de, v12894_de, v12893_de, v12892_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

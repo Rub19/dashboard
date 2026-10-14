@@ -31,6 +31,7 @@ import {
   calculateComputedStats,
   type ValorantAccountProfile,
 } from "@/lib/valorant-provider";
+import Link from "next/link";
 import ValorantMatchRow from "@/components/tracker/ValorantMatchRow";
 import ValorantDayHeader from "@/components/tracker/ValorantDayHeader";
 import TrackerModeDropdown from "@/components/tracker/TrackerModeDropdown";
@@ -38,6 +39,8 @@ import ValorantPerformanceTrends from "@/components/tracker/ValorantPerformanceT
 import ValorantRiotConnectModal from "@/components/tracker/ValorantRiotConnectModal";
 import ValorantFriendCompareModal from "@/components/tracker/ValorantFriendCompareModal";
 import ValorantAiCoachModal from "@/components/tracker/ValorantAiCoachModal";
+import PlayerCardExportModal from "@/components/tracker/PlayerCardExportModal";
+import ValorantWeaponStatsCard from "@/components/tracker/ValorantWeaponStatsCard";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { EASE_SNAP } from "@/lib/ease";
@@ -63,6 +66,8 @@ export default function ValorantTrackerView() {
   const [riotConnectModalOpen, setRiotConnectModalOpen] = useState(false);
   const [friendCompareModalOpen, setFriendCompareModalOpen] = useState(false);
   const [aiCoachModalOpen, setAiCoachModalOpen] = useState(false);
+  const [playerCardModalOpen, setPlayerCardModalOpen] = useState(false);
+  const isEn = settings.language !== "fr";
 
   const [matches, setMatches] = useState<ValorantMatch[]>([]);
   const [loading, setLoading] = useState(false);
@@ -424,22 +429,33 @@ export default function ValorantTrackerView() {
             className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-rose-500/30 bg-rose-500/10 px-3 py-1.5 text-xs font-bold text-rose-300 hover:bg-rose-500/20 active:scale-95 transition-all cursor-pointer"
           >
             <ShieldCheck className="h-3.5 w-3.5 text-rose-400" />
-            <span>Lier Riot Games</span>
+            <span>{isEn ? "Link Riot Games" : "Lier Riot Games"}</span>
           </button>
+
+          <Link
+            href="/tracker?tab=compare"
+            className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-cyan-500/30 bg-cyan-500/10 px-3 py-1.5 text-xs font-bold text-cyan-300 hover:bg-cyan-500/20 active:scale-95 transition-all cursor-pointer shrink-0"
+          >
+            <Swords className="h-3.5 w-3.5 text-cyan-400" />
+            <span>{isEn ? "Compare 1v1" : "Comparer 1v1"}</span>
+            <span className="rounded bg-cyan-500/30 px-1 py-0.2 text-[9px] font-mono font-bold text-cyan-200">
+              1v1
+            </span>
+          </Link>
 
           <button
             type="button"
-            onClick={() => setFriendCompareModalOpen(true)}
-            className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-cyan-500/30 bg-cyan-500/10 px-3 py-1.5 text-xs font-bold text-cyan-300 hover:bg-cyan-500/20 active:scale-95 transition-all cursor-pointer"
+            onClick={() => setPlayerCardModalOpen(true)}
+            className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-purple-500/30 bg-purple-500/10 px-3 py-1.5 text-xs font-bold text-purple-300 hover:bg-purple-500/20 active:scale-95 transition-all cursor-pointer shrink-0"
           >
-            <Share2 className="h-3.5 w-3.5 text-cyan-400" />
-            <span>Comparer</span>
+            <Share2 className="h-3.5 w-3.5 text-purple-400" />
+            <span>{isEn ? "Player Card" : "Carte Joueur"}</span>
           </button>
 
           <button
             type="button"
             onClick={() => setAiCoachModalOpen(true)}
-            className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-amber-500/30 bg-amber-500/10 px-3 py-1.5 text-xs font-bold text-amber-300 hover:bg-amber-500/20 active:scale-95 transition-all cursor-pointer"
+            className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-amber-500/30 bg-amber-500/10 px-3 py-1.5 text-xs font-bold text-amber-300 hover:bg-amber-500/20 active:scale-95 transition-all cursor-pointer shrink-0"
           >
             <Sparkles className="h-3.5 w-3.5 text-amber-400" />
             <span>Coach IA</span>
@@ -582,8 +598,9 @@ export default function ValorantTrackerView() {
       </div>
 
       {activeTab === "analytics" ? (
-        <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll pr-1 pb-6 [overscroll-behavior:contain]">
+        <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll pr-1 pb-6 [overscroll-behavior:contain] space-y-6">
           <ValorantPerformanceTrends matches={matches} />
+          <ValorantWeaponStatsCard matches={matches} isEn={isEn} />
         </div>
       ) : (
         <>
@@ -823,6 +840,17 @@ export default function ValorantTrackerView() {
         profile={playerProfile}
         stats={computedStats}
         matches={matches}
+      />
+
+      <PlayerCardExportModal
+        isOpen={playerCardModalOpen}
+        onClose={() => setPlayerCardModalOpen(false)}
+        profile={playerProfile}
+        stats={computedStats}
+        matches={matches}
+        riotName={riotName}
+        riotTag={riotTag}
+        isEn={isEn}
       />
 
       {/* Henrik API Key Modal */}

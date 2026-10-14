@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.65 — 2026-10-14
+
+**Attributions, contributions communautaires et politique de marque Riot Games**
+
+- Intégration de la clause officielle de non-affiliation requise par Riot Games (*Legal Jibber Jabber*) sur le tableau de bord du tracker et dans l'onglet de conformité.
+- Ajout des attributions explicites et des liens directs vers `valorant-api.com`, `docs.henrikdev.xyz`, `developer.riotgames.com` et Data Dragon.
+- Création du composant interactif `RiotAttributionModal` détaillant les 4 fournisseurs de données, les contributions open source et le strict respect de Riot Vanguard (Fair-Play).
+- Refonte du pied de page permanent du tracker avec badges de redirection, garanties de confidentialité locale zéro log et accès direct aux crédits.
+
 ## v1.75.64 — 2026-10-14
 
 **Correction de l'écran noir sur le tracker et fiabilisation de la barre latérale**

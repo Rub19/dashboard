@@ -20,8 +20,9 @@ import {
   Brain,
   CheckCircle2,
   Clock,
-  Sparkle,
   Award,
+  ExternalLink,
+  Heart,
 } from "@/components/icons/ph";
 import { useSettings } from "@/components/SettingsProvider";
 import { useToast } from "@/components/ToastProvider";
@@ -44,6 +45,7 @@ import {
 import GameBrandIcon from "@/components/GameBrandIcon";
 import RiotTrackerConnectModal from "@/components/tracker/RiotTrackerConnectModal";
 import ValorantFriendCompareModal from "@/components/tracker/ValorantFriendCompareModal";
+import RiotAttributionModal from "@/components/tracker/RiotAttributionModal";
 import { useAnimatedSidebar } from "@/components/motion/animated-sidebar";
 import { Icon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
@@ -205,6 +207,7 @@ export default function RiotGamingHome() {
   const [loading, setLoading] = useState(false);
   const [connectModalOpen, setConnectModalOpen] = useState(false);
   const [compareModalOpen, setCompareModalOpen] = useState(false);
+  const [attributionModalOpen, setAttributionModalOpen] = useState(false);
   const [simulatedRsoConnected, setSimulatedRsoConnected] = useState(true);
 
   const valorantStats = useMemo<ValorantComputedStats>(() => {
@@ -1232,6 +1235,141 @@ export default function RiotGamingHome() {
                     ))}
                   </div>
                 </div>
+
+                <div id="attributions" className="rounded-[var(--panel-radius)] border border-rose-500/30 bg-gradient-to-br from-rose-950/20 via-[var(--bg-main)]/90 to-transparent p-5 backdrop-blur-xl shadow-xl space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-rose-500/20 pb-3">
+                    <div className="flex items-center gap-2 text-rose-400">
+                      <Heart className="h-5 w-5" />
+                      <h2 className="text-base font-black text-[var(--text-primary)] uppercase tracking-wider">
+                        Attributions d&apos;APIs, Contributions Communautaires & Non-Affiliation
+                      </h2>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setAttributionModalOpen(true)}
+                      className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/40 bg-rose-500/20 px-3 py-1 text-xs font-bold text-rose-300 hover:bg-rose-500/30 transition-colors cursor-pointer"
+                    >
+                      <span>Modale Détaillée</span>
+                      <ExternalLink className="h-3 w-3" />
+                    </button>
+                  </div>
+
+                  <div className="rounded-xl border border-amber-500/30 bg-amber-950/20 p-3.5 space-y-1.5 text-xs">
+                    <div className="flex items-center gap-2 font-bold text-amber-300">
+                      <ShieldCheck className="h-4 w-4" />
+                      <span>Clause de Non-Affiliation Officielle (Riot Legal Jibber Jabber)</span>
+                    </div>
+                    <p className="text-[var(--text-muted)] italic leading-relaxed border-l-2 border-amber-400/50 pl-3">
+                      « ETHONE isn&apos;t endorsed by Riot Games and doesn&apos;t reflect the views or opinions of Riot Games or anyone officially involved in producing or managing Riot Games properties. Riot Games, and all associated properties are trademarks or registered trademarks of Riot Games, Inc. »
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div className="rounded-xl border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/40 p-3.5 space-y-2 hover:border-rose-500/40 transition-all">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-rose-500/15 border border-rose-500/30 text-rose-400 font-bold text-xs">
+                            V
+                          </div>
+                          <span className="font-bold text-xs text-[var(--text-primary)]">Valorant-API.com</span>
+                        </div>
+                        <a
+                          href="https://valorant-api.com/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-[11px] font-mono text-rose-400 hover:underline"
+                        >
+                          <span>valorant-api.com</span>
+                          <ExternalLink className="h-3 w-3" />
+                        </a>
+                      </div>
+                      <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">
+                        API open source fournissant les assets graphiques complets de VALORANT (agents, capacités, armes, skins, cartes, sprays et bannières).
+                      </p>
+                      <span className="inline-block rounded-md bg-rose-500/10 px-2 py-0.5 text-[10px] font-mono text-rose-300">
+                        ✓ Assets & Médias In-Game
+                      </span>
+                    </div>
+
+                    <div className="rounded-xl border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/40 p-3.5 space-y-2 hover:border-cyan-500/40 transition-all">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-cyan-500/15 border border-cyan-500/30 text-cyan-400 font-bold text-xs">
+                            H
+                          </div>
+                          <span className="font-bold text-xs text-[var(--text-primary)]">HenrikDev API</span>
+                        </div>
+                        <a
+                          href="https://docs.henrikdev.xyz/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-[11px] font-mono text-cyan-400 hover:underline"
+                        >
+                          <span>docs.henrikdev.xyz</span>
+                          <ExternalLink className="h-3 w-3" />
+                        </a>
+                      </div>
+                      <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">
+                        API communautaire de référence pour l&apos;extraction de l&apos;historique de matchs récents, scores de rounds, MMR et statistiques de duel.
+                      </p>
+                      <span className="inline-block rounded-md bg-cyan-500/10 px-2 py-0.5 text-[10px] font-mono text-cyan-300">
+                        ✓ Télémétrie & Historiques Post-Match
+                      </span>
+                    </div>
+
+                    <div className="rounded-xl border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/40 p-3.5 space-y-2 hover:border-amber-500/40 transition-all">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-500/15 border border-amber-500/30 text-amber-400 font-bold text-xs">
+                            R
+                          </div>
+                          <span className="font-bold text-xs text-[var(--text-primary)]">Riot Games Developer Portal</span>
+                        </div>
+                        <a
+                          href="https://developer.riotgames.com/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-[11px] font-mono text-amber-400 hover:underline"
+                        >
+                          <span>developer.riotgames.com</span>
+                          <ExternalLink className="h-3 w-3" />
+                        </a>
+                      </div>
+                      <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">
+                        Plateforme officielle fournissant l&apos;API League of Legends, TFT et les spécifications de conformité pour Riot Sign On (RSO).
+                      </p>
+                      <span className="inline-block rounded-md bg-amber-500/10 px-2 py-0.5 text-[10px] font-mono text-amber-300">
+                        ✓ Portail Officiel & Spécifications RSO
+                      </span>
+                    </div>
+
+                    <div className="rounded-xl border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/40 p-3.5 space-y-2 hover:border-emerald-500/40 transition-all">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-bold text-xs">
+                            D
+                          </div>
+                          <span className="font-bold text-xs text-[var(--text-primary)]">Riot Data Dragon</span>
+                        </div>
+                        <a
+                          href="https://developer.riotgames.com/docs/lol#data-dragon"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-[11px] font-mono text-emerald-400 hover:underline"
+                        >
+                          <span>Data Dragon CDN</span>
+                          <ExternalLink className="h-3 w-3" />
+                        </a>
+                      </div>
+                      <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">
+                        CDN statique officiel pour la distribution des portraits de champions, objets et sorts d&apos;invocateurs LoL.
+                      </p>
+                      <span className="inline-block rounded-md bg-emerald-500/10 px-2 py-0.5 text-[10px] font-mono text-emerald-300">
+                        ✓ CDN Statique Officiel LoL
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
 
@@ -1504,17 +1642,89 @@ export default function RiotGamingHome() {
           </div>
         </div>
 
-        <div className="rounded-xl border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/30 p-3.5 backdrop-blur-md flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-[var(--text-muted)]">
-          <div className="flex items-center gap-2">
-            <ShieldCheck className="h-4 w-4 text-emerald-400 shrink-0" />
-            <span>
-              <strong>Confidentialité & Zéro Log :</strong> Aucun compte requis, aucune donnée ni journal sauvegardé sur serveur tiers. Votre Riot ID est conservé localement sur cet appareil conformément aux directives de Riot Games.
-            </span>
+        <footer className="mt-8 space-y-3 rounded-2xl border border-[var(--panel-border)]/70 bg-gradient-to-b from-[var(--surface-raised)]/40 via-[var(--bg-main)]/70 to-[var(--bg-main)]/90 p-4 sm:p-5 backdrop-blur-xl shadow-lg">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-[var(--panel-border)]/50 pb-3.5">
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-rose-500/15 border border-rose-500/30 text-rose-400">
+                <GameBrandIcon name="Valorant" className="h-3.5 w-3.5" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-black tracking-wider uppercase text-[var(--text-primary)]">
+                    Attributions & Contributions Open Source
+                  </span>
+                  <span className="rounded-full border border-emerald-500/40 bg-emerald-500/15 px-2 py-0.2 text-[9px] font-bold text-emerald-300">
+                    Non Affilié à Riot Games
+                  </span>
+                </div>
+                <p className="text-[11px] text-[var(--text-muted)]">
+                  Respect des politiques Legal Jibber Jabber et valorisation des APIs communautaires.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2">
+              <a
+                href="https://valorant-api.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-2.5 py-1 text-xs font-mono font-bold text-rose-300 hover:border-rose-500/50 hover:bg-rose-500/10 transition-colors"
+                title="API Open Source des assets VALORANT"
+              >
+                <span>valorant-api.com</span>
+                <ExternalLink className="h-3 w-3" />
+              </a>
+
+              <a
+                href="https://docs.henrikdev.xyz/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-2.5 py-1 text-xs font-mono font-bold text-cyan-300 hover:border-cyan-500/50 hover:bg-cyan-500/10 transition-colors"
+                title="API de télémétrie et matchs VALORANT"
+              >
+                <span>henrikdev.xyz</span>
+                <ExternalLink className="h-3 w-3" />
+              </a>
+
+              <a
+                href="https://developer.riotgames.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-2.5 py-1 text-xs font-mono font-bold text-amber-300 hover:border-amber-500/50 hover:bg-amber-500/10 transition-colors"
+                title="Portail Officiel Développeur Riot Games"
+              >
+                <span>developer.riotgames.com</span>
+                <ExternalLink className="h-3 w-3" />
+              </a>
+
+              <button
+                type="button"
+                onClick={() => setAttributionModalOpen(true)}
+                className="inline-flex items-center gap-1 rounded-lg border border-purple-500/40 bg-purple-500/15 px-2.5 py-1 text-xs font-bold text-purple-200 hover:bg-purple-500/25 transition-all cursor-pointer shadow-sm active:scale-95"
+              >
+                <Heart className="h-3 w-3 text-rose-400" />
+                <span>Tous les crédits</span>
+              </button>
+            </div>
           </div>
-          <span className="font-mono text-[10px] shrink-0 text-emerald-400">
-            ✓ 100% Local · Zéro Log · Conforme Riot Games
-          </span>
-        </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-[11px] leading-relaxed text-[var(--text-muted)]">
+            <div className="rounded-xl border border-amber-500/25 bg-amber-950/15 p-2.5">
+              <span className="font-bold text-amber-300/90 block mb-0.5">Avis de Non-Affiliation (Legal Jibber Jabber) :</span>
+              « ETHONE isn&apos;t endorsed by Riot Games and doesn&apos;t reflect the views or opinions of Riot Games or anyone officially involved in producing or managing Riot Games properties. Riot Games, and all associated properties are trademarks or registered trademarks of Riot Games, Inc. »
+            </div>
+
+            <div className="rounded-xl border border-emerald-500/25 bg-emerald-950/15 p-2.5 flex flex-col justify-between">
+              <div>
+                <span className="font-bold text-emerald-300/90 block mb-0.5">Confidentialité & Zéro Log :</span>
+                Aucun compte obligatoire, aucun journal stocké sur serveur tiers. Votre Riot ID est conservé exclusivement dans le stockage local de votre navigateur conformément aux exigences du portail développeur Riot Games.
+              </div>
+              <div className="pt-1.5 font-mono text-[10px] text-emerald-400 font-semibold">
+                ✓ 100% Local · Zéro Log · Conforme Fair-Play Vanguard
+              </div>
+            </div>
+          </div>
+        </footer>
       </div>
 
       <RiotTrackerConnectModal
@@ -1539,6 +1749,11 @@ export default function RiotGamingHome() {
         myProfile={valorantProfile}
         myStats={valorantStats}
         myMatches={valorantMatches}
+      />
+
+      <RiotAttributionModal
+        isOpen={attributionModalOpen}
+        onClose={() => setAttributionModalOpen(false)}
       />
     </div>
   );

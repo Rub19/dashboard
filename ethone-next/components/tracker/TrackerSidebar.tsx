@@ -15,6 +15,7 @@ import {
   Brain,
   ShieldCheck,
   Activity,
+  Heart,
 } from "@/components/icons/ph";
 import { ethoneIcon } from "@/components/EthoneIcon";
 import GameBrandIcon from "@/components/GameBrandIcon";
@@ -165,6 +166,17 @@ const TRACKER_GROUPS: TrackerSidebarGroup[] = [
           />
         ),
         badge: "7/7",
+      },
+      {
+        id: "attributions",
+        label: "Attributions & Crédits",
+        href: "/tracker?tab=compliance#attributions",
+        renderIcon: (colored) => (
+          <Heart
+            className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-rose-400")}
+          />
+        ),
+        badge: "APIs",
       },
     ],
   },
@@ -391,7 +403,7 @@ const TrackerSidebarNavList = memo(function TrackerSidebarNavList({
       if (item.id === "rso") {
         return pathname === "/tracker" && currentTab === "rso";
       }
-      if (item.id === "compliance") {
+      if (item.id === "compliance" || item.id === "attributions") {
         return pathname === "/tracker" && currentTab === "compliance";
       }
       if (item.id === "home") {

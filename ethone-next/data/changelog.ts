@@ -54947,10 +54947,58 @@ const v12906_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12906_fr, v12905_fr, v12904_fr, v12903_fr, v12902_fr, v12901_fr, v12900_fr, v12899_fr, v12898_fr, v12897_fr, v12896_fr, v12895_fr, v12894_fr, v12893_fr, v12892_fr);
-CHANGELOG_BY_LANG.en.unshift(v12906_en, v12905_en, v12904_en, v12903_en, v12902_en, v12901_en, v12900_en, v12899_en, v12898_en, v12897_en, v12896_en, v12895_en, v12894_en, v12893_en, v12892_en);
-CHANGELOG_BY_LANG.es.unshift(v12906_es, v12905_es, v12904_es, v12903_es, v12902_es, v12901_es, v12900_es, v12899_es, v12898_es, v12897_es, v12896_es, v12895_es, v12894_es, v12893_es, v12892_es);
-CHANGELOG_BY_LANG.de.unshift(v12906_de, v12905_de, v12904_de, v12903_de, v12902_de, v12901_de, v12900_de, v12899_de, v12898_de, v12897_de, v12896_de, v12895_de, v12894_de, v12893_de, v12892_de);
+const v12907_fr: ChangelogEntry = {
+  version: "v1.75.65",
+  date: "2026-10-14",
+  title: "Attributions, contributions communautaires et politique de marque Riot Games",
+  items: [
+    "Intégration de la clause officielle de non-affiliation Riot Games (Legal Jibber Jabber) sur l'ensemble du tracker et dans l'onglet de conformité",
+    "Ajout des attributions et liens directs vers valorant-api.com, HenrikDev API, Riot Developer Portal et Data Dragon",
+    "Nouveau composant interactif RiotAttributionModal détaillant les 4 APIs partenaires et les contributions open source",
+    "Pied de page permanent enrichi avec badges interactifs, garanties de confidentialité locale et accès direct aux crédits",
+  ],
+};
+
+const v12907_en: ChangelogEntry = {
+  version: "v1.75.65",
+  date: "2026-10-14",
+  title: "Attributions, community contributions, and Riot Games brand policy",
+  items: [
+    "Integrated official Riot Games Legal Jibber Jabber non-affiliation statement across tracker and compliance tab",
+    "Added attributions and direct links to valorant-api.com, HenrikDev API, Riot Developer Portal, and Data Dragon",
+    "New interactive RiotAttributionModal component displaying partner APIs and open source community contributions",
+    "Enhanced persistent footer with interactive badges, local zero-log privacy guarantees, and credits access",
+  ],
+};
+
+const v12907_es: ChangelogEntry = {
+  version: "v1.75.65",
+  date: "2026-10-14",
+  title: "Atribuciones, contribuciones comunitarias y política de marca Riot Games",
+  items: [
+    "Integración del descargo oficial de no afiliación Riot Games (Legal Jibber Jabber) en todo el tracker",
+    "Atribuciones y enlaces directos a valorant-api.com, HenrikDev API, Riot Developer Portal y Data Dragon",
+    "Nuevo componente interactivo RiotAttributionModal con APIs asociadas y contribuciones de la comunidad",
+    "Pie de página persistente con insignias interactivas, privacidad local y acceso a créditos",
+  ],
+};
+
+const v12907_de: ChangelogEntry = {
+  version: "v1.75.65",
+  date: "2026-10-14",
+  title: "Namensnennungen, Community-Beiträge und Riot Games Markenrichtlinie",
+  items: [
+    "Offizielle Riot Games Legal Jibber Jabber Nicht-Affiliierungs-Erklärung im gesamten Tracker integriert",
+    "Namensnennungen und Direktlinks zu valorant-api.com, HenrikDev API, Riot Developer Portal und Data Dragon",
+    "Neue interaktive RiotAttributionModal-Komponente mit Partner-APIs und Open-Source-Beiträgen",
+    "Erweiterte persistente Fußzeile mit interaktiven Badges, lokalem Datenschutz und direktem Zugriff auf Credits",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12907_fr, v12906_fr, v12905_fr, v12904_fr, v12903_fr, v12902_fr, v12901_fr, v12900_fr, v12899_fr, v12898_fr, v12897_fr, v12896_fr, v12895_fr, v12894_fr, v12893_fr, v12892_fr);
+CHANGELOG_BY_LANG.en.unshift(v12907_en, v12906_en, v12905_en, v12904_en, v12903_en, v12902_en, v12901_en, v12900_en, v12899_en, v12898_en, v12897_en, v12896_en, v12895_en, v12894_en, v12893_en, v12892_en);
+CHANGELOG_BY_LANG.es.unshift(v12907_es, v12906_es, v12905_es, v12904_es, v12903_es, v12902_es, v12901_es, v12900_es, v12899_es, v12898_es, v12897_es, v12896_es, v12895_es, v12894_es, v12893_es, v12892_es);
+CHANGELOG_BY_LANG.de.unshift(v12907_de, v12906_de, v12905_de, v12904_de, v12903_de, v12902_de, v12901_de, v12900_de, v12899_de, v12898_de, v12897_de, v12896_de, v12895_de, v12894_de, v12893_de, v12892_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

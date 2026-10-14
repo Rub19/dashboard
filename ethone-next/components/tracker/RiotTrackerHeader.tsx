@@ -4,9 +4,10 @@ import { useState } from "react";
 import Link from "next/link";
 import { useAnimatedSidebar } from "@/components/motion/animated-sidebar";
 import { Icon } from "@/lib/icons";
-import { Sparkles, Key } from "@/components/icons/ph";
+import { Sparkles, Key, Heart } from "@/components/icons/ph";
 import GameBrandIcon from "@/components/GameBrandIcon";
 import RiotTrackerConnectModal from "./RiotTrackerConnectModal";
+import RiotAttributionModal from "./RiotAttributionModal";
 import { cn } from "@/lib/utils";
 
 export interface RiotTrackerHeaderProps {
@@ -28,6 +29,7 @@ export default function RiotTrackerHeader({
 }: RiotTrackerHeaderProps) {
   const { open, setOpen } = useAnimatedSidebar();
   const [connectModalOpen, setConnectModalOpen] = useState(false);
+  const [attributionModalOpen, setAttributionModalOpen] = useState(false);
 
   return (
     <>
@@ -134,6 +136,16 @@ export default function RiotTrackerHeader({
               <span>Connexion & APIs</span>
             </button>
 
+            <button
+              type="button"
+              onClick={() => setAttributionModalOpen(true)}
+              className="flex items-center gap-1.5 rounded-xl border border-purple-500/40 bg-purple-500/15 px-2.5 py-1.5 text-xs font-bold text-purple-200 hover:bg-purple-500/25 active:scale-95 transition-all cursor-pointer shadow-sm"
+              title="Attributions d'APIs, contributions et mentions légales"
+            >
+              <Heart className="h-3.5 w-3.5 text-rose-400" />
+              <span className="hidden sm:inline">Crédits</span>
+            </button>
+
             {onOpenCoach && (
               <button
                 type="button"
@@ -152,6 +164,11 @@ export default function RiotTrackerHeader({
         isOpen={connectModalOpen}
         onClose={() => setConnectModalOpen(false)}
         onRiotIdChanged={onRiotIdChanged}
+      />
+
+      <RiotAttributionModal
+        isOpen={attributionModalOpen}
+        onClose={() => setAttributionModalOpen(false)}
       />
     </>
   );

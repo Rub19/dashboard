@@ -509,8 +509,8 @@ export default function RiotGamingHome() {
       <div className="mx-auto w-full max-w-7xl px-3 py-4 sm:px-6 sm:py-6 space-y-5">
         <header className="rounded-xl border border-white/[0.08] bg-[#10131B]/95 p-3 sm:p-4 backdrop-blur-xl shadow-lg">
           <div className="flex flex-col gap-3.5">
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-              <div className="flex items-center gap-2.5 min-w-0">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5 shrink-0">
                 <button
                   type="button"
                   onClick={() => setOpen(!open)}
@@ -539,120 +539,40 @@ export default function RiotGamingHome() {
                 </div>
               </div>
 
-              <div className="flex flex-wrap items-center gap-1 rounded-xl border border-white/[0.08] bg-black/40 p-1">
-                <button
-                  type="button"
-                  onClick={() => selectGameTab("valorant")}
-                  className={cn(
-                    "relative flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer",
-                    activeGame === "valorant"
-                      ? "text-white"
-                      : "text-neutral-400 hover:text-neutral-200"
-                  )}
-                >
-                  {activeGame === "valorant" && (
-                    <motion.div
-                      layoutId="tactical-game-pill"
-                      transition={SPRING_PILL}
-                      className="absolute inset-0 rounded-lg bg-rose-500/20 border border-rose-500/40 shadow-sm"
-                    />
-                  )}
-                  <GameBrandIcon name="Valorant" className="relative z-10 h-3.5 w-3.5" />
-                  <span className="relative z-10">{tr.valorant}</span>
-                </button>
+              <div className="flex items-center gap-2 flex-1 sm:justify-end min-w-0">
+                {activeGame !== "vct" && (
+                  <form onSubmit={handleSearch} className="flex items-center gap-2 flex-1 max-w-sm min-w-0">
+                    <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-black/40 px-2.5 py-1.5 focus-within:border-white/20 transition-all flex-1 min-w-0">
+                      <User className="h-3.5 w-3.5 text-neutral-400 shrink-0" />
+                      <input
+                        type="text"
+                        value={riotName}
+                        onChange={(e) => setRiotName(e.target.value)}
+                        placeholder={tr.riotIdPlaceholder}
+                        aria-label={isEn ? "Riot Name" : "Nom Riot"}
+                        className="w-full bg-transparent text-xs font-medium text-white outline-none placeholder:text-neutral-500 min-w-0"
+                      />
+                      <span className="text-xs font-mono text-neutral-500 shrink-0">#</span>
+                      <input
+                        type="text"
+                        value={riotTag}
+                        onChange={(e) => setRiotTag(e.target.value)}
+                        placeholder={tr.riotTagPlaceholder}
+                        aria-label={isEn ? "Riot Tag" : "Tag Riot"}
+                        className="w-14 bg-transparent font-mono text-xs font-medium text-white outline-none placeholder:text-neutral-500 uppercase shrink-0"
+                      />
+                    </div>
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="flex items-center gap-1.5 rounded-lg bg-white text-black font-semibold px-3 py-1.5 text-xs hover:bg-neutral-200 active:scale-95 transition-all cursor-pointer disabled:opacity-40 shadow-sm shrink-0"
+                    >
+                      <Search className="h-3.5 w-3.5 text-black" />
+                      <span className="hidden md:inline">{loading ? tr.scanning : tr.analyze}</span>
+                    </button>
+                  </form>
+                )}
 
-                <button
-                  type="button"
-                  onClick={() => selectGameTab("live")}
-                  className={cn(
-                    "relative flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer",
-                    activeGame === "live"
-                      ? "text-white"
-                      : "text-neutral-400 hover:text-neutral-200"
-                  )}
-                >
-                  {activeGame === "live" && (
-                    <motion.div
-                      layoutId="tactical-game-pill"
-                      transition={SPRING_PILL}
-                      className="absolute inset-0 rounded-lg bg-orange-500/20 border border-orange-500/40 shadow-sm"
-                    />
-                  )}
-                  <Flame className="relative z-10 h-3.5 w-3.5 text-orange-400" />
-                  <span className="relative z-10">{tr.liveMatch}</span>
-                  <span className="relative z-10 rounded bg-orange-500/30 px-1 py-0.2 text-[9px] font-mono font-bold text-orange-200">
-                    {tr.live}
-                  </span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => selectGameTab("vct")}
-                  className={cn(
-                    "relative flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer",
-                    activeGame === "vct"
-                      ? "text-white"
-                      : "text-neutral-400 hover:text-neutral-200"
-                  )}
-                >
-                  {activeGame === "vct" && (
-                    <motion.div
-                      layoutId="tactical-game-pill"
-                      transition={SPRING_PILL}
-                      className="absolute inset-0 rounded-lg bg-amber-500/20 border border-amber-500/40 shadow-sm"
-                    />
-                  )}
-                  <Trophy className="relative z-10 h-3.5 w-3.5 text-amber-400" />
-                  <span className="relative z-10">{tr.vctPickems}</span>
-                  <span className="relative z-10 rounded bg-amber-500/30 px-1 py-0.2 text-[9px] font-mono font-bold text-amber-200">
-                    {tr.live}
-                  </span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => selectGameTab("lol")}
-                  className={cn(
-                    "relative flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer",
-                    activeGame === "lol"
-                      ? "text-white"
-                      : "text-neutral-400 hover:text-neutral-200"
-                  )}
-                >
-                  {activeGame === "lol" && (
-                    <motion.div
-                      layoutId="tactical-game-pill"
-                      transition={SPRING_PILL}
-                      className="absolute inset-0 rounded-lg bg-amber-500/20 border border-amber-500/40 shadow-sm"
-                    />
-                  )}
-                  <GameBrandIcon name="League of Legends" className="relative z-10 h-3.5 w-3.5" />
-                  <span className="relative z-10">{tr.lol}</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => selectGameTab("tft")}
-                  className={cn(
-                    "relative flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer",
-                    activeGame === "tft"
-                      ? "text-white"
-                      : "text-neutral-400 hover:text-neutral-200"
-                  )}
-                >
-                  {activeGame === "tft" && (
-                    <motion.div
-                      layoutId="tactical-game-pill"
-                      transition={SPRING_PILL}
-                      className="absolute inset-0 rounded-lg bg-purple-500/20 border border-purple-500/40 shadow-sm"
-                    />
-                  )}
-                  <GameBrandIcon name="Teamfight Tactics" className="relative z-10 h-3.5 w-3.5" />
-                  <span className="relative z-10">{tr.tft}</span>
-                </button>
-              </div>
-
-              <div className="flex items-center gap-2 shrink-0">
                 <div className="flex items-center rounded-lg border border-white/10 bg-black/40 p-0.5 shrink-0">
                   <button
                     type="button"
@@ -689,85 +609,191 @@ export default function RiotGamingHome() {
                     <span className="font-mono text-[10px] font-bold">EN</span>
                   </button>
                 </div>
+              </div>
+            </div>
+
+            <div className="flex items-center overflow-x-auto no-scrollbar scroll-smooth pt-2.5 border-t border-white/[0.06]">
+              <div className="flex items-center gap-1 rounded-xl border border-white/[0.08] bg-black/40 p-1 shrink-0 whitespace-nowrap">
+                <button
+                  type="button"
+                  onClick={() => selectGameTab("valorant")}
+                  className={cn(
+                    "relative flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer shrink-0",
+                    activeGame === "valorant"
+                      ? "text-white"
+                      : "text-neutral-400 hover:text-neutral-200"
+                  )}
+                >
+                  {activeGame === "valorant" && (
+                    <motion.div
+                      layoutId="tactical-game-pill"
+                      transition={SPRING_PILL}
+                      className="absolute inset-0 rounded-lg bg-rose-500/20 border border-rose-500/40 shadow-sm"
+                    />
+                  )}
+                  <GameBrandIcon name="Valorant" className="relative z-10 h-3.5 w-3.5" />
+                  <span className="relative z-10">{tr.valorant}</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => selectGameTab("live")}
+                  className={cn(
+                    "relative flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer shrink-0",
+                    activeGame === "live"
+                      ? "text-white"
+                      : "text-neutral-400 hover:text-neutral-200"
+                  )}
+                >
+                  {activeGame === "live" && (
+                    <motion.div
+                      layoutId="tactical-game-pill"
+                      transition={SPRING_PILL}
+                      className="absolute inset-0 rounded-lg bg-orange-500/20 border border-orange-500/40 shadow-sm"
+                    />
+                  )}
+                  <Flame className="relative z-10 h-3.5 w-3.5 text-orange-400" />
+                  <span className="relative z-10">{tr.liveMatch}</span>
+                  <span className="relative z-10 rounded bg-orange-500/30 px-1 py-0.2 text-[9px] font-mono font-bold text-orange-200">
+                    {tr.live}
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => selectGameTab("vct")}
+                  className={cn(
+                    "relative flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer shrink-0",
+                    activeGame === "vct"
+                      ? "text-white"
+                      : "text-neutral-400 hover:text-neutral-200"
+                  )}
+                >
+                  {activeGame === "vct" && (
+                    <motion.div
+                      layoutId="tactical-game-pill"
+                      transition={SPRING_PILL}
+                      className="absolute inset-0 rounded-lg bg-amber-500/20 border border-amber-500/40 shadow-sm"
+                    />
+                  )}
+                  <Trophy className="relative z-10 h-3.5 w-3.5 text-amber-400" />
+                  <span className="relative z-10">{tr.vctPickems}</span>
+                  <span className="relative z-10 rounded bg-amber-500/30 px-1 py-0.2 text-[9px] font-mono font-bold text-amber-200">
+                    {tr.live}
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => selectGameTab("lol")}
+                  className={cn(
+                    "relative flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer shrink-0",
+                    activeGame === "lol"
+                      ? "text-white"
+                      : "text-neutral-400 hover:text-neutral-200"
+                  )}
+                >
+                  {activeGame === "lol" && (
+                    <motion.div
+                      layoutId="tactical-game-pill"
+                      transition={SPRING_PILL}
+                      className="absolute inset-0 rounded-lg bg-yellow-500/20 border border-yellow-500/40 shadow-sm"
+                    />
+                  )}
+                  <GameBrandIcon name="League of Legends" className="relative z-10 h-3.5 w-3.5" />
+                  <span className="relative z-10">{tr.lol}</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => selectGameTab("tft")}
+                  className={cn(
+                    "relative flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer shrink-0",
+                    activeGame === "tft"
+                      ? "text-white"
+                      : "text-neutral-400 hover:text-neutral-200"
+                  )}
+                >
+                  {activeGame === "tft" && (
+                    <motion.div
+                      layoutId="tactical-game-pill"
+                      transition={SPRING_PILL}
+                      className="absolute inset-0 rounded-lg bg-purple-500/20 border border-purple-500/40 shadow-sm"
+                    />
+                  )}
+                  <GameBrandIcon name="Teamfight Tactics" className="relative z-10 h-3.5 w-3.5" />
+                  <span className="relative z-10">{tr.tft}</span>
+                </button>
+
+                <div className="h-4 w-px bg-white/10 mx-1 shrink-0" aria-hidden="true" />
 
                 <button
                   type="button"
                   onClick={() => selectGameTab("coach")}
                   className={cn(
-                    "flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium transition-all cursor-pointer active:scale-95",
+                    "relative flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer shrink-0",
                     activeGame === "coach"
-                      ? "border-purple-500/40 bg-purple-500/15 text-purple-200 shadow-sm"
-                      : "border-white/10 bg-white/[0.04] text-neutral-300 hover:text-white hover:bg-white/[0.08]"
+                      ? "text-white"
+                      : "text-neutral-400 hover:text-neutral-200"
                   )}
                 >
-                  <Brain className="h-3.5 w-3.5 text-purple-400" />
-                  <span>{tr.coachIa}</span>
+                  {activeGame === "coach" && (
+                    <motion.div
+                      layoutId="tactical-game-pill"
+                      transition={SPRING_PILL}
+                      className="absolute inset-0 rounded-lg bg-purple-500/20 border border-purple-500/40 shadow-sm"
+                    />
+                  )}
+                  <Brain className="relative z-10 h-3.5 w-3.5 text-purple-400" />
+                  <span className="relative z-10">{tr.coachIa}</span>
+                  <span className="relative z-10 rounded bg-purple-500/30 px-1 py-0.2 text-[9px] font-mono font-bold text-purple-200">
+                    AI
+                  </span>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => selectGameTab("telemetry")}
                   className={cn(
-                    "flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium transition-all cursor-pointer active:scale-95",
+                    "relative flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer shrink-0",
                     activeGame === "telemetry"
-                      ? "border-cyan-500/40 bg-cyan-500/15 text-cyan-200 shadow-sm"
-                      : "border-white/10 bg-white/[0.04] text-neutral-300 hover:text-white hover:bg-white/[0.08]"
+                      ? "text-white"
+                      : "text-neutral-400 hover:text-neutral-200"
                   )}
                 >
-                  <Target className="h-3.5 w-3.5 text-cyan-400" />
-                  <span>{tr.telemetry}</span>
+                  {activeGame === "telemetry" && (
+                    <motion.div
+                      layoutId="tactical-game-pill"
+                      transition={SPRING_PILL}
+                      className="absolute inset-0 rounded-lg bg-cyan-500/20 border border-cyan-500/40 shadow-sm"
+                    />
+                  )}
+                  <Target className="relative z-10 h-3.5 w-3.5 text-cyan-400" />
+                  <span className="relative z-10">{tr.telemetry}</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => selectGameTab("training")}
                   className={cn(
-                    "flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium transition-all cursor-pointer active:scale-95",
+                    "relative flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer shrink-0",
                     activeGame === "training"
-                      ? "border-emerald-500/40 bg-emerald-500/15 text-emerald-200 shadow-sm"
-                      : "border-white/10 bg-white/[0.04] text-neutral-300 hover:text-white hover:bg-white/[0.08]"
+                      ? "text-white"
+                      : "text-neutral-400 hover:text-neutral-200"
                   )}
                 >
-                  <Activity className="h-3.5 w-3.5 text-emerald-400" />
-                  <span className="hidden sm:inline">{tr.training}</span>
+                  {activeGame === "training" && (
+                    <motion.div
+                      layoutId="tactical-game-pill"
+                      transition={SPRING_PILL}
+                      className="absolute inset-0 rounded-lg bg-emerald-500/20 border border-emerald-500/40 shadow-sm"
+                    />
+                  )}
+                  <Activity className="relative z-10 h-3.5 w-3.5 text-emerald-400" />
+                  <span className="relative z-10">{tr.training}</span>
                 </button>
               </div>
             </div>
-
-            {activeGame !== "vct" && (
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-white/[0.06]">
-                <form onSubmit={handleSearch} className="flex items-center gap-2 flex-1 max-w-md">
-                  <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 focus-within:border-white/20 transition-all flex-1">
-                    <User className="h-3.5 w-3.5 text-neutral-400 shrink-0" />
-                    <input
-                      type="text"
-                      value={riotName}
-                      onChange={(e) => setRiotName(e.target.value)}
-                      placeholder={tr.riotIdPlaceholder}
-                      aria-label={isEn ? "Riot Name" : "Nom Riot"}
-                      className="w-full bg-transparent text-xs font-medium text-white outline-none placeholder:text-neutral-500"
-                    />
-                    <span className="text-xs font-mono text-neutral-500">#</span>
-                    <input
-                      type="text"
-                      value={riotTag}
-                      onChange={(e) => setRiotTag(e.target.value)}
-                      placeholder={tr.riotTagPlaceholder}
-                      aria-label={isEn ? "Riot Tag" : "Tag Riot"}
-                      className="w-16 bg-transparent font-mono text-xs font-medium text-white outline-none placeholder:text-neutral-500 uppercase"
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="flex items-center gap-1.5 rounded-lg bg-white text-black font-semibold px-3.5 py-1.5 text-xs hover:bg-neutral-200 active:scale-95 transition-all cursor-pointer disabled:opacity-40 shadow-sm shrink-0"
-                  >
-                    <Search className="h-3.5 w-3.5 text-black" />
-                    <span>{loading ? tr.scanning : tr.analyze}</span>
-                  </button>
-                </form>
-              </div>
-            )}
           </div>
         </header>
 

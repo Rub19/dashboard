@@ -655,7 +655,7 @@ export default function RiotGamingHome() {
                   <Flame className="relative z-10 h-3.5 w-3.5 text-orange-400" />
                   <span className="relative z-10">{tr.liveMatch}</span>
                   <span className="relative z-10 rounded bg-orange-500/30 px-1 py-0.2 text-[9px] font-mono font-bold text-orange-200">
-                    {tr.live}
+                    WIP
                   </span>
                 </button>
 

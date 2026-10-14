@@ -63,7 +63,6 @@ function getTrackerGroups(isEn: boolean): TrackerSidebarGroup[] {
               className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-rose-400")}
             />
           ),
-          badge: "WIP",
         },
         {
           id: "live",
@@ -74,7 +73,7 @@ function getTrackerGroups(isEn: boolean): TrackerSidebarGroup[] {
               className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-rose-400")}
             />
           ),
-          badge: isEn ? "Beta" : "Bêta",
+          badge: "WIP",
         },
         {
           id: "valorant",

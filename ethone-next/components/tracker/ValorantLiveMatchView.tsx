@@ -58,7 +58,7 @@ export default function ValorantLiveMatchView({
             <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.05] px-2.5 py-0.5 text-[10px] font-medium text-neutral-300 uppercase tracking-wide">
                 <span className="h-1.5 w-1.5 rounded-full bg-amber-400 animate-pulse" />
-                Live Telemetry · {tr.beta}
+                Live Telemetry · WIP
               </span>
               <span className="rounded-full border border-white/[0.06] bg-white/[0.03] px-2 py-0.5 text-[10px] font-mono text-neutral-400">
                 {tr.liveLocalVanguardTitle}

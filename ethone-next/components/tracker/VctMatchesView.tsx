@@ -15,6 +15,8 @@ import {
   History,
   Swords,
 } from "@/components/icons/ph";
+import { useSettings } from "@/components/SettingsProvider";
+import { getTrackerI18n } from "@/lib/i18n-tracker";
 import { AnimatedNumber } from "./TrackerMotion";
 import { cn } from "@/lib/utils";
 import { EASE_OUT } from "@/lib/ease";
@@ -54,6 +56,9 @@ const RESULTS_API = "https://vlr.orlandomm.net/api/v1/results";
 const STORAGE_KEY = "ethone:vct:pickems";
 
 export default function VctMatchesView() {
+  const { settings } = useSettings();
+  const tr = useMemo(() => getTrackerI18n(settings.language), [settings.language]);
+  const isEn = (settings.language || "").toLowerCase().startsWith("en");
   const reducedMotion = useReducedMotion();
   const [upcomingMatches, setUpcomingMatches] = useState<VlrMatch[]>([]);
   const [resultsMatches, setResultsMatches] = useState<VlrMatch[]>([]);
@@ -230,13 +235,13 @@ export default function VctMatchesView() {
         <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-4 backdrop-blur-xl shadow-sm flex items-center justify-between">
           <div>
             <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">
-              Score Pick'ems
+              {tr.vctScorePickems}
             </span>
             <p className="text-2xl font-mono font-bold text-amber-300 mt-1">
               <AnimatedNumber value={pickEmStats.scoreTotal} suffix=" pts" />
             </p>
             <p className="text-[11px] font-mono text-neutral-400 mt-0.5">
-              {pickEmStats.correct} bon{pickEmStats.correct > 1 ? "s" : ""} pronostic{pickEmStats.correct > 1 ? "s" : ""}
+              {pickEmStats.correct} {isEn ? (pickEmStats.correct > 1 ? "correct predictions" : "correct prediction") : (pickEmStats.correct > 1 ? "bons pronostics" : "bon pronostic")}
             </p>
           </div>
           <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400">
@@ -247,13 +252,13 @@ export default function VctMatchesView() {
         <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-4 backdrop-blur-xl shadow-sm flex items-center justify-between">
           <div>
             <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">
-              Précision des Pronos
+              {tr.vctAccuracy}
             </span>
             <p className="text-2xl font-mono font-bold text-emerald-400 mt-1">
               <AnimatedNumber value={pickEmStats.accuracy} suffix="%" />
             </p>
             <p className="text-[11px] font-mono text-neutral-400 mt-0.5">
-              {pickEmStats.evaluated} match{pickEmStats.evaluated > 1 ? "s" : ""} évalué{pickEmStats.evaluated > 1 ? "s" : ""}
+              {pickEmStats.evaluated} {isEn ? (pickEmStats.evaluated > 1 ? "matches evaluated" : "match evaluated") : (pickEmStats.evaluated > 1 ? "matchs évalués" : "match évalué")}
             </p>
           </div>
           <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
@@ -264,13 +269,13 @@ export default function VctMatchesView() {
         <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-4 backdrop-blur-xl shadow-sm flex items-center justify-between">
           <div>
             <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">
-              Pronostics Enregistrés
+              {tr.vctSavedPickems}
             </span>
             <p className="text-2xl font-mono font-bold text-white mt-1">
               <AnimatedNumber value={pickEmStats.activeCount} />
             </p>
             <p className="text-[11px] font-mono text-neutral-400 mt-0.5">
-              Sauvegardés en local
+              {tr.vctSavedLocally}
             </p>
           </div>
           <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-400">
@@ -300,10 +305,10 @@ export default function VctMatchesView() {
                 />
               )}
               <Swords className="relative z-10 h-3.5 w-3.5 text-rose-300" />
-              <span className="relative z-10">À venir & En direct</span>
+              <span className="relative z-10">{tr.vctUpcomingTab}</span>
               {liveCount > 0 ? (
                 <span className="relative z-10 rounded-full bg-rose-500 px-1.5 py-0.2 text-[10px] font-bold text-white animate-pulse">
-                  {liveCount} LIVE
+                  {liveCount} {tr.live}
                 </span>
               ) : (
                 <span className="relative z-10 rounded-full bg-black/40 px-1.5 py-0.2 text-[10px]">
@@ -330,7 +335,7 @@ export default function VctMatchesView() {
                 />
               )}
               <History className="relative z-10 h-3.5 w-3.5" />
-              <span className="relative z-10">Scores & Anciens matchs</span>
+              <span className="relative z-10">{tr.vctResultsTab}</span>
               <span className="relative z-10 rounded-full bg-black/20 px-1.5 py-0.2 text-[10px]">
                 {resultsMatches.length}
               </span>
@@ -354,7 +359,7 @@ export default function VctMatchesView() {
                 />
               )}
               <Trophy className="relative z-10 h-3.5 w-3.5" />
-              <span className="relative z-10">Mes Pick'ems</span>
+              <span className="relative z-10">{tr.vctMyPickemsTab}</span>
               <span className="relative z-10 rounded-full bg-black/20 px-1.5 py-0.2 text-[10px]">
                 {pickEmStats.activeCount}
               </span>
@@ -368,7 +373,7 @@ export default function VctMatchesView() {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Rechercher une équipe ou tournoi..."
+                placeholder={tr.vctSearchPlaceholder}
                 className="w-full bg-transparent text-xs font-medium text-white outline-none placeholder:text-neutral-500"
               />
             </div>
@@ -377,10 +382,10 @@ export default function VctMatchesView() {
               onClick={loadVctData}
               disabled={loading}
               className="inline-flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2 text-xs font-semibold text-neutral-200 hover:text-white hover:bg-white/[0.08] active:scale-95 transition-all cursor-pointer disabled:opacity-40 shrink-0"
-              title="Rafraîchir les flux officiels VCT"
+              title={tr.refresh}
             >
               <RefreshCw className={cn("h-3.5 w-3.5", loading && "animate-spin")} />
-              <span className="hidden sm:inline">Actualiser</span>
+              <span className="hidden sm:inline">{tr.refresh}</span>
             </button>
           </div>
         </div>
@@ -388,17 +393,17 @@ export default function VctMatchesView() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-white/[0.06]">
           <div className="flex items-center gap-2 min-w-0">
             <span className="text-xs font-mono font-medium text-neutral-400 shrink-0">
-              Édition :
+              {tr.vctEditionLabel}
             </span>
             <div className="relative w-full sm:w-64">
               <select
                 value={selectedEdition}
                 onChange={(e) => setSelectedEdition(e.target.value)}
                 className="w-full appearance-none rounded-lg border border-white/10 bg-black/60 px-3 py-1.5 pr-8 text-xs font-mono font-medium text-white outline-none focus:border-amber-400/50 transition-all cursor-pointer"
-                aria-label="Sélectionner l'édition du tournoi"
+                aria-label={tr.vctEditionLabel}
               >
                 <option value="all" className="bg-[#10131B] text-white">
-                  Toutes les compétitions ({upcomingMatches.length + resultsMatches.length})
+                  {tr.vctAllCompetitions} ({upcomingMatches.length + resultsMatches.length})
                 </option>
                 {tournamentStats.map((t) => (
                   <option key={t.name} value={t.name} className="bg-[#10131B] text-white">
@@ -421,7 +426,7 @@ export default function VctMatchesView() {
                   : "bg-white/[0.04] text-neutral-300 hover:text-white hover:bg-white/[0.08]"
               )}
             >
-              Tous
+              {tr.vctAll}
             </button>
             {topEditions.map((t) => {
               const count = filterTab === "upcoming" ? t.countUpcoming : filterTab === "results" ? t.countResults : t.total;
@@ -463,21 +468,21 @@ export default function VctMatchesView() {
             onClick={loadVctData}
             className="rounded-lg bg-rose-600 px-4 py-2 text-xs font-semibold text-white hover:bg-rose-500 transition-all cursor-pointer"
           >
-            Réessayer
+            {isEn ? "Retry" : "Réessayer"}
           </button>
         </div>
       ) : filterTab === "upcoming" ? (
         <div className="space-y-4">
           <div className="flex items-center justify-between text-xs px-1 text-neutral-400 font-mono">
             <span>
-              {filteredUpcoming.length} match{filteredUpcoming.length > 1 ? "s" : ""} à venir & en direct
+              {filteredUpcoming.length} {isEn ? (filteredUpcoming.length > 1 ? "upcoming & live matches" : "upcoming & live match") : (filteredUpcoming.length > 1 ? "matchs à venir & en direct" : "match à venir & en direct")}
             </span>
             <button
               type="button"
               onClick={() => setFilterTab("results")}
               className="text-amber-400 hover:text-amber-300 underline underline-offset-4 transition-colors cursor-pointer"
             >
-              Consulter les scores des anciens matchs →
+              {isEn ? "Check past match scores →" : "Consulter les scores des anciens matchs →"}
             </button>
           </div>
 
@@ -528,12 +533,12 @@ export default function VctMatchesView() {
                       {isLive ? (
                         <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/50 bg-rose-500/20 px-3 py-1 font-mono text-[11px] font-bold text-rose-300 animate-pulse">
                           <span className="h-2 w-2 rounded-full bg-rose-400" />
-                          EN DIRECT
+                          {isEn ? "LIVE" : "EN DIRECT"}
                         </span>
                       ) : (
                         <span className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-1 font-mono text-[11px] text-neutral-300">
                           <Clock className="h-3.5 w-3.5 text-neutral-400" />
-                          {m.in || m.utcDate || "À venir"}
+                          {m.in || m.utcDate || (isEn ? "Upcoming" : "À venir")}
                         </span>
                       )}
                     </div>
@@ -579,7 +584,7 @@ export default function VctMatchesView() {
                             )}
                           </div>
                           <p className="text-[11px] font-mono text-neutral-400 mt-0.5">
-                            {isT1Picked ? "Sélectionné comme vainqueur" : "Cliquer pour pronostiquer"}
+                            {isT1Picked ? (isEn ? "Selected as winner" : "Sélectionné comme vainqueur") : (isEn ? "Click to predict" : "Cliquer pour pronostiquer")}
                           </p>
                         </div>
                       </div>
@@ -588,11 +593,11 @@ export default function VctMatchesView() {
                         {isT1Picked ? (
                           <span className="inline-flex items-center gap-1 rounded-md bg-amber-400 text-black px-2.5 py-1 text-[11px] font-mono font-bold shadow-sm">
                             <CheckCircle2 className="h-3.5 w-3.5 text-black" />
-                            MON PICK
+                            {isEn ? "MY PICK" : "MON PICK"}
                           </span>
                         ) : (
                           <span className="inline-flex items-center gap-1 rounded-md border border-white/10 bg-white/[0.04] text-neutral-400 px-2.5 py-1 text-[11px] font-mono group-hover:text-white group-hover:border-white/20 transition-all">
-                            Choisir
+                            {isEn ? "Pick" : "Choisir"}
                           </span>
                         )}
                       </div>
@@ -644,7 +649,7 @@ export default function VctMatchesView() {
                             )}
                           </div>
                           <p className="text-[11px] font-mono text-neutral-400 mt-0.5">
-                            {isT2Picked ? "Sélectionné comme vainqueur" : "Cliquer pour pronostiquer"}
+                            {isT2Picked ? (isEn ? "Selected as winner" : "Sélectionné comme vainqueur") : (isEn ? "Click to predict" : "Cliquer pour pronostiquer")}
                           </p>
                         </div>
                       </div>
@@ -653,11 +658,11 @@ export default function VctMatchesView() {
                         {isT2Picked ? (
                           <span className="inline-flex items-center gap-1 rounded-md bg-amber-400 text-black px-2.5 py-1 text-[11px] font-mono font-bold shadow-sm">
                             <CheckCircle2 className="h-3.5 w-3.5 text-black" />
-                            MON PICK
+                            {isEn ? "MY PICK" : "MON PICK"}
                           </span>
                         ) : (
                           <span className="inline-flex items-center gap-1 rounded-md border border-white/10 bg-white/[0.04] text-neutral-400 px-2.5 py-1 text-[11px] font-mono group-hover:text-white group-hover:border-white/20 transition-all">
-                            Choisir
+                            {isEn ? "Pick" : "Choisir"}
                           </span>
                         )}
                       </div>
@@ -673,7 +678,7 @@ export default function VctMatchesView() {
                       <div className="flex items-center gap-2">
                         <Target className="h-3.5 w-3.5 text-amber-400" />
                         <span className="font-mono text-neutral-300">
-                          Score exact <span className="text-amber-300">(Bonus +5 pts)</span> :
+                          {isEn ? "Exact score" : "Score exact"} <span className="text-amber-300">({isEn ? "Bonus +5 pts" : "Bonus +5 pts"})</span> :
                         </span>
                       </div>
                       <div className="flex items-center gap-1.5">
@@ -702,10 +707,10 @@ export default function VctMatchesView() {
             <div className="rounded-2xl border border-dashed border-white/10 bg-black/20 p-8 text-center space-y-2">
               <Clock className="h-7 w-7 text-neutral-500 mx-auto mb-1" />
               <p className="text-sm font-mono font-bold text-white uppercase">
-                Aucun match à venir pour cette sélection
+                {isEn ? "No upcoming matches for this selection" : "Aucun match à venir pour cette sélection"}
               </p>
               <p className="text-xs text-neutral-400 max-w-md mx-auto">
-                Consultez l'onglet "Scores & Anciens matchs" pour voir les résultats officiels récents ou changez l'édition sélectionnée.
+                {isEn ? "Check the 'Scores & Match History' tab to see recent official results or switch selected edition." : "Consultez l'onglet \"Scores & Anciens matchs\" pour voir les résultats officiels récents ou changez l'édition sélectionnée."}
               </p>
             </div>
           )}
@@ -714,14 +719,14 @@ export default function VctMatchesView() {
         <div className="space-y-4">
           <div className="flex items-center justify-between text-xs px-1 text-neutral-400 font-mono">
             <span>
-              {filteredResults.length} match{filteredResults.length > 1 ? "s" : ""} terminé{filteredResults.length > 1 ? "s" : ""}
+              {filteredResults.length} {isEn ? (filteredResults.length > 1 ? "finished matches" : "finished match") : (filteredResults.length > 1 ? "matchs terminés" : "match terminé")}
             </span>
             <button
               type="button"
               onClick={() => setFilterTab("upcoming")}
               className="text-rose-400 hover:text-rose-300 underline underline-offset-4 transition-colors cursor-pointer"
             >
-              ← Voir les matchs à venir & pronostiquer
+              {isEn ? "← View upcoming matches & predict" : "← Voir les matchs à venir & pronostiquer"}
             </button>
           </div>
 
@@ -777,7 +782,7 @@ export default function VctMatchesView() {
                     <div className="flex items-center gap-2 shrink-0">
                       <span className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-1 font-mono text-[11px] text-neutral-400">
                         <History className="h-3.5 w-3.5 text-neutral-500" />
-                        {m.ago || "Terminé"}
+                        {m.ago || (isEn ? "Finished" : "Terminé")}
                       </span>
                     </div>
                   </div>
@@ -820,7 +825,7 @@ export default function VctMatchesView() {
                             )}
                           </div>
                           <p className="text-[11px] font-mono text-neutral-400 mt-0.5">
-                            {t1Won ? "Vainqueur du match" : "Équipe défaite"}
+                            {t1Won ? (isEn ? "Match Winner" : "Vainqueur du match") : (isEn ? "Defeated Team" : "Équipe défaite")}
                           </p>
                         </div>
                       </div>
@@ -829,11 +834,11 @@ export default function VctMatchesView() {
                         {t1Won ? (
                           <span className="inline-flex items-center gap-1 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-2 py-0.5 text-[10px] font-mono font-bold uppercase">
                             <CheckCircle2 className="h-3 w-3" />
-                            Victoire
+                            {isEn ? "Victory" : "Victoire"}
                           </span>
                         ) : (
                           <span className="inline-flex items-center gap-1 rounded bg-white/[0.04] text-neutral-400 px-2 py-0.5 text-[10px] font-mono uppercase">
-                            Défaite
+                            {isEn ? "Defeat" : "Défaite"}
                           </span>
                         )}
                       </div>
@@ -849,7 +854,7 @@ export default function VctMatchesView() {
                           {team2?.score ?? "0"}
                         </span>
                       </div>
-                      <span className="text-[10px] font-mono text-neutral-400 uppercase mt-1">Score Final</span>
+                      <span className="text-[10px] font-mono text-neutral-400 uppercase mt-1">{isEn ? "Final Score" : "Score Final"}</span>
                     </div>
 
                     <div
@@ -889,7 +894,7 @@ export default function VctMatchesView() {
                             )}
                           </div>
                           <p className="text-[11px] font-mono text-neutral-400 mt-0.5">
-                            {t2Won ? "Vainqueur du match" : "Équipe défaite"}
+                            {t2Won ? (isEn ? "Match Winner" : "Vainqueur du match") : (isEn ? "Defeated Team" : "Équipe défaite")}
                           </p>
                         </div>
                       </div>
@@ -898,11 +903,11 @@ export default function VctMatchesView() {
                         {t2Won ? (
                           <span className="inline-flex items-center gap-1 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-2 py-0.5 text-[10px] font-mono font-bold uppercase">
                             <CheckCircle2 className="h-3 w-3" />
-                            Victoire
+                            {isEn ? "Victory" : "Victoire"}
                           </span>
                         ) : (
                           <span className="inline-flex items-center gap-1 rounded bg-white/[0.04] text-neutral-400 px-2 py-0.5 text-[10px] font-mono uppercase">
-                            Défaite
+                            {isEn ? "Defeat" : "Défaite"}
                           </span>
                         )}
                       </div>
@@ -925,15 +930,15 @@ export default function VctMatchesView() {
                           <XCircle className="h-4 w-4 text-rose-400 shrink-0" />
                         )}
                         <span>
-                          Votre prono : <strong>{pred.winner}</strong> {pred.score ? `(${pred.score})` : ""}
+                          {isEn ? "Your pick:" : "Votre prono :"} <strong>{pred.winner}</strong> {pred.score ? `(${pred.score})` : ""}
                         </span>
                       </div>
                       <span className="font-bold">
                         {isPredCorrect
                           ? isScoreExact
-                            ? "+15 pts (Score exact !)"
-                            : "+10 pts (Vainqueur correct)"
-                          : "0 pt (Prono manqué)"}
+                            ? (isEn ? "+15 pts (Exact score!)" : "+15 pts (Score exact !)")
+                            : (isEn ? "+10 pts (Correct winner)" : "+10 pts (Vainqueur correct)")
+                          : (isEn ? "0 pts (Missed pick)" : "0 pt (Prono manqué)")}
                       </span>
                     </div>
                   )}
@@ -944,7 +949,7 @@ export default function VctMatchesView() {
             <div className="rounded-2xl border border-dashed border-white/10 bg-black/20 p-8 text-center space-y-2">
               <Trophy className="h-7 w-7 text-neutral-500 mx-auto mb-1" />
               <p className="text-sm font-mono font-bold text-white uppercase">
-                Aucun résultat correspondant aux critères
+                {isEn ? "No results matching criteria" : "Aucun résultat correspondant aux critères"}
               </p>
             </div>
           )}
@@ -953,14 +958,14 @@ export default function VctMatchesView() {
         <div className="space-y-4">
           <div className="flex items-center justify-between text-xs px-1 text-neutral-400 font-mono">
             <span>
-              {Object.keys(predictions).length} pronostic{Object.keys(predictions).length > 1 ? "s" : ""} enregistré{Object.keys(predictions).length > 1 ? "s" : ""}
+              {Object.keys(predictions).length} {isEn ? (Object.keys(predictions).length > 1 ? "saved predictions" : "saved prediction") : (Object.keys(predictions).length > 1 ? "pronostics enregistrés" : "pronostic enregistré")}
             </span>
             <button
               type="button"
               onClick={() => setFilterTab("upcoming")}
               className="text-amber-400 hover:text-amber-300 underline underline-offset-4 transition-colors cursor-pointer"
             >
-              Faire d'autres pronostics →
+              {isEn ? "Make more predictions →" : "Faire d'autres pronostics →"}
             </button>
           </div>
 
@@ -986,16 +991,16 @@ export default function VctMatchesView() {
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/[0.06] pb-3 text-xs">
                     <span className="font-mono text-neutral-400 font-semibold truncate">
-                      {match?.tournament || "Compétition VCT"} {match?.event ? `— ${match.event}` : ""}
+                      {match?.tournament || (isEn ? "VCT Competition" : "Compétition VCT")} {match?.event ? `— ${match.event}` : ""}
                     </span>
                     <div className="flex items-center gap-2">
                       {isCompleted ? (
                         <span className="rounded bg-white/[0.04] px-2 py-0.5 font-mono text-[10px] text-neutral-400">
-                          {match?.ago || "Terminé"}
+                          {match?.ago || (isEn ? "Finished" : "Terminé")}
                         </span>
                       ) : (
                         <span className="rounded bg-rose-500/20 text-rose-300 border border-rose-500/30 px-2 py-0.5 font-mono text-[10px] font-bold">
-                          {match?.in || "À venir"}
+                          {match?.in || (isEn ? "Upcoming" : "À venir")}
                         </span>
                       )}
                       <button
@@ -1003,20 +1008,20 @@ export default function VctMatchesView() {
                         onClick={() => deletePrediction(pred.matchId)}
                         className="rounded border border-white/10 bg-white/[0.03] px-2.5 py-1 font-mono text-[11px] text-neutral-400 hover:text-rose-400 hover:border-rose-500/40 transition-all cursor-pointer"
                       >
-                        Supprimer
+                        {isEn ? "Delete" : "Supprimer"}
                       </button>
                     </div>
                   </div>
 
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs text-neutral-400 font-mono">Vainqueur choisi :</span>
+                      <span className="text-xs text-neutral-400 font-mono">{isEn ? "Chosen winner:" : "Vainqueur choisi :"}</span>
                       <span className="rounded-md bg-amber-400 text-black px-2.5 py-0.5 text-xs font-mono font-bold">
                         {pred.winner}
                       </span>
                       {pred.score && (
                         <span className="rounded bg-white/[0.06] border border-white/10 px-2 py-0.5 font-mono text-xs text-white">
-                          Score : {pred.score}
+                          {isEn ? `Score: ${pred.score}` : `Score : ${pred.score}`}
                         </span>
                       )}
                     </div>
@@ -1024,7 +1029,7 @@ export default function VctMatchesView() {
                     {isCompleted && (
                       <div className="flex items-center gap-2">
                         <span className="text-xs text-neutral-400 font-mono">
-                          Score réel : {team1?.score ?? "0"} - {team2?.score ?? "0"}
+                          {isEn ? `Actual score: ${team1?.score ?? "0"} - ${team2?.score ?? "0"}` : `Score réel : ${team1?.score ?? "0"} - ${team2?.score ?? "0"}`}
                         </span>
                         <span
                           className={cn(
@@ -1037,12 +1042,12 @@ export default function VctMatchesView() {
                           {isPredCorrect ? (
                             <>
                               <CheckCircle2 className="h-3 w-3" />
-                              Gagné (+10 pts)
+                              {isEn ? "Won (+10 pts)" : "Gagné (+10 pts)"}
                             </>
                           ) : (
                             <>
                               <XCircle className="h-3 w-3" />
-                              Manqué
+                              {isEn ? "Missed" : "Manqué"}
                             </>
                           )}
                         </span>
@@ -1056,10 +1061,10 @@ export default function VctMatchesView() {
             <div className="rounded-2xl border border-dashed border-white/10 bg-black/20 p-8 text-center space-y-2">
               <Trophy className="h-7 w-7 text-neutral-500 mx-auto mb-1" />
               <p className="text-sm font-mono font-bold text-white uppercase">
-                Vous n'avez pas encore fait de pronostic
+                {isEn ? "You haven't made any predictions yet" : "Vous n'avez pas encore fait de pronostic"}
               </p>
               <p className="text-xs text-neutral-400 max-w-md mx-auto">
-                Allez dans l'onglet "À venir & En direct" et cliquez sur une équipe pour enregistrer votre Pick'em et tenter de marquer jusqu'à 15 points par match !
+                {isEn ? "Go to the 'Upcoming & Live' tab and click on a team to record your Pick'em and try to score up to 15 points per match!" : "Allez dans l'onglet \"À venir & En direct\" et cliquez sur une équipe pour enregistrer votre Pick'em et tenter de marquer jusqu'à 15 points par match !"}
               </p>
             </div>
           )}

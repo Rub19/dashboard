@@ -1,7 +1,9 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { Activity, Radio, ShieldCheck, Wifi, RefreshCw } from "@/components/icons/ph";
+import { useSettings } from "@/components/SettingsProvider";
+import { getTrackerI18n } from "@/lib/i18n-tracker";
 import { cn } from "@/lib/utils";
 import type { ValorantAccountProfile } from "@/lib/valorant-provider";
 import type { ValorantMatch } from "@/lib/valorant-tracker";
@@ -18,6 +20,8 @@ export default function ValorantLiveMatchView({
   riotTag,
   valorantProfile,
 }: ValorantLiveMatchViewProps) {
+  const { settings } = useSettings();
+  const tr = useMemo(() => getTrackerI18n(settings.language), [settings.language]);
   const [checking, setChecking] = useState(false);
   const [checkMessage, setCheckMessage] = useState<string | null>(null);
 
@@ -30,9 +34,13 @@ export default function ValorantLiveMatchView({
     setCheckMessage(null);
     setTimeout(() => {
       setChecking(false);
-      setCheckMessage("Aucune partie en cours détectée. Lancez VALORANT et rejoignez un match pour activer la télémétrie en temps réel.");
+      setCheckMessage(
+        settings.language?.startsWith("en")
+          ? "No active match detected. Launch VALORANT and join a match to activate real-time telemetry."
+          : "Aucune partie en cours détectée. Lancez VALORANT et rejoignez un match pour activer la télémétrie en temps réel."
+      );
     }, 750);
-  }, []);
+  }, [settings.language]);
 
   return (
     <div className="space-y-4">
@@ -42,20 +50,20 @@ export default function ValorantLiveMatchView({
             <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.05] px-2.5 py-0.5 text-[10px] font-medium text-neutral-300 uppercase tracking-wide">
                 <span className="h-1.5 w-1.5 rounded-full bg-amber-400 animate-pulse" />
-                Live Telemetry · Bêta
+                Live Telemetry · {tr.beta}
               </span>
               <span className="rounded-full border border-white/[0.06] bg-white/[0.03] px-2 py-0.5 text-[10px] font-mono text-neutral-400">
-                Client Local Vanguard
+                {tr.liveLocalVanguardTitle}
               </span>
             </div>
             <h2 className="text-base sm:text-lg font-semibold text-white uppercase tracking-wide">
-              Partie en Direct (Bêta)
+              {tr.liveHeaderTitle}
             </h2>
             <p className="text-xs text-neutral-400">
               {fullRiotId ? (
-                <>Suivi de session en temps réel pour <strong className="text-white font-medium">{fullRiotId}</strong>.</>
+                <>{tr.liveSubtitleWithId} <strong className="text-white font-medium">{fullRiotId}</strong>.</>
               ) : (
-                <>Suivi de session en temps réel via le client local VALORANT.</>
+                <>{tr.liveSubtitleGeneric}</>
               )}
             </p>
           </div>
@@ -68,7 +76,7 @@ export default function ValorantLiveMatchView({
               className="flex items-center gap-1.5 rounded-xl bg-white px-3.5 py-2 text-xs font-medium text-black hover:bg-neutral-200 active:scale-[0.98] transition-all cursor-pointer shadow-sm disabled:opacity-50"
             >
               <RefreshCw className={cn("h-3.5 w-3.5 text-black", checking && "animate-spin")} />
-              <span>{checking ? "Recherche de session..." : "Vérifier le client VALORANT"}</span>
+              <span>{checking ? tr.liveCheckingBtn : tr.liveCheckBtn}</span>
             </button>
           </div>
         </div>
@@ -79,10 +87,10 @@ export default function ValorantLiveMatchView({
           </div>
           <div className="max-w-md mx-auto space-y-1.5">
             <h3 className="text-sm font-semibold text-white">
-              Aucune session de jeu active détectée
+              {tr.liveNoSessionTitle}
             </h3>
             <p className="text-xs text-neutral-400 leading-relaxed">
-              Le tracker de match en direct est actuellement en phase <strong className="text-white font-medium">Bêta</strong>. Pour synchroniser la télémétrie en manche réelle, démarrez VALORANT sur votre ordinateur et entrez dans une partie personnalisée, non classée ou compétitive.
+              {tr.liveNoSessionDesc}
             </p>
           </div>
 
@@ -99,30 +107,30 @@ export default function ValorantLiveMatchView({
         <div className="rounded-2xl border border-white/[0.08] bg-[#121214]/80 p-4 backdrop-blur-2xl shadow-sm space-y-2">
           <div className="flex items-center gap-2 text-white">
             <Wifi className="h-4 w-4 text-neutral-400" />
-            <h4 className="text-xs font-semibold uppercase tracking-wider">Détection Locale Vanguard</h4>
+            <h4 className="text-xs font-semibold uppercase tracking-wider">{tr.liveLocalVanguardTitle}</h4>
           </div>
           <p className="text-xs text-neutral-400 leading-relaxed">
-            Synchronisation instantanée avec le client officiel VALORANT en local dès le début de la première manche de votre partie.
+            {tr.liveLocalVanguardDesc}
           </p>
         </div>
 
         <div className="rounded-2xl border border-white/[0.08] bg-[#121214]/80 p-4 backdrop-blur-2xl shadow-sm space-y-2">
           <div className="flex items-center gap-2 text-white">
             <Activity className="h-4 w-4 text-neutral-400" />
-            <h4 className="text-xs font-semibold uppercase tracking-wider">Télémétrie en Manche Réelle</h4>
+            <h4 className="text-xs font-semibold uppercase tracking-wider">{tr.liveRealRoundTitle}</h4>
           </div>
           <p className="text-xs text-neutral-400 leading-relaxed">
-            Suivi automatisé de l&apos;économie d&apos;équipe, des points d&apos;ultime, des scores de combat et du statut du Spike round après round.
+            {tr.liveRealRoundDesc}
           </p>
         </div>
 
         <div className="rounded-2xl border border-white/[0.08] bg-[#121214]/80 p-4 backdrop-blur-2xl shadow-sm space-y-2">
           <div className="flex items-center gap-2 text-white">
             <ShieldCheck className="h-4 w-4 text-neutral-400" />
-            <h4 className="text-xs font-semibold uppercase tracking-wider">Conformité Fair-Play</h4>
+            <h4 className="text-xs font-semibold uppercase tracking-wider">{tr.liveFairPlayTitle}</h4>
           </div>
           <p className="text-xs text-neutral-400 leading-relaxed">
-            100% passif, zéro modification des fichiers de jeu, certifié strictement conforme aux règles d&apos;intégrité Riot Vanguard.
+            {tr.liveFairPlayDesc}
           </p>
         </div>
       </div>

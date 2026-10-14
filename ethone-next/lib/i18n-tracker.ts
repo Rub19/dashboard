@@ -1,0 +1,494 @@
+export interface TrackerTranslations {
+  hub: string;
+  wip: string;
+  live: string;
+  beta: string;
+  valorant: string;
+  lol: string;
+  tft: string;
+  vctPickems: string;
+  liveMatch: string;
+  coachIa: string;
+  telemetry: string;
+  training: string;
+
+  riotIdPlaceholder: string;
+  riotTagPlaceholder: string;
+  analyze: string;
+  scanning: string;
+
+  refresh: string;
+  compare: string;
+  notConnected: string;
+  connected: string;
+  noProfile: string;
+  unrated: string;
+  matches: string;
+  match: string;
+  victory: string;
+  defeat: string;
+  draw: string;
+
+  kdRatio: string;
+  winRate: string;
+  combatScoreAcs: string;
+  headshotPrecision: string;
+  rankProgression: string;
+  avgPerRound: string;
+  eliteTier: string;
+
+  topCompetitiveAgents: string;
+  recentAgents: string;
+  noAgent: string;
+  duelWinrate: string;
+
+  shootingTelemetryImpact: string;
+  impactDistribution: string;
+  head: string;
+  body: string;
+  legs: string;
+  firstDuelWinrate: string;
+  crosshairAboveAverage: string;
+
+  competitiveMatchHistory: string;
+  last5Matches: string;
+  allQueues: string;
+  competitiveQueue: string;
+  unratedQueue: string;
+  swiftplayQueue: string;
+  spikeRushQueue: string;
+  deathmatchQueue: string;
+  noMatchFound: string;
+  searchPrompt: string;
+
+  valEmptyTitle: string;
+  valEmptyDesc: string;
+  valPerfTitle: string;
+  valPerfDesc: string;
+  valTelemTitle: string;
+  valTelemDesc: string;
+  valCoachTitle: string;
+  valCoachDesc: string;
+  valLoadingTitle: string;
+  valLoadingDesc: string;
+
+  lolEmptyTitle: string;
+  lolEmptyDesc: string;
+  lolKdaTitle: string;
+  lolKdaDesc: string;
+  lolDpmTitle: string;
+  lolDpmDesc: string;
+  lolKpTitle: string;
+  lolKpDesc: string;
+  lolLoadingTitle: string;
+  lolLoadingDesc: string;
+  lolAverageKda: string;
+  lolDpm: string;
+  lolKp: string;
+  lolMatchesAnalyzed: string;
+  lolRecentMatches: string;
+
+  tftModuleTitle: string;
+  tftModuleDesc: string;
+  tftConfigKeyBtn: string;
+
+  coachDiagnosticTitle: string;
+  coachDiagnosticActive: string;
+  coachEvalPrefix: string;
+  coachPendingTitle: string;
+  coachPendingDesc: string;
+  coachArchetype: string;
+  coachStrength: string;
+  coachWeakness: string;
+  coachRecommendations: string;
+  coachRoutineBtn: string;
+
+  trainingPlanTitle: string;
+  trainingPendingTitle: string;
+  trainingPendingDesc: string;
+  trainingRoutineFor: string;
+  phase1Title: string;
+  phase1Desc: string;
+  phase2Title: string;
+  phase2Desc: string;
+  phase3Title: string;
+  phase3Desc: string;
+
+  telemHeaderTitle: string;
+  telemPendingTitle: string;
+  telemPendingDesc: string;
+  telemTotalKills: string;
+  telemTotalDeaths: string;
+  telemHeadPrecision: string;
+  telemOverallAdr: string;
+  telemSpreadTitle: string;
+  telemHeadshots: string;
+  telemBodyshots: string;
+  telemLegshots: string;
+  telemMapTitle: string;
+  telemNoMap: string;
+
+  liveHeaderTitle: string;
+  liveSubtitleWithId: string;
+  liveSubtitleGeneric: string;
+  liveCheckBtn: string;
+  liveCheckingBtn: string;
+  liveNoSessionTitle: string;
+  liveNoSessionDesc: string;
+  liveLocalVanguardTitle: string;
+  liveLocalVanguardDesc: string;
+  liveRealRoundTitle: string;
+  liveRealRoundDesc: string;
+  liveFairPlayTitle: string;
+  liveFairPlayDesc: string;
+
+  vctScorePickems: string;
+  vctAccuracy: string;
+  vctSavedPickems: string;
+  vctSavedLocally: string;
+  vctUpcomingTab: string;
+  vctResultsTab: string;
+  vctMyPickemsTab: string;
+  vctSearchPlaceholder: string;
+  vctEditionLabel: string;
+  vctAllCompetitions: string;
+  vctAll: string;
+
+  footerCompliance: string;
+  footerNotAffiliated: string;
+  footerLegalDesc: string;
+  footerCreditsBtn: string;
+  footerApiKeyBtn: string;
+}
+
+export const TRACKER_TRANSLATIONS: Record<"fr" | "en", TrackerTranslations> = {
+  fr: {
+    hub: "Hub",
+    wip: "WIP",
+    live: "LIVE",
+    beta: "Bêta",
+    valorant: "VALORANT",
+    lol: "LoL",
+    tft: "TFT",
+    vctPickems: "VCT & Pick'ems",
+    liveMatch: "Partie en direct",
+    coachIa: "Coach IA",
+    telemetry: "Télémétrie",
+    training: "Entraînement",
+
+    riotIdPlaceholder: "Riot ID",
+    riotTagPlaceholder: "TAG",
+    analyze: "Analyser",
+    scanning: "Scan...",
+
+    refresh: "Actualiser",
+    compare: "Comparer",
+    notConnected: "— Non connecté",
+    connected: "Riot Games · Connecté",
+    noProfile: "Aucun profil",
+    unrated: "Non classé",
+    matches: "parties",
+    match: "partie",
+    victory: "Victoire",
+    defeat: "Défaite",
+    draw: "Égalité",
+
+    kdRatio: "Ratio K/D",
+    winRate: "Taux de Victoire",
+    combatScoreAcs: "Score Combat ACS",
+    headshotPrecision: "Précision Tête (HS)",
+    rankProgression: "Progression de Rang",
+    avgPerRound: "Moyenne par manche",
+    eliteTier: "Tier Élite · Vandal / Phantom",
+
+    topCompetitiveAgents: "Top Agents Compétitifs",
+    recentAgents: "agents récents",
+    noAgent: "Aucun agent",
+    duelWinrate: "Victoires en duel",
+
+    shootingTelemetryImpact: "Télémétrie de Tir & Impact",
+    impactDistribution: "Localisation des impacts",
+    head: "Tête",
+    body: "Corps",
+    legs: "Jambes",
+    firstDuelWinrate: "Victoires 1er duel",
+    crosshairAboveAverage: "Alignement réticule supérieur à la moyenne",
+
+    competitiveMatchHistory: "Journal des Matchs Compétitifs",
+    last5Matches: "5 dernières parties officielles",
+    allQueues: "Toutes files",
+    competitiveQueue: "Compétitif",
+    unratedQueue: "Non classé",
+    swiftplayQueue: "Swiftplay",
+    spikeRushQueue: "Spike Rush",
+    deathmatchQueue: "Deathmatch",
+    noMatchFound: "Aucun match trouvé",
+    searchPrompt: "Recherchez un Riot ID ci-dessus pour charger l'historique complet des parties.",
+
+    valEmptyTitle: "Aucun profil VALORANT sélectionné",
+    valEmptyDesc: "Saisissez votre Riot ID et votre TAG dans la barre ci-dessus puis cliquez sur « Analyser » pour charger vos statistiques compétitives officielles, votre télémétrie de tir et votre historique de parties.",
+    valPerfTitle: "Performances",
+    valPerfDesc: "ACS officiel, ratio K/D, taux de victoire et suivi précis de la progression de rang et des RR.",
+    valTelemTitle: "Télémétrie",
+    valTelemDesc: "Précision anatomique calculée (tête, corps, jambes) et analyse des engagements round par round.",
+    valCoachTitle: "Coach Tactique",
+    valCoachDesc: "Diagnostic de style de jeu, détection des points faibles et plan d'entraînement adapté.",
+    valLoadingTitle: "Analyse du profil en cours...",
+    valLoadingDesc: "Synchronisation des statistiques compétitives et des matchs récents via l'API officielle.",
+
+    lolEmptyTitle: "Aucun invocateur League of Legends sélectionné",
+    lolEmptyDesc: "Saisissez votre Riot ID et votre TAG dans la barre ci-dessus puis cliquez sur « Analyser » pour charger votre KDA moyen, vos dégâts par minute et l'historique de vos parties récentes.",
+    lolKdaTitle: "KDA & Impact",
+    lolKdaDesc: "Ratio KDA moyen, éliminations, morts et assistances cumulées sur les dernières parties.",
+    lolDpmTitle: "Dégâts / Minute",
+    lolDpmDesc: "Volume de dégâts infligés aux champions calculé par minute de jeu.",
+    lolKpTitle: "Kill Participation",
+    lolKpDesc: "Taux d'implication dans les prises d'objectifs et les éliminations collectives.",
+    lolLoadingTitle: "Analyse de l'Invocateur en cours...",
+    lolLoadingDesc: "Récupération de l'historique de match SoloQ et Flex via l'API Riot Games.",
+    lolAverageKda: "KDA Moyen",
+    lolDpm: "Dégâts / Minute",
+    lolKp: "Kill Participation",
+    lolMatchesAnalyzed: "Parties analysées :",
+    lolRecentMatches: "Parties Récentes League of Legends",
+
+    tftModuleTitle: "Module Teamfight Tactics",
+    tftModuleDesc: "L'intégration des données de match TFT (compositions d'unités, synergies d'équipe et classements de fin de manche) requiert la configuration d'une clé API Riot Games personnalisée.",
+    tftConfigKeyBtn: "Configurer la Clé API Riot",
+
+    coachDiagnosticTitle: "Diagnostic Tactique Coach IA",
+    coachDiagnosticActive: "Analyse active",
+    coachEvalPrefix: "Évaluation basée sur",
+    coachPendingTitle: "Diagnostic Tactique Coach IA en attente",
+    coachPendingDesc: "Le Coach IA requiert au moins une partie compétitive enregistrée pour analyser votre style de jeu, l'efficacité de vos engagements et la rentabilité de vos achats. Recherchez un Riot ID ci-dessus pour lancer l'audit.",
+    coachArchetype: "Archétype",
+    coachStrength: "Point Fort Majeur",
+    coachWeakness: "Axe d'Amélioration",
+    coachRecommendations: "Recommandations Tactiques Personnalisées",
+    coachRoutineBtn: "Routine d'entraînement",
+
+    trainingPlanTitle: "Plan d'Entraînement Personnalisé · Coach IA",
+    trainingPendingTitle: "Plan d'Entraînement en Attente",
+    trainingPendingDesc: "Synchronisez un profil VALORANT ci-dessus pour générer une routine d'entraînement adaptée à votre agent favori et votre niveau actuel.",
+    trainingRoutineFor: "Routine ciblée",
+    phase1Title: "Phase 1 : Calibrage Mécanique & Placement de Réticule (10 min)",
+    phase1Desc: "Éliminez 50 bots en mode Entraînement avec Vandal sans vous accroupir. Focus sur le micro-ajustement horizontal à hauteur de tête avant de tirer la première balle.",
+    phase2Title: "Phase 2 : Prise d'Espace & Duels sous Pression (15 min)",
+    phase2Desc: "Entraînez les entrées de site agressives avec vos capacités d'utilitaires posées pour briser la ligne ennemie et forcer un duel avantageux.",
+    phase3Title: "Phase 3 : Débriefing & Suivi des Crédits (5 min)",
+    phase3Desc: "Vérifiez vos rounds d'économie sur la télémétrie post-match. Assurez-vous d'avoir acheté au moins 3 utilitaires clés sur les rounds armés.",
+
+    telemHeaderTitle: "Télémétrie de Combat Post-Match · VALORANT",
+    telemPendingTitle: "Télémétrie en attente de données",
+    telemPendingDesc: "Aucune partie VALORANT n'a été enregistrée pour ce joueur. Entrez un Riot ID valide ci-dessus pour calculer l'analyse balistique, la précision anatomique et les ratios de duel réels.",
+    telemTotalKills: "Éliminations Totales",
+    telemTotalDeaths: "Morts Totales",
+    telemHeadPrecision: "Précision Tête",
+    telemOverallAdr: "ADR Global",
+    telemSpreadTitle: "Répartition Anatomique des Tirs",
+    telemHeadshots: "Tirs à la tête (HS)",
+    telemBodyshots: "Tirs au corps",
+    telemLegshots: "Tirs aux jambes",
+    telemMapTitle: "Performance par Carte",
+    telemNoMap: "Aucune carte disponible",
+
+    liveHeaderTitle: "Partie en Direct (Bêta)",
+    liveSubtitleWithId: "Suivi de session en temps réel pour",
+    liveSubtitleGeneric: "Suivi de session en temps réel via le client local VALORANT.",
+    liveCheckBtn: "Vérifier le client VALORANT",
+    liveCheckingBtn: "Recherche de session...",
+    liveNoSessionTitle: "Aucune session de jeu active détectée",
+    liveNoSessionDesc: "Le tracker de match en direct est actuellement en phase Bêta. Pour synchroniser la télémétrie en manche réelle, démarrez VALORANT sur votre ordinateur et entrez dans une partie personnalisée, non classée ou compétitive.",
+    liveLocalVanguardTitle: "Détection Locale Vanguard",
+    liveLocalVanguardDesc: "Synchronisation instantanée avec le client officiel VALORANT en local dès le début de la première manche de votre partie.",
+    liveRealRoundTitle: "Télémétrie en Manche Réelle",
+    liveRealRoundDesc: "Suivi automatisé de l'économie d'équipe, des points d'ultime, des scores de combat et du statut du Spike round après round.",
+    liveFairPlayTitle: "Conformité Fair-Play",
+    liveFairPlayDesc: "100% passif, zéro modification des fichiers de jeu, certifié strictement conforme aux règles d'intégrité Riot Vanguard.",
+
+    vctScorePickems: "Score Pick'ems",
+    vctAccuracy: "Précision des Pronos",
+    vctSavedPickems: "Pronostics Enregistrés",
+    vctSavedLocally: "Sauvegardés en local",
+    vctUpcomingTab: "À venir & En direct",
+    vctResultsTab: "Scores & Anciens matchs",
+    vctMyPickemsTab: "Mes Pick'ems",
+    vctSearchPlaceholder: "Rechercher une équipe ou tournoi...",
+    vctEditionLabel: "Édition :",
+    vctAllCompetitions: "Toutes les compétitions",
+    vctAll: "Tous",
+
+    footerCompliance: "Attributions & Conformité Compétitive",
+    footerNotAffiliated: "Non Affilié à Riot Games",
+    footerLegalDesc: "Politique Legal Jibber Jabber de Riot Games et APIs communautaires.",
+    footerCreditsBtn: "Tous les crédits",
+    footerApiKeyBtn: "Clé API",
+  },
+  en: {
+    hub: "Hub",
+    wip: "WIP",
+    live: "LIVE",
+    beta: "Beta",
+    valorant: "VALORANT",
+    lol: "LoL",
+    tft: "TFT",
+    vctPickems: "VCT & Pick'ems",
+    liveMatch: "Live Match",
+    coachIa: "AI Coach",
+    telemetry: "Telemetry",
+    training: "Training",
+
+    riotIdPlaceholder: "Riot ID",
+    riotTagPlaceholder: "TAG",
+    analyze: "Analyze",
+    scanning: "Scanning...",
+
+    refresh: "Refresh",
+    compare: "Compare",
+    notConnected: "— Not connected",
+    connected: "Riot Games · Connected",
+    noProfile: "No profile",
+    unrated: "Unrated",
+    matches: "matches",
+    match: "match",
+    victory: "Victory",
+    defeat: "Defeat",
+    draw: "Draw",
+
+    kdRatio: "K/D Ratio",
+    winRate: "Win Rate",
+    combatScoreAcs: "Combat Score (ACS)",
+    headshotPrecision: "Headshot Precision (HS)",
+    rankProgression: "Rank Progression",
+    avgPerRound: "Average per round",
+    eliteTier: "Elite Tier · Vandal / Phantom",
+
+    topCompetitiveAgents: "Top Competitive Agents",
+    recentAgents: "recent agents",
+    noAgent: "No agent",
+    duelWinrate: "Duel Win Rate",
+
+    shootingTelemetryImpact: "Shooting Telemetry & Impact",
+    impactDistribution: "Impact Distribution",
+    head: "Head",
+    body: "Body",
+    legs: "Legs",
+    firstDuelWinrate: "First Duel Win Rate",
+    crosshairAboveAverage: "Crosshair alignment above average",
+
+    competitiveMatchHistory: "Competitive Match History",
+    last5Matches: "Last 5 official matches",
+    allQueues: "All Queues",
+    competitiveQueue: "Competitive",
+    unratedQueue: "Unrated",
+    swiftplayQueue: "Swiftplay",
+    spikeRushQueue: "Spike Rush",
+    deathmatchQueue: "Deathmatch",
+    noMatchFound: "No matches found",
+    searchPrompt: "Search for a Riot ID above to load complete match history.",
+
+    valEmptyTitle: "No VALORANT profile selected",
+    valEmptyDesc: "Enter your Riot ID and TAG in the bar above then click \"Analyze\" to load your official competitive stats, shooting telemetry, and match history.",
+    valPerfTitle: "Performance",
+    valPerfDesc: "Official ACS, K/D ratio, win rate, and precise rank & RR progression tracking.",
+    valTelemTitle: "Telemetry",
+    valTelemDesc: "Calculated hit distribution (head, body, legs) and round-by-round duel analysis.",
+    valCoachTitle: "Tactical Coach",
+    valCoachDesc: "Playstyle diagnosis, weak point detection, and tailored training plan.",
+    valLoadingTitle: "Analyzing player profile...",
+    valLoadingDesc: "Syncing competitive statistics and recent matches from the official API.",
+
+    lolEmptyTitle: "No League of Legends summoner selected",
+    lolEmptyDesc: "Enter your Riot ID and TAG in the bar above then click \"Analyze\" to load your average KDA, damage per minute, and recent match history.",
+    lolKdaTitle: "KDA & Impact",
+    lolKdaDesc: "Average KDA ratio, total kills, deaths, and assists across recent matches.",
+    lolDpmTitle: "Damage / Minute",
+    lolDpmDesc: "Total damage dealt to champions calculated per minute of gameplay.",
+    lolKpTitle: "Kill Participation",
+    lolKpDesc: "Involvement rate in team objectives and takedowns.",
+    lolLoadingTitle: "Analyzing Summoner...",
+    lolLoadingDesc: "Retrieving SoloQ and Flex match history via Riot Games API.",
+    lolAverageKda: "Average KDA",
+    lolDpm: "Damage / Minute",
+    lolKp: "Kill Participation",
+    lolMatchesAnalyzed: "Matches analyzed:",
+    lolRecentMatches: "Recent League of Legends Matches",
+
+    tftModuleTitle: "Teamfight Tactics Module",
+    tftModuleDesc: "TFT match integration (unit comps, team synergies, and end-of-round placements) requires setting up a custom Riot Games API key.",
+    tftConfigKeyBtn: "Configure Riot API Key",
+
+    coachDiagnosticTitle: "Tactical AI Coach Diagnosis",
+    coachDiagnosticActive: "Active analysis",
+    coachEvalPrefix: "Evaluation based on",
+    coachPendingTitle: "Tactical AI Coach Diagnosis Pending",
+    coachPendingDesc: "The AI Coach requires at least one recorded competitive match to evaluate your playstyle, duel efficiency, and economy. Search a Riot ID above to begin the audit.",
+    coachArchetype: "Archetype",
+    coachStrength: "Major Strength",
+    coachWeakness: "Area for Improvement",
+    coachRecommendations: "Custom Tactical Recommendations",
+    coachRoutineBtn: "Training Routine",
+
+    trainingPlanTitle: "Personalized Training Plan · AI Coach",
+    trainingPendingTitle: "Training Plan Pending",
+    trainingPendingDesc: "Sync a VALORANT profile above to generate a tailored training routine for your favorite agent and current skill level.",
+    trainingRoutineFor: "Targeted routine",
+    phase1Title: "Phase 1: Mechanical Calibration & Crosshair Placement (10 min)",
+    phase1Desc: "Eliminate 50 bots in Practice mode with Vandal without crouching. Focus on horizontal micro-adjustments at head height before firing the first shot.",
+    phase2Title: "Phase 2: Space Taking & Duels Under Pressure (15 min)",
+    phase2Desc: "Practice aggressive site entries using utility to break enemy crossfires and force an advantageous duel.",
+    phase3Title: "Phase 3: Debriefing & Economy Tracking (5 min)",
+    phase3Desc: "Review your economy rounds in post-match telemetry. Make sure you bought at least 3 key utilities on gun rounds.",
+
+    telemHeaderTitle: "Post-Match Combat Telemetry · VALORANT",
+    telemPendingTitle: "Telemetry Awaiting Data",
+    telemPendingDesc: "No VALORANT matches recorded for this player. Enter a valid Riot ID above to calculate ballistics, anatomical hit distribution, and real duel ratios.",
+    telemTotalKills: "Total Kills",
+    telemTotalDeaths: "Total Deaths",
+    telemHeadPrecision: "Headshot Precision",
+    telemOverallAdr: "Overall ADR",
+    telemSpreadTitle: "Anatomical Hit Spread",
+    telemHeadshots: "Headshots (HS)",
+    telemBodyshots: "Body shots",
+    telemLegshots: "Leg shots",
+    telemMapTitle: "Performance by Map",
+    telemNoMap: "No maps available",
+
+    liveHeaderTitle: "Live Match (Beta)",
+    liveSubtitleWithId: "Real-time session tracking for",
+    liveSubtitleGeneric: "Real-time session tracking via local VALORANT client.",
+    liveCheckBtn: "Check VALORANT client",
+    liveCheckingBtn: "Searching for session...",
+    liveNoSessionTitle: "No active game session detected",
+    liveNoSessionDesc: "The live match tracker is currently in Beta. To sync real-round telemetry, start VALORANT on your computer and join a custom, unrated, or competitive match.",
+    liveLocalVanguardTitle: "Local Vanguard Detection",
+    liveLocalVanguardDesc: "Instant local synchronization with the official VALORANT client as soon as round one starts.",
+    liveRealRoundTitle: "Real-Round Telemetry",
+    liveRealRoundDesc: "Automated round-by-round tracking of team economy, ultimate points, combat scores, and Spike status.",
+    liveFairPlayTitle: "Fair-Play Compliance",
+    liveFairPlayDesc: "100% passive, zero game file modification, strictly compliant with Riot Vanguard integrity rules.",
+
+    vctScorePickems: "Pick'ems Score",
+    vctAccuracy: "Prediction Accuracy",
+    vctSavedPickems: "Saved Predictions",
+    vctSavedLocally: "Saved locally",
+    vctUpcomingTab: "Upcoming & Live",
+    vctResultsTab: "Scores & Match History",
+    vctMyPickemsTab: "My Pick'ems",
+    vctSearchPlaceholder: "Search team or tournament...",
+    vctEditionLabel: "Edition:",
+    vctAllCompetitions: "All competitions",
+    vctAll: "All",
+
+    footerCompliance: "Attributions & Competitive Compliance",
+    footerNotAffiliated: "Not Affiliated with Riot Games",
+    footerLegalDesc: "Riot Games Legal Jibber Jabber policy and community APIs.",
+    footerCreditsBtn: "All credits",
+    footerApiKeyBtn: "API Key",
+  },
+};
+
+export function getTrackerI18n(lang?: string): TrackerTranslations {
+  const normalized = (lang || "").toLowerCase().startsWith("en") ? "en" : "fr";
+  return TRACKER_TRANSLATIONS[normalized];
+}

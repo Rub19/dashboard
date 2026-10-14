@@ -55,14 +55,14 @@ const TRACKER_GROUPS: TrackerSidebarGroup[] = [
     items: [
       {
         id: "riot-home",
-        label: "Hub Riot Games",
+        label: "Hub",
         href: "/tracker",
         renderIcon: (colored) => (
           <Gamepad2
             className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-rose-400")}
           />
         ),
-        badge: "Live",
+        badge: "WIP",
       },
       {
         id: "live",

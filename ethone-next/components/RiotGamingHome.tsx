@@ -53,6 +53,8 @@ import ValorantLiveMatchView from "@/components/tracker/ValorantLiveMatchView";
 import VctMatchesView from "@/components/tracker/VctMatchesView";
 import { AnimatedNumber } from "@/components/tracker/TrackerMotion";
 import { useAnimatedSidebar } from "@/components/motion/animated-sidebar";
+import FlagIcon from "@/components/FlagIcon";
+import { getTrackerI18n } from "@/lib/i18n-tracker";
 import { Icon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import { EASE_SNAP, EASE_OUT, SPRING_PILL } from "@/lib/ease";
@@ -91,8 +93,8 @@ function getTierTone(tierName?: string | null): { text: string; bg: string; bord
 }
 
 export default function RiotGamingHome() {
-  const { settings } = useSettings();
-  const { success, error: showError } = useToast();
+  const { settings, update } = useSettings();
+  const { success, error: showError, notify } = useToast();
   const { open, setOpen } = useAnimatedSidebar();
   const searchParams = useSearchParams();
   const reducedMotion = useReducedMotion();
@@ -466,6 +468,19 @@ export default function RiotGamingHome() {
   const hasLolData = lolMatches.length > 0;
   const hasProfile = Boolean(valorantProfile?.name || riotName);
 
+  const currentLang = (settings.language || "fr").startsWith("en") ? "en" : "fr";
+  const tr = useMemo(() => getTrackerI18n(currentLang), [currentLang]);
+
+  const toggleLang = useCallback(
+    (lang: "fr" | "en") => {
+      if (lang !== currentLang) {
+        update({ language: lang });
+        notify.language(lang);
+      }
+    },
+    [currentLang, update, notify]
+  );
+
   return (
     <div className="flex h-full min-h-0 w-full flex-col overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[#0A0C10] text-neutral-200">
       <div className="mx-auto w-full max-w-7xl px-3 py-4 sm:px-6 sm:py-6 space-y-5">
@@ -513,7 +528,7 @@ export default function RiotGamingHome() {
                     />
                   )}
                   <GameBrandIcon name="Valorant" className="relative z-10 h-3.5 w-3.5" />
-                  <span className="relative z-10">VALORANT</span>
+                  <span className="relative z-10">{tr.valorant}</span>
                 </button>
 
                 <button
@@ -534,9 +549,9 @@ export default function RiotGamingHome() {
                     />
                   )}
                   <Flame className="relative z-10 h-3.5 w-3.5 text-orange-400" />
-                  <span className="relative z-10">Partie en direct</span>
+                  <span className="relative z-10">{tr.liveMatch}</span>
                   <span className="relative z-10 rounded bg-orange-500/30 px-1 py-0.2 text-[9px] font-mono font-bold text-orange-200">
-                    LIVE
+                    {tr.live}
                   </span>
                 </button>
 
@@ -558,9 +573,9 @@ export default function RiotGamingHome() {
                     />
                   )}
                   <Trophy className="relative z-10 h-3.5 w-3.5 text-amber-400" />
-                  <span className="relative z-10">VCT &amp; Pick&apos;ems</span>
+                  <span className="relative z-10">{tr.vctPickems}</span>
                   <span className="relative z-10 rounded bg-amber-500/30 px-1 py-0.2 text-[9px] font-mono font-bold text-amber-200">
-                    LIVE
+                    {tr.live}
                   </span>
                 </button>
 
@@ -582,7 +597,7 @@ export default function RiotGamingHome() {
                     />
                   )}
                   <GameBrandIcon name="League of Legends" className="relative z-10 h-3.5 w-3.5" />
-                  <span className="relative z-10">LoL</span>
+                  <span className="relative z-10">{tr.lol}</span>
                 </button>
 
                 <button
@@ -603,11 +618,48 @@ export default function RiotGamingHome() {
                     />
                   )}
                   <GameBrandIcon name="Teamfight Tactics" className="relative z-10 h-3.5 w-3.5" />
-                  <span className="relative z-10">TFT</span>
+                  <span className="relative z-10">{tr.tft}</span>
                 </button>
               </div>
 
               <div className="flex items-center gap-2 shrink-0">
+                <div className="flex items-center rounded-lg border border-white/10 bg-black/40 p-0.5 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => toggleLang("fr")}
+                    className={cn(
+                      "flex items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold transition-all cursor-pointer",
+                      currentLang === "fr"
+                        ? "bg-white/[0.12] text-white shadow-sm"
+                        : "text-neutral-400 hover:text-neutral-200"
+                    )}
+                    title="Français"
+                    aria-label="Passer en français"
+                  >
+                    <span className="relative h-3 w-4.5 overflow-hidden rounded-[2px] shrink-0 border border-white/15">
+                      <FlagIcon code="fr" className="h-full w-full object-cover" />
+                    </span>
+                    <span className="font-mono text-[10px] font-bold">FR</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => toggleLang("en")}
+                    className={cn(
+                      "flex items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold transition-all cursor-pointer",
+                      currentLang === "en"
+                        ? "bg-white/[0.12] text-white shadow-sm"
+                        : "text-neutral-400 hover:text-neutral-200"
+                    )}
+                    title="English"
+                    aria-label="Switch to English"
+                  >
+                    <span className="relative h-3 w-4.5 overflow-hidden rounded-[2px] shrink-0 border border-white/15">
+                      <FlagIcon code="en" className="h-full w-full object-cover" />
+                    </span>
+                    <span className="font-mono text-[10px] font-bold">EN</span>
+                  </button>
+                </div>
+
                 <button
                   type="button"
                   onClick={() => selectGameTab("coach")}
@@ -619,7 +671,7 @@ export default function RiotGamingHome() {
                   )}
                 >
                   <Brain className="h-3.5 w-3.5 text-purple-400" />
-                  <span>Coach IA</span>
+                  <span>{tr.coachIa}</span>
                 </button>
 
                 <button
@@ -633,7 +685,7 @@ export default function RiotGamingHome() {
                   )}
                 >
                   <Target className="h-3.5 w-3.5 text-cyan-400" />
-                  <span>Télémétrie</span>
+                  <span>{tr.telemetry}</span>
                 </button>
 
                 <button
@@ -647,7 +699,7 @@ export default function RiotGamingHome() {
                   )}
                 >
                   <Activity className="h-3.5 w-3.5 text-emerald-400" />
-                  <span className="hidden sm:inline">Entraînement</span>
+                  <span className="hidden sm:inline">{tr.training}</span>
                 </button>
               </div>
             </div>
@@ -661,7 +713,7 @@ export default function RiotGamingHome() {
                       type="text"
                       value={riotName}
                       onChange={(e) => setRiotName(e.target.value)}
-                      placeholder="Riot ID"
+                      placeholder={tr.riotIdPlaceholder}
                       aria-label="Nom Riot"
                       className="w-full bg-transparent text-xs font-medium text-white outline-none placeholder:text-neutral-500"
                     />
@@ -670,7 +722,7 @@ export default function RiotGamingHome() {
                       type="text"
                       value={riotTag}
                       onChange={(e) => setRiotTag(e.target.value)}
-                      placeholder="TAG"
+                      placeholder={tr.riotTagPlaceholder}
                       aria-label="Tag Riot"
                       className="w-16 bg-transparent font-mono text-xs font-medium text-white outline-none placeholder:text-neutral-500 uppercase"
                     />
@@ -681,7 +733,7 @@ export default function RiotGamingHome() {
                     className="flex items-center gap-1.5 rounded-lg bg-white text-black font-semibold px-3.5 py-1.5 text-xs hover:bg-neutral-200 active:scale-95 transition-all cursor-pointer disabled:opacity-40 shadow-sm shrink-0"
                   >
                     <Search className="h-3.5 w-3.5 text-black" />
-                    <span>{loading ? "Scan..." : "Analyser"}</span>
+                    <span>{loading ? tr.scanning : tr.analyze}</span>
                   </button>
                 </form>
               </div>
@@ -706,10 +758,10 @@ export default function RiotGamingHome() {
                       <RefreshCw className="h-6 w-6 animate-spin" />
                     </div>
                     <h3 className="text-base font-bold text-white tracking-wide">
-                      Analyse du profil en cours...
+                      {tr.valLoadingTitle}
                     </h3>
                     <p className="text-xs text-neutral-400 font-mono">
-                      Synchronisation des statistiques compétitives et des matchs récents via l&apos;API officielle.
+                      {tr.valLoadingDesc}
                     </p>
                   </div>
                 ) : hasValorantData ? (
@@ -731,7 +783,7 @@ export default function RiotGamingHome() {
                         )}
                         {valorantProfile?.accountLevel !== undefined && (
                           <span className="absolute -bottom-2 -right-1 rounded-md border border-black/80 bg-neutral-900 px-1.5 py-0.2 font-mono text-[10px] font-bold text-neutral-300 shadow">
-                            Niv. {valorantProfile.accountLevel}
+                            {currentLang === "en" ? "Lvl." : "Niv."} {valorantProfile.accountLevel}
                           </span>
                         )}
                       </div>
@@ -742,7 +794,7 @@ export default function RiotGamingHome() {
                             {valorantProfile?.name || riotName || "Profil Tactique"}
                           </h2>
                           <span className="font-mono text-xs font-semibold text-neutral-400">
-                            {riotTag ? `#${valorantProfile?.tag || riotTag}` : (hasProfile ? "" : "— Non connecté")}
+                            {riotTag ? `#${valorantProfile?.tag || riotTag}` : (hasProfile ? "" : tr.notConnected)}
                           </span>
                           <span className="rounded-md border border-rose-500/30 bg-rose-500/10 px-1.5 py-0.2 font-mono text-[10px] font-semibold text-rose-300">
                             VALORANT
@@ -751,7 +803,7 @@ export default function RiotGamingHome() {
 
                         <div className="flex items-center gap-2 text-xs">
                           <span className={cn("font-semibold px-2 py-0.5 rounded border text-[11px]", tierTone.bg, tierTone.border, tierTone.text)}>
-                            {valorantProfile?.currentTierPatched || "Non classé"}
+                            {valorantProfile?.currentTierPatched || tr.unrated}
                           </span>
                           <span className="text-neutral-400 font-mono text-[11px]">
                             {valorantProfile?.rr !== null && valorantProfile?.rr !== undefined ? `${valorantProfile.rr} RR` : "0 RR"}
@@ -764,7 +816,7 @@ export default function RiotGamingHome() {
                       <div className="space-y-1.5 min-w-[200px]">
                         <div className="flex items-center justify-between text-xs">
                           <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">
-                            Progression de Rang
+                            {tr.rankProgression}
                           </span>
                           <span className="font-mono text-[11px] font-bold text-white">
                             {rrValue}/100 RR
@@ -779,7 +831,11 @@ export default function RiotGamingHome() {
                           />
                         </div>
                         <p className="text-[10px] font-mono text-neutral-500">
-                          {valorantStats.matchesCount > 0 ? `${valorantStats.wins}V - ${valorantStats.losses}D sur ${valorantStats.matchesCount} parties` : "Recherchez un Riot ID pour synchroniser"}
+                          {valorantStats.matchesCount > 0
+                            ? (currentLang === "en"
+                                ? `${valorantStats.wins}W - ${valorantStats.losses}L across ${valorantStats.matchesCount} ${valorantStats.matchesCount > 1 ? tr.matches : tr.match}`
+                                : `${valorantStats.wins}V - ${valorantStats.losses}D sur ${valorantStats.matchesCount} ${valorantStats.matchesCount > 1 ? tr.matches : tr.match}`)
+                            : (currentLang === "en" ? "Search a Riot ID to synchronize" : "Recherchez un Riot ID pour synchroniser")}
                         </p>
                       </div>
 
@@ -791,10 +847,10 @@ export default function RiotGamingHome() {
                           }}
                           disabled={loading}
                           className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-semibold text-neutral-200 hover:text-white hover:bg-white/[0.08] active:scale-95 transition-all cursor-pointer disabled:opacity-40"
-                          title="Actualiser les statistiques"
+                          title={tr.refresh}
                         >
                           <RefreshCw className={cn("h-3.5 w-3.5", loading && "animate-spin")} />
-                          <span>Actualiser</span>
+                          <span>{tr.refresh}</span>
                         </button>
                         <button
                           type="button"
@@ -802,7 +858,7 @@ export default function RiotGamingHome() {
                           className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-semibold text-neutral-200 hover:text-white hover:bg-white/[0.08] active:scale-95 transition-all cursor-pointer"
                         >
                           <Share2 className="h-3.5 w-3.5 text-neutral-400" />
-                          <span>Comparer</span>
+                          <span>{tr.compare}</span>
                         </button>
                       </div>
                     </div>
@@ -816,7 +872,7 @@ export default function RiotGamingHome() {
                   >
                     <div className="flex items-center justify-between">
                       <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">
-                        Ratio K/D
+                        {tr.kdRatio}
                       </span>
                       <Flame className="h-4 w-4 text-rose-400" />
                     </div>
@@ -848,7 +904,7 @@ export default function RiotGamingHome() {
                   >
                     <div className="flex items-center justify-between">
                       <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">
-                        Taux de Victoire
+                        {tr.winRate}
                       </span>
                       <Trophy className="h-4 w-4 text-amber-400" />
                     </div>
@@ -861,7 +917,7 @@ export default function RiotGamingHome() {
                         )}
                       </p>
                       <p className="text-[11px] text-neutral-400 font-mono mt-0.5">
-                        {valorantStats.wins}V - {valorantStats.losses}D · {valorantStats.matchesCount} matchs
+                        {valorantStats.wins}{currentLang === "en" ? "W" : "V"} - {valorantStats.losses}{currentLang === "en" ? "L" : "D"} · {valorantStats.matchesCount} {valorantStats.matchesCount > 1 ? tr.matches : tr.match}
                       </p>
                     </div>
                     <div className="h-1.5 w-full rounded-full bg-white/[0.06] overflow-hidden">
@@ -880,7 +936,7 @@ export default function RiotGamingHome() {
                   >
                     <div className="flex items-center justify-between">
                       <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">
-                        {valorantStats.scoreSystem === "performance" ? "Score Performance" : "Score Combat ACS"}
+                        {valorantStats.scoreSystem === "performance" ? (currentLang === "en" ? "Performance Score" : "Score Performance") : tr.combatScoreAcs}
                       </span>
                       <Target className="h-4 w-4 text-cyan-400" />
                     </div>
@@ -912,7 +968,7 @@ export default function RiotGamingHome() {
                   >
                     <div className="flex items-center justify-between">
                       <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">
-                        Précision Tête (HS)
+                        {tr.headshotPrecision}
                       </span>
                       <Sparkles className="h-4 w-4 text-purple-400" />
                     </div>
@@ -925,7 +981,7 @@ export default function RiotGamingHome() {
                         )}
                       </p>
                       <p className="text-[11px] text-neutral-400 font-mono mt-0.5">
-                        Tier Élite · Vandal / Phantom
+                        {tr.eliteTier}
                       </p>
                     </div>
                     <div className="h-1.5 w-full rounded-full bg-white/[0.06] overflow-hidden">
@@ -946,11 +1002,11 @@ export default function RiotGamingHome() {
                         <div className="flex items-center gap-2">
                           <Swords className="h-4 w-4 text-rose-400" />
                           <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-white">
-                            Top Agents Compétitifs
+                            {tr.topCompetitiveAgents}
                           </h3>
                         </div>
                         <span className="text-[10px] font-mono text-neutral-500">
-                          {topValorantAgents.length > 0 ? `${topValorantAgents.length} agents récents` : "Aucun agent"}
+                          {topValorantAgents.length > 0 ? `${topValorantAgents.length} ${tr.recentAgents}` : tr.noAgent}
                         </span>
                       </div>
 
@@ -983,7 +1039,7 @@ export default function RiotGamingHome() {
                                       </span>
                                     </div>
                                     <p className="text-[11px] font-mono text-neutral-400 mt-0.5">
-                                      {ag.matches} partie{ag.matches > 1 ? "s" : ""} · {ag.winRate ?? 0}% de victoires
+                                      {ag.matches} {ag.matches > 1 ? tr.matches : tr.match} · {ag.winRate ?? 0}% {currentLang === "en" ? "winrate" : "de victoires"}
                                     </p>
                                   </div>
                                 </div>
@@ -1002,7 +1058,7 @@ export default function RiotGamingHome() {
                         ) : (
                           <div className="rounded-lg border border-dashed border-white/10 bg-black/20 p-6 text-center">
                             <p className="text-xs text-neutral-400">
-                              Recherchez un joueur ci-dessus pour afficher la maîtrise des agents.
+                              {currentLang === "en" ? "Search a player above to display agent mastery." : "Recherchez un joueur ci-dessus pour afficher la maîtrise des agents."}
                             </p>
                           </div>
                         )}
@@ -1016,7 +1072,7 @@ export default function RiotGamingHome() {
                         className="inline-flex items-center gap-2 rounded-lg bg-white text-black px-3.5 py-1.5 text-xs font-semibold hover:bg-neutral-200 active:scale-95 transition-all cursor-pointer shadow-sm"
                       >
                         <Brain className="h-3.5 w-3.5 text-black" />
-                        <span>Diagnostic Coach IA</span>
+                        <span>{tr.coachIa}</span>
                       </button>
                     </div>
                   </div>
@@ -1027,11 +1083,11 @@ export default function RiotGamingHome() {
                         <div className="flex items-center gap-2">
                           <Target className="h-4 w-4 text-cyan-400" />
                           <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-white">
-                            Télémétrie & Duels de Combat
+                            {tr.shootingTelemetryImpact}
                           </h3>
                         </div>
                         <span className="text-[10px] font-mono text-neutral-500">
-                          {valorantMatches.length} {valorantMatches.length > 1 ? "parties officielles" : "partie officielle"}
+                          {valorantMatches.length} {currentLang === "en" ? (valorantMatches.length > 1 ? "official matches" : "official match") : (valorantMatches.length > 1 ? "parties officielles" : "partie officielle")}
                         </span>
                       </div>
 
@@ -1039,9 +1095,9 @@ export default function RiotGamingHome() {
                         <div className="space-y-3">
                           <div className="rounded-lg border border-white/[0.05] bg-black/30 p-3 space-y-2">
                             <div className="flex items-center justify-between text-xs">
-                              <span className="text-neutral-300 font-medium">Répartition Anatomique des Impacts</span>
+                              <span className="text-neutral-300 font-medium">{tr.impactDistribution}</span>
                               <span className="font-mono text-neutral-400 text-[11px]">
-                                {telemetryMetrics.hsPct > 0 ? `${telemetryMetrics.hsPct}% Tête` : "—"}
+                                {telemetryMetrics.hsPct > 0 ? `${telemetryMetrics.hsPct}% ${tr.head}` : "—"}
                               </span>
                             </div>
                             <div className="h-2 w-full rounded-full bg-white/[0.06] overflow-hidden flex">
@@ -1052,34 +1108,34 @@ export default function RiotGamingHome() {
                             <div className="flex items-center justify-between text-[10px] font-mono text-neutral-400 pt-0.5">
                               <span className="flex items-center gap-1">
                                 <span className="h-1.5 w-1.5 rounded-full bg-purple-400" />
-                                Tête ({telemetryMetrics.hsPct}%)
+                                {tr.head} ({telemetryMetrics.hsPct}%)
                               </span>
                               <span className="flex items-center gap-1">
                                 <span className="h-1.5 w-1.5 rounded-full bg-cyan-400" />
-                                Corps ({telemetryMetrics.bsPct}%)
+                                {tr.body} ({telemetryMetrics.bsPct}%)
                               </span>
                               <span className="flex items-center gap-1">
                                 <span className="h-1.5 w-1.5 rounded-full bg-neutral-600" />
-                                Jambes ({telemetryMetrics.lsPct}%)
+                                {tr.legs} ({telemetryMetrics.lsPct}%)
                               </span>
                             </div>
                           </div>
 
                           <div className="grid grid-cols-3 gap-2 text-center">
                             <div className="rounded-lg border border-white/[0.05] bg-black/30 p-2.5">
-                              <span className="text-[9px] font-mono uppercase text-neutral-400">Total Kills</span>
+                              <span className="text-[9px] font-mono uppercase text-neutral-400">{tr.telemTotalKills}</span>
                               <p className="text-base font-mono font-bold text-white mt-0.5">
                                 {telemetryMetrics.totalKills}
                               </p>
                             </div>
                             <div className="rounded-lg border border-white/[0.05] bg-black/30 p-2.5">
-                              <span className="text-[9px] font-mono uppercase text-neutral-400">ADR / Manche</span>
+                              <span className="text-[9px] font-mono uppercase text-neutral-400">{tr.avgPerRound}</span>
                               <p className="text-base font-mono font-bold text-white mt-0.5">
                                 {telemetryMetrics.adr > 0 ? telemetryMetrics.adr : (valorantCombatSummary.adr || "—")}
                               </p>
                             </div>
                             <div className="rounded-lg border border-white/[0.05] bg-black/30 p-2.5">
-                              <span className="text-[9px] font-mono uppercase text-neutral-400">Duel Winrate</span>
+                              <span className="text-[9px] font-mono uppercase text-neutral-400">{tr.duelWinrate}</span>
                               <p className="text-base font-mono font-bold text-emerald-400 mt-0.5">
                                 {telemetryMetrics.duelWinrate > 0 ? `${telemetryMetrics.duelWinrate}%` : "—"}
                               </p>
@@ -1092,10 +1148,10 @@ export default function RiotGamingHome() {
                             <Target className="h-4 w-4 text-neutral-400" />
                           </div>
                           <p className="text-xs font-mono font-bold text-neutral-300">
-                            Télémétrie non synchronisée
+                            {currentLang === "en" ? "Telemetry not synchronized" : "Télémétrie non synchronisée"}
                           </p>
                           <p className="text-[11px] text-neutral-500 max-w-xs mx-auto">
-                            Recherchez un Riot ID avec des parties officielles pour analyser la précision anatomique et les duels.
+                            {currentLang === "en" ? "Search a Riot ID with official matches to analyze anatomical precision and duels." : "Recherchez un Riot ID avec des parties officielles pour analyser la précision anatomique et les duels."}
                           </p>
                         </div>
                       )}
@@ -1108,7 +1164,7 @@ export default function RiotGamingHome() {
                         className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3.5 py-1.5 text-xs font-semibold text-neutral-200 hover:text-white hover:bg-white/[0.08] active:scale-95 transition-all cursor-pointer"
                       >
                         <Target className="h-3.5 w-3.5 text-cyan-400" />
-                        <span>Rapport Télémétrique Complet</span>
+                        <span>{currentLang === "en" ? "Full Telemetry Report" : "Rapport Télémétrique Complet"}</span>
                       </button>
                     </div>
                   </div>
@@ -1119,10 +1175,10 @@ export default function RiotGamingHome() {
                     <div className="flex items-center gap-2">
                       <Activity className="h-4 w-4 text-rose-400" />
                       <h3 className="text-sm font-mono font-bold uppercase tracking-wider text-white">
-                        Journal des Matchs Compétitifs
+                        {tr.competitiveMatchHistory}
                       </h3>
                       <span className="rounded bg-white/[0.06] px-1.5 py-0.2 font-mono text-[10px] text-neutral-300">
-                        {filteredValorantMatches.length} parties
+                        {filteredValorantMatches.length} {filteredValorantMatches.length > 1 ? tr.matches : tr.match}
                       </span>
                     </div>
 
@@ -1140,7 +1196,7 @@ export default function RiotGamingHome() {
                                 : "text-neutral-400 hover:text-white"
                             )}
                           >
-                            {q.label}
+                            {q.id === "all" ? tr.allQueues : q.id === "competitive" ? tr.competitiveQueue : q.id === "unrated" ? tr.unratedQueue : q.label}
                           </button>
                         ))}
                       </div>
@@ -1151,7 +1207,7 @@ export default function RiotGamingHome() {
                           onClick={() => setShowAllMatches(!showAllMatches)}
                           className="rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-1 text-[11px] font-semibold text-neutral-300 hover:text-white transition-all cursor-pointer"
                         >
-                          {showAllMatches ? "Voir moins" : "Tout afficher"}
+                          {showAllMatches ? (currentLang === "en" ? "Show less" : "Voir moins") : (currentLang === "en" ? "Show all" : "Tout afficher")}
                         </button>
                       )}
                     </div>
@@ -1211,11 +1267,11 @@ export default function RiotGamingHome() {
                                         isWin ? "bg-emerald-500/15 text-emerald-300 border border-emerald-500/30" : "bg-rose-500/15 text-rose-300 border border-rose-500/30"
                                       )}
                                     >
-                                      {isWin ? "Victoire" : "Défaite"}
+                                      {isWin ? tr.victory : tr.defeat}
                                     </span>
                                   </div>
                                   <p className="text-[10px] font-mono text-neutral-400 mt-0.5">
-                                    {m.metadata?.agentName || "Agent"} · {m.metadata?.modeName || "Compétitif"}
+                                    {m.metadata?.agentName || "Agent"} · {m.metadata?.modeName || (currentLang === "en" ? "Competitive" : "Compétitif")}
                                   </p>
                                 </div>
                               </div>
@@ -1268,8 +1324,8 @@ export default function RiotGamingHome() {
                                   {players.length > 0 ? (
                                     <div className="space-y-2">
                                       <div className="flex items-center justify-between text-[11px] font-mono text-neutral-400 border-b border-white/[0.05] pb-1">
-                                        <span>Joueurs de la partie ({players.length})</span>
-                                        <span>Combat & Éliminations</span>
+                                        <span>{currentLang === "en" ? `Match players (${players.length})` : `Joueurs de la partie (${players.length})`}</span>
+                                        <span>{currentLang === "en" ? "Combat & Eliminations" : "Combat & Éliminations"}</span>
                                       </div>
                                       <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                                         {players.slice(0, 10).map((p, pi) => (
@@ -1283,7 +1339,7 @@ export default function RiotGamingHome() {
                                             <div className="flex items-center gap-2 min-w-0">
                                               <span className="font-bold text-white truncate">
                                                 {p.name}
-                                                {p.isMe && <span className="text-rose-400 ml-1">(Moi)</span>}
+                                                {p.isMe && <span className="text-rose-400 ml-1">{currentLang === "en" ? "(Me)" : "(Moi)"}</span>}
                                               </span>
                                               <span className="text-[10px] text-neutral-500">#{p.tag}</span>
                                             </div>
@@ -1302,20 +1358,20 @@ export default function RiotGamingHome() {
                                   ) : (
                                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs font-mono">
                                       <div className="rounded bg-white/[0.02] p-2 border border-white/[0.04]">
-                                        <span className="text-[10px] text-neutral-400 block">Dégâts par manche</span>
+                                        <span className="text-[10px] text-neutral-400 block">{tr.avgPerRound}</span>
                                         <span className="font-bold text-white">{seg?.adr?.value ?? 162} ADR</span>
                                       </div>
                                       <div className="rounded bg-white/[0.02] p-2 border border-white/[0.04]">
-                                        <span className="text-[10px] text-neutral-400 block">Delta dégâts</span>
+                                        <span className="text-[10px] text-neutral-400 block">{currentLang === "en" ? "Damage delta" : "Delta dégâts"}</span>
                                         <span className="font-bold text-emerald-400">+24 dmg</span>
                                       </div>
                                       <div className="rounded bg-white/[0.02] p-2 border border-white/[0.04]">
-                                        <span className="text-[10px] text-neutral-400 block">Score Combat</span>
+                                        <span className="text-[10px] text-neutral-400 block">{currentLang === "en" ? "Combat Score" : "Score Combat"}</span>
                                         <span className="font-bold text-white">{seg?.performanceScore?.value ?? 245} pts</span>
                                       </div>
                                       <div className="rounded bg-white/[0.02] p-2 border border-white/[0.04]">
-                                        <span className="text-[10px] text-neutral-400 block">Statut d'archive</span>
-                                        <span className="font-bold text-neutral-300">Synchronisé</span>
+                                        <span className="text-[10px] text-neutral-400 block">{currentLang === "en" ? "Archive Status" : "Statut d'archive"}</span>
+                                        <span className="font-bold text-neutral-300">{currentLang === "en" ? "Synchronized" : "Synchronisé"}</span>
                                       </div>
                                     </div>
                                   )}
@@ -1329,10 +1385,10 @@ export default function RiotGamingHome() {
                       <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-white/10 bg-black/20 py-10 px-4 text-center">
                         <Swords className="h-8 w-8 text-neutral-600 mb-2" />
                         <p className="text-xs font-bold text-white uppercase tracking-wider">
-                          Aucun match trouvé
+                          {tr.noMatchFound}
                         </p>
                         <p className="text-[11px] text-neutral-400 max-w-sm mt-1">
-                          Recherchez un Riot ID ci-dessus pour charger l'historique complet des parties.
+                          {tr.searchPrompt}
                         </p>
                       </div>
                     )}
@@ -1347,10 +1403,10 @@ export default function RiotGamingHome() {
 
                 <div className="space-y-2 max-w-lg mx-auto">
                   <h3 className="text-lg font-bold tracking-tight text-white">
-                    Aucun profil VALORANT sélectionné
+                    {tr.valEmptyTitle}
                   </h3>
                   <p className="text-xs text-neutral-400 leading-relaxed">
-                    Saisissez votre Riot ID et votre TAG dans la barre ci-dessus puis cliquez sur <span className="text-white font-semibold">« Analyser »</span> pour charger vos statistiques compétitives officielles, votre télémétrie de tir et votre historique de parties.
+                    {tr.valEmptyDesc}
                   </p>
                 </div>
 
@@ -1358,30 +1414,30 @@ export default function RiotGamingHome() {
                   <div className="rounded-lg border border-white/[0.06] bg-black/40 p-4 space-y-1.5">
                     <div className="flex items-center gap-2 text-rose-400">
                       <Flame className="h-4 w-4" />
-                      <span className="text-xs font-mono font-bold uppercase tracking-wider text-white">Performances</span>
+                      <span className="text-xs font-mono font-bold uppercase tracking-wider text-white">{tr.valPerfTitle}</span>
                     </div>
                     <p className="text-xs text-neutral-400 leading-relaxed">
-                      ACS officiel, ratio K/D, taux de victoire et suivi précis de la progression de rang et des RR.
+                      {tr.valPerfDesc}
                     </p>
                   </div>
 
                   <div className="rounded-lg border border-white/[0.06] bg-black/40 p-4 space-y-1.5">
                     <div className="flex items-center gap-2 text-cyan-400">
                       <Target className="h-4 w-4" />
-                      <span className="text-xs font-mono font-bold uppercase tracking-wider text-white">Télémétrie</span>
+                      <span className="text-xs font-mono font-bold uppercase tracking-wider text-white">{tr.valTelemTitle}</span>
                     </div>
                     <p className="text-xs text-neutral-400 leading-relaxed">
-                      Précision anatomique calculée (tête, corps, jambes) et analyse des engagements round par round.
+                      {tr.valTelemDesc}
                     </p>
                   </div>
 
                   <div className="rounded-lg border border-white/[0.06] bg-black/40 p-4 space-y-1.5">
                     <div className="flex items-center gap-2 text-purple-400">
                       <Brain className="h-4 w-4" />
-                      <span className="text-xs font-mono font-bold uppercase tracking-wider text-white">Coach Tactique</span>
+                      <span className="text-xs font-mono font-bold uppercase tracking-wider text-white">{tr.valCoachTitle}</span>
                     </div>
                     <p className="text-xs text-neutral-400 leading-relaxed">
-                      Diagnostic de style de jeu, détection des points faibles et plan d&apos;entraînement adapté.
+                      {tr.valCoachDesc}
                     </p>
                   </div>
                 </div>
@@ -1398,10 +1454,10 @@ export default function RiotGamingHome() {
                       <Brain className="h-6 w-6" />
                     </div>
                     <h3 className="text-sm font-mono font-bold text-white uppercase tracking-wider">
-                      Diagnostic Tactique Coach IA en attente
+                      {tr.coachPendingTitle}
                     </h3>
                     <p className="max-w-md mx-auto text-xs text-neutral-400">
-                      Le Coach IA requiert au moins une partie compétitive enregistrée pour analyser votre style de jeu, l&apos;efficacité de vos engagements et la rentabilité de vos achats. Recherchez un Riot ID ci-dessus pour lancer l&apos;audit.
+                      {tr.coachPendingDesc}
                     </p>
                   </div>
                 ) : (
@@ -1414,14 +1470,14 @@ export default function RiotGamingHome() {
                         <div>
                           <div className="flex items-center gap-2">
                             <h2 className="text-base font-bold text-white tracking-wide">
-                              Diagnostic Tactique Coach IA
+                              {tr.coachDiagnosticTitle}
                             </h2>
                             <span className="rounded-full border border-purple-500/40 bg-purple-500/15 px-2 py-0.5 font-mono text-[10px] font-bold text-purple-300">
-                              {valorantStats.winRate ? `${valorantStats.winRate}% Victoires` : "Analyse active"}
+                              {valorantStats.winRate ? `${valorantStats.winRate}% ${currentLang === "en" ? "Wins" : "Victoires"}` : tr.coachDiagnosticActive}
                             </span>
                           </div>
                           <p className="text-xs text-neutral-400 font-mono mt-0.5">
-                            Évaluation basée sur {valorantMatches.length} {valorantMatches.length > 1 ? "parties officielles" : "partie officielle"} de {valorantProfile?.name || riotName || "Joueur"} #{valorantProfile?.tag || riotTag || "0001"}
+                            {tr.coachEvalPrefix} {valorantMatches.length} {currentLang === "en" ? (valorantMatches.length > 1 ? "official matches" : "official match") : (valorantMatches.length > 1 ? "parties officielles" : "partie officielle")} {currentLang === "en" ? "of" : "de"} {valorantProfile?.name || riotName || (currentLang === "en" ? "Player" : "Joueur")} #{valorantProfile?.tag || riotTag || "0001"}
                           </p>
                         </div>
                       </div>
@@ -1432,90 +1488,92 @@ export default function RiotGamingHome() {
                         className="inline-flex items-center gap-1.5 rounded-lg bg-white text-black px-3.5 py-2 text-xs font-semibold hover:bg-neutral-200 active:scale-95 transition-all cursor-pointer shadow-sm shrink-0"
                       >
                         <Activity className="h-3.5 w-3.5 text-black" />
-                        <span>Routine d&apos;entraînement</span>
+                        <span>{tr.coachRoutineBtn}</span>
                       </button>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                       <div className="rounded-lg border border-white/[0.06] bg-black/40 p-3.5 space-y-1.5">
                         <div className="flex items-center justify-between">
-                          <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">Archétype</span>
+                          <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">{tr.coachArchetype}</span>
                           <Zap className="h-3.5 w-3.5 text-amber-400" />
                         </div>
                         <p className="text-sm font-bold text-white">
                           {topValorantAgents[0]
                             ? `${getAgentRole(topValorantAgents[0].agentName)} (${topValorantAgents[0].agentName})`
-                            : "Joueur Polyvalent"}
+                            : (currentLang === "en" ? "Versatile Player" : "Joueur Polyvalent")}
                         </p>
                         <p className="text-xs text-neutral-400 leading-relaxed">
                           {topValorantAgents[0]
-                            ? `Profil orienté sur ${topValorantAgents[0].agentName} avec ${topValorantAgents[0].matches} ${topValorantAgents[0].matches > 1 ? "parties" : "partie"} et ${topValorantAgents[0].winRate ?? 0}% de victoires.`
-                            : "Données de rôle en cours de calcul."}
+                            ? (currentLang === "en"
+                                ? `Profile centered on ${topValorantAgents[0].agentName} with ${topValorantAgents[0].matches} ${topValorantAgents[0].matches > 1 ? tr.matches : tr.match} and ${topValorantAgents[0].winRate ?? 0}% win rate.`
+                                : `Profil orienté sur ${topValorantAgents[0].agentName} avec ${topValorantAgents[0].matches} ${topValorantAgents[0].matches > 1 ? "parties" : "partie"} et ${topValorantAgents[0].winRate ?? 0}% de victoires.`)
+                            : (currentLang === "en" ? "Role data being calculated." : "Données de rôle en cours de calcul.")}
                         </p>
                       </div>
 
                       <div className="rounded-lg border border-white/[0.06] bg-black/40 p-3.5 space-y-1.5">
                         <div className="flex items-center justify-between">
-                          <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">Point Fort Majeur</span>
+                          <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">{tr.coachStrength}</span>
                           <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
                         </div>
                         <p className="text-sm font-bold text-white">
                           {telemetryMetrics && telemetryMetrics.duelWinrate >= 50
-                            ? `Duels Positifs (${telemetryMetrics.duelWinrate}% win)`
+                            ? (currentLang === "en" ? `Positive Duels (${telemetryMetrics.duelWinrate}% win)` : `Duels Positifs (${telemetryMetrics.duelWinrate}% win)`)
                             : valorantStats.kdRatio
-                            ? `Ratio KD de ${valorantStats.kdRatio}`
-                            : "Présence active en manche"}
+                            ? (currentLang === "en" ? `KD Ratio of ${valorantStats.kdRatio}` : `Ratio KD de ${valorantStats.kdRatio}`)
+                            : (currentLang === "en" ? "Active round presence" : "Présence active en manche")}
                         </p>
                         <p className="text-xs text-neutral-400 leading-relaxed">
                           {telemetryMetrics && telemetryMetrics.hsPct > 0
-                            ? `Précision de tir confirmée avec ${telemetryMetrics.hsPct}% d'impacts critiques à la tête.`
-                            : "Bonne implication dans les éliminations d'équipe."}
+                            ? (currentLang === "en" ? `Confirmed precision with ${telemetryMetrics.hsPct}% critical head impacts.` : `Précision de tir confirmée avec ${telemetryMetrics.hsPct}% d'impacts critiques à la tête.`)
+                            : (currentLang === "en" ? "Good involvement in team eliminations." : "Bonne implication dans les éliminations d'équipe.")}
                         </p>
                       </div>
 
                       <div className="rounded-lg border border-white/[0.06] bg-black/40 p-3.5 space-y-1.5">
                         <div className="flex items-center justify-between">
-                          <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">Axe d&apos;Amélioration</span>
+                          <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">{tr.coachWeakness}</span>
                           <Target className="h-3.5 w-3.5 text-rose-400" />
                         </div>
                         <p className="text-sm font-bold text-white">
                           {telemetryMetrics && telemetryMetrics.hsPct < 20
-                            ? "Placement de Réticule (HS < 20%)"
+                            ? (currentLang === "en" ? "Crosshair Placement (HS < 20%)" : "Placement de Réticule (HS < 20%)")
                             : valorantCombatSummary.deaths > valorantCombatSummary.kills
-                            ? "Survie & Repli Tactique"
-                            : "Gestion de l'Avantage Numérique"}
+                            ? (currentLang === "en" ? "Survival & Tactical Disengage" : "Survie & Repli Tactique")
+                            : (currentLang === "en" ? "Numbers Advantage Management" : "Gestion de l'Avantage Numérique")}
                         </p>
                         <p className="text-xs text-neutral-400 leading-relaxed">
                           {telemetryMetrics && telemetryMetrics.hsPct < 20
-                            ? "Travaillez l'alignement horizontal à hauteur de tête pour augmenter la létalité dès la première balle."
-                            : "Évitez les réengagements solitaires après une première élimination sécurisée."}
+                            ? (currentLang === "en" ? "Work on head-level horizontal alignment to increase first-bullet lethality." : "Travaillez l'alignement horizontal à hauteur de tête pour augmenter la létalité dès la première balle.")
+                            : (currentLang === "en" ? "Avoid re-peeking alone after securing an opening kill." : "Évitez les réengagements solitaires après une première élimination sécurisée.")}
                         </p>
                       </div>
                     </div>
 
                     <div className="rounded-lg border border-white/[0.06] bg-black/40 p-4 space-y-3">
                       <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-neutral-300">
-                        Recommandations Tactiques Personnalisées
+                        {tr.coachRecommendations}
                       </h3>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
                         <div className="rounded border border-white/[0.06] bg-white/[0.02] p-3 space-y-1">
                           <p className="font-bold text-white flex items-center gap-1.5">
                             <span className="h-1.5 w-1.5 rounded-full bg-rose-400" />
-                            Maîtrise de l&apos;Agent ({topValorantAgents[0]?.agentName || "Principal"})
+                            {currentLang === "en" ? `Agent Mastery (${topValorantAgents[0]?.agentName || "Main"})` : `Maîtrise de l'Agent (${topValorantAgents[0]?.agentName || "Principal"})`}
                           </p>
                           <p className="text-neutral-400 leading-relaxed">
-                            Concentrez l&apos;utilisation des capacités utilitaires pour créer un différentiel de vision ou d&apos;espace avant chaque prise de duel direct.
+                            {currentLang === "en" ? "Focus utility usage to generate vision or space differential before taking direct duels." : "Concentrez l'utilisation des capacités utilitaires pour créer un différentiel de vision ou d'espace avant chaque prise de duel direct."}
                           </p>
                         </div>
 
                         <div className="rounded border border-white/[0.06] bg-white/[0.02] p-3 space-y-1">
                           <p className="font-bold text-white flex items-center gap-1.5">
                             <span className="h-1.5 w-1.5 rounded-full bg-cyan-400" />
-                            Gestion Économique des Armes
+                            {currentLang === "en" ? "Weapon Economy Management" : "Gestion Économique des Armes"}
                           </p>
                           <p className="text-neutral-400 leading-relaxed">
-                            Synchronisez vos achats complets avec l&apos;équipe pour maximiser le taux de conversion sur les rounds décisifs et les bonus rounds.
+                            {currentLang === "en" ? "Sync full buys with team economy to maximize conversion rate on decisive and bonus rounds." : "Synchronisez vos achats complets avec l'équipe pour maximiser le taux de conversion sur les rounds décisifs et les bonus rounds."}
                           </p>
                         </div>
                       </div>
@@ -1533,10 +1591,10 @@ export default function RiotGamingHome() {
                       <Target className="h-6 w-6" />
                     </div>
                     <h3 className="text-sm font-mono font-bold text-white uppercase tracking-wider">
-                      Télémétrie en attente de données
+                      {tr.telemPendingTitle}
                     </h3>
                     <p className="max-w-md mx-auto text-xs text-neutral-400">
-                      Aucune partie VALORANT n&apos;a été enregistrée pour ce joueur. Entrez un Riot ID valide ci-dessus pour calculer l&apos;analyse balistique, la précision anatomique et les ratios de duel réels.
+                      {tr.telemPendingDesc}
                     </p>
                   </div>
                 ) : (
@@ -1545,57 +1603,57 @@ export default function RiotGamingHome() {
                       <div className="flex items-center gap-2">
                         <Target className="h-5 w-5 text-cyan-400" />
                         <h2 className="text-sm font-mono font-bold text-white uppercase tracking-wider">
-                          Télémétrie de Combat Post-Match · VALORANT
+                          {tr.telemHeaderTitle}
                         </h2>
                       </div>
                       <span className="text-xs font-mono text-neutral-400">
-                        Base : {valorantMatches.length} {valorantMatches.length > 1 ? "Matchs Officiels" : "Match Officiel"}
+                        {currentLang === "en" ? "Sample: " : "Base : "} {valorantMatches.length} {currentLang === "en" ? (valorantMatches.length > 1 ? "Official Matches" : "Official Match") : (valorantMatches.length > 1 ? "Matchs Officiels" : "Match Officiel")}
                       </span>
                     </div>
 
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
                       <div className="rounded-lg border border-white/[0.06] bg-black/40 p-3">
-                        <span className="text-[10px] font-mono uppercase text-neutral-400">Éliminations Totales</span>
+                        <span className="text-[10px] font-mono uppercase text-neutral-400">{tr.telemTotalKills}</span>
                         <p className="text-2xl font-mono font-bold text-white mt-1">
                           {telemetryMetrics?.totalKills ?? 0} Kills
                         </p>
                         <p className="text-[10px] font-mono text-neutral-500">
-                          Moyenne : {(((telemetryMetrics?.totalKills ?? 0) / valorantMatches.length)).toFixed(1)} / partie
+                          {currentLang === "en" ? "Average: " : "Moyenne : "}{(((telemetryMetrics?.totalKills ?? 0) / valorantMatches.length)).toFixed(1)} {currentLang === "en" ? "/ match" : "/ partie"}
                         </p>
                       </div>
                       <div className="rounded-lg border border-white/[0.06] bg-black/40 p-3">
-                        <span className="text-[10px] font-mono uppercase text-neutral-400">Morts Totales</span>
+                        <span className="text-[10px] font-mono uppercase text-neutral-400">{tr.telemTotalDeaths}</span>
                         <p className="text-2xl font-mono font-bold text-white mt-1">
                           {telemetryMetrics?.totalDeaths ?? 0} Morts
                         </p>
                         <p className="text-[10px] font-mono text-neutral-500">
-                          Moyenne : {(((telemetryMetrics?.totalDeaths ?? 0) / valorantMatches.length)).toFixed(1)} / partie
+                          {currentLang === "en" ? "Average: " : "Moyenne : "}{(((telemetryMetrics?.totalDeaths ?? 0) / valorantMatches.length)).toFixed(1)} {currentLang === "en" ? "/ match" : "/ partie"}
                         </p>
                       </div>
                       <div className="rounded-lg border border-white/[0.06] bg-black/40 p-3">
-                        <span className="text-[10px] font-mono uppercase text-neutral-400">Précision Tête</span>
+                        <span className="text-[10px] font-mono uppercase text-neutral-400">{tr.telemHeadPrecision}</span>
                         <p className="text-2xl font-mono font-bold text-purple-300 mt-1">
                           {telemetryMetrics?.hsPct ?? 0}%
                         </p>
-                        <p className="text-[10px] font-mono text-neutral-500">Impacts confirmés</p>
+                        <p className="text-[10px] font-mono text-neutral-500">{currentLang === "en" ? "Confirmed impacts" : "Impacts confirmés"}</p>
                       </div>
                       <div className="rounded-lg border border-white/[0.06] bg-black/40 p-3">
-                        <span className="text-[10px] font-mono uppercase text-neutral-400">ADR Global</span>
+                        <span className="text-[10px] font-mono uppercase text-neutral-400">{tr.telemOverallAdr}</span>
                         <p className="text-2xl font-mono font-bold text-white mt-1">
                           {telemetryMetrics?.adr || (valorantCombatSummary.adr ? Math.round(Number(valorantCombatSummary.adr)) : "—")}
                         </p>
-                        <p className="text-[10px] font-mono text-neutral-500">Dégâts / round</p>
+                        <p className="text-[10px] font-mono text-neutral-500">{currentLang === "en" ? "Damage / round" : "Dégâts / round"}</p>
                       </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="rounded-lg border border-white/[0.06] bg-black/40 p-4 space-y-2">
                         <h4 className="text-xs font-mono font-bold text-white uppercase tracking-wider">
-                          Répartition Anatomique des Tirs
+                          {tr.telemSpreadTitle}
                         </h4>
                         <div className="space-y-2 text-xs">
                           <div className="flex items-center justify-between">
-                            <span className="text-neutral-300">Tirs à la tête (HS)</span>
+                            <span className="text-neutral-300">{tr.telemHeadshots}</span>
                             <span className="font-mono font-bold text-purple-300">{telemetryMetrics?.hsPct ?? 0}%</span>
                           </div>
                           <div className="h-2 w-full rounded-full bg-white/[0.06] overflow-hidden">
@@ -1603,7 +1661,7 @@ export default function RiotGamingHome() {
                           </div>
 
                           <div className="flex items-center justify-between">
-                            <span className="text-neutral-400">Tirs au corps</span>
+                            <span className="text-neutral-400">{tr.telemBodyshots}</span>
                             <span className="font-mono font-bold text-cyan-300">{telemetryMetrics?.bsPct ?? 0}%</span>
                           </div>
                           <div className="h-2 w-full rounded-full bg-white/[0.06] overflow-hidden">
@@ -1611,7 +1669,7 @@ export default function RiotGamingHome() {
                           </div>
 
                           <div className="flex items-center justify-between">
-                            <span className="text-neutral-500">Tirs aux jambes</span>
+                            <span className="text-neutral-500">{tr.telemLegshots}</span>
                             <span className="font-mono font-bold text-neutral-400">{telemetryMetrics?.lsPct ?? 0}%</span>
                           </div>
                           <div className="h-2 w-full rounded-full bg-white/[0.06] overflow-hidden">
@@ -1622,7 +1680,7 @@ export default function RiotGamingHome() {
 
                       <div className="rounded-lg border border-white/[0.06] bg-black/40 p-4 space-y-2">
                         <h4 className="text-xs font-mono font-bold text-white uppercase tracking-wider">
-                          Performance par Carte
+                          {tr.telemMapTitle}
                         </h4>
                         <div className="space-y-2 text-xs">
                           {realMapStats.length > 0 ? (
@@ -1633,13 +1691,13 @@ export default function RiotGamingHome() {
                               >
                                 <span className="font-bold text-white">{ms.mapName}</span>
                                 <span className="font-mono text-emerald-400 font-semibold">
-                                  {ms.winrate}% Winrate · {ms.kd} KD ({ms.count} {ms.count > 1 ? "parties" : "partie"})
+                                  {ms.winrate}% Winrate · {ms.kd} KD ({ms.count} {ms.count > 1 ? tr.matches : tr.match})
                                 </span>
                               </div>
                             ))
                           ) : (
                             <div className="rounded bg-white/[0.02] border border-white/[0.06] p-2.5 text-neutral-500">
-                              Aucune carte disponible
+                              {tr.telemNoMap}
                             </div>
                           )}
                         </div>
@@ -1658,10 +1716,10 @@ export default function RiotGamingHome() {
                       <Activity className="h-6 w-6" />
                     </div>
                     <h3 className="text-sm font-mono font-bold text-white uppercase tracking-wider">
-                      Plan d&apos;Entraînement en Attente
+                      {tr.trainingPendingTitle}
                     </h3>
                     <p className="max-w-md mx-auto text-xs text-neutral-400">
-                      Synchronisez un profil VALORANT ci-dessus pour générer une routine d&apos;entraînement adaptée à votre agent favori et votre niveau actuel.
+                      {tr.trainingPendingDesc}
                     </p>
                   </div>
                 ) : (
@@ -1670,11 +1728,11 @@ export default function RiotGamingHome() {
                       <div className="flex items-center gap-2">
                         <Activity className="h-5 w-5 text-emerald-400" />
                         <h2 className="text-sm font-mono font-bold text-white uppercase tracking-wider">
-                          Plan d&apos;Entraînement Personnalisé · Coach IA
+                          {tr.trainingPlanTitle}
                         </h2>
                       </div>
                       <span className="text-xs font-mono text-neutral-400">
-                        Routine ciblée {topValorantAgents[0]?.agentName || "VALORANT"} (30 min / jour)
+                        {tr.trainingRoutineFor} {topValorantAgents[0]?.agentName || "VALORANT"} (30 min / {currentLang === "en" ? "day" : "jour"})
                       </span>
                     </div>
 
@@ -1682,42 +1740,46 @@ export default function RiotGamingHome() {
                       <div className="rounded-lg border border-white/[0.06] bg-black/40 p-4 space-y-1.5">
                         <div className="flex items-center justify-between">
                           <span className="text-xs font-bold text-white">
-                            Phase 1 : Calibrage Mécanique &amp; Placement de Réticule (10 min)
+                            {tr.phase1Title}
                           </span>
                           <span className="text-[10px] font-mono font-semibold text-neutral-400 border border-white/10 rounded px-2 py-0.5 bg-white/[0.04]">
                             The Range / Aim Lab
                           </span>
                         </div>
                         <p className="text-xs text-neutral-400 leading-relaxed">
-                          Éliminez 50 bots en mode Entraînement avec Vandal sans vous accroupir. Focus sur le micro-ajustement horizontal à hauteur de tête avant de tirer la première balle.
+                          {tr.phase1Desc}
                         </p>
                       </div>
 
                       <div className="rounded-lg border border-white/[0.06] bg-black/40 p-4 space-y-1.5">
                         <div className="flex items-center justify-between">
                           <span className="text-xs font-bold text-white">
-                            Phase 2 : Prise d&apos;Espace &amp; Duels sous Pression (15 min)
+                            {tr.phase2Title}
                           </span>
                           <span className="text-[10px] font-mono font-semibold text-neutral-400 border border-white/10 rounded px-2 py-0.5 bg-white/[0.04]">
                             2 Swiftplay / Deathmatch
                           </span>
                         </div>
                         <p className="text-xs text-neutral-400 leading-relaxed">
-                          Sur {topValorantAgents[0]?.agentName || "votre agent principal"} : entraînez les entrées de site agressives avec vos capacités d&apos;utilitaires posées pour briser la ligne ennemie et forcer un duel avantageux.
+                          {topValorantAgents[0]?.agentName
+                            ? (currentLang === "en"
+                                ? `On ${topValorantAgents[0].agentName}: practice aggressive site entries using utility to break enemy crossfires and force an advantageous duel.`
+                                : `Sur ${topValorantAgents[0].agentName} : entraînez les entrées de site agressives avec vos capacités d'utilitaires posées pour briser la ligne ennemie et forcer un duel avantageux.`)
+                            : tr.phase2Desc}
                         </p>
                       </div>
 
                       <div className="rounded-lg border border-white/[0.06] bg-black/40 p-4 space-y-1.5">
                         <div className="flex items-center justify-between">
                           <span className="text-xs font-bold text-white">
-                            Phase 3 : Débriefing &amp; Suivi des Crédits (5 min)
+                            {tr.phase3Title}
                           </span>
                           <span className="text-[10px] font-mono font-semibold text-neutral-400 border border-white/10 rounded px-2 py-0.5 bg-white/[0.04]">
                             Dashboard ETHONE
                           </span>
                         </div>
                         <p className="text-xs text-neutral-400 leading-relaxed">
-                          Vérifiez vos rounds d&apos;économie sur la télémétrie post-match. Assurez-vous d&apos;avoir acheté au moins 3 utilitaires clés sur les rounds armés.
+                          {tr.phase3Desc}
                         </p>
                       </div>
                     </div>
@@ -1747,10 +1809,10 @@ export default function RiotGamingHome() {
                       <RefreshCw className="h-6 w-6 animate-spin" />
                     </div>
                     <h3 className="text-base font-bold text-white tracking-wide">
-                      Analyse de l&apos;Invocateur en cours...
+                      {tr.lolLoadingTitle}
                     </h3>
                     <p className="text-xs text-neutral-400 font-mono">
-                      Récupération de l&apos;historique de match SoloQ et Flex via l&apos;API Riot Games.
+                      {tr.lolLoadingDesc}
                     </p>
                   </div>
                 ) : hasLolData ? (
@@ -1763,16 +1825,16 @@ export default function RiotGamingHome() {
                           </div>
                           <div className="min-w-0">
                             <h3 className="text-base font-bold text-white truncate">
-                              {riotName || "Invocateur"}
+                              {riotName || (currentLang === "en" ? "Summoner" : "Invocateur")}
                             </h3>
                             <p className="font-mono text-xs text-neutral-400">{riotTag ? `#${riotTag}` : ""}</p>
                             <p className="text-xs font-semibold text-amber-300">
-                              {lolMatches.length > 0 ? "Compétitif SoloQ" : "SoloQ / Flex"}
+                              {lolMatches.length > 0 ? (currentLang === "en" ? "Competitive SoloQ" : "Compétitif SoloQ") : "SoloQ / Flex"}
                             </p>
                           </div>
                         </div>
                         <div className="pt-2 border-t border-white/[0.06] flex items-center justify-between text-xs text-neutral-400">
-                          <span>Parties analysées :</span>
+                          <span>{tr.lolMatchesAnalyzed}</span>
                           <span className="font-mono font-bold text-white">
                             {lolMatches.length}
                           </span>
@@ -1781,7 +1843,7 @@ export default function RiotGamingHome() {
 
                       <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-4 backdrop-blur-xl shadow-sm flex flex-col justify-between">
                         <div className="flex items-center justify-between">
-                          <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">KDA Moyen</span>
+                          <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">{tr.lolAverageKda}</span>
                           <Flame className="h-4 w-4 text-amber-400" />
                         </div>
                         <div className="my-2">
@@ -1789,7 +1851,7 @@ export default function RiotGamingHome() {
                             {lolSummary.total > 0 ? lolSummary.kda : "—"}
                           </p>
                           <p className="text-[11px] font-mono text-neutral-400">
-                            {lolSummary.total > 0 ? `${lolSummary.kTotal}K / ${lolSummary.dTotal}D / ${lolSummary.aTotal}A` : "0 partie analysée"}
+                            {lolSummary.total > 0 ? `${lolSummary.kTotal}K / ${lolSummary.dTotal}D / ${lolSummary.aTotal}A` : (currentLang === "en" ? "0 matches analyzed" : "0 partie analysée")}
                           </p>
                         </div>
                         <div className="h-1.5 w-full rounded-full bg-white/[0.06] overflow-hidden">
@@ -1802,7 +1864,7 @@ export default function RiotGamingHome() {
 
                       <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-4 backdrop-blur-xl shadow-sm flex flex-col justify-between">
                         <div className="flex items-center justify-between">
-                          <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">Dégâts / Minute</span>
+                          <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">{tr.lolDpm}</span>
                           <Trophy className="h-4 w-4 text-cyan-400" />
                         </div>
                         <div className="my-2">
@@ -1810,7 +1872,7 @@ export default function RiotGamingHome() {
                             {lolSummary.avgDpm > 0 ? lolSummary.avgDpm : "—"}
                           </p>
                           <p className="text-[11px] font-mono text-neutral-400">
-                            {lolSummary.dmgTotal > 0 ? `${lolSummary.dmgTotal.toLocaleString()} dégâts infligés` : "—"}
+                            {lolSummary.dmgTotal > 0 ? `${lolSummary.dmgTotal.toLocaleString()} ${currentLang === "en" ? "damage dealt" : "dégâts infligés"}` : "—"}
                           </p>
                         </div>
                         <div className="h-1.5 w-full rounded-full bg-white/[0.06] overflow-hidden">
@@ -1823,7 +1885,7 @@ export default function RiotGamingHome() {
 
                       <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-4 backdrop-blur-xl shadow-sm flex flex-col justify-between">
                         <div className="flex items-center justify-between">
-                          <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">Kill Participation</span>
+                          <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">{tr.lolKp}</span>
                           <Target className="h-4 w-4 text-emerald-400" />
                         </div>
                         <div className="my-2">
@@ -1831,7 +1893,7 @@ export default function RiotGamingHome() {
                             {lolSummary.avgKp > 0 ? `${lolSummary.avgKp}%` : "—"}
                           </p>
                           <p className="text-[11px] font-mono text-neutral-400">
-                            {lolSummary.avgKp > 0 ? "Participation moyenne aux éliminations" : "—"}
+                            {lolSummary.avgKp > 0 ? (currentLang === "en" ? "Average kill involvement" : "Participation moyenne aux éliminations") : "—"}
                           </p>
                         </div>
                         <div className="h-1.5 w-full rounded-full bg-white/[0.06] overflow-hidden">
@@ -1846,9 +1908,9 @@ export default function RiotGamingHome() {
                     <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-4 sm:p-5 backdrop-blur-xl shadow-sm space-y-3">
                       <div className="flex items-center justify-between border-b border-white/[0.06] pb-2.5">
                         <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-white">
-                          Parties Récentes League of Legends
+                          {tr.lolRecentMatches}
                         </h3>
-                        <span className="text-[10px] font-mono text-neutral-500">{lolMatches.length} parties</span>
+                        <span className="text-[10px] font-mono text-neutral-500">{lolMatches.length} {lolMatches.length > 1 ? tr.matches : tr.match}</span>
                       </div>
 
                       <div className="space-y-2">
@@ -1895,7 +1957,7 @@ export default function RiotGamingHome() {
                                         isWin ? "bg-emerald-500/15 text-emerald-300 border border-emerald-500/30" : "bg-rose-500/15 text-rose-300 border border-rose-500/30"
                                       )}
                                     >
-                                      {isWin ? "Victoire" : "Défaite"}
+                                      {isWin ? tr.victory : tr.defeat}
                                     </span>
                                   </div>
                                   <p className="text-[10px] font-mono text-neutral-400 mt-0.5">
@@ -1924,10 +1986,10 @@ export default function RiotGamingHome() {
 
                     <div className="space-y-2 max-w-lg mx-auto">
                       <h3 className="text-lg font-bold tracking-tight text-white">
-                        Aucun invocateur League of Legends sélectionné
+                        {tr.lolEmptyTitle}
                       </h3>
                       <p className="text-xs text-neutral-400 leading-relaxed">
-                        Saisissez votre Riot ID et votre TAG dans la barre ci-dessus puis cliquez sur <span className="text-white font-semibold">« Analyser »</span> pour charger votre KDA moyen, vos dégâts par minute et l&apos;historique de vos parties récentes.
+                        {tr.lolEmptyDesc}
                       </p>
                     </div>
 
@@ -1935,30 +1997,30 @@ export default function RiotGamingHome() {
                       <div className="rounded-lg border border-white/[0.06] bg-black/40 p-4 space-y-1.5">
                         <div className="flex items-center gap-2 text-amber-400">
                           <Flame className="h-4 w-4" />
-                          <span className="text-xs font-mono font-bold uppercase tracking-wider text-white">KDA &amp; Impact</span>
+                          <span className="text-xs font-mono font-bold uppercase tracking-wider text-white">{tr.lolKdaTitle}</span>
                         </div>
                         <p className="text-xs text-neutral-400 leading-relaxed">
-                          Ratio KDA moyen, éliminations, morts et assistances cumulées sur les dernières parties.
+                          {tr.lolKdaDesc}
                         </p>
                       </div>
 
                       <div className="rounded-lg border border-white/[0.06] bg-black/40 p-4 space-y-1.5">
                         <div className="flex items-center gap-2 text-cyan-400">
                           <Trophy className="h-4 w-4" />
-                          <span className="text-xs font-mono font-bold uppercase tracking-wider text-white">Dégâts / Minute</span>
+                          <span className="text-xs font-mono font-bold uppercase tracking-wider text-white">{tr.lolDpmTitle}</span>
                         </div>
                         <p className="text-xs text-neutral-400 leading-relaxed">
-                          Volume de dégâts infligés aux champions calculé par minute de jeu.
+                          {tr.lolDpmDesc}
                         </p>
                       </div>
 
                       <div className="rounded-lg border border-white/[0.06] bg-black/40 p-4 space-y-1.5">
                         <div className="flex items-center gap-2 text-emerald-400">
                           <Target className="h-4 w-4" />
-                          <span className="text-xs font-mono font-bold uppercase tracking-wider text-white">Kill Participation</span>
+                          <span className="text-xs font-mono font-bold uppercase tracking-wider text-white">{tr.lolKpTitle}</span>
                         </div>
                         <p className="text-xs text-neutral-400 leading-relaxed">
-                          Taux d&apos;implication dans les prises d&apos;objectifs et les éliminations collectives.
+                          {tr.lolKpDesc}
                         </p>
                       </div>
                     </div>
@@ -1976,10 +2038,10 @@ export default function RiotGamingHome() {
 
                   <div className="space-y-2 max-w-lg mx-auto">
                     <h3 className="text-lg font-bold tracking-tight text-white">
-                      Module Teamfight Tactics
+                      {tr.tftModuleTitle}
                     </h3>
                     <p className="text-xs text-neutral-400 leading-relaxed">
-                      L&apos;intégration des données de match TFT (compositions d&apos;unités, synergies d&apos;équipe et classements de fin de manche) requiert la configuration d&apos;une clé API Riot Games personnalisée.
+                      {tr.tftModuleDesc}
                     </p>
                   </div>
 
@@ -1990,7 +2052,7 @@ export default function RiotGamingHome() {
                       className="inline-flex items-center gap-2 rounded-lg bg-white text-black px-4 py-2 text-xs font-semibold hover:bg-neutral-200 active:scale-95 transition-all cursor-pointer shadow-sm"
                     >
                       <Key className="h-3.5 w-3.5 text-black" />
-                      <span>Configurer la Clé API Riot</span>
+                      <span>{tr.tftConfigKeyBtn}</span>
                     </button>
                   </div>
                 </div>
@@ -2008,14 +2070,14 @@ export default function RiotGamingHome() {
               <div>
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-mono font-bold uppercase tracking-wider text-white">
-                    Attributions & Conformité Compétitive
+                    {tr.footerCompliance}
                   </span>
                   <span className="rounded-full border border-white/10 bg-white/[0.05] px-2 py-0.2 text-[9px] font-mono text-neutral-400">
-                    Non Affilié à Riot Games
+                    {tr.footerNotAffiliated}
                   </span>
                 </div>
                 <p className="text-[11px] text-neutral-400 mt-0.5">
-                  Politique Legal Jibber Jabber de Riot Games et APIs communautaires.
+                  {tr.footerLegalDesc}
                 </p>
               </div>
             </div>
@@ -2057,7 +2119,7 @@ export default function RiotGamingHome() {
                 className="inline-flex items-center gap-1.5 rounded-md border border-white/10 bg-white/[0.05] px-2.5 py-1 text-xs font-semibold text-white hover:bg-white/[0.10] active:scale-95 transition-all cursor-pointer shadow-sm"
               >
                 <Heart className="h-3 w-3 text-rose-400" />
-                <span>Tous les crédits</span>
+                <span>{tr.footerCreditsBtn}</span>
               </button>
             </div>
           </div>

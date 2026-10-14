@@ -107,7 +107,7 @@ export default function RiotTrackerHeader({
                 className={cn(
                   "flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-bold transition-all cursor-pointer",
                   activeGame === "tft"
-                    ? "bg-yellow-600 text-white shadow-sm"
+                    ? "bg-purple-600 text-white shadow-sm"
                     : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                 )}
               >

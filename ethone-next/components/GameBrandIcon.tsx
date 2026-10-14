@@ -2,7 +2,7 @@
 
 import { memo } from "react";
 import { Icon as IconifyIcon } from "@iconify/react";
-import { Gamepad2 } from "@/components/icons/ph";
+import { Gamepad2, Target, Swords, Dice5 } from "@/components/icons/ph";
 import { cn } from "@/lib/utils";
 
 type GameBrandIconProps = {
@@ -11,22 +11,9 @@ type GameBrandIconProps = {
   className?: string;
 };
 
-// Real brand marks (Simple Icons). Keyed by a lowercase substring of the
-// Discord activity name. Order matters — more specific first.
 const BRANDS: { match: string; icon: string; color: string }[] = [
-  { match: "valorant", icon: "simple-icons:valorant", color: "#FF4655" },
-  { match: "league of legends", icon: "simple-icons:leagueoflegends", color: "#C89B3C" },
-  // Riot markets TFT under the League of Legends identity and no icon library
-  // (Simple Icons, Arcticons, or otherwise) has a dedicated TFT mark, so this
-  // reuse is intentional, not a placeholder.
-  { match: "teamfight tactics", icon: "simple-icons:leagueoflegends", color: "#C89B3C" },
-  // No official EA/Respawn Apex Legends mark exists in any indexed icon
-  // library either — this is a community-drawn minimalist substitute
-  // (Arcticons pack), used with the user's explicit sign-off.
   { match: "apex legends", icon: "arcticons:apex-legends", color: "#DA0000" },
   { match: "the finals", icon: "simple-icons:thefinals", color: "#FFDE00" },
-  // Same situation as Apex above: no official Ubisoft/Bungie mark exists in
-  // any indexed icon library, only community-drawn substitutes.
   { match: "rainbow six siege", icon: "arcticons:guide-for-rainbow-six-siege", color: "#E8A33D" },
   { match: "destiny 2", icon: "arcticons:destiny-2", color: "#C9A227" },
   { match: "counter-strike", icon: "simple-icons:counterstrike", color: "#F7A800" },
@@ -52,7 +39,6 @@ export const GameBrandIcon = memo(function GameBrandIcon({
   iconUrl,
   className = "h-5 w-5",
 }: GameBrandIconProps) {
-  // 1. The game's own icon from Discord Rich Presence — always the most accurate.
   if (iconUrl && iconUrl.startsWith("http")) {
     return (
       <img
@@ -66,8 +52,38 @@ export const GameBrandIcon = memo(function GameBrandIcon({
     );
   }
 
-  // 2. A known brand mark.
   const clean = name.toLowerCase().trim();
+
+  if (clean.includes("valorant")) {
+    return (
+      <Target
+        className={cn("shrink-0 text-rose-500", className)}
+        style={{ color: "#FF4655" }}
+        aria-hidden="true"
+      />
+    );
+  }
+
+  if (clean.includes("league of legends") || clean === "lol") {
+    return (
+      <Swords
+        className={cn("shrink-0 text-amber-400", className)}
+        style={{ color: "#C89B3C" }}
+        aria-hidden="true"
+      />
+    );
+  }
+
+  if (clean.includes("teamfight tactics") || clean === "tft") {
+    return (
+      <Dice5
+        className={cn("shrink-0 text-purple-400", className)}
+        style={{ color: "#A855F7" }}
+        aria-hidden="true"
+      />
+    );
+  }
+
   const brand = BRANDS.find((b) => clean.includes(b.match));
   if (brand) {
     return (
@@ -80,7 +96,6 @@ export const GameBrandIcon = memo(function GameBrandIcon({
     );
   }
 
-  // 3. Generic.
   return <Gamepad2 className={cn("text-violet-400 shrink-0", className)} />;
 });
 

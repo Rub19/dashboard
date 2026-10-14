@@ -15,6 +15,7 @@ import {
   Activity,
   Flame,
   Trophy,
+  Gamepad2,
 } from "@/components/icons/ph";
 import BrandMark from "@/components/BrandMark";
 import GameBrandIcon from "@/components/GameBrandIcon";
@@ -57,9 +58,8 @@ const TRACKER_GROUPS: TrackerSidebarGroup[] = [
         label: "Hub Riot Games",
         href: "/tracker",
         renderIcon: (colored) => (
-          <GameBrandIcon
-            name="Valorant"
-            className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-rose-500")}
+          <Gamepad2
+            className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-rose-400")}
           />
         ),
         badge: "Live",
@@ -115,7 +115,7 @@ const TRACKER_GROUPS: TrackerSidebarGroup[] = [
         renderIcon: (colored) => (
           <GameBrandIcon
             name="Teamfight Tactics"
-            className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-yellow-400")}
+            className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-purple-400")}
           />
         ),
       },

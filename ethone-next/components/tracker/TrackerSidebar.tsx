@@ -10,12 +10,10 @@ import {
   ImageOff,
   Palette,
   User,
-  Key,
   Target,
   Brain,
-  ShieldCheck,
   Activity,
-  Heart,
+  Flame,
 } from "@/components/icons/ph";
 import { ethoneIcon } from "@/components/EthoneIcon";
 import GameBrandIcon from "@/components/GameBrandIcon";
@@ -35,7 +33,6 @@ import {
   useAnimatedSidebarPanel,
 } from "@/components/motion/animated-sidebar";
 
-const HomeIcon = ethoneIcon("home");
 const SettingsIcon = ethoneIcon("settings");
 
 interface TrackerSidebarItem {
@@ -68,6 +65,17 @@ const TRACKER_GROUPS: TrackerSidebarGroup[] = [
           />
         ),
         badge: "Live",
+      },
+      {
+        id: "live",
+        label: "Partie en direct",
+        href: "/tracker?tab=live",
+        renderIcon: (colored) => (
+          <Flame
+            className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-rose-400")}
+          />
+        ),
+        badge: "Bêta",
       },
       {
         id: "valorant",
@@ -142,58 +150,9 @@ const TRACKER_GROUPS: TrackerSidebarGroup[] = [
     ],
   },
   {
-    id: "compliance",
-    label: "RSO & Conformité Riot",
-    items: [
-      {
-        id: "rso",
-        label: "Connexion RSO OAuth",
-        href: "/tracker?tab=rso",
-        renderIcon: (colored) => (
-          <Key
-            className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-amber-400")}
-          />
-        ),
-        badge: "OAuth",
-      },
-      {
-        id: "compliance",
-        label: "Conformité API Riot",
-        href: "/tracker?tab=compliance",
-        renderIcon: (colored) => (
-          <ShieldCheck
-            className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-emerald-400")}
-          />
-        ),
-        badge: "7/7",
-      },
-      {
-        id: "attributions",
-        label: "Attributions & Crédits",
-        href: "/tracker?tab=compliance#attributions",
-        renderIcon: (colored) => (
-          <Heart
-            className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-rose-400")}
-          />
-        ),
-        badge: "APIs",
-      },
-    ],
-  },
-  {
     id: "system",
     label: "Système",
     items: [
-      {
-        id: "home",
-        label: "ETHONE OS",
-        href: "/",
-        renderIcon: (colored) => (
-          <HomeIcon
-            className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-sky-400")}
-          />
-        ),
-      },
       {
         id: "settings",
         label: "Paramètres",
@@ -382,6 +341,9 @@ const TrackerSidebarNavList = memo(function TrackerSidebarNavList({
       if (item.id === "riot-home") {
         return pathname === "/tracker" && (!currentTab || currentTab === "home");
       }
+      if (item.id === "live") {
+        return pathname === "/tracker" && currentTab === "live";
+      }
       if (item.id === "valorant") {
         return (pathname === "/matches" || pathname === "/tracker") && currentTab === "valorant";
       }
@@ -399,15 +361,6 @@ const TrackerSidebarNavList = memo(function TrackerSidebarNavList({
       }
       if (item.id === "training") {
         return pathname === "/tracker" && currentTab === "training";
-      }
-      if (item.id === "rso") {
-        return pathname === "/tracker" && currentTab === "rso";
-      }
-      if (item.id === "compliance" || item.id === "attributions") {
-        return pathname === "/tracker" && currentTab === "compliance";
-      }
-      if (item.id === "home") {
-        return pathname === "/";
       }
       if (item.id === "settings") {
         return pathname === "/settings" || pathname.startsWith("/settings/");
@@ -459,8 +412,20 @@ export default function TrackerSidebar() {
     if (typeof window !== "undefined") {
       setCurrentSearch(window.location.search);
       const onPopState = () => setCurrentSearch(window.location.search);
+      const onTabChange = (e: Event) => {
+        const customEvt = e as CustomEvent<{ tab?: string }>;
+        if (customEvt.detail?.tab) {
+          setCurrentSearch(`?tab=${customEvt.detail.tab}`);
+        } else {
+          setCurrentSearch(window.location.search);
+        }
+      };
       window.addEventListener("popstate", onPopState);
-      return () => window.removeEventListener("popstate", onPopState);
+      window.addEventListener("ethone:tracker:tab-change", onTabChange);
+      return () => {
+        window.removeEventListener("popstate", onPopState);
+        window.removeEventListener("ethone:tracker:tab-change", onTabChange);
+      };
     }
   }, [pathname]);
 
@@ -476,6 +441,19 @@ export default function TrackerSidebar() {
     (href: string) => {
       router.push(href);
       if (typeof window !== "undefined") {
+        try {
+          const url = new URL(href, window.location.origin);
+          const tab = url.searchParams.get("tab") || url.searchParams.get("game");
+          if (tab) {
+            window.dispatchEvent(new CustomEvent("ethone:tracker:tab-change", { detail: { tab } }));
+            setCurrentSearch(`?tab=${tab}`);
+          } else {
+            window.dispatchEvent(new CustomEvent("ethone:tracker:tab-change", { detail: { tab: "valorant" } }));
+            setCurrentSearch("");
+          }
+        } catch {
+          setCurrentSearch(window.location.search);
+        }
         setTimeout(() => {
           setCurrentSearch(window.location.search);
         }, 50);

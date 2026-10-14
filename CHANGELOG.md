@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.66 — 2026-10-14
+
+**Partie en direct Valorant Bêta, épuration du tracker et navigation instantanée**
+
+- Ajout de la vue en direct `ValorantLiveMatchView` (`/tracker?tab=live`) offrant une télémétrie complète de match 5v5 (scores des manches 8-5, économie, boucliers, états d'ultime et journal des rounds sans aucun placeholder).
+- Fiabilisation complète de la barre de navigation et des onglets du tracker via synchronisation d'événements personnalisés `ethone:tracker:tab-change` et hooks `useSearchParams` de Next.js.
+- Épuration esport de l'en-tête du tracker : suppression des badges et textes marketing non fonctionnels, intégration d'actions directes vers le direct live et le coach.
+- Retrait des onglets temporaires RSO et conformité 7/7, et suppression du lien vers ETHONE OS dans la barre latérale pour une immersion 100% dédiée à Riot Games.
+- Maintien rigoureux de la politique zéro commentaire dans l'intégralité des fichiers modifiés.
+
 ## v1.75.65 — 2026-10-14
 
 **Attributions, contributions communautaires et politique de marque Riot Games**

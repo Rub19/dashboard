@@ -2,11 +2,11 @@
 
 import { useState, useEffect, useMemo, useCallback } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Swords,
   ShieldCheck,
-  TrendingUp,
   User,
   Search,
   ChevronRight,
@@ -16,11 +16,8 @@ import {
   Activity,
   Zap,
   Share2,
-  Key,
   Brain,
   CheckCircle2,
-  Clock,
-  Award,
   ExternalLink,
   Heart,
 } from "@/components/icons/ph";
@@ -46,6 +43,7 @@ import GameBrandIcon from "@/components/GameBrandIcon";
 import RiotTrackerConnectModal from "@/components/tracker/RiotTrackerConnectModal";
 import ValorantFriendCompareModal from "@/components/tracker/ValorantFriendCompareModal";
 import RiotAttributionModal from "@/components/tracker/RiotAttributionModal";
+import ValorantLiveMatchView from "@/components/tracker/ValorantLiveMatchView";
 import { useAnimatedSidebar } from "@/components/motion/animated-sidebar";
 import { Icon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
@@ -53,99 +51,31 @@ import { EASE_SNAP } from "@/lib/ease";
 
 type GameTab =
   | "valorant"
+  | "live"
   | "lol"
   | "tft"
   | "coach"
   | "telemetry"
-  | "training"
-  | "rso"
-  | "compliance";
-
-const RIOT_COMPLIANCE_CHECKS = [
-  {
-    id: "doc-requirements",
-    number: "1",
-    title: "Documentation VALORANT comprise & respectée",
-    riotText: "You have read our game documentation for VALORANT and can confirm that you understand the requirements *",
-    status: "Conforme & Vérifié",
-    details:
-      "Toutes les métadonnées, formats d'historiques et données MMR suivent strictement la documentation officielle de Riot Games et de HenrikDev. Gestion rigoureuse des codes d'erreur, respect des politiques de cache et des quotas d'appels autorisés.",
-  },
-  {
-    id: "production-app",
-    number: "2",
-    title: "Application Publique de Production",
-    riotText: "Your app is not for personal use, educational use, testing, or for a small group of friends. *",
-    status: "Conforme & Vérifié",
-    details:
-      "ETHONE Tactical Coach est une solution publique déployée à l'échelle pour tous les joueurs compétitifs, duos et équipes cherchant un coaching post-match automatisé et une analyse approfondie de leurs duels.",
-  },
-  {
-    id: "no-store-checker",
-    number: "3",
-    title: "Politique Anti-Store Checker Strictement Appliquée",
-    riotText: "You will not develop a VALORANT item store checker, which is against our policies. *",
-    status: "Conforme & Vérifié",
-    details:
-      "L'application exclut formellement tout vérificateur de boutique d'objets, rotateur de skins ou consultation du Marché Nocturne. Seules les données compétitives de jeu (rounds, duels, éliminations, scores) sont traitées.",
-  },
-  {
-    id: "post-match-telemetry",
-    number: "4",
-    title: "Télémétrie Post-Match Uniquement",
-    riotText: "You understand the VALORANT API does not provide real time data or professional esports data. *",
-    status: "Conforme & Vérifié",
-    details:
-      "L'application se base exclusivement sur les historiques de parties terminées (post-match). Aucune interception de mémoire en temps réel dans le client de jeu ni aucun flux esports professionnel propriétaire n'est utilisé.",
-  },
-  {
-    id: "rso-oauth",
-    number: "5",
-    title: "Consentement Joueur via Riot Sign On (RSO)",
-    riotText: "You may not collect player info or show match history/player stats without implementing OAuth with RSO. *",
-    status: "Conforme & Vérifié",
-    details:
-      "Le flux d'authentification officiel Riot Sign On OAuth 2.0 (scopes openid, cpid) garantit que les joueurs gardent le plein contrôle de leurs données et accordent leur consentement avant toute analyse personnalisée.",
-  },
-  {
-    id: "working-prototype",
-    number: "6",
-    title: "Prototype Fonctionnel & Expérience Utilisateur Démontrée",
-    riotText: "Your application contains a link to a working prototype, or at minimum, some sort of visual flow that demonstrates your planned user experience and intended use of the API. *",
-    status: "Conforme & Vérifié",
-    details:
-      "Un prototype 100% interactif est actif en direct, illustrant l'expérience utilisateur complète : connexion RSO, ingestion de la télémétrie post-match, diagnostic algorithmique du Coach IA et génération d'un plan d'entraînement.",
-  },
-  {
-    id: "public-review-access",
-    number: "7",
-    title: "Accès Public Libre pour les Évaluateurs Riot",
-    riotText: "You have made sure that the view settings for all WIP sites/prototypes/demos are set to public OR that login credentials are provided with your application. We are unable to download external apps, create accounts, or join Discord servers as part of our review process. *",
-    status: "Conforme & Vérifié",
-    details:
-      "Accessible instantanément en ligne sans aucune barrière : les reviewers de Riot Games peuvent auditer le produit sans devoir créer de compte obligatoire, sans télécharger d'application externe et sans rejoindre de serveur Discord.",
-  },
-];
+  | "training";
 
 export default function RiotGamingHome() {
   const { settings } = useSettings();
   const { success, error: showError } = useToast();
   const { open, setOpen } = useAnimatedSidebar();
+  const searchParams = useSearchParams();
 
   const [activeGame, setActiveGame] = useState<GameTab>(() => {
     if (typeof window !== "undefined") {
-      const urlTab =
-        new URLSearchParams(window.location.search).get("tab") ||
-        new URLSearchParams(window.location.search).get("game");
+      const sp = new URLSearchParams(window.location.search);
+      const urlTab = sp.get("tab") || sp.get("game");
       if (
+        urlTab === "live" ||
         urlTab === "lol" ||
         urlTab === "tft" ||
         urlTab === "valorant" ||
         urlTab === "coach" ||
         urlTab === "telemetry" ||
-        urlTab === "training" ||
-        urlTab === "rso" ||
-        urlTab === "compliance"
+        urlTab === "training"
       ) {
         return urlTab as GameTab;
       }
@@ -155,26 +85,60 @@ export default function RiotGamingHome() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const handleUrlTab = () => {
-      const urlTab =
-        new URLSearchParams(window.location.search).get("tab") ||
-        new URLSearchParams(window.location.search).get("game");
+    const readTabFromUrl = () => {
+      const sp = new URLSearchParams(window.location.search);
+      const urlTab = sp.get("tab") || sp.get("game");
       if (
+        urlTab === "live" ||
         urlTab === "lol" ||
         urlTab === "tft" ||
         urlTab === "valorant" ||
         urlTab === "coach" ||
         urlTab === "telemetry" ||
-        urlTab === "training" ||
-        urlTab === "rso" ||
-        urlTab === "compliance"
+        urlTab === "training"
       ) {
         setActiveGame(urlTab as GameTab);
       }
     };
-    window.addEventListener("popstate", handleUrlTab);
-    return () => window.removeEventListener("popstate", handleUrlTab);
+    const handleTabChange = (e: Event) => {
+      const customEvt = e as CustomEvent<{ tab?: string }>;
+      const targetTab = customEvt.detail?.tab;
+      if (
+        targetTab === "live" ||
+        targetTab === "valorant" ||
+        targetTab === "lol" ||
+        targetTab === "tft" ||
+        targetTab === "coach" ||
+        targetTab === "telemetry" ||
+        targetTab === "training"
+      ) {
+        setActiveGame(targetTab as GameTab);
+      } else {
+        readTabFromUrl();
+      }
+    };
+    window.addEventListener("popstate", readTabFromUrl);
+    window.addEventListener("ethone:tracker:tab-change", handleTabChange);
+    return () => {
+      window.removeEventListener("popstate", readTabFromUrl);
+      window.removeEventListener("ethone:tracker:tab-change", handleTabChange);
+    };
   }, []);
+
+  useEffect(() => {
+    const tabParam = searchParams?.get("tab") || searchParams?.get("game");
+    if (
+      tabParam === "live" ||
+      tabParam === "valorant" ||
+      tabParam === "lol" ||
+      tabParam === "tft" ||
+      tabParam === "coach" ||
+      tabParam === "telemetry" ||
+      tabParam === "training"
+    ) {
+      setActiveGame(tabParam as GameTab);
+    }
+  }, [searchParams]);
 
   const selectGameTab = useCallback((game: GameTab) => {
     setActiveGame(game);
@@ -182,6 +146,7 @@ export default function RiotGamingHome() {
       const url = new URL(window.location.href);
       url.searchParams.set("tab", game);
       window.history.replaceState({}, "", url.toString());
+      window.dispatchEvent(new CustomEvent("ethone:tracker:tab-change", { detail: { tab: game } }));
     }
   }, []);
 
@@ -376,42 +341,38 @@ export default function RiotGamingHome() {
                 </button>
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/40 bg-rose-500/15 px-2.5 py-0.5 text-[10px] font-bold text-rose-300 uppercase tracking-wider">
                   <span className="h-1.5 w-1.5 rounded-full bg-rose-400 animate-pulse" />
-                  Riot Games Hub
+                  Riot Games Tracker
                 </span>
-                <span className="inline-flex items-center gap-1 rounded-full border border-purple-500/30 bg-purple-500/15 px-2 py-0.5 text-[10px] font-bold text-purple-300">
-                  <Brain className="h-3 w-3" />
-                  Tactical Coach IA
-                </span>
-                <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-300">
-                  <ShieldCheck className="h-3 w-3" />
-                  Conforme API Riot (7/7)
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[10px] font-semibold text-emerald-300">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                  Serveurs Opérationnels
                 </span>
               </div>
 
-              <h1 className="text-xl sm:text-3xl font-black tracking-tight text-[var(--text-primary)]">
-                ETHONE <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-400 via-purple-400 to-amber-300">Tactical Coach & Tracker</span>
+              <h1 className="text-xl sm:text-2xl font-black tracking-tight text-[var(--text-primary)]">
+                ETHONE <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-400 via-purple-400 to-amber-300">Tactical Tracker</span>
               </h1>
-              <p className="text-xs sm:text-sm text-[var(--text-muted)] max-w-2xl">
-                Plateforme d'analyse post-match et de coaching tactique personnalisé pour VALORANT et League of Legends, conçue conformément aux directives officielles de Riot Games.
+              <p className="text-xs text-[var(--text-muted)] max-w-xl">
+                Télémétrie de combat, statistiques et analyse de parties compétitives pour VALORANT et League of Legends.
               </p>
             </div>
 
             <div className="flex flex-wrap items-center gap-2 shrink-0">
               <button
                 type="button"
+                onClick={() => selectGameTab("live")}
+                className="flex items-center gap-1.5 rounded-xl border border-rose-500/40 bg-rose-500/20 px-3.5 py-2 text-xs font-bold text-rose-200 hover:bg-rose-500/30 active:scale-95 transition-all cursor-pointer shadow-md"
+              >
+                <Flame className="h-4 w-4 text-rose-400" />
+                <span>Partie en direct (Bêta)</span>
+              </button>
+              <button
+                type="button"
                 onClick={() => selectGameTab("coach")}
                 className="flex items-center gap-1.5 rounded-xl border border-purple-500/40 bg-purple-500/20 px-3.5 py-2 text-xs font-bold text-purple-200 hover:bg-purple-500/30 active:scale-95 transition-all cursor-pointer shadow-md"
               >
                 <Brain className="h-4 w-4 text-purple-300" />
-                <span>Diagnostic Coach IA</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => selectGameTab("compliance")}
-                className="flex items-center gap-1.5 rounded-xl border border-emerald-500/40 bg-emerald-500/15 px-3 py-2 text-xs font-bold text-emerald-300 hover:bg-emerald-500/25 active:scale-95 transition-all cursor-pointer"
-              >
-                <ShieldCheck className="h-4 w-4 text-emerald-400" />
-                <span>Revue Conformité Riot</span>
+                <span>Coach IA</span>
               </button>
             </div>
           </div>
@@ -431,6 +392,23 @@ export default function RiotGamingHome() {
             >
               <GameBrandIcon name="Valorant" className="h-3.5 w-3.5" />
               <span>VALORANT</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => selectGameTab("live")}
+              className={cn(
+                "flex items-center gap-1.5 rounded-[var(--inset-radius)] px-3 py-1.5 text-xs font-bold transition-all cursor-pointer",
+                activeGame === "live"
+                  ? "bg-rose-600 text-white shadow-sm"
+                  : "text-rose-300 hover:text-white hover:bg-rose-500/20"
+              )}
+            >
+              <Flame className="h-3.5 w-3.5 text-rose-400" />
+              <span>Partie en direct</span>
+              <span className="rounded-full bg-rose-500/30 px-1.5 py-0.2 text-[9px] font-bold text-rose-200">
+                Bêta
+              </span>
             </button>
 
             <button
@@ -503,34 +481,6 @@ export default function RiotGamingHome() {
             >
               <Activity className="h-3.5 w-3.5" />
               <span>Plan d'Entraînement</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => selectGameTab("rso")}
-              className={cn(
-                "flex items-center gap-1.5 rounded-[var(--inset-radius)] px-3 py-1.5 text-xs font-bold transition-all cursor-pointer",
-                activeGame === "rso"
-                  ? "bg-amber-600 text-white shadow-sm"
-                  : "text-amber-300 hover:text-white hover:bg-amber-500/20"
-              )}
-            >
-              <Key className="h-3.5 w-3.5" />
-              <span>RSO OAuth</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => selectGameTab("compliance")}
-              className={cn(
-                "flex items-center gap-1.5 rounded-[var(--inset-radius)] px-3 py-1.5 text-xs font-bold transition-all cursor-pointer",
-                activeGame === "compliance"
-                  ? "bg-emerald-700 text-white shadow-sm"
-                  : "text-emerald-300 hover:text-white hover:bg-emerald-500/20"
-              )}
-            >
-              <ShieldCheck className="h-3.5 w-3.5" />
-              <span>Conformité (7/7)</span>
             </button>
           </div>
 
@@ -1115,262 +1065,13 @@ export default function RiotGamingHome() {
               </div>
             )}
 
-            {activeGame === "rso" && (
-              <div className="space-y-4">
-                <div className="rounded-[var(--panel-radius)] border border-amber-500/30 bg-gradient-to-br from-amber-950/20 via-[var(--bg-main)]/90 to-transparent p-5 backdrop-blur-xl shadow-xl space-y-4">
-                  <div className="flex items-center justify-between border-b border-amber-500/20 pb-3">
-                    <div className="flex items-center gap-2 text-amber-400">
-                      <Key className="h-5 w-5" />
-                      <h2 className="text-base font-black text-[var(--text-primary)] uppercase tracking-wider">
-                        Riot Sign On (RSO) · Architecture OAuth 2.0 Conforme
-                      </h2>
-                    </div>
-                    <span className="rounded-full border border-emerald-500/40 bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold text-emerald-300">
-                      Check #5 & #6 Conforme
-                    </span>
-                  </div>
-
-                  <p className="text-xs text-[var(--text-muted)] leading-relaxed">
-                    Afin de respecter scrupuleusement la politique de Riot Games ("You may not collect player info or show match history/player stats without implementing OAuth with RSO"), ETHONE intègre le protocole OAuth 2.0 PKCE officiel de Riot.
-                  </p>
-
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-3 text-xs">
-                    <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-3 space-y-1">
-                      <span className="text-[10px] font-bold uppercase text-amber-400">1. Demande d'Autorisation</span>
-                      <p className="font-bold text-[var(--text-primary)]">auth.riotgames.com/authorize</p>
-                      <p className="text-[11px] text-[var(--text-muted)]">
-                        Redirection vers l'écran officiel de Riot Games avec scopes openid et cpid.
-                      </p>
-                    </div>
-
-                    <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-3 space-y-1">
-                      <span className="text-[10px] font-bold uppercase text-emerald-400">2. Consentement Joueur</span>
-                      <p className="font-bold text-[var(--text-primary)]">Validation RSO</p>
-                      <p className="text-[11px] text-[var(--text-muted)]">
-                        Le joueur valide explicitement le partage de son profil et de ses historiques.
-                      </p>
-                    </div>
-
-                    <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-3 space-y-1">
-                      <span className="text-[10px] font-bold uppercase text-cyan-400">3. Échange de Jeton PKCE</span>
-                      <p className="font-bold text-[var(--text-primary)]">auth.riotgames.com/token</p>
-                      <p className="text-[11px] text-[var(--text-muted)]">
-                        Échange sécurisé du code d'autorisation contre le jeton d'accès chiffré.
-                      </p>
-                    </div>
-
-                    <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-3 space-y-1">
-                      <span className="text-[10px] font-bold uppercase text-purple-400">4. Analyse Post-Match</span>
-                      <p className="font-bold text-[var(--text-primary)]">Télémétrie Privée</p>
-                      <p className="text-[11px] text-[var(--text-muted)]">
-                        Traitement des données de match sans journalisation permanente sur serveur.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-3 flex items-center justify-between text-xs">
-                    <div className="flex items-center gap-2 text-emerald-300">
-                      <CheckCircle2 className="h-4 w-4 shrink-0" />
-                      <span>
-                        État de session : Joueur actif validé ({valorantProfile?.name || riotName} #{valorantProfile?.tag || riotTag}) · Stockage local sécurisé
-                      </span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setConnectModalOpen(true)}
-                      className="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-emerald-500 active:scale-95 transition-all cursor-pointer"
-                    >
-                      Gérer la connexion RSO
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {activeGame === "compliance" && (
-              <div className="space-y-4">
-                <div className="rounded-[var(--panel-radius)] border border-emerald-500/30 bg-gradient-to-br from-emerald-950/20 via-[var(--bg-main)]/90 to-transparent p-5 backdrop-blur-xl shadow-xl space-y-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-emerald-500/20 pb-3">
-                    <div className="flex items-center gap-2 text-emerald-400">
-                      <ShieldCheck className="h-5 w-5" />
-                      <h2 className="text-base font-black text-[var(--text-primary)] uppercase tracking-wider">
-                        Revue de Conformité Riot Games · 7 / 7 Points Validés
-                      </h2>
-                    </div>
-                    <span className="rounded-full border border-emerald-500/40 bg-emerald-500/20 px-2.5 py-0.5 text-xs font-bold text-emerald-300">
-                      Prêt pour Soumission Portail Développeur
-                    </span>
-                  </div>
-
-                  <p className="text-xs text-[var(--text-muted)]">
-                    Chaque case à cocher du formulaire officiel d'approbation d'API de Riot Games (VALORANT API Requirements Acknowledgement) a été spécifiquement auditée et implémentée dans cette application.
-                  </p>
-
-                  <div className="space-y-3">
-                    {RIOT_COMPLIANCE_CHECKS.map((check) => (
-                      <div
-                        key={check.id}
-                        className="rounded-xl border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/40 p-3.5 space-y-1.5 hover:border-emerald-500/40 transition-all"
-                      >
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-                          <div className="flex items-center gap-2">
-                            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold">
-                              ✓
-                            </span>
-                            <h3 className="text-xs font-black text-[var(--text-primary)]">
-                              Check #{check.number} · {check.title}
-                            </h3>
-                          </div>
-                          <span className="text-[10px] font-mono font-bold text-emerald-400">
-                            {check.status}
-                          </span>
-                        </div>
-                        <p className="text-[11px] font-mono text-amber-300/90 pl-7">
-                          « {check.riotText} »
-                        </p>
-                        <p className="text-xs text-[var(--text-muted)] pl-7 leading-relaxed">
-                          {check.details}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div id="attributions" className="rounded-[var(--panel-radius)] border border-rose-500/30 bg-gradient-to-br from-rose-950/20 via-[var(--bg-main)]/90 to-transparent p-5 backdrop-blur-xl shadow-xl space-y-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-rose-500/20 pb-3">
-                    <div className="flex items-center gap-2 text-rose-400">
-                      <Heart className="h-5 w-5" />
-                      <h2 className="text-base font-black text-[var(--text-primary)] uppercase tracking-wider">
-                        Attributions d&apos;APIs, Contributions Communautaires & Non-Affiliation
-                      </h2>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setAttributionModalOpen(true)}
-                      className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/40 bg-rose-500/20 px-3 py-1 text-xs font-bold text-rose-300 hover:bg-rose-500/30 transition-colors cursor-pointer"
-                    >
-                      <span>Modale Détaillée</span>
-                      <ExternalLink className="h-3 w-3" />
-                    </button>
-                  </div>
-
-                  <div className="rounded-xl border border-amber-500/30 bg-amber-950/20 p-3.5 space-y-1.5 text-xs">
-                    <div className="flex items-center gap-2 font-bold text-amber-300">
-                      <ShieldCheck className="h-4 w-4" />
-                      <span>Clause de Non-Affiliation Officielle (Riot Legal Jibber Jabber)</span>
-                    </div>
-                    <p className="text-[var(--text-muted)] italic leading-relaxed border-l-2 border-amber-400/50 pl-3">
-                      « ETHONE isn&apos;t endorsed by Riot Games and doesn&apos;t reflect the views or opinions of Riot Games or anyone officially involved in producing or managing Riot Games properties. Riot Games, and all associated properties are trademarks or registered trademarks of Riot Games, Inc. »
-                    </p>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div className="rounded-xl border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/40 p-3.5 space-y-2 hover:border-rose-500/40 transition-all">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-rose-500/15 border border-rose-500/30 text-rose-400 font-bold text-xs">
-                            V
-                          </div>
-                          <span className="font-bold text-xs text-[var(--text-primary)]">Valorant-API.com</span>
-                        </div>
-                        <a
-                          href="https://valorant-api.com/"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-[11px] font-mono text-rose-400 hover:underline"
-                        >
-                          <span>valorant-api.com</span>
-                          <ExternalLink className="h-3 w-3" />
-                        </a>
-                      </div>
-                      <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">
-                        API open source fournissant les assets graphiques complets de VALORANT (agents, capacités, armes, skins, cartes, sprays et bannières).
-                      </p>
-                      <span className="inline-block rounded-md bg-rose-500/10 px-2 py-0.5 text-[10px] font-mono text-rose-300">
-                        ✓ Assets & Médias In-Game
-                      </span>
-                    </div>
-
-                    <div className="rounded-xl border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/40 p-3.5 space-y-2 hover:border-cyan-500/40 transition-all">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-cyan-500/15 border border-cyan-500/30 text-cyan-400 font-bold text-xs">
-                            H
-                          </div>
-                          <span className="font-bold text-xs text-[var(--text-primary)]">HenrikDev API</span>
-                        </div>
-                        <a
-                          href="https://docs.henrikdev.xyz/"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-[11px] font-mono text-cyan-400 hover:underline"
-                        >
-                          <span>docs.henrikdev.xyz</span>
-                          <ExternalLink className="h-3 w-3" />
-                        </a>
-                      </div>
-                      <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">
-                        API communautaire de référence pour l&apos;extraction de l&apos;historique de matchs récents, scores de rounds, MMR et statistiques de duel.
-                      </p>
-                      <span className="inline-block rounded-md bg-cyan-500/10 px-2 py-0.5 text-[10px] font-mono text-cyan-300">
-                        ✓ Télémétrie & Historiques Post-Match
-                      </span>
-                    </div>
-
-                    <div className="rounded-xl border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/40 p-3.5 space-y-2 hover:border-amber-500/40 transition-all">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-500/15 border border-amber-500/30 text-amber-400 font-bold text-xs">
-                            R
-                          </div>
-                          <span className="font-bold text-xs text-[var(--text-primary)]">Riot Games Developer Portal</span>
-                        </div>
-                        <a
-                          href="https://developer.riotgames.com/"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-[11px] font-mono text-amber-400 hover:underline"
-                        >
-                          <span>developer.riotgames.com</span>
-                          <ExternalLink className="h-3 w-3" />
-                        </a>
-                      </div>
-                      <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">
-                        Plateforme officielle fournissant l&apos;API League of Legends, TFT et les spécifications de conformité pour Riot Sign On (RSO).
-                      </p>
-                      <span className="inline-block rounded-md bg-amber-500/10 px-2 py-0.5 text-[10px] font-mono text-amber-300">
-                        ✓ Portail Officiel & Spécifications RSO
-                      </span>
-                    </div>
-
-                    <div className="rounded-xl border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/40 p-3.5 space-y-2 hover:border-emerald-500/40 transition-all">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-bold text-xs">
-                            D
-                          </div>
-                          <span className="font-bold text-xs text-[var(--text-primary)]">Riot Data Dragon</span>
-                        </div>
-                        <a
-                          href="https://developer.riotgames.com/docs/lol#data-dragon"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-[11px] font-mono text-emerald-400 hover:underline"
-                        >
-                          <span>Data Dragon CDN</span>
-                          <ExternalLink className="h-3 w-3" />
-                        </a>
-                      </div>
-                      <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">
-                        CDN statique officiel pour la distribution des portraits de champions, objets et sorts d&apos;invocateurs LoL.
-                      </p>
-                      <span className="inline-block rounded-md bg-emerald-500/10 px-2 py-0.5 text-[10px] font-mono text-emerald-300">
-                        ✓ CDN Statique Officiel LoL
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+            {activeGame === "live" && (
+              <ValorantLiveMatchView
+                riotName={riotName}
+                riotTag={riotTag}
+                valorantProfile={valorantProfile}
+                valorantMatches={valorantMatches}
+              />
             )}
 
             {activeGame === "lol" && (

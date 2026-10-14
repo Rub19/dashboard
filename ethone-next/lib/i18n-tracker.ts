@@ -183,6 +183,7 @@ export interface TrackerTranslations {
   coachChatPlaceholder: string;
   coachChatSend: string;
   coachChatThinking: string;
+  coachChatPromptsLabel: string;
   coachPrompt1: string;
   coachPrompt2: string;
   coachPrompt3: string;
@@ -376,6 +377,7 @@ export const TRACKER_TRANSLATIONS: Record<"fr" | "en", TrackerTranslations> = {
     coachChatPlaceholder: "Posez une question tactique (ex: Comment jouer Haven en défense ?)...",
     coachChatSend: "Envoyer",
     coachChatThinking: "Le Coach analyse vos données tactiques...",
+    coachChatPromptsLabel: "Pistes :",
     coachPrompt1: "🎯 Analyse mon tir et mon crosshair placement",
     coachPrompt2: "⚡ Conseils pour progresser sur mon agent principal",
     coachPrompt3: "🛡️ Comment gérer les retakes et le 4v5",
@@ -567,6 +569,7 @@ export const TRACKER_TRANSLATIONS: Record<"fr" | "en", TrackerTranslations> = {
     coachChatPlaceholder: "Ask a tactical question (e.g. How to play defense on Haven?)...",
     coachChatSend: "Send",
     coachChatThinking: "Coach is analyzing your tactical data...",
+    coachChatPromptsLabel: "Prompts :",
     coachPrompt1: "🎯 Analyze my shooting and crosshair placement",
     coachPrompt2: "⚡ Tips to improve on my main agent",
     coachPrompt3: "🛡️ How to manage retakes and 4v5 disadvantage",

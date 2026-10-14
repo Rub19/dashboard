@@ -2156,17 +2156,17 @@ export default function RiotGamingHome() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-[11px] leading-relaxed text-neutral-400 font-mono">
             <div className="rounded-lg border border-white/[0.05] bg-black/30 p-3">
-              <span className="font-semibold text-neutral-200 block mb-1">Notice Légale :</span>
-              ETHONE isn&apos;t endorsed by Riot Games and doesn&apos;t reflect the views or opinions of Riot Games or anyone officially involved in producing or managing Riot Games properties. Riot Games, and all associated properties are trademarks or registered trademarks of Riot Games, Inc.
+              <span className="font-semibold text-neutral-200 block mb-1">{tr.footerNoticeTitle}</span>
+              {tr.footerNoticeBody}
             </div>
 
             <div className="rounded-lg border border-white/[0.05] bg-black/30 p-3 flex flex-col justify-between">
               <div>
-                <span className="font-semibold text-neutral-200 block mb-1">Confidentialité & Stockage Local :</span>
-                Aucun compte obligatoire, zéro trace sur serveur externe. Les données de profil et Riot ID sont stockées exclusivement dans le navigateur local de l'utilisateur.
+                <span className="font-semibold text-neutral-200 block mb-1">{tr.footerPrivacyTitle}</span>
+                {tr.footerPrivacyBody}
               </div>
               <div className="pt-2 text-[10px] text-emerald-400 font-bold">
-                ✓ 100% Local · Zéro Log · Conforme Fair-Play Vanguard
+                {tr.footerPrivacyBadge}
               </div>
             </div>
           </div>
@@ -2176,6 +2176,7 @@ export default function RiotGamingHome() {
       <RiotTrackerConnectModal
         isOpen={connectModalOpen}
         onClose={() => setConnectModalOpen(false)}
+        isEn={isEn}
         onRiotIdChanged={(name, tag) => {
           const cleanName = name.trim();
           const cleanTag = tag.trim().replace(/^#/, "");
@@ -2195,11 +2196,13 @@ export default function RiotGamingHome() {
         myProfile={valorantProfile}
         myStats={valorantStats}
         myMatches={valorantMatches}
+        isEn={isEn}
       />
 
       <RiotAttributionModal
         isOpen={attributionModalOpen}
         onClose={() => setAttributionModalOpen(false)}
+        isEn={isEn}
       />
     </div>
   );

@@ -159,6 +159,11 @@ export interface TrackerTranslations {
   footerLegalDesc: string;
   footerCreditsBtn: string;
   footerApiKeyBtn: string;
+  footerNoticeTitle: string;
+  footerNoticeBody: string;
+  footerPrivacyTitle: string;
+  footerPrivacyBody: string;
+  footerPrivacyBadge: string;
 
   siteVersion: string;
   siteVersionLabel: string;
@@ -347,6 +352,11 @@ export const TRACKER_TRANSLATIONS: Record<"fr" | "en", TrackerTranslations> = {
     footerLegalDesc: "Politique Legal Jibber Jabber de Riot Games et APIs communautaires.",
     footerCreditsBtn: "Tous les crédits",
     footerApiKeyBtn: "Clé API",
+    footerNoticeTitle: "Notice Légale :",
+    footerNoticeBody: "ETHONE n'est pas affilié à Riot Games et ne reflète en rien les points de vue ou opinions de Riot Games ou de quiconque impliqué officiellement dans la production ou la gestion des propriétés de Riot Games. Riot Games et toutes les propriétés associées sont des marques ou des marques déposées de Riot Games, Inc.",
+    footerPrivacyTitle: "Confidentialité & Stockage Local :",
+    footerPrivacyBody: "Aucun compte obligatoire, zéro trace sur serveur externe. Les données de profil et Riot ID sont stockées exclusivement dans le navigateur local de l'utilisateur.",
+    footerPrivacyBadge: "✓ 100% Local · Zéro Log · Conforme Fair-Play Vanguard",
 
     siteVersion: "v2.4.0",
     siteVersionLabel: "Version du site",
@@ -533,6 +543,11 @@ export const TRACKER_TRANSLATIONS: Record<"fr" | "en", TrackerTranslations> = {
     footerLegalDesc: "Riot Games Legal Jibber Jabber policy and community APIs.",
     footerCreditsBtn: "All credits",
     footerApiKeyBtn: "API Key",
+    footerNoticeTitle: "Legal Notice:",
+    footerNoticeBody: "ETHONE isn't endorsed by Riot Games and doesn't reflect the views or opinions of Riot Games or anyone officially involved in producing or managing Riot Games properties. Riot Games, and all associated properties are trademarks or registered trademarks of Riot Games, Inc.",
+    footerPrivacyTitle: "Privacy & Local Storage:",
+    footerPrivacyBody: "No mandatory account, zero trace on external servers. Profile data and Riot ID are stored exclusively in the user's local browser.",
+    footerPrivacyBadge: "✓ 100% Local · Zero Log · Vanguard Fair-Play Compliant",
 
     siteVersion: "v2.4.0",
     siteVersionLabel: "Site version",

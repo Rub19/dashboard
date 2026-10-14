@@ -24,15 +24,22 @@ export interface RiotTrackerConnectModalProps {
   isOpen: boolean;
   onClose: () => void;
   onRiotIdChanged?: (name: string, tag: string) => void;
+  isEn?: boolean;
 }
 
 export default function RiotTrackerConnectModal({
   isOpen,
   onClose,
   onRiotIdChanged,
+  isEn,
 }: RiotTrackerConnectModalProps) {
   const { success, error: showError } = useToast();
   const { settings, update } = useSettings();
+
+  const isEnglish = typeof isEn === "boolean"
+    ? isEn
+    : (typeof window !== "undefined" ? (localStorage.getItem("ethone:tracker:language") ?? "en") !== "fr" : true);
+
   const [activeTab, setActiveTab] = useState<"rso" | "riotid" | "api" | "servers">("rso");
   const [loading, setLoading] = useState(true);
   const [disconnecting, setDisconnecting] = useState(false);
@@ -67,7 +74,7 @@ export default function RiotTrackerConnectModal({
       })
       .catch((err) => {
         if (mounted) {
-          showError(err instanceof Error ? err.message : "Erreur lors de la vérification Riot");
+          showError(err instanceof Error ? err.message : (isEnglish ? "Error during Riot verification" : "Erreur lors de la vérification Riot"));
         }
       })
       .finally(() => {
@@ -77,7 +84,7 @@ export default function RiotTrackerConnectModal({
     return () => {
       mounted = false;
     };
-  }, [isOpen, showError]);
+  }, [isOpen, showError, isEnglish]);
 
   const handleConnectRSO = async () => {
     try {
@@ -86,7 +93,7 @@ export default function RiotTrackerConnectModal({
         window.location.href = url;
       }
     } catch (err) {
-      showError(err instanceof Error ? err.message : "Impossible d'initier la connexion Riot Games");
+      showError(err instanceof Error ? err.message : (isEnglish ? "Unable to initiate Riot Games sign-in" : "Impossible d'initier la connexion Riot Games"));
     }
   };
 
@@ -99,9 +106,9 @@ export default function RiotTrackerConnectModal({
         approvalRequired: false,
         connected: false,
       });
-      success("Compte Riot dissocié avec succès");
+      success(isEnglish ? "Riot account disconnected successfully" : "Compte Riot dissocié avec succès");
     } catch (err) {
-      showError(err instanceof Error ? err.message : "Erreur lors de la déconnexion");
+      showError(err instanceof Error ? err.message : (isEnglish ? "Error during disconnection" : "Erreur lors de la déconnexion"));
     } finally {
       setDisconnecting(false);
     }
@@ -112,7 +119,7 @@ export default function RiotTrackerConnectModal({
     const cleanName = riotName.trim();
     const cleanTag = riotTag.trim().replace(/^#/, "");
     if (!cleanName || !cleanTag) {
-      showError("Veuillez renseigner un Nom Riot et un Tag valides");
+      showError(isEnglish ? "Please enter a valid Riot Name and Tag" : "Veuillez renseigner un Nom Riot et un Tag valides");
       return;
     }
     if (typeof window !== "undefined") {
@@ -122,7 +129,7 @@ export default function RiotTrackerConnectModal({
     if (onRiotIdChanged) {
       onRiotIdChanged(cleanName, cleanTag);
     }
-    success(`Profil Riot enregistré localement : ${cleanName}#${cleanTag}`);
+    success(isEnglish ? `Riot profile saved locally: ${cleanName}#${cleanTag}` : `Profil Riot enregistré localement : ${cleanName}#${cleanTag}`);
     onClose();
   };
 
@@ -133,21 +140,21 @@ export default function RiotTrackerConnectModal({
       const duration = Math.round(performance.now() - start + 24);
       setApiLatency(duration);
       setTestingApi(false);
-      success(`API Connectée · Latence ${duration}ms · Quota OK`);
+      success(isEnglish ? `API Connected · Latency ${duration}ms · Quota OK` : `API Connectée · Latence ${duration}ms · Quota OK`);
     }, 450);
   };
 
   const handleSaveApiKey = () => {
     update({ valorantApiKey: apiKey.trim() });
-    success("Clé API enregistrée pour le tracker");
+    success(isEnglish ? "API key saved for the tracker" : "Clé API enregistrée pour le tracker");
   };
 
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="#RIOT TRACKER · Connexion & Directives API"
-      description="Gérez votre authentification Riot Games, vos clés d'API et le diagnostic des serveurs compétitifs."
+      title={isEnglish ? "#RIOT TRACKER · API & Connection Directives" : "#RIOT TRACKER · Connexion & Directives API"}
+      description={isEnglish ? "Manage your Riot Games authentication, API keys, and competitive server diagnostics." : "Gérez votre authentification Riot Games, vos clés d'API et le diagnostic des serveurs compétitifs."}
       size="lg"
       hideFooter
     >
@@ -178,7 +185,7 @@ export default function RiotTrackerConnectModal({
             )}
           >
             <User className="h-4 w-4" />
-            <span>Riot ID Rapide</span>
+            <span>{isEnglish ? "Fast Riot ID" : "Riot ID Rapide"}</span>
           </button>
 
           <button
@@ -192,7 +199,7 @@ export default function RiotTrackerConnectModal({
             )}
           >
             <Key className="h-4 w-4" />
-            <span>Clés & Quotas API</span>
+            <span>{isEnglish ? "API Keys & Quotas" : "Clés & Quotas API"}</span>
           </button>
 
           <button
@@ -206,7 +213,7 @@ export default function RiotTrackerConnectModal({
             )}
           >
             <Server className="h-4 w-4" />
-            <span>Santé Serveurs</span>
+            <span>{isEnglish ? "Server Health" : "Santé Serveurs"}</span>
           </button>
         </div>
 
@@ -215,17 +222,21 @@ export default function RiotTrackerConnectModal({
             {loading ? (
               <div className="flex flex-col items-center justify-center py-8">
                 <Loader2 className="h-6 w-6 animate-spin text-rose-500" />
-                <p className="mt-2 text-xs text-[var(--text-muted)]">Vérification de l'état de connexion Riot RSO...</p>
+                <p className="mt-2 text-xs text-[var(--text-muted)]">
+                  {isEnglish ? "Checking Riot RSO connection status..." : "Vérification de l'état de connexion Riot RSO..."}
+                </p>
               </div>
             ) : status?.connected ? (
               <div className="rounded-[var(--panel-radius)] border border-emerald-500/30 bg-emerald-500/10 p-4 space-y-3">
                 <div className="flex items-center gap-2">
                   <ShieldCheck className="h-5 w-5 text-emerald-400" />
-                  <h4 className="text-xs font-bold text-emerald-300">Compte Riot Officiel Synchronisé</h4>
+                  <h4 className="text-xs font-bold text-emerald-300">
+                    {isEnglish ? "Official Riot Account Synchronized" : "Compte Riot Officiel Synchronisé"}
+                  </h4>
                 </div>
                 <div className="rounded-xl border border-emerald-500/20 bg-black/25 p-3 text-xs space-y-1">
                   <p className="text-[var(--text-primary)]">
-                    Identifiant Riot : <span className="font-mono font-bold">{status.riotId || "Compte lié"}</span>
+                    {isEnglish ? "Riot Identifier:" : "Identifiant Riot :"} <span className="font-mono font-bold">{status.riotId || (isEnglish ? "Linked Account" : "Compte lié")}</span>
                   </p>
                   {status.puuid && (
                     <p className="text-[10px] font-mono text-[var(--text-muted)] truncate">
@@ -233,7 +244,7 @@ export default function RiotTrackerConnectModal({
                     </p>
                   )}
                   <p className="text-[11px] text-emerald-400 font-semibold">
-                    ✓ Authentification OAuth 2.0 active
+                    {isEnglish ? "✓ OAuth 2.0 authentication active" : "✓ Authentification OAuth 2.0 active"}
                   </p>
                 </div>
                 <Button
@@ -245,7 +256,7 @@ export default function RiotTrackerConnectModal({
                   className="flex items-center gap-1.5"
                 >
                   {disconnecting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Unplug className="h-3.5 w-3.5" />}
-                  <span>Dissocier le compte RSO</span>
+                  <span>{isEnglish ? "Unlink RSO account" : "Dissocier le compte RSO"}</span>
                 </Button>
               </div>
             ) : status?.approvalRequired ? (
@@ -254,25 +265,31 @@ export default function RiotTrackerConnectModal({
                   <div className="flex items-center gap-2">
                     <span className="inline-flex h-2 w-2 rounded-full bg-amber-400 animate-pulse" />
                     <h4 className="text-xs font-bold text-amber-300">
-                      Riot Sign On (RSO) — Demande d'Agrément en Cours
+                      {isEnglish ? "Riot Sign On (RSO) — Pending Approval" : "Riot Sign On (RSO) — Demande d'Agrément en Cours"}
                     </h4>
                   </div>
                   <p className="text-xs text-[var(--text-primary)]/90 leading-relaxed">
-                    L'application ETHONE est actuellement soumise à l'équipe Riot Games Developer pour l'obtention des clés de production RSO OAuth 2.0.
+                    {isEnglish
+                      ? "The ETHONE application is currently under review by the Riot Games Developer team for production RSO OAuth 2.0 keys."
+                      : "L'application ETHONE est actuellement soumise à l'équipe Riot Games Developer pour l'obtention des clés de production RSO OAuth 2.0."}
                   </p>
                   <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">
-                    Pour l'évaluation Riot et l'utilisation immédiate, vous pouvez charger n'importe quel profil compétitif via l'onglet <strong>Riot ID Rapide</strong>.
+                    {isEnglish
+                      ? "For evaluation and instant use, you can load any competitive profile via the Fast Riot ID tab."
+                      : "Pour l'évaluation Riot et l'utilisation immédiate, vous pouvez charger n'importe quel profil compétitif via l'onglet Riot ID Rapide."}
                   </p>
                 </div>
                 <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 flex items-center justify-between text-xs">
-                  <span className="text-[var(--text-muted)]">Portail des Développeurs Riot :</span>
+                  <span className="text-[var(--text-muted)]">
+                    {isEnglish ? "Riot Developer Portal:" : "Portail des Développeurs Riot :"}
+                  </span>
                   <a
                     href="https://developer.riotgames.com"
                     target="_blank"
                     rel="noreferrer"
                     className="inline-flex items-center gap-1 text-rose-400 hover:text-rose-300 font-bold"
                   >
-                    <span>Consulter le statut</span>
+                    <span>{isEnglish ? "Check status" : "Consulter le statut"}</span>
                     <ExternalLink className="h-3 w-3" />
                   </a>
                 </div>
@@ -281,10 +298,14 @@ export default function RiotTrackerConnectModal({
               <div className="rounded-[var(--panel-radius)] border border-rose-500/30 bg-rose-500/10 p-4 space-y-3">
                 <div className="flex items-center gap-2">
                   <Swords className="h-5 w-5 text-rose-400" />
-                  <h4 className="text-xs font-bold text-rose-300">Connexion Riot Sign On disponible</h4>
+                  <h4 className="text-xs font-bold text-rose-300">
+                    {isEnglish ? "Riot Sign On connection available" : "Connexion Riot Sign On disponible"}
+                  </h4>
                 </div>
                 <p className="text-xs text-[var(--text-primary)]/90 leading-relaxed">
-                  Autorisez ETHONE via le portail officiel de Riot Games pour récupérer instantanément votre historique de parties sécurisé.
+                  {isEnglish
+                    ? "Authorize ETHONE through the official Riot Games portal to instantly fetch your secure match history."
+                    : "Autorisez ETHONE via le portail officiel de Riot Games pour récupérer instantanément votre historique de parties sécurisé."}
                 </p>
                 <Button
                   type="button"
@@ -293,7 +314,7 @@ export default function RiotTrackerConnectModal({
                   onClick={handleConnectRSO}
                   className="bg-gradient-to-r from-rose-600 to-red-600 font-bold"
                 >
-                  Se connecter avec Riot Games (OAuth)
+                  {isEnglish ? "Sign in with Riot Games (OAuth)" : "Se connecter avec Riot Games (OAuth)"}
                 </Button>
               </div>
             )}
@@ -304,10 +325,12 @@ export default function RiotTrackerConnectModal({
           <form onSubmit={handleSaveRiotId} className="space-y-4">
             <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 space-y-3">
               <h4 className="text-xs font-bold text-[var(--text-primary)]">
-                Définir votre Riot ID Joueur
+                {isEnglish ? "Set your Player Riot ID" : "Définir votre Riot ID Joueur"}
               </h4>
               <p className="text-xs text-[var(--text-muted)]">
-                Entrez votre pseudo en jeu et votre tag pour synchroniser automatiquement vos statistiques de match (Valorant, LoL et TFT).
+                {isEnglish
+                  ? "Enter your in-game name and tag to automatically sync match statistics (Valorant, LoL, and TFT)."
+                  : "Entrez votre pseudo en jeu et votre tag pour synchroniser automatiquement vos statistiques de match (Valorant, LoL et TFT)."}
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -317,7 +340,8 @@ export default function RiotTrackerConnectModal({
                     type="text"
                     value={riotName}
                     onChange={(e) => setRiotName(e.target.value)}
-                    aria-label="Nom Riot"
+                    placeholder={isEnglish ? "Riot Username" : "Nom Riot"}
+                    aria-label={isEnglish ? "Riot Username" : "Nom Riot"}
                     className="w-full bg-transparent text-xs font-bold text-[var(--text-primary)] outline-none"
                     required
                   />
@@ -326,7 +350,8 @@ export default function RiotTrackerConnectModal({
                     type="text"
                     value={riotTag}
                     onChange={(e) => setRiotTag(e.target.value)}
-                    aria-label="Tag Riot"
+                    placeholder={isEnglish ? "TAG" : "TAG"}
+                    aria-label={isEnglish ? "Riot Tag" : "Tag Riot"}
                     className="w-16 bg-transparent font-mono text-xs font-bold text-[var(--text-primary)] outline-none"
                     required
                   />
@@ -337,20 +362,20 @@ export default function RiotTrackerConnectModal({
                   onChange={(e) => setRegion(e.target.value)}
                   className="rounded-xl border border-[var(--input-border)] bg-[var(--bg-surface-elevated)] px-3 py-2 text-xs font-bold text-[var(--text-primary)] outline-none cursor-pointer"
                 >
-                  <option value="eu">Europe (EUW)</option>
-                  <option value="na">Amérique du Nord (NA)</option>
-                  <option value="kr">Corée (KR)</option>
-                  <option value="ap">Asie-Pacifique (AP)</option>
+                  <option value="eu">{isEnglish ? "Europe (EUW)" : "Europe (EUW)"}</option>
+                  <option value="na">{isEnglish ? "North America (NA)" : "Amérique du Nord (NA)"}</option>
+                  <option value="kr">{isEnglish ? "Korea (KR)" : "Corée (KR)"}</option>
+                  <option value="ap">{isEnglish ? "Asia-Pacific (AP)" : "Asie-Pacifique (AP)"}</option>
                 </select>
               </div>
             </div>
 
             <div className="flex items-center justify-end gap-2">
               <Button type="button" variant="secondary" size="sm" onClick={onClose}>
-                Annuler
+                {isEnglish ? "Cancel" : "Annuler"}
               </Button>
               <Button type="submit" variant="primary" size="sm" className="bg-amber-600 font-bold">
-                Appliquer et Charger le Profil
+                {isEnglish ? "Apply and Load Profile" : "Appliquer et Charger le Profil"}
               </Button>
             </div>
           </form>
@@ -363,15 +388,17 @@ export default function RiotTrackerConnectModal({
                 <div className="flex items-center gap-2">
                   <Key className="h-4 w-4 text-cyan-400" />
                   <h4 className="text-xs font-bold text-[var(--text-primary)]">
-                    Clé API HenrikDev / Riot Games (Optionnel)
+                    {isEnglish ? "HenrikDev / Riot Games API Key (Optional)" : "Clé API HenrikDev / Riot Games (Optionnel)"}
                   </h4>
                 </div>
                 <span className="text-[10px] font-mono px-2 py-0.5 rounded-full border border-cyan-500/30 bg-cyan-500/10 text-cyan-300 font-bold">
-                  {apiKey ? "Configurée" : "Clé Publique par Défaut"}
+                  {apiKey ? (isEnglish ? "Configured" : "Configurée") : (isEnglish ? "Default Public Key" : "Clé Publique par Défaut")}
                 </span>
               </div>
               <p className="text-xs text-[var(--text-muted)]">
-                Utilisez votre propre clé de développement pour débloquer les plafonds de requêtes et accéder aux classements complets.
+                {isEnglish
+                  ? "Use your own developer key to bypass rate limits and access complete leaderboards."
+                  : "Utilisez votre propre clé de développement pour débloquer les plafonds de requêtes et accéder aux classements complets."}
               </p>
 
               <div className="flex items-center gap-2">
@@ -379,21 +406,26 @@ export default function RiotTrackerConnectModal({
                   type="password"
                   value={apiKey}
                   onChange={(e) => setApiKey(e.target.value)}
-                  aria-label="Clé API"
+                  placeholder={isEnglish ? "Enter API Key" : "Entrez votre clé API"}
+                  aria-label={isEnglish ? "API Key" : "Clé API"}
                   className="flex-1 rounded-xl border border-[var(--input-border)] bg-[var(--bg-surface-elevated)] px-3 py-2 text-xs font-mono text-[var(--text-primary)] outline-none"
                 />
                 <Button type="button" variant="secondary" size="sm" onClick={handleSaveApiKey}>
-                  Enregistrer
+                  {isEnglish ? "Save" : "Enregistrer"}
                 </Button>
               </div>
 
               <div className="rounded-xl border border-[var(--panel-border)]/60 bg-black/20 p-3 space-y-2">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-[var(--text-muted)]">Plafond de requêtes standard :</span>
+                  <span className="text-[var(--text-muted)]">
+                    {isEnglish ? "Standard rate limit:" : "Plafond de requêtes standard :"}
+                  </span>
                   <span className="font-mono font-bold text-[var(--text-primary)]">20 req / 1 sec · 100 req / 2 min</span>
                 </div>
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-[var(--text-muted)]">Endpoints activés :</span>
+                  <span className="text-[var(--text-muted)]">
+                    {isEnglish ? "Active endpoints:" : "Endpoints activés :"}
+                  </span>
                   <span className="font-mono text-emerald-400 font-bold">VALORANT V3 · LoL Match V5 · TFT V1</span>
                 </div>
               </div>
@@ -407,12 +439,12 @@ export default function RiotTrackerConnectModal({
                 className="flex items-center gap-1.5 rounded-xl border border-cyan-500/30 bg-cyan-500/10 px-3 py-1.5 text-xs font-bold text-cyan-300 hover:bg-cyan-500/20 active:scale-95 transition-all cursor-pointer"
               >
                 {testingApi ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Radio className="h-3.5 w-3.5" />}
-                <span>Tester la Connectivité</span>
+                <span>{isEnglish ? "Test Connectivity" : "Tester la Connectivité"}</span>
                 {apiLatency !== null && <span className="font-mono text-[10px]">({apiLatency}ms)</span>}
               </button>
 
               <Button type="button" variant="secondary" size="sm" onClick={onClose}>
-                Fermer
+                {isEnglish ? "Close" : "Fermer"}
               </Button>
             </div>
           </div>
@@ -422,14 +454,14 @@ export default function RiotTrackerConnectModal({
           <div className="space-y-4">
             <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 space-y-3">
               <h4 className="text-xs font-bold text-[var(--text-primary)]">
-                État des Infrastructures & Serveurs Compétitifs
+                {isEnglish ? "Infrastructure & Competitive Server Status" : "État des Infrastructures & Serveurs Compétitifs"}
               </h4>
 
               <div className="space-y-2">
                 {[
-                  { region: "Europe Ouest (EUW)", ping: "18ms", status: "Opérationnel", uptime: "99.98%" },
-                  { region: "Amérique du Nord (NA)", ping: "89ms", status: "Opérationnel", uptime: "99.95%" },
-                  { region: "Corée & Asie (KR)", ping: "192ms", status: "Opérationnel", uptime: "99.99%" },
+                  { region: isEnglish ? "Western Europe (EUW)" : "Europe Ouest (EUW)", ping: "18ms", status: isEnglish ? "Operational" : "Opérationnel", uptime: "99.98%" },
+                  { region: isEnglish ? "North America (NA)" : "Amérique du Nord (NA)", ping: "89ms", status: isEnglish ? "Operational" : "Opérationnel", uptime: "99.95%" },
+                  { region: isEnglish ? "Korea & Asia (KR)" : "Corée & Asie (KR)", ping: "192ms", status: isEnglish ? "Operational" : "Opérationnel", uptime: "99.99%" },
                 ].map((s) => (
                   <div
                     key={s.region}
@@ -452,9 +484,13 @@ export default function RiotTrackerConnectModal({
               <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 flex items-start gap-2.5 text-xs">
                 <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
                 <div className="space-y-1 text-[var(--text-primary)]">
-                  <p className="font-bold text-emerald-300">Conformité aux Directives Développeurs Riot Games</p>
+                  <p className="font-bold text-emerald-300">
+                    {isEnglish ? "Riot Games Developer Directives Compliance" : "Conformité aux Directives Développeurs Riot Games"}
+                  </p>
                   <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">
-                    ETHONE applique un filtrage strict garantissant qu'aucune consultation de boutique ou d'inventaire personnel n'est accessible aux tiers ou aux invités.
+                    {isEnglish
+                      ? "ETHONE applies strict client-side filtering ensuring no store or personal inventory queries can ever be inspected by third parties or guests."
+                      : "ETHONE applique un filtrage strict garantissant qu'aucune consultation de boutique ou d'inventaire personnel n'est accessible aux tiers ou aux invités."}
                   </p>
                 </div>
               </div>
@@ -462,7 +498,7 @@ export default function RiotTrackerConnectModal({
 
             <div className="flex items-center justify-end">
               <Button type="button" variant="secondary" size="sm" onClick={onClose}>
-                Fermer
+                {isEnglish ? "Close" : "Fermer"}
               </Button>
             </div>
           </div>

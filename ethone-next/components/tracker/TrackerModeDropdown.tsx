@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { Check } from "@/components/icons/ph";
 import { cn } from "@/lib/utils";
@@ -38,6 +38,7 @@ export default function TrackerModeDropdown({
   accentColor = "rose",
   className,
 }: TrackerModeDropdownProps) {
+  const isEnglish = typeof window !== "undefined" ? (localStorage.getItem("ethone:tracker:language") ?? "en") !== "fr" : true;
   const selected = options.find((o) => o.id === selectedId) || options[0];
 
   return (
@@ -52,7 +53,7 @@ export default function TrackerModeDropdown({
         )}
       >
         <span className="truncate max-w-[130px]">
-          {selected?.label ?? "Tous les modes"}
+          {selected?.label ?? (isEnglish ? "All modes" : "Tous les modes")}
         </span>
         <AnimatedDropdownTriggerIndicator className="h-3.5 w-3.5 text-[var(--text-muted)] group-data-[popup-open]:text-[var(--text-primary)]" />
       </AnimatedDropdownTrigger>

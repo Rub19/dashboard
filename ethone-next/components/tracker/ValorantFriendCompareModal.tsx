@@ -15,6 +15,7 @@ export interface ValorantFriendCompareModalProps {
   myProfile: ValorantAccountProfile | null;
   myStats: ValorantComputedStats | null;
   myMatches: ValorantMatch[];
+  isEn?: boolean;
 }
 
 export default function ValorantFriendCompareModal({
@@ -23,8 +24,13 @@ export default function ValorantFriendCompareModal({
   myProfile,
   myStats,
   myMatches,
+  isEn,
 }: ValorantFriendCompareModalProps) {
   const { success, error: showError } = useToast();
+
+  const isEnglish = typeof isEn === "boolean"
+    ? isEn
+    : (typeof window !== "undefined" ? (localStorage.getItem("ethone:tracker:language") ?? "en") !== "fr" : true);
 
   const [friendName, setFriendName] = useState("");
   const [friendTag, setFriendTag] = useState("");
@@ -40,7 +46,7 @@ export default function ValorantFriendCompareModal({
     const cleanTag = friendTag.trim().replace(/^#/, "");
 
     if (!cleanName || !cleanTag) {
-      showError("Veuillez renseigner le nom et le tag de votre ami(e)");
+      showError(isEnglish ? "Please provide your friend's Riot name and tag" : "Veuillez renseigner le nom et le tag de votre ami(e)");
       return;
     }
 
@@ -48,7 +54,7 @@ export default function ValorantFriendCompareModal({
     try {
       const profileRes = await fetchPlayerProfile(cleanName, cleanTag, true);
       if (!profileRes.data) {
-        showError(profileRes.error || "Joueur introuvable");
+        showError(profileRes.error || (isEnglish ? "Player not found" : "Joueur introuvable"));
         setFriendProfile(null);
         setFriendStats(null);
         return;
@@ -62,32 +68,34 @@ export default function ValorantFriendCompareModal({
       const validMatches = Array.isArray(list) ? list : [];
       const computed = calculateComputedStats(validMatches, "henrikdev");
       setFriendStats(computed);
-      success(`Comparaison prête avec ${cleanName}#${cleanTag}`);
+      success(isEnglish ? `Comparison ready with ${cleanName}#${cleanTag}` : `Comparaison prête avec ${cleanName}#${cleanTag}`);
     } catch (err) {
-      showError(err instanceof Error ? err.message : "Erreur de comparaison");
+      showError(err instanceof Error ? err.message : (isEnglish ? "Comparison error" : "Erreur de comparaison"));
     } finally {
       setLoading(false);
     }
   };
 
   const handleShareSummary = async () => {
-    const pName = myProfile?.name || "Joueur";
+    const pName = myProfile?.name || (isEnglish ? "Player" : "Joueur");
     const pTag = myProfile?.tag ? `#${myProfile.tag}` : "";
-    const rank = myProfile?.currentTierPatched || "Non classé";
-    const wr = myStats?.winRate !== null ? `${myStats?.winRate}% WR` : "";
-    const kd = myStats?.kdRatio !== null ? `${myStats?.kdRatio} K/D` : "";
-    const hs = myStats?.headshotPercentage !== null ? `${myStats?.headshotPercentage}% HS` : "";
+    const rank = myProfile?.currentTierPatched || (isEnglish ? "Unrated" : "Non classé");
+    const wr = myStats?.winRate !== null && myStats?.winRate !== undefined ? `${myStats.winRate}% WR` : "";
+    const kd = myStats?.kdRatio !== null && myStats?.kdRatio !== undefined ? `${myStats.kdRatio} K/D` : "";
+    const hs = myStats?.headshotPercentage !== null && myStats?.headshotPercentage !== undefined ? `${myStats.headshotPercentage}% HS` : "";
 
     const parts = [rank, wr, kd, hs].filter(Boolean).join(" · ");
-    const text = `🎯 Stats Valorant de ${pName}${pTag} sur ETHONE : ${parts}`;
+    const text = isEnglish
+      ? `🎯 Valorant stats for ${pName}${pTag} on ETHONE: ${parts}`
+      : `🎯 Stats Valorant de ${pName}${pTag} sur ETHONE : ${parts}`;
 
     try {
       await navigator.clipboard.writeText(text);
       setCopied(true);
-      success("Résumé copié dans le presse-papier");
+      success(isEnglish ? "Summary copied to clipboard" : "Résumé copié dans le presse-papier");
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      showError("Impossible de copier dans le presse-papier");
+      showError(isEnglish ? "Failed to copy to clipboard" : "Impossible de copier dans le presse-papier");
     }
   };
 
@@ -95,8 +103,8 @@ export default function ValorantFriendCompareModal({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Comparaison Sociale & Partage de Statistiques"
-      description="Comparez vos statistiques Valorant avec un(e) ami(e) ou partagez votre fiche de jeu."
+      title={isEnglish ? "Social Comparison & Stats Sharing" : "Comparaison Sociale & Partage de Statistiques"}
+      description={isEnglish ? "Compare your Valorant stats with a friend or share your match card." : "Comparez vos statistiques Valorant avec un(e) ami(e) ou partagez votre fiche de jeu."}
       size="lg"
       hideFooter
     >
@@ -108,7 +116,8 @@ export default function ValorantFriendCompareModal({
               type="text"
               value={friendName}
               onChange={(e) => setFriendName(e.target.value)}
-              aria-label="Pseudo de votre ami(e)"
+              placeholder={isEnglish ? "Friend username" : "Pseudo ami"}
+              aria-label={isEnglish ? "Friend username" : "Pseudo de votre ami(e)"}
               className="w-full bg-transparent text-xs font-bold text-[var(--text-primary)] outline-none"
             />
           </div>
@@ -119,7 +128,8 @@ export default function ValorantFriendCompareModal({
               type="text"
               value={friendTag}
               onChange={(e) => setFriendTag(e.target.value)}
-              aria-label="TAG ami"
+              placeholder={isEnglish ? "TAG" : "TAG"}
+              aria-label={isEnglish ? "Friend tag" : "TAG ami"}
               className="w-full bg-transparent font-mono text-xs font-bold text-[var(--text-primary)] outline-none"
             />
           </div>
@@ -132,7 +142,7 @@ export default function ValorantFriendCompareModal({
             className="w-full sm:w-auto flex items-center justify-center gap-1.5 shrink-0 bg-gradient-to-r from-rose-600 to-red-600 font-bold"
           >
             {loading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Swords className="h-3.5 w-3.5" />}
-            <span>Comparer</span>
+            <span>{isEnglish ? "Compare" : "Comparer"}</span>
           </Button>
         </form>
 
@@ -140,22 +150,22 @@ export default function ValorantFriendCompareModal({
           <div className="grid grid-cols-3 items-center text-center pb-3 border-b border-[var(--panel-border)]/50">
             <div>
               <p className="text-xs font-black text-rose-400">
-                {myProfile?.name || "Vous"}
+                {myProfile?.name || (isEnglish ? "You" : "Vous")}
                 {myProfile?.tag ? ` #${myProfile.tag}` : ""}
               </p>
-              <span className="text-[10px] text-[var(--text-muted)]">{myProfile?.currentTierPatched || "Non classé"}</span>
+              <span className="text-[10px] text-[var(--text-muted)]">{myProfile?.currentTierPatched || (isEnglish ? "Unrated" : "Non classé")}</span>
             </div>
 
             <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
-              Indicateur
+              {isEnglish ? "Metric" : "Indicateur"}
             </div>
 
             <div>
               <p className="text-xs font-black text-cyan-400">
-                {friendProfile ? `${friendProfile.name} #${friendProfile.tag}` : "Ami(e)"}
+                {friendProfile ? `${friendProfile.name} #${friendProfile.tag}` : (isEnglish ? "Friend" : "Ami(e)")}
               </p>
               <span className="text-[10px] text-[var(--text-muted)]">
-                {friendProfile ? friendProfile.currentTierPatched || "Non classé" : "En attente"}
+                {friendProfile ? friendProfile.currentTierPatched || (isEnglish ? "Unrated" : "Non classé") : (isEnglish ? "Pending" : "En attente")}
               </span>
             </div>
           </div>
@@ -163,27 +173,27 @@ export default function ValorantFriendCompareModal({
           {(
             [
               {
-                label: "Taux de Victoire",
+                label: isEnglish ? "Win Rate" : "Taux de Victoire",
                 myVal: myStats?.winRate !== null && myStats?.winRate !== undefined ? `${myStats.winRate}%` : "—",
                 friendVal: friendStats?.winRate !== null && friendStats?.winRate !== undefined ? `${friendStats.winRate}%` : "—",
               },
               {
-                label: "Ratio K/D",
+                label: isEnglish ? "K/D Ratio" : "Ratio K/D",
                 myVal: myStats?.kdRatio !== null && myStats?.kdRatio !== undefined ? String(myStats.kdRatio) : "—",
                 friendVal: friendStats?.kdRatio !== null && friendStats?.kdRatio !== undefined ? String(friendStats.kdRatio) : "—",
               },
               {
-                label: "Précision Headshot",
+                label: isEnglish ? "Headshot %" : "Précision Headshot",
                 myVal: myStats?.headshotPercentage !== null && myStats?.headshotPercentage !== undefined ? `${myStats.headshotPercentage}%` : "—",
                 friendVal: friendStats?.headshotPercentage !== null && friendStats?.headshotPercentage !== undefined ? `${friendStats.headshotPercentage}%` : "—",
               },
               {
-                label: "Dégâts / Round (ADR)",
+                label: isEnglish ? "Damage / Round (ADR)" : "Dégâts / Round (ADR)",
                 myVal: myStats?.adr !== null && myStats?.adr !== undefined ? String(myStats.adr) : "—",
                 friendVal: friendStats?.adr !== null && friendStats?.adr !== undefined ? String(friendStats.adr) : "—",
               },
               {
-                label: "Parties Analysées",
+                label: isEnglish ? "Analyzed Matches" : "Parties Analysées",
                 myVal: String(myStats?.matchesCount ?? myMatches.length),
                 friendVal: String(friendStats?.matchesCount ?? "—"),
               },
@@ -199,7 +209,7 @@ export default function ValorantFriendCompareModal({
 
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2 border-t border-[var(--panel-border)]">
           <p className="text-[11px] text-[var(--text-muted)] text-center sm:text-left">
-            🔒 Seules les statistiques publiques autorisées sont comparées.
+            {isEnglish ? "🔒 Only authorized public statistics are compared." : "🔒 Seules les statistiques publiques autorisées sont comparées."}
           </p>
 
           <div className="flex items-center gap-2 w-full sm:w-auto">
@@ -211,10 +221,10 @@ export default function ValorantFriendCompareModal({
               className="flex items-center justify-center gap-1.5 text-xs font-bold w-full sm:w-auto"
             >
               {copied ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
-              <span>{copied ? "Copié !" : "Copier ma fiche"}</span>
+              <span>{isEnglish ? (copied ? "Copied!" : "Copy Player Card") : (copied ? "Copié !" : "Copier ma fiche")}</span>
             </Button>
             <Button type="button" variant="primary" size="sm" onClick={onClose} className="w-full sm:w-auto">
-              Fermer
+              {isEnglish ? "Close" : "Fermer"}
             </Button>
           </div>
         </div>

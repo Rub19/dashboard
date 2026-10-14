@@ -7,12 +7,16 @@ import { cn } from "@/lib/utils";
 interface ValorantDayHeaderProps {
   group: ValorantDayGroup;
   onViewReport?: () => void;
+  isEn?: boolean;
 }
 
-export default function ValorantDayHeader({ group, onViewReport }: ValorantDayHeaderProps) {
+export default function ValorantDayHeader({ group, onViewReport, isEn }: ValorantDayHeaderProps) {
+  const isEnglish = typeof isEn === "boolean"
+    ? isEn
+    : (typeof window !== "undefined" ? (localStorage.getItem("ethone:tracker:language") ?? "en") !== "fr" : true);
+
   return (
     <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 px-3 py-2 text-xs select-none">
-      {/* Left: Date + Count + View Report + Record */}
       <div className="flex flex-wrap items-center gap-3.5">
         <div className="flex items-center gap-2">
           <h3 className="text-base font-black text-[var(--text-primary)] tracking-wide">
@@ -23,14 +27,13 @@ export default function ValorantDayHeader({ group, onViewReport }: ValorantDayHe
           </span>
         </div>
 
-        {/* View Report Link */}
         <button
           type="button"
           onClick={onViewReport}
           className="flex items-center gap-1 text-[11px] font-bold text-rose-400 hover:text-rose-300 transition-colors cursor-pointer"
         >
           <TrendingUp className="h-3.5 w-3.5" />
-          <span>View Report</span>
+          <span>{isEnglish ? "View Report" : "Voir le rapport"}</span>
         </button>
 
         {/* Record (Wins // Losses) */}

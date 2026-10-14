@@ -18,6 +18,7 @@ export type DailyReportModalProps = {
   game: "valorant" | "lol";
   currentGroup: ValorantDayGroup | LolDayGroup | null;
   previousGroup?: ValorantDayGroup | LolDayGroup | null;
+  isEn?: boolean;
 };
 
 export default function DailyReportModal({
@@ -26,8 +27,13 @@ export default function DailyReportModal({
   game,
   currentGroup,
   previousGroup,
+  isEn,
 }: DailyReportModalProps) {
   const isVal = game === "valorant";
+
+  const isEnglish = typeof isEn === "boolean"
+    ? isEn
+    : (typeof window !== "undefined" ? (localStorage.getItem("ethone:tracker:language") ?? "en") !== "fr" : true);
 
   const stats = useMemo(() => {
     if (!currentGroup) return null;
@@ -51,10 +57,8 @@ export default function DailyReportModal({
     const prevHs = prevVal?.avgHsPercent != null ? Math.round(prevVal.avgHsPercent) : null;
     const hsDiff = prevHs !== null ? hs - prevHs : null;
 
-    // Valorant : score de performance (0-500) depuis le patch 13.06, ACS pour les anciennes parties ; « — » (0) si absent.
     const valScore = valGroup?.avgPerformanceScore ?? (valGroup?.avgAcs || 0);
     const valScoreIsPerformance = valGroup?.avgPerformanceScore != null;
-    // On ne compare jamais un score de performance (0-500) à un ACS : les deux échelles ne sont pas comparables.
     const prevValScore =
       prevVal && (prevVal.avgPerformanceScore != null) === valScoreIsPerformance
         ? prevVal.avgPerformanceScore ?? (prevVal.avgAcs || null)
@@ -63,35 +67,34 @@ export default function DailyReportModal({
     const prevAcs = isVal ? prevValScore : prevLol?.avgDpm || null;
     const acsDiff = prevAcs !== null ? acs - prevAcs : null;
 
-    // AI Coach Insights based on stats
     const tips: string[] = [];
     if (winRate >= 60) {
-      tips.push("Excellente forme globale avec une majorité de victoires. Continue sur ce rythme !");
+      tips.push(isEnglish ? "Great momentum today with a positive win record. Keep up this pace!" : "Excellente forme globale avec une majorité de victoires. Continue sur ce rythme !");
     } else if (winRate < 40) {
-      tips.push("Session difficile : prends de courtes pauses entre les parties pour réinitialiser ton focus mental.");
+      tips.push(isEnglish ? "Tough session: take short breaks between matches to reset mental focus." : "Session difficile : prends de courtes pauses entre les parties pour réinitialiser ton focus mental.");
     }
 
     if (isVal) {
       if (hs >= 30) {
-        tips.push("Précision chirurgicale : ton pourcentage de Headshots est au-dessus de la moyenne de ton rang.");
+        tips.push(isEnglish ? "Surgical accuracy: your headshot rate is well above your tier's average." : "Précision chirurgicale : ton pourcentage de Headshots est au-dessus de la moyenne de ton rang.");
       } else if (hs < 20) {
-        tips.push("Conseil de visée : maintiens ton réticule à hauteur de tête (Crosshair Placement) lors des décalages.");
+        tips.push(isEnglish ? "Aim tip: maintain your crosshair at head level when clearing common corners." : "Conseil de visée : maintiens ton réticule à hauteur de tête (Crosshair Placement) lors des décalages.");
       }
 
       if ((valGroup?.avgDamageDelta || 0) > 20) {
-        tips.push("Très bon impact en duel (+DDΔ positif) : tu infliges bien plus de dégâts que tu n'en subis.");
+        tips.push(isEnglish ? "Strong duel impact (+DDΔ positive): you deal significantly more damage than you receive." : "Très bon impact en duel (+DDΔ positif) : tu infliges bien plus de dégâts que tu n'en subis.");
       }
     } else {
       if (kd >= 3.0) {
-        tips.push("KDA exceptionnel : très bonne survie et participation décisive aux escarmouches.");
+        tips.push(isEnglish ? "Exceptional KDA: high survival rate and decisive teamfight contribution." : "KDA exceptionnel : très bonne survie et participation décisive aux escarmouches.");
       }
       if ((lolGroup?.avgDpm || 0) >= 600) {
-        tips.push("Dégâts constants par minute élevés : tu optimises bien ton impact en teamfight.");
+        tips.push(isEnglish ? "Consistently high damage per minute: maximizing impact in mid-game skirmishes." : "Dégâts constants par minute élevés : tu optimises bien ton impact en teamfight.");
       }
     }
 
     if (tips.length === 0) {
-      tips.push("Performance équilibrée. Maintiens une communication active et sécurise les objectifs clés.");
+      tips.push(isEnglish ? "Solid balanced performance. Keep pinging communication and secure round objectives." : "Performance équilibrée. Maintiens une communication active et sécurise les objectifs clés.");
     }
 
     return {
@@ -112,14 +115,13 @@ export default function DailyReportModal({
       totalAssists: isVal ? valGroup?.totalAssists : undefined,
       tips,
     };
-  }, [currentGroup, previousGroup, isVal]);
+  }, [currentGroup, previousGroup, isVal, isEnglish]);
 
   if (!isOpen || !stats) return null;
 
   return (
     <AnimatePresence>
       <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4">
-        {/* Backdrop */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -128,7 +130,6 @@ export default function DailyReportModal({
           className="fixed inset-0 bg-black/80 backdrop-blur-md"
         />
 
-        {/* Modal Dialog */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95, y: 15 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -136,7 +137,6 @@ export default function DailyReportModal({
           transition={{ type: "spring", stiffness: 400, damping: 40 }}
           className="relative w-full max-w-lg overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)]/95 p-5 sm:p-6 shadow-2xl backdrop-blur-2xl"
         >
-          {/* Header */}
           <div className="flex items-center justify-between border-b border-[var(--panel-border)] pb-4">
             <div className="flex items-center gap-2.5">
               <div
@@ -150,9 +150,11 @@ export default function DailyReportModal({
                 <TrendingUp className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="text-base font-black text-[var(--text-primary)]">Rapport du jour</h3>
+                <h3 className="text-base font-black text-[var(--text-primary)]">
+                  {isEnglish ? "Daily Summary" : "Rapport du jour"}
+                </h3>
                 <p className="text-xs text-[var(--text-muted)] font-medium">
-                  {stats.dateLabel} • {stats.count} {stats.count > 1 ? "parties" : "partie"}
+                  {stats.dateLabel} • {stats.count} {stats.count > 1 ? (isEnglish ? "matches" : "parties") : (isEnglish ? "match" : "partie")}
                 </p>
               </div>
             </div>
@@ -166,12 +168,10 @@ export default function DailyReportModal({
             </button>
           </div>
 
-          {/* Stats Grid */}
           <div className="mt-5 grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {/* Record & Win Rate */}
             <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] p-3 backdrop-blur-xl">
               <span className="block text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">
-                Bilan ({stats.winRate}%)
+                {isEnglish ? `Record (${stats.winRate}%)` : `Bilan (${stats.winRate}%)`}
               </span>
               <div className="mt-1 flex items-center gap-1.5 font-mono text-sm font-black">
                 <span className="text-emerald-400">{stats.wins}W</span>
@@ -180,10 +180,9 @@ export default function DailyReportModal({
               </div>
             </div>
 
-            {/* K/D or KDA */}
             <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] p-3 backdrop-blur-xl">
               <span className="block text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">
-                {isVal ? "Ratio K/D" : "KDA Moyen"}
+                {isVal ? (isEnglish ? "K/D Ratio" : "Ratio K/D") : (isEnglish ? "Avg KDA" : "KDA Moyen")}
               </span>
               <div className="mt-1 flex items-center justify-between">
                 <span className="font-mono text-sm font-black text-[var(--text-primary)]">{stats.kd}</span>
@@ -201,10 +200,9 @@ export default function DailyReportModal({
               </div>
             </div>
 
-            {/* ACS / DPM */}
             <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] p-3 backdrop-blur-xl">
               <span className="block text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">
-                {isVal ? (stats.valScoreIsPerformance ? "Score de performance" : "Score ACS") : "Dégâts DPM"}
+                {isVal ? (stats.valScoreIsPerformance ? (isEnglish ? "Performance Score" : "Score de performance") : (isEnglish ? "ACS Score" : "Score ACS")) : (isEnglish ? "DPM Damage" : "Dégâts DPM")}
               </span>
               <div className="mt-1 flex items-center justify-between">
                 <span className="font-mono text-sm font-black text-[var(--text-primary)]">{stats.acs}</span>
@@ -221,11 +219,10 @@ export default function DailyReportModal({
               </div>
             </div>
 
-            {/* HS% if Valorant */}
             {isVal && (
               <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] p-3 backdrop-blur-xl">
                 <span className="block text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">
-                  Précision HS
+                  {isEnglish ? "HS Accuracy" : "Précision HS"}
                 </span>
                 <div className="mt-1 flex items-center justify-between">
                   <span className="font-mono text-sm font-black text-[var(--text-primary)]">{stats.hs}%</span>
@@ -244,12 +241,11 @@ export default function DailyReportModal({
             )}
           </div>
 
-          {/* AI Coach Insights Section */}
           <div className="mt-5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] p-4">
             <div className="flex items-center gap-2 mb-2">
               <Sparkles className="h-4 w-4 text-amber-400" />
               <h4 className="text-xs font-bold text-[var(--text-primary)] uppercase tracking-wider">
-                Analyse & Conseils Coach
+                {isEnglish ? "Coach Insights & Tips" : "Analyse & Conseils Coach"}
               </h4>
             </div>
             <ul className="space-y-2 text-xs text-[var(--text-primary)]/85">

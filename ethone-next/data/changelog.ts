@@ -55043,10 +55043,59 @@ const v12908_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12908_fr, v12907_fr, v12906_fr, v12905_fr, v12904_fr, v12903_fr, v12902_fr, v12901_fr, v12900_fr, v12899_fr, v12898_fr, v12897_fr, v12896_fr, v12895_fr, v12894_fr, v12893_fr, v12892_fr);
-CHANGELOG_BY_LANG.en.unshift(v12908_en, v12907_en, v12906_en, v12905_en, v12904_en, v12903_en, v12902_en, v12901_en, v12900_en, v12899_en, v12898_en, v12897_en, v12896_en, v12895_en, v12894_en, v12893_en, v12892_en);
-CHANGELOG_BY_LANG.es.unshift(v12908_es, v12907_es, v12906_es, v12905_es, v12904_es, v12903_es, v12902_es, v12901_es, v12900_es, v12899_es, v12898_es, v12897_es, v12896_es, v12895_es, v12894_es, v12893_es, v12892_es);
-CHANGELOG_BY_LANG.de.unshift(v12908_de, v12907_de, v12906_de, v12905_de, v12904_de, v12903_de, v12902_de, v12901_de, v12900_de, v12899_de, v12898_de, v12897_de, v12896_de, v12895_de, v12894_de, v12893_de, v12892_de);
+const v12909_fr: ChangelogEntry = {
+  version: "v1.75.67",
+  date: "2026-10-14",
+  title: "Refonte du tracker Riot Games sous design moderne Apple sobre et monochrome",
+  items: [
+    "Suppression des dégradés saturés et des bordures néon au profit d'un design frosted glass inspiré d'Apple et macOS Sequoia",
+    "Segmented Control monochrome avec capsule de sélection frosted et typographie épurée",
+    "Cartes métriques et tableaux de scores unifiés sous une palette sombre sobre sans artifices artificiels",
+    "Boutons d'action Apple solides et transparents avec retours haptiques subtils",
+  ],
+};
+
+const v12909_en: ChangelogEntry = {
+  version: "v1.75.67",
+  date: "2026-10-14",
+  title: "Riot Games tracker redesigned with modern Apple dark frosted aesthetic",
+  items: [
+    "Eliminated saturated gradients and neon borders in favor of sleek Apple dark frosted glass cards",
+    "Monochrome Apple segmented control with smooth glass active pill and refined typography",
+    "Unified metric cards and 5v5 scoreboards under an understated dark palette without AI artifacts",
+    "Modern solid and glass Apple action buttons with subtle tactile feedback",
+  ],
+};
+
+const v12909_es: ChangelogEntry = {
+  version: "v1.75.67",
+  date: "2026-10-14",
+  title: "Rediseño del tracker Riot Games con estética moderna estilo Apple sobria y monocromática",
+  items: [
+    "Eliminación de degradados chillones y bordes de neón en favor de tarjetas de cristal oscuro estilo Apple",
+    "Control segmentado monocromático con cápsula translúcida y tipografía limpia",
+    "Métricas y marcadores 5v5 unificados bajo una paleta oscura elegante sin artificios",
+    "Botones de acción Apple sólidos y de vidrio con interacciones sutiles",
+  ],
+};
+
+const v12909_de: ChangelogEntry = {
+  version: "v1.75.67",
+  date: "2026-10-14",
+  title: "Riot Games Tracker Neugestaltung im modernen Apple Dark-Mode Design",
+  items: [
+    "Bunte Farbverläufe und Neon-Ränder durch dezente Apple Frosted-Glass-Karten ersetzt",
+    "Monochromes Segmented Control mit matter Glaskapsel und feiner Typografie",
+    "Einheitliche Metrik-Karten und 5v5-Scoreboards in eleganter dunkler Farbpalette",
+    "Moderne solide und gläserne Apple-Aktionsbuttons mit subtilen Übergängen",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12909_fr, v12908_fr, v12907_fr, v12906_fr, v12905_fr, v12904_fr, v12903_fr, v12902_fr, v12901_fr, v12900_fr, v12899_fr, v12898_fr, v12897_fr, v12896_fr, v12895_fr, v12894_fr, v12893_fr, v12892_fr);
+CHANGELOG_BY_LANG.en.unshift(v12909_en, v12908_en, v12907_en, v12906_en, v12905_en, v12904_en, v12903_en, v12902_en, v12901_en, v12900_en, v12899_en, v12898_en, v12897_en, v12896_en, v12895_en, v12894_en, v12893_en, v12892_en);
+CHANGELOG_BY_LANG.es.unshift(v12909_es, v12908_es, v12907_es, v12906_es, v12905_es, v12904_es, v12903_es, v12902_es, v12901_es, v12900_es, v12899_es, v12898_es, v12897_es, v12896_es, v12895_es, v12894_es, v12893_es, v12892_es);
+CHANGELOG_BY_LANG.de.unshift(v12909_de, v12908_de, v12907_de, v12906_de, v12905_de, v12904_de, v12903_de, v12902_de, v12901_de, v12900_de, v12899_de, v12898_de, v12897_de, v12896_de, v12895_de, v12894_de, v12893_de, v12892_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
+
 

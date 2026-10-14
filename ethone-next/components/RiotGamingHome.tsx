@@ -322,37 +322,34 @@ export default function RiotGamingHome() {
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.35, ease: EASE_SNAP }}
-          className="relative overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-gradient-to-br from-[#12141c]/95 via-[var(--bg-main)]/90 to-[#19131a]/95 p-4 sm:p-6 backdrop-blur-2xl shadow-xl"
+          className="relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[#121214]/80 p-5 sm:p-6 backdrop-blur-2xl shadow-xl"
         >
-          <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-rose-500/10 blur-3xl" />
-          <div className="pointer-events-none absolute -left-20 -bottom-20 h-64 w-64 rounded-full bg-cyan-500/10 blur-3xl" />
-
           <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-            <div className="space-y-2 min-w-0">
+            <div className="space-y-1.5 min-w-0">
               <div className="flex flex-wrap items-center gap-2">
                 <button
                   type="button"
                   onClick={() => setOpen(!open)}
-                  className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)]/70 text-[var(--text-muted)] hover:border-rose-500/40 hover:text-[var(--text-primary)] transition-all active:scale-95 cursor-pointer shadow-sm"
+                  className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-neutral-400 hover:text-white hover:bg-white/[0.08] transition-all active:scale-95 cursor-pointer"
                   title={open ? "Réduire le menu" : "Ouvrir le menu"}
                   aria-label="Basculer la barre latérale"
                 >
                   <Icon name={open ? "sidebar-simple" : "sidebar"} className="h-3.5 w-3.5" />
                 </button>
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/40 bg-rose-500/15 px-2.5 py-0.5 text-[10px] font-bold text-rose-300 uppercase tracking-wider">
-                  <span className="h-1.5 w-1.5 rounded-full bg-rose-400 animate-pulse" />
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-0.5 text-[11px] font-medium text-neutral-300">
+                  <span className="h-1.5 w-1.5 rounded-full bg-white/70" />
                   Riot Games Tracker
                 </span>
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[10px] font-semibold text-emerald-300">
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-0.5 text-[11px] font-medium text-neutral-300">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
                   Serveurs Opérationnels
                 </span>
               </div>
 
-              <h1 className="text-xl sm:text-2xl font-black tracking-tight text-[var(--text-primary)]">
-                ETHONE <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-400 via-purple-400 to-amber-300">Tactical Tracker</span>
+              <h1 className="text-xl sm:text-2xl font-semibold tracking-tight text-white">
+                ETHONE <span className="text-neutral-400 font-normal">Tactical Tracker</span>
               </h1>
-              <p className="text-xs text-[var(--text-muted)] max-w-xl">
+              <p className="text-xs text-neutral-400 max-w-xl leading-relaxed">
                 Télémétrie de combat, statistiques et analyse de parties compétitives pour VALORANT et League of Legends.
               </p>
             </div>
@@ -361,17 +358,20 @@ export default function RiotGamingHome() {
               <button
                 type="button"
                 onClick={() => selectGameTab("live")}
-                className="flex items-center gap-1.5 rounded-xl border border-rose-500/40 bg-rose-500/20 px-3.5 py-2 text-xs font-bold text-rose-200 hover:bg-rose-500/30 active:scale-95 transition-all cursor-pointer shadow-md"
+                className="flex items-center gap-2 rounded-xl bg-white text-black font-medium px-3.5 py-2 text-xs hover:bg-neutral-200 active:scale-95 transition-all cursor-pointer shadow-sm"
               >
-                <Flame className="h-4 w-4 text-rose-400" />
-                <span>Partie en direct (Bêta)</span>
+                <Flame className="h-3.5 w-3.5 text-neutral-900" />
+                <span>Partie en direct</span>
+                <span className="rounded-md bg-black/10 px-1.5 py-0.2 text-[9px] font-semibold text-neutral-800">
+                  Bêta
+                </span>
               </button>
               <button
                 type="button"
                 onClick={() => selectGameTab("coach")}
-                className="flex items-center gap-1.5 rounded-xl border border-purple-500/40 bg-purple-500/20 px-3.5 py-2 text-xs font-bold text-purple-200 hover:bg-purple-500/30 active:scale-95 transition-all cursor-pointer shadow-md"
+                className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.05] hover:bg-white/[0.09] hover:text-white text-neutral-200 font-medium px-3.5 py-2 text-xs active:scale-95 transition-all cursor-pointer backdrop-blur"
               >
-                <Brain className="h-4 w-4 text-purple-300" />
+                <Brain className="h-3.5 w-3.5 text-neutral-300" />
                 <span>Coach IA</span>
               </button>
             </div>
@@ -379,18 +379,18 @@ export default function RiotGamingHome() {
         </motion.div>
 
         <div className="flex flex-col gap-3">
-          <div className="flex flex-wrap items-center gap-1.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/90 p-1 backdrop-blur-xl shadow-md">
+          <div className="flex flex-wrap items-center gap-1 rounded-2xl border border-white/[0.08] bg-[#121214]/80 p-1 backdrop-blur-xl shadow-lg">
             <button
               type="button"
               onClick={() => selectGameTab("valorant")}
               className={cn(
-                "flex items-center gap-2 rounded-[var(--inset-radius)] px-3 py-1.5 text-xs font-bold transition-all cursor-pointer",
+                "flex items-center gap-2 rounded-xl px-3 py-1.5 text-xs font-medium transition-all cursor-pointer",
                 activeGame === "valorant"
-                  ? "bg-rose-600 text-white shadow-sm"
-                  : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                  ? "bg-white/15 text-white shadow-sm border border-white/15"
+                  : "text-neutral-400 hover:text-white hover:bg-white/[0.04]"
               )}
             >
-              <GameBrandIcon name="Valorant" className="h-3.5 w-3.5" />
+              <GameBrandIcon name="Valorant" className="h-3.5 w-3.5 text-neutral-300" />
               <span>VALORANT</span>
             </button>
 
@@ -398,15 +398,15 @@ export default function RiotGamingHome() {
               type="button"
               onClick={() => selectGameTab("live")}
               className={cn(
-                "flex items-center gap-1.5 rounded-[var(--inset-radius)] px-3 py-1.5 text-xs font-bold transition-all cursor-pointer",
+                "flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-medium transition-all cursor-pointer",
                 activeGame === "live"
-                  ? "bg-rose-600 text-white shadow-sm"
-                  : "text-rose-300 hover:text-white hover:bg-rose-500/20"
+                  ? "bg-white/15 text-white shadow-sm border border-white/15"
+                  : "text-neutral-400 hover:text-white hover:bg-white/[0.04]"
               )}
             >
-              <Flame className="h-3.5 w-3.5 text-rose-400" />
+              <Flame className="h-3.5 w-3.5 text-neutral-300" />
               <span>Partie en direct</span>
-              <span className="rounded-full bg-rose-500/30 px-1.5 py-0.2 text-[9px] font-bold text-rose-200">
+              <span className="rounded-md bg-white/10 px-1.5 py-0.2 text-[9px] font-semibold text-neutral-300">
                 Bêta
               </span>
             </button>
@@ -415,13 +415,13 @@ export default function RiotGamingHome() {
               type="button"
               onClick={() => selectGameTab("lol")}
               className={cn(
-                "flex items-center gap-2 rounded-[var(--inset-radius)] px-3 py-1.5 text-xs font-bold transition-all cursor-pointer",
+                "flex items-center gap-2 rounded-xl px-3 py-1.5 text-xs font-medium transition-all cursor-pointer",
                 activeGame === "lol"
-                  ? "bg-amber-600 text-white shadow-sm"
-                  : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                  ? "bg-white/15 text-white shadow-sm border border-white/15"
+                  : "text-neutral-400 hover:text-white hover:bg-white/[0.04]"
               )}
             >
-              <GameBrandIcon name="League of Legends" className="h-3.5 w-3.5" />
+              <GameBrandIcon name="League of Legends" className="h-3.5 w-3.5 text-neutral-300" />
               <span>League of Legends</span>
             </button>
 
@@ -429,43 +429,43 @@ export default function RiotGamingHome() {
               type="button"
               onClick={() => selectGameTab("tft")}
               className={cn(
-                "flex items-center gap-2 rounded-[var(--inset-radius)] px-3 py-1.5 text-xs font-bold transition-all cursor-pointer",
+                "flex items-center gap-2 rounded-xl px-3 py-1.5 text-xs font-medium transition-all cursor-pointer",
                 activeGame === "tft"
-                  ? "bg-yellow-600 text-white shadow-sm"
-                  : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                  ? "bg-white/15 text-white shadow-sm border border-white/15"
+                  : "text-neutral-400 hover:text-white hover:bg-white/[0.04]"
               )}
             >
-              <GameBrandIcon name="Teamfight Tactics" className="h-3.5 w-3.5" />
+              <GameBrandIcon name="Teamfight Tactics" className="h-3.5 w-3.5 text-neutral-300" />
               <span>Teamfight Tactics</span>
             </button>
 
-            <div className="hidden sm:block h-4 w-px bg-[var(--panel-border)] mx-1" />
+            <div className="hidden sm:block h-3.5 w-px bg-white/10 mx-1" />
 
             <button
               type="button"
               onClick={() => selectGameTab("coach")}
               className={cn(
-                "flex items-center gap-1.5 rounded-[var(--inset-radius)] px-3 py-1.5 text-xs font-bold transition-all cursor-pointer",
+                "flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-medium transition-all cursor-pointer",
                 activeGame === "coach"
-                  ? "bg-purple-600 text-white shadow-sm"
-                  : "text-purple-300 hover:text-white hover:bg-purple-500/20"
+                  ? "bg-white/15 text-white shadow-sm border border-white/15"
+                  : "text-neutral-400 hover:text-white hover:bg-white/[0.04]"
               )}
             >
-              <Brain className="h-3.5 w-3.5" />
-              <span>Coach IA Tactique</span>
+              <Brain className="h-3.5 w-3.5 text-neutral-300" />
+              <span>Coach IA</span>
             </button>
 
             <button
               type="button"
               onClick={() => selectGameTab("telemetry")}
               className={cn(
-                "flex items-center gap-1.5 rounded-[var(--inset-radius)] px-3 py-1.5 text-xs font-bold transition-all cursor-pointer",
+                "flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-medium transition-all cursor-pointer",
                 activeGame === "telemetry"
-                  ? "bg-cyan-600 text-white shadow-sm"
-                  : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                  ? "bg-white/15 text-white shadow-sm border border-white/15"
+                  : "text-neutral-400 hover:text-white hover:bg-white/[0.04]"
               )}
             >
-              <Target className="h-3.5 w-3.5" />
+              <Target className="h-3.5 w-3.5 text-neutral-300" />
               <span>Télémétrie</span>
             </button>
 
@@ -473,60 +473,60 @@ export default function RiotGamingHome() {
               type="button"
               onClick={() => selectGameTab("training")}
               className={cn(
-                "flex items-center gap-1.5 rounded-[var(--inset-radius)] px-3 py-1.5 text-xs font-bold transition-all cursor-pointer",
+                "flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-medium transition-all cursor-pointer",
                 activeGame === "training"
-                  ? "bg-emerald-600 text-white shadow-sm"
-                  : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                  ? "bg-white/15 text-white shadow-sm border border-white/15"
+                  : "text-neutral-400 hover:text-white hover:bg-white/[0.04]"
               )}
             >
-              <Activity className="h-3.5 w-3.5" />
+              <Activity className="h-3.5 w-3.5 text-neutral-300" />
               <span>Plan d'Entraînement</span>
             </button>
           </div>
 
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <form onSubmit={handleSearch} className="flex items-center gap-2">
-              <div className="flex items-center gap-2 rounded-xl border border-[var(--input-border)] bg-[var(--bg-surface-elevated)] px-3 py-1.5">
-                <User className="h-3.5 w-3.5 text-[var(--text-muted)]" />
+              <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-[#121214]/80 px-3 py-1.5 focus-within:border-white/20 transition-all">
+                <User className="h-3.5 w-3.5 text-neutral-400" />
                 <input
                   type="text"
                   value={riotName}
                   onChange={(e) => setRiotName(e.target.value)}
                   aria-label="Nom Riot"
-                  className="w-24 sm:w-28 bg-transparent text-xs font-bold text-[var(--text-primary)] outline-none"
+                  className="w-24 sm:w-28 bg-transparent text-xs font-medium text-white outline-none placeholder:text-neutral-500"
                 />
-                <span className="text-xs text-[var(--text-muted)]">#</span>
+                <span className="text-xs text-neutral-500">#</span>
                 <input
                   type="text"
                   value={riotTag}
                   onChange={(e) => setRiotTag(e.target.value)}
                   aria-label="Tag Riot"
-                  className="w-12 bg-transparent font-mono text-xs font-bold text-[var(--text-primary)] outline-none"
+                  className="w-12 bg-transparent font-mono text-xs font-medium text-white outline-none placeholder:text-neutral-500"
                 />
               </div>
               <button
                 type="submit"
                 disabled={loading}
-                className="flex items-center gap-1 rounded-xl bg-[var(--accent-primary)] px-3.5 py-2 text-xs font-bold text-[var(--accent-contrast)] hover:opacity-90 active:scale-95 transition-all cursor-pointer disabled:opacity-40 shadow-sm"
+                className="flex items-center gap-1.5 rounded-xl bg-white text-black font-medium px-3.5 py-1.5 text-xs hover:bg-neutral-200 active:scale-95 transition-all cursor-pointer disabled:opacity-40 shadow-sm"
               >
-                <Search className="h-3.5 w-3.5" />
+                <Search className="h-3.5 w-3.5 text-black" />
                 <span>Analyser</span>
               </button>
             </form>
 
             <div className="flex items-center gap-1.5 text-xs">
-              <span className="text-[10px] uppercase font-bold text-[var(--text-muted)]">Profils vérifiés :</span>
+              <span className="text-[10px] uppercase font-medium tracking-wider text-neutral-500">Profils :</span>
               <button
                 type="button"
                 onClick={() => applyQuickPlayer("Rub19", "boss", "valorant")}
-                className="rounded-lg border border-rose-500/40 bg-rose-500/15 px-2 py-1 text-[11px] font-bold text-rose-300 hover:bg-rose-500/25 active:scale-95 transition-all cursor-pointer"
+                className="rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-1 text-[11px] font-medium text-neutral-300 hover:text-white hover:bg-white/[0.08] active:scale-95 transition-all cursor-pointer"
               >
                 Rub19 #boss (Immortal)
               </button>
               <button
                 type="button"
                 onClick={() => applyQuickPlayer("Agurin", "EUW", "lol")}
-                className="rounded-lg border border-amber-500/40 bg-amber-500/15 px-2 py-1 text-[11px] font-bold text-amber-300 hover:bg-amber-500/25 active:scale-95 transition-all cursor-pointer"
+                className="rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-1 text-[11px] font-medium text-neutral-300 hover:text-white hover:bg-white/[0.08] active:scale-95 transition-all cursor-pointer"
               >
                 Agurin #EUW (LoL)
               </button>
@@ -548,36 +548,36 @@ export default function RiotGamingHome() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                   <motion.div
                     whileHover={{ y: -2 }}
-                    className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/85 p-4 backdrop-blur-xl shadow-md space-y-3"
+                    className="rounded-2xl border border-white/[0.08] bg-[#121214]/80 p-4 backdrop-blur-2xl shadow-sm space-y-3"
                   >
                     <div className="flex items-center gap-3">
                       {valorantProfile?.cardSmall ? (
                         <img
                           src={valorantProfile.cardSmall}
                           alt={valorantProfile.name}
-                          className="h-12 w-12 rounded-xl object-cover border border-[var(--panel-border)] shadow-sm shrink-0"
+                          className="h-12 w-12 rounded-xl object-cover border border-white/10 shadow-sm shrink-0"
                         />
                       ) : (
-                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-rose-500/15 text-rose-400 font-bold border border-rose-500/30 shrink-0">
-                          <User className="h-6 w-6" />
+                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/[0.04] text-neutral-300 font-semibold border border-white/10 shrink-0">
+                          <User className="h-6 w-6 text-neutral-400" />
                         </div>
                       )}
                       <div className="min-w-0">
-                        <h3 className="text-base font-black text-[var(--text-primary)] truncate">
+                        <h3 className="text-base font-semibold text-white truncate">
                           {valorantProfile?.name || riotName || "Joueur"}
                         </h3>
-                        <p className="font-mono text-xs text-[var(--text-muted)]">
+                        <p className="font-mono text-xs text-neutral-400">
                           {riotTag ? `#${valorantProfile?.tag || riotTag}` : ""}
                         </p>
-                        <p className="text-xs font-bold text-rose-400 truncate">
+                        <p className="text-xs font-medium text-neutral-300 truncate">
                           {valorantProfile?.currentTierPatched || "Immortel 1"}
                           {valorantProfile?.rr !== null && valorantProfile?.rr !== undefined ? ` · ${valorantProfile.rr} RR` : " · 0 RR"}
                         </p>
                       </div>
                     </div>
-                    <div className="pt-2 border-t border-[var(--panel-border)]/50 flex items-center justify-between text-xs text-[var(--text-muted)]">
+                    <div className="pt-2 border-t border-white/[0.06] flex items-center justify-between text-xs text-neutral-400">
                       <span>Niveau de compte :</span>
-                      <span className="font-mono font-bold text-[var(--text-primary)]">
+                      <span className="font-mono font-medium text-white">
                         {valorantProfile?.accountLevel ?? "364"}
                       </span>
                     </div>
@@ -585,66 +585,66 @@ export default function RiotGamingHome() {
 
                   <motion.div
                     whileHover={{ y: -2 }}
-                    className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/85 p-4 backdrop-blur-xl shadow-md flex flex-col justify-between"
+                    className="rounded-2xl border border-white/[0.08] bg-[#121214]/80 p-4 backdrop-blur-2xl shadow-sm flex flex-col justify-between"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Ratio K/D</span>
-                      <Flame className="h-4 w-4 text-emerald-400" />
+                      <span className="text-[10px] font-medium uppercase tracking-wider text-neutral-400">Ratio K/D</span>
+                      <Flame className="h-4 w-4 text-neutral-400" />
                     </div>
                     <div className="my-2">
-                      <p className="text-3xl font-black text-emerald-400">
+                      <p className="text-3xl font-semibold tracking-tight text-white">
                         {valorantStats.kdRatio !== null ? valorantStats.kdRatio : "1.69"}
                       </p>
-                      <p className="text-[11px] text-[var(--text-muted)] font-medium">
+                      <p className="text-[11px] text-neutral-400 font-normal">
                         {valorantStats.matchesCount > 0 ? `${valorantStats.wins}V - ${valorantStats.losses}D` : "7V - 3D (70% Winrate)"}
                       </p>
                     </div>
-                    <div className="h-1.5 w-full rounded-full bg-[var(--surface-raised)] overflow-hidden">
-                      <div className="h-full bg-emerald-400 rounded-full" style={{ width: "85%" }} />
+                    <div className="h-1.5 w-full rounded-full bg-white/[0.08] overflow-hidden">
+                      <div className="h-full bg-white rounded-full" style={{ width: "85%" }} />
                     </div>
                   </motion.div>
 
                   <motion.div
                     whileHover={{ y: -2 }}
-                    className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/85 p-4 backdrop-blur-xl shadow-md flex flex-col justify-between"
+                    className="rounded-2xl border border-white/[0.08] bg-[#121214]/80 p-4 backdrop-blur-2xl shadow-sm flex flex-col justify-between"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Taux de Victoire</span>
-                      <Trophy className="h-4 w-4 text-rose-400" />
+                      <span className="text-[10px] font-medium uppercase tracking-wider text-neutral-400">Taux de Victoire</span>
+                      <Trophy className="h-4 w-4 text-neutral-400" />
                     </div>
                     <div className="my-2">
-                      <p className="text-3xl font-black text-rose-400">
+                      <p className="text-3xl font-semibold tracking-tight text-white">
                         {valorantStats.winRate !== null ? `${valorantStats.winRate}%` : "70%"}
                       </p>
-                      <p className="text-[11px] text-[var(--text-muted)] font-medium">
+                      <p className="text-[11px] text-neutral-400 font-normal">
                         {valorantMatches.length > 0 ? `${valorantMatches.length} parties analysées` : "10 parties analysées"}
                       </p>
                     </div>
-                    <div className="h-1.5 w-full rounded-full bg-[var(--surface-raised)] overflow-hidden">
-                      <div className="h-full bg-rose-500 rounded-full" style={{ width: "70%" }} />
+                    <div className="h-1.5 w-full rounded-full bg-white/[0.08] overflow-hidden">
+                      <div className="h-full bg-white rounded-full" style={{ width: "70%" }} />
                     </div>
                   </motion.div>
 
                   <motion.div
                     whileHover={{ y: -2 }}
-                    className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/85 p-4 backdrop-blur-xl shadow-md flex flex-col justify-between"
+                    className="rounded-2xl border border-white/[0.08] bg-[#121214]/80 p-4 backdrop-blur-2xl shadow-sm flex flex-col justify-between"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                      <span className="text-[10px] font-medium uppercase tracking-wider text-neutral-400">
                         {valorantStats.scoreSystem === "performance" ? "Score Performance" : "Score ACS Moyen"}
                       </span>
-                      <Target className="h-4 w-4 text-cyan-400" />
+                      <Target className="h-4 w-4 text-neutral-400" />
                     </div>
                     <div className="my-2">
-                      <p className="text-3xl font-black text-cyan-400">
+                      <p className="text-3xl font-semibold tracking-tight text-white">
                         {valorantStats.averageScore !== null ? valorantStats.averageScore : "274"}
                       </p>
-                      <p className="text-[11px] text-[var(--text-muted)] font-medium">
+                      <p className="text-[11px] text-neutral-400 font-normal">
                         Tir à la tête : {valorantStats.headshotPercentage !== null ? `${valorantStats.headshotPercentage}%` : "24%"}
                       </p>
                     </div>
-                    <div className="h-1.5 w-full rounded-full bg-[var(--surface-raised)] overflow-hidden">
-                      <div className="h-full bg-cyan-400 rounded-full" style={{ width: "24%" }} />
+                    <div className="h-1.5 w-full rounded-full bg-white/[0.08] overflow-hidden">
+                      <div className="h-full bg-white rounded-full" style={{ width: "24%" }} />
                     </div>
                   </motion.div>
                 </div>
@@ -652,15 +652,15 @@ export default function RiotGamingHome() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <motion.div
                     whileHover={{ y: -2 }}
-                    className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/90 p-5 backdrop-blur-xl shadow-lg flex flex-col justify-between space-y-4"
+                    className="rounded-2xl border border-white/[0.08] bg-[#121214]/80 p-5 backdrop-blur-2xl shadow-sm flex flex-col justify-between space-y-4"
                   >
                     <div>
                       <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-2 text-rose-400">
-                          <Swords className="h-4 w-4" />
-                          <h4 className="text-xs font-bold uppercase tracking-wider">Top Agents Joués</h4>
+                        <div className="flex items-center gap-2 text-neutral-300">
+                          <Swords className="h-4 w-4 text-neutral-400" />
+                          <h4 className="text-xs font-semibold uppercase tracking-wider text-white">Top Agents Joués</h4>
                         </div>
-                        <span className="text-[10px] font-mono font-bold text-[var(--text-muted)]">
+                        <span className="text-[10px] font-mono font-medium text-neutral-400">
                           {topValorantAgents.length > 0 ? `${topValorantAgents.length} agents récents` : "Jett & Neon"}
                         </span>
                       </div>
@@ -670,32 +670,32 @@ export default function RiotGamingHome() {
                           topValorantAgents.map((ag) => (
                             <div
                               key={ag.agentName}
-                              className="flex items-center justify-between rounded-xl border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/50 p-2.5 transition-all hover:border-rose-500/30"
+                              className="flex items-center justify-between rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5 transition-all hover:border-white/10 hover:bg-white/[0.04]"
                             >
                               <div className="flex items-center gap-2.5 min-w-0">
                                 {ag.agentImageUrl ? (
                                   <img
                                     src={ag.agentImageUrl}
                                     alt={ag.agentName}
-                                    className="h-9 w-9 rounded-lg object-cover border border-[var(--panel-border)] shrink-0"
+                                    className="h-9 w-9 rounded-lg object-cover border border-white/10 shrink-0"
                                   />
                                 ) : (
-                                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-rose-500/20 text-rose-300 font-bold shrink-0">
+                                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/[0.04] text-neutral-200 font-semibold border border-white/10 shrink-0">
                                     {ag.agentName[0]}
                                   </div>
                                 )}
                                 <div className="min-w-0">
-                                  <p className="text-xs font-black text-[var(--text-primary)] truncate">{ag.agentName}</p>
-                                  <p className="text-[11px] text-[var(--text-muted)]">
+                                  <p className="text-xs font-semibold text-white truncate">{ag.agentName}</p>
+                                  <p className="text-[11px] text-neutral-400">
                                     {ag.matches} match{ag.matches > 1 ? "s" : ""} · {ag.winRate ?? 0}% de victoires
                                   </p>
                                 </div>
                               </div>
                               <div className="text-right shrink-0">
-                                <p className="text-xs font-mono font-bold text-emerald-400">
+                                <p className="text-xs font-mono font-semibold text-white">
                                   {ag.kdRatio !== null ? `${ag.kdRatio} KD` : "—"}
                                 </p>
-                                <p className="text-[10px] font-mono text-[var(--text-muted)]">
+                                <p className="text-[10px] font-mono text-neutral-400">
                                   {ag.kills}K / {ag.deaths}D
                                 </p>
                               </div>
@@ -703,30 +703,30 @@ export default function RiotGamingHome() {
                           ))
                         ) : (
                           <div className="space-y-2">
-                            <div className="flex items-center justify-between rounded-xl border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/50 p-2.5">
+                            <div className="flex items-center justify-between rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
                               <div className="flex items-center gap-2.5">
-                                <div className="h-9 w-9 rounded-lg bg-rose-500/20 text-rose-300 font-bold flex items-center justify-center">J</div>
+                                <div className="h-9 w-9 rounded-lg bg-white/[0.04] text-neutral-200 font-semibold border border-white/10 flex items-center justify-center">J</div>
                                 <div>
-                                  <p className="text-xs font-black text-[var(--text-primary)]">Jett</p>
-                                  <p className="text-[11px] text-[var(--text-muted)]">9 matchs · 67% de victoires</p>
+                                  <p className="text-xs font-semibold text-white">Jett</p>
+                                  <p className="text-[11px] text-neutral-400">9 matchs · 67% de victoires</p>
                                 </div>
                               </div>
                               <div className="text-right">
-                                <p className="text-xs font-mono font-bold text-emerald-400">1.70 KD</p>
-                                <p className="text-[10px] font-mono text-[var(--text-muted)]">139K / 82D</p>
+                                <p className="text-xs font-mono font-semibold text-white">1.70 KD</p>
+                                <p className="text-[10px] font-mono text-neutral-400">139K / 82D</p>
                               </div>
                             </div>
-                            <div className="flex items-center justify-between rounded-xl border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/50 p-2.5">
+                            <div className="flex items-center justify-between rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
                               <div className="flex items-center gap-2.5">
-                                <div className="h-9 w-9 rounded-lg bg-cyan-500/20 text-cyan-300 font-bold flex items-center justify-center">N</div>
+                                <div className="h-9 w-9 rounded-lg bg-white/[0.04] text-neutral-200 font-semibold border border-white/10 flex items-center justify-center">N</div>
                                 <div>
-                                  <p className="text-xs font-black text-[var(--text-primary)]">Neon</p>
-                                  <p className="text-[11px] text-[var(--text-muted)]">1 match · 100% de victoires</p>
+                                  <p className="text-xs font-semibold text-white">Neon</p>
+                                  <p className="text-[11px] text-neutral-400">1 match · 100% de victoires</p>
                                 </div>
                               </div>
                               <div className="text-right">
-                                <p className="text-xs font-mono font-bold text-emerald-400">1.67 KD</p>
-                                <p className="text-[10px] font-mono text-[var(--text-muted)]">5K / 3D</p>
+                                <p className="text-xs font-mono font-semibold text-white">1.67 KD</p>
+                                <p className="text-[10px] font-mono text-neutral-400">5K / 3D</p>
                               </div>
                             </div>
                           </div>
@@ -738,9 +738,9 @@ export default function RiotGamingHome() {
                       <button
                         type="button"
                         onClick={() => selectGameTab("coach")}
-                        className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-2 text-xs font-bold text-white shadow-md hover:from-purple-500 hover:to-indigo-500 active:scale-95 transition-all cursor-pointer"
+                        className="flex items-center gap-2 rounded-xl bg-white text-black px-4 py-2 text-xs font-medium hover:bg-neutral-200 active:scale-[0.98] transition-all cursor-pointer shadow-sm"
                       >
-                        <Brain className="h-3.5 w-3.5 text-purple-200" />
+                        <Brain className="h-3.5 w-3.5 text-black" />
                         <span>Ouvrir le Diagnostic Coach IA</span>
                       </button>
                     </div>
@@ -748,53 +748,53 @@ export default function RiotGamingHome() {
 
                   <motion.div
                     whileHover={{ y: -2 }}
-                    className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/90 p-5 backdrop-blur-xl shadow-lg flex flex-col justify-between space-y-4"
+                    className="rounded-2xl border border-white/[0.08] bg-[#121214]/80 p-5 backdrop-blur-2xl shadow-sm flex flex-col justify-between space-y-4"
                   >
                     <div>
                       <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-2 text-rose-400">
-                          <Target className="h-4 w-4" />
-                          <h4 className="text-xs font-bold uppercase tracking-wider">Télémétrie de Combat</h4>
+                        <div className="flex items-center gap-2 text-neutral-300">
+                          <Target className="h-4 w-4 text-neutral-400" />
+                          <h4 className="text-xs font-semibold uppercase tracking-wider text-white">Télémétrie de Combat</h4>
                         </div>
-                        <span className="text-[10px] font-mono font-bold text-emerald-400">
+                        <span className="text-[10px] font-mono font-medium text-neutral-400">
                           10 parties analysées
                         </span>
                       </div>
 
                       <div className="grid grid-cols-3 gap-2 text-center">
-                        <div className="rounded-xl border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/40 p-2.5">
-                          <span className="text-[10px] font-bold uppercase text-[var(--text-muted)]">Kills</span>
-                          <p className="text-lg font-black text-[var(--text-primary)] mt-1">
+                        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
+                          <span className="text-[10px] font-medium uppercase text-neutral-400">Kills</span>
+                          <p className="text-lg font-semibold text-white mt-1">
                             {valorantCombatSummary.kills || 144}
                           </p>
                         </div>
-                        <div className="rounded-xl border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/40 p-2.5">
-                          <span className="text-[10px] font-bold uppercase text-[var(--text-muted)]">Morts</span>
-                          <p className="text-lg font-black text-rose-400 mt-1">
+                        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
+                          <span className="text-[10px] font-medium uppercase text-neutral-400">Morts</span>
+                          <p className="text-lg font-semibold text-white mt-1">
                             {valorantCombatSummary.deaths || 85}
                           </p>
                         </div>
-                        <div className="rounded-xl border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/40 p-2.5">
-                          <span className="text-[10px] font-bold uppercase text-[var(--text-muted)]">Passes</span>
-                          <p className="text-lg font-black text-cyan-400 mt-1">
+                        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
+                          <span className="text-[10px] font-medium uppercase text-neutral-400">Passes</span>
+                          <p className="text-lg font-semibold text-white mt-1">
                             {valorantCombatSummary.assists || 22}
                           </p>
                         </div>
-                        <div className="rounded-xl border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/40 p-2.5">
-                          <span className="text-[10px] font-bold uppercase text-[var(--text-muted)]">Ratio K/D</span>
-                          <p className="text-lg font-black text-emerald-400 mt-1">
+                        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
+                          <span className="text-[10px] font-medium uppercase text-neutral-400">Ratio K/D</span>
+                          <p className="text-lg font-semibold text-white mt-1">
                             {valorantCombatSummary.kd || "1.69"}
                           </p>
                         </div>
-                        <div className="rounded-xl border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/40 p-2.5">
-                          <span className="text-[10px] font-bold uppercase text-[var(--text-muted)]">ADR / Manche</span>
-                          <p className="text-lg font-black text-amber-400 mt-1">
+                        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
+                          <span className="text-[10px] font-medium uppercase text-neutral-400">ADR / Manche</span>
+                          <p className="text-lg font-semibold text-white mt-1">
                             {valorantCombatSummary.adr || 162}
                           </p>
                         </div>
-                        <div className="rounded-xl border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/40 p-2.5">
-                          <span className="text-[10px] font-bold uppercase text-[var(--text-muted)]">Tirs Tête</span>
-                          <p className="text-lg font-black text-violet-400 mt-1">
+                        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
+                          <span className="text-[10px] font-medium uppercase text-neutral-400">Tirs Tête</span>
+                          <p className="text-lg font-semibold text-white mt-1">
                             {valorantCombatSummary.hs ? `${valorantCombatSummary.hs}%` : "24%"}
                           </p>
                         </div>
@@ -805,17 +805,17 @@ export default function RiotGamingHome() {
                       <button
                         type="button"
                         onClick={() => selectGameTab("telemetry")}
-                        className="flex items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-4 py-2 text-xs font-semibold text-[var(--text-primary)] hover:border-cyan-500/40 transition-colors cursor-pointer"
+                        className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.06] px-4 py-2 text-xs font-medium text-white hover:bg-white/[0.10] active:scale-[0.98] transition-all cursor-pointer"
                       >
-                        <Target className="h-3.5 w-3.5 text-cyan-400" />
+                        <Target className="h-3.5 w-3.5 text-neutral-300" />
                         <span>Détails Télémétrie</span>
                       </button>
                       <button
                         type="button"
                         onClick={() => setCompareModalOpen(true)}
-                        className="flex items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-4 py-2 text-xs font-semibold text-[var(--text-primary)] hover:border-rose-500/40 transition-colors cursor-pointer"
+                        className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.06] px-4 py-2 text-xs font-medium text-white hover:bg-white/[0.10] active:scale-[0.98] transition-all cursor-pointer"
                       >
-                        <Share2 className="h-3.5 w-3.5 text-rose-400" />
+                        <Share2 className="h-3.5 w-3.5 text-neutral-300" />
                         <span>Comparer avec un ami</span>
                       </button>
                     </div>
@@ -826,22 +826,22 @@ export default function RiotGamingHome() {
 
             {activeGame === "coach" && (
               <div className="space-y-4">
-                <div className="rounded-[var(--panel-radius)] border border-purple-500/30 bg-gradient-to-br from-purple-900/30 via-[var(--bg-main)]/90 to-indigo-950/40 p-5 backdrop-blur-xl shadow-xl space-y-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-purple-500/20 pb-4">
+                <div className="rounded-2xl border border-white/[0.08] bg-[#121214]/80 p-5 backdrop-blur-2xl shadow-sm space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/[0.06] pb-4">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-500/20 border border-purple-500/40 text-purple-300 shadow-md">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/[0.04] border border-white/10 text-white shadow-sm">
                         <Brain className="h-6 w-6" />
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <h2 className="text-lg font-black text-[var(--text-primary)]">
+                          <h2 className="text-lg font-semibold text-white">
                             Tactical Coach IA · Diagnostic Personnalisé
                           </h2>
-                          <span className="rounded-full border border-purple-500/40 bg-purple-500/20 px-2 py-0.5 text-[10px] font-bold text-purple-300">
+                          <span className="rounded-full border border-white/10 bg-white/[0.05] px-2 py-0.5 text-[10px] font-medium text-neutral-300">
                             Score 88/100
                           </span>
                         </div>
-                        <p className="text-xs text-[var(--text-muted)]">
+                        <p className="text-xs text-neutral-400">
                           Analyse post-match de vos 10 dernières parties de VALORANT ({valorantProfile?.name || riotName} #{valorantProfile?.tag || riotTag})
                         </p>
                       </div>
@@ -851,71 +851,71 @@ export default function RiotGamingHome() {
                       <button
                         type="button"
                         onClick={() => selectGameTab("training")}
-                        className="flex items-center gap-1.5 rounded-xl bg-purple-600 px-3.5 py-2 text-xs font-bold text-white hover:bg-purple-500 active:scale-95 transition-all cursor-pointer shadow-md"
+                        className="flex items-center gap-1.5 rounded-xl bg-white text-black px-3.5 py-2 text-xs font-medium hover:bg-neutral-200 active:scale-[0.98] transition-all cursor-pointer shadow-sm"
                       >
-                        <Activity className="h-3.5 w-3.5" />
+                        <Activity className="h-3.5 w-3.5 text-black" />
                         <span>Générer ma routine d'entraînement</span>
                       </button>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    <div className="rounded-xl border border-purple-500/20 bg-[var(--surface-raised)]/40 p-3.5 space-y-1.5">
+                    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3.5 space-y-1.5">
                       <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-bold uppercase text-purple-300">Profil de Jeu</span>
-                        <Zap className="h-3.5 w-3.5 text-amber-400" />
+                        <span className="text-[10px] font-medium uppercase text-neutral-400">Profil de Jeu</span>
+                        <Zap className="h-3.5 w-3.5 text-neutral-400" />
                       </div>
-                      <p className="text-sm font-black text-[var(--text-primary)]">Entry Fragger Agressif</p>
-                      <p className="text-xs text-[var(--text-muted)] leading-relaxed">
+                      <p className="text-sm font-semibold text-white">Entry Fragger Agressif</p>
+                      <p className="text-xs text-neutral-400 leading-relaxed">
                         Excellente prise d'espace sur Jett avec 78% de conversion de First Blood sur Split et Ascent.
                       </p>
                     </div>
 
-                    <div className="rounded-xl border border-purple-500/20 bg-[var(--surface-raised)]/40 p-3.5 space-y-1.5">
+                    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3.5 space-y-1.5">
                       <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-bold uppercase text-emerald-300">Point Fort Majeur</span>
-                        <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
+                        <span className="text-[10px] font-medium uppercase text-neutral-400">Point Fort Majeur</span>
+                        <CheckCircle2 className="h-3.5 w-3.5 text-neutral-400" />
                       </div>
-                      <p className="text-sm font-black text-[var(--text-primary)]">Efficacité des Duels (1.69 KD)</p>
-                      <p className="text-xs text-[var(--text-muted)] leading-relaxed">
+                      <p className="text-sm font-semibold text-white">Efficacité des Duels (1.69 KD)</p>
+                      <p className="text-xs text-neutral-400 leading-relaxed">
                         144 éliminations pour 85 morts. Les duels en un contre un tournent à votre avantage dans 72% des engagements.
                       </p>
                     </div>
 
-                    <div className="rounded-xl border border-purple-500/20 bg-[var(--surface-raised)]/40 p-3.5 space-y-1.5">
+                    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3.5 space-y-1.5">
                       <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-bold uppercase text-rose-300">Axe d'Amélioration</span>
-                        <Target className="h-3.5 w-3.5 text-rose-400" />
+                        <span className="text-[10px] font-medium uppercase text-neutral-400">Axe d'Amélioration</span>
+                        <Target className="h-3.5 w-3.5 text-neutral-400" />
                       </div>
-                      <p className="text-sm font-black text-[var(--text-primary)]">Discipline sur les Bonus Rounds</p>
-                      <p className="text-xs text-[var(--text-muted)] leading-relaxed">
+                      <p className="text-sm font-semibold text-white">Discipline sur les Bonus Rounds</p>
+                      <p className="text-xs text-neutral-400 leading-relaxed">
                         Tendance à trop contester à longue distance avec SMG face aux rifles achetés au round 3.
                       </p>
                     </div>
                   </div>
 
-                  <div className="rounded-xl border border-[var(--panel-border)]/60 bg-[var(--bg-main)]/70 p-4 space-y-3">
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-purple-300">
+                  <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 space-y-3">
+                    <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-300">
                       Recommandations Tactiques Détaillées
                     </h3>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                      <div className="rounded-lg border border-[var(--panel-border)]/50 bg-[var(--surface-raised)]/30 p-3 space-y-1">
-                        <p className="font-bold text-[var(--text-primary)] flex items-center gap-1.5">
-                          <span className="h-1.5 w-1.5 rounded-full bg-rose-400" />
+                      <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-3 space-y-1">
+                        <p className="font-semibold text-white flex items-center gap-1.5">
+                          <span className="h-1.5 w-1.5 rounded-full bg-white/70" />
                           Prise de Site A sur Split (Jett)
                         </p>
-                        <p className="text-[var(--text-muted)] leading-relaxed">
+                        <p className="text-neutral-400 leading-relaxed">
                           Déployez le Cloudburst au niveau des chevrons avant votre Tailwind. Cela brise la ligne ennemie et permet à vos initiateurs d'envoyer leurs utilitaires sans vous exposer.
                         </p>
                       </div>
 
-                      <div className="rounded-lg border border-[var(--panel-border)]/50 bg-[var(--surface-raised)]/30 p-3 space-y-1">
-                        <p className="font-bold text-[var(--text-primary)] flex items-center gap-1.5">
-                          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                      <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-3 space-y-1">
+                        <p className="font-semibold text-white flex items-center gap-1.5">
+                          <span className="h-1.5 w-1.5 rounded-full bg-white/70" />
                           Gestion Économique & Blade Storm
                         </p>
-                        <p className="text-[var(--text-muted)] leading-relaxed">
+                        <p className="text-neutral-400 leading-relaxed">
                           Votre ultime Jett (Blade Storm) est rentabilisé à 80% lorsqu'il est joué sur un round d'économie d'équipe. Il évite à vos alliés de dépenser des crédits et permet d'économiser jusqu'à 4 500 crédits pour le round suivant.
                         </p>
                       </div>
@@ -927,82 +927,82 @@ export default function RiotGamingHome() {
 
             {activeGame === "telemetry" && (
               <div className="space-y-4">
-                <div className="rounded-[var(--panel-radius)] border border-cyan-500/30 bg-gradient-to-br from-cyan-950/20 via-[var(--bg-main)]/90 to-transparent p-5 backdrop-blur-xl shadow-xl space-y-4">
-                  <div className="flex items-center justify-between border-b border-cyan-500/20 pb-3">
-                    <div className="flex items-center gap-2 text-cyan-400">
-                      <Target className="h-5 w-5" />
-                      <h2 className="text-base font-black text-[var(--text-primary)] uppercase tracking-wider">
+                <div className="rounded-2xl border border-white/[0.08] bg-[#121214]/80 p-5 backdrop-blur-2xl shadow-sm space-y-4">
+                  <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
+                    <div className="flex items-center gap-2 text-neutral-300">
+                      <Target className="h-5 w-5 text-neutral-400" />
+                      <h2 className="text-base font-semibold text-white uppercase tracking-wider">
                         Télémétrie de Combat Complète · VALORANT Post-Match
                       </h2>
                     </div>
-                    <span className="text-xs font-mono font-bold text-cyan-300">
+                    <span className="text-xs font-mono text-neutral-400">
                       Base : 10 Matchs Officiels
                     </span>
                   </div>
 
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-                    <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-3">
-                      <span className="text-[10px] font-bold uppercase text-[var(--text-muted)]">Éliminations Totales</span>
-                      <p className="text-2xl font-black text-[var(--text-primary)] mt-1">144 Kills</p>
-                      <p className="text-[10px] text-[var(--text-muted)]">Moyenne : 14.4 / partie</p>
+                    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
+                      <span className="text-[10px] font-medium uppercase text-neutral-400">Éliminations Totales</span>
+                      <p className="text-2xl font-semibold text-white mt-1">144 Kills</p>
+                      <p className="text-[10px] text-neutral-500">Moyenne : 14.4 / partie</p>
                     </div>
-                    <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-3">
-                      <span className="text-[10px] font-bold uppercase text-[var(--text-muted)]">Morts Totales</span>
-                      <p className="text-2xl font-black text-rose-400 mt-1">85 Morts</p>
-                      <p className="text-[10px] text-[var(--text-muted)]">Moyenne : 8.5 / partie</p>
+                    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
+                      <span className="text-[10px] font-medium uppercase text-neutral-400">Morts Totales</span>
+                      <p className="text-2xl font-semibold text-white mt-1">85 Morts</p>
+                      <p className="text-[10px] text-neutral-500">Moyenne : 8.5 / partie</p>
                     </div>
-                    <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-3">
-                      <span className="text-[10px] font-bold uppercase text-[var(--text-muted)]">Précision Tête</span>
-                      <p className="text-2xl font-black text-violet-400 mt-1">24.2%</p>
-                      <p className="text-[10px] text-[var(--text-muted)]">Vandal & Phantom</p>
+                    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
+                      <span className="text-[10px] font-medium uppercase text-neutral-400">Précision Tête</span>
+                      <p className="text-2xl font-semibold text-white mt-1">24.2%</p>
+                      <p className="text-[10px] text-neutral-500">Vandal & Phantom</p>
                     </div>
-                    <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-3">
-                      <span className="text-[10px] font-bold uppercase text-[var(--text-muted)]">ADR Global</span>
-                      <p className="text-2xl font-black text-emerald-400 mt-1">162</p>
-                      <p className="text-[10px] text-[var(--text-muted)]">Dégâts / round</p>
+                    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
+                      <span className="text-[10px] font-medium uppercase text-neutral-400">ADR Global</span>
+                      <p className="text-2xl font-semibold text-white mt-1">162</p>
+                      <p className="text-[10px] text-neutral-500">Dégâts / round</p>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 space-y-2">
-                      <h4 className="text-xs font-bold text-[var(--text-primary)] uppercase">Répartition Anatomique des Tirs</h4>
+                    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 space-y-2">
+                      <h4 className="text-xs font-semibold text-white uppercase">Répartition Anatomique des Tirs</h4>
                       <div className="space-y-1.5 text-xs">
                         <div className="flex items-center justify-between">
-                          <span className="text-violet-300">Tirs à la tête (HS)</span>
-                          <span className="font-mono font-bold text-[var(--text-primary)]">24%</span>
+                          <span className="text-neutral-300">Tirs à la tête (HS)</span>
+                          <span className="font-mono font-medium text-white">24%</span>
                         </div>
-                        <div className="h-2 w-full rounded-full bg-[var(--surface-raised)] overflow-hidden">
-                          <div className="h-full bg-violet-400" style={{ width: "24%" }} />
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                          <span className="text-cyan-300">Tirs au corps</span>
-                          <span className="font-mono font-bold text-[var(--text-primary)]">71%</span>
-                        </div>
-                        <div className="h-2 w-full rounded-full bg-[var(--surface-raised)] overflow-hidden">
-                          <div className="h-full bg-cyan-400" style={{ width: "71%" }} />
+                        <div className="h-2 w-full rounded-full bg-white/[0.08] overflow-hidden">
+                          <div className="h-full bg-white rounded-full" style={{ width: "24%" }} />
                         </div>
 
                         <div className="flex items-center justify-between">
-                          <span className="text-slate-400">Tirs aux jambes</span>
-                          <span className="font-mono font-bold text-[var(--text-primary)]">5%</span>
+                          <span className="text-neutral-400">Tirs au corps</span>
+                          <span className="font-mono font-medium text-white">71%</span>
                         </div>
-                        <div className="h-2 w-full rounded-full bg-[var(--surface-raised)] overflow-hidden">
-                          <div className="h-full bg-slate-400" style={{ width: "5%" }} />
+                        <div className="h-2 w-full rounded-full bg-white/[0.08] overflow-hidden">
+                          <div className="h-full bg-white/60 rounded-full" style={{ width: "71%" }} />
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <span className="text-neutral-500">Tirs aux jambes</span>
+                          <span className="font-mono font-medium text-white">5%</span>
+                        </div>
+                        <div className="h-2 w-full rounded-full bg-white/[0.08] overflow-hidden">
+                          <div className="h-full bg-white/30 rounded-full" style={{ width: "5%" }} />
                         </div>
                       </div>
                     </div>
 
-                    <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 space-y-2">
-                      <h4 className="text-xs font-bold text-[var(--text-primary)] uppercase">Performance par Carte</h4>
+                    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 space-y-2">
+                      <h4 className="text-xs font-semibold text-white uppercase">Performance par Carte</h4>
                       <div className="space-y-2 text-xs">
-                        <div className="flex items-center justify-between rounded-lg bg-[var(--bg-main)]/60 p-2">
-                          <span className="font-bold text-[var(--text-primary)]">Split</span>
-                          <span className="font-mono text-emerald-400 font-bold">80% Winrate · 1.72 KD</span>
+                        <div className="flex items-center justify-between rounded-lg bg-white/[0.02] border border-white/[0.06] p-2.5">
+                          <span className="font-medium text-white">Split</span>
+                          <span className="font-mono text-neutral-300 font-medium">80% Winrate · 1.72 KD</span>
                         </div>
-                        <div className="flex items-center justify-between rounded-lg bg-[var(--bg-main)]/60 p-2">
-                          <span className="font-bold text-[var(--text-primary)]">Ascent</span>
-                          <span className="font-mono text-emerald-400 font-bold">67% Winrate · 1.64 KD</span>
+                        <div className="flex items-center justify-between rounded-lg bg-white/[0.02] border border-white/[0.06] p-2.5">
+                          <span className="font-medium text-white">Ascent</span>
+                          <span className="font-mono text-neutral-300 font-medium">67% Winrate · 1.64 KD</span>
                         </div>
                       </div>
                     </div>
@@ -1013,50 +1013,50 @@ export default function RiotGamingHome() {
 
             {activeGame === "training" && (
               <div className="space-y-4">
-                <div className="rounded-[var(--panel-radius)] border border-emerald-500/30 bg-gradient-to-br from-emerald-950/20 via-[var(--bg-main)]/90 to-transparent p-5 backdrop-blur-xl shadow-xl space-y-4">
-                  <div className="flex items-center justify-between border-b border-emerald-500/20 pb-3">
-                    <div className="flex items-center gap-2 text-emerald-400">
-                      <Activity className="h-5 w-5" />
-                      <h2 className="text-base font-black text-[var(--text-primary)] uppercase tracking-wider">
+                <div className="rounded-2xl border border-white/[0.08] bg-[#121214]/80 p-5 backdrop-blur-2xl shadow-sm space-y-4">
+                  <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
+                    <div className="flex items-center gap-2 text-neutral-300">
+                      <Activity className="h-5 w-5 text-neutral-400" />
+                      <h2 className="text-base font-semibold text-white uppercase tracking-wider">
                         Plan d'Entraînement Personnalisé · Recommandation Coach IA
                       </h2>
                     </div>
-                    <span className="text-xs font-bold text-emerald-300">Routine 30 min / jour</span>
+                    <span className="text-xs font-medium text-neutral-400">Routine 30 min / jour</span>
                   </div>
 
                   <div className="space-y-3">
-                    <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 space-y-1.5">
+                    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 space-y-1.5">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-black text-[var(--text-primary)]">
+                        <span className="text-xs font-semibold text-white">
                           Phase 1 : Calibrage Mécanique & Placement de Réticule (10 min)
                         </span>
-                        <span className="text-[10px] font-mono font-bold text-emerald-400">The Range / Aim Lab</span>
+                        <span className="text-[10px] font-mono font-medium text-neutral-400 border border-white/10 rounded-md px-2 py-0.5 bg-white/[0.04]">The Range / Aim Lab</span>
                       </div>
-                      <p className="text-xs text-[var(--text-muted)] leading-relaxed">
+                      <p className="text-xs text-neutral-400 leading-relaxed">
                         Éliminez 50 bots en mode Entraînement avec Vandal sans vous accroupir (interdiction de la touche Ctrl). Focus sur le micro-ajustement horizontal à hauteur de tête avant de tirer la première balle.
                       </p>
                     </div>
 
-                    <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 space-y-1.5">
+                    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 space-y-1.5">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-black text-[var(--text-primary)]">
+                        <span className="text-xs font-semibold text-white">
                           Phase 2 : Prise d'Espace & Duels sous Pression (15 min)
                         </span>
-                        <span className="text-[10px] font-mono font-bold text-cyan-400">2 Swiftplay / Deathmatch</span>
+                        <span className="text-[10px] font-mono font-medium text-neutral-400 border border-white/10 rounded-md px-2 py-0.5 bg-white/[0.04]">2 Swiftplay / Deathmatch</span>
                       </div>
-                      <p className="text-xs text-[var(--text-muted)] leading-relaxed">
+                      <p className="text-xs text-neutral-400 leading-relaxed">
                         Sur Jett : entraînez les entrées de site agressives avec un Cloudburst posé et un dash immédiat dans la fumée pour perturber la ligne de visée ennemie et forcer un trade avantageux.
                       </p>
                     </div>
 
-                    <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 space-y-1.5">
+                    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 space-y-1.5">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-black text-[var(--text-primary)]">
+                        <span className="text-xs font-semibold text-white">
                           Phase 3 : Débriefing & Suivi des Crédits (5 min)
                         </span>
-                        <span className="text-[10px] font-mono font-bold text-purple-400">Dashboard ETHONE</span>
+                        <span className="text-[10px] font-mono font-medium text-neutral-400 border border-white/10 rounded-md px-2 py-0.5 bg-white/[0.04]">Dashboard ETHONE</span>
                       </div>
-                      <p className="text-xs text-[var(--text-muted)] leading-relaxed">
+                      <p className="text-xs text-neutral-400 leading-relaxed">
                         Vérifiez vos rounds d'économie sur la télémétrie post-match. Assurez-vous d'avoir acheté au moins 3 utilitaires clés sur les rounds armés.
                       </p>
                     </div>
@@ -1079,25 +1079,25 @@ export default function RiotGamingHome() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                   <motion.div
                     whileHover={{ y: -2 }}
-                    className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/85 p-4 backdrop-blur-xl shadow-md space-y-3"
+                    className="rounded-2xl border border-white/[0.08] bg-[#121214]/80 p-4 backdrop-blur-2xl shadow-sm space-y-3"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-500/15 text-amber-400 font-bold border border-amber-500/30 shrink-0">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/[0.04] text-white font-semibold border border-white/10 shrink-0">
                         <GameBrandIcon name="League of Legends" className="h-6 w-6" />
                       </div>
                       <div className="min-w-0">
-                        <h3 className="text-base font-black text-[var(--text-primary)] truncate">
+                        <h3 className="text-base font-semibold text-white truncate">
                           {riotName || "Invocateur"}
                         </h3>
-                        <p className="font-mono text-xs text-[var(--text-muted)]">{riotTag ? `#${riotTag}` : ""}</p>
-                        <p className="text-xs font-bold text-amber-400">
+                        <p className="font-mono text-xs text-neutral-400">{riotTag ? `#${riotTag}` : ""}</p>
+                        <p className="text-xs font-medium text-neutral-300">
                           {lolMatches.length > 0 ? "Compétitif" : "Challenger / SoloQ"}
                         </p>
                       </div>
                     </div>
-                    <div className="pt-2 border-t border-[var(--panel-border)]/50 flex items-center justify-between text-xs text-[var(--text-muted)]">
+                    <div className="pt-2 border-t border-white/[0.06] flex items-center justify-between text-xs text-neutral-400">
                       <span>Parties trouvées :</span>
-                      <span className="font-mono font-bold text-[var(--text-primary)]">
+                      <span className="font-mono font-medium text-white">
                         {lolMatches.length > 0 ? lolMatches.length : "1"}
                       </span>
                     </div>
@@ -1105,56 +1105,56 @@ export default function RiotGamingHome() {
 
                   <motion.div
                     whileHover={{ y: -2 }}
-                    className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/85 p-4 backdrop-blur-xl shadow-md flex flex-col justify-between"
+                    className="rounded-2xl border border-white/[0.08] bg-[#121214]/80 p-4 backdrop-blur-2xl shadow-sm flex flex-col justify-between"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">KDA Moyen</span>
-                      <Flame className="h-4 w-4 text-amber-400" />
+                      <span className="text-[10px] font-medium uppercase tracking-wider text-neutral-400">KDA Moyen</span>
+                      <Flame className="h-4 w-4 text-neutral-400" />
                     </div>
                     <div className="my-2">
-                      <p className="text-3xl font-black text-amber-400">
+                      <p className="text-3xl font-semibold tracking-tight text-white">
                         {lolSummary.total > 0 ? lolSummary.kda : "1.27"}
                       </p>
-                      <p className="text-[11px] text-[var(--text-muted)] font-medium">
+                      <p className="text-[11px] text-neutral-400 font-normal">
                         {lolSummary.total > 0 ? `${lolSummary.kTotal}K / ${lolSummary.dTotal}D / ${lolSummary.aTotal}A` : "9K / 11D / 5A"}
                       </p>
                     </div>
-                    <div className="h-1.5 w-full rounded-full bg-[var(--surface-raised)] overflow-hidden">
-                      <div className="h-full bg-amber-400 rounded-full" style={{ width: "65%" }} />
+                    <div className="h-1.5 w-full rounded-full bg-white/[0.08] overflow-hidden">
+                      <div className="h-full bg-white rounded-full" style={{ width: "65%" }} />
                     </div>
                   </motion.div>
 
                   <motion.div
                     whileHover={{ y: -2 }}
-                    className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/85 p-4 backdrop-blur-xl shadow-md flex flex-col justify-between"
+                    className="rounded-2xl border border-white/[0.08] bg-[#121214]/80 p-4 backdrop-blur-2xl shadow-sm flex flex-col justify-between"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Dégâts / Minute</span>
-                      <Trophy className="h-4 w-4 text-emerald-400" />
+                      <span className="text-[10px] font-medium uppercase tracking-wider text-neutral-400">Dégâts / Minute</span>
+                      <Trophy className="h-4 w-4 text-neutral-400" />
                     </div>
                     <div className="my-2">
-                      <p className="text-3xl font-black text-emerald-400">831</p>
-                      <p className="text-[11px] text-[var(--text-muted)] font-medium">24 944 dégâts infligés</p>
+                      <p className="text-3xl font-semibold tracking-tight text-white">831</p>
+                      <p className="text-[11px] text-neutral-400 font-normal">24 944 dégâts infligés</p>
                     </div>
-                    <div className="h-1.5 w-full rounded-full bg-[var(--surface-raised)] overflow-hidden">
-                      <div className="h-full bg-emerald-400 rounded-full" style={{ width: "75%" }} />
+                    <div className="h-1.5 w-full rounded-full bg-white/[0.08] overflow-hidden">
+                      <div className="h-full bg-white rounded-full" style={{ width: "75%" }} />
                     </div>
                   </motion.div>
 
                   <motion.div
                     whileHover={{ y: -2 }}
-                    className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/85 p-4 backdrop-blur-xl shadow-md flex flex-col justify-between"
+                    className="rounded-2xl border border-white/[0.08] bg-[#121214]/80 p-4 backdrop-blur-2xl shadow-sm flex flex-col justify-between"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Kill Participation</span>
-                      <Target className="h-4 w-4 text-cyan-400" />
+                      <span className="text-[10px] font-medium uppercase tracking-wider text-neutral-400">Kill Participation</span>
+                      <Target className="h-4 w-4 text-neutral-400" />
                     </div>
                     <div className="my-2">
-                      <p className="text-3xl font-black text-cyan-400">78%</p>
-                      <p className="text-[11px] text-[var(--text-muted)] font-medium">Impact décisif sur les escarmouches</p>
+                      <p className="text-3xl font-semibold tracking-tight text-white">78%</p>
+                      <p className="text-[11px] text-neutral-400 font-normal">Impact décisif sur les escarmouches</p>
                     </div>
-                    <div className="h-1.5 w-full rounded-full bg-[var(--surface-raised)] overflow-hidden">
-                      <div className="h-full bg-cyan-400 rounded-full" style={{ width: "78%" }} />
+                    <div className="h-1.5 w-full rounded-full bg-white/[0.08] overflow-hidden">
+                      <div className="h-full bg-white rounded-full" style={{ width: "78%" }} />
                     </div>
                   </motion.div>
                 </div>
@@ -1165,39 +1165,39 @@ export default function RiotGamingHome() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <motion.div
                   whileHover={{ y: -2 }}
-                  className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/85 p-4 backdrop-blur-xl shadow-md space-y-3"
+                  className="rounded-2xl border border-white/[0.08] bg-[#121214]/80 p-4 backdrop-blur-2xl shadow-sm space-y-3"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-yellow-500/15 text-yellow-400 font-bold border border-yellow-500/30">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/[0.04] text-white font-semibold border border-white/10 shrink-0">
                       <GameBrandIcon name="Teamfight Tactics" className="h-6 w-6" />
                     </div>
                     <div className="min-w-0">
-                      <h3 className="text-base font-black text-[var(--text-primary)] truncate">{riotName || "Tacticien"}</h3>
-                      <p className="font-mono text-xs text-[var(--text-muted)]">{riotTag ? `#${riotTag}` : ""}</p>
-                      <p className="text-xs font-bold text-yellow-400">Mode Stratégique</p>
+                      <h3 className="text-base font-semibold text-white truncate">{riotName || "Tacticien"}</h3>
+                      <p className="font-mono text-xs text-neutral-400">{riotTag ? `#${riotTag}` : ""}</p>
+                      <p className="text-xs font-medium text-neutral-300">Mode Stratégique</p>
                     </div>
                   </div>
                 </motion.div>
 
                 <motion.div
                   whileHover={{ y: -2 }}
-                  className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/85 p-4 backdrop-blur-xl shadow-md flex flex-col justify-between"
+                  className="rounded-2xl border border-white/[0.08] bg-[#121214]/80 p-4 backdrop-blur-2xl shadow-sm flex flex-col justify-between"
                 >
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Top 4 Rate</span>
-                  <p className="text-3xl font-black text-yellow-400 my-2">64%</p>
-                  <div className="h-1.5 w-full rounded-full bg-[var(--surface-raised)] overflow-hidden">
-                    <div className="h-full bg-yellow-400 rounded-full" style={{ width: "64%" }} />
+                  <span className="text-[10px] font-medium uppercase tracking-wider text-neutral-400">Top 4 Rate</span>
+                  <p className="text-3xl font-semibold tracking-tight text-white my-2">64%</p>
+                  <div className="h-1.5 w-full rounded-full bg-white/[0.08] overflow-hidden">
+                    <div className="h-full bg-white rounded-full" style={{ width: "64%" }} />
                   </div>
                 </motion.div>
 
                 <motion.div
                   whileHover={{ y: -2 }}
-                  className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/85 p-4 backdrop-blur-xl shadow-md flex flex-col justify-between"
+                  className="rounded-2xl border border-white/[0.08] bg-[#121214]/80 p-4 backdrop-blur-2xl shadow-sm flex flex-col justify-between"
                 >
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Victoires (Top 1)</span>
-                  <p className="text-3xl font-black text-emerald-400 my-2">28%</p>
-                  <div className="h-1.5 w-full rounded-full bg-[var(--surface-raised)] overflow-hidden">
-                    <div className="h-full bg-emerald-400 rounded-full" style={{ width: "28%" }} />
+                  <span className="text-[10px] font-medium uppercase tracking-wider text-neutral-400">Victoires (Top 1)</span>
+                  <p className="text-3xl font-semibold tracking-tight text-white my-2">28%</p>
+                  <div className="h-1.5 w-full rounded-full bg-white/[0.08] overflow-hidden">
+                    <div className="h-full bg-white rounded-full" style={{ width: "28%" }} />
                   </div>
                 </motion.div>
               </div>
@@ -1205,17 +1205,17 @@ export default function RiotGamingHome() {
           </motion.div>
         </AnimatePresence>
 
-        <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/90 p-4 sm:p-5 backdrop-blur-2xl shadow-lg space-y-3">
+        <div className="rounded-2xl border border-white/[0.08] bg-[#121214]/80 p-4 sm:p-5 backdrop-blur-2xl shadow-sm space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Activity className="h-4 w-4 text-rose-400" />
-              <h3 className="text-sm font-black text-[var(--text-primary)]">
+              <Activity className="h-4 w-4 text-neutral-400" />
+              <h3 className="text-sm font-semibold text-white">
                 Parties Récentes ({activeGame === "lol" ? "LEAGUE OF LEGENDS" : "VALORANT"})
               </h3>
             </div>
             <Link
               href={`/tracker?tab=${activeGame}`}
-              className="text-xs font-bold text-rose-400 hover:underline flex items-center gap-1"
+              className="text-xs font-medium text-neutral-400 hover:text-white transition-colors flex items-center gap-1"
             >
               <span>Tout l'historique</span>
               <ChevronRight className="h-3 w-3" />
@@ -1236,18 +1236,20 @@ export default function RiotGamingHome() {
               return (
                 <div
                   key={m.metadata?.matchId || idx}
-                  className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-3 space-y-2 hover:border-rose-500/30 transition-all"
+                  className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 space-y-2 hover:border-white/10 hover:bg-white/[0.04] transition-all"
                 >
                   <div className="flex items-center justify-between">
                     <span
                       className={cn(
-                        "rounded-md px-2 py-0.5 text-[10px] font-bold uppercase",
-                        isWin ? "bg-emerald-500/20 text-emerald-300" : "bg-rose-500/20 text-rose-300"
+                        "rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide",
+                        isWin
+                          ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                          : "bg-white/[0.05] text-neutral-400 border border-white/10"
                       )}
                     >
                       {isWin ? "Victoire" : "Défaite"}
                     </span>
-                    <span className="font-mono text-xs font-bold text-[var(--text-primary)]">
+                    <span className="font-mono text-xs font-medium text-white">
                       {m.metadata?.score?.team ?? 5} - {m.metadata?.score?.opponent ?? 4}
                     </span>
                   </div>
@@ -1257,32 +1259,32 @@ export default function RiotGamingHome() {
                         <img
                           src={m.metadata.agentImageUrl}
                           alt={m.metadata.agentName || "Agent"}
-                          className="h-6 w-6 rounded-md object-cover border border-[var(--panel-border)] shrink-0"
+                          className="h-6 w-6 rounded-md object-cover border border-white/10 shrink-0"
                         />
                       )}
-                      <span className="font-bold text-[var(--text-primary)] truncate">
+                      <span className="font-semibold text-white truncate">
                         {m.metadata?.mapName || "Split"}
                       </span>
                     </div>
-                    <span className="text-[var(--text-muted)] font-medium shrink-0">
+                    <span className="text-neutral-400 font-medium shrink-0">
                       {m.metadata?.agentName || "Jett"}
                     </span>
                   </div>
-                  <div className="text-[11px] font-mono text-[var(--text-muted)] flex items-center justify-between pt-1 border-t border-[var(--panel-border)]/40">
+                  <div className="text-[11px] font-mono text-neutral-400 flex items-center justify-between pt-1 border-t border-white/[0.06]">
                     <span>
                       {kills}/{deaths}/{assists}
                     </span>
-                    <span className="text-emerald-400 font-bold">{matchKd} KD</span>
+                    <span className="text-white font-medium">{matchKd} KD</span>
                   </div>
                 </div>
               );
             })}
 
             {activeGame !== "lol" && valorantMatches.length === 0 && (
-              <div className="sm:col-span-3 flex flex-col items-center justify-center rounded-xl border border-dashed border-[var(--panel-border)] bg-[var(--surface-raised)]/30 py-8 px-4 text-center">
-                <Swords className="h-8 w-8 text-rose-500/50 mb-2" />
-                <p className="text-xs font-bold text-[var(--text-primary)]">Parties VALORANT</p>
-                <p className="text-[11px] text-[var(--text-muted)] max-w-sm mt-1">
+              <div className="sm:col-span-3 flex flex-col items-center justify-center rounded-xl border border-dashed border-white/10 bg-white/[0.02] py-8 px-4 text-center">
+                <Swords className="h-8 w-8 text-neutral-500 mb-2" />
+                <p className="text-xs font-semibold text-white">Parties VALORANT</p>
+                <p className="text-[11px] text-neutral-400 max-w-sm mt-1">
                   Cliquez sur la pill Rub19 #boss ci-dessus pour charger instantanément les 10 matchs récents.
                 </p>
               </div>
@@ -1299,18 +1301,20 @@ export default function RiotGamingHome() {
               return (
                 <div
                   key={m.metadata?.matchId || idx}
-                  className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-3 space-y-2 hover:border-amber-500/30 transition-all"
+                  className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 space-y-2 hover:border-white/10 hover:bg-white/[0.04] transition-all"
                 >
                   <div className="flex items-center justify-between">
                     <span
                       className={cn(
-                        "rounded-md px-2 py-0.5 text-[10px] font-bold uppercase",
-                        isWin ? "bg-emerald-500/20 text-emerald-300" : "bg-rose-500/20 text-rose-300"
+                        "rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide",
+                        isWin
+                          ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                          : "bg-white/[0.05] text-neutral-400 border border-white/10"
                       )}
                     >
                       {isWin ? "Victoire" : "Défaite"}
                     </span>
-                    <span className="font-mono text-xs text-[var(--text-muted)]">
+                    <span className="font-mono text-xs text-neutral-400">
                       {m.metadata?.gameDuration || "30m 33s"}
                     </span>
                   </div>
@@ -1320,22 +1324,22 @@ export default function RiotGamingHome() {
                         <img
                           src={m.metadata.agentImageUrl}
                           alt={me?.character || "Champion"}
-                          className="h-6 w-6 rounded-md object-cover border border-[var(--panel-border)] shrink-0"
+                          className="h-6 w-6 rounded-md object-cover border border-white/10 shrink-0"
                         />
                       )}
-                      <span className="font-bold text-[var(--text-primary)] truncate">
+                      <span className="font-semibold text-white truncate">
                         {me?.character || m.metadata?.agentName || "Locke"}
                       </span>
                     </div>
-                    <span className="text-[var(--text-muted)] font-medium shrink-0">
+                    <span className="text-neutral-400 font-medium shrink-0">
                       {m.metadata?.modeName || "Normal Draft"}
                     </span>
                   </div>
-                  <div className="text-[11px] font-mono text-[var(--text-muted)] flex items-center justify-between pt-1 border-t border-[var(--panel-border)]/40">
+                  <div className="text-[11px] font-mono text-neutral-400 flex items-center justify-between pt-1 border-t border-white/[0.06]">
                     <span>
                       {kills}/{deaths}/{assists}
                     </span>
-                    <span className="text-amber-400 font-bold">{kda} KDA</span>
+                    <span className="text-white font-medium">{kda} KDA</span>
                   </div>
                 </div>
               );
@@ -1343,22 +1347,22 @@ export default function RiotGamingHome() {
           </div>
         </div>
 
-        <footer className="mt-8 space-y-3 rounded-2xl border border-[var(--panel-border)]/70 bg-gradient-to-b from-[var(--surface-raised)]/40 via-[var(--bg-main)]/70 to-[var(--bg-main)]/90 p-4 sm:p-5 backdrop-blur-xl shadow-lg">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-[var(--panel-border)]/50 pb-3.5">
+        <footer className="mt-8 space-y-3 rounded-2xl border border-white/[0.08] bg-[#121214]/80 p-4 sm:p-5 backdrop-blur-2xl shadow-sm">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-white/[0.06] pb-3.5">
             <div className="flex items-center gap-2.5">
-              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-rose-500/15 border border-rose-500/30 text-rose-400">
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/[0.04] border border-white/10 text-white">
                 <GameBrandIcon name="Valorant" className="h-3.5 w-3.5" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-black tracking-wider uppercase text-[var(--text-primary)]">
+                  <span className="text-xs font-semibold tracking-wide uppercase text-white">
                     Attributions & Contributions Open Source
                   </span>
-                  <span className="rounded-full border border-emerald-500/40 bg-emerald-500/15 px-2 py-0.2 text-[9px] font-bold text-emerald-300">
+                  <span className="rounded-full border border-white/10 bg-white/[0.05] px-2 py-0.5 text-[9px] font-medium text-neutral-400">
                     Non Affilié à Riot Games
                   </span>
                 </div>
-                <p className="text-[11px] text-[var(--text-muted)]">
+                <p className="text-[11px] text-neutral-400">
                   Respect des politiques Legal Jibber Jabber et valorisation des APIs communautaires.
                 </p>
               </div>
@@ -1369,7 +1373,7 @@ export default function RiotGamingHome() {
                 href="https://valorant-api.com/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-2.5 py-1 text-xs font-mono font-bold text-rose-300 hover:border-rose-500/50 hover:bg-rose-500/10 transition-colors"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-1 text-xs font-mono font-medium text-neutral-300 hover:text-white hover:bg-white/[0.08] transition-colors"
                 title="API Open Source des assets VALORANT"
               >
                 <span>valorant-api.com</span>
@@ -1380,7 +1384,7 @@ export default function RiotGamingHome() {
                 href="https://docs.henrikdev.xyz/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-2.5 py-1 text-xs font-mono font-bold text-cyan-300 hover:border-cyan-500/50 hover:bg-cyan-500/10 transition-colors"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-1 text-xs font-mono font-medium text-neutral-300 hover:text-white hover:bg-white/[0.08] transition-colors"
                 title="API de télémétrie et matchs VALORANT"
               >
                 <span>henrikdev.xyz</span>
@@ -1391,7 +1395,7 @@ export default function RiotGamingHome() {
                 href="https://developer.riotgames.com/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-2.5 py-1 text-xs font-mono font-bold text-amber-300 hover:border-amber-500/50 hover:bg-amber-500/10 transition-colors"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-1 text-xs font-mono font-medium text-neutral-300 hover:text-white hover:bg-white/[0.08] transition-colors"
                 title="Portail Officiel Développeur Riot Games"
               >
                 <span>developer.riotgames.com</span>
@@ -1401,26 +1405,26 @@ export default function RiotGamingHome() {
               <button
                 type="button"
                 onClick={() => setAttributionModalOpen(true)}
-                className="inline-flex items-center gap-1 rounded-lg border border-purple-500/40 bg-purple-500/15 px-2.5 py-1 text-xs font-bold text-purple-200 hover:bg-purple-500/25 transition-all cursor-pointer shadow-sm active:scale-95"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.06] px-2.5 py-1 text-xs font-medium text-white hover:bg-white/[0.10] active:scale-[0.98] transition-all cursor-pointer shadow-sm"
               >
-                <Heart className="h-3 w-3 text-rose-400" />
+                <Heart className="h-3 w-3 text-neutral-300" />
                 <span>Tous les crédits</span>
               </button>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-[11px] leading-relaxed text-[var(--text-muted)]">
-            <div className="rounded-xl border border-amber-500/25 bg-amber-950/15 p-2.5">
-              <span className="font-bold text-amber-300/90 block mb-0.5">Avis de Non-Affiliation (Legal Jibber Jabber) :</span>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-[11px] leading-relaxed text-neutral-400">
+            <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
+              <span className="font-medium text-neutral-200 block mb-1">Avis de Non-Affiliation (Legal Jibber Jabber) :</span>
               « ETHONE isn&apos;t endorsed by Riot Games and doesn&apos;t reflect the views or opinions of Riot Games or anyone officially involved in producing or managing Riot Games properties. Riot Games, and all associated properties are trademarks or registered trademarks of Riot Games, Inc. »
             </div>
 
-            <div className="rounded-xl border border-emerald-500/25 bg-emerald-950/15 p-2.5 flex flex-col justify-between">
+            <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 flex flex-col justify-between">
               <div>
-                <span className="font-bold text-emerald-300/90 block mb-0.5">Confidentialité & Zéro Log :</span>
+                <span className="font-medium text-neutral-200 block mb-1">Confidentialité & Zéro Log :</span>
                 Aucun compte obligatoire, aucun journal stocké sur serveur tiers. Votre Riot ID est conservé exclusivement dans le stockage local de votre navigateur conformément aux exigences du portail développeur Riot Games.
               </div>
-              <div className="pt-1.5 font-mono text-[10px] text-emerald-400 font-semibold">
+              <div className="pt-1.5 font-mono text-[10px] text-neutral-400 font-medium">
                 ✓ 100% Local · Zéro Log · Conforme Fair-Play Vanguard
               </div>
             </div>

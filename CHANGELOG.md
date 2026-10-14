@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.67 — 2026-10-14
+
+**Refonte du tracker Riot Games sous design moderne Apple sobre et monochrome**
+
+- Refonte visuelle complète inspirée des standards de design Apple (macOS Sequoia, visionOS, iOS 18) avec surfaces frosted glass (`#121214` à 80% d'opacité, flou d'arrière-plan `backdrop-blur-2xl` et bordures subtiles `border-white/[0.08]`).
+- Remplacement des dégradés néon multicolores et des boutons arc-en-ciel par un Segmented Control monochrome Apple et des boutons solides blancs ou translucides avec retours haptiques discrets.
+- Harmonisation sobre des cartes statistiques de combat, des profils Valorant, LoL et TFT, ainsi que des diagnostics Coach IA et de télémétrie post-match.
+- Refonte des vues de match en direct (`ValorantLiveMatchView`) et de l'historique des parties sous une typographie fine et sans saturation artificielle.
+- Respect rigoureux de la politique zéro commentaire dans l'intégralité du code touché.
+
 ## v1.75.66 — 2026-10-14
 
 **Partie en direct Valorant Bêta, épuration du tracker et navigation instantanée**

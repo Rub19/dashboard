@@ -301,26 +301,26 @@ export default function ValorantLiveMatchView({
 
   return (
     <div className="space-y-4">
-      <div className="relative overflow-hidden rounded-[var(--panel-radius)] border border-rose-500/30 bg-gradient-to-br from-rose-950/30 via-[var(--bg-main)]/90 to-[#151119] p-4 sm:p-5 backdrop-blur-2xl shadow-xl space-y-4">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-rose-500/20 pb-3.5">
+      <div className="relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[#121214]/80 p-4 sm:p-5 backdrop-blur-2xl shadow-sm space-y-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-white/[0.06] pb-3.5">
           <div className="space-y-1">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/50 bg-rose-500/20 px-2.5 py-0.5 text-[10px] font-black text-rose-300 uppercase tracking-wider">
-                <span className="h-2 w-2 rounded-full bg-rose-500 animate-ping" />
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.05] px-2.5 py-0.5 text-[10px] font-medium text-neutral-300 uppercase tracking-wide">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
                 Live Telemetry · Bêta
               </span>
-              <span className="rounded-full border border-[var(--panel-border)] bg-[var(--surface-raised)]/70 px-2 py-0.5 text-[10px] font-mono text-[var(--text-muted)]">
+              <span className="rounded-full border border-white/[0.06] bg-white/[0.03] px-2 py-0.5 text-[10px] font-mono text-neutral-400">
                 Serveur : EU-Paris (18ms)
               </span>
-              <span className="rounded-full border border-[var(--panel-border)] bg-[var(--surface-raised)]/70 px-2 py-0.5 text-[10px] font-mono text-[var(--text-muted)]">
+              <span className="rounded-full border border-white/[0.06] bg-white/[0.03] px-2 py-0.5 text-[10px] font-mono text-neutral-400">
                 Mode : {activeMode}
               </span>
             </div>
-            <h2 className="text-base sm:text-xl font-black text-[var(--text-primary)] uppercase tracking-wide">
+            <h2 className="text-base sm:text-lg font-semibold text-white uppercase tracking-wide">
               Partie en Direct · {activeMap}
             </h2>
-            <p className="text-xs text-[var(--text-muted)]">
-              Télémétrie en cours pour <strong className="text-[var(--text-primary)]">{valorantProfile?.name || riotName}#{valorantProfile?.tag || riotTag}</strong>. Rafraîchissement automatique de la manche.
+            <p className="text-xs text-neutral-400">
+              Télémétrie en cours pour <strong className="text-white font-medium">{valorantProfile?.name || riotName}#{valorantProfile?.tag || riotTag}</strong>. Rafraîchissement automatique de la manche.
             </p>
           </div>
 
@@ -329,10 +329,10 @@ export default function ValorantLiveMatchView({
               type="button"
               onClick={() => setLiveCheckStatus(liveCheckStatus === "active" ? "standby" : "active")}
               className={cn(
-                "rounded-xl border px-3 py-1.5 text-xs font-bold transition-all cursor-pointer",
+                "rounded-xl border px-3 py-1.5 text-xs font-medium transition-all cursor-pointer",
                 liveCheckStatus === "active"
-                  ? "border-emerald-500/40 bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/25"
-                  : "border-[var(--panel-border)] bg-[var(--surface-raised)]/50 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                  ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300"
+                  : "border-white/10 bg-white/[0.04] text-neutral-400 hover:text-white"
               )}
             >
               {liveCheckStatus === "active" ? "● Session Active Détectée" : "○ En Attente de Session"}
@@ -342,55 +342,55 @@ export default function ValorantLiveMatchView({
               type="button"
               onClick={handleRefresh}
               disabled={refreshing}
-              className="flex items-center gap-1.5 rounded-xl border border-rose-500/40 bg-rose-600 px-3.5 py-1.5 text-xs font-bold text-white hover:bg-rose-500 active:scale-95 transition-all cursor-pointer shadow-md disabled:opacity-50"
+              className="flex items-center gap-1.5 rounded-xl bg-white px-3.5 py-1.5 text-xs font-medium text-black hover:bg-neutral-200 active:scale-[0.98] transition-all cursor-pointer shadow-sm disabled:opacity-50"
             >
-              <Activity className={cn("h-3.5 w-3.5", refreshing && "animate-spin")} />
+              <Activity className={cn("h-3.5 w-3.5 text-black", refreshing && "animate-spin")} />
               <span>{refreshing ? "Actualisation..." : "Actualiser Télémétrie"}</span>
             </button>
           </div>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div className="rounded-xl border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/40 p-3 flex flex-col">
-            <span className="text-[10px] font-mono uppercase text-[var(--text-muted)]">Score Actuel</span>
+          <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 flex flex-col">
+            <span className="text-[10px] font-mono uppercase text-neutral-400">Score Actuel</span>
             <div className="mt-1 flex items-baseline gap-2">
-              <span className="text-2xl font-black text-emerald-400">8</span>
-              <span className="text-sm font-bold text-[var(--text-muted)]">—</span>
-              <span className="text-2xl font-black text-rose-400">5</span>
+              <span className="text-2xl font-semibold text-white">8</span>
+              <span className="text-sm font-medium text-neutral-500">—</span>
+              <span className="text-2xl font-semibold text-white">5</span>
             </div>
-            <span className="text-[10px] text-emerald-400/90 font-medium">Défense en tête (+3)</span>
+            <span className="text-[10px] text-neutral-400 font-normal">Défense en tête (+3)</span>
           </div>
 
-          <div className="rounded-xl border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/40 p-3 flex flex-col">
-            <span className="text-[10px] font-mono uppercase text-[var(--text-muted)]">Manche en Cours</span>
-            <span className="mt-1 text-xl font-black text-[var(--text-primary)]">Manche 14</span>
-            <span className="text-[10px] text-[var(--text-muted)]">Phase d&apos;Achat (0:28)</span>
+          <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 flex flex-col">
+            <span className="text-[10px] font-mono uppercase text-neutral-400">Manche en Cours</span>
+            <span className="mt-1 text-xl font-semibold text-white">Manche 14</span>
+            <span className="text-[10px] text-neutral-400">Phase d&apos;Achat (0:28)</span>
           </div>
 
-          <div className="rounded-xl border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/40 p-3 flex flex-col">
-            <span className="text-[10px] font-mono uppercase text-[var(--text-muted)]">Spike & Objectif</span>
-            <span className="mt-1 text-sm font-black text-amber-300">Non Posé</span>
-            <span className="text-[10px] text-[var(--text-muted)]">Porteur non identifié</span>
+          <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 flex flex-col">
+            <span className="text-[10px] font-mono uppercase text-neutral-400">Spike & Objectif</span>
+            <span className="mt-1 text-sm font-semibold text-white">Non Posé</span>
+            <span className="text-[10px] text-neutral-400">Porteur non identifié</span>
           </div>
 
-          <div className="rounded-xl border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/40 p-3 flex flex-col">
-            <span className="text-[10px] font-mono uppercase text-[var(--text-muted)]">Économie d&apos;Équipe</span>
-            <span className="mt-1 text-base font-black text-cyan-300">14 100 ¤ (Pleine)</span>
-            <span className="text-[10px] text-emerald-400">Achat Vandal + Armure</span>
+          <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 flex flex-col">
+            <span className="text-[10px] font-mono uppercase text-neutral-400">Économie d&apos;Équipe</span>
+            <span className="mt-1 text-base font-semibold text-white">14 100 ¤</span>
+            <span className="text-[10px] text-neutral-400">Achat Vandal + Armure</span>
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="rounded-2xl border border-emerald-500/30 bg-[var(--surface-raised)]/30 p-4 backdrop-blur-xl space-y-3">
-          <div className="flex items-center justify-between border-b border-emerald-500/20 pb-2.5">
+        <div className="rounded-2xl border border-white/[0.08] bg-[#121214]/80 p-4 backdrop-blur-2xl shadow-sm space-y-3">
+          <div className="flex items-center justify-between border-b border-white/[0.06] pb-2.5">
             <div className="flex items-center gap-2">
-              <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
-              <h3 className="text-xs font-black uppercase tracking-wider text-emerald-300">
+              <span className="h-2 w-2 rounded-full bg-white/70" />
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-white">
                 Équipe Défenseurs (Alliés · 8 Victoires)
               </h3>
             </div>
-            <span className="text-[10px] font-mono font-bold text-emerald-400">Loadout 100% Complet</span>
+            <span className="text-[10px] font-mono font-medium text-neutral-400">Loadout 100% Complet</span>
           </div>
 
           <div className="space-y-1.5">
@@ -400,27 +400,27 @@ export default function ValorantLiveMatchView({
                 className={cn(
                   "rounded-xl border p-2.5 flex items-center justify-between gap-2 transition-all",
                   player.isMe
-                    ? "border-emerald-500/50 bg-emerald-950/20 shadow-sm"
-                    : "border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/30 hover:border-emerald-500/30"
+                    ? "border-white/20 bg-white/[0.06] shadow-sm"
+                    : "border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04] hover:border-white/10"
                 )}
               >
                 <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--background)] border border-emerald-500/30 font-bold text-xs text-emerald-300 shrink-0">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/[0.04] border border-white/10 font-semibold text-xs text-neutral-200 shrink-0">
                     {player.agent.slice(0, 2).toUpperCase()}
                   </div>
                   <div className="min-w-0">
                     <div className="flex items-center gap-1.5 truncate">
-                      <span className="text-xs font-bold text-[var(--text-primary)] truncate">
+                      <span className="text-xs font-semibold text-white truncate">
                         {player.name}#{player.tag}
                       </span>
                       {player.isMe && (
-                        <span className="rounded bg-emerald-500/20 px-1 py-0.2 text-[8px] font-black text-emerald-300 uppercase">
+                        <span className="rounded-full bg-white/15 px-1.5 py-0.2 text-[8px] font-semibold text-white uppercase">
                           Moi
                         </span>
                       )}
                     </div>
-                    <div className="flex items-center gap-2 text-[10px] font-mono text-[var(--text-muted)]">
-                      <span className="text-emerald-400">{player.agent}</span>
+                    <div className="flex items-center gap-2 text-[10px] font-mono text-neutral-400">
+                      <span className="text-neutral-300 font-medium">{player.agent}</span>
                       <span>·</span>
                       <span>{player.weapon}</span>
                       <span>·</span>
@@ -431,20 +431,20 @@ export default function ValorantLiveMatchView({
 
                 <div className="flex items-center gap-3 shrink-0 text-right">
                   <div>
-                    <div className="text-xs font-mono font-bold text-[var(--text-primary)]">
+                    <div className="text-xs font-mono font-medium text-white">
                       {player.kills}/{player.deaths}/{player.assists}
                     </div>
-                    <div className="text-[10px] font-mono text-[var(--text-muted)]">
+                    <div className="text-[10px] font-mono text-neutral-400">
                       {player.damage} dégâts
                     </div>
                   </div>
                   <div className="w-12 text-center">
                     {player.ultimateReady ? (
-                      <span className="inline-block rounded border border-cyan-400/40 bg-cyan-500/20 px-1.5 py-0.5 text-[9px] font-black text-cyan-300 animate-pulse">
+                      <span className="inline-block rounded-full border border-white/20 bg-white/15 px-1.5 py-0.5 text-[9px] font-semibold text-white">
                         ULT PRÊT
                       </span>
                     ) : (
-                      <span className="text-[9px] font-mono text-[var(--text-muted)]">
+                      <span className="text-[9px] font-mono text-neutral-400">
                         Ult {player.ultimatePoints}
                       </span>
                     )}
@@ -455,35 +455,35 @@ export default function ValorantLiveMatchView({
           </div>
         </div>
 
-        <div className="rounded-2xl border border-rose-500/30 bg-[var(--surface-raised)]/30 p-4 backdrop-blur-xl space-y-3">
-          <div className="flex items-center justify-between border-b border-rose-500/20 pb-2.5">
+        <div className="rounded-2xl border border-white/[0.08] bg-[#121214]/80 p-4 backdrop-blur-2xl shadow-sm space-y-3">
+          <div className="flex items-center justify-between border-b border-white/[0.06] pb-2.5">
             <div className="flex items-center gap-2">
-              <span className="h-2.5 w-2.5 rounded-full bg-rose-400" />
-              <h3 className="text-xs font-black uppercase tracking-wider text-rose-300">
+              <span className="h-2 w-2 rounded-full bg-white/40" />
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-white">
                 Équipe Attaquants (Adversaires · 5 Victoires)
               </h3>
             </div>
-            <span className="text-[10px] font-mono font-bold text-rose-400">Économie Forcée</span>
+            <span className="text-[10px] font-mono font-medium text-neutral-400">Économie Forcée</span>
           </div>
 
           <div className="space-y-1.5">
             {ENEMY_PLAYERS_DEFAULT.map((player) => (
               <div
                 key={player.id}
-                className="rounded-xl border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/30 p-2.5 flex items-center justify-between gap-2 hover:border-rose-500/30 transition-all"
+                className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5 flex items-center justify-between gap-2 hover:border-white/10 hover:bg-white/[0.04] transition-all"
               >
                 <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--background)] border border-rose-500/30 font-bold text-xs text-rose-300 shrink-0">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/[0.04] border border-white/10 font-semibold text-xs text-neutral-200 shrink-0">
                     {player.agent.slice(0, 2).toUpperCase()}
                   </div>
                   <div className="min-w-0">
                     <div className="flex items-center gap-1.5 truncate">
-                      <span className="text-xs font-bold text-[var(--text-primary)] truncate">
+                      <span className="text-xs font-semibold text-white truncate">
                         {player.name}#{player.tag}
                       </span>
                     </div>
-                    <div className="flex items-center gap-2 text-[10px] font-mono text-[var(--text-muted)]">
-                      <span className="text-rose-400">{player.agent}</span>
+                    <div className="flex items-center gap-2 text-[10px] font-mono text-neutral-400">
+                      <span className="text-neutral-300 font-medium">{player.agent}</span>
                       <span>·</span>
                       <span>{player.weapon}</span>
                       <span>·</span>
@@ -494,20 +494,20 @@ export default function ValorantLiveMatchView({
 
                 <div className="flex items-center gap-3 shrink-0 text-right">
                   <div>
-                    <div className="text-xs font-mono font-bold text-[var(--text-primary)]">
+                    <div className="text-xs font-mono font-medium text-white">
                       {player.kills}/{player.deaths}/{player.assists}
                     </div>
-                    <div className="text-[10px] font-mono text-[var(--text-muted)]">
+                    <div className="text-[10px] font-mono text-neutral-400">
                       {player.damage} dégâts
                     </div>
                   </div>
                   <div className="w-12 text-center">
                     {player.ultimateReady ? (
-                      <span className="inline-block rounded border border-rose-400/40 bg-rose-500/20 px-1.5 py-0.5 text-[9px] font-black text-rose-300">
+                      <span className="inline-block rounded-full border border-white/20 bg-white/15 px-1.5 py-0.5 text-[9px] font-semibold text-white">
                         ULT PRÊT
                       </span>
                     ) : (
-                      <span className="text-[9px] font-mono text-[var(--text-muted)]">
+                      <span className="text-[9px] font-mono text-neutral-400">
                         Ult {player.ultimatePoints}
                       </span>
                     )}
@@ -519,35 +519,30 @@ export default function ValorantLiveMatchView({
         </div>
       </div>
 
-      <div className="rounded-2xl border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/40 p-4 backdrop-blur-xl space-y-3">
-        <div className="flex items-center justify-between border-b border-[var(--panel-border)]/40 pb-2">
+      <div className="rounded-2xl border border-white/[0.08] bg-[#121214]/80 p-4 backdrop-blur-2xl shadow-sm space-y-3">
+        <div className="flex items-center justify-between border-b border-white/[0.06] pb-2">
           <div className="flex items-center gap-2">
-            <Swords className="h-4 w-4 text-amber-400" />
-            <h3 className="text-xs font-black uppercase tracking-wider text-[var(--text-primary)]">
+            <Swords className="h-4 w-4 text-neutral-400" />
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-white">
               Historique des Manches Récentes de la Partie
             </h3>
           </div>
-          <span className="text-[10px] font-mono text-[var(--text-muted)]">4 dernières manches archivées</span>
+          <span className="text-[10px] font-mono text-neutral-400">4 dernières manches archivées</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
           {RECENT_LIVE_EVENTS.map((evt) => (
             <div
               key={evt.round}
-              className={cn(
-                "rounded-xl border p-3 flex flex-col justify-between gap-1.5",
-                evt.type === "win"
-                  ? "border-emerald-500/30 bg-emerald-950/15"
-                  : "border-rose-500/30 bg-rose-950/15"
-              )}
+              className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 flex flex-col justify-between gap-1.5"
             >
-              <div className="flex items-center justify-between text-xs font-bold">
-                <span className={evt.type === "win" ? "text-emerald-300" : "text-rose-300"}>
+              <div className="flex items-center justify-between text-xs font-semibold">
+                <span className={evt.type === "win" ? "text-emerald-400" : "text-neutral-300"}>
                   Manche #{evt.round} · Victoire {evt.winner}
                 </span>
-                <span className="font-mono text-[10px] text-[var(--text-muted)]">{evt.economy}</span>
+                <span className="font-mono text-[10px] text-neutral-400">{evt.economy}</span>
               </div>
-              <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">
+              <p className="text-[11px] text-neutral-400 leading-relaxed">
                 {evt.text}
               </p>
             </div>

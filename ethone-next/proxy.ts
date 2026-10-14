@@ -54,6 +54,8 @@ export async function proxy(request: NextRequest) {
     "/discord",
     "/docs",
     "/documentation",
+    "/tracker",
+    "/matches",
   ];
   const isPublicRoute = publicRoutes.some(
     (route) => pathname === route || pathname.startsWith(`${route}/`)

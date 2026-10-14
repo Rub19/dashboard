@@ -70,6 +70,8 @@ const PUBLIC_ROUTES = [
   "/discord",
   "/docs",
   "/documentation",
+  "/tracker",
+  "/matches",
 ];
 
 const BOOT_TIMEOUT_MS = 8_000;
@@ -87,6 +89,8 @@ const INFO_ROUTES = [
   "/discord",
   "/docs",
   "/documentation",
+  "/tracker",
+  "/matches",
 ];
 
 function isInfoRoute(pathname: string | null): boolean {
@@ -105,7 +109,12 @@ export function safeLoginNext(raw: string | null | undefined): string {
 function shouldRenderInShell(pathname: string | null, publicRoute: boolean): boolean {
   if (!publicRoute) return true;
   if (!pathname) return false;
-  return false;
+  return (
+    pathname === "/tracker" ||
+    pathname.startsWith("/tracker/") ||
+    pathname === "/matches" ||
+    pathname.startsWith("/matches/")
+  );
 }
 
 function isPublicRoute(pathname: string | null): boolean {

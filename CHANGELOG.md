@@ -1,6 +1,14 @@
 # Changelog
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
+## v1.75.83 — 2026-10-15
+
+**Accès Hybride : Portail Principal sous Login & Tracker Valorant Public Libre**
+
+- **Portail principal strictement protégé** : L'accès à `https://ethone.dev/` (accueil, dashboard, bureaux personnels et fonctionnalités privées) exige obligatoirement une connexion active et redirige immédiatement vers `/login` pour les visiteurs non connectés.
+- **Accès libre public sur `/tracker`** : La page `https://ethone.dev/tracker` (ainsi que `/matches`) est accessible directement et librement sans aucune restriction de connexion, garantissant l'évaluation instantanée par l'équipe de revue Riot Games.
+- **Cohérence d'affichage dans le Shell** : Intégration de la vue Tracker dans la barre latérale gaming sans nécessiter d'authentification utilisateur.
+
 ## v1.75.82 — 2026-10-14
 
 **Sécurité & Authentification : Rétablissement de la Page de Connexion & Redirection Stricte**

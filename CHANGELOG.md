@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.86 — 2026-10-15
+
+**Riot Developer API : Déploiement de la vérification de domaine riot.txt**
+
+- **Jeton officiel de validation de domaine** : Déploiement de `riot.txt` dans `/tracker/riot.txt` et `/riot.txt` avec le jeton de sécurité attribué par le portail Riot Games Developer.
+- **En-têtes HTTP de conformité** : Configuration de `Content-Type: text/plain; charset=utf-8` et `Access-Control-Allow-Origin: *` dans `_headers` pour la validation automatique immédiate.
+- **Support de vérification d'API de production** : Validation de propriété pour l'approbation de la clé d'API VALORANT officielle.
+
 ## v1.75.85 — 2026-10-15
 
 **CI/CD : Migration vers Node 24 & Actions GitHub v7**

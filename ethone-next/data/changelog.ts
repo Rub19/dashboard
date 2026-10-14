@@ -55941,10 +55941,54 @@ const v12927_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12927_fr, v12926_fr, v12925_fr, v12924_fr, v12923_fr, v12922_fr, v12921_fr, v12920_fr, v12919_fr, v12918_fr, v12917_fr, v12916_fr, v12915_fr, v12914_fr, v12913_fr, v12912_fr, v12911_fr, v12910_fr, v12909_fr, v12908_fr, v12907_fr, v12906_fr, v12905_fr, v12904_fr, v12903_fr, v12902_fr, v12901_fr, v12900_fr, v12899_fr, v12898_fr, v12897_fr, v12896_fr, v12895_fr, v12894_fr, v12893_fr, v12892_fr);
-CHANGELOG_BY_LANG.en.unshift(v12927_en, v12926_en, v12925_en, v12924_en, v12923_en, v12922_en, v12921_en, v12920_en, v12919_en, v12918_en, v12917_en, v12916_en, v12915_en, v12914_en, v12913_en, v12912_en, v12911_en, v12910_en, v12909_en, v12908_en, v12907_en, v12906_en, v12905_en, v12904_en, v12903_en, v12902_en, v12901_en, v12900_en, v12899_en, v12898_en, v12897_en, v12896_en, v12895_en, v12894_en, v12893_en, v12892_en);
-CHANGELOG_BY_LANG.es.unshift(v12927_es, v12926_es, v12925_es, v12924_es, v12923_es, v12922_es, v12921_es, v12920_es, v12919_es, v12918_es, v12917_es, v12916_es, v12915_es, v12914_es, v12913_es, v12912_es, v12911_es, v12910_es, v12909_es, v12908_es, v12907_es, v12906_es, v12905_es, v12904_es, v12903_es, v12902_es, v12901_es, v12900_es, v12899_es, v12898_es, v12897_es, v12896_es, v12895_es, v12894_es, v12893_es, v12892_es);
-CHANGELOG_BY_LANG.de.unshift(v12927_de, v12926_de, v12925_de, v12924_de, v12923_de, v12922_de, v12921_de, v12920_de, v12919_de, v12918_de, v12917_de, v12916_de, v12915_de, v12914_de, v12913_de, v12912_de, v12911_de, v12910_de, v12909_de, v12908_de, v12907_de, v12906_de, v12905_de, v12904_de, v12903_de, v12902_de, v12901_de, v12900_de, v12899_de, v12898_de, v12897_de, v12896_de, v12895_de, v12894_de, v12893_de, v12892_de);
+const v12928_fr: ChangelogEntry = {
+  version: "v1.75.86",
+  date: "2026-10-15",
+  title: "Riot Developer API : Déploiement de la vérification de domaine riot.txt",
+  items: [
+    "Ajout du fichier officiel de vérification de domaine riot.txt dans /tracker/riot.txt et /riot.txt",
+    "Configuration des en-têtes HTTP text/plain et CORS pour la validation automatique Riot Games",
+    "Certification de conformité de l'application de production pour la clé d'API VALORANT",
+  ],
+};
+
+const v12928_en: ChangelogEntry = {
+  version: "v1.75.86",
+  date: "2026-10-15",
+  title: "Riot Developer API: Deployed domain verification riot.txt",
+  items: [
+    "Added official domain verification token riot.txt at /tracker/riot.txt and /riot.txt",
+    "Configured text/plain and CORS HTTP headers for automated Riot Games verification",
+    "Production compliance certification for VALORANT API key approval",
+  ],
+};
+
+const v12928_es: ChangelogEntry = {
+  version: "v1.75.86",
+  date: "2026-10-15",
+  title: "Riot Developer API: Despliegue de verificación de dominio riot.txt",
+  items: [
+    "Añadido archivo oficial de verificación de dominio riot.txt en /tracker/riot.txt y /riot.txt",
+    "Configuración de cabeceras HTTP text/plain y CORS para validación automática de Riot Games",
+    "Certificación de conformidad de producción para clave de API de VALORANT",
+  ],
+};
+
+const v12928_de: ChangelogEntry = {
+  version: "v1.75.86",
+  date: "2026-10-15",
+  title: "Riot Developer API: Bereitstellung der Domain-Verifizierung riot.txt",
+  items: [
+    "Offizielle Domain-Verifizierungsdatei riot.txt in /tracker/riot.txt und /riot.txt hinzugefügt",
+    "Konfiguration der text/plain- und CORS-HTTP-Header für automatisierte Riot Games-Validierung",
+    "Produktions-Compliance-Zertifizierung für VALORANT-API-Schlüssel",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12928_fr, v12927_fr, v12926_fr, v12925_fr, v12924_fr, v12923_fr, v12922_fr, v12921_fr, v12920_fr, v12919_fr, v12918_fr, v12917_fr, v12916_fr, v12915_fr, v12914_fr, v12913_fr, v12912_fr, v12911_fr, v12910_fr, v12909_fr, v12908_fr, v12907_fr, v12906_fr, v12905_fr, v12904_fr, v12903_fr, v12902_fr, v12901_fr, v12900_fr, v12899_fr, v12898_fr, v12897_fr, v12896_fr, v12895_fr, v12894_fr, v12893_fr, v12892_fr);
+CHANGELOG_BY_LANG.en.unshift(v12928_en, v12927_en, v12926_en, v12925_en, v12924_en, v12923_en, v12922_en, v12921_en, v12920_en, v12919_en, v12918_en, v12917_en, v12916_en, v12915_en, v12914_en, v12913_en, v12912_en, v12911_en, v12910_en, v12909_en, v12908_en, v12907_en, v12906_en, v12905_en, v12904_en, v12903_en, v12902_en, v12901_en, v12900_en, v12899_en, v12898_en, v12897_en, v12896_en, v12895_en, v12894_en, v12893_en, v12892_en);
+CHANGELOG_BY_LANG.es.unshift(v12928_es, v12927_es, v12926_es, v12925_es, v12924_es, v12923_es, v12922_es, v12921_es, v12920_es, v12919_es, v12918_es, v12917_es, v12916_es, v12915_es, v12914_es, v12913_es, v12912_es, v12911_es, v12910_es, v12909_es, v12908_es, v12907_es, v12906_es, v12905_es, v12904_es, v12903_es, v12902_es, v12901_es, v12900_es, v12899_es, v12898_es, v12897_es, v12896_es, v12895_es, v12894_es, v12893_es, v12892_es);
+CHANGELOG_BY_LANG.de.unshift(v12928_de, v12927_de, v12926_de, v12925_de, v12924_de, v12923_de, v12922_de, v12921_de, v12920_de, v12919_de, v12918_de, v12917_de, v12916_de, v12915_de, v12914_de, v12913_de, v12912_de, v12911_de, v12910_de, v12909_de, v12908_de, v12907_de, v12906_de, v12905_de, v12904_de, v12903_de, v12902_de, v12901_de, v12900_de, v12899_de, v12898_de, v12897_de, v12896_de, v12895_de, v12894_de, v12893_de, v12892_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

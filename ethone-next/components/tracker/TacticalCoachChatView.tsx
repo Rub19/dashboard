@@ -89,7 +89,7 @@ export default function TacticalCoachChatView({
   riotName = "",
   riotTag = "",
   onSelectTab,
-  currentLang = "fr",
+  currentLang = "en",
 }: TacticalCoachChatViewProps) {
   const tr = useMemo(() => getTrackerI18n(currentLang), [currentLang]);
   const isEn = (currentLang || "").toLowerCase().startsWith("en");

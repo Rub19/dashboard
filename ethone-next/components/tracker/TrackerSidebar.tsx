@@ -48,117 +48,119 @@ interface TrackerSidebarGroup {
   items: TrackerSidebarItem[];
 }
 
-const TRACKER_GROUPS: TrackerSidebarGroup[] = [
-  {
-    id: "riot",
-    label: "Riot Games",
-    items: [
-      {
-        id: "riot-home",
-        label: "Hub",
-        href: "/tracker",
-        renderIcon: (colored) => (
-          <Gamepad2
-            className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-rose-400")}
-          />
-        ),
-        badge: "WIP",
-      },
-      {
-        id: "live",
-        label: "Partie en direct",
-        href: "/tracker?tab=live",
-        renderIcon: (colored) => (
-          <Flame
-            className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-rose-400")}
-          />
-        ),
-        badge: "Bêta",
-      },
-      {
-        id: "valorant",
-        label: "VALORANT",
-        href: "/tracker?tab=valorant",
-        renderIcon: (colored) => (
-          <GameBrandIcon
-            name="Valorant"
-            className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-rose-500")}
-          />
-        ),
-      },
-      {
-        id: "vct",
-        label: "VCT & Pick'ems",
-        href: "/tracker?tab=vct",
-        renderIcon: (colored) => (
-          <Trophy
-            className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-amber-400")}
-          />
-        ),
-        badge: "Live",
-      },
-      {
-        id: "lol",
-        label: "League of Legends",
-        href: "/tracker?tab=lol",
-        renderIcon: (colored) => (
-          <GameBrandIcon
-            name="League of Legends"
-            className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-amber-500")}
-          />
-        ),
-      },
-      {
-        id: "tft",
-        label: "Teamfight Tactics",
-        href: "/tracker?tab=tft",
-        renderIcon: (colored) => (
-          <GameBrandIcon
-            name="Teamfight Tactics"
-            className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-purple-400")}
-          />
-        ),
-      },
-    ],
-  },
-  {
-    id: "coaching",
-    label: "Coaching & IA",
-    items: [
-      {
-        id: "coach",
-        label: "Coach IA Tactique",
-        href: "/tracker?tab=coach",
-        renderIcon: (colored) => (
-          <Brain
-            className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-purple-400")}
-          />
-        ),
-        badge: "IA",
-      },
-      {
-        id: "telemetry",
-        label: "Télémétrie de Combat",
-        href: "/tracker?tab=telemetry",
-        renderIcon: (colored) => (
-          <Target
-            className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-cyan-400")}
-          />
-        ),
-      },
-      {
-        id: "training",
-        label: "Plan d'Entraînement",
-        href: "/tracker?tab=training",
-        renderIcon: (colored) => (
-          <Activity
-            className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-emerald-400")}
-          />
-        ),
-      },
-    ],
-  },
-];
+function getTrackerGroups(isEn: boolean): TrackerSidebarGroup[] {
+  return [
+    {
+      id: "riot",
+      label: "Riot Games",
+      items: [
+        {
+          id: "riot-home",
+          label: "Hub",
+          href: "/tracker",
+          renderIcon: (colored) => (
+            <Gamepad2
+              className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-rose-400")}
+            />
+          ),
+          badge: "WIP",
+        },
+        {
+          id: "live",
+          label: isEn ? "Live Match" : "Partie en direct",
+          href: "/tracker?tab=live",
+          renderIcon: (colored) => (
+            <Flame
+              className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-rose-400")}
+            />
+          ),
+          badge: isEn ? "Beta" : "Bêta",
+        },
+        {
+          id: "valorant",
+          label: "VALORANT",
+          href: "/tracker?tab=valorant",
+          renderIcon: (colored) => (
+            <GameBrandIcon
+              name="Valorant"
+              className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-rose-500")}
+            />
+          ),
+        },
+        {
+          id: "vct",
+          label: "VCT & Pick'ems",
+          href: "/tracker?tab=vct",
+          renderIcon: (colored) => (
+            <Trophy
+              className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-amber-400")}
+            />
+          ),
+          badge: "Live",
+        },
+        {
+          id: "lol",
+          label: "League of Legends",
+          href: "/tracker?tab=lol",
+          renderIcon: (colored) => (
+            <GameBrandIcon
+              name="League of Legends"
+              className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-amber-500")}
+            />
+          ),
+        },
+        {
+          id: "tft",
+          label: "Teamfight Tactics",
+          href: "/tracker?tab=tft",
+          renderIcon: (colored) => (
+            <GameBrandIcon
+              name="Teamfight Tactics"
+              className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-purple-400")}
+            />
+          ),
+        },
+      ],
+    },
+    {
+      id: "coaching",
+      label: isEn ? "Coaching & AI" : "Coaching & IA",
+      items: [
+        {
+          id: "coach",
+          label: isEn ? "Tactical AI Coach" : "Coach IA Tactique",
+          href: "/tracker?tab=coach",
+          renderIcon: (colored) => (
+            <Brain
+              className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-purple-400")}
+            />
+          ),
+          badge: isEn ? "AI" : "IA",
+        },
+        {
+          id: "telemetry",
+          label: isEn ? "Combat Telemetry" : "Télémétrie de Combat",
+          href: "/tracker?tab=telemetry",
+          renderIcon: (colored) => (
+            <Target
+              className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-cyan-400")}
+            />
+          ),
+        },
+        {
+          id: "training",
+          label: isEn ? "Training Plan" : "Plan d'Entraînement",
+          href: "/tracker?tab=training",
+          renderIcon: (colored) => (
+            <Activity
+              className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-emerald-400")}
+            />
+          ),
+        },
+      ],
+    },
+  ];
+}
 
 const TrackerSidebarBrand = memo(function TrackerSidebarBrand() {
   const { collapsed } = useAnimatedSidebarPanel();
@@ -200,7 +202,13 @@ const TrackerSidebarBrand = memo(function TrackerSidebarBrand() {
   );
 });
 
-const TrackerSidebarProfile = memo(function TrackerSidebarProfile({ collapsed }: { collapsed: boolean }) {
+const TrackerSidebarProfile = memo(function TrackerSidebarProfile({
+  collapsed,
+  isEn = true,
+}: {
+  collapsed: boolean;
+  isEn?: boolean;
+}) {
   const router = useRouter();
   const [riotName, setRiotName] = useState("");
 
@@ -211,7 +219,7 @@ const TrackerSidebarProfile = memo(function TrackerSidebarProfile({ collapsed }:
     }
   }, []);
 
-  const label = riotName || "Profil Tracker";
+  const label = riotName || (isEn ? "Tracker Profile" : "Profil Tracker");
 
   return (
     <button
@@ -221,8 +229,8 @@ const TrackerSidebarProfile = memo(function TrackerSidebarProfile({ collapsed }:
         "group mb-1 flex w-full items-center gap-2.5 rounded-xl border border-transparent transition-colors hover:bg-[var(--menu-hover)] cursor-pointer",
         collapsed ? "justify-center p-1.5" : "p-2"
       )}
-      title={`Profil Tracker : ${label}`}
-      aria-label={`Profil Tracker : ${label}`}
+      title={`${isEn ? "Tracker Profile" : "Profil Tracker"} : ${label}`}
+      aria-label={`${isEn ? "Tracker Profile" : "Profil Tracker"} : ${label}`}
     >
       <div
         className={cn(
@@ -251,23 +259,23 @@ const TrackerSidebarProfile = memo(function TrackerSidebarProfile({ collapsed }:
           collapsed && "hidden"
         )}
       >
-        <div className="truncate font-bold">{riotName || "Aucun profil"}</div>
+        <div className="truncate font-bold">{riotName || (isEn ? "No profile" : "Aucun profil")}</div>
         <div className="text-[9px] font-mono text-[var(--text-muted)] truncate">
-          {riotName ? "Riot Games · Connecté" : "Non connecté"}
+          {riotName ? (isEn ? "Riot Games · Connected" : "Riot Games · Connecté") : (isEn ? "Not connected" : "Non connecté")}
         </div>
       </motion.div>
     </button>
   );
 });
 
-const TrackerSidebarFooter = memo(function TrackerSidebarFooter() {
+const TrackerSidebarFooter = memo(function TrackerSidebarFooter({ isEn = true }: { isEn?: boolean }) {
   const { setOpen } = useAnimatedSidebar();
   const { collapsed } = useAnimatedSidebarPanel();
   const { settings, update } = useSettings();
 
   return (
     <div className="flex flex-col gap-3">
-      <TrackerSidebarProfile collapsed={collapsed} />
+      <TrackerSidebarProfile collapsed={collapsed} isEn={isEn} />
 
       <div
         className={cn(
@@ -325,14 +333,17 @@ const TrackerSidebarNavList = memo(function TrackerSidebarNavList({
   currentTab,
   pathname,
   onSelect,
+  isEn = true,
 }: {
   currentTab: string | null;
   pathname: string;
   onSelect: (href: string) => void;
+  isEn?: boolean;
 }) {
   const { collapsed } = useAnimatedSidebarPanel();
   const { settings } = useSettings();
   const showIcons = settings.sidebarIcons || collapsed;
+  const groups = useMemo(() => getTrackerGroups(isEn), [isEn]);
 
   const isItemActive = useCallback(
     (item: TrackerSidebarItem) => {
@@ -367,7 +378,7 @@ const TrackerSidebarNavList = memo(function TrackerSidebarNavList({
 
   return (
     <div className="flex flex-col">
-      {TRACKER_GROUPS.map((group, groupIndex) => (
+      {groups.map((group, groupIndex) => (
         <div key={group.id}>
           {groupIndex > 0 && (
             collapsed ? (
@@ -400,6 +411,30 @@ export default function TrackerSidebar() {
   const router = useRouter();
   const pathname = usePathname() ?? "/tracker";
   const { setOpen } = useAnimatedSidebar();
+
+  const [trackerLang, setTrackerLang] = useState<"en" | "fr">(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const stored = localStorage.getItem("ethone:tracker:language");
+        if (stored === "fr" || stored === "en") return stored;
+      } catch {}
+    }
+    return "en";
+  });
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const onLangChange = (e: Event) => {
+      const customEvt = e as CustomEvent<{ lang?: "en" | "fr" }>;
+      if (customEvt.detail?.lang) {
+        setTrackerLang(customEvt.detail.lang);
+      }
+    };
+    window.addEventListener("ethone:tracker:lang-change", onLangChange);
+    return () => window.removeEventListener("ethone:tracker:lang-change", onLangChange);
+  }, []);
+
+  const isEn = trackerLang === "en";
 
   const [currentSearch, setCurrentSearch] = useState("");
 
@@ -495,11 +530,12 @@ export default function TrackerSidebar() {
             currentTab={currentTab}
             pathname={pathname}
             onSelect={handleSelect}
+            isEn={isEn}
           />
         </AnimatedSidebarContent>
 
         <AnimatedSidebarFooter className="mb-3 border-t border-[var(--panel-border)] pt-3">
-          <TrackerSidebarFooter />
+          <TrackerSidebarFooter isEn={isEn} />
         </AnimatedSidebarFooter>
 
         <AnimatedSidebarRail />

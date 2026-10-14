@@ -280,10 +280,16 @@ export function formatMatchLocalTime(m: VlrMatch, isEn: boolean): string {
   }).format(new Date(ts));
 }
 
-export default function VctMatchesView() {
+export default function VctMatchesView({ lang }: { lang?: string } = {}) {
   const { settings } = useSettings();
-  const tr = useMemo(() => getTrackerI18n(settings.language), [settings.language]);
-  const isEn = (settings.language || "").toLowerCase().startsWith("en");
+  const effectiveLang =
+    lang ||
+    (typeof window !== "undefined"
+      ? localStorage.getItem("ethone:tracker:language")
+      : null) ||
+    "en";
+  const tr = useMemo(() => getTrackerI18n(effectiveLang), [effectiveLang]);
+  const isEn = effectiveLang.toLowerCase().startsWith("en");
   const reducedMotion = useReducedMotion();
 
   const [upcomingMatches, setUpcomingMatches] = useState<VlrMatch[]>([]);

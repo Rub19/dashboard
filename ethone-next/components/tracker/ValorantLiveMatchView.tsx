@@ -13,15 +13,23 @@ export interface ValorantLiveMatchViewProps {
   riotTag: string;
   valorantProfile: ValorantAccountProfile | null;
   valorantMatches: ValorantMatch[];
+  lang?: string;
 }
 
 export default function ValorantLiveMatchView({
   riotName,
   riotTag,
   valorantProfile,
+  lang,
 }: ValorantLiveMatchViewProps) {
   const { settings } = useSettings();
-  const tr = useMemo(() => getTrackerI18n(settings.language), [settings.language]);
+  const effectiveLang =
+    lang ||
+    (typeof window !== "undefined"
+      ? localStorage.getItem("ethone:tracker:language")
+      : null) ||
+    "en";
+  const tr = useMemo(() => getTrackerI18n(effectiveLang), [effectiveLang]);
   const [checking, setChecking] = useState(false);
   const [checkMessage, setCheckMessage] = useState<string | null>(null);
 

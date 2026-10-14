@@ -21,12 +21,16 @@ beforeAll(() => {
 
 describe("RiotGamingHome Render Test", () => {
   it("renders without crashing", () => {
-    render(
+    const { queryByText, getByText } = render(
       <SettingsProvider>
         <ToastProvider>
           <RiotGamingHome />
         </ToastProvider>
       </SettingsProvider>
     );
+
+    expect(getByText("Analyze")).toBeTruthy();
+    expect(queryByText("Mise à jour v2.4.0 — ETHONE Tactical")).toBeNull();
+    expect(queryByText("Notes de version")).toBeNull();
   });
 });

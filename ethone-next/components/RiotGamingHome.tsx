@@ -53,7 +53,6 @@ import ValorantFriendCompareModal from "@/components/tracker/ValorantFriendCompa
 import RiotAttributionModal from "@/components/tracker/RiotAttributionModal";
 import ValorantLiveMatchView from "@/components/tracker/ValorantLiveMatchView";
 import VctMatchesView from "@/components/tracker/VctMatchesView";
-import TacticalPatchNotesModal from "@/components/tracker/TacticalPatchNotesModal";
 import TacticalCoachChatView from "@/components/tracker/TacticalCoachChatView";
 import { AnimatedNumber } from "@/components/tracker/TrackerMotion";
 import { useAnimatedSidebar } from "@/components/motion/animated-sidebar";
@@ -102,16 +101,6 @@ export default function RiotGamingHome() {
   const { open, setOpen } = useAnimatedSidebar();
   const searchParams = useSearchParams();
   const reducedMotion = useReducedMotion();
-
-  const [showPatchNotes, setShowPatchNotes] = useState(false);
-  const [bannerDismissed, setBannerDismissed] = useState(() => {
-    if (typeof window === "undefined") return false;
-    try {
-      return localStorage.getItem("ethone:tactical:banner_dismissed_v2_4") === "1";
-    } catch {
-      return false;
-    }
-  });
 
   const [activeGame, setActiveGame] = useState<GameTab>(() => {
     if (typeof window !== "undefined") {
@@ -482,18 +471,37 @@ export default function RiotGamingHome() {
   const hasLolData = lolMatches.length > 0;
   const hasProfile = Boolean(valorantProfile?.name || riotName);
 
-  const currentLang = (settings.language || "fr").startsWith("en") ? "en" : "fr";
+  const [trackerLang, setTrackerLang] = useState<"en" | "fr">(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const sp = new URLSearchParams(window.location.search);
+        const urlLang = sp.get("lang");
+        if (urlLang === "en" || urlLang === "fr") return urlLang;
+        const stored = localStorage.getItem("ethone:tracker:language");
+        if (stored === "en" || stored === "fr") return stored;
+      } catch {}
+    }
+    return "en";
+  });
+
+  const currentLang = trackerLang;
   const isEn = currentLang === "en";
   const tr = useMemo(() => getTrackerI18n(currentLang), [currentLang]);
 
   const toggleLang = useCallback(
     (lang: "fr" | "en") => {
-      if (lang !== currentLang) {
-        update({ language: lang });
+      if (lang !== trackerLang) {
+        setTrackerLang(lang);
+        if (typeof window !== "undefined") {
+          try {
+            localStorage.setItem("ethone:tracker:language", lang);
+            window.dispatchEvent(new CustomEvent("ethone:tracker:lang-change", { detail: { lang } }));
+          } catch {}
+        }
         notify.language(lang);
       }
     },
-    [currentLang, update, notify]
+    [trackerLang, notify]
   );
 
   return (
@@ -507,8 +515,8 @@ export default function RiotGamingHome() {
                   type="button"
                   onClick={() => setOpen(!open)}
                   className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-neutral-400 hover:text-white hover:bg-white/[0.08] transition-all active:scale-95 cursor-pointer"
-                  title={open ? "Réduire le menu" : "Ouvrir le menu"}
-                  aria-label="Basculer la barre latérale"
+                  title={open ? (isEn ? "Collapse menu" : "Réduire le menu") : (isEn ? "Open menu" : "Ouvrir le menu")}
+                  aria-label={isEn ? "Toggle sidebar" : "Basculer la barre latérale"}
                 >
                   <Icon name={open ? "sidebar-simple" : "sidebar"} className="h-4 w-4" />
                 </button>
@@ -521,16 +529,13 @@ export default function RiotGamingHome() {
                   <span className="text-xs font-semibold uppercase tracking-wider text-rose-400">
                     TACTICAL
                   </span>
-                  <button
-                    type="button"
-                    onClick={() => setShowPatchNotes(true)}
-                    className="ml-1 inline-flex items-center gap-1 rounded-full border border-rose-500/30 bg-rose-500/10 hover:bg-rose-500/20 px-2 py-0.5 text-[10px] font-mono font-bold text-rose-300 hover:text-white transition-all cursor-pointer shadow-xs active:scale-95"
-                    title={isEn ? "Tactical Tracker v2.4.0 — View site release notes" : "Tactical Tracker v2.4.0 — Voir les notes de mise à jour du site"}
-                    aria-label={isEn ? "Tactical Tracker v2.4.0 — View site release notes" : "Tactical Tracker v2.4.0 — Voir les notes de mise à jour du site"}
+                  <span
+                    className="ml-1 inline-flex items-center gap-1 rounded-full border border-rose-500/30 bg-rose-500/10 px-2 py-0.5 text-[10px] font-mono font-bold text-rose-300"
+                    title="ETHONE Tactical v2.4.0"
                   >
-                    <span className="h-1.5 w-1.5 rounded-full bg-rose-400 animate-pulse" />
+                    <span className="h-1.5 w-1.5 rounded-full bg-rose-400" />
                     <span>v2.4.0</span>
-                  </button>
+                  </span>
                 </div>
               </div>
 
@@ -739,7 +744,7 @@ export default function RiotGamingHome() {
                       value={riotName}
                       onChange={(e) => setRiotName(e.target.value)}
                       placeholder={tr.riotIdPlaceholder}
-                      aria-label="Nom Riot"
+                      aria-label={isEn ? "Riot Name" : "Nom Riot"}
                       className="w-full bg-transparent text-xs font-medium text-white outline-none placeholder:text-neutral-500"
                     />
                     <span className="text-xs font-mono text-neutral-500">#</span>
@@ -748,7 +753,7 @@ export default function RiotGamingHome() {
                       value={riotTag}
                       onChange={(e) => setRiotTag(e.target.value)}
                       placeholder={tr.riotTagPlaceholder}
-                      aria-label="Tag Riot"
+                      aria-label={isEn ? "Riot Tag" : "Tag Riot"}
                       className="w-16 bg-transparent font-mono text-xs font-medium text-white outline-none placeholder:text-neutral-500 uppercase"
                     />
                   </div>
@@ -765,62 +770,6 @@ export default function RiotGamingHome() {
             )}
           </div>
         </header>
-
-        {!bannerDismissed && (
-          <motion.div
-            initial={reducedMotion ? false : { opacity: 0, y: -6 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={reducedMotion ? undefined : { opacity: 0, height: 0 }}
-            transition={{ duration: 0.22, ease: EASE_OUT }}
-            className="relative overflow-hidden rounded-xl border border-rose-500/25 bg-gradient-to-r from-rose-950/40 via-[#10131B]/95 to-amber-950/25 p-3 sm:p-3.5 backdrop-blur-xl shadow-md"
-          >
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-300 shadow-inner">
-                  <Sparkles className="h-4 w-4" />
-                </div>
-                <div className="min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="rounded bg-rose-500/25 border border-rose-500/40 px-1.5 py-0.2 text-[10px] font-mono font-bold uppercase text-rose-300 tracking-wider">
-                      {tr.updateBannerTag}
-                    </span>
-                    <span className="font-mono text-xs font-bold text-white truncate">
-                      {tr.updateBannerHeadline}
-                    </span>
-                  </div>
-                  <p className="text-xs text-neutral-300 truncate mt-0.5">
-                    {tr.updateBannerDesc}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
-                <button
-                  type="button"
-                  onClick={() => setShowPatchNotes(true)}
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.06] hover:bg-white/10 px-3 py-1.5 text-xs font-semibold text-white transition-all cursor-pointer shadow-sm active:scale-95"
-                >
-                  <span>{tr.updateBannerBtn}</span>
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setBannerDismissed(true);
-                    try {
-                      localStorage.setItem("ethone:tactical:banner_dismissed_v2_4", "1");
-                    } catch {}
-                  }}
-                  className="inline-flex h-7 w-7 items-center justify-center rounded-lg text-neutral-400 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer"
-                  title={isEn ? "Dismiss banner" : "Masquer le bandeau"}
-                  aria-label={isEn ? "Dismiss banner" : "Masquer le bandeau"}
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-            </div>
-          </motion.div>
-        )}
 
         <AnimatePresence mode="wait">
           <motion.div
@@ -1841,11 +1790,12 @@ export default function RiotGamingHome() {
                 riotTag={riotTag}
                 valorantProfile={valorantProfile}
                 valorantMatches={valorantMatches}
+                lang={currentLang}
               />
             )}
 
             {activeGame === "vct" && (
-              <VctMatchesView />
+              <VctMatchesView lang={currentLang} />
             )}
 
             {activeGame === "lol" && (
@@ -2224,12 +2174,6 @@ export default function RiotGamingHome() {
       <RiotAttributionModal
         isOpen={attributionModalOpen}
         onClose={() => setAttributionModalOpen(false)}
-      />
-
-      <TacticalPatchNotesModal
-        isOpen={showPatchNotes}
-        onClose={() => setShowPatchNotes(false)}
-        lang={currentLang}
       />
     </div>
   );

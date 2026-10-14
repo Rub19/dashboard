@@ -561,7 +561,7 @@ export const TRACKER_TRANSLATIONS: Record<"fr" | "en", TrackerTranslations> = {
 };
 
 export function getTrackerI18n(lang?: string): TrackerTranslations {
-  const normalized = (lang || "").toLowerCase().startsWith("en") ? "en" : "fr";
+  const normalized = (lang || "en").toLowerCase().startsWith("fr") ? "fr" : "en";
   return TRACKER_TRANSLATIONS[normalized];
 }
 

@@ -16,6 +16,7 @@ import {
   Flame,
   Trophy,
   Gamepad2,
+  Swords,
 } from "@/components/icons/ph";
 import BrandMark from "@/components/BrandMark";
 import GameBrandIcon from "@/components/GameBrandIcon";
@@ -85,6 +86,17 @@ function getTrackerGroups(isEn: boolean): TrackerSidebarGroup[] {
               className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-rose-500")}
             />
           ),
+        },
+        {
+          id: "compare",
+          label: isEn ? "Compare with Friend" : "Comparer avec un ami",
+          href: "/tracker?tab=compare",
+          renderIcon: (colored) => (
+            <Swords
+              className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-rose-400")}
+            />
+          ),
+          badge: "1v1",
         },
         {
           id: "vct",

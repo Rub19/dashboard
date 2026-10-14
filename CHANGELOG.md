@@ -1,6 +1,16 @@
 # Changelog
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
+## v1.75.78 — 2026-10-14
+
+**Section Compare with Friend : duel télémétrique face-à-face et calcul de synergie duo**
+
+- Nouvel onglet et navigation dédiée « Compare with Friend » dans le Tracker VALORANT avec badge 1v1 interactif et routing URL `?tab=compare`.
+- Arène de confrontation face-à-face side-by-side avec recherche de Riot ID d'ami, favoris rapides et mémoire de session `localStorage`.
+- Verdict tactique d'avantage exécutif évaluant le tir, la survie, le taux de victoire, l'ACS moyen et le rang compétitif en direct.
+- Jauges bilatérales avec pourcentage de répartition et différentiels directs (+KD, +HS%, +Winrate).
+- Répartition anatomique des tirs (Tête / Corps / Jambes), face-à-face des 3 agents signatures et indice de synergie duo.
+
 ## v1.75.77 — 2026-10-14
 
 **Coach IA : suggestions tactiques agrandies, sublimées et sans scrollbar**

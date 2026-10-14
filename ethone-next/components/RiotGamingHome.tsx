@@ -50,6 +50,7 @@ import {
 import GameBrandIcon from "@/components/GameBrandIcon";
 import RiotTrackerConnectModal from "@/components/tracker/RiotTrackerConnectModal";
 import ValorantFriendCompareModal from "@/components/tracker/ValorantFriendCompareModal";
+import CompareWithFriendView from "@/components/tracker/CompareWithFriendView";
 import RiotAttributionModal from "@/components/tracker/RiotAttributionModal";
 import ValorantLiveMatchView from "@/components/tracker/ValorantLiveMatchView";
 import VctMatchesView from "@/components/tracker/VctMatchesView";
@@ -64,6 +65,7 @@ import { EASE_SNAP, EASE_OUT, SPRING_PILL } from "@/lib/ease";
 
 type GameTab =
   | "valorant"
+  | "compare"
   | "live"
   | "vct"
   | "lol"
@@ -112,6 +114,7 @@ export default function RiotGamingHome() {
         urlTab === "lol" ||
         urlTab === "tft" ||
         urlTab === "valorant" ||
+        urlTab === "compare" ||
         urlTab === "coach" ||
         urlTab === "telemetry" ||
         urlTab === "training"
@@ -133,6 +136,7 @@ export default function RiotGamingHome() {
         urlTab === "lol" ||
         urlTab === "tft" ||
         urlTab === "valorant" ||
+        urlTab === "compare" ||
         urlTab === "coach" ||
         urlTab === "telemetry" ||
         urlTab === "training"
@@ -147,6 +151,7 @@ export default function RiotGamingHome() {
         targetTab === "live" ||
         targetTab === "vct" ||
         targetTab === "valorant" ||
+        targetTab === "compare" ||
         targetTab === "lol" ||
         targetTab === "tft" ||
         targetTab === "coach" ||
@@ -172,6 +177,7 @@ export default function RiotGamingHome() {
       tabParam === "live" ||
       tabParam === "vct" ||
       tabParam === "valorant" ||
+      tabParam === "compare" ||
       tabParam === "lol" ||
       tabParam === "tft" ||
       tabParam === "coach" ||
@@ -646,6 +652,30 @@ export default function RiotGamingHome() {
                   )}
                   <GameBrandIcon name="Valorant" className="relative z-10 h-3.5 w-3.5" />
                   <span className="relative z-10">{tr.valorant}</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => selectGameTab("compare")}
+                  className={cn(
+                    "relative flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer shrink-0",
+                    activeGame === "compare"
+                      ? "text-white"
+                      : "text-neutral-400 hover:text-neutral-200"
+                  )}
+                >
+                  {activeGame === "compare" && (
+                    <motion.div
+                      layoutId="tactical-game-pill"
+                      transition={SPRING_PILL}
+                      className="absolute inset-0 rounded-lg bg-rose-500/20 border border-rose-500/40 shadow-sm"
+                    />
+                  )}
+                  <Swords className="relative z-10 h-3.5 w-3.5 text-rose-400" />
+                  <span className="relative z-10">{isEn ? "Compare" : "Comparer"}</span>
+                  <span className="relative z-10 rounded bg-rose-500/30 px-1 py-0.2 text-[9px] font-mono font-bold text-rose-200">
+                    1v1
+                  </span>
                 </button>
 
                 <button
@@ -1821,6 +1851,17 @@ export default function RiotGamingHome() {
                   </div>
                 )}
               </div>
+            )}
+
+            {activeGame === "compare" && (
+              <CompareWithFriendView
+                myProfile={valorantProfile}
+                myStats={valorantStats}
+                myMatches={valorantMatches}
+                myRiotName={riotName}
+                myRiotTag={riotTag}
+                isEn={isEn}
+              />
             )}
 
             {activeGame === "live" && (

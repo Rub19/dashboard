@@ -50,7 +50,7 @@ export default function RiotTrackerHeader({
             </button>
 
             <Link
-              href="/"
+              href="/tracker"
               className="flex items-center gap-2 outline-none group cursor-pointer"
             >
               <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-rose-600 to-red-600 text-white shadow-md">

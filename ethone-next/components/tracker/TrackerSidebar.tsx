@@ -15,7 +15,6 @@ import {
   Activity,
   Flame,
 } from "@/components/icons/ph";
-import { ethoneIcon } from "@/components/EthoneIcon";
 import GameBrandIcon from "@/components/GameBrandIcon";
 import { useSettings } from "@/components/SettingsProvider";
 import { useUserIdentity } from "@/lib/hooks/useUserIdentity";
@@ -32,8 +31,6 @@ import {
   useAnimatedSidebar,
   useAnimatedSidebarPanel,
 } from "@/components/motion/animated-sidebar";
-
-const SettingsIcon = ethoneIcon("settings");
 
 interface TrackerSidebarItem {
   id: string;
@@ -144,22 +141,6 @@ const TRACKER_GROUPS: TrackerSidebarGroup[] = [
         renderIcon: (colored) => (
           <Activity
             className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-emerald-400")}
-          />
-        ),
-      },
-    ],
-  },
-  {
-    id: "system",
-    label: "Système",
-    items: [
-      {
-        id: "settings",
-        label: "Paramètres",
-        href: "/settings",
-        renderIcon: (colored) => (
-          <SettingsIcon
-            className={cn("h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110", colored && "text-slate-300")}
           />
         ),
       },
@@ -361,9 +342,6 @@ const TrackerSidebarNavList = memo(function TrackerSidebarNavList({
       }
       if (item.id === "training") {
         return pathname === "/tracker" && currentTab === "training";
-      }
-      if (item.id === "settings") {
-        return pathname === "/settings" || pathname.startsWith("/settings/");
       }
       return false;
     },

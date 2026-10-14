@@ -55139,10 +55139,58 @@ const v12910_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12910_fr, v12909_fr, v12908_fr, v12907_fr, v12906_fr, v12905_fr, v12904_fr, v12903_fr, v12902_fr, v12901_fr, v12900_fr, v12899_fr, v12898_fr, v12897_fr, v12896_fr, v12895_fr, v12894_fr, v12893_fr, v12892_fr);
-CHANGELOG_BY_LANG.en.unshift(v12910_en, v12909_en, v12908_en, v12907_en, v12906_en, v12905_en, v12904_en, v12903_en, v12902_en, v12901_en, v12900_en, v12899_en, v12898_en, v12897_en, v12896_en, v12895_en, v12894_en, v12893_en, v12892_en);
-CHANGELOG_BY_LANG.es.unshift(v12910_es, v12909_es, v12908_es, v12907_es, v12906_es, v12905_es, v12904_es, v12903_es, v12902_es, v12901_es, v12900_es, v12899_es, v12898_es, v12897_es, v12896_es, v12895_es, v12894_es, v12893_es, v12892_es);
-CHANGELOG_BY_LANG.de.unshift(v12910_de, v12909_de, v12908_de, v12907_de, v12906_de, v12905_de, v12904_de, v12903_de, v12902_de, v12901_de, v12900_de, v12899_de, v12898_de, v12897_de, v12896_de, v12895_de, v12894_de, v12893_de, v12892_de);
+const v12911_fr: ChangelogEntry = {
+  version: "v1.75.69",
+  date: "2026-10-14",
+  title: "Isolation du Tracker Gaming et suppression des paramètres dans la barre latérale",
+  items: [
+    "Retrait définitif de la section Système et du bouton Paramètres dans la barre latérale du tracker",
+    "Suppression du lien vers le dashboard Ethone OS dans le logo d'en-tête pour un confinement strict",
+    "Désactivation de la palette de commandes et raccourcis globaux dans l'espace tracker",
+    "Respect strict de la politique zéro commentaire et cohérence visuelle",
+  ],
+};
+
+const v12911_en: ChangelogEntry = {
+  version: "v1.75.69",
+  date: "2026-10-14",
+  title: "Gaming Tracker isolation and removal of settings from sidebar",
+  items: [
+    "Removed System section and Settings button from the tracker sidebar",
+    "Replaced dashboard link in the header brand with dedicated tracker home for full isolation",
+    "Disabled global command palette and system shortcuts while in tracker views",
+    "Strict compliance with zero comments policy and visual consistency",
+  ],
+};
+
+const v12911_es: ChangelogEntry = {
+  version: "v1.75.69",
+  date: "2026-10-14",
+  title: "Aislamiento del Tracker Gaming y eliminación de ajustes en la barra lateral",
+  items: [
+    "Eliminación definitiva de la sección Sistema y ajustes en la barra lateral del tracker",
+    "Sustitución del enlace al dashboard en el encabezado para un confinamiento estricto",
+    "Desactivación de la paleta de comandos y atajos globales en el entorno del tracker",
+    "Cumplimiento estricto de la política de cero comentarios y coherencia visual",
+  ],
+};
+
+const v12911_de: ChangelogEntry = {
+  version: "v1.75.69",
+  date: "2026-10-14",
+  title: "Gaming Tracker Isolation und Entfernung der Einstellungen aus der Seitenleiste",
+  items: [
+    "Endgültige Entfernung des Bereichs System und der Einstellungen aus der Tracker-Seitenleiste",
+    "Ersetzung des Dashboard-Links im Header durch reine Tracker-Navigation zur vollständigen Isolation",
+    "Deaktivierung der Befehlspalette und globalen Shortcuts in der Tracker-Ansicht",
+    "Strikte Einhaltung der Null-Kommentar-Richtlinie und visuelle Konsistenz",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12911_fr, v12910_fr, v12909_fr, v12908_fr, v12907_fr, v12906_fr, v12905_fr, v12904_fr, v12903_fr, v12902_fr, v12901_fr, v12900_fr, v12899_fr, v12898_fr, v12897_fr, v12896_fr, v12895_fr, v12894_fr, v12893_fr, v12892_fr);
+CHANGELOG_BY_LANG.en.unshift(v12911_en, v12910_en, v12909_en, v12908_en, v12907_en, v12906_en, v12905_en, v12904_en, v12903_en, v12902_en, v12901_en, v12900_en, v12899_en, v12898_en, v12897_en, v12896_en, v12895_en, v12894_en, v12893_en, v12892_en);
+CHANGELOG_BY_LANG.es.unshift(v12911_es, v12910_es, v12909_es, v12908_es, v12907_es, v12906_es, v12905_es, v12904_es, v12903_es, v12902_es, v12901_es, v12900_es, v12899_es, v12898_es, v12897_es, v12896_es, v12895_es, v12894_es, v12893_es, v12892_es);
+CHANGELOG_BY_LANG.de.unshift(v12911_de, v12910_de, v12909_de, v12908_de, v12907_de, v12906_de, v12905_de, v12904_de, v12903_de, v12902_de, v12901_de, v12900_de, v12899_de, v12898_de, v12897_de, v12896_de, v12895_de, v12894_de, v12893_de, v12892_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

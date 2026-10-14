@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.69 — 2026-10-14
+
+**Isolation du Tracker Gaming et suppression des paramètres dans la barre latérale**
+
+- Suppression intégrale de la section `Système` et du lien `Paramètres` dans la barre latérale du tracker (`TrackerSidebar`).
+- Remplacement du lien vers la racine Ethone OS dans le logo d'en-tête `RiotTrackerHeader` par une redirection exclusive vers `/tracker`.
+- Désactivation de la palette de commandes globale et des raccourcis système dans l'environnement tracker afin d'isoler hermétiquement l'expérience Riot Games.
+- Respect strict de la politique zéro commentaire.
+
 ## v1.75.68 — 2026-10-14
 
 **Suppression définitive des placeholders et mode Bêta authentique pour le direct**

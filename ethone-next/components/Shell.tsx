@@ -67,7 +67,6 @@ export default function Shell({ children }: { children: ReactNode }) {
               >
                 <TrackerSidebar />
                 <div data-v8-shell data-tracker-fullscreen className="flex min-h-0 min-w-0 flex-1 flex-col overflow-clip bg-[var(--background)]">
-                  <CommandPalette />
                   <DocumentMetadata />
                   <CosmicBackground />
                   <RefreshSpinner />
@@ -88,8 +87,6 @@ export default function Shell({ children }: { children: ReactNode }) {
                   </PrivacyShield>
                 </div>
               </AnimatedSidebarProvider>
-              <ShortcutsOverlay />
-              <KeyboardShortcuts />
             </ShortcutsProvider>
           </PresenceProvider>
         </ContextMenuProvider>

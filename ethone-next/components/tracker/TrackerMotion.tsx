@@ -5,11 +5,12 @@ import { useReducedMotion } from "framer-motion";
 
 export function AnimatedNumber({
   value,
-  duration = 600,
+  duration = 350,
   decimals = 0,
   prefix = "",
   suffix = "",
   className = "",
+  locale,
 }: {
   value: number;
   duration?: number;
@@ -17,6 +18,7 @@ export function AnimatedNumber({
   prefix?: string;
   suffix?: string;
   className?: string;
+  locale?: string;
 }) {
   const reducedMotion = useReducedMotion();
   const [displayValue, setDisplayValue] = useState(reducedMotion ? value : 0);
@@ -57,7 +59,13 @@ export function AnimatedNumber({
     return () => cancelAnimationFrame(frameId);
   }, [value, duration, reducedMotion]);
 
-  const formatted = decimals > 0 ? displayValue.toFixed(decimals) : Math.round(displayValue).toString();
+  let formatted: string;
+  if (decimals > 0) {
+    const fixed = displayValue.toFixed(decimals);
+    formatted = locale === "fr" ? fixed.replace(".", ",") : fixed;
+  } else {
+    formatted = Math.round(displayValue).toString();
+  }
 
   return (
     <span className={className}>

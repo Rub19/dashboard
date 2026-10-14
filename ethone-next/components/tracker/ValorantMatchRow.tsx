@@ -245,7 +245,7 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
             <span className="block text-[9px] font-bold uppercase text-[var(--text-muted)]/80">K/D</span>
             <span
               className={cn(
-                "font-mono text-sm font-black",
+                "font-mono text-sm font-black tabular-nums",
                 kd >= 2.0
                   ? "text-cyan-400"
                   : kd >= 1.0
@@ -253,7 +253,7 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
                   : "text-rose-400"
               )}
             >
-              {kd}
+              {Number(kd).toFixed(2)}
             </span>
           </div>
 
@@ -414,10 +414,10 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
                       <div className="text-right">
                         <span className="block text-[9px] uppercase font-bold text-[var(--text-muted)]">Ratio K/D</span>
                         <span className={cn(
-                          "font-mono text-base font-black",
+                          "font-mono text-base font-black tabular-nums",
                           kd >= 2.0 ? "text-cyan-400" : kd >= 1.0 ? "text-emerald-400" : "text-rose-400"
                         )}>
-                          {kd}
+                          {Number(kd).toFixed(2)}
                         </span>
                       </div>
                     </div>

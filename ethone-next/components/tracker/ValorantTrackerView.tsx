@@ -491,8 +491,8 @@ export default function ValorantTrackerView() {
             </div>
             <div className="border-l border-[var(--panel-border)]/60 pl-3">
               <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Ratio K/D</span>
-              <p className="text-sm font-black text-emerald-400">
-                {computedStats.kdRatio !== null ? computedStats.kdRatio : "—"}
+              <p className="text-sm font-black text-emerald-400 tabular-nums">
+                {computedStats.kdRatio !== null ? Number(computedStats.kdRatio).toFixed(2) : "—"}
               </p>
             </div>
           </div>

@@ -4,7 +4,7 @@ import { useEffect, useId } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Sparkles, X, CheckCircle2, ShieldCheck } from "@/components/icons/ph";
 import { getTrackerI18n, getPatchNotes } from "@/lib/i18n-tracker";
-import { EASE_SNAP, SPRING_MODAL } from "@/lib/ease";
+import { EASE_SNAP, SPRING_PANEL } from "@/lib/ease";
 import { cn } from "@/lib/utils";
 
 interface TacticalPatchNotesModalProps {
@@ -55,7 +55,7 @@ export default function TacticalPatchNotesModal({
             initial={reducedMotion ? false : { opacity: 0, scale: 0.95, y: 16 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={reducedMotion ? undefined : { opacity: 0, scale: 0.96, y: 12 }}
-            transition={SPRING_MODAL}
+            transition={SPRING_PANEL}
             className="relative flex flex-col max-h-[85vh] w-full max-w-xl overflow-hidden rounded-2xl border border-white/[0.12] bg-[#10131B] shadow-[0_0_50px_rgba(0,0,0,0.8)] z-10"
           >
             <div className="flex items-center justify-between border-b border-white/[0.08] p-4 sm:p-5 bg-gradient-to-r from-rose-950/40 via-[#131722] to-black/60">

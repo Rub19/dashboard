@@ -58,7 +58,7 @@ import TacticalCoachChatView from "@/components/tracker/TacticalCoachChatView";
 import { AnimatedNumber } from "@/components/tracker/TrackerMotion";
 import { useAnimatedSidebar } from "@/components/motion/animated-sidebar";
 import FlagIcon from "@/components/FlagIcon";
-import { getTrackerI18n } from "@/lib/i18n-tracker";
+import { getTrackerI18n, formatStatPercent } from "@/lib/i18n-tracker";
 import { Icon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import { EASE_SNAP, EASE_OUT, SPRING_PILL } from "@/lib/ease";
@@ -957,9 +957,9 @@ export default function RiotGamingHome() {
                       <Flame className="h-4 w-4 text-rose-400" />
                     </div>
                     <div className="my-2.5">
-                      <p className="text-3xl font-mono font-bold tracking-tight text-white">
+                      <p className="text-3xl font-mono font-bold tracking-tight text-white tabular-nums">
                         {valorantStats.kdRatio !== null ? (
-                          <AnimatedNumber value={Number(valorantStats.kdRatio)} decimals={2} />
+                          <AnimatedNumber value={Number(valorantStats.kdRatio)} decimals={2} locale={currentLang} />
                         ) : (
                           "—"
                         )}
@@ -969,11 +969,13 @@ export default function RiotGamingHome() {
                       </p>
                     </div>
                     <div className="h-1.5 w-full rounded-full bg-white/[0.06] overflow-hidden">
-                      <div
-                        className="h-full bg-rose-500 rounded-full transition-all duration-500"
-                        style={{
+                      <motion.div
+                        initial={reducedMotion ? false : { width: 0 }}
+                        animate={{
                           width: valorantStats.kdRatio !== null ? `${Math.min(100, Math.round((Number(valorantStats.kdRatio) / 2) * 100))}%` : "0%",
                         }}
+                        transition={{ duration: 0.5, ease: EASE_OUT }}
+                        className="h-full bg-rose-500 rounded-full"
                       />
                     </div>
                   </motion.div>
@@ -989,9 +991,9 @@ export default function RiotGamingHome() {
                       <Trophy className="h-4 w-4 text-amber-400" />
                     </div>
                     <div className="my-2.5">
-                      <p className="text-3xl font-mono font-bold tracking-tight text-white">
+                      <p className="text-3xl font-mono font-bold tracking-tight text-white tabular-nums">
                         {valorantStats.winRate !== null ? (
-                          <AnimatedNumber value={valorantStats.winRate} suffix="%" />
+                          <AnimatedNumber value={valorantStats.winRate} suffix={currentLang === "fr" ? " %" : "%"} locale={currentLang} />
                         ) : (
                           "—"
                         )}
@@ -1001,11 +1003,13 @@ export default function RiotGamingHome() {
                       </p>
                     </div>
                     <div className="h-1.5 w-full rounded-full bg-white/[0.06] overflow-hidden">
-                      <div
-                        className="h-full bg-emerald-400 rounded-full transition-all duration-500"
-                        style={{
+                      <motion.div
+                        initial={reducedMotion ? false : { width: 0 }}
+                        animate={{
                           width: valorantStats.winRate !== null ? `${valorantStats.winRate}%` : "0%",
                         }}
+                        transition={{ duration: 0.5, ease: EASE_OUT }}
+                        className="h-full bg-emerald-400 rounded-full"
                       />
                     </div>
                   </motion.div>
@@ -1021,9 +1025,9 @@ export default function RiotGamingHome() {
                       <Target className="h-4 w-4 text-cyan-400" />
                     </div>
                     <div className="my-2.5">
-                      <p className="text-3xl font-mono font-bold tracking-tight text-white">
+                      <p className="text-3xl font-mono font-bold tracking-tight text-white tabular-nums">
                         {valorantStats.averageScore !== null ? (
-                          <AnimatedNumber value={valorantStats.averageScore} />
+                          <AnimatedNumber value={valorantStats.averageScore} suffix=" pts" />
                         ) : (
                           "—"
                         )}
@@ -1033,11 +1037,13 @@ export default function RiotGamingHome() {
                       </p>
                     </div>
                     <div className="h-1.5 w-full rounded-full bg-white/[0.06] overflow-hidden">
-                      <div
-                        className="h-full bg-cyan-400 rounded-full transition-all duration-500"
-                        style={{
+                      <motion.div
+                        initial={reducedMotion ? false : { width: 0 }}
+                        animate={{
                           width: valorantStats.averageScore !== null ? `${Math.min(100, Math.round((valorantStats.averageScore / 350) * 100))}%` : "0%",
                         }}
+                        transition={{ duration: 0.5, ease: EASE_OUT }}
+                        className="h-full bg-cyan-400 rounded-full"
                       />
                     </div>
                   </motion.div>
@@ -1053,9 +1059,9 @@ export default function RiotGamingHome() {
                       <Sparkles className="h-4 w-4 text-purple-400" />
                     </div>
                     <div className="my-2.5">
-                      <p className="text-3xl font-mono font-bold tracking-tight text-white">
+                      <p className="text-3xl font-mono font-bold tracking-tight text-white tabular-nums">
                         {valorantStats.headshotPercentage !== null ? (
-                          <AnimatedNumber value={valorantStats.headshotPercentage} suffix="%" />
+                          <AnimatedNumber value={valorantStats.headshotPercentage} suffix={currentLang === "fr" ? " %" : "%"} locale={currentLang} />
                         ) : (
                           "—"
                         )}
@@ -1065,11 +1071,13 @@ export default function RiotGamingHome() {
                       </p>
                     </div>
                     <div className="h-1.5 w-full rounded-full bg-white/[0.06] overflow-hidden">
-                      <div
-                        className="h-full bg-purple-400 rounded-full transition-all duration-500"
-                        style={{
+                      <motion.div
+                        initial={reducedMotion ? false : { width: 0 }}
+                        animate={{
                           width: valorantStats.headshotPercentage !== null ? `${valorantStats.headshotPercentage}%` : "0%",
                         }}
+                        transition={{ duration: 0.5, ease: EASE_OUT }}
+                        className="h-full bg-purple-400 rounded-full"
                       />
                     </div>
                   </motion.div>
@@ -1119,14 +1127,14 @@ export default function RiotGamingHome() {
                                       </span>
                                     </div>
                                     <p className="text-[11px] font-mono text-neutral-400 mt-0.5">
-                                      {ag.matches} {ag.matches > 1 ? tr.matches : tr.match} · {ag.winRate ?? 0}% {currentLang === "en" ? "winrate" : "de victoires"}
+                                      {ag.matches} {ag.matches > 1 ? tr.matches : tr.match} · {formatStatPercent(ag.winRate ?? 0, currentLang)} {currentLang === "en" ? "winrate" : "de victoires"}
                                     </p>
                                   </div>
                                 </div>
 
-                                <div className="text-right shrink-0">
+                                <div className="text-right shrink-0 tabular-nums">
                                   <p className="text-xs font-mono font-bold text-white">
-                                    {ag.kdRatio !== null ? `${ag.kdRatio} KD` : "—"}
+                                    {ag.kdRatio !== null ? `${Number(ag.kdRatio).toFixed(2)} KD` : "—"}
                                   </p>
                                   <p className="text-[10px] font-mono text-neutral-500">
                                     {ag.kills}K / {ag.deaths}D
@@ -1176,8 +1184,8 @@ export default function RiotGamingHome() {
                           <div className="rounded-lg border border-white/[0.05] bg-black/30 p-3 space-y-2">
                             <div className="flex items-center justify-between text-xs">
                               <span className="text-neutral-300 font-medium">{tr.impactDistribution}</span>
-                              <span className="font-mono text-neutral-400 text-[11px]">
-                                {telemetryMetrics.hsPct > 0 ? `${telemetryMetrics.hsPct}% ${tr.head}` : "—"}
+                              <span className="font-mono text-neutral-400 text-[11px] tabular-nums">
+                                {telemetryMetrics.hsPct > 0 ? `${formatStatPercent(telemetryMetrics.hsPct, currentLang)} ${tr.head}` : "—"}
                               </span>
                             </div>
                             <div className="h-2 w-full rounded-full bg-white/[0.06] overflow-hidden flex">
@@ -1185,18 +1193,18 @@ export default function RiotGamingHome() {
                               <div className="h-full bg-cyan-400" style={{ width: `${telemetryMetrics.bsPct}%` }} />
                               <div className="h-full bg-neutral-600" style={{ width: `${telemetryMetrics.lsPct}%` }} />
                             </div>
-                            <div className="flex items-center justify-between text-[10px] font-mono text-neutral-400 pt-0.5">
+                            <div className="flex items-center justify-between text-[10px] font-mono text-neutral-400 pt-0.5 tabular-nums">
                               <span className="flex items-center gap-1">
                                 <span className="h-1.5 w-1.5 rounded-full bg-purple-400" />
-                                {tr.head} ({telemetryMetrics.hsPct}%)
+                                {tr.head} ({formatStatPercent(telemetryMetrics.hsPct, currentLang)})
                               </span>
                               <span className="flex items-center gap-1">
                                 <span className="h-1.5 w-1.5 rounded-full bg-cyan-400" />
-                                {tr.body} ({telemetryMetrics.bsPct}%)
+                                {tr.body} ({formatStatPercent(telemetryMetrics.bsPct, currentLang)})
                               </span>
                               <span className="flex items-center gap-1">
                                 <span className="h-1.5 w-1.5 rounded-full bg-neutral-600" />
-                                {tr.legs} ({telemetryMetrics.lsPct}%)
+                                {tr.legs} ({formatStatPercent(telemetryMetrics.lsPct, currentLang)})
                               </span>
                             </div>
                           </div>
@@ -1204,20 +1212,20 @@ export default function RiotGamingHome() {
                           <div className="grid grid-cols-3 gap-2 text-center">
                             <div className="rounded-lg border border-white/[0.05] bg-black/30 p-2.5">
                               <span className="text-[9px] font-mono uppercase text-neutral-400">{tr.telemTotalKills}</span>
-                              <p className="text-base font-mono font-bold text-white mt-0.5">
+                              <p className="text-base font-mono font-bold text-white mt-0.5 tabular-nums">
                                 {telemetryMetrics.totalKills}
                               </p>
                             </div>
                             <div className="rounded-lg border border-white/[0.05] bg-black/30 p-2.5">
                               <span className="text-[9px] font-mono uppercase text-neutral-400">{tr.avgPerRound}</span>
-                              <p className="text-base font-mono font-bold text-white mt-0.5">
-                                {telemetryMetrics.adr > 0 ? telemetryMetrics.adr : (valorantCombatSummary.adr || "—")}
+                              <p className="text-base font-mono font-bold text-white mt-0.5 tabular-nums">
+                                {telemetryMetrics.adr > 0 ? `${Math.round(telemetryMetrics.adr)} ADR` : (valorantCombatSummary.adr ? `${Math.round(Number(valorantCombatSummary.adr))} ADR` : "—")}
                               </p>
                             </div>
                             <div className="rounded-lg border border-white/[0.05] bg-black/30 p-2.5">
                               <span className="text-[9px] font-mono uppercase text-neutral-400">{tr.duelWinrate}</span>
-                              <p className="text-base font-mono font-bold text-emerald-400 mt-0.5">
-                                {telemetryMetrics.duelWinrate > 0 ? `${telemetryMetrics.duelWinrate}%` : "—"}
+                              <p className="text-base font-mono font-bold text-emerald-400 mt-0.5 tabular-nums">
+                                {telemetryMetrics.duelWinrate > 0 ? formatStatPercent(telemetryMetrics.duelWinrate, currentLang) : "—"}
                               </p>
                             </div>
                           </div>
@@ -1301,94 +1309,133 @@ export default function RiotGamingHome() {
                         const isWin =
                           m.metadata?.result?.toLowerCase() === "victory" ||
                           ((m.metadata?.score?.team || 0) > (m.metadata?.score?.opponent || 0));
+                        const me = m.scoreboard?.players?.find((p) => p.isMe);
                         const seg = m.segments?.[0]?.stats;
-                        const kills = seg?.kills?.value ?? 14;
-                        const deaths = seg?.deaths?.value ?? 8;
-                        const assists = seg?.assists?.value ?? 3;
-                        const kd = (kills / Math.max(1, deaths)).toFixed(2);
-                        const hs = seg?.headshotsPercentage?.value ?? 24;
-                        const teamScore = m.metadata?.score?.team ?? (isWin ? 13 : 8);
-                        const oppScore = m.metadata?.score?.opponent ?? (isWin ? 8 : 13);
+                        const kills = me?.stats?.kills ?? seg?.kills?.value ?? 0;
+                        const deaths = me?.stats?.deaths ?? seg?.deaths?.value ?? 0;
+                        const assists = me?.stats?.assists ?? seg?.assists?.value ?? 0;
+                        const kd = deaths > 0 ? (kills / deaths).toFixed(2) : (kills > 0 ? kills.toFixed(2) : "0.00");
+                        const totalShots = (me?.stats?.headshots ?? 0) + (me?.stats?.bodyshots ?? 0) + (me?.stats?.legshots ?? 0);
+                        const rawHs = seg?.headshotsPercentage?.value !== undefined
+                          ? seg.headshotsPercentage.value
+                          : (totalShots > 0 ? ((me?.stats?.headshots ?? 0) / totalShots) * 100 : null);
+                        const hsFormatted = formatStatPercent(rawHs, currentLang, 1);
+                        const teamScore = m.metadata?.score?.team;
+                        const oppScore = m.metadata?.score?.opponent;
+                        const hasScore = teamScore !== null && teamScore !== undefined && oppScore !== null && oppScore !== undefined;
                         const players = m.scoreboard?.players || [];
 
                         return (
-                          <div
+                          <motion.div
                             key={matchId}
-                            className="rounded-lg border border-white/[0.06] bg-black/30 transition-all hover:border-white/15 hover:bg-black/40 overflow-hidden"
+                            initial={reducedMotion ? false : { opacity: 0, y: 6 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{
+                              duration: 0.22,
+                              delay: reducedMotion ? 0 : Math.min(idx * 0.03, 0.18),
+                              ease: EASE_OUT,
+                            }}
+                            className={cn(
+                              "rounded-xl border bg-black/35 transition-all overflow-hidden",
+                              isExpanded
+                                ? "border-white/20 bg-black/50 shadow-md"
+                                : "border-white/[0.07] hover:border-white/15 hover:bg-black/45"
+                            )}
                           >
                             <div
                               onClick={() => setExpandedMatchId(isExpanded ? null : matchId)}
-                              className="flex items-center justify-between p-3 cursor-pointer select-none gap-3"
+                              className="flex items-center justify-between p-3 sm:px-4 cursor-pointer select-none gap-3"
                             >
-                              <div className="flex items-center gap-3 min-w-0">
+                              <div className="flex items-center gap-3 min-w-0 flex-1">
                                 <div
                                   className={cn(
-                                    "h-8 w-1 rounded-full shrink-0",
-                                    isWin ? "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]" : "bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.6)]"
+                                    "h-9 w-1 rounded-full shrink-0",
+                                    isWin
+                                      ? "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]"
+                                      : "bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.5)]"
                                   )}
                                 />
 
-                                {m.metadata?.agentImageUrl && (
+                                {m.metadata?.agentImageUrl ? (
                                   <img
                                     src={m.metadata.agentImageUrl}
                                     alt={m.metadata.agentName || "Agent"}
-                                    className="h-9 w-9 rounded-md object-cover border border-white/10 shrink-0"
+                                    className="h-9 w-9 rounded-lg object-cover border border-white/10 shrink-0 bg-neutral-900"
+                                    onError={(e) => {
+                                      (e.target as HTMLImageElement).style.display = "none";
+                                    }}
                                   />
+                                ) : (
+                                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/[0.04] border border-white/10 text-white font-mono text-xs font-bold shrink-0">
+                                    {(m.metadata?.agentName || "V")[0]}
+                                  </div>
                                 )}
 
                                 <div className="min-w-0">
                                   <div className="flex items-center gap-2">
-                                    <span className="text-xs font-bold text-white truncate">
-                                      {m.metadata?.mapName || "Split"}
+                                    <span className="text-xs sm:text-sm font-bold text-white truncate">
+                                      {m.metadata?.mapName || "VALORANT"}
                                     </span>
                                     <span
                                       className={cn(
-                                        "rounded px-1.5 py-0.2 text-[9px] font-mono font-bold uppercase",
-                                        isWin ? "bg-emerald-500/15 text-emerald-300 border border-emerald-500/30" : "bg-rose-500/15 text-rose-300 border border-rose-500/30"
+                                        "rounded px-1.5 py-0.5 text-[9px] font-mono font-bold uppercase shrink-0",
+                                        isWin
+                                          ? "bg-emerald-500/15 text-emerald-300 border border-emerald-500/30"
+                                          : "bg-rose-500/15 text-rose-300 border border-rose-500/30"
                                       )}
                                     >
                                       {isWin ? tr.victory : tr.defeat}
                                     </span>
                                   </div>
-                                  <p className="text-[10px] font-mono text-neutral-400 mt-0.5">
+                                  <p className="text-[10px] font-mono text-neutral-400 mt-0.5 truncate">
                                     {m.metadata?.agentName || "Agent"} · {m.metadata?.modeName || (currentLang === "en" ? "Competitive" : "Compétitif")}
                                   </p>
                                 </div>
                               </div>
 
-                              <div className="flex items-center gap-4 sm:gap-6 shrink-0">
-                                <div className="text-center">
-                                  <span className="text-[9px] font-mono text-neutral-500 block uppercase">Score</span>
-                                  <span className="font-mono text-xs font-bold text-white">
-                                    <span className={isWin ? "text-emerald-400" : "text-rose-400"}>{teamScore}</span>
-                                    <span className="text-neutral-500 mx-0.5">:</span>
-                                    <span className={!isWin ? "text-emerald-400" : "text-rose-400"}>{oppScore}</span>
-                                  </span>
+                              <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+                                <div className="w-14 sm:w-16 text-center tabular-nums font-mono">
+                                  <span className="text-[9px] text-neutral-500 block uppercase">Score</span>
+                                  {hasScore ? (
+                                    <span className="text-xs sm:text-sm font-bold">
+                                      <span className={isWin ? "text-emerald-400" : "text-rose-400"}>{teamScore}</span>
+                                      <span className="text-neutral-500 mx-0.5">:</span>
+                                      <span className={!isWin ? "text-emerald-400" : "text-rose-400"}>{oppScore}</span>
+                                    </span>
+                                  ) : (
+                                    <span className="text-xs font-bold text-neutral-400">— : —</span>
+                                  )}
                                 </div>
 
-                                <div className="text-right">
-                                  <span className="text-[9px] font-mono text-neutral-500 block uppercase">KDA</span>
-                                  <span className="font-mono text-xs font-bold text-neutral-200">
+                                <div className="w-16 sm:w-20 text-right tabular-nums font-mono">
+                                  <span className="text-[9px] text-neutral-500 block uppercase">KDA</span>
+                                  <span className="text-xs sm:text-sm font-bold text-neutral-200">
                                     {kills}/{deaths}/{assists}
                                   </span>
                                 </div>
 
-                                <div className="hidden sm:block text-right">
-                                  <span className="text-[9px] font-mono text-neutral-500 block uppercase">KD</span>
-                                  <span className="font-mono text-xs font-bold text-white">{kd}</span>
+                                <div className="hidden sm:block w-12 sm:w-14 text-right tabular-nums font-mono">
+                                  <span className="text-[9px] text-neutral-500 block uppercase">KD</span>
+                                  <span className={cn("text-xs sm:text-sm font-bold", Number(kd) >= 1.0 ? "text-white" : "text-neutral-400")}>
+                                    {kd}
+                                  </span>
                                 </div>
 
-                                <div className="hidden sm:block text-right">
-                                  <span className="text-[9px] font-mono text-neutral-500 block uppercase">Préc. HS</span>
-                                  <span className="font-mono text-xs font-bold text-purple-300">{hs}%</span>
+                                <div className="hidden md:block w-16 sm:w-18 text-right tabular-nums font-mono">
+                                  <span className="text-[9px] text-neutral-500 block uppercase">Préc. HS</span>
+                                  <span className="text-xs sm:text-sm font-bold text-purple-300">
+                                    {hsFormatted}
+                                  </span>
                                 </div>
 
-                                <ChevronDown
-                                  className={cn(
-                                    "h-4 w-4 text-neutral-400 transition-transform duration-200 shrink-0",
-                                    isExpanded && "rotate-180 text-white"
-                                  )}
-                                />
+                                <div className="w-5 text-right shrink-0 flex items-center justify-end">
+                                  <ChevronDown
+                                    className={cn(
+                                      "h-4 w-4 text-neutral-400 transition-transform duration-200",
+                                      isExpanded && "rotate-180 text-white"
+                                    )}
+                                  />
+                                </div>
                               </div>
                             </div>
 
@@ -1398,13 +1445,13 @@ export default function RiotGamingHome() {
                                   initial={reducedMotion ? false : { height: 0, opacity: 0 }}
                                   animate={{ height: "auto", opacity: 1 }}
                                   exit={reducedMotion ? undefined : { height: 0, opacity: 0 }}
-                                  transition={{ duration: 0.2, ease: EASE_SNAP }}
+                                  transition={{ duration: 0.22, ease: EASE_SNAP }}
                                   className="border-t border-white/[0.06] bg-black/60 p-3 sm:p-4 space-y-3"
                                 >
                                   {players.length > 0 ? (
                                     <div className="space-y-2">
-                                      <div className="flex items-center justify-between text-[11px] font-mono text-neutral-400 border-b border-white/[0.05] pb-1">
-                                        <span>{currentLang === "en" ? `Match players (${players.length})` : `Joueurs de la partie (${players.length})`}</span>
+                                      <div className="flex items-center justify-between text-[11px] font-mono text-neutral-400 border-b border-white/[0.05] pb-1.5">
+                                        <span>{currentLang === "en" ? `Match scoreboard (${players.length} players)` : `Tableau des scores (${players.length} joueurs)`}</span>
                                         <span>{currentLang === "en" ? "Combat & Eliminations" : "Combat & Éliminations"}</span>
                                       </div>
                                       <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -1412,24 +1459,32 @@ export default function RiotGamingHome() {
                                           <div
                                             key={`${p.name}-${pi}`}
                                             className={cn(
-                                              "flex items-center justify-between rounded p-2 text-xs font-mono",
-                                              p.isMe ? "bg-white/[0.08] border border-white/20" : "bg-white/[0.02] border border-white/[0.04]"
+                                              "flex items-center justify-between rounded-lg p-2 text-xs font-mono transition-colors",
+                                              p.isMe
+                                                ? "bg-rose-500/10 border border-rose-500/30 text-white"
+                                                : "bg-white/[0.02] border border-white/[0.05] hover:bg-white/[0.04]"
                                             )}
                                           >
                                             <div className="flex items-center gap-2 min-w-0">
-                                              <span className="font-bold text-white truncate">
+                                              <span className="font-bold text-white truncate max-w-[140px] sm:max-w-[180px]">
                                                 {p.name}
-                                                {p.isMe && <span className="text-rose-400 ml-1">{currentLang === "en" ? "(Me)" : "(Moi)"}</span>}
+                                                {p.isMe && (
+                                                  <span className="text-rose-400 ml-1 font-semibold">
+                                                    {currentLang === "en" ? "(Me)" : "(Moi)"}
+                                                  </span>
+                                                )}
                                               </span>
-                                              <span className="text-[10px] text-neutral-500">#{p.tag}</span>
+                                              <span className="text-[10px] text-neutral-500 shrink-0">#{p.tag}</span>
                                             </div>
-                                            <div className="text-right">
+                                            <div className="text-right shrink-0 tabular-nums">
                                               <span className="text-white font-bold">
-                                                {p.stats?.kills || 0}/{p.stats?.deaths || 0}/{p.stats?.assists || 0}
+                                                {p.stats?.kills ?? 0}/{p.stats?.deaths ?? 0}/{p.stats?.assists ?? 0}
                                               </span>
-                                              <span className="text-neutral-400 text-[10px] ml-2">
-                                                {p.stats?.score ? `${p.stats.score} pts` : ""}
-                                              </span>
+                                              {typeof p.stats?.score === "number" && (
+                                                <span className="text-neutral-400 text-[10px] ml-2">
+                                                  {Math.round(p.stats.score)} pts
+                                                </span>
+                                              )}
                                             </div>
                                           </div>
                                         ))}
@@ -1437,28 +1492,47 @@ export default function RiotGamingHome() {
                                     </div>
                                   ) : (
                                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs font-mono">
-                                      <div className="rounded bg-white/[0.02] p-2 border border-white/[0.04]">
-                                        <span className="text-[10px] text-neutral-400 block">{tr.avgPerRound}</span>
-                                        <span className="font-bold text-white">{seg?.adr?.value ?? 162} ADR</span>
+                                      <div className="rounded-lg bg-white/[0.02] p-2.5 border border-white/[0.05]">
+                                        <span className="text-[10px] text-neutral-400 block uppercase">{tr.avgPerRound}</span>
+                                        <span className="font-bold text-white mt-0.5 block tabular-nums">
+                                          {seg?.adr?.value !== undefined ? `${Math.round(seg.adr.value)} ADR` : "—"}
+                                        </span>
                                       </div>
-                                      <div className="rounded bg-white/[0.02] p-2 border border-white/[0.04]">
-                                        <span className="text-[10px] text-neutral-400 block">{currentLang === "en" ? "Damage delta" : "Delta dégâts"}</span>
-                                        <span className="font-bold text-emerald-400">+24 dmg</span>
+                                      <div className="rounded-lg bg-white/[0.02] p-2.5 border border-white/[0.05]">
+                                        <span className="text-[10px] text-neutral-400 block uppercase">{currentLang === "en" ? "Damage delta" : "Delta dégâts"}</span>
+                                        <span
+                                          className={cn(
+                                            "font-bold mt-0.5 block tabular-nums",
+                                            (seg?.damageDeltaPerRound?.value ?? 0) >= 0 ? "text-emerald-400" : "text-rose-400"
+                                          )}
+                                        >
+                                          {seg?.damageDeltaPerRound?.value !== undefined
+                                            ? `${seg.damageDeltaPerRound.value > 0 ? "+" : ""}${Math.round(seg.damageDeltaPerRound.value)} dmg`
+                                            : "—"}
+                                        </span>
                                       </div>
-                                      <div className="rounded bg-white/[0.02] p-2 border border-white/[0.04]">
-                                        <span className="text-[10px] text-neutral-400 block">{currentLang === "en" ? "Combat Score" : "Score Combat"}</span>
-                                        <span className="font-bold text-white">{seg?.performanceScore?.value ?? 245} pts</span>
+                                      <div className="rounded-lg bg-white/[0.02] p-2.5 border border-white/[0.05]">
+                                        <span className="text-[10px] text-neutral-400 block uppercase">{currentLang === "en" ? "Combat Score" : "Score Combat"}</span>
+                                        <span className="font-bold text-white mt-0.5 block tabular-nums">
+                                          {seg?.performanceScore?.value !== undefined
+                                            ? `${Math.round(seg.performanceScore.value)} pts`
+                                            : seg?.scorePerRound?.value !== undefined
+                                            ? `${Math.round(seg.scorePerRound.value)} pts`
+                                            : "—"}
+                                        </span>
                                       </div>
-                                      <div className="rounded bg-white/[0.02] p-2 border border-white/[0.04]">
-                                        <span className="text-[10px] text-neutral-400 block">{currentLang === "en" ? "Archive Status" : "Statut d'archive"}</span>
-                                        <span className="font-bold text-neutral-300">{currentLang === "en" ? "Synchronized" : "Synchronisé"}</span>
+                                      <div className="rounded-lg bg-white/[0.02] p-2.5 border border-white/[0.05]">
+                                        <span className="text-[10px] text-neutral-400 block uppercase">{currentLang === "en" ? "Archive Status" : "Statut d'archive"}</span>
+                                        <span className="font-bold text-neutral-300 mt-0.5 block">
+                                          {currentLang === "en" ? "Synchronized" : "Synchronisé"}
+                                        </span>
                                       </div>
                                     </div>
                                   )}
                                 </motion.div>
                               )}
                             </AnimatePresence>
-                          </div>
+                          </motion.div>
                         );
                       })
                     ) : (
@@ -1572,33 +1646,41 @@ export default function RiotGamingHome() {
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
                       <div className="rounded-lg border border-white/[0.06] bg-black/40 p-3">
                         <span className="text-[10px] font-mono uppercase text-neutral-400">{tr.telemTotalKills}</span>
-                        <p className="text-2xl font-mono font-bold text-white mt-1">
+                        <p className="text-2xl font-mono font-bold text-white mt-1 tabular-nums">
                           {telemetryMetrics?.totalKills ?? 0} Kills
                         </p>
-                        <p className="text-[10px] font-mono text-neutral-500">
-                          {currentLang === "en" ? "Average: " : "Moyenne : "}{(((telemetryMetrics?.totalKills ?? 0) / valorantMatches.length)).toFixed(1)} {currentLang === "en" ? "/ match" : "/ partie"}
+                        <p className="text-[10px] font-mono text-neutral-500 tabular-nums">
+                          {currentLang === "en" ? "Average: " : "Moyenne : "}
+                          {currentLang === "fr"
+                            ? (valorantMatches.length > 0 ? ((telemetryMetrics?.totalKills ?? 0) / valorantMatches.length).toFixed(1).replace(".", ",") : "0,0")
+                            : (valorantMatches.length > 0 ? ((telemetryMetrics?.totalKills ?? 0) / valorantMatches.length).toFixed(1) : "0.0")}{" "}
+                          {currentLang === "en" ? "/ match" : "/ partie"}
                         </p>
                       </div>
                       <div className="rounded-lg border border-white/[0.06] bg-black/40 p-3">
                         <span className="text-[10px] font-mono uppercase text-neutral-400">{tr.telemTotalDeaths}</span>
-                        <p className="text-2xl font-mono font-bold text-white mt-1">
-                          {telemetryMetrics?.totalDeaths ?? 0} Morts
+                        <p className="text-2xl font-mono font-bold text-white mt-1 tabular-nums">
+                          {telemetryMetrics?.totalDeaths ?? 0} {currentLang === "en" ? "Deaths" : "Morts"}
                         </p>
-                        <p className="text-[10px] font-mono text-neutral-500">
-                          {currentLang === "en" ? "Average: " : "Moyenne : "}{(((telemetryMetrics?.totalDeaths ?? 0) / valorantMatches.length)).toFixed(1)} {currentLang === "en" ? "/ match" : "/ partie"}
+                        <p className="text-[10px] font-mono text-neutral-500 tabular-nums">
+                          {currentLang === "en" ? "Average: " : "Moyenne : "}
+                          {currentLang === "fr"
+                            ? (valorantMatches.length > 0 ? ((telemetryMetrics?.totalDeaths ?? 0) / valorantMatches.length).toFixed(1).replace(".", ",") : "0,0")
+                            : (valorantMatches.length > 0 ? ((telemetryMetrics?.totalDeaths ?? 0) / valorantMatches.length).toFixed(1) : "0.0")}{" "}
+                          {currentLang === "en" ? "/ match" : "/ partie"}
                         </p>
                       </div>
                       <div className="rounded-lg border border-white/[0.06] bg-black/40 p-3">
                         <span className="text-[10px] font-mono uppercase text-neutral-400">{tr.telemHeadPrecision}</span>
-                        <p className="text-2xl font-mono font-bold text-purple-300 mt-1">
-                          {telemetryMetrics?.hsPct ?? 0}%
+                        <p className="text-2xl font-mono font-bold text-purple-300 mt-1 tabular-nums">
+                          {formatStatPercent(telemetryMetrics?.hsPct, currentLang, 1)}
                         </p>
                         <p className="text-[10px] font-mono text-neutral-500">{currentLang === "en" ? "Confirmed impacts" : "Impacts confirmés"}</p>
                       </div>
                       <div className="rounded-lg border border-white/[0.06] bg-black/40 p-3">
                         <span className="text-[10px] font-mono uppercase text-neutral-400">{tr.telemOverallAdr}</span>
-                        <p className="text-2xl font-mono font-bold text-white mt-1">
-                          {telemetryMetrics?.adr || (valorantCombatSummary.adr ? Math.round(Number(valorantCombatSummary.adr)) : "—")}
+                        <p className="text-2xl font-mono font-bold text-white mt-1 tabular-nums">
+                          {telemetryMetrics?.adr ? `${Math.round(telemetryMetrics.adr)} ADR` : (valorantCombatSummary.adr ? `${Math.round(Number(valorantCombatSummary.adr))} ADR` : "—")}
                         </p>
                         <p className="text-[10px] font-mono text-neutral-500">{currentLang === "en" ? "Damage / round" : "Dégâts / round"}</p>
                       </div>
@@ -1612,7 +1694,9 @@ export default function RiotGamingHome() {
                         <div className="space-y-2 text-xs">
                           <div className="flex items-center justify-between">
                             <span className="text-neutral-300">{tr.telemHeadshots}</span>
-                            <span className="font-mono font-bold text-purple-300">{telemetryMetrics?.hsPct ?? 0}%</span>
+                            <span className="font-mono font-bold text-purple-300 tabular-nums">
+                              {formatStatPercent(telemetryMetrics?.hsPct ?? 0, currentLang)}
+                            </span>
                           </div>
                           <div className="h-2 w-full rounded-full bg-white/[0.06] overflow-hidden">
                             <div className="h-full bg-purple-400 rounded-full" style={{ width: `${telemetryMetrics?.hsPct ?? 0}%` }} />
@@ -1620,7 +1704,9 @@ export default function RiotGamingHome() {
 
                           <div className="flex items-center justify-between">
                             <span className="text-neutral-400">{tr.telemBodyshots}</span>
-                            <span className="font-mono font-bold text-cyan-300">{telemetryMetrics?.bsPct ?? 0}%</span>
+                            <span className="font-mono font-bold text-cyan-300 tabular-nums">
+                              {formatStatPercent(telemetryMetrics?.bsPct ?? 0, currentLang)}
+                            </span>
                           </div>
                           <div className="h-2 w-full rounded-full bg-white/[0.06] overflow-hidden">
                             <div className="h-full bg-cyan-400 rounded-full" style={{ width: `${telemetryMetrics?.bsPct ?? 0}%` }} />
@@ -1628,7 +1714,9 @@ export default function RiotGamingHome() {
 
                           <div className="flex items-center justify-between">
                             <span className="text-neutral-500">{tr.telemLegshots}</span>
-                            <span className="font-mono font-bold text-neutral-400">{telemetryMetrics?.lsPct ?? 0}%</span>
+                            <span className="font-mono font-bold text-neutral-400 tabular-nums">
+                              {formatStatPercent(telemetryMetrics?.lsPct ?? 0, currentLang)}
+                            </span>
                           </div>
                           <div className="h-2 w-full rounded-full bg-white/[0.06] overflow-hidden">
                             <div className="h-full bg-neutral-600 rounded-full" style={{ width: `${telemetryMetrics?.lsPct ?? 0}%` }} />
@@ -1648,8 +1736,8 @@ export default function RiotGamingHome() {
                                 className="flex items-center justify-between rounded bg-white/[0.02] border border-white/[0.06] p-2.5"
                               >
                                 <span className="font-bold text-white">{ms.mapName}</span>
-                                <span className="font-mono text-emerald-400 font-semibold">
-                                  {ms.winrate}% Winrate · {ms.kd} KD ({ms.count} {ms.count > 1 ? tr.matches : tr.match})
+                                <span className="font-mono text-emerald-400 font-semibold tabular-nums">
+                                  {formatStatPercent(ms.winrate, currentLang)} Winrate · {ms.kd} KD ({ms.count} {ms.count > 1 ? tr.matches : tr.match})
                                 </span>
                               </div>
                             ))
@@ -1847,8 +1935,8 @@ export default function RiotGamingHome() {
                           <Target className="h-4 w-4 text-emerald-400" />
                         </div>
                         <div className="my-2">
-                          <p className="text-3xl font-mono font-bold tracking-tight text-white">
-                            {lolSummary.avgKp > 0 ? `${lolSummary.avgKp}%` : "—"}
+                          <p className="text-3xl font-mono font-bold tracking-tight text-white tabular-nums">
+                            {lolSummary.avgKp > 0 ? formatStatPercent(lolSummary.avgKp, currentLang) : "—"}
                           </p>
                           <p className="text-[11px] font-mono text-neutral-400">
                             {lolSummary.avgKp > 0 ? (currentLang === "en" ? "Average kill involvement" : "Participation moyenne aux éliminations") : "—"}
@@ -1875,19 +1963,26 @@ export default function RiotGamingHome() {
                         {lolMatches.slice(0, 5).map((m, idx) => {
                           const me = m.scoreboard?.players?.find((p) => p.isMe) || m.scoreboard?.players?.[0];
                           const isWin = m.metadata?.result?.toLowerCase() === "victory";
-                          const kills = me?.stats?.kills ?? 9;
-                          const deaths = me?.stats?.deaths ?? 11;
-                          const assists = me?.stats?.assists ?? 5;
-                          const kda = deaths > 0 ? ((kills + assists) / deaths).toFixed(2) : String(kills + assists);
+                          const kills = me?.stats?.kills ?? 0;
+                          const deaths = me?.stats?.deaths ?? 0;
+                          const assists = me?.stats?.assists ?? 0;
+                          const kda = deaths > 0 ? ((kills + assists) / deaths).toFixed(2) : (kills + assists > 0 ? (kills + assists).toFixed(2) : "0.00");
                           const champName = me?.character || m.metadata?.agentName;
                           const champIcon = m.metadata?.agentImageUrl || (champName ? getLolChampionIcon(champName) : null);
 
                           return (
-                            <div
+                            <motion.div
                               key={m.metadata?.matchId || idx}
-                              className="flex items-center justify-between rounded-lg border border-white/[0.06] bg-black/30 p-3 hover:border-white/10 transition-all"
+                              initial={reducedMotion ? false : { opacity: 0, y: 6 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{
+                                duration: 0.22,
+                                delay: reducedMotion ? 0 : Math.min(idx * 0.03, 0.18),
+                                ease: EASE_OUT,
+                              }}
+                              className="flex items-center justify-between rounded-xl border border-white/[0.07] bg-black/35 p-3 sm:px-4 hover:border-white/15 hover:bg-black/45 transition-all gap-3"
                             >
-                              <div className="flex items-center gap-3 min-w-0">
+                              <div className="flex items-center gap-3 min-w-0 flex-1">
                                 <div
                                   className={cn(
                                     "h-8 w-1 rounded-full shrink-0",
@@ -1918,19 +2013,19 @@ export default function RiotGamingHome() {
                                       {isWin ? tr.victory : tr.defeat}
                                     </span>
                                   </div>
-                                  <p className="text-[10px] font-mono text-neutral-400 mt-0.5">
+                                  <p className="text-[10px] font-mono text-neutral-400 mt-0.5 truncate">
                                     {m.metadata?.modeName || "Normal Draft"} · {m.metadata?.gameDuration || "28m"}
                                   </p>
                                 </div>
                               </div>
 
-                              <div className="text-right shrink-0">
-                                <p className="text-xs font-mono font-bold text-white">
+                              <div className="w-20 text-right shrink-0 tabular-nums font-mono">
+                                <p className="text-xs sm:text-sm font-bold text-white">
                                   {kills}/{deaths}/{assists}
                                 </p>
-                                <p className="text-[10px] font-mono text-neutral-400">{kda} KDA</p>
+                                <p className="text-[10px] text-neutral-400">{kda} KDA</p>
                               </div>
-                            </div>
+                            </motion.div>
                           );
                         })}
                       </div>

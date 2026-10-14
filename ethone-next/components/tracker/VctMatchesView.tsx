@@ -254,8 +254,8 @@ export default function VctMatchesView() {
             <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">
               {tr.vctAccuracy}
             </span>
-            <p className="text-2xl font-mono font-bold text-emerald-400 mt-1">
-              <AnimatedNumber value={pickEmStats.accuracy} suffix="%" />
+            <p className="text-2xl font-mono font-bold text-emerald-400 mt-1 tabular-nums">
+              <AnimatedNumber value={pickEmStats.accuracy} suffix={isEn ? "%" : " %"} locale={isEn ? "en" : "fr"} />
             </p>
             <p className="text-[11px] font-mono text-neutral-400 mt-0.5">
               {pickEmStats.evaluated} {isEn ? (pickEmStats.evaluated > 1 ? "matches evaluated" : "match evaluated") : (pickEmStats.evaluated > 1 ? "matchs évalués" : "match évalué")}

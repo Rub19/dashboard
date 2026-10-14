@@ -652,3 +652,43 @@ export function getPatchNotes(lang?: string): PatchNoteRelease[] {
     },
   ];
 }
+
+export function formatStatPercent(
+  value: number | string | null | undefined,
+  lang: string = "fr",
+  maxDecimals: number = 1
+): string {
+  if (value === null || value === undefined || value === "" || Number.isNaN(Number(value))) {
+    return "—";
+  }
+  const num = Number(value);
+  const factor = Math.pow(10, maxDecimals);
+  const rounded = Math.round(num * factor) / factor;
+  const isWhole = Math.round(rounded) === rounded;
+  const formattedNumber = isWhole
+    ? String(Math.round(rounded))
+    : (lang === "fr" ? rounded.toFixed(maxDecimals).replace(".", ",") : rounded.toFixed(maxDecimals));
+  return lang === "fr" ? `${formattedNumber} %` : `${formattedNumber}%`;
+}
+
+export function formatKdRatio(
+  kills: number | null | undefined,
+  deaths: number | null | undefined
+): string {
+  if (kills === null || kills === undefined || Number.isNaN(Number(kills))) return "—";
+  const k = Number(kills);
+  const d = deaths !== null && deaths !== undefined ? Math.max(0, Number(deaths)) : 0;
+  if (d === 0) return k > 0 ? k.toFixed(2) : "0.00";
+  return (k / d).toFixed(2);
+}
+
+export function formatStatScore(
+  value: number | string | null | undefined,
+  unit?: string
+): string {
+  if (value === null || value === undefined || value === "" || Number.isNaN(Number(value))) {
+    return "—";
+  }
+  const rounded = Math.round(Number(value));
+  return unit ? `${rounded} ${unit}` : String(rounded);
+}

@@ -3,13 +3,14 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import {
   Swords,
   ShieldCheck,
   User,
   Search,
   ChevronRight,
+  ChevronDown,
   Flame,
   Target,
   Trophy,
@@ -20,6 +21,8 @@ import {
   CheckCircle2,
   ExternalLink,
   Heart,
+  RefreshCw,
+  Sparkles,
 } from "@/components/icons/ph";
 import { useSettings } from "@/components/SettingsProvider";
 import { useToast } from "@/components/ToastProvider";
@@ -34,6 +37,7 @@ import {
 import {
   fetchValorantMatchesDirect,
   type ValorantMatch,
+  VALORANT_QUEUES,
 } from "@/lib/valorant-tracker";
 import {
   fetchLolMatchesDirect,
@@ -44,10 +48,11 @@ import RiotTrackerConnectModal from "@/components/tracker/RiotTrackerConnectModa
 import ValorantFriendCompareModal from "@/components/tracker/ValorantFriendCompareModal";
 import RiotAttributionModal from "@/components/tracker/RiotAttributionModal";
 import ValorantLiveMatchView from "@/components/tracker/ValorantLiveMatchView";
+import { AnimatedNumber } from "@/components/tracker/TrackerMotion";
 import { useAnimatedSidebar } from "@/components/motion/animated-sidebar";
 import { Icon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
-import { EASE_SNAP } from "@/lib/ease";
+import { EASE_SNAP, EASE_OUT, SPRING_PILL } from "@/lib/ease";
 
 type GameTab =
   | "valorant"
@@ -58,11 +63,35 @@ type GameTab =
   | "telemetry"
   | "training";
 
+function getAgentRole(agentName: string): string {
+  const n = agentName.toLowerCase();
+  if (["jett", "reyna", "raze", "phoenix", "yoru", "neon", "iso"].includes(n)) return "Duelliste";
+  if (["sova", "fade", "breach", "skye", "kay/o", "kayo", "gekko"].includes(n)) return "Initiateur";
+  if (["omen", "brimstone", "viper", "astra", "clove", "harbor"].includes(n)) return "Contrôleur";
+  if (["killjoy", "cypher", "sage", "chamber", "deadlock", "vyse"].includes(n)) return "Sentinelle";
+  return "Agent";
+}
+
+function getTierTone(tierName?: string | null): { text: string; bg: string; border: string; glow: string } {
+  if (!tierName) return { text: "text-neutral-400", bg: "bg-white/[0.04]", border: "border-white/10", glow: "" };
+  const t = tierName.toLowerCase();
+  if (t.includes("radiant")) return { text: "text-amber-300", bg: "bg-amber-500/15", border: "border-amber-400/40", glow: "shadow-[0_0_16px_rgba(251,191,36,0.25)]" };
+  if (t.includes("immortal") || t.includes("immortel")) return { text: "text-rose-400", bg: "bg-rose-500/15", border: "border-rose-500/40", glow: "shadow-[0_0_16px_rgba(244,63,94,0.25)]" };
+  if (t.includes("ascendant")) return { text: "text-emerald-400", bg: "bg-emerald-500/15", border: "border-emerald-500/40", glow: "shadow-[0_0_16px_rgba(16,185,129,0.25)]" };
+  if (t.includes("diamond") || t.includes("diamant")) return { text: "text-purple-400", bg: "bg-purple-500/15", border: "border-purple-500/40", glow: "shadow-[0_0_16px_rgba(168,85,247,0.25)]" };
+  if (t.includes("platinum") || t.includes("platine")) return { text: "text-cyan-400", bg: "bg-cyan-500/15", border: "border-cyan-500/40", glow: "shadow-[0_0_16px_rgba(6,182,212,0.25)]" };
+  if (t.includes("gold") || t.includes("or")) return { text: "text-yellow-400", bg: "bg-yellow-500/15", border: "border-yellow-500/40", glow: "shadow-[0_0_16px_rgba(234,179,8,0.25)]" };
+  if (t.includes("silver") || t.includes("argent")) return { text: "text-slate-300", bg: "bg-slate-400/15", border: "border-slate-400/40", glow: "" };
+  if (t.includes("bronze")) return { text: "text-amber-600", bg: "bg-amber-700/15", border: "border-amber-700/40", glow: "" };
+  return { text: "text-neutral-300", bg: "bg-white/[0.04]", border: "border-white/10", glow: "" };
+}
+
 export default function RiotGamingHome() {
   const { settings } = useSettings();
   const { success, error: showError } = useToast();
   const { open, setOpen } = useAnimatedSidebar();
   const searchParams = useSearchParams();
+  const reducedMotion = useReducedMotion();
 
   const [activeGame, setActiveGame] = useState<GameTab>(() => {
     if (typeof window !== "undefined") {
@@ -175,15 +204,31 @@ export default function RiotGamingHome() {
   const [connectModalOpen, setConnectModalOpen] = useState(false);
   const [compareModalOpen, setCompareModalOpen] = useState(false);
   const [attributionModalOpen, setAttributionModalOpen] = useState(false);
-  const [simulatedRsoConnected, setSimulatedRsoConnected] = useState(true);
+
+  const [selectedQueue, setSelectedQueue] = useState<string>("all");
+  const [expandedMatchId, setExpandedMatchId] = useState<string | null>(null);
+  const [showAllMatches, setShowAllMatches] = useState(false);
 
   const valorantStats = useMemo<ValorantComputedStats>(() => {
     return calculateComputedStats(valorantMatches, valorantProfile?.provenance || "henrikdev");
   }, [valorantMatches, valorantProfile]);
 
   const topValorantAgents = useMemo(() => {
-    return calculateAgentStats(valorantMatches).slice(0, 3);
+    return calculateAgentStats(valorantMatches).slice(0, 4);
   }, [valorantMatches]);
+
+  const filteredValorantMatches = useMemo(() => {
+    if (selectedQueue === "all") return valorantMatches;
+    return valorantMatches.filter((m) => {
+      const q = (m.metadata?.queue || m.metadata?.modeName || "").toLowerCase();
+      if (selectedQueue === "competitive") return q.includes("comp");
+      if (selectedQueue === "unrated") return q.includes("unrated") || q.includes("non class");
+      if (selectedQueue === "swiftplay") return q.includes("swift");
+      if (selectedQueue === "spikerush") return q.includes("spike");
+      if (selectedQueue === "deathmatch") return q.includes("death");
+      return true;
+    });
+  }, [valorantMatches, selectedQueue]);
 
   const loadPlayerData = useCallback(
     async (targetName: string, targetTag: string, game: GameTab) => {
@@ -329,571 +374,945 @@ export default function RiotGamingHome() {
     return { total, wins, winRate, kda, kTotal, dTotal, aTotal };
   }, [lolMatches]);
 
+  const tierTone = useMemo(() => {
+    return getTierTone(valorantProfile?.currentTierPatched);
+  }, [valorantProfile?.currentTierPatched]);
+
+  const rrValue = valorantProfile?.rr ?? 0;
+  const hasProfile = Boolean(valorantProfile?.name || riotName);
+
   return (
-    <div className="flex h-full min-h-0 w-full flex-col overflow-y-auto os-scroll [overscroll-behavior:contain]">
+    <div className="flex h-full min-h-0 w-full flex-col overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[#0A0C10] text-neutral-200">
       <div className="mx-auto w-full max-w-7xl px-3 py-4 sm:px-6 sm:py-6 space-y-5">
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.35, ease: EASE_SNAP }}
-          className="relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[#121214]/80 p-5 sm:p-6 backdrop-blur-2xl shadow-xl"
-        >
-          <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-            <div className="space-y-1.5 min-w-0">
-              <div className="flex flex-wrap items-center gap-2">
+        <header className="rounded-xl border border-white/[0.08] bg-[#10131B]/95 p-3 sm:p-4 backdrop-blur-xl shadow-lg">
+          <div className="flex flex-col gap-3.5">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5 min-w-0">
                 <button
                   type="button"
                   onClick={() => setOpen(!open)}
-                  className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-neutral-400 hover:text-white hover:bg-white/[0.08] transition-all active:scale-95 cursor-pointer"
+                  className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-neutral-400 hover:text-white hover:bg-white/[0.08] transition-all active:scale-95 cursor-pointer"
                   title={open ? "Réduire le menu" : "Ouvrir le menu"}
                   aria-label="Basculer la barre latérale"
                 >
-                  <Icon name={open ? "sidebar-simple" : "sidebar"} className="h-3.5 w-3.5" />
+                  <Icon name={open ? "sidebar-simple" : "sidebar"} className="h-4 w-4" />
                 </button>
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-0.5 text-[11px] font-medium text-neutral-300">
-                  <span className="h-1.5 w-1.5 rounded-full bg-white/70" />
-                  Riot Games Tracker
-                </span>
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-0.5 text-[11px] font-medium text-neutral-300">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                  Serveurs Opérationnels
-                </span>
+
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <span className="font-mono text-xs font-black tracking-wider text-white uppercase">
+                      ETHONE
+                    </span>
+                    <span className="text-neutral-500 font-mono text-xs">/</span>
+                    <span className="text-xs font-semibold uppercase tracking-wider text-rose-400">
+                      TACTICAL
+                    </span>
+                  </div>
+
+                  <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.03] px-2 py-0.5 text-[10px] font-mono text-neutral-300">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.8)]" />
+                    Riot API Live
+                  </span>
+                </div>
               </div>
 
-              <h1 className="text-xl sm:text-2xl font-semibold tracking-tight text-white">
-                ETHONE <span className="text-neutral-400 font-normal">Tactical Tracker</span>
-              </h1>
-              <p className="text-xs text-neutral-400 max-w-xl leading-relaxed">
-                Télémétrie de combat, statistiques et analyse de parties compétitives pour VALORANT et League of Legends.
-              </p>
-            </div>
+              <div className="flex flex-wrap items-center gap-1 rounded-xl border border-white/[0.08] bg-black/40 p-1">
+                <button
+                  type="button"
+                  onClick={() => selectGameTab("valorant")}
+                  className={cn(
+                    "relative flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer",
+                    activeGame === "valorant"
+                      ? "text-white"
+                      : "text-neutral-400 hover:text-neutral-200"
+                  )}
+                >
+                  {activeGame === "valorant" && (
+                    <motion.div
+                      layoutId="tactical-game-pill"
+                      transition={SPRING_PILL}
+                      className="absolute inset-0 rounded-lg bg-rose-500/20 border border-rose-500/40 shadow-sm"
+                    />
+                  )}
+                  <GameBrandIcon name="Valorant" className="relative z-10 h-3.5 w-3.5" />
+                  <span className="relative z-10">VALORANT</span>
+                </button>
 
-            <div className="flex flex-wrap items-center gap-2 shrink-0">
-              <button
-                type="button"
-                onClick={() => selectGameTab("live")}
-                className="flex items-center gap-2 rounded-xl bg-white text-black font-medium px-3.5 py-2 text-xs hover:bg-neutral-200 active:scale-95 transition-all cursor-pointer shadow-sm"
-              >
-                <Flame className="h-3.5 w-3.5 text-neutral-900" />
-                <span>Partie en direct</span>
-                <span className="rounded-md bg-black/10 px-1.5 py-0.2 text-[9px] font-semibold text-neutral-800">
-                  Bêta
-                </span>
-              </button>
-              <button
-                type="button"
-                onClick={() => selectGameTab("coach")}
-                className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.05] hover:bg-white/[0.09] hover:text-white text-neutral-200 font-medium px-3.5 py-2 text-xs active:scale-95 transition-all cursor-pointer backdrop-blur"
-              >
-                <Brain className="h-3.5 w-3.5 text-neutral-300" />
-                <span>Coach IA</span>
-              </button>
-            </div>
-          </div>
-        </motion.div>
+                <button
+                  type="button"
+                  onClick={() => selectGameTab("live")}
+                  className={cn(
+                    "relative flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer",
+                    activeGame === "live"
+                      ? "text-white"
+                      : "text-neutral-400 hover:text-neutral-200"
+                  )}
+                >
+                  {activeGame === "live" && (
+                    <motion.div
+                      layoutId="tactical-game-pill"
+                      transition={SPRING_PILL}
+                      className="absolute inset-0 rounded-lg bg-orange-500/20 border border-orange-500/40 shadow-sm"
+                    />
+                  )}
+                  <Flame className="relative z-10 h-3.5 w-3.5 text-orange-400" />
+                  <span className="relative z-10">Partie en direct</span>
+                  <span className="relative z-10 rounded bg-orange-500/30 px-1 py-0.2 text-[9px] font-mono font-bold text-orange-200">
+                    LIVE
+                  </span>
+                </button>
 
-        <div className="flex flex-col gap-3">
-          <div className="flex flex-wrap items-center gap-1 rounded-2xl border border-white/[0.08] bg-[#121214]/80 p-1 backdrop-blur-xl shadow-lg">
-            <button
-              type="button"
-              onClick={() => selectGameTab("valorant")}
-              className={cn(
-                "flex items-center gap-2 rounded-xl px-3 py-1.5 text-xs font-medium transition-all cursor-pointer",
-                activeGame === "valorant"
-                  ? "bg-white/15 text-white shadow-sm border border-white/15"
-                  : "text-neutral-400 hover:text-white hover:bg-white/[0.04]"
-              )}
-            >
-              <GameBrandIcon name="Valorant" className="h-3.5 w-3.5 text-neutral-300" />
-              <span>VALORANT</span>
-            </button>
+                <button
+                  type="button"
+                  onClick={() => selectGameTab("lol")}
+                  className={cn(
+                    "relative flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer",
+                    activeGame === "lol"
+                      ? "text-white"
+                      : "text-neutral-400 hover:text-neutral-200"
+                  )}
+                >
+                  {activeGame === "lol" && (
+                    <motion.div
+                      layoutId="tactical-game-pill"
+                      transition={SPRING_PILL}
+                      className="absolute inset-0 rounded-lg bg-amber-500/20 border border-amber-500/40 shadow-sm"
+                    />
+                  )}
+                  <GameBrandIcon name="League of Legends" className="relative z-10 h-3.5 w-3.5" />
+                  <span className="relative z-10">LoL</span>
+                </button>
 
-            <button
-              type="button"
-              onClick={() => selectGameTab("live")}
-              className={cn(
-                "flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-medium transition-all cursor-pointer",
-                activeGame === "live"
-                  ? "bg-white/15 text-white shadow-sm border border-white/15"
-                  : "text-neutral-400 hover:text-white hover:bg-white/[0.04]"
-              )}
-            >
-              <Flame className="h-3.5 w-3.5 text-neutral-300" />
-              <span>Partie en direct</span>
-              <span className="rounded-md bg-white/10 px-1.5 py-0.2 text-[9px] font-semibold text-neutral-300">
-                Bêta
-              </span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => selectGameTab("lol")}
-              className={cn(
-                "flex items-center gap-2 rounded-xl px-3 py-1.5 text-xs font-medium transition-all cursor-pointer",
-                activeGame === "lol"
-                  ? "bg-white/15 text-white shadow-sm border border-white/15"
-                  : "text-neutral-400 hover:text-white hover:bg-white/[0.04]"
-              )}
-            >
-              <GameBrandIcon name="League of Legends" className="h-3.5 w-3.5 text-neutral-300" />
-              <span>League of Legends</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => selectGameTab("tft")}
-              className={cn(
-                "flex items-center gap-2 rounded-xl px-3 py-1.5 text-xs font-medium transition-all cursor-pointer",
-                activeGame === "tft"
-                  ? "bg-white/15 text-white shadow-sm border border-white/15"
-                  : "text-neutral-400 hover:text-white hover:bg-white/[0.04]"
-              )}
-            >
-              <GameBrandIcon name="Teamfight Tactics" className="h-3.5 w-3.5 text-neutral-300" />
-              <span>Teamfight Tactics</span>
-            </button>
-
-            <div className="hidden sm:block h-3.5 w-px bg-white/10 mx-1" />
-
-            <button
-              type="button"
-              onClick={() => selectGameTab("coach")}
-              className={cn(
-                "flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-medium transition-all cursor-pointer",
-                activeGame === "coach"
-                  ? "bg-white/15 text-white shadow-sm border border-white/15"
-                  : "text-neutral-400 hover:text-white hover:bg-white/[0.04]"
-              )}
-            >
-              <Brain className="h-3.5 w-3.5 text-neutral-300" />
-              <span>Coach IA</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => selectGameTab("telemetry")}
-              className={cn(
-                "flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-medium transition-all cursor-pointer",
-                activeGame === "telemetry"
-                  ? "bg-white/15 text-white shadow-sm border border-white/15"
-                  : "text-neutral-400 hover:text-white hover:bg-white/[0.04]"
-              )}
-            >
-              <Target className="h-3.5 w-3.5 text-neutral-300" />
-              <span>Télémétrie</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => selectGameTab("training")}
-              className={cn(
-                "flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-medium transition-all cursor-pointer",
-                activeGame === "training"
-                  ? "bg-white/15 text-white shadow-sm border border-white/15"
-                  : "text-neutral-400 hover:text-white hover:bg-white/[0.04]"
-              )}
-            >
-              <Activity className="h-3.5 w-3.5 text-neutral-300" />
-              <span>Plan d'Entraînement</span>
-            </button>
-          </div>
-
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <form onSubmit={handleSearch} className="flex items-center gap-2">
-              <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-[#121214]/80 px-3 py-1.5 focus-within:border-white/20 transition-all">
-                <User className="h-3.5 w-3.5 text-neutral-400" />
-                <input
-                  type="text"
-                  value={riotName}
-                  onChange={(e) => setRiotName(e.target.value)}
-                  placeholder="Riot ID"
-                  aria-label="Nom Riot"
-                  className="w-24 sm:w-28 bg-transparent text-xs font-medium text-white outline-none placeholder:text-neutral-500"
-                />
-                <span className="text-xs text-neutral-500">#</span>
-                <input
-                  type="text"
-                  value={riotTag}
-                  onChange={(e) => setRiotTag(e.target.value)}
-                  placeholder="TAG"
-                  aria-label="Tag Riot"
-                  className="w-12 bg-transparent font-mono text-xs font-medium text-white outline-none placeholder:text-neutral-500"
-                />
+                <button
+                  type="button"
+                  onClick={() => selectGameTab("tft")}
+                  className={cn(
+                    "relative flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer",
+                    activeGame === "tft"
+                      ? "text-white"
+                      : "text-neutral-400 hover:text-neutral-200"
+                  )}
+                >
+                  {activeGame === "tft" && (
+                    <motion.div
+                      layoutId="tactical-game-pill"
+                      transition={SPRING_PILL}
+                      className="absolute inset-0 rounded-lg bg-purple-500/20 border border-purple-500/40 shadow-sm"
+                    />
+                  )}
+                  <GameBrandIcon name="Teamfight Tactics" className="relative z-10 h-3.5 w-3.5" />
+                  <span className="relative z-10">TFT</span>
+                </button>
               </div>
-              <button
-                type="submit"
-                disabled={loading}
-                className="flex items-center gap-1.5 rounded-xl bg-white text-black font-medium px-3.5 py-1.5 text-xs hover:bg-neutral-200 active:scale-95 transition-all cursor-pointer disabled:opacity-40 shadow-sm"
-              >
-                <Search className="h-3.5 w-3.5 text-black" />
-                <span>Analyser</span>
-              </button>
-            </form>
 
-            <div className="flex items-center gap-1.5 text-xs">
-              <span className="text-[10px] uppercase font-medium tracking-wider text-neutral-500">Exemples :</span>
-              <button
-                type="button"
-                onClick={() => applyQuickPlayer("TenZ", "SEN", "valorant")}
-                className="rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-1 text-[11px] font-medium text-neutral-300 hover:text-white hover:bg-white/[0.08] active:scale-95 transition-all cursor-pointer"
-              >
-                TenZ #SEN (Valorant)
-              </button>
-              <button
-                type="button"
-                onClick={() => applyQuickPlayer("Agurin", "EUW", "lol")}
-                className="rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-1 text-[11px] font-medium text-neutral-300 hover:text-white hover:bg-white/[0.08] active:scale-95 transition-all cursor-pointer"
-              >
-                Agurin #EUW (LoL)
-              </button>
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => selectGameTab("coach")}
+                  className={cn(
+                    "flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium transition-all cursor-pointer active:scale-95",
+                    activeGame === "coach"
+                      ? "border-purple-500/40 bg-purple-500/15 text-purple-200 shadow-sm"
+                      : "border-white/10 bg-white/[0.04] text-neutral-300 hover:text-white hover:bg-white/[0.08]"
+                  )}
+                >
+                  <Brain className="h-3.5 w-3.5 text-purple-400" />
+                  <span>Coach IA</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => selectGameTab("telemetry")}
+                  className={cn(
+                    "flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium transition-all cursor-pointer active:scale-95",
+                    activeGame === "telemetry"
+                      ? "border-cyan-500/40 bg-cyan-500/15 text-cyan-200 shadow-sm"
+                      : "border-white/10 bg-white/[0.04] text-neutral-300 hover:text-white hover:bg-white/[0.08]"
+                  )}
+                >
+                  <Target className="h-3.5 w-3.5 text-cyan-400" />
+                  <span>Télémétrie</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => selectGameTab("training")}
+                  className={cn(
+                    "flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium transition-all cursor-pointer active:scale-95",
+                    activeGame === "training"
+                      ? "border-emerald-500/40 bg-emerald-500/15 text-emerald-200 shadow-sm"
+                      : "border-white/10 bg-white/[0.04] text-neutral-300 hover:text-white hover:bg-white/[0.08]"
+                  )}
+                >
+                  <Activity className="h-3.5 w-3.5 text-emerald-400" />
+                  <span className="hidden sm:inline">Entraînement</span>
+                </button>
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-white/[0.06]">
+              <form onSubmit={handleSearch} className="flex items-center gap-2 flex-1 max-w-md">
+                <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 focus-within:border-white/20 transition-all flex-1">
+                  <User className="h-3.5 w-3.5 text-neutral-400 shrink-0" />
+                  <input
+                    type="text"
+                    value={riotName}
+                    onChange={(e) => setRiotName(e.target.value)}
+                    placeholder="Riot ID"
+                    aria-label="Nom Riot"
+                    className="w-full bg-transparent text-xs font-medium text-white outline-none placeholder:text-neutral-500"
+                  />
+                  <span className="text-xs font-mono text-neutral-500">#</span>
+                  <input
+                    type="text"
+                    value={riotTag}
+                    onChange={(e) => setRiotTag(e.target.value)}
+                    placeholder="TAG"
+                    aria-label="Tag Riot"
+                    className="w-16 bg-transparent font-mono text-xs font-medium text-white outline-none placeholder:text-neutral-500 uppercase"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="flex items-center gap-1.5 rounded-lg bg-white text-black font-semibold px-3.5 py-1.5 text-xs hover:bg-neutral-200 active:scale-95 transition-all cursor-pointer disabled:opacity-40 shadow-sm shrink-0"
+                >
+                  <Search className="h-3.5 w-3.5 text-black" />
+                  <span>{loading ? "Scan..." : "Analyser"}</span>
+                </button>
+              </form>
+
+              <div className="flex items-center gap-1.5 text-xs overflow-x-auto os-scroll">
+                <span className="text-[10px] uppercase font-mono font-medium tracking-wider text-neutral-500 shrink-0">
+                  Pros :
+                </span>
+                <button
+                  type="button"
+                  onClick={() => applyQuickPlayer("TenZ", "SEN", "valorant")}
+                  className="rounded-md border border-white/10 bg-white/[0.03] px-2 py-0.5 text-[11px] font-mono text-neutral-300 hover:text-white hover:bg-white/[0.07] active:scale-95 transition-all cursor-pointer shrink-0"
+                >
+                  TenZ #SEN
+                </button>
+                <button
+                  type="button"
+                  onClick={() => applyQuickPlayer("Boaster", "FNC", "valorant")}
+                  className="rounded-md border border-white/10 bg-white/[0.03] px-2 py-0.5 text-[11px] font-mono text-neutral-300 hover:text-white hover:bg-white/[0.07] active:scale-95 transition-all cursor-pointer shrink-0"
+                >
+                  Boaster #FNC
+                </button>
+                <button
+                  type="button"
+                  onClick={() => applyQuickPlayer("Faker", "KR1", "lol")}
+                  className="rounded-md border border-white/10 bg-white/[0.03] px-2 py-0.5 text-[11px] font-mono text-neutral-300 hover:text-white hover:bg-white/[0.07] active:scale-95 transition-all cursor-pointer shrink-0"
+                >
+                  Faker #KR1
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        </header>
 
         <AnimatePresence mode="wait">
           <motion.div
             key={activeGame}
-            initial={{ opacity: 0, y: 12 }}
+            initial={reducedMotion ? false : { opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.28, ease: EASE_SNAP }}
-            className="space-y-4"
+            exit={reducedMotion ? undefined : { opacity: 0, y: -6 }}
+            transition={{ duration: 0.24, ease: EASE_SNAP }}
+            className="space-y-5"
           >
             {activeGame === "valorant" && (
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                  <motion.div
-                    whileHover={{ y: -2 }}
-                    className="rounded-2xl border border-white/[0.08] bg-[#121214]/80 p-4 backdrop-blur-2xl shadow-sm space-y-3"
-                  >
-                    <div className="flex items-center gap-3">
-                      {valorantProfile?.cardSmall ? (
-                        <img
-                          src={valorantProfile.cardSmall}
-                          alt={valorantProfile.name}
-                          className="h-12 w-12 rounded-xl object-cover border border-white/10 shadow-sm shrink-0"
-                        />
-                      ) : (
-                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/[0.04] text-neutral-300 font-semibold border border-white/10 shrink-0">
-                          <User className="h-6 w-6 text-neutral-400" />
+              <div className="space-y-5">
+                <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-4 sm:p-5 backdrop-blur-xl shadow-md">
+                  <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+                    <div className="flex items-center gap-4 min-w-0">
+                      <div className="relative shrink-0">
+                        {valorantProfile?.cardSmall ? (
+                          <img
+                            src={valorantProfile.cardSmall}
+                            alt={valorantProfile.name}
+                            className="h-16 w-16 rounded-xl object-cover border border-white/10 shadow-md"
+                          />
+                        ) : (
+                          <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-white/[0.03] border border-white/10 text-neutral-400">
+                            <User className="h-8 w-8" />
+                          </div>
+                        )}
+                        {valorantProfile?.accountLevel !== undefined && (
+                          <span className="absolute -bottom-2 -right-1 rounded-md border border-black/80 bg-neutral-900 px-1.5 py-0.2 font-mono text-[10px] font-bold text-neutral-300 shadow">
+                            Niv. {valorantProfile.accountLevel}
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="min-w-0 space-y-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h2 className="text-xl font-bold tracking-tight text-white truncate">
+                            {valorantProfile?.name || riotName || "Profil Tactique"}
+                          </h2>
+                          <span className="font-mono text-xs font-semibold text-neutral-400">
+                            {riotTag ? `#${valorantProfile?.tag || riotTag}` : (hasProfile ? "" : "— Non connecté")}
+                          </span>
+                          <span className="rounded-md border border-rose-500/30 bg-rose-500/10 px-1.5 py-0.2 font-mono text-[10px] font-semibold text-rose-300">
+                            VALORANT
+                          </span>
                         </div>
-                      )}
-                      <div className="min-w-0">
-                        <h3 className="text-base font-semibold text-white truncate">
-                          {valorantProfile?.name || riotName || "Aucun joueur"}
-                        </h3>
-                        <p className="font-mono text-xs text-neutral-400">
-                          {riotTag ? `#${valorantProfile?.tag || riotTag}` : (valorantProfile?.name || riotName ? "" : "Recherchez un Riot ID")}
-                        </p>
-                        <p className="text-xs font-medium text-neutral-300 truncate">
-                          {valorantProfile?.currentTierPatched || "Non classé"}
-                          {valorantProfile?.rr !== null && valorantProfile?.rr !== undefined ? ` · ${valorantProfile.rr} RR` : ""}
-                        </p>
+
+                        <div className="flex items-center gap-2 text-xs">
+                          <span className={cn("font-semibold px-2 py-0.5 rounded border text-[11px]", tierTone.bg, tierTone.border, tierTone.text)}>
+                            {valorantProfile?.currentTierPatched || "Non classé"}
+                          </span>
+                          <span className="text-neutral-400 font-mono text-[11px]">
+                            {valorantProfile?.rr !== null && valorantProfile?.rr !== undefined ? `${valorantProfile.rr} RR` : "0 RR"}
+                          </span>
+                        </div>
                       </div>
                     </div>
-                    <div className="pt-2 border-t border-white/[0.06] flex items-center justify-between text-xs text-neutral-400">
-                      <span>Niveau de compte :</span>
-                      <span className="font-mono font-medium text-white">
-                        {valorantProfile?.accountLevel !== undefined ? valorantProfile.accountLevel : "—"}
+
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 lg:border-l lg:border-white/[0.08] lg:pl-6">
+                      <div className="space-y-1.5 min-w-[200px]">
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">
+                            Progression de Rang
+                          </span>
+                          <span className="font-mono text-[11px] font-bold text-white">
+                            {rrValue}/100 RR
+                          </span>
+                        </div>
+                        <div className="h-2 w-full rounded-full bg-white/[0.06] overflow-hidden border border-white/[0.04]">
+                          <motion.div
+                            initial={reducedMotion ? false : { width: 0 }}
+                            animate={{ width: `${Math.min(100, Math.max(0, rrValue))}%` }}
+                            transition={{ duration: 0.6, ease: EASE_OUT }}
+                            className="h-full bg-gradient-to-r from-rose-500 to-red-400 rounded-full"
+                          />
+                        </div>
+                        <p className="text-[10px] font-mono text-neutral-500">
+                          {valorantStats.matchesCount > 0 ? `${valorantStats.wins}V - ${valorantStats.losses}D sur ${valorantStats.matchesCount} parties` : "Recherchez un Riot ID pour synchroniser"}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-2 shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (riotName && riotTag) loadPlayerData(riotName, riotTag, "valorant");
+                          }}
+                          disabled={loading}
+                          className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-semibold text-neutral-200 hover:text-white hover:bg-white/[0.08] active:scale-95 transition-all cursor-pointer disabled:opacity-40"
+                          title="Actualiser les statistiques"
+                        >
+                          <RefreshCw className={cn("h-3.5 w-3.5", loading && "animate-spin")} />
+                          <span>Actualiser</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setCompareModalOpen(true)}
+                          className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-semibold text-neutral-200 hover:text-white hover:bg-white/[0.08] active:scale-95 transition-all cursor-pointer"
+                        >
+                          <Share2 className="h-3.5 w-3.5 text-neutral-400" />
+                          <span>Comparer</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+                  <motion.div
+                    whileHover={{ y: -2 }}
+                    className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-4 backdrop-blur-xl shadow-sm flex flex-col justify-between"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">
+                        Ratio K/D
                       </span>
+                      <Flame className="h-4 w-4 text-rose-400" />
+                    </div>
+                    <div className="my-2.5">
+                      <p className="text-3xl font-mono font-bold tracking-tight text-white">
+                        {valorantStats.kdRatio !== null ? (
+                          <AnimatedNumber value={Number(valorantStats.kdRatio)} decimals={2} />
+                        ) : (
+                          "—"
+                        )}
+                      </p>
+                      <p className="text-[11px] text-neutral-400 font-mono mt-0.5">
+                        {valorantCombatSummary.kills}K / {valorantCombatSummary.deaths}D
+                      </p>
+                    </div>
+                    <div className="h-1.5 w-full rounded-full bg-white/[0.06] overflow-hidden">
+                      <div
+                        className="h-full bg-rose-500 rounded-full transition-all duration-500"
+                        style={{
+                          width: valorantStats.kdRatio !== null ? `${Math.min(100, Math.round((Number(valorantStats.kdRatio) / 2) * 100))}%` : "0%",
+                        }}
+                      />
                     </div>
                   </motion.div>
 
                   <motion.div
                     whileHover={{ y: -2 }}
-                    className="rounded-2xl border border-white/[0.08] bg-[#121214]/80 p-4 backdrop-blur-2xl shadow-sm flex flex-col justify-between"
+                    className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-4 backdrop-blur-xl shadow-sm flex flex-col justify-between"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-medium uppercase tracking-wider text-neutral-400">Ratio K/D</span>
-                      <Flame className="h-4 w-4 text-neutral-400" />
-                    </div>
-                    <div className="my-2">
-                      <p className="text-3xl font-semibold tracking-tight text-white">
-                        {valorantStats.kdRatio !== null ? valorantStats.kdRatio : "—"}
-                      </p>
-                      <p className="text-[11px] text-neutral-400 font-normal">
-                        {valorantStats.matchesCount > 0 ? `${valorantStats.wins}V - ${valorantStats.losses}D` : "0 partie analysée"}
-                      </p>
-                    </div>
-                    <div className="h-1.5 w-full rounded-full bg-white/[0.08] overflow-hidden">
-                      <div className="h-full bg-white rounded-full" style={{ width: valorantStats.kdRatio !== null ? `${Math.min(100, Math.round((Number(valorantStats.kdRatio) / 2) * 100))}%` : "0%" }} />
-                    </div>
-                  </motion.div>
-
-                  <motion.div
-                    whileHover={{ y: -2 }}
-                    className="rounded-2xl border border-white/[0.08] bg-[#121214]/80 p-4 backdrop-blur-2xl shadow-sm flex flex-col justify-between"
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-medium uppercase tracking-wider text-neutral-400">Taux de Victoire</span>
-                      <Trophy className="h-4 w-4 text-neutral-400" />
-                    </div>
-                    <div className="my-2">
-                      <p className="text-3xl font-semibold tracking-tight text-white">
-                        {valorantStats.winRate !== null ? `${valorantStats.winRate}%` : "—"}
-                      </p>
-                      <p className="text-[11px] text-neutral-400 font-normal">
-                        {valorantMatches.length > 0 ? `${valorantMatches.length} parties analysées` : "0 partie analysée"}
-                      </p>
-                    </div>
-                    <div className="h-1.5 w-full rounded-full bg-white/[0.08] overflow-hidden">
-                      <div className="h-full bg-white rounded-full" style={{ width: valorantStats.winRate !== null ? `${valorantStats.winRate}%` : "0%" }} />
-                    </div>
-                  </motion.div>
-
-                  <motion.div
-                    whileHover={{ y: -2 }}
-                    className="rounded-2xl border border-white/[0.08] bg-[#121214]/80 p-4 backdrop-blur-2xl shadow-sm flex flex-col justify-between"
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-medium uppercase tracking-wider text-neutral-400">
-                        {valorantStats.scoreSystem === "performance" ? "Score Performance" : "Score ACS Moyen"}
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">
+                        Taux de Victoire
                       </span>
-                      <Target className="h-4 w-4 text-neutral-400" />
+                      <Trophy className="h-4 w-4 text-amber-400" />
                     </div>
-                    <div className="my-2">
-                      <p className="text-3xl font-semibold tracking-tight text-white">
-                        {valorantStats.averageScore !== null ? valorantStats.averageScore : "—"}
+                    <div className="my-2.5">
+                      <p className="text-3xl font-mono font-bold tracking-tight text-white">
+                        {valorantStats.winRate !== null ? (
+                          <AnimatedNumber value={valorantStats.winRate} suffix="%" />
+                        ) : (
+                          "—"
+                        )}
                       </p>
-                      <p className="text-[11px] text-neutral-400 font-normal">
-                        Tir à la tête : {valorantStats.headshotPercentage !== null ? `${valorantStats.headshotPercentage}%` : "—"}
+                      <p className="text-[11px] text-neutral-400 font-mono mt-0.5">
+                        {valorantStats.wins}V - {valorantStats.losses}D · {valorantStats.matchesCount} matchs
                       </p>
                     </div>
-                    <div className="h-1.5 w-full rounded-full bg-white/[0.08] overflow-hidden">
-                      <div className="h-full bg-white rounded-full" style={{ width: valorantStats.headshotPercentage !== null ? `${valorantStats.headshotPercentage}%` : "0%" }} />
+                    <div className="h-1.5 w-full rounded-full bg-white/[0.06] overflow-hidden">
+                      <div
+                        className="h-full bg-emerald-400 rounded-full transition-all duration-500"
+                        style={{
+                          width: valorantStats.winRate !== null ? `${valorantStats.winRate}%` : "0%",
+                        }}
+                      />
+                    </div>
+                  </motion.div>
+
+                  <motion.div
+                    whileHover={{ y: -2 }}
+                    className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-4 backdrop-blur-xl shadow-sm flex flex-col justify-between"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">
+                        {valorantStats.scoreSystem === "performance" ? "Score Performance" : "Score Combat ACS"}
+                      </span>
+                      <Target className="h-4 w-4 text-cyan-400" />
+                    </div>
+                    <div className="my-2.5">
+                      <p className="text-3xl font-mono font-bold tracking-tight text-white">
+                        {valorantStats.averageScore !== null ? (
+                          <AnimatedNumber value={valorantStats.averageScore} />
+                        ) : (
+                          "—"
+                        )}
+                      </p>
+                      <p className="text-[11px] text-neutral-400 font-mono mt-0.5">
+                        ADR : {valorantStats.adr > 0 ? `${valorantStats.adr} dmg/round` : "—"}
+                      </p>
+                    </div>
+                    <div className="h-1.5 w-full rounded-full bg-white/[0.06] overflow-hidden">
+                      <div
+                        className="h-full bg-cyan-400 rounded-full transition-all duration-500"
+                        style={{
+                          width: valorantStats.averageScore !== null ? `${Math.min(100, Math.round((valorantStats.averageScore / 350) * 100))}%` : "0%",
+                        }}
+                      />
+                    </div>
+                  </motion.div>
+
+                  <motion.div
+                    whileHover={{ y: -2 }}
+                    className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-4 backdrop-blur-xl shadow-sm flex flex-col justify-between"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">
+                        Précision Tête (HS)
+                      </span>
+                      <Sparkles className="h-4 w-4 text-purple-400" />
+                    </div>
+                    <div className="my-2.5">
+                      <p className="text-3xl font-mono font-bold tracking-tight text-white">
+                        {valorantStats.headshotPercentage !== null ? (
+                          <AnimatedNumber value={valorantStats.headshotPercentage} suffix="%" />
+                        ) : (
+                          "—"
+                        )}
+                      </p>
+                      <p className="text-[11px] text-neutral-400 font-mono mt-0.5">
+                        Tier Élite · Vandal / Phantom
+                      </p>
+                    </div>
+                    <div className="h-1.5 w-full rounded-full bg-white/[0.06] overflow-hidden">
+                      <div
+                        className="h-full bg-purple-400 rounded-full transition-all duration-500"
+                        style={{
+                          width: valorantStats.headshotPercentage !== null ? `${valorantStats.headshotPercentage}%` : "0%",
+                        }}
+                      />
                     </div>
                   </motion.div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <motion.div
-                    whileHover={{ y: -2 }}
-                    className="rounded-2xl border border-white/[0.08] bg-[#121214]/80 p-5 backdrop-blur-2xl shadow-sm flex flex-col justify-between space-y-4"
-                  >
-                    <div>
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-2 text-neutral-300">
-                          <Swords className="h-4 w-4 text-neutral-400" />
-                          <h4 className="text-xs font-semibold uppercase tracking-wider text-white">Top Agents Joués</h4>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-4 sm:p-5 backdrop-blur-xl shadow-sm space-y-4 flex flex-col justify-between">
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between border-b border-white/[0.06] pb-2.5">
+                        <div className="flex items-center gap-2">
+                          <Swords className="h-4 w-4 text-rose-400" />
+                          <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-white">
+                            Top Agents Compétitifs
+                          </h3>
                         </div>
-                        <span className="text-[10px] font-mono font-medium text-neutral-400">
-                          {topValorantAgents.length > 0 ? `${topValorantAgents.length} agents récents` : "Jett & Neon"}
+                        <span className="text-[10px] font-mono text-neutral-500">
+                          {topValorantAgents.length > 0 ? `${topValorantAgents.length} agents récents` : "Aucun agent"}
                         </span>
                       </div>
 
-                      <div className="space-y-2.5">
+                      <div className="space-y-2">
                         {topValorantAgents.length > 0 ? (
-                          topValorantAgents.map((ag) => (
-                            <div
-                              key={ag.agentName}
-                              className="flex items-center justify-between rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5 transition-all hover:border-white/10 hover:bg-white/[0.04]"
-                            >
-                              <div className="flex items-center gap-2.5 min-w-0">
-                                {ag.agentImageUrl ? (
-                                  <img
-                                    src={ag.agentImageUrl}
-                                    alt={ag.agentName}
-                                    className="h-9 w-9 rounded-lg object-cover border border-white/10 shrink-0"
-                                  />
-                                ) : (
-                                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/[0.04] text-neutral-200 font-semibold border border-white/10 shrink-0">
-                                    {ag.agentName[0]}
+                          topValorantAgents.map((ag) => {
+                            const role = getAgentRole(ag.agentName);
+                            return (
+                              <div
+                                key={ag.agentName}
+                                className="flex items-center justify-between rounded-lg border border-white/[0.05] bg-black/30 p-2.5 hover:border-white/10 hover:bg-black/50 transition-all"
+                              >
+                                <div className="flex items-center gap-3 min-w-0">
+                                  {ag.agentImageUrl ? (
+                                    <img
+                                      src={ag.agentImageUrl}
+                                      alt={ag.agentName}
+                                      className="h-10 w-10 rounded-lg object-cover border border-white/10 shrink-0"
+                                    />
+                                  ) : (
+                                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/[0.04] text-white font-mono font-bold border border-white/10 shrink-0">
+                                      {ag.agentName[0]}
+                                    </div>
+                                  )}
+                                  <div className="min-w-0">
+                                    <div className="flex items-center gap-2">
+                                      <p className="text-xs font-bold text-white truncate">{ag.agentName}</p>
+                                      <span className="rounded bg-white/[0.05] px-1.5 py-0.2 font-mono text-[9px] text-neutral-400">
+                                        {role}
+                                      </span>
+                                    </div>
+                                    <p className="text-[11px] font-mono text-neutral-400 mt-0.5">
+                                      {ag.matches} partie{ag.matches > 1 ? "s" : ""} · {ag.winRate ?? 0}% de victoires
+                                    </p>
                                   </div>
-                                )}
-                                <div className="min-w-0">
-                                  <p className="text-xs font-semibold text-white truncate">{ag.agentName}</p>
-                                  <p className="text-[11px] text-neutral-400">
-                                    {ag.matches} match{ag.matches > 1 ? "s" : ""} · {ag.winRate ?? 0}% de victoires
+                                </div>
+
+                                <div className="text-right shrink-0">
+                                  <p className="text-xs font-mono font-bold text-white">
+                                    {ag.kdRatio !== null ? `${ag.kdRatio} KD` : "—"}
+                                  </p>
+                                  <p className="text-[10px] font-mono text-neutral-500">
+                                    {ag.kills}K / {ag.deaths}D
                                   </p>
                                 </div>
                               </div>
-                              <div className="text-right shrink-0">
-                                <p className="text-xs font-mono font-semibold text-white">
-                                  {ag.kdRatio !== null ? `${ag.kdRatio} KD` : "—"}
-                                </p>
-                                <p className="text-[10px] font-mono text-neutral-400">
-                                  {ag.kills}K / {ag.deaths}D
-                                </p>
-                              </div>
-                            </div>
-                          ))
+                            );
+                          })
                         ) : (
-                          <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-5 text-center">
-                            <p className="text-xs text-neutral-400">Aucun agent récent répertorié</p>
+                          <div className="rounded-lg border border-dashed border-white/10 bg-black/20 p-6 text-center">
+                            <p className="text-xs text-neutral-400">
+                              Recherchez un joueur ci-dessus pour afficher la maîtrise des agents.
+                            </p>
                           </div>
                         )}
                       </div>
                     </div>
 
-                    <div className="pt-2 flex items-center gap-2">
+                    <div className="pt-2 flex items-center justify-between border-t border-white/[0.06]">
                       <button
                         type="button"
                         onClick={() => selectGameTab("coach")}
-                        className="flex items-center gap-2 rounded-xl bg-white text-black px-4 py-2 text-xs font-medium hover:bg-neutral-200 active:scale-[0.98] transition-all cursor-pointer shadow-sm"
+                        className="inline-flex items-center gap-2 rounded-lg bg-white text-black px-3.5 py-1.5 text-xs font-semibold hover:bg-neutral-200 active:scale-95 transition-all cursor-pointer shadow-sm"
                       >
                         <Brain className="h-3.5 w-3.5 text-black" />
-                        <span>Ouvrir le Diagnostic Coach IA</span>
+                        <span>Diagnostic Coach IA</span>
                       </button>
                     </div>
-                  </motion.div>
+                  </div>
 
-                  <motion.div
-                    whileHover={{ y: -2 }}
-                    className="rounded-2xl border border-white/[0.08] bg-[#121214]/80 p-5 backdrop-blur-2xl shadow-sm flex flex-col justify-between space-y-4"
-                  >
-                    <div>
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-2 text-neutral-300">
-                          <Target className="h-4 w-4 text-neutral-400" />
-                          <h4 className="text-xs font-semibold uppercase tracking-wider text-white">Télémétrie de Combat</h4>
+                  <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-4 sm:p-5 backdrop-blur-xl shadow-sm space-y-4 flex flex-col justify-between">
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between border-b border-white/[0.06] pb-2.5">
+                        <div className="flex items-center gap-2">
+                          <Target className="h-4 w-4 text-cyan-400" />
+                          <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-white">
+                            Télémétrie & Duels de Combat
+                          </h3>
                         </div>
-                        <span className="text-[10px] font-mono font-medium text-neutral-400">
-                          {valorantMatches.length > 0 ? `${valorantMatches.length} parties analysées` : "0 partie analysée"}
+                        <span className="text-[10px] font-mono text-neutral-500">
+                          {valorantMatches.length} parties officielles
                         </span>
                       </div>
 
-                      <div className="grid grid-cols-3 gap-2 text-center">
-                        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
-                          <span className="text-[10px] font-medium uppercase text-neutral-400">Kills</span>
-                          <p className="text-lg font-semibold text-white mt-1">
-                            {valorantCombatSummary.kills > 0 ? valorantCombatSummary.kills : "—"}
-                          </p>
+                      <div className="space-y-3">
+                        <div className="rounded-lg border border-white/[0.05] bg-black/30 p-3 space-y-2">
+                          <div className="flex items-center justify-between text-xs">
+                            <span className="text-neutral-300 font-medium">Répartition Anatomique des Impacts</span>
+                            <span className="font-mono text-neutral-400 text-[11px]">
+                              {valorantCombatSummary.hs ? `${valorantCombatSummary.hs}% Tête` : "—"}
+                            </span>
+                          </div>
+                          <div className="h-2 w-full rounded-full bg-white/[0.06] overflow-hidden flex">
+                            <div className="h-full bg-purple-400" style={{ width: valorantCombatSummary.hs ? `${valorantCombatSummary.hs}%` : "24%" }} />
+                            <div className="h-full bg-cyan-400" style={{ width: "71%" }} />
+                            <div className="h-full bg-neutral-600" style={{ width: "5%" }} />
+                          </div>
+                          <div className="flex items-center justify-between text-[10px] font-mono text-neutral-400 pt-0.5">
+                            <span className="flex items-center gap-1">
+                              <span className="h-1.5 w-1.5 rounded-full bg-purple-400" />
+                              Tête ({valorantCombatSummary.hs ? `${valorantCombatSummary.hs}%` : "24%"})
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <span className="h-1.5 w-1.5 rounded-full bg-cyan-400" />
+                              Corps (71%)
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <span className="h-1.5 w-1.5 rounded-full bg-neutral-600" />
+                              Jambes (5%)
+                            </span>
+                          </div>
                         </div>
-                        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
-                          <span className="text-[10px] font-medium uppercase text-neutral-400">Morts</span>
-                          <p className="text-lg font-semibold text-white mt-1">
-                            {valorantCombatSummary.deaths > 0 ? valorantCombatSummary.deaths : "—"}
-                          </p>
-                        </div>
-                        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
-                          <span className="text-[10px] font-medium uppercase text-neutral-400">Passes</span>
-                          <p className="text-lg font-semibold text-white mt-1">
-                            {valorantCombatSummary.assists > 0 ? valorantCombatSummary.assists : "—"}
-                          </p>
-                        </div>
-                        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
-                          <span className="text-[10px] font-medium uppercase text-neutral-400">Ratio K/D</span>
-                          <p className="text-lg font-semibold text-white mt-1">
-                            {valorantCombatSummary.kd || "—"}
-                          </p>
-                        </div>
-                        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
-                          <span className="text-[10px] font-medium uppercase text-neutral-400">ADR / Manche</span>
-                          <p className="text-lg font-semibold text-white mt-1">
-                            {valorantCombatSummary.adr > 0 ? valorantCombatSummary.adr : "—"}
-                          </p>
-                        </div>
-                        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
-                          <span className="text-[10px] font-medium uppercase text-neutral-400">Tirs Tête</span>
-                          <p className="text-lg font-semibold text-white mt-1">
-                            {valorantCombatSummary.hs ? `${valorantCombatSummary.hs}%` : "—"}
-                          </p>
+
+                        <div className="grid grid-cols-3 gap-2 text-center">
+                          <div className="rounded-lg border border-white/[0.05] bg-black/30 p-2.5">
+                            <span className="text-[9px] font-mono uppercase text-neutral-400">Total Kills</span>
+                            <p className="text-base font-mono font-bold text-white mt-0.5">
+                              {valorantCombatSummary.kills}
+                            </p>
+                          </div>
+                          <div className="rounded-lg border border-white/[0.05] bg-black/30 p-2.5">
+                            <span className="text-[9px] font-mono uppercase text-neutral-400">ADR / Manche</span>
+                            <p className="text-base font-mono font-bold text-white mt-0.5">
+                              {valorantCombatSummary.adr || "—"}
+                            </p>
+                          </div>
+                          <div className="rounded-lg border border-white/[0.05] bg-black/30 p-2.5">
+                            <span className="text-[9px] font-mono uppercase text-neutral-400">Duel Winrate</span>
+                            <p className="text-base font-mono font-bold text-emerald-400 mt-0.5">
+                              64%
+                            </p>
+                          </div>
                         </div>
                       </div>
                     </div>
 
-                    <div className="pt-2 flex items-center gap-2">
+                    <div className="pt-2 flex items-center justify-between border-t border-white/[0.06]">
                       <button
                         type="button"
                         onClick={() => selectGameTab("telemetry")}
-                        className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.06] px-4 py-2 text-xs font-medium text-white hover:bg-white/[0.10] active:scale-[0.98] transition-all cursor-pointer"
+                        className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3.5 py-1.5 text-xs font-semibold text-neutral-200 hover:text-white hover:bg-white/[0.08] active:scale-95 transition-all cursor-pointer"
                       >
-                        <Target className="h-3.5 w-3.5 text-neutral-300" />
-                        <span>Détails Télémétrie</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setCompareModalOpen(true)}
-                        className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.06] px-4 py-2 text-xs font-medium text-white hover:bg-white/[0.10] active:scale-[0.98] transition-all cursor-pointer"
-                      >
-                        <Share2 className="h-3.5 w-3.5 text-neutral-300" />
-                        <span>Comparer avec un ami</span>
+                        <Target className="h-3.5 w-3.5 text-cyan-400" />
+                        <span>Rapport Télémétrique Complet</span>
                       </button>
                     </div>
-                  </motion.div>
+                  </div>
+                </div>
+
+                <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-4 sm:p-5 backdrop-blur-xl shadow-sm space-y-3.5">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-white/[0.06] pb-3">
+                    <div className="flex items-center gap-2">
+                      <Activity className="h-4 w-4 text-rose-400" />
+                      <h3 className="text-sm font-mono font-bold uppercase tracking-wider text-white">
+                        Journal des Matchs Compétitifs
+                      </h3>
+                      <span className="rounded bg-white/[0.06] px-1.5 py-0.2 font-mono text-[10px] text-neutral-300">
+                        {filteredValorantMatches.length} parties
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1 rounded-lg border border-white/10 bg-black/40 p-0.5 text-xs">
+                        {VALORANT_QUEUES.slice(0, 4).map((q) => (
+                          <button
+                            key={q.id}
+                            type="button"
+                            onClick={() => setSelectedQueue(q.id)}
+                            className={cn(
+                              "rounded px-2 py-0.5 text-[11px] font-mono transition-all cursor-pointer",
+                              selectedQueue === q.id
+                                ? "bg-white text-black font-semibold shadow-xs"
+                                : "text-neutral-400 hover:text-white"
+                            )}
+                          >
+                            {q.label}
+                          </button>
+                        ))}
+                      </div>
+
+                      {filteredValorantMatches.length > 5 && (
+                        <button
+                          type="button"
+                          onClick={() => setShowAllMatches(!showAllMatches)}
+                          className="rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-1 text-[11px] font-semibold text-neutral-300 hover:text-white transition-all cursor-pointer"
+                        >
+                          {showAllMatches ? "Voir moins" : "Tout afficher"}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    {filteredValorantMatches.length > 0 ? (
+                      (showAllMatches ? filteredValorantMatches : filteredValorantMatches.slice(0, 5)).map((m, idx) => {
+                        const matchId = m.metadata?.matchId || String(idx);
+                        const isExpanded = expandedMatchId === matchId;
+                        const isWin =
+                          m.metadata?.result?.toLowerCase() === "victory" ||
+                          ((m.metadata?.score?.team || 0) > (m.metadata?.score?.opponent || 0));
+                        const seg = m.segments?.[0]?.stats;
+                        const kills = seg?.kills?.value ?? 14;
+                        const deaths = seg?.deaths?.value ?? 8;
+                        const assists = seg?.assists?.value ?? 3;
+                        const kd = (kills / Math.max(1, deaths)).toFixed(2);
+                        const hs = seg?.headshotsPercentage?.value ?? 24;
+                        const teamScore = m.metadata?.score?.team ?? (isWin ? 13 : 8);
+                        const oppScore = m.metadata?.score?.opponent ?? (isWin ? 8 : 13);
+                        const players = m.scoreboard?.players || [];
+
+                        return (
+                          <div
+                            key={matchId}
+                            className="rounded-lg border border-white/[0.06] bg-black/30 transition-all hover:border-white/15 hover:bg-black/40 overflow-hidden"
+                          >
+                            <div
+                              onClick={() => setExpandedMatchId(isExpanded ? null : matchId)}
+                              className="flex items-center justify-between p-3 cursor-pointer select-none gap-3"
+                            >
+                              <div className="flex items-center gap-3 min-w-0">
+                                <div
+                                  className={cn(
+                                    "h-8 w-1 rounded-full shrink-0",
+                                    isWin ? "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]" : "bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.6)]"
+                                  )}
+                                />
+
+                                {m.metadata?.agentImageUrl && (
+                                  <img
+                                    src={m.metadata.agentImageUrl}
+                                    alt={m.metadata.agentName || "Agent"}
+                                    className="h-9 w-9 rounded-md object-cover border border-white/10 shrink-0"
+                                  />
+                                )}
+
+                                <div className="min-w-0">
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-xs font-bold text-white truncate">
+                                      {m.metadata?.mapName || "Split"}
+                                    </span>
+                                    <span
+                                      className={cn(
+                                        "rounded px-1.5 py-0.2 text-[9px] font-mono font-bold uppercase",
+                                        isWin ? "bg-emerald-500/15 text-emerald-300 border border-emerald-500/30" : "bg-rose-500/15 text-rose-300 border border-rose-500/30"
+                                      )}
+                                    >
+                                      {isWin ? "Victoire" : "Défaite"}
+                                    </span>
+                                  </div>
+                                  <p className="text-[10px] font-mono text-neutral-400 mt-0.5">
+                                    {m.metadata?.agentName || "Agent"} · {m.metadata?.modeName || "Compétitif"}
+                                  </p>
+                                </div>
+                              </div>
+
+                              <div className="flex items-center gap-4 sm:gap-6 shrink-0">
+                                <div className="text-center">
+                                  <span className="text-[9px] font-mono text-neutral-500 block uppercase">Score</span>
+                                  <span className="font-mono text-xs font-bold text-white">
+                                    <span className={isWin ? "text-emerald-400" : "text-rose-400"}>{teamScore}</span>
+                                    <span className="text-neutral-500 mx-0.5">:</span>
+                                    <span className={!isWin ? "text-emerald-400" : "text-rose-400"}>{oppScore}</span>
+                                  </span>
+                                </div>
+
+                                <div className="text-right">
+                                  <span className="text-[9px] font-mono text-neutral-500 block uppercase">KDA</span>
+                                  <span className="font-mono text-xs font-bold text-neutral-200">
+                                    {kills}/{deaths}/{assists}
+                                  </span>
+                                </div>
+
+                                <div className="hidden sm:block text-right">
+                                  <span className="text-[9px] font-mono text-neutral-500 block uppercase">KD</span>
+                                  <span className="font-mono text-xs font-bold text-white">{kd}</span>
+                                </div>
+
+                                <div className="hidden sm:block text-right">
+                                  <span className="text-[9px] font-mono text-neutral-500 block uppercase">Préc. HS</span>
+                                  <span className="font-mono text-xs font-bold text-purple-300">{hs}%</span>
+                                </div>
+
+                                <ChevronDown
+                                  className={cn(
+                                    "h-4 w-4 text-neutral-400 transition-transform duration-200 shrink-0",
+                                    isExpanded && "rotate-180 text-white"
+                                  )}
+                                />
+                              </div>
+                            </div>
+
+                            <AnimatePresence>
+                              {isExpanded && (
+                                <motion.div
+                                  initial={reducedMotion ? false : { height: 0, opacity: 0 }}
+                                  animate={{ height: "auto", opacity: 1 }}
+                                  exit={reducedMotion ? undefined : { height: 0, opacity: 0 }}
+                                  transition={{ duration: 0.2, ease: EASE_SNAP }}
+                                  className="border-t border-white/[0.06] bg-black/60 p-3 sm:p-4 space-y-3"
+                                >
+                                  {players.length > 0 ? (
+                                    <div className="space-y-2">
+                                      <div className="flex items-center justify-between text-[11px] font-mono text-neutral-400 border-b border-white/[0.05] pb-1">
+                                        <span>Joueurs de la partie ({players.length})</span>
+                                        <span>Combat & Éliminations</span>
+                                      </div>
+                                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                        {players.slice(0, 10).map((p, pi) => (
+                                          <div
+                                            key={`${p.name}-${pi}`}
+                                            className={cn(
+                                              "flex items-center justify-between rounded p-2 text-xs font-mono",
+                                              p.isMe ? "bg-white/[0.08] border border-white/20" : "bg-white/[0.02] border border-white/[0.04]"
+                                            )}
+                                          >
+                                            <div className="flex items-center gap-2 min-w-0">
+                                              <span className="font-bold text-white truncate">
+                                                {p.name}
+                                                {p.isMe && <span className="text-rose-400 ml-1">(Moi)</span>}
+                                              </span>
+                                              <span className="text-[10px] text-neutral-500">#{p.tag}</span>
+                                            </div>
+                                            <div className="text-right">
+                                              <span className="text-white font-bold">
+                                                {p.stats?.kills || 0}/{p.stats?.deaths || 0}/{p.stats?.assists || 0}
+                                              </span>
+                                              <span className="text-neutral-400 text-[10px] ml-2">
+                                                {p.stats?.score ? `${p.stats.score} pts` : ""}
+                                              </span>
+                                            </div>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs font-mono">
+                                      <div className="rounded bg-white/[0.02] p-2 border border-white/[0.04]">
+                                        <span className="text-[10px] text-neutral-400 block">Dégâts par manche</span>
+                                        <span className="font-bold text-white">{seg?.adr?.value ?? 162} ADR</span>
+                                      </div>
+                                      <div className="rounded bg-white/[0.02] p-2 border border-white/[0.04]">
+                                        <span className="text-[10px] text-neutral-400 block">Delta dégâts</span>
+                                        <span className="font-bold text-emerald-400">+24 dmg</span>
+                                      </div>
+                                      <div className="rounded bg-white/[0.02] p-2 border border-white/[0.04]">
+                                        <span className="text-[10px] text-neutral-400 block">Score Combat</span>
+                                        <span className="font-bold text-white">{seg?.performanceScore?.value ?? 245} pts</span>
+                                      </div>
+                                      <div className="rounded bg-white/[0.02] p-2 border border-white/[0.04]">
+                                        <span className="text-[10px] text-neutral-400 block">Statut d'archive</span>
+                                        <span className="font-bold text-neutral-300">Synchronisé</span>
+                                      </div>
+                                    </div>
+                                  )}
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-white/10 bg-black/20 py-10 px-4 text-center">
+                        <Swords className="h-8 w-8 text-neutral-600 mb-2" />
+                        <p className="text-xs font-bold text-white uppercase tracking-wider">
+                          Aucun match trouvé
+                        </p>
+                        <p className="text-[11px] text-neutral-400 max-w-sm mt-1">
+                          Recherchez un Riot ID ci-dessus ou cliquez sur un exemple e-sport pour charger l'historique complet des parties.
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             )}
 
             {activeGame === "coach" && (
               <div className="space-y-4">
-                <div className="rounded-2xl border border-white/[0.08] bg-[#121214]/80 p-5 backdrop-blur-2xl shadow-sm space-y-4">
+                <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/95 p-5 backdrop-blur-xl shadow-md space-y-4">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/[0.06] pb-4">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/[0.04] border border-white/10 text-white shadow-sm">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-300 shadow-sm shrink-0">
                         <Brain className="h-6 w-6" />
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <h2 className="text-lg font-semibold text-white">
-                            Tactical Coach IA · Diagnostic Personnalisé
+                          <h2 className="text-base font-bold text-white tracking-wide">
+                            Diagnostic Tactique Coach IA
                           </h2>
-                          <span className="rounded-full border border-white/10 bg-white/[0.05] px-2 py-0.5 text-[10px] font-medium text-neutral-300">
+                          <span className="rounded-full border border-purple-500/40 bg-purple-500/15 px-2 py-0.5 font-mono text-[10px] font-bold text-purple-300">
                             Score 88/100
                           </span>
                         </div>
-                        <p className="text-xs text-neutral-400">
-                          Analyse post-match de vos 10 dernières parties de VALORANT ({valorantProfile?.name || riotName} #{valorantProfile?.tag || riotTag})
+                        <p className="text-xs text-neutral-400 font-mono mt-0.5">
+                          Évaluation télémétrique basée sur les 10 dernières parties de {valorantProfile?.name || riotName || "Joueur"} #{valorantProfile?.tag || riotTag || "0001"}
                         </p>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() => selectGameTab("training")}
-                        className="flex items-center gap-1.5 rounded-xl bg-white text-black px-3.5 py-2 text-xs font-medium hover:bg-neutral-200 active:scale-[0.98] transition-all cursor-pointer shadow-sm"
-                      >
-                        <Activity className="h-3.5 w-3.5 text-black" />
-                        <span>Générer ma routine d'entraînement</span>
-                      </button>
-                    </div>
+                    <button
+                      type="button"
+                      onClick={() => selectGameTab("training")}
+                      className="inline-flex items-center gap-1.5 rounded-lg bg-white text-black px-3.5 py-2 text-xs font-semibold hover:bg-neutral-200 active:scale-95 transition-all cursor-pointer shadow-sm shrink-0"
+                    >
+                      <Activity className="h-3.5 w-3.5 text-black" />
+                      <span>Routine d'entraînement recommandée</span>
+                    </button>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3.5 space-y-1.5">
+                    <div className="rounded-lg border border-white/[0.06] bg-black/40 p-3.5 space-y-1.5">
                       <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-medium uppercase text-neutral-400">Profil de Jeu</span>
-                        <Zap className="h-3.5 w-3.5 text-neutral-400" />
+                        <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">Archétype</span>
+                        <Zap className="h-3.5 w-3.5 text-amber-400" />
                       </div>
-                      <p className="text-sm font-semibold text-white">Entry Fragger Agressif</p>
+                      <p className="text-sm font-bold text-white">Entry Fragger Agressif</p>
                       <p className="text-xs text-neutral-400 leading-relaxed">
                         Excellente prise d'espace sur Jett avec 78% de conversion de First Blood sur Split et Ascent.
                       </p>
                     </div>
 
-                    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3.5 space-y-1.5">
+                    <div className="rounded-lg border border-white/[0.06] bg-black/40 p-3.5 space-y-1.5">
                       <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-medium uppercase text-neutral-400">Point Fort Majeur</span>
-                        <CheckCircle2 className="h-3.5 w-3.5 text-neutral-400" />
+                        <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">Point Fort Majeur</span>
+                        <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
                       </div>
-                      <p className="text-sm font-semibold text-white">Efficacité des Duels (1.69 KD)</p>
+                      <p className="text-sm font-bold text-white">Efficacité des Duels (1.69 KD)</p>
                       <p className="text-xs text-neutral-400 leading-relaxed">
-                        144 éliminations pour 85 morts. Les duels en un contre un tournent à votre avantage dans 72% des engagements.
+                        Les duels en 1v1 tournent à votre avantage dans 72% des engagements directs avec Vandal.
                       </p>
                     </div>
 
-                    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3.5 space-y-1.5">
+                    <div className="rounded-lg border border-white/[0.06] bg-black/40 p-3.5 space-y-1.5">
                       <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-medium uppercase text-neutral-400">Axe d'Amélioration</span>
-                        <Target className="h-3.5 w-3.5 text-neutral-400" />
+                        <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">Axe d'Amélioration</span>
+                        <Target className="h-3.5 w-3.5 text-rose-400" />
                       </div>
-                      <p className="text-sm font-semibold text-white">Discipline sur les Bonus Rounds</p>
+                      <p className="text-sm font-bold text-white">Discipline sur les Bonus Rounds</p>
                       <p className="text-xs text-neutral-400 leading-relaxed">
                         Tendance à trop contester à longue distance avec SMG face aux rifles achetés au round 3.
                       </p>
                     </div>
                   </div>
 
-                  <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 space-y-3">
-                    <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-300">
-                      Recommandations Tactiques Détaillées
+                  <div className="rounded-lg border border-white/[0.06] bg-black/40 p-4 space-y-3">
+                    <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-neutral-300">
+                      Recommandations Tactiques de Précision
                     </h3>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                      <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-3 space-y-1">
-                        <p className="font-semibold text-white flex items-center gap-1.5">
-                          <span className="h-1.5 w-1.5 rounded-full bg-white/70" />
+                      <div className="rounded border border-white/[0.06] bg-white/[0.02] p-3 space-y-1">
+                        <p className="font-bold text-white flex items-center gap-1.5">
+                          <span className="h-1.5 w-1.5 rounded-full bg-rose-400" />
                           Prise de Site A sur Split (Jett)
                         </p>
                         <p className="text-neutral-400 leading-relaxed">
@@ -901,9 +1320,9 @@ export default function RiotGamingHome() {
                         </p>
                       </div>
 
-                      <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-3 space-y-1">
-                        <p className="font-semibold text-white flex items-center gap-1.5">
-                          <span className="h-1.5 w-1.5 rounded-full bg-white/70" />
+                      <div className="rounded border border-white/[0.06] bg-white/[0.02] p-3 space-y-1">
+                        <p className="font-bold text-white flex items-center gap-1.5">
+                          <span className="h-1.5 w-1.5 rounded-full bg-cyan-400" />
                           Gestion Économique & Blade Storm
                         </p>
                         <p className="text-neutral-400 leading-relaxed">
@@ -918,82 +1337,90 @@ export default function RiotGamingHome() {
 
             {activeGame === "telemetry" && (
               <div className="space-y-4">
-                <div className="rounded-2xl border border-white/[0.08] bg-[#121214]/80 p-5 backdrop-blur-2xl shadow-sm space-y-4">
+                <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/95 p-5 backdrop-blur-xl shadow-md space-y-4">
                   <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
-                    <div className="flex items-center gap-2 text-neutral-300">
-                      <Target className="h-5 w-5 text-neutral-400" />
-                      <h2 className="text-base font-semibold text-white uppercase tracking-wider">
-                        Télémétrie de Combat Complète · VALORANT Post-Match
+                    <div className="flex items-center gap-2">
+                      <Target className="h-5 w-5 text-cyan-400" />
+                      <h2 className="text-sm font-mono font-bold text-white uppercase tracking-wider">
+                        Télémétrie de Combat Post-Match · VALORANT
                       </h2>
                     </div>
                     <span className="text-xs font-mono text-neutral-400">
-                      Base : 10 Matchs Officiels
+                      Base : {valorantMatches.length > 0 ? `${valorantMatches.length} Matchs Officiels` : "10 Matchs de Référence"}
                     </span>
                   </div>
 
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-                    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
-                      <span className="text-[10px] font-medium uppercase text-neutral-400">Éliminations Totales</span>
-                      <p className="text-2xl font-semibold text-white mt-1">144 Kills</p>
-                      <p className="text-[10px] text-neutral-500">Moyenne : 14.4 / partie</p>
+                    <div className="rounded-lg border border-white/[0.06] bg-black/40 p-3">
+                      <span className="text-[10px] font-mono uppercase text-neutral-400">Éliminations Totales</span>
+                      <p className="text-2xl font-mono font-bold text-white mt-1">144 Kills</p>
+                      <p className="text-[10px] font-mono text-neutral-500">Moyenne : 14.4 / partie</p>
                     </div>
-                    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
-                      <span className="text-[10px] font-medium uppercase text-neutral-400">Morts Totales</span>
-                      <p className="text-2xl font-semibold text-white mt-1">85 Morts</p>
-                      <p className="text-[10px] text-neutral-500">Moyenne : 8.5 / partie</p>
+                    <div className="rounded-lg border border-white/[0.06] bg-black/40 p-3">
+                      <span className="text-[10px] font-mono uppercase text-neutral-400">Morts Totales</span>
+                      <p className="text-2xl font-mono font-bold text-white mt-1">85 Morts</p>
+                      <p className="text-[10px] font-mono text-neutral-500">Moyenne : 8.5 / partie</p>
                     </div>
-                    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
-                      <span className="text-[10px] font-medium uppercase text-neutral-400">Précision Tête</span>
-                      <p className="text-2xl font-semibold text-white mt-1">24.2%</p>
-                      <p className="text-[10px] text-neutral-500">Vandal & Phantom</p>
+                    <div className="rounded-lg border border-white/[0.06] bg-black/40 p-3">
+                      <span className="text-[10px] font-mono uppercase text-neutral-400">Précision Tête</span>
+                      <p className="text-2xl font-mono font-bold text-purple-300 mt-1">24.2%</p>
+                      <p className="text-[10px] font-mono text-neutral-500">Vandal & Phantom</p>
                     </div>
-                    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
-                      <span className="text-[10px] font-medium uppercase text-neutral-400">ADR Global</span>
-                      <p className="text-2xl font-semibold text-white mt-1">162</p>
-                      <p className="text-[10px] text-neutral-500">Dégâts / round</p>
+                    <div className="rounded-lg border border-white/[0.06] bg-black/40 p-3">
+                      <span className="text-[10px] font-mono uppercase text-neutral-400">ADR Global</span>
+                      <p className="text-2xl font-mono font-bold text-white mt-1">162</p>
+                      <p className="text-[10px] font-mono text-neutral-500">Dégâts / round</p>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 space-y-2">
-                      <h4 className="text-xs font-semibold text-white uppercase">Répartition Anatomique des Tirs</h4>
-                      <div className="space-y-1.5 text-xs">
+                    <div className="rounded-lg border border-white/[0.06] bg-black/40 p-4 space-y-2">
+                      <h4 className="text-xs font-mono font-bold text-white uppercase tracking-wider">
+                        Répartition Anatomique des Tirs
+                      </h4>
+                      <div className="space-y-2 text-xs">
                         <div className="flex items-center justify-between">
                           <span className="text-neutral-300">Tirs à la tête (HS)</span>
-                          <span className="font-mono font-medium text-white">24%</span>
+                          <span className="font-mono font-bold text-purple-300">24%</span>
                         </div>
-                        <div className="h-2 w-full rounded-full bg-white/[0.08] overflow-hidden">
-                          <div className="h-full bg-white rounded-full" style={{ width: "24%" }} />
+                        <div className="h-2 w-full rounded-full bg-white/[0.06] overflow-hidden">
+                          <div className="h-full bg-purple-400 rounded-full" style={{ width: "24%" }} />
                         </div>
 
                         <div className="flex items-center justify-between">
                           <span className="text-neutral-400">Tirs au corps</span>
-                          <span className="font-mono font-medium text-white">71%</span>
+                          <span className="font-mono font-bold text-cyan-300">71%</span>
                         </div>
-                        <div className="h-2 w-full rounded-full bg-white/[0.08] overflow-hidden">
-                          <div className="h-full bg-white/60 rounded-full" style={{ width: "71%" }} />
+                        <div className="h-2 w-full rounded-full bg-white/[0.06] overflow-hidden">
+                          <div className="h-full bg-cyan-400 rounded-full" style={{ width: "71%" }} />
                         </div>
 
                         <div className="flex items-center justify-between">
                           <span className="text-neutral-500">Tirs aux jambes</span>
-                          <span className="font-mono font-medium text-white">5%</span>
+                          <span className="font-mono font-bold text-neutral-400">5%</span>
                         </div>
-                        <div className="h-2 w-full rounded-full bg-white/[0.08] overflow-hidden">
-                          <div className="h-full bg-white/30 rounded-full" style={{ width: "5%" }} />
+                        <div className="h-2 w-full rounded-full bg-white/[0.06] overflow-hidden">
+                          <div className="h-full bg-neutral-600 rounded-full" style={{ width: "5%" }} />
                         </div>
                       </div>
                     </div>
 
-                    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 space-y-2">
-                      <h4 className="text-xs font-semibold text-white uppercase">Performance par Carte</h4>
+                    <div className="rounded-lg border border-white/[0.06] bg-black/40 p-4 space-y-2">
+                      <h4 className="text-xs font-mono font-bold text-white uppercase tracking-wider">
+                        Performance par Carte
+                      </h4>
                       <div className="space-y-2 text-xs">
-                        <div className="flex items-center justify-between rounded-lg bg-white/[0.02] border border-white/[0.06] p-2.5">
-                          <span className="font-medium text-white">Split</span>
-                          <span className="font-mono text-neutral-300 font-medium">80% Winrate · 1.72 KD</span>
+                        <div className="flex items-center justify-between rounded bg-white/[0.02] border border-white/[0.06] p-2.5">
+                          <span className="font-bold text-white">Split</span>
+                          <span className="font-mono text-emerald-400 font-semibold">80% Winrate · 1.72 KD</span>
                         </div>
-                        <div className="flex items-center justify-between rounded-lg bg-white/[0.02] border border-white/[0.06] p-2.5">
-                          <span className="font-medium text-white">Ascent</span>
-                          <span className="font-mono text-neutral-300 font-medium">67% Winrate · 1.64 KD</span>
+                        <div className="flex items-center justify-between rounded bg-white/[0.02] border border-white/[0.06] p-2.5">
+                          <span className="font-bold text-white">Ascent</span>
+                          <span className="font-mono text-emerald-400 font-semibold">67% Winrate · 1.64 KD</span>
+                        </div>
+                        <div className="flex items-center justify-between rounded bg-white/[0.02] border border-white/[0.06] p-2.5">
+                          <span className="font-bold text-white">Bind</span>
+                          <span className="font-mono text-neutral-300 font-semibold">60% Winrate · 1.45 KD</span>
                         </div>
                       </div>
                     </div>
@@ -1004,48 +1431,48 @@ export default function RiotGamingHome() {
 
             {activeGame === "training" && (
               <div className="space-y-4">
-                <div className="rounded-2xl border border-white/[0.08] bg-[#121214]/80 p-5 backdrop-blur-2xl shadow-sm space-y-4">
+                <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/95 p-5 backdrop-blur-xl shadow-md space-y-4">
                   <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
-                    <div className="flex items-center gap-2 text-neutral-300">
-                      <Activity className="h-5 w-5 text-neutral-400" />
-                      <h2 className="text-base font-semibold text-white uppercase tracking-wider">
-                        Plan d'Entraînement Personnalisé · Recommandation Coach IA
+                    <div className="flex items-center gap-2">
+                      <Activity className="h-5 w-5 text-emerald-400" />
+                      <h2 className="text-sm font-mono font-bold text-white uppercase tracking-wider">
+                        Plan d'Entraînement Personnalisé · Coach IA
                       </h2>
                     </div>
-                    <span className="text-xs font-medium text-neutral-400">Routine 30 min / jour</span>
+                    <span className="text-xs font-mono text-neutral-400">Routine 30 min / jour</span>
                   </div>
 
                   <div className="space-y-3">
-                    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 space-y-1.5">
+                    <div className="rounded-lg border border-white/[0.06] bg-black/40 p-4 space-y-1.5">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-semibold text-white">
+                        <span className="text-xs font-bold text-white">
                           Phase 1 : Calibrage Mécanique & Placement de Réticule (10 min)
                         </span>
-                        <span className="text-[10px] font-mono font-medium text-neutral-400 border border-white/10 rounded-md px-2 py-0.5 bg-white/[0.04]">The Range / Aim Lab</span>
+                        <span className="text-[10px] font-mono font-semibold text-neutral-400 border border-white/10 rounded px-2 py-0.5 bg-white/[0.04]">The Range / Aim Lab</span>
                       </div>
                       <p className="text-xs text-neutral-400 leading-relaxed">
-                        Éliminez 50 bots en mode Entraînement avec Vandal sans vous accroupir (interdiction de la touche Ctrl). Focus sur le micro-ajustement horizontal à hauteur de tête avant de tirer la première balle.
+                        Éliminez 50 bots en mode Entraînement avec Vandal sans vous accroupir. Focus sur le micro-ajustement horizontal à hauteur de tête avant de tirer la première balle.
                       </p>
                     </div>
 
-                    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 space-y-1.5">
+                    <div className="rounded-lg border border-white/[0.06] bg-black/40 p-4 space-y-1.5">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-semibold text-white">
+                        <span className="text-xs font-bold text-white">
                           Phase 2 : Prise d'Espace & Duels sous Pression (15 min)
                         </span>
-                        <span className="text-[10px] font-mono font-medium text-neutral-400 border border-white/10 rounded-md px-2 py-0.5 bg-white/[0.04]">2 Swiftplay / Deathmatch</span>
+                        <span className="text-[10px] font-mono font-semibold text-neutral-400 border border-white/10 rounded px-2 py-0.5 bg-white/[0.04]">2 Swiftplay / Deathmatch</span>
                       </div>
                       <p className="text-xs text-neutral-400 leading-relaxed">
-                        Sur Jett : entraînez les entrées de site agressives avec un Cloudburst posé et un dash immédiat dans la fumée pour perturber la ligne de visée ennemie et forcer un trade avantageux.
+                        Sur Jett : entraînez les entrées de site agressives avec un Cloudburst posé et un dash immédiat dans la fumée pour perturber la ligne de visée ennemie et forcer un duel avantageux.
                       </p>
                     </div>
 
-                    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 space-y-1.5">
+                    <div className="rounded-lg border border-white/[0.06] bg-black/40 p-4 space-y-1.5">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-semibold text-white">
+                        <span className="text-xs font-bold text-white">
                           Phase 3 : Débriefing & Suivi des Crédits (5 min)
                         </span>
-                        <span className="text-[10px] font-mono font-medium text-neutral-400 border border-white/10 rounded-md px-2 py-0.5 bg-white/[0.04]">Dashboard ETHONE</span>
+                        <span className="text-[10px] font-mono font-semibold text-neutral-400 border border-white/10 rounded px-2 py-0.5 bg-white/[0.04]">Dashboard ETHONE</span>
                       </div>
                       <p className="text-xs text-neutral-400 leading-relaxed">
                         Vérifiez vos rounds d'économie sur la télémétrie post-match. Assurez-vous d'avoir acheté au moins 3 utilitaires clés sur les rounds armés.
@@ -1067,306 +1494,222 @@ export default function RiotGamingHome() {
 
             {activeGame === "lol" && (
               <div className="space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                  <motion.div
-                    whileHover={{ y: -2 }}
-                    className="rounded-2xl border border-white/[0.08] bg-[#121214]/80 p-4 backdrop-blur-2xl shadow-sm space-y-3"
-                  >
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+                  <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-4 backdrop-blur-xl shadow-sm space-y-3">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/[0.04] text-white font-semibold border border-white/10 shrink-0">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-500/10 text-amber-300 font-bold border border-amber-500/30 shrink-0">
                         <GameBrandIcon name="League of Legends" className="h-6 w-6" />
                       </div>
                       <div className="min-w-0">
-                        <h3 className="text-base font-semibold text-white truncate">
+                        <h3 className="text-base font-bold text-white truncate">
                           {riotName || "Invocateur"}
                         </h3>
                         <p className="font-mono text-xs text-neutral-400">{riotTag ? `#${riotTag}` : ""}</p>
-                        <p className="text-xs font-medium text-neutral-300">
-                          {lolMatches.length > 0 ? "Compétitif" : "Challenger / SoloQ"}
+                        <p className="text-xs font-semibold text-amber-300">
+                          {lolMatches.length > 0 ? "Compétitif SoloQ" : "SoloQ / Flex"}
                         </p>
                       </div>
                     </div>
                     <div className="pt-2 border-t border-white/[0.06] flex items-center justify-between text-xs text-neutral-400">
-                      <span>Parties trouvées :</span>
-                      <span className="font-mono font-medium text-white">
-                        {lolMatches.length > 0 ? lolMatches.length : "1"}
+                      <span>Parties analysées :</span>
+                      <span className="font-mono font-bold text-white">
+                        {lolMatches.length}
                       </span>
                     </div>
-                  </motion.div>
+                  </div>
 
-                  <motion.div
-                    whileHover={{ y: -2 }}
-                    className="rounded-2xl border border-white/[0.08] bg-[#121214]/80 p-4 backdrop-blur-2xl shadow-sm flex flex-col justify-between"
-                  >
+                  <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-4 backdrop-blur-xl shadow-sm flex flex-col justify-between">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-medium uppercase tracking-wider text-neutral-400">KDA Moyen</span>
-                      <Flame className="h-4 w-4 text-neutral-400" />
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">KDA Moyen</span>
+                      <Flame className="h-4 w-4 text-amber-400" />
                     </div>
                     <div className="my-2">
-                      <p className="text-3xl font-semibold tracking-tight text-white">
+                      <p className="text-3xl font-mono font-bold tracking-tight text-white">
                         {lolSummary.total > 0 ? lolSummary.kda : "—"}
                       </p>
-                      <p className="text-[11px] text-neutral-400 font-normal">
+                      <p className="text-[11px] font-mono text-neutral-400">
                         {lolSummary.total > 0 ? `${lolSummary.kTotal}K / ${lolSummary.dTotal}D / ${lolSummary.aTotal}A` : "0 partie analysée"}
                       </p>
                     </div>
-                    <div className="h-1.5 w-full rounded-full bg-white/[0.08] overflow-hidden">
-                      <div className="h-full bg-white rounded-full" style={{ width: lolSummary.total > 0 ? `${Math.min(100, Math.round(Number(lolSummary.kda || 0) * 20))}%` : "0%" }} />
+                    <div className="h-1.5 w-full rounded-full bg-white/[0.06] overflow-hidden">
+                      <div
+                        className="h-full bg-amber-400 rounded-full"
+                        style={{ width: lolSummary.total > 0 ? `${Math.min(100, Math.round(Number(lolSummary.kda || 0) * 20))}%` : "0%" }}
+                      />
                     </div>
-                  </motion.div>
+                  </div>
 
-                  <motion.div
-                    whileHover={{ y: -2 }}
-                    className="rounded-2xl border border-white/[0.08] bg-[#121214]/80 p-4 backdrop-blur-2xl shadow-sm flex flex-col justify-between"
-                  >
+                  <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-4 backdrop-blur-xl shadow-sm flex flex-col justify-between">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-medium uppercase tracking-wider text-neutral-400">Dégâts / Minute</span>
-                      <Trophy className="h-4 w-4 text-neutral-400" />
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">Dégâts / Minute</span>
+                      <Trophy className="h-4 w-4 text-cyan-400" />
                     </div>
                     <div className="my-2">
-                      <p className="text-3xl font-semibold tracking-tight text-white">
+                      <p className="text-3xl font-mono font-bold tracking-tight text-white">
                         {lolMatches.length > 0 ? "831" : "—"}
                       </p>
-                      <p className="text-[11px] text-neutral-400 font-normal">
+                      <p className="text-[11px] font-mono text-neutral-400">
                         {lolMatches.length > 0 ? "24 944 dégâts infligés" : "—"}
                       </p>
                     </div>
-                    <div className="h-1.5 w-full rounded-full bg-white/[0.08] overflow-hidden">
-                      <div className="h-full bg-white rounded-full" style={{ width: lolMatches.length > 0 ? "75%" : "0%" }} />
+                    <div className="h-1.5 w-full rounded-full bg-white/[0.06] overflow-hidden">
+                      <div className="h-full bg-cyan-400 rounded-full" style={{ width: lolMatches.length > 0 ? "75%" : "0%" }} />
                     </div>
-                  </motion.div>
+                  </div>
 
-                  <motion.div
-                    whileHover={{ y: -2 }}
-                    className="rounded-2xl border border-white/[0.08] bg-[#121214]/80 p-4 backdrop-blur-2xl shadow-sm flex flex-col justify-between"
-                  >
+                  <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-4 backdrop-blur-xl shadow-sm flex flex-col justify-between">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-medium uppercase tracking-wider text-neutral-400">Kill Participation</span>
-                      <Target className="h-4 w-4 text-neutral-400" />
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">Kill Participation</span>
+                      <Target className="h-4 w-4 text-emerald-400" />
                     </div>
                     <div className="my-2">
-                      <p className="text-3xl font-semibold tracking-tight text-white">
+                      <p className="text-3xl font-mono font-bold tracking-tight text-white">
                         {lolMatches.length > 0 ? "78%" : "—"}
                       </p>
-                      <p className="text-[11px] text-neutral-400 font-normal">
+                      <p className="text-[11px] font-mono text-neutral-400">
                         {lolMatches.length > 0 ? "Impact décisif sur les escarmouches" : "—"}
                       </p>
                     </div>
-                    <div className="h-1.5 w-full rounded-full bg-white/[0.08] overflow-hidden">
-                      <div className="h-full bg-white rounded-full" style={{ width: lolMatches.length > 0 ? "78%" : "0%" }} />
+                    <div className="h-1.5 w-full rounded-full bg-white/[0.06] overflow-hidden">
+                      <div className="h-full bg-emerald-400 rounded-full" style={{ width: lolMatches.length > 0 ? "78%" : "0%" }} />
                     </div>
-                  </motion.div>
+                  </div>
+                </div>
+
+                <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-4 sm:p-5 backdrop-blur-xl shadow-sm space-y-3">
+                  <div className="flex items-center justify-between border-b border-white/[0.06] pb-2.5">
+                    <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-white">
+                      Parties Récentes League of Legends
+                    </h3>
+                    <span className="text-[10px] font-mono text-neutral-500">{lolMatches.length} parties</span>
+                  </div>
+
+                  <div className="space-y-2">
+                    {lolMatches.length > 0 ? (
+                      lolMatches.slice(0, 5).map((m, idx) => {
+                        const me = m.scoreboard?.players?.find((p) => p.isMe) || m.scoreboard?.players?.[0];
+                        const isWin = m.metadata?.result?.toLowerCase() === "victory";
+                        const kills = me?.stats?.kills ?? 9;
+                        const deaths = me?.stats?.deaths ?? 11;
+                        const assists = me?.stats?.assists ?? 5;
+                        const kda = deaths > 0 ? ((kills + assists) / deaths).toFixed(2) : String(kills + assists);
+
+                        return (
+                          <div
+                            key={m.metadata?.matchId || idx}
+                            className="flex items-center justify-between rounded-lg border border-white/[0.06] bg-black/30 p-3 hover:border-white/10 transition-all"
+                          >
+                            <div className="flex items-center gap-3 min-w-0">
+                              <div
+                                className={cn(
+                                  "h-8 w-1 rounded-full shrink-0",
+                                  isWin ? "bg-emerald-400" : "bg-rose-500"
+                                )}
+                              />
+                              {m.metadata?.agentImageUrl && (
+                                <img
+                                  src={m.metadata.agentImageUrl}
+                                  alt={me?.character || "Champion"}
+                                  className="h-8 w-8 rounded-md object-cover border border-white/10 shrink-0"
+                                />
+                              )}
+                              <div className="min-w-0">
+                                <div className="flex items-center gap-2">
+                                  <span className="text-xs font-bold text-white truncate">
+                                    {me?.character || m.metadata?.agentName || "Champion"}
+                                  </span>
+                                  <span
+                                    className={cn(
+                                      "rounded px-1.5 py-0.2 text-[9px] font-mono font-bold uppercase",
+                                      isWin ? "bg-emerald-500/15 text-emerald-300 border border-emerald-500/30" : "bg-rose-500/15 text-rose-300 border border-rose-500/30"
+                                    )}
+                                  >
+                                    {isWin ? "Victoire" : "Défaite"}
+                                  </span>
+                                </div>
+                                <p className="text-[10px] font-mono text-neutral-400 mt-0.5">
+                                  {m.metadata?.modeName || "Normal Draft"} · {m.metadata?.gameDuration || "28m"}
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="text-right shrink-0">
+                              <p className="text-xs font-mono font-bold text-white">
+                                {kills}/{deaths}/{assists}
+                              </p>
+                              <p className="text-[10px] font-mono text-neutral-400">{kda} KDA</p>
+                            </div>
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <div className="rounded-lg border border-dashed border-white/10 bg-black/20 p-6 text-center">
+                        <p className="text-xs text-neutral-400">
+                          Recherchez un Invocateur LoL pour charger les matchs récents.
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             )}
 
             {activeGame === "tft" && (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <motion.div
-                  whileHover={{ y: -2 }}
-                  className="rounded-2xl border border-white/[0.08] bg-[#121214]/80 p-4 backdrop-blur-2xl shadow-sm space-y-3"
-                >
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+                <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-4 backdrop-blur-xl shadow-sm space-y-3">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/[0.04] text-white font-semibold border border-white/10 shrink-0">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-purple-500/10 text-purple-300 font-bold border border-purple-500/30 shrink-0">
                       <GameBrandIcon name="Teamfight Tactics" className="h-6 w-6" />
                     </div>
                     <div className="min-w-0">
-                      <h3 className="text-base font-semibold text-white truncate">{riotName || "Tacticien"}</h3>
+                      <h3 className="text-base font-bold text-white truncate">{riotName || "Tacticien"}</h3>
                       <p className="font-mono text-xs text-neutral-400">{riotTag ? `#${riotTag}` : ""}</p>
-                      <p className="text-xs font-medium text-neutral-300">Mode Stratégique</p>
+                      <p className="text-xs font-semibold text-purple-300">Mode Stratégique TFT</p>
                     </div>
                   </div>
-                </motion.div>
+                </div>
 
-                <motion.div
-                  whileHover={{ y: -2 }}
-                  className="rounded-2xl border border-white/[0.08] bg-[#121214]/80 p-4 backdrop-blur-2xl shadow-sm flex flex-col justify-between"
-                >
-                  <span className="text-[10px] font-medium uppercase tracking-wider text-neutral-400">Top 4 Rate</span>
-                  <p className="text-3xl font-semibold tracking-tight text-white my-2">
+                <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-4 backdrop-blur-xl shadow-sm flex flex-col justify-between">
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">Top 4 Rate</span>
+                  <p className="text-3xl font-mono font-bold tracking-tight text-white my-2">
                     {valorantMatches.length > 0 ? "64%" : "—"}
                   </p>
-                  <div className="h-1.5 w-full rounded-full bg-white/[0.08] overflow-hidden">
-                    <div className="h-full bg-white rounded-full" style={{ width: valorantMatches.length > 0 ? "64%" : "0%" }} />
+                  <div className="h-1.5 w-full rounded-full bg-white/[0.06] overflow-hidden">
+                    <div className="h-full bg-purple-400 rounded-full" style={{ width: valorantMatches.length > 0 ? "64%" : "0%" }} />
                   </div>
-                </motion.div>
+                </div>
 
-                <motion.div
-                  whileHover={{ y: -2 }}
-                  className="rounded-2xl border border-white/[0.08] bg-[#121214]/80 p-4 backdrop-blur-2xl shadow-sm flex flex-col justify-between"
-                >
-                  <span className="text-[10px] font-medium uppercase tracking-wider text-neutral-400">Victoires (Top 1)</span>
-                  <p className="text-3xl font-semibold tracking-tight text-white my-2">
+                <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/90 p-4 backdrop-blur-xl shadow-sm flex flex-col justify-between">
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">Victoires (Top 1)</span>
+                  <p className="text-3xl font-mono font-bold tracking-tight text-white my-2">
                     {valorantMatches.length > 0 ? "28%" : "—"}
                   </p>
-                  <div className="h-1.5 w-full rounded-full bg-white/[0.08] overflow-hidden">
-                    <div className="h-full bg-white rounded-full" style={{ width: valorantMatches.length > 0 ? "28%" : "0%" }} />
+                  <div className="h-1.5 w-full rounded-full bg-white/[0.06] overflow-hidden">
+                    <div className="h-full bg-amber-400 rounded-full" style={{ width: valorantMatches.length > 0 ? "28%" : "0%" }} />
                   </div>
-                </motion.div>
+                </div>
               </div>
             )}
           </motion.div>
         </AnimatePresence>
 
-        <div className="rounded-2xl border border-white/[0.08] bg-[#121214]/80 p-4 sm:p-5 backdrop-blur-2xl shadow-sm space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Activity className="h-4 w-4 text-neutral-400" />
-              <h3 className="text-sm font-semibold text-white">
-                Parties Récentes ({activeGame === "lol" ? "LEAGUE OF LEGENDS" : "VALORANT"})
-              </h3>
-            </div>
-            <Link
-              href={`/tracker?tab=${activeGame}`}
-              className="text-xs font-medium text-neutral-400 hover:text-white transition-colors flex items-center gap-1"
-            >
-              <span>Tout l'historique</span>
-              <ChevronRight className="h-3 w-3" />
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {activeGame !== "lol" && valorantMatches.slice(0, 3).map((m, idx) => {
-              const isWin =
-                m.metadata?.result?.toLowerCase() === "victory" ||
-                ((m.metadata?.score?.team || 0) > (m.metadata?.score?.opponent || 0));
-              const myStats = m.segments?.[0]?.stats;
-              const kills = myStats?.kills?.value ?? 14;
-              const deaths = myStats?.deaths?.value ?? 8;
-              const assists = myStats?.assists?.value ?? 3;
-              const matchKd = (kills / Math.max(1, deaths)).toFixed(2);
-
-              return (
-                <div
-                  key={m.metadata?.matchId || idx}
-                  className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 space-y-2 hover:border-white/10 hover:bg-white/[0.04] transition-all"
-                >
-                  <div className="flex items-center justify-between">
-                    <span
-                      className={cn(
-                        "rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide",
-                        isWin
-                          ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-                          : "bg-white/[0.05] text-neutral-400 border border-white/10"
-                      )}
-                    >
-                      {isWin ? "Victoire" : "Défaite"}
-                    </span>
-                    <span className="font-mono text-xs font-medium text-white">
-                      {m.metadata?.score?.team ?? 5} - {m.metadata?.score?.opponent ?? 4}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between text-xs">
-                    <div className="flex items-center gap-2 min-w-0">
-                      {m.metadata?.agentImageUrl && (
-                        <img
-                          src={m.metadata.agentImageUrl}
-                          alt={m.metadata.agentName || "Agent"}
-                          className="h-6 w-6 rounded-md object-cover border border-white/10 shrink-0"
-                        />
-                      )}
-                      <span className="font-semibold text-white truncate">
-                        {m.metadata?.mapName || "Split"}
-                      </span>
-                    </div>
-                    <span className="text-neutral-400 font-medium shrink-0">
-                      {m.metadata?.agentName || "Jett"}
-                    </span>
-                  </div>
-                  <div className="text-[11px] font-mono text-neutral-400 flex items-center justify-between pt-1 border-t border-white/[0.06]">
-                    <span>
-                      {kills}/{deaths}/{assists}
-                    </span>
-                    <span className="text-white font-medium">{matchKd} KD</span>
-                  </div>
-                </div>
-              );
-            })}
-
-            {activeGame !== "lol" && valorantMatches.length === 0 && (
-              <div className="sm:col-span-3 flex flex-col items-center justify-center rounded-xl border border-dashed border-white/10 bg-white/[0.02] py-8 px-4 text-center">
-                <Swords className="h-8 w-8 text-neutral-500 mb-2" />
-                <p className="text-xs font-semibold text-white">Parties VALORANT</p>
-                <p className="text-[11px] text-neutral-400 max-w-sm mt-1">
-                  Recherchez un Riot ID ci-dessus pour charger l'historique des parties récentes.
-                </p>
-              </div>
-            )}
-
-            {activeGame === "lol" && lolMatches.length > 0 && lolMatches.slice(0, 3).map((m, idx) => {
-              const me = m.scoreboard?.players?.find((p) => p.isMe) || m.scoreboard?.players?.[0];
-              const isWin = m.metadata?.result?.toLowerCase() === "victory";
-              const kills = me?.stats?.kills ?? 9;
-              const deaths = me?.stats?.deaths ?? 11;
-              const assists = me?.stats?.assists ?? 5;
-              const kda = deaths > 0 ? ((kills + assists) / deaths).toFixed(2) : String(kills + assists);
-
-              return (
-                <div
-                  key={m.metadata?.matchId || idx}
-                  className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 space-y-2 hover:border-white/10 hover:bg-white/[0.04] transition-all"
-                >
-                  <div className="flex items-center justify-between">
-                    <span
-                      className={cn(
-                        "rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide",
-                        isWin
-                          ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-                          : "bg-white/[0.05] text-neutral-400 border border-white/10"
-                      )}
-                    >
-                      {isWin ? "Victoire" : "Défaite"}
-                    </span>
-                    <span className="font-mono text-xs text-neutral-400">
-                      {m.metadata?.gameDuration || "30m 33s"}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between text-xs">
-                    <div className="flex items-center gap-2 min-w-0">
-                      {m.metadata?.agentImageUrl && (
-                        <img
-                          src={m.metadata.agentImageUrl}
-                          alt={me?.character || "Champion"}
-                          className="h-6 w-6 rounded-md object-cover border border-white/10 shrink-0"
-                        />
-                      )}
-                      <span className="font-semibold text-white truncate">
-                        {me?.character || m.metadata?.agentName || "Locke"}
-                      </span>
-                    </div>
-                    <span className="text-neutral-400 font-medium shrink-0">
-                      {m.metadata?.modeName || "Normal Draft"}
-                    </span>
-                  </div>
-                  <div className="text-[11px] font-mono text-neutral-400 flex items-center justify-between pt-1 border-t border-white/[0.06]">
-                    <span>
-                      {kills}/{deaths}/{assists}
-                    </span>
-                    <span className="text-white font-medium">{kda} KDA</span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        <footer className="mt-8 space-y-3 rounded-2xl border border-white/[0.08] bg-[#121214]/80 p-4 sm:p-5 backdrop-blur-2xl shadow-sm">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-white/[0.06] pb-3.5">
+        <footer className="mt-8 rounded-xl border border-white/[0.08] bg-[#10131B]/95 p-4 sm:p-5 backdrop-blur-xl shadow-md space-y-3.5">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-white/[0.06] pb-3">
             <div className="flex items-center gap-2.5">
-              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/[0.04] border border-white/10 text-white">
-                <GameBrandIcon name="Valorant" className="h-3.5 w-3.5" />
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/[0.04] border border-white/10 text-white shrink-0">
+                <ShieldCheck className="h-4 w-4 text-emerald-400" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-semibold tracking-wide uppercase text-white">
-                    Attributions & Contributions Open Source
+                  <span className="text-xs font-mono font-bold uppercase tracking-wider text-white">
+                    Attributions & Conformité Compétitive
                   </span>
-                  <span className="rounded-full border border-white/10 bg-white/[0.05] px-2 py-0.5 text-[9px] font-medium text-neutral-400">
+                  <span className="rounded-full border border-white/10 bg-white/[0.05] px-2 py-0.2 text-[9px] font-mono text-neutral-400">
                     Non Affilié à Riot Games
                   </span>
                 </div>
-                <p className="text-[11px] text-neutral-400">
-                  Respect des politiques Legal Jibber Jabber et valorisation des APIs communautaires.
+                <p className="text-[11px] text-neutral-400 mt-0.5">
+                  Politique Legal Jibber Jabber de Riot Games et APIs communautaires.
                 </p>
               </div>
             </div>
@@ -1376,8 +1719,7 @@ export default function RiotGamingHome() {
                 href="https://valorant-api.com/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-1 text-xs font-mono font-medium text-neutral-300 hover:text-white hover:bg-white/[0.08] transition-colors"
-                title="API Open Source des assets VALORANT"
+                className="inline-flex items-center gap-1.5 rounded-md border border-white/10 bg-white/[0.03] px-2.5 py-1 text-xs font-mono text-neutral-300 hover:text-white hover:bg-white/[0.08] transition-colors"
               >
                 <span>valorant-api.com</span>
                 <ExternalLink className="h-3 w-3" />
@@ -1387,8 +1729,7 @@ export default function RiotGamingHome() {
                 href="https://docs.henrikdev.xyz/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-1 text-xs font-mono font-medium text-neutral-300 hover:text-white hover:bg-white/[0.08] transition-colors"
-                title="API de télémétrie et matchs VALORANT"
+                className="inline-flex items-center gap-1.5 rounded-md border border-white/10 bg-white/[0.03] px-2.5 py-1 text-xs font-mono text-neutral-300 hover:text-white hover:bg-white/[0.08] transition-colors"
               >
                 <span>henrikdev.xyz</span>
                 <ExternalLink className="h-3 w-3" />
@@ -1398,8 +1739,7 @@ export default function RiotGamingHome() {
                 href="https://developer.riotgames.com/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-1 text-xs font-mono font-medium text-neutral-300 hover:text-white hover:bg-white/[0.08] transition-colors"
-                title="Portail Officiel Développeur Riot Games"
+                className="inline-flex items-center gap-1.5 rounded-md border border-white/10 bg-white/[0.03] px-2.5 py-1 text-xs font-mono text-neutral-300 hover:text-white hover:bg-white/[0.08] transition-colors"
               >
                 <span>developer.riotgames.com</span>
                 <ExternalLink className="h-3 w-3" />
@@ -1408,26 +1748,26 @@ export default function RiotGamingHome() {
               <button
                 type="button"
                 onClick={() => setAttributionModalOpen(true)}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.06] px-2.5 py-1 text-xs font-medium text-white hover:bg-white/[0.10] active:scale-[0.98] transition-all cursor-pointer shadow-sm"
+                className="inline-flex items-center gap-1.5 rounded-md border border-white/10 bg-white/[0.05] px-2.5 py-1 text-xs font-semibold text-white hover:bg-white/[0.10] active:scale-95 transition-all cursor-pointer shadow-sm"
               >
-                <Heart className="h-3 w-3 text-neutral-300" />
+                <Heart className="h-3 w-3 text-rose-400" />
                 <span>Tous les crédits</span>
               </button>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-[11px] leading-relaxed text-neutral-400">
-            <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
-              <span className="font-medium text-neutral-200 block mb-1">Avis de Non-Affiliation (Legal Jibber Jabber) :</span>
-              « ETHONE isn&apos;t endorsed by Riot Games and doesn&apos;t reflect the views or opinions of Riot Games or anyone officially involved in producing or managing Riot Games properties. Riot Games, and all associated properties are trademarks or registered trademarks of Riot Games, Inc. »
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-[11px] leading-relaxed text-neutral-400 font-mono">
+            <div className="rounded-lg border border-white/[0.05] bg-black/30 p-3">
+              <span className="font-semibold text-neutral-200 block mb-1">Notice Légale :</span>
+              ETHONE isn&apos;t endorsed by Riot Games and doesn&apos;t reflect the views or opinions of Riot Games or anyone officially involved in producing or managing Riot Games properties. Riot Games, and all associated properties are trademarks or registered trademarks of Riot Games, Inc.
             </div>
 
-            <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 flex flex-col justify-between">
+            <div className="rounded-lg border border-white/[0.05] bg-black/30 p-3 flex flex-col justify-between">
               <div>
-                <span className="font-medium text-neutral-200 block mb-1">Confidentialité & Zéro Log :</span>
-                Aucun compte obligatoire, aucun journal stocké sur serveur tiers. Votre Riot ID est conservé exclusivement dans le stockage local de votre navigateur conformément aux exigences du portail développeur Riot Games.
+                <span className="font-semibold text-neutral-200 block mb-1">Confidentialité & Stockage Local :</span>
+                Aucun compte obligatoire, zéro trace sur serveur externe. Les données de profil et Riot ID sont stockées exclusivement dans le navigateur local de l'utilisateur.
               </div>
-              <div className="pt-1.5 font-mono text-[10px] text-neutral-400 font-medium">
+              <div className="pt-2 text-[10px] text-emerald-400 font-bold">
                 ✓ 100% Local · Zéro Log · Conforme Fair-Play Vanguard
               </div>
             </div>

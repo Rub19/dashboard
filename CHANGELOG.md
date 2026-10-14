@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.72 — 2026-10-14
+
+**Refonte visuelle et motion design d'ETHONE Tactical Tracker**
+
+- Unification de la navigation supérieure en une barre de commande tactique (statuts Riot API en direct, onglets de jeux avec glissement fluide et recherche intégrée).
+- Intégration de micro-animations de compteurs numériques (`AnimatedNumber`) et d'une jauge de progression RR dynamique.
+- Refonte de la présentation des agents avec mise en avant des rôles tactiques (Duelliste, Initiateur, Contrôleur, Sentinelle) et ratios de victoire.
+- Historique de matchs interactif avec accordéon déployable révélant le tableau complet des scores et statistiques de combat par manche.
+- Respect strict des préférences d'accessibilité `prefers-reduced-motion` et de la politique zéro commentaire.
+
 ## v1.75.71 — 2026-10-14
 
 **Suppression des pseudos par défaut et état neutre pour la recherche de joueurs**

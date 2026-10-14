@@ -55283,10 +55283,58 @@ const v12913_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12913_fr, v12912_fr, v12911_fr, v12910_fr, v12909_fr, v12908_fr, v12907_fr, v12906_fr, v12905_fr, v12904_fr, v12903_fr, v12902_fr, v12901_fr, v12900_fr, v12899_fr, v12898_fr, v12897_fr, v12896_fr, v12895_fr, v12894_fr, v12893_fr, v12892_fr);
-CHANGELOG_BY_LANG.en.unshift(v12913_en, v12912_en, v12911_en, v12910_en, v12909_en, v12908_en, v12907_en, v12906_en, v12905_en, v12904_en, v12903_en, v12902_en, v12901_en, v12900_en, v12899_en, v12898_en, v12897_en, v12896_en, v12895_en, v12894_en, v12893_en, v12892_en);
-CHANGELOG_BY_LANG.es.unshift(v12913_es, v12912_es, v12911_es, v12910_es, v12909_es, v12908_es, v12907_es, v12906_es, v12905_es, v12904_es, v12903_es, v12902_es, v12901_es, v12900_es, v12899_es, v12898_es, v12897_es, v12896_es, v12895_es, v12894_es, v12893_es, v12892_es);
-CHANGELOG_BY_LANG.de.unshift(v12913_de, v12912_de, v12911_de, v12910_de, v12909_de, v12908_de, v12907_de, v12906_de, v12905_de, v12904_de, v12903_de, v12902_de, v12901_de, v12900_de, v12899_de, v12898_de, v12897_de, v12896_de, v12895_de, v12894_de, v12893_de, v12892_de);
+const v12914_fr: ChangelogEntry = {
+  version: "v1.75.72",
+  date: "2026-10-14",
+  title: "Refonte visuelle et motion design d'ETHONE Tactical Tracker",
+  items: [
+    "Barre de commande tactique unifiée réunissant statut API, sélecteurs de jeu et recherche",
+    "Animations fluides de compteurs numériques (AnimatedNumber) et jauge de progression RR",
+    "Historique des parties interactif avec affichage détaillé des scores et des joueurs au clic",
+    "Panneaux télémétriques et recommandations du Coach IA optimisés avec design esports sombre",
+  ],
+};
+
+const v12914_en: ChangelogEntry = {
+  version: "v1.75.72",
+  date: "2026-10-14",
+  title: "Visual redesign and motion design for ETHONE Tactical Tracker",
+  items: [
+    "Unified tactical command bar with live API status, game tabs, and integrated player search",
+    "Smooth numeric count-up animations (AnimatedNumber) and competitive RR progress gauge",
+    "Interactive match history with expandable player scoreboard and combat breakdown on click",
+    "Optimized telemetry metrics and AI Coach briefing with dark graphite esports aesthetic",
+  ],
+};
+
+const v12914_es: ChangelogEntry = {
+  version: "v1.75.72",
+  date: "2026-10-14",
+  title: "Rediseño visual y motion design para ETHONE Tactical Tracker",
+  items: [
+    "Barra de comandos táctica unificada con estado de API en vivo y búsqueda integrada",
+    "Animaciones fluidas de conteo numérico (AnimatedNumber) y medidor de rango RR competitivo",
+    "Historial de partidas interactivo con despliegue de detalles y marcadores al hacer clic",
+    "Métricas de telemetría y diagnósticos de Coach IA con estética oscura de esports",
+  ],
+};
+
+const v12914_de: ChangelogEntry = {
+  version: "v1.75.72",
+  date: "2026-10-14",
+  title: "Visuelles Redesign und Motion Design für ETHONE Tactical Tracker",
+  items: [
+    "Vereinte taktische Befehlsleiste mit Live-API-Status und integrierter Spielersuche",
+    "Flüssige Zahlenanimationen (AnimatedNumber) und kompetitive RR-Fortschrittsanzeige",
+    "Interaktiver Spielverlauf mit aufklappbaren Punkte- und Spielerübersichten per Klick",
+    "Optimierte Telemetriedaten und KI-Coach-Briefings im dunklen Esports-Graphit-Design",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12914_fr, v12913_fr, v12912_fr, v12911_fr, v12910_fr, v12909_fr, v12908_fr, v12907_fr, v12906_fr, v12905_fr, v12904_fr, v12903_fr, v12902_fr, v12901_fr, v12900_fr, v12899_fr, v12898_fr, v12897_fr, v12896_fr, v12895_fr, v12894_fr, v12893_fr, v12892_fr);
+CHANGELOG_BY_LANG.en.unshift(v12914_en, v12913_en, v12912_en, v12911_en, v12910_en, v12909_en, v12908_en, v12907_en, v12906_en, v12905_en, v12904_en, v12903_en, v12902_en, v12901_en, v12900_en, v12899_en, v12898_en, v12897_en, v12896_en, v12895_en, v12894_en, v12893_en, v12892_en);
+CHANGELOG_BY_LANG.es.unshift(v12914_es, v12913_es, v12912_es, v12911_es, v12910_es, v12909_es, v12908_es, v12907_es, v12906_es, v12905_es, v12904_es, v12903_es, v12902_es, v12901_es, v12900_es, v12899_es, v12898_es, v12897_es, v12896_es, v12895_es, v12894_es, v12893_es, v12892_es);
+CHANGELOG_BY_LANG.de.unshift(v12914_de, v12913_de, v12912_de, v12911_de, v12910_de, v12909_de, v12908_de, v12907_de, v12906_de, v12905_de, v12904_de, v12903_de, v12902_de, v12901_de, v12900_de, v12899_de, v12898_de, v12897_de, v12896_de, v12895_de, v12894_de, v12893_de, v12892_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

@@ -28,7 +28,7 @@ const ATTRIBUTION_ITEMS = [
     badge: "Assets & Médias",
     tagColor: "border-rose-500/40 bg-rose-500/15 text-rose-300",
     description:
-      "API communautaire non-officielle et open source fournissant l'intégralité des métadonnées visuelles de VALORANT : cartes, armes, skins, agents, capacités, bannières et échelons MMR.",
+      "API communautaire non-officielle et open source fournissant l'intégralité des métadonnées visuelles de VALORANT : cartes, armes, skins, agents, capacités, bannières et icônes de rangs officiels.",
     contribution:
       "Fournit les illustrations d'agents, icônes d'aptitudes et fonds de cartes affichés sur le tableau de bord et les fiches de match.",
   },
@@ -41,7 +41,7 @@ const ATTRIBUTION_ITEMS = [
     description:
       "Fournisseur d'historiques de parties, statistiques de rounds et données de classement compétitif en temps différé pour la scène compétitive de VALORANT.",
     contribution:
-      "Alimente la télémétrie de duel post-match, le ratio K/D, le calcul de dégâts par manche (ADR) et l'estimation de cote MMR.",
+      "Alimente la télémétrie de duel post-match, le ratio K/D, le calcul de dégâts par manche (ADR) et l'affichage des rangs compétitifs officiels (RR).",
   },
   {
     id: "riot-developer",

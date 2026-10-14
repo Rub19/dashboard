@@ -830,7 +830,7 @@ export default function ValorantTrackerView() {
         isOpen={apiKeyModalOpen}
         onClose={() => setApiKeyModalOpen(false)}
         title="Clé API HenrikDev (Rangs Valorant Réels)"
-        description="Configurez votre clé API Henrik pour récupérer les véritables rangs compétitifs (MMR) de tous les joueurs de vos parties sans estimation."
+        description="Configurez votre clé API Henrik pour récupérer les véritables rangs compétitifs officiels (RR) de tous les joueurs de vos parties sans estimation."
         size="md"
         hideFooter
       >

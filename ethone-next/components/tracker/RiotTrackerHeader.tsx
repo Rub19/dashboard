@@ -18,6 +18,7 @@ export interface RiotTrackerHeaderProps {
   onRiotIdChanged?: (name: string, tag: string) => void;
   currentProfileName?: string;
   currentProfileTag?: string;
+  isEn?: boolean;
 }
 
 export default function RiotTrackerHeader({
@@ -27,6 +28,7 @@ export default function RiotTrackerHeader({
   onRiotIdChanged,
   currentProfileName,
   currentProfileTag,
+  isEn,
 }: RiotTrackerHeaderProps) {
   const { open, setOpen } = useAnimatedSidebar();
   const [connectModalOpen, setConnectModalOpen] = useState(false);
@@ -168,6 +170,7 @@ export default function RiotTrackerHeader({
       <RiotAttributionModal
         isOpen={attributionModalOpen}
         onClose={() => setAttributionModalOpen(false)}
+        isEn={isEn}
       />
     </>
   );

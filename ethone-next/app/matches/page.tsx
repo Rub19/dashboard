@@ -105,6 +105,7 @@ export default function MatchesPage({ defaultTab }: { defaultTab?: string }) {
 
   const trackerKind = "tracker-apex";
   const { items, loading, syncing, sync } = useTracker(path, trackerKind);
+  const isEn = !settings.language?.startsWith("fr");
 
   return (
     <div className="flex h-full min-h-0 w-full flex-1 flex-col overflow-hidden">
@@ -113,6 +114,7 @@ export default function MatchesPage({ defaultTab }: { defaultTab?: string }) {
         onSelectGame={(g) => selectTab(g)}
         currentProfileName={name}
         currentProfileTag={tag}
+        isEn={isEn}
         onRiotIdChanged={(newName, newTag) => {
           const cleanName = newName.trim();
           const cleanTag = newTag.trim().replace(/^#/, "");

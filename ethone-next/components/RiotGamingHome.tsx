@@ -504,6 +504,19 @@ export default function RiotGamingHome() {
     [trackerLang, notify]
   );
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const handleLangEvent = (e: Event) => {
+      const customEvent = e as CustomEvent<{ lang?: string }>;
+      const l = customEvent.detail?.lang;
+      if (l === "en" || l === "fr") {
+        setTrackerLang(l);
+      }
+    };
+    window.addEventListener("ethone:tracker:lang-change", handleLangEvent);
+    return () => window.removeEventListener("ethone:tracker:lang-change", handleLangEvent);
+  }, []);
+
   return (
     <div className="flex h-full min-h-0 w-full flex-col overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[#0A0C10] text-neutral-200">
       <div className="mx-auto w-full max-w-7xl px-3 py-4 sm:px-6 sm:py-6 space-y-5">

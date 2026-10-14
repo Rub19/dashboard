@@ -170,7 +170,7 @@ const TrackerSidebarBrand = memo(function TrackerSidebarBrand() {
         "flex h-10 items-center gap-2.5 text-[var(--text-primary)] outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)] transition-transform active:scale-95",
         collapsed && "justify-center"
       )}
-      aria-label="RIOT TRACKER & COACH"
+      aria-label="ETHONE COACH"
     >
       <BrandMark size={32} className="shrink-0 drop-shadow-md" />
       <motion.div
@@ -187,10 +187,7 @@ const TrackerSidebarBrand = memo(function TrackerSidebarBrand() {
       >
         <div className="flex items-center gap-1.5">
           <span className="text-xs font-black tracking-wider text-[var(--text-primary)] uppercase">
-            #RIOT COACH
-          </span>
-          <span className="rounded-full border border-rose-500/40 bg-rose-500/15 px-1.5 py-0.2 text-[8px] font-bold text-rose-300">
-            LIVE
+            ETHONE COACH
           </span>
         </div>
         <span className="text-[10px] font-mono text-[var(--text-muted)] mt-0.5">

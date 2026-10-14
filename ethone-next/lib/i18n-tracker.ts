@@ -170,6 +170,19 @@ export interface TrackerTranslations {
   patchNotesBadge: string;
   patchNotesDesc: string;
   patchNotesClose: string;
+
+  coachChatTitle: string;
+  coachChatSubtitle: string;
+  coachChatReset: string;
+  coachChatDiagnostic: string;
+  coachChatPlaceholder: string;
+  coachChatSend: string;
+  coachChatThinking: string;
+  coachPrompt1: string;
+  coachPrompt2: string;
+  coachPrompt3: string;
+  coachPrompt4: string;
+  coachPrompt5: string;
 }
 
 export const TRACKER_TRANSLATIONS: Record<"fr" | "en", TrackerTranslations> = {
@@ -345,6 +358,19 @@ export const TRACKER_TRANSLATIONS: Record<"fr" | "en", TrackerTranslations> = {
     patchNotesBadge: "v2.4.0 · Build Compétitif",
     patchNotesDesc: "Historique des mises à jour du site, indépendant d'ETHONE OS.",
     patchNotesClose: "Fermer",
+
+    coachChatTitle: "Coach IA Tactique",
+    coachChatSubtitle: "Expertise VALORANT & VCT Esport · Analyse de vos statistiques réelles",
+    coachChatReset: "Nouvelle discussion",
+    coachChatDiagnostic: "Diagnostic de synthèse",
+    coachChatPlaceholder: "Posez une question tactique (ex: Comment jouer Haven en défense ?)...",
+    coachChatSend: "Envoyer",
+    coachChatThinking: "Le Coach analyse vos données tactiques...",
+    coachPrompt1: "🎯 Analyse mon tir et mon crosshair placement",
+    coachPrompt2: "⚡ Conseils pour progresser sur mon agent principal",
+    coachPrompt3: "🛡️ Comment gérer les retakes et le 4v5",
+    coachPrompt4: "🏆 Méta VCT : compositions et stratégies pros",
+    coachPrompt5: "💰 Gestion économique des armes et rounds bonus",
   },
   en: {
     hub: "Hub",
@@ -518,6 +544,19 @@ export const TRACKER_TRANSLATIONS: Record<"fr" | "en", TrackerTranslations> = {
     patchNotesBadge: "v2.4.0 · Competitive Build",
     patchNotesDesc: "Site release history, independent from ETHONE OS.",
     patchNotesClose: "Close",
+
+    coachChatTitle: "Tactical AI Coach",
+    coachChatSubtitle: "VALORANT & VCT Esports Expertise · Analyzes your actual stats",
+    coachChatReset: "New conversation",
+    coachChatDiagnostic: "Summary Diagnostic",
+    coachChatPlaceholder: "Ask a tactical question (e.g. How to play defense on Haven?)...",
+    coachChatSend: "Send",
+    coachChatThinking: "Coach is analyzing your tactical data...",
+    coachPrompt1: "🎯 Analyze my shooting and crosshair placement",
+    coachPrompt2: "⚡ Tips to improve on my main agent",
+    coachPrompt3: "🛡️ How to manage retakes and 4v5 disadvantage",
+    coachPrompt4: "🏆 VCT Meta: pro compositions and strategies",
+    coachPrompt5: "💰 Weapon economy management and bonus rounds",
   },
 };
 

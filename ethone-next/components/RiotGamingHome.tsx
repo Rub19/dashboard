@@ -54,6 +54,7 @@ import RiotAttributionModal from "@/components/tracker/RiotAttributionModal";
 import ValorantLiveMatchView from "@/components/tracker/ValorantLiveMatchView";
 import VctMatchesView from "@/components/tracker/VctMatchesView";
 import TacticalPatchNotesModal from "@/components/tracker/TacticalPatchNotesModal";
+import TacticalCoachChatView from "@/components/tracker/TacticalCoachChatView";
 import { AnimatedNumber } from "@/components/tracker/TrackerMotion";
 import { useAnimatedSidebar } from "@/components/motion/animated-sidebar";
 import FlagIcon from "@/components/FlagIcon";
@@ -1526,140 +1527,18 @@ export default function RiotGamingHome() {
         )}
 
             {activeGame === "coach" && (
-              <div className="space-y-4">
-                {valorantMatches.length === 0 ? (
-                  <div className="rounded-xl border border-dashed border-white/10 bg-[#10131B]/95 p-8 text-center space-y-3">
-                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-300">
-                      <Brain className="h-6 w-6" />
-                    </div>
-                    <h3 className="text-sm font-mono font-bold text-white uppercase tracking-wider">
-                      {tr.coachPendingTitle}
-                    </h3>
-                    <p className="max-w-md mx-auto text-xs text-neutral-400">
-                      {tr.coachPendingDesc}
-                    </p>
-                  </div>
-                ) : (
-                  <div className="rounded-xl border border-white/[0.08] bg-[#10131B]/95 p-5 backdrop-blur-xl shadow-md space-y-4">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/[0.06] pb-4">
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-300 shadow-sm shrink-0">
-                          <Brain className="h-6 w-6" />
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <h2 className="text-base font-bold text-white tracking-wide">
-                              {tr.coachDiagnosticTitle}
-                            </h2>
-                            <span className="rounded-full border border-purple-500/40 bg-purple-500/15 px-2 py-0.5 font-mono text-[10px] font-bold text-purple-300">
-                              {valorantStats.winRate ? `${valorantStats.winRate}% ${currentLang === "en" ? "Wins" : "Victoires"}` : tr.coachDiagnosticActive}
-                            </span>
-                          </div>
-                          <p className="text-xs text-neutral-400 font-mono mt-0.5">
-                            {tr.coachEvalPrefix} {valorantMatches.length} {currentLang === "en" ? (valorantMatches.length > 1 ? "official matches" : "official match") : (valorantMatches.length > 1 ? "parties officielles" : "partie officielle")} {currentLang === "en" ? "of" : "de"} {valorantProfile?.name || riotName || (currentLang === "en" ? "Player" : "Joueur")} #{valorantProfile?.tag || riotTag || "0001"}
-                          </p>
-                        </div>
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={() => selectGameTab("training")}
-                        className="inline-flex items-center gap-1.5 rounded-lg bg-white text-black px-3.5 py-2 text-xs font-semibold hover:bg-neutral-200 active:scale-95 transition-all cursor-pointer shadow-sm shrink-0"
-                      >
-                        <Activity className="h-3.5 w-3.5 text-black" />
-                        <span>{tr.coachRoutineBtn}</span>
-                      </button>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                      <div className="rounded-lg border border-white/[0.06] bg-black/40 p-3.5 space-y-1.5">
-                        <div className="flex items-center justify-between">
-                          <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">{tr.coachArchetype}</span>
-                          <Zap className="h-3.5 w-3.5 text-amber-400" />
-                        </div>
-                        <p className="text-sm font-bold text-white">
-                          {topValorantAgents[0]
-                            ? `${getAgentRole(topValorantAgents[0].agentName)} (${topValorantAgents[0].agentName})`
-                            : (currentLang === "en" ? "Versatile Player" : "Joueur Polyvalent")}
-                        </p>
-                        <p className="text-xs text-neutral-400 leading-relaxed">
-                          {topValorantAgents[0]
-                            ? (currentLang === "en"
-                                ? `Profile centered on ${topValorantAgents[0].agentName} with ${topValorantAgents[0].matches} ${topValorantAgents[0].matches > 1 ? tr.matches : tr.match} and ${topValorantAgents[0].winRate ?? 0}% win rate.`
-                                : `Profil orienté sur ${topValorantAgents[0].agentName} avec ${topValorantAgents[0].matches} ${topValorantAgents[0].matches > 1 ? "parties" : "partie"} et ${topValorantAgents[0].winRate ?? 0}% de victoires.`)
-                            : (currentLang === "en" ? "Role data being calculated." : "Données de rôle en cours de calcul.")}
-                        </p>
-                      </div>
-
-                      <div className="rounded-lg border border-white/[0.06] bg-black/40 p-3.5 space-y-1.5">
-                        <div className="flex items-center justify-between">
-                          <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">{tr.coachStrength}</span>
-                          <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
-                        </div>
-                        <p className="text-sm font-bold text-white">
-                          {telemetryMetrics && telemetryMetrics.duelWinrate >= 50
-                            ? (currentLang === "en" ? `Positive Duels (${telemetryMetrics.duelWinrate}% win)` : `Duels Positifs (${telemetryMetrics.duelWinrate}% win)`)
-                            : valorantStats.kdRatio
-                            ? (currentLang === "en" ? `KD Ratio of ${valorantStats.kdRatio}` : `Ratio KD de ${valorantStats.kdRatio}`)
-                            : (currentLang === "en" ? "Active round presence" : "Présence active en manche")}
-                        </p>
-                        <p className="text-xs text-neutral-400 leading-relaxed">
-                          {telemetryMetrics && telemetryMetrics.hsPct > 0
-                            ? (currentLang === "en" ? `Confirmed precision with ${telemetryMetrics.hsPct}% critical head impacts.` : `Précision de tir confirmée avec ${telemetryMetrics.hsPct}% d'impacts critiques à la tête.`)
-                            : (currentLang === "en" ? "Good involvement in team eliminations." : "Bonne implication dans les éliminations d'équipe.")}
-                        </p>
-                      </div>
-
-                      <div className="rounded-lg border border-white/[0.06] bg-black/40 p-3.5 space-y-1.5">
-                        <div className="flex items-center justify-between">
-                          <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">{tr.coachWeakness}</span>
-                          <Target className="h-3.5 w-3.5 text-rose-400" />
-                        </div>
-                        <p className="text-sm font-bold text-white">
-                          {telemetryMetrics && telemetryMetrics.hsPct < 20
-                            ? (currentLang === "en" ? "Crosshair Placement (HS < 20%)" : "Placement de Réticule (HS < 20%)")
-                            : valorantCombatSummary.deaths > valorantCombatSummary.kills
-                            ? (currentLang === "en" ? "Survival & Tactical Disengage" : "Survie & Repli Tactique")
-                            : (currentLang === "en" ? "Numbers Advantage Management" : "Gestion de l'Avantage Numérique")}
-                        </p>
-                        <p className="text-xs text-neutral-400 leading-relaxed">
-                          {telemetryMetrics && telemetryMetrics.hsPct < 20
-                            ? (currentLang === "en" ? "Work on head-level horizontal alignment to increase first-bullet lethality." : "Travaillez l'alignement horizontal à hauteur de tête pour augmenter la létalité dès la première balle.")
-                            : (currentLang === "en" ? "Avoid re-peeking alone after securing an opening kill." : "Évitez les réengagements solitaires après une première élimination sécurisée.")}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="rounded-lg border border-white/[0.06] bg-black/40 p-4 space-y-3">
-                      <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-neutral-300">
-                        {tr.coachRecommendations}
-                      </h3>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                        <div className="rounded border border-white/[0.06] bg-white/[0.02] p-3 space-y-1">
-                          <p className="font-bold text-white flex items-center gap-1.5">
-                            <span className="h-1.5 w-1.5 rounded-full bg-rose-400" />
-                            {currentLang === "en" ? `Agent Mastery (${topValorantAgents[0]?.agentName || "Main"})` : `Maîtrise de l'Agent (${topValorantAgents[0]?.agentName || "Principal"})`}
-                          </p>
-                          <p className="text-neutral-400 leading-relaxed">
-                            {currentLang === "en" ? "Focus utility usage to generate vision or space differential before taking direct duels." : "Concentrez l'utilisation des capacités utilitaires pour créer un différentiel de vision ou d'espace avant chaque prise de duel direct."}
-                          </p>
-                        </div>
-
-                        <div className="rounded border border-white/[0.06] bg-white/[0.02] p-3 space-y-1">
-                          <p className="font-bold text-white flex items-center gap-1.5">
-                            <span className="h-1.5 w-1.5 rounded-full bg-cyan-400" />
-                            {currentLang === "en" ? "Weapon Economy Management" : "Gestion Économique des Armes"}
-                          </p>
-                          <p className="text-neutral-400 leading-relaxed">
-                            {currentLang === "en" ? "Sync full buys with team economy to maximize conversion rate on decisive and bonus rounds." : "Synchronisez vos achats complets avec l'équipe pour maximiser le taux de conversion sur les rounds décisifs et les bonus rounds."}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
+              <TacticalCoachChatView
+                valorantProfile={valorantProfile}
+                valorantStats={valorantStats}
+                valorantMatches={valorantMatches}
+                valorantCombatSummary={valorantCombatSummary}
+                topValorantAgents={topValorantAgents}
+                telemetryMetrics={telemetryMetrics}
+                riotName={riotName}
+                riotTag={riotTag}
+                onSelectTab={selectGameTab}
+                currentLang={currentLang}
+              />
             )}
 
             {activeGame === "telemetry" && (

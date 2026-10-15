@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.95 — 2026-10-15
+
+**Vraie pièce Etho dans Discord**
+
+- La pièce officielle Etho est maintenant un émoji du bot, utilisable dans tous les serveurs sans prendre de place
+- Elle remplace 🪙 par défaut dans l'économie et le casino ; une monnaie personnalisée par un admin reste prioritaire
+
 ## v1.75.94 — 2026-10-15
 
 **Console Discord plus rapide et bandeau de mise à jour corrigé**

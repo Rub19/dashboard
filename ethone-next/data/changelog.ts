@@ -56397,6 +56397,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_94_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_94_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_94_de);
 
+const v1_75_95_fr: ChangelogEntry = {
+  version: "v1.75.95",
+  date: "2026-10-15",
+  title: "Vraie pièce Etho dans Discord",
+  items: [
+    "La pièce officielle Etho est maintenant un émoji du bot, utilisable dans tous les serveurs sans prendre de place",
+    "Elle remplace 🪙 par défaut dans l'économie et le casino ; une monnaie personnalisée par un admin reste prioritaire",
+  ],
+};
+
+const v1_75_95_en: ChangelogEntry = {
+  version: "v1.75.95",
+  date: "2026-10-15",
+  title: "Real Etho coin in Discord",
+  items: [
+    "The official Etho coin is now a bot emoji, usable in every server without taking an emoji slot",
+    "It replaces 🪙 by default in economy and casino; a custom currency set by an admin still takes priority",
+  ],
+};
+
+const v1_75_95_es: ChangelogEntry = {
+  version: "v1.75.95",
+  date: "2026-10-15",
+  title: "Moneda Etho real en Discord",
+  items: [
+    "La moneda oficial de Etho es ahora un emoji del bot, disponible en todos los servidores sin ocupar espacio",
+    "Sustituye a 🪙 por defecto en economía y casino; una moneda personalizada por un admin sigue teniendo prioridad",
+  ],
+};
+
+const v1_75_95_de: ChangelogEntry = {
+  version: "v1.75.95",
+  date: "2026-10-15",
+  title: "Echte Etho-Münze in Discord",
+  items: [
+    "Die offizielle Etho-Münze ist jetzt ein Bot-Emoji, in jedem Server nutzbar ohne Emoji-Platz zu belegen",
+    "Sie ersetzt standardmäßig 🪙 in Wirtschaft und Casino; eine eigene Währung eines Admins hat weiterhin Vorrang",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_95_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_95_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_95_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_95_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

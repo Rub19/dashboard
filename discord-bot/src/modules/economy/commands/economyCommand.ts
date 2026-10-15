@@ -9,6 +9,7 @@ import { economyStorage } from '../storage/economyStorage.js';
 import { economyService } from '../services/economyService.js';
 import { cooldownService } from '../../../services/cooldownService.js';
 import { buttonRow, container, footer, sectionWithThumbnail, separator, text, toneToColor } from '../../../utils/components.js';
+import { displayCurrencySymbol } from '../currencyEmoji.js';
 
 // /pay gets its own small fixed cooldown independent of the guild's
 // admin-configurable commandCooldown (which defaults to disabled) — this one
@@ -89,7 +90,7 @@ export const economyCommand: Command = {
     const config = economyStorage.getConfig(guildId);
     const interaction = ctx.interaction as ChatInputCommandInteraction;
     const sub = ctx.isSlash ? interaction.options.getSubcommand() : (ctx.args[0]?.toLowerCase() || 'balance');
-    const sym = config.currencySymbol;
+    const sym = displayCurrencySymbol(config.currencySymbol);
     const me = { id: ctx.author.id, username: ctx.author.username, avatarUrl: ctx.author.displayAvatarURL() };
 
     if (!config.enabled && sub !== 'shop') {

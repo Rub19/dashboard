@@ -7,6 +7,7 @@ import { Command, CommandContext } from '../../../types/command.js';
 import { gamesService } from '../services/gamesService.js';
 import { gamesStorage } from '../storage/gamesStorage.js';
 import { getAppEmoji } from '../../../services/appEmojis.js';
+import { displayCurrencySymbol } from '../../economy/currencyEmoji.js';
 
 export const blackjackCommand: Command = {
   name: 'blackjack',
@@ -207,7 +208,8 @@ export const casinoCommand: Command = {
       : ctx.args[0] || 'jackpot';
 
     const sparkles = getAppEmoji('etho_a_sparkles') || '✨';
-    const { name: currencyName, symbol: currencySymbol } = gamesService.getCurrency(ctx.guildId);
+    const { name: currencyName, symbol: rawCurrencySymbol } = gamesService.getCurrency(ctx.guildId);
+    const currencySymbol = displayCurrencySymbol(rawCurrencySymbol);
 
     if (sub === 'daily') {
       const res = await gamesService.dailySpin(ctx.guildId, ctx.author);

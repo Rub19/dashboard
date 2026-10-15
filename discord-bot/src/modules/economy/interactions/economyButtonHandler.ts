@@ -5,6 +5,7 @@ import { guildConfigService } from '../../../services/guildConfigService.js';
 import { levelingStorage } from '../../leveling/storage/levelingStorage.js';
 import { container, footer, progressBar, separator, text, toneToColor } from '../../../utils/components.js';
 import { noticeEmbed } from '../../../utils/embeds.js';
+import { displayCurrencySymbol } from '../currencyEmoji.js';
 
 // Boutons rapides sous les cartes /economy (Quotidien, Travailler, Classement,
 // Boutique, Rejouer) et le bouton "Classement" de /rank. Les réponses sont
@@ -33,7 +34,7 @@ export async function handleEconomyButton(interaction: ButtonInteraction): Promi
   const guildId = interaction.guildId;
   const gConf = guildConfigService.getConfig(guildId);
   const config = economyStorage.getConfig(guildId);
-  const sym = config.currencySymbol;
+  const sym = displayCurrencySymbol(config.currencySymbol);
   const me = { id: interaction.user.id, username: interaction.user.username, avatarUrl: interaction.user.displayAvatarURL() };
   const id = interaction.customId;
 

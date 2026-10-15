@@ -1,5 +1,14 @@
 [
   {
+    "version": "v1.75.95",
+    "date": "2026-10-15",
+    "title": "Vraie pièce Etho dans Discord",
+    "items": [
+      "La pièce officielle Etho est maintenant un émoji du bot, utilisable dans tous les serveurs sans prendre de place",
+      "Elle remplace 🪙 par défaut dans l'économie et le casino ; une monnaie personnalisée par un admin reste prioritaire"
+    ]
+  },
+  {
     "version": "v1.75.94",
     "date": "2026-10-15",
     "title": "Console Discord plus rapide et bandeau de mise à jour corrigé",
@@ -629,14 +638,6 @@
     "items": [
       "Bouclier de l'owner : quand il est coupé, ses réactions sont grisées avec une explication (elles reprennent à la réactivation).",
       "Barre latérale : la couronne « Owner Etho » est remplacée par un point de statut, comme sur Keeper."
-    ]
-  },
-  {
-    "version": "v1.55.92",
-    "date": "2026-10-09",
-    "title": "Écran de démarrage une seule fois",
-    "items": [
-      "L'écran de démarrage ETHONE ne s'affiche plus qu'au premier lancement : pendant 12 h, les rechargements et les nouveaux onglets ouvrent directement l'app, sans clignotement."
     ]
   }
 ]

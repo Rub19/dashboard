@@ -1,4 +1,4 @@
-# ETHONE — passation & nouveautés (2026-10-15, version 1.75.94)
+# ETHONE — passation & nouveautés (2026-10-15, version 1.75.95)
 
 ## Projet
 - `ethone-next/` : site Next.js statique (ethone.dev, Cloudflare Pages, déploiement auto au push sur `main`).
@@ -26,7 +26,11 @@
 
 ---
 
-## Nouveautés majeures & Réalisations récentes (v1.75.83 → v1.75.94)
+## Nouveautés majeures & Réalisations récentes (v1.75.83 → v1.75.95)
+
+### Pièce Etho en émoji d'application (v1.75.95)
+- `public/bot-icons/coin.png` (rendu 128 px de `components/icons/EthoCoin.tsx`) devient l'émoji d'application `etho_coin` via `syncAppEmojis` (déjà créé sur l'app).
+- `modules/economy/currencyEmoji.ts` : `displayCurrencySymbol` remplace le symbole par défaut (`🪙`, `etho` ou vide) par `etho_coin` dans l'économie et `/casino`. Les embeds Blackjack de `gamesService` gardent 🪙 (titres et pieds d'embed n'affichent pas les émojis custom).
 
 ### Console : bandeau de version, doubles requêtes, guildAuth (v1.75.94)
 - `useVersionChecker` : le bandeau n'apparaît plus que si la version en attente est plus récente que le build chargé (une version déjà chargée restait « en attente » et le bandeau revenait à chaque page) ; un commit vide ne compte plus comme différent.

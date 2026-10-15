@@ -8,6 +8,7 @@ import { economyService } from '../services/economyService.js';
 import { cooldownService } from '../../../services/cooldownService.js';
 import { buttonRow, container, footer, sectionWithThumbnail, separator, text, toneToColor } from '../../../utils/components.js';
 import { ButtonBuilder, ButtonStyle } from 'discord.js';
+import { displayCurrencySymbol } from '../currencyEmoji.js';
 
 const PAY_COOLDOWN_SECONDS = 5;
 
@@ -51,7 +52,7 @@ export const dailyCommand: Command = {
       return;
     }
     const me = { id: ctx.author.id, username: ctx.author.username, avatarUrl: ctx.author.displayAvatarURL() };
-    const sym = config.currencySymbol;
+    const sym = displayCurrencySymbol(config.currencySymbol);
     const result = economyService.claimDaily(guildId, me);
     if (!result.ok) {
       if (result.reason === 'cooldown') {
@@ -91,7 +92,7 @@ export const workCommand: Command = {
       return;
     }
     const me = { id: ctx.author.id, username: ctx.author.username, avatarUrl: ctx.author.displayAvatarURL() };
-    const sym = config.currencySymbol;
+    const sym = displayCurrencySymbol(config.currencySymbol);
     const result = economyService.work(guildId, me);
     if (!result.ok) {
       if (result.reason === 'cooldown') {
@@ -135,7 +136,7 @@ export const balanceCommand: Command = {
     const interaction = ctx.interaction as ChatInputCommandInteraction;
     const targetUser = ctx.isSlash ? interaction.options.getUser('membre') : null;
     const target = targetUser || ctx.author;
-    const sym = config.currencySymbol;
+    const sym = displayCurrencySymbol(config.currencySymbol);
     const wallet = economyStorage.getWallet(guildId, target.id, { username: target.username, avatarUrl: target.displayAvatarURL() });
     const rank = economyStorage.getLeaderboard(guildId, 1000).findIndex((w) => w.userId === target.id) + 1;
     const card = container(toneToColor('info', ctx.guildConfig.infoColor), [
@@ -186,7 +187,7 @@ export const payCommand: Command = {
     const targetUser = interaction.options.getUser('membre', true);
     const amount = interaction.options.getInteger('montant', true);
     const me = { id: ctx.author.id, username: ctx.author.username, avatarUrl: ctx.author.displayAvatarURL() };
-    const sym = config.currencySymbol;
+    const sym = displayCurrencySymbol(config.currencySymbol);
     const result = economyService.transfer(guildId, me, { id: targetUser.id, username: targetUser.username, avatarUrl: targetUser.displayAvatarURL(), bot: targetUser.bot }, amount);
     const messages: Record<string, string> = {
       disabled: '⚪ Les transferts sont désactivés sur ce serveur.',
@@ -230,7 +231,7 @@ export const gambleCommand: Command = {
     const interaction = ctx.interaction as ChatInputCommandInteraction;
     const bet = interaction.options.getInteger('mise', true);
     const me = { id: ctx.author.id, username: ctx.author.username, avatarUrl: ctx.author.displayAvatarURL() };
-    const sym = config.currencySymbol;
+    const sym = displayCurrencySymbol(config.currencySymbol);
     const result = economyService.gamble(guildId, me, bet);
     if (!result.ok) {
       if (result.reason === 'disabled') {
@@ -281,7 +282,7 @@ export const robCommand: Command = {
     const interaction = ctx.interaction as ChatInputCommandInteraction;
     const targetUser = interaction.options.getUser('membre', true);
     const me = { id: ctx.author.id, username: ctx.author.username, avatarUrl: ctx.author.displayAvatarURL() };
-    const sym = config.currencySymbol;
+    const sym = displayCurrencySymbol(config.currencySymbol);
     const result = economyService.rob(guildId, me, { id: targetUser.id, username: targetUser.username, avatarUrl: targetUser.displayAvatarURL(), bot: targetUser.bot });
     if (!result.ok) {
       const messages: Record<string, string> = {
@@ -330,7 +331,7 @@ export const shopCommand: Command = {
     }
     const guildId = ctx.guild.id;
     const config = economyStorage.getConfig(guildId);
-    const sym = config.currencySymbol;
+    const sym = displayCurrencySymbol(config.currencySymbol);
     const items = economyStorage.getShopItems(guildId).filter((i) => i.enabled);
     if (items.length === 0) {
       await ctx.reply({ embeds: [ctx.createEmbed('info').setDescription('La boutique est vide pour le moment.')] });

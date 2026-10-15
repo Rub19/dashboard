@@ -7,6 +7,7 @@ import { MultiChannelPicker, MultiRolePicker } from "@/components/discord/MultiP
 import { Field, NumberField, Section, Switch, ToggleField, inputCls } from "@/components/discord/SettingsUI";
 import { cn } from "@/lib/utils";
 import Select from "@/components/ui/Select";
+import MarkdownContent from "@/components/MarkdownContent";
 
 export interface LevelingSettings {
   enabled: boolean;
@@ -155,7 +156,7 @@ export function EmbedPreview({ color, title, text }: { color: string; title?: st
   return (
     <div className="rounded-lg border-l-4 bg-[#2b2d31] p-3 text-sm text-[#dbdee1]" style={{ borderColor: color }}>
       {title && <p className="mb-1 font-bold text-[var(--text-primary)]">{title}</p>}
-      <p className="whitespace-pre-wrap">{text}</p>
+      <MarkdownContent content={text} className="text-[#dbdee1]" />
     </div>
   );
 }

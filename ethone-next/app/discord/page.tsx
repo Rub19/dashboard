@@ -215,7 +215,7 @@ const MODULES: BotModule[] = [
   },
   {
     id: "commands",
-    title: "Command Builder",
+    title: "Commandes personnalisées",
     description: "Créez vos commandes Discord personnalisées avec réponses textes et embeds.",
     icon: MODULE_ICONS.commands,
     color: "text-[var(--text-muted)]",
@@ -231,7 +231,7 @@ const MODULES: BotModule[] = [
   },
   {
     id: "leveling",
-    title: "Leveling & Rôles XP",
+    title: "Niveaux & Rôles XP",
     description: "Gain d'expérience par messages et distribution automatique de rôles.",
     icon: MODULE_ICONS.leveling,
     color: "text-[var(--text-muted)]",
@@ -247,7 +247,7 @@ const MODULES: BotModule[] = [
   },
   {
     id: "tickets",
-    title: "Tickets Center",
+    title: "Centre de tickets",
     description: "Helpdesk professionnel, formulaires, équipes de staff, transcripts et statistiques.",
     icon: MODULE_ICONS.tickets,
     color: "text-[var(--text-muted)]",
@@ -319,7 +319,7 @@ const MODULES: BotModule[] = [
   },
   {
     id: "ai",
-    title: "AI Assistant",
+    title: "Assistant IA",
     description: "Assistant IA Discord intelligent, base RAG sémantique, builder de personnalité et outils support.",
     icon: MODULE_ICONS.ai,
     color: "text-[var(--text-muted)]",
@@ -327,7 +327,7 @@ const MODULES: BotModule[] = [
   },
   {
     id: "forms",
-    title: "Forms & Applications",
+    title: "Formulaires & Candidatures",
     description: "Form Builder no-code, candidatures staff, logique conditionnelle, scoring et review.",
     icon: MODULE_ICONS.forms,
     color: "text-[var(--text-muted)]",
@@ -367,7 +367,7 @@ const MODULES: BotModule[] = [
   },
   {
     id: "server",
-    title: "Server Management Center",
+    title: "Gestion du serveur",
     description: "Centre de gestion globale : diagnostics santé, score de sécurité, membres, salons, rôles, permissions et emojis.",
     icon: MODULE_ICONS.server,
     color: "text-[var(--text-muted)]",
@@ -383,7 +383,7 @@ const MODULES: BotModule[] = [
   },
   {
     id: "sticky",
-    title: "Sticky Messages",
+    title: "Messages épinglés",
     description: "Garde un message important toujours visible en bas d'un salon : le bot le repositionne automatiquement.",
     icon: MODULE_ICONS.sticky,
     color: "text-[var(--text-muted)]",
@@ -391,7 +391,7 @@ const MODULES: BotModule[] = [
   },
   {
     id: "reminders",
-    title: "Reminders",
+    title: "Rappels",
     description: "« Rappelle-moi » : programme des rappels personnels que le bot t'envoie à l'échéance, ponctuels ou récurrents.",
     icon: MODULE_ICONS.reminders,
     color: "text-[var(--text-muted)]",
@@ -415,7 +415,7 @@ const MODULES: BotModule[] = [
   },
   {
     id: "statroles",
-    title: "Statroles",
+    title: "Rôles d'activité",
     description: "Rôles donnés et retirés automatiquement selon l'activité : messages, vocal, ancienneté, avec un constructeur de conditions.",
     icon: MODULE_ICONS.statroles,
     color: "text-[var(--text-muted)]",
@@ -447,7 +447,7 @@ const MODULES: BotModule[] = [
   },
   {
     id: "birthdays",
-    title: "Birthdays",
+    title: "Anniversaires",
     description: "Anniversaires des membres : annonce quotidienne dans un salon + rôle du jour automatique.",
     icon: MODULE_ICONS.birthdays,
     color: "text-[var(--text-muted)]",
@@ -463,7 +463,7 @@ const MODULES: BotModule[] = [
   },
   {
     id: "serverstats",
-    title: "Server Stats",
+    title: "Salons compteurs",
     description: "Salons compteurs : le nom d'un salon affiche le nombre de membres, de boosts, de membres en ligne…",
     icon: MODULE_ICONS.serverstats,
     color: "text-[var(--text-muted)]",
@@ -471,7 +471,7 @@ const MODULES: BotModule[] = [
   },
   {
     id: "highlights",
-    title: "Highlights",
+    title: "Mots surveillés",
     description: "Mots-clés personnels surveillés : reçois un DM quand quelqu'un d'autre les mentionne dans le serveur.",
     icon: MODULE_ICONS.highlights,
     color: "text-[var(--text-muted)]",

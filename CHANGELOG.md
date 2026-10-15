@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.96 — 2026-10-15
+
+**Console Discord : liens directs et titres en français**
+
+- Les anciens liens « Serveur › Salons, Rôles, Emojis, Webhooks, Paramètres » ouvrent le bon onglet ; Membres, Permissions et Journal ouvrent la bonne section
+- L'aperçu du message de niveau affiche le gras comme sur Discord
+- Titres de modules traduits (Centre de tickets, Assistant IA, Anniversaires, Rappels, Gestion du serveur…)
+
 ## v1.75.95 — 2026-10-15
 
 **Vraie pièce Etho dans Discord**

@@ -1,4 +1,4 @@
-# ETHONE — passation & nouveautés (2026-10-15, version 1.75.95)
+# ETHONE — passation & nouveautés (2026-10-15, version 1.75.96)
 
 ## Projet
 - `ethone-next/` : site Next.js statique (ethone.dev, Cloudflare Pages, déploiement auto au push sur `main`).
@@ -26,7 +26,13 @@
 
 ---
 
-## Nouveautés majeures & Réalisations récentes (v1.75.83 → v1.75.95)
+## Nouveautés majeures & Réalisations récentes (v1.75.83 → v1.75.96)
+
+### Console : redirections server/*, aperçu niveau, titres FR (v1.75.96)
+- `LegacyModuleRedirect` accepte `view` et `tab` ; `/discord/server/{channels,roles,emojis,webhooks,settings}` ouvrent l'onglet (lu par `ConsoleServer` via `?tab=`), `members`/`permissions` → `?view=members`, `audit` → `?view=logs`.
+- `EmbedPreview` (leveling) rend le markdown via `MarkdownContent`.
+- Titres FR dans `app/discord/page.tsx` et `lib/discord-modules.ts`.
+- Commandes testées en vrai sur Serveur Test Bot : `/ping`, `/balance` (pièce etho_coin OK), bouton Quotidien, `/help`, message « module désactivé » (`/ask`). Économie réactivée puis remise désactivée.
 
 ### Pièce Etho en émoji d'application (v1.75.95)
 - `public/bot-icons/coin.png` (rendu 128 px de `components/icons/EthoCoin.tsx`) devient l'émoji d'application `etho_coin` via `syncAppEmojis` (déjà créé sur l'app).

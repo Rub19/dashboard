@@ -83,7 +83,10 @@ const isVoice = (t: number) => t === 2 || t === 13;
  * Les membres, permissions et journal sont dans « Rôles et membres » et « Logs ».
  */
 export default function ConsoleServer({ guildId }: { guildId: string }) {
-  const [tab, setTab] = useState<Tab>("overview");
+  const [tab, setTab] = useState<Tab>(() => {
+    const wanted = typeof window === "undefined" ? null : new URLSearchParams(window.location.search).get("tab");
+    return TABS.find(([id]) => id === wanted)?.[0] ?? "overview";
+  });
   return (
     <ConsolePage title="Serveur" actions={<Segmented label="Section" value={tab} options={TABS} onChange={setTab} />}>
       {tab === "overview" && <OverviewTab guildId={guildId} />}

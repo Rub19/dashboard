@@ -56442,6 +56442,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_95_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_95_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_95_de);
 
+const v1_75_96_fr: ChangelogEntry = {
+  version: "v1.75.96",
+  date: "2026-10-15",
+  title: "Console Discord : liens directs et titres en français",
+  items: [
+    "Les anciens liens « Serveur › Salons, Rôles, Emojis, Webhooks, Paramètres » ouvrent le bon onglet ; Membres, Permissions et Journal ouvrent la bonne section",
+    "L'aperçu du message de niveau affiche le gras comme sur Discord",
+    "Titres de modules traduits (Centre de tickets, Assistant IA, Anniversaires, Rappels, Gestion du serveur…)",
+  ],
+};
+
+const v1_75_96_en: ChangelogEntry = {
+  version: "v1.75.96",
+  date: "2026-10-15",
+  title: "Discord console: direct links and French titles",
+  items: [
+    "Old \"Server › Channels, Roles, Emojis, Webhooks, Settings\" links open the right tab; Members, Permissions and Audit open the right section",
+    "Level-up message preview renders bold like Discord",
+    "Module titles translated to French",
+  ],
+};
+
+const v1_75_96_es: ChangelogEntry = {
+  version: "v1.75.96",
+  date: "2026-10-15",
+  title: "Consola de Discord: enlaces directos y títulos en francés",
+  items: [
+    "Los enlaces antiguos de «Servidor» abren la pestaña correcta",
+    "La vista previa del mensaje de nivel muestra la negrita como en Discord",
+    "Títulos de módulos traducidos al francés",
+  ],
+};
+
+const v1_75_96_de: ChangelogEntry = {
+  version: "v1.75.96",
+  date: "2026-10-15",
+  title: "Discord-Konsole: direkte Links und französische Titel",
+  items: [
+    "Alte „Server“-Links öffnen den richtigen Tab",
+    "Die Vorschau der Level-Nachricht zeigt Fettdruck wie Discord",
+    "Modultitel ins Französische übersetzt",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_96_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_96_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_96_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_96_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

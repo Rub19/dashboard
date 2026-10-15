@@ -15,13 +15,13 @@ export default function Screen1Security({ onNext }: Screen1SecurityProps) {
       <div className="text-center mb-6">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 text-xs font-semibold mb-3">
           <ShieldAlert className="w-3.5 h-3.5" />
-          <span>SÉCURITÉ & ANTI-RAID 0.2S</span>
+          <span>SÉCURITÉ & ANTI-RAID</span>
         </div>
         <h3 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white tracking-tight mb-2">
           Protection chirurgicale en temps réel.
         </h3>
         <p className="text-xs sm:text-sm text-zinc-400 max-w-lg mx-auto leading-relaxed">
-          Chaque événement de votre serveur est surveillé avec une précision absolue : raids, mass-mentions, suppressions suspectes et comptes frauduleux sont neutralisés en 0.2s.
+          Les événements de votre serveur sont surveillés en continu : raids, mass-mentions, suppressions suspectes et comptes frauduleux sont neutralisés automatiquement.
         </p>
       </div>
 
@@ -33,7 +33,7 @@ export default function Screen1Security({ onNext }: Screen1SecurityProps) {
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between gap-2">
-                <h4 className="text-xs font-bold text-white">Détection & Sanction 0.2s</h4>
+                <h4 className="text-xs font-bold text-white">Détection & Sanction</h4>
                 <span className="rounded-md bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-300">
                   ACTIF
                 </span>

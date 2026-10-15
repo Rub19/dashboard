@@ -41,7 +41,7 @@ export default function Screen0Welcome({ onNext, onSkip }: Screen0WelcomeProps) 
             <Shield className="w-4 h-4" />
           </div>
           <div className="min-w-0">
-            <p className="text-xs font-bold text-white">Anti-Raid 0.2s</p>
+            <p className="text-xs font-bold text-white">Anti-Raid</p>
             <p className="text-[11px] text-zinc-400 truncate">Sanction immédiate & bouclier</p>
           </div>
         </div>

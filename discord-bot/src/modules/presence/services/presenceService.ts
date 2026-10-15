@@ -182,10 +182,13 @@ export class PresenceService {
       const resolvedName = this.parseDynamicVariables(activity.name) || 'ETHONE';
       const resolvedState = activity.state ? this.parseDynamicVariables(activity.state) : undefined;
       const gatewayStatus: 'online' | 'idle' | 'dnd' | 'invisible' = (status as string) === 'streaming' ? 'online' : (status as 'online' | 'idle' | 'dnd' | 'invisible');
-      const isStreaming = activity.type === 'Streaming' || (status as string) === 'streaming';
-      const gatewayActivity = isStreaming && activity.type !== 'Streaming'
-        ? { ...activity, type: 'Streaming' as DiscordActivityType, url: activity.url || 'https://www.twitch.tv/ethone' }
-        : activity;
+      const hasStreamUrl = Boolean(activity.url && /^https?:\/\//.test(activity.url));
+      const isStreaming = (activity.type === 'Streaming' || (status as string) === 'streaming') && hasStreamUrl;
+      const gatewayActivity = isStreaming
+        ? { ...activity, type: 'Streaming' as DiscordActivityType }
+        : activity.type === 'Streaming'
+          ? { ...activity, type: 'Playing' as DiscordActivityType, url: undefined }
+          : activity;
 
       // Streaming garde le type natif (bouton « Regarder » + lien). Pour les autres, Discord n'affichait
       // que le nom dans la liste des membres (« Spotify » au lieu de « Listening to Spotify ») : on passe
@@ -247,17 +250,14 @@ export class PresenceService {
       return { success: false, state: this.currentState, rateLimited: true };
     }
 
-    if (status === 'streaming' && activity.type !== 'Streaming') {
-      activity = {
-        ...activity,
-        type: 'Streaming',
-        url: activity.url || 'https://www.twitch.tv/ethone',
-      };
+    const hasStreamUrl = Boolean(activity.url && /^https?:\/\//.test(activity.url));
+    if (status === 'streaming' && activity.type !== 'Streaming' && hasStreamUrl) {
+      activity = { ...activity, type: 'Streaming' };
     }
 
-    // Validation spécifique pour Streaming
-    if (activity.type === 'Streaming' && (!activity.url || !activity.url.startsWith('http'))) {
-      activity.url = 'https://www.twitch.tv/discord';
+    if ((activity.type === 'Streaming' || status === 'streaming') && !hasStreamUrl) {
+      activity = { ...activity, type: 'Playing', url: undefined };
+      if (status === 'streaming') status = 'online';
     }
 
     const prevStatus = this.currentState.status;

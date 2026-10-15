@@ -56034,6 +56034,55 @@ CHANGELOG_BY_LANG.en.unshift(v12929_en, v12928_en, v12927_en, v12926_en, v12925_
 CHANGELOG_BY_LANG.es.unshift(v12929_es, v12928_es, v12927_es, v12926_es, v12925_es, v12924_es, v12923_es, v12922_es, v12921_es, v12920_es, v12919_es, v12918_es, v12917_es, v12916_es, v12915_es, v12914_es, v12913_es, v12912_es, v12911_es, v12910_es, v12909_es, v12908_es, v12907_es, v12906_es, v12905_es, v12904_es, v12903_es, v12902_es, v12901_es, v12900_es, v12899_es, v12898_es, v12897_es, v12896_es, v12895_es, v12894_es, v12893_es, v12892_es);
 CHANGELOG_BY_LANG.de.unshift(v12929_de, v12928_de, v12927_de, v12926_de, v12925_de, v12924_de, v12923_de, v12922_de, v12921_de, v12920_de, v12919_de, v12918_de, v12917_de, v12916_de, v12915_de, v12914_de, v12913_de, v12912_de, v12911_de, v12910_de, v12909_de, v12908_de, v12907_de, v12906_de, v12905_de, v12904_de, v12903_de, v12902_de, v12901_de, v12900_de, v12899_de, v12898_de, v12897_de, v12896_de, v12895_de, v12894_de, v12893_de, v12892_de);
 
+const v1_75_88_fr: ChangelogEntry = {
+  version: "v1.75.88",
+  date: "2026-10-15",
+  title: "Présence du bot sans chaîne imposée",
+  items: [
+    "Plus de lien Twitch par défaut : le Mode Streamer exige le lien de ta propre chaîne",
+    "Retrait des activités de rotation inventées",
+    "Vitrine du bot : retrait des chiffres non vérifiés (0.2s, « des centaines de communautés »)",
+  ],
+};
+
+const v1_75_88_en: ChangelogEntry = {
+  version: "v1.75.88",
+  date: "2026-10-15",
+  title: "Bot presence without an imposed channel",
+  items: [
+    "No default Twitch link anymore: Streamer Mode requires your own channel link",
+    "Removed made-up rotation activities",
+    "Bot showcase: removed unverified figures (0.2s, \"hundreds of communities\")",
+  ],
+};
+
+const v1_75_88_es: ChangelogEntry = {
+  version: "v1.75.88",
+  date: "2026-10-15",
+  title: "Presencia del bot sin canal impuesto",
+  items: [
+    "Ya no hay enlace de Twitch por defecto: el Modo Streamer exige el enlace de tu canal",
+    "Se eliminaron actividades de rotación inventadas",
+    "Escaparate del bot: se quitaron cifras no verificadas (0.2s, «cientos de comunidades»)",
+  ],
+};
+
+const v1_75_88_de: ChangelogEntry = {
+  version: "v1.75.88",
+  date: "2026-10-15",
+  title: "Bot-Präsenz ohne vorgegebenen Kanal",
+  items: [
+    "Kein Standard-Twitch-Link mehr: Der Streamer-Modus verlangt deinen eigenen Kanal-Link",
+    "Erfundene Rotationsaktivitäten entfernt",
+    "Bot-Seite: nicht belegte Zahlen entfernt (0.2s, „hunderte Communities“)",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_88_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_88_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_88_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_88_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

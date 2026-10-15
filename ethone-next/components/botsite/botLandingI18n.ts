@@ -208,7 +208,7 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
       dashboardBtn: "Ouvrir le dashboard",
       onlineLabel: "En ligne 24/7",
       highlights: [
-        "🛡️ Anti-Raid 0.2s",
+        "🛡️ Anti-Raid",
         "🎵 Pont vocal Spotify",
         "⚡ Zéro latence",
       ],
@@ -446,7 +446,7 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
     },
     cta: {
       title: "Prêt à transformer ton serveur Discord ?",
-      subtitle: "Rejoins des centaines de communautés qui font confiance à Etho chaque jour pour leur sécurité, leur musique et leur animation.",
+      subtitle: "Ajoute Etho à ton serveur pour gérer sécurité, musique et animation au même endroit.",
       addBtn: "Ajouter le bot ↗",
       dashboardBtn: "Ouvrir le dashboard",
     },
@@ -494,7 +494,7 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
       dashboardBtn: "Open Dashboard",
       onlineLabel: "Online 24/7",
       highlights: [
-        "🛡️ 0.2s Anti-Raid",
+        "🛡️ Anti-Raid",
         "🎵 Spotify Voice Bridge",
         "⚡ Sub-15ms Latency",
       ],
@@ -732,7 +732,7 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
     },
     cta: {
       title: "Ready to elevate your Discord server?",
-      subtitle: "Join hundreds of thriving communities relying on Etho every day for security, music, and fun.",
+      subtitle: "Add Etho to your server to handle security, music, and fun in one place.",
       addBtn: "Add to Discord ↗",
       dashboardBtn: "Open Dashboard",
     },
@@ -780,7 +780,7 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
       dashboardBtn: "Abrir el panel",
       onlineLabel: "En línea 24/7",
       highlights: [
-        "🛡️ Anti-Raid 0.2s",
+        "🛡️ Anti-Raid",
         "🎵 Puente de voz Spotify",
         "⚡ Cero latencia",
       ],
@@ -1018,7 +1018,7 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
     },
     cta: {
       title: "¿Listo para transformar tu servidor de Discord?",
-      subtitle: "Únete a cientos de comunidades que confían en Etho cada día para su seguridad y entretenimiento.",
+      subtitle: "Añade Etho a tu servidor para gestionar seguridad, música y entretenimiento en un solo lugar.",
       addBtn: "Añadir el bot ↗",
       dashboardBtn: "Abrir el panel",
     },
@@ -1066,7 +1066,7 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
       dashboardBtn: "Dashboard öffnen",
       onlineLabel: "Online 24/7",
       highlights: [
-        "🛡️ 0.2s Anti-Raid",
+        "🛡️ Anti-Raid",
         "🎵 Spotify Voice-Bridge",
         "⚡ Null Latenz",
       ],
@@ -1304,7 +1304,7 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
     },
     cta: {
       title: "Bereit, deinen Discord-Server aufzuwerten?",
-      subtitle: "Schließe dich hunderten Communities an, die Etho täglich für Sicherheit, Musik und Animation vertrauen.",
+      subtitle: "Füge Etho deinem Server hinzu, um Sicherheit, Musik und Animation an einem Ort zu verwalten.",
       addBtn: "Bot hinzufügen ↗",
       dashboardBtn: "Dashboard öffnen",
     },

@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.88 — 2026-10-15
+
+**Présence du bot sans chaîne imposée**
+
+- Plus de lien Twitch par défaut : le Mode Streamer exige le lien de ta propre chaîne
+- Retrait des activités de rotation inventées
+- Vitrine du bot : retrait des chiffres non vérifiés (0.2s, « des centaines de communautés »)
+
 ## v1.75.87 — 2026-10-15
 
 **iOS Native : Icône officielle ETHONE & Refonte Login Liquid Glass**

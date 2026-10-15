@@ -233,7 +233,7 @@ function DiscordChatSimulator() {
                   </p>
                   <div className="mt-1.5 flex items-center gap-1.5 text-[10px] font-medium text-red-300">
                     <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-red-400" />
-                    Message purgé en 0.2s · Salons verrouillés
+                    Message purgé · Salons verrouillés
                   </div>
                 </div>
               </div>
@@ -253,7 +253,7 @@ function DiscordChatSimulator() {
                     <span className="rounded bg-[#5865f2] px-1.5 py-0.5 text-[9px] font-bold text-white">
                       APP
                     </span>
-                    <span className="text-[11px] text-zinc-500">Aujourd&apos;hui à 21:04 (0.2s)</span>
+                    <span className="text-[11px] text-zinc-500">Aujourd&apos;hui à 21:04</span>
                   </div>
 
                   <div className="mt-2 rounded-xl border-l-4 border-emerald-400 bg-emerald-950/25 p-4 backdrop-blur-sm shadow-lg shadow-black/40">
@@ -263,7 +263,7 @@ function DiscordChatSimulator() {
                         🛡️ Anti-Raid · Sanction Immédiate
                       </span>
                       <span className="rounded-lg border border-emerald-500/30 bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-300">
-                        ⚡ 0.2s réaction
+                        ⚡ Automatique
                       </span>
                     </div>
                     <p className="mt-2 text-xs leading-relaxed text-zinc-200">

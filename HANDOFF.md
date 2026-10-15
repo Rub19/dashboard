@@ -1,4 +1,4 @@
-# ETHONE — passation & nouveautés (2026-10-15, version 1.75.87)
+# ETHONE — passation & nouveautés (2026-10-15, version 1.75.88)
 
 ## Projet
 - `ethone-next/` : site Next.js statique (ethone.dev, Cloudflare Pages, déploiement auto au push sur `main`).
@@ -26,7 +26,11 @@
 
 ---
 
-## Nouveautés majeures & Réalisations récentes (v1.75.83 → v1.75.87)
+## Nouveautés majeures & Réalisations récentes (v1.75.83 → v1.75.88)
+
+### Présence du bot sans chaîne imposée (v1.75.88)
+- Plus aucun lien Twitch par défaut (site et bot) : le Mode Streamer exige un lien http(s) saisi par l'admin, sinon la présence retombe en « Joue à ».
+- Activités de rotation inventées supprimées ; claims non vérifiés (0.2s, « des centaines de communautés ») retirés de la vitrine et de l'onboarding.
 
 ### 1. iOS Native : Icône officielle Retina 1024x1024 & Refonte Login Liquid Glass (v1.75.87)
 - **Remplacement de l'icône IPA** : Retrait définitif du placeholder Capacitor (croix bleue sur grille blanche) sur l'écran d'accueil iPhone. Remplacement par le logo officiel d'ETHONE en résolution Retina 1024x1024 (`AppIcon-512@2x.png` et `AppIcon.png`) : fond sombre profond `#101018`, contour néon signal multi-teintes (`#8b5cf6` → `#38bdf8` → `#34d399` → `#e11d48`), reflet glass supérieur et monogramme « E » géométrique blanc centré.
@@ -60,7 +64,7 @@
 
 ## Nouveautés antérieures (v1.73.0 → v1.75.37)
 
-### 0. Vitrine Bot : Bouton Retour en Haut Flottant et Footer 3 Colonnes Style Bleed (v1.75.37)
+### Vitrine Bot : Bouton Retour en Haut Flottant et Footer 3 Colonnes Style Bleed (v1.75.37)
 - **Bouton Flottant Circulaire** : Ajout d'un bouton circulaire en bas à droite (`ArrowUp`) qui s'affiche automatiquement dès que le défilement dépasse 200px et permet de remonter en haut de page en douceur avec animation Framer Motion.
 - **Footer 3 Colonnes Style Bleed** : Refonte totale du bas de page en grille 3 colonnes :
   - Colonne 1 : Logo Etho, Copyright © 2026 etho.dev, Tous droits réservés, et VersionPill.
@@ -68,61 +72,61 @@
   - Colonne 3 (Légal) : Conditions d'utilisation, Confidentialité, Cookies, Mentions légales et bouton Paramètres des cookies.
 - **Suppression du Slogan Inférieur** : Retrait définitif de « Le bot Discord tout-en-un pour votre communauté » du bas de page.
 
-### 1. Vitrine Bot : Épuration du Hero et Retrait des 3 Badges (v1.75.36)
+### Vitrine Bot : Épuration du Hero et Retrait des 3 Badges (v1.75.36)
 - **Hero Épuré** : Suppression des 3 badges secondaires sous les boutons d'appel à l'action (« Anti-Raid 0.2s », « Pont vocal Spotify », « Zéro latence ») dans `BotLanding.tsx`.
 - **Impact Visuel** : Mise en valeur directe des boutons d'action (« Ajouter le bot », « Ouvrir le dashboard ») et du simulateur Discord interactif sans distractions textuelles superflues.
 
-### 1. Rétablissement du Bouton Retour au Dashboard pour les Utilisateurs ETHONE OS (v1.75.35)
+### Rétablissement du Bouton Retour au Dashboard pour les Utilisateurs ETHONE OS (v1.75.35)
 - **Rétablissement Multisupport** : Réintégration complète du lien et bouton « Retour au dashboard » pour les utilisateurs disposant d'un compte ETHONE OS (détecté via session Supabase, profil de compte, jetons locaux ou domaine hôte `ethone.dev`).
 - **Barre Latérale & Sélecteur de Serveurs** : Ajout du bouton « Retour au dashboard » avec icône fléchée sous « Mes serveurs » dans `HubSidebar` et dans `ServerPicker`.
 - **En-tête & Pastille Flottante** : Ajout du raccourci dans la barre d'en-tête de la console Discord aux côtés de la pastille de sauvegarde et en pastille flottante en bas à droite de l'écran avec nettoyage de l'état de session Discord sélectionné.
 - **Internationalisation Complète** : Traduction de la clé `dReturnToDashboard` en français, anglais, espagnol et allemand.
 
-### 1. Sélecteurs Déroulants Sur-Mesure Obsidian / Keeper (v1.75.34)
+### Sélecteurs Déroulants Sur-Mesure Obsidian / Keeper (v1.75.34)
 - **Nouveau Composant `Select` Déroulant** : Création d'un composant de sélection sur-mesure dans `ethone-next/components/discord/console/kit.tsx` avec bordures fines, fond de surface sombre, icône fléchée animée, popover animé via Framer Motion (`SPRING_LAYOUT`), coche d'activation (`Check`) et fermeture au clic extérieur.
 - **Remplacement Global des `<select>` Natifs** : Élimination de 100 % des balises `<select>` natives du navigateur dans la console Discord (`ConsoleStreamers`, `ConsoleLeveling`, `ConsoleVoice`, `ConsoleServer`, `ConsoleSettings`, `ConsoleLogs`, `ConsoleCommands`, `ConsoleEvents`, `CustomCommandEditor`, `FormEditor`, `ConsoleProtections`), supprimant les fenêtres grises/blanches système et la surbrillance bleue agressive.
 - **Navigation au Clavier Complète** : Prise en charge des touches `Échap` (fermeture), `Flèche bas` / `Flèche haut` (navigation dans les options) et `Entrée` (sélection).
 - **Tailles & Alignements Précis** : Support des variantes `size="md"` (hauteur standard 36px) et `size="sm"` (hauteur compacte 32px pour filtres et actions), avec alignement dynamique `left` ou `right`.
 
-### 1. Économie : Pièce Officielle Etho, Sélecteur de Devises & Import Personnalisé (v1.75.33)
+### Économie : Pièce Officielle Etho, Sélecteur de Devises & Import Personnalisé (v1.75.33)
 - **Pièce Custom Officielle Etho (Défaut)** : Création d'une pièce dorée vectorielle avec frappe haute définition du sceau Etho, reflets métalliques, tranche cannelée et fond chaud, configurée comme monnaie native par défaut sur tout le dashboard et le bot.
 - **Sélecteur de Devises Interactif** : Panneau de choix complet permettant aux administrateurs de choisir entre la pièce Etho, 12 presets d'emojis populaires (pièce, diamant, bourse, étoile, cookie, éclair, couronne, trèfle, flamme, etc.) et une saisie libre d'emojis ou codes Discord personnalisés (`<:nom:id>`).
 - **Importation de Fichier Personnalisé & URL** : Zone de glisser-déposer et sélecteur de fichier acceptant les images transparentes (PNG, SVG, WebP, JPG) et les URL directes, avec aperçu en temps réel aux côtés d'un solde et bouton de restauration en 1 clic de la pièce Etho officielle.
 - **Rendu Visuel Unifié** : Composant `CoinBadge` dynamique affichant la pièce active sur tous les soldes, classements, compteurs de volume et circulation, prix de la boutique et parties de casino.
 
-### 1. Lecteur Musique : Remplacement du Carré Vide par un Vinyle Stylisé (v1.75.32)
+### Lecteur Musique : Remplacement du Carré Vide par un Vinyle Stylisé (v1.75.32)
 - **Design Vinyle Apaisant** : Remplacement du bloc noir/carré vide stressant par un visuel de disque vinyle soigné avec jaquette, sillons et macaron central orné d'une note de musique (`Music`).
 - **Animation de Rotation Réactive** : Rotation fluide à 360° du disque vinyle (`animate-[spin_6s_linear_infinite]`) lorsque de la musique est en cours de lecture, et repos élégant et statique à l'état inactif (« Rien en cours »).
 - **Interaction et Robustesse** : Clic direct sur le visuel pour focaliser immédiatement le champ de recherche de titre (`searchInputRef`), et gestion d'erreur `onError` avec repli élégant pour toute miniature manquante ou corrompue dans le lecteur et la liste de résultats.
 
-### 1. Mode Streamer & Pastille Violette Bot Discord (v1.75.31)
+### Mode Streamer & Pastille Violette Bot Discord (v1.75.31)
 - **Sélecteur de statut visible étendu** : Ajout du 5e statut « Mode Streamer » dans la section « 1. Statut Visible sur Discord » avec pastille violette (`bg-purple-500`) et icône de lecture en direct.
 - **Synchronisation automatique de l'activité** : Le choix du Mode Streamer active automatiquement l'activité de type `Streaming`, charge l'URL de live Twitch par défaut (`https://www.twitch.tv/ethone`) et met à jour l'aperçu du profil du bot (pastille violette avec triangle de diffusion).
 - **Compatibilité Gateway & Bot** : Gestion transparente dans `PresenceService` (mappage sur la Gateway Discord avec `ActivityType.Streaming`), support dans la commande `/status` avec choix « 🟣 Mode Streamer » et statut dans le panneau d'administration.
 
-### 1. Documentation Etho : Sidebar Transparente Style Keeper, Catalogue 50 Commandes & 100% Inclus (v1.75.30)
+### Documentation Etho : Sidebar Transparente Style Keeper, Catalogue 50 Commandes & 100% Inclus (v1.75.30)
 - **Alignement de marque** : Dénomination exclusive « Etho » dans l'en-tête, le hero et le footer (suppression de « Etho Protect »).
 - **Sidebar transparente style Keeper** : Suppression intégrale du fond encadré de la barre latérale pour une intégration directe sur fond obsidian (`#090d0b`), recherche intégrée en tête et arborescence continue sur rail vertical sans compteurs numériques ni bordures superflues.
 - **Catalogue complet des 50 commandes** : Section interactive dédiée listant l'ensemble des commandes d'Etho (Sécurité, Modération, Configuration, Musique, Spotify, Utilitaires, Fun) avec filtre instantané par catégorie, recherche temps réel, syntaxes, sous-commandes et copie en 1 clic.
 - **Élimination de tout placeholder payant** : Retrait définitif de toutes les mentions et badges « Ultra », « Premium », « Essentiel » et « Recommandé ». Etho n'a aucun abonnement payant et tout est 100% inclus pour chaque serveur.
 
-### 1. Sélecteur de Profil et Multi-Compte dans le Menu Utilisateur (v1.75.29)
+### Sélecteur de Profil et Multi-Compte dans le Menu Utilisateur (v1.75.29)
 - **Sélecteur de profil direct** : Ajout d'un tiroir interactif « Changer de profil » directement dans `UserProfileDropdown` affichant le profil actif en badge et listant tous les profils configurés avec puce de couleur d'accent et indicateur d'espace.
 - **Bascule en 1 clic** : Changement instantané avec synchronisation réactive des paramètres via `useActiveProfile` et confirmation par toast sans rechargement de page.
 - **Prise en charge multi-compte** : Mémorisation des comptes connectés (`ethone_saved_accounts`), affichage des avatars/identifiants et bascule fluide entre comptes enregistrés.
 - **Raccourcis intégrés** : Accès direct à la gestion des profils (`/profile-selection`) et à l'ajout de compte (`/login?switch=1`).
 
-### 1. Documentation Etho : Refonte style Keeper & Harmonisation de Marque (v1.75.28)
+### Documentation Etho : Refonte style Keeper & Harmonisation de Marque (v1.75.28)
 - **Harmonisation globale de la marque** : Remplacement de « Etho Protect » par « Etho » dans toute la documentation (`/docs`, `/documentation`), métadonnées OpenGraph et barre latérale de gestion de serveurs (`HubSidebar`).
 - **Thème sombre inspiré de Keeper** : Fond obsidian sombre `#090d0b`, surfaces de cartes `#0d1410`, bordures fines `#18231c` et accents vert émeraude `#22c55e`.
 - **Barre latérale gauche élargie & Rail continu** : Largeur généreuse (`w-76 xl:w-80`), champ de recherche `Rechercher…` en tête avec raccourci Ctrl+K, arborescence à rail vertical continu avec indicateur actif vert, catégories de modules interactives avec navigation fluide et bandeau d'appel à l'action final.
 
-### 1. Refonte Musique, Bento Features & Commandes sur Demande (v1.75.27)
+### Refonte Musique, Bento Features & Commandes sur Demande (v1.75.27)
 - **Visualiseur spatial 8D & Deck physique** : Balayage horizontal continu avec badges ON/8D, paquet de cartes superposées avec flou de profondeur (POWER - Kanye West) et anneaux Spotify concentriques.
 - **Grille de 12 fonctionnalités** : Halo flottant de 7 icônes en arche et cartes concrètes sans jargon.
 - **Catalogue sur demande** : Séparateur et bouton de déploiement à la demande évitant tout défilement forcé.
 
-### 2. Stabilisation Carte Spotify & Hauteur d'Égaliseur (v1.75.26)
+### Stabilisation Carte Spotify & Hauteur d'Égaliseur (v1.75.26)
 - Hauteur fixe `h-5` (20px) éliminant tout soubresaut vertical dans le simulateur Discord.
 - **Rétablissement officiel de la vitrine sur `/bot`** : accessible directement sur `discord.ethone.dev/bot` et `ethone.dev/bot` avec métadonnées OpenGraph complètes et sans redirection cassée.
 - **Motion design inspiré de MultiBot et Keeper Protect** : esthétique sombre satinée (`#07080d`), halos cyan glacé `#92C8D2`, cartes en verre dépoli et spring transitions.
@@ -133,7 +137,7 @@
 - **Prise en main en 3 étapes claires**, catalogue de commandes avec recherche, filtres et copie de syntaxe en 1 clic.
 - **Section FAQ interactive** avec accordéons repliables et bannière d'invitation finale.
 
-### 2. Catégorie Fun & Divertissement : Suite de Commandes Fun & Médias & Studio Dashboard (v1.75.1)
+### Catégorie Fun & Divertissement : Suite de Commandes Fun & Médias & Studio Dashboard (v1.75.1)
 - **Suite complète de commandes interactives pour Etho** : 8 commandes Discord dédiées (`/lyrics`, `/quote`, `/image`, `/duckduckgoimage`, `/reverseimage`, `/tvshow`, `/movie`, `/game`) et commande d'aiguillage `/fun <subcommand>`.
 - **Recherche de paroles en direct (`/lyrics`)** : Moteur LRCLib gratuit sans clé, support des requêtes artiste + titre, affichage des paroles synchronisées ou brutes, durée et pochette d'album.
 - **Générateur de citations stylisées (`/quote`)** : Rendu esthétique instantané aux couleurs de Discord avec support des auteurs, texte et date.
@@ -144,35 +148,35 @@
   - Studios interactifs en direct : onglets Paroles, Citations, Recherche d'images, Recherche inversée, Cinéma & Séries et Jeux vidéo sans aucun placeholder ni fausse donnée.
 - **Zéro commentaire & zéro placeholder** : Conforme aux règles strictes du projet (0 commentaire dans le code source, données 100 % réelles).
 
-### 2. Intégration Complète Spotify : Commandes Bot & Dashboard Interactif Motion (v1.75.0)
+### Intégration Complète Spotify : Commandes Bot & Dashboard Interactif Motion (v1.75.0)
 - **Suite de commandes Spotify pour le bot** : 20 commandes slash et préfixes (`/spotify nowplaying`, `play`, `pause`, `resume`, `next`, `previous`, `seek`, `volume`, `repeat`, `shuffle`, `queue`, `like`, `unlike`, `toptracks`, `topartists`, `device`, `devices`, `vc`, `login`, `logout`) avec raccourcis directs.
 - **Pont vocal Discord (`/spotify vc`)** : diffusion directe du titre Spotify en cours d'écoute dans le salon vocal Discord du membre via le lecteur audio Etho.
 - **Boutons interactifs Discord** : commandes directes depuis l'embed d'écoute avec boutons Précédent, Lecture/Pause, Suivant, Like/Unlike et Diffuser en vocal.
 - **Module Dashboard Spotify immersif (`/discord?view=spotify`)** : vinyle animé en rotation Framer Motion, égaliseur sonore dynamique 5 bandes, barre de progression interactive et curseur de volume temps réel.
 - **Zéro placeholder & actions réelles** : recherche et ajout à la file d'attente, transfert d'appareil actif, gestion des favoris et statistiques de morceaux et artistes préférés.
 
-### 2. Console Discord : Résolution du blocage sur /bot et suppression de l'ancien dashboard (v1.74.18)
+### Console Discord : Résolution du blocage sur /bot et suppression de l'ancien dashboard (v1.74.18)
 - **Suppression du dashboard fantôme** : Retrait définitif de `EthoProtectDashboard.tsx` qui bloquait l'affichage (« Bonjour Compte », 0 serveur et écran noir).
 - **Redirection instantanée vers la console officielle** : `https://discord.ethone.dev/bot` et la racine de `discord.ethone.dev` redirigent immédiatement vers `/discord`.
 - **Expérience unifiée & connectée** : Affichage direct de la session Discord sécurisée (BotSessionGate), des vrais serveurs en grille moderne à 3 colonnes et de la détection de présence.
 
-### 2. Bouclier Owner : Défilement fluide de la page et épuration des libellés (v1.74.17)
+### Bouclier Owner : Défilement fluide de la page et épuration des libellés (v1.74.17)
 - **Défilement restauré** : Intégration du conteneur `os-scroll` et déverrouillage de la hauteur sur `/discord/owner-shield` et `/owner/shield` permettant de faire défiler l'intégralité de la console et des serveurs surveillés sans blocage ni coupure.
 - **Nettoyage des formulations artificielles** : Suppression des mentions « Console d'élite » et « inviolable » au profit de libellés sobres et professionnels (« Protection Propriétaire », « Rétablissement automatique de vos rôles »).
 - **Espacement bas optimisé** : Ajout d'une marge de défilement inférieure (`pb-36`) évitant toute collision avec le bouton flottant de retour et le dock.
 
-### 3. Bouclier Owner : Extinction en cascade des serveurs surveillés (v1.74.16)
+### Bouclier Owner : Extinction en cascade des serveurs surveillés (v1.74.16)
 - **Extinction synchronisée des serveurs** : Lorsque le bouclier principal est désactivé au sommet de la page, tous les commutateurs de la grille « Serveurs surveillés » basculent immédiatement en inactif (OFF, grisés).
 - **Statut et filtres alignés** : Chaque carte de serveur affiche désormais « Bouclier coupé » en gris neutre, le compteur de serveurs couverts passe à `0 / [total]` et l'onglet filtre passe dynamiquement en `Inactifs ([total])`.
 - **Réactivation intelligente par serveur** : Tenter d'activer la surveillance sur un serveur individuel alors que le bouclier maître est coupé réenclenche automatiquement le bouclier principal et sécurise immédiatement le serveur ciblé.
 
-### 2. Généralisation de la vue moderne & suppression définitive de la vue classique (v1.74.15)
+### Généralisation de la vue moderne & suppression définitive de la vue classique (v1.74.15)
 - **Suppression du mode classique** : Retrait complet de l'ancienne vue mono-colonne dans `ServerPicker.tsx`, des composants obsolètes (`ClassicAvatar`), des styles et classes CSS obsolètes (`rowClass`, `discordBtn`) et des branches conditionnelles de secours.
 - **Vue moderne en standard unique** : La grille responsive en 3 colonnes (`grid-cols-1 md:grid-cols-2 lg:grid-cols-3`) avec en-tête d'accueil personnalisé (`Bienvenue, [Nom]`), cartes compactes et statut d'installation en direct est désormais le standard unique et permanent.
 - **Suppression des bascules** : Retrait du bouton `Vue classique` dans l'en-tête bureau et du bouton `Classique` sur mobile, ainsi que du commutateur `Voir l'ancienne vitrine` dans le dashboard bot.
 - **Allègement du bundle** : Nettoyage de plus de 250 lignes de code mort et d'icônes obsolètes pour des performances accrues.
 
-### 2. Discord AutoMod natif format Keeper (v1.74.14)
+### Discord AutoMod natif format Keeper (v1.74.14)
 - **Navigation latérale** : Ajout de la catégorie `AutoMod` sous la section `Protection` de `HubSidebar.tsx` avec icône Filter émeraude, sélection active et fil d'Ariane synchronisé (`app/discord/page.tsx`).
 - **Vue liste fidèle à Keeper** : 6 règles standard intégrées sans aucun placeholder :
   1. `ETHONE • Protection Anti-Phishing Nitro` (Mots-clés · 7 mots-clés · bloque)
@@ -191,32 +195,32 @@
 - **Actions, sanctions & exceptions** : Message de blocage personnalisé (150 car.), salon d'alerte, timeout (1m à 7j), rôles exemptés et salons exemptés.
 - **Synchronisation API réelle** : Branché sur `GET/POST/PUT/DELETE /automod-native` et bouton 1-clic d'installation recommandée (`POST /automod-native/recommended`).
 
-### 2. Bouclier Owner en cascade & Refonte visuelle (v1.74.13)
+### Bouclier Owner en cascade & Refonte visuelle (v1.74.13)
 - **Bascule maître en cascade intégrale** : Décocher l'interrupteur maître coupe immédiatement l'intégralité des 12 sous-protections (débannissement, timeout, rôles, vocal, pseudo, défense) à la fois dans l'interface et sur le serveur, garantissant qu'aucun voyant vert ne reste allumé quand le bouclier est inactif.
 - **Refonte Motion Design & Glassmorphism** : Carte d'état en verre dépoli avec aura réactive, séparation en 4 modules thématiques (`Sanctions & Bannissements`, `Rôles & Identité`, `Salons Vocaux`, `Défense d'Etho & Confidentialité`), grille responsive des serveurs et journal d'interceptions.
 
-### 3. Refonte intégrale de la Messagerie / Mail (v1.74.4 → v1.74.13)
+### Refonte intégrale de la Messagerie / Mail (v1.74.4 → v1.74.13)
 - **Fond synchronisé avec le thème utilisateur (v1.74.10)** : Élimination du blanc éblouissant, le fond des e-mails adopte la couleur exacte du thème sélectionné (Obsidian, Midnight, Dyno Rose, Arctic, etc.).
 - **Rendu sandboxé isolé sans vide (v1.74.4, v1.74.9)** : Composant `MailBodyViewer` en iframe sandboxée sécurisée, 100% largeur/hauteur, sans marge morte ni coupure. Bouton d'agrandissement plein écran (`Maximize2`/`Minimize2`).
 - **Images externes & CID fiabilisées (v1.74.9)** : Prise en charge `referrerpolicy="no-referrer"` anti-blocage hotlink, résolution des pièces jointes `cid:...`, surclassement HTTPS automatique.
 - **Réponses rapides 1-clic & Saisie fluide (v1.74.6, v1.74.13)** : Pastilles de réponses automatiques, zone de texte auto-extensible, conteneur `shrink-0` à défilement autonome (`max-h-[45vh] overflow-y-auto`) avec marge basse protectrice empêchant tout masquage des boutons d'envoi.
 - **Auto-masquage du Dock sur /mail (v1.74.13)** : Le dock flottant s'escamote automatiquement sur la page messagerie pour libérer tout l'espace d'écriture, avec bouton de rappel sur la barre d'état.
 
-### 4. Sélecteur de serveurs Discord en grille 3 colonnes (v1.74.12)
+### Sélecteur de serveurs Discord en grille 3 colonnes (v1.74.12)
 - Remplacement de la liste étirée sur 1 colonne par une grille responsive en 3 colonnes (`grid-cols-1 md:grid-cols-2 lg:grid-cols-3`).
 - En-tête personnalisé avec avatar circulaire de l'utilisateur et salutation (`Bienvenue, [Nom]`).
 - Cartes épurées pour serveurs gérés (badge émeraude « Bot installé », couronne propriétaire 👑) et serveurs à inviter (« Inviter le bot ↗ »).
 
-### 5. Audio & Confort acoustique (v1.74.11)
+### Audio & Confort acoustique (v1.74.11)
 - Suppression complète de l'écouteur `mouseover` dans `SoundProvider` (`sound.tsx`) qui déclenchait un son systématique au survol de chaque bouton ou lien interactif.
 - Maintien du retour haptique sonore au clic (`onClick`) et sur les confirmations/alertes.
 
-### 6. Dock flottant, Ambiance & Ergonomie (v1.74.2 → v1.74.8)
+### Dock flottant, Ambiance & Ergonomie (v1.74.2 → v1.74.8)
 - **Réglages live d'élévation & d'échelle du Dock (v1.74.8)** : Curseurs tactiles dans le Centre de contrôle permettant de régler l'altitude (40px à 120px) et la taille (75% à 130%) avec sauvegarde en direct dans Supabase (`user_settings`).
 - **Égaliseur animé & Pastilles sonores (v1.74.5, v1.74.8)** : Mini-égaliseur à 4 barres animées dans la capsule sonore du dock lors de la lecture d'une ambiance, et pastilles sonores rapides dans le chronomètre Focus (`FocusTimer2026`).
 - **Restauration de la barre d'état (StatusBar, v1.74.2)** : Version en direct, statut de synchro, ping et rôle, compatible avec le Mode Zen (`Ctrl+Shift+Z`).
 
-### 7. Modules Console avancés & Outils staff (v1.73.8 → v1.74.1)
+### Modules Console avancés & Outils staff (v1.73.8 → v1.74.1)
 - **Économie** : Ajustement de solde staff via `POST /economy/wallets/:userId/adjust` avec audit.
 - **Formulaires** : Export 1-clic en formats CSV et JSON.
 - **Starboard** : Simulateur d'envoi de test sur Discord (`POST /starboard/test`).
@@ -225,7 +229,7 @@
 - **Sauvegardes** : Importateur de fichiers `.json` locaux vers l'API de restauration du bot.
 - **Télémétrie en direct** : Vrai ping WebSocket Gateway Discord (`client.ws.ping`) et allocation mémoire V8.
 
-### 8. Bot Discord Etho (v1.73.6 → v1.73.7)
+### Bot Discord Etho (v1.73.6 → v1.73.7)
 - **Avatar officiel** : Intégration de l'anneau pourpre éclatant dans tous les embeds (`ethone.png`, révision `r3`).
 - **Message d'accueil Keeper** : 4 points clés, détection intelligente du salon privé du staff et mention de l'inviteur.
 
@@ -247,13 +251,11 @@
 
 ---
 
-## État des tests & Qualité au 2026-10-12
-- Tests unitaires Next.js : **329/329 tests passent**.
-- TypeScript : **`npx tsc --noEmit` passe sans aucune erreur**.
-- Lint : **`npm run lint` passe sans aucune erreur**.
-- Audits de sécurité : `audit-security.mjs` et `precommit-upload-check.mjs` passent (0 avertissement, 1893 fichiers audités).
-- Build Next.js : **Export statique 100% vert**, toutes les routes pré-rendues.
-- Déploiement : commit `351e97cc` poussé sur la branche `main` (déploiement automatique Cloudflare Pages).
+## État des tests & Qualité au 2026-10-15
+- Tests unitaires Next.js : **385/385 passent** (57 suites).
+- Lint : **0 erreur, 138 avertissements** (surtout `<img>` dans les trackers et variables inutilisées).
+- TypeScript : **18 erreurs connues** dans `components/RiotGamingHome.tsx`, `components/tracker/RiotTrackerConnectModal.tsx` et `components/tracker/TacticalCoachChatView.tsx` (types Riot désalignés, `NotifyApi` appelé comme fonction). Le build passe car `next.config` a `ignoreBuildErrors: true` : à corriger avant de retirer ce flag.
+- Audits de sécurité : `audit-security.mjs` et `precommit-upload-check.mjs` à lancer depuis la racine avant chaque commit.
 
 ---
 
@@ -264,6 +266,6 @@
 2. **Vérification mobile des pages de la console** :
    - Contrôler sur petits écrans (< 390px) que le menu d'onglets mobiles de la console (`MobileTabs`) affiche lisiblement tous les blocs sans débordement horizontal.
 3. **Optimisation des balises `<img>` restantes** :
-   - 22 avertissements mineurs du linter sur des balises `<img>` dans des composants trackers de jeux (LoL, Valorant) : les migrer progressivement vers `ClientImage` ou `next/image`.
+   - Avertissements du linter sur des balises `<img>` dans les trackers de jeux (LoL, Valorant) : les migrer vers `ClientImage` ou `next/image`.
 4. **Surveillance & Maintenance VPS** :
    - Vérifier périodiquement l'état du bot via `pm2 logs ethone-bot` et les sauvegardes automatiques dans Supabase `bot-backups`.

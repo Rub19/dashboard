@@ -1,5 +1,15 @@
 [
   {
+    "version": "v1.75.88",
+    "date": "2026-10-15",
+    "title": "Présence du bot sans chaîne imposée",
+    "items": [
+      "Plus de lien Twitch par défaut : le Mode Streamer exige le lien de ta propre chaîne",
+      "Retrait des activités de rotation inventées",
+      "Vitrine du bot : retrait des chiffres non vérifiés (0.2s, « des centaines de communautés »)"
+    ]
+  },
+  {
     "version": "v1.75.45",
     "date": "2026-10-13",
     "title": "Boutons rectangulaires, logo Riot horizontal et motion design des trackers",
@@ -625,15 +635,6 @@
     "items": [
       "Les blocs des pages de la console entrent en cascade, l'un après l'autre (désactivé si le mouvement réduit est demandé).",
       "Changement de page plus net et plus rapide : glissement léger sans flou."
-    ]
-  },
-  {
-    "version": "v1.55.85",
-    "date": "2026-10-08",
-    "title": "Console Discord : barre latérale vers les modules",
-    "items": [
-      "Les liens Animation de la barre latérale (Musique, Niveaux, Giveaways…) ouvrent le module dans la console au lieu de la pleine page.",
-      "Nouveau lien « Tous les modules » pour atteindre les autres modules depuis la barre latérale."
     ]
   }
 ]

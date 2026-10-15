@@ -84,14 +84,9 @@ const DYNAMIC_VARIABLES = [
   { tag: "{date}", desc: "Date actuelle (ex: 12/10/2026)" },
 ];
 
-const DEFAULT_ROTATION_ACTIVITIES = [
-  { id: "rot_1", type: "Streaming" as DiscordActivityType, text: "🔴 En direct sur Twitch • /help", url: "https://www.twitch.tv/ethone", weight: 25 },
-  { id: "rot_2", type: "Listening" as DiscordActivityType, text: "Spotify • Chill Lo-Fi Beats & Synthwave", weight: 20 },
+const DEFAULT_ROTATION_ACTIVITIES: { id: string; type: DiscordActivityType; text: string; url?: string; weight: number }[] = [
   { id: "rot_3", type: "Watching" as DiscordActivityType, text: "{guildCount} serveurs • Anti-Raid 24/7", weight: 30 },
-  { id: "rot_4", type: "Playing" as DiscordActivityType, text: "Minecraft • Serveur Communautaire ETHONE", weight: 15 },
-  { id: "rot_5", type: "Playing" as DiscordActivityType, text: "Visual Studio Code • Dashboard v1.75.8", weight: 15 },
   { id: "rot_6", type: "Watching" as DiscordActivityType, text: "vos tickets d'assistance • /ticket", weight: 20 },
-  { id: "rot_7", type: "Competing" as DiscordActivityType, text: "Tournoi Discord Arena & Rocket League", weight: 15 },
   { id: "rot_8", type: "Playing" as DiscordActivityType, text: "{userCount} membres servis • /bot info", weight: 20 },
 ];
 
@@ -101,7 +96,7 @@ const DEFAULT_PROFILES = [
     name: "🟣 Mode Streamer (Twitch Live)",
     status: "streaming",
     description: "Pastille violette de diffusion Twitch avec lien direct vers le live",
-    activity: { type: "Streaming", name: "🔴 En direct sur Twitch • /help", url: "https://www.twitch.tv/ethone" },
+    activity: { type: "Streaming", name: "🔴 En direct • /help", url: "" },
   },
   {
     id: "prof_dnd",
@@ -173,7 +168,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
   const [currentStatus, setCurrentStatus] = useState<DiscordStatus>("online");
   const [activityType, setActivityType] = useState<DiscordActivityType>("Watching");
   const [activityName, setActivityName] = useState("your tickets • /ticket");
-  const [streamUrl, setStreamUrl] = useState("https://www.twitch.tv/ethone");
+  const [streamUrl, setStreamUrl] = useState("");
   const [presenceSource, setPresenceSource] = useState("rotation");
   const [lastUpdated, setLastUpdated] = useState<string>(new Date().toISOString());
   const [rateLimited, setRateLimited] = useState(false);
@@ -340,9 +335,16 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
       url: activityType === "Streaming" ? streamUrl : undefined,
     };
 
+    const streamTarget = targetStatus === "streaming" || targetActivity.type === "Streaming";
+    const streamLink = targetActivity.url || streamUrl;
+    if (streamTarget && !/^https?:\/\/\S+$/.test(streamLink || "")) {
+      toast.error("Ajoute le lien de ta chaîne (Twitch ou YouTube) pour le Mode Streamer.");
+      return;
+    }
+
     if (targetStatus === "streaming") {
       targetActivity.type = "Streaming";
-      targetActivity.url = targetActivity.url || streamUrl || "https://www.twitch.tv/ethone";
+      targetActivity.url = targetActivity.url || streamUrl;
     }
 
     try {
@@ -386,7 +388,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
         {
           type: "Streaming",
           name: "🔴 En direct sur Twitch • /help",
-          url: streamUrl || "https://www.twitch.tv/ethone",
+          url: streamUrl,
         },
         true
       );
@@ -473,11 +475,15 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
       toast.error("Veuillez saisir un texte d'activité.");
       return;
     }
+    if (newRotType === "Streaming" && !/^https?:\/\/\S+$/.test(newRotUrl || "")) {
+      toast.error("Ajoute le lien de la chaîne pour une activité en direct.");
+      return;
+    }
     const newItem = {
       id: `rot_${Date.now()}`,
       type: newRotType,
       text: newRotText.trim(),
-      url: newRotType === "Streaming" ? newRotUrl || "https://www.twitch.tv/ethone" : undefined,
+      url: newRotType === "Streaming" ? newRotUrl : undefined,
       weight: newRotWeight,
     };
     setRotationConfig((prev) => ({
@@ -490,6 +496,10 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
   };
 
   const handleQuickAddRotationTemplate = (type: DiscordActivityType, text: string, url?: string) => {
+    if (type === "Streaming" && !/^https?:\/\/\S+$/.test(url || "")) {
+      toast.error("Renseigne d'abord le lien de ta chaîne dans le Mode Streamer.");
+      return;
+    }
     const newItem = {
       id: `rot_${Date.now()}`,
       type,
@@ -959,7 +969,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                                 setCurrentStatus(s.id as DiscordStatus);
                                 if (s.id === "streaming") {
                                   setActivityType("Streaming");
-                                  if (!streamUrl) setStreamUrl("https://www.twitch.tv/ethone");
+                                  
                                 } else if (activityType === "Streaming") {
                                   setActivityType("Watching");
                                 }
@@ -1012,7 +1022,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                           onClick={() => {
                             setCurrentStatus("streaming");
                             setActivityType("Streaming");
-                            if (!streamUrl) setStreamUrl("https://www.twitch.tv/ethone");
+                            
                           }}
                           className={cn(
                             "px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer",
@@ -1044,7 +1054,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                                 setActivityType(item.type as DiscordActivityType);
                                 if (item.type === "Streaming") {
                                   setCurrentStatus("streaming");
-                                  if (!streamUrl) setStreamUrl("https://www.twitch.tv/ethone");
+                                  
                                 } else if (currentStatus === "streaming") {
                                   setCurrentStatus("online");
                                 }
@@ -1075,7 +1085,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                             type="url"
                             value={streamUrl}
                             onChange={(e) => setStreamUrl(e.target.value)}
-                            placeholder="https://www.twitch.tv/ethone"
+                            placeholder="https://www.twitch.tv/ta-chaine"
                             className="w-full px-3.5 py-2 rounded-lg bg-[var(--surface-raised)] border border-purple-500/30 text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-purple-400 font-mono"
                           />
                           <p className="text-[11px] text-purple-300/80">
@@ -1352,7 +1362,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                   <div className="flex flex-wrap gap-2">
                     <button
                       type="button"
-                      onClick={() => handleQuickAddRotationTemplate("Streaming", "🔴 En direct sur Twitch • /help", "https://www.twitch.tv/ethone")}
+                      onClick={() => handleQuickAddRotationTemplate("Streaming", "🔴 En direct • /help", streamUrl)}
                       className="px-3 py-1.5 rounded-lg bg-purple-500/15 hover:bg-purple-500/25 border border-purple-500/30 text-purple-300 text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
                     >
                       <Video className="w-3.5 h-3.5" />
@@ -1509,7 +1519,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                         type="url"
                         value={newRotUrl}
                         onChange={(e) => setNewRotUrl(e.target.value)}
-                        placeholder="URL Twitch / YouTube (ex: https://www.twitch.tv/ethone)"
+                        placeholder="URL Twitch / YouTube (ex: https://www.twitch.tv/ta-chaine)"
                         className="w-full px-3 py-2 rounded-lg bg-[var(--surface-raised)] border border-purple-500/30 text-xs text-[var(--text-primary)] font-mono"
                       />
                     )}

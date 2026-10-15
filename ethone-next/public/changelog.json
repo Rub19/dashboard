@@ -1,5 +1,14 @@
 [
   {
+    "version": "v1.75.101",
+    "date": "2026-10-15",
+    "title": "IA du dashboard sur des modèles Groq actuels",
+    "items": [
+      "Le Brain et le Worker utilisent openai/gpt-oss-120b au lieu d'un modèle retiré par Groq : plus de tentative ratée avant chaque réponse",
+      "Liste des modèles Groq mise à jour (gpt-oss-120b, gpt-oss-20b, qwen3.8-27b)"
+    ]
+  },
+  {
     "version": "v1.75.100",
     "date": "2026-10-15",
     "title": "Assistant IA : modèle Groq à jour",
@@ -626,17 +635,6 @@
       "Giveaways : lancement d'un tirage avec durée, gagnants, rôle à gagner et conditions (rôles requis ou exclus, âge du compte, niveau, réclamation), puis suivi des tirages en cours et relance des terminés.",
       "Musique : lecteur en direct (lecture, pause, titre suivant ou précédent, volume, répétition, aléatoire), recherche et lancement d'un titre, file d'attente, réglages (DJ, 24 h/24, déconnexion) et statistiques.",
       "Sécurité : les actions sur un giveaway (terminer, relancer, annuler, prolonger) vérifient désormais qu'il appartient bien au serveur ouvert."
-    ]
-  },
-  {
-    "version": "v1.55.98",
-    "date": "2026-10-09",
-    "title": "Mail : redirections vers Gmail, iCloud et autres",
-    "items": [
-      "Profil mail › Redirections : reçois aussi les mails de tes adresses @ethone.dev sur une autre boîte (Gmail, iCloud…), pour toutes tes adresses ou une seule.",
-      "Sécurité : un code à 6 chiffres est envoyé à la boîte de destination ; rien n'est transféré tant que le code n'est pas saisi (15 minutes, 5 essais, 5 redirections au maximum).",
-      "Les mails classés en spam ou bloqués ne sont jamais transférés ; les pièces jointes suivent jusqu'à 10 Mo, et répondre depuis Gmail répond directement à l'expéditeur.",
-      "Chaque redirection peut être mise en pause ou supprimée."
     ]
   }
 ]

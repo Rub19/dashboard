@@ -56663,6 +56663,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_100_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_100_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_100_de);
 
+const v1_75_101_fr: ChangelogEntry = {
+  version: "v1.75.101",
+  date: "2026-10-15",
+  title: "IA du dashboard sur des modèles Groq actuels",
+  items: [
+    "Le Brain et le Worker utilisent openai/gpt-oss-120b au lieu d'un modèle retiré par Groq : plus de tentative ratée avant chaque réponse",
+    "Liste des modèles Groq mise à jour (gpt-oss-120b, gpt-oss-20b, qwen3.8-27b)",
+  ],
+};
+
+const v1_75_101_en: ChangelogEntry = {
+  version: "v1.75.101",
+  date: "2026-10-15",
+  title: "Dashboard AI on current Groq models",
+  items: [
+    "Brain and the Worker use openai/gpt-oss-120b instead of a model Groq retired: no more failed attempt before each answer",
+    "Groq model list updated (gpt-oss-120b, gpt-oss-20b, qwen3.8-27b)",
+  ],
+};
+
+const v1_75_101_es: ChangelogEntry = {
+  version: "v1.75.101",
+  date: "2026-10-15",
+  title: "IA del dashboard con modelos actuales de Groq",
+  items: [
+    "Brain y el Worker usan openai/gpt-oss-120b en lugar de un modelo retirado",
+    "Lista de modelos de Groq actualizada",
+  ],
+};
+
+const v1_75_101_de: ChangelogEntry = {
+  version: "v1.75.101",
+  date: "2026-10-15",
+  title: "Dashboard-KI mit aktuellen Groq-Modellen",
+  items: [
+    "Brain und der Worker nutzen openai/gpt-oss-120b statt eines eingestellten Modells",
+    "Groq-Modellliste aktualisiert",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_101_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_101_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_101_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_101_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

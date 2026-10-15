@@ -6,7 +6,7 @@ export const BRAIN_PROVIDERS = Object.freeze([
   Object.freeze({ id: "context", label: "ETHONE Context", kind: "local", privacy: "Aucune donnée envoyée", models: Object.freeze(["context-v1"]) }),
   Object.freeze({ id: "openai", label: "OpenAI", kind: "cloud", privacy: "Via backend ETHONE", models: Object.freeze(["configure-via-worker"]) }),
   Object.freeze({ id: "anthropic", label: "Anthropic", kind: "cloud", privacy: "Via backend ETHONE", models: Object.freeze(["configure-via-worker"]) }),
-  Object.freeze({ id: "groq", label: "Groq", kind: "cloud", privacy: "Via backend ETHONE", models: Object.freeze(["llama-3.3-70b-versatile", "llama-3.1-8b-instant", "openai/gpt-oss-120b", "openai/gpt-oss-20b", "qwen/qwen3.6-27b", "gemma2-9b-it"]) }),
+  Object.freeze({ id: "groq", label: "Groq", kind: "cloud", privacy: "Via backend ETHONE", models: Object.freeze(["openai/gpt-oss-120b", "openai/gpt-oss-20b", "qwen/qwen3.8-27b"]) }),
   Object.freeze({ id: "gemini", label: "Gemini", kind: "cloud", privacy: "Via backend ETHONE", models: Object.freeze(["configure-via-worker"]) }),
   Object.freeze({ id: "deepseek", label: "DeepSeek", kind: "cloud", privacy: "Via backend ETHONE", models: Object.freeze(["configure-via-worker"]) }),
   Object.freeze({ id: "openrouter", label: "OpenRouter", kind: "cloud", privacy: "Via backend ETHONE", models: Object.freeze(["configure-via-worker"]) }),

@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.101 — 2026-10-15
+
+**IA du dashboard sur des modèles Groq actuels**
+
+- Le Brain et le Worker utilisent openai/gpt-oss-120b au lieu d'un modèle retiré par Groq : plus de tentative ratée avant chaque réponse
+- Liste des modèles Groq mise à jour (gpt-oss-120b, gpt-oss-20b, qwen3.8-27b)
+
 ## v1.75.100 — 2026-10-15
 
 **Assistant IA : modèle Groq à jour**

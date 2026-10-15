@@ -25,7 +25,7 @@
     "AI_PRIMARY_PROVIDER": "cloudflare",
     "AI_PRIMARY_MODEL": "@cf/meta/llama-3.3-70b-instruct-v1",
     "AI_FALLBACK_PROVIDER": "groq",
-    "AI_FALLBACK_MODEL": "llama-3.3-70b-versatile",
+    "AI_FALLBACK_MODEL": "openai/gpt-oss-120b",
     "AI_CLOUDFLARE_DAILY_ALLOCATION": "10000",
     "AI_CLOUDFLARE_DAILY_BUDGET": "8000",
     "AI_CLOUDFLARE_EMERGENCY_BUFFER": "2000",

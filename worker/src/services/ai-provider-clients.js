@@ -213,6 +213,7 @@ export async function askGroq(env, { model, messages, context }) {
           model: selected,
           max_tokens: 1024,
           temperature: 0.4,
+          ...(selected.startsWith("openai/gpt-oss") ? { reasoning_effort: "low" } : {}),
           messages: [
             { role: "system", content: `${SYSTEM_PROMPT}\n\nContexte : ${contextJson}` },
             ...chatMessages

@@ -56974,6 +56974,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_106_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_106_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_106_de);
 
+const v1_75_107_fr: ChangelogEntry = {
+  version: "v1.75.107",
+  date: "2026-10-15",
+  title: "Page Etho épurée",
+  items: [
+    "Retrait de la pastille « Le bot Discord tout-en-un » au-dessus du titre",
+  ],
+};
+
+const v1_75_107_en: ChangelogEntry = {
+  version: "v1.75.107",
+  date: "2026-10-15",
+  title: "Cleaner Etho page",
+  items: [
+    "Removed the \"All-in-one Discord bot\" pill above the headline",
+  ],
+};
+
+const v1_75_107_es: ChangelogEntry = {
+  version: "v1.75.107",
+  date: "2026-10-15",
+  title: "Página de Etho más limpia",
+  items: [
+    "Se quitó la etiqueta sobre el título",
+  ],
+};
+
+const v1_75_107_de: ChangelogEntry = {
+  version: "v1.75.107",
+  date: "2026-10-15",
+  title: "Aufgeräumte Etho-Seite",
+  items: [
+    "Etikett über der Überschrift entfernt",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_107_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_107_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_107_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_107_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

@@ -1372,23 +1372,11 @@ export default function BotLanding() {
         <section className="mx-auto w-full max-w-6xl px-6 pb-20 pt-12 md:pt-20">
           <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
             <div>
-              <motion.div
-                initial={false}
-                animate={{ opacity: 1, y: 0 }}
-                className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3.5 py-1.5 text-xs font-semibold text-[#92C8D2] backdrop-blur-md"
-              >
-                <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
-                </span>
-                {c.hero.badge}
-              </motion.div>
-
               <motion.h1
                 initial={false}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, delay: 0.1 }}
-                className="mt-6 text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl"
+                className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl"
               >
                 {c.hero.titlePart1}{" "}
                 <span className="bg-gradient-to-r from-[#92C8D2] via-white to-[#92C8D2] bg-clip-text text-transparent">

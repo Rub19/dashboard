@@ -1,4 +1,4 @@
-# ETHONE — passation & nouveautés (2026-10-15, version 1.75.106)
+# ETHONE — passation & nouveautés (2026-10-15, version 1.75.107)
 
 ## Projet
 - `ethone-next/` : site Next.js statique (ethone.dev, Cloudflare Pages, déploiement auto au push sur `main`).
@@ -26,7 +26,7 @@
 
 ---
 
-## Nouveautés majeures & Réalisations récentes (v1.75.83 → v1.75.106)
+## Nouveautés majeures & Réalisations récentes (v1.75.83 → v1.75.107)
 
 ### Page /bot/connexion + reconnexion bot silencieuse (v1.75.106)
 - `components/botsite/BotLogin.tsx` (route `/bot/connexion`) : modèle Keeper aux couleurs Etho (langue, thème clair/sombre, Discord via Supabase). Le bouton Dashboard de /bot y mène si pas de session Discord, sinon `/discord`.

@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.107 — 2026-10-15
+
+**Page Etho épurée**
+
+- Retrait de la pastille « Le bot Discord tout-en-un » au-dessus du titre
+
 ## v1.75.106 — 2026-10-15
 
 **Page de connexion Etho et reconnexion automatique**

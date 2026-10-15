@@ -1270,6 +1270,10 @@ export default function DiscordDashboardPage() {
                     ? i18n("dProtections", "Protections")
                     : view === "automod"
                     ? "AutoMod"
+                    : view === "welcome"
+                    ? "Bienvenue et départs"
+                    : view === "autoroles"
+                    ? "Rôles automatiques"
                     : view === "scan"
                     ? i18n("dSecurityScan", "Scan de sécurité")
                     : view === "setup"

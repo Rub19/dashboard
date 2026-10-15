@@ -26,7 +26,12 @@
 
 ---
 
-## Nouveautés majeures & Réalisations récentes (v1.75.83 → v1.75.109)
+## Nouveautés majeures & Réalisations récentes (v1.75.83 → v1.75.110)
+
+### /server + compteur de badges (v1.75.110)
+- Bot : `modules/serverInfo/` (`badgeScanner.ts` scanne `guild.members.fetch()`, cache 10 min ; `serverCommand.ts` pages Aperçu/Membres/Salons & rôles/Badges, menu `srv:<userId>`).
+- API `GET /api/guilds/:guildId/badges` (`?refresh=1` force le scan). Dashboard : onglet « Badges » de `ConsoleServer.tsx`.
+- Icônes `public/bot-icons/badge_*.png` → emojis d'app `etho_badge_*`. Limite Discord : Nitro (palier) et badge Quête invisibles pour un bot ; Nitro compté via avatar animé seulement.
 
 ### Musique : état des sources (v1.75.109, vérifié le 2026-10-15)
 - Accès SSH au NAS par clé OK (`ssh nas`, port 46 ; pas de SFTP : copier avec `cat fichier | ssh nas "cat > …"`). Docker sans sudo. Conteneurs : `lavalink` (ghcr 4.2.2, lavaplayer 2.2.6, net host, config ~/lavalink/application.yml), `yt-resolver`, tunnels autossh.

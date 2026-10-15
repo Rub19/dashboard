@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.110 — 2026-10-15
+
+**Commande /server et compteur de badges**
+
+- Nouvelle commande /server avec 4 pages : Aperçu, Membres, Salons & rôles et Badges.
+- La page Badges compte les vrais badges Discord des membres (Staff, Partenaire, HypeSquad, Bug Hunter, Early Supporter, développeurs, modérateur certifié) et chaque palier de boost, de 1 mois à 2 ans.
+- Nouvel onglet Badges dans la page Serveur du dashboard, avec relance de l'analyse.
+- Le Nitro n'est compté que via l'avatar animé, et le badge Quête n'est pas visible : Discord ne les montre pas aux bots.
+
 ## v1.75.109 — 2026-10-15
 
 **Musique : secours YouTube réparé**

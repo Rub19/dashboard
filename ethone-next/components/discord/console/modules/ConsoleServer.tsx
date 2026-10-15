@@ -6,11 +6,13 @@ import { Hash, Volume2 } from "@/components/icons/ph";
 import ChannelPicker, { invalidateGuildChannels } from "../../ChannelPicker";
 import { confirmDialog } from "@/lib/confirmDialog";
 import { sinceLabel } from "@/lib/discord/security-scan";
-import { pageStagger } from "@/lib/motion-variants";
+import { pageStagger, staggerItem } from "@/lib/motion-variants";
 import { cn } from "@/lib/utils";
 import { ConsolePage, EmptyLine, GhostButton, Panel, Row, Segmented, Select, StatTile, Stepper, Switch, TextField, roleColor, useGuildApi } from "../kit";
 
-type Tab = "overview" | "channels" | "roles" | "emojis" | "webhooks" | "settings";
+type Tab = "overview" | "badges" | "channels" | "roles" | "emojis" | "webhooks" | "settings";
+type BadgeCount = { key: string; label: string; iconUrl: string; count: number };
+type BadgeScan = { scannedAt: string; humans: number; bots: number; withBadge: number; boosters: number; badges: BadgeCount[]; boosts: BadgeCount[] };
 type Overview = {
   guild: { name: string; ownerTag: string; createdAt: string };
   kpis: {
@@ -62,6 +64,7 @@ type Settings = {
 
 const TABS: [Tab, string][] = [
   ["overview", "Aperçu"],
+  ["badges", "Badges"],
   ["channels", "Salons"],
   ["roles", "Rôles"],
   ["emojis", "Emojis"],
@@ -90,6 +93,7 @@ export default function ConsoleServer({ guildId }: { guildId: string }) {
   return (
     <ConsolePage title="Serveur" actions={<Segmented label="Section" value={tab} options={TABS} onChange={setTab} />}>
       {tab === "overview" && <OverviewTab guildId={guildId} />}
+      {tab === "badges" && <BadgesTab guildId={guildId} />}
       {tab === "channels" && <ChannelsTab guildId={guildId} />}
       {tab === "roles" && <RolesTab guildId={guildId} />}
       {tab === "emojis" && <EmojisTab guildId={guildId} />}
@@ -195,6 +199,65 @@ function OverviewTab({ guildId }: { guildId: string }) {
             ))}
           </ul>
         )}
+      </Panel>
+    </>
+  );
+}
+
+function BadgesTab({ guildId }: { guildId: string }) {
+  const api = useGuildApi(guildId);
+  const [scan, setScan] = useState<BadgeScan | null>(null);
+  const [failed, setFailed] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const load = useCallback(
+    async (refresh = false) => {
+      setBusy(true);
+      const r = await api<BadgeScan>(refresh ? "/badges?refresh=1" : "/badges");
+      setBusy(false);
+      if (r) setScan(r);
+      else setFailed(true);
+    },
+    [api]
+  );
+  useEffect(() => {
+    void load();
+  }, [load]);
+  if (!scan) return <Panel><EmptyLine>{failed ? "Analyse indisponible pour le moment." : "Analyse des membres…"}</EmptyLine></Panel>;
+  const grid = (list: BadgeCount[]) => (
+    <motion.ul variants={pageStagger} initial="initial" animate="animate" className="grid grid-cols-2 gap-2 p-4 sm:grid-cols-3 lg:grid-cols-4">
+      {list.map((b) => (
+        <motion.li
+          key={b.key}
+          variants={staggerItem}
+          className={cn("flex items-center gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-hover)] px-3 py-2.5", b.count === 0 && "opacity-40")}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={b.iconUrl} alt="" className="h-7 w-7 shrink-0 object-contain" />
+          <div className="min-w-0">
+            <p className="truncate text-[12px] font-semibold text-[var(--text-primary)]">{b.label}</p>
+            <p className="font-mono text-sm font-bold tabular-nums text-[var(--text-primary)]">×{fmt(b.count)}</p>
+          </div>
+        </motion.li>
+      ))}
+    </motion.ul>
+  );
+  return (
+    <>
+      <motion.div variants={pageStagger} initial="initial" animate="animate" className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <StatTile label="Humains analysés" value={fmt(scan.humans)} hint={`${fmt(scan.bots)} bots ignorés`} />
+        <StatTile label="Avec un badge" value={fmt(scan.withBadge)} hint={scan.humans ? `${Math.round((scan.withBadge / scan.humans) * 100)} % des membres` : undefined} />
+        <StatTile label="Boosters" value={fmt(scan.boosters)} />
+        <StatTile label="Badges au total" value={fmt([...scan.badges, ...scan.boosts].reduce((n, b) => n + b.count, 0))} />
+      </motion.div>
+      <Panel
+        title="Badges de profil"
+        subtitle={`Analyse ${sinceLabel(scan.scannedAt)} · Nitro sans avatar animé et badge Quête ne sont pas visibles par les bots`}
+        actions={<GhostButton disabled={busy} onClick={() => load(true)}>{busy ? "Analyse…" : "Relancer l'analyse"}</GhostButton>}
+      >
+        {grid(scan.badges)}
+      </Panel>
+      <Panel title="Boosts du serveur" subtitle="Le badge de boost évolue avec l'ancienneté du boost.">
+        {grid(scan.boosts)}
       </Panel>
     </>
   );

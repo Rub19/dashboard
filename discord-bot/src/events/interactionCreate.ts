@@ -1,3 +1,4 @@
+import { handleServerSelect } from '../modules/serverInfo/serverCommand.js';
 import { Interaction, MessageFlags } from 'discord.js';
 import { config } from '../config.js';
 import { commandRegistry } from '../handlers/commandHandler.js';
@@ -116,6 +117,10 @@ export async function onInteractionCreate(interaction: Interaction) {
   }
   // 1. Gestion des composants d'interaction (Boutons, Menus déroulants, Modals)
   if (interaction.isAnySelectMenu()) {
+    if (interaction.customId.startsWith('srv:') && interaction.isStringSelectMenu()) {
+      await safeHandleComponent(interaction, 'server_page', () => handleServerSelect(interaction));
+      return;
+    }
     if (interaction.customId.startsWith('guild_join:')) {
       await safeHandleComponent(interaction, 'guild_join_select', () => guildJoinService.handleSelect(interaction as any));
       return;

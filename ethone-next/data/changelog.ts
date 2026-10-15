@@ -57102,6 +57102,59 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_109_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_109_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_109_de);
 
+const v1_75_110_fr: ChangelogEntry = {
+  version: "v1.75.110",
+  date: "2026-10-15",
+  title: "Commande /server et compteur de badges",
+  items: [
+    "Nouvelle commande /server avec 4 pages : Aperçu, Membres, Salons & rôles et Badges.",
+    "La page Badges compte les vrais badges Discord des membres (Staff, Partenaire, HypeSquad, Bug Hunter, Early Supporter, développeurs, modérateur certifié) et chaque palier de boost, de 1 mois à 2 ans.",
+    "Nouvel onglet Badges dans la page Serveur du dashboard, avec relance de l'analyse.",
+    "Le Nitro n'est compté que via l'avatar animé, et le badge Quête n'est pas visible : Discord ne les montre pas aux bots.",
+  ],
+};
+
+const v1_75_110_en: ChangelogEntry = {
+  version: "v1.75.110",
+  date: "2026-10-15",
+  title: "/server command and badge counter",
+  items: [
+    "New /server command with 4 pages: Overview, Members, Channels & roles and Badges.",
+    "The Badges page counts members' real Discord badges (Staff, Partner, HypeSquad, Bug Hunter, Early Supporter, developers, certified moderator) and every boost tier, from 1 month to 2 years.",
+    "New Badges tab on the dashboard Server page, with a rescan button.",
+    "Nitro is only counted via animated avatars, and the Quest badge isn't visible: Discord doesn't expose them to bots.",
+  ],
+};
+
+const v1_75_110_es: ChangelogEntry = {
+  version: "v1.75.110",
+  date: "2026-10-15",
+  title: "Comando /server y contador de insignias",
+  items: [
+    "Nuevo comando /server con 4 páginas: Resumen, Miembros, Canales y roles e Insignias.",
+    "La página Insignias cuenta las insignias reales de Discord de los miembros (Staff, Partner, HypeSquad, Bug Hunter, Early Supporter, desarrolladores, moderador certificado) y cada nivel de boost, de 1 mes a 2 años.",
+    "Nueva pestaña Insignias en la página Servidor del panel, con nuevo análisis.",
+    "Nitro solo se cuenta por el avatar animado y la insignia de Misión no es visible: Discord no las muestra a los bots.",
+  ],
+};
+
+const v1_75_110_de: ChangelogEntry = {
+  version: "v1.75.110",
+  date: "2026-10-15",
+  title: "/server-Befehl und Abzeichen-Zähler",
+  items: [
+    "Neuer /server-Befehl mit 4 Seiten: Übersicht, Mitglieder, Kanäle & Rollen und Abzeichen.",
+    "Die Abzeichen-Seite zählt die echten Discord-Abzeichen der Mitglieder (Staff, Partner, HypeSquad, Bug Hunter, Early Supporter, Entwickler, zertifizierter Moderator) und jede Boost-Stufe von 1 Monat bis 2 Jahre.",
+    "Neuer Abzeichen-Tab auf der Server-Seite des Dashboards, mit erneutem Scan.",
+    "Nitro wird nur über animierte Avatare gezählt, das Quest-Abzeichen ist nicht sichtbar: Discord zeigt sie Bots nicht.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_110_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_110_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_110_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_110_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

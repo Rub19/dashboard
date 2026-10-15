@@ -17,6 +17,7 @@ import { createSettingsRouter } from './routes/settingsRoutes.js';
 import { createModerationRouter } from './routes/moderationRoutes.js';
 import { createWelcomeRouter } from './routes/welcomeRoutes.js';
 import { createTicketRouter } from './routes/ticketRoutes.js';
+import { createBadgeRouter } from './routes/badgeRoutes.js';
 import { createLogRouter } from './routes/logRoutes.js';
 import { createRoleRouter } from './routes/roleRoutes.js';
 import { createSecurityRouter } from './routes/securityRoutes.js';
@@ -187,6 +188,7 @@ export function startWebServer(client: Client): http.Server {
     createGuildAuthMiddleware(client),
     createWelcomeRouter(client)
   );
+  app.use('/api/guilds/:guildId/badges', authMiddleware, createGuildAuthMiddleware(client), createBadgeRouter(client));
   app.use(
     '/api/guilds/:guildId/tickets',
     authMiddleware,

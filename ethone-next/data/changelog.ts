@@ -56622,6 +56622,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_99_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_99_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_99_de);
 
+const v1_75_100_fr: ChangelogEntry = {
+  version: "v1.75.100",
+  date: "2026-10-15",
+  title: "Assistant IA : modèle Groq à jour",
+  items: [
+    "Le modèle utilisé jusqu'ici n'existe plus chez Groq : le bot passe sur openai/gpt-oss-120b",
+  ],
+};
+
+const v1_75_100_en: ChangelogEntry = {
+  version: "v1.75.100",
+  date: "2026-10-15",
+  title: "AI assistant: current Groq model",
+  items: [
+    "The previous model was retired by Groq: the bot now uses openai/gpt-oss-120b",
+  ],
+};
+
+const v1_75_100_es: ChangelogEntry = {
+  version: "v1.75.100",
+  date: "2026-10-15",
+  title: "Asistente IA: modelo de Groq actualizado",
+  items: [
+    "Groq retiró el modelo anterior: el bot usa ahora openai/gpt-oss-120b",
+  ],
+};
+
+const v1_75_100_de: ChangelogEntry = {
+  version: "v1.75.100",
+  date: "2026-10-15",
+  title: "KI-Assistent: aktuelles Groq-Modell",
+  items: [
+    "Groq hat das bisherige Modell eingestellt: Der Bot nutzt jetzt openai/gpt-oss-120b",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_100_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_100_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_100_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_100_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

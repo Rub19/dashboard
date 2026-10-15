@@ -38,6 +38,8 @@ export interface AICompletionResult {
   suggestedActions?: string[];
 }
 
+const GROQ_DEFAULT_MODEL = 'openai/gpt-oss-120b';
+
 export class AIProviderService {
   /**
    * Génère une complétion via le provider configuré ou le moteur contextuel interne.
@@ -46,7 +48,7 @@ export class AIProviderService {
    * rétrocompatibilité avec les call-sites existants (tests playground, etc.).
    */
   public static withAvailableProvider(settings: AISettings): AISettings {
-    return settings.provider === 'BUILTIN' && process.env.GROQ_API_KEY ? { ...settings, provider: 'GROQ' } : settings;
+    return settings.provider === 'BUILTIN' && process.env.GROQ_API_KEY ? { ...settings, provider: 'GROQ', model: process.env.GROQ_MODEL || GROQ_DEFAULT_MODEL } : settings;
   }
 
   public static async generate(rawParams: GenerateCompletionParams): Promise<AICompletionResult> {
@@ -178,7 +180,8 @@ export class AIProviderService {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            model: settings.model && !settings.model.includes('/') ? settings.model : 'llama-3.3-70b-versatile',
+            model: settings.model || GROQ_DEFAULT_MODEL,
+            ...((settings.model || GROQ_DEFAULT_MODEL).startsWith('openai/gpt-oss') ? { reasoning_effort: 'low' } : {}),
             messages: [
               { role: 'system', content: `${systemPrompt}\n\n${knowledgeContext}` },
               ...messages.map((m) => ({ role: m.role, content: m.content })),
@@ -200,7 +203,7 @@ export class AIProviderService {
               tokensUsed: Number(data.usage?.total_tokens) || 0,
               promptTokens: Number(data.usage?.prompt_tokens) || undefined,
               completionTokens: Number(data.usage?.completion_tokens) || undefined,
-              model: data.model || 'llama-3.3-70b-versatile',
+              model: data.model || GROQ_DEFAULT_MODEL,
             };
           }
         } else {

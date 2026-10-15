@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.100 — 2026-10-15
+
+**Assistant IA : modèle Groq à jour**
+
+- Le modèle utilisé jusqu'ici n'existe plus chez Groq : le bot passe sur openai/gpt-oss-120b
+
 ## v1.75.99 — 2026-10-15
 
 **Assistant IA branché sur Groq**

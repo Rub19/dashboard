@@ -1,5 +1,13 @@
 [
   {
+    "version": "v1.75.100",
+    "date": "2026-10-15",
+    "title": "Assistant IA : modèle Groq à jour",
+    "items": [
+      "Le modèle utilisé jusqu'ici n'existe plus chez Groq : le bot passe sur openai/gpt-oss-120b"
+    ]
+  },
+  {
     "version": "v1.75.99",
     "date": "2026-10-15",
     "title": "Assistant IA branché sur Groq",
@@ -629,14 +637,6 @@
       "Sécurité : un code à 6 chiffres est envoyé à la boîte de destination ; rien n'est transféré tant que le code n'est pas saisi (15 minutes, 5 essais, 5 redirections au maximum).",
       "Les mails classés en spam ou bloqués ne sont jamais transférés ; les pièces jointes suivent jusqu'à 10 Mo, et répondre depuis Gmail répond directement à l'expéditeur.",
       "Chaque redirection peut être mise en pause ou supprimée."
-    ]
-  },
-  {
-    "version": "v1.55.97",
-    "date": "2026-10-09",
-    "title": "Économie et Jeux : finitions",
-    "items": [
-      "Le symbole de la monnaie est plus discret dans les tuiles chiffrées."
     ]
   }
 ]

@@ -1,4 +1,4 @@
-# ETHONE — passation & nouveautés (2026-10-15, version 1.75.92)
+# ETHONE — passation & nouveautés (2026-10-15, version 1.75.93)
 
 ## Projet
 - `ethone-next/` : site Next.js statique (ethone.dev, Cloudflare Pages, déploiement auto au push sur `main`).
@@ -26,7 +26,10 @@
 
 ---
 
-## Nouveautés majeures & Réalisations récentes (v1.75.83 → v1.75.92)
+## Nouveautés majeures & Réalisations récentes (v1.75.83 → v1.75.93)
+
+### Vitrine bot : cartes Plateformes fidèles (v1.75.93)
+- `PLATFORM_CONFIGS` (BotLanding.tsx) réécrit d'après les sous-commandes réelles : Instagram/X/TikTok = recherche + aperçu (aucun suivi de flux), Pinterest = recherche + lien Google Lens, Last.fm sans leaderboard, Twitch = alertes Twitch/YouTube/Kick. Les `platforms.items` de `botLandingI18n.ts` ne sont pas rendus.
 
 ### Vitrine bot : mobile, partage et textes (v1.75.92)
 - Grilles en `grid-cols-1` sous `sm` (le contenu min-content élargissait la colonne à 392px sur 375px) et libellé « Ajouter Etho » masqué sous 400px (le bouton menu sortait de l'écran).

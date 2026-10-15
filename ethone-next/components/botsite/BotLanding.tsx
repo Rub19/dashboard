@@ -957,10 +957,10 @@ const PLATFORM_CONFIGS: PlatformConfigItem[] = [
       </svg>
     ),
     desc: {
-      fr: <>Recherchez des <span className="font-medium text-[#E1306C]">Profils</span>. Suivez les <span className="font-medium text-[#E1306C]">Flux</span>. Alertes dans vos salons sur les <span className="font-medium text-[#E1306C]">Nouveaux Posts</span>.</>,
-      en: <>Search, View <span className="font-medium text-[#E1306C]">Profiles</span>. Track <span className="font-medium text-[#E1306C]">Feeds</span>. Notify any channel about <span className="font-medium text-[#E1306C]">New Posts</span>.</>,
-      es: <>Busca <span className="font-medium text-[#E1306C]">Perfiles</span>. Sigue los <span className="font-medium text-[#E1306C]">Feeds</span>. Notifica cualquier canal sobre <span className="font-medium text-[#E1306C]">Nuevos Posts</span>.</>,
-      de: <><span className="font-medium text-[#E1306C]">Profile</span> durchsuchen. <span className="font-medium text-[#E1306C]">Feeds</span> verfolgen. Alerts bei <span className="font-medium text-[#E1306C]">Neuen Beiträgen</span>.</>,
+      fr: <>Recherche des <span className="font-medium text-[#E1306C]">profils</span> et affiche une <span className="font-medium text-[#E1306C]">publication</span> directement dans Discord.</>,
+      en: <>Search <span className="font-medium text-[#E1306C]">profiles</span> and preview any <span className="font-medium text-[#E1306C]">post</span> right inside Discord.</>,
+      es: <>Busca <span className="font-medium text-[#E1306C]">perfiles</span> y muestra una <span className="font-medium text-[#E1306C]">publicación</span> directamente en Discord.</>,
+      de: <>Suche <span className="font-medium text-[#E1306C]">Profile</span> und zeige einen <span className="font-medium text-[#E1306C]">Beitrag</span> direkt in Discord an.</>,
     },
   },
   {
@@ -975,10 +975,10 @@ const PLATFORM_CONFIGS: PlatformConfigItem[] = [
       </svg>
     ),
     desc: {
-      fr: <>Recherchez des <span className="font-medium text-white">Profils</span>. Suivez les <span className="font-medium text-white">Flux</span>. Alertes en direct pour <span className="font-medium text-white">Nouveaux Posts & Retweets</span>.</>,
-      en: <>Search, View <span className="font-medium text-white">Profiles</span>. Track <span className="font-medium text-white">Feeds</span>. Notify any channel about <span className="font-medium text-white">New Posts, Retweets</span>.</>,
-      es: <>Busca <span className="font-medium text-white">Perfiles</span>. Sigue los <span className="font-medium text-white">Feeds</span>. Notifica cualquier canal sobre <span className="font-medium text-white">Posts y Retweets</span>.</>,
-      de: <><span className="font-medium text-white">Profile</span> durchsuchen. <span className="font-medium text-white">Feeds</span> verfolgen. Alerts bei <span className="font-medium text-white">Posts & Retweets</span>.</>,
+      fr: <>Recherche des <span className="font-medium text-white">profils</span> et affiche un <span className="font-medium text-white">post X</span> directement dans Discord.</>,
+      en: <>Search <span className="font-medium text-white">profiles</span> and preview any <span className="font-medium text-white">X post</span> right inside Discord.</>,
+      es: <>Busca <span className="font-medium text-white">perfiles</span> y muestra un <span className="font-medium text-white">post de X</span> directamente en Discord.</>,
+      de: <>Suche <span className="font-medium text-white">Profile</span> und zeige einen <span className="font-medium text-white">X-Post</span> direkt in Discord an.</>,
     },
   },
   {
@@ -993,10 +993,10 @@ const PLATFORM_CONFIGS: PlatformConfigItem[] = [
       </svg>
     ),
     desc: {
-      fr: <>Recherche <span className="font-medium text-[#E60023]">Lens Visuelle</span> sur images. Parcourez les <span className="font-medium text-[#E60023]">Profils</span>. Intégrez le <span className="font-medium text-[#E60023]">Flux en direct</span> et plus de <span className="font-medium text-[#E60023]">5+</span> options.</>,
-      en: <>Use <span className="font-medium text-[#E60023]">Lens Search</span> on images. Search, View <span className="font-medium text-[#E60023]">Profiles</span>. Embed <span className="font-medium text-[#E60023]">Live Feed</span> into any channel. and <span className="font-medium text-[#E60023]">5+</span> more.</>,
-      es: <>Usa <span className="font-medium text-[#E60023]">Lens</span> en imágenes. Explora <span className="font-medium text-[#E60023]">Perfiles</span>. Integra <span className="font-medium text-[#E60023]">Feed en vivo</span> y <span className="font-medium text-[#E60023]">5+</span> más.</>,
-      de: <>Visuelle <span className="font-medium text-[#E60023]">Lens-Suche</span> auf Bildern. <span className="font-medium text-[#E60023]">Profile</span> ansehen. <span className="font-medium text-[#E60023]">Live-Feed</span> einbetten und <span className="font-medium text-[#E60023]">5+</span> mehr.</>,
+      fr: <>Recherche d&apos;<span className="font-medium text-[#E60023]">épingles</span>, de profils et de tableaux, avec un lien direct vers <span className="font-medium text-[#E60023]">Google Lens</span>.</>,
+      en: <>Search <span className="font-medium text-[#E60023]">pins</span>, profiles and boards, with a direct <span className="font-medium text-[#E60023]">Google Lens</span> link.</>,
+      es: <>Busca <span className="font-medium text-[#E60023]">pines</span>, perfiles y tableros, con enlace directo a <span className="font-medium text-[#E60023]">Google Lens</span>.</>,
+      de: <>Suche <span className="font-medium text-[#E60023]">Pins</span>, Profile und Pinnwände, mit direktem Link zu <span className="font-medium text-[#E60023]">Google Lens</span>.</>,
     },
   },
   {
@@ -1011,10 +1011,10 @@ const PLATFORM_CONFIGS: PlatformConfigItem[] = [
       </svg>
     ),
     desc: {
-      fr: <>Recherchez des <span className="font-medium text-[#FF5500]">Morceaux</span>. Suivez les <span className="font-medium text-[#FF5500]">Flux</span>. Diffusez en vocal et alertes <span className="font-medium text-[#FF5500]">Nouveaux Titres</span>.</>,
-      en: <>Search <span className="font-medium text-[#FF5500]">Songs</span>. Track <span className="font-medium text-[#FF5500]">Feeds</span>. Notify any channel about <span className="font-medium text-[#FF5500]">New Posts</span>.</>,
-      es: <>Busca <span className="font-medium text-[#FF5500]">Canciones</span>. Sigue los <span className="font-medium text-[#FF5500]">Feeds</span>. Notifica cualquier canal sobre <span className="font-medium text-[#FF5500]">Nuevos Posts</span>.</>,
-      de: <><span className="font-medium text-[#FF5500]">Tracks</span> suchen. <span className="font-medium text-[#FF5500]">Feeds</span> verfolgen. Alerts bei <span className="font-medium text-[#FF5500]">Neuen Songs</span>.</>,
+      fr: <>Recherche des <span className="font-medium text-[#FF5500]">morceaux</span> et joue-les directement dans ton <span className="font-medium text-[#FF5500]">salon vocal</span>.</>,
+      en: <>Search <span className="font-medium text-[#FF5500]">tracks</span> and play them straight into your <span className="font-medium text-[#FF5500]">voice channel</span>.</>,
+      es: <>Busca <span className="font-medium text-[#FF5500]">canciones</span> y reprodúcelas directamente en tu <span className="font-medium text-[#FF5500]">canal de voz</span>.</>,
+      de: <>Suche <span className="font-medium text-[#FF5500]">Tracks</span> und spiele sie direkt in deinem <span className="font-medium text-[#FF5500]">Sprachkanal</span> ab.</>,
     },
   },
   {
@@ -1029,10 +1029,10 @@ const PLATFORM_CONFIGS: PlatformConfigItem[] = [
       </svg>
     ),
     desc: {
-      fr: <>Recherchez des <span className="font-medium text-[#00F2FE]">Profils</span>. Suivez les <span className="font-medium text-[#00F2FE]">Créateurs</span>. Recevez des alertes de <span className="font-medium text-[#00F2FE]">Nouvelles Vidéos</span>.</>,
-      en: <>Search <span className="font-medium text-[#00F2FE]">Profiles</span>. Track <span className="font-medium text-[#00F2FE]">Feeds</span>. Notify any channel about <span className="font-medium text-[#00F2FE]">New Posts</span>.</>,
-      es: <>Busca <span className="font-medium text-[#00F2FE]">Perfiles</span>. Sigue <span className="font-medium text-[#00F2FE]">Creadores</span>. Alertas de <span className="font-medium text-[#00F2FE]">Nuevos Vídeos</span>.</>,
-      de: <><span className="font-medium text-[#00F2FE]">Profile</span> durchsuchen. <span className="font-medium text-[#00F2FE]">Feeds</span> verfolgen. Alerts bei <span className="font-medium text-[#00F2FE]">Neuen Videos</span>.</>,
+      fr: <>Recherche des <span className="font-medium text-[#00F2FE]">profils</span> et affiche les détails d&apos;une <span className="font-medium text-[#00F2FE]">vidéo</span> directement dans Discord.</>,
+      en: <>Search <span className="font-medium text-[#00F2FE]">profiles</span> and preview any <span className="font-medium text-[#00F2FE]">video</span> right inside Discord.</>,
+      es: <>Busca <span className="font-medium text-[#00F2FE]">perfiles</span> y muestra los detalles de un <span className="font-medium text-[#00F2FE]">vídeo</span> en Discord.</>,
+      de: <>Suche <span className="font-medium text-[#00F2FE]">Profile</span> und zeige Details zu einem <span className="font-medium text-[#00F2FE]">Video</span> direkt in Discord an.</>,
     },
   },
   {
@@ -1047,10 +1047,10 @@ const PLATFORM_CONFIGS: PlatformConfigItem[] = [
       </svg>
     ),
     desc: {
-      fr: <>Affichez votre <span className="font-medium text-[#D51007]">Titre actuel & Récents</span>. Explorez <span className="font-medium text-[#D51007]">Artistes & Profils</span>. Suivez les <span className="font-medium text-[#D51007]">Leaderboards</span> et <span className="font-medium text-[#D51007]">10+</span> stats.</>,
-      en: <>View your <span className="font-medium text-[#D51007]">current track, Recent Tracks</span>. Search <span className="font-medium text-[#D51007]">Artists, Profiles</span>. Track <span className="font-medium text-[#D51007]">Leaderboards</span>. and <span className="font-medium text-[#D51007]">10+</span> more.</>,
-      es: <>Mira tu <span className="font-medium text-[#D51007]">Pista actual y Recientes</span>. Busca <span className="font-medium text-[#D51007]">Artistas</span>. Sigue los <span className="font-medium text-[#D51007]">Rankings</span> y <span className="font-medium text-[#D51007]">10+</span> más.</>,
-      de: <>Aktueller <span className="font-medium text-[#D51007]">Track & Kürzlich gehört</span>. <span className="font-medium text-[#D51007]">Künstler & Profile</span> suchen. <span className="font-medium text-[#D51007]">Leaderboards</span> und <span className="font-medium text-[#D51007]">10+</span> mehr.</>,
+      fr: <>Affiche ton <span className="font-medium text-[#D51007]">titre en cours</span>, tes écoutes récentes, tes <span className="font-medium text-[#D51007]">tops artistes, titres et albums</span> et compare tes goûts.</>,
+      en: <>Show your <span className="font-medium text-[#D51007]">now playing</span>, recent tracks, your <span className="font-medium text-[#D51007]">top artists, tracks and albums</span> and compare tastes.</>,
+      es: <>Muestra tu <span className="font-medium text-[#D51007]">canción actual</span>, tus escuchas recientes, tus <span className="font-medium text-[#D51007]">tops de artistas, canciones y álbumes</span> y compara gustos.</>,
+      de: <>Zeigt deinen <span className="font-medium text-[#D51007]">aktuellen Titel</span>, zuletzt gehörte Tracks, deine <span className="font-medium text-[#D51007]">Top-Künstler, -Titel und -Alben</span> und vergleicht Geschmäcker.</>,
     },
   },
   {
@@ -1065,10 +1065,10 @@ const PLATFORM_CONFIGS: PlatformConfigItem[] = [
       </svg>
     ),
     desc: {
-      fr: <>Diffusez en <span className="font-medium text-[#FF0000]">Audio HD</span>. Recherchez <span className="font-medium text-[#FF0000]">Vidéos & Playlists</span>. Écoutez dans n&apos;importe quel <span className="font-medium text-[#FF0000]">Salon Vocal</span>.</>,
-      en: <>Stream <span className="font-medium text-[#FF0000]">Hi-Fi Audio</span>. Search <span className="font-medium text-[#FF0000]">Videos, Playlists</span>. Listen in any <span className="font-medium text-[#FF0000]">Voice Channel</span>.</>,
-      es: <>Transmite en <span className="font-medium text-[#FF0000]">Audio HD</span>. Busca <span className="font-medium text-[#FF0000]">Vídeos & Listas</span>. Escucha en cualquier <span className="font-medium text-[#FF0000]">Canal de Voz</span>.</>,
-      de: <><span className="font-medium text-[#FF0000]">Hi-Fi Audio</span> streamen. Videos & Playlists <span className="font-medium text-[#FF0000]">durchsuchen</span>. Höre in jedem <span className="font-medium text-[#FF0000]">Sprachkanal</span>.</>,
+      fr: <>Colle un lien ou une <span className="font-medium text-[#FF0000]">playlist YouTube</span> : Etho retrouve les titres et les joue en <span className="font-medium text-[#FF0000]">vocal</span>.</>,
+      en: <>Paste a link or a <span className="font-medium text-[#FF0000]">YouTube playlist</span>: Etho finds the tracks and plays them in <span className="font-medium text-[#FF0000]">voice</span>.</>,
+      es: <>Pega un enlace o una <span className="font-medium text-[#FF0000]">playlist de YouTube</span>: Etho encuentra las canciones y las reproduce en <span className="font-medium text-[#FF0000]">voz</span>.</>,
+      de: <>Füge einen Link oder eine <span className="font-medium text-[#FF0000]">YouTube-Playlist</span> ein: Etho findet die Titel und spielt sie im <span className="font-medium text-[#FF0000]">Sprachkanal</span>.</>,
     },
   },
   {
@@ -1083,10 +1083,10 @@ const PLATFORM_CONFIGS: PlatformConfigItem[] = [
       </svg>
     ),
     desc: {
-      fr: <>Alertes <span className="font-medium text-[#9146FF]">En direct</span>. Suivez vos <span className="font-medium text-[#9146FF]">Streamers favoris</span>. Notifications personnalisées et <span className="font-medium text-[#9146FF]">Embeds</span>.</>,
-      en: <>Instant <span className="font-medium text-[#9146FF]">Live Alerts</span>. Track favorite <span className="font-medium text-[#9146FF]">Streamers</span>. Custom notification <span className="font-medium text-[#9146FF]">Embeds</span>.</>,
-      es: <>Alertas en <span className="font-medium text-[#9146FF]">Vivo</span>. Sigue a tus <span className="font-medium text-[#9146FF]">Streamers</span>. Notificaciones con <span className="font-medium text-[#9146FF]">Embeds</span>.</>,
-      de: <>Sofortige <span className="font-medium text-[#9146FF]">Live-Alerts</span>. Lieblings-<span className="font-medium text-[#9146FF]">Streamer</span> verfolgen. Anpassbare <span className="font-medium text-[#9146FF]">Embed-Benachrichtigungen</span>.</>,
+      fr: <><span className="font-medium text-[#9146FF]">Alertes en direct</span> quand tes streamers lancent un live sur <span className="font-medium text-[#9146FF]">Twitch, YouTube ou Kick</span>.</>,
+      en: <><span className="font-medium text-[#9146FF]">Live alerts</span> when your streamers go live on <span className="font-medium text-[#9146FF]">Twitch, YouTube or Kick</span>.</>,
+      es: <><span className="font-medium text-[#9146FF]">Alertas en directo</span> cuando tus streamers empiezan en <span className="font-medium text-[#9146FF]">Twitch, YouTube o Kick</span>.</>,
+      de: <><span className="font-medium text-[#9146FF]">Live-Benachrichtigungen</span>, wenn deine Streamer auf <span className="font-medium text-[#9146FF]">Twitch, YouTube oder Kick</span> live gehen.</>,
     },
   },
 ];

@@ -1,5 +1,17 @@
 [
   {
+    "version": "v1.75.93",
+    "date": "2026-10-15",
+    "title": "Plateformes du bot décrites fidèlement",
+    "items": [
+      "Instagram, X et TikTok : recherche de profils et aperçu de posts (pas d'alertes automatiques)",
+      "SoundCloud et YouTube : recherche et lecture en vocal",
+      "Twitch : alertes de live Twitch, YouTube et Kick",
+      "Last.fm : titre en cours, tops et comparaison de goûts (sans classement inventé)",
+      "Pinterest : recherche d'épingles avec lien Google Lens"
+    ]
+  },
+  {
     "version": "v1.75.92",
     "date": "2026-10-15",
     "title": "Vitrine du bot corrigée sur mobile",
@@ -630,15 +642,6 @@
       "Bouclier de l'owner refait au format de la console, sans badges décoratifs.",
       "Jeux : si l'économie est coupée, la page le dit au lieu de proposer des boutons qui échouent.",
       "Pages de modules : les badges ronds deviennent des étiquettes discrètes."
-    ]
-  },
-  {
-    "version": "v1.55.90",
-    "date": "2026-10-09",
-    "title": "Habitudes : finitions",
-    "items": [
-      "L'anneau du jour trace sa coche quand toutes les habitudes sont faites.",
-      "Changement de vue (Grille, Semaine, Liste) plus rapide."
     ]
   }
 ]

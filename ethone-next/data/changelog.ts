@@ -56291,6 +56291,63 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_92_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_92_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_92_de);
 
+const v1_75_93_fr: ChangelogEntry = {
+  version: "v1.75.93",
+  date: "2026-10-15",
+  title: "Plateformes du bot décrites fidèlement",
+  items: [
+    "Instagram, X et TikTok : recherche de profils et aperçu de posts (pas d'alertes automatiques)",
+    "SoundCloud et YouTube : recherche et lecture en vocal",
+    "Twitch : alertes de live Twitch, YouTube et Kick",
+    "Last.fm : titre en cours, tops et comparaison de goûts (sans classement inventé)",
+    "Pinterest : recherche d'épingles avec lien Google Lens",
+  ],
+};
+
+const v1_75_93_en: ChangelogEntry = {
+  version: "v1.75.93",
+  date: "2026-10-15",
+  title: "Bot platforms described accurately",
+  items: [
+    "Instagram, X and TikTok: profile search and post previews (no automatic alerts)",
+    "SoundCloud and YouTube: search and play in voice",
+    "Twitch: live alerts for Twitch, YouTube and Kick",
+    "Last.fm: now playing, tops and taste comparison (no made-up leaderboard)",
+    "Pinterest: pin search with a Google Lens link",
+  ],
+};
+
+const v1_75_93_es: ChangelogEntry = {
+  version: "v1.75.93",
+  date: "2026-10-15",
+  title: "Plataformas del bot descritas con precisión",
+  items: [
+    "Instagram, X y TikTok: búsqueda de perfiles y vista previa de posts (sin alertas automáticas)",
+    "SoundCloud y YouTube: búsqueda y reproducción en voz",
+    "Twitch: alertas de directo en Twitch, YouTube y Kick",
+    "Last.fm: canción actual, tops y comparación de gustos",
+    "Pinterest: búsqueda de pines con enlace a Google Lens",
+  ],
+};
+
+const v1_75_93_de: ChangelogEntry = {
+  version: "v1.75.93",
+  date: "2026-10-15",
+  title: "Bot-Plattformen korrekt beschrieben",
+  items: [
+    "Instagram, X und TikTok: Profilsuche und Beitragsvorschau (keine automatischen Alerts)",
+    "SoundCloud und YouTube: Suche und Wiedergabe im Sprachkanal",
+    "Twitch: Live-Benachrichtigungen für Twitch, YouTube und Kick",
+    "Last.fm: aktueller Titel, Tops und Geschmacksvergleich",
+    "Pinterest: Pin-Suche mit Google-Lens-Link",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_93_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_93_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_93_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_93_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

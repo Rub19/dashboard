@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.93 — 2026-10-15
+
+**Plateformes du bot décrites fidèlement**
+
+- Instagram, X et TikTok : recherche de profils et aperçu de posts (pas d'alertes automatiques)
+- SoundCloud et YouTube : recherche et lecture en vocal
+- Twitch : alertes de live Twitch, YouTube et Kick
+- Last.fm : titre en cours, tops et comparaison de goûts (sans classement inventé)
+- Pinterest : recherche d'épingles avec lien Google Lens
+
 ## v1.75.92 — 2026-10-15
 
 **Vitrine du bot corrigée sur mobile**

@@ -229,11 +229,11 @@ function BadgesTab({ guildId }: { guildId: string }) {
         <motion.li
           key={b.key}
           variants={staggerItem}
-          className={cn("flex items-center gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-hover)] px-3 py-2.5", b.count === 0 && "opacity-40")}
+          className="flex items-center gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-hover)] px-3 py-2.5"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={b.iconUrl} alt="" className="h-7 w-7 shrink-0 object-contain" />
-          <div className="min-w-0">
+          <img src={b.iconUrl} alt="" className={cn("h-7 w-7 shrink-0 object-contain", b.count === 0 && "opacity-30 grayscale")} />
+          <div className={cn("min-w-0", b.count === 0 && "opacity-40")}>
             <p className="truncate text-[12px] font-semibold text-[var(--text-primary)]">{b.label}</p>
             <p className="font-mono text-sm font-bold tabular-nums text-[var(--text-primary)]">×{fmt(b.count)}</p>
           </div>

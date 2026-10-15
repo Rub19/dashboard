@@ -34,7 +34,7 @@ export default function RiotTrackerConnectModal({
   isEn,
 }: RiotTrackerConnectModalProps) {
   const { success, error: showError } = useToast();
-  const { settings, update } = useSettings();
+  const { settings } = useSettings();
 
   const isEnglish = typeof isEn === "boolean"
     ? isEn
@@ -60,9 +60,7 @@ export default function RiotTrackerConnectModal({
     return settings.liveTrackerRiotTag || "";
   });
   const [region, setRegion] = useState("eu");
-  const [apiKey, setApiKey] = useState(settings.valorantApiKey || "");
-  const [testingApi, setTestingApi] = useState(false);
-  const [apiLatency, setApiLatency] = useState<number | null>(null);
+  const [apiKey, setApiKey] = useState(() => (typeof window !== "undefined" ? localStorage.getItem("ethone:cred:riot:riotApiKey") || "" : ""));
 
   useEffect(() => {
     if (!isOpen) return;
@@ -134,18 +132,18 @@ export default function RiotTrackerConnectModal({
   };
 
   const handleTestApi = () => {
-    setTestingApi(true);
-    const start = performance.now();
-    setTimeout(() => {
-      const duration = Math.round(performance.now() - start + 24);
-      setApiLatency(duration);
-      setTestingApi(false);
-      success(isEnglish ? `API Connected · Latency ${duration}ms · Quota OK` : `API Connectée · Latence ${duration}ms · Quota OK`);
-    }, 450);
+    if (/^RGAPI-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(apiKey.trim())) {
+      success(isEnglish ? "Key format is valid (RGAPI-…)" : "Format de clé valide (RGAPI-…)");
+    } else {
+      showError(isEnglish ? "Invalid key: expected RGAPI-xxxxxxxx-…" : "Clé invalide : format attendu RGAPI-xxxxxxxx-…");
+    }
   };
 
   const handleSaveApiKey = () => {
-    update({ valorantApiKey: apiKey.trim() });
+    if (typeof window !== "undefined") {
+      if (apiKey.trim()) localStorage.setItem("ethone:cred:riot:riotApiKey", apiKey.trim());
+      else localStorage.removeItem("ethone:cred:riot:riotApiKey");
+    }
     success(isEnglish ? "API key saved for the tracker" : "Clé API enregistrée pour le tracker");
   };
 
@@ -435,12 +433,10 @@ export default function RiotTrackerConnectModal({
               <button
                 type="button"
                 onClick={handleTestApi}
-                disabled={testingApi}
                 className="flex items-center gap-1.5 rounded-xl border border-cyan-500/30 bg-cyan-500/10 px-3 py-1.5 text-xs font-bold text-cyan-300 hover:bg-cyan-500/20 active:scale-95 transition-all cursor-pointer"
               >
-                {testingApi ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Radio className="h-3.5 w-3.5" />}
-                <span>{isEnglish ? "Test Connectivity" : "Tester la Connectivité"}</span>
-                {apiLatency !== null && <span className="font-mono text-[10px]">({apiLatency}ms)</span>}
+                <Radio className="h-3.5 w-3.5" />
+                <span>{isEnglish ? "Check key" : "Vérifier la clé"}</span>
               </button>
 
               <Button type="button" variant="secondary" size="sm" onClick={onClose}>

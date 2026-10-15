@@ -1,4 +1,4 @@
-# ETHONE — passation & nouveautés (2026-10-15, version 1.75.88)
+# ETHONE — passation & nouveautés (2026-10-15, version 1.75.89)
 
 ## Projet
 - `ethone-next/` : site Next.js statique (ethone.dev, Cloudflare Pages, déploiement auto au push sur `main`).
@@ -26,7 +26,13 @@
 
 ---
 
-## Nouveautés majeures & Réalisations récentes (v1.75.83 → v1.75.88)
+## Nouveautés majeures & Réalisations récentes (v1.75.83 → v1.75.89)
+
+### Tracker Riot fiabilisé & dépendances (v1.75.89)
+- TypeScript à **0 erreur** et `ignoreBuildErrors` retiré de `next.config.ts` : le build échoue désormais sur une erreur de type.
+- Coach tactique : `notify()` (inexistant) remplacé par `show()` (reset/copie plantaient), résumés de parties lisant `mapName` / `result`.
+- Modale Riot : faux test de latence remplacé par une vérification du format `RGAPI-…` ; la clé est stockée dans `localStorage` `ethone:cred:riot:riotApiKey` (là où `lib/api.ts` la lit) au lieu d'un champ `valorantApiKey` inexistant dans les settings.
+- Dependabot : sharp 0.35.5 (override dans `worker/pnpm-workspace.yaml`), overrides `postcss-selector-parser` / `source-map-js` dans `discord-bot/web`.
 
 ### Présence du bot sans chaîne imposée (v1.75.88)
 - Plus aucun lien Twitch par défaut (site et bot) : le Mode Streamer exige un lien http(s) saisi par l'admin, sinon la présence retombe en « Joue à ».
@@ -254,7 +260,7 @@
 ## État des tests & Qualité au 2026-10-15
 - Tests unitaires Next.js : **385/385 passent** (57 suites).
 - Lint : **0 erreur, 138 avertissements** (surtout `<img>` dans les trackers et variables inutilisées).
-- TypeScript : **18 erreurs connues** dans `components/RiotGamingHome.tsx`, `components/tracker/RiotTrackerConnectModal.tsx` et `components/tracker/TacticalCoachChatView.tsx` (types Riot désalignés, `NotifyApi` appelé comme fonction). Le build passe car `next.config` a `ignoreBuildErrors: true` : à corriger avant de retirer ce flag.
+- TypeScript : **0 erreur** (`npx tsc --noEmit -p .`), vérifié aussi par `npm run build` (plus de `ignoreBuildErrors`).
 - Audits de sécurité : `audit-security.mjs` et `precommit-upload-check.mjs` à lancer depuis la racine avant chaque commit.
 
 ---
@@ -267,5 +273,7 @@
    - Contrôler sur petits écrans (< 390px) que le menu d'onglets mobiles de la console (`MobileTabs`) affiche lisiblement tous les blocs sans débordement horizontal.
 3. **Optimisation des balises `<img>` restantes** :
    - Avertissements du linter sur des balises `<img>` dans les trackers de jeux (LoL, Valorant) : les migrer vers `ClientImage` ou `next/image`.
-4. **Surveillance & Maintenance VPS** :
+4. **Ancien dashboard Vite `discord-bot/web`** :
+   - Jamais buildé ni servi sur le VPS (pas de `web/dist`), remplacé par ethone-next. Il garde une alerte `braces` sans correctif (via tailwind 3) : à supprimer avec le bloc `webDistPath` de `discord-bot/src/server/index.ts`.
+5. **Surveillance & Maintenance VPS** :
    - Vérifier périodiquement l'état du bot via `pm2 logs ethone-bot` et les sauvegardes automatiques dans Supabase `bot-backups`.

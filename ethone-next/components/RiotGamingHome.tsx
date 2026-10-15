@@ -237,7 +237,7 @@ export default function RiotGamingHome() {
   const filteredValorantMatches = useMemo(() => {
     if (selectedQueue === "all") return valorantMatches;
     return valorantMatches.filter((m) => {
-      const q = (m.metadata?.queue || m.metadata?.modeName || "").toLowerCase();
+      const q = (m.metadata?.modeName || "").toLowerCase();
       if (selectedQueue === "competitive") return q.includes("comp");
       if (selectedQueue === "unrated") return q.includes("unrated") || q.includes("non class");
       if (selectedQueue === "swiftplay") return q.includes("swift");
@@ -285,7 +285,7 @@ export default function RiotGamingHome() {
                     localStorage.getItem("ethone:cred:riot:apiKey")
                   : null;
               if (localKey) {
-                return fetchLolMatchesDirect(cleanName, cleanTag, "all", localKey, 0).catch(() => []);
+                return fetchLolMatchesDirect(cleanName, cleanTag, "all", localKey).catch(() => []);
               }
               return [];
             }),
@@ -1068,7 +1068,7 @@ export default function RiotGamingHome() {
                         )}
                       </p>
                       <p className="text-[11px] text-neutral-400 font-mono mt-0.5">
-                        ADR : {valorantStats.adr > 0 ? `${valorantStats.adr} dmg/round` : "—"}
+                        ADR : {valorantStats.adr && valorantStats.adr > 0 ? `${valorantStats.adr} dmg/round` : "—"}
                       </p>
                     </div>
                     <div className="h-1.5 w-full rounded-full bg-white/[0.06] overflow-hidden">
@@ -1339,7 +1339,7 @@ export default function RiotGamingHome() {
                   <div className="space-y-2">
                     {filteredValorantMatches.length > 0 ? (
                       (showAllMatches ? filteredValorantMatches : filteredValorantMatches.slice(0, 5)).map((m, idx) => {
-                        const matchId = m.metadata?.matchId || String(idx);
+                        const matchId = m.id || String(idx);
                         const isExpanded = expandedMatchId === matchId;
                         const isWin =
                           m.metadata?.result?.toLowerCase() === "victory" ||
@@ -1645,7 +1645,7 @@ export default function RiotGamingHome() {
                 telemetryMetrics={telemetryMetrics}
                 riotName={riotName}
                 riotTag={riotTag}
-                onSelectTab={selectGameTab}
+                onSelectTab={(tab) => selectGameTab(tab as GameTab)}
                 currentLang={currentLang}
               />
             )}
@@ -2014,12 +2014,12 @@ export default function RiotGamingHome() {
                           const deaths = me?.stats?.deaths ?? 0;
                           const assists = me?.stats?.assists ?? 0;
                           const kda = deaths > 0 ? ((kills + assists) / deaths).toFixed(2) : (kills + assists > 0 ? (kills + assists).toFixed(2) : "0.00");
-                          const champName = me?.character || m.metadata?.agentName;
-                          const champIcon = m.metadata?.agentImageUrl || (champName ? getLolChampionIcon(champName) : null);
+                          const champName = me?.character || m.metadata?.championName;
+                          const champIcon = m.metadata?.championImageUrl || (champName ? getLolChampionIcon(champName) : null);
 
                           return (
                             <motion.div
-                              key={m.metadata?.matchId || idx}
+                              key={m.id || idx}
                               initial={reducedMotion ? false : { opacity: 0, y: 6 }}
                               animate={{ opacity: 1, y: 0 }}
                               transition={{
@@ -2049,7 +2049,7 @@ export default function RiotGamingHome() {
                                 <div className="min-w-0">
                                   <div className="flex items-center gap-2">
                                     <span className="text-xs font-bold text-white truncate">
-                                      {me?.character || m.metadata?.agentName || "Champion"}
+                                      {me?.character || m.metadata?.championName || "Champion"}
                                     </span>
                                     <span
                                       className={cn(

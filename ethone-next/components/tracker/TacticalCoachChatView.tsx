@@ -49,10 +49,10 @@ interface TacticalCoachMessage {
 interface TacticalCoachChatViewProps {
   valorantProfile?: ValorantAccountProfile | null;
   valorantStats?: {
-    kdRatio?: string;
-    winRate?: number | string;
-    combatScoreAcs?: number | string;
-    headshotPercentage?: number | string;
+    kdRatio?: string | number | null;
+    winRate?: number | string | null;
+    combatScoreAcs?: number | string | null;
+    headshotPercentage?: number | string | null;
     tierName?: string;
   };
   valorantMatches?: ValorantMatch[];
@@ -60,12 +60,12 @@ interface TacticalCoachChatViewProps {
     kills?: number;
     deaths?: number;
     assists?: number;
-    adr?: number | string;
+    adr?: number | string | null;
   };
   topValorantAgents?: {
     agentName: string;
     matches: number;
-    winRate?: number;
+    winRate?: number | null;
   }[];
   telemetryMetrics?: {
     totalKills: number;
@@ -462,7 +462,7 @@ export default function TacticalCoachChatView({
   const tr = useMemo(() => getTrackerI18n(currentLang), [currentLang]);
   const isEn = (currentLang || "").toLowerCase().startsWith("en");
   const reducedMotion = useReducedMotion();
-  const { notify } = useToast();
+  const { show: notify } = useToast();
 
   const playerName = valorantProfile?.name || riotName || (isEn ? "Player" : "Joueur");
   const playerTag = (valorantProfile?.tag || riotTag || "").replace(/^#/, "");
@@ -570,8 +570,8 @@ export default function TacticalCoachChatView({
       const kills = me?.stats?.kills ?? seg?.kills?.value ?? 0;
       const deaths = me?.stats?.deaths ?? seg?.deaths?.value ?? 0;
       const assists = me?.stats?.assists ?? seg?.assists?.value ?? 0;
-      const map = m.metadata?.map?.name || (targetLang === "en" ? "Unknown Map" : "Map inconnue");
-      const won = m.metadata?.result?.won
+      const map = m.metadata?.mapName || (targetLang === "en" ? "Unknown Map" : "Map inconnue");
+      const won = m.metadata?.result?.toLowerCase() === "victory"
         ? (targetLang === "en" ? "Win" : "Victoire")
         : (targetLang === "en" ? "Loss" : "Défaite");
       const score = `${m.metadata?.score?.team ?? 0}-${m.metadata?.score?.opponent ?? 0}`;

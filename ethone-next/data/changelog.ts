@@ -56083,6 +56083,63 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_88_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_88_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_88_de);
 
+const v1_75_89_fr: ChangelogEntry = {
+  version: "v1.75.89",
+  date: "2026-10-15",
+  title: "Tracker Riot fiabilisé et dépendances corrigées",
+  items: [
+    "Coach tactique : réinitialiser et copier ne plantent plus",
+    "Coach tactique : les résumés de parties affichent la vraie carte et le vrai résultat",
+    "Clé API Riot : vérification réelle du format au lieu d'une fausse latence, enregistrée là où le tracker la lit",
+    "Historique LoL : champion et icône corrects",
+    "Correctifs de sécurité des dépendances (sharp, postcss-selector-parser, source-map-js)",
+  ],
+};
+
+const v1_75_89_en: ChangelogEntry = {
+  version: "v1.75.89",
+  date: "2026-10-15",
+  title: "Riot tracker hardened and dependencies patched",
+  items: [
+    "Tactical Coach: reset and copy no longer crash",
+    "Tactical Coach: match summaries show the real map and result",
+    "Riot API key: real format check instead of a fake latency, saved where the tracker reads it",
+    "LoL history: correct champion and icon",
+    "Dependency security fixes (sharp, postcss-selector-parser, source-map-js)",
+  ],
+};
+
+const v1_75_89_es: ChangelogEntry = {
+  version: "v1.75.89",
+  date: "2026-10-15",
+  title: "Tracker de Riot más fiable y dependencias corregidas",
+  items: [
+    "Coach táctico: reiniciar y copiar ya no fallan",
+    "Coach táctico: los resúmenes muestran el mapa y resultado reales",
+    "Clave API de Riot: verificación real del formato en lugar de una latencia falsa",
+    "Historial de LoL: campeón e icono correctos",
+    "Correcciones de seguridad de dependencias (sharp, postcss-selector-parser, source-map-js)",
+  ],
+};
+
+const v1_75_89_de: ChangelogEntry = {
+  version: "v1.75.89",
+  date: "2026-10-15",
+  title: "Riot-Tracker stabilisiert und Abhängigkeiten gepatcht",
+  items: [
+    "Taktik-Coach: Zurücksetzen und Kopieren stürzen nicht mehr ab",
+    "Taktik-Coach: Spielzusammenfassungen zeigen echte Karte und Ergebnis",
+    "Riot-API-Schlüssel: echte Formatprüfung statt erfundener Latenz",
+    "LoL-Verlauf: richtiger Champion und richtiges Icon",
+    "Sicherheitsfixes für Abhängigkeiten (sharp, postcss-selector-parser, source-map-js)",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_89_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_89_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_89_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_89_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

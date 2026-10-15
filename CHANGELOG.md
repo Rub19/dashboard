@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.89 — 2026-10-15
+
+**Tracker Riot fiabilisé et dépendances corrigées**
+
+- Coach tactique : réinitialiser et copier ne plantent plus
+- Coach tactique : les résumés de parties affichent la vraie carte et le vrai résultat
+- Clé API Riot : vérification réelle du format au lieu d'une fausse latence, enregistrée là où le tracker la lit
+- Historique LoL : champion et icône corrects
+- Correctifs de sécurité des dépendances (sharp, postcss-selector-parser, source-map-js)
+
 ## v1.75.88 — 2026-10-15
 
 **Présence du bot sans chaîne imposée**

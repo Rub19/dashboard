@@ -1,5 +1,17 @@
 [
   {
+    "version": "v1.75.89",
+    "date": "2026-10-15",
+    "title": "Tracker Riot fiabilisé et dépendances corrigées",
+    "items": [
+      "Coach tactique : réinitialiser et copier ne plantent plus",
+      "Coach tactique : les résumés de parties affichent la vraie carte et le vrai résultat",
+      "Clé API Riot : vérification réelle du format au lieu d'une fausse latence, enregistrée là où le tracker la lit",
+      "Historique LoL : champion et icône corrects",
+      "Correctifs de sécurité des dépendances (sharp, postcss-selector-parser, source-map-js)"
+    ]
+  },
+  {
     "version": "v1.75.88",
     "date": "2026-10-15",
     "title": "Présence du bot sans chaîne imposée",
@@ -626,15 +638,6 @@
     "title": "Console Discord : lien direct vers un module",
     "items": [
       "Un lien du type /discord?guildId=…&module=leveling ouvre directement le module dans la console."
-    ]
-  },
-  {
-    "version": "v1.55.86",
-    "date": "2026-10-08",
-    "title": "Console Discord : motion design harmonisé",
-    "items": [
-      "Les blocs des pages de la console entrent en cascade, l'un après l'autre (désactivé si le mouvement réduit est demandé).",
-      "Changement de page plus net et plus rapide : glissement léger sans flou."
     ]
   }
 ]

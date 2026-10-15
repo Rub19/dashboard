@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.91 — 2026-10-15
+
+**Onboarding de la console sans chiffres inventés**
+
+- Retrait de « sub-15ms » et « Latence 12ms »
+- Apple Music retiré des sources musicales (non supporté)
+
 ## v1.75.90 — 2026-10-15
 
 **Vitrine du bot alignée sur les vraies fonctions**

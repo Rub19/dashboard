@@ -71,8 +71,8 @@ export default function Screen0Welcome({ onNext, onSkip }: Screen0WelcomeProps) 
             <Zap className="w-4 h-4" />
           </div>
           <div className="min-w-0">
-            <p className="text-xs font-bold text-white">Zéro latence</p>
-            <p className="text-[11px] text-zinc-400 truncate">Temps de réponse sub-15ms</p>
+            <p className="text-xs font-bold text-white">Toujours en ligne</p>
+            <p className="text-[11px] text-zinc-400 truncate">Hébergé en continu sur serveur dédié</p>
           </div>
         </div>
       </div>

@@ -56189,6 +56189,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_90_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_90_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_90_de);
 
+const v1_75_91_fr: ChangelogEntry = {
+  version: "v1.75.91",
+  date: "2026-10-15",
+  title: "Onboarding de la console sans chiffres inventés",
+  items: [
+    "Retrait de « sub-15ms » et « Latence 12ms »",
+    "Apple Music retiré des sources musicales (non supporté)",
+  ],
+};
+
+const v1_75_91_en: ChangelogEntry = {
+  version: "v1.75.91",
+  date: "2026-10-15",
+  title: "Console onboarding without made-up numbers",
+  items: [
+    "Removed \"sub-15ms\" and \"12ms latency\"",
+    "Removed Apple Music from music sources (not supported)",
+  ],
+};
+
+const v1_75_91_es: ChangelogEntry = {
+  version: "v1.75.91",
+  date: "2026-10-15",
+  title: "Onboarding de la consola sin cifras inventadas",
+  items: [
+    "Se quitaron «sub-15ms» y «Latencia 12ms»",
+    "Apple Music retirado de las fuentes (no compatible)",
+  ],
+};
+
+const v1_75_91_de: ChangelogEntry = {
+  version: "v1.75.91",
+  date: "2026-10-15",
+  title: "Konsolen-Onboarding ohne erfundene Zahlen",
+  items: [
+    "„sub-15ms“ und „12ms Latenz“ entfernt",
+    "Apple Music aus den Musikquellen entfernt (nicht unterstützt)",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_91_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_91_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_91_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_91_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

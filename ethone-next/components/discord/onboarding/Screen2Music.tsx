@@ -95,8 +95,7 @@ export default function Screen2Music({ onNext }: Screen2MusicProps) {
           </span>
         </div>
         <div className="mt-2 flex items-center justify-between text-xs text-zinc-400">
-          <span className="truncate">Spotify · SoundCloud · YouTube · Apple Music</span>
-          <span className="text-emerald-400 font-mono text-[11px] shrink-0">Latence 12ms</span>
+          <span className="truncate">Spotify · SoundCloud · YouTube</span>
         </div>
       </div>
 

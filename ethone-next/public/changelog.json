@@ -1,5 +1,14 @@
 [
   {
+    "version": "v1.75.91",
+    "date": "2026-10-15",
+    "title": "Onboarding de la console sans chiffres inventés",
+    "items": [
+      "Retrait de « sub-15ms » et « Latence 12ms »",
+      "Apple Music retiré des sources musicales (non supporté)"
+    ]
+  },
+  {
     "version": "v1.75.90",
     "date": "2026-10-15",
     "title": "Vitrine du bot alignée sur les vraies fonctions",
@@ -630,16 +639,6 @@
       "Nouvelle fenêtre de création avec idées en un clic, choix de l'emoji et objectif de 1 à 7 fois par semaine.",
       "Mail : un mail s'ouvre tout de suite au clic, la liste ne change plus de largeur, et changer de mail rapidement n'affiche plus l'ancien.",
       "Mail : plus de bordure de focus rouge sur la ligne cliquée, et une case de sélection propre au survol de l'avatar."
-    ]
-  },
-  {
-    "version": "v1.55.88",
-    "date": "2026-10-08",
-    "title": "Console Discord : Économie, Jeux et Streamers dans la console",
-    "items": [
-      "Économie, Jeux et casino, Alertes streamers, Calendrier et AutoMod natif s'ouvrent aussi dans la console.",
-      "Le lien « Retour » des pages de modules est bien masqué dans la console.",
-      "Musique : plus de durée « 03:00 » inventée quand rien ne joue ou que la durée est inconnue."
     ]
   }
 ]

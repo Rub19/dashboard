@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.98 — 2026-10-15
+
+**Commandes slash de nouveau synchronisées**
+
+- Discord refusait toutes les mises à jour depuis le 12/10 (plus de 100 commandes) : les nouvelles commandes n'apparaissaient pas
+- Les raccourcis en double (/spotifyplay…, /lyrics, /movie, /fm…) passent en préfixe uniquement : utilise /spotify, /fun et /lastfm
+
 ## v1.75.97 — 2026-10-15
 
 **Commande en double retirée**

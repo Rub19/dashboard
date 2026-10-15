@@ -56532,6 +56532,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_97_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_97_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_97_de);
 
+const v1_75_98_fr: ChangelogEntry = {
+  version: "v1.75.98",
+  date: "2026-10-15",
+  title: "Commandes slash de nouveau synchronisées",
+  items: [
+    "Discord refusait toutes les mises à jour depuis le 12/10 (plus de 100 commandes) : les nouvelles commandes n'apparaissaient pas",
+    "Les raccourcis en double (/spotifyplay…, /lyrics, /movie, /fm…) passent en préfixe uniquement : utilise /spotify, /fun et /lastfm",
+  ],
+};
+
+const v1_75_98_en: ChangelogEntry = {
+  version: "v1.75.98",
+  date: "2026-10-15",
+  title: "Slash commands synced again",
+  items: [
+    "Discord rejected every update since 10/12 (over 100 commands): new commands never appeared",
+    "Duplicate shortcuts (/spotifyplay…, /lyrics, /movie, /fm…) are now prefix-only: use /spotify, /fun and /lastfm",
+  ],
+};
+
+const v1_75_98_es: ChangelogEntry = {
+  version: "v1.75.98",
+  date: "2026-10-15",
+  title: "Comandos slash sincronizados de nuevo",
+  items: [
+    "Discord rechazaba todas las actualizaciones desde el 12/10 (más de 100 comandos)",
+    "Los atajos duplicados (/spotifyplay…, /lyrics, /movie, /fm…) quedan solo con prefijo: usa /spotify, /fun y /lastfm",
+  ],
+};
+
+const v1_75_98_de: ChangelogEntry = {
+  version: "v1.75.98",
+  date: "2026-10-15",
+  title: "Slash-Befehle wieder synchronisiert",
+  items: [
+    "Discord lehnte seit dem 12.10. jedes Update ab (über 100 Befehle)",
+    "Doppelte Kurzbefehle (/spotifyplay…, /lyrics, /movie, /fm…) gibt es nur noch mit Präfix: nutze /spotify, /fun und /lastfm",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_98_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_98_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_98_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_98_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

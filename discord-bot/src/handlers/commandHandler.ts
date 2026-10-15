@@ -125,6 +125,12 @@ import { config } from '../config.js';
 import { Command } from '../types/command.js';
 import { logger } from '../utils/logger.js';
 
+const PREFIX_ONLY_SHORTCUTS = new Set([
+  'spotifylike', 'spotifylogin', 'spotifylogout', 'spotifynext', 'spotifypause', 'spotifyplay',
+  'spotifyprevious', 'spotifyqueue', 'spotifyresume', 'spotifyunlike', 'spotifyvc',
+  'lyrics', 'quote', 'duckduckgoimage', 'image', 'reverseimage', 'tvshow', 'movie', 'game', 'fm',
+]);
+
 class CommandRegistry {
   private commands = new Collection<string, Command>();
   private aliases = new Collection<string, string>();
@@ -329,7 +335,7 @@ class CommandRegistry {
    */
   public async deploySlashCommands(): Promise<void> {
     const slashDataList = this.getAllCommands()
-      .filter((cmd) => cmd.slashData !== undefined)
+      .filter((cmd) => cmd.slashData !== undefined && !PREFIX_ONLY_SHORTCUTS.has(cmd.name))
       .map((cmd) => cmd.slashData!.toJSON());
     // Menus contextuels (clic droit) : déployés avec les commandes slash
     const contextMenus = REPORT_CONTEXT_MENUS.map((m) => m.data.toJSON());

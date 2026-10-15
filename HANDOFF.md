@@ -1,4 +1,4 @@
-# ETHONE — passation & nouveautés (2026-10-15, version 1.75.97)
+# ETHONE — passation & nouveautés (2026-10-15, version 1.75.98)
 
 ## Projet
 - `ethone-next/` : site Next.js statique (ethone.dev, Cloudflare Pages, déploiement auto au push sur `main`).
@@ -26,7 +26,10 @@
 
 ---
 
-## Nouveautés majeures & Réalisations récentes (v1.75.83 → v1.75.97)
+## Nouveautés majeures & Réalisations récentes (v1.75.83 → v1.75.98)
+
+### Slash commands : limite de 100 (v1.75.98)
+- Depuis le 2026-10-15 09:47, `deploySlashCommands` échouait (`DiscordAPIError[30032]`, 117 commandes > 100) : dernier déploiement réussi le 2026-10-12. `PREFIX_ONLY_SHORTCUTS` (handlers/commandHandler.ts) exclut du déploiement les 20 raccourcis qui doublent `/spotify`, `/fun` et `/lastfm` ; ils restent en préfixe. Surveiller ce total avant d'ajouter une commande slash.
 
 ### Doublon /economy balance retiré (v1.75.97)
 - Sous-commande slash `balance` retirée de `/economy` (`/balance` reste ; `!economy` sans argument affiche toujours le solde). Les autres raccourcis (`/daily`, `/work`, `/pay`, `/gamble`, `/rob`, `/shop`) doublent encore leurs sous-commandes `/economy`.

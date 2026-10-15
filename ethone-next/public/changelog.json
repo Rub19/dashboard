@@ -1,5 +1,14 @@
 [
   {
+    "version": "v1.75.98",
+    "date": "2026-10-15",
+    "title": "Commandes slash de nouveau synchronisées",
+    "items": [
+      "Discord refusait toutes les mises à jour depuis le 12/10 (plus de 100 commandes) : les nouvelles commandes n'apparaissaient pas",
+      "Les raccourcis en double (/spotifyplay…, /lyrics, /movie, /fm…) passent en préfixe uniquement : utilise /spotify, /fun et /lastfm"
+    ]
+  },
+  {
     "version": "v1.75.97",
     "date": "2026-10-15",
     "title": "Commande en double retirée",
@@ -630,14 +639,6 @@
       "Jeux et casino : nouvelle page avec cagnotte et statistiques, un interrupteur par jeu, mises minimum et maximum, part versée à la cagnotte, meilleurs joueurs et dernières parties.",
       "Seuls les réglages réellement appliqués par le bot sont affichés ; chaque modification est enregistrée aussitôt.",
       "Les tables de jeu jouables restent accessibles avec « Jouer depuis le site »."
-    ]
-  },
-  {
-    "version": "v1.55.95",
-    "date": "2026-10-09",
-    "title": "Sélecteur de serveur : correctif",
-    "items": [
-      "La liste des serveurs s'affiche par-dessus la page au lieu d'être coupée par la barre latérale."
     ]
   }
 ]

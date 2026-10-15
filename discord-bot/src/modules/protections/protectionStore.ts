@@ -54,6 +54,7 @@ export const ProtectionSettingsSchema = z.object({
   minAccountAgeDays: z.number().int().min(1).max(365).optional(),
   dmMessage: z.string().max(500).optional(),
   backupIntervalHours: z.number().int().min(1).max(168).optional(),
+  watchedChannels: ids.optional(),
 });
 export type ProtectionSettings = z.infer<typeof ProtectionSettingsSchema>;
 

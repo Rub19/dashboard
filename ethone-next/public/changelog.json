@@ -1,5 +1,15 @@
 [
   {
+    "version": "v1.75.108",
+    "date": "2026-10-15",
+    "title": "Nouvelle page Protections",
+    "items": [
+      "Page Protections refaite : catégories à gauche avec compteurs, recherche, barre de progression, filtres et cartes par catégorie avec « Tout activer »",
+      "50 protections, toutes gratuites : ajout d'anti-déban, anti-événement, anti-suppression de message, anti-suppression de réaction et anti-renommage de membre",
+      "Les protections de renommage, d'emojis et d'invitations sont rangées dans leur vraie catégorie (Salons, Rôles, Serveur), « Arrivées » devient « Membres »"
+    ]
+  },
+  {
     "version": "v1.75.107",
     "date": "2026-10-15",
     "title": "Page Etho épurée",
@@ -616,21 +626,6 @@
       "La cagnotte ne peut plus être alimentée quand le casino est désactivé, et elle est plafonnée à 10 000 000 ; chaque ajout est journalisé côté bot.",
       "Les réglages du casino sont validés par le bot (mises entre 1 et 1 000 000, mise minimale ≤ maximale) et ne permettent plus de modifier la cagnotte directement.",
       "Formulaires : l'examinateur enregistré est le compte connecté, et le faux taux de complétion a été retiré."
-    ]
-  },
-  {
-    "version": "v1.59.0",
-    "date": "2026-10-09",
-    "title": "Console : 8 modules de plus au format Keeper",
-    "items": [
-      "AFK : retour automatique, réponse aux mentions, préfixe [AFK], effacement des réponses, liste des membres absents avec retrait manuel.",
-      "Anniversaires : salon, heure, message ({user}, {age}), mention, rôle du jour, anniversaires du jour et à venir.",
-      "Tags : création, recherche, modification et suppression des réponses /tag, avec le nombre d'affichages.",
-      "Rappels : création d'un rappel (délai, répétition, salon), liste des rappels programmés et annulation.",
-      "Compteur : salon, règles (deux fois de suite, retour à 0 en cas d'erreur), remise à zéro, record et meilleurs compteurs.",
-      "Messages épinglés : un message par salon toujours en bas, en texte ou en embed (titre, couleur), délai, pause, republication.",
-      "Salons compteurs : fréquence, catégories prêtes à l'emploi, modèles avec variables cliquables et aperçu en direct, actualisation immédiate.",
-      "Highlights : chiffres du serveur et gestion de tes propres mots-clés et salons ignorés (ceux des autres restent privés)."
     ]
   }
 ]

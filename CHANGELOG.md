@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.108 — 2026-10-15
+
+**Nouvelle page Protections**
+
+- Page Protections refaite : catégories à gauche avec compteurs, recherche, barre de progression, filtres et cartes par catégorie avec « Tout activer »
+- 50 protections, toutes gratuites : ajout d'anti-déban, anti-événement, anti-suppression de message, anti-suppression de réaction et anti-renommage de membre
+- Les protections de renommage, d'emojis et d'invitations sont rangées dans leur vraie catégorie (Salons, Rôles, Serveur), « Arrivées » devient « Membres »
+
 ## v1.75.107 — 2026-10-15
 
 **Page Etho épurée**

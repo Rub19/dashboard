@@ -11,8 +11,12 @@ import {
   GuildEmoji,
   GuildMember,
   Message,
+  MessageReaction,
   OverwriteType,
   PartialMessage,
+  PartialMessageReaction,
+  PartialUser,
+  User,
   PermissionFlagsBits,
   PermissionsBitField,
   Role,
@@ -342,6 +346,18 @@ class ProtectionEngine {
         case AuditLogEvent.MemberBanAdd:
           await this.evaluate(guild, 'antiBan', ex, { detail: `a banni <@${target}>`, undo: () => guild.members.unban(target!, 'Etho · Anti-ban : rafale annulée') });
           break;
+        case AuditLogEvent.MemberBanRemove:
+          await this.evaluate(guild, 'antiUnban', ex, { detail: `a débanni <@${target}>`, undo: () => guild.members.ban(target!, { reason: 'Etho · Anti-déban : rafale annulée' }) });
+          break;
+        case AuditLogEvent.GuildScheduledEventCreate:
+          await this.evaluate(guild, 'antiEvent', ex, { detail: `a créé l'événement ${change(entry, 'name')?.new ?? ''}`.trim(), undo: () => guild.scheduledEvents.delete(target!) });
+          break;
+        case AuditLogEvent.GuildScheduledEventUpdate:
+          await this.evaluate(guild, 'antiEvent', ex, { detail: `a modifié l'événement ${guild.scheduledEvents.cache.get(target!)?.name ?? ''}`.trim(), undo: () => this.revertEvent(guild, entry, target!) });
+          break;
+        case AuditLogEvent.GuildScheduledEventDelete:
+          await this.evaluate(guild, 'antiEvent', ex, { detail: `a supprimé l'événement ${change(entry, 'name')?.old ?? ''}`.trim(), undo: () => this.recreateEvent(guild, entry) });
+          break;
         case AuditLogEvent.MemberKick:
           await this.evaluate(guild, 'antiKick', ex, { detail: `a expulsé <@${target}>`, undo: () => this.inviteBack(guild, target!) });
           break;
@@ -444,6 +460,13 @@ class ProtectionEngine {
       await this.evaluate(guild, 'antiTimeout', ex, {
         detail: `a mis <@${target}> en timeout`,
         undo: async () => (await guild.members.fetch(target).catch(() => null))?.timeout(null, 'Etho · Anti-timeout : rafale annulée'),
+      });
+    }
+    const nick = change(entry, 'nick');
+    if (nick && ex !== target) {
+      await this.evaluate(guild, 'antiMemberRename', ex, {
+        detail: `a renommé <@${target}>`,
+        undo: async () => (await guild.members.fetch(target).catch(() => null))?.setNickname(nick.old == null ? null : String(nick.old), 'Etho · Anti-renommage de membre'),
       });
     }
     if (change(entry, 'mute')?.new === true) {
@@ -588,6 +611,36 @@ class ProtectionEngine {
   }
 
   // --- Réparations -------------------------------------------------------------------------------------------------
+
+  private async revertEvent(guild: Guild, entry: GuildAuditLogsEntry, eventId: string) {
+    const event = await guild.scheduledEvents.fetch(eventId).catch(() => null);
+    if (!event) return;
+    const patch: Record<string, unknown> = {};
+    for (const [key, field] of [['name', 'name'], ['description', 'description'], ['scheduled_start_time', 'scheduledStartTime'], ['scheduled_end_time', 'scheduledEndTime']] as const) {
+      const c = change(entry, key);
+      if (c && c.old != null) patch[field] = c.old;
+    }
+    if (Object.keys(patch).length) await event.edit({ ...patch, reason: 'Etho · Anti-événement' });
+  }
+
+  private async recreateEvent(guild: Guild, entry: GuildAuditLogsEntry) {
+    const start = change(entry, 'scheduled_start_time')?.old;
+    if (!start || new Date(String(start)).getTime() <= Date.now()) return;
+    const channelId = change(entry, 'channel_id')?.old;
+    const location = (change(entry, 'entity_metadata')?.old as { location?: string } | undefined)?.location;
+    const end = change(entry, 'scheduled_end_time')?.old;
+    await guild.scheduledEvents.create({
+      name: String(change(entry, 'name')?.old ?? 'Événement'),
+      description: change(entry, 'description')?.old ? String(change(entry, 'description')!.old) : undefined,
+      scheduledStartTime: String(start),
+      scheduledEndTime: end ? String(end) : location ? new Date(new Date(String(start)).getTime() + 3600_000).toISOString() : undefined,
+      privacyLevel: 2,
+      entityType: Number(change(entry, 'entity_type')?.old ?? (channelId ? 2 : 3)),
+      channel: channelId ? String(channelId) : undefined,
+      entityMetadata: location ? { location } : undefined,
+      reason: 'Etho · Anti-événement',
+    });
+  }
 
   private async inviteBack(guild: Guild, userId: string) {
     const me = guild.members.me;
@@ -877,8 +930,64 @@ class ProtectionEngine {
     return wl && (getProtection(key)?.noWhitelistLimit || s.exceptionQuotaMax == null);
   }
 
+  private watchedChannel(s: ProtectionSettings, channelId: string, parentId: string | null) {
+    const list = s.watchedChannels ?? [];
+    return list.includes(channelId) || (parentId != null && list.includes(parentId));
+  }
+
+  private async deletedBy(message: Message<true>): Promise<string> {
+    await new Promise((r) => setTimeout(r, 1200));
+    const logs = await message.guild.fetchAuditLogs({ type: AuditLogEvent.MessageDelete, limit: 5 }).catch(() => null);
+    const entry = logs?.entries.find(
+      (e) => e.targetId === message.author.id && (e.extra as { channel?: { id: string } } | null)?.channel?.id === message.channelId && Date.now() - e.createdTimestamp < 15_000
+    );
+    return entry?.executorId ?? message.author.id;
+  }
+
+  private async onWatchedMessageDelete(message: Message<true>) {
+    const s = protectionStore.get(message.guild.id, 'antiMessageDelete');
+    const parentId = 'parentId' in message.channel ? message.channel.parentId : null;
+    if (!s.enabled || !this.watchedChannel(s, message.channelId, parentId)) return;
+    const files = [...message.attachments.values()].map((a) => a.url).slice(0, 5);
+    if (message.channel.isSendable() && (message.content || files.length)) {
+      await message.channel
+        .send({
+          embeds: [
+            new EmbedBuilder()
+              .setColor(0x6b7280)
+              .setAuthor({ name: message.author.tag, iconURL: message.author.displayAvatarURL() })
+              .setDescription((message.content || '').slice(0, 4000) || null)
+              .setFooter({ text: 'Message supprimé · remis par Etho' })
+              .setTimestamp(message.createdAt),
+          ],
+          files,
+          allowedMentions: { parse: [] },
+        })
+        .catch(() => {});
+    }
+    const executor = await this.deletedBy(message);
+    await this.evaluate(message.guild, 'antiMessageDelete', executor, { channelId: message.channelId, detail: `a supprimé un message de <@${message.author.id}> dans <#${message.channelId}>` });
+  }
+
+  public async onReactionRemove(reaction: MessageReaction | PartialMessageReaction, user: User | PartialUser): Promise<void> {
+    const message = reaction.message;
+    if (!message.inGuild() || user.bot) return;
+    const s = protectionStore.get(message.guild.id, 'antiReactionRemove');
+    const parentId = 'parentId' in message.channel ? message.channel.parentId : null;
+    if (!s.enabled || !this.watchedChannel(s, message.channelId, parentId)) return;
+    const emoji = reaction.emoji.id ? `<:${reaction.emoji.name}:${reaction.emoji.id}>` : reaction.emoji.name ?? '';
+    const ch = this.logChannel(message.guild, s);
+    if (ch) {
+      await ch
+        .send({ embeds: [new EmbedBuilder().setColor(0xf59e0b).setAuthor({ name: 'Anti-suppression de réaction' }).setDescription(`<@${user.id}> a retiré ${emoji} sur [un message](${message.url}) dans <#${message.channelId}>.`).setTimestamp()], allowedMentions: { parse: [] } })
+        .catch(() => {});
+    }
+    await this.evaluate(message.guild, 'antiReactionRemove', user.id, { channelId: message.channelId, detail: `a retiré ${emoji} dans <#${message.channelId}>` });
+  }
+
   public async onMessageDelete(message: Message | PartialMessage): Promise<void> {
     if (message.partial || !message.inGuild() || message.author.bot) return;
+    await this.onWatchedMessageDelete(message).catch((err) => logger.warn('[Protections] Anti-suppression de message :', (err as Error)?.message));
     const s = protectionStore.get(message.guild.id, 'antiGhostPing');
     if (!s.enabled) return;
     if (Date.now() - message.createdTimestamp > (s.ghostMaxAgeSeconds ?? 60) * 1000) return;

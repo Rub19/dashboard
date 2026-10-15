@@ -2,7 +2,7 @@
 
 import { Fragment, useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { ArrowLeft, Ban, Camera, CircleCheck, FolderClosed, Hash, History, Info, Lock, LogOut, PenLine, Search, Timer, TriangleAlert, UserRoundMinus, WandSparkles } from "lucide-react";
+import { ArrowLeft, Ban, Bot, Camera, ChevronRight, CircleCheck, FolderClosed, Gavel, Hash, History, Info, LayoutGrid, Lock, LogOut, MessageSquare, PenLine, Search, Server, Timer, TriangleAlert, UserCog, UserRoundMinus, Users, Volume2, WandSparkles, type LucideIcon } from "lucide-react";
 import ChannelPicker, { fetchGuildChannels, type ChannelOption } from "../ChannelPicker";
 import { confirmDialog } from "@/lib/confirmDialog";
 import { useToast } from "@/components/ToastProvider";
@@ -20,7 +20,7 @@ type Def = {
   category: string;
   description: string;
   kind: Kind;
-  specific?: "webhookAction" | "maxPerMessage" | "ghostPing" | "textWall" | "duplicate" | "emojiAbuse";
+  specific?: "webhookAction" | "maxPerMessage" | "ghostPing" | "textWall" | "duplicate" | "emojiAbuse" | "watchedChannels";
   verb?: string;
   noun?: [string, string];
   aftermath?: string;
@@ -72,6 +72,7 @@ type Settings = {
   minAccountAgeDays?: number;
   dmMessage?: string;
   backupIntervalHours?: number;
+  watchedChannels?: string[];
 };
 type Data = {
   categories: string[];
@@ -147,7 +148,7 @@ const hasAlert = (d: Def) => d.kind !== "rollback";
 /** À compléter : active mais sans salon de log (ou sans mot interdit). */
 export function isIncomplete(d: Def, s: Settings) {
   if (!s.enabled || d.kind === "rollback") return false;
-  return !s.logChannelId || (d.kind === "words" && !(s.bannedWords ?? []).length);
+  return !s.logChannelId || (d.kind === "words" && !(s.bannedWords ?? []).length) || (d.specific === "watchedChannels" && !(s.watchedChannels ?? []).length);
 }
 
 /** Phrase « Ce que fait Etho » (même texte que /protection voir). */
@@ -371,6 +372,18 @@ function ChannelChips({ ids, channels, onChange, guildId, categories }: { ids: s
 type Filter = "all" | "on" | "off" | "todo";
 
 /** Protections (format Keeper) : liste par catégorie à gauche, réglages de la protection choisie à droite. */
+const CATEGORY_META: Record<string, { icon: LucideIcon; description: string }> = {
+  "Sanctions en série": { icon: Gavel, description: "Bans, expulsions et timeouts en rafale par un même membre du staff." },
+  Salons: { icon: Hash, description: "Création, suppression et modification de salons." },
+  "Rôles et permissions": { icon: UserCog, description: "Rôles créés, supprimés, modifiés ou distribués." },
+  "Bots et intégrations": { icon: Bot, description: "Bots invités, webhooks et fils de discussion." },
+  Vocal: { icon: Volume2, description: "Mutes, sourdines, déconnexions et déplacements forcés." },
+  Serveur: { icon: Server, description: "Nom, icône, emojis, invitations, événements et réglages généraux." },
+  Messages: { icon: MessageSquare, description: "Spam, liens, mentions, mots interdits et arnaques." },
+  Membres: { icon: Users, description: "Comptes suspects à l'arrivée et pseudos changés en série." },
+  Sauvegarde: { icon: History, description: "Photos du serveur pour tout restaurer après un incident." },
+};
+
 export default function ConsoleProtections({
   guildId,
   onOpenView,
@@ -390,6 +403,8 @@ export default function ConsoleProtections({
   const [q, setQ] = useState("");
   const [prepared, setPrepared] = useState<Record<string, boolean>>({});
   const [busy, setBusy] = useState<string | null>(null);
+  const [category, setCategory] = useState<string>("all");
+  const [detailOpen, setDetailOpen] = useState(false);
 
   const load = useCallback(async () => {
     const r = await api<Data>("/protections");
@@ -399,15 +414,16 @@ export default function ConsoleProtections({
     void load();
     fetchGuildChannels(guildId).then(setChannels);
     const p = new URLSearchParams(window.location.search).get("p");
-    if (p) setSelected(p);
+    if (p) {
+      setSelected(p);
+      setDetailOpen(true);
+    }
   }, [guildId, load]);
 
   // Téléphone : la liste occupe l'écran ; toucher une protection ouvre son détail (bouton retour).
   const isPhone = useMediaQuery("(max-width: 1023px)");
-  const [phoneDetail, setPhoneDetail] = useState(false);
   const select = (key: string) => {
     setSelected(key);
-    setPhoneDetail(true);
     const url = new URL(window.location.href);
     url.searchParams.set("p", key);
     window.history.replaceState(window.history.state, "", url);
@@ -470,8 +486,22 @@ export default function ConsoleProtections({
   });
   const current = data.catalog.find((d) => d.key === selected && visible.includes(d)) ?? visible[0] ?? null;
 
+  const visibleCats = data.categories.filter((cat) => visible.some((d) => d.category === cat));
+  const shownCats = category === "all" ? visibleCats : visibleCats.filter((c) => c === category);
+  const activeTotal = data.catalog.filter((d) => d.kind !== "rollback").length;
+  const activeOn = data.catalog.filter((d) => d.kind !== "rollback" && data.settings[d.key].enabled).length;
+  const toggleCategory = async (cat: string) => {
+    const items = data.catalog.filter((d) => d.category === cat && d.kind !== "rollback");
+    const target = !items.every((d) => data.settings[d.key].enabled);
+    for (const d of items) if (data.settings[d.key].enabled !== target) await save(d.key, { enabled: target });
+  };
+  const open = (key: string) => {
+    select(key);
+    setDetailOpen(true);
+  };
+
   return (
-    <motion.div initial={reduced ? false : { opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="mx-auto w-full max-w-6xl space-y-4">
+    <motion.div initial={reduced ? false : { opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }} className="mx-auto w-full max-w-6xl space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-bold tracking-tight text-[var(--text-primary)] sm:text-3xl">Protections</h1>
         <div className="flex items-center gap-2">
@@ -479,17 +509,17 @@ export default function ConsoleProtections({
             <button
               type="button"
               onClick={() => onOpenView("logs", { logsTab: "incidents" })}
-              className="flex items-center gap-2 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-2 text-[13px] font-semibold text-[var(--text-primary)] transition-[background-color,transform] hover:bg-[var(--surface-hover)] active:scale-[0.98] cursor-pointer"
+              className="flex items-center gap-2 rounded-xl border border-[var(--panel-border)] px-3.5 py-2 text-[13px] font-semibold text-[var(--text-primary)] transition-[background-color,transform] hover:bg-[var(--surface-hover)] active:scale-[0.98] cursor-pointer"
             >
-              <History className="h-4 w-4 text-[var(--accent-primary)]" />
-              <span>Timeline des incidents</span>
+              <History className="h-4 w-4" />
+              <span>Incidents</span>
             </button>
           )}
           {onOpenSetup && (
             <button
               type="button"
               onClick={onOpenSetup}
-              className="flex items-center gap-2 rounded-lg border border-[var(--panel-border)] px-3 py-2 text-[13px] font-semibold text-[var(--text-primary)] transition-[background-color,transform] hover:bg-[var(--surface-hover)] active:scale-[0.98] cursor-pointer"
+              className="flex items-center gap-2 rounded-xl border border-[var(--panel-border)] px-3.5 py-2 text-[13px] font-semibold text-[var(--text-primary)] transition-[background-color,transform] hover:bg-[var(--surface-hover)] active:scale-[0.98] cursor-pointer"
             >
               <WandSparkles className="h-4 w-4" />
               <span>Configuration assistée</span>
@@ -518,76 +548,78 @@ export default function ConsoleProtections({
         </div>
       )}
 
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-wrap gap-1 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-1" role="tablist" aria-label="Filtrer les protections">
-          {(
-            [
-              ["all", "Toutes", counts.all],
-              ["on", "Actives", counts.on],
-              ["off", "Inactives", counts.off],
-              ["todo", "À compléter", counts.todo],
-            ] as const
-          ).map(([id, label, n]) => (
-            <button key={id} type="button" role="tab" aria-selected={filter === id} onClick={() => setFilter(id)} className="relative isolate flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[13px] font-semibold">
-              {filter === id && <motion.span layoutId="prot-filter" transition={SPRING_PILL} className="absolute inset-0 -z-10 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))]" />}
-              {id === "todo" && <TriangleAlert className="h-3.5 w-3.5 text-[var(--warning)]" />}
-              <span className={filter === id ? "text-[var(--text-primary)]" : "text-[var(--text-muted)]"}>{label}</span>
-              <span className="text-[11px] tabular-nums text-[var(--text-muted)]">{n}</span>
-            </button>
-          ))}
-        </div>
-        <label className="flex h-9 w-full items-center gap-2 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 sm:w-72">
-          <Search className="h-4 w-4 text-[var(--text-muted)]" />
-          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Spam, liens, rôles…" aria-label="Filtrer par nom" className="min-w-0 flex-1 bg-transparent text-sm text-[var(--text-primary)] outline-none placeholder:text-[var(--text-muted)]" />
-        </label>
-      </div>
+      <div className="grid gap-6 lg:grid-cols-[15.5rem_1fr]">
+        <aside className={cn("space-y-3 lg:sticky lg:top-4 lg:self-start", isPhone && detailOpen && "hidden")}>
+          <label className="flex h-10 items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 transition-colors focus-within:border-[var(--accent-primary)]/60">
+            <Search className="h-4 w-4 text-[var(--text-muted)]" />
+            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Spam, liens, rôles…" aria-label="Chercher une protection" className="min-w-0 flex-1 bg-transparent text-sm text-[var(--text-primary)] outline-none placeholder:text-[var(--text-muted)]" />
+          </label>
+          <nav aria-label="Catégories de protections" className="space-y-0.5">
+            {(["all", ...data.categories] as const).map((cat) => {
+              const items = cat === "all" ? data.catalog : data.catalog.filter((d) => d.category === cat);
+              const on = items.filter((d) => data.settings[d.key].enabled).length;
+              const Icon = cat === "all" ? LayoutGrid : CATEGORY_META[cat]?.icon ?? LayoutGrid;
+              const active = category === cat;
+              const locked = cat === "Sauvegarde";
+              return (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => {
+                    setCategory(cat);
+                    setDetailOpen(false);
+                  }}
+                  aria-current={active}
+                  className="relative isolate flex h-10 w-full items-center gap-3 rounded-xl px-3 text-left text-sm transition-colors cursor-pointer"
+                >
+                  {active && <motion.span layoutId="prot-cat" transition={SPRING_LAYOUT} className="absolute inset-0 -z-10 rounded-xl bg-[var(--surface-hover)]" />}
+                  <Icon className={cn("h-4 w-4 shrink-0 transition-colors", active ? "text-[var(--accent-primary)]" : "text-[var(--text-muted)]")} />
+                  <span className={cn("min-w-0 flex-1 truncate font-medium", active ? "text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]")}>{cat === "all" ? "Toutes" : cat}</span>
+                  {locked ? <Lock className="h-3.5 w-3.5 text-[var(--text-muted)]" aria-label="Sauvegarde" /> : <span className="text-xs tabular-nums text-[var(--text-muted)]">{on}/{items.length}</span>}
+                </button>
+              );
+            })}
+          </nav>
+          <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-4">
+            <div className="flex items-baseline justify-between">
+              <span className="text-[13px] font-medium text-[var(--text-muted)]">Protections actives</span>
+              <span className="text-base font-bold tabular-nums text-[var(--text-primary)]">
+                {activeOn}
+                <span className="text-[var(--text-muted)]">/{activeTotal}</span>
+              </span>
+            </div>
+            <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-[var(--surface-hover)]">
+              <motion.div className="h-full rounded-full bg-[var(--accent-primary)]" initial={false} animate={{ width: `${Math.max(2, (activeOn / Math.max(1, activeTotal)) * 100)}%` }} transition={SPRING_LAYOUT} />
+            </div>
+          </div>
+        </aside>
 
-      <div className="grid overflow-hidden rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] lg:grid-cols-[19rem_1fr]">
-        {/* Liste */}
-        <nav aria-label="Protections" className={cn("overflow-y-auto p-2 lg:max-h-[calc(100vh-14rem)] lg:border-r lg:border-[var(--panel-border)]", isPhone && phoneDetail && "hidden")}>
-          {visible.length === 0 && <p className="px-3 py-6 text-center text-xs text-[var(--text-muted)]">Aucune protection ne correspond.</p>}
-          {data.categories.map((cat) => {
-            const items = visible.filter((d) => d.category === cat);
-            if (!items.length) return null;
-            const all = data.catalog.filter((d) => d.category === cat);
-            return (
-              <div key={cat} className="pb-2">
-                <div className="flex items-center justify-between px-2.5 pb-1 pt-3 text-xs font-semibold text-[var(--text-muted)]">
-                  <span>{cat}</span>
-                  <span className="tabular-nums">
-                    {all.filter((d) => data.settings[d.key].enabled).length}/{all.length}
-                  </span>
-                </div>
-                {items.map((d) => {
-                  const s = data.settings[d.key];
-                  const active = current?.key === d.key;
-                  return (
-                    <div key={d.key} className="relative isolate flex items-center rounded-md pr-2">
-                      {active && <motion.span layoutId="prot-active" transition={SPRING_LAYOUT} className="absolute inset-0 -z-10 rounded-md bg-[var(--surface-hover)]" />}
-                      <button type="button" onClick={() => select(d.key)} aria-current={active} className={cn("flex h-9 min-w-0 flex-1 items-center gap-2 rounded-md pl-2.5 text-left text-sm transition-colors", active || s.enabled ? "text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]")}>
-                        <span className="min-w-0 flex-1 truncate">{d.label}</span>
-                        {isIncomplete(d, s) && <TriangleAlert className="h-3.5 w-3.5 shrink-0 text-[var(--warning)]" aria-label="À compléter" />}
-                      </button>
-                      <Switch checked={s.enabled} onChange={(v) => save(d.key, { enabled: v })} label={`${d.label} ${s.enabled ? "activée" : "désactivée"}`} />
-                    </div>
-                  );
-                })}
-              </div>
-            );
-          })}
-        </nav>
+        <div className="min-w-0 space-y-4">
+          <div className="inline-flex flex-wrap gap-1 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-1" role="tablist" aria-label="Filtrer les protections">
+            {(
+              [
+                ["all", "Toutes", counts.all],
+                ["on", "Actives", counts.on],
+                ["off", "Inactives", counts.off],
+                ["todo", "À compléter", counts.todo],
+              ] as const
+            ).map(([id, label, n]) => (
+              <button key={id} type="button" role="tab" aria-selected={filter === id} onClick={() => setFilter(id)} className="relative isolate flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[13px] font-semibold cursor-pointer">
+                {filter === id && <motion.span layoutId="prot-filter" transition={SPRING_PILL} className="absolute inset-0 -z-10 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))]" />}
+                {id === "todo" && <TriangleAlert className="h-3.5 w-3.5 text-[var(--warning)]" />}
+                <span className={filter === id ? "text-[var(--text-primary)]" : "text-[var(--text-muted)]"}>{label}</span>
+                <span className="text-[11px] tabular-nums text-[var(--text-muted)]">{n}</span>
+              </button>
+            ))}
+          </div>
 
-        {/* Détail */}
-        <div className={cn("min-w-0", isPhone && !phoneDetail && "hidden")}>
-          {isPhone && (
-            <button type="button" onClick={() => setPhoneDetail(false)} className="flex w-full items-center gap-2 border-b border-[var(--panel-border)] px-4 py-3 text-[13px] font-semibold text-[var(--text-muted)] active:bg-[var(--surface-hover)]">
-              <ArrowLeft className="h-4 w-4" />
-              Toutes les protections
-            </button>
-          )}
           <AnimatePresence mode="popLayout" initial={false}>
-            {current && (
-              <motion.div key={current.key} initial={reduced ? false : { opacity: 0, x: 8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}>
+            {detailOpen && current ? (
+              <motion.div key={`detail-${current.key}`} initial={reduced ? false : { opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} exit={reduced ? { opacity: 0 } : { opacity: 0, x: -16 }} transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }} className="overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]">
+                <button type="button" onClick={() => setDetailOpen(false)} className="flex w-full items-center gap-2 border-b border-[var(--panel-border)] px-5 py-3 text-[13px] font-semibold text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)] cursor-pointer">
+                  <ArrowLeft className="h-4 w-4" />
+                  {category === "all" ? "Toutes les protections" : category}
+                </button>
                 <Detail
                   def={current}
                   s={data.settings[current.key]}
@@ -601,6 +633,63 @@ export default function ConsoleProtections({
                   onBackupNow={backupNow}
                   busy={busy}
                 />
+              </motion.div>
+            ) : (
+              <motion.div key={`list-${category}`} initial={reduced ? false : { opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }} className="space-y-4">
+                {shownCats.length === 0 && <p className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-5 py-10 text-center text-sm text-[var(--text-muted)]">Aucune protection ne correspond.</p>}
+                {shownCats.map((cat) => {
+                  const meta = CATEGORY_META[cat];
+                  const Icon = meta?.icon ?? LayoutGrid;
+                  const items = visible.filter((d) => d.category === cat);
+                  const toggleable = data.catalog.filter((d) => d.category === cat && d.kind !== "rollback");
+                  const allOn = toggleable.length > 0 && toggleable.every((d) => data.settings[d.key].enabled);
+                  return (
+                    <section key={cat} className="overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]">
+                      <header className="flex items-center gap-3 border-b border-[var(--panel-border)] px-5 py-4">
+                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]">
+                          <Icon className="h-4.5 w-4.5" />
+                        </span>
+                        <div className="min-w-0 flex-1">
+                          <h2 className="text-base font-bold text-[var(--text-primary)]">{cat}</h2>
+                          {meta && <p className="text-[13px] text-[var(--text-muted)]">{meta.description}</p>}
+                        </div>
+                        {toggleable.length > 0 && (
+                          <button type="button" onClick={() => void toggleCategory(cat)} className="shrink-0 rounded-xl border border-[var(--panel-border)] px-3 py-1.5 text-[13px] font-semibold text-[var(--text-primary)] transition-[background-color,transform] hover:bg-[var(--surface-hover)] active:scale-[0.97] cursor-pointer">
+                            {allOn ? "Tout désactiver" : "Tout activer"}
+                          </button>
+                        )}
+                      </header>
+                      <ul>
+                        {items.map((d, i) => {
+                          const st = data.settings[d.key];
+                          const todo = isIncomplete(d, st);
+                          return (
+                            <motion.li
+                              key={d.key}
+                              initial={reduced ? false : { opacity: 0, y: 6 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1], delay: reduced ? 0 : Math.min(i, 12) * 0.025 }}
+                              className="group flex items-center gap-4 border-b border-[var(--panel-border)] px-5 py-3.5 last:border-b-0 transition-colors hover:bg-[var(--surface-hover)]/50"
+                            >
+                              <motion.span animate={{ scale: st.enabled ? 1 : 0.8, backgroundColor: st.enabled ? "var(--success)" : "var(--text-muted)" }} transition={SPRING_PILL} className="h-1.5 w-1.5 shrink-0 rounded-full opacity-80" aria-hidden="true" />
+                              <button type="button" onClick={() => open(d.key)} className="min-w-0 flex-1 text-left cursor-pointer">
+                                <span className="flex items-center gap-2 text-sm font-semibold text-[var(--text-primary)]">
+                                  {d.label}
+                                  {todo && <TriangleAlert className="h-3.5 w-3.5 text-[var(--warning)]" aria-label="À compléter" />}
+                                </span>
+                                <span className="mt-0.5 block text-[13px] text-[var(--text-muted)]">{todo ? "À compléter : choisis un salon de logs" + (d.specific === "watchedChannels" ? " et les salons surveillés" : d.kind === "words" ? " et les mots interdits" : "") + "." : d.description}</span>
+                              </button>
+                              {d.kind !== "rollback" && <Switch checked={st.enabled} onChange={(v) => save(d.key, { enabled: v })} label={`${d.label} ${st.enabled ? "activée" : "désactivée"}`} />}
+                              <button type="button" onClick={() => open(d.key)} aria-label={`Régler ${d.label}`} className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[var(--text-muted)] transition-[color,transform] group-hover:translate-x-0.5 group-hover:text-[var(--text-primary)] cursor-pointer">
+                                <ChevronRight className="h-4 w-4" />
+                              </button>
+                            </motion.li>
+                          );
+                        })}
+                      </ul>
+                    </section>
+                  );
+                })}
               </motion.div>
             )}
           </AnimatePresence>
@@ -759,6 +848,11 @@ function Detail({
                       <Stepper value={s.minLength ?? 2} min={1} max={200} unit="caractères" onCommit={(v) => onSave({ minLength: v })} />
                     </Field>
                   </>
+                )}
+                {def.specific === "watchedChannels" && (
+                  <Field label="Salons surveillés" hint="Seuls ces salons (ou les salons de ces catégories) sont protégés. Obligatoire.">
+                    <ChannelChips guildId={guildId} channels={channels} ids={s.watchedChannels ?? []} onChange={(ids) => onSave({ watchedChannels: ids })} />
+                  </Field>
                 )}
                 {def.specific === "emojiAbuse" && (
                   <>

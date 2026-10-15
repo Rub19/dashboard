@@ -1,4 +1,4 @@
-# ETHONE — passation & nouveautés (2026-10-15, version 1.75.107)
+# ETHONE — passation & nouveautés (2026-10-15, version 1.75.108)
 
 ## Projet
 - `ethone-next/` : site Next.js statique (ethone.dev, Cloudflare Pages, déploiement auto au push sur `main`).
@@ -26,7 +26,11 @@
 
 ---
 
-## Nouveautés majeures & Réalisations récentes (v1.75.83 → v1.75.107)
+## Nouveautés majeures & Réalisations récentes (v1.75.83 → v1.75.108)
+
+### Page Protections façon Keeper (v1.75.108)
+- `ConsoleProtections` : colonne gauche (recherche, catégories + compteurs, carte « Protections actives »), filtres, cartes par catégorie (`CATEGORY_META`, « Tout activer/désactiver »), clic sur une ligne = `Detail` existant avec retour.
+- Catalogue (bot) : 50 protections, catégories alignées sur Keeper (Membres remplace Arrivées, Modules supplémentaires répartis). Nouvelles : `antiUnban` (MemberBanRemove → reban), `antiEvent` (GuildScheduledEvent* → supprime/revert/recrée), `antiMemberRename` (MemberUpdate nick par un tiers → remet l'ancien), `antiMessageDelete` et `antiReactionRemove` (réglage `watchedChannels`, obligatoire = À compléter). Rien n'est Premium chez Etho.
 
 ### Page /bot/connexion + reconnexion bot silencieuse (v1.75.106)
 - `components/botsite/BotLogin.tsx` (route `/bot/connexion`) : modèle Keeper aux couleurs Etho (langue, thème clair/sombre, Discord via Supabase). Le bouton Dashboard de /bot y mène si pas de session Discord, sinon `/discord`.

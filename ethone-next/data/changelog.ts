@@ -57015,6 +57015,52 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_107_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_107_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_107_de);
 
+const v1_75_108_fr: ChangelogEntry = {
+  version: "v1.75.108",
+  date: "2026-10-15",
+  title: "Nouvelle page Protections",
+  items: [
+    "Page Protections refaite : catégories à gauche avec compteurs, recherche, barre de progression, filtres et cartes par catégorie avec « Tout activer »",
+    "50 protections, toutes gratuites : ajout d'anti-déban, anti-événement, anti-suppression de message, anti-suppression de réaction et anti-renommage de membre",
+    "Les protections de renommage, d'emojis et d'invitations sont rangées dans leur vraie catégorie (Salons, Rôles, Serveur), « Arrivées » devient « Membres »",
+  ],
+};
+
+const v1_75_108_en: ChangelogEntry = {
+  version: "v1.75.108",
+  date: "2026-10-15",
+  title: "New Protections page",
+  items: [
+    "Protections page redesigned: categories with counters, search, progress bar, filters and category cards with \"Enable all\"",
+    "50 protections, all free: added anti-unban, anti-event, anti-message-delete, anti-reaction-remove and anti-member-rename",
+  ],
+};
+
+const v1_75_108_es: ChangelogEntry = {
+  version: "v1.75.108",
+  date: "2026-10-15",
+  title: "Nueva página de Protecciones",
+  items: [
+    "Página de Protecciones rediseñada con categorías, búsqueda y tarjetas",
+    "50 protecciones gratuitas, con 5 nuevas",
+  ],
+};
+
+const v1_75_108_de: ChangelogEntry = {
+  version: "v1.75.108",
+  date: "2026-10-15",
+  title: "Neue Schutz-Seite",
+  items: [
+    "Schutz-Seite neu gestaltet mit Kategorien, Suche und Karten",
+    "50 kostenlose Schutzfunktionen, davon 5 neu",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_108_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_108_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_108_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_108_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

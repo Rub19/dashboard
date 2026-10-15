@@ -23,7 +23,8 @@ export type SpecificKind =
   | 'ghostPing'
   | 'textWall'
   | 'duplicate'
-  | 'emojiAbuse';
+  | 'emojiAbuse'
+  | 'watchedChannels';
 
 export interface ProtectionDef {
   key: string;
@@ -58,26 +59,22 @@ export const PROTECTION_CATEGORIES = [
   'Vocal',
   'Serveur',
   'Messages',
-  'Arrivées',
+  'Membres',
   'Sauvegarde',
-  'Modules supplémentaires',
 ] as const;
 
 const nuke = (quotaMax: number, quotaSeconds: number) => ({ quotaMax, quotaSeconds, punish: 'derank' as Punish });
 const msg = (quotaMax: number, quotaSeconds: number) => ({ quotaMax, quotaSeconds, punish: 'timeout' as Punish, timeoutSeconds: 10 * M });
 
 export const PROTECTIONS: ProtectionDef[] = [
-  // Sanctions en série
   { key: 'antiBan', label: 'Anti-ban', category: 'Sanctions en série', description: 'Détecte les bans en cascade par un même modérateur.', kind: 'quota', verb: 'bannit', noun: ['membre', 'membres'], aftermath: 'Toutes les personnes bannies pendant la rafale sont débannies.', defaults: nuke(5, 10 * M) },
   { key: 'antiKick', label: 'Anti-kick', category: 'Sanctions en série', description: 'Détecte les kicks en cascade par un même modérateur.', kind: 'quota', verb: 'expulse', noun: ['membre', 'membres'], aftermath: 'Les membres expulsés reçoivent une invitation de retour en message privé.', defaults: nuke(5, 10 * M) },
   { key: 'antiTimeout', label: 'Anti-timeout', category: 'Sanctions en série', description: 'Détecte les timeouts en cascade par un même modérateur.', kind: 'quota', verb: 'met en timeout', noun: ['membre', 'membres'], aftermath: 'Les timeouts de la rafale sont levés.', defaults: nuke(5, 10 * M) },
-
-  // Salons
+  { key: 'antiUnban', label: 'Anti-déban', category: 'Sanctions en série', description: "Détecte les débannissements en cascade, rebannit les comptes libérés et sanctionne l'auteur.", kind: 'quota', verb: 'débannit', noun: ['membre', 'membres'], aftermath: 'Les comptes débannis pendant la rafale sont rebannis.', defaults: nuke(3, 10 * M) },
   { key: 'antiChannelCreate', label: 'Anti-création de salon', category: 'Salons', description: 'Détecte la création abusive de salons.', kind: 'quota', verb: 'crée', noun: ['salon', 'salons'], aftermath: "Les salons créés pendant l'attaque sont supprimés.", channelExempt: true, defaults: nuke(1, 5 * M) },
   { key: 'antiChannelDelete', label: 'Anti-suppression de salon', category: 'Salons', description: 'Détecte la suppression abusive de salons.', kind: 'quota', verb: 'supprime', noun: ['salon', 'salons'], aftermath: 'Les salons supprimés sont recréés avec leurs permissions.', lockdownAdvised: true, channelExempt: true, defaults: nuke(1, 5 * M) },
   { key: 'antiChannelUpdate', label: 'Anti-modification de salon', category: 'Salons', description: 'Détecte les modifications massives de salons.', kind: 'quota', verb: 'modifie', noun: ['salon', 'salons'], aftermath: 'Les salons retrouvent leur nom, description et permissions.', channelExempt: true, defaults: nuke(1, 10 * M) },
-
-  // Rôles et permissions
+  { key: 'antiChannelRename', label: 'Anti-renommage de salon', category: 'Salons', description: "Remet l'ancien nom d'un salon renommé et sanctionne l'auteur.", kind: 'quota', verb: 'renomme', noun: ['salon', 'salons'], aftermath: 'Chaque salon renommé retrouve son ancien nom.', channelExempt: true, defaults: nuke(1, 10 * M) },
   { key: 'antiRoleCreate', label: 'Anti-création de rôle', category: 'Rôles et permissions', description: 'Détecte la création abusive de rôles.', kind: 'quota', verb: 'crée', noun: ['rôle', 'rôles'], aftermath: 'Les rôles créés sont supprimés.', defaults: nuke(1, 5 * M) },
   { key: 'antiRoleDelete', label: 'Anti-suppression de rôle', category: 'Rôles et permissions', description: 'Détecte la suppression abusive de rôles.', kind: 'quota', verb: 'supprime', noun: ['rôle', 'rôles'], aftermath: 'Les rôles supprimés sont recréés avec les mêmes réglages et rendus à leurs membres.', lockdownAdvised: true, defaults: nuke(1, 5 * M) },
   { key: 'antiRoleUpdate', label: 'Anti-modification de rôle', category: 'Rôles et permissions', description: 'Détecte les modifications massives de rôles.', kind: 'quota', verb: 'modifie', noun: ['rôle', 'rôles'], aftermath: 'Les rôles retrouvent leur nom, couleur et permissions.', defaults: nuke(1, 10 * M) },
@@ -85,24 +82,23 @@ export const PROTECTIONS: ProtectionDef[] = [
   { key: 'antiRoleRemove', label: 'Anti-retrait de rôle', category: 'Rôles et permissions', description: 'Détecte le retrait de rôles protégés ou à permissions sensibles.', kind: 'watched', verb: 'retire un rôle à permission sensible', aftermath: 'Le rôle retiré est rendu à la victime.', noWhitelistLimit: true, defaults: { punish: 'derank', watchedPerms: [], watchedRoles: [] } },
   { key: 'antiRoleMass', label: 'Anti-rôle de masse', category: 'Rôles et permissions', description: "Détecte les attributions massives d'un même rôle.", kind: 'quota', verb: 'donne le même rôle à', noun: ['membre', 'membres'], aftermath: 'Le rôle est retiré aux membres de la rafale.', defaults: nuke(20, 10 * M) },
   { key: 'antiReorganisation', label: 'Anti-réorganisation de rôle', category: 'Rôles et permissions', description: "Bloque les changements de position des rôles. Discord n'indique pas qui déplace un rôle : il est remis en place sans sanction.", kind: 'reorder', noWhitelistLimit: true, defaults: { punish: 'none' } },
-
-  // Bots et intégrations
+  { key: 'antiRoleRename', label: 'Anti-renommage de rôle', category: 'Rôles et permissions', description: "Remet l'ancien nom d'un rôle renommé et sanctionne l'auteur.", kind: 'quota', verb: 'renomme', noun: ['rôle', 'rôles'], aftermath: 'Chaque rôle renommé retrouve son ancien nom.', defaults: nuke(1, 10 * M) },
   { key: 'antiBot', label: 'Anti-bot', category: 'Bots et intégrations', description: "Détecte l'ajout de bots non autorisés.", kind: 'quota', verb: 'ajoute', noun: ['bot', 'bots'], aftermath: 'Le bot ajouté est banni.', defaults: nuke(1, 10 * M) },
   { key: 'antiWebhook', label: 'Anti-webhook', category: 'Bots et intégrations', description: 'Détecte la création abusive de webhooks.', kind: 'quota', specific: 'webhookAction', verb: 'crée', noun: ['webhook', 'webhooks'], channelExempt: true, defaults: { ...nuke(1, 10 * M), webhookAction: 'delete' } },
   { key: 'antiWebhookUpdate', label: 'Anti-modification de webhook', category: 'Bots et intégrations', description: "Remet le nom, l'avatar et le salon d'un webhook modifié et sanctionne l'auteur.", kind: 'quota', verb: 'modifie', noun: ['webhook', 'webhooks'], aftermath: 'Les webhooks modifiés retrouvent leur nom, leur avatar et leur salon.', channelExempt: true, defaults: nuke(3, 10 * M) },
   { key: 'antiThreadCreate', label: 'Anti-thread', category: 'Bots et intégrations', description: 'Détecte la création abusive de fils.', kind: 'quota', verb: 'crée', noun: ['fil', 'fils'], aftermath: "Les fils créés pendant l'attaque sont supprimés.", channelExempt: true, defaults: nuke(1, 1 * M) },
-
-  // Vocal
   { key: 'antiMuteVoc', label: 'Anti-mute vocal', category: 'Vocal', description: 'Détecte les mutes vocaux en masse.', kind: 'quota', verb: 'mute en vocal', noun: ['membre', 'membres'], aftermath: 'Les membres mutés retrouvent la parole.', defaults: msg(5, 1 * M) },
   { key: 'antiSourdineVoc', label: 'Anti-sourdine vocal', category: 'Vocal', description: 'Détecte les mises en sourdine vocale en masse.', kind: 'quota', verb: 'met en sourdine', noun: ['membre', 'membres'], aftermath: 'Les membres retrouvent le son.', defaults: msg(5, 1 * M) },
   { key: 'antiDecoUser', label: 'Anti-déconnexion vocale', category: 'Vocal', description: 'Détecte les déconnexions vocales en masse.', kind: 'quota', verb: 'déconnecte du vocal', noun: ['membre', 'membres'], defaults: msg(5, 1 * M) },
   { key: 'antiDeplUser', label: 'Anti-déplacement vocal', category: 'Vocal', description: 'Détecte les déplacements vocaux en masse.', kind: 'quota', verb: 'déplace en vocal', noun: ['membre', 'membres'], defaults: msg(5, 1 * M) },
-
-  // Serveur
   { key: 'antiUpdateGuild', label: 'Anti-modification du serveur', category: 'Serveur', description: 'Détecte la modification du serveur, de son nom ou de son icône.', kind: 'quota', verb: 'modifie les réglages du serveur', noun: ['fois', 'fois'], aftermath: 'Etho remet les anciens réglages du serveur quand c’est possible.', lockdownAdvised: true, defaults: nuke(1, 10 * M) },
+  { key: 'antiEvent', label: 'Anti-événement', category: 'Serveur', description: "Détecte la création, la modification et la suppression abusives d'événements, annule tout et sanctionne l'auteur.", kind: 'quota', verb: 'crée, modifie ou supprime', noun: ['événement', 'événements'], aftermath: 'Les événements créés sont supprimés, les modifiés retrouvent leurs infos et les supprimés sont recréés.', defaults: nuke(2, 10 * M) },
   { key: 'antiExpression', label: 'Anti-expression', category: 'Serveur', description: "Détecte la suppression d'emojis et de stickers.", kind: 'quota', verb: 'supprime', noun: ['emoji ou sticker', 'emojis ou stickers'], aftermath: 'Etho remet en ligne ce qui a été supprimé.', defaults: nuke(5, 10 * M) },
-
-  // Messages
+  { key: 'antiServerRename', label: 'Anti-renommage du serveur', category: 'Serveur', description: "Remet l'ancien nom du serveur et sanctionne l'auteur d'un renommage.", kind: 'quota', verb: 'renomme le serveur', noun: ['fois', 'fois'], aftermath: "L'ancien nom du serveur est remis.", defaults: nuke(1, 10 * M) },
+  { key: 'antiIconUpdate', label: "Anti-changement d'icône", category: 'Serveur', description: "Remet l'ancienne icône du serveur et sanctionne l'auteur du changement.", kind: 'quota', verb: "change l'icône du serveur", noun: ['fois', 'fois'], aftermath: "L'ancienne icône est remise.", defaults: nuke(1, 10 * M) },
+  { key: 'antiEmojiDelete', label: "Anti-suppression d'emoji", category: 'Serveur', description: "Recrée l'emoji supprimé et sanctionne l'auteur.", kind: 'quota', verb: 'supprime', noun: ['emoji', 'emojis'], aftermath: 'Chaque emoji supprimé est recréé avec le même nom.', defaults: nuke(1, 10 * M) },
+  { key: 'antiEmojiRename', label: "Anti-renommage d'emoji", category: 'Serveur', description: "Remet l'ancien nom d'un emoji renommé et sanctionne l'auteur.", kind: 'quota', verb: 'renomme', noun: ['emoji', 'emojis'], aftermath: 'Chaque emoji renommé retrouve son ancien nom.', defaults: nuke(1, 10 * M) },
+  { key: 'antiInviteDelete', label: "Anti-suppression d'invitation", category: 'Serveur', description: "Recrée l'invitation supprimée dans le même salon et sanctionne l'auteur.", kind: 'quota', verb: 'supprime', noun: ['invitation', 'invitations'], aftermath: 'Une nouvelle invitation est créée dans le même salon. Son lien est dans le log.', channelExempt: true, defaults: nuke(1, 10 * M) },
   { key: 'antiLink', label: 'Anti-lien', category: 'Messages', description: 'Bloque les liens publiés sans whitelist.', kind: 'link', verb: 'publie un lien', aftermath: 'Le message est supprimé.', deletesMessage: true, channelExempt: true, noWhitelistLimit: true, defaults: { punish: 'none', timeoutSeconds: 10 * M, linkTypes: ['general', 'discord'], allowedDomains: [], enforcement: 'bot' } },
   { key: 'antiSpam', label: 'Anti-spam', category: 'Messages', description: 'Détecte le flood de messages et bloque le spam.', kind: 'quota', verb: 'envoie', noun: ['message', 'messages'], aftermath: 'Les messages de la rafale sont supprimés.', deletesMessage: true, channelExempt: true, defaults: msg(5, 8) },
   { key: 'antiBadWord', label: 'Anti-BadWord', category: 'Messages', description: 'Bloque les messages contenant des mots interdits configurables.', kind: 'words', verb: 'écrit un mot interdit', aftermath: 'Le message est supprimé.', deletesMessage: true, channelExempt: true, noWhitelistLimit: true, defaults: { punish: 'none', timeoutSeconds: 10 * M, bannedWords: [], enforcement: 'bot' } },
@@ -116,21 +112,11 @@ export const PROTECTIONS: ProtectionDef[] = [
   { key: 'antiScam', label: 'Anti-token grab', category: 'Messages', description: "Détecte et supprime les messages d'arnaque : faux Nitro, faux Steam, vol de compte.", kind: 'scam', verb: "publie une arnaque", aftermath: "Le message est supprimé. L'auteur n'est pas sanctionné, sauf si tu choisis une punition.", deletesMessage: true, channelExempt: true, noWhitelistLimit: true, defaults: { punish: 'none', timeoutSeconds: 10 * M } },
   { key: 'antiToxicity', label: 'Anti-toxicité', category: 'Messages', description: 'Analyse chaque message et sanctionne ceux dont le taux de toxicité dépasse ta limite, en français comme en anglais.', kind: 'toxicity', verb: 'atteint le taux de toxicité', aftermath: 'Le message est supprimé.', deletesMessage: true, channelExempt: true, noWhitelistLimit: true, defaults: { punish: 'timeout', timeoutSeconds: 10 * M, toxicityThreshold: 90, ignoreUntargeted: true } },
   { key: 'antiStickerAbuse', label: 'Anti-StickerAbuse', category: 'Messages', description: "Sanctionne l'envoi de stickers en rafale, même tous différents, et efface la rafale.", kind: 'quota', verb: 'envoie', noun: ['sticker', 'stickers'], aftermath: 'La rafale de stickers est supprimée.', deletesMessage: true, channelExempt: true, defaults: msg(4, 15) },
-
-  // Arrivées
-  { key: 'antiAlt', label: 'Anti-alt', category: 'Arrivées', description: 'Refuse les comptes Discord trop récents.', kind: 'alt', noWhitelistLimit: true, defaults: { punish: 'kick', minAccountAgeDays: 7, dmMessage: '' } },
-
-  // Sauvegarde
+  { key: 'antiMessageDelete', label: 'Anti-suppression de message', category: 'Messages', description: "Dans les salons choisis, remet tout message supprimé et sanctionne l'auteur des suppressions.", kind: 'quota', specific: 'watchedChannels', verb: 'supprime', noun: ['message', 'messages'], aftermath: 'Chaque message supprimé est republié dans son salon.', defaults: { ...msg(3, 1 * M), watchedChannels: [] } },
+  { key: 'antiReactionRemove', label: 'Anti-suppression de réaction', category: 'Messages', description: 'Dans les salons choisis, signale chaque réaction retirée et peut verrouiller le serveur si ça se répète.', kind: 'quota', specific: 'watchedChannels', verb: 'retire', noun: ['réaction', 'réactions'], aftermath: 'Chaque réaction retirée est signalée dans le salon de logs.', defaults: { quotaMax: 10, quotaSeconds: 1 * M, punish: 'none' as Punish, watchedChannels: [] } },
+  { key: 'antiMemberRename', label: 'Anti-renommage de membre', category: 'Membres', description: "Détecte les pseudos de membres changés en cascade, remet les anciens et sanctionne l'auteur.", kind: 'quota', verb: 'renomme', noun: ['membre', 'membres'], aftermath: 'Chaque membre renommé retrouve son ancien pseudo.', defaults: nuke(3, 10 * M) },
+  { key: 'antiAlt', label: 'Anti-alt', category: 'Membres', description: 'Refuse les comptes Discord trop récents.', kind: 'alt', noWhitelistLimit: true, defaults: { punish: 'kick', minAccountAgeDays: 7, dmMessage: '' } },
   { key: 'rollback', label: 'Rollback & Backups', category: 'Sauvegarde', description: 'Capture le serveur régulièrement pour tout restaurer après un incident.', kind: 'rollback', noWhitelistLimit: true, defaults: { punish: 'none', backupIntervalHours: 24 } },
-
-  // Modules supplémentaires
-  { key: 'antiServerRename', label: 'Anti-renommage du serveur', category: 'Modules supplémentaires', description: "Remet l'ancien nom du serveur et sanctionne l'auteur d'un renommage.", kind: 'quota', verb: 'renomme le serveur', noun: ['fois', 'fois'], aftermath: "L'ancien nom du serveur est remis.", defaults: nuke(1, 10 * M) },
-  { key: 'antiIconUpdate', label: "Anti-changement d'icône", category: 'Modules supplémentaires', description: "Remet l'ancienne icône du serveur et sanctionne l'auteur du changement.", kind: 'quota', verb: "change l'icône du serveur", noun: ['fois', 'fois'], aftermath: "L'ancienne icône est remise.", defaults: nuke(1, 10 * M) },
-  { key: 'antiRoleRename', label: 'Anti-renommage de rôle', category: 'Modules supplémentaires', description: "Remet l'ancien nom d'un rôle renommé et sanctionne l'auteur.", kind: 'quota', verb: 'renomme', noun: ['rôle', 'rôles'], aftermath: 'Chaque rôle renommé retrouve son ancien nom.', defaults: nuke(1, 10 * M) },
-  { key: 'antiChannelRename', label: 'Anti-renommage de salon', category: 'Modules supplémentaires', description: "Remet l'ancien nom d'un salon renommé et sanctionne l'auteur.", kind: 'quota', verb: 'renomme', noun: ['salon', 'salons'], aftermath: 'Chaque salon renommé retrouve son ancien nom.', channelExempt: true, defaults: nuke(1, 10 * M) },
-  { key: 'antiEmojiDelete', label: "Anti-suppression d'emoji", category: 'Modules supplémentaires', description: "Recrée l'emoji supprimé et sanctionne l'auteur.", kind: 'quota', verb: 'supprime', noun: ['emoji', 'emojis'], aftermath: 'Chaque emoji supprimé est recréé avec le même nom.', defaults: nuke(1, 10 * M) },
-  { key: 'antiEmojiRename', label: "Anti-renommage d'emoji", category: 'Modules supplémentaires', description: "Remet l'ancien nom d'un emoji renommé et sanctionne l'auteur.", kind: 'quota', verb: 'renomme', noun: ['emoji', 'emojis'], aftermath: 'Chaque emoji renommé retrouve son ancien nom.', defaults: nuke(1, 10 * M) },
-  { key: 'antiInviteDelete', label: "Anti-suppression d'invitation", category: 'Modules supplémentaires', description: "Recrée l'invitation supprimée dans le même salon et sanctionne l'auteur.", kind: 'quota', verb: 'supprime', noun: ['invitation', 'invitations'], aftermath: 'Une nouvelle invitation est créée dans le même salon. Son lien est dans le log.', channelExempt: true, defaults: nuke(1, 10 * M) },
 ];
 
 export const PROTECTION_KEYS = PROTECTIONS.map((p) => p.key);
@@ -172,7 +158,7 @@ const dur = (s: number) => (s % 86400 === 0 ? `${s / 86400} j` : s % 3600 === 0 
 
 /** Protections de messages qui suppriment chaque message fautif tout de suite (les rafales attendent le seuil). */
 const INSTANT_DELETE = new Set(['antiLink', 'antiBadWord', 'antiMentionUsers', 'antiMentionRoles', 'antiMentionEveryone', 'antiTextWall', 'antiEmojiAbuse', 'antiScam', 'antiToxicity']);
-const FEMININE = new Set(['invitation']);
+const FEMININE = new Set(['invitation', 'réaction']);
 
 /** Phrase « Ce que fait Etho » (même texte que la console). */
 export function describeProtection(

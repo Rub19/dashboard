@@ -333,6 +333,7 @@ export function registerEvents(client: Client): void {
   });
   client.on(Events.MessageReactionRemove, (reaction, user) => {
     if (moduleOn(reaction.message.guildId, 'starboard')) starboardService.handleReactionRemove(reaction, user);
+    void protectionEngine.onReactionRemove(reaction, user).catch(() => {});
   });
   client.on(Events.MessageReactionRemoveAll, (message) => {
     if (moduleOn(message.guildId, 'starboard')) starboardService.handleReactionClear(message);

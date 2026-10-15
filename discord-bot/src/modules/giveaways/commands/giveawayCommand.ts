@@ -55,7 +55,7 @@ export const giveawayCommand: Command = {
         .setName('end')
         .setDescription('Termine immédiatement un giveaway et effectue le tirage')
         .addStringOption((opt) =>
-          opt.setName('id').setDescription('Identifiant du giveaway').setRequired(true)
+          opt.setName('id').setDescription('Giveaway').setRequired(true).setAutocomplete(true)
         )
     )
     .addSubcommand((sub) =>
@@ -63,7 +63,7 @@ export const giveawayCommand: Command = {
         .setName('reroll')
         .setDescription('Sélectionne de nouveaux gagnants pour un giveaway terminé')
         .addStringOption((opt) =>
-          opt.setName('id').setDescription('Identifiant du giveaway').setRequired(true)
+          opt.setName('id').setDescription('Giveaway').setRequired(true).setAutocomplete(true)
         )
         .addIntegerOption((opt) =>
           opt
@@ -78,7 +78,7 @@ export const giveawayCommand: Command = {
         .setName('cancel')
         .setDescription('Annule un giveaway en cours sans tirer de gagnant')
         .addStringOption((opt) =>
-          opt.setName('id').setDescription('Identifiant du giveaway').setRequired(true)
+          opt.setName('id').setDescription('Giveaway').setRequired(true).setAutocomplete(true)
         )
     )
     .addSubcommand((sub) =>
@@ -86,7 +86,7 @@ export const giveawayCommand: Command = {
         .setName('extend')
         .setDescription('Prolonge la durée d\'un giveaway actif')
         .addStringOption((opt) =>
-          opt.setName('id').setDescription('Identifiant du giveaway').setRequired(true)
+          opt.setName('id').setDescription('Giveaway').setRequired(true).setAutocomplete(true)
         )
         .addIntegerOption((opt) =>
           opt
@@ -99,6 +99,19 @@ export const giveawayCommand: Command = {
     .addSubcommand((sub) =>
       sub.setName('list').setDescription('Liste les giveaways actifs du serveur')
     ),
+
+  async autocomplete(interaction) {
+    if (!interaction.guildId) return interaction.respond([]);
+    const sub = interaction.options.getSubcommand();
+    const focused = interaction.options.getFocused().toLowerCase();
+    const wanted = sub === 'reroll' ? ['ended'] : ['active', 'paused', 'scheduled'];
+    const choices = giveawayStorage
+      .getForGuild(interaction.guildId)
+      .filter((g) => wanted.includes(g.status) && (g.prize.toLowerCase().includes(focused) || g.id.toLowerCase().includes(focused)))
+      .slice(0, 25)
+      .map((g) => ({ name: String(`${g.prize} · ${g.status === 'ended' ? 'terminé' : 'fin ' + new Date(g.endsAt).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' })}`).slice(0, 100), value: g.id }));
+    await interaction.respond(choices);
+  },
 
   async execute(ctx: CommandContext): Promise<void> {
     const t = getTranslation(ctx.guildConfig.language);

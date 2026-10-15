@@ -66,7 +66,7 @@ export const pollCommand: Command = {
         .setName('panel')
         .setDescription('Publier un panneau de vote interactif dans un salon Discord')
         .addStringOption((opt) =>
-          opt.setName('id').setDescription('ID du sondage').setRequired(true)
+          opt.setName('id').setDescription('Sondage').setRequired(true).setAutocomplete(true)
         )
         .addChannelOption((opt) =>
           opt
@@ -87,7 +87,7 @@ export const pollCommand: Command = {
         .setName('end')
         .setDescription('Clôturer immédiatement un sondage et exécuter les automatisations')
         .addStringOption((opt) =>
-          opt.setName('id').setDescription('ID du sondage à terminer').setRequired(true)
+          opt.setName('id').setDescription('Sondage à terminer').setRequired(true).setAutocomplete(true)
         )
     )
     .addSubcommand((sub) =>
@@ -95,7 +95,7 @@ export const pollCommand: Command = {
         .setName('results')
         .setDescription("Afficher les résultats actuels ou finaux d'un sondage")
         .addStringOption((opt) =>
-          opt.setName('id').setDescription('ID du sondage').setRequired(true)
+          opt.setName('id').setDescription('Sondage').setRequired(true).setAutocomplete(true)
         )
     )
     .addSubcommand((sub) =>
@@ -103,6 +103,18 @@ export const pollCommand: Command = {
         .setName('list')
         .setDescription('Lister tous les sondages actifs de ce serveur')
     ),
+
+  autocomplete: async (interaction) => {
+    if (!interaction.guildId) return interaction.respond([]);
+    const sub = interaction.options.getSubcommand();
+    const focused = interaction.options.getFocused().toLowerCase();
+    const choices = pollRepository
+      .getPolls(interaction.guildId)
+      .filter((p) => (sub !== 'end' || p.status === 'ACTIVE' || p.status === 'PAUSED') && (p.title.toLowerCase().includes(focused) || p.id.toLowerCase().includes(focused)))
+      .slice(0, 25)
+      .map((p) => ({ name: String(`${p.title} · ${p.status === 'ACTIVE' ? 'en cours' : p.status === 'ENDED' ? 'terminé' : p.status.toLowerCase()}`).slice(0, 100), value: p.id }));
+    await interaction.respond(choices);
+  },
 
   execute: async (ctx: CommandContext) => {
     const t = getTranslation(ctx.guildConfig.language);

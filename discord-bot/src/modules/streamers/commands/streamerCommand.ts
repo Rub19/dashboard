@@ -92,7 +92,7 @@ export const streamerCommand: Command = {
             )
         )
         .addStringOption((opt) =>
-          opt.setName('chaine').setDescription('Pseudo ou identifiant de la chaîne').setRequired(true)
+          opt.setName('chaine').setDescription('Pseudo ou identifiant de la chaîne').setRequired(true).setAutocomplete(true)
         )
     )
     .addSubcommand((sub) =>
@@ -159,6 +159,18 @@ export const streamerCommand: Command = {
             .setRequired(false)
         )
     ),
+
+  async autocomplete(interaction) {
+    if (!interaction.guildId) return interaction.respond([]);
+    const platform = interaction.options.getString('plateforme');
+    const focused = interaction.options.getFocused().toLowerCase();
+    const choices = streamerStorage
+      .getStreamers(interaction.guildId)
+      .filter((st) => (!platform || st.platform === platform) && st.username.toLowerCase().includes(focused))
+      .slice(0, 25)
+      .map((st) => ({ name: String(`${st.username} (${st.platform})`).slice(0, 100), value: st.username }));
+    await interaction.respond(choices);
+  },
 
   async execute(ctx: CommandContext): Promise<void> {
     if (!ctx.guild) return;
@@ -243,7 +255,7 @@ export const streamerCommand: Command = {
         .setDescription(
           `La chaîne **${added.displayName || added.username}** (${platform.toUpperCase()}) a été ajoutée aux alertes !\n\n` +
             `📍 **Salon d'annonce :** ${added.channelId ? `<#${added.channelId}>` : config.defaultChannelId ? `<#${config.defaultChannelId}> (défaut)` : '*Aucun salon configuré*'}\n` +
-            `🔔 **Notification :** ${added.pingRoleId ? `<@&${added.pingRoleId}>` : config.defaultPing}\n` +
+            `🔔 **Notification :** ${added.pingRoleId ? `<@&${added.pingRoleId}>` : config.defaultPing === 'none' ? 'Aucune mention' : config.defaultPing === 'here' ? '@here' : config.defaultPing === 'everyone' ? '@everyone' : config.defaultPing}\n` +
             (added.discordUserId ? `👤 **Membre Discord lié :** <@${added.discordUserId}>\n` : '') +
             (added.gameFilter ? `🎯 **Filtre de jeu :** \`${added.gameFilter}\`\n` : '') +
             `📡 **Statut actuel :** ${probe.isLive ? `${onlineEmoji} **EN DIRECT** (${probe.viewers} spectateurs)` : '⚫ Hors ligne'}`

@@ -192,7 +192,7 @@ export const welcomeCommand: Command = {
       await ctx.deferReply({ ephemeral: true });
       try {
         const res = await welcomeService.sendTest(ctx.guild, kind, 'channel', ctx.author);
-        await ctx.editReply({ embeds: [ctx.createEmbed('success').setDescription(`Message de ${KIND_LABEL[kind]} de test envoyé dans <#${welcomeService.getConfig(guildId)[kind].channelId}>${res.channelName ? ` (#${res.channelName})` : ''}.`)] });
+        await ctx.editReply({ embeds: [ctx.createEmbed('success').setDescription(`Message de ${KIND_LABEL[kind]} de test envoyé dans ${res.channelId ? `<#${res.channelId}>` : `#${res.channelName}`}.`)] });
       } catch (err: any) {
         await ctx.editReply({ embeds: [ctx.createEmbed('error').setDescription(`${err?.message || 'Envoi impossible.'} Choisis d'abord un salon avec \`/bienvenue salon${kind === 'goodbye' ? ' type:Départ' : ''}\`.`)] });
       }

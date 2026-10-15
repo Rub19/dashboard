@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.104 — 2026-10-15
+
+**Autocomplétion des commandes et correctifs trouvés en test réel**
+
+- /streamer remove, /giveaway end/reroll/cancel/extend, /reminder cancel, /poll et /economy buy proposent la liste des éléments existants : plus besoin de taper un nom ou un identifiant
+- /bienvenue test affiche le bon salon (au lieu de « <#null> »)
+- /streamer add affiche « Aucune mention » au lieu de « none »
+- Le site ne réutilise plus une ancienne version en cache lors de la navigation
+
 ## v1.75.103 — 2026-10-15
 
 **Fausses données retirées, tutoiement et page /bot pour Google**

@@ -1,4 +1,4 @@
-const CACHE_NAME = "ethone-next-v422";
+const CACHE_NAME = "ethone-next-v423";
 const PRECACHE = ["/", "/login/", "/dashboard/", "/offline.html"];
 const STATIC_EXTENSIONS = [".js", ".css", ".png", ".jpg", ".jpeg", ".webp", ".svg", ".woff", ".woff2", ".ico"];
 
@@ -354,6 +354,21 @@ self.addEventListener("fetch", (event) => {
           })
           .catch(() => cached || offlineFallback());
       })
+    );
+    return;
+  }
+
+  if (requestUrl.pathname.endsWith(".txt") || event.request.headers.get("RSC")) {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          if (response && response.status === 200 && response.type === "basic") {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          }
+          return response;
+        })
+        .catch(() => caches.match(event.request).then((cached) => cached || offlineFallback()))
     );
     return;
   }

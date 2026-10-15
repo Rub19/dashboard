@@ -56827,6 +56827,57 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_103_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_103_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_103_de);
 
+const v1_75_104_fr: ChangelogEntry = {
+  version: "v1.75.104",
+  date: "2026-10-15",
+  title: "Autocomplétion des commandes et correctifs trouvés en test réel",
+  items: [
+    "/streamer remove, /giveaway end/reroll/cancel/extend, /reminder cancel, /poll et /economy buy proposent la liste des éléments existants : plus besoin de taper un nom ou un identifiant",
+    "/bienvenue test affiche le bon salon (au lieu de « <#null> »)",
+    "/streamer add affiche « Aucune mention » au lieu de « none »",
+    "Le site ne réutilise plus une ancienne version en cache lors de la navigation",
+  ],
+};
+
+const v1_75_104_en: ChangelogEntry = {
+  version: "v1.75.104",
+  date: "2026-10-15",
+  title: "Command autocomplete and fixes found in real tests",
+  items: [
+    "/streamer remove, /giveaway end/reroll/cancel/extend, /reminder cancel, /poll and /economy buy list existing items",
+    "/bienvenue test shows the right channel instead of \"<#null>\"",
+    "/streamer add shows \"No mention\" instead of \"none\"",
+    "The site no longer reuses an old cached version while navigating",
+  ],
+};
+
+const v1_75_104_es: ChangelogEntry = {
+  version: "v1.75.104",
+  date: "2026-10-15",
+  title: "Autocompletado de comandos y correcciones",
+  items: [
+    "Los comandos de eliminar/terminar muestran la lista de elementos existentes",
+    "/bienvenue test muestra el canal correcto",
+    "El sitio ya no reutiliza una versión antigua en caché",
+  ],
+};
+
+const v1_75_104_de: ChangelogEntry = {
+  version: "v1.75.104",
+  date: "2026-10-15",
+  title: "Autovervollständigung und Korrekturen",
+  items: [
+    "Entfernen-/Beenden-Befehle zeigen die vorhandenen Einträge",
+    "/bienvenue test zeigt den richtigen Kanal",
+    "Die Seite nutzt keine alte zwischengespeicherte Version mehr",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_104_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_104_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_104_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_104_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

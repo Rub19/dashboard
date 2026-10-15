@@ -1,5 +1,16 @@
 [
   {
+    "version": "v1.75.104",
+    "date": "2026-10-15",
+    "title": "Autocomplétion des commandes et correctifs trouvés en test réel",
+    "items": [
+      "/streamer remove, /giveaway end/reroll/cancel/extend, /reminder cancel, /poll et /economy buy proposent la liste des éléments existants : plus besoin de taper un nom ou un identifiant",
+      "/bienvenue test affiche le bon salon (au lieu de « <#null> »)",
+      "/streamer add affiche « Aucune mention » au lieu de « none »",
+      "Le site ne réutilise plus une ancienne version en cache lors de la navigation"
+    ]
+  },
+  {
     "version": "v1.75.103",
     "date": "2026-10-15",
     "title": "Fausses données retirées, tutoiement et page /bot pour Google",
@@ -627,18 +638,6 @@
       "Les pages de modules ne tombent plus en erreur au premier chargement : la vérification de tes droits interroge Discord une seule fois au lieu d'une fois par requête.",
       "Rôles : l'indication « membres déjà présents » demande d'abord de choisir des rôles quand aucun n'est réglé.",
       "Invitations : un salon d'annonces enregistré par son nom (ancien réglage) s'affiche correctement."
-    ]
-  },
-  {
-    "version": "v1.56.1",
-    "date": "2026-10-09",
-    "title": "Console : Suggestions, Rôles et Invitations au format Keeper",
-    "items": [
-      "Suggestions : salon, fil de discussion, message à l'auteur, et traitement des idées (statut et réponse officielle) par filtre.",
-      "Rôles : rôles donnés à l'arrivée (bots, règles, délai, rattrapage) et menus de rôles à publier, avec option « un seul rôle à la fois ».",
-      "Invitations : suivi, annonces dans un salon, paliers de récompense, meilleurs inviteurs et liens du serveur.",
-      "Invitations : le salon des annonces choisi dans le tableau de bord est maintenant bien utilisé, et un chiffre inventé a été retiré des statistiques.",
-      "Suggestions : une suggestion ne peut plus être modifiée depuis un autre serveur."
     ]
   }
 ]

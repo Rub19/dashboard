@@ -49,8 +49,19 @@ export const economyCommand: Command = {
       sub
         .setName('buy')
         .setDescription('Acheter un article de la boutique')
-        .addStringOption((opt) => opt.setName('id').setDescription('Identifiant de l’article (voir /shop)').setRequired(true))
+        .addStringOption((opt) => opt.setName('id').setDescription('Article de la boutique').setRequired(true).setAutocomplete(true))
     ),
+
+  async autocomplete(interaction) {
+    if (!interaction.guildId) return interaction.respond([]);
+    const focused = interaction.options.getFocused().toLowerCase();
+    const choices = economyStorage
+      .getShopItems(interaction.guildId)
+      .filter((i) => i.enabled && i.label.toLowerCase().includes(focused))
+      .slice(0, 25)
+      .map((i) => ({ name: String(`${i.label} · ${i.price.toLocaleString('fr-FR')}`).slice(0, 100), value: i.id }));
+    await interaction.respond(choices);
+  },
 
   async execute(ctx: CommandContext): Promise<void> {
     if (!ctx.guild || !ctx.member) {

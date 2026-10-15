@@ -219,7 +219,7 @@ class WelcomeService {
     type: 'welcome' | 'goodbye',
     target: 'channel' | 'dm' = 'channel',
     adminUser?: User
-  ): Promise<{ success: boolean; channelName?: string; note?: string }> {
+  ): Promise<{ success: boolean; channelId?: string; channelName?: string; note?: string }> {
     const conf = this.getConfig(guild.id);
     const messageConf = type === 'welcome' ? conf.welcome : conf.goodbye;
     const clientMember = guild.members.me!;
@@ -268,7 +268,7 @@ class WelcomeService {
 
     ctx.channelId = channel.id;
     await this.sendMessage(channel, messageConf, ctx, clientMember.user.displayAvatarURL({ size: 256 }));
-    return { success: true, channelName: channel.name };
+    return { success: true, channelId: channel.id, channelName: channel.name };
   }
 
   /** Carte de bienvenue pour un MP (générée même si la carte du salon est désactivée) ; null si le rendu échoue. */

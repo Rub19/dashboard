@@ -43,8 +43,19 @@ export const reminderCommand: Command = {
       sub
         .setName('cancel')
         .setDescription('Annule un rappel')
-        .addStringOption((opt) => opt.setName('id').setDescription('ID du rappel (voir /reminder list)').setRequired(true))
+        .addStringOption((opt) => opt.setName('id').setDescription('Rappel à annuler').setRequired(true).setAutocomplete(true))
     ),
+
+  autocomplete: async (interaction) => {
+    if (!interaction.guildId) return interaction.respond([]);
+    const focused = interaction.options.getFocused().toLowerCase();
+    const choices = reminderStorage
+      .listForUser(interaction.guildId, interaction.user.id)
+      .filter((r) => r.message.toLowerCase().includes(focused) || r.id.toLowerCase().includes(focused))
+      .slice(0, 25)
+      .map((r) => ({ name: String(`${new Date(r.remindAt).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' })} · ${r.message}`).slice(0, 100), value: r.id }));
+    await interaction.respond(choices);
+  },
 
   execute: async (ctx: CommandContext) => {
     const guildId = ctx.guild?.id;

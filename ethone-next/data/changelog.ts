@@ -56491,6 +56491,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_96_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_96_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_96_de);
 
+const v1_75_97_fr: ChangelogEntry = {
+  version: "v1.75.97",
+  date: "2026-10-15",
+  title: "Commande en double retirée",
+  items: [
+    "/economy balance est retiré : /balance fait la même chose et reste disponible",
+  ],
+};
+
+const v1_75_97_en: ChangelogEntry = {
+  version: "v1.75.97",
+  date: "2026-10-15",
+  title: "Duplicate command removed",
+  items: [
+    "/economy balance is removed: /balance does the same thing and stays available",
+  ],
+};
+
+const v1_75_97_es: ChangelogEntry = {
+  version: "v1.75.97",
+  date: "2026-10-15",
+  title: "Comando duplicado eliminado",
+  items: [
+    "Se eliminó /economy balance: /balance hace lo mismo y sigue disponible",
+  ],
+};
+
+const v1_75_97_de: ChangelogEntry = {
+  version: "v1.75.97",
+  date: "2026-10-15",
+  title: "Doppelter Befehl entfernt",
+  items: [
+    "/economy balance wurde entfernt: /balance macht dasselbe und bleibt verfügbar",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_97_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_97_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_97_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_97_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

@@ -44,12 +44,6 @@ export const economyCommand: Command = {
   slashData: new SlashCommandBuilder()
     .setName('economy')
     .setDescription('Économie du serveur')
-    .addSubcommand((sub) =>
-      sub
-        .setName('balance')
-        .setDescription('Affiche votre solde (ou celui d’un membre)')
-        .addUserOption((opt) => opt.setName('membre').setDescription('Membre à consulter').setRequired(false))
-    )
     .addSubcommand((sub) => sub.setName('daily').setDescription('Réclame votre bonus quotidien (série = bonus)'))
     .addSubcommand((sub) => sub.setName('work').setDescription('Fais un petit boulot pour gagner des crédits'))
     .addSubcommand((sub) =>

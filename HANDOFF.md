@@ -1,4 +1,4 @@
-# ETHONE — passation & nouveautés (2026-10-15, version 1.75.96)
+# ETHONE — passation & nouveautés (2026-10-15, version 1.75.97)
 
 ## Projet
 - `ethone-next/` : site Next.js statique (ethone.dev, Cloudflare Pages, déploiement auto au push sur `main`).
@@ -26,7 +26,10 @@
 
 ---
 
-## Nouveautés majeures & Réalisations récentes (v1.75.83 → v1.75.96)
+## Nouveautés majeures & Réalisations récentes (v1.75.83 → v1.75.97)
+
+### Doublon /economy balance retiré (v1.75.97)
+- Sous-commande slash `balance` retirée de `/economy` (`/balance` reste ; `!economy` sans argument affiche toujours le solde). Les autres raccourcis (`/daily`, `/work`, `/pay`, `/gamble`, `/rob`, `/shop`) doublent encore leurs sous-commandes `/economy`.
 
 ### Console : redirections server/*, aperçu niveau, titres FR (v1.75.96)
 - `LegacyModuleRedirect` accepte `view` et `tab` ; `/discord/server/{channels,roles,emojis,webhooks,settings}` ouvrent l'onglet (lu par `ConsoleServer` via `?tab=`), `members`/`permissions` → `?view=members`, `audit` → `?view=logs`.

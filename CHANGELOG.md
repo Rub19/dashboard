@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.97 — 2026-10-15
+
+**Commande en double retirée**
+
+- /economy balance est retiré : /balance fait la même chose et reste disponible
+
 ## v1.75.96 — 2026-10-15
 
 **Console Discord : liens directs et titres en français**

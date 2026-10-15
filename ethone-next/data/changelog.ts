@@ -56577,6 +56577,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_98_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_98_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_98_de);
 
+const v1_75_99_fr: ChangelogEntry = {
+  version: "v1.75.99",
+  date: "2026-10-15",
+  title: "Assistant IA branché sur Groq",
+  items: [
+    "Quand une clé Groq est configurée sur le serveur du bot, /ask l'utilise automatiquement au lieu du moteur intégré",
+    "/summarize résume maintenant la conversation avec l'IA (repli sur l'ancien résumé si l'IA est indisponible)",
+  ],
+};
+
+const v1_75_99_en: ChangelogEntry = {
+  version: "v1.75.99",
+  date: "2026-10-15",
+  title: "AI assistant wired to Groq",
+  items: [
+    "When a Groq key is configured on the bot server, /ask uses it automatically instead of the built-in engine",
+    "/summarize now summarizes the conversation with AI (falls back to the old summary if AI is unavailable)",
+  ],
+};
+
+const v1_75_99_es: ChangelogEntry = {
+  version: "v1.75.99",
+  date: "2026-10-15",
+  title: "Asistente IA conectado a Groq",
+  items: [
+    "Con una clave de Groq en el servidor del bot, /ask la usa automáticamente",
+    "/summarize resume ahora la conversación con IA",
+  ],
+};
+
+const v1_75_99_de: ChangelogEntry = {
+  version: "v1.75.99",
+  date: "2026-10-15",
+  title: "KI-Assistent mit Groq verbunden",
+  items: [
+    "Mit einem Groq-Schlüssel auf dem Bot-Server nutzt /ask ihn automatisch",
+    "/summarize fasst die Unterhaltung jetzt mit KI zusammen",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_99_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_99_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_99_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_99_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

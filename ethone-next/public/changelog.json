@@ -1,5 +1,14 @@
 [
   {
+    "version": "v1.75.99",
+    "date": "2026-10-15",
+    "title": "Assistant IA branché sur Groq",
+    "items": [
+      "Quand une clé Groq est configurée sur le serveur du bot, /ask l'utilise automatiquement au lieu du moteur intégré",
+      "/summarize résume maintenant la conversation avec l'IA (repli sur l'ancien résumé si l'IA est indisponible)"
+    ]
+  },
+  {
     "version": "v1.75.98",
     "date": "2026-10-15",
     "title": "Commandes slash de nouveau synchronisées",
@@ -628,17 +637,6 @@
     "title": "Économie et Jeux : finitions",
     "items": [
       "Le symbole de la monnaie est plus discret dans les tuiles chiffrées."
-    ]
-  },
-  {
-    "version": "v1.55.96",
-    "date": "2026-10-09",
-    "title": "Console Discord : Économie et Jeux refaits façon Keeper",
-    "items": [
-      "Économie : nouvelle page en blocs avec monnaie, bonus quotidien, gains par message et petit boulot, paris et vols, boutique de rôles modifiable sur place, classement et derniers mouvements.",
-      "Jeux et casino : nouvelle page avec cagnotte et statistiques, un interrupteur par jeu, mises minimum et maximum, part versée à la cagnotte, meilleurs joueurs et dernières parties.",
-      "Seuls les réglages réellement appliqués par le bot sont affichés ; chaque modification est enregistrée aussitôt.",
-      "Les tables de jeu jouables restent accessibles avec « Jouer depuis le site »."
     ]
   }
 ]

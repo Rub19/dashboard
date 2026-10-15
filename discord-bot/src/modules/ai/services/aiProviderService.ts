@@ -45,7 +45,12 @@ export class AIProviderService {
    * DEPRECATED : préférer `generateWithIntent()` (Prompt #18). Conservé pour
    * rétrocompatibilité avec les call-sites existants (tests playground, etc.).
    */
-  public static async generate(params: GenerateCompletionParams): Promise<AICompletionResult> {
+  public static withAvailableProvider(settings: AISettings): AISettings {
+    return settings.provider === 'BUILTIN' && process.env.GROQ_API_KEY ? { ...settings, provider: 'GROQ' } : settings;
+  }
+
+  public static async generate(rawParams: GenerateCompletionParams): Promise<AICompletionResult> {
+    const params = { ...rawParams, settings: this.withAvailableProvider(rawParams.settings) };
     // Budget quotidien atteint (ou 0) : pas d'appel au fournisseur payant, moteur intégré gratuit.
     const budget = params.settings.dailyBudgetTokens ?? 0;
     const overBudget = params.settings.provider !== 'BUILTIN' && aiDailyBudget.remaining(params.settings.guildId, budget) <= 0;
@@ -173,7 +178,7 @@ export class AIProviderService {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            model: settings.model || 'llama-3.3-70b-versatile',
+            model: settings.model && !settings.model.includes('/') ? settings.model : 'llama-3.3-70b-versatile',
             messages: [
               { role: 'system', content: `${systemPrompt}\n\n${knowledgeContext}` },
               ...messages.map((m) => ({ role: m.role, content: m.content })),
@@ -195,7 +200,7 @@ export class AIProviderService {
               tokensUsed: Number(data.usage?.total_tokens) || 0,
               promptTokens: Number(data.usage?.prompt_tokens) || undefined,
               completionTokens: Number(data.usage?.completion_tokens) || undefined,
-              model: settings.model || 'groq-llama',
+              model: data.model || 'llama-3.3-70b-versatile',
             };
           }
         } else {

@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.99 — 2026-10-15
+
+**Assistant IA branché sur Groq**
+
+- Quand une clé Groq est configurée sur le serveur du bot, /ask l'utilise automatiquement au lieu du moteur intégré
+- /summarize résume maintenant la conversation avec l'IA (repli sur l'ancien résumé si l'IA est indisponible)
+
 ## v1.75.98 — 2026-10-15
 
 **Commandes slash de nouveau synchronisées**

@@ -1,6 +1,8 @@
 import { SlashCommandBuilder } from 'discord.js';
 import { Command, CommandContext } from '../../types/command.js';
 import { AIToolService } from '../../modules/ai/services/aiToolService.js';
+import { AIProviderService } from '../../modules/ai/services/aiProviderService.js';
+import { aiRepository } from '../../modules/ai/storage/aiRepository.js';
 import { baseEmbed } from '../../utils/embeds.js';
 import { formatString, getTranslation } from '../../utils/i18n.js';
 
@@ -48,7 +50,15 @@ export const summarizeCommand: Command = {
         .reverse()
         .map((m) => ({ author: m.author.username, content: m.content }));
 
-      const summary = AIToolService.summarizeMessages(list);
+      const transcript = list.filter((m) => m.content.trim()).map((m) => `${m.author}: ${m.content}`).join('\n').slice(0, 8000);
+      const ai = transcript
+        ? await AIProviderService.generate({
+            settings: aiRepository.getSettings(ctx.guildId ?? ''),
+            systemPrompt: 'Tu résumes une conversation Discord en français, en 3 à 6 puces courtes : sujets abordés, décisions, questions restées ouvertes. N\'invente rien.',
+            messages: [{ role: 'user', content: transcript, timestamp: new Date().toISOString() }],
+          }).catch(() => null)
+        : null;
+      const summary = ai && !ai.model.startsWith('builtin') ? ai.text : AIToolService.summarizeMessages(list);
 
       await ctx.editReply({
         embeds: [baseEmbed('info').setTitle(t.summarize_title).setDescription(summary.slice(0, 4096))],

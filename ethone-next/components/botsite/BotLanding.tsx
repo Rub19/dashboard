@@ -756,7 +756,7 @@ function QueueDeck() {
           <div className="min-w-0 flex-1">
             <div className="flex items-baseline gap-2">
               <p className="truncate text-sm font-bold text-white">POWER</p>
-              <span className="truncate text-xs font-medium text-[#92C8D2]">Kanye West</span>
+              <span className="truncate text-xs font-medium text-[#92C8D2]">Titre en cours</span>
             </div>
             <div className="mt-2 flex items-center gap-2.5">
               <div className="relative h-1 flex-1 rounded-full bg-white/10">
@@ -1062,10 +1062,10 @@ const PLATFORM_CONFIGS: PlatformConfigItem[] = [
       </svg>
     ),
     desc: {
-      fr: <>Affichez votre <span className="font-medium text-[#D51007]">Titre actuel & Récents</span>. Explorez <span className="font-medium text-[#D51007]">Artistes & Profils</span>. Suivez les <span className="font-medium text-[#D51007]">Leaderboards</span> et <span className="font-medium text-[#D51007]">50+</span> stats.</>,
-      en: <>View your <span className="font-medium text-[#D51007]">current track, Recent Tracks</span>. Search <span className="font-medium text-[#D51007]">Artists, Profiles</span>. Track <span className="font-medium text-[#D51007]">Leaderboards</span>. and <span className="font-medium text-[#D51007]">50+</span> more.</>,
-      es: <>Mira tu <span className="font-medium text-[#D51007]">Pista actual y Recientes</span>. Busca <span className="font-medium text-[#D51007]">Artistas</span>. Sigue los <span className="font-medium text-[#D51007]">Rankings</span> y <span className="font-medium text-[#D51007]">50+</span> más.</>,
-      de: <>Aktueller <span className="font-medium text-[#D51007]">Track & Kürzlich gehört</span>. <span className="font-medium text-[#D51007]">Künstler & Profile</span> suchen. <span className="font-medium text-[#D51007]">Leaderboards</span> und <span className="font-medium text-[#D51007]">50+</span> mehr.</>,
+      fr: <>Affichez votre <span className="font-medium text-[#D51007]">Titre actuel & Récents</span>. Explorez <span className="font-medium text-[#D51007]">Artistes & Profils</span>. Suivez les <span className="font-medium text-[#D51007]">Leaderboards</span> et <span className="font-medium text-[#D51007]">10+</span> stats.</>,
+      en: <>View your <span className="font-medium text-[#D51007]">current track, Recent Tracks</span>. Search <span className="font-medium text-[#D51007]">Artists, Profiles</span>. Track <span className="font-medium text-[#D51007]">Leaderboards</span>. and <span className="font-medium text-[#D51007]">10+</span> more.</>,
+      es: <>Mira tu <span className="font-medium text-[#D51007]">Pista actual y Recientes</span>. Busca <span className="font-medium text-[#D51007]">Artistas</span>. Sigue los <span className="font-medium text-[#D51007]">Rankings</span> y <span className="font-medium text-[#D51007]">10+</span> más.</>,
+      de: <>Aktueller <span className="font-medium text-[#D51007]">Track & Kürzlich gehört</span>. <span className="font-medium text-[#D51007]">Künstler & Profile</span> suchen. <span className="font-medium text-[#D51007]">Leaderboards</span> und <span className="font-medium text-[#D51007]">10+</span> mehr.</>,
     },
   },
   {

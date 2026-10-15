@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.90 — 2026-10-15
+
+**Vitrine du bot alignée sur les vraies fonctions**
+
+- Fonctions inexistantes retirées (TTS, Snipe, Blacktea, traduction, rappels de bump)
+- Remplacées par les vraies : assistant IA, tickets, casino, tags, rappels, starboard, images IA, anniversaires
+- Chiffres corrigés : plus de 100 commandes, 20 commandes de sécurité, 60+ commandes musique
+
 ## v1.75.89 — 2026-10-15
 
 **Tracker Riot fiabilisé et dépendances corrigées**

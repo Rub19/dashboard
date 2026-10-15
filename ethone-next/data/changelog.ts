@@ -56140,6 +56140,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_89_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_89_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_89_de);
 
+const v1_75_90_fr: ChangelogEntry = {
+  version: "v1.75.90",
+  date: "2026-10-15",
+  title: "Vitrine du bot alignée sur les vraies fonctions",
+  items: [
+    "Fonctions inexistantes retirées (TTS, Snipe, Blacktea, traduction, rappels de bump)",
+    "Remplacées par les vraies : assistant IA, tickets, casino, tags, rappels, starboard, images IA, anniversaires",
+    "Chiffres corrigés : plus de 100 commandes, 20 commandes de sécurité, 60+ commandes musique",
+  ],
+};
+
+const v1_75_90_en: ChangelogEntry = {
+  version: "v1.75.90",
+  date: "2026-10-15",
+  title: "Bot showcase matches real features",
+  items: [
+    "Removed features that do not exist (TTS, Snipe, Blacktea, translation, bump reminders)",
+    "Replaced with real ones: AI assistant, tickets, casino, tags, reminders, starboard, AI images, birthdays",
+    "Fixed numbers: over 100 commands, 20 security commands, 60+ music commands",
+  ],
+};
+
+const v1_75_90_es: ChangelogEntry = {
+  version: "v1.75.90",
+  date: "2026-10-15",
+  title: "Escaparate del bot alineado con las funciones reales",
+  items: [
+    "Se quitaron funciones inexistentes (TTS, Snipe, Blacktea, traducción, recordatorios de bump)",
+    "Reemplazadas por las reales: asistente IA, tickets, casino, tags, recordatorios, starboard, imágenes IA, cumpleaños",
+    "Cifras corregidas: más de 100 comandos, 20 de seguridad, 60+ de música",
+  ],
+};
+
+const v1_75_90_de: ChangelogEntry = {
+  version: "v1.75.90",
+  date: "2026-10-15",
+  title: "Bot-Seite zeigt echte Funktionen",
+  items: [
+    "Nicht vorhandene Funktionen entfernt (TTS, Snipe, Blacktea, Übersetzung, Bump-Erinnerungen)",
+    "Ersetzt durch echte: KI-Assistent, Tickets, Casino, Tags, Erinnerungen, Starboard, KI-Bilder, Geburtstage",
+    "Zahlen korrigiert: über 100 Befehle, 20 Sicherheitsbefehle, 60+ Musikbefehle",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_90_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_90_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_90_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_90_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

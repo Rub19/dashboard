@@ -242,7 +242,7 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
         desc: "Protégez votre serveur contre les raids coordonnés grâce aux filtres d'âge de compte et d'avatar.",
         verified: "Identité vérifiée",
       },
-      moreBtn: "100+ commandes de sécurité",
+      moreBtn: "20 commandes de sécurité",
     },
     music: {
       badge: "EXPÉRIENCE AUDIO",
@@ -265,7 +265,7 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
         desc: "Entièrement intégré et pilotable directement avec Spotify.",
         status: "Synchronisé",
       },
-      moreBtn: "20+ commandes musique",
+      moreBtn: "60+ commandes musique",
     },
     platforms: {
       badge: "INTÉGRATIONS",
@@ -317,8 +317,8 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
       subtitle: "Ne vous souciez plus jamais d'avoir besoin d'un autre bot, tous vos besoins sont couverts.",
       commandsDivider: {
         before: "Plus de",
-        count: "800+",
-        after: "Commandes",
+        count: "100",
+        after: "commandes",
       },
       allCommandsBtn: "Toutes les commandes",
       hideCommandsBtn: "Masquer les commandes",
@@ -328,48 +328,48 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
           desc: "Recherche d'images inversée, requêtes visuelles ou recherche en ligne pour n'importe quel résultat.",
         },
         tts: {
-          title: "Synthèse vocale (TTS)",
-          desc: "Convertissez du texte en fichier audio ou faites parler Etho en direct dans vos salons. Plus de 80+ voix.",
+          title: "Assistant IA",
+          desc: "Pose une question avec /ask ou fais résumer une discussion avec /summarize.",
         },
         levels: {
           title: "Système de niveaux",
           desc: "Système d'XP et de niveaux pour vos membres afin de monter en grade et suivre leur progression.",
         },
         snipe: {
-          title: "Snipe & Historique",
-          desc: "Système avancé pour récupérer messages, images, vidéos, modifications et réactions supprimées.",
+          title: "Tickets d'assistance",
+          desc: "Un système de tickets complet pour que ton staff réponde aux membres en privé.",
         },
         giveaways: {
           title: "Giveaways & Concours",
           desc: "Organisez des tirages au sort rapides et faciles pour les membres de votre serveur.",
         },
         games: {
-          title: "Mini-Jeux",
-          desc: "Jouez à Blacktea, au Morpion et à de nombreux mini-jeux entre amis.",
+          title: "Casino & Mini-jeux",
+          desc: "Blackjack, roulette, dés et jeu de comptage pour animer ton serveur.",
         },
         autoResponders: {
-          title: "Réponses automatiques",
-          desc: "Configurez des réponses automatiques aux messages correspondant à des déclencheurs.",
+          title: "Tags",
+          desc: "Des réponses réutilisables que ton équipe rappelle en une commande.",
         },
         bumpReminder: {
-          title: "Rappels de Bump",
-          desc: "Recevez des rappels programmés pour faire /bump sur votre serveur sur Disboard.",
+          title: "Rappels",
+          desc: "Programme des rappels personnels avec /reminder.",
         },
         counters: {
           title: "Salons compteurs",
           desc: "Créez des salons compteurs pour afficher les statistiques du serveur en direct.",
         },
         reactionTriggers: {
-          title: "Déclencheurs de réactions",
-          desc: "Configurez des déclencheurs avancés sur les messages ou messages précédents.",
+          title: "Starboard",
+          desc: "Les messages les plus appréciés mis en avant dans un salon dédié.",
         },
         imageManipulation: {
-          title: "Manipulation d'images",
-          desc: "Transformez facilement images, vidéos et GIFs en mèmes percutants.",
+          title: "Images IA",
+          desc: "Génère des images à partir d'une description avec /imagine.",
         },
         translation: {
-          title: "Traduction instantanée",
-          desc: "Traduisez rapidement du texte dans plus de 100 langues.",
+          title: "Anniversaires & AFK",
+          desc: "Souhaite les anniversaires automatiquement et signale ton absence avec /afk.",
         },
         reminders: {
           title: "Rappels de Bump",
@@ -528,7 +528,7 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
         desc: "Protect against targeted bot raids on your server, with our mass join, avatar and account age anti-raid filters.",
         verified: "Identity verified",
       },
-      moreBtn: "100+ security commands",
+      moreBtn: "20 security commands",
     },
     music: {
       badge: "AUDIO EXPERIENCE",
@@ -551,7 +551,7 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
         desc: "Fully integrated and capable, with Spotify.",
         status: "Synced",
       },
-      moreBtn: "20+ more commands",
+      moreBtn: "60+ music commands",
     },
     platforms: {
       badge: "PLATFORMS",
@@ -603,8 +603,8 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
       subtitle: "Never worry about needing another bot for anything else, we've got all your needs covered.",
       commandsDivider: {
         before: "Over",
-        count: "800+",
-        after: "Commands",
+        count: "100",
+        after: "commands",
       },
       allCommandsBtn: "All Commands",
       hideCommandsBtn: "Hide Commands",
@@ -614,48 +614,48 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
           desc: "Reverse search images, query images or search online for any website result.",
         },
         tts: {
-          title: "Text To Speech",
-          desc: "Convert text into a generated voice audio file, or have Etho speak live in any channel. Over 80+ voices.",
+          title: "AI Assistant",
+          desc: "Ask anything with /ask or summarize a conversation with /summarize.",
         },
         levels: {
           title: "Levels",
           desc: "Leveling system for the users in your server to level up and track experience.",
         },
         snipe: {
-          title: "Snipe",
-          desc: "Advanced sniping system to get images, videos, edits & reactions.",
+          title: "Support Tickets",
+          desc: "A full ticket system so your staff can help members privately.",
         },
         giveaways: {
           title: "Giveaways",
           desc: "Host giveaways fast and easily for your server's members.",
         },
         games: {
-          title: "Games",
-          desc: "Play blacktea and tic-tac-toe with your friends.",
+          title: "Casino & Mini-games",
+          desc: "Blackjack, roulette, dice and a counting game to keep your server lively.",
         },
         autoResponders: {
-          title: "Auto Responders",
-          desc: "Set up automatic replies to messages that match a trigger.",
+          title: "Tags",
+          desc: "Reusable replies your team can recall with one command.",
         },
         bumpReminder: {
-          title: "Bump Reminder",
-          desc: "Get reminders to /bump your server on Disboard.",
+          title: "Reminders",
+          desc: "Schedule personal reminders with /reminder.",
         },
         counters: {
           title: "Counters",
           desc: "Create counter channels for simple server statistics.",
         },
         reactionTriggers: {
-          title: "Reaction Triggers",
-          desc: "Set up advanced triggers to messages or previous messages.",
+          title: "Starboard",
+          desc: "Highlight the most loved messages in a dedicated channel.",
         },
         imageManipulation: {
-          title: "Image Manipulation",
-          desc: "Turn images, videos and GIFs into memes easily.",
+          title: "AI Images",
+          desc: "Generate images from a description with /imagine.",
         },
         translation: {
-          title: "Translation",
-          desc: "Translate text quickly. Over 100+ languages.",
+          title: "Birthdays & AFK",
+          desc: "Celebrate birthdays automatically and set your away status with /afk.",
         },
         reminders: {
           title: "Bump Reminder",
@@ -814,7 +814,7 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
         desc: "Protege tu servidor contra oleadas de bots con filtros de edad de cuenta y avatar.",
         verified: "Identidad verificada",
       },
-      moreBtn: "100+ comandos de seguridad",
+      moreBtn: "20 comandos de seguridad",
     },
     music: {
       badge: "EXPERIENCIA DE AUDIO",
@@ -837,7 +837,7 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
         desc: "Totalmente integrado y capaz con Spotify.",
         status: "Sincronizado",
       },
-      moreBtn: "20+ más comandos",
+      moreBtn: "60+ comandos de música",
     },
     platforms: {
       badge: "PLATAFORMAS",
@@ -889,8 +889,8 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
       subtitle: "No te preocupes por necesitar otro bot para nada más, cubrimos todas tus necesidades.",
       commandsDivider: {
         before: "Más de",
-        count: "800+",
-        after: "Comandos",
+        count: "100",
+        after: "comandos",
       },
       allCommandsBtn: "Todos los comandos",
       hideCommandsBtn: "Ocultar comandos",
@@ -900,48 +900,48 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
           desc: "Búsqueda inversa de imágenes, consultas visuales o búsqueda en la web para cualquier resultado.",
         },
         tts: {
-          title: "Texto a voz (TTS)",
-          desc: "Convierte texto en audio o haz que Etho hable en directo en cualquier canal. Más de 80+ voces.",
+          title: "Asistente IA",
+          desc: "Pregunta lo que quieras con /ask o resume una conversación con /summarize.",
         },
         levels: {
           title: "Niveles y XP",
           desc: "Sistema de niveles para que los miembros de tu servidor suban de nivel y sigan su experiencia.",
         },
         snipe: {
-          title: "Snipe",
-          desc: "Sistema avanzado para recuperar imágenes, vídeos, ediciones y reacciones eliminadas.",
+          title: "Tickets de soporte",
+          desc: "Un sistema de tickets completo para que tu staff ayude a los miembros en privado.",
         },
         giveaways: {
           title: "Sorteos",
           desc: "Organiza sorteos rápidos y fáciles para los miembros de tu servidor.",
         },
         games: {
-          title: "Juegos",
-          desc: "Juega a blacktea, tres en raya y muchos minijuegos con tus amigos.",
+          title: "Casino y minijuegos",
+          desc: "Blackjack, ruleta, dados y juego de conteo para animar tu servidor.",
         },
         autoResponders: {
-          title: "Auto-respuestas",
-          desc: "Configura respuestas automáticas a mensajes que coincidan con un disparador.",
+          title: "Tags",
+          desc: "Respuestas reutilizables que tu equipo recupera con un comando.",
         },
         bumpReminder: {
-          title: "Recordatorio de Bump",
-          desc: "Recibe recordatorios para hacer /bump de tu servidor en Disboard.",
+          title: "Recordatorios",
+          desc: "Programa recordatorios personales con /reminder.",
         },
         counters: {
           title: "Canales contadores",
           desc: "Crea canales contadores para estadísticas simples de tu servidor.",
         },
         reactionTriggers: {
-          title: "Disparadores de reacción",
-          desc: "Configura disparadores avanzados en mensajes o mensajes anteriores.",
+          title: "Starboard",
+          desc: "Destaca los mensajes más populares en un canal dedicado.",
         },
         imageManipulation: {
-          title: "Manipulación de imágenes",
-          desc: "Convierte imágenes, vídeos y GIFs en memes fácilmente.",
+          title: "Imágenes IA",
+          desc: "Genera imágenes a partir de una descripción con /imagine.",
         },
         translation: {
-          title: "Traducción",
-          desc: "Traduce texto rápidamente en más de 100 idiomas.",
+          title: "Cumpleaños y AFK",
+          desc: "Felicita cumpleaños automáticamente e indica tu ausencia con /afk.",
         },
         reminders: {
           title: "Recordatorio de Bump",
@@ -1100,7 +1100,7 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
         desc: "Schütze deinen Server vor organisierten Bot-Raids durch Account-Alter- und Avatar-Filter.",
         verified: "Verifiziert",
       },
-      moreBtn: "100+ Sicherheitsbefehle",
+      moreBtn: "20 Sicherheitsbefehle",
     },
     music: {
       badge: "AUDIO-ERLEBNIS",
@@ -1123,7 +1123,7 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
         desc: "Vollständig integriert und steuerbar mit Spotify.",
         status: "Synchronisiert",
       },
-      moreBtn: "20+ weitere Befehle",
+      moreBtn: "60+ Musikbefehle",
     },
     platforms: {
       badge: "PLATTFORMEN",
@@ -1175,7 +1175,7 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
       subtitle: "Keine Sorge mehr, jemals einen anderen Bot zu benötigen – wir decken alle deine Bedürfnisse ab.",
       commandsDivider: {
         before: "Über",
-        count: "800+",
+        count: "100",
         after: "Befehle",
       },
       allCommandsBtn: "Alle Befehle",
@@ -1186,48 +1186,48 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
           desc: "Rückwärtssuche von Bildern, Bildabfragen oder Online-Suche nach jedem Website-Ergebnis.",
         },
         tts: {
-          title: "Text to Speech (TTS)",
-          desc: "Wandle Text in Sprachaudiodateien um oder lass Etho live in jedem Kanal sprechen. Über 80+ Stimmen.",
+          title: "KI-Assistent",
+          desc: "Stelle Fragen mit /ask oder fasse Unterhaltungen mit /summarize zusammen.",
         },
         levels: {
           title: "Level-System",
           desc: "Levelsystem für Servermitglieder zum Aufsteigen und Verfolgen von Erfahrung.",
         },
         snipe: {
-          title: "Snipe",
-          desc: "Erweitertes Snipe-System für gelöschte Bilder, Videos, Edits und Reaktionen.",
+          title: "Support-Tickets",
+          desc: "Ein vollständiges Ticketsystem, damit dein Team Mitgliedern privat hilft.",
         },
         giveaways: {
           title: "Giveaways",
           desc: "Veranstalte Giveaways schnell und einfach für deine Servermitglieder.",
         },
         games: {
-          title: "Spiele",
-          desc: "Spiele Blacktea, Tic-Tac-Toe und viele Minispiele mit deinen Freunden.",
+          title: "Casino & Minispiele",
+          desc: "Blackjack, Roulette, Würfel und ein Zählspiel für deinen Server.",
         },
         autoResponders: {
-          title: "Auto-Responder",
-          desc: "Richte automatische Antworten auf Nachrichten ein, die einem Trigger entsprechen.",
+          title: "Tags",
+          desc: "Wiederverwendbare Antworten, die dein Team mit einem Befehl abruft.",
         },
         bumpReminder: {
-          title: "Bump-Erinnerung",
-          desc: "Erhalte Erinnerungen für /bump deines Servers auf Disboard.",
+          title: "Erinnerungen",
+          desc: "Plane persönliche Erinnerungen mit /reminder.",
         },
         counters: {
           title: "Zähler-Kanäle",
           desc: "Erstelle Zähler-Kanäle für einfache Serverstatistiken.",
         },
         reactionTriggers: {
-          title: "Reaktions-Trigger",
-          desc: "Richte erweiterte Trigger auf Nachrichten oder vorherige Nachrichten ein.",
+          title: "Starboard",
+          desc: "Die beliebtesten Nachrichten in einem eigenen Kanal hervorheben.",
         },
         imageManipulation: {
-          title: "Bildbearbeitung",
-          desc: "Verwandle Bilder, Videos und GIFs einfach in Memes.",
+          title: "KI-Bilder",
+          desc: "Erzeuge Bilder aus einer Beschreibung mit /imagine.",
         },
         translation: {
-          title: "Übersetzung",
-          desc: "Übersetze Text schnell in über 100 Sprachen.",
+          title: "Geburtstage & AFK",
+          desc: "Gratuliere automatisch zum Geburtstag und melde dich mit /afk ab.",
         },
         reminders: {
           title: "Bump-Erinnerung",

@@ -1,4 +1,4 @@
-# ETHONE — passation & nouveautés (2026-10-15, version 1.75.89)
+# ETHONE — passation & nouveautés (2026-10-15, version 1.75.90)
 
 ## Projet
 - `ethone-next/` : site Next.js statique (ethone.dev, Cloudflare Pages, déploiement auto au push sur `main`).
@@ -26,7 +26,10 @@
 
 ---
 
-## Nouveautés majeures & Réalisations récentes (v1.75.83 → v1.75.89)
+## Nouveautés majeures & Réalisations récentes (v1.75.83 → v1.75.90)
+
+### Vitrine bot alignée sur les vraies fonctions (v1.75.90)
+- `botLandingI18n.ts` : fonctions inexistantes (TTS, Snipe, Blacktea, traduction, bump, manipulation d'images) remplacées par des vraies (/ask, /ticket, casino, /tag, /reminder, starboard, /imagine, /birthday). Chiffres alignés sur `bot.ethone.dev/api/public/commands` (115 commandes, 20 sécurité, 63 musique).
 
 ### Tracker Riot fiabilisé & dépendances (v1.75.89)
 - TypeScript à **0 erreur** et `ignoreBuildErrors` retiré de `next.config.ts` : le build échoue désormais sur une erreur de type.

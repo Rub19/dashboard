@@ -110,15 +110,16 @@ export const MODULES: ModuleDef[] = [
     own: {
       get: (g) => {
         const c = welcomeRepository.getConfig(g);
-        return Boolean(c.welcome.enabled || c.goodbye.enabled);
+        return Boolean(c.welcome.enabled || c.goodbye.enabled || c.welcome.dm.enabled || c.ghostPing.enabled);
       },
       set: (g, enabled) => {
         const c = welcomeRepository.getConfig(g);
         // Désactiver coupe l'accueil ET l'au revoir ; activer ne rallume que l'accueil (l'au revoir reste un choix à part).
         welcomeRepository.saveConfig(g, {
           ...c,
-          welcome: { ...c.welcome, enabled },
+          welcome: { ...c.welcome, enabled, dm: { ...c.welcome.dm, enabled: enabled ? c.welcome.dm.enabled : false } },
           goodbye: { ...c.goodbye, enabled: enabled ? c.goodbye.enabled : false },
+          ghostPing: { ...c.ghostPing, enabled: enabled ? c.ghostPing.enabled : false },
         });
       },
     },
@@ -129,7 +130,16 @@ export const MODULES: ModuleDef[] = [
     emoji: '🎭',
     description: 'Rôles donnés à l\'arrivée, menus de rôles.',
     commands: [],
-    own: { get: (g) => autoRoleService.getConfig(g).enabled, set: (g, enabled) => void autoRoleService.updateConfig(g, { enabled }) },
+    own: {
+      get: (g) => {
+        const c = autoRoleService.getConfig(g);
+        return Boolean(c.enabled || c.temp.enabled || c.voice.enabled);
+      },
+      set: (g, enabled) => {
+        const c = autoRoleService.getConfig(g);
+        void autoRoleService.updateConfig(g, enabled ? { enabled } : { enabled, temp: { ...c.temp, enabled }, voice: { ...c.voice, enabled } });
+      },
+    },
   },
   {
     id: 'leveling',

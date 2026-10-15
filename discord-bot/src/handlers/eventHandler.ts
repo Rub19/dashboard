@@ -1,3 +1,4 @@
+import { welcomeService } from '../modules/welcome/services/welcomeService.js';
 import { enforceBlacklistOnJoin } from '../services/blacklistService.js';
 import { onMemberJoin as captchaOnJoin } from '../services/captchaService.js';
 import { onPresenceUpdate as supportersOnPresenceUpdate, onUserUpdate as supportersOnUserUpdate, startSupportersSweep, syncSupporter } from '../services/supportersService.js';
@@ -207,6 +208,9 @@ export function registerEvents(client: Client): void {
     void syncSupporter(newMember);
     void guardSecureRoles(oldMember as GuildMember, newMember).catch((err) => logger.warn('[SecureRoles] garde-fou :', err?.message));
     // Auto-Role "attendre le filtrage des règles" : reprend l'attribution une fois `pending` passé à false.
+    if (moduleOn(newMember.guild.id, 'welcome') && (oldMember as GuildMember).pending && !newMember.pending) {
+      void welcomeService.handleScreeningPassed(newMember).catch((err) => logger.warn('[Welcome] filtrage des règles :', err?.message));
+    }
     if (moduleOn(newMember.guild.id, 'roles') && (oldMember as GuildMember).pending && !newMember.pending) {
       void autoRoleService.handleScreeningPassed(newMember).catch((err) => logger.warn('[AutoRole] filtrage des règles :', err?.message));
     }
@@ -308,6 +312,7 @@ export function registerEvents(client: Client): void {
     handleVoiceStateUpdate(oldState, newState);
     // Salons vocaux temporaires : un module désactivé ne crée ni ne supprime aucun salon.
     if (isModuleEnabled(guildId, 'voice')) voiceService.handleVoiceStateUpdate(oldState, newState);
+    if (isModuleEnabled(guildId, 'roles')) void autoRoleService.handleVoiceState(oldState, newState).catch((err) => logger.warn('[AutoRole] rôles en vocal :', err?.message));
     voiceStayService.onVoiceStateUpdate(oldState, newState);
     if (isModuleEnabled(guildId, 'stats')) statsCollector.onVoiceStateUpdate(oldState, newState);
     ownerShieldService.handleVoiceStateUpdate(oldState, newState);

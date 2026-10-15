@@ -33,6 +33,8 @@ import ConsoleCommands from "@/components/discord/console/ConsoleCommands";
 import ConsoleTools from "@/components/discord/console/ConsoleTools";
 import ConsoleProtections from "@/components/discord/console/ConsoleProtections";
 import ConsoleAutomodNative from "@/components/discord/console/modules/ConsoleAutomodNative";
+import ConsoleWelcome from "@/components/discord/console/modules/ConsoleWelcome";
+import ConsoleAutoRoles from "@/components/discord/console/modules/ConsoleAutoRoles";
 import ModuleEmbed, { hasNativePage } from "@/components/discord/console/ModuleEmbed";
 import GuildOverviewScreen from "@/components/discord/GuildOverviewScreen";
 import GuildAssistedSetup from "@/components/discord/GuildAssistedSetup";
@@ -701,11 +703,11 @@ export default function DiscordDashboardPage() {
       setShowScan(false);
       setConsoleView(null);
       // Sécurité = page Protections de la console (anti-raid et anti-nuke réunis).
-      if (id === "security") {
+      if (id === "security" || id === "welcome") {
         setActiveModule(null);
         setShowSetup(false);
         setShowAllModules(false);
-        setConsoleView("protections");
+        setConsoleView(id === "welcome" ? "welcome" : "protections");
         return;
       }
       // Vue d'ensemble = accueil de la console (même contenu, déjà au format Keeper).
@@ -788,7 +790,7 @@ export default function DiscordDashboardPage() {
         setShowSetup(true);
       } else if (sp.get("view") === "scan" || sp.get("tab") === "scan") {
         setShowScan(true);
-      } else if (["settings", "access", "logs", "whitelist", "blacklist", "members", "commands", "tools", "protections", "automod"].includes(sp.get("view") ?? "")) {
+      } else if (["settings", "access", "logs", "whitelist", "blacklist", "members", "commands", "tools", "protections", "automod", "welcome", "autoroles"].includes(sp.get("view") ?? "")) {
         setConsoleView(sp.get("view") as ConsoleView);
       } else if (sp.get("module") && sp.get("module") !== "overview" && INLINE_MODULE_IDS.has(sp.get("module")!)) {
         setActiveModule(sp.get("module") as ModuleType);
@@ -1211,6 +1213,7 @@ export default function DiscordDashboardPage() {
           onOpenSetup={goSetup}
           onOpenScan={goScan}
           onOpenView={openConsoleView}
+          logsTab={logsTab}
           activeModuleCount={activeModuleCount}
           totalModuleCount={totalModuleCount}
           botInviteUrl={BOT_INVITE_URL}
@@ -1381,6 +1384,8 @@ export default function DiscordDashboardPage() {
               {view === "tools" && <ConsoleTools guildId={selectedGuild.id} />}
               {view === "protections" && <ConsoleProtections guildId={selectedGuild.id} onOpenView={openConsoleView} onOpenSetup={goSetup} />}
               {view === "automod" && <ConsoleAutomodNative guildId={selectedGuild.id} />}
+              {view === "welcome" && <ConsoleWelcome guildId={selectedGuild.id} />}
+              {view === "autoroles" && <ConsoleAutoRoles guildId={selectedGuild.id} />}
 
               {view === "scan" && (
                 <GuildSecurityScan

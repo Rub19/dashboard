@@ -27,6 +27,7 @@ export const AVAILABLE_VARIABLES: AvailableVariable[] = [
   { key: '{server}', description: 'Nom du serveur Discord', example: 'ETHONE Community' },
   { key: '{serverid}', description: 'Identifiant Discord du serveur', example: '1128633164290596884' },
   { key: '{membercount}', description: 'Nombre total de membres sur le serveur', example: '1 245' },
+  { key: '{membercount.ordinal}', description: 'Rang du membre à son arrivée', example: '1 245e' },
   { key: '{serverowner}', description: 'Propriétaire du serveur', example: 'OwnerTag' },
   { key: '{channel}', description: 'Mention du salon de bienvenue', example: '#bienvenue' },
   { key: '{createdat}', description: 'Date de création du compte Discord', example: '03/09/2024' },

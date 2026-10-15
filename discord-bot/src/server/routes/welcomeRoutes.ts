@@ -8,6 +8,7 @@ import { OnboardingRunner } from '../../modules/welcome/services/onboardingRunne
 import { WelcomeCardGenerator } from '../../modules/welcome/images/welcomeCardGenerator.js';
 import { WelcomeImageConfigSchema } from '../../modules/welcome/types/welcomeConfig.js';
 import { VariableContext } from '../../modules/welcome/types/variables.js';
+import { saveAsset } from '../../modules/welcome/storage/welcomeAssets.js';
 import { logger } from '../../utils/logger.js';
 import { rateLimit, idempotent, guildLock } from '../middleware/antiAbuseMiddleware.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
@@ -21,7 +22,19 @@ export function createWelcomeRouter(discordClient: Client) {
   router.get('/', rateLimit('READ'), async (req: Request, res: Response): Promise<void> => {
     const guildId = String(req.params.guildId);
     const config = welcomeService.getConfig(guildId);
-    res.json({ config });
+    const guild = discordClient.guilds.cache.get(guildId);
+    const me = discordClient.user;
+    res.json({
+      config,
+      meta: {
+        botName: me?.username ?? 'Etho',
+        botAvatar: me?.displayAvatarURL({ size: 128 }) ?? null,
+        guildName: guild?.name ?? '',
+        guildIcon: guild?.iconURL({ size: 128 }) ?? null,
+        memberCount: guild?.memberCount ?? 0,
+        canWebhook: Boolean(guild?.members.me?.permissions.has(PermissionFlagsBits.ManageWebhooks)),
+      },
+    });
   });
 
   // 2. Mettre à jour la configuration Welcome & Goodbye
@@ -65,15 +78,25 @@ export function createWelcomeRouter(discordClient: Client) {
     }
 
     try {
+      const admin = req.user?.id ? await discordClient.users.fetch(req.user.id).catch(() => undefined) : undefined;
       const result = await welcomeService.sendTest(
         guild,
-        type === 'goodbye' ? 'goodbye' : 'welcome',
-        target === 'dm' ? 'dm' : 'channel'
+        type === 'goodbye' ? 'goodbye' : type === 'ghostping' ? 'ghostping' : 'welcome',
+        target === 'dm' ? 'dm' : 'channel',
+        admin
       );
       res.json(result);
     } catch (err: any) {
       logger.error('Erreur lors du test Welcome :', err);
       res.status(Number(err?.status) || 500).json({ error: clientErrorMessage(err, 'Échec de l’envoi du test sur Discord') });
+    }
+  });
+
+  router.post('/assets', rateLimit('CONFIG', { byGuild: true }), (req: Request, res: Response): void => {
+    try {
+      res.json({ url: saveAsset(String(req.params.guildId), String(req.body?.dataUrl ?? '')) });
+    } catch (err: any) {
+      res.status(Number(err?.status) || 400).json({ error: err?.message || 'Image refusée' });
     }
   });
 

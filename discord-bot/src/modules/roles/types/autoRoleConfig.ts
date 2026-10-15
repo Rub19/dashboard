@@ -6,6 +6,27 @@ export const UserRoleOverrideSchema = z.object({
 });
 export type UserRoleOverride = z.infer<typeof UserRoleOverrideSchema>;
 
+const roleIds = z.array(z.string().regex(/^\d{15,25}$/)).max(25).default([]).catch([]);
+
+export const TempRoleConfigSchema = z.object({
+  enabled: z.boolean().default(false).catch(false),
+  roleIds,
+  durationMinutes: z.number().int().min(1).max(43200).default(1440).catch(1440),
+  waitForScreening: z.boolean().default(true).catch(true),
+});
+export type TempRoleConfig = z.infer<typeof TempRoleConfigSchema>;
+
+export const VoiceRoleConfigSchema = z.object({
+  enabled: z.boolean().default(false).catch(false),
+  roleIds,
+  memberMode: z.enum(['allow', 'deny']).default('allow').catch('allow'),
+  memberRoleIds: roleIds,
+  channelMode: z.enum(['allow', 'deny']).default('allow').catch('allow'),
+  channelIds: z.array(z.string().regex(/^\d{15,25}$/)).max(50).default([]).catch([]),
+  ignoreBots: z.boolean().default(true).catch(true),
+});
+export type VoiceRoleConfig = z.infer<typeof VoiceRoleConfigSchema>;
+
 export const AutoRoleConfigSchema = z.object({
   enabled: z.boolean().default(false),
   roleIds: z.array(z.string()).default([]),
@@ -36,6 +57,9 @@ export const AutoRoleConfigSchema = z.object({
   // Rôles supplémentaires pour des membres précis, en plus de roleIds.
   userOverrides: z.array(UserRoleOverrideSchema).default([]),
   removeUserFromListAfterAssignment: z.boolean().default(true),
+
+  temp: TempRoleConfigSchema.default({}),
+  voice: VoiceRoleConfigSchema.default({}),
 });
 
 export type AutoRoleConfig = z.infer<typeof AutoRoleConfigSchema>;

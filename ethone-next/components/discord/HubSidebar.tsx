@@ -36,7 +36,13 @@ import {
   UserRoundCog as LUserRoundCog,
   UsersRound as LUsersRound,
   WandSparkles as LWandSparkles,
+  Hand as LHand,
+  Scale as LScale,
+  ScrollText as LScrollText,
+  Contact as LContact,
 } from "lucide-react";
+
+type SidebarIcon = React.ComponentType<{ className?: string; strokeWidth?: number }>;
 import ClientImage from "@/components/ClientImage";
 import ServerSwitcher from "./console/ServerSwitcher";
 import OwnerBotSection from "./OwnerBotSection";
@@ -59,7 +65,7 @@ import {
 } from "./consoleMotion";
 import type { NavigatorCategory, NavigatorModule } from "./ModuleNavigator";
 
-export type ConsoleView = "settings" | "access" | "logs" | "whitelist" | "blacklist" | "members" | "commands" | "tools" | "protections" | "automod";
+export type ConsoleView = "settings" | "access" | "logs" | "whitelist" | "blacklist" | "members" | "commands" | "tools" | "protections" | "automod" | "welcome" | "autoroles";
 export type HubView = "home" | "modules" | "module" | "setup" | "scan" | ConsoleView;
 
 interface HubSidebarProps {
@@ -83,7 +89,8 @@ interface HubSidebarProps {
   onClose?: () => void;
   onOpenSetup?: () => void;
   /** Ouvre une page de la console (Réglages, Accès…) sans quitter la console. */
-  onOpenView?: (view: ConsoleView, opts?: { logsTab?: "incidents" | "channels" }) => void;
+  onOpenView?: (view: ConsoleView, opts?: { logsTab?: "incidents" | "journal" | "channels" }) => void;
+  logsTab?: "incidents" | "journal" | "channels";
   /** Modules actifs / total sur ce serveur (lus depuis le bot par la page). */
   activeModuleCount?: number;
   totalModuleCount?: number;
@@ -146,6 +153,7 @@ export default function HubSidebar({
   onAllModules,
   activeModuleCount,
   totalModuleCount,
+  logsTab = "incidents",
 }: HubSidebarProps) {
   const router = useRouter();
   const i18n = useI18n();
@@ -266,9 +274,57 @@ export default function HubSidebar({
   }, [botUser, storedUser, identity.isGuest, identity.initials, currentDisplayName]);
 
 
+  const openView = (v: ConsoleView, fallback: string, opts?: { logsTab?: "incidents" | "journal" | "channels" }) =>
+    onOpenView ? onOpenView(v, opts) : router.push(`/discord/?guildId=${selectedGuildId}&view=${v}${fallback}`);
+  const viewItem = (v: ConsoleView, label: string, icon: SidebarIcon, badge?: React.ReactNode) => ({ key: v, label, icon, active: view === v, onClick: () => openView(v, ""), badge });
+  const moduleItem = (id: string, label: string, icon: SidebarIcon) => ({ key: id, label, icon, active: activeId === id, onClick: () => (onSelect ? onSelect(id) : router.push(`/discord/${id}?guildId=${selectedGuildId}`)) });
+  const sections: Array<{ title: string; items: Array<{ key: string; label: string; icon: SidebarIcon; active: boolean; onClick: () => void; badge?: React.ReactNode }> }> = [
+    {
+      title: i18n("dProtection", "Protection"),
+      items: [
+        viewItem(
+          "protections",
+          i18n("dProtections", "Protections"),
+          LShield,
+          protCount ? <span className={cn("ml-auto font-mono text-xs tabular-nums", protCount.on ? "text-emerald-400" : "text-[var(--text-muted)]")}>{protCount.on}/{protCount.total}</span> : undefined
+        ),
+        viewItem("automod", "AutoMod", LFilter),
+        { key: "scan", label: i18n("dSecurityScan", "Scan de sécurité"), icon: LScanFace, active: view === "scan", onClick: () => (onOpenScan ? onOpenScan() : router.push(`/discord?guildId=${selectedGuildId}&view=scan`)) },
+        { key: "logs-protection", label: "Logs de protection", icon: LHistory, active: view === "logs" && logsTab === "incidents", onClick: () => openView("logs", "", { logsTab: "incidents" }) },
+        { key: "setup", label: i18n("dAssistedSetup", "Configuration assistée"), icon: LWandSparkles, active: view === "setup", onClick: () => (onOpenSetup ? onOpenSetup() : router.push(`/discord/setup?guildId=${selectedGuildId}`)) },
+      ],
+    },
+    {
+      title: "Accueil des membres",
+      items: [viewItem("welcome", "Bienvenue et départs", LHand), viewItem("autoroles", "Rôles automatiques", LSquareUserRound)],
+    },
+    { title: "Sanctions", items: [moduleItem("moderation", "Sanctions", LScale)] },
+    {
+      title: "Modération",
+      items: [viewItem("commands", i18n("dCommands", "Commandes"), LGavel), viewItem("members", i18n("dRolesAndMembers", "Rôles et membres"), LContact)],
+    },
+    {
+      title: "Accès",
+      items: [viewItem("whitelist", i18n("dWhitelist", "Whitelist"), LUsersRound), viewItem("blacklist", i18n("dBlacklist", "Blacklist"), LBan), viewItem("access", "Owners Etho", LUserRoundCog)],
+    },
+    {
+      title: i18n("dAnimation", "Animation"),
+      items: [
+        ...ANIMATION_LINKS.map(({ id, key, label, icon }) => moduleItem(id, i18n(key, label), icon)),
+        ...(onAllModules ? [{ key: "all-modules", label: i18n("dAllModules", "Tous les modules"), icon: LLayoutGrid, active: view === "modules", onClick: onAllModules }] : []),
+      ],
+    },
+    {
+      title: i18n("dServer", "Serveur"),
+      items: [
+        { key: "logs-server", label: "Logs du serveur", icon: LScrollText, active: view === "logs" && logsTab !== "incidents", onClick: () => openView("logs", "", { logsTab: "journal" }) },
+        viewItem("tools", i18n("dTools", "Outils"), LBriefcaseBusiness),
+        viewItem("settings", i18n("dSettings", "Réglages"), LSettings),
+      ],
+    },
+  ];
+
   const isOverviewActive = view === "home" && !activeId;
-  const isSetupActive = view === "setup";
-  const isScanActive = view === "scan";
 
   return (
     <>
@@ -358,239 +414,29 @@ export default function HubSidebar({
             </button>
           </div>
 
-          <div className="space-y-1.5 pt-2">
-            <span className="block px-2 text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
-              {i18n("dProtection", "Protection")}
-            </span>
-            <div className="space-y-1 text-sm">
-              <button
-                type="button"
-                onClick={() => (onOpenView ? onOpenView("protections") : router.push(`/discord/?guildId=${selectedGuildId}&view=protections`))}
-                aria-current={view === "protections" ? "page" : undefined}
-                className={cn(
-                  "w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors cursor-pointer text-left",
-                  view === "protections" ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold" : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
-                )}
-              >
-                <LShield strokeWidth={1.75} className="h-4.5 w-4.5 shrink-0" />
-                <span>{i18n("dProtections", "Protections")}</span>
-                {protCount && (
-                  <span className={cn("ml-auto font-mono text-xs tabular-nums", protCount.on ? "text-emerald-400" : "text-[var(--text-muted)]")}>
-                    {protCount.on}/{protCount.total}
-                  </span>
-                )}
-              </button>
-
-              <button
-                type="button"
-                onClick={() => (onOpenView ? onOpenView("automod") : router.push(`/discord/?guildId=${selectedGuildId}&view=automod`))}
-                aria-current={view === "automod" ? "page" : undefined}
-                className={cn(
-                  "w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors cursor-pointer text-left",
-                  view === "automod" ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold" : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
-                )}
-              >
-                <LFilter strokeWidth={1.75} className="h-4.5 w-4.5 shrink-0" />
-                <span>AutoMod</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  if (onOpenScan) {
-                    onOpenScan();
-                  } else {
-                    router.push(`/discord?guildId=${selectedGuildId}&view=scan`);
-                  }
-                }}
-                className={cn(
-                  "w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors cursor-pointer text-left",
-                  isScanActive
-                    ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold"
-                    : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
-                )}
-              >
-                <LScanFace strokeWidth={1.75} className="h-4.5 w-4.5 shrink-0" />
-                <span>{i18n("dSecurityScan", "Scan de sécurité")}</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  if (onOpenSetup) {
-                    onOpenSetup();
-                  } else {
-                    router.push(`/discord/setup?guildId=${selectedGuildId}`);
-                  }
-                }}
-                className={cn(
-                  "w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors cursor-pointer text-left",
-                  isSetupActive
-                    ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold"
-                    : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
-                )}
-              >
-                <LWandSparkles strokeWidth={1.75} className="h-4.5 w-4.5 shrink-0" />
-                <span>{i18n("dAssistedSetup", "Configuration assistée")}</span>
-              </button>
+          {sections.map((section) => (
+            <div key={section.title} className="space-y-1.5 pt-2">
+              <span className="block px-2 text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">{section.title}</span>
+              <div className="space-y-1 text-sm">
+                {section.items.map(({ key, label, icon: Icon, active, onClick, badge }) => (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={onClick}
+                    aria-current={active ? "page" : undefined}
+                    className={cn(
+                      "w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors cursor-pointer text-left",
+                      active ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold" : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
+                    )}
+                  >
+                    <Icon strokeWidth={1.75} className="h-4.5 w-4.5 shrink-0" />
+                    <span className="truncate">{label}</span>
+                    {badge}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
-
-          <div className="space-y-1.5 pt-2">
-            <span className="block px-2 text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
-              {i18n("dMembers", "Membres")}
-            </span>
-            <div className="space-y-1 text-sm">
-              <button
-                type="button"
-                onClick={() => (onOpenView ? onOpenView("whitelist") : router.push(`/discord/security?tab=whitelist&guildId=${selectedGuildId}`))}
-                aria-current={view === "whitelist" ? "page" : undefined}
-                className={cn(
-                  "w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors cursor-pointer text-left",
-                  view === "whitelist" ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold" : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
-                )}
-              >
-                <LUsersRound strokeWidth={1.75} className="h-4.5 w-4.5 shrink-0" />
-                <span>{i18n("dWhitelist", "Whitelist")}</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => (onOpenView ? onOpenView("blacklist") : router.push(`/discord/security?tab=blacklist&guildId=${selectedGuildId}`))}
-                aria-current={view === "blacklist" ? "page" : undefined}
-                className={cn(
-                  "w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors cursor-pointer text-left",
-                  view === "blacklist" ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold" : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
-                )}
-              >
-                <LBan strokeWidth={1.75} className="h-4.5 w-4.5 shrink-0" />
-                <span>{i18n("dBlacklist", "Blacklist")}</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => (onOpenView ? onOpenView("members") : router.push(`/discord/server/roles?guildId=${selectedGuildId}`))}
-                aria-current={view === "members" ? "page" : undefined}
-                className={cn(
-                  "w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors cursor-pointer text-left",
-                  view === "members" ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold" : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
-                )}
-              >
-                <LSquareUserRound strokeWidth={1.75} className="h-4.5 w-4.5 shrink-0" />
-                <span>{i18n("dRolesAndMembers", "Rôles et membres")}</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => (onOpenView ? onOpenView("commands") : router.push(`/discord/?guildId=${selectedGuildId}&view=commands`))}
-                aria-current={view === "commands" ? "page" : undefined}
-                className={cn(
-                  "w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors cursor-pointer text-left",
-                  view === "commands" ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold" : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
-                )}
-              >
-                <LGavel strokeWidth={1.75} className="h-4.5 w-4.5 shrink-0" />
-                <span>{i18n("dCommands", "Commandes")}</span>
-              </button>
-            </div>
-          </div>
-
-          <div className="space-y-1.5 pt-2">
-            <span className="block px-2 text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
-              {i18n("dAnimation", "Animation")}
-            </span>
-            <div className="space-y-1 text-sm">
-              {ANIMATION_LINKS.map(({ id, path, key, label, icon: Icon }) => (
-                <button
-                  key={path}
-                  type="button"
-                  onClick={() => (onSelect ? onSelect(id) : router.push(`${path}?guildId=${selectedGuildId}`))}
-                  aria-current={activeId === id ? "page" : undefined}
-                  className={cn(
-                    "w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors cursor-pointer text-left",
-                    activeId === id ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold" : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
-                  )}
-                >
-                  <Icon strokeWidth={1.75} className="h-4.5 w-4.5 shrink-0" />
-                  <span>{i18n(key, label)}</span>
-                </button>
-              ))}
-              {onAllModules && (
-                <button
-                  type="button"
-                  onClick={onAllModules}
-                  aria-current={view === "modules" ? "page" : undefined}
-                  className={cn(
-                    "w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors cursor-pointer text-left",
-                    view === "modules" ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold" : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
-                  )}
-                >
-                  <LLayoutGrid strokeWidth={1.75} className="h-4.5 w-4.5 shrink-0" />
-                  <span>{i18n("dAllModules", "Tous les modules")}</span>
-                </button>
-              )}
-            </div>
-          </div>
-
-          <div className="space-y-1.5 pt-2">
-            <span className="block px-2 text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
-              {i18n("dServer", "Serveur")}
-            </span>
-            <div className="space-y-1 text-sm">
-              <button
-                type="button"
-                onClick={() => (onOpenView ? onOpenView("logs") : router.push(`/discord/logs?guildId=${selectedGuildId}`))}
-                aria-current={view === "logs" ? "page" : undefined}
-                className={cn(
-                  "w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors cursor-pointer text-left",
-                  view === "logs" ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold" : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
-                )}
-              >
-                <LHistory strokeWidth={1.75} className="h-4.5 w-4.5 shrink-0" />
-                <span>{i18n("dLogs", "Logs")}</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => (onOpenView ? onOpenView("tools") : router.push(`/discord/?guildId=${selectedGuildId}&view=tools`))}
-                aria-current={view === "tools" ? "page" : undefined}
-                className={cn(
-                  "w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors cursor-pointer text-left",
-                  view === "tools" ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold" : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
-                )}
-              >
-                <LBriefcaseBusiness strokeWidth={1.75} className="h-4.5 w-4.5 shrink-0" />
-                <span>{i18n("dTools", "Outils")}</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => (onOpenView ? onOpenView("settings") : router.push(`/discord/server/settings?guildId=${selectedGuildId}`))}
-                aria-current={view === "settings" ? "page" : undefined}
-                className={cn(
-                  "w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors cursor-pointer text-left",
-                  view === "settings" ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold" : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
-                )}
-              >
-                <LSettings strokeWidth={1.75} className="h-4.5 w-4.5 shrink-0" />
-                <span>{i18n("dSettings", "Réglages")}</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => (onOpenView ? onOpenView("access") : router.push(`/discord/server/permissions?guildId=${selectedGuildId}`))}
-                aria-current={view === "access" ? "page" : undefined}
-                className={cn(
-                  "w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors cursor-pointer text-left",
-                  view === "access" ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold" : "text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)]"
-                )}
-              >
-                <LUserRoundCog strokeWidth={1.75} className="h-4.5 w-4.5 shrink-0" />
-                <span>{i18n("dAccess", "Accès")}</span>
-              </button>
-            </div>
-          </div>
-
+          ))}
         </div>
 
         {totalModuleCount ? (

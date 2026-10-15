@@ -18,6 +18,7 @@ import { createModerationRouter } from './routes/moderationRoutes.js';
 import { createWelcomeRouter } from './routes/welcomeRoutes.js';
 import { createTicketRouter } from './routes/ticketRoutes.js';
 import { createBadgeRouter } from './routes/badgeRoutes.js';
+import { assetPath } from '../modules/welcome/storage/welcomeAssets.js';
 import { createLogRouter } from './routes/logRoutes.js';
 import { createRoleRouter } from './routes/roleRoutes.js';
 import { createSecurityRouter } from './routes/securityRoutes.js';
@@ -123,7 +124,20 @@ export function startWebServer(client: Client): http.Server {
   // Les émojis arrivent en base64 (256 Ko max côté Discord ≈ 350 Ko encodés) : limite relevée pour cette seule route.
   const jsonDefault = express.json();
   const jsonEmoji = express.json({ limit: '600kb' });
-  app.use((req, res, next) => (req.method === 'POST' && /\/server\/emojis\/?$/.test(req.path) ? jsonEmoji : jsonDefault)(req, res, next));
+  const jsonAsset = express.json({ limit: '6mb' });
+  app.use((req, res, next) =>
+    (req.method === 'POST' && /\/welcome\/assets\/?$/.test(req.path) ? jsonAsset : req.method === 'POST' && /\/server\/emojis\/?$/.test(req.path) ? jsonEmoji : jsonDefault)(req, res, next)
+  );
+  app.get('/api/public/welcome-assets/:guildId/:file', (req, res) => {
+    const file = assetPath(String(req.params.guildId), String(req.params.file));
+    if (!file) {
+      res.status(404).end();
+      return;
+    }
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.sendFile(file);
+  });
 
   // Protection volumétrique globale (Rate limit baseline 120 req/min par IP/User)
   app.use('/api', rateLimit('READ', { customLimit: 120, customWindowMs: 60000 }));

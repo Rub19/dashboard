@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { Client, GuildMember, PermissionFlagsBits } from 'discord.js';
+import { Client, Guild, GuildMember, PermissionFlagsBits, Role, VoiceBasedChannel, VoiceState } from 'discord.js';
 import { AutoRoleConfig, AutoRoleConfigSchema } from '../types/autoRoleConfig.js';
 import { logService } from '../../logs/services/logService.js';
 import { logger } from '../../../utils/logger.js';
@@ -11,15 +11,96 @@ class AutoRoleService {
   private configs = new Map<string, AutoRoleConfig>();
   private client: Client | null = null;
   private scheduledSyncTimer: ReturnType<typeof setInterval> | null = null;
+  private tempPath = path.resolve(process.cwd(), 'data', 'temp_roles.json');
+  private tempGrants: Array<{ guildId: string; userId: string; roleIds: string[]; expiresAt: number }> = [];
+  private tempTimer: ReturnType<typeof setInterval> | null = null;
 
   constructor() {
     this.ensureDirectory();
     this.loadData();
+    try {
+      if (fs.existsSync(this.tempPath)) this.tempGrants = JSON.parse(fs.readFileSync(this.tempPath, 'utf-8'));
+    } catch (err) {
+      logger.error('Erreur chargement temp_roles.json :', err);
+    }
+  }
+
+  private saveTemp() {
+    try {
+      fs.writeFileSync(this.tempPath, JSON.stringify(this.tempGrants), 'utf-8');
+    } catch (err) {
+      logger.error('Erreur sauvegarde temp_roles.json :', err);
+    }
+  }
+
+  /** Rôles qu'Etho peut donner sans risque : existants, sous son rôle le plus haut, sans permission dangereuse. */
+  private safeRoles(guild: Guild, ids: string[]): Role[] {
+    const me = guild.members.me;
+    if (!me?.permissions.has(PermissionFlagsBits.ManageRoles)) return [];
+    const top = me.roles.highest.position;
+    return ids
+      .map((id) => guild.roles.cache.get(id))
+      .filter((r): r is Role => Boolean(r && !r.managed && r.id !== guild.id && r.position < top && !isSensitiveRole(r)));
+  }
+
+  private async grantTemp(member: GuildMember): Promise<void> {
+    const temp = this.getConfig(member.guild.id).temp;
+    if (!temp.enabled) return;
+    const roles = this.safeRoles(member.guild, temp.roleIds).filter((r) => !member.roles.cache.has(r.id));
+    if (!roles.length) return;
+    await member.roles.add(roles, 'Rôle temporaire à l’arrivée').catch((err) => logger.warn('[AutoRole] Rôle temporaire impossible :', err?.message));
+    this.tempGrants = this.tempGrants.filter((g) => !(g.guildId === member.guild.id && g.userId === member.id));
+    this.tempGrants.push({ guildId: member.guild.id, userId: member.id, roleIds: roles.map((r) => r.id), expiresAt: Date.now() + temp.durationMinutes * 60_000 });
+    this.saveTemp();
+  }
+
+  private async expireTempRoles(): Promise<void> {
+    if (!this.client) return;
+    const now = Date.now();
+    const due = this.tempGrants.filter((g) => g.expiresAt <= now);
+    if (!due.length) return;
+    this.tempGrants = this.tempGrants.filter((g) => g.expiresAt > now);
+    this.saveTemp();
+    for (const g of due) {
+      const guild = this.client.guilds.cache.get(g.guildId);
+      const member = guild ? await guild.members.fetch(g.userId).catch(() => null) : null;
+      const held = member ? g.roleIds.filter((id) => member.roles.cache.has(id)) : [];
+      if (member && held.length) await member.roles.remove(held, 'Fin du rôle temporaire à l’arrivée').catch(() => null);
+    }
+  }
+
+  private voiceChannelMatches(channel: VoiceBasedChannel, ids: string[], mode: 'allow' | 'deny'): boolean {
+    if (!ids.length) return true;
+    const hit = ids.includes(channel.id) || (channel.parentId != null && ids.includes(channel.parentId));
+    return mode === 'allow' ? hit : !hit;
+  }
+
+  /** Rôles en vocal : donnés en entrant dans un salon concerné, retirés en le quittant. */
+  public async handleVoiceState(oldState: VoiceState, newState: VoiceState): Promise<void> {
+    const member = newState.member ?? oldState.member;
+    if (!member) return;
+    const v = this.getConfig(member.guild.id).voice;
+    if (!v.enabled || !v.roleIds.length) return;
+    if (member.user.bot && v.ignoreBots) return;
+    const memberOk = !v.memberRoleIds.length || (v.memberMode === 'allow' ? v.memberRoleIds.some((id) => member.roles.cache.has(id)) : !v.memberRoleIds.some((id) => member.roles.cache.has(id)));
+    const inside = Boolean(newState.channel && memberOk && this.voiceChannelMatches(newState.channel, v.channelIds, v.channelMode));
+    const roles = this.safeRoles(member.guild, v.roleIds);
+    if (inside) {
+      const missing = roles.filter((r) => !member.roles.cache.has(r.id));
+      if (missing.length) await member.roles.add(missing, 'Rôle en vocal').catch((err) => logger.warn('[AutoRole] Rôle vocal impossible :', err?.message));
+    } else if (oldState.channel) {
+      const held = roles.filter((r) => member.roles.cache.has(r.id));
+      if (held.length) await member.roles.remove(held, 'Sortie du vocal').catch(() => null);
+    }
   }
 
   /** Démarre la vérification horaire des synchronisations programmées (voir runScheduledSyncTick). */
   public initialize(client: Client) {
     this.client = client;
+    if (!this.tempTimer) {
+      this.tempTimer = setInterval(() => void this.expireTempRoles().catch((err) => logger.error('[AutoRole] Expiration des rôles temporaires :', err)), 60_000).unref();
+      void this.expireTempRoles().catch(() => null);
+    }
     if (this.scheduledSyncTimer) return;
     this.scheduledSyncTimer = setInterval(() => {
       void this.runScheduledSyncTick().catch((err) => logger.error('[AutoRole] Erreur tick de synchro programmée :', err));
@@ -94,6 +175,7 @@ class AutoRoleService {
 
   public async assignOnJoin(member: GuildMember): Promise<string[]> {
     const config = this.getConfig(member.guild.id);
+    if (config.temp.enabled && !member.user.bot && !(config.temp.waitForScreening && member.pending)) await this.grantTemp(member);
     if (!config.enabled) return [];
 
     // Filtre bots vs humains
@@ -120,6 +202,7 @@ class AutoRoleService {
   /** Reprend l'attribution une fois le filtrage des règles validé (pending: true -> false). */
   public async handleScreeningPassed(member: GuildMember): Promise<string[]> {
     const config = this.getConfig(member.guild.id);
+    if (config.temp.enabled && config.temp.waitForScreening && !member.user.bot) await this.grantTemp(member);
     if (!config.enabled || !config.waitForScreening) return [];
     const isBot = member.user.bot;
     if (isBot && !config.applyToBots) return [];

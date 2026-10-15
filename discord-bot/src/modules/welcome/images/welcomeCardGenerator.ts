@@ -1,5 +1,5 @@
 import { createCanvas, loadImage, type Image, type SKRSContext2D } from '@napi-rs/canvas';
-import { WelcomeImageConfig, WelcomeImageConfigSchema } from '../types/welcomeConfig.js';
+import { CARD_SIZE_PX, CardBackground, CardLayer, WelcomeImageConfig, WelcomeImageConfigSchema } from '../types/welcomeConfig.js';
 import { VariableContext } from '../types/variables.js';
 import { VariableParser } from '../variables/variableParser.js';
 import { logger } from '../../../utils/logger.js';
@@ -8,6 +8,7 @@ import { FONT_STACK, registerCardFonts } from '../../../utils/cardFonts.js';
 import { fetchPublicImage } from '../../../utils/publicImageFetch.js';
 import { drawCover, rgba, shapePath } from '../../../utils/cardDraw.js';
 import { renderAnimatedCard } from './animatedCard.js';
+import { readLocalAsset } from '../storage/welcomeAssets.js';
 
 // Carte animée : rendu 1000 × 375 (au lieu de 1600 × 600) pour garder un GIF léger.
 const ANIM_SCALE = 1.25;
@@ -216,6 +217,99 @@ function layoutGaming(c: Ctx, cfg: WelcomeImageConfig, t: Texts, avatar: Image |
 
 const LAYOUTS = { default: layoutDefault, modern: layoutModern, minimal: layoutMinimal, gaming: layoutGaming };
 
+async function loadRemote(url: string): Promise<Image | null> {
+  if (!url) return null;
+  const buf = readLocalAsset(url) ?? (await fetchPublicImage(url));
+  if (!buf) return null;
+  try {
+    return await loadImage(buf);
+  } catch {
+    return null;
+  }
+}
+
+function paintBackground(c: Ctx, bg: CardBackground, img: Image | null, w: number, h: number): void {
+  if (bg.type === 'gradient') {
+    const a = ((bg.angle - 90) * Math.PI) / 180;
+    const r = Math.abs(w * Math.cos(a)) / 2 + Math.abs(h * Math.sin(a)) / 2;
+    const g = c.createLinearGradient(w / 2 - Math.cos(a) * r, h / 2 - Math.sin(a) * r, w / 2 + Math.cos(a) * r, h / 2 + Math.sin(a) * r);
+    g.addColorStop(0, bg.color);
+    g.addColorStop(1, bg.color2);
+    c.fillStyle = g;
+  } else {
+    c.fillStyle = bg.color;
+  }
+  c.fillRect(0, 0, w, h);
+  if (bg.type === 'image' && img) {
+    drawCover(c, img, w, h);
+    if (bg.overlay > 0) {
+      c.fillStyle = rgba(bg.color, bg.overlay / 100);
+      c.fillRect(0, 0, w, h);
+    }
+  }
+}
+
+function paintLayer(c: Ctx, layer: CardLayer, avatar: Image | null, images: Map<string, Image | null>, ctx: VariableContext): void {
+  c.save();
+  if (layer.type === 'text') {
+    const raw = safeText(VariableParser.parse(layer.text, { ...ctx, mentionUser: false }));
+    const text = layer.uppercase ? raw.toUpperCase() : raw;
+    c.globalAlpha = layer.opacity;
+    c.fillStyle = layer.color;
+    c.textAlign = layer.align;
+    c.textBaseline = 'middle';
+    fitFont(c, text, layer.weight, FONT_STACK[layer.font], layer.size, Math.max(8, Math.round(layer.size / 3)), layer.maxWidth);
+    c.fillText(ellipsize(c, text, layer.maxWidth), layer.x, layer.y);
+  } else if (layer.type === 'avatar') {
+    const r = layer.size / 2;
+    const cx = layer.x + r;
+    const cy = layer.y + r;
+    if (layer.borderWidth > 0) {
+      shapePath(c, cx, cy, r + layer.borderWidth, layer.shape);
+      c.fillStyle = layer.borderColor;
+      c.fill();
+    }
+    shapePath(c, cx, cy, r, layer.shape);
+    c.clip();
+    if (avatar) c.drawImage(avatar, cx - r, cy - r, r * 2, r * 2);
+    else {
+      c.fillStyle = '#5865F2';
+      c.fillRect(cx - r, cy - r, r * 2, r * 2);
+    }
+  } else if (layer.type === 'image') {
+    const img = images.get(layer.url) ?? null;
+    if (img) {
+      c.globalAlpha = layer.opacity;
+      c.beginPath();
+      c.roundRect(layer.x, layer.y, layer.w, layer.h, Math.min(layer.radius, layer.w / 2, layer.h / 2));
+      c.clip();
+      const s = Math.max(layer.w / img.width, layer.h / img.height);
+      c.drawImage(img, layer.x + (layer.w - img.width * s) / 2, layer.y + (layer.h - img.height * s) / 2, img.width * s, img.height * s);
+    }
+  } else {
+    c.globalAlpha = layer.opacity;
+    c.fillStyle = layer.color;
+    c.beginPath();
+    if (layer.shape === 'circle') c.ellipse(layer.x + layer.w / 2, layer.y + layer.h / 2, layer.w / 2, layer.h / 2, 0, 0, Math.PI * 2);
+    else c.roundRect(layer.x, layer.y, layer.w, layer.h, Math.min(layer.radius, layer.w / 2, layer.h / 2));
+    c.fill();
+  }
+  c.restore();
+}
+
+async function renderLayered(cfg: WelcomeImageConfig, avatar: Image | null, ctx: VariableContext): Promise<Buffer> {
+  const [w, h] = CARD_SIZE_PX[cfg.size ?? 'large'];
+  const bg = cfg.background ?? { type: 'gradient' as const, color: cfg.backgroundColor, color2: cfg.accentColor, angle: 135, url: '', overlay: 0 };
+  const layers = (cfg.layers ?? []).filter((l) => l.visible);
+  const urls = [...new Set([bg.type === 'image' ? bg.url : '', ...layers.map((l) => (l.type === 'image' ? l.url : ''))].filter(Boolean))];
+  const images = new Map(await Promise.all(urls.map(async (u) => [u, await loadRemote(u)] as const)));
+  const canvas = createCanvas(w, h);
+  const c = canvas.getContext('2d');
+  paintBackground(c, bg, images.get(bg.url) ?? null, w, h);
+  for (const layer of layers) paintLayer(c, layer, avatar, images, ctx);
+  return canvas.toBuffer('image/png');
+}
+
 export class WelcomeCardGenerator {
   /** Avatar téléchargé une fois : sert à la carte ET en pièce jointe de l'embed (une URL d'avatar Discord expire
    * dès que le membre change d'avatar, d'où les « Image failed to load » sur les anciens messages). */
@@ -251,6 +345,8 @@ export class WelcomeCardGenerator {
       logger.warn('[WelcomeCard] Avatar illisible, initiale utilisée :', err);
     }
 
+    if (cfg.layers) return renderLayered(cfg, avatar, ctx);
+
     let bg: Image | null = null;
     if (cfg.customBackgroundUrl) {
       const buf = await fetchPublicImage(cfg.customBackgroundUrl);
@@ -262,6 +358,7 @@ export class WelcomeCardGenerator {
         }
       }
     }
+
 
     const texts: Texts = {
       title: safeText(VariableParser.parse(cfg.titleText, ctx), 'BIENVENUE'),

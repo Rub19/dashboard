@@ -30,6 +30,7 @@ export class VariableParser {
       .replace(/\{userid\}/gi, ctx.userId)
       .replace(/\{server\}/gi, ctx.guildName)
       .replace(/\{serverid\}/gi, ctx.guildId)
+      .replace(/\{membercount\.ordinal\}/gi, ctx.memberCount === 1 ? '1er' : `${ctx.memberCount.toLocaleString('fr-FR')}e`)
       .replace(/\{membercount\}/gi, ctx.memberCount.toLocaleString('fr-FR'))
       .replace(/\{usercount\}/gi, ctx.memberCount.toLocaleString('fr-FR'))
       .replace(/\{serverowner\}/gi, ctx.serverOwner || 'Propriétaire')

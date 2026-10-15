@@ -1,4 +1,4 @@
-import { FullWelcomeConfig, WelcomeImageConfigSchema } from './welcomeConfig.js';
+import { FullWelcomeInput, WelcomeImageConfigSchema } from './welcomeConfig.js';
 import { OnboardingFlow } from './onboarding.js';
 
 export interface WelcomeTemplate {
@@ -8,7 +8,7 @@ export interface WelcomeTemplate {
   description: string;
   badge: string;
   previewColor: string;
-  config: Partial<FullWelcomeConfig>;
+  config: Partial<FullWelcomeInput>;
   onboarding?: Partial<OnboardingFlow>;
 }
 

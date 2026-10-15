@@ -57155,6 +57155,75 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_110_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_110_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_110_de);
 
+const v1_75_111_fr: ChangelogEntry = {
+  version: "v1.75.111",
+  date: "2026-10-15",
+  title: "Bienvenue et départs, Rôles automatiques et nouvelle barre latérale",
+  items: [
+    "Barre latérale réorganisée comme Keeper : Protection, Accueil des membres, Sanctions, Modération, Accès, Animation et Serveur. Le pilotage d'Etho reste visible pour l'owner seulement.",
+    "Nouvelle page Bienvenue et départs en 5 onglets : Arrivée, Message privé, Départ, Ghost ping et Options.",
+    "Messages en Embed, Container ou texte : titre avec lien, en-tête, vignette, grande image, pied de page, heure, jusqu'à 10 champs et 5 boutons liens, avec envoi d'images.",
+    "Aperçu façon Discord en direct, bouton Tester (tu joues le nouveau membre) et Réinitialiser.",
+    "Éditeur d'image à calques : modèles, texte, avatar, image, forme, fond couleur, dégradé ou image, 4 tailles, aimantation au centre et annulation.",
+    "Publication au nom du serveur, mention du membre, notification des rôles et suppression automatique du message.",
+    "Ghost ping dans les salons choisis, attente de la vérification, départ rapide et limite de 10 messages par minute pendant une vague d'arrivées.",
+    "Nouvelle page Rôles automatiques : rôles à l'arrivée pour les membres et les bots, rôle temporaire retiré automatiquement et rôles en vocal avec filtres de rôles et de salons. Tout est gratuit.",
+  ],
+};
+
+const v1_75_111_en: ChangelogEntry = {
+  version: "v1.75.111",
+  date: "2026-10-15",
+  title: "Welcome & leaves, Auto roles and new sidebar",
+  items: [
+    "Sidebar reorganised like Keeper: Protection, Member welcome, Sanctions, Moderation, Access, Fun and Server. Etho controls stay visible to the owner only.",
+    "New Welcome & leaves page with 5 tabs: Arrival, Direct message, Leave, Ghost ping and Options.",
+    "Messages as Embed, Container or plain text: linked title, header, thumbnail, large image, footer, timestamp, up to 10 fields and 5 link buttons, with image uploads.",
+    "Live Discord-style preview, Test button (you play the new member) and Reset.",
+    "Layered image editor: templates, text, avatar, image, shape, color, gradient or image background, 4 sizes, center snapping and undo.",
+    "Post as the server, mention the member, notify roles and auto-delete the message.",
+    "Ghost ping in chosen channels, wait for verification, quick leave handling and a 10 messages per minute cap during join waves.",
+    "New Auto roles page: join roles for members and bots, a temporary role removed automatically and voice roles with role and channel filters. All free.",
+  ],
+};
+
+const v1_75_111_es: ChangelogEntry = {
+  version: "v1.75.111",
+  date: "2026-10-15",
+  title: "Bienvenida y salidas, Roles automáticos y nueva barra lateral",
+  items: [
+    "Barra lateral reorganizada como Keeper: Protección, Bienvenida, Sanciones, Moderación, Acceso, Animación y Servidor. El control de Etho solo lo ve el owner.",
+    "Nueva página Bienvenida y salidas con 5 pestañas: Llegada, Mensaje privado, Salida, Ghost ping y Opciones.",
+    "Mensajes en Embed, Container o texto: título con enlace, encabezado, miniatura, imagen grande, pie, hora, hasta 10 campos y 5 botones de enlace, con subida de imágenes.",
+    "Vista previa estilo Discord en directo, botón Probar (tú haces de nuevo miembro) y Restablecer.",
+    "Editor de imagen por capas: plantillas, texto, avatar, imagen, forma, fondo de color, degradado o imagen, 4 tamaños, imán al centro y deshacer.",
+    "Publicar en nombre del servidor, mencionar al miembro, notificar roles y borrar el mensaje automáticamente.",
+    "Ghost ping en los canales elegidos, esperar la verificación, salida rápida y límite de 10 mensajes por minuto durante oleadas.",
+    "Nueva página Roles automáticos: roles de llegada para miembros y bots, rol temporal retirado automáticamente y roles de voz con filtros. Todo gratis.",
+  ],
+};
+
+const v1_75_111_de: ChangelogEntry = {
+  version: "v1.75.111",
+  date: "2026-10-15",
+  title: "Begrüßung & Abschied, Auto-Rollen und neue Seitenleiste",
+  items: [
+    "Seitenleiste wie bei Keeper neu sortiert: Schutz, Mitgliederempfang, Sanktionen, Moderation, Zugriff, Unterhaltung und Server. Die Etho-Steuerung sieht nur der Owner.",
+    "Neue Seite Begrüßung & Abschied mit 5 Tabs: Ankunft, Privatnachricht, Abschied, Ghost Ping und Optionen.",
+    "Nachrichten als Embed, Container oder Text: verlinkter Titel, Kopfzeile, Vorschaubild, großes Bild, Fußzeile, Uhrzeit, bis zu 10 Felder und 5 Link-Buttons, mit Bild-Upload.",
+    "Live-Vorschau im Discord-Stil, Test-Button (du spielst das neue Mitglied) und Zurücksetzen.",
+    "Ebenen-Bildeditor: Vorlagen, Text, Avatar, Bild, Form, Farb-, Verlaufs- oder Bildhintergrund, 4 Größen, Einrasten in der Mitte und Rückgängig.",
+    "Im Namen des Servers posten, Mitglied erwähnen, Rollen benachrichtigen und Nachricht automatisch löschen.",
+    "Ghost Ping in gewählten Kanälen, Warten auf Verifizierung, schneller Abgang und höchstens 10 Nachrichten pro Minute bei Beitrittswellen.",
+    "Neue Seite Auto-Rollen: Beitrittsrollen für Mitglieder und Bots, automatisch entfernte temporäre Rolle und Sprachrollen mit Rollen- und Kanalfiltern. Alles kostenlos.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_111_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_111_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_111_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_111_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

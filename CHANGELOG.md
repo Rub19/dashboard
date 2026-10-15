@@ -2,6 +2,19 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.111 — 2026-10-15
+
+**Bienvenue et départs, Rôles automatiques et nouvelle barre latérale**
+
+- Barre latérale réorganisée comme Keeper : Protection, Accueil des membres, Sanctions, Modération, Accès, Animation et Serveur. Le pilotage d'Etho reste visible pour l'owner seulement.
+- Nouvelle page Bienvenue et départs en 5 onglets : Arrivée, Message privé, Départ, Ghost ping et Options.
+- Messages en Embed, Container ou texte : titre avec lien, en-tête, vignette, grande image, pied de page, heure, jusqu'à 10 champs et 5 boutons liens, avec envoi d'images.
+- Aperçu façon Discord en direct, bouton Tester (tu joues le nouveau membre) et Réinitialiser.
+- Éditeur d'image à calques : modèles, texte, avatar, image, forme, fond couleur, dégradé ou image, 4 tailles, aimantation au centre et annulation.
+- Publication au nom du serveur, mention du membre, notification des rôles et suppression automatique du message.
+- Ghost ping dans les salons choisis, attente de la vérification, départ rapide et limite de 10 messages par minute pendant une vague d'arrivées.
+- Nouvelle page Rôles automatiques : rôles à l'arrivée pour les membres et les bots, rôle temporaire retiré automatiquement et rôles en vocal avec filtres de rôles et de salons. Tout est gratuit.
+
 ## v1.75.110 — 2026-10-15
 
 **Commande /server et compteur de badges**

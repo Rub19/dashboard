@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.109 — 2026-10-15
+
+**Musique : secours YouTube réparé**
+
+- Le service de secours qui récupère le son YouTube quand Lavalink est refusé remarche (il imposait des clients YouTube devenus inutilisables)
+
 ## v1.75.108 — 2026-10-15
 
 **Nouvelle page Protections**

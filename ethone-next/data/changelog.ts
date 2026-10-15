@@ -57061,6 +57061,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_108_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_108_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_108_de);
 
+const v1_75_109_fr: ChangelogEntry = {
+  version: "v1.75.109",
+  date: "2026-10-15",
+  title: "Musique : secours YouTube réparé",
+  items: [
+    "Le service de secours qui récupère le son YouTube quand Lavalink est refusé remarche (il imposait des clients YouTube devenus inutilisables)",
+  ],
+};
+
+const v1_75_109_en: ChangelogEntry = {
+  version: "v1.75.109",
+  date: "2026-10-15",
+  title: "Music: YouTube fallback repaired",
+  items: [
+    "The fallback service that fetches YouTube audio when Lavalink is refused works again",
+  ],
+};
+
+const v1_75_109_es: ChangelogEntry = {
+  version: "v1.75.109",
+  date: "2026-10-15",
+  title: "Música: respaldo de YouTube reparado",
+  items: [
+    "El servicio de respaldo para el audio de YouTube vuelve a funcionar",
+  ],
+};
+
+const v1_75_109_de: ChangelogEntry = {
+  version: "v1.75.109",
+  date: "2026-10-15",
+  title: "Musik: YouTube-Ersatzweg repariert",
+  items: [
+    "Der Ersatzdienst für YouTube-Audio funktioniert wieder",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_109_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_109_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_109_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_109_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

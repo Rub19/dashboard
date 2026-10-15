@@ -1,4 +1,4 @@
-# ETHONE — passation & nouveautés (2026-10-15, version 1.75.108)
+# ETHONE — passation & nouveautés (2026-10-15, version 1.75.109)
 
 ## Projet
 - `ethone-next/` : site Next.js statique (ethone.dev, Cloudflare Pages, déploiement auto au push sur `main`).
@@ -26,7 +26,12 @@
 
 ---
 
-## Nouveautés majeures & Réalisations récentes (v1.75.83 → v1.75.108)
+## Nouveautés majeures & Réalisations récentes (v1.75.83 → v1.75.109)
+
+### Musique : état des sources (v1.75.109, vérifié le 2026-10-15)
+- Accès SSH au NAS par clé OK (`ssh nas`, port 46 ; pas de SFTP : copier avec `cat fichier | ssh nas "cat > …"`). Docker sans sudo. Conteneurs : `lavalink` (ghcr 4.2.2, lavaplayer 2.2.6, net host, config ~/lavalink/application.yml), `yt-resolver`, tunnels autossh.
+- SoundCloud cassé côté SoundCloud (« Did not detect any supported formats »), même avec Lavalink dev / lavaplayer 2.2.7 testé. Bandcamp `bcsearch` renvoie vide. Deezer écarté (plugin = clé de déchiffrement).
+- `yt-resolver` (discord-bot/lavalink/yt-resolver/resolver.py) : `player_client android/web` forcés ne donnaient plus aucun format ; retirés (clients par défaut de yt-dlp = Opus 251). Copie NAS sauvegardée en resolver.py.bak-20261015. Vérifié : resolve OK puis Lavalink charge la piste.
 
 ### Page Protections façon Keeper (v1.75.108)
 - `ConsoleProtections` : colonne gauche (recherche, catégories + compteurs, carte « Protections actives »), filtres, cartes par catégorie (`CATEGORY_META`, « Tout activer/désactiver »), clic sur une ligne = `Detail` existant avec retour.

@@ -689,21 +689,6 @@ function WaveformScanner() {
           />
         ))}
       </div>
-      {!reduced && (
-        <motion.div
-          className="pointer-events-none absolute inset-y-3 flex flex-col items-center justify-between"
-          animate={{ left: ["15%", "85%"] }}
-          transition={{ duration: 4.5, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
-        >
-          <span className="rounded-full border border-[#92C8D2]/40 bg-[#0c141d] px-2 py-0.5 text-[10px] font-bold text-[#92C8D2] shadow-[0_0_12px_rgba(146,200,210,0.4)]">
-            8D
-          </span>
-          <div className="h-full w-[2px] bg-gradient-to-b from-[#92C8D2] via-white to-[#92C8D2] shadow-[0_0_14px_#92C8D2]" />
-          <span className="text-[10px] font-bold tracking-widest text-[#92C8D2]">
-            ON
-          </span>
-        </motion.div>
-      )}
     </div>
   );
 }
@@ -1343,10 +1328,11 @@ export default function BotLanding() {
               href={INVITE_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex h-9 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-white via-zinc-100 to-white px-4 text-xs font-bold text-black shadow-lg shadow-white/10 transition-transform hover:scale-105"
+              aria-label={c.nav.invite}
+              className="inline-flex h-9 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-white via-zinc-100 to-white px-3 text-xs font-bold sm:px-4 text-black shadow-lg shadow-white/10 transition-transform hover:scale-105"
             >
               <DiscordGlyph className="h-4 w-4" />
-              {c.nav.invite}
+              <span className="hidden min-[400px]:inline">{c.nav.invite}</span>
             </a>
             <LanguageSelect lang={lang} onChange={changeLang} label={c.nav.language} />
             <button
@@ -1391,7 +1377,7 @@ export default function BotLanding() {
 
       <main className="relative z-10">
         <section className="mx-auto w-full max-w-6xl px-6 pb-20 pt-12 md:pt-20">
-          <div className="grid items-center gap-12 lg:grid-cols-2">
+          <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
             <div>
               <motion.div
                 initial={false}
@@ -1511,7 +1497,7 @@ export default function BotLanding() {
             <p className="mx-auto mt-3 max-w-xl text-zinc-400">{c.security.subtitle}</p>
           </Reveal>
 
-          <div className="mt-14 grid gap-6 sm:grid-cols-2">
+          <div className="mt-14 grid grid-cols-1 gap-6 sm:grid-cols-2">
             <Reveal>
               <div className="group relative h-full overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0c0d14] p-7 transition-all hover:border-[#92C8D2]/30">
                 <h3 className="text-lg font-bold text-[#92C8D2]">{c.security.filters.title}</h3>
@@ -1633,7 +1619,7 @@ export default function BotLanding() {
             <p className="mx-auto mt-3 max-w-xl text-zinc-400">{c.music.subtitle}</p>
           </Reveal>
 
-          <div className="mt-14 grid gap-6 sm:grid-cols-2">
+          <div className="mt-14 grid grid-cols-1 gap-6 sm:grid-cols-2">
             <Reveal className="sm:row-span-2">
               <div className="group relative flex h-full flex-col justify-between overflow-hidden rounded-3xl border border-white/[0.08] bg-[#0c0d14]/90 p-7 sm:p-8 backdrop-blur-xl transition-all hover:border-[#92C8D2]/30">
                 <div>
@@ -1777,7 +1763,7 @@ export default function BotLanding() {
             <p className="mx-auto mt-3 max-w-xl text-zinc-400">{c.features.subtitle}</p>
           </Reveal>
 
-          <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-14 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {FEATURE_KEYS.map((key, i) => {
               const item = c.features.items[key];
               if (!item) return null;
@@ -1878,7 +1864,7 @@ export default function BotLanding() {
                   <p className="mt-12 text-center text-sm text-zinc-500">{c.commands.empty}</p>
                 )}
 
-                <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {filteredCommands.map((cmd) => (
                     <div
                       key={cmd.name}
@@ -1949,7 +1935,7 @@ export default function BotLanding() {
             </h2>
           </Reveal>
 
-          <div className="mt-14 grid gap-6 sm:grid-cols-3">
+          <div className="mt-14 grid grid-cols-1 gap-6 sm:grid-cols-3">
             {c.steps.items.map((st, i) => (
               <Reveal key={st.step} delay={i * 0.1}>
                 <div className="relative h-full rounded-2xl border border-white/[0.08] bg-[#0c0d14] p-7 transition-all hover:border-white/20">

@@ -80,6 +80,7 @@ const nunito = Nunito({ variable: "--font-nunito", display: "swap", subsets: ["l
 const playfair = Playfair_Display({ variable: "--font-playfair", display: "swap", subsets: ["latin"], preload: false });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://ethone.dev"),
   title: "ETHONE",
   description: "ETHONE réinvente votre environnement numérique : un espace unifié pour organiser, créer et avancer.",
   manifest: "/manifest.json",

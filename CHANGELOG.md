@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.92 — 2026-10-15
+
+**Vitrine du bot corrigée sur mobile**
+
+- Le titre et les textes ne sont plus coupés à droite sur téléphone
+- Le bouton menu n'est plus hors écran sur les petits téléphones
+- Aperçu de partage (Discord, X) réparé : l'image pointait vers localhost
+- Carte musique « Filtres 8D » remplacée par Paroles & Playlists (fonctions réelles)
+- FAQ : retrait de la mention de stockage chiffré, non vérifiée
+
 ## v1.75.91 — 2026-10-15
 
 **Onboarding de la console sans chiffres inventés**

@@ -56234,6 +56234,63 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_91_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_91_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_91_de);
 
+const v1_75_92_fr: ChangelogEntry = {
+  version: "v1.75.92",
+  date: "2026-10-15",
+  title: "Vitrine du bot corrigée sur mobile",
+  items: [
+    "Le titre et les textes ne sont plus coupés à droite sur téléphone",
+    "Le bouton menu n'est plus hors écran sur les petits téléphones",
+    "Aperçu de partage (Discord, X) réparé : l'image pointait vers localhost",
+    "Carte musique « Filtres 8D » remplacée par Paroles & Playlists (fonctions réelles)",
+    "FAQ : retrait de la mention de stockage chiffré, non vérifiée",
+  ],
+};
+
+const v1_75_92_en: ChangelogEntry = {
+  version: "v1.75.92",
+  date: "2026-10-15",
+  title: "Bot showcase fixed on mobile",
+  items: [
+    "Headline and text are no longer cut off on phones",
+    "Menu button no longer off-screen on small phones",
+    "Share preview fixed: the image pointed to localhost",
+    "\"8D filters\" music card replaced by Lyrics & Playlists (real features)",
+    "FAQ: removed the unverified encrypted storage claim",
+  ],
+};
+
+const v1_75_92_es: ChangelogEntry = {
+  version: "v1.75.92",
+  date: "2026-10-15",
+  title: "Escaparate del bot corregido en móvil",
+  items: [
+    "El título y los textos ya no se cortan en el móvil",
+    "El botón de menú ya no queda fuera de pantalla",
+    "Vista previa al compartir reparada: la imagen apuntaba a localhost",
+    "Tarjeta «Filtros 8D» sustituida por Letras y playlists (funciones reales)",
+    "FAQ: se quitó la mención de almacenamiento cifrado no verificada",
+  ],
+};
+
+const v1_75_92_de: ChangelogEntry = {
+  version: "v1.75.92",
+  date: "2026-10-15",
+  title: "Bot-Seite auf Mobilgeräten korrigiert",
+  items: [
+    "Überschrift und Texte werden auf dem Handy nicht mehr abgeschnitten",
+    "Menü-Button nicht mehr außerhalb des Bildschirms",
+    "Teilen-Vorschau repariert: Das Bild zeigte auf localhost",
+    "Karte „8D-Filter“ durch Songtexte & Playlists ersetzt (echte Funktionen)",
+    "FAQ: nicht belegte Angabe zur verschlüsselten Speicherung entfernt",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_92_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_92_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_92_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_92_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

@@ -181,7 +181,7 @@ export interface BotCopy {
 export const BOT_COPY: Record<BotLang, BotCopy> = {
   fr: {
     meta: {
-      title: "Etho — Le bot Discord tout-en-un pour votre communauté",
+      title: "Etho — Le bot Discord tout-en-un pour ta communauté",
       description: "Modération chirurgicale, protection anti-raid, musique, pont vocal Spotify et catalogue complet de commandes fun. Tout pour votre serveur, sans superflu.",
     },
     nav: {
@@ -250,9 +250,9 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
       titleHighlight: "pour tous",
       subtitle: "Qualité audio supérieure et commandes complètes pour une expérience musicale incomparable.",
       filters: {
-        title: "Filtres Préconfigurés",
-        desc: "Génération à la volée pour transformer n'importe quelle musique en écoute immersive.",
-        label8D: "8D Spatial",
+        title: "Paroles & Playlists",
+        desc: "Affiche les paroles du titre en cours et sauvegarde tes playlists pour les relancer en une commande.",
+        label8D: "Paroles",
         status: "ACTIF",
       },
       queue: {
@@ -440,7 +440,7 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
         },
         {
           q: "Mes données sont-elles conservées en sécurité ?",
-          a: "Absolument. Aucune conversation privée n'est enregistrée ni partagée. Seules les configurations nécessaires au bon fonctionnement de vos salons et modules sont stockées de manière chiffrée.",
+          a: "Absolument. Aucune conversation privée n'est enregistrée ni partagée. Seules les configurations nécessaires au bon fonctionnement de tes salons et modules sont stockées, et tout est supprimé quand Etho quitte ton serveur.",
         },
       ],
     },
@@ -536,9 +536,9 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
       titleHighlight: "For Everyone",
       subtitle: "Premium audio quality and commands for a superior music experience.",
       filters: {
-        title: "Preset Filters",
-        desc: "On-the-fly generation to transform any music into an immersive listening experience.",
-        label8D: "8D Spatial",
+        title: "Lyrics & Playlists",
+        desc: "Show the lyrics of the current track and save playlists to replay them with one command.",
+        label8D: "Lyrics",
         status: "ACTIVE",
       },
       queue: {
@@ -726,7 +726,7 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
         },
         {
           q: "Is my server data safe?",
-          a: "Yes. Private messages are never stored. Only minimal server configuration data required for module functionality is encrypted and securely stored.",
+          a: "Yes. Private messages are never stored. Only the configuration needed for your modules is stored, and it is wiped when Etho leaves your server.",
         },
       ],
     },
@@ -822,9 +822,9 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
       titleHighlight: "para todos",
       subtitle: "Calidad de audio premium y comandos completos para una experiencia musical superior.",
       filters: {
-        title: "Filtros preestablecidos",
-        desc: "Generación en tiempo real para transformar cualquier música en una experiencia inmersiva.",
-        label8D: "8D Espacial",
+        title: "Letras y playlists",
+        desc: "Muestra la letra de la canción actual y guarda playlists para volver a lanzarlas con un comando.",
+        label8D: "Letras",
         status: "ACTIVO",
       },
       queue: {
@@ -1012,7 +1012,7 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
         },
         {
           q: "¿Están seguros los datos de mi servidor?",
-          a: "Totalmente. No se registran mensajes privados y solo se guardan de forma cifrada las configuraciones necesarias.",
+          a: "Totalmente. No se registran mensajes privados y solo se guardan las configuraciones necesarias, que se borran cuando Etho sale de tu servidor.",
         },
       ],
     },
@@ -1108,9 +1108,9 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
       titleHighlight: "für jeden",
       subtitle: "Erstklassige Audioqualität und Befehle für ein herausragendes Musikerlebnis.",
       filters: {
-        title: "Voreingestellte Filter",
-        desc: "Echtzeit-Verarbeitung für ein immersives Hörerlebnis jedes Titels.",
-        label8D: "8D Raumklang",
+        title: "Songtexte & Playlists",
+        desc: "Zeigt den Songtext des aktuellen Titels und speichert Playlists, die du mit einem Befehl startest.",
+        label8D: "Songtext",
         status: "AKTIV",
       },
       queue: {
@@ -1298,7 +1298,7 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
         },
         {
           q: "Sind meine Serverdaten sicher?",
-          a: "Ja. Private Nachrichten werden niemals gespeichert. Nur erforderliche Modulkonfigurationen werden verschlüsselt hinterlegt.",
+          a: "Ja. Private Nachrichten werden niemals gespeichert. Nur die nötigen Modulkonfigurationen werden gespeichert und beim Verlassen deines Servers gelöscht.",
         },
       ],
     },

@@ -1,4 +1,4 @@
-# ETHONE — passation & nouveautés (2026-10-15, version 1.75.91)
+# ETHONE — passation & nouveautés (2026-10-15, version 1.75.92)
 
 ## Projet
 - `ethone-next/` : site Next.js statique (ethone.dev, Cloudflare Pages, déploiement auto au push sur `main`).
@@ -26,7 +26,13 @@
 
 ---
 
-## Nouveautés majeures & Réalisations récentes (v1.75.83 → v1.75.91)
+## Nouveautés majeures & Réalisations récentes (v1.75.83 → v1.75.92)
+
+### Vitrine bot : mobile, partage et textes (v1.75.92)
+- Grilles en `grid-cols-1` sous `sm` (le contenu min-content élargissait la colonne à 392px sur 375px) et libellé « Ajouter Etho » masqué sous 400px (le bouton menu sortait de l'écran).
+- `metadataBase` ajouté au layout racine (og:image pointait sur localhost), canonical + Twitter card sur `/bot`.
+- Carte « Filtres 8D » remplacée par Paroles & Playlists (le bot n'a aucun filtre audio), mention de stockage chiffré retirée de la FAQ.
+- Connu : une copie cachée de la page reste dans `<div hidden id="S:0">` (boundary Suspense de streaming non nettoyée) ; invisible mais dupliquée dans le DOM.
 
 ### Vitrine bot alignée sur les vraies fonctions (v1.75.90)
 - `botLandingI18n.ts` : fonctions inexistantes (TTS, Snipe, Blacktea, traduction, bump, manipulation d'images) remplacées par des vraies (/ask, /ticket, casino, /tag, /reminder, starboard, /imagine, /birthday). Chiffres alignés sur `bot.ethone.dev/api/public/commands` (115 commandes, 20 sécurité, 63 musique).

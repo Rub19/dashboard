@@ -94,7 +94,7 @@ export function Panel({
   className?: string;
 }) {
   return (
-    <motion.section variants={staggerItem} className={cn("overflow-visible rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]", className)}>
+    <motion.section variants={staggerItem} className={cn("relative overflow-visible rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] focus-within:z-30 has-[[aria-expanded=true]]:z-30", className)}>
       {(title || actions) && (
         <header className="flex items-center justify-between gap-3 border-b border-[var(--panel-border)] px-5 py-3.5">
           <div className="min-w-0">
@@ -159,10 +159,11 @@ export function Switch({
   );
 }
 
-export function GhostButton({ children, onClick, disabled }: { children: ReactNode; onClick?: () => void; disabled?: boolean }) {
+export function GhostButton({ children, onClick, disabled, expanded }: { children: ReactNode; onClick?: () => void; disabled?: boolean; expanded?: boolean }) {
   return (
     <button
       type="button"
+      aria-expanded={expanded}
       onClick={onClick}
       disabled={disabled}
       className="flex items-center gap-1.5 rounded-lg border border-[var(--panel-border)] px-2.5 py-1.5 text-xs font-semibold text-[var(--text-primary)] transition-[background-color,transform] duration-150 hover:bg-[var(--surface-hover)] active:scale-[0.97] disabled:opacity-50"
@@ -208,7 +209,7 @@ function SearchPopover({
 
   return (
     <div ref={boxRef} className="relative">
-      <GhostButton onClick={() => setOpen((v) => !v)} disabled={disabled}>
+      <GhostButton onClick={() => setOpen((v) => !v)} disabled={disabled} expanded={open}>
         <Plus className="h-3.5 w-3.5" />
         {label}
       </GhostButton>

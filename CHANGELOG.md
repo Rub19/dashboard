@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.113 — 2026-10-15
+
+**Badges Nitro mieux détectés et menus corrigés**
+
+- Le compteur de badges repère le Nitro par tous ses avantages visibles : avatar animé, bannière, style de pseudo et profil de serveur.
+- Les menus déroulants de la console passent au-dessus des blocs suivants au lieu d'être recouverts.
+
 ## v1.75.112 — 2026-10-15
 
 **La nouvelle carte de bienvenue reste animée**

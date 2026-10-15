@@ -26,7 +26,7 @@
 
 ---
 
-## Nouveautés majeures & Réalisations récentes (v1.75.83 → v1.75.112)
+## Nouveautés majeures & Réalisations récentes (v1.75.83 → v1.75.113)
 
 ### Bienvenue et départs + Rôles automatiques façon Keeper (v1.75.111)
 - Sidebar (`HubSidebar.tsx`) en sections data-driven : Protection, Accueil des membres, Sanctions, Modération, Accès, Animation, Serveur. Vues console `welcome` et `autoroles`.
@@ -36,7 +36,7 @@
 ### /server + compteur de badges (v1.75.110)
 - Bot : `modules/serverInfo/` (`badgeScanner.ts` scanne `guild.members.fetch()`, cache 10 min ; `serverCommand.ts` pages Aperçu/Membres/Salons & rôles/Badges, menu `srv:<userId>`).
 - API `GET /api/guilds/:guildId/badges` (`?refresh=1` force le scan). Dashboard : onglet « Badges » de `ConsoleServer.tsx`.
-- Icônes `public/bot-icons/badge_*.png` → emojis d'app `etho_badge_*`. Limite Discord : Nitro (palier) et badge Quête invisibles pour un bot ; Nitro compté via avatar animé seulement.
+- Icônes `public/bot-icons/badge_*.png` → emojis d'app `etho_badge_*`. Scan via REST brut (`Routes.guildMembers`) : Nitro = avatar animé, bannière (GET /users/:id, 500 max), `display_name_styles` ou profil de serveur. Palier Nitro et badge Quête invisibles. Panel console : `focus-within:z-30` + `has-[aria-expanded]` pour que les menus passent au-dessus.
 
 ### Musique : état des sources (v1.75.109, vérifié le 2026-10-15)
 - Accès SSH au NAS par clé OK (`ssh nas`, port 46 ; pas de SFTP : copier avec `cat fichier | ssh nas "cat > …"`). Docker sans sudo. Conteneurs : `lavalink` (ghcr 4.2.2, lavaplayer 2.2.6, net host, config ~/lavalink/application.yml), `yt-resolver`, tunnels autossh.

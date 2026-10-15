@@ -251,7 +251,7 @@ function BadgesTab({ guildId }: { guildId: string }) {
       </motion.div>
       <Panel
         title="Badges de profil"
-        subtitle={`Analyse ${sinceLabel(scan.scannedAt)} · Nitro sans avatar animé et badge Quête ne sont pas visibles par les bots`}
+        subtitle={`Analyse ${sinceLabel(scan.scannedAt)} · Nitro repéré par ses avantages visibles ; palier Nitro et badge Quête invisibles pour les bots`}
         actions={<GhostButton disabled={busy} onClick={() => load(true)}>{busy ? "Analyse…" : "Relancer l'analyse"}</GhostButton>}
       >
         {grid(scan.badges)}

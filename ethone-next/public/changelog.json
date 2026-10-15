@@ -1,5 +1,14 @@
 [
   {
+    "version": "v1.75.113",
+    "date": "2026-10-15",
+    "title": "Badges Nitro mieux détectés et menus corrigés",
+    "items": [
+      "Le compteur de badges repère le Nitro par tous ses avantages visibles : avatar animé, bannière, style de pseudo et profil de serveur.",
+      "Les menus déroulants de la console passent au-dessus des blocs suivants au lieu d'être recouverts."
+    ]
+  },
+  {
     "version": "v1.75.112",
     "date": "2026-10-15",
     "title": "La nouvelle carte de bienvenue reste animée",
@@ -620,17 +629,6 @@
       "Logs : nouvel onglet Journal avec recherche, catégories, gravité, période et chargement progressif.",
       "Correction : le nombre de membres en ligne n'est plus estimé (45 % des membres) quand le bot ne voit pas les présences.",
       "Sécurité : les réglages IA et les règles de salon sont validés par le bot (modes connus, budget plafonné)."
-    ]
-  },
-  {
-    "version": "v1.61.0",
-    "date": "2026-10-09",
-    "title": "Console : Réglages complets, Alertes streamers et Sauvegardes au format Keeper",
-    "items": [
-      "Réglages : la page regroupe désormais tous les paramètres du bot (langue, fuseau horaire, commandes / et à préfixe, contacts d'urgence avec test, aperçu des messages en privé, problèmes détectés), en plus du préfixe, du salon système et du mode raid.",
-      "Alertes streamers : suivre une chaîne Twitch, YouTube ou Kick, pause par streamer, salon, mention, spectateurs minimum, jeu, message, alerte de test ; salons par plateforme, message d'alerte, affichage, fin de live, délai et rôle « En live ».",
-      "Sauvegardes : sauvegarde manuelle (protégée ou non), liste avec vérification, téléchargement, protection et suppression, planification et rétention. La restauration garde son assistant détaillé.",
-      "Sécurité : les réglages des sauvegardes sont validés par le bot (au plus 30 sauvegardes et 90 jours de rétention) pour éviter de remplir le disque du serveur."
     ]
   }
 ]

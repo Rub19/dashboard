@@ -57269,6 +57269,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_112_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_112_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_112_de);
 
+const v1_75_113_fr: ChangelogEntry = {
+  version: "v1.75.113",
+  date: "2026-10-15",
+  title: "Badges Nitro mieux détectés et menus corrigés",
+  items: [
+    "Le compteur de badges repère le Nitro par tous ses avantages visibles : avatar animé, bannière, style de pseudo et profil de serveur.",
+    "Les menus déroulants de la console passent au-dessus des blocs suivants au lieu d'être recouverts.",
+  ],
+};
+
+const v1_75_113_en: ChangelogEntry = {
+  version: "v1.75.113",
+  date: "2026-10-15",
+  title: "Better Nitro badge detection and fixed menus",
+  items: [
+    "The badge counter now spots Nitro through every visible perk: animated avatar, banner, display name style and server profile.",
+    "Console dropdowns now open above the following blocks instead of being covered.",
+  ],
+};
+
+const v1_75_113_es: ChangelogEntry = {
+  version: "v1.75.113",
+  date: "2026-10-15",
+  title: "Mejor detección de Nitro y menús corregidos",
+  items: [
+    "El contador de insignias detecta Nitro por todas sus ventajas visibles: avatar animado, banner, estilo de nombre y perfil de servidor.",
+    "Los menús desplegables de la consola se abren por encima de los bloques siguientes.",
+  ],
+};
+
+const v1_75_113_de: ChangelogEntry = {
+  version: "v1.75.113",
+  date: "2026-10-15",
+  title: "Bessere Nitro-Erkennung und reparierte Menüs",
+  items: [
+    "Der Abzeichen-Zähler erkennt Nitro an allen sichtbaren Vorteilen: animierter Avatar, Banner, Namensstil und Serverprofil.",
+    "Aufklappmenüs der Konsole öffnen sich jetzt über den folgenden Blöcken.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_113_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_113_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_113_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_113_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

@@ -1,4 +1,4 @@
-import { Guild, GuildMember, UserFlags } from 'discord.js';
+import { Guild, Routes, UserFlags } from 'discord.js';
 import { getAppEmoji } from '../../services/appEmojis.js';
 
 const CDN = 'https://cdn.discordapp.com/badge-icons';
@@ -23,7 +23,7 @@ export const PROFILE_BADGES: BadgeDef[] = [
   { key: 'earlysupporter', label: 'Early Supporter', icon: '7060786766c9c840eb3019e725d2b358', flag: UserFlags.PremiumEarlySupporter },
   { key: 'verifieddev', label: 'Développeur de bot vérifié', icon: '6df5892e0f35b051f8b61eace34f4967', flag: UserFlags.VerifiedDeveloper },
   { key: 'activedev', label: 'Développeur actif', icon: '6bdc42827a38498929a4920da12695d9', flag: UserFlags.ActiveDeveloper },
-  { key: 'nitro', label: 'Nitro (avatar animé)', icon: '2ba85e8026a8614b640c2837bcdfe21b' },
+  { key: 'nitro', label: 'Nitro', icon: '2ba85e8026a8614b640c2837bcdfe21b' },
 ];
 
 export const BOOST_TIERS: Array<BadgeDef & { months: number }> = [
@@ -68,23 +68,57 @@ export function boostTier(premiumSince: Date, now = Date.now()) {
   return [...BOOST_TIERS].reverse().find((t) => months >= t.months) ?? BOOST_TIERS[0];
 }
 
-function memberBadges(member: GuildMember): string[] {
+type RawUser = { id: string; bot?: boolean; avatar?: string | null; banner?: string | null; public_flags?: number; display_name_styles?: unknown };
+type RawMember = { user: RawUser; avatar?: string | null; banner?: string | null; premium_since?: string | null };
+
+const BANNER_LOOKUPS = 500;
+
+/** Avantages réservés au Nitro visibles par un bot : avatar animé, bannière, profil de serveur, style de pseudo. */
+const nitroHint = (m: RawMember) => Boolean(m.user.avatar?.startsWith('a_') || m.user.banner || m.user.display_name_styles || m.avatar || m.banner);
+
+async function fetchRawMembers(guild: Guild): Promise<RawMember[]> {
+  const all: RawMember[] = [];
+  let after = '0';
+  for (;;) {
+    const page = (await guild.client.rest.get(Routes.guildMembers(guild.id), { query: new URLSearchParams({ limit: '1000', after }) })) as RawMember[];
+    all.push(...page);
+    if (page.length < 1000) return all;
+    after = page[page.length - 1].user.id;
+  }
+}
+
+/** La bannière n'est pas dans la liste des membres : lue profil par profil pour ceux sans autre indice Nitro. */
+async function withBanners(guild: Guild, members: RawMember[]): Promise<void> {
+  // ponytail: limité à 500 profils par analyse pour ménager l'API ; au-delà, seuls les autres indices comptent.
+  const todo = members.filter((m) => !m.user.bot && !nitroHint(m)).slice(0, BANNER_LOOKUPS);
+  for (let i = 0; i < todo.length; i += 5) {
+    await Promise.all(
+      todo.slice(i, i + 5).map(async (m) => {
+        const u = (await guild.client.rest.get(Routes.user(m.user.id)).catch(() => null)) as RawUser | null;
+        if (u?.banner) m.user.banner = u.banner;
+      })
+    );
+  }
+}
+
+function memberBadges(m: RawMember): string[] {
   const keys: string[] = [];
-  const flags = member.user.flags?.bitfield ?? 0;
+  const flags = m.user.public_flags ?? 0;
   for (const b of PROFILE_BADGES) if (b.flag !== undefined && (flags & b.flag) === b.flag) keys.push(b.key);
-  if (member.user.avatar?.startsWith('a_')) keys.push('nitro');
-  if (member.premiumSince) keys.push(boostTier(member.premiumSince).key);
+  if (nitroHint(m)) keys.push('nitro');
+  if (m.premium_since) keys.push(boostTier(new Date(m.premium_since)).key);
   return keys;
 }
 
 async function runScan(guild: Guild): Promise<BadgeScan> {
-  const members = await guild.members.fetch();
+  const members = await fetchRawMembers(guild);
+  await withBanners(guild, members);
   const counts = new Map<string, number>();
   let humans = 0;
   let bots = 0;
   let withBadge = 0;
   let boosters = 0;
-  for (const member of members.values()) {
+  for (const member of members) {
     if (member.user.bot) {
       bots++;
       continue;
@@ -92,7 +126,7 @@ async function runScan(guild: Guild): Promise<BadgeScan> {
     humans++;
     const keys = memberBadges(member);
     if (keys.length) withBadge++;
-    if (member.premiumSince) boosters++;
+    if (member.premium_since) boosters++;
     for (const k of keys) counts.set(k, (counts.get(k) ?? 0) + 1);
   }
   const toCount = (b: BadgeDef): BadgeCount => ({ key: b.key, label: b.label, iconUrl: badgeIconUrl(b.icon), count: counts.get(b.key) ?? 0 });

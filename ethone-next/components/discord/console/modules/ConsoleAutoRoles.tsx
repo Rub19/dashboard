@@ -69,7 +69,7 @@ function ChannelChips({ guildId, ids, onChange }: { guildId: string; ids: string
         ))}
       </AnimatePresence>
       <div className="relative">
-        <GhostButton onClick={() => setOpen((v) => !v)}>+ Ajouter un salon ou une catégorie</GhostButton>
+        <GhostButton onClick={() => setOpen((v) => !v)} expanded={open}>+ Ajouter un salon ou une catégorie</GhostButton>
         <AnimatePresence>
           {open && (
             <motion.div

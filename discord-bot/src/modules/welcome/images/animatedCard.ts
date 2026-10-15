@@ -19,6 +19,8 @@ export interface AnimatedCardOptions {
   /** Centre et rayon de l'avatar dans le repère logique, pour le halo. */
   avatar: { x: number; y: number; r: number } | null;
   foreground: Canvas;
+  /** Fond de base (dégradé de la carte à calques) à la place de la couleur unie. */
+  paintBase?: (c: SKRSContext2D) => void;
   frames?: number;
   delayMs?: number;
 }
@@ -34,8 +36,11 @@ function particles(count: number, w: number, h: number) {
 
 function drawFrame(c: SKRSContext2D, o: AnimatedCardOptions, t: number, dots: ReturnType<typeof particles>): void {
   const { width: W, height: H } = o;
-  c.fillStyle = o.backgroundColor;
-  c.fillRect(0, 0, W, H);
+  if (o.paintBase) o.paintBase(c);
+  else {
+    c.fillStyle = o.backgroundColor;
+    c.fillRect(0, 0, W, H);
+  }
 
   // Deux lueurs d'accent qui dérivent lentement (ellipses périodiques).
   const blobs = [

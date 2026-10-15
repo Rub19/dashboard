@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.112 — 2026-10-15
+
+**La nouvelle carte de bienvenue reste animée**
+
+- La carte par défaut prend le nouveau design et reste un GIF animé : lueurs, particules, halo autour de l'avatar et reflet.
+- Interrupteur « Carte animée » dans l'éditeur d'image (fond couleur ou dégradé).
+
 ## v1.75.111 — 2026-10-15
 
 **Bienvenue et départs, Rôles automatiques et nouvelle barre latérale**

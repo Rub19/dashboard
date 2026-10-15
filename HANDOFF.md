@@ -26,11 +26,11 @@
 
 ---
 
-## Nouveautés majeures & Réalisations récentes (v1.75.83 → v1.75.111)
+## Nouveautés majeures & Réalisations récentes (v1.75.83 → v1.75.112)
 
 ### Bienvenue et départs + Rôles automatiques façon Keeper (v1.75.111)
 - Sidebar (`HubSidebar.tsx`) en sections data-driven : Protection, Accueil des membres, Sanctions, Modération, Accès, Animation, Serveur. Vues console `welcome` et `autoroles`.
-- `ConsoleWelcome.tsx` + `console/welcome/*` (MessageEditor, DiscordPreview, ImageEditor à calques, types/modèles). Bot : `welcomeService.ts` réécrit (format embed/container/text, `asServer` via webhook, ghost ping, options waitVerification/ignoreBots/quickLeave, vague limitée à 10/min), rendu `renderLayered` dans `welcomeCardGenerator.ts`, upload `POST /welcome/assets` → `data/welcome-assets/` servi par `GET /api/public/welcome-assets/:guild/:file`.
+- `ConsoleWelcome.tsx` + `console/welcome/*` (MessageEditor, DiscordPreview, ImageEditor à calques, types/modèles). Bot : `welcomeService.ts` réécrit (format embed/container/text, `asServer` via webhook, ghost ping, options waitVerification/ignoreBots/quickLeave, vague limitée à 10/min), rendu `renderLayered` (GIF animé via `renderAnimatedCard` + `paintBase` si `animated`), upload `POST /welcome/assets` → `data/welcome-assets/` servi par `GET /api/public/welcome-assets/:guild/:file`.
 - `ConsoleAutoRoles.tsx` ; bot `autoRoleConfig.ts` `temp` (persisté dans `data/temp_roles.json`, tick 60 s) et `voice` (voiceStateUpdate).
 
 ### /server + compteur de badges (v1.75.110)

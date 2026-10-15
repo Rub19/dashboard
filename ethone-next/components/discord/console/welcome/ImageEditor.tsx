@@ -402,6 +402,15 @@ export default function ImageEditor({ guildId, image, onChange, viewer, meta, go
             <span className="text-[11px] text-[var(--text-muted)]">Taille</span>
             <Select value={size} width="w-full" aria-label="Taille de l'image" options={SIZE_OPTIONS} onChange={resize} />
           </div>
+          {bg.type !== "image" && (
+            <label className="flex items-center justify-between gap-3 text-[11px] text-[var(--text-muted)]">
+              <span>
+                <span className="block text-xs font-semibold text-[var(--text-primary)]">Carte animée</span>
+                GIF : lueurs, particules et halo
+              </span>
+              <Switch checked={image.animated !== false} onChange={(v) => commit({ animated: v })} label="Carte animée" />
+            </label>
+          )}
           <Segmented label="Fond" value={bg.type} options={[["color", "Couleur"], ["gradient", "Dégradé"], ["image", "Image"]]} onChange={(v) => setBg({ type: v })} />
           <div className="space-y-1">
             <span className="text-[11px] text-[var(--text-muted)]">{bg.type === "gradient" ? "Première couleur" : "Couleur"}</span>

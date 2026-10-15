@@ -303,6 +303,25 @@ async function renderLayered(cfg: WelcomeImageConfig, avatar: Image | null, ctx:
   const layers = (cfg.layers ?? []).filter((l) => l.visible);
   const urls = [...new Set([bg.type === 'image' ? bg.url : '', ...layers.map((l) => (l.type === 'image' ? l.url : ''))].filter(Boolean))];
   const images = new Map(await Promise.all(urls.map(async (u) => [u, await loadRemote(u)] as const)));
+  if (cfg.animated && bg.type !== 'image') {
+    // GIF allégé : 800 px de large au plus.
+    const scale = Math.min(1, 800 / w);
+    const fg = createCanvas(Math.round(w * scale), Math.round(h * scale));
+    const fc = fg.getContext('2d');
+    fc.scale(scale, scale);
+    for (const layer of layers) paintLayer(fc, layer, avatar, images, ctx);
+    const av = layers.find((l) => l.type === 'avatar');
+    return renderAnimatedCard({
+      width: w,
+      height: h,
+      scale,
+      backgroundColor: bg.color,
+      accentColor: bg.type === 'gradient' ? bg.color2 : cfg.accentColor,
+      avatar: av && av.type === 'avatar' ? { x: av.x + av.size / 2, y: av.y + av.size / 2, r: av.size / 2 } : null,
+      foreground: fg,
+      paintBase: (c) => paintBackground(c, bg, null, w, h),
+    });
+  }
   const canvas = createCanvas(w, h);
   const c = canvas.getContext('2d');
   paintBackground(c, bg, images.get(bg.url) ?? null, w, h);

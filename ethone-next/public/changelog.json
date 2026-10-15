@@ -1,5 +1,14 @@
 [
   {
+    "version": "v1.75.112",
+    "date": "2026-10-15",
+    "title": "La nouvelle carte de bienvenue reste animée",
+    "items": [
+      "La carte par défaut prend le nouveau design et reste un GIF animé : lueurs, particules, halo autour de l'avatar et reflet.",
+      "Interrupteur « Carte animée » dans l'éditeur d'image (fond couleur ou dégradé)."
+    ]
+  },
+  {
     "version": "v1.75.111",
     "date": "2026-10-15",
     "title": "Bienvenue et départs, Rôles automatiques et nouvelle barre latérale",
@@ -622,14 +631,6 @@
       "Alertes streamers : suivre une chaîne Twitch, YouTube ou Kick, pause par streamer, salon, mention, spectateurs minimum, jeu, message, alerte de test ; salons par plateforme, message d'alerte, affichage, fin de live, délai et rôle « En live ».",
       "Sauvegardes : sauvegarde manuelle (protégée ou non), liste avec vérification, téléchargement, protection et suppression, planification et rétention. La restauration garde son assistant détaillé.",
       "Sécurité : les réglages des sauvegardes sont validés par le bot (au plus 30 sauvegardes et 90 jours de rétention) pour éviter de remplir le disque du serveur."
-    ]
-  },
-  {
-    "version": "v1.60.1",
-    "date": "2026-10-09",
-    "title": "Commandes : le détail suit toujours la commande choisie",
-    "items": [
-      "Le panneau de droite affiche immédiatement la commande sélectionnée (il pouvait rester vide ou figé sur la précédente)."
     ]
   }
 ]

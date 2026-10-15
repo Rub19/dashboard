@@ -43,6 +43,7 @@ export type CardImage = {
   accentColor: string;
   backgroundColor: string;
   textColor: string;
+  animated?: boolean;
   size?: CardSize;
   background?: Background;
   layers?: Layer[];

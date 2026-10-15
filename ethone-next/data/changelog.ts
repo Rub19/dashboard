@@ -57224,6 +57224,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_111_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_111_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_111_de);
 
+const v1_75_112_fr: ChangelogEntry = {
+  version: "v1.75.112",
+  date: "2026-10-15",
+  title: "La nouvelle carte de bienvenue reste animée",
+  items: [
+    "La carte par défaut prend le nouveau design et reste un GIF animé : lueurs, particules, halo autour de l'avatar et reflet.",
+    "Interrupteur « Carte animée » dans l'éditeur d'image (fond couleur ou dégradé).",
+  ],
+};
+
+const v1_75_112_en: ChangelogEntry = {
+  version: "v1.75.112",
+  date: "2026-10-15",
+  title: "The new welcome card stays animated",
+  items: [
+    "The default card uses the new design and stays an animated GIF: glows, particles, avatar halo and shine.",
+    "« Animated card » switch in the image editor (color or gradient background).",
+  ],
+};
+
+const v1_75_112_es: ChangelogEntry = {
+  version: "v1.75.112",
+  date: "2026-10-15",
+  title: "La nueva tarjeta de bienvenida sigue animada",
+  items: [
+    "La tarjeta por defecto usa el nuevo diseño y sigue siendo un GIF animado: brillos, partículas, halo del avatar y reflejo.",
+    "Interruptor « Tarjeta animada » en el editor de imagen (fondo de color o degradado).",
+  ],
+};
+
+const v1_75_112_de: ChangelogEntry = {
+  version: "v1.75.112",
+  date: "2026-10-15",
+  title: "Die neue Begrüßungskarte bleibt animiert",
+  items: [
+    "Die Standardkarte nutzt das neue Design und bleibt ein animiertes GIF: Leuchten, Partikel, Avatar-Halo und Glanz.",
+    "Schalter « Animierte Karte » im Bildeditor (Farb- oder Verlaufshintergrund).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_112_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_112_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_112_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_112_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

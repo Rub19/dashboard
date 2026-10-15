@@ -182,7 +182,7 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
   fr: {
     meta: {
       title: "Etho — Le bot Discord tout-en-un pour ta communauté",
-      description: "Modération chirurgicale, protection anti-raid, musique, pont vocal Spotify et catalogue complet de commandes fun. Tout pour votre serveur, sans superflu.",
+      description: "Modération chirurgicale, protection anti-raid, musique, pont vocal Spotify et catalogue complet de commandes fun. Tout pour ton serveur, sans superflu.",
     },
     nav: {
       features: "Fonctionnalités",
@@ -217,10 +217,10 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
       badge: "SÉCURITÉ DU SERVEUR",
       titlePart1: "Modération et Sécurité",
       titleHighlight: "de premier ordre",
-      subtitle: "Les meilleurs outils pour maintenir votre communauté saine, verrouillée et protégée.",
+      subtitle: "Les meilleurs outils pour garder ta communauté saine, verrouillée et protégée.",
       filters: {
         title: "Filtres Automatisés",
-        desc: "Gardez vos salons textuels propres grâce à nos options de filtrage instantané.",
+        desc: "Garde tes salons textuels propres grâce au filtrage instantané.",
         chips: {
           links: "Liens",
           mentions: "Mass Mentions",
@@ -230,16 +230,16 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
       },
       permissions: {
         title: "Sécurité des Permissions",
-        desc: "Supprimez et révoquez les permissions dangereuses susceptibles d'être exploitées via l'API.",
+        desc: "Supprime et révoque les permissions dangereuses susceptibles d'être exploitées via l'API.",
       },
       antiNuke: {
         title: "Anti-Nuke",
-        desc: "Prévenez les suppressions massives de salons ou de rôles avec des seuils d'alerte personnalisables.",
+        desc: "Empêche les suppressions massives de salons ou de rôles avec des seuils d'alerte personnalisables.",
         scanning: "Analyse en direct",
       },
       antiRaid: {
         title: "Anti-Raid",
-        desc: "Protégez votre serveur contre les raids coordonnés grâce aux filtres d'âge de compte et d'avatar.",
+        desc: "Protège ton serveur contre les raids coordonnés grâce aux filtres d'âge de compte et d'avatar.",
         verified: "Identité vérifiée",
       },
       moreBtn: "20 commandes de sécurité",
@@ -269,13 +269,13 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
     },
     platforms: {
       badge: "INTÉGRATIONS",
-      titlePart1: "Intégrations avec vos",
+      titlePart1: "Intégrations avec tes",
       titleHighlight: "Plateformes préférées",
-      subtitle: "Suivez, écoutez, recherchez et diffusez vos médias en direct depuis vos services favoris.",
+      subtitle: "Suis, écoute, recherche et diffuse tes médias depuis tes services préférés.",
       cards: {
         spotify: {
           name: "Spotify",
-          desc: "Jouez, contrôlez votre musique en vocal, synchronisez vos titres et diffusez en direct.",
+          desc: "Joue et contrôle ta musique en vocal, synchronise tes titres et diffuse en direct.",
           tag: "14+ commandes",
         },
         lastfm: {
@@ -285,22 +285,22 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
         },
         soundcloud: {
           name: "SoundCloud",
-          desc: "Recherchez des morceaux indépendants, diffusez en vocal et partagez des liens audio directs.",
+          desc: "Recherche des morceaux, diffuse-les en vocal et partage des liens audio.",
           tag: "Vocal direct",
         },
         tiktok: {
           name: "TikTok",
-          desc: "Recherchez des profils, suivez les créateurs et recevez des alertes de nouvelles vidéos.",
+          desc: "Recherche des profils et affiche les vidéos directement dans Discord.",
           tag: "Flux & alertes",
         },
         pinterest: {
           name: "Pinterest",
-          desc: "Recherche visuelle Lens sur vos images, profils et intégration de flux d'épingles.",
+          desc: "Recherche d'épingles, de profils et de tableaux, avec un lien Google Lens.",
           tag: "Recherche Lens",
         },
         youtube: {
           name: "YouTube",
-          desc: "Streaming audio haute fidélité dans vos salons vocaux et lecture directe de playlists.",
+          desc: "Colle un lien ou une playlist YouTube : Etho joue les titres en vocal.",
           tag: "Streaming HD",
         },
         twitch: {
@@ -314,7 +314,7 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
       badge: "CATALOGUE",
       titlePart1: "D'innombrables fonctionnalités",
       titleHighlight: "en plus",
-      subtitle: "Ne vous souciez plus jamais d'avoir besoin d'un autre bot, tous vos besoins sont couverts.",
+      subtitle: "Plus besoin d'empiler les bots : l'essentiel est déjà là.",
       commandsDivider: {
         before: "Plus de",
         count: "100",
@@ -333,7 +333,7 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
         },
         levels: {
           title: "Système de niveaux",
-          desc: "Système d'XP et de niveaux pour vos membres afin de monter en grade et suivre leur progression.",
+          desc: "Système d'XP et de niveaux pour que tes membres montent en grade et suivent leur progression.",
         },
         snipe: {
           title: "Tickets d'assistance",
@@ -341,7 +341,7 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
         },
         giveaways: {
           title: "Giveaways & Concours",
-          desc: "Organisez des tirages au sort rapides et faciles pour les membres de votre serveur.",
+          desc: "Organise des tirages au sort rapides pour les membres de ton serveur.",
         },
         games: {
           title: "Casino & Mini-jeux",
@@ -357,7 +357,7 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
         },
         counters: {
           title: "Salons compteurs",
-          desc: "Créez des salons compteurs pour afficher les statistiques du serveur en direct.",
+          desc: "Crée des salons compteurs qui affichent les statistiques du serveur en direct.",
         },
         reactionTriggers: {
           title: "Starboard",
@@ -373,11 +373,11 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
         },
         reminders: {
           title: "Rappels de Bump",
-          desc: "Recevez des rappels programmés pour faire /bump sur votre serveur sur Disboard.",
+          desc: "Reçois des rappels programmés pour faire /bump sur Disboard.",
         },
         reactionRoles: {
           title: "Déclencheurs de réactions",
-          desc: "Configurez des déclencheurs avancés sur les messages ou messages précédents.",
+          desc: "Configure des déclencheurs avancés sur les messages.",
         },
         lyrics: {
           title: "Manipulation d'images",
@@ -410,12 +410,12 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
     commands: {
       eyebrow: "COMMANDES",
       title: "Catalogue des Commandes",
-      subtitle: "Explorez l'ensemble des commandes interactives prêtes à l'emploi.",
+      subtitle: "Explore toutes les commandes prêtes à l'emploi.",
       search: "Rechercher une commande...",
       all: "Toutes",
       copy: "Copier",
       copied: "Copié !",
-      empty: "Aucune commande ne correspond à votre recherche.",
+      empty: "Aucune commande ne correspond à ta recherche.",
     },
     faq: {
       eyebrow: "QUESTIONS FRÉQUENTES",
@@ -432,11 +432,11 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
         },
         {
           q: "Comment fonctionne le pont vocal Spotify (/spotify vc) ?",
-          a: "Connectez-vous dans un salon vocal Discord et lancez votre musique sur votre application Spotify. La commande /spotify vc fait rejoindre Etho à votre salon et diffuse instantanément votre piste en direct.",
+          a: "Rejoins un salon vocal Discord et lance ta musique dans ton application Spotify. La commande /spotify vc fait rejoindre Etho à ton salon et diffuse instantanément ta piste en direct.",
         },
         {
           q: "Qu'est-ce que le Bouclier Owner ?",
-          a: "C'est une barrière exclusive réservée au propriétaire du serveur : même en cas de prise de contrôle d'un rôle d'administration par un attaquant, Etho annule toute révocation de vos permissions et vous restaure immédiatement.",
+          a: "C'est une barrière exclusive réservée au propriétaire du serveur : même en cas de prise de contrôle d'un rôle d'administration par un attaquant, Etho annule toute révocation de tes permissions et te restaure immédiatement.",
         },
         {
           q: "Mes données sont-elles conservées en sécurité ?",
@@ -451,7 +451,7 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
       dashboardBtn: "Ouvrir le dashboard",
     },
     footer: {
-      tagline: "Le bot Discord tout-en-un pour votre communauté",
+      tagline: "Le bot Discord tout-en-un pour ta communauté",
       botColTitle: "Bot",
       legalColTitle: "Légal",
       rightsReserved: "Tous droits réservés.",

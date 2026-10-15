@@ -1,4 +1,4 @@
-# ETHONE — passation & nouveautés (2026-10-15, version 1.75.102)
+# ETHONE — passation & nouveautés (2026-10-15, version 1.75.103)
 
 ## Projet
 - `ethone-next/` : site Next.js statique (ethone.dev, Cloudflare Pages, déploiement auto au push sur `main`).
@@ -26,13 +26,20 @@
 
 ---
 
-## Nouveautés majeures & Réalisations récentes (v1.75.83 → v1.75.102)
+## Nouveautés majeures & Réalisations récentes (v1.75.83 → v1.75.103)
+
+### Fausses données, tutoiement, invitation, SEO /bot (v1.75.103)
+- Coach Valorant : « — » / « ton agent principal » au lieu de 25 %/50 %/Jett/10 parties. Moteur IA intégré : règlement et salon #support inventés retirés.
+- `ticketRepository` : défauts = une catégorie « Support » sans équipe, aucune équipe ni automatisation (les serveurs déjà initialisés gardent leurs données).
+- Tout au « tu » sur /bot (FR) et dans la console. `ConsolePage` : `xl:max-w-5xl 2xl:max-w-6xl`.
+- Invitations : `permissions=1436565368055` (liste précise au lieu d'Administrateur) ; le lien de secours du Bouclier Owner garde Administrateur.
+- `app/loading.tsx` supprimé : il enveloppait toutes les pages dans un Suspense (contenu livré dans `<div hidden id="S:0">`). `loading.tsx` vides gardés seulement dans discord, activity, connections, leaderboard, settings, tracker (useSearchParams sans Suspense).
 
 ### Spotify + fiabilité bot (v1.75.102)
 - Île : ±15 s, copier/ouvrir le lien Spotify, Espace/←→/↑↓ quand la vue Spotify est ouverte. Dock : ligne de temps en double retirée (MediaProgress affiche déjà écoulé / restant).
 - Échec `deploySlashCommands` → `BotErrorIncidentService` (empreinte + incident critique). `/economy` ne garde que leaderboard/buy ; previous/nowplaying/volume/shuffle/loop/clearqueue ajoutés à `PREFIX_ONLY_SHORTCUTS` (91 commandes slash).
 - `release.js` met aussi à jour `discord-bot/package.json` (version du pilotage).
-- RESTE À FAIRE : tester les parcours réels (tickets, bienvenue, giveaway, musique, streamers, sauvegardes) sur Serveur Test Bot ; retirer les fausses données (repli du Coach Valorant 25 %/50 %/Jett/10 parties, règlement inventé du moteur IA intégré, catégories de tickets par défaut).
+- RESTE À FAIRE : tester les parcours réels (tickets, bienvenue, giveaway, musique, streamers, sauvegardes) sur Serveur Test Bot.
 
 ### IA : Groq automatique (v1.75.99)
 - `GROQ_API_KEY` est dans `discord-bot/.env` sur le VPS (clé distincte de celle du Worker). Aucun écran ne choisit le fournisseur : `AIProviderService.withAvailableProvider` passe `BUILTIN` → `GROQ` dès que la clé existe ; le modèle devient `GROQ_MODEL` (env) ou `openai/gpt-oss-120b` avec `reasoning_effort: low` (v1.75.100 : `llama-3.3-70b-versatile` est retiré chez Groq, 404). v1.75.101 : Worker (`ai-config.js`, `AI_FALLBACK_MODEL` de wrangler.jsonc, `reasoning_effort: low` pour gpt-oss) et `lib/brain` passés sur `openai/gpt-oss-120b` / `gpt-oss-20b` / `qwen/qwen3.8-27b` (modèles Groq vérifiés le 2026-10-15).

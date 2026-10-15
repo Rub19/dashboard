@@ -25,7 +25,7 @@ import { BOT_COPY, BOT_LANGS, BOT_LANG_KEY, detectBotLang, type BotLang } from "
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 const BOT_CLIENT_ID = "1545139931154878464";
-const INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
+const INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=1436565368055&scope=bot%20applications.commands`;
 const SUPPORT_URL = "https://discord.gg/WvEcyBuP45";
 const DASHBOARD_URL = "/discord";
 
@@ -43,10 +43,10 @@ interface PublicStats {
 }
 
 const STATIC_FALLBACK_COMMANDS: PublicCommand[] = [
-  { name: "shield", description: "Active ou consulte l'état du bouclier Owner pour restaurer vos rôles en cas de raid.", category: "Sécurité", subcommands: [{ name: "status", description: "Affiche l'état du bouclier" }, { name: "toggle", description: "Active ou coupe le bouclier" }] },
+  { name: "shield", description: "Active ou consulte l'état du bouclier Owner pour restaurer tes rôles en cas de raid.", category: "Sécurité", subcommands: [{ name: "status", description: "Affiche l'état du bouclier" }, { name: "toggle", description: "Active ou coupe le bouclier" }] },
   { name: "automod", description: "Configure les filtres automatiques contre le spam, les raids et les pings massifs.", category: "Sécurité", subcommands: [{ name: "rules", description: "Liste les règles actives" }, { name: "action", description: "Définit la sanction automatique" }] },
-  { name: "spotify", description: "Contrôle la lecture Spotify et diffuse votre titre dans votre salon vocal Discord.", category: "Spotify", subcommands: [{ name: "vc", description: "Rejoint le salon et diffuse le titre" }, { name: "nowplaying", description: "Affiche le titre en cours" }, { name: "like", description: "Ajoute aux favoris Spotify" }] },
-  { name: "lastfm", description: "Affiche vos statistiques d'écoute Last.fm et votre titre en direct.", category: "Fun", subcommands: [{ name: "nowplaying", description: "Titre en cours" }, { name: "recent", description: "Récents scrobbles" }, { name: "topartists", description: "Top artistes" }, { name: "taste", description: "Comparateur de goûts" }, { name: "login", description: "Associer son compte" }] },
+  { name: "spotify", description: "Contrôle la lecture Spotify et diffuse ton titre dans ton salon vocal Discord.", category: "Spotify", subcommands: [{ name: "vc", description: "Rejoint le salon et diffuse le titre" }, { name: "nowplaying", description: "Affiche le titre en cours" }, { name: "like", description: "Ajoute aux favoris Spotify" }] },
+  { name: "lastfm", description: "Affiche tes statistiques d'écoute Last.fm et ton titre en direct.", category: "Fun", subcommands: [{ name: "nowplaying", description: "Titre en cours" }, { name: "recent", description: "Récents scrobbles" }, { name: "topartists", description: "Top artistes" }, { name: "taste", description: "Comparateur de goûts" }, { name: "login", description: "Associer son compte" }] },
   { name: "tiktok", description: "Recherche de profils, inspection de vidéos et liens de créateurs TikTok.", category: "Fun", subcommands: [{ name: "profile", description: "Affiche les infos d'un compte TikTok" }, { name: "video", description: "Inspecte une vidéo TikTok" }] },
   { name: "pinterest", description: "Recherche visuelle d'épingles, profils et tableaux d'inspiration Pinterest.", category: "Fun", subcommands: [{ name: "search", description: "Recherche visuelle de pins" }, { name: "pin", description: "Affiche le détail d'une épingle" }, { name: "user", description: "Affiche un profil créateur" }] },
   { name: "instagram", description: "Recherche de profils, photos et inspection de publications Instagram.", category: "Fun", subcommands: [{ name: "user", description: "Affiche le profil et les photos" }, { name: "post", description: "Inspecte une publication Instagram" }] },
@@ -57,7 +57,7 @@ const STATIC_FALLBACK_COMMANDS: PublicCommand[] = [
   { name: "reverseimage", description: "Recherche d'image inversée sur Google Lens, Bing, TinEye et SauceNAO.", category: "Fun", subcommands: [] },
   { name: "play", description: "Joue un titre ou une playlist musicale dans le salon vocal actuel.", category: "Musique", subcommands: [] },
   { name: "volume", description: "Ajuste le volume de diffusion du bot de 1% à 150%.", category: "Musique", subcommands: [] },
-  { name: "rank", description: "Affiche votre niveau actuel, votre carte d'expérience et votre rang sur le serveur.", category: "Économie", subcommands: [] },
+  { name: "rank", description: "Affiche ton niveau actuel, ta carte d'expérience et ton rang sur le serveur.", category: "Économie", subcommands: [] },
   { name: "leaderboard", description: "Affiche le classement des membres les plus actifs en texte et en vocal.", category: "Économie", subcommands: [] },
   { name: "ban", description: "Bannit un utilisateur avec motif et purge des messages récents.", category: "Modération", subcommands: [] },
   { name: "timeout", description: "Exclut temporairement un membre pour une durée déterminée.", category: "Modération", subcommands: [] },
@@ -937,7 +937,7 @@ const PLATFORM_CONFIGS: PlatformConfigItem[] = [
       </svg>
     ),
     desc: {
-      fr: <>Jouez, contrôlez votre <span className="font-medium text-[#1DB954]">Musique</span>. Écoutez en <span className="font-medium text-[#1DB954]">Salon Vocal</span>. et plus de <span className="font-medium text-[#1DB954]">14+</span> options.</>,
+      fr: <>Joue et contrôle ta <span className="font-medium text-[#1DB954]">musique</span>, écoute-la en <span className="font-medium text-[#1DB954]">salon vocal</span> et profite de plus de <span className="font-medium text-[#1DB954]">14</span> options.</>,
       en: <>Play, Queue, Control your <span className="font-medium text-[#1DB954]">Music</span>. Listen in any <span className="font-medium text-[#1DB954]">Voice Channel</span>. and <span className="font-medium text-[#1DB954]">14+</span> more.</>,
       es: <>Reproduce, controla tu <span className="font-medium text-[#1DB954]">Música</span>. Escucha en cualquier <span className="font-medium text-[#1DB954]">Canal de Voz</span>. y <span className="font-medium text-[#1DB954]">14+</span> más.</>,
       de: <>Spiele, steuere deine <span className="font-medium text-[#1DB954]">Musik</span>. Höre in jedem <span className="font-medium text-[#1DB954]">Sprachkanal</span>. und <span className="font-medium text-[#1DB954]">14+</span> mehr.</>,

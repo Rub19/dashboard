@@ -114,8 +114,8 @@ export default function ReportsSetupPanel({ guildId }: { guildId: string }) {
   if (!config.enabled) {
     return (
       <section className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 text-center sm:p-10">
-        <h2 className="text-lg font-bold text-[var(--text-primary)] sm:text-xl">Vous n&apos;avez pas encore configuré vos signalements</h2>
-        <p className="mx-auto mt-2 max-w-xl text-sm text-[var(--text-muted)]">Laissez vos membres signaler un abus en un clic (clic droit sur un message ou un membre, ou /report), et donnez à votre équipe un salon pour les traiter.</p>
+        <h2 className="text-lg font-bold text-[var(--text-primary)] sm:text-xl">Tu n&apos;as pas encore configuré les signalements</h2>
+        <p className="mx-auto mt-2 max-w-xl text-sm text-[var(--text-muted)]">Laisse tes membres signaler un abus en un clic (clic droit sur un message ou un membre, ou /report), et donne à ton équipe un salon pour les traiter.</p>
         <div className="mt-6">
           <TeamMessagePreview />
         </div>
@@ -127,7 +127,7 @@ export default function ReportsSetupPanel({ guildId }: { guildId: string }) {
         >
           {busy ? "Installation…" : "Installer en quelques secondes"}
         </button>
-        <p className="mx-auto mt-3 max-w-md text-xs text-[var(--text-muted)]">Le bot crée le salon « signalements » visible de l&apos;équipe de modération et du bot seulement. Vous pourrez ensuite en choisir un autre.</p>
+        <p className="mx-auto mt-3 max-w-md text-xs text-[var(--text-muted)]">Le bot crée le salon « signalements » visible de l&apos;équipe de modération et du bot seulement. Tu pourras ensuite en choisir un autre.</p>
       </section>
     );
   }
@@ -161,7 +161,7 @@ export default function ReportsSetupPanel({ guildId }: { guildId: string }) {
           >
             <span>
               <span className="block text-xs font-semibold text-[var(--text-primary)]">Mentionner l&apos;équipe à chaque nouveau signalement</span>
-              <span className="mt-0.5 block text-xs text-[var(--text-muted)]">{config.staffRoleId ? "Le rôle de l'équipe est prévenu." : "Choisissez d'abord un rôle d'équipe."}</span>
+              <span className="mt-0.5 block text-xs text-[var(--text-muted)]">{config.staffRoleId ? "Le rôle de l'équipe est prévenu." : "Choisis d'abord un rôle d'équipe."}</span>
             </span>
             <span className={cn("relative mt-0.5 inline-flex h-5 w-9 shrink-0 items-center rounded-full p-0.5 transition-colors", config.pingStaff ? "bg-[var(--accent-primary)]" : "bg-[var(--text-primary)]/15")}>
               <span className={cn("block h-4 w-4 rounded-full bg-white shadow transition-transform", config.pingStaff ? "translate-x-4" : "translate-x-0")} />

@@ -56765,6 +56765,68 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_102_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_102_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_102_de);
 
+const v1_75_103_fr: ChangelogEntry = {
+  version: "v1.75.103",
+  date: "2026-10-15",
+  title: "Fausses données retirées, tutoiement et page /bot pour Google",
+  items: [
+    "Coach Valorant : plus de statistiques inventées quand les données manquent",
+    "Assistant IA sans clé : plus de règlement inventé, il cite la base du serveur ou le dit honnêtement",
+    "Tickets : un nouveau serveur démarre avec une seule catégorie « Support », sans équipes ni automatisations factices",
+    "Page /bot et console entièrement au « tu »",
+    "Console plus large sur grand écran",
+    "Invitation du bot sans la permission Administrateur, seulement les permissions utiles",
+    "Page /bot : le contenu est livré directement dans le HTML (plus de copie cachée)",
+  ],
+};
+
+const v1_75_103_en: ChangelogEntry = {
+  version: "v1.75.103",
+  date: "2026-10-15",
+  title: "Fake data removed, consistent tone and /bot page for search engines",
+  items: [
+    "Valorant Coach: no more made-up stats when data is missing",
+    "AI assistant without key: no more invented rules",
+    "Tickets: new servers start with a single \"Support\" category, no fake teams or automations",
+    "Console wider on large screens",
+    "Bot invite without Administrator, only the permissions it needs",
+    "/bot page: content shipped directly in the HTML (no hidden copy)",
+  ],
+};
+
+const v1_75_103_es: ChangelogEntry = {
+  version: "v1.75.103",
+  date: "2026-10-15",
+  title: "Datos falsos eliminados y página /bot para buscadores",
+  items: [
+    "Coach Valorant: sin estadísticas inventadas",
+    "Asistente IA sin clave: sin reglamento inventado",
+    "Tickets: los servidores nuevos empiezan con una sola categoría «Support»",
+    "Consola más ancha en pantallas grandes",
+    "Invitación del bot sin permiso de Administrador",
+    "Página /bot: el contenido va directamente en el HTML",
+  ],
+};
+
+const v1_75_103_de: ChangelogEntry = {
+  version: "v1.75.103",
+  date: "2026-10-15",
+  title: "Falsche Daten entfernt und /bot-Seite für Suchmaschinen",
+  items: [
+    "Valorant-Coach: keine erfundenen Statistiken mehr",
+    "KI-Assistent ohne Schlüssel: keine erfundenen Regeln",
+    "Tickets: neue Server starten mit nur einer Kategorie „Support“",
+    "Konsole auf großen Bildschirmen breiter",
+    "Bot-Einladung ohne Administrator-Recht",
+    "/bot-Seite: Inhalt direkt im HTML",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_103_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_103_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_103_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_103_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

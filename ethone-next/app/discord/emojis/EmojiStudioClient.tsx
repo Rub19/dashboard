@@ -153,7 +153,7 @@ export default function EmojiStudioClient() {
       success(`:${e.name}: supprimé.`);
     } catch {
       setEmojis(before);
-      toastError("Suppression impossible : vérifiez la permission « Gérer les expressions » du bot.");
+      toastError("Suppression impossible : vérifie la permission « Gérer les expressions » du bot.");
     }
   };
 
@@ -223,7 +223,7 @@ export default function EmojiStudioClient() {
           icon="mod-emojis"
           tint="amber"
           title="Émojis du serveur"
-          subtitle="Déposez vos images ou GIF animés : le bot les ajoute directement sur votre serveur."
+          subtitle="Dépose tes images ou GIF animés : le bot les ajoute directement sur ton serveur."
           actions={
             <button
               type="button"
@@ -238,7 +238,7 @@ export default function EmojiStudioClient() {
 
         {state === "offline" ? (
           <div className="rounded-2xl border border-dashed border-[var(--panel-border)] p-8 text-center text-sm text-[var(--text-muted)]">
-            Le bot n&apos;a pas répondu pour ce serveur. Vérifiez qu&apos;il est présent, puis actualisez.
+            Le bot n&apos;a pas répondu pour ce serveur. Vérifie qu&apos;il est présent, puis actualise.
           </div>
         ) : (
           <>
@@ -272,7 +272,7 @@ export default function EmojiStudioClient() {
               <motion.div animate={{ y: dragging ? -4 : 0 }} transition={SPRING_LAYOUT} className="mx-auto mb-3 grid h-14 w-14 place-items-center rounded-2xl bg-[var(--accent-primary)]/12 text-[var(--accent-primary)]">
                 <Upload className="h-6 w-6" />
               </motion.div>
-              <p className="text-sm font-semibold">{dragging ? "Lâchez pour ajouter" : "Glissez vos images ici"}</p>
+              <p className="text-sm font-semibold">{dragging ? "Lâchez pour ajouter" : "Glisse tes images ici"}</p>
               <p className="mt-1 text-xs text-[var(--text-muted)]">PNG, JPG, WebP ou GIF animé · 256 Ko maximum · jusqu&apos;à 20 à la fois</p>
               <button
                 type="button"
@@ -462,7 +462,7 @@ export default function EmojiStudioClient() {
                           <p
                             onDoubleClick={() => !e.managed && startRename(e)}
                             className="w-full truncate text-center text-xs text-[var(--text-primary)]/85 cursor-default select-none"
-                            title={!e.managed ? `:${e.name}: (double-cliquez pour renommer)` : `:${e.name}:`}
+                            title={!e.managed ? `:${e.name}: (double-clique pour renommer)` : `:${e.name}:`}
                           >
                             :{e.name}:
                           </p>

@@ -676,7 +676,7 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
               ) : (
                 <div className="rounded-xl border border-dashed border-[var(--panel-border)] p-8 text-center text-xs text-[var(--text-muted)]">
                   <Radio className="mx-auto h-8 w-8 text-[#d51007]/50 mb-2" />
-                  <p>Entrez un pseudo Last.fm ci-dessus pour inspecter son profil en direct.</p>
+                  <p>Entre un pseudo Last.fm ci-dessus pour inspecter son profil en direct.</p>
                 </div>
               )}
 

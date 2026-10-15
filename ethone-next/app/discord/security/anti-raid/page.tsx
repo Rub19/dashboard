@@ -35,7 +35,7 @@ import { GuildSelector } from "@/components/GuildSelector";
 import Select from "@/components/ui/Select";
 
 const BOT_CLIENT_ID = "1545139931154878464";
-const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
+const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=1436565368055&scope=bot%20applications.commands`;
 
 // Types Anti-Raid
 type ThreatLevel = "SAFE" | "SUSPICIOUS" | "ELEVATED" | "DANGEROUS" | "CRITICAL";
@@ -599,7 +599,7 @@ export default function AntiRaidDashboardPage() {
             targetState ? "Le serveur est protégé en mode d'urgence." : "Retour au niveau normal."
           );
         } catch (err: unknown) {
-          showError("Échec de l'action", formatApiError(err, "Impossible de modifier le Raid Mode. Vérifiez que le bot est en ligne."));
+          showError("Échec de l'action", formatApiError(err, "Impossible de modifier le Raid Mode. Vérifie que le bot est en ligne."));
         } finally {
           setIsActionLoading(false);
           setConfirmModal((prev) => ({ ...prev, open: false }));
@@ -636,7 +636,7 @@ export default function AntiRaidDashboardPage() {
           }));
           success(targetState ? "🔒 Lockdown Activé" : "🔓 Lockdown Levé");
         } catch (err: unknown) {
-          showError("Échec du Lockdown", formatApiError(err, "Impossible de modifier le statut de verrouillage. Vérifiez que le bot est en ligne."));
+          showError("Échec du Lockdown", formatApiError(err, "Impossible de modifier le statut de verrouillage. Vérifie que le bot est en ligne."));
         } finally {
           setIsActionLoading(false);
           setConfirmModal((prev) => ({ ...prev, open: false }));
@@ -836,7 +836,7 @@ export default function AntiRaidDashboardPage() {
               <div>
                 <p className="font-semibold text-[var(--text-primary)] text-sm">Le bot ETHONE n&apos;est pas installé sur ce serveur</p>
                 <p className="mt-0.5 text-[var(--text-muted)]">
-                  Invitez le bot sur « {selectedGuild.name} » pour activer la surveillance et les protections Anti-Raid en temps réel.
+                  Invite le bot sur « {selectedGuild.name} » pour activer la surveillance et les protections Anti-Raid en temps réel.
                 </p>
               </div>
             </div>

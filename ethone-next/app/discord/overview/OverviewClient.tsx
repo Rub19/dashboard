@@ -28,7 +28,7 @@ import { CardSkeleton } from "@/components/ui/Skeleton";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 const BOT_CLIENT_ID = "1545139931154878464";
-const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
+const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=1436565368055&scope=bot%20applications.commands`;
 
 function formatUptime(ms: number): string {
   const s = Math.floor((ms || 0) / 1000);
@@ -200,7 +200,7 @@ export default function OverviewClient() {
               <div>
                 <p className="font-semibold text-[var(--text-primary)] text-sm">Le bot ETHONE n&apos;est pas installé sur ce serveur</p>
                 <p className="mt-0.5 text-[var(--text-muted)]">
-                  Invitez le bot sur « {selectedGuild.name} » pour activer la modération en temps réel, la musique, les tickets et les statistiques.
+                  Invite le bot sur « {selectedGuild.name} » pour activer la modération en temps réel, la musique, les tickets et les statistiques.
                 </p>
               </div>
             </div>

@@ -250,7 +250,7 @@ export default function HealthGroup({
                   Diagnostics & Auto-Check 1-Clic
                 </h3>
                 <p className="text-xs text-[var(--text-muted)] mt-0.5">
-                  Vérifiez en temps réel l'intégrité de tous les sous-systèmes critiques du bot
+                  Vérifie en temps réel l'intégrité de tous les sous-systèmes critiques du bot
                 </p>
               </div>
               <button

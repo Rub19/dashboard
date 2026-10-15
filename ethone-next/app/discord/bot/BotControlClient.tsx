@@ -224,7 +224,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
   }, [activeTab, isOwner, router]);
 
   const handleRemoteRestart = async () => {
-    if (!await confirmDialog("⚠️ Confirmation Propriétaire : Êtes-vous sûr de vouloir redémarrer le bot Discord à distance ?")) return;
+    if (!await confirmDialog("⚠️ Confirmation Propriétaire : Tu veux vraiment redémarrer le bot Discord à distance ?")) return;
     setRestartingBot(true);
     try {
       const res = await fetch(`${BOT_API_URL}/api/bot/restart`, {
@@ -982,7 +982,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
     { name: "/kick membre:... raison:...", desc: "Expulse un membre du serveur", cat: "Modération", perm: "Expulser des membres" },
     { name: "/ban membre:... raison:...", desc: "Bannit définitivement un utilisateur du serveur", cat: "Modération", perm: "Bannir des membres" },
     { name: "/lock", desc: "Verrouille l'envoi de messages dans le salon pour les membres", cat: "Modération", perm: "Gérer les salons" },
-    { name: "/rank", desc: "Affiche votre carte de niveau, XP et réputation", cat: "Leveling", perm: "Tous" },
+    { name: "/rank", desc: "Affiche ta carte de niveau, ton XP et ta réputation", cat: "Leveling", perm: "Tous" },
     { name: "/leaderboard", desc: "Affiche le classement des membres les plus actifs", cat: "Leveling", perm: "Tous" },
     { name: "/giveaway", desc: "Organise un tirage au sort automatique avec inscription bouton", cat: "Communauté", perm: "Gérer les événements" },
     { name: "/poll question:...", desc: "Lance un sondage communautaire interactif en direct", cat: "Communauté", perm: "Tous" },

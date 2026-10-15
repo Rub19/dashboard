@@ -643,7 +643,7 @@ export default function OverviewGroup({
 
             {!settingsGuildId ? (
               <p className="text-xs text-[var(--text-muted)] italic pt-2">
-                Sélectionnez un serveur pour voir ses modules.
+                Sélectionne un serveur pour voir ses modules.
               </p>
             ) : modulesLoading && modules.length === 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 pt-2">
@@ -772,7 +772,7 @@ export default function OverviewGroup({
           <div>
             <h3 className="text-lg font-bold text-[var(--text-primary)]">Centre de Présence Dédié</h3>
             <p className="text-xs text-[var(--text-muted)] max-w-md mx-auto mt-1">
-              Gérez la présence globale, le mode streamer Twitch en 1 clic, le mode Ne Pas Déranger, le mode invisible et la rotation des activités.
+              Gère la présence globale, le mode streamer Twitch en 1 clic, le mode Ne Pas Déranger, le mode invisible et la rotation des activités.
             </p>
           </div>
           <Link

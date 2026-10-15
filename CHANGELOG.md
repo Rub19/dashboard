@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.103 — 2026-10-15
+
+**Fausses données retirées, tutoiement et page /bot pour Google**
+
+- Coach Valorant : plus de statistiques inventées quand les données manquent
+- Assistant IA sans clé : plus de règlement inventé, il cite la base du serveur ou le dit honnêtement
+- Tickets : un nouveau serveur démarre avec une seule catégorie « Support », sans équipes ni automatisations factices
+- Page /bot et console entièrement au « tu »
+- Console plus large sur grand écran
+- Invitation du bot sans la permission Administrateur, seulement les permissions utiles
+- Page /bot : le contenu est livré directement dans le HTML (plus de copie cachée)
+
 ## v1.75.102 — 2026-10-15
 
 **Lecteurs Spotify et fiabilité du bot**

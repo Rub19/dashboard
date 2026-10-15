@@ -314,7 +314,7 @@ export default function DiscordIncidentsTimeline({
               Aucun incident correspondant aux filtres
             </p>
             <p className="mt-1 text-xs">
-              Modifiez vos critères de recherche ou réinitialisez les filtres.
+              Modifie tes critères de recherche ou réinitialise les filtres.
             </p>
             <button
               type="button"

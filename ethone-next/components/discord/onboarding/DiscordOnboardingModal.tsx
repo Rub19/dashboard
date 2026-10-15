@@ -228,7 +228,7 @@ export default function DiscordOnboardingModal({
                 Passer l&apos;introduction ?
               </h4>
               <p className="text-xs text-zinc-400 mb-5 leading-relaxed">
-                Vous pourrez revoir cette introduction à tout moment depuis les réglages du bot.
+                Tu pourras revoir cette introduction à tout moment depuis les réglages du bot.
               </p>
               <div className="flex gap-2">
                 <motion.button

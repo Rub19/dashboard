@@ -368,7 +368,7 @@ const RISK_BADGES: Record<
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 const BOT_CLIENT_ID = "1545139931154878464";
-const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
+const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=1436565368055&scope=bot%20applications.commands`;
 
 const ALL_ACTIONS: { id: AutoModAction; label: string; desc: string; icon: any }[] = [
   { id: "DELETE", label: "Supprimer", desc: "Supprime le message enfreignant", icon: Trash2 },
@@ -1004,7 +1004,7 @@ export default function AutoModCommandCenterPage() {
                     Bot non présent sur ce serveur
                   </p>
                   <p className="text-xs text-amber-300/80">
-                    Pour configurer l'AutoMod et activer les protections automatiques sur <span className="font-semibold">{selectedGuild.name}</span>, invitez le bot.
+                    Pour configurer l'AutoMod et activer les protections automatiques sur <span className="font-semibold">{selectedGuild.name}</span>, invite le bot.
                   </p>
                 </div>
               </div>
@@ -1261,7 +1261,7 @@ export default function AutoModCommandCenterPage() {
                 <div>
                   <h2 className="text-sm font-bold text-[var(--text-primary)]">Moteur de Règles Personnalisées</h2>
                   <p className="text-xs text-[var(--text-muted)]">
-                    Créez des chaînes de détection complexes avec opérateurs logiques (ALL, ANY, NOT), conditions multi-triggers et sanctions automatiques.
+                    Crée des chaînes de détection complexes avec opérateurs logiques (ALL, ANY, NOT), conditions multi-triggers et sanctions automatiques.
                   </p>
                 </div>
                 <button
@@ -1546,7 +1546,7 @@ export default function AutoModCommandCenterPage() {
                     <Layers className="h-8 w-8 mx-auto mb-2 text-[var(--text-muted)]" />
                     <p className="text-xs font-semibold text-[var(--text-muted)]">Aucune règle personnalisée</p>
                     <p className="text-xs text-[var(--text-muted)] mt-0.5">
-                      Les 10 détecteurs intégrés protègent déjà le serveur, mais vous pouvez ajouter des règles sur mesure.
+                      Les 10 détecteurs intégrés protègent déjà le serveur, mais tu peux ajouter des règles sur mesure.
                     </p>
                     <button
                       onClick={startNewRule}
@@ -2143,7 +2143,7 @@ export default function AutoModCommandCenterPage() {
                               });
                               setNewRegexInput("");
                             } catch {
-                              showError("Regex Invalide", "Veuillez vérifier la syntaxe de votre expression régulière.");
+                              showError("Regex Invalide", "Vérifie la syntaxe de ton expression régulière.");
                             }
                           }
                         }}
@@ -2373,7 +2373,7 @@ export default function AutoModCommandCenterPage() {
                     type="text"
                     value={userSearchQuery}
                     onChange={(e) => setUserSearchQuery(e.target.value)}
-                    placeholder="Entrez l'identifiant Discord du membre (User ID)"
+                    placeholder="Entre l'identifiant Discord du membre (User ID)"
                     className="h-9 flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs text-[var(--text-primary)] outline-none"
                   />
                   <button
@@ -2399,7 +2399,7 @@ export default function AutoModCommandCenterPage() {
                   <div>
                     <h2 className="text-sm font-bold text-[var(--text-primary)]">Sandbox de Test AutoMod (Dry-Run Simulator)</h2>
                     <p className="text-xs text-[var(--text-muted)] mt-0.5 leading-relaxed">
-                      Testez vos règles et détecteurs en toute sécurité. La sandbox exécute le pipeline complet (10 détecteurs, calculateurs de risque et règles personnalisées) <strong>sans supprimer de message ni sanctionner personne</strong> sur votre serveur Discord.
+                      Teste tes règles et détecteurs en toute sécurité. La sandbox exécute le pipeline complet (10 détecteurs, calculateurs de risque et règles personnalisées) <strong>sans supprimer de message ni sanctionner personne</strong> sur ton serveur Discord.
                     </p>
                   </div>
                 </div>
@@ -2413,7 +2413,7 @@ export default function AutoModCommandCenterPage() {
                     rows={3}
                     value={sandboxMessage}
                     onChange={(e) => setSandboxMessage(e.target.value)}
-                    placeholder="Saisissez un message suspect ou un exemple pour tester les filtres..."
+                    placeholder="Saisis un message suspect ou un exemple pour tester les filtres..."
                     className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 text-xs text-[var(--text-primary)] font-mono outline-none focus:border-amber-500 resize-none"
                   />
                 </div>

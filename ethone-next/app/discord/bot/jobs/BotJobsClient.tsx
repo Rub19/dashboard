@@ -825,7 +825,7 @@ export default function BotJobsClient() {
             <ListRestart className="w-10 h-10 text-[var(--text-muted)] mx-auto opacity-50" />
             <h3 className="text-base font-bold text-[var(--text-primary)]">Aucune tâche trouvée</h3>
             <p className="text-xs text-[var(--text-muted)] max-w-sm mx-auto">
-              Aucune tâche ne correspond aux critères de filtre ou à votre recherche actuelle.
+              Aucune tâche ne correspond aux critères de filtre ou à ta recherche actuelle.
             </p>
             <button
               onClick={() => {
@@ -1213,7 +1213,7 @@ export default function BotJobsClient() {
               </h3>
               {logs.length === 0 ? (
                 <div className="p-6 text-center text-xs text-[var(--text-muted)] rounded-2xl bg-[var(--surface-base)] border border-[var(--panel-border)]">
-                  Aucun déclenchement manuel enregistré dans cette session. Utilisez le bouton &quot;Exécuter&quot; pour tester une tâche.
+                  Aucun déclenchement manuel enregistré dans cette session. Utilise le bouton &quot;Exécuter&quot; pour tester une tâche.
                 </div>
               ) : (
                 <div className="space-y-2">

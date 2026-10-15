@@ -2,7 +2,7 @@ import LegacyModuleRedirect from "@/components/discord/LegacyModuleRedirect";
 
 export const metadata = {
   title: "Détail de Sauvegarde | ETHONE",
-  description: "Inspectez le contenu, l'intégrité et la structure de votre snapshot.",
+  description: "Inspecte le contenu, l'intégrité et la structure de ton snapshot.",
 };
 
 export const dynamic = "force-static";

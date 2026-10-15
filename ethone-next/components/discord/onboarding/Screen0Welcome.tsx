@@ -32,7 +32,7 @@ export default function Screen0Welcome({ onNext, onSkip }: Screen0WelcomeProps) 
         ETHO <span className="bg-gradient-to-r from-[#92C8D2] to-emerald-400 bg-clip-text text-transparent">CONSOLE</span>
       </h2>
       <p className="text-xs sm:text-sm text-zinc-400 font-medium max-w-lg leading-relaxed mb-6">
-        Sécurité chirurgicale, lecteur musique haute fidélité, pont vocal Spotify et gestion communautaire pour votre serveur Discord, réunis dans un dashboard fluide et sans superflu.
+        Sécurité chirurgicale, lecteur musique haute fidélité, pont vocal Spotify et gestion communautaire pour ton serveur Discord, réunis dans un dashboard fluide et sans superflu.
       </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 w-full max-w-lg mb-8 text-left">

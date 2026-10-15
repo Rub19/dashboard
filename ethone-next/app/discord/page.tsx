@@ -72,7 +72,7 @@ function SpotifyBrandIcon({ className = "h-4 w-4" }: { className?: string }) {
 const BOT_CLIENT_ID = "1545139931154878464";
 const PICKED_STORAGE_KEY = "ethone:discord:picked";
 const LAST_GUILD_STORAGE_KEY = "ethone:discord:last-guild-id";
-const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
+const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=1436565368055&scope=bot%20applications.commands`;
 
 type ModuleType =
   | "overview"
@@ -146,7 +146,7 @@ const MODULE_PAGES: Record<string, string> = {
 
 const MODULE_CATEGORIES: NavigatorCategory[] = [
   { id: "protect", label: "Sécurité & modération", hint: "Protégez le serveur", modules: ["security", "secureroles", "moderation", "automodnative", "logs", "backups"] },
-  { id: "community", label: "Communauté", hint: "Accueillez et animez vos membres", modules: ["welcome", "roles", "statroles", "leveling", "invites", "suggestions", "polls", "forms", "starboard", "highlights", "birthdays"] },
+  { id: "community", label: "Communauté", hint: "Accueille et anime tes membres", modules: ["welcome", "roles", "statroles", "leveling", "invites", "suggestions", "polls", "forms", "starboard", "highlights", "birthdays"] },
   { id: "fun", label: "Fun & Divertissement", hint: "Paroles, médias, jeux et divertissement", modules: ["fun", "games", "spotify", "music", "streamers", "giveaways", "economy", "counting", "events", "calendar", "voice"] },
   { id: "tools", label: "Outils du quotidien", hint: "Support et automatisations", modules: ["tickets", "commands", "tags", "reminders", "sticky", "afk", "serverstats"] },
   { id: "manage", label: "Gestion & intelligence", hint: "Vue globale, IA et bot", modules: ["overview", "server", "settings", "analytics", "stats", "ai", "bot"] },
@@ -216,7 +216,7 @@ const MODULES: BotModule[] = [
   {
     id: "commands",
     title: "Commandes personnalisées",
-    description: "Créez vos commandes Discord personnalisées avec réponses textes et embeds.",
+    description: "Crée tes commandes Discord personnalisées avec réponses texte et embeds.",
     icon: MODULE_ICONS.commands,
     color: "text-[var(--text-muted)]",
     badge: "Custom",
@@ -288,7 +288,7 @@ const MODULES: BotModule[] = [
   {
     id: "spotify",
     title: "Spotify Connect",
-    description: "Contrôlez votre lecteur Spotify personnel en direct, synchronisez vos titres favoris, vos appareils et diffusez en salon vocal.",
+    description: "Contrôle ton lecteur Spotify en direct, tes titres favoris et tes appareils, et diffuse en salon vocal.",
     icon: MODULE_ICONS.spotify,
     color: "text-emerald-400",
     badge: "Spotify",
@@ -408,7 +408,7 @@ const MODULES: BotModule[] = [
   {
     id: "secureroles",
     title: "Rôles sécurisés",
-    description: "Les permissions sensibles de votre équipe (bannir, gérer les rôles…) ne s'activent qu'après un code à usage unique : un compte volé n'a aucun pouvoir.",
+    description: "Les permissions sensibles de ton équipe (bannir, gérer les rôles…) ne s'activent qu'après un code à usage unique : un compte volé n'a aucun pouvoir.",
     icon: MODULE_ICONS.secureroles,
     color: "text-[var(--text-muted)]",
     badge: "Sécurité",
@@ -957,7 +957,7 @@ export default function DiscordDashboardPage() {
             ...(typeof imported.mentionLimit === "number" ? { mentionLimit: imported.mentionLimit } : {}),
             ...(Array.isArray(imported.customCommands) ? { customCommands: imported.customCommands } : {}),
           }));
-          success("Configuration importée", "Les réglages ont été appliqués. Cliquez sur « Enregistrer » pour les synchroniser.");
+          success("Configuration importée", "Les réglages ont été appliqués. Clique sur « Enregistrer » pour les synchroniser.");
         } catch (err: any) {
           showError("Erreur d'import", err.message || "Fichier de configuration invalide.");
         }
@@ -1297,7 +1297,7 @@ export default function DiscordDashboardPage() {
                 onClick={handleSaveSettings}
                 disabled={isSaving}
                 className="flex items-center gap-2 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer select-none"
-                title="Cliquez pour forcer la synchronisation"
+                title="Clique pour forcer la synchronisation"
               >
                 <CloudCheckIcon className={cn("h-4 w-4 shrink-0", isSaving ? "animate-pulse text-amber-400" : "text-emerald-400")} />
                 <span className="font-normal">
@@ -1325,7 +1325,7 @@ export default function DiscordDashboardPage() {
                         <div>
                           <p className="text-sm font-semibold text-[var(--text-primary)]">Le bot ETHONE n&apos;est pas installé sur ce serveur</p>
                           <p className="mt-0.5 text-xs text-[var(--text-muted)]">
-                            Invitez le bot sur « {selectedGuild.name} » pour activer la modération en temps réel, la musique, les tickets et les commandes personnalisées.
+                            Invite le bot sur « {selectedGuild.name} » pour activer la modération en temps réel, la musique, les tickets et les commandes personnalisées.
                           </p>
                         </div>
                       </div>

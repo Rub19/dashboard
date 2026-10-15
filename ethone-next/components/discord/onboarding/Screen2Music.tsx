@@ -21,7 +21,7 @@ export default function Screen2Music({ onNext }: Screen2MusicProps) {
           Diffusion haute fidélité & intégrations directes.
         </h3>
         <p className="text-xs sm:text-sm text-zinc-400 max-w-lg mx-auto leading-relaxed">
-          Partagez vos morceaux en direct dans votre salon vocal, scrobblez vos écoutes sur Last.fm et affichez les paroles instantanément sans la moindre coupure.
+          Partage tes morceaux en direct dans ton salon vocal, suis tes écoutes Last.fm et affiche les paroles instantanément sans la moindre coupure.
         </p>
       </div>
 
@@ -39,7 +39,7 @@ export default function Screen2Music({ onNext }: Screen2MusicProps) {
                 </code>
               </div>
               <p className="mt-1 text-xs text-zinc-400 leading-relaxed">
-                Connectez votre écoute personnelle Spotify en un clic pour diffuser le flux audio en direct dans le salon vocal où vous vous trouvez, avec boutons de contrôle interactifs.
+                Connecte ton Spotify en un clic pour diffuser ton écoute en direct dans le salon vocal où tu te trouves, avec boutons de contrôle interactifs.
               </p>
             </div>
           </div>
@@ -58,7 +58,7 @@ export default function Screen2Music({ onNext }: Screen2MusicProps) {
                 </code>
               </div>
               <p className="mt-1 text-xs text-zinc-400 leading-relaxed">
-                Affichage des écoutes en cours, de vos artistes les plus écoutés, de vos albums favoris et de vos compatibilités musicales avec les autres membres de votre serveur.
+                Affichage des écoutes en cours, de tes artistes les plus écoutés, de tes albums favoris et de tes compatibilités musicales avec les autres membres de ton serveur.
               </p>
             </div>
           </div>

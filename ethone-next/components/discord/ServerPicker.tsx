@@ -499,7 +499,7 @@ export default function ServerPicker({
                 <div>
                   <h3 className="text-sm font-bold text-[var(--text-primary)]">Connexion Discord requise</h3>
                   <p className="mt-1 text-xs text-[var(--text-muted)]">
-                    Connectez votre compte Discord pour synchroniser et gérer vos serveurs.
+                    Connecte ton compte Discord pour synchroniser et gérer tes serveurs.
                   </p>
                 </div>
                 <button
@@ -517,7 +517,7 @@ export default function ServerPicker({
             {isConnected && filteredInstalled.length === 0 && filteredUninstalled.length === 0 && (
               <motion.div variants={consoleFadeUp} className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-8 text-center space-y-3">
                 <p className="text-sm font-semibold text-[var(--text-primary)]">Aucun serveur Discord gérable trouvé</p>
-                <p className="text-xs text-[var(--text-muted)]">Vous devez disposer des permissions Administrateur ou Gérer le serveur.</p>
+                <p className="text-xs text-[var(--text-muted)]">Il te faut la permission Administrateur ou Gérer le serveur.</p>
                 {inviteUrl && (
                   <a
                     href={inviteUrl}
@@ -607,8 +607,8 @@ export default function ServerPicker({
               {filteredUninstalled.length === 0 && guilds.length > 0 && (
                 <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-8 text-center text-xs text-[var(--text-muted)]">
                   {query
-                    ? "Aucun serveur ne correspond à votre recherche."
-                    : "Etho est déjà installé sur l'ensemble de vos serveurs !"}
+                    ? "Aucun serveur ne correspond à ta recherche."
+                    : "Etho est déjà installé sur l'ensemble de tes serveurs !"}
                 </div>
               )}
 

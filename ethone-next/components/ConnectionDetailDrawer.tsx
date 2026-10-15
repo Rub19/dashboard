@@ -678,7 +678,7 @@ export default function ConnectionDetailDrawer({
 
                     <div className="flex flex-col gap-2 pt-1">
                       <a
-                        href="https://discord.com/oauth2/authorize?client_id=1545139931154878464&permissions=8&scope=bot%20applications.commands"
+                        href="https://discord.com/oauth2/authorize?client_id=1545139931154878464&permissions=1436565368055&scope=bot%20applications.commands"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#5865F2] px-3.5 py-2.5 text-xs font-semibold text-white shadow-md shadow-[#5865F2]/20 transition-all hover:bg-[#4752C4] active:scale-98"

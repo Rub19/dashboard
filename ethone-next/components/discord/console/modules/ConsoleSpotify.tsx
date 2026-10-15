@@ -335,8 +335,8 @@ export default function ConsoleSpotify({ guildId }: { guildId: string }) {
         title="Lecteur en Direct"
         subtitle={
           connected
-            ? "Contrôlez votre lecteur Spotify personnel et diffusez sur le salon vocal."
-            : "Connectez votre compte pour piloter votre écoute en temps réel."
+            ? "Contrôle ton lecteur Spotify personnel et diffuse-le dans le salon vocal."
+            : "Connecte ton compte pour piloter ton écoute en temps réel."
         }
       >
         <div className="relative overflow-hidden p-5 sm:p-7">
@@ -413,7 +413,7 @@ export default function ConsoleSpotify({ guildId }: { guildId: string }) {
                   <p className="truncate text-xs text-[var(--text-muted)]">
                     {track?.artists && track.artists.length > 0
                       ? track.artists.join(", ")
-                      : "Lancez la musique sur Spotify"}
+                      : "Lance la musique sur Spotify"}
                     {track?.album ? ` • ${track.album}` : ""}
                   </p>
                 </div>
@@ -555,7 +555,7 @@ export default function ConsoleSpotify({ guildId }: { guildId: string }) {
 
       <Panel
         title="Recherche & File d'attente"
-        subtitle="Lancez n'importe quel morceau Spotify ou ajoutez-le à la file."
+        subtitle="Lance n'importe quel morceau Spotify ou ajoute-le à la file."
       >
         <div className="p-5 space-y-4">
           <form onSubmit={handleSearch} className="flex gap-2">
@@ -621,7 +621,7 @@ export default function ConsoleSpotify({ guildId }: { guildId: string }) {
       >
         <div className="divide-y divide-[var(--panel-border)]">
           {devices.length === 0 ? (
-            <EmptyLine>Aucun appareil Spotify actif détecté. Ouvrez l&apos;application Spotify.</EmptyLine>
+            <EmptyLine>Aucun appareil Spotify actif détecté. Ouvre l&apos;application Spotify.</EmptyLine>
           ) : (
             devices.map((dev) => (
               <div key={dev.id} className="flex items-center justify-between px-5 py-3.5">
@@ -667,7 +667,7 @@ export default function ConsoleSpotify({ guildId }: { guildId: string }) {
 
       <Panel
         title="Statistiques Personnelles"
-        subtitle="Découvrez vos tops titres et artistes Spotify."
+        subtitle="Découvre tes titres et artistes les plus écoutés sur Spotify."
         actions={
           <div className="flex items-center gap-2">
             <Segmented

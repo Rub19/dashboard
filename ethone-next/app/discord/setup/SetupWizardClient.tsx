@@ -51,7 +51,7 @@ export default function SetupWizardClient() {
         <DiscordIcon className="w-12 h-12 text-[var(--accent-primary)] mx-auto" />
         <h1 className="text-xl font-bold">Connexion Discord requise</h1>
         <p className="text-xs text-[var(--text-muted)] max-w-sm">
-          Connectez votre compte Discord pour configurer votre serveur.
+          Connecte ton compte Discord pour configurer ton serveur.
         </p>
         <button
           onClick={() => connect()}
@@ -70,7 +70,7 @@ export default function SetupWizardClient() {
       <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-primary)] flex flex-col items-center justify-center p-6 text-center space-y-4">
         <h1 className="text-xl font-bold">Aucun serveur administrable</h1>
         <p className="text-xs text-[var(--text-muted)]">
-          Vous devez posséder les permissions d&apos;administrateur sur au moins un serveur.
+          Il te faut les permissions d&apos;administrateur sur au moins un serveur.
         </p>
         <Link
           href="/discord"

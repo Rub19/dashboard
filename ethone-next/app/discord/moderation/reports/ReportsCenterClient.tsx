@@ -25,7 +25,7 @@ import ModuleSkeleton from "@/components/discord/ModuleSkeleton";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 const BOT_CLIENT_ID = "1545139931154878464";
-const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
+const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=1436565368055&scope=bot%20applications.commands`;
 
 interface ModerationReport {
   id: string;
@@ -173,7 +173,7 @@ export default function ReportsCenterClient() {
       );
 
       if (res.ok) {
-        success("Pris en charge", "Le signalement vous a été assigné.");
+        success("Pris en charge", "Le signalement t'a été assigné.");
         fetchReports();
       } else {
         const errBody = await res.json().catch(() => null);
@@ -331,7 +331,7 @@ export default function ReportsCenterClient() {
                   Bot non présent sur ce serveur
                 </p>
                 <p className="text-xs text-amber-300/80">
-                  Pour accéder à la file des signalements membres sur <span className="font-semibold">{selectedGuild.name}</span>, invitez le bot.
+                  Pour accéder à la file des signalements membres sur <span className="font-semibold">{selectedGuild.name}</span>, invite le bot.
                 </p>
               </div>
             </div>

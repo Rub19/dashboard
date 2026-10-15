@@ -3,7 +3,7 @@ import ScanRedirectClient from "./ScanRedirectClient";
 
 export const metadata = {
   title: "Scan de sécurité — ETHONE",
-  description: "Rapport et diagnostic complet de sécurité pour votre serveur Discord.",
+  description: "Rapport et diagnostic complet de sécurité pour ton serveur Discord.",
 };
 
 export const dynamic = "force-static";

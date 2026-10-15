@@ -150,7 +150,7 @@ export default function BotInstallView({
   const inviteHref = useMemo(() => {
     const base =
       botInviteUrl ||
-      `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
+      `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=1436565368055&scope=bot%20applications.commands`;
     return `${base}&guild_id=${encodeURIComponent(guild.id)}&disable_guild_select=true`;
   }, [botInviteUrl, guild.id]);
 

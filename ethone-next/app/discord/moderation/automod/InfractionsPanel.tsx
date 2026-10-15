@@ -235,7 +235,7 @@ export default function InfractionsPanel({ guildId, config, onConfigChange }: Pr
   const saveSettings = async () => {
     if (!editing) return;
     if (editing === "pings" && (draft.userIds ?? []).length === 0 && (draft.roleIds ?? []).length === 0 && draft.enabled) {
-      showError("Aucune cible", "Ajoutez au moins un rôle ou un membre à protéger, ou désactivez la détection.");
+      showError("Aucune cible", "Ajoute au moins un rôle ou un membre à protéger, ou désactivez la détection.");
       return;
     }
     if (await save({ [editing]: draft }, "Réglages enregistrés")) setEditing(null);
@@ -265,7 +265,7 @@ export default function InfractionsPanel({ guildId, config, onConfigChange }: Pr
       <section>
         <h2 className="text-lg font-bold text-[var(--text-primary)]">Détection des infractions</h2>
         <p className="mt-1 text-sm text-[var(--text-muted)]">
-          Configurez les détections automatiques. Tout est désactivé par défaut : rien n&apos;agit tant que vous n&apos;avez pas activé une détection.{" "}
+          Configure les détections automatiques. Tout est désactivé par défaut : rien n&apos;agit tant que tu n&apos;as pas activé une détection.{" "}
           <span className={cn("font-semibold", activeCount > 0 ? "text-[var(--accent-primary)]" : "text-[var(--text-muted)]")}>{activeCount} active{activeCount > 1 ? "s" : ""}.</span>
         </p>
         {outdated && <p className="mt-3 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-amber-200">Le bot n&apos;est pas encore à jour : les détections « Émojis excessifs », « Mentions interdites » et « Mise en forme interdite » ne sont pas disponibles tant qu&apos;il n&apos;est pas redéployé.</p>}
@@ -305,7 +305,7 @@ export default function InfractionsPanel({ guildId, config, onConfigChange }: Pr
           </button>
         </div>
         {steps.length === 0 ? (
-          <div className="mt-5 rounded-xl border border-dashed border-[var(--panel-border)] p-4 text-center text-sm text-[var(--text-muted)]">Vous n&apos;avez créé aucune sanction automatique.</div>
+          <div className="mt-5 rounded-xl border border-dashed border-[var(--panel-border)] p-4 text-center text-sm text-[var(--text-muted)]">Tu n&apos;as créé aucune sanction automatique.</div>
         ) : (
           <ul className="mt-5 divide-y divide-[var(--panel-border)] rounded-xl border border-[var(--panel-border)]">
             {steps.map((s) => (

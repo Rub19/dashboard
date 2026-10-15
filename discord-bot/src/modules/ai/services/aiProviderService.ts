@@ -325,11 +325,12 @@ export class AIProviderService {
     }
     // 3. Détection de questions sur le règlement ou sanctions
     else if (queryLower.includes('règle') || queryLower.includes('regle') || queryLower.includes('interdit') || queryLower.includes('ban') || queryLower.includes('warn') || queryLower.includes('spam')) {
-      if (knowledgeContext.includes('Règlement Officiel') || knowledgeContext.includes('Respectez tous les membres')) {
-        sourcesUsed.push('Règlement Officiel ETHONE');
-        answer = `Voici les points essentiels de notre règlement :\n\n1. **Respect absolu** : Aucun harcèlement, provocation ou insulte n'est toléré.\n2. **Anti-Spam** : Pas de flood de messages ni de mentions inutiles.\n3. **Publicité** : Strictement interdite sans autorisation expresse du staff.\n4. **Vocaux** : Respectez le calme et la convivialité.\n\nTout comportement abusif fait l'objet d'avertissements automatiques ou de sanctions par l'équipe de modération.`;
+      const ruleLines = knowledgeContext.split('\n').filter((l) => l.trim() && !l.startsWith('###') && !l.startsWith('---')).slice(0, 6);
+      if (ruleLines.length > 0) {
+        sourcesUsed.push('Base de connaissances du serveur');
+        answer = `D'après les documents du serveur :\n\n${ruleLines.join('\n')}`;
       } else {
-        answer = `Le serveur applique un règlement strict axé sur le respect mutuel et l'interdiction du spam et de la publicité.`;
+        answer = `Je n'ai pas le règlement de ce serveur dans ma base. Regarde le salon des règles ou demande à un modérateur.`;
       }
     }
     // 4. Détection de questions sur le support ou les tickets
@@ -337,7 +338,7 @@ export class AIProviderService {
       if (knowledgeContext.includes('FAQ Support & Tickets')) {
         sourcesUsed.push('FAQ Support & Tickets');
       }
-      answer = `Pour toute demande d'assistance personnalisée ou pour signaler un comportement, vous pouvez **ouvrir un ticket de support** :\n\n- Rendez-vous dans le salon **#support**\n- Ou cliquez sur le bouton **"🎫 Ouvrir un Ticket"** situé juste en bas de ce message !\n\nNotre équipe de modération vous répondra dans les plus brefs délais.`;
+      answer = `Pour une demande d'aide ou un signalement, ouvre un ticket avec \`/ticket\` (si le module Tickets est activé sur ce serveur) ou contacte un modérateur.`;
     }
     // 5. Détection de questions sur les commandes ou l'aide globale
     else if (queryLower.includes('commande') || queryLower.includes('help') || queryLower.includes('aide') || queryLower.includes('que peux-tu faire') || queryLower.includes('fonctionnalité')) {

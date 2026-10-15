@@ -473,9 +473,9 @@ export default function TacticalCoachChatView({
   }, [playerName, playerTag]);
 
   const welcomeMessage = useMemo<TacticalCoachMessage>(() => {
-    const hs = telemetryMetrics?.hsPct ?? valorantStats?.headshotPercentage ?? 0;
-    const wr = valorantStats?.winRate ?? 0;
-    const kd = valorantStats?.kdRatio ?? "1.00";
+    const hs = telemetryMetrics?.hsPct ?? valorantStats?.headshotPercentage ?? "—";
+    const wr = valorantStats?.winRate ?? "—";
+    const kd = valorantStats?.kdRatio ?? "—";
     const matchesCount = valorantMatches.length;
 
     let content = "";
@@ -531,12 +531,12 @@ export default function TacticalCoachChatView({
   }, [messages, storageKey]);
 
   const buildTelemetryFallback = useCallback((query: string, lang: "en" | "fr") => {
-    const hs = telemetryMetrics?.hsPct ?? valorantStats?.headshotPercentage ?? 25;
-    const wr = valorantStats?.winRate ?? 50;
-    const kd = valorantStats?.kdRatio ?? "1.00";
-    const duelWr = telemetryMetrics?.duelWinrate ?? 50;
-    const matchesCount = valorantMatches.length || 10;
-    const main = topValorantAgents[0]?.agentName || "Jett";
+    const hs = telemetryMetrics?.hsPct ?? valorantStats?.headshotPercentage ?? "—";
+    const wr = valorantStats?.winRate ?? "—";
+    const kd = valorantStats?.kdRatio ?? "—";
+    const duelWr = telemetryMetrics?.duelWinrate ?? "—";
+    const matchesCount = valorantMatches.length;
+    const main = topValorantAgents[0]?.agentName || (lang === "en" ? "your main agent" : "ton agent principal");
     const cleanQuery = query.toLowerCase();
 
     if (lang === "en") {
@@ -555,14 +555,14 @@ export default function TacticalCoachChatView({
   }, [telemetryMetrics, valorantStats, valorantMatches.length, topValorantAgents]);
 
   const buildSystemPrompt = useCallback((targetLang: "en" | "fr") => {
-    const hs = telemetryMetrics?.hsPct ?? valorantStats?.headshotPercentage ?? 0;
+    const hs = telemetryMetrics?.hsPct ?? valorantStats?.headshotPercentage ?? "—";
     const bs = telemetryMetrics?.bsPct ?? 0;
     const ls = telemetryMetrics?.lsPct ?? 0;
-    const duelWr = telemetryMetrics?.duelWinrate ?? 50;
-    const wr = valorantStats?.winRate ?? 0;
-    const kd = valorantStats?.kdRatio ?? "1.00";
-    const acs = valorantStats?.combatScoreAcs ?? 0;
-    const adr = telemetryMetrics?.adr ?? valorantCombatSummary?.adr ?? 0;
+    const duelWr = telemetryMetrics?.duelWinrate ?? "—";
+    const wr = valorantStats?.winRate ?? "—";
+    const kd = valorantStats?.kdRatio ?? "—";
+    const acs = valorantStats?.combatScoreAcs ?? "—";
+    const adr = telemetryMetrics?.adr ?? valorantCombatSummary?.adr ?? "—";
 
     const matchesSummary = valorantMatches.slice(0, 5).map((m) => {
       const seg = m.segments?.[0]?.stats;

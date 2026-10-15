@@ -19,10 +19,10 @@ export default function Screen3Community({ onFinish }: Screen3CommunityProps) {
           <span>OUTILS COMMUNAUTÉ & AUTOMATISATION</span>
         </div>
         <h3 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white tracking-tight mb-2">
-          Tout ce dont votre serveur a besoin.
+          Tout ce dont ton serveur a besoin.
         </h3>
         <p className="text-xs sm:text-sm text-zinc-400 max-w-lg mx-auto leading-relaxed">
-          Configurez vos salons compteurs en un instant, partagez vos tags de réponses rapides et pilotez l&apos;ensemble de vos serveurs depuis votre tableau de bord.
+          Configure tes salons compteurs en un instant, partage tes tags de réponses rapides et pilote tous tes serveurs depuis ton tableau de bord.
         </p>
       </div>
 
@@ -40,7 +40,7 @@ export default function Screen3Community({ onFinish }: Screen3CommunityProps) {
                 </code>
               </div>
               <p className="mt-1 text-xs text-zinc-400 leading-relaxed">
-                Salons vocaux verrouillés affichant automatiquement le nombre de membres, en ligne, boosts et rôles de votre serveur avec rafraîchissement programmé.
+                Salons vocaux verrouillés affichant automatiquement le nombre de membres, en ligne, boosts et rôles de ton serveur avec rafraîchissement programmé.
               </p>
             </div>
           </div>
@@ -59,7 +59,7 @@ export default function Screen3Community({ onFinish }: Screen3CommunityProps) {
                 </code>
               </div>
               <p className="mt-1 text-xs text-zinc-400 leading-relaxed">
-                Création et rappel instantané de messages types, FAQ et liens utiles par autocomplétion pour assister votre communauté sans répétition.
+                Création et rappel instantané de messages types, FAQ et liens utiles par autocomplétion pour aider ta communauté sans te répéter.
               </p>
             </div>
           </div>
@@ -87,10 +87,10 @@ export default function Screen3Community({ onFinish }: Screen3CommunityProps) {
 
       <div className="w-full rounded-xl border border-white/[0.08] bg-black/40 p-4 text-center">
         <h4 className="text-sm font-bold text-white mb-1">
-          Vous êtes prêt à prendre les commandes.
+          Tu es prêt à prendre les commandes.
         </h4>
         <p className="text-xs text-zinc-400 max-w-md mx-auto mb-4 leading-relaxed">
-          Sélectionnez un serveur dans la liste pour activer les modules désirés et ajuster les protections en temps réel.
+          Sélectionne un serveur dans la liste pour activer les modules désirés et ajuster les protections en temps réel.
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3">

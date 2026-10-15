@@ -63,7 +63,7 @@ const ACTION_LABELS: Record<AntiNukeAction, { label: string; icon: string }> = {
 };
 
 const BOT_CLIENT_ID = "1545139931154878464";
-const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
+const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=1436565368055&scope=bot%20applications.commands`;
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
 export default function AntiNukePage() {
@@ -286,7 +286,7 @@ export default function AntiNukePage() {
                 <div>
                   <p className="font-semibold text-[var(--text-primary)] text-sm">Le bot ETHONE n&apos;est pas installé sur ce serveur</p>
                   <p className="mt-0.5 text-[var(--text-muted)]">
-                    Invitez le bot sur « {selectedGuild.name} » pour activer la surveillance Anti-Nuke.
+                    Invite le bot sur « {selectedGuild.name} » pour activer la surveillance Anti-Nuke.
                   </p>
                 </div>
               </div>

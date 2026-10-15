@@ -59,7 +59,7 @@ export function ConsolePage({ title, actions, children }: { title: ReactNode; ac
       variants={pageStagger}
       initial={reduced ? false : "initial"}
       animate="animate"
-      className="mx-auto w-full max-w-4xl space-y-3 sm:space-y-5"
+      className="mx-auto w-full max-w-4xl space-y-3 sm:space-y-5 xl:max-w-5xl 2xl:max-w-6xl"
     >
       <div className="flex items-center justify-between gap-3">
         <h1 className="text-xl font-bold tracking-tight text-[var(--text-primary)] sm:text-3xl">{title}</h1>

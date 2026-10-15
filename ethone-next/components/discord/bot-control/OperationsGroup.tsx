@@ -146,7 +146,7 @@ export default function OperationsGroup({
               <div className="p-8 text-center rounded-xl bg-rose-950/20 border border-rose-500/30 text-xs text-rose-300 space-y-2">
                 <AlertCircle className="w-6 h-6 mx-auto" />
                 <p className="font-semibold">Impossible de charger les intégrations</p>
-                <p className="text-rose-300/70">Le serveur du bot Discord est peut-être hors-ligne. Réessayez dans un instant.</p>
+                <p className="text-rose-300/70">Le serveur du bot Discord est peut-être hors-ligne. Réessaie dans un instant.</p>
                 <button
                   onClick={loadIntegrations}
                   className="mt-2 px-3 py-1.5 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-300 hover:bg-rose-500/20 transition-[color,background-color,border-color,transform] cursor-pointer active:scale-[0.97]"
@@ -246,7 +246,7 @@ export default function OperationsGroup({
               <div className="p-8 text-center rounded-xl bg-rose-950/20 border border-rose-500/30 text-xs text-rose-300 space-y-2">
                 <AlertCircle className="w-6 h-6 mx-auto" />
                 <p className="font-semibold">Impossible de charger les tâches planifiées</p>
-                <p className="text-rose-300/70">Le serveur du bot Discord est peut-être hors-ligne. Réessayez dans un instant.</p>
+                <p className="text-rose-300/70">Le serveur du bot Discord est peut-être hors-ligne. Réessaie dans un instant.</p>
                 <button
                   onClick={loadJobs}
                   className="mt-2 px-3 py-1.5 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-300 hover:bg-rose-500/20 transition-[color,background-color,border-color,transform] cursor-pointer active:scale-[0.97]"

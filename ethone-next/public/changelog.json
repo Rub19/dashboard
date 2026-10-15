@@ -1,5 +1,19 @@
 [
   {
+    "version": "v1.75.103",
+    "date": "2026-10-15",
+    "title": "Fausses données retirées, tutoiement et page /bot pour Google",
+    "items": [
+      "Coach Valorant : plus de statistiques inventées quand les données manquent",
+      "Assistant IA sans clé : plus de règlement inventé, il cite la base du serveur ou le dit honnêtement",
+      "Tickets : un nouveau serveur démarre avec une seule catégorie « Support », sans équipes ni automatisations factices",
+      "Page /bot et console entièrement au « tu »",
+      "Console plus large sur grand écran",
+      "Invitation du bot sans la permission Administrateur, seulement les permissions utiles",
+      "Page /bot : le contenu est livré directement dans le HTML (plus de copie cachée)"
+    ]
+  },
+  {
     "version": "v1.75.102",
     "date": "2026-10-15",
     "title": "Lecteurs Spotify et fiabilité du bot",
@@ -625,17 +639,6 @@
       "Invitations : suivi, annonces dans un salon, paliers de récompense, meilleurs inviteurs et liens du serveur.",
       "Invitations : le salon des annonces choisi dans le tableau de bord est maintenant bien utilisé, et un chiffre inventé a été retiré des statistiques.",
       "Suggestions : une suggestion ne peut plus être modifiée depuis un autre serveur."
-    ]
-  },
-  {
-    "version": "v1.56.0",
-    "date": "2026-10-09",
-    "title": "Console : Tickets, Bienvenue et Modération au format Keeper",
-    "items": [
-      "Tickets : réglages (salon ou forum), catégories, panneaux à publier et tickets en cours, avec prise en charge et fermeture à ton nom.",
-      "Bienvenue : message d'accueil, carte avec aperçu réel, message privé, rôles donnés à l'arrivée et message de départ, enregistrés automatiquement.",
-      "Modération : sanctionner un membre, sanctions récentes à révoquer, bannis, salon des sanctions, sanction automatique après avertissements et alertes d'abus du staff.",
-      "Tickets : « 0 h » désactive maintenant vraiment la fermeture automatique."
     ]
   }
 ]

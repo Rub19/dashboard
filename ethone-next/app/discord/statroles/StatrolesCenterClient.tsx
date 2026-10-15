@@ -286,7 +286,7 @@ export function GroupEditor({ group, roles, depth, onChange, onDelete }: { group
           )}
         </span>
       </div>
-      {group.children.length === 0 && <p className="rounded-xl border border-dashed border-[var(--panel-border)] px-3 py-2 text-xs text-[var(--text-muted)]">Groupe vide : il ne correspond à personne. Ajoutez une condition avec le bouton +.</p>}
+      {group.children.length === 0 && <p className="rounded-xl border border-dashed border-[var(--panel-border)] px-3 py-2 text-xs text-[var(--text-muted)]">Groupe vide : il ne correspond à personne. Ajoute une condition avec le bouton +.</p>}
       <div className="stagger-children space-y-2 pl-3">
         {group.children.map((child, i) =>
           child.kind === "group" ? (
@@ -429,7 +429,7 @@ export default function StatrolesCenterClient() {
         <PageHeader hideBack guildId={guildId} icon="mod-roles" tint="amber" title="Statroles" subtitle="Des rôles donnés, et retirés, automatiquement selon l'activité des membres dans la durée." />
 
         {state === "loading" && <ModuleSkeleton compact className="px-0 sm:px-0" label="Chargement…" />}
-        {state === "offline" && <div className="rounded-2xl border border-dashed border-[var(--panel-border)] p-8 text-center text-sm text-[var(--text-muted)]">Le bot n&apos;a pas répondu pour ce serveur. Vérifiez qu&apos;il est présent, puis actualisez.</div>}
+        {state === "offline" && <div className="rounded-2xl border border-dashed border-[var(--panel-border)] p-8 text-center text-sm text-[var(--text-muted)]">Le bot n&apos;a pas répondu pour ce serveur. Vérifie qu&apos;il est présent, puis actualise.</div>}
 
         {state === "ok" && overview && cfg && (
           <>
@@ -582,7 +582,7 @@ export default function StatrolesCenterClient() {
                   {previewing ? "Calcul…" : "Calculer l'aperçu"}
                 </button>
               </div>
-              {!editing.roleId && <p className="mt-2 text-xs text-[var(--text-muted)]">Choisissez d&apos;abord le rôle à attribuer.</p>}
+              {!editing.roleId && <p className="mt-2 text-xs text-[var(--text-muted)]">Choisis d&apos;abord le rôle à attribuer.</p>}
               {preview && (
                 <div className="mt-3 space-y-2 text-xs">
                   <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">

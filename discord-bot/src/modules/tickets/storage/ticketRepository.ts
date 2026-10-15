@@ -388,41 +388,7 @@ export class TicketRepository {
   public getTeams(guildId: string): TicketTeam[] {
     let teams = this.teams.get(guildId);
     if (!teams) {
-      teams = [
-        {
-          id: 'team-support',
-          guildId,
-          name: 'Support Team',
-          description: 'Équipe dédiée à l’assistance générale et aux questions des membres.',
-          color: '#3B82F6',
-          roleIds: [],
-          categoryIds: [],
-          memberIds: [],
-          createdAt: new Date().toISOString(),
-        },
-        {
-          id: 'team-moderation',
-          guildId,
-          name: 'Moderation Team',
-          description: 'Gestion des signalements, infractions et litiges.',
-          color: '#F97316',
-          roleIds: [],
-          categoryIds: [],
-          memberIds: [],
-          createdAt: new Date().toISOString(),
-        },
-        {
-          id: 'team-billing',
-          guildId,
-          name: 'Billing Team',
-          description: 'Questions financières, abonnements et paiements.',
-          color: '#10B981',
-          roleIds: [],
-          categoryIds: [],
-          memberIds: [],
-          createdAt: new Date().toISOString(),
-        },
-      ];
+      teams = [];
       this.teams.set(guildId, teams);
       this.saveTeams();
     }
@@ -461,13 +427,13 @@ export class TicketRepository {
         {
           id: 'cat-support',
           guildId,
-          name: 'Support Général',
+          name: 'Support',
           emoji: '🛠️',
           description: 'Assistance technique et questions générales.',
           color: '#3B82F6',
           discordCategoryId: null,
           supportRoleIds: [],
-          assignedTeamId: 'team-support',
+          assignedTeamId: null,
           defaultPriority: 'NORMAL',
           autoCloseInactivityHours: 24,
           cooldownMinutes: 0,
@@ -491,74 +457,6 @@ export class TicketRepository {
           ],
           welcomeMessage:
             'Bonjour {user} ! Merci d’avoir contacté l’assistance {category}.\nUn membre du support va prendre en charge votre ticket #{ticketId} sous peu.',
-        },
-        {
-          id: 'cat-billing',
-          guildId,
-          name: 'Facturation & Paiement',
-          emoji: '💳',
-          description: 'Abonnements, factures et questions financières.',
-          color: '#10B981',
-          discordCategoryId: null,
-          supportRoleIds: [],
-          assignedTeamId: 'team-billing',
-          defaultPriority: 'HIGH',
-          autoCloseInactivityHours: 48,
-          cooldownMinutes: 0,
-          maxTicketsPerUser: 1,
-          autoTranscript: true,
-          formFields: [
-            {
-              id: 'invoice_id',
-              label: 'Numéro de facture ou transaction',
-              placeholder: 'Ex: INV-12345',
-              style: 'short',
-              required: false,
-            },
-            {
-              id: 'details',
-              label: 'Description de la demande',
-              placeholder: 'Votre question financière...',
-              style: 'paragraph',
-              required: true,
-            },
-          ],
-          welcomeMessage:
-            'Bonjour {user} ! Votre demande concernant la facturation a été enregistrée. L’équipe Billing va vous répondre sous peu.',
-        },
-        {
-          id: 'cat-report',
-          guildId,
-          name: 'Signalement & Modération',
-          emoji: '🚨',
-          description: 'Signaler un membre, un abus ou un comportement inapproprié.',
-          color: '#EF4444',
-          discordCategoryId: null,
-          supportRoleIds: [],
-          assignedTeamId: 'team-moderation',
-          defaultPriority: 'HIGH',
-          autoCloseInactivityHours: 24,
-          cooldownMinutes: 0,
-          maxTicketsPerUser: 1,
-          autoTranscript: true,
-          formFields: [
-            {
-              id: 'reported_user',
-              label: 'Membre concerné',
-              placeholder: 'Nom ou ID Discord',
-              style: 'short',
-              required: true,
-            },
-            {
-              id: 'details',
-              label: 'Faits reprochés et preuves',
-              placeholder: 'Détaillez les circonstances...',
-              style: 'paragraph',
-              required: true,
-            },
-          ],
-          welcomeMessage:
-            'Bonjour {user} ! Votre signalement a été transmis directement à l’équipe de modération.',
         },
       ];
       this.categories.set(guildId, cats);
@@ -607,7 +505,7 @@ export class TicketRepository {
           color: '#5865F2',
           buttonLabel: 'Ouvrir un ticket',
           buttonEmoji: '🎫',
-          categoryIds: ['cat-support', 'cat-billing', 'cat-report'],
+          categoryIds: ['cat-support'],
         },
       ];
       this.panels.set(guildId, pnls);
@@ -644,28 +542,7 @@ export class TicketRepository {
   public getAutomations(guildId: string): TicketAutomationRule[] {
     let auts = this.automations.get(guildId);
     if (!auts) {
-      auts = [
-        {
-          id: 'rule-auto-billing',
-          guildId,
-          name: 'Attribution automatique Facturation',
-          enabled: true,
-          trigger: 'TICKET_CREATED',
-          conditions: { categoryId: 'cat-billing' },
-          actions: { assignTeamId: 'team-billing', setPriority: 'HIGH', addTags: ['billing'] },
-          createdAt: new Date().toISOString(),
-        },
-        {
-          id: 'rule-auto-report',
-          guildId,
-          name: 'Attribution automatique Signalements',
-          enabled: true,
-          trigger: 'TICKET_CREATED',
-          conditions: { categoryId: 'cat-report' },
-          actions: { assignTeamId: 'team-moderation', setPriority: 'HIGH', addTags: ['moderation'] },
-          createdAt: new Date().toISOString(),
-        },
-      ];
+      auts = [];
       this.automations.set(guildId, auts);
       this.saveAutomations();
     }

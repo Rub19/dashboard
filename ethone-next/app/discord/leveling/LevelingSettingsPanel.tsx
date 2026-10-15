@@ -210,7 +210,7 @@ export default function LevelingSettingsPanel({ guildId, config: rawConfig, savi
       <div className="flex items-start justify-between gap-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
         <div>
           <h2 className="text-lg font-bold text-[var(--text-primary)]">Niveaux</h2>
-          <p className="text-sm text-[var(--text-muted)]">Système de niveaux qui récompense l&apos;activité des membres. Désactivé par défaut : personne ne gagne d&apos;XP tant que vous ne l&apos;activez pas.</p>
+          <p className="text-sm text-[var(--text-muted)]">Système de niveaux qui récompense l&apos;activité des membres. Désactivé par défaut : personne ne gagne d&apos;XP tant que tu ne l&apos;actives pas.</p>
         </div>
         <Switch checked={config.enabled} disabled={disabled || saving} label="Activer les niveaux" onChange={(v) => void onSave({ enabled: v })} />
       </div>
@@ -390,7 +390,7 @@ export default function LevelingSettingsPanel({ guildId, config: rawConfig, savi
 
       {dirty && (
         <div className="fixed inset-x-0 bottom-24 z-30 mx-auto flex w-[min(92vw,640px)] items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)] p-3">
-          <p className="text-sm text-[var(--text-muted)]">{invalid ? "Corrigez les champs en rouge avant d'enregistrer." : "Vous avez des modifications non enregistrées."}</p>
+          <p className="text-sm text-[var(--text-muted)]">{invalid ? "Corrige les champs en rouge avant d'enregistrer." : "Tu as des modifications non enregistrées."}</p>
           <div className="flex gap-2">
             <button type="button" onClick={() => setDraft(config)} className="cursor-pointer rounded-lg px-3 py-2 text-sm font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)]">
               Annuler

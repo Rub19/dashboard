@@ -23,7 +23,7 @@ import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { GuildSelector } from "@/components/GuildSelector";
 
 const BOT_CLIENT_ID = "1545139931154878464";
-const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
+const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=1436565368055&scope=bot%20applications.commands`;
 
 export default function SecurityHubPage() {
   const searchParams = useSearchParams();
@@ -115,7 +115,7 @@ export default function SecurityHubPage() {
           />
         ) : !discordLoading ? (
           <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 text-center text-sm text-[var(--text-muted)]">
-            Connectez un serveur Discord où vous êtes administrateur.
+            Connecte un serveur Discord où tu es administrateur.
           </div>
         ) : null}
 
@@ -129,7 +129,7 @@ export default function SecurityHubPage() {
               <div>
                 <p className="font-semibold text-[var(--text-primary)] text-sm">Le bot ETHONE n&apos;est pas installé sur ce serveur</p>
                 <p className="mt-0.5 text-[var(--text-muted)]">
-                  Invitez le bot sur « {selectedGuild.name} » pour activer les protections Anti-Raid et Anti-Nuke.
+                  Invite le bot sur « {selectedGuild.name} » pour activer les protections Anti-Raid et Anti-Nuke.
                 </p>
               </div>
             </div>

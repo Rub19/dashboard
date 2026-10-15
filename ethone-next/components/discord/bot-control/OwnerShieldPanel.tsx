@@ -644,7 +644,7 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
             Bouclier de l&apos;Owner
           </h1>
           <p className="mt-0.5 text-xs sm:text-sm text-[var(--text-muted)]">
-            Annulation automatique des sanctions et restauration de vos permissions sur tous les serveurs Discord surveillés.
+            Annulation automatique des sanctions et restauration de tes permissions sur tous les serveurs Discord surveillés.
           </p>
         </div>
 
@@ -716,7 +716,7 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
               <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed max-w-2xl">
                 {isMasterActive
                   ? `Etho surveille et annule en temps réel les sanctions (ban, timeout, mute, retrait de rôles). ${covered}/${guilds.length} serveurs surveillés.`
-                  : "Le bouclier est éteint. Toutes les réactions automatiques sont en pause sur l'ensemble de vos serveurs."}
+                  : "Le bouclier est éteint. Toutes les réactions automatiques sont en pause sur l'ensemble de tes serveurs."}
               </p>
             </div>
           </div>
@@ -796,8 +796,8 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
             <h3 className="text-base font-bold text-[var(--text-primary)]">Réactions automatiques</h3>
             <p className="text-xs text-[var(--text-muted)]">
               {isMasterActive
-                ? "Actions déclenchées automatiquement dès qu'un modérateur vous sanctionne."
-                : "Toutes les réactions sont coupées. Réactivez le bouclier pour relancer la protection."}
+                ? "Actions déclenchées automatiquement dès qu'un modérateur te sanctionne."
+                : "Toutes les réactions sont coupées. Réactive le bouclier pour relancer la protection."}
             </p>
           </div>
           {!isMasterActive && (
@@ -883,7 +883,7 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
           <div>
             <h3 className="text-base font-bold text-[var(--text-primary)]">Serveurs surveillés</h3>
             <p className="text-xs text-[var(--text-muted)]">
-              Position d&apos;Etho dans la hiérarchie et état de votre compte par serveur.
+              Position d&apos;Etho dans la hiérarchie et état de ton compte par serveur.
             </p>
           </div>
 

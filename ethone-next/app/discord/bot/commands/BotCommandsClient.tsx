@@ -361,7 +361,7 @@ const COMMANDS_CATALOG: CommandDefinition[] = [
     cooldown: "2s",
     embedPreview: {
       title: "Lecture en Pause",
-      description: "La lecture est suspendue. Utilisez /resume pour continuer.",
+      description: "La lecture est suspendue. Utilise /resume pour continuer.",
     },
   },
   {
@@ -668,7 +668,7 @@ const COMMANDS_CATALOG: CommandDefinition[] = [
     cooldown: "10s",
     embedPreview: {
       title: "Tirage au Sort Officiel",
-      description: "Lot : 1 Mois Discord Nitro · 1 Gagnant · Cliquez sur le bouton pour vous inscrire.",
+      description: "Lot : 1 Mois Discord Nitro · 1 Gagnant · Clique sur le bouton pour vous inscrire.",
     },
   },
   {
@@ -850,7 +850,7 @@ export default function BotCommandsClient() {
               Catalogue des Commandes
             </h1>
             <p className="text-xs sm:text-sm text-[var(--text-muted)] max-w-2xl leading-relaxed">
-              Explorez l&apos;ensemble des commandes Slash (/) et préfixes d&apos;Etho. Consultez la syntaxe exacte, les permissions requises et simulez les réponses en direct.
+              Explorez l&apos;ensemble des commandes Slash (/) et préfixes d&apos;Etho. Consulte la syntaxe exacte, les permissions requises et simulez les réponses en direct.
             </p>
           </div>
 

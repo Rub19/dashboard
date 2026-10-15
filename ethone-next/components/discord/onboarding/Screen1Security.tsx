@@ -21,7 +21,7 @@ export default function Screen1Security({ onNext }: Screen1SecurityProps) {
           Protection chirurgicale en temps réel.
         </h3>
         <p className="text-xs sm:text-sm text-zinc-400 max-w-lg mx-auto leading-relaxed">
-          Les événements de votre serveur sont surveillés en continu : raids, mass-mentions, suppressions suspectes et comptes frauduleux sont neutralisés automatiquement.
+          Les événements de ton serveur sont surveillés en continu : raids, mass-mentions, suppressions suspectes et comptes frauduleux sont neutralisés automatiquement.
         </p>
       </div>
 

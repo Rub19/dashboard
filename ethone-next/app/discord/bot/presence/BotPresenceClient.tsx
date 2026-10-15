@@ -86,7 +86,7 @@ const DYNAMIC_VARIABLES = [
 
 const DEFAULT_ROTATION_ACTIVITIES: { id: string; type: DiscordActivityType; text: string; url?: string; weight: number }[] = [
   { id: "rot_3", type: "Watching" as DiscordActivityType, text: "{guildCount} serveurs • Anti-Raid 24/7", weight: 30 },
-  { id: "rot_6", type: "Watching" as DiscordActivityType, text: "vos tickets d'assistance • /ticket", weight: 20 },
+  { id: "rot_6", type: "Watching" as DiscordActivityType, text: "les tickets d'assistance • /ticket", weight: 20 },
   { id: "rot_8", type: "Playing" as DiscordActivityType, text: "{userCount} membres servis • /bot info", weight: 20 },
 ];
 
@@ -948,7 +948,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                           1. Statut Visible sur Discord
                         </h3>
                         <p className="text-xs text-[var(--text-muted)] mt-0.5">
-                          Choisissez la pastille d&apos;état affichée sur le profil du bot
+                          Choisis la pastille d&apos;état affichée sur le profil du bot
                         </p>
                       </div>
 
@@ -1102,7 +1102,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                           3. Texte de l&apos;Activité & Variables Dynamiques
                         </h3>
                         <p className="text-xs text-[var(--text-muted)] mt-0.5">
-                          Saisissez le texte ou cliquez sur une variable pour l&apos;insérer dynamiquement
+                          Saisis le texte ou clique sur une variable pour l&apos;insérer dynamiquement
                         </p>
                       </div>
 
@@ -1585,7 +1585,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                         Planning Hebdomadaire Automatique
                       </h3>
                       <p className="text-xs text-[var(--text-muted)] mt-0.5">
-                        Définissez quel profil activer selon les plages horaires de la semaine
+                        Définis quel profil activer selon les plages horaires de la semaine
                       </p>
                     </div>
                     <span className="text-xs font-mono text-[var(--accent-primary)] px-2.5 py-1 rounded-lg bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/30">
@@ -1644,7 +1644,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                       Serveurs Installés & Préférences Déclaratives
                     </h2>
                     <p className="text-xs text-[var(--text-muted)] mt-1">
-                      Définissez le profil préféré pour chaque serveur Discord où Etho est installé
+                      Définis le profil préféré pour chaque serveur Discord où Etho est installé
                     </p>
                   </div>
 

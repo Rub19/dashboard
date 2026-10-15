@@ -120,7 +120,7 @@ export default function ConfigurationGroup({
                 Modules du Serveur ({modules.length})
               </h3>
               <p className="text-xs text-[var(--text-muted)]">
-                Activez/désactivez les modules pour un serveur — identique à la commande Discord{" "}
+                Active/désactivez les modules pour un serveur — identique à la commande Discord{" "}
                 <code className="text-[var(--text-primary)]/85">/module</code>
               </p>
             </div>
@@ -140,7 +140,7 @@ export default function ConfigurationGroup({
           </div>
 
           {!settingsGuildId ? (
-            <p className="text-xs text-[var(--text-muted)] italic">Sélectionnez un serveur pour voir ses modules.</p>
+            <p className="text-xs text-[var(--text-muted)] italic">Sélectionne un serveur pour voir ses modules.</p>
           ) : modulesLoading && modules.length === 0 ? (
             <p className="text-xs text-[var(--text-muted)] italic">Chargement des modules…</p>
           ) : modulesError ? (
@@ -212,7 +212,7 @@ export default function ConfigurationGroup({
                   Configuration Opérationnelle & Confidentialité
                 </h3>
                 <p className="text-xs text-[var(--text-muted)]">
-                  Définissez le comportement global, la visibilité des réponses et le style d'interaction du bot
+                  Définis le comportement global, la visibilité des réponses et le style d'interaction du bot
                 </p>
               </div>
               <button
@@ -334,7 +334,7 @@ export default function ConfigurationGroup({
                     Visibilité & Confidentialité des Réponses
                   </h4>
                   <p className="text-[11px] text-[var(--text-muted)] mt-0.5">
-                    Choisissez si les réponses aux commandes (/ask, /bot, /music, etc.) sont visibles publiquement ou privées
+                    Choisis si les réponses aux commandes (/ask, /bot, /music, etc.) sont visibles publiquement ou privées
                   </p>
                 </div>
                 <span
@@ -982,7 +982,7 @@ export default function ConfigurationGroup({
                   Humeur & Tempérament du Thon
                 </h4>
                 <p className="text-[11px] text-[var(--text-muted)]">
-                  Choisissez la personnalité qui régit les réponses de l'IA sur le serveur
+                  Choisis la personnalité qui régit les réponses de l'IA sur le serveur
                 </p>
               </div>
 

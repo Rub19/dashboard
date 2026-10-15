@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.106 — 2026-10-15
+
+**Page de connexion Etho et reconnexion automatique**
+
+- Le bouton « Dashboard » de la page Etho ouvre une page de connexion dédiée (langue, thème clair/sombre, connexion Discord)
+- Quand la session du bot manque, la console se reconnecte toute seule via Discord au lieu d'afficher « session expirée »
+
 ## v1.75.105 — 2026-10-15
 
 **Nouveau panneau de présence d'Etho en MP**

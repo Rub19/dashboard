@@ -103,7 +103,7 @@ authRouter.get('/login', (req: Request, res: Response) => {
     `&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}` +
     `&scope=identify%20guilds` +
     `&state=${state}` +
-    `&prompt=consent`;
+    `&prompt=${req.query.silent === '1' ? 'none' : 'consent'}`;
 
   res.redirect(discordAuthUrl);
 });
@@ -145,6 +145,15 @@ authRouter.all('/dev-login', (req: Request, res: Response) => {
 authRouter.get('/callback', async (req: Request, res: Response): Promise<void> => {
   const code = req.query.code as string;
   if (!code) {
+    const back = safeReturnUrl(req.cookies?.[RETURN_COOKIE]);
+    if (req.query.error && back) {
+      res.clearCookie(STATE_COOKIE, { path: '/' });
+      res.clearCookie(RETURN_COOKIE, { path: '/' });
+      const url = new URL(back);
+      url.searchParams.set('bot_auth', 'failed');
+      res.redirect(url.toString());
+      return;
+    }
     res.redirect('/?error=no_code');
     return;
   }

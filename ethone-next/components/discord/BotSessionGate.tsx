@@ -8,6 +8,7 @@ import { SPRING_LAYOUT } from "@/lib/ease";
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 /** Au-delà, on affiche la page même sans réponse du bot (bot éteint, réseau lent) : chaque module gère ce cas. */
 const CHECK_TIMEOUT_MS = 2500;
+const SILENT_KEY = "ethone:bot-silent-login";
 
 type State = "checking" | "ok" | "expired";
 
@@ -25,7 +26,21 @@ export default function BotSessionGate({ children }: { children: React.ReactNode
     let cancelled = false;
     const timer = window.setTimeout(() => !cancelled && setState((s) => (s === "checking" ? "ok" : s)), CHECK_TIMEOUT_MS);
     fetch(`${BOT_API_URL}/api/auth/me`, { credentials: "include" })
-      .then((r) => !cancelled && setState(r.status === 401 ? "expired" : "ok"))
+      .then((r) => {
+        if (cancelled) return;
+        if (r.status !== 401) {
+          sessionStorage.removeItem(SILENT_KEY);
+          setState("ok");
+          return;
+        }
+        const failed = new URLSearchParams(window.location.search).has("bot_auth");
+        if (!failed && !sessionStorage.getItem(SILENT_KEY)) {
+          sessionStorage.setItem(SILENT_KEY, "1");
+          window.location.replace(`${BOT_API_URL}/api/auth/login?silent=1&return_to=${encodeURIComponent(window.location.href)}`);
+          return;
+        }
+        setState("expired");
+      })
       .catch(() => !cancelled && setState("ok"));
     return () => {
       cancelled = true;
@@ -50,7 +65,7 @@ export default function BotSessionGate({ children }: { children: React.ReactNode
         <img src="/bot-icons/a_logo.gif" alt="" width={56} height={56} className="mx-auto mb-5 h-14 w-14 rounded-2xl" />
         <h1 className="text-lg font-bold tracking-tight text-[var(--text-primary)]">Connecte-toi avec Discord</h1>
         <p className="mt-2 text-sm leading-relaxed text-[var(--text-muted)]">
-          Ta session avec le bot a expiré (elle dure 7 jours). Reconnecte-toi pour gérer tes serveurs ; tu reviendras
+          Ta session avec le bot a expiré. Reconnecte-toi pour gérer tes serveurs ; tu reviendras
           ensuite sur cette page.
         </p>
         <a

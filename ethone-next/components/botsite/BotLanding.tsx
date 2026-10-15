@@ -16,7 +16,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
-import { signInWithOAuth } from "@/lib/auth";
 import FlagIcon, { LANGUAGE_LABELS } from "@/components/FlagIcon";
 import { ArrowUp } from "@/components/icons/ph";
 import { EASE_SNAP, SPRING_MOUSE } from "@/lib/ease";
@@ -540,7 +539,7 @@ function DiscordChatSimulator() {
   );
 }
 
-function LanguageSelect({
+export function LanguageSelect({
   lang,
   onChange,
   label,
@@ -1130,14 +1129,8 @@ export default function BotLanding() {
         router.push(DASHBOARD_URL);
         return;
       }
-      const target = typeof window !== "undefined" ? `${window.location.origin}/discord` : "/discord";
-      const { ok, url } = await signInWithOAuth("discord", target);
-      if (ok && url) {
-        window.location.href = url;
-        return;
-      }
     } catch {}
-    router.push(DASHBOARD_URL);
+    router.push("/bot/connexion");
   };
 
   const { scrollY, scrollYProgress } = useScroll({ container: scrollRef });

@@ -56929,6 +56929,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_105_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_105_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_105_de);
 
+const v1_75_106_fr: ChangelogEntry = {
+  version: "v1.75.106",
+  date: "2026-10-15",
+  title: "Page de connexion Etho et reconnexion automatique",
+  items: [
+    "Le bouton « Dashboard » de la page Etho ouvre une page de connexion dédiée (langue, thème clair/sombre, connexion Discord)",
+    "Quand la session du bot manque, la console se reconnecte toute seule via Discord au lieu d'afficher « session expirée »",
+  ],
+};
+
+const v1_75_106_en: ChangelogEntry = {
+  version: "v1.75.106",
+  date: "2026-10-15",
+  title: "Etho sign-in page and automatic reconnection",
+  items: [
+    "The Etho \"Dashboard\" button opens a dedicated sign-in page (language, light/dark theme, Discord sign-in)",
+    "When the bot session is missing, the console reconnects automatically through Discord",
+  ],
+};
+
+const v1_75_106_es: ChangelogEntry = {
+  version: "v1.75.106",
+  date: "2026-10-15",
+  title: "Página de conexión de Etho y reconexión automática",
+  items: [
+    "El botón «Dashboard» abre una página de conexión dedicada",
+    "La consola se reconecta sola mediante Discord",
+  ],
+};
+
+const v1_75_106_de: ChangelogEntry = {
+  version: "v1.75.106",
+  date: "2026-10-15",
+  title: "Etho-Anmeldeseite und automatische Wiederverbindung",
+  items: [
+    "Der „Dashboard“-Button öffnet eine eigene Anmeldeseite",
+    "Die Konsole meldet sich automatisch über Discord neu an",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_106_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_106_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_106_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_106_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

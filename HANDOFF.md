@@ -1,4 +1,4 @@
-# ETHONE — passation & nouveautés (2026-10-15, version 1.75.105)
+# ETHONE — passation & nouveautés (2026-10-15, version 1.75.106)
 
 ## Projet
 - `ethone-next/` : site Next.js statique (ethone.dev, Cloudflare Pages, déploiement auto au push sur `main`).
@@ -26,7 +26,11 @@
 
 ---
 
-## Nouveautés majeures & Réalisations récentes (v1.75.83 → v1.75.105)
+## Nouveautés majeures & Réalisations récentes (v1.75.83 → v1.75.106)
+
+### Page /bot/connexion + reconnexion bot silencieuse (v1.75.106)
+- `components/botsite/BotLogin.tsx` (route `/bot/connexion`) : modèle Keeper aux couleurs Etho (langue, thème clair/sombre, Discord via Supabase). Le bouton Dashboard de /bot y mène si pas de session Discord, sinon `/discord`.
+- Session bot : le cookie `token` (7 j, Secure, SameSite=None) disparaît côté navigateur au bout d'environ 30 min selon l'utilisateur (cause non reproduite). `BotSessionGate` relance une fois `/api/auth/login?silent=1` (Discord `prompt=none`) ; en cas de refus, le callback renvoie vers la page avec `bot_auth=failed` et l'écran de reconnexion s'affiche.
 
 ### Panneau de présence owner en Components V2 (v1.75.105)
 - `modules/presence/ui/discordOwnerPanel.ts` réécrit : `buildPanel(notice?)` (V2) remplace `buildPanelEmbed`/`buildActionRows` ; boutons statut (dont Invisible), Mode streamer et Activité perso via modales `owner_presence_modal_*` (routées dans interactionCreate), rotation, maintenance. Choisir une activité arrête la rotation (sinon elle l'écrase). `/status` utilise le même panneau.

@@ -1,5 +1,14 @@
 [
   {
+    "version": "v1.75.114",
+    "date": "2026-10-15",
+    "title": "Menus déroulants opaques et chargement après mise à jour",
+    "items": [
+      "Les menus déroulants ne sont plus transparents dans les sections désactivées.",
+      "Le site ne plante plus juste après une mise à jour quand un fichier n'est pas encore disponible : il est redemandé automatiquement."
+    ]
+  },
+  {
     "version": "v1.75.113",
     "date": "2026-10-15",
     "title": "Badges Nitro mieux détectés et menus corrigés",
@@ -617,18 +626,6 @@
       "Événements : nouvelle vue Calendrier (grille du mois, clic sur un jour pour préremplir un événement) ; le module Calendrier l'ouvre directement.",
       "Vue d'ensemble : renvoie vers l'accueil de la console, qui affiche déjà ces informations.",
       "Sécurité : une commande personnalisée ne peut plus être déplacée vers un autre serveur ni lue depuis un autre serveur ; les suggestions ne peuvent plus être modifiées depuis un autre serveur."
-    ]
-  },
-  {
-    "version": "v1.62.0",
-    "date": "2026-10-09",
-    "title": "Console : Serveur, Assistant IA et Journal des logs au format Keeper",
-    "items": [
-      "Serveur : aperçu (membres, salons, rôles, boosts, score de sécurité expliqué, activité), salons (création, nom, sujet, mode lent, NSFW, places, suppression), rôles (création, nom, couleur, affichage séparé, mention, suppression), emojis (ajout, renommage, suppression, stickers), webhooks et paramètres Discord du serveur.",
-      "Assistant IA : mode général, salon dédié et modes par salon, personnalité (nom, humeur, consignes, curseurs), précision, images, mots interdits, mémoire, connaissances et essai en direct. Seuls les réglages appliqués par le bot sont affichés.",
-      "Logs : nouvel onglet Journal avec recherche, catégories, gravité, période et chargement progressif.",
-      "Correction : le nombre de membres en ligne n'est plus estimé (45 % des membres) quand le bot ne voit pas les présences.",
-      "Sécurité : les réglages IA et les règles de salon sont validés par le bot (modes connus, budget plafonné)."
     ]
   }
 ]

@@ -26,7 +26,7 @@
 
 ---
 
-## Nouveautés majeures & Réalisations récentes (v1.75.83 → v1.75.113)
+## Nouveautés majeures & Réalisations récentes (v1.75.83 → v1.75.114)
 
 ### Bienvenue et départs + Rôles automatiques façon Keeper (v1.75.111)
 - Sidebar (`HubSidebar.tsx`) en sections data-driven : Protection, Accueil des membres, Sanctions, Modération, Accès, Animation, Serveur. Vues console `welcome` et `autoroles`.

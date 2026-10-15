@@ -39,9 +39,7 @@ const DURATIONS: ReadonlyArray<readonly [number, string]> = [
 function Section({ title, on, onToggle, children }: { title: string; on: boolean; onToggle: (v: boolean) => void; children: ReactNode }) {
   return (
     <Panel title={title} actions={<Switch checked={on} onChange={onToggle} label={title} />}>
-      <motion.div animate={{ opacity: on ? 1 : 0.6 }} transition={{ duration: 0.25 }}>
-        {children}
-      </motion.div>
+      {children}
     </Panel>
   );
 }

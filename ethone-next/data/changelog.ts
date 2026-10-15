@@ -57314,6 +57314,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_113_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_113_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_113_de);
 
+const v1_75_114_fr: ChangelogEntry = {
+  version: "v1.75.114",
+  date: "2026-10-15",
+  title: "Menus déroulants opaques et chargement après mise à jour",
+  items: [
+    "Les menus déroulants ne sont plus transparents dans les sections désactivées.",
+    "Le site ne plante plus juste après une mise à jour quand un fichier n'est pas encore disponible : il est redemandé automatiquement.",
+  ],
+};
+
+const v1_75_114_en: ChangelogEntry = {
+  version: "v1.75.114",
+  date: "2026-10-15",
+  title: "Opaque dropdowns and loading after updates",
+  items: [
+    "Dropdowns are no longer transparent inside disabled sections.",
+    "The site no longer crashes right after an update when a file isn't available yet: it is requested again automatically.",
+  ],
+};
+
+const v1_75_114_es: ChangelogEntry = {
+  version: "v1.75.114",
+  date: "2026-10-15",
+  title: "Menús opacos y carga tras actualizaciones",
+  items: [
+    "Los menús desplegables ya no son transparentes en las secciones desactivadas.",
+    "El sitio ya no falla justo después de una actualización si un archivo aún no está disponible: se vuelve a pedir automáticamente.",
+  ],
+};
+
+const v1_75_114_de: ChangelogEntry = {
+  version: "v1.75.114",
+  date: "2026-10-15",
+  title: "Undurchsichtige Menüs und Laden nach Updates",
+  items: [
+    "Aufklappmenüs sind in deaktivierten Bereichen nicht mehr durchsichtig.",
+    "Die Seite stürzt direkt nach einem Update nicht mehr ab, wenn eine Datei noch fehlt: sie wird automatisch neu angefordert.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_114_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_114_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_114_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_114_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

@@ -124,7 +124,7 @@ export default function ConsoleInvites({ guildId }: { guildId: string }) {
         {!rewards ? (
           <EmptyLine>Chargement…</EmptyLine>
         ) : (
-          <div className={cn("transition-opacity", settings && !settings.rewardsEnabled && "opacity-50")}>
+          <div>
             <ul>
               <AnimatePresence initial={false}>
                 {rewards.map((rw) => (

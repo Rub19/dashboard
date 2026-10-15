@@ -231,7 +231,7 @@ export default function ConsoleWelcome({ guildId }: { guildId: string }) {
 
   const channelSettings = (m: ChannelMessage, set: (p: Partial<ChannelMessage>) => void, label: string) => (
     <Panel title={label} actions={<Switch checked={m.enabled} onChange={(v) => set({ enabled: v })} label={label} />}>
-      <div className={cn("transition-opacity duration-300", !m.enabled && "opacity-60")}>
+      <div>
         <Row label="Salon">
           <ChannelPicker guildId={guildId} value={m.channelId ?? ""} filterTypes={[0, 5]} allowClear={false} placeholder="Choisir un salon" onChange={(id) => set({ channelId: id })} />
         </Row>
@@ -322,7 +322,7 @@ export default function ConsoleWelcome({ guildId }: { guildId: string }) {
             {tab === "dm" && (
               <>
                 <Panel title="Message privé" actions={<Switch checked={welcome.dm.enabled} onChange={(v) => dm({ enabled: v })} label="Message privé" />}>
-                  <div className={cn("transition-opacity duration-300", !welcome.dm.enabled && "opacity-60")}>
+                  <div>
                     <Row label="Format">
                       <Segmented label="Format" value={formatOf(welcome.dm)} options={FORMATS} onChange={(v) => dm({ format: v, embed: { ...welcome.dm.embed, enabled: v !== "text" } })} />
                     </Row>
@@ -353,7 +353,7 @@ export default function ConsoleWelcome({ guildId }: { guildId: string }) {
 
             {tab === "ghost" && (
               <Panel title="Ghost ping" actions={<Switch checked={ghostPing.enabled} onChange={(v) => gp({ enabled: v })} label="Ghost ping" />}>
-                <div className={cn("transition-opacity duration-300", !ghostPing.enabled && "opacity-60")}>
+                <div>
                   <Row label="Salons" hint="Le nouveau membre y est mentionné, puis le message disparaît : il voit une notification qui l'amène au bon endroit.">
                     <div className="flex flex-wrap items-center gap-1.5">
                       <AnimatePresence initial={false}>

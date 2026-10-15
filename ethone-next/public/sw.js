@@ -1,4 +1,4 @@
-const CACHE_NAME = "ethone-next-v423";
+const CACHE_NAME = "ethone-next-v424";
 const PRECACHE = ["/", "/login/", "/dashboard/", "/offline.html"];
 const STATIC_EXTENSIONS = [".js", ".css", ".png", ".jpg", ".jpeg", ".webp", ".svg", ".woff", ".woff2", ".ico"];
 
@@ -339,7 +339,10 @@ self.addEventListener("fetch", (event) => {
           // Poisoned cache entry — drop it and fall through to a fresh fetch.
           caches.open(CACHE_NAME).then((cache) => cache.delete(event.request));
         }
+        // Un 404 gardé par le cache HTTP pendant un déploiement (fichier pas encore propagé) bloquait la page :
+        // on redemande au réseau sans cache avant d'abandonner.
         return fetch(event.request)
+          .then((response) => (response && response.status === 404 ? fetch(event.request.url, { cache: "reload", credentials: "same-origin" }) : response))
           .then((response) => {
             if (!response || response.status !== 200 || response.type !== "basic") return response;
             // During a deploy, Cloudflare can answer a not-yet-propagated

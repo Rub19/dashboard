@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.114 — 2026-10-15
+
+**Menus déroulants opaques et chargement après mise à jour**
+
+- Les menus déroulants ne sont plus transparents dans les sections désactivées.
+- Le site ne plante plus juste après une mise à jour quand un fichier n'est pas encore disponible : il est redemandé automatiquement.
+
 ## v1.75.113 — 2026-10-15
 
 **Badges Nitro mieux détectés et menus corrigés**

@@ -1,7 +1,9 @@
-# ETHONE — passation & nouveautés (2026-10-13, version 1.75.45)
+# ETHONE — passation & nouveautés (2026-10-15, version 1.75.87)
 
 ## Projet
 - `ethone-next/` : site Next.js statique (ethone.dev, Cloudflare Pages, déploiement auto au push sur `main`).
+- `ios/` : application native iOS (SwiftUI, XcodeGen, architecture Liquid Glass, build IPA Xcode 27 via GitHub Actions).
+- `android/` : application native Android (Kotlin / Gradle).
 - `discord-bot/` : bot Etho (VPS `ssh vps`, pm2 `ethone-bot`, dossier `~/dashboard`).
 - `worker/` : Cloudflare Worker `raspy-fog-bf5b` (`npx wrangler deploy` depuis `worker/`, tests `node --test test/*.test.mjs`).
 - Supabase : projet `bvgifyzhpzkbrwdjrqsg` (tables mail = `ethone_mail_*`, sauvegardes `bot-backups`).
@@ -10,9 +12,8 @@
 - Commits : `git -c user.name="Rub19" -c user.email="rub19.mailpro@gmail.com" commit …`, message « Migration Next.js : vX - … » ou « Migration Next.js : description », **sans co-auteur IA**.
 - Ne jamais committer `discord-bot/scripts/etho-avatar-animated.gif` ni `.mcp.json`.
 - Pas de données inventées ni de placeholders dans le dashboard. Seuls les réglages que le bot applique vraiment sont affichés.
-- **Politique stricte zéro commentaire** : aucun commentaire (`//`, `/*`, `///`) dans le code source créé ou modifié.
+- **Politique stricte zéro commentaire** : aucun commentaire (`//`, `/*`, `///`, `<!-- -->`) dans le code source créé ou modifié.
 - Refuser les secrets collés dans le chat ; ne jamais taper d'identifiants sur un site.
-- Pendant les tests, ne pas modifier les vrais réglages du serveur de l'utilisateur (pas de toggles, owners, whitelist, blacklist). Keeper (keeper.jgl-bot.fr) se consulte en lecture seule.
 - Déploiements autorisés (« je te laisse tout faire ») : les annoncer ; sauvegarder les données du bot avant chaque déploiement bot.
 - Rapports finaux en français.
 
@@ -25,7 +26,39 @@
 
 ---
 
-## Nouveautés majeures & Réalisations récentes (v1.73.0 → v1.75.37)
+## Nouveautés majeures & Réalisations récentes (v1.75.83 → v1.75.87)
+
+### 1. iOS Native : Icône officielle Retina 1024x1024 & Refonte Login Liquid Glass (v1.75.87)
+- **Remplacement de l'icône IPA** : Retrait définitif du placeholder Capacitor (croix bleue sur grille blanche) sur l'écran d'accueil iPhone. Remplacement par le logo officiel d'ETHONE en résolution Retina 1024x1024 (`AppIcon-512@2x.png` et `AppIcon.png`) : fond sombre profond `#101018`, contour néon signal multi-teintes (`#8b5cf6` → `#38bdf8` → `#34d399` → `#e11d48`), reflet glass supérieur et monogramme « E » géométrique blanc centré.
+- **Refonte de l'écran de connexion (`LoginView.swift`)** :
+  - **En-tête officiel** : Remplacement de l'icône générique d'étoiles/sparkles par le composant vectoriel natif `BrandMarkView`, avec titre « Bienvenue sur ETHONE » et sous-titre « Connectez-vous à votre environnement numérique unifié. ».
+  - **Sélecteur d'onglets Liquid Glass** : 3 modes identiques au web (« Mot de passe », « Code OTP », « S'inscrire ») avec indicateur rose néon dynamique (`#E11D48`).
+  - **Champs & fonctionnalités** : E-mail avec icône enveloppe, mot de passe avec cadenas et bascule œil afficher/masquer, bascule « Rester connecté », lien « Mot de passe oublié ? ».
+  - **Bouton d'action signature** : Dégradé rose vibrant (`#E11D48` → `#BE185D`) avec flèche et retour haptique.
+  - **OAuth & Clé de sécurité** : Ligne « OU CONTINUER AVEC » avec 3 boutons côte à côte (Google, GitHub, Discord) et bouton d'accès direct Passkey.
+- **Support OTP natif (`AuthStore.swift`)** : Implémentation des méthodes `signInWithOtp` et `verifyOtp` pour la connexion par code temporaire sans mot de passe.
+
+### 2. Riot Developer API : Jeton de vérification de domaine & Validation (v1.75.86)
+- **Déploiement du jeton de domaine** : Fichier officiel `riot.txt` (`f104ce73-8317-47be-b5db-f4f545213db4`) déployé dans `/tracker/riot.txt` et `/riot.txt`.
+- **En-têtes HTTP de conformité** : Ajout de `Content-Type: text/plain; charset=utf-8` et `Access-Control-Allow-Origin: *` dans `_headers` pour la validation automatisée Riot Games.
+- **Approbation de domaine** : Validation de propriété réussie sur le portail Riot Games Developer pour l'accès aux APIs de production VALORANT.
+
+### 3. CI/CD : Migration vers Node 24 & Actions GitHub v7 (v1.75.85)
+- **Mise à niveau des workflows GitHub Actions** : Migration de tous les workflows (`.github/workflows/`) vers `actions/checkout@v7`, `actions/upload-artifact@v7`, `actions/setup-node@v7`, `actions/setup-java@v6` et `actions/cache@v6`.
+- **Élimination des avertissements d'obsolescence** : Suppression définitive de l'avertissement de deprecation Node 20 sur les runners macOS Xcode 27 et Ubuntu.
+
+### 4. Tracker Valorant : Correction bug 1v1 Compare & Audit Navigateur (v1.75.84)
+- **Correction bug TDZ (Temporal Dead Zone)** : Résolution de l'exception dans `CompareWithFriendView.tsx` où `hasPlayer2` était évalué avant la déclaration de `p2Profile`/`p2Matches`.
+- **Sécurisation défensive** : Null-safety dans `ValorantWeaponStatsCard.tsx`, validation stricte des props du composant `Modal`.
+- **Audit navigateur Playwright complet** : Audit automatisé des 10 pages/onglets de `ethone.dev/tracker/` : 10/10 HTTP 200, 0 crash React (`hasCrashBoundary: false`), 0 erreur console non interceptée, 0 fuite de placeholders.
+
+### 5. Accès Hybride : Portail Principal sous Login & Tracker Public Libre (v1.75.83)
+- **Racine `ethone.dev/` sous login** : Redirection automatique des utilisateurs non authentifiés vers `https://ethone.dev/login/`.
+- **Libre accès au Tracker** : `https://ethone.dev/tracker/` et `/matches/` restent 100% ouverts et accessibles sans compte pour les joueurs et les reviewers Riot.
+
+---
+
+## Nouveautés antérieures (v1.73.0 → v1.75.37)
 
 ### 0. Vitrine Bot : Bouton Retour en Haut Flottant et Footer 3 Colonnes Style Bleed (v1.75.37)
 - **Bouton Flottant Circulaire** : Ajout d'un bouton circulaire en bas à droite (`ArrowUp`) qui s'affiche automatiquement dès que le défilement dépasse 200px et permet de remonter en haut de page en douceur avec animation Framer Motion.

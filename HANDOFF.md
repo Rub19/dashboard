@@ -1,4 +1,4 @@
-# ETHONE — passation & nouveautés (2026-10-15, version 1.75.104)
+# ETHONE — passation & nouveautés (2026-10-15, version 1.75.105)
 
 ## Projet
 - `ethone-next/` : site Next.js statique (ethone.dev, Cloudflare Pages, déploiement auto au push sur `main`).
@@ -26,7 +26,10 @@
 
 ---
 
-## Nouveautés majeures & Réalisations récentes (v1.75.83 → v1.75.104)
+## Nouveautés majeures & Réalisations récentes (v1.75.83 → v1.75.105)
+
+### Panneau de présence owner en Components V2 (v1.75.105)
+- `modules/presence/ui/discordOwnerPanel.ts` réécrit : `buildPanel(notice?)` (V2) remplace `buildPanelEmbed`/`buildActionRows` ; boutons statut (dont Invisible), Mode streamer et Activité perso via modales `owner_presence_modal_*` (routées dans interactionCreate), rotation, maintenance. Choisir une activité arrête la rotation (sinon elle l'écrase). `/status` utilise le même panneau.
 
 ### Tests réels + autocomplétion (v1.75.104)
 - Testé sur Serveur Test Bot (modules activés puis remis désactivés) : bienvenue (message + carte OK), giveaway 1 min (participation, tirage, annonce OK), ticket (ouverture, fermeture, salon supprimé OK), /play sans vocal (message clair), streamers (lofigirl détecté en live via decapi.me, puis retiré).

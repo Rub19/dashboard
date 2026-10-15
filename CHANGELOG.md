@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.105 — 2026-10-15
+
+**Nouveau panneau de présence d'Etho en MP**
+
+- Panneau du propriétaire refait en interface moderne : statut, activité, rotation et maintenance regroupés et lisibles
+- Nouveau bouton « Mode streamer » : tu colles le lien de ta chaîne et le titre, le bot passe en direct (violet)
+- Nouveau bouton « Activité perso » pour écrire ce que le bot affiche
+- Statut Invisible ajouté, et /status utilise le même panneau
+
 ## v1.75.104 — 2026-10-15
 
 **Autocomplétion des commandes et correctifs trouvés en test réel**

@@ -56878,6 +56878,57 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_104_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_104_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_104_de);
 
+const v1_75_105_fr: ChangelogEntry = {
+  version: "v1.75.105",
+  date: "2026-10-15",
+  title: "Nouveau panneau de présence d'Etho en MP",
+  items: [
+    "Panneau du propriétaire refait en interface moderne : statut, activité, rotation et maintenance regroupés et lisibles",
+    "Nouveau bouton « Mode streamer » : tu colles le lien de ta chaîne et le titre, le bot passe en direct (violet)",
+    "Nouveau bouton « Activité perso » pour écrire ce que le bot affiche",
+    "Statut Invisible ajouté, et /status utilise le même panneau",
+  ],
+};
+
+const v1_75_105_en: ChangelogEntry = {
+  version: "v1.75.105",
+  date: "2026-10-15",
+  title: "New Etho presence panel in DMs",
+  items: [
+    "Owner panel rebuilt with a modern layout",
+    "New \"Streamer mode\" button: paste your channel link and title",
+    "New \"Custom activity\" button",
+    "Invisible status added; /status uses the same panel",
+  ],
+};
+
+const v1_75_105_es: ChangelogEntry = {
+  version: "v1.75.105",
+  date: "2026-10-15",
+  title: "Nuevo panel de presencia de Etho por MD",
+  items: [
+    "Panel del propietario rediseñado",
+    "Nuevo botón «Modo streamer» con el enlace de tu canal",
+    "Nuevo botón «Actividad personalizada»",
+  ],
+};
+
+const v1_75_105_de: ChangelogEntry = {
+  version: "v1.75.105",
+  date: "2026-10-15",
+  title: "Neues Präsenz-Panel von Etho per DM",
+  items: [
+    "Owner-Panel modern neu gestaltet",
+    "Neuer Button „Streamer-Modus“ mit deinem Kanal-Link",
+    "Neuer Button „Eigene Aktivität“",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_105_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_105_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_105_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_105_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

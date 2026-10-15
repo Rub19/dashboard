@@ -238,6 +238,8 @@ export async function onInteractionCreate(interaction: Interaction) {
     }
     if (interaction.customId.startsWith('rep_modal:')) {
       await safeHandleComponent(interaction, 'report_modal', () => reportsService.handleModal(interaction));
+    } else if (interaction.customId.startsWith('owner_presence_modal_')) {
+      await safeHandleComponent(interaction, 'owner_presence_modal', () => discordOwnerPanel.handleModal(interaction));
     } else if (interaction.customId.startsWith('onb_modal:')) {
       await safeHandleComponent(interaction, 'onboarding_modal', () => OnboardingRunner.handleModal(interaction));
     } else if (interaction.customId.startsWith('modal_settings_')) {

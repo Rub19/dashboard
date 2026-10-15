@@ -1,5 +1,16 @@
 [
   {
+    "version": "v1.75.105",
+    "date": "2026-10-15",
+    "title": "Nouveau panneau de présence d'Etho en MP",
+    "items": [
+      "Panneau du propriétaire refait en interface moderne : statut, activité, rotation et maintenance regroupés et lisibles",
+      "Nouveau bouton « Mode streamer » : tu colles le lien de ta chaîne et le titre, le bot passe en direct (violet)",
+      "Nouveau bouton « Activité perso » pour écrire ce que le bot affiche",
+      "Statut Invisible ajouté, et /status utilise le même panneau"
+    ]
+  },
+  {
     "version": "v1.75.104",
     "date": "2026-10-15",
     "title": "Autocomplétion des commandes et correctifs trouvés en test réel",
@@ -628,16 +639,6 @@
       "Verrouillage du serveur en option, levable d'un clic depuis la console ou avec /protection deverrouiller.",
       "Nouvelle commande /protection (liste, voir, activer, désactiver, punition, seuil, salon) ; /antinuke est remplacée, /help est à jour et les réponses des commandes sont en embeds.",
       "La configuration assistée active désormais ces nouvelles protections."
-    ]
-  },
-  {
-    "version": "v1.56.2",
-    "date": "2026-10-09",
-    "title": "Console : plus d'erreurs au premier chargement d'une page",
-    "items": [
-      "Les pages de modules ne tombent plus en erreur au premier chargement : la vérification de tes droits interroge Discord une seule fois au lieu d'une fois par requête.",
-      "Rôles : l'indication « membres déjà présents » demande d'abord de choisir des rôles quand aucun n'est réglé.",
-      "Invitations : un salon d'annonces enregistré par son nom (ancien réglage) s'affiche correctement."
     ]
   }
 ]

@@ -4,7 +4,7 @@ import { config } from '../../config.js';
 import { PresenceService } from '../../modules/presence/services/presenceService.js';
 import { discordOwnerPanel } from '../../modules/presence/ui/discordOwnerPanel.js';
 import { DiscordStatus, DiscordActivityType } from '../../modules/presence/types/index.js';
-import { errorEmbed, warningEmbed, successEmbed } from '../../utils/embeds.js';
+import { errorEmbed, warningEmbed } from '../../utils/embeds.js';
 
 /**
  * /status — Affiche ou modifie le statut Discord & l'activité globale du bot.
@@ -99,9 +99,7 @@ export const statusCommand: Command = {
     // Aucun paramètre fourni : affiche simplement le panneau interactif existant
     // (état actuel + boutons rapides), sans rien modifier.
     if (!status && !activityType && !activityText && !state) {
-      const embed = discordOwnerPanel.buildPanelEmbed();
-      const components = discordOwnerPanel.buildActionRows() as any;
-      await ctx.reply({ embeds: [embed], components, ephemeral: true });
+      await ctx.reply({ components: discordOwnerPanel.buildPanel(), componentsV2: true, ephemeral: true });
       return;
     }
 
@@ -127,16 +125,9 @@ export const statusCommand: Command = {
       return;
     }
 
-    const embed = discordOwnerPanel.buildPanelEmbed();
-    const components = discordOwnerPanel.buildActionRows() as any;
-    const confirmEmbed = (result.success ? successEmbed() : warningEmbed()).setDescription(
-      result.success
-        ? '✅ Statut du bot mis à jour avec succès.'
-        : '⚠️ Statut appliqué en mode de secours (vérifiez la connexion Gateway).'
-    );
     await ctx.reply({
-      embeds: [confirmEmbed, embed],
-      components,
+      components: discordOwnerPanel.buildPanel(result.success ? '✅ Statut du bot mis à jour.' : '⚠️ Statut appliqué en mode de secours (vérifie la connexion Gateway).'),
+      componentsV2: true,
       ephemeral: true,
     });
   },

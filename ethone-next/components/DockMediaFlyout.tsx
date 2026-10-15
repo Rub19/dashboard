@@ -24,13 +24,6 @@ import SafeImage from "@/components/SafeImage";
 import ServiceIcon from "@/components/ServiceIcon";
 import { hapticLightImpact } from "@/lib/haptics";
 
-function formatMs(ms: number): string {
-  const total = Math.max(0, Math.floor(ms / 1000));
-  const m = Math.floor(total / 60);
-  const s = total % 60;
-  return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
-}
-
 export type DockMediaFlyoutProps = {
   nowPlaying: NowPlaying | null;
   clientId?: string;
@@ -445,10 +438,6 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
                       disabled={!hasClientId}
                       data-testid="dock-progress"
                     />
-                    <div className="flex items-center justify-between text-[10px] font-mono text-[var(--text-muted)] tabular-nums px-0.5">
-                      <span>{formatMs(localProgress)}</span>
-                      <span>{duration > 0 ? formatMs(duration) : "--:--"}</span>
-                    </div>
                   </div>
 
                   {/* Playback controls row */}

@@ -124,11 +124,13 @@ import { twitterCommand } from '../commands/fun/twitterCommand.js';
 import { config } from '../config.js';
 import { Command } from '../types/command.js';
 import { logger } from '../utils/logger.js';
+import { BotErrorIncidentService } from '../modules/botControl/services/botErrorIncidentService.js';
 
 const PREFIX_ONLY_SHORTCUTS = new Set([
   'spotifylike', 'spotifylogin', 'spotifylogout', 'spotifynext', 'spotifypause', 'spotifyplay',
   'spotifyprevious', 'spotifyqueue', 'spotifyresume', 'spotifyunlike', 'spotifyvc',
   'lyrics', 'quote', 'duckduckgoimage', 'image', 'reverseimage', 'tvshow', 'movie', 'game', 'fm',
+  'previous', 'nowplaying', 'volume', 'shuffle', 'loop', 'clearqueue',
 ]);
 
 class CommandRegistry {
@@ -371,6 +373,10 @@ class CommandRegistry {
       }
     } catch (error) {
       logger.error('Erreur lors du déploiement des slash commands :', error);
+      const detail = error instanceof Error ? error.message : String(error);
+      const errors = BotErrorIncidentService.getInstance();
+      errors.recordError(`Déploiement des commandes slash refusé par Discord (${slashDataList.length} commandes) : ${detail}`, 'slash-commands', 'critical');
+      errors.createOrUpdateIncident('Commandes slash non synchronisées', 'critical', detail, ['slash-commands']);
     }
   }
 }

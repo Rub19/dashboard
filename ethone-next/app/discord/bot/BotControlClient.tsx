@@ -990,7 +990,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
     { name: "/imagine prompt:... [style:...] [ratio:...]", desc: "Génération d'images haute fidélité via IA sécurisée (Flux/Pollinations)", cat: "Intelligence Artificielle", perm: "Tous" },
     { name: "/ai-setup [salon:channel] [humeur:...] [images:bool] [bannir_mot:...]", desc: "Configuration du salon IA dédié, humeur du Thon, génération d'images et mots interdits", cat: "Administration", perm: "Administrateur" },
     { name: "/permissions [action:analyser|preset_strict|preset_equilibre|preset_communaute]", desc: "Analyse multilingue des rôles et configuration des permissions en 1 clic", cat: "Administration", perm: "Administrateur" },
-    { name: "/balance · /economy daily|pay|leaderboard|gamble|shop|buy", desc: "Économie virtuelle du serveur : Crédits ETHONE, quotidien, transferts, paris et boutique de rôles", cat: "Communauté", perm: "Tous" },
+    { name: "/balance · /daily · /work · /pay · /gamble · /shop · /economy leaderboard|buy", desc: "Économie virtuelle du serveur : Crédits ETHONE, quotidien, transferts, paris et boutique de rôles", cat: "Communauté", perm: "Tous" },
     { name: "/verification status|toggle", desc: "Consulte ou active la porte de vérification anti-bot à l'arrivée des membres", cat: "Administration", perm: "Gérer le serveur" },
   ], []);
 

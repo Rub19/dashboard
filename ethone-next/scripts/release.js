@@ -16,6 +16,7 @@ const q = (s) => JSON.stringify(s);
 
 // 1) package.json
 rw("package.json", (s) => s.replace(/"version": "[^"]+"/, `"version": "${version}"`));
+rw("../discord-bot/package.json", (s) => s.replace(/"version": "[^"]+"/, `"version": "${version}"`));
 
 // 2) data/changelog.ts
 rw("data/changelog.ts", (s) => {

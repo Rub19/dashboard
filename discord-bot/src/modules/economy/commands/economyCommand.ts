@@ -44,34 +44,12 @@ export const economyCommand: Command = {
   slashData: new SlashCommandBuilder()
     .setName('economy')
     .setDescription('Économie du serveur')
-    .addSubcommand((sub) => sub.setName('daily').setDescription('Réclame votre bonus quotidien (série = bonus)'))
-    .addSubcommand((sub) => sub.setName('work').setDescription('Fais un petit boulot pour gagner des crédits'))
-    .addSubcommand((sub) =>
-      sub
-        .setName('rob')
-        .setDescription('Tente de voler un membre (risqué : amende en cas d’échec)')
-        .addUserOption((opt) => opt.setName('membre').setDescription('Cible').setRequired(true))
-    )
-    .addSubcommand((sub) =>
-      sub
-        .setName('pay')
-        .setDescription('Transférer des crédits à un membre')
-        .addUserOption((opt) => opt.setName('membre').setDescription('Destinataire').setRequired(true))
-        .addIntegerOption((opt) => opt.setName('montant').setDescription('Montant à transférer').setMinValue(1).setRequired(true))
-    )
     .addSubcommand((sub) => sub.setName('leaderboard').setDescription('Classement des membres les plus riches'))
-    .addSubcommand((sub) =>
-      sub
-        .setName('gamble')
-        .setDescription('Tenter votre chance à pile ou face (double ou rien)')
-        .addIntegerOption((opt) => opt.setName('mise').setDescription('Montant à miser').setMinValue(1).setRequired(true))
-    )
-    .addSubcommand((sub) => sub.setName('shop').setDescription('Affiche la boutique de rôles'))
     .addSubcommand((sub) =>
       sub
         .setName('buy')
         .setDescription('Acheter un article de la boutique')
-        .addStringOption((opt) => opt.setName('id').setDescription('Identifiant de l’article (voir /economy shop)').setRequired(true))
+        .addStringOption((opt) => opt.setName('id').setDescription('Identifiant de l’article (voir /shop)').setRequired(true))
     ),
 
   async execute(ctx: CommandContext): Promise<void> {

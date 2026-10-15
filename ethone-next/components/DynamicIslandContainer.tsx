@@ -29,6 +29,7 @@ import VolumeSlider from "@/components/VolumeSlider";
 import UploadIslandView from "@/components/UploadIslandView";
 import { useDynamicIslandQueue, type IslandView, type IslandEvent } from "@/lib/hooks/useDynamicIslandQueue";
 import { sendSpotifyCommand } from "@/lib/spotify-client";
+import { Copy, ExternalLink, RotateCcw, RotateCw } from "@/components/icons/ph";
 
 const EASE_OUT = [0.16, 1, 0.3, 1] as const;
 
@@ -835,6 +836,27 @@ export default function DynamicIslandContainer() {
     [spotifyControl],
   );
 
+  const seekSpotifyBy = useCallback(
+    (deltaMs: number) => {
+      const duration = nowPlaying?.durationMs ?? 0;
+      if (!duration) return;
+      onSpotifySeek(Math.min(duration, Math.max(0, (nowPlaying?.progressMs ?? 0) + deltaMs)));
+    },
+    [nowPlaying?.durationMs, nowPlaying?.progressMs, onSpotifySeek],
+  );
+
+  const spotifyTrackUrl = nowPlaying?.id ? `https://open.spotify.com/track/${nowPlaying.id}` : null;
+
+  const copySpotifyLink = useCallback(async () => {
+    if (!spotifyTrackUrl) return;
+    try {
+      await navigator.clipboard.writeText(spotifyTrackUrl);
+      showSuccess("Lien copié", nowPlaying?.title ? `${nowPlaying.title} — ${nowPlaying.artist ?? ""}` : undefined);
+    } catch {
+      showError("Copie impossible");
+    }
+  }, [spotifyTrackUrl, nowPlaying?.title, nowPlaying?.artist, showSuccess, showError]);
+
   const phaseLabels: Record<string, string> = {
     focus: i18n("focus"),
     shortBreak: i18n("shortBreak"),
@@ -850,10 +872,20 @@ export default function DynamicIslandContainer() {
     (e: React.KeyboardEvent<HTMLDivElement>) => {
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
-        toggleExpanded();
+        if (e.key === " " && selectedView === "spotify" && (mode === "EXPANDED" || mode === "INTERACTIVE")) togglePlay();
+        else toggleExpanded();
+        return;
+      }
+      if (selectedView === "spotify" && (mode === "EXPANDED" || mode === "INTERACTIVE")) {
+        if (e.key === "ArrowLeft") seekSpotifyBy(-15000);
+        else if (e.key === "ArrowRight") seekSpotifyBy(15000);
+        else if (e.key === "ArrowUp") onSpotifyVolume(Math.min(100, localVolume + 5));
+        else if (e.key === "ArrowDown") onSpotifyVolume(Math.max(0, localVolume - 5));
+        else return;
+        e.preventDefault();
       }
     },
-    [toggleExpanded],
+    [toggleExpanded, selectedView, mode, togglePlay, seekSpotifyBy, onSpotifyVolume, localVolume],
   );
 
   // Always promote a IDLE island to COMPACT as soon as an activity appears,
@@ -1007,7 +1039,17 @@ export default function DynamicIslandContainer() {
 
                 {/* Contrôles : volume à gauche, lecture au centre */}
                 <div className="flex flex-col items-center gap-3 pt-0.5">
-                <div className="flex items-center justify-center gap-7">
+                <div className="flex items-center justify-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => seekSpotifyBy(-15000)}
+                    disabled={pendingSpotify || !nowPlaying?.durationMs}
+                    className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-muted)] transition-[background-color,color,transform] duration-150 hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] active:scale-90 disabled:opacity-40 cursor-pointer"
+                    aria-label="Reculer de 15 secondes"
+                    title="Reculer de 15 s (←)"
+                  >
+                    <RotateCcw className="h-4 w-4" />
+                  </button>
                   <button
                     type="button"
                     onClick={() => spotifyControl("previous")}
@@ -1055,9 +1097,43 @@ export default function DynamicIslandContainer() {
                   >
                     <Icon name="skipForward" pack="phosphor" className="h-[22px] w-[22px] fill-current" />
                   </button>
+                  <button
+                    type="button"
+                    onClick={() => seekSpotifyBy(15000)}
+                    disabled={pendingSpotify || !nowPlaying?.durationMs}
+                    className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-muted)] transition-[background-color,color,transform] duration-150 hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] active:scale-90 disabled:opacity-40 cursor-pointer"
+                    aria-label="Avancer de 15 secondes"
+                    title="Avancer de 15 s (→)"
+                  >
+                    <RotateCw className="h-4 w-4" />
+                  </button>
                 </div>
-                <div className="flex w-full items-center justify-center" onPointerDown={stopPropagation}>
+                <div className="flex w-full items-center justify-between gap-3" onPointerDown={stopPropagation}>
+                  <button
+                    type="button"
+                    onClick={copySpotifyLink}
+                    disabled={!spotifyTrackUrl}
+                    className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-muted)] transition-[background-color,color,transform] duration-150 hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] active:scale-90 disabled:opacity-40 cursor-pointer"
+                    aria-label="Copier le lien du titre"
+                    title="Copier le lien du titre"
+                  >
+                    <Copy className="h-4 w-4" />
+                  </button>
                   <VolumeSlider value={localVolume} onChange={onSpotifyVolume} data-testid="dynamic-island-volume" />
+                  {spotifyTrackUrl ? (
+                    <a
+                      href={spotifyTrackUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-muted)] transition-[background-color,color,transform] duration-150 hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] active:scale-90 disabled:opacity-40 cursor-pointer"
+                      aria-label="Ouvrir dans Spotify"
+                      title="Ouvrir dans Spotify"
+                    >
+                      <ExternalLink className="h-4 w-4" />
+                    </a>
+                  ) : (
+                    <span className="h-9 w-9" aria-hidden="true" />
+                  )}
                 </div>
                 </div>
               </div>

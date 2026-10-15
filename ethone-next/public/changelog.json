@@ -1,5 +1,17 @@
 [
   {
+    "version": "v1.75.102",
+    "date": "2026-10-15",
+    "title": "Lecteurs Spotify et fiabilité du bot",
+    "items": [
+      "Île dynamique : boutons ±15 s, copier le lien du titre, ouvrir dans Spotify, raccourcis clavier (Espace, ←/→, ↑/↓)",
+      "Dock : la durée n'apparaît plus en double",
+      "Bot : un échec de synchronisation des commandes slash apparaît comme incident critique dans le centre de contrôle",
+      "Bot : doublons /economy retirés et commandes musique secondaires en préfixe (marge sous la limite de 100)",
+      "Bot : la version affichée suit enfin la version réelle"
+    ]
+  },
+  {
     "version": "v1.75.101",
     "date": "2026-10-15",
     "title": "IA du dashboard sur des modèles Groq actuels",
@@ -624,17 +636,6 @@
       "Bienvenue : message d'accueil, carte avec aperçu réel, message privé, rôles donnés à l'arrivée et message de départ, enregistrés automatiquement.",
       "Modération : sanctionner un membre, sanctions récentes à révoquer, bannis, salon des sanctions, sanction automatique après avertissements et alertes d'abus du staff.",
       "Tickets : « 0 h » désactive maintenant vraiment la fermeture automatique."
-    ]
-  },
-  {
-    "version": "v1.55.99",
-    "date": "2026-10-09",
-    "title": "Console Discord : Niveaux, Giveaways et Musique refaits façon Keeper",
-    "items": [
-      "Niveaux : annonces avec aperçu, gain d'XP, XP en vocal, salons et rôles ignorés, récompenses par niveau, boosts d'XP, carte /rank avec aperçu réel, classements et top 10 avec ajustement d'XP.",
-      "Giveaways : lancement d'un tirage avec durée, gagnants, rôle à gagner et conditions (rôles requis ou exclus, âge du compte, niveau, réclamation), puis suivi des tirages en cours et relance des terminés.",
-      "Musique : lecteur en direct (lecture, pause, titre suivant ou précédent, volume, répétition, aléatoire), recherche et lancement d'un titre, file d'attente, réglages (DJ, 24 h/24, déconnexion) et statistiques.",
-      "Sécurité : les actions sur un giveaway (terminer, relancer, annuler, prolonger) vérifient désormais qu'il appartient bien au serveur ouvert."
     ]
   }
 ]

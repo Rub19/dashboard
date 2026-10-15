@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.102 — 2026-10-15
+
+**Lecteurs Spotify et fiabilité du bot**
+
+- Île dynamique : boutons ±15 s, copier le lien du titre, ouvrir dans Spotify, raccourcis clavier (Espace, ←/→, ↑/↓)
+- Dock : la durée n'apparaît plus en double
+- Bot : un échec de synchronisation des commandes slash apparaît comme incident critique dans le centre de contrôle
+- Bot : doublons /economy retirés et commandes musique secondaires en préfixe (marge sous la limite de 100)
+- Bot : la version affichée suit enfin la version réelle
+
 ## v1.75.101 — 2026-10-15
 
 **IA du dashboard sur des modèles Groq actuels**

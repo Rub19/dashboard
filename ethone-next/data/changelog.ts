@@ -56708,6 +56708,63 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_101_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_101_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_101_de);
 
+const v1_75_102_fr: ChangelogEntry = {
+  version: "v1.75.102",
+  date: "2026-10-15",
+  title: "Lecteurs Spotify et fiabilité du bot",
+  items: [
+    "Île dynamique : boutons ±15 s, copier le lien du titre, ouvrir dans Spotify, raccourcis clavier (Espace, ←/→, ↑/↓)",
+    "Dock : la durée n'apparaît plus en double",
+    "Bot : un échec de synchronisation des commandes slash apparaît comme incident critique dans le centre de contrôle",
+    "Bot : doublons /economy retirés et commandes musique secondaires en préfixe (marge sous la limite de 100)",
+    "Bot : la version affichée suit enfin la version réelle",
+  ],
+};
+
+const v1_75_102_en: ChangelogEntry = {
+  version: "v1.75.102",
+  date: "2026-10-15",
+  title: "Spotify players and bot reliability",
+  items: [
+    "Dynamic Island: ±15 s buttons, copy track link, open in Spotify, keyboard shortcuts",
+    "Dock: duration no longer shown twice",
+    "Bot: slash command sync failures show up as a critical incident",
+    "Bot: /economy duplicates removed and secondary music commands prefix-only",
+    "Bot: displayed version now matches the real release",
+  ],
+};
+
+const v1_75_102_es: ChangelogEntry = {
+  version: "v1.75.102",
+  date: "2026-10-15",
+  title: "Reproductores Spotify y fiabilidad del bot",
+  items: [
+    "Isla dinámica: ±15 s, copiar enlace, abrir en Spotify, atajos de teclado",
+    "Dock: la duración ya no aparece duplicada",
+    "Bot: los fallos de sincronización de comandos aparecen como incidente crítico",
+    "Bot: duplicados eliminados para quedar bajo el límite de 100",
+    "Bot: la versión mostrada es la real",
+  ],
+};
+
+const v1_75_102_de: ChangelogEntry = {
+  version: "v1.75.102",
+  date: "2026-10-15",
+  title: "Spotify-Player und Bot-Zuverlässigkeit",
+  items: [
+    "Dynamic Island: ±15 s, Link kopieren, in Spotify öffnen, Tastenkürzel",
+    "Dock: Dauer nicht mehr doppelt",
+    "Bot: Fehler beim Slash-Sync erscheinen als kritischer Vorfall",
+    "Bot: Duplikate entfernt, Abstand zum 100er-Limit",
+    "Bot: angezeigte Version entspricht dem echten Release",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_102_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_102_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_102_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_102_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

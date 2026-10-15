@@ -3,6 +3,7 @@ import { Client, Guild, PermissionsBitField } from 'discord.js';
 import { config } from '../../config.js';
 import { firstString } from '../utils/params.js';
 import { guildConfigService } from '../../services/guildConfigService.js';
+import { logger } from '../../utils/logger.js';
 
 /**
  * Accès à la console d'un serveur (comme Keeper) :
@@ -36,22 +37,27 @@ export interface CachedUserGuilds {
 
 const userGuildsCache = new Map<string, CachedUserGuilds>();
 const CACHE_TTL_MS = 60 * 1000; // 1 minute
+const STALE_TTL_MS = 10 * 60 * 1000;
 
 // Une page du dashboard lance plusieurs requêtes à la fois : un seul appel Discord par utilisateur (sinon 429 → 500).
 const userGuildsInFlight = new Map<string, Promise<CachedUserGuilds['guilds']>>();
 
 export async function fetchUserGuilds(accessToken: string, userId: string) {
   const cached = userGuildsCache.get(userId);
-  if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
+  const age = cached ? Date.now() - cached.timestamp : Infinity;
+  if (cached && age < CACHE_TTL_MS) {
     return cached.guilds;
   }
   const pending = userGuildsInFlight.get(userId);
-  if (pending) return pending;
+  if (pending && !(cached && age < STALE_TTL_MS)) return pending;
 
-  const request = (async () => {
+  const request = pending ?? (async () => {
+    const startedAt = Date.now();
     const res = await fetch('https://discord.com/api/v10/users/@me/guilds', {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
+    const took = Date.now() - startedAt;
+    if (took > 1500) logger.warn(`[GuildAuth] /users/@me/guilds lent : ${took} ms (HTTP ${res.status}, retry-after ${res.headers.get('retry-after') ?? '-'})`);
     if (!res.ok) {
       // Discord limite (429) ou répond mal : la liste précédente, même expirée, vaut mieux qu'un échec.
       if (cached) return cached.guilds;
@@ -61,12 +67,12 @@ export async function fetchUserGuilds(accessToken: string, userId: string) {
     userGuildsCache.set(userId, { timestamp: Date.now(), guilds });
     return guilds;
   })();
-  userGuildsInFlight.set(userId, request);
-  try {
-    return await request;
-  } finally {
-    userGuildsInFlight.delete(userId);
+  if (!pending) {
+    userGuildsInFlight.set(userId, request);
+    request.catch(() => {}).finally(() => userGuildsInFlight.delete(userId));
   }
+  if (cached && age < STALE_TTL_MS) return cached.guilds;
+  return request;
 }
 
 export interface GuildAuthOptions {

@@ -87,9 +87,9 @@ export function builtVersion(): VersionData | null {
 export function isNewerBuild(current: VersionData, remote: VersionData): boolean {
   if (current.version !== remote.version) return true;
 
-  const currentCommit = current.commit ?? null;
-  const remoteCommit = remote.commit ?? null;
-  if (currentCommit !== remoteCommit) return true;
+  const currentCommit = current.commit || null;
+  const remoteCommit = remote.commit || null;
+  if (currentCommit && remoteCommit && currentCommit !== remoteCommit) return true;
 
   if (!current.buildAt) return false;
 
@@ -181,15 +181,7 @@ export function syncStoreFromStorage(): VersionStoreState {
   const acknowledgedVersion = loadAcknowledgedVersion();
 
   let hasUpdate = false;
-  if (pending?.version) {
-    const isDismissed = Boolean(
-      (dismissedVersion && dismissedVersion === pending.version) ||
-      (acknowledgedVersion && acknowledgedVersion === pending.version)
-    );
-    if (!isDismissed) {
-      hasUpdate = true;
-    }
-  } else if (current && pending && isNewerBuild(current, pending)) {
+  if (pending?.version && (!current || isNewerBuild(current, pending))) {
     const isDismissed = Boolean(
       (dismissedVersion && dismissedVersion === pending.version) ||
       (acknowledgedVersion && acknowledgedVersion === pending.version)
@@ -287,7 +279,7 @@ export function useVersionChecker(): UseVersionChecker {
       const isAcknowledged = Boolean(acknowledgedVersion && acknowledgedVersion === remote.version);
       const isNewer = isNewerBuild(current, remote);
 
-      if (isNewer || (pending && pending.version === remote.version && !isDismissed && !isAcknowledged)) {
+      if (isNewer) {
         try {
           localStorage.setItem(PENDING_UPDATE_KEY, JSON.stringify(remote));
         } catch {}
@@ -310,6 +302,11 @@ export function useVersionChecker(): UseVersionChecker {
           hasUpdate: false,
         }));
       } else {
+        if (pending) {
+          try {
+            localStorage.removeItem(PENDING_UPDATE_KEY);
+          } catch {}
+        }
         setStoreState((prev) => ({
           ...prev,
           currentData: current,

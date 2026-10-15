@@ -56348,6 +56348,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_93_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_93_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_93_de);
 
+const v1_75_94_fr: ChangelogEntry = {
+  version: "v1.75.94",
+  date: "2026-10-15",
+  title: "Console Discord plus rapide et bandeau de mise à jour corrigé",
+  items: [
+    "Le bandeau « Nouvelle mise à jour disponible » ne réapparaît plus quand tu es déjà sur la dernière version",
+    "Les modules de la console ne rechargent plus leurs données deux fois",
+    "Bot : la vérification de tes droits Discord répond immédiatement depuis le cache au lieu d'attendre ~4 s",
+  ],
+};
+
+const v1_75_94_en: ChangelogEntry = {
+  version: "v1.75.94",
+  date: "2026-10-15",
+  title: "Faster Discord console and fixed update banner",
+  items: [
+    "The \"New update available\" banner no longer reappears when you're already up to date",
+    "Console modules no longer load their data twice",
+    "Bot: Discord permission check answers instantly from cache instead of waiting ~4 s",
+  ],
+};
+
+const v1_75_94_es: ChangelogEntry = {
+  version: "v1.75.94",
+  date: "2026-10-15",
+  title: "Consola de Discord más rápida y aviso de actualización corregido",
+  items: [
+    "El aviso «Nueva actualización disponible» ya no reaparece si ya tienes la última versión",
+    "Los módulos de la consola ya no cargan sus datos dos veces",
+    "Bot: la verificación de permisos responde al instante desde la caché",
+  ],
+};
+
+const v1_75_94_de: ChangelogEntry = {
+  version: "v1.75.94",
+  date: "2026-10-15",
+  title: "Schnellere Discord-Konsole und korrigierter Update-Hinweis",
+  items: [
+    "Der Hinweis „Neues Update verfügbar“ erscheint nicht mehr, wenn du schon aktuell bist",
+    "Konsolenmodule laden ihre Daten nicht mehr doppelt",
+    "Bot: Die Rechteprüfung antwortet sofort aus dem Cache statt ~4 s zu warten",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_94_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_94_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_94_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_94_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

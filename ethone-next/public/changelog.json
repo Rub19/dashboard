@@ -1,5 +1,15 @@
 [
   {
+    "version": "v1.75.94",
+    "date": "2026-10-15",
+    "title": "Console Discord plus rapide et bandeau de mise à jour corrigé",
+    "items": [
+      "Le bandeau « Nouvelle mise à jour disponible » ne réapparaît plus quand tu es déjà sur la dernière version",
+      "Les modules de la console ne rechargent plus leurs données deux fois",
+      "Bot : la vérification de tes droits Discord répond immédiatement depuis le cache au lieu d'attendre ~4 s"
+    ]
+  },
+  {
     "version": "v1.75.93",
     "date": "2026-10-15",
     "title": "Plateformes du bot décrites fidèlement",
@@ -627,21 +637,6 @@
     "title": "Écran de démarrage une seule fois",
     "items": [
       "L'écran de démarrage ETHONE ne s'affiche plus qu'au premier lancement : pendant 12 h, les rechargements et les nouveaux onglets ouvrent directement l'app, sans clignotement."
-    ]
-  },
-  {
-    "version": "v1.55.91",
-    "date": "2026-10-09",
-    "title": "Console Discord : nouvelle vue d'ensemble façon Keeper, corrections",
-    "items": [
-      "Vue d'ensemble refaite comme le nouveau Keeper : bandeaux d'alerte, quatre indicateurs (protections actives, scan, mode raid, préfixe), raccourcis « Gérer le serveur » et activité récente sans emoji parasites.",
-      "Icônes de la console alignées sur Keeper (scan de sécurité, configuration assistée, mode raid…).",
-      "Sélecteur de membres : la liste s'affiche dès l'ouverture, bots compris, avec une recherche par pseudo, nom ou ID.",
-      "Le bouton « Scan de sécurité » fonctionne depuis la page Protections.",
-      "L'écran de chargement ne s'affiche plus qu'au premier lancement de la session.",
-      "Bouclier de l'owner refait au format de la console, sans badges décoratifs.",
-      "Jeux : si l'économie est coupée, la page le dit au lieu de proposer des boutons qui échouent.",
-      "Pages de modules : les badges ronds deviennent des étiquettes discrètes."
     ]
   }
 ]

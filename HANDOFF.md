@@ -1,4 +1,4 @@
-# ETHONE — passation & nouveautés (2026-10-15, version 1.75.93)
+# ETHONE — passation & nouveautés (2026-10-15, version 1.75.94)
 
 ## Projet
 - `ethone-next/` : site Next.js statique (ethone.dev, Cloudflare Pages, déploiement auto au push sur `main`).
@@ -26,7 +26,12 @@
 
 ---
 
-## Nouveautés majeures & Réalisations récentes (v1.75.83 → v1.75.93)
+## Nouveautés majeures & Réalisations récentes (v1.75.83 → v1.75.94)
+
+### Console : bandeau de version, doubles requêtes, guildAuth (v1.75.94)
+- `useVersionChecker` : le bandeau n'apparaît plus que si la version en attente est plus récente que le build chargé (une version déjà chargée restait « en attente » et le bandeau revenait à chaque page) ; un commit vide ne compte plus comme différent.
+- `useGuildApi` (console/kit.tsx) : callback stable (toast via ref) ; avant, chaque changement du contexte de notifications relançait le chargement de tous les modules.
+- Bot `guildAuth.fetchUserGuilds` : stale-while-revalidate (cache frais 1 min, servi jusqu'à 10 min pendant le rafraîchissement) + log `[GuildAuth] /users/@me/guilds lent` au-delà de 1,5 s. Les routes sans override owner (tickets, logs) attendaient ~4,4 s.
 
 ### Vitrine bot : cartes Plateformes fidèles (v1.75.93)
 - `PLATFORM_CONFIGS` (BotLanding.tsx) réécrit d'après les sous-commandes réelles : Instagram/X/TikTok = recherche + aperçu (aucun suivi de flux), Pinterest = recherche + lien Google Lens, Last.fm sans leaderboard, Twitch = alertes Twitch/YouTube/Kick. Les `platforms.items` de `botLandingI18n.ts` ne sont pas rendus.

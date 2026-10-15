@@ -10,6 +10,9 @@ describe("isNewerBuild", () => {
   it("même version, autre commit : mise à jour", () => {
     expect(isNewerBuild({ version: "1.28.116", commit: "abc" }, { version: "1.28.116", commit: "def" })).toBe(true);
   });
+  it("commit inconnu d'un côté : pas de mise à jour pour la même version", () => {
+    expect(isNewerBuild({ version: "1.75.93", commit: "" }, { version: "1.75.93", commit: "c8bbf497" })).toBe(false);
+  });
   it("avec une date de build connue, un déploiement plus récent est détecté", () => {
     expect(isNewerBuild({ version: "1", commit: null, buildAt: "2026-09-26T10:00:00.000Z" }, { version: "1", commit: null, buildAt: "2026-09-26T11:00:00.000Z" })).toBe(true);
   });
@@ -53,6 +56,12 @@ describe("syncStoreFromStorage", () => {
     localStorage.setItem("ethone:dismissed-version", "1.75.41");
     const state = syncStoreFromStorage();
     expect(state.hasUpdate).toBe(false);
+  });
+
+  it("hasUpdate est false quand la version en attente est deja chargee", () => {
+    localStorage.setItem("ethone:version", JSON.stringify({ version: "1.75.41" }));
+    localStorage.setItem("ethone:pending-update", JSON.stringify({ version: "1.75.41" }));
+    expect(syncStoreFromStorage().hasUpdate).toBe(false);
   });
 
   it("hasUpdate est false sans mise a jour en attente", () => {

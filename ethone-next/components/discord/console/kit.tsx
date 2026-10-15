@@ -19,6 +19,8 @@ export const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 /** Appel à l'API du bot pour un serveur : session incluse, erreur lisible. */
 export function useGuildApi(guildId: string) {
   const { error: toastError } = useToast();
+  const toastErrorRef = useRef(toastError);
+  toastErrorRef.current = toastError;
   return useCallback(
     async <T,>(path: string, init?: RequestInit & { json?: unknown; silent?: boolean }): Promise<T | null> => {
       if (!BOT_API_URL) return null;
@@ -33,11 +35,11 @@ export function useGuildApi(guildId: string) {
         if (!res.ok) throw new Error(data?.error || `Erreur ${res.status}`);
         return data as T;
       } catch (err) {
-        if (!init?.silent) toastError("Etho", err instanceof Error ? err.message : "Bot injoignable");
+        if (!init?.silent) toastErrorRef.current("Etho", err instanceof Error ? err.message : "Bot injoignable");
         return null;
       }
     },
-    [guildId, toastError]
+    [guildId]
   );
 }
 

@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.94 — 2026-10-15
+
+**Console Discord plus rapide et bandeau de mise à jour corrigé**
+
+- Le bandeau « Nouvelle mise à jour disponible » ne réapparaît plus quand tu es déjà sur la dernière version
+- Les modules de la console ne rechargent plus leurs données deux fois
+- Bot : la vérification de tes droits Discord répond immédiatement depuis le cache au lieu d'attendre ~4 s
+
 ## v1.75.93 — 2026-10-15
 
 **Plateformes du bot décrites fidèlement**

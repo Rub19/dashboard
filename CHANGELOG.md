@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.131 — 2026-10-16
+
+**Messages de test dans la langue du serveur**
+
+- Les messages de test envoyés dans Discord depuis le dashboard (anniversaire, starboard, panneau de tickets) et le journal de déploiement des panels de rôles sont écrits dans la langue du serveur, plus dans celle du dashboard.
+
 ## v1.75.130 — 2026-10-16
 
 **Connexion depuis la page du bot**

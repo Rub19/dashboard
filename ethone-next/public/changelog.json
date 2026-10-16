@@ -1,5 +1,13 @@
 [
   {
+    "version": "v1.75.131",
+    "date": "2026-10-16",
+    "title": "Messages de test dans la langue du serveur",
+    "items": [
+      "Les messages de test envoyés dans Discord depuis le dashboard (anniversaire, starboard, panneau de tickets) et le journal de déploiement des panels de rôles sont écrits dans la langue du serveur, plus dans celle du dashboard."
+    ]
+  },
+  {
     "version": "v1.75.130",
     "date": "2026-10-16",
     "title": "Connexion depuis la page du bot",
@@ -604,14 +612,6 @@
       "Dynamic Island (musique) : plus épurée, grande pochette, gros bouton lecture blanc entouré de précédent / suivant, volume en dessous.",
       "Dock : verre aux couleurs du thème, boutons arrondis et bouton actif teinté de la couleur d'accent ; bulles d'aide aux couleurs du thème.",
       "Musique du dock : bouton lecture plus grand."
-    ]
-  },
-  {
-    "version": "v1.71.1",
-    "date": "2026-10-11",
-    "title": "Dock : icône Spotify corrigée",
-    "items": [
-      "L'icône Spotify du dock est une pochette carrée nette, avec l'égaliseur dessus au lieu de déborder sous l'icône."
     ]
   }
 ]

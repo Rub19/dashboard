@@ -317,8 +317,8 @@ class RolePanelService {
     await logService.log(guild, {
       category: 'roles',
       type: 'ROLE_UPDATE',
-      title: trq('📢 Panel de Rôles Déployé'),
-      description: trq('Le panel **{name}** a été publié avec succès dans <#{id}>.', { name: panel.name, id: channel.id }),
+      title: trg(guild, '📢 Panel de Rôles Déployé'),
+      description: trg(guild, 'Le panel **{name}** a été publié avec succès dans <#{id}>.', { name: panel.name, id: channel.id }),
       color: '#10B981',
       channelId: channel.id,
       channelName: channel.name,

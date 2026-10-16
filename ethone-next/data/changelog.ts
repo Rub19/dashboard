@@ -58131,6 +58131,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_130_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_130_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_130_de);
 
+const v1_75_131_fr: ChangelogEntry = {
+  version: "v1.75.131",
+  date: "2026-10-16",
+  title: "Messages de test dans la langue du serveur",
+  items: [
+    "Les messages de test envoyés dans Discord depuis le dashboard (anniversaire, starboard, panneau de tickets) et le journal de déploiement des panels de rôles sont écrits dans la langue du serveur, plus dans celle du dashboard.",
+  ],
+};
+
+const v1_75_131_en: ChangelogEntry = {
+  version: "v1.75.131",
+  date: "2026-10-16",
+  title: "Test messages in the server language",
+  items: [
+    "Test messages sent to Discord from the dashboard (birthday, starboard, ticket panel) and the role panel deployment log now use the server language instead of the dashboard's.",
+  ],
+};
+
+const v1_75_131_es: ChangelogEntry = {
+  version: "v1.75.131",
+  date: "2026-10-16",
+  title: "Mensajes de prueba en el idioma del servidor",
+  items: [
+    "Los mensajes de prueba enviados a Discord desde el panel (cumpleaños, starboard, panel de tickets) y el registro de publicación de paneles de roles usan el idioma del servidor y ya no el del panel.",
+  ],
+};
+
+const v1_75_131_de: ChangelogEntry = {
+  version: "v1.75.131",
+  date: "2026-10-16",
+  title: "Testnachrichten in der Serversprache",
+  items: [
+    "Testnachrichten, die aus dem Dashboard an Discord gesendet werden (Geburtstag, Starboard, Ticket-Panel), und das Log zum Veröffentlichen von Rollen-Panels nutzen jetzt die Serversprache statt der des Dashboards.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_131_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_131_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_131_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_131_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

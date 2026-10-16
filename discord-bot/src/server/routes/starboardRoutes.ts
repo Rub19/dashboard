@@ -6,7 +6,7 @@ import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { DESTINATION_CHANNEL_TYPES, canBotSendTo, isSendableTarget, sendToConfiguredChannel } from '../../utils/channelSend.js';
 import { rateLimit } from '../middleware/antiAbuseMiddleware.js';
 import { handleRouteError } from '../utils/routeError.js';
-import { trq } from '../../utils/tr.js';
+import { trq, trg } from '../../utils/tr.js';
 
 /**
  * API Dashboard du module Starboard.
@@ -98,22 +98,22 @@ export function createStarboardRouter(discordClient: Client) {
     const embed = new EmbedBuilder()
       .setColor((config.color as `#${string}`) || '#F5B301')
       .setAuthor({
-        name: req.user?.username || 'Équipe ETHONE',
+        name: req.user?.username || trg(guildId, 'Équipe ETHONE'),
         iconURL: discordClient.user?.displayAvatarURL(),
       })
-      .setTitle(trq('⭐ Publication de test Starboard'))
+      .setTitle(trg(guildId, '⭐ Publication de test Starboard'))
       .setDescription(
-        `Ce message confirme que le salon <#${config.channelId}> est correctement configuré.\n` +
-        `Seuil requis : **${config.threshold}** réaction(s) ${config.emoji}.\n` +
-        `Auto-étoile : **${config.selfStarAllowed ? 'Autorisée' : 'Désactivée'}**.`
+        trg(guildId, 'Ce message confirme que le salon <#{channelId}> est correctement configuré.', { channelId: config.channelId }) + '\n' +
+        trg(guildId, 'Seuil requis : **{threshold}** réaction(s) {emoji}.', { threshold: config.threshold, emoji: config.emoji }) + '\n' +
+        trg(guildId, config.selfStarAllowed ? 'Auto-étoile : **Autorisée**.' : 'Auto-étoile : **Désactivée**.')
       )
       .setFooter({
-        text: trq('{threshold} {emoji} • Test Dashboard', { threshold: config.threshold, emoji: config.emoji }),
+        text: trg(guildId, '{threshold} {emoji} • Test Dashboard', { threshold: config.threshold, emoji: config.emoji }),
       })
       .setTimestamp();
 
     try {
-      const sent = await sendToConfiguredChannel(channel, { embeds: [embed] }, { postTitle: '⭐ Test Starboard' });
+      const sent = await sendToConfiguredChannel(channel, { embeds: [embed] }, { postTitle: trg(guildId, '⭐ Test Starboard') });
       res.json({ success: true, messageId: sent.id, channelName: 'name' in channel ? channel.name : 'salon-starboard' });
     } catch (err: any) {
       handleRouteError(err, res, 'Erreur lors de l’envoi du test');

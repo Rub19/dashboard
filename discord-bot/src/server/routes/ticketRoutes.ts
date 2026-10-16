@@ -19,7 +19,7 @@ import { logger } from '../../utils/logger.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { rateLimit, idempotent } from '../middleware/antiAbuseMiddleware.js';
 import { handleRouteError, handleClientError } from '../utils/routeError.js';
-import { trq } from '../../utils/tr.js';
+import { trq, trg } from '../../utils/tr.js';
 
 export function createTicketRouter(discordClient: Client) {
   const router = express.Router({ mergeParams: true });
@@ -409,12 +409,12 @@ export function createTicketRouter(discordClient: Client) {
     try {
       const embed = new EmbedBuilder()
         .setColor((panel.color || '#5865F2') as `#${string}`)
-        .setTitle(panel.title || '🎫 Support & Assistance')
+        .setTitle(panel.title || trg(guild, '🎫 Support & Assistance'))
         .setDescription(
           panel.description ||
-            'Besoin d’aide ou d’une question ? Cliquez sur le bouton ci-dessous pour créer un ticket.'
+            trg(guild, 'Besoin d’aide ou d’une question ? Cliquez sur le bouton ci-dessous pour créer un ticket.')
         )
-        .setFooter({ text: trq('{name} • Système de Support', { name: guild.name }) })
+        .setFooter({ text: trg(guild, '{name} • Système de Support', { name: guild.name }) })
         .setTimestamp();
 
       const allCategories = ticketService.getCategories(guildId);
@@ -430,7 +430,7 @@ export function createTicketRouter(discordClient: Client) {
         buttonsRow.addComponents(
           new ButtonBuilder()
             .setCustomId(`ticket_open:${cat.id}`)
-            .setLabel(panel.buttonLabel || `Ouvrir un ticket (${cat.name})`)
+            .setLabel(panel.buttonLabel || trg(guild, 'Ouvrir un ticket ({name})', { name: cat.name }))
             .setEmoji(cat.emoji || '🎫')
             .setStyle(ButtonStyle.Primary)
         );

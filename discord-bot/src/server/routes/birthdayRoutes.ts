@@ -5,7 +5,7 @@ import { BirthdayConfigSchema } from '../../modules/birthdays/types/birthday.js'
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { DESTINATION_CHANNEL_TYPES, sendToConfiguredChannel } from '../../utils/channelSend.js';
 import { baseEmbed } from '../../utils/embeds.js';
-import { trq } from '../../utils/tr.js';
+import { trq, trg } from '../../utils/tr.js';
 
 /**
  * API Dashboard du module Birthdays.
@@ -70,10 +70,10 @@ export function createBirthdayRouter(client: Client) {
     }
     const now = new Date();
     const testEmbed = baseEmbed('default', { color: '#FF6BAA' })
-      .setTitle(trq('🎂 [TEST] Anniversaire du jour'))
+      .setTitle(trg(guild, '🎂 [TEST] Anniversaire du jour'))
       .setDescription(
         config.message
-          .replaceAll('{user}', config.mentionUser && req.user?.id ? `<@${req.user.id}>` : '**Membre Test**')
+          .replaceAll('{user}', config.mentionUser && req.user?.id ? `<@${req.user.id}>` : `**${trg(guild, 'Membre Test')}**`)
           .replaceAll('{age}', '20')
           .replaceAll('{date}', `${now.getDate()}/${now.getMonth() + 1}`)
       );
@@ -83,7 +83,7 @@ export function createBirthdayRouter(client: Client) {
         content: config.mentionUser && req.user?.id ? `<@${req.user.id}>` : undefined,
         embeds: [testEmbed],
       },
-      { postTitle: '🎂 [TEST] Anniversaire du jour' }
+      { postTitle: trg(guild, '🎂 [TEST] Anniversaire du jour') }
     );
     res.json({ success: true });
   });

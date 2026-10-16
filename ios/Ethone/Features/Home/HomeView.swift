@@ -94,7 +94,7 @@ struct HomeView: View {
                     model.morePath = [.calendar]
                     model.requestedTab = .more
                 }
-                quickChip(title: "Espaces", systemImage: "person.2.fill", tint: Theme.accent)) {
+                quickChip(title: "Espaces", systemImage: "person.2.fill", tint: Theme.accent) {
                     model.morePath = [.spaces]
                     model.requestedTab = .more
                 }

@@ -38,30 +38,49 @@ struct BillsView: View {
             if let errorMessage {
                 Text(errorMessage).font(.footnote).foregroundStyle(Theme.danger).listRowBackground(Color.clear)
             }
-            if !unpaid.isEmpty {
+            if !bills.isEmpty {
                 Section {
-                    HStack {
-                        Label("À payer ce mois-ci", systemImage: "eurosign.circle.fill")
-                        Spacer()
-                        Text(monthTotal.formatted(.number.precision(.fractionLength(0...2))) + " €").font(.headline.monospacedDigit())
+                    EmptyView()
+                } header: {
+                    VStack(alignment: .leading, spacing: 12) {
+                        AccentRule()
+                        EthoneHeadline(
+                            first: "Ce mois-ci,",
+                            second: monthTotal > 0 ? monthTotal.formatted(.number.precision(.fractionLength(0...2))) + " € à payer." : "rien à payer.",
+                            size: .title
+                        )
+                        .contentTransition(.numericText())
                     }
-                    .listRowBackground(GlassRowBackground())
+                    .textCase(nil)
+                    .foregroundStyle(.primary)
+                    .padding(.leading, -4)
                 }
             }
             Section {
                 ForEach(unpaid) { row($0) }
-            } header: { if !unpaid.isEmpty { Text("À payer · \(unpaid.count)").sectionTitle() } }
+            } header: {
+                if !unpaid.isEmpty {
+                    HStack(spacing: 6) {
+                        Text("À payer")
+                        Text("\(unpaid.count)").foregroundStyle(.tertiary).monospacedDigit()
+                    }
+                    .sectionTitle()
+                    .textCase(nil)
+                }
+            }
             Section {
                 ForEach(paid) { row($0) }
             } header: { if !paid.isEmpty { Text("Payées").sectionTitle() } }
         }
         .scrollContentBackground(.hidden)
+        .animation(Motion.snap, value: bills.map(\.paid))
         .overlay {
             if bills.isEmpty && !loading {
                 ContentUnavailableView("Aucune facture", systemImage: "eurosign.circle", description: Text("Ajoutez une facture ou un abonnement."))
             }
         }
         .navigationTitle("Factures")
+        .toolbarTitleDisplayMode(.inline)
         .ethoneScreen()
         .toolbar {
             ToolbarItem(placement: .primaryAction) { Button { adding = true } label: { Image(systemName: "plus") } }
@@ -77,7 +96,9 @@ struct BillsView: View {
             Button { togglePaid(bill) } label: {
                 Image(systemName: bill.paid ? "checkmark.circle.fill" : "circle")
                     .font(.title2)
-                    .foregroundStyle(bill.paid ? Theme.success : Color.secondary)
+                    .foregroundStyle(bill.paid ? Theme.accent : Color.secondary)
+                    .contentTransition(.symbolEffect(.replace))
+                    .symbolEffect(.bounce, value: bill.paid)
             }
             .buttonStyle(.plain)
             VStack(alignment: .leading, spacing: 2) {

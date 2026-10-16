@@ -57,7 +57,10 @@ struct TeamView: View {
                             Text(member.email).font(.caption).foregroundStyle(.secondary).lineLimit(1)
                         }
                         Spacer()
-                        GlassPill(text: member.statusLabel, tint: (member.status == "active" ? Theme.success : Theme.warning).opacity(0.35))
+                        HStack(spacing: 6) {
+                            Circle().fill(member.status == "active" ? Theme.success : Theme.warning).frame(width: 7, height: 7)
+                            Text(member.statusLabel).font(.caption.weight(.medium)).foregroundStyle(.secondary)
+                        }
                     }
                     .listRowBackground(GlassRowBackground())
                     .swipeActions(edge: .trailing) {
@@ -67,6 +70,7 @@ struct TeamView: View {
             } header: { Text("Membres").sectionTitle() }
         }
         .scrollContentBackground(.hidden)
+        .animation(Motion.snap, value: members.map(\.id))
         .overlay {
             if members.isEmpty && !loading {
                 ContentUnavailableView("Équipe vide", systemImage: "person.3", description: Text("Ajoutez un premier membre."))

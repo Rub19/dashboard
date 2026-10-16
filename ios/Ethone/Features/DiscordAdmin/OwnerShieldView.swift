@@ -583,7 +583,7 @@ struct OwnerShieldView: View {
                                 }
 
                                 if let owner = guild.ownerStatus, owner.isBanned {
-                                    GlassPill(text: "BANNI", tint: Theme.danger)
+                                    GlassPill(text: "Banni", tint: Theme.danger)
                                 }
                             }
                         }

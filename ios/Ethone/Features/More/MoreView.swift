@@ -70,20 +70,6 @@ private let moreGroups: [MoreGroup] = [
 
 private let accountColor = Color(hex: 0x7A7F8C)
 
-private struct IconTile: View {
-    let systemImage: String
-    let color: Color
-
-    var body: some View {
-        Image(systemName: systemImage)
-            .font(.system(size: 15, weight: .semibold))
-            .foregroundStyle(.white)
-            .frame(width: 30, height: 30)
-            .background(color.gradient, in: .rect(cornerRadius: 8, style: .continuous))
-            .accessibilityHidden(true)
-    }
-}
-
 private struct MoreRow: View {
     let title: String
     let icon: String

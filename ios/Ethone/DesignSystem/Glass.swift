@@ -193,3 +193,19 @@ struct StatStrip: View {
         .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
     }
 }
+
+/// Settings-style icon: white glyph on a small rounded colour tile.
+struct IconTile: View {
+    let systemImage: String
+    let color: Color
+
+    var body: some View {
+        Image(systemName: systemImage)
+            .font(.system(size: 15, weight: .semibold))
+            .foregroundStyle(.white)
+            .frame(width: 30, height: 30)
+            .background(color.gradient, in: .rect(cornerRadius: 8, style: .continuous))
+            .accessibilityHidden(true)
+    }
+}
+

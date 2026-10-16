@@ -40,7 +40,7 @@ struct MacrosView: View {
             Section {
                 ForEach(macros) { macro in
                     HStack(spacing: 12) {
-                        Image(systemName: "wand.and.stars").foregroundStyle(Theme.accentSoft).frame(width: 28)
+                        IconTile(systemImage: macro.action == "navigate" ? "arrow.up.forward.app" : "switch.2", color: Theme.accent)
                         VStack(alignment: .leading, spacing: 2) {
                             Text(macro.label).font(.headline)
                             Text(macro.action == "navigate" ? "Ouvrir \(macro.href)" : "Basculer \(macro.setting)")

@@ -100,7 +100,7 @@ struct SecurityView: View {
 
     private func row(_ device: DeviceRecord) -> some View {
         HStack(spacing: 14) {
-            Image(systemName: device.symbol).font(.title2).frame(width: 34).foregroundStyle(Theme.accentSoft)
+            IconTile(systemImage: device.symbol, color: isCurrent(device) ? Theme.accent : Color(hex: 0x7A7F8C))
             VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 8) {
                     Text(device.name).font(.headline).lineLimit(1)

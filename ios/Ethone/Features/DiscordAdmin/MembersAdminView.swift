@@ -23,7 +23,7 @@ struct MembersAdminView: View {
                         VStack(alignment: .leading, spacing: 2) {
                             HStack(spacing: 6) {
                                 Text(member["displayName"]?.stringValue ?? "?").font(.subheadline.weight(.semibold))
-                                if member["bot"]?.boolValue == true { GlassPill(text: "BOT") }
+                                if member["bot"]?.boolValue == true { GlassPill(text: "Bot") }
                             }
                             Text("@\(member["username"]?.stringValue ?? "")").font(.caption).foregroundStyle(.secondary)
                             if let until = member["communicationDisabledUntil"]?.stringValue.flatMap(ISODate.parse), until > Date() {

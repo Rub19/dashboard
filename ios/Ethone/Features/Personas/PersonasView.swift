@@ -42,9 +42,9 @@ struct PersonasView: View {
                         }
                         Spacer()
                         if model.themePreset == persona.theme {
-                            Image(systemName: "checkmark.circle.fill").foregroundStyle(Theme.success).accessibilityLabel("Active")
+                            Image(systemName: "checkmark.circle.fill").foregroundStyle(Theme.accent).symbolEffect(.bounce, value: model.themePreset).accessibilityLabel("Active")
                         } else {
-                            Button("Appliquer") { model.setTheme(persona.theme) }.buttonStyle(.glass)
+                            Button("Appliquer") { withAnimation(.smooth(duration: 0.6)) { model.setTheme(persona.theme) } }.buttonStyle(.glass)
                         }
                     }
                     .listRowBackground(GlassRowBackground())

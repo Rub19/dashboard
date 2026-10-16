@@ -46,13 +46,18 @@ struct FlowsView: View {
             Section {
                 ForEach(flows) { flow in
                     HStack(spacing: 14) {
-                        Image(systemName: symbol(for: flow)).font(.title3).foregroundStyle(Theme.accentSoft).frame(width: 30)
+                        IconTile(systemImage: symbol(for: flow), color: Theme.accent)
                         VStack(alignment: .leading, spacing: 2) {
                             Text(flow.label).font(.headline)
-                            Text("\(flow.count) exécution(s)").font(.caption).foregroundStyle(.secondary)
+                            Text(flow.count == 1 ? "1 exécution" : "\(flow.count) exécutions").font(.caption).foregroundStyle(.secondary)
+                                .contentTransition(.numericText())
                         }
                         Spacer()
-                        Button("Démarrer") { run(flow) }.buttonStyle(.glass)
+                        Button { run(flow) } label: { Image(systemName: "play.fill") }
+                            .buttonStyle(.glass)
+                            .buttonBorderShape(.circle)
+                            .accessibilityLabel("Démarrer \(flow.label)")
+                            .sensoryFeedback(.impact(weight: .medium), trigger: flow.count)
                     }
                     .listRowBackground(GlassRowBackground())
                     .swipeActions(edge: .trailing) {

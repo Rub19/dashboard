@@ -298,6 +298,7 @@ authRouter.get('/me', authMiddleware, async (req: Request, res: Response) => {
  * Déconnecte l'utilisateur et détruit le cookie de session
  */
 authRouter.post('/logout', (req: Request, res: Response) => {
-  res.clearCookie('token', { path: '/' });
+  const { maxAge: _maxAge, ...clear } = cookieOptionsFor(req);
+  res.clearCookie('token', clear);
   res.json({ success: true });
 });

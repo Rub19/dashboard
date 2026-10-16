@@ -9,6 +9,8 @@ import { confirmDialog } from "@/lib/confirmDialog";
 import { SPRING_LAYOUT } from "@/lib/ease";
 import { cn } from "@/lib/utils";
 import { tx } from "@/lib/tx";
+import { useBotSessionUser } from "@/lib/hooks/useBotSessionUser";
+import { getStoredDiscordUser } from "@/lib/hooks/useDiscordOAuth";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 const POLL_MS = 30_000;
@@ -61,6 +63,8 @@ export default function OwnerBotSection({ itemClass }: { itemClass: string }) {
   const { success, error: toastError } = useToast();
   const [data, setData] = useState<Overview | null>(null);
   const [restarting, setRestarting] = useState(false);
+  const botSession = useBotSessionUser();
+  const siteDiscordId = getStoredDiscordUser()?.id;
   const restartingRef = useRef(false);
   const [toolsOpen, setToolsOpen] = useState(() => {
     try {
@@ -127,6 +131,8 @@ export default function OwnerBotSection({ itemClass }: { itemClass: string }) {
   };
 
   if (!data) return null;
+  // Session du bot ouverte sous un autre compte que celui du site : pas de commandes propriétaire au nom d'un autre.
+  if (botSession && siteDiscordId && botSession.id !== siteDiscordId) return null;
   const st = STATUS[data.globalStatus.status] ?? STATUS.operational;
   const ping = data.snapshot.latency?.currentPingMs;
   const ram = data.snapshot.memory?.rssMb;

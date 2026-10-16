@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.137 — 2026-10-17
+
+**Déconnexion complète et commandes propriétaire protégées**
+
+- Se déconnecter du site déconnecte aussi la session du bot Discord : le compte suivant connecté dans le même navigateur n'hérite plus des droits du précédent.
+- Le panneau « Pilotage Etho » (redémarrage, outils du bot) est masqué quand la session du bot appartient à un autre compte que celui connecté sur le site.
+
 ## v1.75.136 — 2026-10-17
 
 **Dashboard du bot : compte Discord cohérent**

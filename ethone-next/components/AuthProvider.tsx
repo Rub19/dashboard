@@ -363,6 +363,15 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       // On continue la déconnexion locale même si le Worker est injoignable.
     }
 
+    // La session du bot Discord (cookie sur son domaine) doit partir avec celle du site, sinon le prochain compte
+    // connecté dans ce navigateur hérite des droits de l'ancien sur le bot.
+    const botApi = process.env.NEXT_PUBLIC_DISCORD_BOT_API;
+    if (botApi) {
+      try {
+        await fetch(`${botApi}/api/auth/logout`, { method: "POST", credentials: "include" });
+      } catch {}
+    }
+
     // Best-effort Supabase sign-out. This must be wrapped: if it throws
     // (e.g. offline), everything below — the cache/localStorage/IndexedDB
     // cleanup and the hard reload — still has to run unconditionally, or a

@@ -58437,6 +58437,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_136_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_136_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_136_de);
 
+const v1_75_137_fr: ChangelogEntry = {
+  version: "v1.75.137",
+  date: "2026-10-17",
+  title: "Déconnexion complète et commandes propriétaire protégées",
+  items: [
+    "Se déconnecter du site déconnecte aussi la session du bot Discord : le compte suivant connecté dans le même navigateur n'hérite plus des droits du précédent.",
+    "Le panneau « Pilotage Etho » (redémarrage, outils du bot) est masqué quand la session du bot appartient à un autre compte que celui connecté sur le site.",
+  ],
+};
+
+const v1_75_137_en: ChangelogEntry = {
+  version: "v1.75.137",
+  date: "2026-10-17",
+  title: "Full sign-out and protected owner controls",
+  items: [
+    "Signing out of the site now also signs out of the Discord bot session: the next account signed in on the same browser no longer inherits the previous one's rights.",
+    "The \"Etho controls\" panel (restart, bot tools) is hidden when the bot session belongs to a different account than the one signed in on the site.",
+  ],
+};
+
+const v1_75_137_es: ChangelogEntry = {
+  version: "v1.75.137",
+  date: "2026-10-17",
+  title: "Cierre de sesión completo y controles de propietario protegidos",
+  items: [
+    "Cerrar sesión en el sitio también cierra la sesión del bot de Discord: la siguiente cuenta conectada en el mismo navegador ya no hereda los derechos de la anterior.",
+    "El panel «Control de Etho» (reinicio, herramientas del bot) se oculta cuando la sesión del bot pertenece a otra cuenta distinta de la conectada en el sitio.",
+  ],
+};
+
+const v1_75_137_de: ChangelogEntry = {
+  version: "v1.75.137",
+  date: "2026-10-17",
+  title: "Vollständige Abmeldung und geschützte Besitzer-Steuerung",
+  items: [
+    "Die Abmeldung von der Website meldet jetzt auch die Discord-Bot-Sitzung ab: Das nächste im selben Browser angemeldete Konto erbt nicht mehr die Rechte des vorherigen.",
+    "Das Feld „Etho-Steuerung“ (Neustart, Bot-Werkzeuge) wird ausgeblendet, wenn die Bot-Sitzung zu einem anderen Konto gehört als dem auf der Website angemeldeten.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_137_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_137_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_137_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_137_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

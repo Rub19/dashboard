@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.138 — 2026-10-17
+
+**App iOS : suite de la refonte ETHONE**
+
+- Factures : titre avec le montant à payer ce mois-ci et coches animées.
+- Flows, Macros, Sécurité et Connexions : icônes en tuiles de couleur, statuts plus sobres, lancement avec retour haptique.
+- Nouveautés : titre ETHONE avec la version installée ; double authentification redessinée.
+- Plugins, Clip et Bouclier owner : sélecteurs en onglets, états vides natifs, bouclier animé quand il est actif.
+- Équipe et Personas : statuts en point de couleur, application d'une persona en fondu.
+
 ## v1.75.137 — 2026-10-17
 
 **Déconnexion complète et commandes propriétaire protégées**

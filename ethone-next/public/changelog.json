@@ -1,5 +1,17 @@
 [
   {
+    "version": "v1.75.138",
+    "date": "2026-10-17",
+    "title": "App iOS : suite de la refonte ETHONE",
+    "items": [
+      "Factures : titre avec le montant à payer ce mois-ci et coches animées.",
+      "Flows, Macros, Sécurité et Connexions : icônes en tuiles de couleur, statuts plus sobres, lancement avec retour haptique.",
+      "Nouveautés : titre ETHONE avec la version installée ; double authentification redessinée.",
+      "Plugins, Clip et Bouclier owner : sélecteurs en onglets, états vides natifs, bouclier animé quand il est actif.",
+      "Équipe et Personas : statuts en point de couleur, application d'une persona en fondu."
+    ]
+  },
+  {
     "version": "v1.75.137",
     "date": "2026-10-17",
     "title": "Déconnexion complète et commandes propriétaire protégées",
@@ -599,17 +611,6 @@
       "Correction du calcul de duo dans le tableau des scores LoL : suppression du faux découpage arbitraire par index d'équipe au profit d'une détection réelle des coéquipiers récurrents à travers l'historique des parties.",
       "Liaison authentique des joueurs en duo : votre Riot ID et votre partenaire de jeu (DorEtDeBriar) sont désormais correctement identifiés et reliés par la barre de groupe cyan, tandis que les joueurs solo (ex: Mordekaiser) ne reçoivent aucun faux indicateur.",
       "Persistance des duos confirmés : conservation des duos établis et synchronisation avec les données de match sans inventer de faux groupes."
-    ]
-  },
-  {
-    "version": "v1.75.17",
-    "date": "2026-10-13",
-    "title": "Bypass Direct Auth Discord, Harmonisation Topbar & Refonte Onboarding Style Keeper",
-    "items": [
-      "Connexion Discord directe depuis la vitrine bot : le bouton Dashboard déclenche directement l'authentification Discord sans passer par le dashboard de bureau ETHONE OS, avec atterrissage immédiat sur la sélection de serveurs.",
-      "Bypass d'authentification dans BootProvider : prise en charge native de la console /discord et persistance du chemin cible après connexion.",
-      "Harmonisation de la barre de navigation vitrine : boutons Dashboard, Ajouter Etho et sélecteur de langue calibrés à la même hauteur (36px, h-9) avec coins arrondis Keeper (rounded-xl) et alignement optique soigné.",
-      "Refonte complète de l'Onboarding Bot : parcours resserré en 4 étapes clés, suppression totale de tout jargon IA et faux placeholders, boutons d'action carrés Keeper et animations Framer Motion soignées."
     ]
   }
 ]

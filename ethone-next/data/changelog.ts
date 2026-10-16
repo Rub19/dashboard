@@ -58482,6 +58482,63 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_137_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_137_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_137_de);
 
+const v1_75_138_fr: ChangelogEntry = {
+  version: "v1.75.138",
+  date: "2026-10-17",
+  title: "App iOS : suite de la refonte ETHONE",
+  items: [
+    "Factures : titre avec le montant à payer ce mois-ci et coches animées.",
+    "Flows, Macros, Sécurité et Connexions : icônes en tuiles de couleur, statuts plus sobres, lancement avec retour haptique.",
+    "Nouveautés : titre ETHONE avec la version installée ; double authentification redessinée.",
+    "Plugins, Clip et Bouclier owner : sélecteurs en onglets, états vides natifs, bouclier animé quand il est actif.",
+    "Équipe et Personas : statuts en point de couleur, application d'une persona en fondu.",
+  ],
+};
+
+const v1_75_138_en: ChangelogEntry = {
+  version: "v1.75.138",
+  date: "2026-10-17",
+  title: "iOS app: ETHONE redesign continued",
+  items: [
+    "Bills: headline with this month's amount due and animated checkmarks.",
+    "Flows, Macros, Security and Connections: colored icon tiles, quieter statuses, haptic feedback on run.",
+    "What's new: ETHONE headline with the installed version; two-factor screen redesigned.",
+    "Plugins, Clip and Owner Shield: tab pickers, native empty states, shield animates while active.",
+    "Team and Personas: status shown as a colored dot, applying a persona fades in.",
+  ],
+};
+
+const v1_75_138_es: ChangelogEntry = {
+  version: "v1.75.138",
+  date: "2026-10-17",
+  title: "App iOS: continúa el rediseño ETHONE",
+  items: [
+    "Facturas: título con el importe a pagar este mes y marcas animadas.",
+    "Flows, Macros, Seguridad y Conexiones: iconos en mosaicos de color, estados más sobrios, respuesta háptica al ejecutar.",
+    "Novedades: título ETHONE con la versión instalada; pantalla de doble autenticación rediseñada.",
+    "Plugins, Clip y Escudo del propietario: selectores en pestañas, estados vacíos nativos, escudo animado cuando está activo.",
+    "Equipo y Personas: estado como punto de color, aplicar una persona con fundido.",
+  ],
+};
+
+const v1_75_138_de: ChangelogEntry = {
+  version: "v1.75.138",
+  date: "2026-10-17",
+  title: "iOS-App: ETHONE-Neugestaltung fortgesetzt",
+  items: [
+    "Rechnungen: Überschrift mit dem diesen Monat fälligen Betrag und animierte Häkchen.",
+    "Flows, Makros, Sicherheit und Verbindungen: farbige Symbolkacheln, ruhigere Status, haptisches Feedback beim Starten.",
+    "Neuigkeiten: ETHONE-Überschrift mit der installierten Version; Zwei-Faktor-Bildschirm neu gestaltet.",
+    "Plugins, Clip und Besitzer-Schild: Tab-Auswahl, native Leerzustände, Schild animiert, solange es aktiv ist.",
+    "Team und Personas: Status als farbiger Punkt, Persona-Anwendung mit Überblendung.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_138_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_138_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_138_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_138_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

@@ -16,6 +16,8 @@ struct SharedSnapshot: Codable {
     var focusPhase: String? = nil
     var focusEndDate: Date? = nil
     var focusPaused: Bool? = nil
+    /// Couleur d'accent du thème choisi dans l'app, pour que les widgets suivent le thème.
+    var accentHex: UInt32? = nil
 
     static let empty = SharedSnapshot(updatedAt: .distantPast, userName: "", openTaskCount: 0, nextTasks: [], habitsDone: 0, habitsTotal: 0, bestStreak: 0, noteCount: 0, focusMinutesToday: 0, focusPhase: nil, focusEndDate: nil, focusPaused: nil)
 

@@ -22,6 +22,25 @@ struct SummaryProvider: TimelineProvider {
     }
 }
 
+extension SharedSnapshot {
+    var accent: Color {
+        let hex = accentHex ?? 0xC1234F
+        return Color(.sRGB, red: Double((hex >> 16) & 0xFF) / 255, green: Double((hex >> 8) & 0xFF) / 255, blue: Double(hex & 0xFF) / 255)
+    }
+}
+
+/// ETHONE widget backdrop: the app's near-black base with one soft pool of the theme accent.
+struct EthoneWidgetBackground: View {
+    let accent: Color
+
+    var body: some View {
+        ZStack {
+            Color(red: 0.055, green: 0.063, blue: 0.082)
+            RadialGradient(colors: [accent.opacity(0.32), .clear], center: .topTrailing, startRadius: 0, endRadius: 180)
+        }
+    }
+}
+
 struct SummaryWidgetView: View {
     @Environment(\.widgetFamily) private var family
     let entry: SummaryEntry
@@ -43,7 +62,7 @@ struct SummaryWidgetView: View {
             .widgetURL(URL(string: "ethone://habits"))
         case .accessoryRectangular:
             VStack(alignment: .leading, spacing: 2) {
-                Text("ETHONE").font(.caption.bold())
+                Text("ETHONE").font(.caption.weight(.semibold)).tracking(0.6)
                 Text(entry.isEmpty ? "Ouvrez l'app" : "\(snapshot.openTaskCount) tâche(s) ouverte(s)")
                 Text(entry.isEmpty ? "" : "\(snapshot.habitsDone)/\(snapshot.habitsTotal) habitudes")
             }
@@ -54,12 +73,15 @@ struct SummaryWidgetView: View {
             HStack(alignment: .top, spacing: 16) {
                 summary
                 VStack(alignment: .leading, spacing: 6) {
-                    Text("À faire").font(.caption.bold()).foregroundStyle(.secondary)
+                    Text("À faire").font(.caption.weight(.semibold)).foregroundStyle(.secondary)
                     if snapshot.nextTasks.isEmpty {
-                        Text(entry.isEmpty ? "Ouvrez ETHONE pour synchroniser." : "Rien à faire. 🎉").font(.subheadline).foregroundStyle(.secondary)
+                        Text(entry.isEmpty ? "Ouvrez ETHONE pour synchroniser." : "Tout est fait.").font(.subheadline).foregroundStyle(.secondary)
                     } else {
                         ForEach(snapshot.nextTasks, id: \.self) { title in
-                            Label(title, systemImage: "circle").font(.subheadline).lineLimit(1)
+                            HStack(spacing: 8) {
+                                Circle().strokeBorder(snapshot.accent, lineWidth: 1.5).frame(width: 12, height: 12)
+                                Text(title).font(.subheadline).lineLimit(1)
+                            }
                         }
                     }
                     Spacer(minLength: 0)
@@ -74,15 +96,20 @@ struct SummaryWidgetView: View {
 
     private var summary: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Label("ETHONE", systemImage: "sparkles").font(.caption.bold()).foregroundStyle(.secondary)
+            Capsule()
+                .fill(LinearGradient(colors: [snapshot.accent, snapshot.accent.opacity(0)], startPoint: .leading, endPoint: .trailing))
+                .frame(width: 28, height: 3)
+            Text("ETHONE").font(.caption.weight(.semibold)).tracking(0.6).foregroundStyle(.secondary)
             Spacer(minLength: 0)
             Text(entry.isEmpty ? "—" : "\(snapshot.openTaskCount)")
-                .font(.system(size: 40, weight: .bold, design: .rounded))
-            Text("tâches ouvertes").font(.caption).foregroundStyle(.secondary)
+                .font(.system(size: 44, weight: .semibold))
+                .tracking(-1.5)
+                .contentTransition(.numericText())
+            Text(snapshot.openTaskCount == 1 ? "tâche ouverte" : "tâches ouvertes").font(.caption).foregroundStyle(.secondary)
             if !entry.isEmpty {
                 Label("\(snapshot.habitsDone)/\(snapshot.habitsTotal) habitudes", systemImage: "flame.fill")
                     .font(.caption)
-                    .foregroundStyle(.orange)
+                    .foregroundStyle(snapshot.accent)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -96,7 +123,7 @@ struct SummaryWidget: Widget {
         StaticConfiguration(kind: kind, provider: SummaryProvider()) { entry in
             SummaryWidgetView(entry: entry)
                 .containerBackground(for: .widget) {
-                    LinearGradient(colors: [Color(red: 0.05, green: 0.06, blue: 0.10), Color(red: 0.16, green: 0.10, blue: 0.30)], startPoint: .topLeading, endPoint: .bottomTrailing)
+                    EthoneWidgetBackground(accent: entry.snapshot.accent)
                 }
         }
         .configurationDisplayName("Résumé ETHONE")

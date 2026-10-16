@@ -38,11 +38,13 @@ final class AppModel {
     func setTheme(_ preset: ThemePreset) {
         themePreset = preset
         UserDefaults.standard.set(preset.rawValue, forKey: Theme.themeKey)
+        publishSnapshot()
     }
 
     func setAccent(_ hex: UInt32?) {
         chosenAccentHex = hex
         if let hex { UserDefaults.standard.set(Int(hex), forKey: Theme.accentKey) } else { UserDefaults.standard.removeObject(forKey: Theme.accentKey) }
+        publishSnapshot()
     }
 
     init() {
@@ -144,7 +146,8 @@ final class AppModel {
             focusMinutesToday: focus.minutesToday,
             focusPhase: focus.isActive ? focus.phase.rawValue : nil,
             focusEndDate: focus.isActive ? focus.endDate : nil,
-            focusPaused: focus.isActive ? focus.isPaused : nil
+            focusPaused: focus.isActive ? focus.isPaused : nil,
+            accentHex: accentHex
         )
         snapshot.save()
         WatchBridge.shared.push(snapshot)

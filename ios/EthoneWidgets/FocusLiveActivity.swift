@@ -67,7 +67,7 @@ struct FocusLockScreenView: View {
                 }
                 Spacer()
                 FocusTimerText(state: state)
-                    .font(.system(size: 34, weight: .bold, design: .rounded))
+                    .font(.system(size: 34, weight: .semibold).monospacedDigit())
             }
             FocusProgressBar(state: state)
         }
@@ -91,7 +91,7 @@ struct FocusLiveActivity: Widget {
                 }
                 DynamicIslandExpandedRegion(.trailing) {
                     FocusTimerText(state: context.state)
-                        .font(.system(size: 30, weight: .bold, design: .rounded))
+                        .font(.system(size: 30, weight: .semibold).monospacedDigit())
                         .frame(maxWidth: 110, alignment: .trailing)
                 }
                 DynamicIslandExpandedRegion(.center) {

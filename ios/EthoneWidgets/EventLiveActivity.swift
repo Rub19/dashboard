@@ -32,7 +32,7 @@ private struct EventLockScreenView: View {
             }
             Spacer()
             EventCountdown(state: state)
-                .font(.system(size: 30, weight: .bold, design: .rounded))
+                .font(.system(size: 30, weight: .semibold).monospacedDigit())
                 .foregroundStyle(eventTint)
         }
         .padding(16)
@@ -53,7 +53,7 @@ struct EventLiveActivity: Widget {
                 }
                 DynamicIslandExpandedRegion(.trailing) {
                     EventCountdown(state: context.state)
-                        .font(.system(size: 30, weight: .bold, design: .rounded))
+                        .font(.system(size: 30, weight: .semibold).monospacedDigit())
                         .frame(maxWidth: 110, alignment: .trailing)
                 }
                 DynamicIslandExpandedRegion(.center) {

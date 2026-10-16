@@ -1,5 +1,16 @@
 [
   {
+    "version": "v1.75.135",
+    "date": "2026-10-16",
+    "title": "App iOS : grands titres, bandes de chiffres et widgets ETHONE",
+    "items": [
+      "Les écrans principaux ouverts depuis Plus retrouvent le grand titre ETHONE.",
+      "Les chiffres de Valorant, LoL, TFT, Activité, Analytique, Discord, Interactions, Système et Fichiers sont réunis dans une seule bande au lieu de tuiles séparées.",
+      "Météo : barre d'amplitude min/max sur 7 jours ; Soundscape : sélecteur en onglets et préréglage en cours animé ; RSS : dates relatives.",
+      "Widgets, Activités en direct et Apple Watch aux couleurs ETHONE ; les widgets suivent le thème choisi dans l'app."
+    ]
+  },
+  {
     "version": "v1.75.134",
     "date": "2026-10-16",
     "title": "App iOS : direction artistique ETHONE sur toute l'app",
@@ -604,18 +615,6 @@
       "Recherche d'images & inversée (/image, /duckduckgoimage, /reverseimage) : recherche de visuels haute résolution et liens directs vers Google Lens, Bing Visual, TinEye, Yandex et SauceNAO.",
       "Cinéma, séries et jeux vidéo (/movie, /tvshow, /game) : intégration directe des bases TVMaze, Wikipédia, CheapShark et Steam avec jaquettes, notes et synopsis détaillés.",
       "Module Dashboard interactif (/discord?view=fun) : catalogue avec cartes sombres animées au survol, copie en 1 clic de la syntaxe et studios de test en direct sans aucun placeholder."
-    ]
-  },
-  {
-    "version": "v1.75.0",
-    "date": "2026-10-12",
-    "title": "Intégration Complète Spotify : Commandes Bot & Dashboard Interactif Motion",
-    "items": [
-      "Suite de commandes Spotify pour le bot : 20 commandes slash et préfixes (/spotify nowplaying, play, pause, resume, next, previous, seek, volume, repeat, shuffle, queue, like, unlike, toptracks, topartists, device, devices, vc, login, logout).",
-      "Pont vocal Discord (/spotify vc) : diffusion directe du titre Spotify en cours d'écoute dans le salon vocal Discord du membre via le lecteur audio Etho.",
-      "Boutons interactifs Discord : commandes directes depuis l'embed d'écoute avec boutons Précédent, Lecture/Pause, Suivant, Like/Unlike et Diffuser en vocal.",
-      "Module Dashboard Spotify immersif (/discord?view=spotify) : vinyle animé en rotation Framer Motion, égaliseur sonore dynamique 5 bandes, barre de progression interactive et curseur de volume temps réel.",
-      "Zéro placeholder & actions réelles : recherche et ajout à la file d'attente, transfert d'appareil actif, gestion des favoris et statistiques de morceaux et artistes préférés."
     ]
   }
 ]

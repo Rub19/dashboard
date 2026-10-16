@@ -58339,6 +58339,59 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_134_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_134_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_134_de);
 
+const v1_75_135_fr: ChangelogEntry = {
+  version: "v1.75.135",
+  date: "2026-10-16",
+  title: "App iOS : grands titres, bandes de chiffres et widgets ETHONE",
+  items: [
+    "Les écrans principaux ouverts depuis Plus retrouvent le grand titre ETHONE.",
+    "Les chiffres de Valorant, LoL, TFT, Activité, Analytique, Discord, Interactions, Système et Fichiers sont réunis dans une seule bande au lieu de tuiles séparées.",
+    "Météo : barre d'amplitude min/max sur 7 jours ; Soundscape : sélecteur en onglets et préréglage en cours animé ; RSS : dates relatives.",
+    "Widgets, Activités en direct et Apple Watch aux couleurs ETHONE ; les widgets suivent le thème choisi dans l'app.",
+  ],
+};
+
+const v1_75_135_en: ChangelogEntry = {
+  version: "v1.75.135",
+  date: "2026-10-16",
+  title: "iOS app: large titles, figure strips and ETHONE widgets",
+  items: [
+    "Main screens opened from More get the large ETHONE title back.",
+    "Figures in Valorant, LoL, TFT, Activity, Analytics, Discord, Interactions, System and Files sit in a single strip instead of separate tiles.",
+    "Weather: 7-day min/max range bar; Soundscape: tab picker and animated playing preset; RSS: relative dates.",
+    "Widgets, Live Activities and Apple Watch in ETHONE colors; widgets follow the theme chosen in the app.",
+  ],
+};
+
+const v1_75_135_es: ChangelogEntry = {
+  version: "v1.75.135",
+  date: "2026-10-16",
+  title: "App iOS: títulos grandes, bandas de cifras y widgets ETHONE",
+  items: [
+    "Las pantallas principales abiertas desde Más recuperan el título grande ETHONE.",
+    "Las cifras de Valorant, LoL, TFT, Actividad, Analítica, Discord, Interacciones, Sistema y Archivos se agrupan en una sola banda en lugar de mosaicos separados.",
+    "Tiempo: barra de amplitud mín./máx. a 7 días; Soundscape: selector en pestañas y ajuste en curso animado; RSS: fechas relativas.",
+    "Widgets, Actividades en vivo y Apple Watch con los colores ETHONE; los widgets siguen el tema elegido en la app.",
+  ],
+};
+
+const v1_75_135_de: ChangelogEntry = {
+  version: "v1.75.135",
+  date: "2026-10-16",
+  title: "iOS-App: große Titel, Zahlenleisten und ETHONE-Widgets",
+  items: [
+    "Die Hauptbildschirme aus „Mehr“ haben wieder den großen ETHONE-Titel.",
+    "Die Zahlen in Valorant, LoL, TFT, Aktivität, Analyse, Discord, Interaktionen, System und Dateien stehen in einer einzigen Leiste statt in einzelnen Kacheln.",
+    "Wetter: Min./Max.-Balken für 7 Tage; Soundscape: Tab-Auswahl und animierte aktive Voreinstellung; RSS: relative Daten.",
+    "Widgets, Live-Aktivitäten und Apple Watch in ETHONE-Farben; die Widgets folgen dem in der App gewählten Design.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_135_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_135_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_135_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_135_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.135 — 2026-10-16
+
+**App iOS : grands titres, bandes de chiffres et widgets ETHONE**
+
+- Les écrans principaux ouverts depuis Plus retrouvent le grand titre ETHONE.
+- Les chiffres de Valorant, LoL, TFT, Activité, Analytique, Discord, Interactions, Système et Fichiers sont réunis dans une seule bande au lieu de tuiles séparées.
+- Météo : barre d'amplitude min/max sur 7 jours ; Soundscape : sélecteur en onglets et préréglage en cours animé ; RSS : dates relatives.
+- Widgets, Activités en direct et Apple Watch aux couleurs ETHONE ; les widgets suivent le thème choisi dans l'app.
+
 ## v1.75.134 — 2026-10-16
 
 **App iOS : direction artistique ETHONE sur toute l'app**

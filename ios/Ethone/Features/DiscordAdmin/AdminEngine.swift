@@ -145,7 +145,12 @@ struct DiscordModuleHubView: View {
                 if !modules.isEmpty {
                     Section {
                         ForEach(modules) { spec in
-                            NavigationLink { ModuleScreen(guild: guild, spec: spec) } label: { Label(spec.title, systemImage: spec.symbol) }
+                            NavigationLink { ModuleScreen(guild: guild, spec: spec) } label: {
+                                HStack(spacing: 14) {
+                                    IconTile(systemImage: spec.symbol, color: Color(hex: 0x5865F2))
+                                    Text(spec.title)
+                                }
+                            }
                         }
                     } header: { Text(group).sectionTitle() } footer: {
                         if group == AdminCatalog.groups.last { Text("Réservé au propriétaire du bot : le bot répond « accès refusé » aux autres comptes.") }
@@ -156,7 +161,6 @@ struct DiscordModuleHubView: View {
         }
         .scrollContentBackground(.hidden)
         .navigationTitle("Tous les modules")
-        .navigationBarTitleDisplayMode(.inline)
         .ethoneScreen()
     }
 }
@@ -263,7 +267,6 @@ struct ModuleScreen: View {
         .scrollContentBackground(.hidden)
         .overlay { if loading && overview == nil && spec.overview != nil { ProgressView() } }
         .navigationTitle(spec.title)
-        .navigationBarTitleDisplayMode(.inline)
         .ethoneScreen()
         .refreshable { await load() }
         .task { await load() }
@@ -339,7 +342,7 @@ struct GenericListView: View {
                         Text(AdminText.title(of: item)).font(.headline).lineLimit(2)
                         let subtitle = AdminText.subtitle(of: item)
                         if !subtitle.isEmpty { Text(subtitle).font(.caption).foregroundStyle(.secondary).lineLimit(2) }
-                        if let date = AdminText.date(of: item) { Text(date.formatted(date: .abbreviated, time: .shortened)).font(.caption2).foregroundStyle(.tertiary) }
+                        if let date = AdminText.date(of: item) { Text(date, format: .relative(presentation: .named)).font(.caption2).foregroundStyle(.tertiary) }
                     }
                 }
                 .listRowBackground(GlassRowBackground())
@@ -362,7 +365,7 @@ struct GenericListView: View {
         }
         .scrollContentBackground(.hidden)
         .overlay {
-            if items.isEmpty && single == nil && !loading { ContentUnavailableView("Rien à afficher", systemImage: "tray", description: Text("Cette liste est vide.")) }
+            if items.isEmpty && single == nil && !loading { ContentUnavailableView(query.isEmpty ? "Aucun élément" : "Aucun résultat", systemImage: "tray", description: Text(query.isEmpty ? "Les éléments créés pour ce module apparaîtront ici." : "Essayez un autre mot.")) }
             if loading && items.isEmpty && single == nil { ProgressView() }
         }
         .searchable(text: $query, prompt: "Filtrer")

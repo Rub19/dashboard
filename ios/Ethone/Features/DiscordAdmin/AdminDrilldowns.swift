@@ -188,7 +188,7 @@ struct EventParticipantsView: View {
                         Button(role: .destructive) { Task { await remove(participant) } } label: { Label("Retirer", systemImage: "person.badge.minus") }
                     }
                 }
-            } header: { Text("\(participants.count) inscrit(s)").sectionTitle() } footer: {
+            } header: { Text(plural(participants.count, "inscrit", "inscrits")).sectionTitle() } footer: {
                 Text("Glisser vers la droite : pointer comme présent. Vers la gauche : retirer de l'événement.")
             }
         }

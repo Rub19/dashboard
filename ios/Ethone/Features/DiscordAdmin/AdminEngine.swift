@@ -21,8 +21,8 @@ extension JSONValue {
         case .string(let value):
             if value.count >= 19, value.contains("T"), let date = ISODate.parse(value) { return date.formatted(date: .abbreviated, time: .shortened) }
             return value
-        case .array(let value): return "\(value.count) élément(s)"
-        case .object(let value): return "\(value.count) champ(s)"
+        case .array(let value): return plural(value.count, "élément", "éléments")
+        case .object(let value): return plural(value.count, "champ", "champs")
         }
     }
 
@@ -636,7 +636,7 @@ struct ConfigObjectView: View {
                     ), axis: .vertical)
                 }
             } else {
-                LabeledContent(title, value: "\(array.count) élément(s)")
+                LabeledContent(title, value: plural(array.count, "élément", "éléments"))
             }
         case .object?:
             DisclosureGroup(title) {
@@ -674,7 +674,7 @@ private struct IdListRow: View {
             HStack {
                 Text(title).foregroundStyle(.primary)
                 Spacer()
-                Text(ids.isEmpty ? "Aucun" : "\(ids.count) sélectionné(s)").foregroundStyle(.secondary)
+                Text(ids.isEmpty ? "Aucun" : plural(ids.count, "sélectionné", "sélectionnés")).foregroundStyle(.secondary)
             }
         }
         .sheet(isPresented: $showing) {

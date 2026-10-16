@@ -68,7 +68,7 @@ struct GiveawaysAdminView: View {
             }
             HStack(spacing: 10) {
                 Label("\(participants)", systemImage: "person.2.fill")
-                Label("\(Int(giveaway["winnerCount"]?.doubleValue ?? 1)) gagnant(s)", systemImage: "trophy.fill")
+                Label(plural(Int(giveaway["winnerCount"]?.doubleValue ?? 1), "gagnant", "gagnants"), systemImage: "trophy.fill")
                 if let end = giveaway["endsAt"]?.stringValue.flatMap(ISODate.parse) {
                     Text(isActive ? "Fin \(end.formatted(.relative(presentation: .named)))" : end.formatted(date: .abbreviated, time: .shortened))
                 }

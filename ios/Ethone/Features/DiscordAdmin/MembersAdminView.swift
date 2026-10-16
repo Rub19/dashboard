@@ -38,7 +38,7 @@ struct MembersAdminView: View {
                     .listRowBackground(GlassRowBackground())
                     .onAppear { if member == members.last { Task { await loadMore() } } }
                 }
-            } header: { Text("\(total) membre(s)").sectionTitle() }
+            } header: { Text(plural(total, "membre", "membres")).sectionTitle() }
         }
         .scrollContentBackground(.hidden)
         .overlay {

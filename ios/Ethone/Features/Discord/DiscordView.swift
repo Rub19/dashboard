@@ -121,6 +121,16 @@ struct GuildDetailView: View {
         search.isEmpty ? modules : modules.filter { $0.name.localizedCaseInsensitiveContains(search) }
     }
 
+    private func toolLink<Destination: View>(_ title: String, _ symbol: String, @ViewBuilder destination: @escaping () -> Destination) -> some View {
+        NavigationLink(destination: destination) {
+            HStack(spacing: 14) {
+                IconTile(systemImage: symbol, color: Color(hex: 0x5865F2))
+                Text(title)
+            }
+        }
+        .listRowBackground(GlassRowBackground())
+    }
+
     var body: some View {
         List {
             if let overview {
@@ -139,21 +149,26 @@ struct GuildDetailView: View {
             }
             if currentGuild.botPresent {
                 Section {
-                    NavigationLink { TicketsAdminView(guild: currentGuild) } label: { Label("Tickets", systemImage: "ticket.fill") }
-                    NavigationLink { ModerationAdminView(guild: currentGuild) } label: { Label("Modération", systemImage: "shield.lefthalf.filled") }
-                    NavigationLink { GiveawaysAdminView(guild: currentGuild) } label: { Label("Giveaways", systemImage: "gift.fill") }
-                    NavigationLink { SecurityAdminView(guild: currentGuild) } label: { Label("Sécurité", systemImage: "lock.shield.fill") }
-                    NavigationLink { MembersAdminView(guild: currentGuild) } label: { Label("Membres", systemImage: "person.2.fill") }
-                    NavigationLink { SuggestionsAdminView(guild: currentGuild) } label: { Label("Suggestions", systemImage: "lightbulb.fill") }
-                    NavigationLink { ModuleScreen(guild: currentGuild, spec: AdminCatalog.streamersSpec) } label: { Label("Alertes Streamers", systemImage: "antenna.radiowaves.left.and.right") }
-                    NavigationLink { ModuleScreen(guild: currentGuild, spec: AdminCatalog.gamesSpec) } label: { Label("Mini-Jeux & Casino", systemImage: "dice.fill") }
-                    NavigationLink { OwnerShieldView() } label: { Label("Owner Shield", systemImage: "shield.lefthalf.filled.badge.checkmark") }
-                    NavigationLink { MusicPlayerView(guild: currentGuild) } label: { Label("Musique & Vocal", systemImage: "music.note.list") }
-                    NavigationLink { PublicLeaderboardView(guildId: currentGuild.id) } label: { Label("Classement public", systemImage: "trophy.fill") }
-                    NavigationLink { DiscordModuleHubView(guild: currentGuild) } label: { Label("Tous les modules", systemImage: "square.grid.2x2.fill") }
-                    NavigationLink { AuditLogAdminView(guild: currentGuild) } label: { Label("Journal d'audit", systemImage: "list.bullet.rectangle.fill") }
-                } header: { Text("Outils").sectionTitle() }
-                .listRowBackground(GlassRowBackground())
+                    toolLink("Modération", "shield.lefthalf.filled") { ModerationAdminView(guild: currentGuild) }
+                    toolLink("Sécurité", "lock.shield.fill") { SecurityAdminView(guild: currentGuild) }
+                    toolLink("Membres", "person.2.fill") { MembersAdminView(guild: currentGuild) }
+                    toolLink("Journal d'audit", "list.bullet.rectangle.fill") { AuditLogAdminView(guild: currentGuild) }
+                } header: { Text("Modération").sectionTitle() }
+                Section {
+                    toolLink("Tickets", "ticket.fill") { TicketsAdminView(guild: currentGuild) }
+                    toolLink("Suggestions", "lightbulb.fill") { SuggestionsAdminView(guild: currentGuild) }
+                    toolLink("Alertes streamers", "antenna.radiowaves.left.and.right") { ModuleScreen(guild: currentGuild, spec: AdminCatalog.streamersSpec) }
+                    toolLink("Classement public", "trophy.fill") { PublicLeaderboardView(guildId: currentGuild.id) }
+                } header: { Text("Communauté").sectionTitle() }
+                Section {
+                    toolLink("Musique et vocal", "music.note.list") { MusicPlayerView(guild: currentGuild) }
+                    toolLink("Giveaways", "gift.fill") { GiveawaysAdminView(guild: currentGuild) }
+                    toolLink("Jeux et casino", "dice.fill") { ModuleScreen(guild: currentGuild, spec: AdminCatalog.gamesSpec) }
+                } header: { Text("Divertissement").sectionTitle() }
+                Section {
+                    toolLink("Tous les modules", "square.grid.2x2.fill") { DiscordModuleHubView(guild: currentGuild) }
+                    toolLink("Owner Shield", "shield.lefthalf.filled.badge.checkmark") { OwnerShieldView() }
+                } header: { Text("Avancé").sectionTitle() }
             }
             Section {
                 ForEach(filtered) { module in
@@ -171,15 +186,21 @@ struct GuildDetailView: View {
                     .listRowBackground(GlassRowBackground())
                 }
             } header: {
-                Text("Modules · \(modules.filter(\.enabled).count) actif(s)").sectionTitle()
+                HStack(spacing: 6) {
+                    Text("Modules")
+                    Text("\(modules.filter(\.enabled).count) actifs").foregroundStyle(.tertiary).monospacedDigit().contentTransition(.numericText())
+                }
+                .sectionTitle()
+                .textCase(nil)
             }
         }
         .scrollContentBackground(.hidden)
+        .sensoryFeedback(.selection, trigger: modules.filter(\.enabled).count)
+        .animation(Motion.snap, value: modules.filter(\.enabled).count)
         .overlay { if loading && modules.isEmpty { ProgressView() } }
         .searchable(text: $search, prompt: "Rechercher un module")
         .navigationTitle(currentGuild.name)
         .ethoneScreen()
-        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             if model.discord.guilds.filter(\.botPresent).count > 1 {
                 ToolbarItem(placement: .topBarTrailing) {

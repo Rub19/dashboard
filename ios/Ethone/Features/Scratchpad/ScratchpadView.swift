@@ -22,7 +22,7 @@ struct ScratchpadView: View {
                 .accessibilityLabel("Bloc-notes")
 
             HStack {
-                Text("\(words) mot(s) · \(text.count) caractère(s)").font(.caption).foregroundStyle(.secondary)
+                Text("\(plural(words, "mot", "mots")), \(plural(text.count, "caractère", "caractères"))").font(.caption).foregroundStyle(.secondary)
                 Spacer()
                 Text(errorMessage ?? status).font(.caption).foregroundStyle(errorMessage == nil ? Color.secondary : Theme.danger)
             }

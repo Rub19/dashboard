@@ -36,8 +36,13 @@ struct ModerationAdminView: View {
                             }
                             Text(entry["userTag"]?.stringValue ?? "").font(.subheadline)
                             Text(entry["reason"]?.stringValue ?? "").font(.caption).foregroundStyle(.secondary).lineLimit(2)
-                            Text("Par \(entry["moderatorTag"]?.stringValue ?? "?")" + (entry["createdAt"]?.stringValue.flatMap(ISODate.parse).map { " · " + $0.formatted(date: .abbreviated, time: .shortened) } ?? ""))
-                                .font(.caption2).foregroundStyle(.tertiary)
+                            HStack(spacing: 4) {
+                                Text("Par \(entry["moderatorTag"]?.stringValue ?? "?")")
+                                if let date = entry["createdAt"]?.stringValue.flatMap(ISODate.parse) {
+                                    Text(date, format: .relative(presentation: .named))
+                                }
+                            }
+                            .font(.caption2).foregroundStyle(.tertiary)
                         }
                         .listRowBackground(GlassRowBackground())
                         .swipeActions(edge: .trailing) {
@@ -46,7 +51,7 @@ struct ModerationAdminView: View {
                             }
                         }
                     }
-                } header: { Text("\(total) sanction(s)").sectionTitle() }
+                } header: { Text(total == 1 ? "1 sanction" : "\(total) sanctions").sectionTitle().contentTransition(.numericText()) }
             } else {
                 Section {
                     ForEach(bans, id: \.self) { ban in
@@ -60,11 +65,20 @@ struct ModerationAdminView: View {
                         }
                         .listRowBackground(GlassRowBackground())
                     }
-                } header: { Text("\(bans.count) banni(s)").sectionTitle() }
+                } header: { Text(bans.count == 1 ? "1 membre banni" : "\(bans.count) membres bannis").sectionTitle() }
             }
         }
         .scrollContentBackground(.hidden)
-        .overlay { if loading && cases.isEmpty && bans.isEmpty { ProgressView() } }
+        .animation(Motion.snap, value: tab)
+        .overlay {
+            if loading && cases.isEmpty && bans.isEmpty {
+                ProgressView()
+            } else if !loading && tab == "cases" && cases.isEmpty {
+                ContentUnavailableView(query.isEmpty ? "Aucune sanction" : "Aucun résultat", systemImage: "checkmark.shield", description: Text(query.isEmpty ? "Les sanctions prises sur ce serveur apparaîtront ici." : "Essayez un autre pseudo ou numéro de dossier."))
+            } else if !loading && tab == "bans" && bans.isEmpty {
+                ContentUnavailableView("Aucun banni", systemImage: "person.crop.circle.badge.checkmark", description: Text("Personne n'est banni de ce serveur."))
+            }
+        }
         .searchable(text: $query, prompt: "Rechercher une sanction")
         .onSubmit(of: .search) { Task { await loadCases() } }
         .navigationTitle("Modération")

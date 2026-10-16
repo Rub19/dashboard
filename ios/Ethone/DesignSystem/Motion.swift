@@ -68,3 +68,8 @@ struct EthoneHeadline: View {
         .accessibilityAddTraits(.isHeader)
     }
 }
+
+/// "1 tâche" / "3 tâches": French count with the right noun form, instead of "tâche(s)".
+func plural(_ count: Int, _ one: String, _ many: String) -> String {
+    "\(count) \(abs(count) <= 1 ? one : many)"
+}

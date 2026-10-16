@@ -158,7 +158,7 @@ struct SharedLinksView: View {
             }
         }
         if sent > 0 {
-            infoMessage = "\(sent) fichier(s) envoyé(s)."
+            infoMessage = plural(sent, "fichier envoyé.", "fichiers envoyés.")
             await resolve()
         }
     }

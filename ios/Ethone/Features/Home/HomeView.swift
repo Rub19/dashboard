@@ -303,7 +303,7 @@ struct HomeView: View {
                             Text(FocusManager.format(focus.remaining(at: context.date))).font(.subheadline.monospacedDigit()).foregroundStyle(.secondary)
                         }
                     } else {
-                        Text("\(focus.sessionsToday) session(s) · \(focus.minutesToday) min aujourd'hui").font(.subheadline).foregroundStyle(.secondary)
+                        Text("\(plural(focus.sessionsToday, "session", "sessions")), \(focus.minutesToday) min aujourd'hui").font(.subheadline).foregroundStyle(.secondary)
                     }
                 }
                 Spacer()

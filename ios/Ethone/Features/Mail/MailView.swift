@@ -323,7 +323,7 @@ struct MailComposeView: View {
                         .disabled(sending || recipients.isEmpty || (subject.isEmpty && text.isEmpty))
                 }
             }
-            .confirmationDialog("Envoyer ce message à \(recipients.count) destinataire(s) ?", isPresented: $confirming, titleVisibility: .visible) {
+            .confirmationDialog("Envoyer ce message à \(plural(recipients.count, "destinataire", "destinataires")) ?", isPresented: $confirming, titleVisibility: .visible) {
                 Button("Envoyer") {
                     sending = true
                     Task {

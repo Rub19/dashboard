@@ -1,5 +1,18 @@
 [
   {
+    "version": "v1.75.134",
+    "date": "2026-10-16",
+    "title": "App iOS : direction artistique ETHONE sur toute l'app",
+    "items": [
+      "Tous les écrans : listes groupées en un seul bloc translucide, titres de navigation au style ETHONE, entrée animée et accents qui suivent le thème choisi.",
+      "Calendrier : la sélection glisse d'un jour à l'autre et on change de mois d'un balayage.",
+      "Habitudes : titre avec la progression du jour, coches à la couleur du thème et flamme de série animée.",
+      "Brain : nouvelle introduction, bulles qui apparaissent du bas et indicateur de réflexion animé.",
+      "Mail : nom du dossier et nombre de non-lus en titre, dates relatives ; Discord : nouvel écran de connexion ; Apparence : changement de thème en fondu.",
+      "iOS 27 : sélecteurs en onglets natifs pour Modération, Tickets, Liens partagés et Mini-jeux."
+    ]
+  },
+  {
     "version": "v1.75.133",
     "date": "2026-10-16",
     "title": "App iOS : direction artistique ETHONE",
@@ -603,17 +616,6 @@
       "Boutons interactifs Discord : commandes directes depuis l'embed d'écoute avec boutons Précédent, Lecture/Pause, Suivant, Like/Unlike et Diffuser en vocal.",
       "Module Dashboard Spotify immersif (/discord?view=spotify) : vinyle animé en rotation Framer Motion, égaliseur sonore dynamique 5 bandes, barre de progression interactive et curseur de volume temps réel.",
       "Zéro placeholder & actions réelles : recherche et ajout à la file d'attente, transfert d'appareil actif, gestion des favoris et statistiques de morceaux et artistes préférés."
-    ]
-  },
-  {
-    "version": "v1.72.0",
-    "date": "2026-10-11",
-    "title": "Soundscape : studio d'ambiance repensé (motion design, boutons carrés, ergonomie studio)",
-    "items": [
-      "Mixeur multi-pistes repensé avec boutons carrés tactiles et animations d'égaliseur audio en temps réel",
-      "Atmosphères préréglées immersives en un clic sans surcharge ni jargon marketing",
-      "Synthèse d'ondes binaurales au style matériel avec sélecteurs de bandes et de fréquences sacrées Solfeggio",
-      "Bannière oscilloscope studio compacte et onglets ergonomiques pour un accès immédiat aux réglages"
     ]
   }
 ]

@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.134 — 2026-10-16
+
+**App iOS : direction artistique ETHONE sur toute l'app**
+
+- Tous les écrans : listes groupées en un seul bloc translucide, titres de navigation au style ETHONE, entrée animée et accents qui suivent le thème choisi.
+- Calendrier : la sélection glisse d'un jour à l'autre et on change de mois d'un balayage.
+- Habitudes : titre avec la progression du jour, coches à la couleur du thème et flamme de série animée.
+- Brain : nouvelle introduction, bulles qui apparaissent du bas et indicateur de réflexion animé.
+- Mail : nom du dossier et nombre de non-lus en titre, dates relatives ; Discord : nouvel écran de connexion ; Apparence : changement de thème en fondu.
+- iOS 27 : sélecteurs en onglets natifs pour Modération, Tickets, Liens partagés et Mini-jeux.
+
 ## v1.75.133 — 2026-10-16
 
 **App iOS : direction artistique ETHONE**

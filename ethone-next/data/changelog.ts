@@ -58278,6 +58278,67 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_133_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_133_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_133_de);
 
+const v1_75_134_fr: ChangelogEntry = {
+  version: "v1.75.134",
+  date: "2026-10-16",
+  title: "App iOS : direction artistique ETHONE sur toute l'app",
+  items: [
+    "Tous les écrans : listes groupées en un seul bloc translucide, titres de navigation au style ETHONE, entrée animée et accents qui suivent le thème choisi.",
+    "Calendrier : la sélection glisse d'un jour à l'autre et on change de mois d'un balayage.",
+    "Habitudes : titre avec la progression du jour, coches à la couleur du thème et flamme de série animée.",
+    "Brain : nouvelle introduction, bulles qui apparaissent du bas et indicateur de réflexion animé.",
+    "Mail : nom du dossier et nombre de non-lus en titre, dates relatives ; Discord : nouvel écran de connexion ; Apparence : changement de thème en fondu.",
+    "iOS 27 : sélecteurs en onglets natifs pour Modération, Tickets, Liens partagés et Mini-jeux.",
+  ],
+};
+
+const v1_75_134_en: ChangelogEntry = {
+  version: "v1.75.134",
+  date: "2026-10-16",
+  title: "iOS app: ETHONE art direction across the app",
+  items: [
+    "Every screen: grouped lists as a single translucent block, ETHONE-style navigation titles, an animated entrance and accents that follow the chosen theme.",
+    "Calendar: the selection glides between days and a swipe changes the month.",
+    "Habits: headline with today's progress, theme-colored checkmarks and an animated streak flame.",
+    "Brain: new introduction, bubbles that rise from the bottom and an animated thinking indicator.",
+    "Mail: folder name and unread count as the title, relative dates; Discord: new sign-in screen; Appearance: theme changes fade.",
+    "iOS 27: native tab pickers for Moderation, Tickets, Shared links and Mini-games.",
+  ],
+};
+
+const v1_75_134_es: ChangelogEntry = {
+  version: "v1.75.134",
+  date: "2026-10-16",
+  title: "App iOS: dirección artística ETHONE en toda la app",
+  items: [
+    "Todas las pantallas: listas agrupadas en un solo bloque translúcido, títulos de navegación al estilo ETHONE, entrada animada y acentos que siguen el tema elegido.",
+    "Calendario: la selección se desliza entre días y un gesto cambia de mes.",
+    "Hábitos: título con el progreso del día, marcas del color del tema y llama de racha animada.",
+    "Brain: nueva introducción, burbujas que suben desde abajo e indicador de reflexión animado.",
+    "Mail: nombre de la carpeta y no leídos en el título, fechas relativas; Discord: nueva pantalla de conexión; Apariencia: cambio de tema con fundido.",
+    "iOS 27: selectores en pestañas nativos para Moderación, Tickets, Enlaces compartidos y Minijuegos.",
+  ],
+};
+
+const v1_75_134_de: ChangelogEntry = {
+  version: "v1.75.134",
+  date: "2026-10-16",
+  title: "iOS-App: ETHONE-Gestaltung in der ganzen App",
+  items: [
+    "Alle Bildschirme: gruppierte Listen als ein durchscheinender Block, Navigationstitel im ETHONE-Stil, animierter Einstieg und Akzente, die dem gewählten Design folgen.",
+    "Kalender: Die Auswahl gleitet zwischen den Tagen, ein Wischen wechselt den Monat.",
+    "Gewohnheiten: Überschrift mit dem Tagesfortschritt, Häkchen in der Designfarbe und animierte Serienflamme.",
+    "Brain: neue Einführung, Blasen, die von unten erscheinen, und animierte Denkanzeige.",
+    "Mail: Ordnername und ungelesene Nachrichten im Titel, relative Daten; Discord: neuer Anmeldebildschirm; Darstellung: Designwechsel mit Überblendung.",
+    "iOS 27: native Tab-Auswahl für Moderation, Tickets, geteilte Links und Minispiele.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_134_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_134_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_134_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_134_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

@@ -121,6 +121,7 @@ import { pinterestCommand } from '../commands/fun/pinterestCommand.js';
 import { instagramCommand } from '../commands/fun/instagramCommand.js';
 import { twitterCommand } from '../commands/fun/twitterCommand.js';
 import { serverCommand } from '../modules/serverInfo/serverCommand.js';
+import { modCommand } from '../modules/moderation/commands/mod.js';
 
 import { config } from '../config.js';
 import { Command } from '../types/command.js';
@@ -303,6 +304,7 @@ class CommandRegistry {
     this.register(instagramCommand);
     this.register(twitterCommand);
     this.register(serverCommand);
+    this.register(modCommand);
   }
 
   public register(command: Command) {

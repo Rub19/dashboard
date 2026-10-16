@@ -1,3 +1,4 @@
+import { appealService } from '../modules/moderation/services/appealService.js';
 import { handleServerSelect } from '../modules/serverInfo/serverCommand.js';
 import { Interaction, MessageFlags } from 'discord.js';
 import { config } from '../config.js';
@@ -156,6 +157,10 @@ export async function onInteractionCreate(interaction: Interaction) {
   }
 
   if (interaction.isButton()) {
+    if (interaction.customId.startsWith('appeal:')) {
+      await safeHandleComponent(interaction, 'appeal_button', () => appealService.handleButton(interaction));
+      return;
+    }
     if (interaction.customId.startsWith('spotify:')) {
       await safeHandleComponent(interaction, 'spotify_button', () => handleSpotifyButton(interaction));
       return;
@@ -228,7 +233,7 @@ export async function onInteractionCreate(interaction: Interaction) {
       await safeHandleComponent(interaction, 'economy_button', () => handleEconomyButton(interaction));
     } else if (interaction.customId.startsWith('rank_btn_')) {
       await safeHandleComponent(interaction, 'rank_button', () => handleRankButton(interaction));
-    } else if (interaction.customId.startsWith('mod_btn_')) {
+    } else if (interaction.customId.startsWith('mod_btn_') || interaction.customId.startsWith('sanc_undo:') || interaction.customId.startsWith('sanc_show:')) {
       await safeHandleComponent(interaction, 'mod_button', () => handleModButton(interaction));
     } else if (interaction.customId.startsWith('sh_')) {
       await safeHandleComponent(interaction, 'owner_shield_button', () => OwnerShieldService.getInstance().handleButtonInteraction(interaction));
@@ -237,6 +242,10 @@ export async function onInteractionCreate(interaction: Interaction) {
   }
 
   if (interaction.isModalSubmit()) {
+    if (interaction.customId.startsWith('appeal:modal:')) {
+      await safeHandleComponent(interaction, 'appeal_modal', () => appealService.handleModal(interaction));
+      return;
+    }
     if (interaction.customId === 'captcha_modal') {
       await safeHandleComponent(interaction, 'captcha_modal', () => handleCaptchaModal(interaction));
       return;

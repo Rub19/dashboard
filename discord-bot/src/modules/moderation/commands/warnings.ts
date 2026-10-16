@@ -1,8 +1,8 @@
 import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
 import { Command, CommandContext } from '../../../types/command.js';
-import { sanctionService } from '../sanctions/sanctionService.js';
 import { formatString, getTranslation } from '../../../utils/i18n.js';
 import { buildSanctionHistoryCard } from '../utils/sanctionCard.js';
+import { memberHistory } from '../interactions/modButtonHandler.js';
 
 export const warningsCommand: Command = {
   name: 'warnings',
@@ -42,7 +42,7 @@ export const warningsCommand: Command = {
     // de 3s de Discord et invalider le token d'interaction ("Unknown interaction" / 10062).
     await ctx.deferReply();
 
-    const sanctions = sanctionService.getUserSanctions(ctx.guild.id, targetId);
+    const sanctions = memberHistory(ctx.guild.id, targetId);
     const targetUser = await ctx.client.users.fetch(targetId).catch(() => null);
 
     await ctx.reply({

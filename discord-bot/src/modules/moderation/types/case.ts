@@ -8,6 +8,9 @@ export const CaseActionSchema = z.enum([
   'UNBAN',
   'SOFTBAN',
   'QUARANTINE',
+  'NOTE',
+  'UNTIMEOUT',
+  'TEMPBAN',
 ]);
 
 export type CaseAction = z.infer<typeof CaseActionSchema>;
@@ -18,6 +21,7 @@ export const CaseSourceSchema = z.enum([
   'ANTI_RAID',
   'SECURITY',
   'SYSTEM',
+  'DISCORD',
 ]);
 
 export type CaseSource = z.infer<typeof CaseSourceSchema>;
@@ -89,6 +93,10 @@ export const ModerationCaseSchema = z.object({
   status: CaseStatusSchema.default('ACTIVE'),
   source: CaseSourceSchema.default('MANUAL'),
   appealStatus: AppealStatusSchema.default('NONE'),
+  severity: z.enum(['light', 'medium', 'grave']).optional(),
+  points: z.number().optional(),
+  context: z.string().optional(),
+  presetId: z.string().optional(),
   metadata: z
     .object({
       channelId: z.string().optional(),

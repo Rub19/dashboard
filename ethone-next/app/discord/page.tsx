@@ -35,6 +35,12 @@ import ConsoleProtections from "@/components/discord/console/ConsoleProtections"
 import ConsoleAutomodNative from "@/components/discord/console/modules/ConsoleAutomodNative";
 import ConsoleWelcome from "@/components/discord/console/modules/ConsoleWelcome";
 import ConsoleAutoRoles from "@/components/discord/console/modules/ConsoleAutoRoles";
+import ConsoleSanctions from "@/components/discord/console/modules/ConsoleSanctions";
+import ConsoleWarnings from "@/components/discord/console/modules/ConsoleWarnings";
+import ConsolePresets from "@/components/discord/console/modules/ConsolePresets";
+import ConsoleReportsKeeper from "@/components/discord/console/modules/ConsoleReportsKeeper";
+import ConsoleAppeals from "@/components/discord/console/modules/ConsoleAppeals";
+import ConsoleModStats from "@/components/discord/console/modules/ConsoleModStats";
 import ModuleEmbed, { hasNativePage } from "@/components/discord/console/ModuleEmbed";
 import GuildOverviewScreen from "@/components/discord/GuildOverviewScreen";
 import GuildAssistedSetup from "@/components/discord/GuildAssistedSetup";
@@ -703,11 +709,11 @@ export default function DiscordDashboardPage() {
       setShowScan(false);
       setConsoleView(null);
       // Sécurité = page Protections de la console (anti-raid et anti-nuke réunis).
-      if (id === "security" || id === "welcome") {
+      if (id === "security" || id === "welcome" || id === "moderation") {
         setActiveModule(null);
         setShowSetup(false);
         setShowAllModules(false);
-        setConsoleView(id === "welcome" ? "welcome" : "protections");
+        setConsoleView(id === "welcome" ? "welcome" : id === "moderation" ? "sanctions" : "protections");
         return;
       }
       // Vue d'ensemble = accueil de la console (même contenu, déjà au format Keeper).
@@ -790,7 +796,7 @@ export default function DiscordDashboardPage() {
         setShowSetup(true);
       } else if (sp.get("view") === "scan" || sp.get("tab") === "scan") {
         setShowScan(true);
-      } else if (["settings", "access", "logs", "whitelist", "blacklist", "members", "commands", "tools", "protections", "automod", "welcome", "autoroles"].includes(sp.get("view") ?? "")) {
+      } else if (["settings", "access", "logs", "whitelist", "blacklist", "members", "commands", "tools", "protections", "automod", "welcome", "autoroles", "sanctions", "warnings", "presets", "reports", "appeals", "modstats"].includes(sp.get("view") ?? "")) {
         setConsoleView(sp.get("view") as ConsoleView);
       } else if (sp.get("module") && sp.get("module") !== "overview" && INLINE_MODULE_IDS.has(sp.get("module")!)) {
         setActiveModule(sp.get("module") as ModuleType);
@@ -1274,6 +1280,18 @@ export default function DiscordDashboardPage() {
                     ? "Bienvenue et départs"
                     : view === "autoroles"
                     ? "Rôles automatiques"
+                    : view === "sanctions"
+                    ? "Sanctions"
+                    : view === "warnings"
+                    ? "Avertissements et paliers"
+                    : view === "presets"
+                    ? "Raisons prédéfinies"
+                    : view === "reports"
+                    ? "Signalements"
+                    : view === "appeals"
+                    ? "Appels"
+                    : view === "modstats"
+                    ? "Statistiques"
                     : view === "scan"
                     ? i18n("dSecurityScan", "Scan de sécurité")
                     : view === "setup"
@@ -1390,6 +1408,12 @@ export default function DiscordDashboardPage() {
               {view === "automod" && <ConsoleAutomodNative guildId={selectedGuild.id} />}
               {view === "welcome" && <ConsoleWelcome guildId={selectedGuild.id} />}
               {view === "autoroles" && <ConsoleAutoRoles guildId={selectedGuild.id} />}
+              {view === "sanctions" && <ConsoleSanctions guildId={selectedGuild.id} />}
+              {view === "warnings" && <ConsoleWarnings guildId={selectedGuild.id} />}
+              {view === "presets" && <ConsolePresets guildId={selectedGuild.id} />}
+              {view === "reports" && <ConsoleReportsKeeper guildId={selectedGuild.id} />}
+              {view === "appeals" && <ConsoleAppeals guildId={selectedGuild.id} />}
+              {view === "modstats" && <ConsoleModStats guildId={selectedGuild.id} />}
 
               {view === "scan" && (
                 <GuildSecurityScan

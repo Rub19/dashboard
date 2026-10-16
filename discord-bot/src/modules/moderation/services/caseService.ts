@@ -13,6 +13,8 @@ import { StaffAbuseDetector } from './staffAbuseDetector.js';
 import { logService } from '../../logs/services/logService.js';
 import { analyticsWriteBuffer } from '../../analytics/storage/analyticsWriteBuffer.js';
 import { logger } from '../../../utils/logger.js';
+import { sanctionConfig } from '../sanctionConfig.js';
+import { onCaseCreated } from './sanctionPipeline.js';
 
 export class CaseService {
   public static createCase(
@@ -29,14 +31,23 @@ export class CaseService {
       durationSeconds?: number | null;
       source?: CaseSource;
       metadata?: ModerationCase['metadata'];
+      severity?: ModerationCase['severity'];
+      points?: number;
+      context?: string;
+      presetId?: string;
     }
   ): ModerationCase {
+    const cfg = sanctionConfig.get(params.guildId);
+    const src = params.source || 'MANUAL';
+    const keep = !(((src === 'SECURITY' || src === 'ANTI_RAID') && !cfg.history.protection) || (src === 'AUTOMOD' && !cfg.history.automod) || (src === 'DISCORD' && !cfg.history.discord));
+    const points =
+      params.points ?? (params.action === 'WARN' ? (src === 'AUTOMOD' ? cfg.warnings.autoPoints.automod : src === 'SECURITY' || src === 'ANTI_RAID' ? cfg.warnings.autoPoints.protection : undefined) : undefined);
     const expiresAt =
       params.durationSeconds && params.durationSeconds > 0
         ? new Date(Date.now() + params.durationSeconds * 1000).toISOString()
         : null;
 
-    const modCase = moderationRepository.createCase({
+    const record = {
       guildId: params.guildId,
       userId: params.userId,
       userTag: params.userTag,
@@ -48,11 +59,17 @@ export class CaseService {
       durationSeconds: params.durationSeconds ?? null,
       createdAt: new Date().toISOString(),
       expiresAt,
-      status: 'ACTIVE',
+      status: 'ACTIVE' as const,
       source: params.source || 'MANUAL',
-      appealStatus: 'NONE',
+      appealStatus: 'NONE' as const,
       metadata: params.metadata || {},
-    });
+      ...(params.severity ? { severity: params.severity } : {}),
+      ...(points !== undefined ? { points } : {}),
+      ...(params.context ? { context: params.context } : {}),
+      ...(params.presetId ? { presetId: params.presetId } : {}),
+    };
+    if (!keep) return { ...record, id: 'UNRECORDED', caseNumber: 0 };
+    const modCase = moderationRepository.createCase(record);
 
     analyticsWriteBuffer.recordModerationAction(params.guildId);
 
@@ -93,6 +110,8 @@ export class CaseService {
         source: params.source,
       },
     });
+
+    void onCaseCreated(discordClient, modCase).catch((err) => logger.warn('[Sanctions] Paliers / garde-fou :', err?.message));
 
     return modCase;
   }
@@ -156,7 +175,7 @@ export class CaseService {
             .fetch(updated.userId)
             .then((m) => m?.timeout(null, `Révocation Case #${caseNumber}`))
             .catch((err) => logger.warn(`[CaseService] Échec levée du timeout Discord pour la Case #${caseNumber} :`, err));
-        } else if (updated.action === 'BAN') {
+        } else if (updated.action === 'BAN' || updated.action === 'TEMPBAN') {
           guild.bans
             .remove(updated.userId, `Révocation Case #${caseNumber}`)
             .catch((err) => logger.warn(`[CaseService] Échec débannissement Discord pour la Case #${caseNumber} :`, err));

@@ -2,6 +2,7 @@ import { Client } from 'discord.js';
 import { moderationRepository } from '../storage/moderationRepository.js';
 import { ModerationLogger } from './moderationLogger.js';
 import { logger } from '../../../utils/logger.js';
+import { remindEnd } from './sanctionPipeline.js';
 import { BotJobSchedulerService } from '../../../modules/botControl/services/botJobSchedulerService.js';
 
 export class ModerationScheduler {
@@ -58,7 +59,7 @@ export class ModerationScheduler {
               } catch (err) {
                 logger.error(`[ModerationScheduler] Échec levée timeout pour ${modCase.userId} :`, err);
               }
-            } else if (modCase.action === 'BAN') {
+            } else if (modCase.action === 'BAN' || modCase.action === 'TEMPBAN') {
               try {
                 await guild.bans.remove(modCase.userId, `Expiration automatique de la Case #${modCase.caseNumber}`);
               } catch (err) {
@@ -81,6 +82,8 @@ export class ModerationScheduler {
               }
             }
           }
+
+          if (guild && (modCase.action === 'TIMEOUT' || modCase.action === 'TEMPBAN' || modCase.action === 'BAN')) void remindEnd(discordClient, guild, modCase);
 
           // 2. Basculer le statut en EXPIRED
           moderationRepository.updateCase(modCase.guildId, modCase.caseNumber, {

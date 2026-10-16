@@ -16,6 +16,23 @@ export const ReportsConfigSchema = z.object({
   pingStaff: z.boolean().default(false),
   /** Délai minimum entre deux signalements d'un même membre (anti-spam). */
   cooldownSeconds: z.number().int().min(0).max(3600).default(60),
+  /** Rôles qui traitent les signalements, en plus des permissions de modération. */
+  moderatorRoleIds: z.array(z.string()).max(25).default([]),
+  /** Rôles mentionnés à chaque nouveau signalement. */
+  mentionRoleIds: z.array(z.string()).max(25).default([]),
+  /** Émoji posé sur le message signalé par clic droit (vide : aucun). */
+  reactionEmoji: z.string().max(80).default('🚩'),
+  /** Plusieurs signalements du même membre en 15 minutes forment un seul message. */
+  groupWindow: z.boolean().default(true),
+  /** Signalements qu'un modérateur peut avoir en cours (0 : sans limite). */
+  maxClaims: z.number().int().min(0).max(50).default(0),
+  /** Sinon, seules les raisons prédéfinies sont proposées pour sanctionner. */
+  customSanctions: z.boolean().default(true),
+  /** Prévenir le signaleur à la clôture. */
+  notifyReporter: z.boolean().default(true),
+  confirmationMessage: z.string().max(500).default(''),
+  threadPerReport: z.boolean().default(false),
+  triageThreads: z.boolean().default(false),
   updatedAt: z.string().default(() => new Date().toISOString()),
 });
 export type ReportsConfig = z.infer<typeof ReportsConfigSchema>;

@@ -1,5 +1,21 @@
 [
   {
+    "version": "v1.75.115",
+    "date": "2026-10-16",
+    "title": "Sanctions façon Keeper, tout gratuit",
+    "items": [
+      "Nouvelle catégorie Sanctions dans la barre latérale : Sanctions, Avertissements et paliers, Raisons prédéfinies, Signalements, Appels et Statistiques.",
+      "Chaque sanction a son dossier numéroté : commandes, protection Etho, AutoMod et sanctions faites à la main dans Discord. Filtres, recherche et export CSV ou JSON gratuits.",
+      "Nouvelle sanction depuis le dashboard : avertissement avec gravité, note, mute, expulsion, ban temporaire ou bannissement, avec raison et contexte privé.",
+      "Avertissements à points avec gravité, expiration, infractions automatiques et bonne conduite. Jusqu'à 10 paliers qui sanctionnent automatiquement.",
+      "MP au membre avec le numéro du dossier, bouton Annuler 10 secondes, réponses masquées avec bouton Afficher, rappel de fin et garde-fou contre les sanctions en rafale.",
+      "Raisons prédéfinies rangées par catégories, proposées en autocomplétion et utilisables avec la nouvelle commande /mod, y compris par des rôles choisis.",
+      "Appels : le membre fait appel depuis son MP, l'équipe accepte, refuse ou en discute, sur Discord ou depuis le dashboard.",
+      "Signalements enrichis : rôles modérateurs, réaction sur le message, regroupement en 15 minutes, limite de prises en charge, signaleur prévenu, fils de discussion et de tri.",
+      "Statistiques de modération sur 7, 30 ou 90 jours."
+    ]
+  },
+  {
     "version": "v1.75.114",
     "date": "2026-10-15",
     "title": "Menus déroulants opaques et chargement après mise à jour",
@@ -613,19 +629,6 @@
     "items": [
       "Sauvegardes : restauration guidée directement dans la console. Choix des éléments (rôles, catégories, salons, permissions, réglages d'Etho), mode « Ajouter et mettre à jour » ou « Remettre à l'identique », plan détaillé recalculé à chaque choix, confirmation par le nom du serveur pour le mode destructif, puis suivi en direct (progression, erreurs, journal).",
       "AutoMod Discord : création et modification des règles dans la console. Type (avec les limites Discord), mots-clés, expressions régulières, mots autorisés, listes prédéfinies, limite de mentions, actions (bloquer avec message, alerter, exclure temporairement, bloquer le membre) et exceptions."
-    ]
-  },
-  {
-    "version": "v1.63.0",
-    "date": "2026-10-09",
-    "title": "Console : toutes les pages au format Keeper, sécurité renforcée",
-    "items": [
-      "Commandes personnalisées : création d'une réponse simple, modèles, activation, description, réponse, déclenchement, délai, rôles requis, duplication et suppression ; éditeur avancé pour les conditions et actions.",
-      "Analytics : indicateurs avec évolution par rapport à la période précédente, points à retenir, carte des heures d'activité, commandes les plus utilisées, sanctions par type, export CSV et JSON.",
-      "AutoMod Discord : règles recommandées en un clic (avec salon d'alerte), liste des règles avec résumé, activation et suppression.",
-      "Événements : nouvelle vue Calendrier (grille du mois, clic sur un jour pour préremplir un événement) ; le module Calendrier l'ouvre directement.",
-      "Vue d'ensemble : renvoie vers l'accueil de la console, qui affiche déjà ces informations.",
-      "Sécurité : une commande personnalisée ne peut plus être déplacée vers un autre serveur ni lue depuis un autre serveur ; les suggestions ne peuvent plus être modifiées depuis un autre serveur."
     ]
   }
 ]

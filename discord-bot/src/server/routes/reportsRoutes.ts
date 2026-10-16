@@ -20,7 +20,23 @@ export function createReportSystemRouter(client: Client) {
   router.put('/config', (req: Request, res: Response): void => {
     const guildId = String(req.params.guildId);
     const parsed = z
-      .object({ enabled: z.boolean(), channelId: snowflake.nullable(), staffRoleId: snowflake.nullable(), pingStaff: z.boolean(), cooldownSeconds: z.number().int().min(0).max(3600) })
+      .object({
+        enabled: z.boolean(),
+        channelId: snowflake.nullable(),
+        staffRoleId: snowflake.nullable(),
+        pingStaff: z.boolean(),
+        cooldownSeconds: z.number().int().min(0).max(3600),
+        moderatorRoleIds: z.array(snowflake).max(25),
+        mentionRoleIds: z.array(snowflake).max(25),
+        reactionEmoji: z.string().max(80),
+        groupWindow: z.boolean(),
+        maxClaims: z.number().int().min(0).max(50),
+        customSanctions: z.boolean(),
+        notifyReporter: z.boolean(),
+        confirmationMessage: z.string().max(500),
+        threadPerReport: z.boolean(),
+        triageThreads: z.boolean(),
+      })
       .partial()
       .strict()
       .safeParse(req.body);
@@ -34,7 +50,7 @@ export function createReportSystemRouter(client: Client) {
       res.status(400).json({ error: 'Salon introuvable sur ce serveur' });
       return;
     }
-    if (parsed.data.staffRoleId && !guild?.roles.cache.has(parsed.data.staffRoleId)) {
+    if ([parsed.data.staffRoleId, ...(parsed.data.moderatorRoleIds ?? []), ...(parsed.data.mentionRoleIds ?? [])].some((id) => id && !guild?.roles.cache.has(id))) {
       res.status(400).json({ error: 'Rôle introuvable sur ce serveur' });
       return;
     }

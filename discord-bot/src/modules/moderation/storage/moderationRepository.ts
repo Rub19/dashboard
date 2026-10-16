@@ -311,6 +311,16 @@ class ModerationRepository {
     return { cases: paginated, total };
   }
 
+  public allCases(guildId: string): ModerationCase[] {
+    return this.cases.get(guildId) || [];
+  }
+
+  public deleteCase(guildId: string, caseNumber: number): void {
+    const list = this.cases.get(guildId) || [];
+    this.cases.set(guildId, list.filter((c) => c.caseNumber !== caseNumber));
+    this.saveCases();
+  }
+
   public getUserCases(guildId: string, userId: string): ModerationCase[] {
     const list = this.cases.get(guildId) || [];
     return list.filter((c) => c.userId === userId);

@@ -57359,6 +57359,79 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_114_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_114_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_114_de);
 
+const v1_75_115_fr: ChangelogEntry = {
+  version: "v1.75.115",
+  date: "2026-10-16",
+  title: "Sanctions façon Keeper, tout gratuit",
+  items: [
+    "Nouvelle catégorie Sanctions dans la barre latérale : Sanctions, Avertissements et paliers, Raisons prédéfinies, Signalements, Appels et Statistiques.",
+    "Chaque sanction a son dossier numéroté : commandes, protection Etho, AutoMod et sanctions faites à la main dans Discord. Filtres, recherche et export CSV ou JSON gratuits.",
+    "Nouvelle sanction depuis le dashboard : avertissement avec gravité, note, mute, expulsion, ban temporaire ou bannissement, avec raison et contexte privé.",
+    "Avertissements à points avec gravité, expiration, infractions automatiques et bonne conduite. Jusqu'à 10 paliers qui sanctionnent automatiquement.",
+    "MP au membre avec le numéro du dossier, bouton Annuler 10 secondes, réponses masquées avec bouton Afficher, rappel de fin et garde-fou contre les sanctions en rafale.",
+    "Raisons prédéfinies rangées par catégories, proposées en autocomplétion et utilisables avec la nouvelle commande /mod, y compris par des rôles choisis.",
+    "Appels : le membre fait appel depuis son MP, l'équipe accepte, refuse ou en discute, sur Discord ou depuis le dashboard.",
+    "Signalements enrichis : rôles modérateurs, réaction sur le message, regroupement en 15 minutes, limite de prises en charge, signaleur prévenu, fils de discussion et de tri.",
+    "Statistiques de modération sur 7, 30 ou 90 jours.",
+  ],
+};
+
+const v1_75_115_en: ChangelogEntry = {
+  version: "v1.75.115",
+  date: "2026-10-16",
+  title: "Keeper-style sanctions, all free",
+  items: [
+    "New Sanctions section in the sidebar: Sanctions, Warnings & tiers, Preset reasons, Reports, Appeals and Statistics.",
+    "Every sanction has a numbered case: commands, Etho protection, AutoMod and sanctions made manually in Discord. Filters, search and free CSV or JSON export.",
+    "New sanction from the dashboard: warning with severity, note, mute, kick, temporary ban or ban, with reason and private context.",
+    "Point-based warnings with severity, expiry, automatic infractions and good conduct. Up to 10 tiers that sanction automatically.",
+    "DM to the member with the case number, 10-second Undo button, hidden replies with a Show button, end reminder and a guard against sanction bursts.",
+    "Preset reasons sorted by categories, offered in autocomplete and usable with the new /mod command, including by chosen roles.",
+    "Appeals: the member appeals from their DM, the team accepts, refuses or discusses it, on Discord or from the dashboard.",
+    "Richer reports: moderator roles, reaction on the message, 15-minute grouping, claim limit, reporter notified, discussion and triage threads.",
+    "Moderation statistics over 7, 30 or 90 days.",
+  ],
+};
+
+const v1_75_115_es: ChangelogEntry = {
+  version: "v1.75.115",
+  date: "2026-10-16",
+  title: "Sanciones al estilo Keeper, todo gratis",
+  items: [
+    "Nueva sección Sanciones en la barra lateral: Sanciones, Advertencias y niveles, Razones predefinidas, Reportes, Apelaciones y Estadísticas.",
+    "Cada sanción tiene su expediente numerado: comandos, protección Etho, AutoMod y sanciones hechas a mano en Discord. Filtros, búsqueda y exportación CSV o JSON gratis.",
+    "Nueva sanción desde el panel: advertencia con gravedad, nota, silencio, expulsión, ban temporal o ban, con razón y contexto privado.",
+    "Advertencias por puntos con gravedad, caducidad, infracciones automáticas y buena conducta. Hasta 10 niveles que sancionan automáticamente.",
+    "MD al miembro con el número de expediente, botón Deshacer de 10 segundos, respuestas ocultas con botón Mostrar, aviso de fin y protección contra ráfagas de sanciones.",
+    "Razones predefinidas por categorías, sugeridas en autocompletado y usables con el nuevo comando /mod, también por roles elegidos.",
+    "Apelaciones: el miembro apela desde su MD, el equipo acepta, rechaza o lo discute, en Discord o desde el panel.",
+    "Reportes mejorados: roles moderadores, reacción en el mensaje, agrupación en 15 minutos, límite de asignaciones, aviso al reportante, hilos de discusión y de clasificación.",
+    "Estadísticas de moderación en 7, 30 o 90 días.",
+  ],
+};
+
+const v1_75_115_de: ChangelogEntry = {
+  version: "v1.75.115",
+  date: "2026-10-16",
+  title: "Sanktionen im Keeper-Stil, alles kostenlos",
+  items: [
+    "Neuer Bereich Sanktionen in der Seitenleiste: Sanktionen, Verwarnungen & Stufen, Vorgefertigte Gründe, Meldungen, Einsprüche und Statistiken.",
+    "Jede Sanktion hat eine nummerierte Akte: Befehle, Etho-Schutz, AutoMod und manuell in Discord verhängte Sanktionen. Filter, Suche und kostenloser CSV- oder JSON-Export.",
+    "Neue Sanktion aus dem Dashboard: Verwarnung mit Schweregrad, Notiz, Stummschaltung, Kick, temporärer Bann oder Bann, mit Grund und privatem Kontext.",
+    "Punktbasierte Verwarnungen mit Schweregrad, Ablauf, automatischen Verstößen und guter Führung. Bis zu 10 Stufen, die automatisch sanktionieren.",
+    "DM an das Mitglied mit Aktennummer, 10-Sekunden-Rückgängig-Button, versteckte Antworten mit Anzeigen-Button, Ende-Erinnerung und Schutz vor Sanktionsserien.",
+    "Vorgefertigte Gründe nach Kategorien, in der Autovervollständigung und mit dem neuen Befehl /mod nutzbar, auch durch gewählte Rollen.",
+    "Einsprüche: Das Mitglied legt per DM Einspruch ein, das Team nimmt an, lehnt ab oder diskutiert, in Discord oder im Dashboard.",
+    "Erweiterte Meldungen: Moderatorrollen, Reaktion auf die Nachricht, 15-Minuten-Bündelung, Übernahme-Limit, Benachrichtigung des Meldenden, Diskussions- und Sortier-Threads.",
+    "Moderationsstatistiken über 7, 30 oder 90 Tage.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_115_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_115_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_115_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_115_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

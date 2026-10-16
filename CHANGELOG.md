@@ -2,6 +2,20 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.115 — 2026-10-16
+
+**Sanctions façon Keeper, tout gratuit**
+
+- Nouvelle catégorie Sanctions dans la barre latérale : Sanctions, Avertissements et paliers, Raisons prédéfinies, Signalements, Appels et Statistiques.
+- Chaque sanction a son dossier numéroté : commandes, protection Etho, AutoMod et sanctions faites à la main dans Discord. Filtres, recherche et export CSV ou JSON gratuits.
+- Nouvelle sanction depuis le dashboard : avertissement avec gravité, note, mute, expulsion, ban temporaire ou bannissement, avec raison et contexte privé.
+- Avertissements à points avec gravité, expiration, infractions automatiques et bonne conduite. Jusqu'à 10 paliers qui sanctionnent automatiquement.
+- MP au membre avec le numéro du dossier, bouton Annuler 10 secondes, réponses masquées avec bouton Afficher, rappel de fin et garde-fou contre les sanctions en rafale.
+- Raisons prédéfinies rangées par catégories, proposées en autocomplétion et utilisables avec la nouvelle commande /mod, y compris par des rôles choisis.
+- Appels : le membre fait appel depuis son MP, l'équipe accepte, refuse ou en discute, sur Discord ou depuis le dashboard.
+- Signalements enrichis : rôles modérateurs, réaction sur le message, regroupement en 15 minutes, limite de prises en charge, signaleur prévenu, fils de discussion et de tri.
+- Statistiques de modération sur 7, 30 ou 90 jours.
+
 ## v1.75.114 — 2026-10-15
 
 **Menus déroulants opaques et chargement après mise à jour**

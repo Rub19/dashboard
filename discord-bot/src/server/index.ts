@@ -18,6 +18,7 @@ import { createModerationRouter } from './routes/moderationRoutes.js';
 import { createWelcomeRouter } from './routes/welcomeRoutes.js';
 import { createTicketRouter } from './routes/ticketRoutes.js';
 import { createBadgeRouter } from './routes/badgeRoutes.js';
+import { createSanctionsRouter } from './routes/sanctionsRoutes.js';
 import { assetPath } from '../modules/welcome/storage/welcomeAssets.js';
 import { createLogRouter } from './routes/logRoutes.js';
 import { createRoleRouter } from './routes/roleRoutes.js';
@@ -203,6 +204,7 @@ export function startWebServer(client: Client): http.Server {
     createWelcomeRouter(client)
   );
   app.use('/api/guilds/:guildId/badges', authMiddleware, createGuildAuthMiddleware(client), createBadgeRouter(client));
+  app.use('/api/guilds/:guildId/sanctions', authMiddleware, createGuildAuthMiddleware(client), createSanctionsRouter(client));
   app.use(
     '/api/guilds/:guildId/tickets',
     authMiddleware,

@@ -1,14 +1,15 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ContainerBuilder, MessageActionRowComponentBuilder } from 'discord.js';
+import type { ModerationCase } from '../types/case.js';
 import { container, footer, sectionWithThumbnail, separator, statsLine, text, toneToColor } from '../../../utils/components.js';
 import type { GuildConfig } from '../../../types/guildConfig.js';
-import type { Sanction } from '../types/sanction.js';
 
 const DEFAULT_AVATAR = 'https://cdn.discordapp.com/embed/avatars/0.png';
 
 export const SANCTION_META: Record<string, { emoji: string; label: string; tone: 'success' | 'error' | 'warning' | 'info' | 'primary' }> = {
   warn: { emoji: '⚠️', label: 'Avertissement', tone: 'warning' },
-  timeout: { emoji: '🔇', label: 'Sourdine (timeout)', tone: 'warning' },
-  untimeout: { emoji: '🔊', label: 'Sourdine levée', tone: 'success' },
+  note: { emoji: '📝', label: 'Note', tone: 'info' },
+  timeout: { emoji: '🔇', label: 'Mute', tone: 'warning' },
+  untimeout: { emoji: '🔊', label: 'Fin de mute', tone: 'success' },
   kick: { emoji: '👢', label: 'Expulsion', tone: 'error' },
   ban: { emoji: '🔨', label: 'Bannissement', tone: 'error' },
   unban: { emoji: '🔓', label: 'Débannissement', tone: 'success' },
@@ -30,6 +31,8 @@ export function formatSanctionDuration(seconds?: number | null): string | null {
 export function buildSanctionCard(opts: {
   guildConfig: GuildConfig;
   type: string;
+  label?: string;
+  extraButtons?: ButtonBuilder[];
   sanctionId: string | number;
   targetTag: string;
   targetMention?: string | null;
@@ -42,7 +45,8 @@ export function buildSanctionCard(opts: {
   dryRun?: boolean;
   extraNote?: string | null;
 }): ContainerBuilder {
-  const meta = SANCTION_META[opts.type] || { emoji: '📋', label: opts.type.toUpperCase(), tone: 'info' as const };
+  const base = SANCTION_META[opts.type] || { emoji: '📋', label: opts.type.toUpperCase(), tone: 'info' as const };
+  const meta = { ...base, label: opts.label ?? base.label };
   const hex = meta.tone === 'error' ? opts.guildConfig.errorColor : meta.tone === 'success' ? opts.guildConfig.successColor : meta.tone === 'info' ? opts.guildConfig.infoColor : null;
   const duration = formatSanctionDuration(opts.durationSeconds);
 
@@ -73,10 +77,19 @@ export function buildSanctionCard(opts: {
         .setEmoji('📋')
         .setStyle(ButtonStyle.Secondary)
         .setDisabled(!opts.targetMention),
+      ...(opts.extraButtons ?? []),
     ),
     footer(`${opts.guildConfig.botName} · Modération`),
   ]);
 }
+
+export type HistoryEntry = { id: string | number; type: string; reason: string; timestamp: string; moderatorTag: string; open?: boolean };
+
+const CASE_TYPE: Record<string, string> = { WARN: 'warn', NOTE: 'note', TIMEOUT: 'timeout', UNTIMEOUT: 'untimeout', KICK: 'kick', BAN: 'ban', TEMPBAN: 'ban', SOFTBAN: 'ban', UNBAN: 'unban' };
+
+/** Dossiers d'un membre au format de l'historique. */
+export const casesToHistory = (cases: ModerationCase[]): HistoryEntry[] =>
+  cases.map((c) => ({ id: c.caseNumber, type: CASE_TYPE[c.action] ?? 'warn', reason: c.reason, timestamp: c.createdAt, moderatorTag: c.moderatorTag, open: c.status === 'ACTIVE' }));
 
 /** Historique des sanctions d'un membre (/warnings). */
 export function buildSanctionHistoryCard(opts: {
@@ -84,7 +97,7 @@ export function buildSanctionHistoryCard(opts: {
   targetTag: string;
   targetId: string;
   targetAvatarUrl?: string | null;
-  sanctions: Sanction[];
+  sanctions: HistoryEntry[];
 }): ContainerBuilder {
   const { sanctions } = opts;
   const counts: Record<string, number> = {};
@@ -96,7 +109,7 @@ export function buildSanctionHistoryCard(opts: {
   const lines = sanctions.slice(0, 10).map((s) => {
     const meta = SANCTION_META[s.type] || { emoji: '📋', label: s.type };
     const ts = Math.floor(new Date(s.timestamp).getTime() / 1000);
-    return `${meta.emoji} **#${s.id}** ${meta.label} — ${s.reason}\n-# par ${s.moderatorTag} · <t:${ts}:d>`;
+    return `${meta.emoji} **#${s.id}** ${meta.label} — ${s.reason}\n-# par ${s.moderatorTag} · <t:${ts}:d>${s.open === false ? ' · clos' : ''}`;
   });
 
   return container(toneToColor(sanctions.length === 0 ? 'success' : 'primary', sanctions.length === 0 ? opts.guildConfig.successColor : opts.guildConfig.primaryColor), [

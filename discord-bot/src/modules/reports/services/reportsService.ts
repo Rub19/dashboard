@@ -20,6 +20,8 @@ import {
   type User,
 } from 'discord.js';
 import { reportsStorage } from '../storage/reportsStorage.js';
+import { sanctionConfig } from '../../moderation/sanctionConfig.js';
+import { ACTION_LABEL, applySanction } from '../../moderation/services/sanctionPipeline.js';
 import { ModerationService } from '../../moderation/services/moderationService.js';
 import { moderationRepository } from '../../moderation/storage/moderationRepository.js';
 import type { ModerationReport } from '../../moderation/types/report.js';
@@ -54,6 +56,7 @@ class ReportsService {
     const conf = reportsStorage.getConfig(guildId);
     if (member.permissions.has(PermissionFlagsBits.Administrator)) return true;
     if (conf.staffRoleId && member.roles.cache.has(conf.staffRoleId)) return true;
+    if (conf.moderatorRoleIds.some((id) => member.roles.cache.has(id))) return true;
     return member.permissions.has(PermissionFlagsBits.ModerateMembers);
   }
 
@@ -93,6 +96,10 @@ class ReportsService {
       messageId: where?.messageId,
       messageContent: where?.messageContent ? clip(where.messageContent, 400) : undefined,
     });
+    if (where?.messageId && where.channelId && conf.reactionEmoji) {
+      const ch = guild.channels.cache.get(where.channelId);
+      if (ch?.isTextBased()) await (await ch.messages.fetch(where.messageId).catch(() => null))?.react(conf.reactionEmoji).catch(() => null);
+    }
     await this.post(guild, target.id, true).catch((err) => logger.warn('[Signalements] Envoi à l’équipe impossible :', err));
     return { ok: true, report };
   }
@@ -141,7 +148,7 @@ class ReportsService {
     const select = new StringSelectMenuBuilder()
       .setCustomId(`rep_sanction:${userId}`)
       .setPlaceholder('Sanctionner le membre')
-      .addOptions(Object.entries(SANCTIONS).map(([value, s]) => new StringSelectMenuOptionBuilder().setLabel(s.label).setValue(value).setDescription(s.description)));
+      .addOptions(this.sanctionOptions(guild.id));
     const buttons = new ActionRowBuilder<ButtonBuilder>().addComponents(
       new ButtonBuilder().setCustomId(`rep_take:${userId}`).setLabel(assigned ? 'Reprendre en charge' : 'Prendre en charge').setStyle(ButtonStyle.Primary),
       new ButtonBuilder().setCustomId(`rep_done:${userId}`).setLabel('Marquer comme traité').setStyle(ButtonStyle.Success),
@@ -150,13 +157,68 @@ class ReportsService {
     return { embeds: [embed], components: [new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(select), buttons], allowedMentions: { parse: [] } };
   }
 
+  /** Raisons prédéfinies du serveur, puis les sanctions libres si « Sanctions personnalisées » est activé. */
+  private sanctionOptions(guildId: string): StringSelectMenuOptionBuilder[] {
+    const presets = sanctionConfig
+      .get(guildId)
+      .presets.reasons.slice(0, 15)
+      .map((p) => new StringSelectMenuOptionBuilder().setLabel(p.name.slice(0, 100)).setValue(`preset:${p.id}`).setDescription(`${ACTION_LABEL[p.action]}${p.category ? ` · ${p.category}` : ''}`.slice(0, 100)));
+    const free =
+      reportsStorage.getConfig(guildId).customSanctions || presets.length === 0
+        ? Object.entries(SANCTIONS).map(([value, s]) => new StringSelectMenuOptionBuilder().setLabel(s.label).setValue(value).setDescription(s.description))
+        : [];
+    return [...presets, ...free].slice(0, 25);
+  }
+
+  /** À la clôture : prévient les signaleurs et range le résumé dans le fil de tri. */
+  public async notifyClosed(guild: Guild, reports: ModerationReport[], outcome: 'ACTIONED' | 'DISMISSED', mod: { id: string; tag: string }, sanction?: string, caseNumber?: number): Promise<void> {
+    const conf = reportsStorage.getConfig(guild.id);
+    const label = outcome === 'DISMISSED' ? 'refusé' : sanction ? 'traité avec une sanction' : 'résolu';
+    if (conf.notifyReporter) {
+      for (const reporterId of new Set(reports.map((r) => r.reporterUserId))) {
+        const user = await guild.client.users.fetch(reporterId).catch(() => null);
+        await user
+          ?.send({
+            embeds: [
+              noticeEmbed(
+                outcome === 'DISMISSED' ? 'info' : 'success',
+                `Ton signalement sur **${guild.name}** a été ${label} par ${mod.tag}${sanction ? ` · ${sanction}` : ''}${caseNumber ? ` (dossier n°${caseNumber})` : ''}.`
+              ),
+            ],
+          })
+          .catch(() => null);
+      }
+    }
+    if (conf.triageThreads && conf.channelId) {
+      const channel = guild.channels.cache.get(conf.channelId);
+      if (channel && channel.type === ChannelType.GuildText) {
+        const name = outcome === 'DISMISSED' ? 'Refusés' : sanction ? 'Sanctionnés' : 'Résolus';
+        const active = await channel.threads.fetchActive().catch(() => null);
+        const thread = active?.threads.find((t) => t.name === name) ?? (await channel.threads.create({ name, autoArchiveDuration: 10080 }).catch(() => null));
+        const target = reports[0];
+        await thread
+          ?.send({
+            content: `**${target?.reportedUserTag ?? '?'}** (<@${target?.reportedUserId}>) · ${reports.length} signalement(s) · ${label} par <@${mod.id}>${caseNumber ? ` · dossier n°${caseNumber}` : ''}`,
+            allowedMentions: { parse: [] },
+          })
+          .catch(() => null);
+      }
+    }
+  }
+
   /** Publie ou met à jour le message de l'équipe. `isNew` : mentionne le rôle de l'équipe si le réglage est activé. */
   public async post(guild: Guild, userId: string, isNew = false): Promise<void> {
     const conf = reportsStorage.getConfig(guild.id);
     const channel = conf.channelId ? guild.channels.cache.get(conf.channelId) : null;
     if (!channel || !isSendableTarget(channel)) return;
     const payload = await this.render(guild, userId);
-    const existing = reportsStorage.getThread(guild.id, userId);
+    let existing = reportsStorage.getThread(guild.id, userId);
+    if (existing && isNew) {
+      const open = this.openReports(guild.id, userId).sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+      const previous = open[open.length - 2];
+      if (!conf.groupWindow || !previous || Date.now() - Date.parse(previous.createdAt) > 15 * 60_000) existing = undefined;
+    }
+    const mentions = [...conf.mentionRoleIds, ...(conf.pingStaff && conf.staffRoleId ? [conf.staffRoleId] : [])];
     // Salon Forum/Média : chaque membre signalé a son propre post (existing.channelId = le post).
     let host: any = null;
     if (existing) {
@@ -170,17 +232,20 @@ class ReportsService {
       const message = await host.messages.fetch(existing!.messageId).catch(() => null);
       if (message) {
         await message.edit(payload);
-        if (isNew && conf.pingStaff && conf.staffRoleId) await host.send({ content: `<@&${conf.staffRoleId}> nouveau signalement ci-dessus.`, allowedMentions: { roles: [conf.staffRoleId] } }).catch(() => undefined);
+        if (isNew && mentions.length) await host.send({ content: `${mentions.map((id) => `<@&${id}>`).join(' ')} nouveau signalement ci-dessus.`, allowedMentions: { roles: mentions } }).catch(() => undefined);
         return;
       }
     }
-    const content = isNew && conf.pingStaff && conf.staffRoleId ? `<@&${conf.staffRoleId}>` : undefined;
+    const content = isNew && mentions.length ? mentions.map((id) => `<@&${id}>`).join(' ') : undefined;
     const sent = await sendToConfiguredChannel(
       channel,
-      { ...payload, content, allowedMentions: content ? { roles: [conf.staffRoleId!] } : { parse: [] } },
+      { ...payload, content, allowedMentions: content ? { roles: mentions } : { parse: [] } },
       { postTitle: `Signalement — ${guild.members?.cache?.get(userId)?.user?.tag ?? userId}` }
     );
     reportsStorage.setThread({ guildId: guild.id, reportedUserId: userId, channelId: sent.channelId ?? channel.id, messageId: sent.id });
+    if (conf.threadPerReport && !isForumLike(channel) && typeof (sent as any).startThread === 'function') {
+      await (sent as any).startThread({ name: `Signalement · ${guild.members.cache.get(userId)?.user.username ?? userId}`.slice(0, 100) }).catch(() => null);
+    }
   }
 
   private openReports(guildId: string, userId: string): ModerationReport[] {
@@ -197,6 +262,19 @@ class ReportsService {
     }
     const mod = { id: interaction.user.id, tag: interaction.user.tag };
     const status = action === 'rep_take' ? 'REVIEWING' : action === 'rep_dismiss' ? 'DISMISSED' : 'ACTIONED';
+    const max = reportsStorage.getConfig(guild.id).maxClaims;
+    if (status === 'REVIEWING' && max > 0) {
+      const mine = new Set(
+        moderationRepository
+          .getReports(guild.id, {})
+          .filter((r) => r.status === 'REVIEWING' && r.assignedModerator?.id === mod.id && r.reportedUserId !== userId)
+          .map((r) => r.reportedUserId)
+      );
+      if (mine.size >= max) {
+        await interaction.reply({ embeds: [noticeEmbed('denied', `Tu as déjà ${mine.size} signalement(s) en cours (limite : ${max}). Termine-les d’abord.`)], flags: MessageFlags.Ephemeral });
+        return;
+      }
+    }
     const reports = this.openReports(guild.id, userId);
     if (reports.length === 0) {
       await interaction.reply({ embeds: [noticeEmbed('info', 'Ces signalements sont déjà traités.')], flags: MessageFlags.Ephemeral });
@@ -207,13 +285,24 @@ class ReportsService {
       else ModerationService.updateReportStatus(guild.id, r.id, status, mod);
     }
     await interaction.update(await this.render(guild, userId));
+    if (status !== 'REVIEWING') await this.notifyClosed(guild, reports, status, mod);
   }
 
   /** Menu « Sanctionner le membre » : applique la sanction via le module de modération (dossier créé) puis clôt les signalements. */
   public async handleSelect(interaction: StringSelectMenuInteraction): Promise<void> {
     const userId = interaction.customId.split(':')[1];
     const guild = interaction.guild;
-    const sanction = SANCTIONS[interaction.values[0]];
+    const picked = interaction.values[0];
+    const preset = picked.startsWith('preset:') && guild ? sanctionConfig.get(guild.id).presets.reasons.find((p) => p.id === picked.slice(7)) : undefined;
+    const sanction: Sanction | undefined = preset
+      ? {
+          label: preset.name,
+          description: '',
+          action: preset.action,
+          seconds: preset.durationSeconds,
+          need: ['BAN', 'TEMPBAN', 'SOFTBAN'].includes(preset.action) ? PermissionFlagsBits.BanMembers : preset.action === 'KICK' ? PermissionFlagsBits.KickMembers : PermissionFlagsBits.ModerateMembers,
+        }
+      : SANCTIONS[picked];
     if (!guild || !sanction || !this.canHandle(interaction.member as GuildMember, guild.id)) {
       await interaction.reply({ embeds: [noticeEmbed('denied', 'Seule l’équipe de modération peut sanctionner depuis un signalement.')], flags: MessageFlags.Ephemeral });
       return;
@@ -224,26 +313,27 @@ class ReportsService {
     }
     await interaction.deferUpdate();
     const reports = this.openReports(guild.id, userId);
-    const reason = `Signalement : ${clip(reports[0]?.reason ?? 'sans motif', 200)}`;
-    const target = await guild.client.users.fetch(userId).catch(() => null);
-    const res = await ModerationService.executeSanction({
+    const reason = preset ? preset.memberReason || preset.name : `Signalement : ${clip(reports[0]?.reason ?? 'sans motif', 200)}`;
+    const res = await applySanction(guild.client, {
       guildId: guild.id,
       userId,
-      userTag: target?.tag,
-      moderatorId: interaction.user.id,
-      moderatorTag: interaction.user.tag,
+      moderator: { id: interaction.user.id, tag: interaction.user.tag },
       action: sanction.action,
       reason,
       durationSeconds: sanction.seconds ?? null,
-      source: 'MANUAL',
+      severity: preset?.severity,
+      points: preset?.points ?? undefined,
+      expiryDays: preset?.expiryDays ?? undefined,
+      presetId: preset?.id,
     });
-    if (!res.success) {
-      await interaction.followUp({ embeds: [noticeEmbed('error', `Sanction impossible : ${res.error ?? 'raison inconnue'}.`)], flags: MessageFlags.Ephemeral });
+    if (!res.ok) {
+      await interaction.followUp({ embeds: [noticeEmbed('error', `Sanction impossible : ${res.error}.`)], flags: MessageFlags.Ephemeral });
       return;
     }
     const mod = { id: interaction.user.id, tag: interaction.user.tag };
-    for (const r of reports) ModerationService.updateReportStatus(guild.id, r.id, 'ACTIONED', mod, `${sanction.label}`, res.case?.caseNumber);
+    for (const r of reports) ModerationService.updateReportStatus(guild.id, r.id, 'ACTIONED', mod, `${sanction.label}`, res.case.caseNumber);
     await interaction.editReply(await this.render(guild, userId));
+    await this.notifyClosed(guild, reports, 'ACTIONED', mod, sanction.label, res.case.caseNumber);
   }
 
   /** Fenêtre de motif validée par le membre. */
@@ -270,7 +360,9 @@ class ReportsService {
       where = { channelId: interaction.channelId ?? undefined };
     }
     const res = await this.submit(interaction.client, guild, interaction.user, target, reason, where);
-    await interaction.editReply({ embeds: [res.ok ? noticeEmbed('success', 'Merci, ton signalement a été transmis à l’équipe de modération.') : noticeEmbed('error', res.error)] });
+    await interaction.editReply({
+      embeds: [res.ok ? noticeEmbed('success', reportsStorage.getConfig(guild.id).confirmationMessage || 'Merci, ton signalement a bien été envoyé à l’équipe de modération.') : noticeEmbed('error', res.error)],
+    });
   }
 
   /**

@@ -1,11 +1,6 @@
 import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
 import { Command, CommandContext } from '../../../types/command.js';
-import { checkHierarchy } from '../permissions/hierarchy.js';
-import { sanctionService } from '../sanctions/sanctionService.js';
-import { buildSanctionCard } from '../utils/sanctionCard.js';
-import { ModLogger } from '../logs/modLogger.js';
-import { formatString, getTranslation } from '../../../utils/i18n.js';
-import { buildSanctionDmEmbed } from '../utils/sanctionDmEmbed.js';
+import { reasonAutocomplete, runSanctionCommand } from './sanctionRunner.js';
 
 export const kickCommand: Command = {
   name: 'kick',
@@ -14,94 +9,20 @@ export const kickCommand: Command = {
   userPermissions: [PermissionFlagsBits.KickMembers],
   slashData: new SlashCommandBuilder()
     .setName('kick')
-    .setDescription('Expulse un membre du serveur')
+    .setDescription('Expulse un membre')
     .addUserOption((opt) => opt.setName('membre').setDescription('Membre à expulser').setRequired(true))
-    .addStringOption((opt) => opt.setName('raison').setDescription('Raison de l’expulsion').setRequired(false))
+    .addStringOption((opt) => opt.setName('raison').setDescription('Raison ou raison prédéfinie').setRequired(false).setAutocomplete(true))
     .setDefaultMemberPermissions(PermissionFlagsBits.KickMembers),
 
+  async autocomplete(interaction) {
+    await reasonAutocomplete(interaction, ['KICK']);
+  },
+
   async execute(ctx: CommandContext): Promise<void> {
-    const conf = ctx.guildConfig;
-    const t = getTranslation(conf.language);
-
-    if (!ctx.guild || !ctx.member) {
-      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.guild_only_command)] });
-      return;
-    }
-
-    // Différer immédiatement : le fetch membre + le DM + le log de modération ci-dessous
-    // peuvent dépasser la fenêtre de 3s de Discord et invalider le token d'interaction
-    // ("Unknown interaction" / 10062) si on ne le fait pas.
-    await ctx.deferReply();
-
-    let targetId: string | undefined;
-    let reason = 'Expulsion par un modérateur';
-
-    if (ctx.isSlash && ctx.interaction) {
-      targetId = ctx.interaction.options.getUser('membre', true).id;
-      reason = ctx.interaction.options.getString('raison') || reason;
-    } else {
-      targetId = ctx.args[0]?.replace(/[^0-9]/g, '');
-      if (ctx.args.length > 1) {
-        reason = ctx.args.slice(1).join(' ');
-      }
-    }
-
-    if (!targetId) {
-      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(formatString(t.mod_usage, { emoji: conf.emojis.error, usage: `${ctx.prefix}kick @membre [raison]` }))] });
-      return;
-    }
-
-    const targetMember = await ctx.guild.members.fetch(targetId).catch(() => null);
-    if (!targetMember) {
-      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.mod_member_not_found)] });
-      return;
-    }
-
-    const check = checkHierarchy(ctx.member, targetMember, ctx.guild.members.me!);
-    if (!check.allowed) {
-      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(`${conf.emojis.error} ${check.reason}`)] });
-      return;
-    }
-
-    try {
-      // Message MP préventif (embed — même rendu que le pipeline automatique)
-      await targetMember.send({
-        embeds: [buildSanctionDmEmbed('kick', t, { guildName: ctx.guild.name, reason, moderatorTag: ctx.author.tag })],
-      }).catch(() => {});
-
-      // Mode test (Bot Owner qui s'auto-cible) : on simule tout SANS jamais
-      // expulser réellement — voir HierarchyCheckResult.dryRun.
-      if (!check.dryRun) {
-        await targetMember.kick(reason);
-      }
-
-      const { sanction } = sanctionService.createSanction({
-        guildId: ctx.guild.id,
-        userId: targetMember.id,
-        userTag: targetMember.user.tag,
-        moderatorId: ctx.author.id,
-        moderatorTag: ctx.author.tag,
-        type: 'kick',
-        reason,
-      });
-
-      await ModLogger.logSanction(ctx.guild, sanction);
-
-      const card = buildSanctionCard({
-        guildConfig: ctx.guildConfig,
-        type: 'kick',
-        sanctionId: sanction.id,
-        targetTag: targetMember.user.tag,
-        targetMention: `<@${targetMember.id}>`,
-        targetAvatarUrl: targetMember.user.displayAvatarURL(),
-        moderatorMention: ctx.author.toString(),
-        reason,
-        totalSanctions: sanctionService.getUserSanctions(ctx.guild.id, targetMember.id).length,
-        dryRun: check.dryRun,
-      });
-      await ctx.reply({ components: [card], componentsV2: true });
-    } catch {
-      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.kick_fail)] });
-    }
+    await runSanctionCommand(ctx, {
+      action: 'KICK',
+      targetId: ctx.isSlash ? ctx.interaction!.options.getUser('membre', true).id : ctx.args[0]?.replace(/[^0-9]/g, ''),
+      reason: ctx.isSlash ? ctx.interaction!.options.getString('raison') : ctx.args.slice(1).join(' '),
+    });
   },
 };

@@ -26,7 +26,12 @@
 
 ---
 
-## Nouveautés majeures & Réalisations récentes (v1.75.83 → v1.75.114)
+## Nouveautés majeures & Réalisations récentes (v1.75.83 → v1.75.115)
+
+### Sanctions façon Keeper (v1.75.115)
+- Circuit unique `modules/moderation/services/sanctionPipeline.ts` (`applySanction` : dossier → MP avec appel → action Discord ; `onCaseCreated` : paliers + garde-fou ; `recordDiscordSanction` via audit log ; `remindEnd`). Les commandes /warn /timeout /kick /ban(/durée) /unban /untimeout passent par `commands/sanctionRunner.ts` ; nouvelle commande `/mod` (raisons prédéfinies). L'ancien `sanctions.json` n'est plus écrit, seulement lu dans l'historique.
+- Réglages `modules/moderation/sanctionConfig.ts` (`data/sanction_config.json`) : tiers, warnings, replies, history, guard, presets, appeals. Appels `services/appealService.ts` (`data/appeals.json`). Historique arrivées/départs/pseudos chiffré `storage/memberEvents.ts` (`data/member_events.enc`, 90 j). La protection crée des dossiers SECURITY (regroupés 10 min).
+- API `/api/guilds/:id/sanctions/*` (`server/routes/sanctionsRoutes.ts`) ; signalements étendus (`reportsConfig.ts`). Pages console : ConsoleSanctions, ConsoleWarnings, ConsolePresets, ConsoleReportsKeeper, ConsoleAppeals, ConsoleModStats (+ `console/sanctions/shared.tsx`).
 
 ### Bienvenue et départs + Rôles automatiques façon Keeper (v1.75.111)
 - Sidebar (`HubSidebar.tsx`) en sections data-driven : Protection, Accueil des membres, Sanctions, Modération, Accès, Animation, Serveur. Vues console `welcome` et `autoroles`.

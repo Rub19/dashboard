@@ -1,3 +1,5 @@
+import { CaseService } from '../moderation/services/caseService.js';
+import { moderationRepository } from '../moderation/storage/moderationRepository.js';
 import {
   AuditLogEvent,
   ChannelType,
@@ -195,9 +197,28 @@ class ProtectionEngine {
     this.recentlyPunished.set(pk, now);
 
     const result = await this.punish(guild, member, executorId, s, `${def.label} : ${opts.detail}`);
+    this.recordCase(guild, executorId, tag, s, def.label, opts.detail);
     const locked = s.lockdown ? await this.lockdown(guild, `${def.label} déclenchée par ${tag}`) : false;
     await this.abuseLog(guild, key, s, { tag, id: executorId, detail: opts.detail, result, repaired, locked });
     return true;
+  }
+
+  /** Dossier automatique de la protection (regroupé : un seul par membre et par protection en 10 minutes). */
+  private recordCase(guild: Guild, userId: string, tag: string, s: ProtectionSettings, label: string, detail: string): void {
+    const recent = moderationRepository.getUserCases(guild.id, userId).some((c) => c.source === 'SECURITY' && c.reason.startsWith(label) && Date.now() - Date.parse(c.createdAt) < 600_000);
+    if (recent) return;
+    const action = s.punish === 'timeout' ? 'TIMEOUT' : s.punish === 'kick' ? 'KICK' : s.punish === 'ban' ? 'BAN' : 'WARN';
+    CaseService.createCase(guild.client, {
+      guildId: guild.id,
+      userId,
+      userTag: tag,
+      moderatorId: guild.client.user!.id,
+      moderatorTag: guild.client.user!.tag,
+      action,
+      reason: `${label} : ${detail}`.slice(0, 500),
+      durationSeconds: action === 'TIMEOUT' ? s.timeoutSeconds : null,
+      source: 'SECURITY',
+    });
   }
 
   // --- Punition & verrouillage -------------------------------------------------------------------------------------

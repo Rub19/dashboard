@@ -1,134 +1,37 @@
 import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
 import { Command, CommandContext } from '../../../types/command.js';
-import { checkHierarchy } from '../permissions/hierarchy.js';
-import { sanctionService } from '../sanctions/sanctionService.js';
-import { buildSanctionCard } from '../utils/sanctionCard.js';
-import { ModLogger } from '../logs/modLogger.js';
-import { formatString, getTranslation } from '../../../utils/i18n.js';
-
-function parseDuration(input: string): number | null {
-  const match = input.match(/^(\d+)(s|m|h|d)?$/i);
-  if (!match) return null;
-
-  const val = parseInt(match[1], 10);
-  const unit = (match[2] || 'm').toLowerCase();
-
-  switch (unit) {
-    case 's': return val;
-    case 'm': return val * 60;
-    case 'h': return val * 3600;
-    case 'd': return val * 86400;
-    default: return val * 60;
-  }
-}
+import { parseDuration, reasonAutocomplete, runSanctionCommand } from './sanctionRunner.js';
 
 export const timeoutCommand: Command = {
   name: 'timeout',
-  description: 'Met en sourdine temporaire un membre (Modération)',
+  description: 'Rend un membre muet pour une durée (Modération)',
   category: 'Modération',
   aliases: ['mute'],
   userPermissions: [PermissionFlagsBits.ModerateMembers],
   slashData: new SlashCommandBuilder()
     .setName('timeout')
-    .setDescription('Met en sourdine un membre')
-    .addUserOption((opt) => opt.setName('membre').setDescription('Membre à mute').setRequired(true))
+    .setDescription('Rend un membre muet')
+    .addUserOption((opt) => opt.setName('membre').setDescription('Membre à rendre muet').setRequired(true))
     .addStringOption((opt) => opt.setName('duree').setDescription('Durée (ex: 10m, 1h, 1d)').setRequired(true))
-    .addStringOption((opt) => opt.setName('raison').setDescription('Raison').setRequired(false))
+    .addStringOption((opt) => opt.setName('raison').setDescription('Raison ou raison prédéfinie').setRequired(false).setAutocomplete(true))
     .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers),
 
+  async autocomplete(interaction) {
+    await reasonAutocomplete(interaction, ['TIMEOUT']);
+  },
+
   async execute(ctx: CommandContext): Promise<void> {
-    const conf = ctx.guildConfig;
-    const t = getTranslation(conf.language);
-
-    if (!ctx.guild || !ctx.member) {
-      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.guild_only_command)] });
+    const raw = ctx.isSlash ? ctx.interaction!.options.getString('duree', true) : ctx.args[1] || '10m';
+    const seconds = parseDuration(raw);
+    if (!seconds || seconds > 28 * 86400) {
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('Durée invalide : entre 1 minute et 28 jours (ex : 10m, 1h, 1d).')] });
       return;
     }
-
-    // Différer immédiatement : le fetch membre + le log de modération ci-dessous peuvent
-    // dépasser la fenêtre de 3s de Discord et invalider le token d'interaction
-    // ("Unknown interaction" / 10062) si on ne le fait pas.
-    await ctx.deferReply();
-
-    let targetId: string | undefined;
-    let durationStr = '10m';
-    let reason = 'Comportement inapproprié';
-
-    if (ctx.isSlash && ctx.interaction) {
-      targetId = ctx.interaction.options.getUser('membre', true).id;
-      durationStr = ctx.interaction.options.getString('duree', true);
-      reason = ctx.interaction.options.getString('raison') || reason;
-    } else {
-      targetId = ctx.args[0]?.replace(/[^0-9]/g, '');
-      durationStr = ctx.args[1] || '10m';
-      if (ctx.args.length > 2) {
-        reason = ctx.args.slice(2).join(' ');
-      }
-    }
-
-    if (!targetId) {
-      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(formatString(t.mod_usage, { emoji: conf.emojis.error, usage: `${ctx.prefix}timeout @membre [durée] [raison]` }))] });
-      return;
-    }
-
-    const seconds = parseDuration(durationStr);
-    if (!seconds || seconds <= 0 || seconds > 28 * 86400) {
-      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.timeout_invalid_duration)] });
-      return;
-    }
-
-    const targetMember = await ctx.guild.members.fetch(targetId).catch(() => null);
-    if (!targetMember) {
-      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.mod_member_not_found)] });
-      return;
-    }
-
-    // Hiérarchie
-    const check = checkHierarchy(ctx.member, targetMember, ctx.guild.members.me!);
-    if (!check.allowed) {
-      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(`${conf.emojis.error} ${check.reason}`)] });
-      return;
-    }
-
-    try {
-      // Mode test (Bot Owner qui s'auto-cible) : on simule tout SANS jamais
-      // appliquer de vraie sourdine — voir HierarchyCheckResult.dryRun. Aussi
-      // pratique ici car le propriétaire a souvent un rôle trop haut pour être
-      // réellement "moderatable" par le bot de toute façon.
-      if (!check.dryRun) {
-        await targetMember.timeout(seconds * 1000, reason);
-      }
-
-      const { sanction } = sanctionService.createSanction({
-        guildId: ctx.guild.id,
-        userId: targetMember.id,
-        userTag: targetMember.user.tag,
-        moderatorId: ctx.author.id,
-        moderatorTag: ctx.author.tag,
-        type: 'timeout',
-        reason,
-        durationSeconds: seconds,
-      });
-
-      await ModLogger.logSanction(ctx.guild, sanction);
-
-      const card = buildSanctionCard({
-        guildConfig: ctx.guildConfig,
-        type: 'timeout',
-        sanctionId: sanction.id,
-        targetTag: targetMember.user.tag,
-        targetMention: targetMember.toString(),
-        targetAvatarUrl: targetMember.user.displayAvatarURL(),
-        moderatorMention: ctx.author.toString(),
-        reason,
-        durationSeconds: seconds,
-        totalSanctions: sanctionService.getUserSanctions(ctx.guild.id, targetMember.id).length,
-        extraNote: `🔓 Fin de la sourdine : <t:${Math.floor(Date.now() / 1000) + seconds}:R>`,
-        dryRun: check.dryRun,
-      });
-      await ctx.reply({ components: [card], componentsV2: true });
-    } catch {
-      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.timeout_fail)] });
-    }
+    await runSanctionCommand(ctx, {
+      action: 'TIMEOUT',
+      targetId: ctx.isSlash ? ctx.interaction!.options.getUser('membre', true).id : ctx.args[0]?.replace(/[^0-9]/g, ''),
+      reason: ctx.isSlash ? ctx.interaction!.options.getString('raison') : ctx.args.slice(2).join(' '),
+      durationSeconds: seconds,
+    });
   },
 };

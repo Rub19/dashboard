@@ -1,4 +1,7 @@
 import { welcomeService } from '../modules/welcome/services/welcomeService.js';
+import { recordDiscordSanction } from '../modules/moderation/services/sanctionPipeline.js';
+import { sanctionConfig } from '../modules/moderation/sanctionConfig.js';
+import { memberEvents } from '../modules/moderation/storage/memberEvents.js';
 import { enforceBlacklistOnJoin } from '../services/blacklistService.js';
 import { onMemberJoin as captchaOnJoin } from '../services/captchaService.js';
 import { onPresenceUpdate as supportersOnPresenceUpdate, onUserUpdate as supportersOnUserUpdate, startSupportersSweep, syncSupporter } from '../services/supportersService.js';
@@ -158,6 +161,7 @@ export function registerEvents(client: Client): void {
     void captchaOnJoin(member).catch((err) => logger.warn('[Captcha] arrivée :', err?.message));
     void syncSupporter(member);
     onGuildMemberAdd(member);
+    if (sanctionConfig.get(member.guild.id).history.joins) memberEvents.add(member.guild.id, member.id, { type: 'join' });
   });
   // Soutiens : tag du serveur affiché ou retiré du profil
   client.on(Events.UserUpdate, (_old, user) => void supportersOnUserUpdate(client, user));
@@ -165,6 +169,7 @@ export function registerEvents(client: Client): void {
   startSupportersSweep(client);
   client.on(Events.GuildMemberRemove, (member) => {
     onGuildMemberRemove(member);
+    if (sanctionConfig.get(member.guild.id).history.joins) memberEvents.add(member.guild.id, member.id, { type: 'leave' });
     ownerShieldService.handleGuildMemberRemove(member);
   });
 
@@ -203,6 +208,7 @@ export function registerEvents(client: Client): void {
   // Logs & Sécurité : Membres
   client.on(Events.GuildMemberUpdate, (oldMember, newMember) => {
     handleGuildMemberUpdate(oldMember, newMember);
+    if (!oldMember.partial && oldMember.nickname !== newMember.nickname && sanctionConfig.get(newMember.guild.id).history.joins) memberEvents.add(newMember.guild.id, newMember.id, { type: 'nick', value: newMember.nickname });
     if (moduleOn(newMember.guild.id, 'automod')) autoModService.handleMemberProfile(newMember);
     ownerShieldService.handleGuildMemberUpdate(oldMember as GuildMember, newMember);
     void syncSupporter(newMember);
@@ -256,6 +262,7 @@ export function registerEvents(client: Client): void {
   // Audit Logs (Mass ban/kick, webhooks, bots)
   client.on(Events.GuildAuditLogEntryCreate, (entry, guild) => {
     void protectionEngine.onAuditEntry(guild, entry as any);
+    recordDiscordSanction(client, guild, entry as any);
     if (moduleOn(guild.id, 'security')) raidDetectionService.handleAuditLog(guild, entry);
 
     if (

@@ -7,7 +7,8 @@ import { sinceLabel } from "@/lib/discord/security-scan";
 import { SPRING_LAYOUT } from "@/lib/ease";
 import { ConsolePage, EmptyLine, MemberPicker, Panel, useGuildApi } from "./kit";
 
-type Role = { id: string; name: string; color: string | null; managed: boolean; permissions: string[]; aboveEtho: boolean; memberCount: number };
+type RoleMember = { id: string; name: string; username: string; avatarUrl: string; bot: boolean };
+type Role = { id: string; name: string; color: string | null; managed: boolean; permissions: string[]; aboveEtho: boolean; memberCount: number; members: RoleMember[] };
 type Inspect = {
   id: string;
   displayName: string;
@@ -32,6 +33,7 @@ export default function ConsoleMembers({ guildId }: { guildId: string }) {
   const [roles, setRoles] = useState<Role[] | null>(null);
   const [aboveCount, setAboveCount] = useState(0);
   const [showAll, setShowAll] = useState(false);
+  const [openRole, setOpenRole] = useState<string | null>(null);
   const [inspected, setInspected] = useState<Inspect | null>(null);
 
   useEffect(() => {
@@ -137,7 +139,13 @@ export default function ConsoleMembers({ guildId }: { guildId: string }) {
             )}
             <ul>
               {shown.map((r) => (
-                <li key={r.id} className="grid items-center gap-2 border-t border-[var(--panel-border)] px-5 py-2.5 first:border-t-0 sm:grid-cols-[11rem_1fr_auto]">
+                <li key={r.id} className="border-t border-[var(--panel-border)] first:border-t-0">
+                <button
+                  type="button"
+                  onClick={() => setOpenRole((o) => (o === r.id ? null : r.id))}
+                  aria-expanded={openRole === r.id}
+                  className="grid w-full items-center gap-2 px-5 py-2.5 text-left transition-colors hover:bg-[var(--surface-hover)] sm:grid-cols-[11rem_1fr_auto_auto]"
+                >
                   <span className="flex min-w-0 items-center gap-2 text-[13px] font-medium text-[var(--text-primary)]">
                     <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: r.color ?? "var(--text-muted)" }} />
                     <span className="truncate">{r.name}</span>
@@ -154,6 +162,35 @@ export default function ConsoleMembers({ guildId }: { guildId: string }) {
                   ) : (
                     <span />
                   )}
+                  <span className="flex items-center gap-1 justify-self-end text-[11px] text-[var(--text-muted)]">
+                    {r.memberCount} membre{r.memberCount > 1 ? "s" : ""}
+                    <ChevronDown className={`h-3.5 w-3.5 transition-transform ${openRole === r.id ? "rotate-180" : ""}`} />
+                  </span>
+                </button>
+                <AnimatePresence initial={false}>
+                  {openRole === r.id && (
+                    <motion.ul initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={SPRING_LAYOUT} className="overflow-hidden bg-[var(--surface-base,var(--bg-main))]/40">
+                      {r.members.length === 0 ? (
+                        <li className="px-9 py-2.5 text-xs text-[var(--text-muted)]">Personne n&apos;a ce rôle.</li>
+                      ) : (
+                        r.members.map((m) => (
+                          <li key={m.id} className="flex items-center gap-2.5 px-9 py-2">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={m.avatarUrl} alt="" className="h-6 w-6 rounded-full" />
+                            <span className="min-w-0 flex-1 truncate text-[13px] text-[var(--text-primary)]">
+                              {m.name} <span className="text-[11px] text-[var(--text-muted)]">@{m.username}</span>
+                            </span>
+                            {m.bot && <span className="rounded bg-[var(--surface-hover)] px-1.5 py-0.5 text-[10px] text-[var(--text-muted)]">Bot</span>}
+                            <button type="button" onClick={() => inspect(m.id)} className="rounded-md border border-[var(--panel-border)] px-2 py-1 text-[11px] font-semibold text-[var(--text-primary)] hover:bg-[var(--surface-hover)]">
+                              Inspecter
+                            </button>
+                          </li>
+                        ))
+                      )}
+                      {r.memberCount > r.members.length && <li className="px-9 pb-2.5 text-[11px] text-[var(--text-muted)]">… et {r.memberCount - r.members.length} autre(s).</li>}
+                    </motion.ul>
+                  )}
+                </AnimatePresence>
                 </li>
               ))}
             </ul>

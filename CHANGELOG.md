@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.118 — 2026-10-16
+
+**Membres des rôles sensibles et catégories de commandes repliables**
+
+- Rôles et membres : chaque rôle sensible affiche son nombre de membres et, au clic, la liste des membres qui l'ont, avec un bouton Inspecter.
+- Commandes : la catégorie de la commande choisie se replie à nouveau.
+
 ## v1.75.117 — 2026-10-16
 
 **Page du bot : aperçus fidèles à Discord et traductions**

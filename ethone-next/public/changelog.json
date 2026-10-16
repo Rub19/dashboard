@@ -1,5 +1,14 @@
 [
   {
+    "version": "v1.75.118",
+    "date": "2026-10-16",
+    "title": "Membres des rôles sensibles et catégories de commandes repliables",
+    "items": [
+      "Rôles et membres : chaque rôle sensible affiche son nombre de membres et, au clic, la liste des membres qui l'ont, avec un bouton Inspecter.",
+      "Commandes : la catégorie de la commande choisie se replie à nouveau."
+    ]
+  },
+  {
     "version": "v1.75.117",
     "date": "2026-10-16",
     "title": "Page du bot : aperçus fidèles à Discord et traductions",
@@ -616,15 +625,6 @@
       "Whitelist : libellés alignés sur les protections (fini « anti-nuke »).",
       "Anti-renommage de salon : le bon motif apparaît dans le journal d'audit Discord.",
       "Sécurité : dépendances mises à jour (Express, Wrangler, Jest 30)."
-    ]
-  },
-  {
-    "version": "v1.65.1",
-    "date": "2026-10-10",
-    "title": "Protections testées et règles AutoMod vérifiées",
-    "items": [
-      "Les règles AutoMod créées par Etho (mode AutoMod des protections, AutoMod Discord, règles recommandées) sont vérifiées après création : si un autre bot de protection les supprime aussitôt, Etho le signale avec son nom au lieu d'afficher « enregistré ».",
-      "Nouveaux tests de scénarios d'attaque : suppression de salon et de rôle (recréés), ajout de bot (banni), webhook (supprimé), rafale de bans (annulée), lien, spam, ghost ping, compte récent et verrouillage avec levée."
     ]
   }
 ]

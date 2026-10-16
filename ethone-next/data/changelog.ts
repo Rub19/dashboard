@@ -57526,6 +57526,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_117_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_117_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_117_de);
 
+const v1_75_118_fr: ChangelogEntry = {
+  version: "v1.75.118",
+  date: "2026-10-16",
+  title: "Membres des rôles sensibles et catégories de commandes repliables",
+  items: [
+    "Rôles et membres : chaque rôle sensible affiche son nombre de membres et, au clic, la liste des membres qui l'ont, avec un bouton Inspecter.",
+    "Commandes : la catégorie de la commande choisie se replie à nouveau.",
+  ],
+};
+
+const v1_75_118_en: ChangelogEntry = {
+  version: "v1.75.118",
+  date: "2026-10-16",
+  title: "Sensitive role members and collapsible command categories",
+  items: [
+    "Roles & members: each sensitive role shows its member count and, on click, the members who have it, with an Inspect button.",
+    "Commands: the category of the selected command can be collapsed again.",
+  ],
+};
+
+const v1_75_118_es: ChangelogEntry = {
+  version: "v1.75.118",
+  date: "2026-10-16",
+  title: "Miembros de roles sensibles y categorías plegables",
+  items: [
+    "Roles y miembros: cada rol sensible muestra su número de miembros y, al hacer clic, la lista de quienes lo tienen, con un botón Inspeccionar.",
+    "Comandos: la categoría del comando elegido se puede volver a plegar.",
+  ],
+};
+
+const v1_75_118_de: ChangelogEntry = {
+  version: "v1.75.118",
+  date: "2026-10-16",
+  title: "Mitglieder sensibler Rollen und einklappbare Kategorien",
+  items: [
+    "Rollen & Mitglieder: Jede sensible Rolle zeigt ihre Mitgliederzahl und per Klick die Mitglieder mit einem Prüfen-Button.",
+    "Befehle: Die Kategorie des gewählten Befehls lässt sich wieder einklappen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_118_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_118_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_118_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_118_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

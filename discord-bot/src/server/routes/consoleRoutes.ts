@@ -501,6 +501,8 @@ export function createConsoleRouter(client: Client): Router {
       return;
     }
     const myTop = guild.members.me?.roles.highest.position ?? 0;
+    // ponytail: liste complète des membres chargée à chaque ouverture ; un cache si les gros serveurs rament.
+    if (guild.memberCount <= 5000) await guild.members.fetch().catch(() => null);
     const roles = guild.roles.cache
       .filter((r) => r.id !== guild.id && dangerousOf(r.permissions).length > 0)
       .sort((a, b) => b.position - a.position)
@@ -512,6 +514,7 @@ export function createConsoleRouter(client: Client): Router {
         permissions: dangerousOf(r.permissions),
         aboveEtho: r.position >= myTop,
         memberCount: r.members.size,
+        members: [...r.members.values()].slice(0, 25).map((m) => ({ id: m.id, name: m.displayName, username: m.user.username, avatarUrl: m.user.displayAvatarURL({ size: 64 }), bot: m.user.bot })),
       }));
     res.json({ roles, aboveEthoCount: roles.filter((r) => r.aboveEtho).length });
   });

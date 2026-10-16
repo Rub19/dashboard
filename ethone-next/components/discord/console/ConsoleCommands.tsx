@@ -53,7 +53,7 @@ export default function ConsoleCommands({ guildId }: { guildId: string }) {
   const [selected, setSelected] = useState<string | null>(null);
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
-  // Catégories dépliées : celle de la commande choisie l'est toujours ; une recherche ou un filtre déplie tout.
+  // Catégories dépliées ; une recherche ou un filtre déplie tout.
   const [openCats, setOpenCats] = useState<Set<string>>(new Set());
   const [channels, setChannels] = useState<ChannelOption[]>([]);
   const listRef = useRef<HTMLDivElement>(null);
@@ -92,7 +92,12 @@ export default function ConsoleCommands({ guildId }: { guildId: string }) {
     return [...map.entries()];
   }, [commands, q, filter]);
   const expandAll = q.trim() !== "" || filter !== "all";
-  const isOpen = (category: string) => expandAll || openCats.has(category) || cmd?.category === category;
+  const selectedCat = cmd?.category;
+  // La catégorie d'une commande choisie s'ouvre, mais reste repliable ensuite.
+  useEffect(() => {
+    if (selectedCat) setOpenCats((prev) => (prev.has(selectedCat) ? prev : new Set(prev).add(selectedCat)));
+  }, [selected, selectedCat]);
+  const isOpen = (category: string) => expandAll || openCats.has(category);
   const toggleCat = (category: string) =>
     setOpenCats((prev) => {
       const next = new Set(prev);

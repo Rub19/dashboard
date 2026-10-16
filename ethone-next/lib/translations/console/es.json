@@ -4554,5 +4554,7 @@
  "{n} rôle sensible au-dessus d'Etho : il ne peut pas agir sur ses membres.": "{n} rol sensible por encima de Etho: no puede actuar sobre sus miembros.",
  "{n} rôles sensibles au-dessus d'Etho : il ne peut pas agir sur leurs membres.": "{n} roles sensibles por encima de Etho: no puede actuar sobre sus miembros.",
  "à l'instant": "justo ahora",
- "… et {n} autre(s).": "… y {n} más."
+ "… et {n} autre(s).": "… y {n} más.",
+ "Le bot est connecté avec un autre compte Discord ({name}).": "El bot está conectado con otra cuenta de Discord ({name}).",
+ "Les réglages des serveurs passent par ce compte. Clique pour reconnecter le bot avec ton compte actuel.": "Los ajustes de los servidores pasan por esa cuenta. Haz clic para reconectar el bot con tu cuenta actual."
 }

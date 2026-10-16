@@ -1,5 +1,14 @@
 [
   {
+    "version": "v1.75.136",
+    "date": "2026-10-17",
+    "title": "Dashboard du bot : compte Discord cohérent",
+    "items": [
+      "Quand la session du bot appartient à un autre compte Discord que celui connecté sur le site, le dashboard le signale et propose de reconnecter le bot avec le bon compte.",
+      "La photo affichée sur « Mes serveurs » correspond désormais au compte connecté, et non à l'ancienne session du bot."
+    ]
+  },
+  {
     "version": "v1.75.135",
     "date": "2026-10-16",
     "title": "App iOS : grands titres, bandes de chiffres et widgets ETHONE",
@@ -602,19 +611,6 @@
       "Suppression définitive de la 4e pastille superflue sur la vitrine bot (/bot) au profit d'un trio épuré et percutant (Anti-Raid 0.2s, Pont vocal Spotify, Zéro latence).",
       "Harmonisation complète et unifiée des modules sous l'appellation sobre « Fun & Médias » à travers l'ensemble des titres, interfaces, descriptions et traductions (FR/EN/ES/DE).",
       "Nettoyage et épuration des embeds Last.fm Discord pour une présentation sobre et soignée."
-    ]
-  },
-  {
-    "version": "v1.75.1",
-    "date": "2026-10-12",
-    "title": "Catégorie Fun & Divertissement : Suite de Commandes Fun & Médias & Studio Dashboard",
-    "items": [
-      "Nouvelle catégorie Fun & Divertissement : ajout de la suite complète de commandes interactives (/lyrics, /quote, /image, /duckduckgoimage, /reverseimage, /movie, /tvshow, /game) et commande maître /fun.",
-      "Recherche de paroles en direct (/lyrics) : moteur LRCLib avec durée, métadonnées d'album et affichage élégant des paroles complètes.",
-      "Générateur de citations (/quote) : création et prévisualisation instantanée de citations stylisées aux formats embed Discord.",
-      "Recherche d'images & inversée (/image, /duckduckgoimage, /reverseimage) : recherche de visuels haute résolution et liens directs vers Google Lens, Bing Visual, TinEye, Yandex et SauceNAO.",
-      "Cinéma, séries et jeux vidéo (/movie, /tvshow, /game) : intégration directe des bases TVMaze, Wikipédia, CheapShark et Steam avec jaquettes, notes et synopsis détaillés.",
-      "Module Dashboard interactif (/discord?view=fun) : catalogue avec cartes sombres animées au survol, copie en 1 clic de la syntaxe et studios de test en direct sans aucun placeholder."
     ]
   }
 ]

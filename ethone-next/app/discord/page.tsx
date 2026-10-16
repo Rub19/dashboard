@@ -14,6 +14,7 @@ import { useAuth } from "@/components/AuthProvider";
 import { useAccountProfile } from "@/lib/profile/account-profile";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
+import { useBotSessionUser } from "@/lib/hooks/useBotSessionUser";
 import { cn, formatApiError } from "@/lib/utils";
 import { useDiscordOnboarding } from "@/lib/hooks/useDiscordOnboarding";
 import DiscordOnboardingModal from "@/components/discord/onboarding/DiscordOnboardingModal";
@@ -640,6 +641,9 @@ export default function DiscordDashboardPage() {
   const [botPresenceKnown, setBotPresenceKnown] = useState(false);
   // 401 du bot : la session Discord du BOT (cookie) est absente, distincte de la session du site.
   const [botAuthRequired, setBotAuthRequired] = useState(false);
+  const botSessionUser = useBotSessionUser();
+  // La session du bot (cookie) peut appartenir à un autre compte Discord que celui connecté sur le site.
+  const botAccountMismatch = !!(botSessionUser && profile?.user?.id && botSessionUser.id !== profile.user.id);
 
   // Serveurs réels de l'utilisateur (ZÉRO FAKE INFO)
   const allGuilds: DiscordGuild[] = useMemo(() => {
@@ -1134,7 +1138,7 @@ export default function DiscordDashboardPage() {
           onConnect={connect}
           onlyManageable={onlyManageable}
           onToggleManageable={() => setOnlyManageable((v) => !v)}
-          botAuthHref={botAuthRequired ? botLoginHref : null}
+          botAuthHref={botAuthRequired || botAccountMismatch ? botLoginHref : null}
           onPick={pickGuild}
         />
         {onboardingModal}
@@ -1338,8 +1342,16 @@ export default function DiscordDashboardPage() {
 
           <div ref={contentRef} className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden [overscroll-behavior:contain]">
             <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
-              {(botAuthRequired || botAbsent) && (
+              {(botAuthRequired || botAccountMismatch || botAbsent) && (
                 <div className="mb-6 space-y-3">
+                  {botAccountMismatch && !botAuthRequired && (
+                    <a href={botLoginHref} className={cn(calloutCls, "transition-colors hover:border-[var(--input-border-hover)]")}>
+                      <span className="text-sm leading-relaxed text-[var(--text-muted)]">
+                        <strong className="font-semibold text-[var(--text-primary)]">{tx("Le bot est connecté avec un autre compte Discord ({name}).", { name: botSessionUser?.globalName || botSessionUser?.username || "" })}</strong>{" "}
+                        {tx("Les réglages des serveurs passent par ce compte. Clique pour reconnecter le bot avec ton compte actuel.")}
+                      </span>
+                    </a>
+                  )}
                   {botAuthRequired && (
                     <a href={botLoginHref} className={cn(calloutCls, "transition-colors hover:border-[var(--input-border-hover)]")}>
                       <span className="text-sm leading-relaxed text-[var(--text-muted)]">

@@ -58392,6 +58392,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_135_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_135_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_135_de);
 
+const v1_75_136_fr: ChangelogEntry = {
+  version: "v1.75.136",
+  date: "2026-10-17",
+  title: "Dashboard du bot : compte Discord cohérent",
+  items: [
+    "Quand la session du bot appartient à un autre compte Discord que celui connecté sur le site, le dashboard le signale et propose de reconnecter le bot avec le bon compte.",
+    "La photo affichée sur « Mes serveurs » correspond désormais au compte connecté, et non à l'ancienne session du bot.",
+  ],
+};
+
+const v1_75_136_en: ChangelogEntry = {
+  version: "v1.75.136",
+  date: "2026-10-17",
+  title: "Bot dashboard: consistent Discord account",
+  items: [
+    "When the bot session belongs to a different Discord account than the one signed in on the site, the dashboard says so and offers to reconnect the bot with the right account.",
+    "The picture on \"My servers\" now matches the signed-in account instead of the old bot session.",
+  ],
+};
+
+const v1_75_136_es: ChangelogEntry = {
+  version: "v1.75.136",
+  date: "2026-10-17",
+  title: "Panel del bot: cuenta de Discord coherente",
+  items: [
+    "Cuando la sesión del bot pertenece a otra cuenta de Discord distinta de la conectada en el sitio, el panel lo indica y propone reconectar el bot con la cuenta correcta.",
+    "La foto de «Mis servidores» corresponde ahora a la cuenta conectada y no a la antigua sesión del bot.",
+  ],
+};
+
+const v1_75_136_de: ChangelogEntry = {
+  version: "v1.75.136",
+  date: "2026-10-17",
+  title: "Bot-Dashboard: einheitliches Discord-Konto",
+  items: [
+    "Gehört die Bot-Sitzung zu einem anderen Discord-Konto als dem auf der Website angemeldeten, zeigt das Dashboard dies an und bietet an, den Bot mit dem richtigen Konto neu zu verbinden.",
+    "Das Bild unter „Meine Server“ entspricht jetzt dem angemeldeten Konto statt der alten Bot-Sitzung.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_136_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_136_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_136_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_136_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

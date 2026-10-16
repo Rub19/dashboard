@@ -190,7 +190,8 @@ export default function ServerPicker({
   }, [uninstalledGuilds, query]);
 
   const storedUser = useMemo(() => getStoredDiscordUser(), []);
-  const botUser = useBotSessionUser();
+  const botSession = useBotSessionUser();
+  const botUser = botSession && (!storedUser?.id || storedUser.id === botSession.id) ? botSession : null;
   const identity = useUserIdentity();
   const currentDisplayName =
     userName ||

@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.136 — 2026-10-17
+
+**Dashboard du bot : compte Discord cohérent**
+
+- Quand la session du bot appartient à un autre compte Discord que celui connecté sur le site, le dashboard le signale et propose de reconnecter le bot avec le bon compte.
+- La photo affichée sur « Mes serveurs » correspond désormais au compte connecté, et non à l'ancienne session du bot.
+
 ## v1.75.135 — 2026-10-16
 
 **App iOS : grands titres, bandes de chiffres et widgets ETHONE**

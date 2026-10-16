@@ -4554,5 +4554,7 @@
  "{n} rôle sensible au-dessus d'Etho : il ne peut pas agir sur ses membres.": "{n} sensible Rolle über Etho: Etho kann nicht gegen ihre Mitglieder vorgehen.",
  "{n} rôles sensibles au-dessus d'Etho : il ne peut pas agir sur leurs membres.": "{n} sensible Rollen über Etho: Etho kann nicht gegen ihre Mitglieder vorgehen.",
  "à l'instant": "gerade eben",
- "… et {n} autre(s).": "… und {n} weitere."
+ "… et {n} autre(s).": "… und {n} weitere.",
+ "Le bot est connecté avec un autre compte Discord ({name}).": "Der Bot ist mit einem anderen Discord-Konto angemeldet ({name}).",
+ "Les réglages des serveurs passent par ce compte. Clique pour reconnecter le bot avec ton compte actuel.": "Servereinstellungen laufen über dieses Konto. Klicke, um den Bot mit deinem aktuellen Konto neu zu verbinden."
 }

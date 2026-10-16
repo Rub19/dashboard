@@ -19,9 +19,9 @@ private struct SummaryPage: View {
     var body: some View {
         if let snapshot = model.snapshot {
             VStack(spacing: 10) {
-                Text("ETHONE").font(.caption.bold()).foregroundStyle(.secondary)
+                Text("ETHONE").font(.caption.weight(.semibold)).foregroundStyle(.secondary)
                 Text("\(snapshot.openTaskCount)")
-                    .font(.system(size: 44, weight: .bold, design: .rounded))
+                    .font(.system(size: 44, weight: .semibold).monospacedDigit())
                 Text("tâches ouvertes").font(.footnote).foregroundStyle(.secondary)
                 Gauge(value: snapshot.habitsTotal == 0 ? 0 : Double(snapshot.habitsDone) / Double(snapshot.habitsTotal)) {
                     Image(systemName: "flame.fill")
@@ -75,7 +75,7 @@ private struct FocusPage: View {
                         Text("En pause").foregroundStyle(.secondary)
                     } else {
                         Text(timerInterval: Date.now...max(end, Date.now.addingTimeInterval(1)), countsDown: true)
-                            .font(.system(size: 40, weight: .bold, design: .rounded))
+                            .font(.system(size: 40, weight: .semibold).monospacedDigit())
                             .monospacedDigit()
                     }
                     HStack {

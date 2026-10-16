@@ -41,7 +41,13 @@ struct MembersAdminView: View {
             } header: { Text("\(total) membre(s)").sectionTitle() }
         }
         .scrollContentBackground(.hidden)
-        .overlay { if loading && members.isEmpty { ProgressView() } }
+        .overlay {
+            if loading && members.isEmpty {
+                ProgressView()
+            } else if members.isEmpty {
+                ContentUnavailableView("Aucun membre", systemImage: "person.2", description: Text("Aucun membre ne correspond pour le moment."))
+            }
+        }
         .searchable(text: $query, prompt: "Rechercher un membre")
         .onSubmit(of: .search) { Task { await load() } }
         .navigationTitle("Membres")

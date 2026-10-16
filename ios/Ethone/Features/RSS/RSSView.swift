@@ -34,6 +34,8 @@ struct RSSView: View {
                     HStack { Text("Charger"); if loading { Spacer(); ProgressView() } }
                 }
                 .disabled(loading || Self.httpURL(address) == nil)
+            } footer: {
+                if feed == nil { Text("Collez l'adresse d'un flux RSS ou Atom : actualités, blog, podcast.") }
             }
             .listRowBackground(GlassRowBackground())
 
@@ -53,7 +55,7 @@ struct RSSView: View {
                                     Text(entry.summary).font(.subheadline).foregroundStyle(.secondary).lineLimit(2).multilineTextAlignment(.leading)
                                 }
                                 if let date = entry.date {
-                                    Text(date, format: .dateTime.day().month(.abbreviated).hour().minute()).font(.caption).foregroundStyle(.tertiary)
+                                    Text(date, format: .relative(presentation: .named)).font(.caption).foregroundStyle(.tertiary)
                                 }
                             }
                         }
@@ -62,13 +64,14 @@ struct RSSView: View {
                     }
                 } header: {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text(feed.title).font(.headline).textCase(nil).foregroundStyle(.primary)
+                        Text(feed.title).font(.title3.weight(.semibold)).tracking(-0.4).textCase(nil).foregroundStyle(.primary)
                         if !feed.description.isEmpty { Text(feed.description).font(.footnote).textCase(nil) }
                     }
                 }
             }
         }
         .scrollContentBackground(.hidden)
+        .animation(Motion.snap, value: feed?.entries.count)
         .navigationTitle("RSS")
         .ethoneScreen()
     }

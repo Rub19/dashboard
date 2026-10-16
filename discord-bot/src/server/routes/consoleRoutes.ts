@@ -512,7 +512,7 @@ export function createConsoleRouter(client: Client): Router {
         color: r.color ? r.hexColor : null,
         managed: r.managed,
         permissions: dangerousOf(r.permissions),
-        aboveEtho: r.position >= myTop,
+        aboveEtho: r.position >= myTop && r.id !== guild.members.me?.roles.highest.id,
         memberCount: r.members.size,
         members: [...r.members.values()].slice(0, 25).map((m) => ({ id: m.id, name: m.displayName, username: m.user.username, avatarUrl: m.user.displayAvatarURL({ size: 64 }), bot: m.user.bot })),
       }));

@@ -1,5 +1,14 @@
 [
   {
+    "version": "v1.75.119",
+    "date": "2026-10-16",
+    "title": "Chargement plus fiable après une mise à jour",
+    "items": [
+      "Si un fichier du site manque juste après une mise à jour, la page se recharge jusqu'à 3 fois au lieu de rester noire.",
+      "Le rôle d'Etho n'est plus signalé « Au-dessus d'Etho » dans Rôles et membres."
+    ]
+  },
+  {
     "version": "v1.75.118",
     "date": "2026-10-16",
     "title": "Membres des rôles sensibles et catégories de commandes repliables",
@@ -613,18 +622,6 @@
     "title": "Incidents plus lisibles",
     "items": [
       "Logs : les incidents affichent le nom des rôles et des salons au lieu des identifiants Discord."
-    ]
-  },
-  {
-    "version": "v1.66.0",
-    "date": "2026-10-10",
-    "title": "Logs des protections et compteur",
-    "items": [
-      "Logs : les incidents des protections (salon supprimé, spam, ghost ping…) apparaissent enfin dans l'onglet Incidents, avec l'auteur et la réaction d'Etho.",
-      "Barre latérale : compteur « Protections actives / total », mis à jour dès qu'une protection est activée ou coupée.",
-      "Whitelist : libellés alignés sur les protections (fini « anti-nuke »).",
-      "Anti-renommage de salon : le bon motif apparaît dans le journal d'audit Discord.",
-      "Sécurité : dépendances mises à jour (Express, Wrangler, Jest 30)."
     ]
   }
 ]

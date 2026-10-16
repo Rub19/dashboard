@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.119 — 2026-10-16
+
+**Chargement plus fiable après une mise à jour**
+
+- Si un fichier du site manque juste après une mise à jour, la page se recharge jusqu'à 3 fois au lieu de rester noire.
+- Le rôle d'Etho n'est plus signalé « Au-dessus d'Etho » dans Rôles et membres.
+
 ## v1.75.118 — 2026-10-16
 
 **Membres des rôles sensibles et catégories de commandes repliables**

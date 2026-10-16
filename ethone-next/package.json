@@ -1,6 +1,6 @@
 {
   "name": "ethone-next",
-  "version": "1.75.118",
+  "version": "1.75.119",
   "private": true,
   "scripts": {
     "dev": "next dev",

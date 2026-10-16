@@ -57571,6 +57571,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_118_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_118_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_118_de);
 
+const v1_75_119_fr: ChangelogEntry = {
+  version: "v1.75.119",
+  date: "2026-10-16",
+  title: "Chargement plus fiable après une mise à jour",
+  items: [
+    "Si un fichier du site manque juste après une mise à jour, la page se recharge jusqu'à 3 fois au lieu de rester noire.",
+    "Le rôle d'Etho n'est plus signalé « Au-dessus d'Etho » dans Rôles et membres.",
+  ],
+};
+
+const v1_75_119_en: ChangelogEntry = {
+  version: "v1.75.119",
+  date: "2026-10-16",
+  title: "More reliable loading after updates",
+  items: [
+    "If a site file is missing right after an update, the page reloads up to 3 times instead of staying blank.",
+    "Etho's own role is no longer flagged « Above Etho » in Roles & members.",
+  ],
+};
+
+const v1_75_119_es: ChangelogEntry = {
+  version: "v1.75.119",
+  date: "2026-10-16",
+  title: "Carga más fiable tras una actualización",
+  items: [
+    "Si falta un archivo justo después de una actualización, la página se recarga hasta 3 veces en lugar de quedarse en negro.",
+    "El rol de Etho ya no aparece como « Por encima de Etho » en Roles y miembros.",
+  ],
+};
+
+const v1_75_119_de: ChangelogEntry = {
+  version: "v1.75.119",
+  date: "2026-10-16",
+  title: "Zuverlässigeres Laden nach Updates",
+  items: [
+    "Fehlt direkt nach einem Update eine Datei, lädt die Seite bis zu 3-mal neu, statt schwarz zu bleiben.",
+    "Ethos eigene Rolle wird in Rollen & Mitglieder nicht mehr als « Über Etho » markiert.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_119_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_119_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_119_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_119_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

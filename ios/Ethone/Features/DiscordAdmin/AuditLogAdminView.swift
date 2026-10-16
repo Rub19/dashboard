@@ -46,7 +46,6 @@ struct AuditLogAdminView: View {
         .searchable(text: $query, prompt: "Rechercher")
         .onSubmit(of: .search) { Task { await load() } }
         .navigationTitle("Journal d'audit")
-        .navigationBarTitleDisplayMode(.inline)
         .ethoneScreen()
         .refreshable { await load() }
         .task(id: severity) { await load() }

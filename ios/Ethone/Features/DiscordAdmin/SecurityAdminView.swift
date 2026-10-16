@@ -88,7 +88,6 @@ struct SecurityAdminView: View {
         .scrollContentBackground(.hidden)
         .overlay { if loading && metrics == nil { ProgressView() } }
         .navigationTitle("Sécurité")
-        .navigationBarTitleDisplayMode(.inline)
         .ethoneScreen()
         .refreshable { await load() }
         .task { await load() }

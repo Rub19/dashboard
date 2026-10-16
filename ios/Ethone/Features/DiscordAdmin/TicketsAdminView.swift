@@ -38,7 +38,10 @@ struct TicketsAdminView: View {
                         HStack {
                             Text("\(ticket["id"]?.stringValue ?? "?") · \(ticket["categoryName"]?.stringValue ?? "Ticket")").font(.headline)
                             Spacer()
-                            Text(TicketLabels.status(ticket["status"]?.stringValue)).font(.caption.weight(.semibold)).foregroundStyle(TicketLabels.color(ticket["status"]?.stringValue))
+                            HStack(spacing: 6) {
+                                Circle().fill(TicketLabels.color(ticket["status"]?.stringValue)).frame(width: 7, height: 7)
+                                Text(TicketLabels.status(ticket["status"]?.stringValue)).font(.caption.weight(.medium)).foregroundStyle(.secondary)
+                            }
                         }
                         Text(ticket["userTag"]?.stringValue ?? "").font(.subheadline).foregroundStyle(.secondary)
                         HStack(spacing: 8) {
@@ -54,12 +57,12 @@ struct TicketsAdminView: View {
             }
         }
         .scrollContentBackground(.hidden)
+        .animation(Motion.snap, value: scope)
         .overlay {
             if shown.isEmpty && !loading { ContentUnavailableView("Aucun ticket", systemImage: "ticket", description: Text(scope == "open" ? "Aucun ticket en cours." : "Aucun ticket fermé.")) }
             if loading && tickets.isEmpty { ProgressView() }
         }
         .navigationTitle("Tickets")
-        .navigationBarTitleDisplayMode(.inline)
         .ethoneScreen()
         .refreshable { await load() }
         .task { await load() }

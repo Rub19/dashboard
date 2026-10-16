@@ -27,10 +27,19 @@ struct MusicPlayerView: View {
 
             Section {
                 if let current {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(current["title"]?.stringValue ?? "Titre en cours").font(.headline)
-                        Text(current["author"]?.stringValue ?? current["artist"]?.stringValue ?? "").font(.subheadline).foregroundStyle(.secondary)
+                    HStack(spacing: 14) {
+                        Image(systemName: "waveform")
+                            .font(.title2.weight(.semibold))
+                            .foregroundStyle(Theme.accent)
+                            .symbolEffect(.variableColor.iterative, options: .repeating)
+                            .frame(width: 34)
+                            .accessibilityHidden(true)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(current["title"]?.stringValue ?? "Titre en cours").font(.title3.weight(.semibold)).tracking(-0.3).lineLimit(2)
+                            Text(current["author"]?.stringValue ?? current["artist"]?.stringValue ?? "").font(.subheadline).foregroundStyle(.secondary)
+                        }
                     }
+                    .padding(.vertical, 4)
                 } else {
                     Text("Rien n'est en cours de lecture.").foregroundStyle(.secondary)
                 }
@@ -90,7 +99,6 @@ struct MusicPlayerView: View {
         }
         .scrollContentBackground(.hidden)
         .navigationTitle("Musique")
-        .navigationBarTitleDisplayMode(.inline)
         .ethoneScreen()
         .refreshable { await load() }
         .task {

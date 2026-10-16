@@ -82,7 +82,6 @@ struct ModerationAdminView: View {
         .searchable(text: $query, prompt: "Rechercher une sanction")
         .onSubmit(of: .search) { Task { await loadCases() } }
         .navigationTitle("Modération")
-        .navigationBarTitleDisplayMode(.inline)
         .ethoneScreen()
         .refreshable { await load() }
         .task { await load() }

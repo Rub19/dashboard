@@ -58,7 +58,6 @@ struct SuggestionsAdminView: View {
             if loading && suggestions.isEmpty { ProgressView() }
         }
         .navigationTitle("Suggestions")
-        .navigationBarTitleDisplayMode(.inline)
         .ethoneScreen()
         .refreshable { await load() }
         .task { await load() }

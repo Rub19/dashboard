@@ -51,7 +51,6 @@ struct MembersAdminView: View {
         .searchable(text: $query, prompt: "Rechercher un membre")
         .onSubmit(of: .search) { Task { await load() } }
         .navigationTitle("Membres")
-        .navigationBarTitleDisplayMode(.inline)
         .ethoneScreen()
         .refreshable { await load() }
         .task { await load() }

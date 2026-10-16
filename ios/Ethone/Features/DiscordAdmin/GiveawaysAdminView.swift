@@ -38,7 +38,6 @@ struct GiveawaysAdminView: View {
             if loading && giveaways.isEmpty { ProgressView() }
         }
         .navigationTitle("Giveaways")
-        .navigationBarTitleDisplayMode(.inline)
         .ethoneScreen()
         .refreshable { await load() }
         .task { await load() }

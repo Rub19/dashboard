@@ -25,6 +25,8 @@ struct ScratchpadView: View {
                 Text("\(plural(words, "mot", "mots")), \(plural(text.count, "caractère", "caractères"))").font(.caption).foregroundStyle(.secondary)
                 Spacer()
                 Text(errorMessage ?? status).font(.caption).foregroundStyle(errorMessage == nil ? Color.secondary : Theme.danger)
+                    .contentTransition(.opacity)
+                    .animation(Motion.swap, value: status)
             }
             .padding(.horizontal, 20)
             .padding(.vertical, 8)

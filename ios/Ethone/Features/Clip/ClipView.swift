@@ -152,7 +152,7 @@ struct ClipView: View {
                     HStack(spacing: 10) {
                         Image(systemName: "checkmark.circle.fill")
                             .foregroundStyle(Theme.success)
-                        Text("Enregistré avec succès dans vos \(targetKind == .note ? "Notes" : "Tâches") !")
+                        Text("Ajouté à vos \(targetKind == .note ? "notes" : "tâches").")
                             .font(.subheadline.weight(.medium))
                             .foregroundStyle(Theme.success)
                     }

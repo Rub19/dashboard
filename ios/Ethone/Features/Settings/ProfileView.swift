@@ -33,13 +33,16 @@ struct ProfileView: View {
                     AvatarView(
                         urlString: currentAvatarString,
                         name: displayName.isEmpty ? (model.auth.user?.displayName ?? "E") : displayName,
-                        size: 72,
+                        size: 84,
                         status: presenceStatus
                     )
+                    .contentTransition(.opacity)
 
                     VStack(alignment: .leading, spacing: 6) {
                         Text(displayName.isEmpty ? (model.auth.user?.displayName ?? "Utilisateur") : displayName)
-                            .font(.headline)
+                            .font(.title2.weight(.semibold))
+                            .tracking(-0.5)
+                            .lineLimit(1)
                         Text(username.isEmpty ? (model.auth.user?.email ?? "") : "@\(username)")
                             .font(.footnote)
                             .foregroundStyle(.secondary)
@@ -94,7 +97,7 @@ struct ProfileView: View {
                     .padding(.vertical, 2)
                 }
             } header: {
-                Text("Présence & Statut").sectionTitle()
+                Text("Présence et statut").sectionTitle()
             }
             .listRowBackground(GlassRowBackground())
 
@@ -122,27 +125,22 @@ struct ProfileView: View {
             if let infoMessage {
                 Text(infoMessage).font(.footnote).foregroundStyle(Theme.success).listRowBackground(Color.clear)
             }
-
-            Section {
-                Button {
-                    Task { await save() }
-                } label: {
-                    HStack {
-                        Text("Enregistrer les modifications")
-                            .fontWeight(.medium)
-                        if saving {
-                            Spacer()
-                            ProgressView()
-                        }
-                    }
-                }
-                .disabled(saving || loading)
-            }
-            .listRowBackground(GlassRowBackground())
         }
         .scrollContentBackground(.hidden)
         .navigationTitle("Profil")
         .ethoneScreen()
+        .toolbar {
+            ToolbarItem(placement: .confirmationAction) {
+                if saving {
+                    ProgressView()
+                } else {
+                    Button("Enregistrer") { Task { await save() } }
+                        .disabled(loading)
+                }
+            }
+        }
+        .sensoryFeedback(.success, trigger: infoMessage) { _, new in new != nil }
+        .animation(Motion.snap, value: infoMessage)
         .task { await load() }
         .sheet(isPresented: $showAvatarSheet) {
             AvatarLibrarySheet(
@@ -197,7 +195,7 @@ struct ProfileView: View {
             let saved: JSONValue = try await model.api.worker("api/profile", method: exists ? "PATCH" : "POST", body: body)
             publicId = saved["public_id"]?.stringValue ?? publicId
             exists = true
-            infoMessage = "Profil enregistré avec succès."
+            infoMessage = "Profil enregistré."
             errorMessage = nil
         } catch {
             infoMessage = nil

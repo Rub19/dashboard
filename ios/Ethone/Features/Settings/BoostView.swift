@@ -66,6 +66,8 @@ struct BoostView: View {
             .listRowBackground(GlassRowBackground())
         }
         .scrollContentBackground(.hidden)
+        .animation(Motion.snap, value: latencies.count)
+        .sensoryFeedback(.success, trigger: cleared) { _, new in new }
         .navigationTitle("Performance")
         .ethoneScreen()
         .onAppear {

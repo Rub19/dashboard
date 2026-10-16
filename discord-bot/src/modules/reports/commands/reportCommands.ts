@@ -2,6 +2,7 @@ import { ApplicationCommandType, ChannelType, ContextMenuCommandBuilder, Message
 import { Command, CommandContext } from '../../../types/command.js';
 import { reportsStorage } from '../storage/reportsStorage.js';
 import { reportsService } from '../services/reportsService.js';
+import { trg } from '../../../utils/tr.js';
 import { noticeEmbed } from '../../../utils/embeds.js';
 import { emitConfigUpdated } from '../../../services/syncConfigEmitter.js';
 import { SLASH_DESTINATION_TYPES } from '../../../utils/channelSend.js';
@@ -37,29 +38,30 @@ export const reportCommand: Command = {
 
   async execute(ctx: CommandContext): Promise<void> {
     if (!ctx.guild || !ctx.isSlash || !ctx.interaction) {
-      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('❌ Utilise la commande slash **/report** sur un serveur.')], ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(`❌ ${trg(ctx.guild?.id, 'Utilise la commande slash **/report** sur un serveur.')}`)], ephemeral: true });
       return;
     }
     const i = ctx.interaction;
     const guild = ctx.guild;
     const sub = i.options.getSubcommand();
+    const t = (s: string, v?: Record<string, string | number>) => trg(guild.id, s, v);
 
     if (sub === 'user') {
       await i.deferReply({ flags: MessageFlags.Ephemeral });
       const target = i.options.getUser('membre', true);
       const res = await reportsService.submit(i.client, guild, i.user, target, i.options.getString('motif', true), { channelId: i.channelId });
-      await i.editReply({ embeds: [res.ok ? noticeEmbed('success', 'Merci, ton signalement a été transmis à l’équipe de modération.') : noticeEmbed('error', res.error)] });
+      await i.editReply({ embeds: [res.ok ? noticeEmbed('success', t('Merci, ton signalement a été transmis à l’équipe de modération.')) : noticeEmbed('error', res.error)] });
       return;
     }
 
     if (!ctx.member?.permissions.has(PermissionFlagsBits.ManageGuild)) {
-      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('⛔ Réservé aux membres qui ont la permission **Gérer le serveur**.')], ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(`⛔ ${t('Réservé aux membres qui ont la permission **Gérer le serveur**.')}`)], ephemeral: true });
       return;
     }
     if (sub === 'status') {
       const c = reportsStorage.getConfig(guild.id);
       await ctx.reply({
-        embeds: [ctx.createEmbed(c.enabled ? 'success' : 'warning').setTitle('🚨 Signalements').setDescription(c.enabled && c.channelId ? `Actif · salon <#${c.channelId}>${c.staffRoleId ? ` · équipe <@&${c.staffRoleId}>` : ''}` : 'Non configuré. `/report setup` l’installe en quelques secondes.')],
+        embeds: [ctx.createEmbed(c.enabled ? 'success' : 'warning').setTitle(`🚨 ${t('Signalements')}`).setDescription(c.enabled && c.channelId ? `${t('Actif · salon {channel}', { channel: `<#${c.channelId}>` })}${c.staffRoleId ? ` · ${t('équipe {role}', { role: `<@&${c.staffRoleId}>` })}` : ''}` : t('Non configuré. `/report setup` l’installe en quelques secondes.'))],
         ephemeral: true,
         allowedMentions: { parse: [] },
       });
@@ -71,9 +73,9 @@ export const reportCommand: Command = {
       const role = i.options.getRole('equipe');
       const res = await reportsService.setup(guild, { channelId: channel?.id ?? null, staffRoleId: role?.id ?? undefined });
       emitConfigUpdated('reports', guild.id, reportsStorage.getConfig(guild.id), 'DISCORD_COMMAND', ctx.author.id);
-      await i.editReply({ embeds: [noticeEmbed('success', `Signalements actifs dans <#${res.channelId}>${res.created ? ' (salon créé, visible de l’équipe seulement)' : ''}. Les membres peuvent utiliser **/report** ou le clic droit sur un message ou un membre.`)] });
+      await i.editReply({ embeds: [noticeEmbed('success', `${t('Signalements actifs dans {channel}', { channel: `<#${res.channelId}>` })}${res.created ? ` ${t('(salon créé, visible de l’équipe seulement)')}` : ''}. ${t('Les membres peuvent utiliser **/report** ou le clic droit sur un message ou un membre.')}`)] });
     } catch (err) {
-      await i.editReply({ embeds: [noticeEmbed('error', err instanceof Error ? err.message : 'Installation impossible.')] });
+      await i.editReply({ embeds: [noticeEmbed('error', err instanceof Error ? err.message : t('Installation impossible.'))] });
     }
   },
 };
@@ -86,7 +88,7 @@ export interface ContextMenu {
 const enabledOrExplain = async (interaction: MessageContextMenuCommandInteraction | UserContextMenuCommandInteraction): Promise<boolean> => {
   const conf = interaction.guildId ? reportsStorage.getConfig(interaction.guildId) : null;
   if (conf?.enabled && conf.channelId) return true;
-  await interaction.reply({ embeds: [noticeEmbed('warning', 'Le système de signalement n’est pas activé sur ce serveur.')], flags: MessageFlags.Ephemeral });
+  await interaction.reply({ embeds: [noticeEmbed('warning', trg(interaction.guildId, 'Le système de signalement n’est pas activé sur ce serveur.'))], flags: MessageFlags.Ephemeral });
   return false;
 };
 
@@ -96,14 +98,14 @@ export const REPORT_CONTEXT_MENUS: ContextMenu[] = [
     async run(interaction) {
       if (!interaction.isMessageContextMenuCommand() || !(await enabledOrExplain(interaction))) return;
       const msg = interaction.targetMessage;
-      await interaction.showModal(reportsService.buildModal({ userId: msg.author.id, channelId: msg.channelId, messageId: msg.id }));
+      await interaction.showModal(reportsService.buildModal({ userId: msg.author.id, channelId: msg.channelId, messageId: msg.id }, interaction.guildId));
     },
   },
   {
     data: new ContextMenuCommandBuilder().setName('Signaler le membre').setType(ApplicationCommandType.User),
     async run(interaction) {
       if (!interaction.isUserContextMenuCommand() || !(await enabledOrExplain(interaction))) return;
-      await interaction.showModal(reportsService.buildModal({ userId: interaction.targetUser.id }));
+      await interaction.showModal(reportsService.buildModal({ userId: interaction.targetUser.id }, interaction.guildId));
     },
   },
 ];

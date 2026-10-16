@@ -1,5 +1,6 @@
 import { GuildMember } from 'discord.js';
 import { ownerImmunityService } from '../../../services/ownerImmunityService.js';
+import { trg } from '../../../utils/tr.js';
 
 export interface HierarchyCheckResult {
   allowed: boolean;
@@ -38,7 +39,7 @@ export function checkHierarchy(
   if (ownerImmunityService.isOwnerImmune(target.id)) {
     return {
       allowed: false,
-      reason: 'Cette personne est le propriétaire du bot : elle est immunisée contre toute sanction (`/godmode` pour désactiver temporairement).',
+      reason: trg(target.guild.id, 'Cette personne est le propriétaire du bot : elle est immunisée contre toute sanction (`/godmode` pour désactiver temporairement).'),
     };
   }
 
@@ -46,7 +47,7 @@ export function checkHierarchy(
   if (moderator.id === target.id) {
     return {
       allowed: false,
-      reason: 'Vous ne pouvez pas exécuter une sanction sur vous-même.',
+      reason: trg(target.guild.id, 'Vous ne pouvez pas exécuter une sanction sur vous-même.'),
     };
   }
 
@@ -54,7 +55,7 @@ export function checkHierarchy(
   if (target.id === botMember.id) {
     return {
       allowed: false,
-      reason: 'Vous ne pouvez pas exécuter une sanction sur le bot.',
+      reason: trg(target.guild.id, 'Vous ne pouvez pas exécuter une sanction sur le bot.'),
     };
   }
 
@@ -62,7 +63,7 @@ export function checkHierarchy(
   if (target.id === target.guild.ownerId) {
     return {
       allowed: false,
-      reason: 'Impossible de sanctionner le propriétaire du serveur.',
+      reason: trg(target.guild.id, 'Impossible de sanctionner le propriétaire du serveur.'),
     };
   }
 
@@ -70,7 +71,7 @@ export function checkHierarchy(
   if (!target.manageable) {
     return {
       allowed: false,
-      reason: 'Le bot ne possède pas un rôle suffisamment élevé pour modérer ce membre.',
+      reason: trg(target.guild.id, 'Le bot ne possède pas un rôle suffisamment élevé pour modérer ce membre.'),
     };
   }
 
@@ -83,7 +84,7 @@ export function checkHierarchy(
       return {
         allowed: false,
         reason:
-          'Vous ne pouvez pas sanctionner un membre possédant un rôle égal ou supérieur au vôtre.',
+          trg(target.guild.id, 'Vous ne pouvez pas sanctionner un membre possédant un rôle égal ou supérieur au vôtre.'),
       };
     }
   }

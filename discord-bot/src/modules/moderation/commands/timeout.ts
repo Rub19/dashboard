@@ -1,6 +1,7 @@
 import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
 import { Command, CommandContext } from '../../../types/command.js';
 import { parseDuration, reasonAutocomplete, runSanctionCommand } from './sanctionRunner.js';
+import { trg } from '../../../utils/tr.js';
 
 export const timeoutCommand: Command = {
   name: 'timeout',
@@ -24,7 +25,7 @@ export const timeoutCommand: Command = {
     const raw = ctx.isSlash ? ctx.interaction!.options.getString('duree', true) : ctx.args[1] || '10m';
     const seconds = parseDuration(raw);
     if (!seconds || seconds > 28 * 86400) {
-      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('Durée invalide : entre 1 minute et 28 jours (ex : 10m, 1h, 1d).')] });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(trg(ctx.guild?.id, 'Durée invalide : entre 1 minute et 28 jours (ex : 10m, 1h, 1d).'))] });
       return;
     }
     await runSanctionCommand(ctx, {

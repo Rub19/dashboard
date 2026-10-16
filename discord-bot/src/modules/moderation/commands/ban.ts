@@ -1,6 +1,7 @@
 import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
 import { Command, CommandContext } from '../../../types/command.js';
 import { parseDuration, reasonAutocomplete, runSanctionCommand } from './sanctionRunner.js';
+import { trg } from '../../../utils/tr.js';
 
 export const banCommand: Command = {
   name: 'ban',
@@ -23,7 +24,7 @@ export const banCommand: Command = {
     const raw = ctx.isSlash ? ctx.interaction!.options.getString('duree') : null;
     const seconds = raw ? parseDuration(raw) : null;
     if (raw && !seconds) {
-      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('Durée invalide : utilise par exemple 1h, 3d ou 7d.')] });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(trg(ctx.guild?.id, 'Durée invalide : utilise par exemple 1h, 3d ou 7d.'))] });
       return;
     }
     await runSanctionCommand(ctx, {

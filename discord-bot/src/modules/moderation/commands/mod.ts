@@ -2,6 +2,7 @@ import { GuildMember, SlashCommandBuilder } from 'discord.js';
 import { Command, CommandContext } from '../../../types/command.js';
 import { findPreset, reasonAutocomplete, runSanctionCommand } from './sanctionRunner.js';
 import { canModerate } from '../services/sanctionPipeline.js';
+import { trg } from '../../../utils/tr.js';
 
 export const modCommand: Command = {
   name: 'mod',
@@ -19,17 +20,17 @@ export const modCommand: Command = {
 
   async execute(ctx: CommandContext): Promise<void> {
     if (!ctx.guild || !ctx.isSlash) {
-      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('Utilise la commande slash `/mod` sur un serveur.')], ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(trg(ctx.guild?.id, 'Utilise la commande slash `/mod` sur un serveur.'))], ephemeral: true });
       return;
     }
     const preset = findPreset(ctx.guild.id, ctx.interaction!.options.getString('raison', true));
     if (!preset) {
-      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('Choisis une raison prédéfinie dans la liste.')], ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(trg(ctx.guild?.id, 'Choisis une raison prédéfinie dans la liste.'))], ephemeral: true });
       return;
     }
     const member = ctx.member as GuildMember | null;
     if (!canModerate(member) && !preset.roleIds.some((id) => member?.roles.cache.has(id))) {
-      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('Tu ne peux pas utiliser cette raison.')], ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(trg(ctx.guild?.id, 'Tu ne peux pas utiliser cette raison.'))], ephemeral: true });
       return;
     }
     await runSanctionCommand(ctx, {

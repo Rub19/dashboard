@@ -1,4 +1,5 @@
 import { ContainerBuilder, EmbedBuilder, Guild, MessageFlags, SectionBuilder, SeparatorBuilder, TextDisplayBuilder, ThumbnailBuilder, type BaseMessageOptions } from 'discord.js';
+import { guildLang, tr } from '../../utils/tr.js';
 import type { CaseAction, ModerationCase } from './types/case.js';
 import type { MessageKey, MessageTemplate } from './sanctionConfig.js';
 
@@ -59,7 +60,8 @@ export function renderTemplate(
   return { components: [c], flags: MessageFlags.IsComponentsV2 };
 }
 
-export function caseVars(guild: Guild, c: ModerationCase, label: string, warns: number, human: (s: number) => string): MessageVars {
+export function caseVars(guild: Guild, c: ModerationCase, label: string, warns: number, human: (s: number, lang?: string) => string): MessageVars {
+  const lang = guildLang(guild.id);
   return {
     target: `<@${c.userId}>`,
     member: c.userTag,
@@ -68,8 +70,8 @@ export function caseVars(guild: Guild, c: ModerationCase, label: string, warns: 
     case: `#${c.caseNumber}`,
     warns: String(warns),
     server: guild.name,
-    duration: c.durationSeconds && c.action !== 'WARN' ? human(c.durationSeconds) : '',
+    duration: c.durationSeconds && c.action !== 'WARN' ? human(c.durationSeconds, lang) : '',
     points: c.points != null ? String(c.points) : '',
-    type: label,
+    type: tr(lang, label),
   };
 }

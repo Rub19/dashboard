@@ -7,6 +7,7 @@ import { ACTION_LABEL, activeWarns, applySanction, human } from '../services/san
 import { moderationRepository } from '../storage/moderationRepository.js';
 import { sanctionConfig, type Preset, type Severity } from '../sanctionConfig.js';
 import type { CaseAction } from '../types/case.js';
+import { trg } from '../../../utils/tr.js';
 
 const CARD_TYPE: Partial<Record<CaseAction, string>> = { WARN: 'warn', TIMEOUT: 'timeout', UNTIMEOUT: 'untimeout', KICK: 'kick', BAN: 'ban', TEMPBAN: 'ban', UNBAN: 'unban', SOFTBAN: 'ban', NOTE: 'note' };
 export const UNDO_SECONDS = 10;
@@ -50,33 +51,34 @@ export interface RunOptions {
 /** Tronc commun des commandes /warn, /timeout, /kick, /ban, /unban, /untimeout et /mod. */
 export async function runSanctionCommand(ctx: CommandContext, opts: RunOptions): Promise<void> {
   if (!ctx.guild || !ctx.member) {
-    await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('Commande utilisable sur un serveur seulement.')] });
+    await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(trg(ctx.guild?.id, 'Commande utilisable sur un serveur seulement.'))] });
     return;
   }
   const cfg = sanctionConfig.get(ctx.guild.id);
   const msgKey = MESSAGE_KEY[opts.action];
   const tpl = msgKey ? cfg.messages[msgKey].reply : null;
   await ctx.deferReply({ ephemeral: tpl?.enabled ? tpl.visibility === 'mod' : cfg.replies.hideReplies });
+  const t = (s: string, v?: Record<string, string | number>) => trg(ctx.guild!.id, s, v);
   const fail = (msg: string) => ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(`${ctx.guildConfig.emojis.error} ${msg}`)] });
 
-  if (!opts.targetId) return void (await fail('Membre introuvable.'));
+  if (!opts.targetId) return void (await fail(t('Membre introuvable.')));
   const preset = findPreset(ctx.guild.id, opts.reason);
   let action = opts.action;
   let reason = preset ? preset.memberReason || preset.name : (opts.reason ?? '').trim();
   let duration = opts.durationSeconds ?? null;
   if (preset && opts.action !== 'WARN' && opts.action !== 'TIMEOUT' && opts.action !== 'KICK' && opts.action !== 'BAN') action = preset.action;
   if (preset && (action === 'TIMEOUT' || action === 'TEMPBAN') && !duration) duration = preset.durationSeconds;
-  if (!reason && action === 'WARN' && cfg.replies.requireReason) return void (await fail('Une raison est obligatoire pour avertir sur ce serveur.'));
-  if (!reason) reason = 'Aucune raison précisée';
+  if (!reason && action === 'WARN' && cfg.replies.requireReason) return void (await fail(t('Une raison est obligatoire pour avertir sur ce serveur.')));
+  if (!reason) reason = t('Aucune raison précisée');
 
   if (action !== 'UNBAN') {
     const target = await ctx.guild.members.fetch(opts.targetId).catch(() => null);
     if (target) {
       const check = checkHierarchy(ctx.member as GuildMember, target, ctx.guild.members.me!);
-      if (!check.allowed) return void (await fail(check.reason ?? 'Action refusée.'));
-      if (check.dryRun) return void (await ctx.reply({ embeds: [ctx.createEmbed('info').setDescription('🧪 Mode test : tu t’es ciblé toi-même, aucune sanction appliquée.')] }));
+      if (!check.allowed) return void (await fail(check.reason ?? t('Action refusée.')));
+      if (check.dryRun) return void (await ctx.reply({ embeds: [ctx.createEmbed('info').setDescription(`🧪 ${t('Mode test : tu t’es ciblé toi-même, aucune sanction appliquée.')}`)] }));
     } else if (action !== 'BAN' && action !== 'TEMPBAN' && action !== 'NOTE' && action !== 'WARN') {
-      return void (await fail("Ce membre n'est pas sur le serveur."));
+      return void (await fail(t("Ce membre n'est pas sur le serveur.")));
     }
   }
 
@@ -97,9 +99,9 @@ export async function runSanctionCommand(ctx: CommandContext, opts: RunOptions):
   const user = await ctx.client.users.fetch(c.userId).catch(() => null);
   const buttons: ButtonBuilder[] = [];
   if (cfg.replies.undoButton && ['WARN', 'TIMEOUT', 'BAN', 'TEMPBAN'].includes(action)) {
-    buttons.push(new ButtonBuilder().setCustomId(`sanc_undo:${c.caseNumber}:${ctx.author.id}:${Math.floor(Date.now() / 1000) + UNDO_SECONDS}`).setLabel(`Annuler (${UNDO_SECONDS} s)`).setStyle(ButtonStyle.Danger));
+    buttons.push(new ButtonBuilder().setCustomId(`sanc_undo:${c.caseNumber}:${ctx.author.id}:${Math.floor(Date.now() / 1000) + UNDO_SECONDS}`).setLabel(t('Annuler ({n} s)', { n: UNDO_SECONDS })).setStyle(ButtonStyle.Danger));
   }
-  if (cfg.replies.hideReplies && cfg.replies.publicByDefault) buttons.push(new ButtonBuilder().setCustomId(`sanc_show:${c.caseNumber}`).setLabel('Afficher').setStyle(ButtonStyle.Secondary));
+  if (cfg.replies.hideReplies && cfg.replies.publicByDefault) buttons.push(new ButtonBuilder().setCustomId(`sanc_show:${c.caseNumber}`).setLabel(t('Afficher')).setStyle(ButtonStyle.Secondary));
 
   if (tpl?.enabled) {
     const out = renderTemplate(tpl, caseVars(ctx.guild, c, ACTION_LABEL[c.action], activeWarns(ctx.guild.id, c.userId), human), {
@@ -132,9 +134,9 @@ export async function runSanctionCommand(ctx: CommandContext, opts: RunOptions):
         totalSanctions: moderationRepository.getUserCases(ctx.guild.id, c.userId).length,
         extraNote:
           action === 'WARN' && c.points != null
-            ? `⚖️ ${c.points} point${c.points > 1 ? 's' : ''}${c.expiresAt ? ` · expire <t:${Math.floor(Date.parse(c.expiresAt) / 1000)}:R>` : ''}`
+            ? `⚖️ ${t(c.points > 1 ? '{n} points' : '{n} point', { n: c.points })}${c.expiresAt ? ` · ${t('expire {when}', { when: `<t:${Math.floor(Date.parse(c.expiresAt) / 1000)}:R>` })}` : ''}`
             : action === 'TIMEOUT' && c.expiresAt
-              ? `🔓 Fin du mute : <t:${Math.floor(Date.parse(c.expiresAt) / 1000)}:R>`
+              ? `🔓 ${t('Fin du mute : {when}', { when: `<t:${Math.floor(Date.parse(c.expiresAt) / 1000)}:R>` })}`
               : null,
         extraButtons: buttons,
       }),

@@ -7,6 +7,7 @@ import { noticeEmbed } from '../../../utils/embeds.js';
 import { moderationRepository } from '../storage/moderationRepository.js';
 import { CaseService } from '../services/caseService.js';
 import { ACTION_LABEL } from '../services/sanctionPipeline.js';
+import { trg } from '../../../utils/tr.js';
 
 /** Dossiers du membre, plus les anciennes sanctions enregistrées avant les dossiers numérotés. */
 export function memberHistory(guildId: string, userId: string): HistoryEntry[] {
@@ -25,28 +26,28 @@ export async function handleModButton(interaction: ButtonInteraction): Promise<v
   if (id.startsWith('sanc_undo:')) {
     const [, num, modId, until] = id.split(':');
     if (interaction.user.id !== modId) {
-      await interaction.reply({ embeds: [noticeEmbed('denied', 'Seul le modérateur qui a sanctionné peut annuler.')], flags: MessageFlags.Ephemeral });
+      await interaction.reply({ embeds: [noticeEmbed('denied', trg(guildId, 'Seul le modérateur qui a sanctionné peut annuler.'))], flags: MessageFlags.Ephemeral });
       return;
     }
     if (Date.now() / 1000 > Number(until)) {
-      await interaction.reply({ embeds: [noticeEmbed('info', 'Les 10 secondes pour annuler sont passées : lève la sanction depuis le dossier.')], flags: MessageFlags.Ephemeral });
+      await interaction.reply({ embeds: [noticeEmbed('info', trg(guildId, 'Les 10 secondes pour annuler sont passées : lève la sanction depuis le dossier.'))], flags: MessageFlags.Ephemeral });
       return;
     }
-    const res = CaseService.revertCase(interaction.client, guildId, Number(num), { id: interaction.user.id, tag: interaction.user.tag }, 'Annulée par le modérateur');
+    const res = CaseService.revertCase(interaction.client, guildId, Number(num), { id: interaction.user.id, tag: interaction.user.tag }, trg(guildId, 'Annulée par le modérateur'));
     if (res.success && res.case) {
       const target = await interaction.client.users.fetch(res.case.userId).catch(() => null);
       await target
-        ?.send({ embeds: [noticeEmbed('success', `Ta sanction sur **${interaction.guild?.name ?? 'le serveur'}** (${ACTION_LABEL[res.case.action]}, dossier n°${num}) a été annulée par le modérateur.`)] })
+        ?.send({ embeds: [noticeEmbed('success', trg(guildId, 'Ta sanction sur **{server}** ({label}, dossier n°{n}) a été annulée par le modérateur.', { server: interaction.guild?.name ?? trg(guildId, 'le serveur'), label: trg(guildId, ACTION_LABEL[res.case.action]), n: num }))] })
         .catch(() => null);
     }
-    await interaction.reply({ embeds: [noticeEmbed(res.success ? 'success' : 'error', res.success ? `Dossier n°${num} annulé.` : res.error ?? 'Annulation impossible.')], flags: MessageFlags.Ephemeral });
+    await interaction.reply({ embeds: [noticeEmbed(res.success ? 'success' : 'error', res.success ? trg(guildId, 'Dossier n°{n} annulé.', { n: num }) : res.error ?? trg(guildId, 'Annulation impossible.'))], flags: MessageFlags.Ephemeral });
     return;
   }
 
   if (id.startsWith('sanc_show:')) {
     const c = moderationRepository.getCaseByNumber(guildId, Number(id.split(':')[1]));
     if (!c || !interaction.channel?.isSendable()) {
-      await interaction.reply({ embeds: [noticeEmbed('error', 'Dossier introuvable.')], flags: MessageFlags.Ephemeral });
+      await interaction.reply({ embeds: [noticeEmbed('error', trg(guildId, 'Dossier introuvable.'))], flags: MessageFlags.Ephemeral });
       return;
     }
     const user = await interaction.client.users.fetch(c.userId).catch(() => null);
@@ -68,13 +69,13 @@ export async function handleModButton(interaction: ButtonInteraction): Promise<v
       flags: V2_FLAGS,
       allowedMentions: { parse: [] },
     });
-    await interaction.reply({ embeds: [noticeEmbed('success', 'Sanction affichée dans le salon.')], flags: MessageFlags.Ephemeral });
+    await interaction.reply({ embeds: [noticeEmbed('success', trg(guildId, 'Sanction affichée dans le salon.'))], flags: MessageFlags.Ephemeral });
     return;
   }
 
   const [action, userId] = id.replace('mod_btn_', '').split(':');
   if (action !== 'history' || !userId) {
-    await interaction.reply({ embeds: [noticeEmbed('error', 'Action inconnue.')], flags: MessageFlags.Ephemeral });
+    await interaction.reply({ embeds: [noticeEmbed('error', trg(guildId, 'Action inconnue.'))], flags: MessageFlags.Ephemeral });
     return;
   }
   const user = await interaction.client.users.fetch(userId).catch(() => null);

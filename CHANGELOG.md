@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.124 — 2026-10-16
+
+**Le bot parle la langue du serveur : sanctions et signalements**
+
+- Les sanctions (/warn, /mute, /ban…), leurs messages privés, le bouton Annuler, l'historique, les appels et tout le système de signalement s'affichent dans la langue choisie pour le serveur (français, anglais, espagnol ou allemand).
+- Les messages personnalisés écrits par l'équipe restent tels quels.
+
 ## v1.75.123 — 2026-10-16
 
 **Fils de signalement archivés à la clôture**

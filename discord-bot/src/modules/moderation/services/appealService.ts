@@ -21,6 +21,7 @@ import { CaseService } from './caseService.js';
 import { ACTION_LABEL, activeWarns, canModerate, human, isOpen } from './sanctionPipeline.js';
 import { caseVars, renderTemplate } from '../sanctionMessages.js';
 import { logger } from '../../../utils/logger.js';
+import { trg } from '../../../utils/tr.js';
 
 export type Appeal = {
   id: string;
@@ -67,21 +68,22 @@ class AppealService {
 
   private card(a: Appeal, note?: string): BaseMessageOptions {
     const c = moderationRepository.getCaseByNumber(a.guildId, a.caseNumber);
+    const t = (s: string, v?: Record<string, string | number>) => trg(a.guildId, s, v);
     const e = new EmbedBuilder()
       .setColor(a.status === 'pending' ? 0xf59e0b : a.status === 'accepted' ? 0x22c55e : 0xef4444)
-      .setTitle(`📨 Appel · dossier n°${a.caseNumber}`)
-      .setDescription(`<@${a.userId}> (${a.userTag}) conteste : **${ACTION_LABEL[(c?.action ?? a.action) as keyof typeof ACTION_LABEL] ?? a.action}**\n> ${(c?.reason ?? '').slice(0, 300)}`)
-      .addFields({ name: sanctionConfig.get(a.guildId).appeals.question || 'Pourquoi lever cette sanction ?', value: a.answer.slice(0, 1024) || '—' })
-      .setFooter({ text: a.status === 'pending' ? 'En attente de décision' : `${STATUS_LABEL[a.status]}${a.decidedBy ? ` par ${a.decidedBy}` : ''}` })
+      .setTitle(`📨 ${t('Appel')} · ${t('dossier n°{n}', { n: a.caseNumber })}`)
+      .setDescription(`<@${a.userId}> (${a.userTag}) ${t('conteste :')} **${t(ACTION_LABEL[(c?.action ?? a.action) as keyof typeof ACTION_LABEL] ?? a.action)}**\n> ${(c?.reason ?? '').slice(0, 300)}`)
+      .addFields({ name: sanctionConfig.get(a.guildId).appeals.question || t('Pourquoi lever cette sanction ?'), value: a.answer.slice(0, 1024) || '—' })
+      .setFooter({ text: a.status === 'pending' ? t('En attente de décision') : `${t(STATUS_LABEL[a.status])}${a.decidedBy ? ` ${t('par {who}', { who: a.decidedBy })}` : ''}` })
       .setTimestamp(new Date(a.createdAt));
-    if (note) e.addFields({ name: 'Discussion', value: note });
+    if (note) e.addFields({ name: t('Discussion'), value: note });
     const components =
       a.status === 'pending'
         ? [
             new ActionRowBuilder<ButtonBuilder>().addComponents(
-              new ButtonBuilder().setCustomId(`appeal:accept:${a.id}`).setLabel('Accepter').setStyle(ButtonStyle.Success),
-              new ButtonBuilder().setCustomId(`appeal:refuse:${a.id}`).setLabel('Refuser').setStyle(ButtonStyle.Danger),
-              new ButtonBuilder().setCustomId(`appeal:discuss:${a.id}`).setLabel('En discuter').setStyle(ButtonStyle.Secondary)
+              new ButtonBuilder().setCustomId(`appeal:accept:${a.id}`).setLabel(t('Accepter')).setStyle(ButtonStyle.Success),
+              new ButtonBuilder().setCustomId(`appeal:refuse:${a.id}`).setLabel(t('Refuser')).setStyle(ButtonStyle.Danger),
+              new ButtonBuilder().setCustomId(`appeal:discuss:${a.id}`).setLabel(t('En discuter')).setStyle(ButtonStyle.Secondary)
             ),
           ]
         : [];
@@ -92,12 +94,13 @@ class AppealService {
   private blocker(guildId: string, caseNumber: number, userId: string): string | null {
     const cfg = sanctionConfig.get(guildId).appeals;
     const c = moderationRepository.getCaseByNumber(guildId, caseNumber);
-    if (!cfg.enabled || !cfg.channelId) return "Les appels sont fermés sur ce serveur.";
-    if (!c || c.userId !== userId) return 'Dossier introuvable.';
-    if (!(cfg.actions as string[]).includes(c.action)) return "Cette sanction ne peut pas faire l'objet d'un appel.";
-    if (!isOpen(c)) return 'Cette sanction est déjà levée.';
-    if (Date.now() - Date.parse(c.createdAt) > cfg.windowDays * 86400_000) return `Le délai pour faire appel (${cfg.windowDays} jours) est dépassé.`;
-    if (this.list.some((a) => a.guildId === guildId && a.caseNumber === caseNumber)) return 'Tu as déjà fait appel de cette sanction.';
+    const t = (s: string, v?: Record<string, string | number>) => trg(guildId, s, v);
+    if (!cfg.enabled || !cfg.channelId) return t('Les appels sont fermés sur ce serveur.');
+    if (!c || c.userId !== userId) return t('Dossier introuvable.');
+    if (!(cfg.actions as string[]).includes(c.action)) return t("Cette sanction ne peut pas faire l'objet d'un appel.");
+    if (!isOpen(c)) return t('Cette sanction est déjà levée.');
+    if (Date.now() - Date.parse(c.createdAt) > cfg.windowDays * 86400_000) return t('Le délai pour faire appel ({n} jours) est dépassé.', { n: cfg.windowDays });
+    if (this.list.some((a) => a.guildId === guildId && a.caseNumber === caseNumber)) return t('Tu as déjà fait appel de cette sanction.');
     return null;
   }
 
@@ -107,25 +110,25 @@ class AppealService {
       const [guildId, num] = rest;
       const why = this.blocker(guildId, Number(num), interaction.user.id);
       if (why) return void (await interaction.reply({ content: why, flags: MessageFlags.Ephemeral }));
-      const question = sanctionConfig.get(guildId).appeals.question || 'Pourquoi lever cette sanction ?';
+      const question = sanctionConfig.get(guildId).appeals.question || trg(guildId, 'Pourquoi lever cette sanction ?');
       await interaction.showModal(
         new ModalBuilder()
           .setCustomId(`appeal:modal:${guildId}:${num}`)
-          .setTitle(`Appel · dossier n°${num}`)
+          .setTitle(`${trg(guildId, 'Appel')} · ${trg(guildId, 'dossier n°{n}', { n: num })}`)
           .addComponents(new ActionRowBuilder<TextInputBuilder>().addComponents(new TextInputBuilder().setCustomId('answer').setLabel(question.slice(0, 45)).setStyle(TextInputStyle.Paragraph).setMinLength(10).setMaxLength(1000).setRequired(true)))
       );
       return;
     }
     const appeal = this.list.find((a) => a.id === rest[0]);
-    if (!appeal || !interaction.guild) return void (await interaction.reply({ content: 'Appel introuvable.', flags: MessageFlags.Ephemeral }));
+    if (!appeal || !interaction.guild) return void (await interaction.reply({ content: trg(interaction.guildId, 'Appel introuvable.'), flags: MessageFlags.Ephemeral }));
     const cfg = sanctionConfig.get(appeal.guildId).appeals;
     const member = interaction.member as GuildMember | null;
     if (!canModerate(member) && !cfg.deciderRoleIds.some((id) => member?.roles.cache.has(id))) {
-      return void (await interaction.reply({ content: 'Seuls les rôles qui décident peuvent traiter un appel.', flags: MessageFlags.Ephemeral }));
+      return void (await interaction.reply({ content: trg(appeal.guildId, 'Seuls les rôles qui décident peuvent traiter un appel.'), flags: MessageFlags.Ephemeral }));
     }
     if (kind === 'discuss') {
-      const thread = interaction.message.hasThread ? interaction.message.thread : await interaction.message.startThread({ name: `Appel n°${appeal.caseNumber}`.slice(0, 100) }).catch(() => null);
-      return void (await interaction.reply({ content: thread ? `Discussion : <#${thread.id}>` : 'Impossible de créer le fil (permission « Créer des fils publics »).', flags: MessageFlags.Ephemeral }));
+      const thread = interaction.message.hasThread ? interaction.message.thread : await interaction.message.startThread({ name: trg(appeal.guildId, 'Appel n°{n}', { n: appeal.caseNumber }).slice(0, 100) }).catch(() => null);
+      return void (await interaction.reply({ content: thread ? `${trg(appeal.guildId, 'Discussion')} : <#${thread.id}>` : trg(appeal.guildId, 'Impossible de créer le fil (permission « Créer des fils publics »).'), flags: MessageFlags.Ephemeral }));
     }
     const res = await this.decide(interaction.client, appeal.guildId, appeal.id, kind === 'accept', { id: interaction.user.id, tag: interaction.user.tag });
     if (!res.ok) return void (await interaction.reply({ content: res.error, flags: MessageFlags.Ephemeral }));
@@ -139,7 +142,7 @@ class AppealService {
     const guild = interaction.client.guilds.cache.get(guildId);
     const cfg = sanctionConfig.get(guildId).appeals;
     const channel = guild && cfg.channelId ? guild.channels.cache.get(cfg.channelId) : null;
-    if (!guild || !channel?.isSendable()) return void (await interaction.reply({ content: "Le salon des appels est introuvable : préviens l'équipe.", flags: MessageFlags.Ephemeral }));
+    if (!guild || !channel?.isSendable()) return void (await interaction.reply({ content: trg(guildId, "Le salon des appels est introuvable : préviens l'équipe."), flags: MessageFlags.Ephemeral }));
     const c = moderationRepository.getCaseByNumber(guildId, Number(num))!;
     const appeal: Appeal = {
       id: `${guildId}-${num}-${Date.now().toString(36)}`,
@@ -154,23 +157,23 @@ class AppealService {
     };
     const mentions = cfg.mentionRoleIds.map((id) => `<@&${id}>`).join(' ');
     const msg = await channel.send({ ...this.card(appeal), content: mentions || undefined, allowedMentions: { roles: cfg.mentionRoleIds } }).catch(() => null);
-    if (!msg) return void (await interaction.reply({ content: "Envoi impossible dans le salon des appels : préviens l'équipe.", flags: MessageFlags.Ephemeral }));
+    if (!msg) return void (await interaction.reply({ content: trg(guildId, "Envoi impossible dans le salon des appels : préviens l'équipe."), flags: MessageFlags.Ephemeral }));
     appeal.channelId = msg.channelId;
     appeal.messageId = msg.id;
     this.list.push(appeal);
     this.save();
     moderationRepository.updateCase(guildId, appeal.caseNumber, { appealStatus: 'PENDING' });
-    await interaction.reply({ content: "Ton appel a bien été envoyé à l'équipe. Tu recevras sa réponse en message privé.", flags: MessageFlags.Ephemeral });
+    await interaction.reply({ content: trg(guildId, "Ton appel a bien été envoyé à l'équipe. Tu recevras sa réponse en message privé."), flags: MessageFlags.Ephemeral });
   }
 
   /** Accepte (lève la sanction) ou refuse un appel, depuis Discord ou le dashboard. */
   async decide(client: Client, guildId: string, id: string, accept: boolean, by: { id: string; tag: string }): Promise<{ ok: true; appeal: Appeal } | { ok: false; error: string }> {
     const appeal = this.list.find((a) => a.guildId === guildId && a.id === id);
-    if (!appeal) return { ok: false, error: 'Appel introuvable.' };
-    if (appeal.status !== 'pending') return { ok: false, error: 'Cet appel est déjà traité.' };
+    if (!appeal) return { ok: false, error: trg(guildId, 'Appel introuvable.') };
+    if (appeal.status !== 'pending') return { ok: false, error: trg(guildId, 'Cet appel est déjà traité.') };
     if (accept) {
       const r = CaseService.revertCase(client, guildId, appeal.caseNumber, by, 'Appel accepté');
-      if (!r.success && !/déjà/.test(r.error ?? '')) return { ok: false, error: r.error ?? 'Levée impossible.' };
+      if (!r.success && !/déjà/.test(r.error ?? '')) return { ok: false, error: r.error ?? trg(guildId, 'Levée impossible.') };
     }
     appeal.status = accept ? 'accepted' : 'refused';
     appeal.decidedAt = new Date().toISOString();
@@ -188,8 +191,8 @@ class AppealService {
         embeds: [
           new EmbedBuilder()
             .setColor(accept ? 0x22c55e : 0xef4444)
-            .setAuthor({ name: guild?.name ?? 'Serveur', iconURL: guild?.iconURL() ?? undefined })
-            .setDescription(accept ? `Ton appel du dossier n°${appeal.caseNumber} est **accepté** : la sanction est levée.` : `Ton appel du dossier n°${appeal.caseNumber} est **refusé** : la sanction est maintenue.`),
+            .setAuthor({ name: guild?.name ?? trg(guildId, 'Serveur'), iconURL: guild?.iconURL() ?? undefined })
+            .setDescription(trg(guildId, accept ? 'Ton appel du dossier n°{n} est **accepté** : la sanction est levée.' : 'Ton appel du dossier n°{n} est **refusé** : la sanction est maintenue.', { n: appeal.caseNumber })),
         ],
       })
       .catch(() => null);

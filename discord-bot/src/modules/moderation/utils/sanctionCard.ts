@@ -2,6 +2,7 @@ import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ContainerBuilder, Message
 import type { ModerationCase } from '../types/case.js';
 import { container, footer, sectionWithThumbnail, separator, statsLine, text, toneToColor } from '../../../utils/components.js';
 import type { GuildConfig } from '../../../types/guildConfig.js';
+import { tr } from '../../../utils/tr.js';
 
 const DEFAULT_AVATAR = 'https://cdn.discordapp.com/embed/avatars/0.png';
 
@@ -46,7 +47,9 @@ export function buildSanctionCard(opts: {
   extraNote?: string | null;
 }): ContainerBuilder {
   const base = SANCTION_META[opts.type] || { emoji: '📋', label: opts.type.toUpperCase(), tone: 'info' as const };
-  const meta = { ...base, label: opts.label ?? base.label };
+  const lang = opts.guildConfig.language;
+  const t = (s: string, v?: Record<string, string | number>) => tr(lang, s, v);
+  const meta = { ...base, label: t(opts.label ?? base.label) };
   const hex = meta.tone === 'error' ? opts.guildConfig.errorColor : meta.tone === 'success' ? opts.guildConfig.successColor : meta.tone === 'info' ? opts.guildConfig.infoColor : null;
   const duration = formatSanctionDuration(opts.durationSeconds);
 
@@ -54,32 +57,32 @@ export function buildSanctionCard(opts: {
     sectionWithThumbnail(
       [
         `## ${meta.emoji} ${meta.label} · #${opts.sanctionId}`,
-        `**Membre :** ${opts.targetMention || opts.targetTag}${opts.targetMention ? ` (${opts.targetTag})` : ''}`,
-        `**Modérateur :** ${opts.moderatorMention}`,
+        `**${t('Membre')} :** ${opts.targetMention || opts.targetTag}${opts.targetMention ? ` (${opts.targetTag})` : ''}`,
+        `**${t('Modérateur')} :** ${opts.moderatorMention}`,
       ],
       opts.targetAvatarUrl || DEFAULT_AVATAR,
       opts.targetTag,
     ),
-    text(`**Raison :** ${opts.reason}`),
+    text(`**${t('Raison')} :** ${opts.reason}`),
     separator(),
     statsLine([
       duration ? `⏱️ ${duration}` : null,
-      typeof opts.totalSanctions === 'number' ? `📋 ${opts.totalSanctions} sanction(s) au total` : null,
+      typeof opts.totalSanctions === 'number' ? `📋 ${t('{n} sanction(s) au total', { n: opts.totalSanctions })}` : null,
       `🕒 <t:${Math.floor(Date.now() / 1000)}:R>`,
     ]),
-    opts.escalation ? text(`⚡ **Auto-escalade :** ${opts.escalation}`) : null,
+    opts.escalation ? text(`⚡ **${t('Auto-escalade')} :** ${opts.escalation}`) : null,
     opts.extraNote ? text(opts.extraNote) : null,
-    opts.dryRun ? text('🧪 **Mode test (God Mode)** — auto-ciblage : aperçu sans conséquence réelle.') : null,
+    opts.dryRun ? text(`🧪 ${t('**Mode test (God Mode)** — auto-ciblage : aperçu sans conséquence réelle.')}`) : null,
     new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
       new ButtonBuilder()
         .setCustomId(`mod_btn_history:${(opts.targetMention || '').replace(/[^0-9]/g, '') || '0'}`)
-        .setLabel('Historique')
+        .setLabel(t('Historique'))
         .setEmoji('📋')
         .setStyle(ButtonStyle.Secondary)
         .setDisabled(!opts.targetMention),
       ...(opts.extraButtons ?? []),
     ),
-    footer(`${opts.guildConfig.botName} · Modération`),
+    footer(`${opts.guildConfig.botName} · ${t('Modération')}`),
   ]);
 }
 
@@ -100,6 +103,7 @@ export function buildSanctionHistoryCard(opts: {
   sanctions: HistoryEntry[];
 }): ContainerBuilder {
   const { sanctions } = opts;
+  const t = (s: string, v?: Record<string, string | number>) => tr(opts.guildConfig.language, s, v);
   const counts: Record<string, number> = {};
   for (const s of sanctions) counts[s.type] = (counts[s.type] || 0) + 1;
   const summary = Object.entries(counts)
@@ -109,14 +113,14 @@ export function buildSanctionHistoryCard(opts: {
   const lines = sanctions.slice(0, 10).map((s) => {
     const meta = SANCTION_META[s.type] || { emoji: '📋', label: s.type };
     const ts = Math.floor(new Date(s.timestamp).getTime() / 1000);
-    return `${meta.emoji} **#${s.id}** ${meta.label} — ${s.reason}\n-# par ${s.moderatorTag} · <t:${ts}:d>${s.open === false ? ' · clos' : ''}`;
+    return `${meta.emoji} **#${s.id}** ${t(meta.label)} — ${s.reason}\n-# ${t('par {who}', { who: s.moderatorTag })} · <t:${ts}:d>${s.open === false ? ` · ${t('clos')}` : ''}`;
   });
 
   return container(toneToColor(sanctions.length === 0 ? 'success' : 'primary', sanctions.length === 0 ? opts.guildConfig.successColor : opts.guildConfig.primaryColor), [
     sectionWithThumbnail(
       [
-        `## 📋 Historique · ${opts.targetTag}`,
-        sanctions.length === 0 ? 'Aucune sanction enregistrée — casier vierge ✅' : `**${sanctions.length}** sanction(s) · ${summary}`,
+        `## 📋 ${t('Historique')} · ${opts.targetTag}`,
+        sanctions.length === 0 ? `${t('Aucune sanction enregistrée — casier vierge')} ✅` : `${t('**{n}** sanction(s)', { n: sanctions.length })} · ${summary}`,
         `-# <@${opts.targetId}>`,
       ],
       opts.targetAvatarUrl || DEFAULT_AVATAR,
@@ -124,7 +128,7 @@ export function buildSanctionHistoryCard(opts: {
     ),
     sanctions.length > 0 ? separator() : null,
     sanctions.length > 0 ? text(lines.join('\n\n')) : null,
-    sanctions.length > 10 ? text(`-# … et **${sanctions.length - 10}** autre(s)`) : null,
-    footer(`${opts.guildConfig.botName} · Modération`),
+    sanctions.length > 10 ? text(`-# ${t('… et **{n}** autre(s)', { n: sanctions.length - 10 })}`) : null,
+    footer(`${opts.guildConfig.botName} · ${t('Modération')}`),
   ]);
 }

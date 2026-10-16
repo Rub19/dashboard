@@ -1,0 +1,11 @@
+import assert from 'node:assert';
+import { tr } from '../src/utils/tr.js';
+import { human } from '../src/modules/moderation/services/sanctionPipeline.js';
+assert.equal(tr('en', 'dossier n°{n}', { n: 8 }), 'case #8');
+assert.equal(tr('de', 'Membre introuvable.'), 'Mitglied nicht gefunden.');
+assert.equal(tr('fr', 'dossier n°{n}', { n: 8 }), 'dossier n°8');
+assert.equal(tr('es', 'texte absent'), 'texte absent');
+assert.equal(human(7200, 'en'), '2 hours');
+assert.equal(human(86400, 'es'), '1 día');
+console.log('ok');
+process.exit(0);

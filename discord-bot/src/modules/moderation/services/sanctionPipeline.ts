@@ -16,6 +16,7 @@ import { sanctionConfig, SEVERITY_LABEL, type SanctionConfig, type Severity, typ
 import { ownerImmunityService } from '../../../services/ownerImmunityService.js';
 import { MESSAGE_KEY, caseVars, renderTemplate } from '../sanctionMessages.js';
 import { logger } from '../../../utils/logger.js';
+import { guildLang, tr, trg } from '../../../utils/tr.js';
 
 export const ACTION_LABEL: Record<CaseAction, string> = {
   WARN: 'Avertissement',
@@ -33,10 +34,10 @@ export const ACTION_LABEL: Record<CaseAction, string> = {
 const COLOR: Partial<Record<CaseAction, number>> = { WARN: 0xfacc15, TIMEOUT: 0xf97316, KICK: 0xf97316, SOFTBAN: 0xef4444, BAN: 0xef4444, TEMPBAN: 0xef4444, UNBAN: 0x22c55e, UNTIMEOUT: 0x22c55e };
 const REVERSIBLE: CaseAction[] = ['WARN', 'TIMEOUT', 'TEMPBAN', 'BAN'];
 
-export const human = (s: number) => {
-  if (s % 86400 === 0) return `${s / 86400} jour${s / 86400 > 1 ? 's' : ''}`;
-  if (s % 3600 === 0) return `${s / 3600} heure${s / 3600 > 1 ? 's' : ''}`;
-  return `${Math.round(s / 60)} minute${s >= 120 ? 's' : ''}`;
+export const human = (s: number, lang?: string) => {
+  if (s % 86400 === 0) return tr(lang, s / 86400 > 1 ? '{n} jours' : '{n} jour', { n: s / 86400 });
+  if (s % 3600 === 0) return tr(lang, s / 3600 > 1 ? '{n} heures' : '{n} heure', { n: s / 3600 });
+  return tr(lang, s >= 120 ? '{n} minutes' : '{n} minute', { n: Math.round(s / 60) });
 };
 
 /** Un dossier « en cours » : ni levé ni expiré. */
@@ -65,9 +66,11 @@ export type ApplyResult = { ok: true; case: ModerationCase } | { ok: false; erro
 export const activeWarns = (guildId: string, userId: string) => moderationRepository.getUserCases(guildId, userId).filter((x) => x.action === 'WARN' && isOpen(x)).length;
 
 export function memberDm(guild: Guild, c: ModerationCase, cfg: SanctionConfig): BaseMessageOptions {
+  const lang = guildLang(guild.id);
+  const t = (s: string, v?: Record<string, string | number>) => tr(lang, s, v);
   const canAppeal = cfg.appeals.enabled && cfg.appeals.channelId && (cfg.appeals.actions as string[]).includes(c.action);
   const appealRow = canAppeal
-    ? [new ActionRowBuilder<ButtonBuilder>().addComponents(new ButtonBuilder().setCustomId(`appeal:open:${guild.id}:${c.caseNumber}`).setLabel('Faire appel').setStyle(ButtonStyle.Secondary).setEmoji('📨'))]
+    ? [new ActionRowBuilder<ButtonBuilder>().addComponents(new ButtonBuilder().setCustomId(`appeal:open:${guild.id}:${c.caseNumber}`).setLabel(t('Faire appel')).setStyle(ButtonStyle.Secondary).setEmoji('📨'))]
     : [];
   const key = MESSAGE_KEY[c.action];
   const custom = key ? cfg.messages[key].dm : null;
@@ -75,40 +78,41 @@ export function memberDm(guild: Guild, c: ModerationCase, cfg: SanctionConfig): 
     const out = renderTemplate(custom, caseVars(guild, c, ACTION_LABEL[c.action], activeWarns(guild.id, c.userId), human), { server: guild.iconURL({ size: 256 }) });
     return { ...out, components: [...(out.components ?? []), ...appealRow] };
   }
-  const who = cfg.replies.nameModerator && c.source !== 'SYSTEM' ? c.moderatorTag : "L'équipe de modération";
+  const who = cfg.replies.nameModerator && c.source !== 'SYSTEM' ? c.moderatorTag : t("L'équipe de modération");
   const e = new EmbedBuilder()
     .setColor(COLOR[c.action] ?? 0x5865f2)
     .setAuthor({ name: guild.name, iconURL: guild.iconURL() ?? undefined })
-    .setTitle(`${ACTION_LABEL[c.action]} · dossier n°${c.caseNumber}`)
-    .setDescription(c.reason || 'Aucune raison précisée.')
-    .addFields({ name: 'Par', value: who, inline: true })
+    .setTitle(`${t(ACTION_LABEL[c.action])} · ${t('dossier n°{n}', { n: c.caseNumber })}`)
+    .setDescription(c.reason || t('Aucune raison précisée.'))
+    .addFields({ name: t('Par'), value: who, inline: true })
     .setTimestamp(new Date(c.createdAt));
-  if (c.action === 'WARN' && c.severity) e.addFields({ name: 'Gravité', value: `${SEVERITY_LABEL[c.severity]}${c.points != null ? ` · ${c.points} point${c.points > 1 ? 's' : ''}` : ''}`, inline: true });
-  if ((c.action === 'TIMEOUT' || c.action === 'TEMPBAN') && c.durationSeconds) e.addFields({ name: 'Durée', value: human(c.durationSeconds), inline: true });
+  if (c.action === 'WARN' && c.severity) e.addFields({ name: t('Gravité'), value: `${t(SEVERITY_LABEL[c.severity])}${c.points != null ? ` · ${t(c.points > 1 ? '{n} points' : '{n} point', { n: c.points })}` : ''}`, inline: true });
+  if ((c.action === 'TIMEOUT' || c.action === 'TEMPBAN') && c.durationSeconds) e.addFields({ name: t('Durée'), value: human(c.durationSeconds, lang), inline: true });
   return { embeds: [e], components: appealRow };
 }
 
 /** Applique une sanction de bout en bout : vérifications, dossier, MP au membre, action sur Discord. */
 export async function applySanction(client: Client, p: ApplyParams): Promise<ApplyResult> {
   const guild = client.guilds.cache.get(p.guildId);
-  if (!guild) return { ok: false, error: 'Serveur introuvable.' };
+  const t = (s: string) => trg(p.guildId, s);
+  if (!guild) return { ok: false, error: t('Serveur introuvable.') };
   const cfg = sanctionConfig.get(guild.id);
   const member = await guild.members.fetch(p.userId).catch(() => null);
   const user = member?.user ?? (await client.users.fetch(p.userId).catch(() => null));
-  if (!user) return { ok: false, error: 'Membre introuvable.' };
+  if (!user) return { ok: false, error: t('Membre introuvable.') };
   const a = p.action;
 
   if (a !== 'NOTE' && a !== 'UNBAN' && a !== 'UNTIMEOUT') {
-    if (ownerImmunityService.isOwnerImmune(user.id)) return { ok: false, error: 'Ce membre est protégé.' };
-    if (user.id === guild.ownerId) return { ok: false, error: 'Impossible de sanctionner le propriétaire du serveur.' };
-    if (user.id === client.user?.id) return { ok: false, error: 'Etho ne peut pas se sanctionner.' };
+    if (ownerImmunityService.isOwnerImmune(user.id)) return { ok: false, error: t('Ce membre est protégé.') };
+    if (user.id === guild.ownerId) return { ok: false, error: t('Impossible de sanctionner le propriétaire du serveur.') };
+    if (user.id === client.user?.id) return { ok: false, error: t('Etho ne peut pas se sanctionner.') };
   }
-  if ((a === 'TIMEOUT' || a === 'UNTIMEOUT' || a === 'KICK') && !member) return { ok: false, error: "Le membre n'est pas sur le serveur." };
-  if ((a === 'TIMEOUT' || a === 'UNTIMEOUT') && !member!.moderatable) return { ok: false, error: 'Rôle du membre au-dessus de celui d’Etho.' };
-  if (a === 'KICK' && !member!.kickable) return { ok: false, error: 'Rôle du membre au-dessus de celui d’Etho.' };
-  if ((a === 'BAN' || a === 'TEMPBAN' || a === 'SOFTBAN') && member && !member.bannable) return { ok: false, error: 'Rôle du membre au-dessus de celui d’Etho.' };
-  if (a === 'UNBAN' && !(await guild.bans.fetch(user.id).catch(() => null))) return { ok: false, error: "Ce membre n'est pas banni." };
-  if (a === 'UNTIMEOUT' && !member!.isCommunicationDisabled()) return { ok: false, error: "Ce membre n'est pas muet." };
+  if ((a === 'TIMEOUT' || a === 'UNTIMEOUT' || a === 'KICK') && !member) return { ok: false, error: t("Le membre n'est pas sur le serveur.") };
+  if ((a === 'TIMEOUT' || a === 'UNTIMEOUT') && !member!.moderatable) return { ok: false, error: t('Rôle du membre au-dessus de celui d’Etho.') };
+  if (a === 'KICK' && !member!.kickable) return { ok: false, error: t('Rôle du membre au-dessus de celui d’Etho.') };
+  if ((a === 'BAN' || a === 'TEMPBAN' || a === 'SOFTBAN') && member && !member.bannable) return { ok: false, error: t('Rôle du membre au-dessus de celui d’Etho.') };
+  if (a === 'UNBAN' && !(await guild.bans.fetch(user.id).catch(() => null))) return { ok: false, error: t("Ce membre n'est pas banni.") };
+  if (a === 'UNTIMEOUT' && !member!.isCommunicationDisabled()) return { ok: false, error: t("Ce membre n'est pas muet.") };
 
   const severity = a === 'WARN' ? (p.severity ?? cfg.warnings.defaultSeverity) : undefined;
   const points = a === 'WARN' ? (p.points ?? (cfg.warnings.severityEnabled ? cfg.warnings.points[severity!] : 1)) : undefined;
@@ -122,7 +126,7 @@ export async function applySanction(client: Client, p: ApplyParams): Promise<App
     moderatorId: p.moderator.id,
     moderatorTag: p.moderator.tag,
     action: a,
-    reason: p.reason || 'Aucune raison précisée',
+    reason: p.reason || t('Aucune raison précisée'),
     durationSeconds: duration,
     source: p.source ?? 'MANUAL',
     severity,
@@ -145,7 +149,7 @@ export async function applySanction(client: Client, p: ApplyParams): Promise<App
     } else if (a === 'UNBAN') await guild.bans.remove(user.id, why);
   } catch (err: any) {
     if (c.caseNumber) moderationRepository.deleteCase(guild.id, c.caseNumber);
-    return { ok: false, error: err?.code === 50013 ? 'Permission manquante pour Etho.' : err?.message || 'Action refusée par Discord.' };
+    return { ok: false, error: err?.code === 50013 ? t('Permission manquante pour Etho.') : err?.message || t('Action refusée par Discord.') };
   }
   return { ok: true, case: c };
 }
@@ -188,13 +192,13 @@ async function applyTiers(client: Client, c: ModerationCase, cfg: SanctionConfig
   if (await guild.bans.fetch(c.userId).catch(() => null)) return;
   const member = await guild.members.fetch(c.userId).catch(() => null);
   if (hit.action === 'TIMEOUT' && member?.communicationDisabledUntilTimestamp && member.communicationDisabledUntilTimestamp > now + hit.durationSeconds * 1000) return;
-  const unit = hit.unit === 'points' ? 'points' : 'infractions';
+  const unit = trg(c.guildId, hit.unit === 'points' ? 'points' : 'infractions');
   await applySanction(client, {
     guildId: c.guildId,
     userId: c.userId,
     moderator: { id: client.user!.id, tag: client.user!.tag },
     action: hit.action,
-    reason: hit.reason || `Palier automatique : ${hit.count} ${unit}`,
+    reason: hit.reason || trg(c.guildId, 'Palier automatique : {n} {unit}', { n: hit.count, unit }),
     durationSeconds: hit.durationSeconds,
     source: 'SYSTEM',
   });
@@ -213,7 +217,7 @@ async function guardCheck(client: Client, c: ModerationCase, cfg: SanctionConfig
   lastAlert.set(key, Date.now());
   const guild = client.guilds.cache.get(c.guildId);
   if (!guild) return;
-  const text = `⚠️ **Garde-fou** : <@${c.moderatorId}> (${c.moderatorTag}) a posé **${n} sanctions** en une heure sur **${guild.name}** (seuil : ${cfg.guard.perHour}). Compte volé ou abus ? Vérifie ses dernières sanctions.`;
+  const text = `⚠️ ${trg(guild.id, '**Garde-fou** : {mod} ({tag}) a posé **{n} sanctions** en une heure sur **{server}** (seuil : {max}). Compte volé ou abus ? Vérifie ses dernières sanctions.', { mod: `<@${c.moderatorId}>`, tag: c.moderatorTag, n, server: guild.name, max: cfg.guard.perHour })}`;
   const channel = cfg.guard.alertChannelId ? guild.channels.cache.get(cfg.guard.alertChannelId) : null;
   if (channel?.isTextBased()) await channel.send({ content: text, allowedMentions: { parse: [] } }).catch(() => null);
   else await (await guild.fetchOwner().catch(() => null))?.send(text).catch(() => null);
@@ -235,7 +239,7 @@ export async function remindEnd(client: Client, guild: Guild, c: ModerationCase)
     return;
   }
   await user
-    ?.send({ embeds: [new EmbedBuilder().setColor(0x22c55e).setAuthor({ name: guild.name, iconURL: guild.iconURL() ?? undefined }).setDescription(`Ton ${c.action === 'TIMEOUT' ? 'mute' : 'ban temporaire'} (dossier n°${c.caseNumber}) est terminé.`)] })
+    ?.send({ embeds: [new EmbedBuilder().setColor(0x22c55e).setAuthor({ name: guild.name, iconURL: guild.iconURL() ?? undefined }).setDescription(trg(guild.id, c.action === 'TIMEOUT' ? 'Ton mute (dossier n°{n}) est terminé.' : 'Ton ban temporaire (dossier n°{n}) est terminé.', { n: c.caseNumber }))] })
     .catch(() => null);
 }
 

@@ -57796,6 +57796,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_123_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_123_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_123_de);
 
+const v1_75_124_fr: ChangelogEntry = {
+  version: "v1.75.124",
+  date: "2026-10-16",
+  title: "Le bot parle la langue du serveur : sanctions et signalements",
+  items: [
+    "Les sanctions (/warn, /mute, /ban…), leurs messages privés, le bouton Annuler, l'historique, les appels et tout le système de signalement s'affichent dans la langue choisie pour le serveur (français, anglais, espagnol ou allemand).",
+    "Les messages personnalisés écrits par l'équipe restent tels quels.",
+  ],
+};
+
+const v1_75_124_en: ChangelogEntry = {
+  version: "v1.75.124",
+  date: "2026-10-16",
+  title: "The bot speaks the server's language: sanctions and reports",
+  items: [
+    "Sanctions (/warn, /mute, /ban…), their DMs, the Undo button, history, appeals and the whole report system now show in the language chosen for the server (French, English, Spanish or German).",
+    "Custom messages written by the staff stay as they are.",
+  ],
+};
+
+const v1_75_124_es: ChangelogEntry = {
+  version: "v1.75.124",
+  date: "2026-10-16",
+  title: "El bot habla el idioma del servidor: sanciones y reportes",
+  items: [
+    "Las sanciones (/warn, /mute, /ban…), sus mensajes privados, el botón Deshacer, el historial, las apelaciones y todo el sistema de reportes se muestran en el idioma elegido para el servidor (francés, inglés, español o alemán).",
+    "Los mensajes personalizados escritos por el equipo se quedan tal cual.",
+  ],
+};
+
+const v1_75_124_de: ChangelogEntry = {
+  version: "v1.75.124",
+  date: "2026-10-16",
+  title: "Der Bot spricht die Sprache des Servers: Sanktionen und Meldungen",
+  items: [
+    "Sanktionen (/warn, /mute, /ban…), ihre DMs, der Rückgängig-Button, der Verlauf, Einsprüche und das gesamte Meldesystem erscheinen in der für den Server gewählten Sprache (Französisch, Englisch, Spanisch oder Deutsch).",
+    "Vom Team geschriebene eigene Nachrichten bleiben unverändert.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_124_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_124_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_124_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_124_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

@@ -28,6 +28,7 @@ import type { ModerationReport } from '../../moderation/types/report.js';
 import type { CaseAction } from '../../moderation/types/case.js';
 import { baseEmbed, noticeEmbed } from '../../../utils/embeds.js';
 import { logger } from '../../../utils/logger.js';
+import { trg } from '../../../utils/tr.js';
 import { isForumLike, isSendableTarget, sendToConfiguredChannel } from '../../../utils/channelSend.js';
 
 const OPEN: ModerationReport['status'][] = ['NEW', 'REVIEWING', 'ESCALATED'];
@@ -61,28 +62,30 @@ class ReportsService {
   }
 
   /** Fenêtre de saisie du motif (menus contextuels et /report). */
-  public buildModal(target: { userId: string; channelId?: string; messageId?: string }): ModalBuilder {
+  public buildModal(target: { userId: string; channelId?: string; messageId?: string }, guildId?: string | null): ModalBuilder {
+    const t = (s: string) => trg(guildId, s);
     const id = target.messageId && target.channelId ? `rep_modal:msg:${target.userId}:${target.channelId}:${target.messageId}` : `rep_modal:user:${target.userId}`;
     return new ModalBuilder()
       .setCustomId(id)
-      .setTitle('Signaler')
+      .setTitle(t('Signaler'))
       .addComponents(
         new ActionRowBuilder<TextInputBuilder>().addComponents(
-          new TextInputBuilder().setCustomId('reason').setLabel('Pourquoi signalez-vous ?').setStyle(TextInputStyle.Paragraph).setMinLength(5).setMaxLength(500).setRequired(true).setPlaceholder('Décrivez le problème en quelques mots')
+          new TextInputBuilder().setCustomId('reason').setLabel(t('Pourquoi signalez-vous ?')).setStyle(TextInputStyle.Paragraph).setMinLength(5).setMaxLength(500).setRequired(true).setPlaceholder(t('Décrivez le problème en quelques mots'))
         )
       );
   }
 
   /** Enregistre le signalement puis crée / met à jour le message de l'équipe. */
   public async submit(client: Client, guild: Guild, reporter: User, target: User, reason: string, where?: { channelId?: string; messageId?: string; messageContent?: string }): Promise<SubmitResult> {
+    const t = (s: string, v?: Record<string, string | number>) => trg(guild.id, s, v);
     const conf = reportsStorage.getConfig(guild.id);
-    if (!conf.enabled || !conf.channelId) return { ok: false, error: 'Le système de signalement n’est pas configuré sur ce serveur.' };
-    if (target.id === reporter.id) return { ok: false, error: 'Tu ne peux pas te signaler toi-même.' };
-    if (target.bot) return { ok: false, error: 'Les bots ne peuvent pas être signalés ici : préviens l’équipe directement.' };
+    if (!conf.enabled || !conf.channelId) return { ok: false, error: t('Le système de signalement n’est pas configuré sur ce serveur.') };
+    if (target.id === reporter.id) return { ok: false, error: t('Tu ne peux pas te signaler toi-même.') };
+    if (target.bot) return { ok: false, error: t('Les bots ne peuvent pas être signalés ici : préviens l’équipe directement.') };
     const channel = guild.channels.cache.get(conf.channelId);
-    if (!channel || !isSendableTarget(channel)) return { ok: false, error: 'Le salon des signalements est introuvable : l’équipe doit le reconfigurer.' };
+    if (!channel || !isSendableTarget(channel)) return { ok: false, error: t('Le salon des signalements est introuvable : l’équipe doit le reconfigurer.') };
     const wait = reportsStorage.checkAndStamp(guild.id, reporter.id, conf.cooldownSeconds);
-    if (wait > 0) return { ok: false, error: `Patiente encore ${wait} s avant un nouveau signalement.` };
+    if (wait > 0) return { ok: false, error: t('Patiente encore {wait} s avant un nouveau signalement.', { wait }) };
 
     const report = ModerationService.createReport({
       guildId: guild.id,
@@ -106,6 +109,7 @@ class ReportsService {
 
   /** Message unique de l'équipe pour un membre signalé : tous ses signalements ouverts, ses sanctions passées, les boutons. */
   public async render(guild: Guild, userId: string): Promise<BaseMessageOptions> {
+    const t = (s: string, v?: Record<string, string | number>) => trg(guild.id, s, v);
     const all = moderationRepository.getReports(guild.id, { reportedUserId: userId }).sort((a, b) => a.createdAt.localeCompare(b.createdAt));
     const open = all.filter((r) => OPEN.includes(r.status));
     const shown = open.length > 0 ? open : all.slice(-1);
@@ -118,28 +122,28 @@ class ReportsService {
     const assigned = open.find((r) => r.assignedModerator)?.assignedModerator;
     const name = member?.displayName ?? user?.username ?? userId;
     const embed = baseEmbed(done ? 'success' : assigned ? 'warning' : 'error', { footerText: null })
-      .setTitle(`🚨 Signalement contre ${plain(name)}${user ? ` (@${user.username})` : ''}`)
+      .setTitle(`🚨 ${t('Signalement contre {name}', { name: plain(name) })}${user ? ` (@${user.username})` : ''}`)
       .setThumbnail(user?.displayAvatarURL({ size: 128 }) ?? null);
 
     const lines: string[] = [];
-    lines.push(`Compte créé ${user ? ts(user.createdAt) : '—'} · Arrivé sur le serveur ${member?.joinedAt ? ts(member.joinedAt) : '—'}`);
-    lines.push(`🔎 ${count('TIMEOUT')} exclusion(s) · ${count('WARN')} avertissement(s) · ${count('KICK')} expulsion(s) · ${count('BAN') + count('SOFTBAN')} bannissement(s)`);
+    lines.push(t('Compte créé {created} · Arrivé sur le serveur {joined}', { created: user ? ts(user.createdAt) : '—', joined: member?.joinedAt ? ts(member.joinedAt) : '—' }));
+    lines.push(`🔎 ${t('{timeouts} exclusion(s) · {warns} avertissement(s) · {kicks} expulsion(s) · {bans} bannissement(s)', { timeouts: count('TIMEOUT'), warns: count('WARN'), kicks: count('KICK'), bans: count('BAN') + count('SOFTBAN') })}`);
     lines.push('');
     for (const r of shown.slice(-MAX_SHOWN)) {
-      const link = r.messageId && r.channelId ? ` · [Message](https://discord.com/channels/${guild.id}/${r.channelId}/${r.messageId})` : '';
-      lines.push(`**Signalé par** <@${r.reporterUserId}>${r.channelId ? ` dans <#${r.channelId}>` : ''} ${ts(r.createdAt)}${link}`);
+      const link = r.messageId && r.channelId ? ` · [${t('Message')}](https://discord.com/channels/${guild.id}/${r.channelId}/${r.messageId})` : '';
+      lines.push(`${t('**Signalé par** {who}', { who: `<@${r.reporterUserId}>` })}${r.channelId ? ` ${t('dans {channel}', { channel: `<#${r.channelId}>` })}` : ''} ${ts(r.createdAt)}${link}`);
       lines.push(`> ${plain(clip(r.reason, 300))}`);
       if (r.messageContent) lines.push(`> 💬 « ${plain(clip(r.messageContent, 160))} »`);
     }
-    if (shown.length > MAX_SHOWN) lines.push(`… et ${shown.length - MAX_SHOWN} signalement(s) plus ancien(s).`);
+    if (shown.length > MAX_SHOWN) lines.push(t('… et {n} signalement(s) plus ancien(s).', { n: shown.length - MAX_SHOWN }));
     lines.push('');
     if (done) {
       const last = all[all.length - 1];
-      lines.push(`✅ ${last?.status === 'DISMISSED' ? 'Rejeté' : 'Traité'}${last?.assignedModerator ? ` par <@${last.assignedModerator.id}>` : ''}${last?.caseNumber ? ` · dossier n°${last.caseNumber}` : ''}.`);
+      lines.push(`✅ ${t(last?.status === 'DISMISSED' ? 'Rejeté' : 'Traité')}${last?.assignedModerator ? ` ${t('par {who}', { who: `<@${last.assignedModerator.id}>` })}` : ''}${last?.caseNumber ? ` · ${t('dossier n°{n}', { n: last.caseNumber })}` : ''}.`);
     } else if (assigned) {
-      lines.push(`👀 Pris en charge par <@${assigned.id}>.`);
+      lines.push(`👀 ${t('Pris en charge par {who}.', { who: `<@${assigned.id}>` })}`);
     } else {
-      lines.push(`⏳ En attente depuis ${ts(open[0].createdAt, 'F')} (${ts(open[0].createdAt)}).`);
+      lines.push(`⏳ ${t('En attente depuis {date}', { date: ts(open[0].createdAt, 'F') })} (${ts(open[0].createdAt)}).`);
     }
     embed.setDescription(lines.join('\n').slice(0, 4000));
 
@@ -147,12 +151,12 @@ class ReportsService {
 
     const select = new StringSelectMenuBuilder()
       .setCustomId(`rep_sanction:${userId}`)
-      .setPlaceholder('Sanctionner le membre')
+      .setPlaceholder(t('Sanctionner le membre'))
       .addOptions(this.sanctionOptions(guild.id));
     const buttons = new ActionRowBuilder<ButtonBuilder>().addComponents(
-      new ButtonBuilder().setCustomId(`rep_take:${userId}`).setLabel(assigned ? 'Reprendre en charge' : 'Prendre en charge').setStyle(ButtonStyle.Primary),
-      new ButtonBuilder().setCustomId(`rep_done:${userId}`).setLabel('Marquer comme traité').setStyle(ButtonStyle.Success),
-      new ButtonBuilder().setCustomId(`rep_dismiss:${userId}`).setLabel('Rejeter').setStyle(ButtonStyle.Secondary)
+      new ButtonBuilder().setCustomId(`rep_take:${userId}`).setLabel(t(assigned ? 'Reprendre en charge' : 'Prendre en charge')).setStyle(ButtonStyle.Primary),
+      new ButtonBuilder().setCustomId(`rep_done:${userId}`).setLabel(t('Marquer comme traité')).setStyle(ButtonStyle.Success),
+      new ButtonBuilder().setCustomId(`rep_dismiss:${userId}`).setLabel(t('Rejeter')).setStyle(ButtonStyle.Secondary)
     );
     return { embeds: [embed], components: [new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(select), buttons], allowedMentions: { parse: [] } };
   }
@@ -162,18 +166,19 @@ class ReportsService {
     const presets = sanctionConfig
       .get(guildId)
       .presets.reasons.slice(0, 15)
-      .map((p) => new StringSelectMenuOptionBuilder().setLabel(p.name.slice(0, 100)).setValue(`preset:${p.id}`).setDescription(`${ACTION_LABEL[p.action]}${p.category ? ` · ${p.category}` : ''}`.slice(0, 100)));
+      .map((p) => new StringSelectMenuOptionBuilder().setLabel(p.name.slice(0, 100)).setValue(`preset:${p.id}`).setDescription(`${trg(guildId, ACTION_LABEL[p.action])}${p.category ? ` · ${p.category}` : ''}`.slice(0, 100)));
     const free =
       reportsStorage.getConfig(guildId).customSanctions || presets.length === 0
-        ? Object.entries(SANCTIONS).map(([value, s]) => new StringSelectMenuOptionBuilder().setLabel(s.label).setValue(value).setDescription(s.description))
+        ? Object.entries(SANCTIONS).map(([value, s]) => new StringSelectMenuOptionBuilder().setLabel(trg(guildId, s.label)).setValue(value).setDescription(trg(guildId, s.description)))
         : [];
     return [...presets, ...free].slice(0, 25);
   }
 
   /** À la clôture : prévient les signaleurs et range le résumé dans le fil de tri. */
   public async notifyClosed(guild: Guild, reports: ModerationReport[], outcome: 'ACTIONED' | 'DISMISSED', mod: { id: string; tag: string }, sanction?: string, caseNumber?: number): Promise<void> {
+    const t = (s: string, v?: Record<string, string | number>) => trg(guild.id, s, v);
     const conf = reportsStorage.getConfig(guild.id);
-    const label = outcome === 'DISMISSED' ? 'refusé' : sanction ? 'traité avec une sanction' : 'résolu';
+    const label = t(outcome === 'DISMISSED' ? 'refusé' : sanction ? 'traité avec une sanction' : 'résolu');
     if (conf.notifyReporter) {
       for (const reporterId of new Set(reports.map((r) => r.reporterUserId))) {
         const user = await guild.client.users.fetch(reporterId).catch(() => null);
@@ -182,7 +187,7 @@ class ReportsService {
             embeds: [
               noticeEmbed(
                 outcome === 'DISMISSED' ? 'info' : 'success',
-                `Ton signalement sur **${guild.name}** a été ${label} par ${mod.tag}${sanction ? ` · ${sanction}` : ''}${caseNumber ? ` (dossier n°${caseNumber})` : ''}.`
+                `${t('Ton signalement sur **{server}** a été {label} par {mod}', { server: guild.name, label, mod: mod.tag })}${sanction ? ` · ${sanction}` : ''}${caseNumber ? ` (${t('dossier n°{n}', { n: caseNumber })})` : ''}.`
               ),
             ],
           })
@@ -192,13 +197,13 @@ class ReportsService {
     if (conf.triageThreads && conf.channelId) {
       const channel = guild.channels.cache.get(conf.channelId);
       if (channel && channel.type === ChannelType.GuildText) {
-        const name = outcome === 'DISMISSED' ? 'Refusés' : sanction ? 'Sanctionnés' : 'Résolus';
+        const name = t(outcome === 'DISMISSED' ? 'Refusés' : sanction ? 'Sanctionnés' : 'Résolus');
         const active = await channel.threads.fetchActive().catch(() => null);
         const thread = active?.threads.find((t) => t.name === name) ?? (await channel.threads.create({ name, autoArchiveDuration: 10080 }).catch(() => null));
         const target = reports[0];
         await thread
           ?.send({
-            content: `**${target?.reportedUserTag ?? '?'}** (<@${target?.reportedUserId}>) · ${reports.length} signalement(s) · ${label} par <@${mod.id}>${caseNumber ? ` · dossier n°${caseNumber}` : ''}`,
+            content: `**${target?.reportedUserTag ?? '?'}** (<@${target?.reportedUserId}>) · ${t('{n} signalement(s)', { n: reports.length })} · ${label} ${t('par {who}', { who: `<@${mod.id}>` })}${caseNumber ? ` · ${t('dossier n°{n}', { n: caseNumber })}` : ''}`,
             allowedMentions: { parse: [] },
           })
           .catch(() => null);
@@ -207,7 +212,7 @@ class ReportsService {
     const posted = reports[0] ? reportsStorage.getThread(guild.id, reports[0].reportedUserId) : undefined;
     if (conf.threadPerReport && posted) {
       const thread = await guild.channels.fetch(posted.messageId).catch(() => null);
-      if (thread?.isThread()) await thread.setArchived(true, `Signalement ${label}`).catch(() => null);
+      if (thread?.isThread()) await thread.setArchived(true, `${t('Signalement')} ${label}`).catch(() => null);
     }
   }
 
@@ -237,7 +242,7 @@ class ReportsService {
       const message = await host.messages.fetch(existing!.messageId).catch(() => null);
       if (message) {
         await message.edit(payload);
-        if (isNew && mentions.length) await host.send({ content: `${mentions.map((id) => `<@&${id}>`).join(' ')} nouveau signalement ci-dessus.`, allowedMentions: { roles: mentions } }).catch(() => undefined);
+        if (isNew && mentions.length) await host.send({ content: `${mentions.map((id) => `<@&${id}>`).join(' ')} ${trg(guild.id, 'nouveau signalement ci-dessus.')}`, allowedMentions: { roles: mentions } }).catch(() => undefined);
         return;
       }
     }
@@ -245,11 +250,11 @@ class ReportsService {
     const sent = await sendToConfiguredChannel(
       channel,
       { ...payload, content, allowedMentions: content ? { roles: mentions } : { parse: [] } },
-      { postTitle: `Signalement — ${guild.members?.cache?.get(userId)?.user?.tag ?? userId}` }
+      { postTitle: `${trg(guild.id, 'Signalement')} — ${guild.members?.cache?.get(userId)?.user?.tag ?? userId}` }
     );
     reportsStorage.setThread({ guildId: guild.id, reportedUserId: userId, channelId: sent.channelId ?? channel.id, messageId: sent.id });
     if (conf.threadPerReport && !isForumLike(channel) && typeof (sent as any).startThread === 'function') {
-      await (sent as any).startThread({ name: `Signalement · ${guild.members.cache.get(userId)?.user.username ?? userId}`.slice(0, 100) }).catch(() => null);
+      await (sent as any).startThread({ name: `${trg(guild.id, 'Signalement')} · ${guild.members.cache.get(userId)?.user.username ?? userId}`.slice(0, 100) }).catch(() => null);
     }
   }
 
@@ -262,7 +267,7 @@ class ReportsService {
     const [action, userId] = interaction.customId.split(':');
     const guild = interaction.guild;
     if (!guild || !this.canHandle(interaction.member as GuildMember, guild.id)) {
-      await interaction.reply({ embeds: [noticeEmbed('denied', 'Seule l’équipe de modération peut traiter les signalements.')], flags: MessageFlags.Ephemeral });
+      await interaction.reply({ embeds: [noticeEmbed('denied', trg(interaction.guildId, 'Seule l’équipe de modération peut traiter les signalements.'))], flags: MessageFlags.Ephemeral });
       return;
     }
     const mod = { id: interaction.user.id, tag: interaction.user.tag };
@@ -276,13 +281,13 @@ class ReportsService {
           .map((r) => r.reportedUserId)
       );
       if (mine.size >= max) {
-        await interaction.reply({ embeds: [noticeEmbed('denied', `Tu as déjà ${mine.size} signalement(s) en cours (limite : ${max}). Termine-les d’abord.`)], flags: MessageFlags.Ephemeral });
+        await interaction.reply({ embeds: [noticeEmbed('denied', trg(guild.id, 'Tu as déjà {n} signalement(s) en cours (limite : {max}). Termine-les d’abord.', { n: mine.size, max }))], flags: MessageFlags.Ephemeral });
         return;
       }
     }
     const reports = this.openReports(guild.id, userId);
     if (reports.length === 0) {
-      await interaction.reply({ embeds: [noticeEmbed('info', 'Ces signalements sont déjà traités.')], flags: MessageFlags.Ephemeral });
+      await interaction.reply({ embeds: [noticeEmbed('info', trg(guild.id, 'Ces signalements sont déjà traités.'))], flags: MessageFlags.Ephemeral });
       return;
     }
     for (const r of reports) {
@@ -309,16 +314,16 @@ class ReportsService {
         }
       : SANCTIONS[picked];
     if (!guild || !sanction || !this.canHandle(interaction.member as GuildMember, guild.id)) {
-      await interaction.reply({ embeds: [noticeEmbed('denied', 'Seule l’équipe de modération peut sanctionner depuis un signalement.')], flags: MessageFlags.Ephemeral });
+      await interaction.reply({ embeds: [noticeEmbed('denied', trg(interaction.guildId, 'Seule l’équipe de modération peut sanctionner depuis un signalement.'))], flags: MessageFlags.Ephemeral });
       return;
     }
     if (!interaction.memberPermissions?.has(sanction.need)) {
-      await interaction.reply({ embeds: [noticeEmbed('denied', `Il te manque la permission nécessaire pour « ${sanction.label} ».`)], flags: MessageFlags.Ephemeral });
+      await interaction.reply({ embeds: [noticeEmbed('denied', trg(guild.id, 'Il te manque la permission nécessaire pour « {label} ».', { label: preset ? sanction.label : trg(guild.id, sanction.label) }))], flags: MessageFlags.Ephemeral });
       return;
     }
     await interaction.deferUpdate();
     const reports = this.openReports(guild.id, userId);
-    const reason = preset ? preset.memberReason || preset.name : `Signalement : ${clip(reports[0]?.reason ?? 'sans motif', 200)}`;
+    const reason = preset ? preset.memberReason || preset.name : `${trg(guild.id, 'Signalement')} : ${clip(reports[0]?.reason ?? trg(guild.id, 'sans motif'), 200)}`;
     const res = await applySanction(guild.client, {
       guildId: guild.id,
       userId,
@@ -332,13 +337,14 @@ class ReportsService {
       presetId: preset?.id,
     });
     if (!res.ok) {
-      await interaction.followUp({ embeds: [noticeEmbed('error', `Sanction impossible : ${res.error}.`)], flags: MessageFlags.Ephemeral });
+      await interaction.followUp({ embeds: [noticeEmbed('error', trg(guild.id, 'Sanction impossible : {error}.', { error: res.error }))], flags: MessageFlags.Ephemeral });
       return;
     }
     const mod = { id: interaction.user.id, tag: interaction.user.tag };
-    for (const r of reports) ModerationService.updateReportStatus(guild.id, r.id, 'ACTIONED', mod, `${sanction.label}`, res.case.caseNumber);
+    const shownLabel = preset ? sanction.label : trg(guild.id, sanction.label);
+    for (const r of reports) ModerationService.updateReportStatus(guild.id, r.id, 'ACTIONED', mod, shownLabel, res.case.caseNumber);
     await interaction.editReply(await this.render(guild, userId));
-    await this.notifyClosed(guild, reports, 'ACTIONED', mod, sanction.label, res.case.caseNumber);
+    await this.notifyClosed(guild, reports, 'ACTIONED', mod, shownLabel, res.case.caseNumber);
   }
 
   /** Fenêtre de motif validée par le membre. */
@@ -352,7 +358,7 @@ class ReportsService {
     await interaction.deferReply({ flags: MessageFlags.Ephemeral });
     const target = await guild.client.users.fetch(userId).catch(() => null);
     if (!target) {
-      await interaction.editReply({ embeds: [noticeEmbed('error', 'Membre introuvable.')] });
+      await interaction.editReply({ embeds: [noticeEmbed('error', trg(guild.id, 'Membre introuvable.'))] });
       return;
     }
     let where: { channelId?: string; messageId?: string; messageContent?: string } | undefined;
@@ -366,7 +372,7 @@ class ReportsService {
     }
     const res = await this.submit(interaction.client, guild, interaction.user, target, reason, where);
     await interaction.editReply({
-      embeds: [res.ok ? noticeEmbed('success', reportsStorage.getConfig(guild.id).confirmationMessage || 'Merci, ton signalement a bien été envoyé à l’équipe de modération.') : noticeEmbed('error', res.error)],
+      embeds: [res.ok ? noticeEmbed('success', reportsStorage.getConfig(guild.id).confirmationMessage || trg(guild.id, 'Merci, ton signalement a bien été envoyé à l’équipe de modération.')) : noticeEmbed('error', res.error)],
     });
   }
 
@@ -379,15 +385,15 @@ class ReportsService {
     let created = false;
     if (!channelId) {
       const me = guild.members.me;
-      if (!me?.permissions.has(PermissionFlagsBits.ManageChannels)) throw new Error('Il me faut la permission « Gérer les salons » pour créer le salon.');
+      if (!me?.permissions.has(PermissionFlagsBits.ManageChannels)) throw new Error(trg(guild.id, 'Il me faut la permission « Gérer les salons » pour créer le salon.'));
       const staffRoles = opts.staffRoleId
         ? [opts.staffRoleId]
         : guild.roles.cache.filter((r) => !r.managed && r.id !== guild.id && (r.permissions.has(PermissionFlagsBits.ModerateMembers) || r.permissions.has(PermissionFlagsBits.Administrator))).map((r) => r.id);
       const allow = [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages, PermissionFlagsBits.ReadMessageHistory];
       const channel = await guild.channels.create({
-        name: 'signalements',
+        name: trg(guild.id, 'signalements'),
         type: ChannelType.GuildText,
-        topic: 'Signalements des membres : traités par l’équipe de modération.',
+        topic: trg(guild.id, 'Signalements des membres : traités par l’équipe de modération.'),
         permissionOverwrites: [
           { id: guild.roles.everyone.id, deny: [PermissionFlagsBits.ViewChannel] },
           { id: me.id, allow: [...allow, PermissionFlagsBits.EmbedLinks, PermissionFlagsBits.ManageMessages] },
@@ -398,7 +404,7 @@ class ReportsService {
       channelId = channel.id;
       created = true;
     } else if (!isSendableTarget(guild.channels.cache.get(channelId))) {
-      throw new Error('Salon introuvable ou non textuel.');
+      throw new Error(trg(guild.id, 'Salon introuvable ou non textuel.'));
     }
     reportsStorage.updateConfig(guild.id, { enabled: true, channelId, ...(opts.staffRoleId !== undefined ? { staffRoleId: opts.staffRoleId } : {}) });
     return { channelId, created };

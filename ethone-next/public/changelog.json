@@ -1,5 +1,14 @@
 [
   {
+    "version": "v1.75.124",
+    "date": "2026-10-16",
+    "title": "Le bot parle la langue du serveur : sanctions et signalements",
+    "items": [
+      "Les sanctions (/warn, /mute, /ban…), leurs messages privés, le bouton Annuler, l'historique, les appels et tout le système de signalement s'affichent dans la langue choisie pour le serveur (français, anglais, espagnol ou allemand).",
+      "Les messages personnalisés écrits par l'équipe restent tels quels."
+    ]
+  },
+  {
     "version": "v1.75.123",
     "date": "2026-10-16",
     "title": "Fils de signalement archivés à la clôture",
@@ -602,17 +611,6 @@
     "title": "Mobile : widget de l'accueil visible",
     "items": [
       "Accueil sur téléphone : le widget choisi dans les onglets s'affiche bien (il restait invisible)."
-    ]
-  },
-  {
-    "version": "v1.69.0",
-    "date": "2026-10-11",
-    "title": "Mobile : pages plus compactes et rangées en onglets",
-    "items": [
-      "Accueil : sur téléphone, un widget à la fois choisi dans une barre d'onglets, au lieu de six écrans à faire défiler.",
-      "Console Discord : chaque page de module affiche ses blocs en onglets sur téléphone ; la page Protections s'ouvre en liste puis en détail avec un bouton retour.",
-      "Réglages, Profil, Habitudes, Tâches et Agenda : en-têtes et indicateurs compactés pour voir l'essentiel sans défiler.",
-      "Le bouton « Retour à ETHONE » de la console devient une simple icône sur téléphone."
     ]
   }
 ]

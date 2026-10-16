@@ -35,3 +35,19 @@ extension View {
     }
 }
 
+
+extension View {
+    /// View-switching picker: iOS 27 tabs style, segmented before.
+    @ViewBuilder
+    func ethoneTabsPicker() -> some View {
+        #if compiler(>=6.4)
+        if #available(iOS 27.0, *) {
+            self.pickerStyle(.tabs)
+        } else {
+            self.pickerStyle(.segmented)
+        }
+        #else
+        self.pickerStyle(.segmented)
+        #endif
+    }
+}

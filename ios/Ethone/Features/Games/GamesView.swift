@@ -21,7 +21,7 @@ struct GamesView: View {
             Picker("Jeu", selection: $selected) {
                 ForEach(games) { game in Label(game.label, systemImage: game.symbol).tag(game.id) }
             }
-            .pickerStyle(.segmented)
+            .ethoneTabsPicker()
             .padding(12)
             if let game = games.first(where: { $0.id == selected }) {
                 GameWebView(url: game.url).id(game.id)

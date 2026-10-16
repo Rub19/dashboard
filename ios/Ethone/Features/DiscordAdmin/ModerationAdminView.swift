@@ -19,7 +19,7 @@ struct ModerationAdminView: View {
                 Text("Sanctions").tag("cases")
                 Text("Bannis").tag("bans")
             }
-            .pickerStyle(.segmented)
+            .ethoneTabsPicker()
             .listRowBackground(Color.clear)
 
             if let errorMessage { Text(errorMessage).font(.footnote).foregroundStyle(Theme.danger).listRowBackground(Color.clear) }

@@ -21,7 +21,7 @@ struct TicketsAdminView: View {
                 Text("En cours").tag("open")
                 Text("Fermés").tag("closed")
             }
-            .pickerStyle(.segmented)
+            .ethoneTabsPicker()
             .listRowBackground(Color.clear)
 
             if let errorMessage {

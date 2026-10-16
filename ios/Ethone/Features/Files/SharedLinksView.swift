@@ -21,7 +21,7 @@ struct SharedLinksView: View {
                     Text("Partage (télécharger)").tag("share")
                     Text("Dépôt (envoyer)").tag("drop")
                 }
-                .pickerStyle(.segmented)
+                .ethoneTabsPicker()
                 TextField("Lien ou identifiant", text: $input)
                     .keyboardType(.URL).textInputAutocapitalization(.never).autocorrectionDisabled()
                 SecureField("Mot de passe du lien (si demandé)", text: $password)

@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.140 — 2026-10-17
+
+**App iOS : profil et finitions**
+
+- Profil : en-tête agrandi et bouton « Enregistrer » dans la barre du haut, avec un retour haptique de réussite.
+- Performance : retour haptique quand le cache est vidé et mesures animées.
+- Messages de confirmation raccourcis (« Profil enregistré. », « Ajouté à vos notes. »).
+- Scratchpad : l'indicateur d'enregistrement change en douceur.
+
 ## v1.75.139 — 2026-10-17
 
 **App iOS : administration Discord refaite**

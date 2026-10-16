@@ -58596,6 +58596,59 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_139_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_139_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_139_de);
 
+const v1_75_140_fr: ChangelogEntry = {
+  version: "v1.75.140",
+  date: "2026-10-17",
+  title: "App iOS : profil et finitions",
+  items: [
+    "Profil : en-tête agrandi et bouton « Enregistrer » dans la barre du haut, avec un retour haptique de réussite.",
+    "Performance : retour haptique quand le cache est vidé et mesures animées.",
+    "Messages de confirmation raccourcis (« Profil enregistré. », « Ajouté à vos notes. »).",
+    "Scratchpad : l'indicateur d'enregistrement change en douceur.",
+  ],
+};
+
+const v1_75_140_en: ChangelogEntry = {
+  version: "v1.75.140",
+  date: "2026-10-17",
+  title: "iOS app: profile and finishing touches",
+  items: [
+    "Profile: larger header and a \"Save\" button in the top bar, with success haptics.",
+    "Performance: haptic feedback when the cache is cleared and animated measurements.",
+    "Shorter confirmation messages (\"Profile saved.\", \"Added to your notes.\").",
+    "Scratchpad: the save indicator changes smoothly.",
+  ],
+};
+
+const v1_75_140_es: ChangelogEntry = {
+  version: "v1.75.140",
+  date: "2026-10-17",
+  title: "App iOS: perfil y acabados",
+  items: [
+    "Perfil: cabecera más grande y botón «Guardar» en la barra superior, con respuesta háptica de éxito.",
+    "Rendimiento: respuesta háptica al vaciar la caché y mediciones animadas.",
+    "Mensajes de confirmación más cortos («Perfil guardado.», «Añadido a tus notas.»).",
+    "Scratchpad: el indicador de guardado cambia con suavidad.",
+  ],
+};
+
+const v1_75_140_de: ChangelogEntry = {
+  version: "v1.75.140",
+  date: "2026-10-17",
+  title: "iOS-App: Profil und Feinschliff",
+  items: [
+    "Profil: größerer Kopfbereich und „Sichern“-Button oben in der Leiste, mit haptischer Bestätigung.",
+    "Leistung: haptisches Feedback beim Leeren des Caches und animierte Messwerte.",
+    "Kürzere Bestätigungen („Profil gesichert.“, „Zu deinen Notizen hinzugefügt.“).",
+    "Scratchpad: Die Speicheranzeige wechselt sanft.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_140_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_140_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_140_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_140_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

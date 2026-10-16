@@ -1,5 +1,16 @@
 [
   {
+    "version": "v1.75.140",
+    "date": "2026-10-17",
+    "title": "App iOS : profil et finitions",
+    "items": [
+      "Profil : en-tête agrandi et bouton « Enregistrer » dans la barre du haut, avec un retour haptique de réussite.",
+      "Performance : retour haptique quand le cache est vidé et mesures animées.",
+      "Messages de confirmation raccourcis (« Profil enregistré. », « Ajouté à vos notes. »).",
+      "Scratchpad : l'indicateur d'enregistrement change en douceur."
+    ]
+  },
+  {
     "version": "v1.75.139",
     "date": "2026-10-17",
     "title": "App iOS : administration Discord refaite",
@@ -602,17 +613,6 @@
       "Épuration complète des cartes : suppression intégrale des mentions de statut inférieures ('Intégration native', 'Connecté') et des badges superflus pour une présentation épurée et authentique fidèle aux maquettes.",
       "Alignement icône et titre : disposition horizontale moderne avec icône de marque et libellé sur la même ligne.",
       "Descriptions enrichies avec mots-clés colorés : intégration de la suite complète de 9 plateformes (Spotify, Instagram, X, Pinterest, SoundCloud, TikTok, Last.fm, YouTube, Twitch) avec surbrillance dynamique des fonctionnalités clés."
-    ]
-  },
-  {
-    "version": "v1.75.19",
-    "date": "2026-10-13",
-    "title": "Vitrine Bot : Correction Avatar Discord, Lecteur Spotify et Démo Anti-Raid",
-    "items": [
-      "Avatar Discord circulaire haute résolution : remplacement de l'icône de l'application par l'avatar officiel Discord d'Etho, éliminant les artéfacts de bordure et les coupures horizontales dans le simulateur.",
-      "Lecteur Spotify réaliste et interactif : disque vinyle circulaire authentique avec microsillons, centre de macaron dynamique, badge Spotify officiel et boutons interactifs réactifs (lecture/pause, like, diffusion vocale).",
-      "Démo Anti-Raid fidèle et dynamique : mise en valeur visuelle de la purge éclair en 0.2s sur le message malveillant (barré, marquage banni/purgé) et boutons d'action interactifs style Keeper Protect (Bouclier Owner, Salons sécurisés, Audit).",
-      "Purge complète des références tierces : suppression intégrale de toute mention d'autres bots tiers sur l'ensemble de la vitrine publique."
     ]
   }
 ]

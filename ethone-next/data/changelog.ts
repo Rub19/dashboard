@@ -57935,6 +57935,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_126_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_126_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_126_de);
 
+const v1_75_127_fr: ChangelogEntry = {
+  version: "v1.75.127",
+  date: "2026-10-16",
+  title: "La pièce du serveur partout dans Jeux et casino",
+  items: [
+    "Jeux et casino affiche partout la monnaie choisie dans Économie (pièce Etho, emoji ou image personnalisée) : cagnotte, mises, redistributions, meilleurs joueurs et dernières parties.",
+    "Retrait de chiffres inventés dans le dashboard : nombre de commandes, latence affichée en dur, heure figée dans l'aperçu des messages de sanction.",
+  ],
+};
+
+const v1_75_127_en: ChangelogEntry = {
+  version: "v1.75.127",
+  date: "2026-10-16",
+  title: "The server's coin everywhere in Games & casino",
+  items: [
+    "Games & casino now shows the currency chosen in Economy everywhere (Etho coin, emoji or custom image): pot, bets, payouts, top players and latest games.",
+    "Removed made-up figures from the dashboard: command count, hardcoded latency, frozen time in the sanction message preview.",
+  ],
+};
+
+const v1_75_127_es: ChangelogEntry = {
+  version: "v1.75.127",
+  date: "2026-10-16",
+  title: "La moneda del servidor en todo Juegos y casino",
+  items: [
+    "Juegos y casino muestra en todas partes la moneda elegida en Economía (moneda Etho, emoji o imagen personalizada): bote, apuestas, pagos, mejores jugadores y últimas partidas.",
+    "Se quitaron cifras inventadas del panel: número de comandos, latencia fija, hora congelada en la vista previa de los mensajes de sanción.",
+  ],
+};
+
+const v1_75_127_de: ChangelogEntry = {
+  version: "v1.75.127",
+  date: "2026-10-16",
+  title: "Die Server-Münze überall in Spiele & Casino",
+  items: [
+    "Spiele & Casino zeigt jetzt überall die in Wirtschaft gewählte Währung (Etho-Münze, Emoji oder eigenes Bild): Topf, Einsätze, Auszahlungen, Top-Spieler und letzte Runden.",
+    "Erfundene Zahlen aus dem Dashboard entfernt: Befehlsanzahl, fest eingetragene Latenz, eingefrorene Uhrzeit in der Vorschau der Sanktionsnachrichten.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_127_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_127_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_127_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_127_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

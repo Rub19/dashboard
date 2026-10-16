@@ -1,5 +1,14 @@
 [
   {
+    "version": "v1.75.127",
+    "date": "2026-10-16",
+    "title": "La pièce du serveur partout dans Jeux et casino",
+    "items": [
+      "Jeux et casino affiche partout la monnaie choisie dans Économie (pièce Etho, emoji ou image personnalisée) : cagnotte, mises, redistributions, meilleurs joueurs et dernières parties.",
+      "Retrait de chiffres inventés dans le dashboard : nombre de commandes, latence affichée en dur, heure figée dans l'aperçu des messages de sanction."
+    ]
+  },
+  {
     "version": "v1.75.126",
     "date": "2026-10-16",
     "title": "Dashboard Discord traduit et commandes slash localisées",
@@ -600,15 +609,6 @@
     "title": "Mobile : Connexions compactes",
     "items": [
       "Connexions sur téléphone : chaque service tient sur une ligne (nom, état, bouton), l'en-tête est plus court et les blocs de présentation sont masqués."
-    ]
-  },
-  {
-    "version": "v1.70.1",
-    "date": "2026-10-11",
-    "title": "Réglages : Ctrl K et annulation",
-    "items": [
-      "Dans les Réglages, Ctrl K n'ouvre plus la palette générale en même temps que la recherche des réglages.",
-      "Ctrl Z dans un champ texte annule la frappe, sans annuler un réglage."
     ]
   }
 ]

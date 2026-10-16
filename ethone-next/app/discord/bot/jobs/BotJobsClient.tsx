@@ -667,7 +667,6 @@ export default function BotJobsClient() {
               <ListRestart className="w-3.5 h-3.5 text-[var(--accent-primary)]" />
             </div>
             <div className="text-xl font-bold tracking-tight text-[var(--text-primary)]">{kpis.total}</div>
-            <div className="text-[10px] text-[var(--text-muted)]">{tx("100% enregistrées")}</div>
           </motion.div>
 
           <motion.div

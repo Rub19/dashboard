@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.127 — 2026-10-16
+
+**La pièce du serveur partout dans Jeux et casino**
+
+- Jeux et casino affiche partout la monnaie choisie dans Économie (pièce Etho, emoji ou image personnalisée) : cagnotte, mises, redistributions, meilleurs joueurs et dernières parties.
+- Retrait de chiffres inventés dans le dashboard : nombre de commandes, latence affichée en dur, heure figée dans l'aperçu des messages de sanction.
+
 ## v1.75.126 — 2026-10-16
 
 **Dashboard Discord traduit et commandes slash localisées**

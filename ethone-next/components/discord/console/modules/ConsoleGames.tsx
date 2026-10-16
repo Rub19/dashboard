@@ -5,7 +5,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { sinceLabel } from "@/lib/discord/security-scan";
 import { pageStagger } from "@/lib/motion-variants";
-import EthoCoin from "@/components/icons/EthoCoin";
+import { CoinBadge } from "./ConsoleEconomy";
 import { ConsolePage, EmptyLine, GhostButton, Panel, Row, StatTile, Stepper, Switch, useGuildApi } from "../kit";
 import { tx } from "@/lib/tx";
 
@@ -42,14 +42,11 @@ const GAMES: Array<{ key: keyof GamesConfig; label: string; hint: string }> = [
   { key: "dailySpinEnabled", label: "Roue quotidienne", hint: "Un tour gratuit par jour avec /casino daily." },
 ];
 const fmt = (n: number) => n.toLocaleString("fr-FR");
-const Amount = ({ n, sym }: { n: number; sym: string }) => (
+type Coin = { sym: string; iconUrl: string | null };
+const Amount = ({ n, coin, size = 16 }: { n: number; coin: Coin; size?: number }) => (
   <span className="inline-flex items-center gap-1.5">
     <span>{fmt(n)}</span>
-    {sym === "🪙" || sym === "etho" ? (
-      <EthoCoin size={16} className="inline-block shrink-0 align-middle" />
-    ) : (
-      <span className="text-sm font-medium text-[var(--text-muted)]">{sym}</span>
-    )}
+    <CoinBadge sym={coin.sym} iconUrl={coin.iconUrl} size={size} />
   </span>
 );
 
@@ -60,14 +57,17 @@ export default function ConsoleGames({ guildId }: { guildId: string }) {
   const [ov, setOv] = useState<Overview | null>(null);
   const [history, setHistory] = useState<GameRecord[] | null>(null);
   const [seed, setSeed] = useState(500);
+  const [eco, setEco] = useState<{ currencySymbol?: string; currencyCustomIconUrl?: string | null } | null>(null);
 
   const load = useCallback(async () => {
-    const [c, o, h] = await Promise.all([
+    const [c, o, h, e] = await Promise.all([
       api<GamesConfig>("/games/config"),
       api<Overview>("/games/overview", { silent: true }),
       api<{ history: GameRecord[] }>("/games/history?limit=15", { silent: true }),
+      api<{ config: { currencySymbol?: string; currencyCustomIconUrl?: string | null } }>("/economy/config", { silent: true }),
     ]);
     if (c) setCfg(c);
+    if (e) setEco(e.config);
     if (o) setOv(o);
     setHistory(h?.history ?? []);
   }, [api]);
@@ -98,7 +98,8 @@ export default function ConsoleGames({ guildId }: { guildId: string }) {
       </ConsolePage>
     );
   }
-  const sym = cfg.currencySymbol ?? ov?.currencySymbol ?? "🪙";
+  const coin: Coin = { sym: eco?.currencySymbol ?? cfg.currencySymbol ?? ov?.currencySymbol ?? "🪙", iconUrl: eco?.currencyCustomIconUrl ?? null };
+  const coinIcon = <CoinBadge sym={coin.sym} iconUrl={coin.iconUrl} size={14} />;
 
   return (
     <ConsolePage
@@ -119,10 +120,10 @@ export default function ConsoleGames({ guildId }: { guildId: string }) {
       )}
 
       <motion.div variants={pageStagger} className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatTile label={tx("Cagnotte")} value={<Amount n={ov?.jackpotPool ?? cfg.jackpotPool} sym={sym} />} hint={tx("{jackpotContributionPercent} % de chaque mise", { jackpotContributionPercent: cfg.jackpotContributionPercent })} />
+        <StatTile label={tx("Cagnotte")} value={<Amount n={ov?.jackpotPool ?? cfg.jackpotPool} coin={coin} />} hint={tx("{jackpotContributionPercent} % de chaque mise", { jackpotContributionPercent: cfg.jackpotContributionPercent })} />
         <StatTile label={tx("Parties jouées")} value={ov ? fmt(ov.totalGamesPlayed) : "—"} />
-        <StatTile label={tx("Misé / redistribué")} value={ov ? `${fmt(ov.totalBets)}` : "—"} hint={ov ? tx("{v0} {sym} redistribués", { v0: fmt(ov.totalPayouts), sym }) : undefined} />
-        <StatTile label={tx("Plus gros gain")} value={ov?.biggestWin ? <Amount n={ov.biggestWin.amount} sym={sym} /> : "—"} hint={ov?.biggestWin ? `${ov.biggestWin.username} · ${GAME_LABEL[ov.biggestWin.game] ?? ov.biggestWin.game}` : tx("Aucune partie")} />
+        <StatTile label={tx("Misé / redistribué")} value={ov ? `${fmt(ov.totalBets)}` : "—"} hint={ov ? <span className="inline-flex items-center gap-1"><Amount n={ov.totalPayouts} coin={coin} size={13} /> {tx("redistribués")}</span> : undefined} />
+        <StatTile label={tx("Plus gros gain")} value={ov?.biggestWin ? <Amount n={ov.biggestWin.amount} coin={coin} /> : "—"} hint={ov?.biggestWin ? `${ov.biggestWin.username} · ${GAME_LABEL[ov.biggestWin.game] ?? ov.biggestWin.game}` : tx("Aucune partie")} />
       </motion.div>
 
       <Panel title={tx("Jeux")}>
@@ -141,7 +142,7 @@ export default function ConsoleGames({ guildId }: { guildId: string }) {
             <span className="text-xs text-[var(--text-muted)]">{tx("de")}</span>
             <Stepper value={cfg.minBet} min={1} max={cfg.maxBet} step={10} onCommit={(n) => save({ minBet: n })} />
             <span className="text-xs text-[var(--text-muted)]">à</span>
-            <Stepper value={cfg.maxBet} min={Math.max(10, cfg.minBet)} max={10000000} step={100} unit={sym} onCommit={(n) => save({ maxBet: n })} />
+            <Stepper value={cfg.maxBet} min={Math.max(10, cfg.minBet)} max={10000000} step={100} unit={coinIcon} onCommit={(n) => save({ maxBet: n })} />
           </div>
         </Row>
         <Row label={tx("Part versée à la cagnotte")} hint={tx("Prélevée sur chaque mise ; la cagnotte tombe sur un Blackjack naturel ou un 777.")}>
@@ -149,7 +150,7 @@ export default function ConsoleGames({ guildId }: { guildId: string }) {
         </Row>
         <Row label={tx("Alimenter la cagnotte")} hint={cfg.enabled && cfg.economyEnabled !== false ? tx("Ajoute un montant à la cagnotte actuelle (plafond : 10 000 000).") : tx("Active le casino et l'économie pour alimenter la cagnotte.")}>
           <div className="flex flex-wrap items-center gap-2">
-            <Stepper value={seed} min={1} max={1000000} step={100} unit={sym} onCommit={setSeed} disabled={!cfg.enabled || cfg.economyEnabled === false} />
+            <Stepper value={seed} min={1} max={1000000} step={100} unit={coinIcon} onCommit={setSeed} disabled={!cfg.enabled || cfg.economyEnabled === false} />
             <GhostButton onClick={addToJackpot} disabled={!cfg.enabled || cfg.economyEnabled === false}>
               {tx("Ajouter")}
             </GhostButton>
@@ -170,7 +171,7 @@ export default function ConsoleGames({ guildId }: { guildId: string }) {
                   <span className="w-5 shrink-0 text-right font-mono text-xs text-[var(--text-muted)]">{i + 1}</span>
                   <span className="min-w-0 flex-1 truncate text-[var(--text-primary)]">{w.username}</span>
                   <span className="shrink-0 text-[11px] text-[var(--text-muted)]">{w.gamesPlayed} {" "}{tx("parties")}</span>
-                  <span className="shrink-0 font-mono text-xs tabular-nums text-[var(--success)]">+{fmt(w.totalWon)}</span>
+                  <span className="shrink-0 font-mono text-xs tabular-nums text-[var(--success)]">+<Amount n={w.totalWon} coin={coin} size={13} /></span>
                 </li>
               ))}
             </ol>
@@ -196,7 +197,7 @@ export default function ConsoleGames({ guildId }: { guildId: string }) {
                   </span>
                   <span className="shrink-0 font-mono text-xs tabular-nums" style={{ color: g.net >= 0 ? "var(--success)" : "var(--danger)" }}>
                     {g.net >= 0 ? "+" : ""}
-                    {fmt(g.net)}
+                    <Amount n={g.net} coin={coin} size={13} />
                   </span>
                 </li>
               ))}

@@ -650,10 +650,6 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
           </div>
 
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--surface-raised)]/60 border border-[var(--panel-border)] text-xs font-mono text-[var(--text-muted)]">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>{tx("Shard 0 • 24ms")}</span>
-            </div>
             <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/25 text-xs font-semibold text-[var(--accent-primary)]">
               <ShieldCheck className="w-3 h-3" />
               <span>{tx("Owner")}{" "} {identity.ownerId.slice(0, 6)}…</span>

@@ -411,7 +411,7 @@ export default function OverviewGroup({
                         {tx("Catalogue des Commandes")}
                       </h4>
                       <p className="text-[11px] text-[var(--text-muted)]">
-                        {tx("40 commandes Slash & simulateur Keeper")}
+                        {tx("Commandes Slash & simulateur Keeper")}
                       </p>
                     </div>
                   </div>
@@ -431,7 +431,7 @@ export default function OverviewGroup({
                         {tx("Tâches Planifiées & Cron")}
                       </h4>
                       <p className="text-[11px] text-[var(--text-muted)]">
-                        {tx("15 jobs récurrents, files & déclencheur")}
+                        {tx("Jobs récurrents, files & déclencheur")}
                       </p>
                     </div>
                   </div>

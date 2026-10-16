@@ -136,7 +136,7 @@ function Preview({ t, dm, original }: { t: Template; dm?: boolean; original: str
             <p className="flex items-center gap-1.5">
               <span className="font-medium text-white">{tx("Etho")}</span>
               <span className="rounded-[3px] bg-[#5865F2] px-1 text-[10px] font-semibold text-white">{tx("APP")}</span>
-              <span className="text-[11px] text-[#949BA4]">{dm ? tx("en message privé") : tx("Aujourd'hui à 18:32")}</span>
+              <span className="text-[11px] text-[#949BA4]">{dm ? tx("en message privé") : tx("Aujourd'hui à {time}", { time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) })}</span>
             </p>
             {!t.enabled ? (
               <p className="text-xs italic text-[#949BA4]">{original}</p>

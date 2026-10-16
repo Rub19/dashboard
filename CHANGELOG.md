@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.133 — 2026-10-16
+
+**App iOS : direction artistique ETHONE**
+
+- Connexion refaite comme sur le site : titre « Votre espace, réinventé pour vous. », les six modules, sélecteur en Liquid Glass et entrée animée.
+- Le faux bouton « Passkey » (qui ouvrait Google) est retiré.
+- Accueil : grand titre avec la date, chiffres du jour réunis dans un seul panneau, raccourcis qui défilent sans être coupés.
+- Tâches, Focus et Notes alignés sur la même direction : titres ETHONE, listes groupées, chronomètre redessiné, ouverture des notes en zoom.
+- Titres de section en minuscules dans toute l'app et animations respectant « Réduire les animations ».
+
 ## v1.75.132 — 2026-10-16
 
 **App iOS : écran Plus réorganisé**

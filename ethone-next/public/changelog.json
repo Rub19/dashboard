@@ -1,5 +1,17 @@
 [
   {
+    "version": "v1.75.133",
+    "date": "2026-10-16",
+    "title": "App iOS : direction artistique ETHONE",
+    "items": [
+      "Connexion refaite comme sur le site : titre « Votre espace, réinventé pour vous. », les six modules, sélecteur en Liquid Glass et entrée animée.",
+      "Le faux bouton « Passkey » (qui ouvrait Google) est retiré.",
+      "Accueil : grand titre avec la date, chiffres du jour réunis dans un seul panneau, raccourcis qui défilent sans être coupés.",
+      "Tâches, Focus et Notes alignés sur la même direction : titres ETHONE, listes groupées, chronomètre redessiné, ouverture des notes en zoom.",
+      "Titres de section en minuscules dans toute l'app et animations respectant « Réduire les animations »."
+    ]
+  },
+  {
     "version": "v1.75.132",
     "date": "2026-10-16",
     "title": "App iOS : écran Plus réorganisé",
@@ -602,16 +614,6 @@
       "Atmosphères préréglées immersives en un clic sans surcharge ni jargon marketing",
       "Synthèse d'ondes binaurales au style matériel avec sélecteurs de bandes et de fréquences sacrées Solfeggio",
       "Bannière oscilloscope studio compacte et onglets ergonomiques pour un accès immédiat aux réglages"
-    ]
-  },
-  {
-    "version": "v1.71.3",
-    "date": "2026-10-11",
-    "title": "Petites retouches",
-    "items": [
-      "Mail sur téléphone : le tri « Plus récents » ne chevauche plus le titre de la boîte.",
-      "Dock : bouton météo et Control Center aux couleurs du thème.",
-      "Activité sur téléphone : marges réduites."
     ]
   }
 ]

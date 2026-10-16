@@ -58221,6 +58221,63 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_132_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_132_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_132_de);
 
+const v1_75_133_fr: ChangelogEntry = {
+  version: "v1.75.133",
+  date: "2026-10-16",
+  title: "App iOS : direction artistique ETHONE",
+  items: [
+    "Connexion refaite comme sur le site : titre « Votre espace, réinventé pour vous. », les six modules, sélecteur en Liquid Glass et entrée animée.",
+    "Le faux bouton « Passkey » (qui ouvrait Google) est retiré.",
+    "Accueil : grand titre avec la date, chiffres du jour réunis dans un seul panneau, raccourcis qui défilent sans être coupés.",
+    "Tâches, Focus et Notes alignés sur la même direction : titres ETHONE, listes groupées, chronomètre redessiné, ouverture des notes en zoom.",
+    "Titres de section en minuscules dans toute l'app et animations respectant « Réduire les animations ».",
+  ],
+};
+
+const v1_75_133_en: ChangelogEntry = {
+  version: "v1.75.133",
+  date: "2026-10-16",
+  title: "iOS app: ETHONE art direction",
+  items: [
+    "Sign-in redone like the website: \"Your space, reimagined for you.\" headline, the six modules, a Liquid Glass switcher and an animated entrance.",
+    "The fake \"Passkey\" button (which opened Google) is removed.",
+    "Home: large headline with the date, the day's numbers in a single panel, shortcuts that scroll without being cut off.",
+    "Tasks, Focus and Notes follow the same direction: ETHONE headlines, grouped lists, redrawn timer, notes open with a zoom.",
+    "Sentence-case section titles across the app and animations that respect Reduce Motion.",
+  ],
+};
+
+const v1_75_133_es: ChangelogEntry = {
+  version: "v1.75.133",
+  date: "2026-10-16",
+  title: "App iOS: dirección artística ETHONE",
+  items: [
+    "Inicio de sesión rehecho como en la web: título «Tu espacio, reinventado para ti», los seis módulos, selector en Liquid Glass y entrada animada.",
+    "Se elimina el falso botón «Passkey» (que abría Google).",
+    "Inicio: gran título con la fecha, cifras del día en un solo panel, accesos que se desplazan sin cortarse.",
+    "Tareas, Focus y Notas siguen la misma dirección: títulos ETHONE, listas agrupadas, temporizador rediseñado, notas que se abren con zoom.",
+    "Títulos de sección en minúsculas en toda la app y animaciones que respetan «Reducir movimiento».",
+  ],
+};
+
+const v1_75_133_de: ChangelogEntry = {
+  version: "v1.75.133",
+  date: "2026-10-16",
+  title: "iOS-App: ETHONE-Gestaltung",
+  items: [
+    "Anmeldung wie auf der Website neu gestaltet: Überschrift „Dein Bereich, neu gedacht.“, die sechs Module, Liquid-Glass-Umschalter und animierter Einstieg.",
+    "Der falsche „Passkey“-Button (der Google öffnete) ist entfernt.",
+    "Start: große Überschrift mit Datum, Tageszahlen in einem einzigen Feld, Schnellzugriffe scrollen ohne abgeschnitten zu werden.",
+    "Aufgaben, Fokus und Notizen folgen derselben Linie: ETHONE-Überschriften, gruppierte Listen, neu gezeichneter Timer, Notizen öffnen mit Zoom.",
+    "Abschnittstitel in normaler Schreibweise in der ganzen App und Animationen, die „Bewegung reduzieren“ beachten.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_133_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_133_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_133_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_133_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

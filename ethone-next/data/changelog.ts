@@ -57432,6 +57432,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_115_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_115_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_115_de);
 
+const v1_75_116_fr: ChangelogEntry = {
+  version: "v1.75.116",
+  date: "2026-10-16",
+  title: "Paliers et raisons mieux protégés",
+  items: [
+    "Un palier ou une raison prédéfinie invalide est maintenant refusé au lieu d'effacer toute la liste.",
+  ],
+};
+
+const v1_75_116_en: ChangelogEntry = {
+  version: "v1.75.116",
+  date: "2026-10-16",
+  title: "Safer tiers and preset reasons",
+  items: [
+    "An invalid tier or preset reason is now rejected instead of wiping the whole list.",
+  ],
+};
+
+const v1_75_116_es: ChangelogEntry = {
+  version: "v1.75.116",
+  date: "2026-10-16",
+  title: "Niveles y razones más seguros",
+  items: [
+    "Un nivel o una razón predefinida no válidos ahora se rechazan en lugar de borrar toda la lista.",
+  ],
+};
+
+const v1_75_116_de: ChangelogEntry = {
+  version: "v1.75.116",
+  date: "2026-10-16",
+  title: "Sicherere Stufen und Gründe",
+  items: [
+    "Eine ungültige Stufe oder ein ungültiger Grund wird jetzt abgelehnt, statt die ganze Liste zu löschen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_116_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_116_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_116_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_116_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

@@ -40,7 +40,7 @@ export const PresetSchema = z.object({
 export type Preset = z.infer<typeof PresetSchema>;
 
 export const SanctionConfigSchema = z.object({
-  tiers: z.array(TierSchema).max(10).default([]).catch([]),
+  tiers: z.array(TierSchema).max(10).default([]),
   warnings: z
     .object({
       severityEnabled: z.boolean().default(true),
@@ -80,7 +80,7 @@ export const SanctionConfigSchema = z.object({
   presets: z
     .object({
       categories: z.array(z.string().min(1).max(30)).max(12).default(['Spam', 'Pub', 'Insultes', 'NSFW', 'Comportement', 'Autre']),
-      reasons: z.array(PresetSchema).max(15).default([]).catch([]),
+      reasons: z.array(PresetSchema).max(15).default([]),
     })
     .default({}),
   appeals: z

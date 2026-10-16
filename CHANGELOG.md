@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.116 — 2026-10-16
+
+**Paliers et raisons mieux protégés**
+
+- Un palier ou une raison prédéfinie invalide est maintenant refusé au lieu d'effacer toute la liste.
+
 ## v1.75.115 — 2026-10-16
 
 **Sanctions façon Keeper, tout gratuit**

@@ -1,5 +1,13 @@
 [
   {
+    "version": "v1.75.116",
+    "date": "2026-10-16",
+    "title": "Paliers et raisons mieux protégés",
+    "items": [
+      "Un palier ou une raison prédéfinie invalide est maintenant refusé au lieu d'effacer toute la liste."
+    ]
+  },
+  {
     "version": "v1.75.115",
     "date": "2026-10-16",
     "title": "Sanctions façon Keeper, tout gratuit",
@@ -620,15 +628,6 @@
       "Sécurité : un rôle avec des permissions de modération ou d'administration n'est plus jamais donné automatiquement (panneau de rôles, rôle à l'arrivée, récompenses de niveau et d'invitation, boutique, commandes personnalisées).",
       "Sécurité : un événement ne peut plus être déplacé vers un autre serveur ni voir son organisateur ou ses compteurs modifiés ; les préférences vocales d'un membre ne peuvent plus être modifiées par un autre.",
       "Formulaires : un formulaire impossible à ouvrir sur Discord n'envoie plus les membres vers une page réservée au staff ; ils reçoivent un message clair."
-    ]
-  },
-  {
-    "version": "v1.64.0",
-    "date": "2026-10-10",
-    "title": "Console : restauration de sauvegarde et éditeur AutoMod Discord au format Keeper",
-    "items": [
-      "Sauvegardes : restauration guidée directement dans la console. Choix des éléments (rôles, catégories, salons, permissions, réglages d'Etho), mode « Ajouter et mettre à jour » ou « Remettre à l'identique », plan détaillé recalculé à chaque choix, confirmation par le nom du serveur pour le mode destructif, puis suivi en direct (progression, erreurs, journal).",
-      "AutoMod Discord : création et modification des règles dans la console. Type (avec les limites Discord), mots-clés, expressions régulières, mots autorisés, listes prédéfinies, limite de mentions, actions (bloquer avec message, alerter, exclure temporairement, bloquer le membre) et exceptions."
     ]
   }
 ]

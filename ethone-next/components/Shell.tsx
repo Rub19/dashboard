@@ -7,6 +7,8 @@ import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Minimize2 } from "@/components/icons/ph";
 import { useSettings } from "@/components/SettingsProvider";
+import { useAuth } from "@/components/AuthProvider";
+import { isBotOnly } from "@/lib/login-entry";
 import { WindowManagerProvider } from "@/components/WindowManagerProvider";
 import PresenceProvider from "@/components/PresenceProvider";
 import { ShortcutsProvider } from "@/components/ShortcutsProvider";
@@ -47,6 +49,7 @@ const KeyboardShortcuts = dynamic(() => import("@/components/KeyboardShortcuts")
 
 export default function Shell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const botOnly = isBotOnly(useAuth().user);
   const { settings, update } = useSettings();
   const discordFullscreen = pathname === "/discord" || pathname === "/bot" || (pathname?.startsWith("/discord/") ?? false) || (pathname?.startsWith("/bot/") ?? false);
   const isGamingTracker = pathname === "/tracker" || (pathname?.startsWith("/tracker/") ?? false) || pathname === "/matches" || (pathname?.startsWith("/matches/") ?? false);
@@ -113,7 +116,7 @@ export default function Shell({ children }: { children: ReactNode }) {
                     <div className="flex items-center border border-[var(--panel-border)] bg-[var(--surface-raised)]/95 backdrop-blur-md px-1 py-0.5 shadow-lg rounded-sm">
                       <VersionPill />
                     </div>
-                    <Link
+                    {!botOnly && <Link
                       href="/"
                       onClick={(e) => {
                         try {
@@ -129,7 +132,7 @@ export default function Shell({ children }: { children: ReactNode }) {
                     >
                       <ArrowLeft className="h-4 w-4" />
                       <span className="hidden sm:inline">Retour à ETHONE</span>
-                    </Link>
+                    </Link>}
                   </div>
                   <PrivacyShield>
                     <main

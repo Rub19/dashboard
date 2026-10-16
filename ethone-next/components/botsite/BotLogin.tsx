@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { signInWithOAuth } from "@/lib/auth";
+import { markLoginEntry } from "@/lib/login-entry";
 import { EASE_SNAP } from "@/lib/ease";
 import { useMotionPref } from "@/lib/hooks/useMotionPref";
 import { LanguageSelect } from "./BotLanding";
@@ -122,6 +123,7 @@ export default function BotLogin() {
     setPending(true);
     setFailed(false);
     try {
+      markLoginEntry("bot");
       const { ok, url } = await signInWithOAuth("discord", `${window.location.origin}${DASHBOARD_URL}`);
       if (ok && url) {
         window.location.href = url;

@@ -12,6 +12,7 @@ import {
 import { usePathname, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { useAuth } from "@/components/AuthProvider";
+import { BOT_ONLY_ROUTES, isBotOnly } from "@/lib/login-entry";
 import { useActiveProfile } from "@/components/SettingsProvider";
 import Loading from "@/components/Loading";
 import BrandMark from "@/components/BrandMark";
@@ -248,6 +249,11 @@ export default function BootProvider({ children }: { children: ReactNode }) {
         return;
       }
       setState("authenticated");
+      if (isBotOnly(session.user) && !BOT_ONLY_ROUTES.some((r) => pathname === r || pathname?.startsWith(`${r}/`))) {
+        setState("recovering");
+        router.replace("/discord");
+        return;
+      }
       if (publicRoute && !isInfoRoute(pathname)) {
         setState("recovering");
         router.replace(safeLoginNext(new URLSearchParams(window.location.search).get("next")));

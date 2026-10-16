@@ -1,5 +1,6 @@
 "use client";
 
+import { markLoginEntry } from "@/lib/login-entry";
 import { useEffect, useRef, useState, useCallback, useMemo, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -87,6 +88,7 @@ function humanError(err: unknown, i18n: (key: string, fallback?: string) => stri
 }
 
 export default function LoginPage() {
+  useEffect(() => markLoginEntry("os"), []);
   const i18n = useI18n();
   const router = useRouter();
   const { success } = useToast();

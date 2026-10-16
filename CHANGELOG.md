@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.130 — 2026-10-16
+
+**Connexion depuis la page du bot**
+
+- Se connecter depuis la page de présentation d'Etho mène directement au dashboard du bot.
+- Un compte créé depuis la page du bot n'ouvre que le dashboard d'Etho ; le bouton « Retour à ETHONE » n'apparaît que pour les comptes ETHONE OS.
+- Sur discord.ethone.dev, la déconnexion ramène à la connexion du bot.
+
 ## v1.75.129 — 2026-10-16
 
 **Rôles et membres : membres au clic, textes traduits**

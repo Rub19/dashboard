@@ -15,6 +15,7 @@ import { fetchWorker, WorkerError } from "@/lib/api";
 import { sendOtp as sendOtpWorker, verifyOtp as verifyOtpWorker } from "@/lib/auth";
 import { sweepLocalIdentityAndCredentials } from "@/lib/identity-sweep";
 import { authLog } from "@/lib/auth-log";
+import { applyLoginEntry } from "@/lib/login-entry";
 import { Session, User } from "@supabase/supabase-js";
 
 type AuthContextValue = {
@@ -252,6 +253,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         // duplicate SIGNED_IN firing (or a stray one on initial load) is
         // harmless.
         if (_event === "SIGNED_IN" && newSession) {
+          void applyLoginEntry(newSession.user).catch(() => {});
           syncMfaStatus().then((pending) => {
             if (pending !== null) setMfaPending(pending);
           });
@@ -384,7 +386,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     // identity, which a same-page state clear alone cannot guarantee.
     if (typeof window !== "undefined") {
       try {
-        window.location.href = "/login";
+        window.location.href = window.location.hostname === "discord.ethone.dev" ? "/bot/connexion" : "/login";
       } catch {
         // Navigation API unavailable (e.g. non-browser test environment) —
         // local state is already cleared above, nothing else to do.

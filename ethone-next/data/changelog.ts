@@ -58082,6 +58082,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_129_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_129_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_129_de);
 
+const v1_75_130_fr: ChangelogEntry = {
+  version: "v1.75.130",
+  date: "2026-10-16",
+  title: "Connexion depuis la page du bot",
+  items: [
+    "Se connecter depuis la page de présentation d'Etho mène directement au dashboard du bot.",
+    "Un compte créé depuis la page du bot n'ouvre que le dashboard d'Etho ; le bouton « Retour à ETHONE » n'apparaît que pour les comptes ETHONE OS.",
+    "Sur discord.ethone.dev, la déconnexion ramène à la connexion du bot.",
+  ],
+};
+
+const v1_75_130_en: ChangelogEntry = {
+  version: "v1.75.130",
+  date: "2026-10-16",
+  title: "Sign-in from the bot page",
+  items: [
+    "Signing in from Etho's showcase page leads straight to the bot dashboard.",
+    "An account created from the bot page only opens Etho's dashboard; the \"Back to ETHONE\" button only shows for ETHONE OS accounts.",
+    "On discord.ethone.dev, signing out returns to the bot sign-in.",
+  ],
+};
+
+const v1_75_130_es: ChangelogEntry = {
+  version: "v1.75.130",
+  date: "2026-10-16",
+  title: "Conexión desde la página del bot",
+  items: [
+    "Conectarse desde la página de presentación de Etho lleva directamente al panel del bot.",
+    "Una cuenta creada desde la página del bot solo abre el panel de Etho; el botón «Volver a ETHONE» solo aparece para cuentas de ETHONE OS.",
+    "En discord.ethone.dev, cerrar sesión vuelve a la conexión del bot.",
+  ],
+};
+
+const v1_75_130_de: ChangelogEntry = {
+  version: "v1.75.130",
+  date: "2026-10-16",
+  title: "Anmeldung über die Bot-Seite",
+  items: [
+    "Die Anmeldung auf Ethos Präsentationsseite führt direkt zum Bot-Dashboard.",
+    "Ein über die Bot-Seite erstelltes Konto öffnet nur Ethos Dashboard; der Button „Zurück zu ETHONE“ erscheint nur für ETHONE-OS-Konten.",
+    "Auf discord.ethone.dev führt die Abmeldung zurück zur Bot-Anmeldung.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_130_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_130_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_130_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_130_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

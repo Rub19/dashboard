@@ -170,7 +170,7 @@ export default function RootLayout({
         />
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){if(location.hostname==='discord.ethone.dev'&&(location.pathname==='/'||location.pathname==='/index.html'))location.replace('/bot');})();`,
+            __html: `(function(){if(location.hostname==='discord.ethone.dev'){if(location.pathname==='/'||location.pathname==='/index.html')location.replace('/bot');else if(location.pathname==='/login'||location.pathname==='/login/')location.replace('/bot/connexion');}})();`,
           }}
         />
         <script

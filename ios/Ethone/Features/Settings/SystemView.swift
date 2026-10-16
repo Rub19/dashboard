@@ -62,16 +62,6 @@ struct SystemView: View {
         .reloadOnRemoteChange(["ethone_user_data"]) { await load() }
     }
 
-    private func tile(_ value: String, _ label: String, _ symbol: String) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Image(systemName: symbol).foregroundStyle(Theme.accentSoft)
-            Text(value).font(.title3.weight(.bold).monospacedDigit())
-            Text(label).font(.caption2).foregroundStyle(.secondary)
-        }
-        .padding(12)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .glassEffect(.regular, in: .rect(cornerRadius: 18))
-    }
 
     private func load() async {
         loading = true

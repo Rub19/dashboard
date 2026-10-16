@@ -95,15 +95,5 @@ struct InteractionsView: View {
         level == 0 ? Color.primary.opacity(0.08) : Theme.accent.opacity(0.25 + 0.18 * Double(level))
     }
 
-    private func tile(_ value: String, _ label: String, _ symbol: String) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Image(systemName: symbol).foregroundStyle(Theme.accentSoft)
-            Text(value).font(.title3.weight(.bold).monospacedDigit())
-            Text(label).font(.caption2).foregroundStyle(.secondary)
-        }
-        .padding(12)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .glassEffect(.regular, in: .rect(cornerRadius: 18))
-    }
 }
 

@@ -96,16 +96,6 @@ struct TftTrackerView: View {
         "\(Int(seconds) / 60) min"
     }
 
-    private func tile(_ value: String, _ label: String, _ symbol: String) -> some View {
-        VStack(spacing: 4) {
-            Image(systemName: symbol).foregroundStyle(Theme.accent)
-            Text(value).font(.title3.weight(.bold).monospacedDigit())
-            Text(label).font(.caption2).foregroundStyle(.secondary)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 14)
-        .glassEffect(.regular, in: .rect(cornerRadius: 20))
-    }
 
     private func load() async {
         let cleanName = name.trimmingCharacters(in: .whitespaces)

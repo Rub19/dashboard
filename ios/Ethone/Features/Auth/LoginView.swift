@@ -373,16 +373,22 @@ struct MFAView: View {
     @State private var useBackup = false
 
     var body: some View {
-        VStack(spacing: 24) {
+        VStack(alignment: .leading, spacing: 22) {
             Image(systemName: "lock.shield.fill")
-                .font(.system(size: 44))
-                .foregroundStyle(Theme.accentSoft)
-                .padding(22)
-                .glassEffect(Glass.regular.tint(Theme.accent.opacity(0.3)), in: .circle)
-            Text("Vérification en deux étapes").font(.title2.weight(.semibold))
+                .font(.system(size: 28))
+                .foregroundStyle(Theme.accent)
+                .padding(16)
+                .glassEffect(Glass.regular.tint(Theme.accent.opacity(0.3)), in: .rect(cornerRadius: 20))
+                .reveal(0)
+            VStack(alignment: .leading, spacing: 12) {
+                AccentRule()
+                EthoneHeadline(first: "Une dernière étape,", second: "votre code de sécurité.", size: .title)
+            }
+            .reveal(1)
             Text(useBackup ? "Saisissez un code de secours." : "Saisissez le code à 6 chiffres de votre application d'authentification.")
-                .multilineTextAlignment(.center)
                 .foregroundStyle(.secondary)
+                .contentTransition(.opacity)
+                .reveal(2)
 
             GlassCard(padding: 18) {
                 VStack(spacing: 14) {
@@ -417,15 +423,21 @@ struct MFAView: View {
                 }
             }
 
-            Button(useBackup ? "Utiliser mon application" : "Utiliser un code de secours") {
-                useBackup.toggle()
-                code = ""
+            HStack {
+                Button(useBackup ? "Utiliser mon application" : "Utiliser un code de secours") {
+                    withAnimation(Motion.snap) {
+                        useBackup.toggle()
+                        code = ""
+                    }
+                }
+                Spacer()
+                Button("Se déconnecter", role: .destructive) { Task { await auth.signOut() } }
             }
-            .font(.footnote)
-
-            Button("Se déconnecter", role: .destructive) { Task { await auth.signOut() } }
-                .font(.footnote)
+            .font(.footnote.weight(.medium))
         }
         .padding(24)
+        .frame(maxWidth: 520, maxHeight: .infinity, alignment: .top)
+        .padding(.top, 20)
+        .sensoryFeedback(.error, trigger: auth.errorMessage) { _, new in new != nil }
     }
 }

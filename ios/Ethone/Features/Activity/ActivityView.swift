@@ -145,16 +145,6 @@ struct ActivityView: View {
         ])
     }
 
-    private func metricCell(value: String, label: String, symbol: String, tint: Color) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Image(systemName: symbol).font(.caption).foregroundStyle(tint)
-            Text(value).font(.headline.weight(.semibold)).monospacedDigit()
-            Text(label).font(.system(size: 10)).foregroundStyle(.secondary).lineLimit(1)
-        }
-        .padding(10)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .glassEffect(Glass.regular.tint(tint.opacity(0.12)), in: .rect(cornerRadius: 14))
-    }
 
     private var categoryFilterRow: some View {
         ScrollView(.horizontal, showsIndicators: false) {

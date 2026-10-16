@@ -179,32 +179,15 @@ struct ChangelogView: View {
     }
 
     private var currentVersionBanner: some View {
-        GlassCard {
-            HStack(spacing: 14) {
-                ZStack {
-                    Circle()
-                        .fill(Theme.accent.opacity(0.18))
-                        .frame(width: 46, height: 46)
-                    Image(systemName: "sparkles")
-                        .font(.system(size: 20, weight: .semibold))
-                        .foregroundStyle(Theme.accent)
-                }
-
-                VStack(alignment: .leading, spacing: 3) {
-                    HStack(spacing: 8) {
-                        Text("ETHONE")
-                            .font(.headline)
-                        GlassPill(text: appVersionString, tint: Theme.accent)
-                    }
-                    Text("Toutes les évolutions, nouveautés et corrections de l'application.")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-
-                Spacer()
-            }
-            .padding(14)
+        VStack(alignment: .leading, spacing: 12) {
+            AccentRule()
+            EthoneHeadline(first: "Nouveautés,", second: "version \(appVersionString).", size: .title)
+            Text("Les évolutions et corrections de l'app, version par version.")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 4)
     }
 
     private var filterBar: some View {
@@ -270,10 +253,12 @@ struct ChangelogView: View {
 
                         Spacer()
 
-                        Image(systemName: isExpanded ? "chevron.up.circle.fill" : "chevron.down.circle")
-                            .font(.system(size: 18))
+                        Image(systemName: "chevron.down")
+                            .font(.footnote.weight(.semibold))
                             .foregroundStyle(.secondary)
-                            .padding(.top, 2)
+                            .rotationEffect(.degrees(isExpanded ? 180 : 0))
+                            .padding(.top, 4)
+                            .accessibilityLabel(isExpanded ? "Replier" : "Déplier")
                     }
                 }
                 .buttonStyle(.plain)

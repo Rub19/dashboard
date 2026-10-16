@@ -55,19 +55,19 @@ struct ConnectionsView: View {
             }
             Section {
                 ForEach(items.sorted { ($0.connected ? 0 : 1, $0.name) < ($1.connected ? 0 : 1, $1.name) }) { item in
-                    HStack {
-                        Label(item.name, systemImage: item.symbol)
+                    HStack(spacing: 14) {
+                        IconTile(systemImage: item.symbol, color: item.connected ? Theme.accent : Color(hex: 0x7A7F8C))
+                        Text(item.name)
                         Spacer()
-                        if item.connected {
-                            GlassPill(text: "Connecté", systemImage: "checkmark", tint: Theme.success.opacity(0.4))
-                        } else {
-                            Text("Non relié").font(.footnote).foregroundStyle(.secondary)
+                        HStack(spacing: 6) {
+                            Circle().fill(item.connected ? Theme.success : Color.secondary.opacity(0.5)).frame(width: 7, height: 7)
+                            Text(item.connected ? "Connecté" : "Non relié").font(.footnote).foregroundStyle(.secondary)
                         }
                     }
                     .listRowBackground(GlassRowBackground())
                 }
             } footer: {
-                Text("Reliez ou retirez un service depuis ethone.dev → Connexions.")
+                Text("Reliez ou retirez un service depuis la page Connexions d'ethone.dev.")
             }
         }
         .scrollContentBackground(.hidden)

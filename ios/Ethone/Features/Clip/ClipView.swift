@@ -88,7 +88,7 @@ struct ClipView: View {
                         Label(target.rawValue, systemImage: target.symbol).tag(target)
                     }
                 }
-                .pickerStyle(.segmented)
+                .ethoneTabsPicker()
             }
             .listRowBackground(GlassRowBackground())
 

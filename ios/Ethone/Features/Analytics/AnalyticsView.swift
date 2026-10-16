@@ -105,16 +105,6 @@ struct AnalyticsView: View {
         ])
     }
 
-    private func tile(_ value: String, _ label: String, _ symbol: String, _ tint: Color) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Image(systemName: symbol).foregroundStyle(tint)
-            Text(value).font(.title3.weight(.bold).monospacedDigit())
-            Text(label).font(.caption2).foregroundStyle(.secondary)
-        }
-        .padding(12)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .glassEffect(Glass.regular.tint(tint.opacity(0.15)), in: .rect(cornerRadius: 18))
-    }
 
     private func chartCard<C: View>(title: String, symbol: String, empty: String?, @ViewBuilder chart: () -> C) -> some View {
         GlassCard {

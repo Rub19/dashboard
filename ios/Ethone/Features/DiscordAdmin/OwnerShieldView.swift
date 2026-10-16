@@ -298,6 +298,8 @@ struct OwnerShieldView: View {
                     Image(systemName: store.autoDefenseEnabled ? "shield.fill" : "shield.slash.fill")
                         .font(.system(size: 26, weight: .bold))
                         .foregroundStyle(store.autoDefenseEnabled ? Theme.success : Theme.danger)
+                        .symbolEffect(.breathe, isActive: store.autoDefenseEnabled)
+                        .contentTransition(.symbolEffect(.replace))
                 }
 
                 VStack(alignment: .leading, spacing: 4) {
@@ -305,7 +307,7 @@ struct OwnerShieldView: View {
                         Text("Bouclier Suprême")
                             .font(.headline)
                         GlassPill(
-                            text: store.autoDefenseEnabled ? "ACTIF" : "DÉSACTIVÉ",
+                            text: store.autoDefenseEnabled ? "Actif" : "Désactivé",
                             tint: store.autoDefenseEnabled ? Theme.success : Theme.danger
                         )
                     }

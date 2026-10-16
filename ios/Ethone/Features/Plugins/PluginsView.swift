@@ -43,7 +43,7 @@ struct PluginsView: View {
                         Text(filter.rawValue).tag(filter)
                     }
                 }
-                .pickerStyle(.segmented)
+                .ethoneTabsPicker()
                 .padding(.horizontal)
 
                 ScrollView(.horizontal, showsIndicators: false) {
@@ -66,21 +66,14 @@ struct PluginsView: View {
                     }
                     .padding(.horizontal)
                 }
+                .mask {
+                    LinearGradient(stops: [.init(color: .clear, location: 0), .init(color: .black, location: 0.04), .init(color: .black, location: 0.9), .init(color: .clear, location: 1)], startPoint: .leading, endPoint: .trailing)
+                }
+                .sensoryFeedback(.selection, trigger: selectedType)
 
                 if filteredPlugins.isEmpty {
-                    VStack(spacing: 12) {
-                        Image(systemName: "puzzlepiece.extension")
-                            .font(.system(size: 40))
-                            .foregroundStyle(.secondary)
-                        Text("Aucun plugin trouvé")
-                            .font(.headline)
-                        Text("Essayez un autre mot-clé ou modifiez les filtres de catégorie.")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                            .multilineTextAlignment(.center)
-                    }
-                    .padding(.top, 40)
-                    .padding(.horizontal)
+                    ContentUnavailableView("Aucun plugin trouvé", systemImage: "puzzlepiece.extension", description: Text("Essayez un autre mot ou une autre catégorie."))
+                        .padding(.top, 24)
                 } else {
                     LazyVStack(spacing: 12) {
                         ForEach(filteredPlugins) { item in
@@ -128,6 +121,8 @@ struct PluginsView: View {
                             store.toggleFavorite(item)
                         } label: {
                             Image(systemName: isFavorite ? "heart.fill" : "heart")
+                                .symbolEffect(.bounce, value: isFavorite)
+                                .contentTransition(.symbolEffect(.replace))
                                 .foregroundStyle(isFavorite ? Theme.danger : .secondary)
                                 .font(.subheadline)
                         }

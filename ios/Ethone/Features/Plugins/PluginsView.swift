@@ -232,7 +232,7 @@ private struct PluginDetailSheet: View {
 
                         VStack(alignment: .leading, spacing: 4) {
                             Text(item.name)
-                                .font(.title3.bold())
+                                .font(.title3.weight(.semibold))
 
                             Text(item.author)
                                 .font(.subheadline)

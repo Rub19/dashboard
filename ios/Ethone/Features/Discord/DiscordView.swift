@@ -20,18 +20,23 @@ struct DiscordView: View {
     }
 
     private var connectPrompt: some View {
-        VStack(spacing: 20) {
+        VStack(alignment: .leading, spacing: 20) {
             Image(systemName: "bubble.left.and.bubble.right.fill")
-                .font(.system(size: 44))
+                .font(.system(size: 30))
                 .foregroundStyle(Color(hex: 0x5865F2))
-                .padding(24)
-                .glassEffect(Glass.regular.tint(Color(hex: 0x5865F2).opacity(0.3)), in: .circle)
-            Text("Pilotez le bot Etho").font(.title3.bold())
-            Text("Connectez votre compte Discord pour gérer les modules de vos serveurs.")
-                .multilineTextAlignment(.center)
+                .padding(18)
+                .glassEffect(Glass.regular.tint(Color(hex: 0x5865F2).opacity(0.3)), in: .rect(cornerRadius: 22))
+                .reveal(0)
+            VStack(alignment: .leading, spacing: 12) {
+                AccentRule()
+                EthoneHeadline(first: "Configurer Etho,", second: "serveur par serveur.", size: .title)
+            }
+            .reveal(1)
+            Text("La connexion Discord sert uniquement à identifier votre compte et les serveurs que vous pouvez gérer.")
                 .foregroundStyle(.secondary)
+                .reveal(2)
             if let message = discord.errorMessage {
-                Text(message).font(.footnote).foregroundStyle(Theme.danger).multilineTextAlignment(.center)
+                Label(message, systemImage: "exclamationmark.circle.fill").font(.footnote).foregroundStyle(Theme.danger)
             }
             Button {
                 Task { await discord.signIn() }
@@ -44,9 +49,12 @@ struct DiscordView: View {
                 .padding(.vertical, 6)
             }
             .buttonStyle(.glassProminent)
+            .tint(Color(hex: 0x5865F2))
             .disabled(discord.isLoading)
+            .reveal(3)
         }
         .padding(24)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 
     private var guildList: some View {

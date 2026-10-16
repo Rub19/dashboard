@@ -379,7 +379,7 @@ struct MFAView: View {
                 .foregroundStyle(Theme.accentSoft)
                 .padding(22)
                 .glassEffect(Glass.regular.tint(Theme.accent.opacity(0.3)), in: .circle)
-            Text("Vérification en deux étapes").font(.title2.bold())
+            Text("Vérification en deux étapes").font(.title2.weight(.semibold))
             Text(useBackup ? "Saisissez un code de secours." : "Saisissez le code à 6 chiffres de votre application d'authentification.")
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.secondary)

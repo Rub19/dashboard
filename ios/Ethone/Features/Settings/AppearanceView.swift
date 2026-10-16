@@ -17,7 +17,7 @@ struct AppearanceView: View {
                         LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 3), spacing: 14) {
                             ForEach(ThemePreset.allCases) { preset in
                                 Button {
-                                    model.setTheme(preset)
+                                    withAnimation(.smooth(duration: 0.6)) { model.setTheme(preset) }
                                 } label: {
                                     VStack(spacing: 6) {
                                         themeSwatch(preset)
@@ -38,7 +38,7 @@ struct AppearanceView: View {
                         Text("Couleur d'accent").sectionTitle()
                         LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 14), count: 4), spacing: 14) {
                             Button {
-                                model.setAccent(nil)
+                                withAnimation(.smooth(duration: 0.6)) { model.setAccent(nil) }
                             } label: {
                                 VStack(spacing: 6) {
                                     Circle()
@@ -58,7 +58,7 @@ struct AppearanceView: View {
 
                             ForEach(palette, id: \.hex) { entry in
                                 Button {
-                                    model.setAccent(entry.hex)
+                                    withAnimation(.smooth(duration: 0.6)) { model.setAccent(entry.hex) }
                                 } label: {
                                     VStack(spacing: 6) {
                                         Circle()

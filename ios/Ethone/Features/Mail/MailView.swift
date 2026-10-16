@@ -177,9 +177,11 @@ struct MailView: View {
                 ProgressView()
             }
         }
-        .navigationTitle("Mail")
+        .navigationTitle(folder.label)
+        .navigationSubtitle(model.mail.unread > 0 ? "\(model.mail.unread) non lu\(model.mail.unread > 1 ? "s" : "")" : "Tout est lu")
         .ethoneScreen()
-        .navigationBarTitleDisplayMode(.inline)
+        .animation(Motion.snap, value: model.mail.messages.map(\.id))
+        .sensoryFeedback(.selection, trigger: folder)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button { composing = ComposeDraft(to: "", subject: "", body: "") } label: { Image(systemName: "square.and.pencil") }
@@ -201,13 +203,14 @@ struct MailView: View {
     private func row(_ message: MailMessage) -> some View {
         HStack(alignment: .top, spacing: 12) {
             Circle().fill(message.isRead ? Color.clear : Theme.accent).frame(width: 9, height: 9).padding(.top, 6)
+                .animation(Motion.snap, value: message.isRead)
             VStack(alignment: .leading, spacing: 3) {
                 HStack {
-                    Text(message.sender).font(.headline).lineLimit(1)
+                    Text(message.sender).font(.headline.weight(message.isRead ? .medium : .semibold)).lineLimit(1)
                     Spacer()
-                    if let date = message.date { Text(date, format: .dateTime.day().month(.abbreviated)).font(.caption).foregroundStyle(.secondary) }
+                    if let date = message.date { Text(date, format: .relative(presentation: .numeric, unitsStyle: .narrow)).font(.caption).foregroundStyle(.secondary) }
                 }
-                Text(message.title).font(.subheadline).foregroundStyle(.primary).lineLimit(1)
+                Text(message.title).font(.subheadline.weight(message.isRead ? .regular : .medium)).foregroundStyle(.primary).lineLimit(1)
                 Text(message.readableBody).font(.footnote).foregroundStyle(.secondary).lineLimit(2)
             }
             if message.isStarred == true { Image(systemName: "star.fill").foregroundStyle(Theme.warning) }
@@ -226,7 +229,7 @@ struct MailDetailView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 14) {
-                    Text(message.title).font(.title2.bold())
+                    Text(message.title).font(.title2.weight(.semibold)).tracking(-0.5)
                     HStack {
                         AvatarView(url: nil, name: message.sender, size: 40)
                         VStack(alignment: .leading, spacing: 2) {

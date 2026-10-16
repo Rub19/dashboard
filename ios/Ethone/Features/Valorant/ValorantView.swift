@@ -34,13 +34,11 @@ struct ValorantView: View {
                 .listRowInsets(EdgeInsets())
             } else {
                 Section {
-                    GlassEffectContainer(spacing: 12) {
-                        HStack(spacing: 12) {
-                            tile("\(store.matches.isEmpty ? 0 : wins * 100 / store.matches.count) %", "Victoires", "trophy.fill")
-                            tile(String(format: "%.2f", kd), "K/D", "scope")
-                            tile(scoreSummary.value.map(String.init) ?? "—", scoreSummary.label, "chart.bar.fill")
-                        }
-                    }
+                    StatStrip(items: [
+                        ("\(store.matches.isEmpty ? 0 : wins * 100 / store.matches.count) %", "Victoires"),
+                        (String(format: "%.2f", kd), "K/D"),
+                        (scoreSummary.value.map(String.init) ?? "—", scoreSummary.label),
+                    ])
                     .listRowInsets(EdgeInsets())
                     .listRowBackground(Color.clear)
                 } footer: {

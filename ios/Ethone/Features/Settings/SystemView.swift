@@ -12,13 +12,11 @@ struct SystemView: View {
             if let errorMessage { Text(errorMessage).font(.footnote).foregroundStyle(Theme.danger).listRowBackground(Color.clear) }
 
             Section {
-                GlassEffectContainer(spacing: 12) {
-                    HStack(spacing: 12) {
-                        tile("\(spaces.count)", "Espaces", "square.grid.2x2.fill")
-                        tile("\(flows.count)", "Flows", "bolt.fill")
-                        tile("\(flows.reduce(0) { $0 + $1.count })", "Exécutions", "play.fill")
-                    }
-                }
+                StatStrip(items: [
+                    ("\(spaces.count)", "Espaces"),
+                    ("\(flows.count)", "Flows"),
+                    ("\(flows.reduce(0) { $0 + $1.count })", "Exécutions"),
+                ])
                 .listRowInsets(EdgeInsets())
                 .listRowBackground(Color.clear)
             }

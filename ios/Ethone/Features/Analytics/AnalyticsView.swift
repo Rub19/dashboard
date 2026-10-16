@@ -98,13 +98,11 @@ struct AnalyticsView: View {
         let totalMinutes = Int(focusPoints.reduce(0) { $0 + $1.value })
         let totalDone = Int(doneTaskPoints.reduce(0) { $0 + $1.value })
         let bestStreak = model.habits.activeHabits.map { model.habits.streak($0) }.max() ?? 0
-        return GlassEffectContainer(spacing: 12) {
-            HStack(spacing: 12) {
-                tile("\(totalMinutes) min", "Concentration", "timer", Theme.accent)
-                tile("\(totalDone)", "Tâches faites", "checkmark.circle.fill", Theme.violet)
-                tile("\(bestStreak) j", "Meilleure série", "flame.fill", Color(hex: 0xF59E0B))
-            }
-        }
+        return StatStrip(items: [
+            ("\(totalMinutes) min", "Concentration"),
+            ("\(totalDone)", "Tâches faites"),
+            ("\(bestStreak) j", "Meilleure série"),
+        ])
     }
 
     private func tile(_ value: String, _ label: String, _ symbol: String, _ tint: Color) -> some View {

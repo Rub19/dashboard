@@ -137,14 +137,12 @@ struct ActivityView: View {
         let totalFocusMinutes = model.focus.minutesToday
         let habitsCompletedToday = model.habits.activeHabits.filter { model.habits.isDone($0) }.count
 
-        return GlassEffectContainer(spacing: 10) {
-            HStack(spacing: 10) {
-                metricCell(value: "\(allEntries.count)", label: "Actions", symbol: "waveform.path.ecg", tint: Theme.accent)
-                metricCell(value: "\(totalDoneTasks)", label: "Tâches faites", symbol: "checkmark.circle.fill", tint: Theme.success)
-                metricCell(value: "\(totalFocusMinutes)m", label: "Focus ajd.", symbol: "timer", tint: Color(hex: 0xF59E0B))
-                metricCell(value: "\(habitsCompletedToday)", label: "Habitudes ajd.", symbol: "flame.fill", tint: Color(hex: 0xEF4444))
-            }
-        }
+        return StatStrip(items: [
+            ("\(allEntries.count)", "Actions"),
+            ("\(totalDoneTasks)", "Tâches faites"),
+            ("\(totalFocusMinutes)m", "Focus"),
+            ("\(habitsCompletedToday)", "Habitudes"),
+        ])
     }
 
     private func metricCell(value: String, label: String, symbol: String, tint: Color) -> some View {

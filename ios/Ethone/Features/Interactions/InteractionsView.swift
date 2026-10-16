@@ -37,13 +37,11 @@ struct InteractionsView: View {
         let best = data.values.max() ?? 0
         ScrollView {
             VStack(spacing: 16) {
-                GlassEffectContainer(spacing: 12) {
-                    HStack(spacing: 12) {
-                        tile("\(total)", "Interactions", "hand.tap.fill")
-                        tile("\(data.count)", "Jours actifs", "calendar")
-                        tile("\(best)", "Meilleur jour", "trophy.fill")
-                    }
-                }
+                StatStrip(items: [
+                    ("\(total)", "Interactions"),
+                    ("\(data.count)", "Jours actifs"),
+                    ("\(best)", "Meilleur jour"),
+                ])
                 GlassCard {
                     VStack(alignment: .leading, spacing: 10) {
                         Text("26 dernières semaines").sectionTitle()

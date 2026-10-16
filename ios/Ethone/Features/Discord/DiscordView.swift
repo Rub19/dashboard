@@ -125,13 +125,11 @@ struct GuildDetailView: View {
         List {
             if let overview {
                 Section {
-                    GlassEffectContainer(spacing: 12) {
-                        HStack(spacing: 12) {
-                            tile("\(overview.guild.memberCount)", "Membres", "person.2.fill")
-                            tile("\(Int(overview.botStatus.pingMs)) ms", "Latence", "bolt.fill")
-                            tile("\(overview.stats.commandsToday ?? 0)", "Commandes / jour", "terminal.fill")
-                        }
-                    }
+                    StatStrip(items: [
+                        ("\(overview.guild.memberCount)", "Membres"),
+                        ("\(Int(overview.botStatus.pingMs)) ms", "Latence"),
+                        ("\(overview.stats.commandsToday ?? 0)", "Commandes / jour"),
+                    ])
                     .listRowInsets(EdgeInsets())
                     .listRowBackground(Color.clear)
                 }

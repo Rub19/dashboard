@@ -83,13 +83,11 @@ struct LolTrackerView: View {
 
             if !matches.isEmpty {
                 Section {
-                    GlassEffectContainer(spacing: 12) {
-                        HStack(spacing: 12) {
-                            tile("\(wins * 100 / matches.count) %", "Victoires", "trophy.fill")
-                            tile(String(format: "%.2f", averageKDA), "KDA", "scope")
-                            tile(String(format: "%.1f", averageCS), "CS/min", "chart.bar.fill")
-                        }
-                    }
+                    StatStrip(items: [
+                        ("\(wins * 100 / matches.count) %", "Victoires"),
+                        (String(format: "%.2f", averageKDA), "KDA"),
+                        (String(format: "%.1f", averageCS), "CS/min"),
+                    ])
                     .listRowInsets(EdgeInsets())
                     .listRowBackground(Color.clear)
                 }

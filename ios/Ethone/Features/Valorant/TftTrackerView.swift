@@ -33,13 +33,11 @@ struct TftTrackerView: View {
 
             if !placements.isEmpty {
                 Section {
-                    GlassEffectContainer(spacing: 12) {
-                        HStack(spacing: 12) {
-                            tile(String(format: "%.1f", average), "Place moyenne", "number")
-                            tile("\(top4) %", "Top 4", "trophy.fill")
-                            tile("\(firsts)", "Victoires", "crown.fill")
-                        }
-                    }
+                    StatStrip(items: [
+                        (String(format: "%.1f", average), "Place moyenne"),
+                        ("\(top4) %", "Top 4"),
+                        ("\(firsts)", "Victoires"),
+                    ])
                     .listRowInsets(EdgeInsets())
                     .listRowBackground(Color.clear)
                 }

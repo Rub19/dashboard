@@ -1,126 +1,235 @@
 import SwiftUI
 import UserNotifications
 
+private struct MoreItem: Identifiable {
+    let destination: MoreDestination
+    let title: String
+    let icon: String
+    var id: MoreDestination { destination }
+}
+
+private struct MoreGroup: Identifiable {
+    let title: String
+    let color: Color
+    let items: [MoreItem]
+    var id: String { title }
+}
+
+private let moreGroups: [MoreGroup] = [
+    MoreGroup(title: "Au quotidien", color: Color(hex: 0xE5484D), items: [
+        MoreItem(destination: .brain, title: "Brain", icon: "sparkles"),
+        MoreItem(destination: .mail, title: "Mail", icon: "envelope.fill"),
+        MoreItem(destination: .calendar, title: "Calendrier", icon: "calendar"),
+        MoreItem(destination: .habits, title: "Habitudes", icon: "flame.fill"),
+        MoreItem(destination: .files, title: "Fichiers", icon: "folder.fill"),
+        MoreItem(destination: .scratchpad, title: "Scratchpad", icon: "square.and.pencil"),
+        MoreItem(destination: .clip, title: "Clip", icon: "paperclip"),
+        MoreItem(destination: .weather, title: "Météo", icon: "cloud.sun.fill"),
+        MoreItem(destination: .soundscape, title: "Soundscape", icon: "waveform"),
+        MoreItem(destination: .rss, title: "RSS", icon: "dot.radiowaves.up.forward"),
+    ]),
+    MoreGroup(title: "Automatisation", color: Color(hex: 0xF5A524), items: [
+        MoreItem(destination: .flows, title: "Flows", icon: "bolt.fill"),
+        MoreItem(destination: .macros, title: "Macros", icon: "wand.and.stars"),
+        MoreItem(destination: .personas, title: "Personas", icon: "person.crop.circle.badge.checkmark"),
+        MoreItem(destination: .connections, title: "Connexions", icon: "link"),
+        MoreItem(destination: .plugins, title: "Plugins & Extensions", icon: "puzzlepiece.extension.fill"),
+    ]),
+    MoreGroup(title: "Partage", color: Color(hex: 0x3E8BFF), items: [
+        MoreItem(destination: .spaces, title: "Espaces partagés", icon: "person.2.fill"),
+        MoreItem(destination: .team, title: "Équipe", icon: "person.3.fill"),
+        MoreItem(destination: .sharedLinks, title: "Liens partagés", icon: "link.badge.plus"),
+    ]),
+    MoreGroup(title: "Discord", color: Color(hex: 0x5865F2), items: [
+        MoreItem(destination: .discord, title: "Bot Discord", icon: "bubble.left.and.bubble.right.fill"),
+        MoreItem(destination: .ownerShield, title: "Owner Shield", icon: "shield.lefthalf.filled.badge.checkmark"),
+        MoreItem(destination: .leaderboard, title: "Classement public", icon: "trophy.fill"),
+    ]),
+    MoreGroup(title: "Jeux", color: Color(hex: 0x2FB57C), items: [
+        MoreItem(destination: .valorant, title: "Valorant", icon: "scope"),
+        MoreItem(destination: .valorantStore, title: "Boutique Valorant", icon: "bag.fill"),
+        MoreItem(destination: .lolTracker, title: "League of Legends", icon: "shield.fill"),
+        MoreItem(destination: .lolRotation, title: "Rotation LoL", icon: "arrow.triangle.2.circlepath"),
+        MoreItem(destination: .tftTracker, title: "Teamfight Tactics", icon: "hexagon.fill"),
+        MoreItem(destination: .otherGames, title: "Autres jeux", icon: "gamecontroller"),
+        MoreItem(destination: .games, title: "Mini-jeux", icon: "gamecontroller.fill"),
+    ]),
+    MoreGroup(title: "Suivi", color: Color(hex: 0x8E6CF0), items: [
+        MoreItem(destination: .analytics, title: "Analytique", icon: "chart.bar.xaxis"),
+        MoreItem(destination: .activity, title: "Activité", icon: "waveform.path.ecg"),
+        MoreItem(destination: .interactions, title: "Interactions", icon: "square.grid.3x3.fill"),
+        MoreItem(destination: .bills, title: "Factures", icon: "eurosign"),
+    ]),
+    MoreGroup(title: "Appareil", color: Color(hex: 0x7A7F8C), items: [
+        MoreItem(destination: .boost, title: "Performance", icon: "gauge.with.needle.fill"),
+        MoreItem(destination: .browser, title: "Navigateur", icon: "safari.fill"),
+        MoreItem(destination: .system, title: "Système", icon: "cpu"),
+        MoreItem(destination: .admin, title: "Administration", icon: "lock.shield"),
+    ]),
+]
+
+private let accountColor = Color(hex: 0x7A7F8C)
+
+private struct IconTile: View {
+    let systemImage: String
+    let color: Color
+
+    var body: some View {
+        Image(systemName: systemImage)
+            .font(.system(size: 15, weight: .semibold))
+            .foregroundStyle(.white)
+            .frame(width: 30, height: 30)
+            .background(color.gradient, in: .rect(cornerRadius: 8, style: .continuous))
+            .accessibilityHidden(true)
+    }
+}
+
+private struct MoreRow: View {
+    let title: String
+    let icon: String
+    let color: Color
+    var value: String? = nil
+
+    var body: some View {
+        HStack(spacing: 14) {
+            IconTile(systemImage: icon, color: color)
+            Text(title)
+            if let value {
+                Spacer(minLength: 8)
+                Text(value).foregroundStyle(.secondary)
+            }
+        }
+    }
+}
+
 struct MoreView: View {
     @Environment(AppModel.self) private var model
     @Environment(AuthStore.self) private var auth
     @State private var notificationStatus: UNAuthorizationStatus = .notDetermined
     @State private var confirmSignOut = false
+    @State private var query = ""
+
+    private var rowBackground: some View { Rectangle().fill(.thinMaterial) }
+
+    private var filteredGroups: [MoreGroup] {
+        let needle = query.trimmingCharacters(in: .whitespaces)
+        guard !needle.isEmpty else { return moreGroups }
+        return moreGroups.compactMap { group in
+            let items = group.items.filter { $0.title.localizedStandardContains(needle) || group.title.localizedStandardContains(needle) }
+            return items.isEmpty ? nil : MoreGroup(title: group.title, color: group.color, items: items)
+        }
+    }
+
+    private var notificationsAllowed: Bool {
+        [.authorized, .provisional, .ephemeral].contains(notificationStatus)
+    }
 
     var body: some View {
         @Bindable var model = model
         NavigationStack(path: $model.morePath) {
             List {
-                Section {
-                    NavigationLink(value: MoreDestination.brain) { Label("Brain", systemImage: "sparkles") }
-                    NavigationLink(value: MoreDestination.mail) { Label("Mail", systemImage: "envelope.fill") }
-                    NavigationLink(value: MoreDestination.discord) { Label("Bot Discord", systemImage: "bubble.left.and.bubble.right.fill") }
-                    NavigationLink(value: MoreDestination.files) { Label("Fichiers", systemImage: "folder.fill") }
-                    NavigationLink(value: MoreDestination.spaces) { Label("Espaces partagés", systemImage: "person.2.fill") }
-                    NavigationLink(value: MoreDestination.team) { Label("Équipe", systemImage: "person.3.fill") }
-                    NavigationLink(value: MoreDestination.flows) { Label("Flows", systemImage: "bolt.fill") }
-                    NavigationLink(value: MoreDestination.connections) { Label("Connexions", systemImage: "link") }
-                    NavigationLink(value: MoreDestination.interactions) { Label("Interactions", systemImage: "square.grid.3x3.fill") }
-                    NavigationLink(value: MoreDestination.bills) { Label("Factures", systemImage: "eurosign.circle.fill") }
-                    NavigationLink(value: MoreDestination.valorant) { Label("Valorant", systemImage: "scope") }
-                    NavigationLink(value: MoreDestination.valorantStore) { Label("Boutique Valorant", systemImage: "bag.fill") }
-                    NavigationLink(value: MoreDestination.lolTracker) { Label("League of Legends", systemImage: "shield.fill") }
-                    NavigationLink(value: MoreDestination.tftTracker) { Label("Teamfight Tactics", systemImage: "square.grid.3x3.fill") }
-                    NavigationLink(value: MoreDestination.otherGames) { Label("Autres jeux", systemImage: "gamecontroller") }
-                    NavigationLink(value: MoreDestination.lolRotation) { Label("Rotation LoL", systemImage: "shield.lefthalf.filled") }
-                    NavigationLink(value: MoreDestination.games) { Label("Jeux", systemImage: "gamecontroller.fill") }
-                    NavigationLink(value: MoreDestination.analytics) { Label("Analytique", systemImage: "chart.bar.xaxis") }
-                    NavigationLink(value: MoreDestination.activity) { Label("Activité", systemImage: "waveform.path.ecg") }
-                    NavigationLink(value: MoreDestination.habits) { Label("Habitudes", systemImage: "flame.fill") }
-                    NavigationLink(value: MoreDestination.calendar) { Label("Calendrier", systemImage: "calendar") }
-                    NavigationLink(value: MoreDestination.notifications) { Label("Notifications", systemImage: "bell.badge.fill") }
-                    NavigationLink(value: MoreDestination.profile) { Label("Profil", systemImage: "person.crop.circle") }
-                    NavigationLink(value: MoreDestination.workspaces) { Label("Profils de travail", systemImage: "rectangle.stack.person.crop") }
-                    NavigationLink(value: MoreDestination.leaderboard) { Label("Classement public", systemImage: "trophy") }
-                    NavigationLink(value: MoreDestination.boost) { Label("Performance", systemImage: "gauge.with.needle.fill") }
-                    NavigationLink(value: MoreDestination.browser) { Label("Navigateur", systemImage: "safari.fill") }
-                    NavigationLink(value: MoreDestination.system) { Label("Système", systemImage: "cpu") }
-                    NavigationLink(value: MoreDestination.sharedLinks) { Label("Liens partagés", systemImage: "link.badge.plus") }
-                    NavigationLink(value: MoreDestination.admin) { Label("Administration", systemImage: "lock.shield") }
-                    NavigationLink(value: MoreDestination.scratchpad) { Label("Scratchpad", systemImage: "square.and.pencil") }
-                    NavigationLink(value: MoreDestination.macros) { Label("Macros", systemImage: "wand.and.stars") }
-                    NavigationLink(value: MoreDestination.personas) { Label("Personas", systemImage: "person.crop.circle.badge.checkmark") }
-                    NavigationLink(value: MoreDestination.rss) { Label("RSS", systemImage: "dot.radiowaves.up.forward") }
-                    NavigationLink(value: MoreDestination.weather) { Label("Météo", systemImage: "cloud.sun.fill") }
-                    NavigationLink(value: MoreDestination.soundscape) { Label("Soundscape", systemImage: "waveform.circle.fill") }
-                    NavigationLink(value: MoreDestination.plugins) { Label("Plugins & Extensions", systemImage: "puzzlepiece.extension.fill") }
-                    NavigationLink(value: MoreDestination.clip) { Label("Clip", systemImage: "paperclip") }
-                    NavigationLink(value: MoreDestination.changelog) { Label("Journal des modifications", systemImage: "clock.arrow.circlepath") }
-                    NavigationLink(value: MoreDestination.ownerShield) { Label("Owner Shield", systemImage: "shield.lefthalf.filled.badge.checkmark") }
-                } header: { Text("Applications").sectionTitle() }
-                .listRowBackground(GlassRowBackground())
-
-                Section {
-                    HStack(spacing: 14) {
-                        AvatarView(url: auth.user?.avatarURL, name: auth.user?.displayName ?? "E", size: 56, status: .online)
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(auth.user?.displayName ?? "").font(.headline)
-                            Text(auth.user?.email ?? "").font(.footnote).foregroundStyle(.secondary)
-                        }
-                    }
-                    .padding(.vertical, 4)
-                    .listRowBackground(GlassRowBackground())
-
-                    NavigationLink(value: MoreDestination.settings) { Label("Apparence", systemImage: "paintpalette.fill") }
-                        .listRowBackground(GlassRowBackground())
-
-                    NavigationLink(value: MoreDestination.security) { Label("Appareils et sécurité", systemImage: "lock.shield.fill") }
-                        .listRowBackground(GlassRowBackground())
-
-                    Toggle(isOn: Binding(
-                        get: { model.lock.isEnabled },
-                        set: { value in Task { await model.lock.setEnabled(value) } }
-                    )) {
-                        Label("Verrouiller avec \(model.lock.biometryLabel)", systemImage: "faceid")
-                    }
-                    .listRowBackground(GlassRowBackground())
-                } header: { Text("Compte").sectionTitle() }
-
-                Section {
-                    HStack {
-                        Label("Notifications", systemImage: "bell.badge.fill")
-                        Spacer()
-                        switch notificationStatus {
-                        case .authorized, .provisional, .ephemeral:
-                            Text("Activées").foregroundStyle(Theme.success)
-                        case .denied:
-                            Button("Réglages") {
-                                if let url = URL(string: UIApplication.openSettingsURLString) { UIApplication.shared.open(url) }
-                            }
-                        default:
-                            Button("Activer") {
-                                Task {
-                                    await NotificationManager.requestAuthorization()
-                                    await refreshStatus()
+                if query.isEmpty {
+                    Section {
+                        NavigationLink(value: MoreDestination.profile) {
+                            HStack(spacing: 14) {
+                                AvatarView(url: auth.user?.avatarURL, name: auth.user?.displayName ?? "E", size: 58, status: .online)
+                                VStack(alignment: .leading, spacing: 3) {
+                                    Text(auth.user?.displayName ?? "Mon compte")
+                                        .font(.title3.weight(.semibold))
+                                        .lineLimit(1)
+                                    Text(auth.user?.email ?? "Profil, avatar et statut")
+                                        .font(.subheadline)
+                                        .foregroundStyle(.secondary)
+                                        .lineLimit(1)
                                 }
                             }
+                            .padding(.vertical, 6)
+                        }
+                        .accessibilityHint("Ouvre ton profil")
+                        .listRowBackground(rowBackground)
+                    }
+                }
+
+                ForEach(filteredGroups) { group in
+                    Section(group.title) {
+                        ForEach(group.items) { item in
+                            NavigationLink(value: item.destination) {
+                                MoreRow(title: item.title, icon: item.icon, color: group.color)
+                            }
+                            .listRowBackground(rowBackground)
                         }
                     }
-                    .listRowBackground(GlassRowBackground())
-                } header: { Text("Rappels").sectionTitle() } footer: {
-                    Text("Rappels de tâches, d'habitudes et d'événements, fin de session de concentration. Les notifications envoyées par le serveur nécessitent une version signée de l'app.")
                 }
 
-                Section {
-                    Button(role: .destructive) { confirmSignOut = true } label: {
-                        Label("Se déconnecter", systemImage: "rectangle.portrait.and.arrow.right")
+                if query.isEmpty {
+                    Section {
+                        NavigationLink(value: MoreDestination.settings) {
+                            MoreRow(title: "Apparence", icon: "paintpalette.fill", color: accountColor)
+                        }
+                        .listRowBackground(rowBackground)
+                        NavigationLink(value: MoreDestination.notifications) {
+                            MoreRow(title: "Notifications", icon: "bell.badge.fill", color: accountColor, value: notificationsAllowed ? nil : "Désactivées")
+                        }
+                        .listRowBackground(rowBackground)
+                        NavigationLink(value: MoreDestination.workspaces) {
+                            MoreRow(title: "Profils de travail", icon: "rectangle.stack.person.crop", color: accountColor)
+                        }
+                        .listRowBackground(rowBackground)
+                        NavigationLink(value: MoreDestination.security) {
+                            MoreRow(title: "Appareils et sécurité", icon: "lock.shield.fill", color: accountColor)
+                        }
+                        .listRowBackground(rowBackground)
+                        Toggle(isOn: Binding(
+                            get: { model.lock.isEnabled },
+                            set: { value in Task { await model.lock.setEnabled(value) } }
+                        )) {
+                            MoreRow(title: "Verrouiller avec \(model.lock.biometryLabel)", icon: "faceid", color: accountColor)
+                        }
+                        .listRowBackground(rowBackground)
+                        if !notificationsAllowed {
+                            Button(notificationStatus == .denied ? "Autoriser les notifications dans Réglages" : "Autoriser les notifications") {
+                                if notificationStatus == .denied {
+                                    if let url = URL(string: UIApplication.openSettingsURLString) { UIApplication.shared.open(url) }
+                                } else {
+                                    Task {
+                                        await NotificationManager.requestAuthorization()
+                                        await refreshStatus()
+                                    }
+                                }
+                            }
+                            .listRowBackground(rowBackground)
+                        }
+                    } header: {
+                        Text("Compte")
+                    } footer: {
+                        if !notificationsAllowed {
+                            Text("Les notifications servent aux rappels de tâches, d'habitudes et d'événements, et à la fin des sessions de concentration.")
+                        }
                     }
-                    .listRowBackground(GlassRowBackground())
-                }
 
-                Section {
-                    NavigationLink(value: MoreDestination.changelog) {
-                        LabeledContent("Version", value: Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "—")
+                    Section {
+                        Button(role: .destructive) { confirmSignOut = true } label: {
+                            Text("Se déconnecter").frame(maxWidth: .infinity)
+                        }
+                        .listRowBackground(rowBackground)
                     }
-                    .listRowBackground(GlassRowBackground())
+
+                    Section {
+                        NavigationLink(value: MoreDestination.changelog) {
+                            LabeledContent("Nouveautés de la version", value: Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "—")
+                        }
+                        .listRowBackground(rowBackground)
+                    }
                 }
             }
+            .listStyle(.insetGrouped)
             .scrollContentBackground(.hidden)
+            .overlay {
+                if !query.isEmpty && filteredGroups.isEmpty {
+                    ContentUnavailableView.search(text: query)
+                }
+            }
+            .searchable(text: $query, prompt: "Rechercher une section")
             .navigationTitle("Plus")
             .ethoneScreen()
             .navigationDestination(for: MoreDestination.self) { destination in

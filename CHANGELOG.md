@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.132 — 2026-10-16
+
+**App iOS : écran Plus réorganisé**
+
+- L'écran Plus de l'app iOS est regroupé par thème (Au quotidien, Automatisation, Partage, Discord, Jeux, Suivi, Appareil, Compte) avec des icônes en couleur et une recherche.
+- La carte du compte en haut ouvre le profil ; les entrées en double (Notifications, Journal des modifications) sont fusionnées.
+- « Jeux » devient « Mini-jeux » pour ne plus être confondu avec les trackers.
+
 ## v1.75.131 — 2026-10-16
 
 **Messages de test dans la langue du serveur**

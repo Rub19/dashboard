@@ -27,7 +27,7 @@ struct GamesView: View {
                 GameWebView(url: game.url).id(game.id)
             }
         }
-        .navigationTitle("Jeux")
+        .navigationTitle("Mini-jeux")
         .ethoneScreen()
         .navigationBarTitleDisplayMode(.inline)
     }

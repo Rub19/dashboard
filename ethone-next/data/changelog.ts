@@ -58172,6 +58172,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_131_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_131_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_131_de);
 
+const v1_75_132_fr: ChangelogEntry = {
+  version: "v1.75.132",
+  date: "2026-10-16",
+  title: "App iOS : écran Plus réorganisé",
+  items: [
+    "L'écran Plus de l'app iOS est regroupé par thème (Au quotidien, Automatisation, Partage, Discord, Jeux, Suivi, Appareil, Compte) avec des icônes en couleur et une recherche.",
+    "La carte du compte en haut ouvre le profil ; les entrées en double (Notifications, Journal des modifications) sont fusionnées.",
+    "« Jeux » devient « Mini-jeux » pour ne plus être confondu avec les trackers.",
+  ],
+};
+
+const v1_75_132_en: ChangelogEntry = {
+  version: "v1.75.132",
+  date: "2026-10-16",
+  title: "iOS app: More screen reorganized",
+  items: [
+    "The iOS app's More screen is grouped by theme (Everyday, Automation, Sharing, Discord, Games, Tracking, Device, Account) with colored icons and search.",
+    "The account card at the top opens the profile; duplicate entries (Notifications, Changelog) are merged.",
+    "\"Games\" becomes \"Mini-games\" so it's no longer confused with the trackers.",
+  ],
+};
+
+const v1_75_132_es: ChangelogEntry = {
+  version: "v1.75.132",
+  date: "2026-10-16",
+  title: "App iOS: pantalla Más reorganizada",
+  items: [
+    "La pantalla Más de la app iOS se agrupa por tema (Día a día, Automatización, Compartir, Discord, Juegos, Seguimiento, Dispositivo, Cuenta) con iconos de color y búsqueda.",
+    "La tarjeta de la cuenta arriba abre el perfil; las entradas duplicadas (Notificaciones, Registro de cambios) se fusionan.",
+    "«Juegos» pasa a «Minijuegos» para no confundirse con los trackers.",
+  ],
+};
+
+const v1_75_132_de: ChangelogEntry = {
+  version: "v1.75.132",
+  date: "2026-10-16",
+  title: "iOS-App: Mehr-Bildschirm neu geordnet",
+  items: [
+    "Der Mehr-Bildschirm der iOS-App ist nach Themen gruppiert (Alltag, Automatisierung, Teilen, Discord, Spiele, Auswertung, Gerät, Konto) mit farbigen Symbolen und Suche.",
+    "Die Kontokarte oben öffnet das Profil; doppelte Einträge (Mitteilungen, Änderungsprotokoll) sind zusammengeführt.",
+    "„Spiele“ heißt jetzt „Minispiele“, damit es nicht mit den Trackern verwechselt wird.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_132_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_132_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_132_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_132_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

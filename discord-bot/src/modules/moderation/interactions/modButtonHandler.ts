@@ -33,6 +33,12 @@ export async function handleModButton(interaction: ButtonInteraction): Promise<v
       return;
     }
     const res = CaseService.revertCase(interaction.client, guildId, Number(num), { id: interaction.user.id, tag: interaction.user.tag }, 'Annulée par le modérateur');
+    if (res.success && res.case) {
+      const target = await interaction.client.users.fetch(res.case.userId).catch(() => null);
+      await target
+        ?.send({ embeds: [noticeEmbed('success', `Ta sanction sur **${interaction.guild?.name ?? 'le serveur'}** (${ACTION_LABEL[res.case.action]}, dossier n°${num}) a été annulée par le modérateur.`)] })
+        .catch(() => null);
+    }
     await interaction.reply({ embeds: [noticeEmbed(res.success ? 'success' : 'error', res.success ? `Dossier n°${num} annulé.` : res.error ?? 'Annulation impossible.')], flags: MessageFlags.Ephemeral });
     return;
   }

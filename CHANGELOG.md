@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.120 — 2026-10-16
+
+**Messages de sanction personnalisables et pages rangées**
+
+- Nouvelle page Messages de sanction (gratuite) : réponse de chaque commande (/warn, /mute, /ban…) et message privé au membre, en texte, embed ou container, avec variables et aperçu.
+- Messages privés personnalisables aussi pour la fin d'une sanction et la décision d'un appel.
+- Annuler une sanction prévient maintenant le membre en message privé.
+- Le délai, « Donner maintenant » et le rattrapage des rôles à l'arrivée sont regroupés dans Rôles automatiques ; la page Rôles ne garde que les menus de rôles.
+- Les descriptions de commandes écrites en anglais sont traduites aussi sur le site en français, et les textes restés non traduits sont retentés.
+
 ## v1.75.119 — 2026-10-16
 
 **Chargement plus fiable après une mise à jour**

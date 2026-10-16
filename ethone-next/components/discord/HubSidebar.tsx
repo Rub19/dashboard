@@ -45,6 +45,7 @@ import {
   Flag as LFlag,
   MailOpen as LMailOpen,
   ChartColumn as LChartColumn,
+  MessageSquareText as LMessageSquareText,
 } from "lucide-react";
 
 type SidebarIcon = React.ComponentType<{ className?: string; strokeWidth?: number }>;
@@ -70,7 +71,7 @@ import {
 } from "./consoleMotion";
 import type { NavigatorCategory, NavigatorModule } from "./ModuleNavigator";
 
-export type ConsoleView = "settings" | "access" | "logs" | "whitelist" | "blacklist" | "members" | "commands" | "tools" | "protections" | "automod" | "welcome" | "autoroles" | "sanctions" | "warnings" | "presets" | "reports" | "appeals" | "modstats";
+export type ConsoleView = "settings" | "access" | "logs" | "whitelist" | "blacklist" | "members" | "commands" | "tools" | "protections" | "automod" | "welcome" | "autoroles" | "sanctions" | "warnings" | "presets" | "reports" | "appeals" | "modstats" | "sanctionmessages";
 export type HubView = "home" | "modules" | "module" | "setup" | "scan" | ConsoleView;
 
 interface HubSidebarProps {
@@ -316,7 +317,7 @@ export default function HubSidebar({
     },
     {
       title: "Modération",
-      items: [viewItem("commands", i18n("dCommands", "Commandes"), LGavel), viewItem("members", i18n("dRolesAndMembers", "Rôles et membres"), LContact)],
+      items: [viewItem("commands", i18n("dCommands", "Commandes"), LGavel), viewItem("sanctionmessages", "Messages de sanction", LMessageSquareText), viewItem("members", i18n("dRolesAndMembers", "Rôles et membres"), LContact)],
     },
     {
       title: "Accès",

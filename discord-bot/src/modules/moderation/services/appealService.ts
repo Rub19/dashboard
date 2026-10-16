@@ -18,7 +18,8 @@ import {
 import { moderationRepository } from '../storage/moderationRepository.js';
 import { sanctionConfig } from '../sanctionConfig.js';
 import { CaseService } from './caseService.js';
-import { ACTION_LABEL, canModerate, isOpen } from './sanctionPipeline.js';
+import { ACTION_LABEL, activeWarns, canModerate, human, isOpen } from './sanctionPipeline.js';
+import { caseVars, renderTemplate } from '../sanctionMessages.js';
 import { logger } from '../../../utils/logger.js';
 
 export type Appeal = {
@@ -178,7 +179,11 @@ class AppealService {
     moderationRepository.updateCase(guildId, appeal.caseNumber, { appealStatus: accept ? 'ACCEPTED' : 'REJECTED' });
     const guild = client.guilds.cache.get(guildId);
     const user = await client.users.fetch(appeal.userId).catch(() => null);
-    await user
+    const tpl = sanctionConfig.get(guildId).messages[accept ? 'appealAccepted' : 'appealRefused'];
+    const appealedCase = moderationRepository.getCaseByNumber(guildId, appeal.caseNumber);
+    if (tpl.enabled && guild && appealedCase) {
+      await user?.send(renderTemplate(tpl, caseVars(guild, appealedCase, ACTION_LABEL[appealedCase.action], activeWarns(guildId, appeal.userId), human), { server: guild.iconURL({ size: 256 }) })).catch(() => null);
+    } else await user
       ?.send({
         embeds: [
           new EmbedBuilder()

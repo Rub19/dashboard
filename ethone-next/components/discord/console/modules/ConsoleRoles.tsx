@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
 import ChannelPicker, { fetchGuildChannels, type ChannelOption } from "../../ChannelPicker";
@@ -8,21 +8,8 @@ import { confirmDialog } from "@/lib/confirmDialog";
 import { useToast } from "@/components/ToastProvider";
 import { SPRING_LAYOUT } from "@/lib/ease";
 import { cn } from "@/lib/utils";
-import { ConsolePage, EmptyLine, GhostButton, Panel, RoleAdder, RoleChips, Row, Segmented, Stepper, Switch, TextField, useGuildApi } from "../kit";
+import { ConsolePage, EmptyLine, GhostButton, Panel, RoleAdder, Row, Segmented, Switch, TextField, useGuildApi } from "../kit";
 
-type AutoRole = {
-  enabled: boolean;
-  roleIds: string[];
-  applyToHumans: boolean;
-  applyToBots: boolean;
-  waitForScreening: boolean;
-  delaySeconds: number;
-  useSeparateBotRoles: boolean;
-  botRoleIds: string[];
-  scheduledSyncEnabled: boolean;
-  scheduledSyncIntervalHours: number;
-  lastSyncAt: string | null;
-};
 type Item = { id: string; roleId: string; label: string; emoji: string | null; description: string | null; style: "Primary" | "Secondary" | "Success" | "Danger"; prerequisiteRoleId: string | null; mutuallyExclusiveRoleIds: string[] };
 type Group = { id: string; name: string; mode: "toggle" | "single_exclusive" | "multi_limit"; minSelect: number; maxSelect: number; itemIds: string[] };
 type RolePanel = { id: string; name: string; channelId: string | null; messageId: string | null; componentType: "buttons" | "select_menu"; title: string; description: string; color: string; items: Item[]; groups: Group[]; status: string; [k: string]: unknown };
@@ -30,45 +17,19 @@ type RolePanel = { id: string; name: string; channelId: string | null; messageId
 const input = "w-full rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/70";
 const EXCLUSIVE = "console-exclusive";
 
-/** Rôles (format Keeper) : rôles donnés à l'arrivée et menus de rôles en libre-service. */
+/** Menus de rôles en libre-service. Les rôles donnés à l'arrivée sont dans « Rôles automatiques ». */
 export default function ConsoleRoles({ guildId }: { guildId: string }) {
   const api = useGuildApi(guildId);
   const { success } = useToast();
-  const [auto, setAuto] = useState<AutoRole | null>(null);
-  const [missing, setMissing] = useState<number | null>(null);
   const [panels, setPanels] = useState<RolePanel[] | null>(null);
   const [channels, setChannels] = useState<ChannelOption[]>([]);
   const [open, setOpen] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
 
-  const loadAuto = useCallback(async () => {
-    const r = await api<{ config: AutoRole; missingCount: number }>("/roles/autorole");
-    if (r) {
-      setAuto(r.config);
-      setMissing(r.missingCount);
-    }
-  }, [api]);
   useEffect(() => {
-    void loadAuto();
     api<{ panels: RolePanel[] }>("/roles/panels").then((r) => setPanels(r?.panels ?? []));
     fetchGuildChannels(guildId).then(setChannels);
-  }, [api, guildId, loadAuto]);
-
-  const saveAuto = async (patch: Partial<AutoRole>) => {
-    if (auto) setAuto({ ...auto, ...patch });
-    const r = await api<{ config: AutoRole }>("/roles/autorole", { method: "PATCH", json: patch });
-    if (r) setAuto(r.config);
-  };
-  const syncNow = async () => {
-    if (!(await confirmDialog(`Donner les rôles automatiques aux ${missing} membre${missing === 1 ? "" : "s"} qui ne les ont pas encore ?`, { title: "Synchroniser", confirmLabel: "Donner les rôles" }))) return;
-    setBusy("sync");
-    const r = await api<{ updated: number }>("/roles/autorole/sync", { method: "POST", json: {} });
-    setBusy(null);
-    if (r) {
-      success("Rôles donnés", `${r.updated} membre${r.updated > 1 ? "s" : ""} mis à jour.`);
-      void loadAuto();
-    }
-  };
+  }, [api, guildId]);
 
   const savePanel = async (p: Partial<RolePanel>) => {
     const r = await api<{ panel: RolePanel }>("/roles/panels", { method: "POST", json: p });
@@ -97,58 +58,7 @@ export default function ConsoleRoles({ guildId }: { guildId: string }) {
   const channelName = (id: string | null) => (id ? channels.find((c) => c.id === id)?.name ?? null : null);
 
   return (
-    <ConsolePage title="Rôles">
-      <Panel title="Rôles à l'arrivée" subtitle="Donnés automatiquement à chaque nouveau membre.">
-        {!auto ? (
-          <EmptyLine>Chargement…</EmptyLine>
-        ) : (
-          <>
-            {!auto.enabled && <p className="border-b border-[var(--panel-border)] px-5 py-2.5 text-xs text-[var(--warning)]">Module désactivé : active-le en haut de la page pour que ces rôles soient donnés.</p>}
-            <Row label="Membres">
-              <RoleChips guildId={guildId} ids={auto.roleIds} onChange={(ids) => saveAuto({ roleIds: ids })} />
-            </Row>
-            <Row label="Bots" hint="Rôles pour les bots ajoutés au serveur.">
-              <div className="flex flex-wrap items-center gap-3">
-                <Switch checked={auto.applyToBots} onChange={(v) => saveAuto({ applyToBots: v })} label="Donner des rôles aux bots" />
-                {auto.applyToBots && (
-                  <Segmented
-                    label="Rôles des bots"
-                    value={auto.useSeparateBotRoles ? "own" : "same"}
-                    options={[
-                      ["same", "Mêmes rôles"],
-                      ["own", "Rôles à part"],
-                    ]}
-                    onChange={(v) => saveAuto({ useSeparateBotRoles: v === "own" })}
-                  />
-                )}
-              </div>
-            </Row>
-            {auto.applyToBots && auto.useSeparateBotRoles && (
-              <Row label="Rôles des bots">
-                <RoleChips guildId={guildId} ids={auto.botRoleIds} onChange={(ids) => saveAuto({ botRoleIds: ids })} />
-              </Row>
-            )}
-            <Row label="Après les règles" hint="Attendre que le membre accepte les règles du serveur (filtrage Discord).">
-              <Switch checked={auto.waitForScreening} onChange={(v) => saveAuto({ waitForScreening: v })} label="Attendre l'acceptation des règles" />
-            </Row>
-            <Row label="Délai" hint="Laisse le temps à l'anti-raid de passer. 0 : immédiat.">
-              <Stepper value={auto.delaySeconds} min={0} max={86400} unit="s" onCommit={(n) => saveAuto({ delaySeconds: n })} />
-            </Row>
-            <Row label="Membres déjà présents" hint={auto.roleIds.length === 0 ? "Choisis d'abord les rôles à donner." : missing ? `${missing} membre${missing > 1 ? "s" : ""} n'${missing > 1 ? "ont" : "a"} pas encore ces rôles.` : "Tout le monde a déjà ces rôles."}>
-              <GhostButton onClick={syncNow} disabled={!missing || busy === "sync" || auto.roleIds.length === 0}>
-                {busy === "sync" ? "Attribution…" : "Donner maintenant"}
-              </GhostButton>
-            </Row>
-            <Row label="Rattrapage automatique" hint="Redonne les rôles manquants à intervalle régulier.">
-              <div className="flex flex-wrap items-center gap-3">
-                <Switch checked={auto.scheduledSyncEnabled} onChange={(v) => saveAuto({ scheduledSyncEnabled: v })} label="Rattrapage automatique" />
-                {auto.scheduledSyncEnabled && <Stepper value={auto.scheduledSyncIntervalHours} min={1} max={168} unit="h" onCommit={(n) => saveAuto({ scheduledSyncIntervalHours: n })} />}
-              </div>
-            </Row>
-          </>
-        )}
-      </Panel>
-
+    <ConsolePage title="Menus de rôles">
       <Panel title="Menus de rôles" subtitle="Les membres choisissent eux-mêmes leurs rôles." actions={<GhostButton onClick={addPanel}>Nouveau menu</GhostButton>}>
         {!panels ? (
           <EmptyLine>Chargement…</EmptyLine>

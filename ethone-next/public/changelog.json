@@ -1,5 +1,17 @@
 [
   {
+    "version": "v1.75.120",
+    "date": "2026-10-16",
+    "title": "Messages de sanction personnalisables et pages rangées",
+    "items": [
+      "Nouvelle page Messages de sanction (gratuite) : réponse de chaque commande (/warn, /mute, /ban…) et message privé au membre, en texte, embed ou container, avec variables et aperçu.",
+      "Messages privés personnalisables aussi pour la fin d'une sanction et la décision d'un appel.",
+      "Annuler une sanction prévient maintenant le membre en message privé.",
+      "Le délai, « Donner maintenant » et le rattrapage des rôles à l'arrivée sont regroupés dans Rôles automatiques ; la page Rôles ne garde que les menus de rôles.",
+      "Les descriptions de commandes écrites en anglais sont traduites aussi sur le site en français, et les textes restés non traduits sont retentés."
+    ]
+  },
+  {
     "version": "v1.75.119",
     "date": "2026-10-16",
     "title": "Chargement plus fiable après une mise à jour",
@@ -614,14 +626,6 @@
       "Le lien « Pleine page » disparaît pour les modules refaits dans la console.",
       "Code inutilisé retiré (anciens écrans de modules et composants orphelins).",
       "Sécurité : 20 alertes de dépendances en moins (patch-package retiré, js-yaml à jour)."
-    ]
-  },
-  {
-    "version": "v1.66.1",
-    "date": "2026-10-10",
-    "title": "Incidents plus lisibles",
-    "items": [
-      "Logs : les incidents affichent le nom des rôles et des salons au lieu des identifiants Discord."
     ]
   }
 ]

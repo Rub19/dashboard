@@ -125,7 +125,7 @@ export function createPublicRouter(client: Client): express.Router {
 
   router.get('/commands', (req: Request, res: Response) => {
     const list = listPublicCommands();
-    const lang = (SITE_LANGS as readonly string[]).includes(String(req.query.lang)) ? (String(req.query.lang) as SiteLang) : null;
+    const lang = (SITE_LANGS as readonly string[]).includes(String(req.query.lang ?? 'fr')) ? (String(req.query.lang ?? 'fr') as SiteLang) : null;
     if (!lang) {
       res.json({ commands: list });
       return;

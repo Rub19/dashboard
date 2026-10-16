@@ -41,6 +41,7 @@ import ConsolePresets from "@/components/discord/console/modules/ConsolePresets"
 import ConsoleReportsKeeper from "@/components/discord/console/modules/ConsoleReportsKeeper";
 import ConsoleAppeals from "@/components/discord/console/modules/ConsoleAppeals";
 import ConsoleModStats from "@/components/discord/console/modules/ConsoleModStats";
+import ConsoleSanctionMessages from "@/components/discord/console/modules/ConsoleSanctionMessages";
 import ModuleEmbed, { hasNativePage } from "@/components/discord/console/ModuleEmbed";
 import GuildOverviewScreen from "@/components/discord/GuildOverviewScreen";
 import GuildAssistedSetup from "@/components/discord/GuildAssistedSetup";
@@ -796,7 +797,7 @@ export default function DiscordDashboardPage() {
         setShowSetup(true);
       } else if (sp.get("view") === "scan" || sp.get("tab") === "scan") {
         setShowScan(true);
-      } else if (["settings", "access", "logs", "whitelist", "blacklist", "members", "commands", "tools", "protections", "automod", "welcome", "autoroles", "sanctions", "warnings", "presets", "reports", "appeals", "modstats"].includes(sp.get("view") ?? "")) {
+      } else if (["settings", "access", "logs", "whitelist", "blacklist", "members", "commands", "tools", "protections", "automod", "welcome", "autoroles", "sanctions", "warnings", "presets", "reports", "appeals", "modstats", "sanctionmessages"].includes(sp.get("view") ?? "")) {
         setConsoleView(sp.get("view") as ConsoleView);
       } else if (sp.get("module") && sp.get("module") !== "overview" && INLINE_MODULE_IDS.has(sp.get("module")!)) {
         setActiveModule(sp.get("module") as ModuleType);
@@ -1292,6 +1293,8 @@ export default function DiscordDashboardPage() {
                     ? "Appels"
                     : view === "modstats"
                     ? "Statistiques"
+                    : view === "sanctionmessages"
+                    ? "Messages de sanction"
                     : view === "scan"
                     ? i18n("dSecurityScan", "Scan de sécurité")
                     : view === "setup"
@@ -1414,6 +1417,7 @@ export default function DiscordDashboardPage() {
               {view === "reports" && <ConsoleReportsKeeper guildId={selectedGuild.id} />}
               {view === "appeals" && <ConsoleAppeals guildId={selectedGuild.id} />}
               {view === "modstats" && <ConsoleModStats guildId={selectedGuild.id} />}
+              {view === "sanctionmessages" && <ConsoleSanctionMessages guildId={selectedGuild.id} />}
 
               {view === "scan" && (
                 <GuildSecurityScan

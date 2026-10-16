@@ -57616,6 +57616,63 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_119_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_119_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_119_de);
 
+const v1_75_120_fr: ChangelogEntry = {
+  version: "v1.75.120",
+  date: "2026-10-16",
+  title: "Messages de sanction personnalisables et pages rangées",
+  items: [
+    "Nouvelle page Messages de sanction (gratuite) : réponse de chaque commande (/warn, /mute, /ban…) et message privé au membre, en texte, embed ou container, avec variables et aperçu.",
+    "Messages privés personnalisables aussi pour la fin d'une sanction et la décision d'un appel.",
+    "Annuler une sanction prévient maintenant le membre en message privé.",
+    "Le délai, « Donner maintenant » et le rattrapage des rôles à l'arrivée sont regroupés dans Rôles automatiques ; la page Rôles ne garde que les menus de rôles.",
+    "Les descriptions de commandes écrites en anglais sont traduites aussi sur le site en français, et les textes restés non traduits sont retentés.",
+  ],
+};
+
+const v1_75_120_en: ChangelogEntry = {
+  version: "v1.75.120",
+  date: "2026-10-16",
+  title: "Customizable sanction messages and tidier pages",
+  items: [
+    "New Sanction messages page (free): the reply of each command (/warn, /mute, /ban…) and the DM to the member, as text, embed or container, with variables and preview.",
+    "Custom DMs also for the end of a sanction and appeal decisions.",
+    "Undoing a sanction now notifies the member by DM.",
+    "Join role delay, « Give now » and catch-up are grouped in Auto roles; the Roles page keeps only role menus.",
+    "Command descriptions written in English are translated on the French site too, and untranslated texts are retried.",
+  ],
+};
+
+const v1_75_120_es: ChangelogEntry = {
+  version: "v1.75.120",
+  date: "2026-10-16",
+  title: "Mensajes de sanción personalizables y páginas ordenadas",
+  items: [
+    "Nueva página Mensajes de sanción (gratis): respuesta de cada comando (/warn, /mute, /ban…) y MD al miembro, en texto, embed o container, con variables y vista previa.",
+    "MD personalizables también para el fin de una sanción y la decisión de una apelación.",
+    "Deshacer una sanción ahora avisa al miembro por MD.",
+    "El retraso, « Dar ahora » y la recuperación de roles de llegada se agrupan en Roles automáticos; la página Roles solo conserva los menús de roles.",
+    "Las descripciones de comandos escritas en inglés también se traducen en el sitio en francés, y los textos sin traducir se reintentan.",
+  ],
+};
+
+const v1_75_120_de: ChangelogEntry = {
+  version: "v1.75.120",
+  date: "2026-10-16",
+  title: "Anpassbare Sanktionsnachrichten und aufgeräumte Seiten",
+  items: [
+    "Neue Seite Sanktionsnachrichten (kostenlos): Antwort jedes Befehls (/warn, /mute, /ban…) und DM an das Mitglied, als Text, Embed oder Container, mit Variablen und Vorschau.",
+    "Anpassbare DMs auch für das Ende einer Sanktion und Einspruchsentscheidungen.",
+    "Das Rückgängigmachen einer Sanktion benachrichtigt das Mitglied jetzt per DM.",
+    "Verzögerung, « Jetzt vergeben » und Nachholen der Beitrittsrollen sind unter Auto-Rollen gebündelt; die Rollen-Seite enthält nur noch Rollenmenüs.",
+    "Auf Englisch geschriebene Befehlsbeschreibungen werden auch auf der französischen Seite übersetzt, nicht übersetzte Texte werden erneut versucht.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_120_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_120_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_120_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_120_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

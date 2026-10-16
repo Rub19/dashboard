@@ -39,7 +39,35 @@ export const PresetSchema = z.object({
 });
 export type Preset = z.infer<typeof PresetSchema>;
 
+export const MESSAGE_KEYS = ['warn', 'note', 'ban', 'tempban', 'softban', 'kick', 'mute', 'unmute', 'unban'] as const;
+export type MessageKey = (typeof MESSAGE_KEYS)[number];
+export const EXTRA_KEYS = ['end', 'appealAccepted', 'appealRefused'] as const;
+
+const hex = z.string().regex(/^#[0-9a-fA-F]{6}$/).default('#5865F2').catch('#5865F2');
+export const MessageTemplateSchema = z.object({
+  enabled: z.boolean().default(false),
+  format: z.enum(['container', 'embed', 'text']).default('embed'),
+  thumb: z.enum(['none', 'member', 'moderator', 'server']).default('member'),
+  title: z.string().max(256).default(''),
+  color: hex,
+  text: z.string().max(2000).default(''),
+  footer: z.string().max(256).default(''),
+});
+export type MessageTemplate = z.infer<typeof MessageTemplateSchema>;
+const ReplyTemplateSchema = MessageTemplateSchema.extend({
+  visibility: z.enum(['all', 'mod']).default('all'),
+  deleteAfterSeconds: z.number().int().min(0).max(300).default(0),
+});
+export type ReplyTemplate = z.infer<typeof ReplyTemplateSchema>;
+const pair = z.object({ reply: ReplyTemplateSchema.default({}), dm: MessageTemplateSchema.default({}) }).default({});
+
 export const SanctionConfigSchema = z.object({
+  messages: z
+    .object({
+      ...Object.fromEntries(MESSAGE_KEYS.map((k) => [k, pair])),
+      ...Object.fromEntries(EXTRA_KEYS.map((k) => [k, MessageTemplateSchema.default({})])),
+    } as Record<MessageKey, typeof pair> & Record<(typeof EXTRA_KEYS)[number], ReturnType<typeof MessageTemplateSchema.default>>)
+    .default({}),
   tiers: z.array(TierSchema).max(10).default([]),
   warnings: z
     .object({

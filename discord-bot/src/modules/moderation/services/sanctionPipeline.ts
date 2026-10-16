@@ -14,6 +14,7 @@ import { CaseService } from './caseService.js';
 import { moderationRepository } from '../storage/moderationRepository.js';
 import { sanctionConfig, SEVERITY_LABEL, type SanctionConfig, type Severity, type Tier } from '../sanctionConfig.js';
 import { ownerImmunityService } from '../../../services/ownerImmunityService.js';
+import { MESSAGE_KEY, caseVars, renderTemplate } from '../sanctionMessages.js';
 import { logger } from '../../../utils/logger.js';
 
 export const ACTION_LABEL: Record<CaseAction, string> = {
@@ -60,7 +61,20 @@ export interface ApplyParams {
 export type ApplyResult = { ok: true; case: ModerationCase } | { ok: false; error: string };
 
 /** Message privé du membre sanctionné : numéro du dossier, raison et bouton d'appel si l'appel est ouvert. */
+/** Avertissements encore actifs du membre (pour la variable {warns}). */
+export const activeWarns = (guildId: string, userId: string) => moderationRepository.getUserCases(guildId, userId).filter((x) => x.action === 'WARN' && isOpen(x)).length;
+
 export function memberDm(guild: Guild, c: ModerationCase, cfg: SanctionConfig): BaseMessageOptions {
+  const canAppeal = cfg.appeals.enabled && cfg.appeals.channelId && (cfg.appeals.actions as string[]).includes(c.action);
+  const appealRow = canAppeal
+    ? [new ActionRowBuilder<ButtonBuilder>().addComponents(new ButtonBuilder().setCustomId(`appeal:open:${guild.id}:${c.caseNumber}`).setLabel('Faire appel').setStyle(ButtonStyle.Secondary).setEmoji('📨'))]
+    : [];
+  const key = MESSAGE_KEY[c.action];
+  const custom = key ? cfg.messages[key].dm : null;
+  if (custom?.enabled) {
+    const out = renderTemplate(custom, caseVars(guild, c, ACTION_LABEL[c.action], activeWarns(guild.id, c.userId), human), { server: guild.iconURL({ size: 256 }) });
+    return { ...out, components: [...(out.components ?? []), ...appealRow] };
+  }
   const who = cfg.replies.nameModerator && c.source !== 'SYSTEM' ? c.moderatorTag : "L'équipe de modération";
   const e = new EmbedBuilder()
     .setColor(COLOR[c.action] ?? 0x5865f2)
@@ -71,13 +85,7 @@ export function memberDm(guild: Guild, c: ModerationCase, cfg: SanctionConfig): 
     .setTimestamp(new Date(c.createdAt));
   if (c.action === 'WARN' && c.severity) e.addFields({ name: 'Gravité', value: `${SEVERITY_LABEL[c.severity]}${c.points != null ? ` · ${c.points} point${c.points > 1 ? 's' : ''}` : ''}`, inline: true });
   if ((c.action === 'TIMEOUT' || c.action === 'TEMPBAN') && c.durationSeconds) e.addFields({ name: 'Durée', value: human(c.durationSeconds), inline: true });
-  const canAppeal = cfg.appeals.enabled && cfg.appeals.channelId && (cfg.appeals.actions as string[]).includes(c.action === 'TEMPBAN' ? 'TEMPBAN' : c.action);
-  return {
-    embeds: [e],
-    components: canAppeal
-      ? [new ActionRowBuilder<ButtonBuilder>().addComponents(new ButtonBuilder().setCustomId(`appeal:open:${guild.id}:${c.caseNumber}`).setLabel('Faire appel').setStyle(ButtonStyle.Secondary).setEmoji('📨'))]
-      : [],
-  };
+  return { embeds: [e], components: appealRow };
 }
 
 /** Applique une sanction de bout en bout : vérifications, dossier, MP au membre, action sur Discord. */
@@ -219,8 +227,13 @@ export async function onCaseCreated(client: Client, c: ModerationCase): Promise<
 
 /** « Rappel de fin » : le membre est prévenu quand son mute ou son ban temporaire se termine. */
 export async function remindEnd(client: Client, guild: Guild, c: ModerationCase): Promise<void> {
-  if (!sanctionConfig.get(guild.id).replies.endReminder) return;
+  const cfg = sanctionConfig.get(guild.id);
+  if (!cfg.replies.endReminder) return;
   const user = await client.users.fetch(c.userId).catch(() => null);
+  if (cfg.messages.end.enabled) {
+    await user?.send(renderTemplate(cfg.messages.end, caseVars(guild, c, ACTION_LABEL[c.action], activeWarns(guild.id, c.userId), human), { server: guild.iconURL({ size: 256 }) })).catch(() => null);
+    return;
+  }
   await user
     ?.send({ embeds: [new EmbedBuilder().setColor(0x22c55e).setAuthor({ name: guild.name, iconURL: guild.iconURL() ?? undefined }).setDescription(`Ton ${c.action === 'TIMEOUT' ? 'mute' : 'ban temporaire'} (dossier n°${c.caseNumber}) est terminé.`)] })
     .catch(() => null);

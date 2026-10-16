@@ -1,8 +1,9 @@
-import { AutocompleteInteraction, ButtonBuilder, ButtonStyle, GuildMember } from 'discord.js';
+import { ActionRowBuilder, AutocompleteInteraction, ButtonBuilder, ButtonStyle, GuildMember } from 'discord.js';
+import { MESSAGE_KEY, caseVars, renderTemplate } from '../sanctionMessages.js';
 import { CommandContext } from '../../../types/command.js';
 import { checkHierarchy } from '../permissions/hierarchy.js';
 import { buildSanctionCard } from '../utils/sanctionCard.js';
-import { applySanction } from '../services/sanctionPipeline.js';
+import { ACTION_LABEL, activeWarns, applySanction, human } from '../services/sanctionPipeline.js';
 import { moderationRepository } from '../storage/moderationRepository.js';
 import { sanctionConfig, type Preset, type Severity } from '../sanctionConfig.js';
 import type { CaseAction } from '../types/case.js';
@@ -53,7 +54,9 @@ export async function runSanctionCommand(ctx: CommandContext, opts: RunOptions):
     return;
   }
   const cfg = sanctionConfig.get(ctx.guild.id);
-  await ctx.deferReply({ ephemeral: cfg.replies.hideReplies });
+  const msgKey = MESSAGE_KEY[opts.action];
+  const tpl = msgKey ? cfg.messages[msgKey].reply : null;
+  await ctx.deferReply({ ephemeral: tpl?.enabled ? tpl.visibility === 'mod' : cfg.replies.hideReplies });
   const fail = (msg: string) => ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(`${ctx.guildConfig.emojis.error} ${msg}`)] });
 
   if (!opts.targetId) return void (await fail('Membre introuvable.'));
@@ -97,6 +100,21 @@ export async function runSanctionCommand(ctx: CommandContext, opts: RunOptions):
     buttons.push(new ButtonBuilder().setCustomId(`sanc_undo:${c.caseNumber}:${ctx.author.id}:${Math.floor(Date.now() / 1000) + UNDO_SECONDS}`).setLabel(`Annuler (${UNDO_SECONDS} s)`).setStyle(ButtonStyle.Danger));
   }
   if (cfg.replies.hideReplies && cfg.replies.publicByDefault) buttons.push(new ButtonBuilder().setCustomId(`sanc_show:${c.caseNumber}`).setLabel('Afficher').setStyle(ButtonStyle.Secondary));
+
+  if (tpl?.enabled) {
+    const out = renderTemplate(tpl, caseVars(ctx.guild, c, ACTION_LABEL[c.action], activeWarns(ctx.guild.id, c.userId), human), {
+      member: user?.displayAvatarURL() ?? null,
+      moderator: ctx.author.displayAvatarURL(),
+      server: ctx.guild.iconURL({ size: 256 }),
+    });
+    const row = buttons.length ? [new ActionRowBuilder<ButtonBuilder>().addComponents(buttons)] : [];
+    await ctx.reply({ ...out, components: [...((out.components as never[]) ?? []), ...row], componentsV2: Boolean(out.flags), allowedMentions: { parse: [] } } as never);
+    if (tpl.deleteAfterSeconds && ctx.interaction) {
+      const it = ctx.interaction;
+      setTimeout(() => void it.deleteReply().catch(() => null), tpl.deleteAfterSeconds * 1000).unref();
+    }
+    return;
+  }
 
   await ctx.reply({
     components: [

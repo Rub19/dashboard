@@ -77,7 +77,7 @@ function useLiveData(lang: BotLang) {
         if (!cancelled && data && typeof data.guilds === "number") setStats(data as PublicStats);
       })
       .catch(() => {});
-    fetch(`${BOT_API_URL}/api/public/commands${lang === "fr" ? "" : `?lang=${lang}`}`)
+    fetch(`${BOT_API_URL}/api/public/commands?lang=${lang}`)
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
         if (cancelled) return;

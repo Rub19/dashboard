@@ -1,12 +1,14 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Folder, Hash, ShieldCheck, Volume2 } from "lucide-react";
 import { fetchGuildChannels, type ChannelOption } from "../../ChannelPicker";
 import { SPRING_PILL } from "@/lib/ease";
+import { useToast } from "@/components/ToastProvider";
+import { confirmDialog } from "@/lib/confirmDialog";
 import { cn } from "@/lib/utils";
-import { Chip, ConsolePage, EmptyLine, GhostButton, Panel, RoleChips, Row, Segmented, Select, Switch, useGuildApi } from "../kit";
+import { Chip, ConsolePage, EmptyLine, GhostButton, Panel, RoleChips, Row, Segmented, Select, Stepper, Switch, useGuildApi } from "../kit";
 
 type Temp = { enabled: boolean; roleIds: string[]; durationMinutes: number; waitForScreening: boolean };
 type Voice = { enabled: boolean; roleIds: string[]; memberMode: "allow" | "deny"; memberRoleIds: string[]; channelMode: "allow" | "deny"; channelIds: string[]; ignoreBots: boolean };
@@ -18,6 +20,9 @@ type AutoRole = {
   useSeparateBotRoles: boolean;
   botRoleIds: string[];
   waitForScreening: boolean;
+  delaySeconds: number;
+  scheduledSyncEnabled: boolean;
+  scheduledSyncIntervalHours: number;
   temp: Temp;
   voice: Voice;
 };
@@ -111,11 +116,32 @@ function ChannelChips({ guildId, ids, onChange }: { guildId: string; ids: string
 /** Rôles automatiques (format Keeper) : rôles à l'arrivée, rôle temporaire et rôles en vocal. Tout est gratuit. */
 export default function ConsoleAutoRoles({ guildId }: { guildId: string }) {
   const api = useGuildApi(guildId);
+  const { success } = useToast();
   const [cfg, setCfg] = useState<AutoRole | null>(null);
+  const [missing, setMissing] = useState<number | null>(null);
+  const [syncing, setSyncing] = useState(false);
 
-  useEffect(() => {
-    api<{ config: AutoRole }>("/roles/autorole").then((r) => r && setCfg(r.config));
+  const load = useCallback(async () => {
+    const r = await api<{ config: AutoRole; missingCount: number }>("/roles/autorole");
+    if (r) {
+      setCfg(r.config);
+      setMissing(r.missingCount);
+    }
   }, [api]);
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  const syncNow = async () => {
+    if (!(await confirmDialog(`Donner les rôles à l'arrivée aux ${missing} membre${missing === 1 ? "" : "s"} qui ne les ont pas encore ?`, { title: "Donner maintenant", confirmLabel: "Donner les rôles" }))) return;
+    setSyncing(true);
+    const r = await api<{ updated: number }>("/roles/autorole/sync", { method: "POST", json: {} });
+    setSyncing(false);
+    if (r) {
+      success("Rôles donnés", `${r.updated} membre${r.updated > 1 ? "s" : ""} mis à jour.`);
+      void load();
+    }
+  };
 
   const save = async (patch: Partial<AutoRole>) => {
     if (!cfg) return;
@@ -158,6 +184,20 @@ export default function ConsoleAutoRoles({ guildId }: { guildId: string }) {
         </Row>
         <Row label="Attendre la vérification" hint="Les rôles arrivent quand le membre a accepté les règles du serveur.">
           <Switch checked={cfg.waitForScreening} onChange={(v) => save({ waitForScreening: v })} label="Attendre la vérification" />
+        </Row>
+        <Row label="Délai" hint="Laisse le temps à l'anti-raid de passer. 0 : immédiat.">
+          <Stepper value={cfg.delaySeconds} min={0} max={86400} unit="s" onCommit={(n) => save({ delaySeconds: n })} />
+        </Row>
+        <Row label="Membres déjà présents" hint={cfg.roleIds.length === 0 ? "Choisis d'abord les rôles à donner." : missing ? `${missing} membre${missing > 1 ? "s" : ""} n'${missing > 1 ? "ont" : "a"} pas encore ces rôles.` : "Tout le monde a déjà ces rôles."}>
+          <GhostButton onClick={syncNow} disabled={!missing || syncing || cfg.roleIds.length === 0 || !cfg.enabled}>
+            {syncing ? "Attribution…" : "Donner maintenant"}
+          </GhostButton>
+        </Row>
+        <Row label="Rattrapage automatique" hint="Redonne les rôles manquants à intervalle régulier.">
+          <div className="flex flex-wrap items-center gap-3">
+            <Switch checked={cfg.scheduledSyncEnabled} onChange={(v) => save({ scheduledSyncEnabled: v })} label="Rattrapage automatique" />
+            {cfg.scheduledSyncEnabled && <Stepper value={cfg.scheduledSyncIntervalHours} min={1} max={168} unit="h" onCommit={(n) => save({ scheduledSyncIntervalHours: n })} />}
+          </div>
         </Row>
       </Section>
 

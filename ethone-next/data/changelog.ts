@@ -57473,6 +57473,59 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_116_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_116_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_116_de);
 
+const v1_75_117_fr: ChangelogEntry = {
+  version: "v1.75.117",
+  date: "2026-10-16",
+  title: "Page du bot : aperçus fidèles à Discord et traductions",
+  items: [
+    "Les exemples de messages d'Etho sur la page du bot ressemblent maintenant vraiment à Discord : couleurs, embeds, champs, boutons et carte de bienvenue.",
+    "Nouvel exemple Sanctions avec la carte d'avertissement et le bouton Annuler.",
+    "Les exemples, les catégories et les descriptions des commandes sont traduits en anglais, espagnol et allemand.",
+    "Le bouton Lever la sanction est de nouveau rouge.",
+  ],
+};
+
+const v1_75_117_en: ChangelogEntry = {
+  version: "v1.75.117",
+  date: "2026-10-16",
+  title: "Bot page: Discord-accurate previews and translations",
+  items: [
+    "Etho's example messages on the bot page now really look like Discord: colors, embeds, fields, buttons and welcome card.",
+    "New Sanctions example with the warning card and the Undo button.",
+    "Examples, categories and command descriptions are translated into English, Spanish and German.",
+    "The Lift sanction button is red again.",
+  ],
+};
+
+const v1_75_117_es: ChangelogEntry = {
+  version: "v1.75.117",
+  date: "2026-10-16",
+  title: "Página del bot: vistas fieles a Discord y traducciones",
+  items: [
+    "Los mensajes de ejemplo de Etho en la página del bot ahora se ven realmente como en Discord: colores, embeds, campos, botones y tarjeta de bienvenida.",
+    "Nuevo ejemplo de Sanciones con la tarjeta de advertencia y el botón Deshacer.",
+    "Los ejemplos, las categorías y las descripciones de los comandos están traducidos al inglés, español y alemán.",
+    "El botón Levantar la sanción vuelve a ser rojo.",
+  ],
+};
+
+const v1_75_117_de: ChangelogEntry = {
+  version: "v1.75.117",
+  date: "2026-10-16",
+  title: "Bot-Seite: Discord-getreue Vorschauen und Übersetzungen",
+  items: [
+    "Etho-Beispielnachrichten auf der Bot-Seite sehen jetzt wirklich wie in Discord aus: Farben, Embeds, Felder, Buttons und Willkommenskarte.",
+    "Neues Sanktionen-Beispiel mit Verwarnungskarte und Rückgängig-Button.",
+    "Beispiele, Kategorien und Befehlsbeschreibungen sind auf Englisch, Spanisch und Deutsch übersetzt.",
+    "Der Button Sanktion aufheben ist wieder rot.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_117_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_117_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_117_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_117_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

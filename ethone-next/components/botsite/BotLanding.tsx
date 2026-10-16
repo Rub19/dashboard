@@ -21,6 +21,7 @@ import { ArrowUp } from "@/components/icons/ph";
 import { EASE_SNAP, SPRING_MOUSE } from "@/lib/ease";
 import { useMotionPref } from "@/lib/hooks/useMotionPref";
 import { BOT_COPY, BOT_LANGS, BOT_LANG_KEY, detectBotLang, type BotLang } from "./botLandingI18n";
+import DiscordShowcase from "./DiscordShowcase";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 const BOT_CLIENT_ID = "1545139931154878464";
@@ -63,7 +64,7 @@ const STATIC_FALLBACK_COMMANDS: PublicCommand[] = [
   { name: "clear", description: "Supprime rapidement un nombre défini de messages dans le salon.", category: "Modération", subcommands: [] },
 ];
 
-function useLiveData() {
+function useLiveData(lang: BotLang) {
   const [stats, setStats] = useState<PublicStats | null>(null);
   const [commands, setCommands] = useState<PublicCommand[]>(STATIC_FALLBACK_COMMANDS);
 
@@ -76,7 +77,7 @@ function useLiveData() {
         if (!cancelled && data && typeof data.guilds === "number") setStats(data as PublicStats);
       })
       .catch(() => {});
-    fetch(`${BOT_API_URL}/api/public/commands`)
+    fetch(`${BOT_API_URL}/api/public/commands${lang === "fr" ? "" : `?lang=${lang}`}`)
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
         if (cancelled) return;
@@ -88,10 +89,17 @@ function useLiveData() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [lang]);
 
   return { stats, commands };
 }
+
+const CATEGORY_LABEL: Record<Exclude<BotLang, "fr">, Record<string, string>> = {
+  en: { Administration: "Administration", Autres: "Other", Communauté: "Community", Fun: "Fun", Général: "General", Modération: "Moderation", Musique: "Music", Sécurité: "Security", Utilitaires: "Utilities", Vocal: "Voice", Économie: "Economy" },
+  es: { Administration: "Administración", Autres: "Otros", Communauté: "Comunidad", Fun: "Diversión", Général: "General", Modération: "Moderación", Musique: "Música", Sécurité: "Seguridad", Utilitaires: "Utilidades", Vocal: "Voz", Économie: "Economía" },
+  de: { Administration: "Administration", Autres: "Sonstiges", Communauté: "Community", Fun: "Spaß", Général: "Allgemein", Modération: "Moderation", Musique: "Musik", Sécurité: "Sicherheit", Utilitaires: "Werkzeuge", Vocal: "Sprache", Économie: "Wirtschaft" },
+};
+const categoryLabel = (lang: BotLang, cat: string) => (lang === "fr" ? cat : CATEGORY_LABEL[lang][cat] ?? cat);
 
 const fold = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 const numberFr = (n: number) => new Intl.NumberFormat("fr-FR").format(n);
@@ -161,382 +169,6 @@ function CountUp({ value, fallback = "0" }: { value?: number; fallback?: string 
   }, [inView, value, reduced]);
 
   return <span ref={ref}>{typeof value === "number" ? numberFr(reduced ? value : 0) : fallback}</span>;
-}
-
-function DiscordChatSimulator() {
-  const [activeTab, setActiveTab] = useState<"shield" | "spotify" | "fun" | "welcome">("shield");
-  const [isPlaying, setIsPlaying] = useState(true);
-  const [liked, setLiked] = useState(false);
-  const [vcActive, setVcActive] = useState(false);
-  const [lyricsCopied, setLyricsCopied] = useState(false);
-
-  return (
-    <div className="relative mx-auto w-full max-w-xl overflow-hidden rounded-2xl border border-white/[0.09] bg-[#0c0d14]/95 p-1 shadow-[0_32px_80px_-20px_rgba(0,0,0,0.9)] backdrop-blur-2xl">
-      <div className="flex items-center justify-between border-b border-white/[0.06] bg-black/40 px-4 py-3">
-        <div className="flex items-center gap-2">
-          <span className="h-3 w-3 rounded-full bg-[#ff5f57]" />
-          <span className="h-3 w-3 rounded-full bg-[#febc2e]" />
-          <span className="h-3 w-3 rounded-full bg-[#28c840]" />
-          <span className="ml-2 font-mono text-xs font-semibold text-zinc-400"># général</span>
-        </div>
-        <div className="flex items-center gap-1 rounded-xl bg-white/[0.04] p-1">
-          {(
-            [
-              ["shield", "🛡️ Anti-Raid"],
-              ["spotify", "🎵 Spotify"],
-              ["fun", "🎉 Fun"],
-              ["welcome", "👋 Bienvenue"],
-            ] as const
-          ).map(([tab, label]) => (
-            <button
-              key={tab}
-              type="button"
-              onClick={() => setActiveTab(tab)}
-              className={`rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
-                activeTab === tab
-                  ? "bg-[#92C8D2]/20 text-[#92C8D2] shadow-sm"
-                  : "text-zinc-400 hover:text-white"
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="min-h-[300px] p-5 text-left text-sm font-sans">
-        <AnimatePresence mode="wait">
-          {activeTab === "shield" && (
-            <motion.div
-              key="shield"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.25 }}
-              className="space-y-4"
-            >
-              <div className="relative flex items-start gap-3 rounded-xl border border-red-500/20 bg-red-950/20 p-2.5">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-red-500/30 bg-red-900/30 text-sm font-bold text-red-300">
-                  ⚠️
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-baseline gap-2">
-                    <span className="font-semibold text-red-300 line-through">AttaquantRaid</span>
-                    <span className="rounded bg-red-500/25 px-1.5 py-0.5 text-[9px] font-bold text-red-200">
-                      BANNI & PURGÉ
-                    </span>
-                    <span className="text-[11px] text-zinc-500">Aujourd&apos;hui à 21:04</span>
-                  </div>
-                  <p className="mt-1 text-xs text-zinc-400 line-through decoration-red-400/60">
-                    @everyone REJOIGNEZ FREE NITRO ICI http://scam-link-fake.gg !!
-                  </p>
-                  <div className="mt-1.5 flex items-center gap-1.5 text-[10px] font-medium text-red-300">
-                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-red-400" />
-                    Message purgé · Salons verrouillés
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3">
-                <Image
-                  src="/branding/ethone-discord-avatar-v2.png"
-                  alt="Etho"
-                  width={36}
-                  height={36}
-                  unoptimized
-                  className="h-9 w-9 shrink-0 rounded-full object-cover ring-1 ring-white/10"
-                />
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-baseline gap-2">
-                    <span className="font-bold text-white">Etho</span>
-                    <span className="rounded bg-[#5865f2] px-1.5 py-0.5 text-[9px] font-bold text-white">
-                      APP
-                    </span>
-                    <span className="text-[11px] text-zinc-500">Aujourd&apos;hui à 21:04</span>
-                  </div>
-
-                  <div className="mt-2 rounded-xl border-l-4 border-emerald-400 bg-emerald-950/25 p-4 backdrop-blur-sm shadow-lg shadow-black/40">
-                    <div className="flex items-center justify-between">
-                      <span className="flex items-center gap-1.5 text-xs font-bold text-emerald-300">
-                        <span className="h-2 w-2 rounded-full bg-emerald-400" />
-                        🛡️ Anti-Raid · Sanction Immédiate
-                      </span>
-                      <span className="rounded-lg border border-emerald-500/30 bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-300">
-                        ⚡ Automatique
-                      </span>
-                    </div>
-                    <p className="mt-2 text-xs leading-relaxed text-zinc-200">
-                      Raid neutralisé avec succès. Attaquant banni, 14 messages récents purgés, salons sécurisés. Bouclier Owner actif. Aucun rôle compromis.
-                    </p>
-                    <div className="mt-3 grid grid-cols-2 gap-2 text-[11px]">
-                      <div className="rounded-lg border border-white/[0.06] bg-black/30 p-2">
-                        <span className="block text-[10px] text-zinc-400">Sanction appliquée</span>
-                        <span className="font-semibold text-red-300">Bannissement & Purge</span>
-                      </div>
-                      <div className="rounded-lg border border-white/[0.06] bg-black/30 p-2">
-                        <span className="block text-[10px] text-zinc-400">Statut de sécurité</span>
-                        <span className="font-semibold text-emerald-300">Bouclier Owner Actif</span>
-                      </div>
-                    </div>
-                    <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-white/[0.06] pt-3">
-                      <button
-                        type="button"
-                        className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 text-xs font-semibold text-emerald-300 transition-colors hover:bg-emerald-500/20"
-                      >
-                        🛡️ Bouclier Owner (Actif)
-                      </button>
-                      <button
-                        type="button"
-                        className="rounded-xl border border-white/10 bg-white/[0.06] px-3 py-1.5 text-xs font-semibold text-zinc-300 transition-colors hover:bg-white/10"
-                      >
-                        🔒 Salons sécurisés
-                      </button>
-                      <button
-                        type="button"
-                        className="rounded-xl border border-white/10 bg-white/[0.06] px-3 py-1.5 text-xs font-semibold text-zinc-300 transition-colors hover:bg-white/10"
-                      >
-                        📋 Audit en direct
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          {activeTab === "spotify" && (
-            <motion.div
-              key="spotify"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.25 }}
-              className="space-y-4"
-            >
-              <div className="flex items-start gap-3">
-                <Image
-                  src="/branding/ethone-discord-avatar-v2.png"
-                  alt="Etho"
-                  width={36}
-                  height={36}
-                  unoptimized
-                  className="h-9 w-9 shrink-0 rounded-full object-cover ring-1 ring-white/10"
-                />
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-baseline gap-2">
-                    <span className="font-bold text-white">Etho</span>
-                    <span className="rounded bg-[#5865f2] px-1.5 py-0.5 text-[9px] font-bold text-white">
-                      APP
-                    </span>
-                    <span className="font-mono text-xs text-zinc-400">/spotify nowplaying</span>
-                  </div>
-
-                  <div className="mt-2 rounded-xl border-l-4 border-[#1DB954] bg-[#121b15]/95 p-4 shadow-lg shadow-black/40">
-                    <div className="flex h-5 items-center justify-between">
-                      <span className="flex items-center gap-2 text-xs font-bold text-[#1DB954]">
-                        <span className="h-2 w-2 animate-pulse rounded-full bg-[#1DB954]" />
-                        En direct sur Spotify
-                      </span>
-                      <div className="flex h-5 items-end gap-1 shrink-0">
-                        {[0.6, 1.2, 0.4, 0.9, 0.7].map((h, i) => (
-                          <motion.span
-                            key={i}
-                            className="w-1 rounded-full bg-[#1DB954]"
-                            animate={{ height: isPlaying ? [4, 16 * h, 6] : 4 }}
-                            transition={{ duration: 0.6, repeat: Infinity, delay: i * 0.12 }}
-                          />
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="mt-3 flex items-center gap-3.5">
-                      <div className="relative h-14 w-14 shrink-0 rounded-full bg-neutral-950 ring-1 ring-white/20 shadow-md shadow-black/80 flex items-center justify-center select-none">
-                        <motion.div
-                          animate={{ rotate: isPlaying ? 360 : 0 }}
-                          transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
-                          className="relative flex h-full w-full items-center justify-center rounded-full bg-gradient-to-tr from-neutral-950 via-neutral-900 to-neutral-950 overflow-hidden"
-                        >
-                          <div className="absolute inset-1 rounded-full border border-white/[0.08]" />
-                          <div className="absolute inset-2.5 rounded-full border border-white/[0.06]" />
-                          <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br from-red-600 via-purple-700 to-indigo-900 ring-1 ring-white/20 shadow-inner">
-                            <span className="h-1.5 w-1.5 rounded-full bg-neutral-950 ring-1 ring-white/40" />
-                          </div>
-                        </motion.div>
-                        <div className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#1DB954] ring-2 ring-[#121b15]">
-                          <svg className="h-2.5 w-2.5 text-black" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z" />
-                          </svg>
-                        </div>
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-bold text-white hover:underline cursor-pointer">Starboy</p>
-                        <p className="truncate text-xs text-zinc-300">The Weeknd, Daft Punk</p>
-                        <div className="mt-2 flex items-center gap-2">
-                          <span className="font-mono text-[10px] text-zinc-400">1:42</span>
-                          <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/10">
-                            <motion.div
-                              className="h-full rounded-full bg-[#1DB954]"
-                              animate={{ width: isPlaying ? ["45%", "48%", "45%"] : "45%" }}
-                              transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-                            />
-                          </div>
-                          <span className="font-mono text-[10px] text-zinc-400">3:50</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-white/[0.06] pt-3">
-                      <button
-                        type="button"
-                        onClick={() => setIsPlaying(!isPlaying)}
-                        className="rounded-xl border border-white/10 bg-white/[0.08] px-3 py-1.5 text-xs font-semibold text-white transition-all hover:bg-white/15 active:scale-95"
-                      >
-                        {isPlaying ? "⏸ Pause" : "▶ Lecture"}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setLiked(!liked)}
-                        className={`rounded-xl border px-3 py-1.5 text-xs font-semibold transition-all active:scale-95 ${
-                          liked
-                            ? "border-pink-500/40 bg-pink-500/20 text-pink-300"
-                            : "border-white/10 bg-white/[0.06] text-zinc-300 hover:bg-white/10"
-                        }`}
-                      >
-                        {liked ? "❤️ Liké" : "🤍 Like"}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setVcActive(!vcActive)}
-                        className={`rounded-xl border px-3 py-1.5 text-xs font-semibold transition-all active:scale-95 ${
-                          vcActive
-                            ? "border-[#1DB954]/50 bg-[#1DB954]/25 text-[#1DB954]"
-                            : "border-[#1DB954]/30 bg-[#1DB954]/10 text-[#1DB954] hover:bg-[#1DB954]/20"
-                        }`}
-                      >
-                        {vcActive ? "🔊 En diffusion dans #Général Vocal" : "🔊 Diffuser en vocal (/spotify vc)"}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          {activeTab === "fun" && (
-            <motion.div
-              key="fun"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.25 }}
-              className="space-y-4"
-            >
-              <div className="flex items-start gap-3">
-                <Image
-                  src="/branding/ethone-discord-avatar-v2.png"
-                  alt="Etho"
-                  width={36}
-                  height={36}
-                  unoptimized
-                  className="h-9 w-9 shrink-0 rounded-full object-cover ring-1 ring-white/10"
-                />
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-baseline gap-2">
-                    <span className="font-bold text-white">Etho</span>
-                    <span className="rounded bg-[#5865f2] px-1.5 py-0.5 text-[9px] font-bold text-white">
-                      APP
-                    </span>
-                    <span className="font-mono text-xs text-zinc-400">/lyrics query:FE!N Travis Scott</span>
-                  </div>
-
-                  <div className="mt-2 rounded-xl border-l-4 border-[#a78bfa] bg-[#161224]/90 p-4 shadow-lg shadow-black/40">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-[#c084fc]">
-                        🎵 Paroles · FE!N — Travis Scott feat. Playboi Carti
-                      </span>
-                      <span className="rounded-lg border border-[#a78bfa]/30 bg-[#a78bfa]/20 px-2 py-0.5 text-[10px] font-bold text-[#c084fc]">
-                        LRCLib 3:11
-                      </span>
-                    </div>
-                    <div className="mt-3 max-h-24 overflow-hidden rounded-lg bg-black/40 p-3 font-mono text-xs leading-relaxed text-zinc-300 border border-white/[0.04]">
-                      <p className="text-zinc-500">Just come outside for the night (yeah)</p>
-                      <p className="text-white">Take your time, get your light (yeah)</p>
-                      <p className="text-[#c084fc]">Johnny Dang, huh-uh</p>
-                      <p className="text-zinc-500">I been in this room for too long...</p>
-                    </div>
-                    <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-white/[0.06] pt-3">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setLyricsCopied(true);
-                          setTimeout(() => setLyricsCopied(false), 2000);
-                        }}
-                        className="rounded-xl border border-white/10 bg-white/[0.06] px-3 py-1.5 text-xs font-semibold text-zinc-300 transition-colors hover:bg-white/10 active:scale-95"
-                      >
-                        {lyricsCopied ? "✓ Paroles copiées !" : "📋 Copier les paroles"}
-                      </button>
-                      <button
-                        type="button"
-                        className="rounded-xl border border-white/10 bg-white/[0.06] px-3 py-1.5 text-xs font-semibold text-zinc-300 transition-colors hover:bg-white/10 active:scale-95"
-                      >
-                        🔍 Voir sur Genius
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          {activeTab === "welcome" && (
-            <motion.div
-              key="welcome"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.25 }}
-              className="space-y-4"
-            >
-              <div className="flex items-start gap-3">
-                <Image
-                  src="/branding/ethone-discord-avatar-v2.png"
-                  alt="Etho"
-                  width={36}
-                  height={36}
-                  unoptimized
-                  className="h-9 w-9 shrink-0 rounded-full object-cover ring-1 ring-white/10"
-                />
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-baseline gap-2">
-                    <span className="font-bold text-white">Etho</span>
-                    <span className="rounded bg-[#5865f2] px-1.5 py-0.5 text-[9px] font-bold text-white">
-                      APP
-                    </span>
-                    <span className="text-[11px] text-zinc-500">Arrivée d&apos;un nouveau membre</span>
-                  </div>
-
-                  <div className="mt-2 rounded-xl border-l-4 border-[#38bdf8] bg-[#0c1926]/90 p-4 shadow-lg shadow-black/40">
-                    <p className="text-sm font-bold text-white">Bienvenue sur le serveur, Alex ! 🎉</p>
-                    <p className="mt-1 text-xs text-zinc-300">
-                      Tu es le <span className="font-semibold text-[#38bdf8]">1 428e membre</span>. Prends tes rôles dans le salon dédié et profite de la communauté.
-                    </p>
-                    <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-white/[0.06] pt-3">
-                      <span className="rounded-xl border border-[#38bdf8]/30 bg-[#38bdf8]/20 px-3 py-1 text-xs font-bold text-[#38bdf8]">
-                        @Membre
-                      </span>
-                      <span className="rounded-xl border border-[#38bdf8]/30 bg-[#38bdf8]/20 px-3 py-1 text-xs font-bold text-[#38bdf8]">
-                        @AccèsGénéral
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    </div>
-  );
 }
 
 export function LanguageSelect({
@@ -692,7 +324,7 @@ function WaveformScanner() {
   );
 }
 
-function QueueDeck() {
+function QueueDeck({ nowLabel }: { nowLabel: string }) {
   return (
     <div className="relative mt-6 pt-3 pb-8">
       <div
@@ -740,7 +372,7 @@ function QueueDeck() {
           <div className="min-w-0 flex-1">
             <div className="flex items-baseline gap-2">
               <p className="truncate text-sm font-bold text-white">POWER</p>
-              <span className="truncate text-xs font-medium text-[#92C8D2]">Titre en cours</span>
+              <span className="truncate text-xs font-medium text-[#92C8D2]">{nowLabel}</span>
             </div>
             <div className="mt-2 flex items-center gap-2.5">
               <div className="relative h-1 flex-1 rounded-full bg-white/10">
@@ -1100,8 +732,8 @@ const STATS_LABELS: Record<BotLang, { servers: string; members: string; commands
 export default function BotLanding() {
   const router = useRouter();
   const { reduced } = useMotionPref();
-  const { stats, commands } = useLiveData();
   const [lang, setLang] = useState<BotLang>("fr");
+  const { stats, commands } = useLiveData(lang);
   const c = BOT_COPY[lang];
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -1423,7 +1055,7 @@ export default function BotLanding() {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              <DiscordChatSimulator />
+              <DiscordShowcase lang={lang} />
             </motion.div>
           </div>
         </section>
@@ -1617,7 +1249,7 @@ export default function BotLanding() {
               <div className="group relative h-full overflow-hidden rounded-3xl border border-white/[0.08] bg-[#0c0d14]/90 p-7 backdrop-blur-xl transition-all hover:border-[#92C8D2]/30">
                 <h3 className="text-xl font-bold tracking-tight text-[#92C8D2]">{c.music.queue.title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-zinc-400">{c.music.queue.desc}</p>
-                <QueueDeck />
+                <QueueDeck nowLabel={{ fr: "Titre en cours", en: "Now playing", es: "Sonando ahora", de: "Läuft gerade" }[lang]} />
               </div>
             </Reveal>
 
@@ -1836,7 +1468,7 @@ export default function BotLanding() {
                           : "border border-white/10 bg-white/[0.02] text-zinc-400 hover:text-white"
                       }`}
                     >
-                      {cat === "all" ? c.commands.all : cat}
+                      {cat === "all" ? c.commands.all : categoryLabel(lang, cat)}
                     </button>
                   ))}
                 </div>
@@ -1855,7 +1487,7 @@ export default function BotLanding() {
                         <span className="font-mono text-sm font-bold text-white">/{cmd.name}</span>
                         <div className="flex items-center gap-2">
                           <span className="rounded-md bg-white/[0.05] px-2 py-0.5 text-[10px] uppercase tracking-wider text-zinc-400">
-                            {cmd.category}
+                            {categoryLabel(lang, cmd.category)}
                           </span>
                           <button
                             type="button"
@@ -2107,7 +1739,7 @@ export default function BotLanding() {
           <motion.button
             type="button"
             onClick={scrollToTop}
-            aria-label="Retour en haut"
+            aria-label={{ fr: "Retour en haut", en: "Back to top", es: "Volver arriba", de: "Nach oben" }[lang]}
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}

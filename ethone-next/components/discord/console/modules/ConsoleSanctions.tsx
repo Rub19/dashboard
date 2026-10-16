@@ -190,7 +190,7 @@ export default function ConsoleSanctions({ guildId }: { guildId: string }) {
       <NewSanction guildId={guildId} open={creating} onClose={() => setCreating(false)} onDone={() => (setCreating(false), void load())} />
 
       <Drawer open={!!detail} onClose={() => setDetail(null)} title={detail ? `Dossier n°${detail.case.caseNumber}` : ""} subtitle={detail ? `${detail.case.label} · ${ORIGIN_LABEL[detail.case.origin]}` : undefined}
-        footer={detail && detail.case.open && ["WARN", "TIMEOUT", "BAN", "TEMPBAN"].includes(detail.case.action) ? <PrimaryButton className="w-full bg-[var(--danger)] text-white" onClick={() => revoke(detail.case)}>Lever la sanction</PrimaryButton> : undefined}
+        footer={detail && detail.case.open && ["WARN", "TIMEOUT", "BAN", "TEMPBAN"].includes(detail.case.action) ? <motion.button type="button" whileTap={{ scale: 0.97 }} onClick={() => revoke(detail.case)} className="w-full rounded-lg bg-[var(--danger)] px-4 py-2 text-sm font-semibold text-white transition-[filter] hover:brightness-110">Lever la sanction</motion.button> : undefined}
       >
         {detail && (
           <>

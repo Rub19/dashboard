@@ -1,5 +1,16 @@
 [
   {
+    "version": "v1.75.117",
+    "date": "2026-10-16",
+    "title": "Page du bot : aperçus fidèles à Discord et traductions",
+    "items": [
+      "Les exemples de messages d'Etho sur la page du bot ressemblent maintenant vraiment à Discord : couleurs, embeds, champs, boutons et carte de bienvenue.",
+      "Nouvel exemple Sanctions avec la carte d'avertissement et le bouton Annuler.",
+      "Les exemples, les catégories et les descriptions des commandes sont traduits en anglais, espagnol et allemand.",
+      "Le bouton Lever la sanction est de nouveau rouge."
+    ]
+  },
+  {
     "version": "v1.75.116",
     "date": "2026-10-16",
     "title": "Paliers et raisons mieux protégés",
@@ -614,20 +625,6 @@
     "items": [
       "Les règles AutoMod créées par Etho (mode AutoMod des protections, AutoMod Discord, règles recommandées) sont vérifiées après création : si un autre bot de protection les supprime aussitôt, Etho le signale avec son nom au lieu d'afficher « enregistré ».",
       "Nouveaux tests de scénarios d'attaque : suppression de salon et de rôle (recréés), ajout de bot (banni), webhook (supprimé), rafale de bans (annulée), lien, spam, ghost ping, compte récent et verrouillage avec levée."
-    ]
-  },
-  {
-    "version": "v1.65.0",
-    "date": "2026-10-10",
-    "title": "Console : éditeurs avancés au format Keeper et sécurité des rôles",
-    "items": [
-      "Commandes personnalisées : éditeur complet dans la console (arguments, conditions si/alors/sinon, réponses texte ou embed avec boutons, rôle donné ou retiré, message privé, suppression du message), aperçu de test et enregistrement unique.",
-      "Formulaires : création et modification dans la console (jusqu'à 5 questions affichées dans la fenêtre Discord, ordre, obligatoire, longueur, délai entre deux réponses, ancienneté, rôles requis ou exclus, panneau).",
-      "Sondages : mode « Sondage avancé » (votes par boutons) avec choix et emojis, date de fin, anonymat, changement ou retrait du vote, rôles autorisés ou exclus, ancienneté, poids des votes par rôle et quorum ; republication du panneau et export des votes.",
-      "Événements : participants dans la console (inscrits, peut-être, liste d'attente), pointage des présences et retrait, modification du titre, de la description et des places.",
-      "Sécurité : un rôle avec des permissions de modération ou d'administration n'est plus jamais donné automatiquement (panneau de rôles, rôle à l'arrivée, récompenses de niveau et d'invitation, boutique, commandes personnalisées).",
-      "Sécurité : un événement ne peut plus être déplacé vers un autre serveur ni voir son organisateur ou ses compteurs modifiés ; les préférences vocales d'un membre ne peuvent plus être modifiées par un autre.",
-      "Formulaires : un formulaire impossible à ouvrir sur Discord n'envoie plus les membres vers une page réservée au staff ; ils reçoivent un message clair."
     ]
   }
 ]

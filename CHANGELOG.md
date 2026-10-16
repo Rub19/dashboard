@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.117 — 2026-10-16
+
+**Page du bot : aperçus fidèles à Discord et traductions**
+
+- Les exemples de messages d'Etho sur la page du bot ressemblent maintenant vraiment à Discord : couleurs, embeds, champs, boutons et carte de bienvenue.
+- Nouvel exemple Sanctions avec la carte d'avertissement et le bouton Annuler.
+- Les exemples, les catégories et les descriptions des commandes sont traduits en anglais, espagnol et allemand.
+- Le bouton Lever la sanction est de nouveau rouge.
+
 ## v1.75.116 — 2026-10-16
 
 **Paliers et raisons mieux protégés**

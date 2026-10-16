@@ -1,3 +1,4 @@
+import { SITE_LANGS, commandTranslations, type SiteLang } from '../../services/commandTranslations.js';
 import { Client } from 'discord.js';
 import express, { Request, Response } from 'express';
 import { commandRegistry } from '../../handlers/commandHandler.js';
@@ -122,8 +123,17 @@ export function createPublicRouter(client: Client): express.Router {
     });
   });
 
-  router.get('/commands', (_req: Request, res: Response) => {
-    res.json({ commands: listPublicCommands() });
+  router.get('/commands', (req: Request, res: Response) => {
+    const list = listPublicCommands();
+    const lang = (SITE_LANGS as readonly string[]).includes(String(req.query.lang)) ? (String(req.query.lang) as SiteLang) : null;
+    if (!lang) {
+      res.json({ commands: list });
+      return;
+    }
+    commandTranslations.ensure(lang, list.flatMap((c) => [c.description, ...c.subcommands.map((s) => s.description)]));
+    res.json({
+      commands: list.map((c) => ({ ...c, description: commandTranslations.t(lang, c.description), subcommands: c.subcommands.map((s) => ({ ...s, description: commandTranslations.t(lang, s.description) })) })),
+    });
   });
 
   return router;

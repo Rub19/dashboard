@@ -5,61 +5,60 @@ struct HabitsView: View {
     @State private var showAdd = false
 
     var body: some View {
-        NavigationStack {
-            List {
-                if let message = model.habits.errorMessage {
-                    Text(message).font(.footnote).foregroundStyle(Theme.danger).listRowBackground(Color.clear)
-                }
-                if !model.habits.activeHabits.isEmpty {
-                    let done = model.habits.activeHabits.filter { model.habits.isDone($0) }.count
-                    let total = model.habits.activeHabits.count
-                    Section {
-                        EmptyView()
-                    } header: {
-                        VStack(alignment: .leading, spacing: 12) {
-                            AccentRule()
-                            EthoneHeadline(first: "Habitudes", second: done == total ? "Journée complète." : "\(done) sur \(total) aujourd'hui.", size: .title)
-                            ProgressView(value: Double(done), total: Double(max(total, 1)))
-                                .tint(Theme.accent)
-                                .animation(Motion.snap, value: done)
-                        }
-                        .textCase(nil)
-                        .foregroundStyle(.primary)
-                        .padding(.leading, -4)
+        List {
+            if let message = model.habits.errorMessage {
+                Text(message).font(.footnote).foregroundStyle(Theme.danger).listRowBackground(Color.clear)
+            }
+            if !model.habits.activeHabits.isEmpty {
+                let done = model.habits.activeHabits.filter { model.habits.isDone($0) }.count
+                let total = model.habits.activeHabits.count
+                Section {
+                    EmptyView()
+                } header: {
+                    VStack(alignment: .leading, spacing: 12) {
+                        AccentRule()
+                        EthoneHeadline(first: "Habitudes", second: done == total ? "Journée complète." : "\(done) sur \(total) aujourd'hui.", size: .title)
+                        ProgressView(value: Double(done), total: Double(max(total, 1)))
+                            .tint(Theme.accent)
+                            .animation(Motion.snap, value: done)
                     }
-                }
-                ForEach(model.habits.activeHabits) { habit in
-                    HabitRow(habit: habit)
-                        .listRowBackground(GlassRowBackground())
-                        .swipeActions(edge: .trailing) {
-                            Button(role: .destructive) {
-                                NotificationManager.cancelHabit(id: habit.id)
-                                Task { await model.habits.delete(habit) }
-                            } label: { Label("Supprimer", systemImage: "trash") }
-                        }
-                }
-                .ethoneReorderable()
-            }
-            .ethoneReorderContainer(for: Habit.self) { sources, before in
-                model.habits.move(sources, before: before)
-            }
-            .scrollContentBackground(.hidden)
-            .overlay {
-                if model.habits.activeHabits.isEmpty && !model.habits.isLoading {
-                    ContentUnavailableView("Aucune habitude", systemImage: "flame", description: Text("Ajoutez une habitude pour suivre vos séries."))
+                    .textCase(nil)
+                    .foregroundStyle(.primary)
+                    .padding(.leading, -4)
                 }
             }
-            .refreshable { await model.habits.refresh() }
-            .navigationTitle("Habitudes")
-            .toolbarTitleDisplayMode(.inline)
-            .ethoneScreen()
-            .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    Button { showAdd = true } label: { Image(systemName: "plus") }
-                }
+            ForEach(model.habits.activeHabits) { habit in
+                HabitRow(habit: habit)
+                    .listRowBackground(GlassRowBackground())
+                    .swipeActions(edge: .trailing) {
+                        Button(role: .destructive) {
+                            NotificationManager.cancelHabit(id: habit.id)
+                            Task { await model.habits.delete(habit) }
+                        } label: { Label("Supprimer", systemImage: "trash") }
+                    }
             }
-            .sheet(isPresented: $showAdd) { AddHabitSheet() }
+            .ethoneReorderable()
         }
+        .ethoneReorderContainer(for: Habit.self) { sources, before in
+            model.habits.move(sources, before: before)
+        }
+        .scrollContentBackground(.hidden)
+        .overlay {
+            if model.habits.activeHabits.isEmpty && !model.habits.isLoading {
+                ContentUnavailableView("Aucune habitude", systemImage: "flame", description: Text("Ajoutez une habitude pour suivre vos séries."))
+            }
+        }
+        .refreshable { await model.habits.refresh() }
+        .navigationTitle("Habitudes")
+        .toolbarTitleDisplayMode(.inline)
+        .ethoneScreen()
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Button { showAdd = true } label: { Image(systemName: "plus") }
+            }
+        }
+        .sheet(isPresented: $showAdd) { AddHabitSheet() }
+    
     }
 }
 

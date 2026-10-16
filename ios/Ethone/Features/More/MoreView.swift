@@ -118,9 +118,9 @@ struct MoreView: View {
                     Section {
                         NavigationLink(value: MoreDestination.profile) {
                             HStack(spacing: 14) {
-                                AvatarView(url: auth.user?.avatarURL, name: auth.user?.displayName ?? "E", size: 58, status: .online)
+                                AvatarView(urlString: model.ethoneAvatar ?? auth.user?.avatarURL?.absoluteString, name: model.ethoneName ?? auth.user?.displayName ?? "E", size: 58, status: .online)
                                 VStack(alignment: .leading, spacing: 3) {
-                                    Text(auth.user?.displayName ?? "Mon compte")
+                                    Text(model.ethoneName ?? auth.user?.displayName ?? "Mon compte")
                                         .font(.title3.weight(.semibold))
                                         .lineLimit(1)
                                     Text(auth.user?.email ?? "Profil, avatar et statut")

@@ -28,6 +28,9 @@ final class AppModel {
     @ObservationIgnored private var flushTask: Task<Void, Never>?
 
     var requestedTab: AppTab?
+    /// Photo et nom du profil ETHONE (ethone_public_profiles), prioritaires sur ceux du fournisseur de connexion (Discord, Google…).
+    private(set) var ethoneAvatar: String?
+    private(set) var ethoneName: String?
     var morePath: [MoreDestination] = []
 
     private(set) var themePreset: ThemePreset = Theme.preset
@@ -119,7 +122,16 @@ final class AppModel {
         return !Task.isCancelled
     }
 
+    func refreshProfile() async {
+        struct Row: Decodable { let avatar_url: String?; let display_name: String? }
+        guard let id = auth.user?.id,
+              let row = try? await api.list("ethone_public_profiles", query: [URLQueryItem(name: "user_id", value: "eq.\(id)")], as: Row.self).first else { return }
+        ethoneAvatar = row.avatar_url?.isEmpty == false ? row.avatar_url : nil
+        ethoneName = row.display_name?.isEmpty == false ? row.display_name : nil
+    }
+
     func refreshAll() async {
+        await refreshProfile()
         async let a: Void = notes.refresh()
         async let b: Void = tasks.refresh()
         async let c: Void = events.refresh()

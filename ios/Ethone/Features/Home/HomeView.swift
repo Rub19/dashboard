@@ -332,13 +332,13 @@ struct HomeView: View {
                     model.morePath = [.profile]
                     model.requestedTab = .more
                 } label: {
-                    AvatarView(url: auth.user?.avatarURL, name: auth.user?.displayName ?? "E", size: 40, status: .online)
+                    AvatarView(urlString: model.ethoneAvatar ?? auth.user?.avatarURL?.absoluteString, name: model.ethoneName ?? auth.user?.displayName ?? "E", size: 40, status: .online)
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel("Profil")
             }
             AccentRule()
-            EthoneHeadline(first: "\(salutation),", second: auth.user?.displayName ?? "")
+            EthoneHeadline(first: "\(salutation),", second: model.ethoneName ?? auth.user?.displayName ?? "")
         }
         .padding(.top, 12)
     }

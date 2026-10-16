@@ -154,6 +154,7 @@ struct MailView: View {
             }
             ForEach(model.mail.messages) { message in
                 Button { selected = message } label: { row(message) }
+                    .tint(.primary)
                     .listRowBackground(GlassRowBackground())
                     .swipeActions(edge: .leading) {
                         Button {

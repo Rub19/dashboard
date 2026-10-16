@@ -23,7 +23,7 @@ struct ProfileView: View {
     private var currentAvatarString: String? {
         let trimmed = avatarURL.trimmingCharacters(in: .whitespaces)
         if !trimmed.isEmpty { return trimmed }
-        return model.auth.user?.avatarURL?.absoluteString
+        return model.ethoneAvatar ?? model.auth.user?.avatarURL?.absoluteString
     }
 
     var body: some View {
@@ -196,6 +196,7 @@ struct ProfileView: View {
             publicId = saved["public_id"]?.stringValue ?? publicId
             exists = true
             infoMessage = "Profil enregistré."
+            await model.refreshProfile()
             errorMessage = nil
         } catch {
             infoMessage = nil

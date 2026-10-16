@@ -1,5 +1,14 @@
 [
   {
+    "version": "v1.75.141",
+    "date": "2026-10-17",
+    "title": "App iOS : modules Discord",
+    "items": [
+      "« Tous les modules » : icônes en tuiles aux couleurs de Discord et grand titre ETHONE, aussi sur chaque écran de module.",
+      "Listes des modules : dates relatives et message clair quand une liste est vide ou qu'un filtre ne trouve rien."
+    ]
+  },
+  {
     "version": "v1.75.140",
     "date": "2026-10-17",
     "title": "App iOS : profil et finitions",
@@ -602,17 +611,6 @@
       "Guides de crise & scénarios d'urgence : fiches d'action immédiate pour neutraliser un raid en cours, gérer un compte modérateur compromis, bloquer le phishing/faux Nitro et restaurer le serveur.",
       "Référence exhaustive des modules par catégorie : catalogue complet des protections (Sanctions, Salons, Rôles, Bots, Vocal, Serveur, Messages, Membres, Sauvegardes, Mode Ultra) avec seuils recommandés et temps de réaction (< 250ms).",
       "Motion design & interactivité avancée : moteur de recherche temps réel avec raccourci Ctrl+K, modales interactives de détails pour chaque module et guide avec copie en un clic des commandes /slash."
-    ]
-  },
-  {
-    "version": "v1.75.20",
-    "date": "2026-10-13",
-    "title": "Vitrine Bot : Carrousel Défilant Continu des Intégrations & Épuration des Cartes",
-    "items": [
-      "Carrousel défilant continu (Marquee) : transformation de la grille statique des intégrations en un bandeau défilant fluide à défilement horizontal infini avec masques en dégradé sur les bords et mise en pause automatique au survol.",
-      "Épuration complète des cartes : suppression intégrale des mentions de statut inférieures ('Intégration native', 'Connecté') et des badges superflus pour une présentation épurée et authentique fidèle aux maquettes.",
-      "Alignement icône et titre : disposition horizontale moderne avec icône de marque et libellé sur la même ligne.",
-      "Descriptions enrichies avec mots-clés colorés : intégration de la suite complète de 9 plateformes (Spotify, Instagram, X, Pinterest, SoundCloud, TikTok, Last.fm, YouTube, Twitch) avec surbrillance dynamique des fonctionnalités clés."
     ]
   }
 ]

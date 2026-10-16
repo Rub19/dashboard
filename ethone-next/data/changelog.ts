@@ -58649,6 +58649,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_140_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_140_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_140_de);
 
+const v1_75_141_fr: ChangelogEntry = {
+  version: "v1.75.141",
+  date: "2026-10-17",
+  title: "App iOS : modules Discord",
+  items: [
+    "« Tous les modules » : icônes en tuiles aux couleurs de Discord et grand titre ETHONE, aussi sur chaque écran de module.",
+    "Listes des modules : dates relatives et message clair quand une liste est vide ou qu'un filtre ne trouve rien.",
+  ],
+};
+
+const v1_75_141_en: ChangelogEntry = {
+  version: "v1.75.141",
+  date: "2026-10-17",
+  title: "iOS app: Discord modules",
+  items: [
+    "\"All modules\": Discord-colored icon tiles and the large ETHONE title, also on each module screen.",
+    "Module lists: relative dates and a clear message when a list is empty or a filter finds nothing.",
+  ],
+};
+
+const v1_75_141_es: ChangelogEntry = {
+  version: "v1.75.141",
+  date: "2026-10-17",
+  title: "App iOS: módulos de Discord",
+  items: [
+    "«Todos los módulos»: iconos en mosaicos del color de Discord y título grande ETHONE, también en cada pantalla de módulo.",
+    "Listas de módulos: fechas relativas y mensaje claro cuando una lista está vacía o un filtro no encuentra nada.",
+  ],
+};
+
+const v1_75_141_de: ChangelogEntry = {
+  version: "v1.75.141",
+  date: "2026-10-17",
+  title: "iOS-App: Discord-Module",
+  items: [
+    "„Alle Module“: Symbolkacheln in Discord-Farbe und großer ETHONE-Titel, auch auf jedem Modulbildschirm.",
+    "Modullisten: relative Daten und klare Hinweise, wenn eine Liste leer ist oder ein Filter nichts findet.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_141_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_141_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_141_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_141_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

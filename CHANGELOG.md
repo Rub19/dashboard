@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.141 — 2026-10-17
+
+**App iOS : modules Discord**
+
+- « Tous les modules » : icônes en tuiles aux couleurs de Discord et grand titre ETHONE, aussi sur chaque écran de module.
+- Listes des modules : dates relatives et message clair quand une liste est vide ou qu'un filtre ne trouve rien.
+
 ## v1.75.140 — 2026-10-17
 
 **App iOS : profil et finitions**

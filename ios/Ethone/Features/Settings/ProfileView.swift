@@ -142,7 +142,6 @@ struct ProfileView: View {
         }
         .scrollContentBackground(.hidden)
         .navigationTitle("Profil")
-        .navigationBarTitleDisplayMode(.inline)
         .ethoneScreen()
         .task { await load() }
         .sheet(isPresented: $showAvatarSheet) {

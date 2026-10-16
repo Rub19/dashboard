@@ -53,7 +53,6 @@ struct AdminView: View {
         .scrollContentBackground(.hidden)
         .overlay { if loading && stats == nil && !forbidden { ProgressView() } }
         .navigationTitle("Administration")
-        .navigationBarTitleDisplayMode(.inline)
         .ethoneScreen()
         .refreshable { await load() }
         .task { await load() }

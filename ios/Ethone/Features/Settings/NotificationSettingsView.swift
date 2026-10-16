@@ -94,7 +94,6 @@ struct NotificationSettingsView: View {
         }
         .scrollContentBackground(.hidden)
         .navigationTitle("Notifications")
-        .navigationBarTitleDisplayMode(.inline)
         .ethoneScreen()
         .task { await refreshStatus() }
         .onChange(of: tasks) { resync() }

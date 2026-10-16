@@ -63,7 +63,6 @@ struct MacrosView: View {
             }
         }
         .navigationTitle("Macros")
-        .navigationBarTitleDisplayMode(.inline)
         .ethoneScreen()
         .refreshable { await load() }
         .task { await load() }

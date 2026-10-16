@@ -91,7 +91,6 @@ struct AnalyticsView: View {
         }
         .navigationTitle("Analytique")
         .ethoneScreen()
-        .navigationBarTitleDisplayMode(.inline)
         .task { await model.refreshAll() }
     }
 

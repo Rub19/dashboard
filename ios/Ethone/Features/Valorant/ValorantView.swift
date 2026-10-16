@@ -83,7 +83,6 @@ struct ValorantView: View {
         }
         .navigationTitle("Valorant")
         .ethoneScreen()
-        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button { editing = true } label: { Image(systemName: "gearshape") }

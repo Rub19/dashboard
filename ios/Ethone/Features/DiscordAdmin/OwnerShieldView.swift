@@ -268,7 +268,6 @@ struct OwnerShieldView: View {
         .scrollContentBackground(.hidden)
         .searchable(text: $search, prompt: "Filtrer les serveurs...")
         .navigationTitle("Owner Shield")
-        .navigationBarTitleDisplayMode(.inline)
         .ethoneScreen()
         .task {
             await store.fetch(store: discord)

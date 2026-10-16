@@ -34,7 +34,6 @@ struct WeatherView: View {
         }
         .navigationTitle("Météo")
         .ethoneScreen()
-        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button { cityField = city; editingCity = true } label: { Image(systemName: "magnifyingglass") }
@@ -67,10 +66,12 @@ struct WeatherView: View {
                 Text(weather.placeName).font(.headline)
                 HStack(alignment: .firstTextBaseline) {
                     Text("\(Int(now.temperature.rounded()))°").font(.system(size: 80, weight: .light)).tracking(-3)
+                        .contentTransition(.numericText())
                     Spacer()
                     Image(systemName: WeatherCode.symbol(now.code, isDay: now.isDay))
                         .symbolRenderingMode(.multicolor)
                         .font(.system(size: 54))
+                        .symbolEffect(.breathe, options: .speed(0.4))
                 }
                 Text(WeatherCode.label(now.code)).font(.title3)
                 Text("Ressenti \(Int(now.feelsLike.rounded()))°").foregroundStyle(.secondary)
@@ -104,15 +105,31 @@ struct WeatherView: View {
         GlassCard(padding: 14) {
             VStack(alignment: .leading, spacing: 12) {
                 Text("7 jours").sectionTitle()
+                let low = weather.days.map(\.min).min() ?? 0
+                let high = weather.days.map(\.max).max() ?? 1
                 ForEach(weather.days) { day in
-                    HStack {
-                        Text(weekday(day.date)).frame(width: 90, alignment: .leading)
-                        Image(systemName: WeatherCode.symbol(day.code)).symbolRenderingMode(.multicolor)
-                        if day.rainChance >= 20 { Text("\(day.rainChance)%").font(.caption).foregroundStyle(.cyan) }
-                        Spacer()
-                        Text("\(Int(day.min.rounded()))°").foregroundStyle(.secondary)
-                        Text("\(Int(day.max.rounded()))°").fontWeight(.semibold)
+                    HStack(spacing: 10) {
+                        Text(weekday(day.date)).frame(width: 96, alignment: .leading).lineLimit(1)
+                        Image(systemName: WeatherCode.symbol(day.code)).symbolRenderingMode(.multicolor).frame(width: 26)
+                        Text(day.rainChance >= 20 ? "\(day.rainChance)%" : "")
+                            .font(.caption.weight(.medium)).foregroundStyle(.cyan).frame(width: 34, alignment: .leading)
+                        Text("\(Int(day.min.rounded()))°").foregroundStyle(.secondary).monospacedDigit().frame(width: 32, alignment: .trailing)
+                        GeometryReader { geo in
+                            let span = max(high - low, 1)
+                            let start = (day.min - low) / span
+                            let end = (day.max - low) / span
+                            Capsule().fill(.primary.opacity(0.1))
+                                .overlay(alignment: .leading) {
+                                    Capsule()
+                                        .fill(LinearGradient(colors: [.cyan, .yellow, .orange], startPoint: .leading, endPoint: .trailing))
+                                        .frame(width: max(geo.size.width * (end - start), 6))
+                                        .offset(x: geo.size.width * start)
+                                }
+                        }
+                        .frame(height: 5)
+                        Text("\(Int(day.max.rounded()))°").fontWeight(.semibold).monospacedDigit().frame(width: 32, alignment: .trailing)
                     }
+                    .accessibilityElement(children: .combine)
                 }
             }
         }

@@ -74,7 +74,6 @@ struct TeamView: View {
         }
         .navigationTitle("Équipe")
         .ethoneScreen()
-        .navigationBarTitleDisplayMode(.inline)
         .refreshable { await load() }
         .task { await load() }
     }

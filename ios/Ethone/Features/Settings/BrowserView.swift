@@ -40,7 +40,6 @@ struct BrowserView: View {
             }
         }
         .navigationTitle("Navigateur")
-        .navigationBarTitleDisplayMode(.inline)
         .ethoneScreen()
         .sheet(isPresented: $showReport) {
             NavigationStack {

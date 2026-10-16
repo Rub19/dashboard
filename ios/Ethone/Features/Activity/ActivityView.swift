@@ -128,7 +128,6 @@ struct ActivityView: View {
         .searchable(text: $query, prompt: "Rechercher dans l'activité")
         .navigationTitle("Activité")
         .ethoneScreen()
-        .navigationBarTitleDisplayMode(.inline)
         .refreshable { await model.refreshAll() }
         .task { await model.refreshAll() }
     }

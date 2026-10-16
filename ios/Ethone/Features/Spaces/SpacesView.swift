@@ -51,7 +51,6 @@ struct SpacesView: View {
         }
         .navigationTitle("Espaces")
         .ethoneScreen()
-        .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(for: SharedSpace.self) { space in SpaceDetailView(space: space) }
         .refreshable { await model.spaces.refresh() }
         .task { await model.spaces.refresh() }

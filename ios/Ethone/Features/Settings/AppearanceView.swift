@@ -99,7 +99,6 @@ struct AppearanceView: View {
         }
         .navigationTitle("Apparence")
         .ethoneScreen()
-        .navigationBarTitleDisplayMode(.inline)
     }
 
     private func themeSwatch(_ preset: ThemePreset) -> some View {

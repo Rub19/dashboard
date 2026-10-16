@@ -200,7 +200,6 @@ struct ClipView: View {
         }
         .scrollContentBackground(.hidden)
         .navigationTitle("Clip")
-        .navigationBarTitleDisplayMode(.inline)
         .ethoneScreen()
     }
 

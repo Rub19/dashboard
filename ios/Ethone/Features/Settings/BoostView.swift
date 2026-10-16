@@ -67,7 +67,6 @@ struct BoostView: View {
         }
         .scrollContentBackground(.hidden)
         .navigationTitle("Performance")
-        .navigationBarTitleDisplayMode(.inline)
         .ethoneScreen()
         .onAppear {
             UIDevice.current.isBatteryMonitoringEnabled = true

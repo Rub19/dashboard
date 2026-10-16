@@ -166,3 +166,30 @@ extension View {
     }
 }
 
+
+/// A row of figures in one connected glass strip, separated by hairlines: the ETHONE way to show a few numbers.
+struct StatStrip: View {
+    let items: [(value: String, label: String)]
+
+    var body: some View {
+        HStack(spacing: 0) {
+            ForEach(Array(items.enumerated()), id: \.offset) { index, item in
+                if index > 0 { Divider().frame(height: 36) }
+                VStack(spacing: 4) {
+                    Text(item.value)
+                        .font(.title3.weight(.semibold))
+                        .tracking(-0.5)
+                        .monospacedDigit()
+                        .contentTransition(.numericText())
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
+                    Text(item.label).font(.caption).foregroundStyle(.secondary).lineLimit(1)
+                }
+                .frame(maxWidth: .infinity)
+                .accessibilityElement(children: .combine)
+            }
+        }
+        .padding(.vertical, 14)
+        .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
+    }
+}

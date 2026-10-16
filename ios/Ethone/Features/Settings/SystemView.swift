@@ -58,7 +58,6 @@ struct SystemView: View {
         .scrollContentBackground(.hidden)
         .overlay { if loading && spaces.isEmpty && flows.isEmpty { ProgressView() } }
         .navigationTitle("Système")
-        .navigationBarTitleDisplayMode(.inline)
         .ethoneScreen()
         .refreshable { await load() }
         .task { await load() }

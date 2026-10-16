@@ -69,7 +69,6 @@ struct FlowsView: View {
         }
         .navigationTitle("Flows")
         .ethoneScreen()
-        .navigationBarTitleDisplayMode(.inline)
         .refreshable { await load() }
         .task { await load() }
         .reloadOnRemoteChange(["ethone_user_data"]) { await load() }

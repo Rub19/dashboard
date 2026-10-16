@@ -99,7 +99,6 @@ struct PluginsView: View {
         .scrollContentBackground(.hidden)
         .searchable(text: $searchText, prompt: "Rechercher un widget, thème, IA...")
         .navigationTitle("Plugins & Extensions")
-        .navigationBarTitleDisplayMode(.inline)
         .ethoneScreen()
         .sheet(item: $selectedPlugin) { item in
             PluginDetailSheet(item: item, store: store)

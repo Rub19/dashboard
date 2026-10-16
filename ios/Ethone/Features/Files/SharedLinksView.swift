@@ -74,7 +74,6 @@ struct SharedLinksView: View {
         }
         .scrollContentBackground(.hidden)
         .navigationTitle("Liens partagés")
-        .navigationBarTitleDisplayMode(.inline)
         .ethoneScreen()
         .fileImporter(isPresented: $importing, allowedContentTypes: [.item], allowsMultipleSelection: true) { result in
             if case .success(let urls) = result { Task { await upload(urls) } }

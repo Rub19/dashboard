@@ -73,7 +73,6 @@ struct InteractionsView: View {
         }
         .navigationTitle("Interactions")
         .ethoneScreen()
-        .navigationBarTitleDisplayMode(.inline)
         .task { await model.refreshAll() }
     }
 

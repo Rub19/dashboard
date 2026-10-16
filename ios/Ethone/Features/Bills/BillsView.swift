@@ -63,7 +63,6 @@ struct BillsView: View {
         }
         .navigationTitle("Factures")
         .ethoneScreen()
-        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .primaryAction) { Button { adding = true } label: { Image(systemName: "plus") } }
         }

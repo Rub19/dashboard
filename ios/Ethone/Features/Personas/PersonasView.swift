@@ -61,7 +61,6 @@ struct PersonasView: View {
             }
         }
         .navigationTitle("Personas")
-        .navigationBarTitleDisplayMode(.inline)
         .ethoneScreen()
         .refreshable { await load() }
         .task { await load() }

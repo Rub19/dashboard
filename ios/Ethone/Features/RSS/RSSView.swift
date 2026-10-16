@@ -70,7 +70,6 @@ struct RSSView: View {
         }
         .scrollContentBackground(.hidden)
         .navigationTitle("RSS")
-        .navigationBarTitleDisplayMode(.inline)
         .ethoneScreen()
     }
 

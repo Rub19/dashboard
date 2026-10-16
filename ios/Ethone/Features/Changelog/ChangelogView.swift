@@ -163,7 +163,6 @@ struct ChangelogView: View {
         .scrollContentBackground(.hidden)
         .searchable(text: $search, prompt: "Rechercher une version ou fonctionnalité…")
         .navigationTitle("Journal des versions")
-        .navigationBarTitleDisplayMode(.inline)
         .ethoneScreen()
         .task {
             if let first = store.entries.first {

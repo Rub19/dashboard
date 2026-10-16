@@ -70,7 +70,6 @@ struct PublicLeaderboardView: View {
         }
         .scrollContentBackground(.hidden)
         .navigationTitle("Classement public")
-        .navigationBarTitleDisplayMode(.inline)
         .ethoneScreen()
         .task { if !guildId.isEmpty && payload == nil { await load() } }
     }

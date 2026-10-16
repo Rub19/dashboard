@@ -91,7 +91,6 @@ struct SecurityView: View {
         }
         .navigationTitle("Sécurité")
         .ethoneScreen()
-        .navigationBarTitleDisplayMode(.inline)
         .refreshable { await load() }
         .task { await load() }
         .confirmationDialog("Déconnecter tous les autres appareils ?", isPresented: $confirmRevokeOthers, titleVisibility: .visible) {

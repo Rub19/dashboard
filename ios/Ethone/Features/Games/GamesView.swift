@@ -29,7 +29,6 @@ struct GamesView: View {
         }
         .navigationTitle("Mini-jeux")
         .ethoneScreen()
-        .navigationBarTitleDisplayMode(.inline)
     }
 }
 

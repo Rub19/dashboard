@@ -74,7 +74,6 @@ struct ConnectionsView: View {
         .overlay { if loading && items.isEmpty { ProgressView() } }
         .navigationTitle("Connexions")
         .ethoneScreen()
-        .navigationBarTitleDisplayMode(.inline)
         .refreshable { await load() }
         .task { await load() }
     }

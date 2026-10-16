@@ -168,7 +168,6 @@ struct FilesView: View {
         .searchable(text: $query, prompt: "Rechercher un fichier")
         .navigationTitle(currentFolder?.name ?? "Fichiers")
         .ethoneScreen()
-        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
                 Button {
@@ -222,30 +221,11 @@ struct FilesView: View {
     }
 
     private var metricsBar: some View {
-        HStack(spacing: 12) {
-            metricItem(title: "Fichiers", value: "\(files.count)", icon: "doc.on.doc.fill", color: Theme.accentSoft)
-            metricItem(title: "Espace", value: ByteCountFormatter.string(fromByteCount: totalBytes, countStyle: .file), icon: "internaldrive.fill", color: Theme.success)
-            metricItem(title: "Favoris", value: "\(favoritesCount)", icon: "star.fill", color: Theme.warning)
-        }
-    }
-
-    private func metricItem(title: String, value: String, icon: String, color: Color) -> some View {
-        GlassCard(padding: 12) {
-            VStack(alignment: .leading, spacing: 4) {
-                HStack {
-                    Image(systemName: icon)
-                        .font(.footnote)
-                        .foregroundStyle(color)
-                    Spacer()
-                }
-                Text(value)
-                    .font(.headline.weight(.bold))
-                    .foregroundStyle(.primary)
-                Text(title)
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-            }
-        }
+        StatStrip(items: [
+            ("\(files.count)", "Fichiers"),
+            (ByteCountFormatter.string(fromByteCount: totalBytes, countStyle: .file), "Espace"),
+            ("\(favoritesCount)", "Favoris"),
+        ])
     }
 
     private var breadcrumbBar: some View {
@@ -303,6 +283,10 @@ struct FilesView: View {
                 }
             }
             .padding(.vertical, 2)
+        }
+        .sensoryFeedback(.selection, trigger: category)
+        .mask {
+            LinearGradient(stops: [.init(color: .black, location: 0), .init(color: .black, location: 0.9), .init(color: .clear, location: 1)], startPoint: .leading, endPoint: .trailing)
         }
     }
 

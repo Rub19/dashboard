@@ -33,24 +33,28 @@ struct SoundscapeView: View {
                         Text(section.rawValue).tag(section)
                     }
                 }
-                .pickerStyle(.segmented)
+                .ethoneTabsPicker()
                 .padding(.horizontal)
 
-                switch activeTab {
-                case .presets:
-                    presetsSection
-                case .frequencies:
-                    frequenciesSection
-                case .mixer:
-                    mixerSection
+                Group {
+                    switch activeTab {
+                    case .presets:
+                        presetsSection
+                    case .frequencies:
+                        frequenciesSection
+                    case .mixer:
+                        mixerSection
+                    }
                 }
+                .id(activeTab)
+                .transition(.opacity.combined(with: .offset(y: 10)))
             }
+            .animation(Motion.snap, value: activeTab)
             .padding(.top, 12)
             .padding(.bottom, 100)
         }
         .scrollIndicators(.hidden)
         .navigationTitle("Soundscape")
-        .navigationBarTitleDisplayMode(.inline)
         .ethoneScreen()
         .safeAreaInset(edge: .bottom) {
             bottomFloatingBar
@@ -62,12 +66,8 @@ struct SoundscapeView: View {
 
     private var presetsSection: some View {
         VStack(alignment: .leading, spacing: 14) {
-            HStack {
-                Text("Ambiances 1-clic").sectionTitle()
-                Spacer()
-                Text("6 configurations").font(.caption).foregroundStyle(.secondary)
-            }
-            .padding(.horizontal)
+            Text("Ambiances").sectionTitle()
+                .padding(.horizontal)
 
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 160), spacing: 12)], spacing: 12) {
                 ForEach(SoundscapePreset.all) { preset in
@@ -81,9 +81,11 @@ struct SoundscapeView: View {
                                     .foregroundStyle(Color(hex: model.accentHex))
                                 Spacer()
                                 if engine.isPlaying && engine.selectedSolfeggio == preset.solfeggio && engine.selectedWave == preset.wave {
-                                    Circle()
-                                        .fill(Theme.success)
-                                        .frame(width: 8, height: 8)
+                                    Image(systemName: "waveform")
+                                        .font(.footnote.weight(.semibold))
+                                        .foregroundStyle(Theme.accent)
+                                        .symbolEffect(.variableColor.iterative, options: .repeating)
+                                        .accessibilityLabel("En lecture")
                                 }
                             }
 
@@ -99,9 +101,10 @@ struct SoundscapeView: View {
                         }
                         .padding(14)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .glassEffect(.regular, in: .rect(cornerRadius: 18))
+                        .glassEffect(.regular.interactive(), in: .rect(cornerRadius: 18))
                     }
                     .buttonStyle(.plain)
+                    .sensoryFeedback(.impact(weight: .light), trigger: engine.selectedSolfeggio == preset.solfeggio && engine.selectedWave == preset.wave)
                 }
             }
             .padding(.horizontal)

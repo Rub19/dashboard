@@ -53,7 +53,6 @@ struct WorkspacesView: View {
         .scrollContentBackground(.hidden)
         .overlay { if loading && profiles.isEmpty { ProgressView() } }
         .navigationTitle("Profils de travail")
-        .navigationBarTitleDisplayMode(.inline)
         .ethoneScreen()
         .refreshable { await load() }
         .task { await load() }

@@ -8,6 +8,7 @@ import {
 import { RoleItem } from '../types/index.js';
 import { logService } from '../../logs/services/logService.js';
 import { logger } from '../../../utils/logger.js';
+import { trg } from '../../../utils/tr.js';
 
 export class ServerRoleService {
   /**
@@ -57,7 +58,7 @@ export class ServerRoleService {
     }
   ): Promise<{ success: boolean; role?: RoleItem; error?: string }> {
     const guild = client.guilds.cache.get(guildId);
-    if (!guild) return { success: false, error: 'Serveur introuvable.' };
+    if (!guild) return { success: false, error: trg(guildId, 'Serveur introuvable.') };
 
     try {
       let permsBit = 0n;
@@ -124,14 +125,14 @@ export class ServerRoleService {
     }
   ): Promise<{ success: boolean; error?: string }> {
     const guild = client.guilds.cache.get(guildId);
-    if (!guild) return { success: false, error: 'Serveur introuvable.' };
+    if (!guild) return { success: false, error: trg(guildId, 'Serveur introuvable.') };
 
     const role = guild.roles.cache.get(roleId);
-    if (!role) return { success: false, error: 'Rôle introuvable.' };
+    if (!role) return { success: false, error: trg(guildId, 'Rôle introuvable.') };
 
     const botMember = guild.members.me;
     if (role.position >= (botMember?.roles.highest.position || 0) && guild.ownerId !== botMember?.id) {
-      return { success: false, error: 'Ce rôle est supérieur ou égal au rôle du bot dans la hiérarchie Discord.' };
+      return { success: false, error: trg(guildId, 'Ce rôle est supérieur ou égal au rôle du bot dans la hiérarchie Discord.') };
     }
 
     try {
@@ -171,14 +172,14 @@ export class ServerRoleService {
     reason: string = 'Supprimé via ETHONE Dashboard'
   ): Promise<{ success: boolean; error?: string }> {
     const guild = client.guilds.cache.get(guildId);
-    if (!guild) return { success: false, error: 'Serveur introuvable.' };
+    if (!guild) return { success: false, error: trg(guildId, 'Serveur introuvable.') };
 
     const role = guild.roles.cache.get(roleId);
-    if (!role) return { success: false, error: 'Rôle introuvable.' };
+    if (!role) return { success: false, error: trg(guildId, 'Rôle introuvable.') };
 
     const botMember = guild.members.me;
     if (role.position >= (botMember?.roles.highest.position || 0) && guild.ownerId !== botMember?.id) {
-      return { success: false, error: 'Impossible de supprimer un rôle supérieur ou égal au rôle du bot.' };
+      return { success: false, error: trg(guildId, 'Impossible de supprimer un rôle supérieur ou égal au rôle du bot.') };
     }
 
     try {

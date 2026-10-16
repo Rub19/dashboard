@@ -3,6 +3,7 @@ import { Command, CommandContext } from '../../../types/command.js';
 import { levelingStorage } from '../storage/levelingStorage.js';
 import { formatString, getTranslation } from '../../../utils/i18n.js';
 import { container, separator, text, footer, progressBar, toneToColor } from '../../../utils/components.js';
+import { trg } from '../../../utils/tr.js';
 
 export const leaderboardCommand: Command = {
   name: 'leaderboard',
@@ -27,7 +28,7 @@ export const leaderboardCommand: Command = {
     }
 
     if (!config.leaderboardOnDiscord) {
-      await ctx.reply({ embeds: [ctx.createEmbed('info').setDescription('Le classement est désactivé sur Discord sur ce serveur.')], ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('info').setDescription(trg(ctx, 'Le classement est désactivé sur Discord sur ce serveur.'))], ephemeral: true });
       return;
     }
 

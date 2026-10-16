@@ -6,6 +6,7 @@ import { levelingStorage } from '../../leveling/storage/levelingStorage.js';
 import { container, footer, progressBar, separator, text, toneToColor } from '../../../utils/components.js';
 import { noticeEmbed } from '../../../utils/embeds.js';
 import { displayCurrencySymbol } from '../currencyEmoji.js';
+import { trg } from '../../../utils/tr.js';
 
 // Boutons rapides sous les cartes /economy (Quotidien, Travailler, Classement,
 // Boutique, Rejouer) et le bouton "Classement" de /rank. Les réponses sont
@@ -28,7 +29,7 @@ const V2_EPHEMERAL = MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral;
 
 export async function handleEconomyButton(interaction: ButtonInteraction): Promise<void> {
   if (!interaction.guildId) {
-    await interaction.reply({ embeds: [noticeEmbed('error', 'Disponible uniquement sur un serveur.')], flags: MessageFlags.Ephemeral });
+    await interaction.reply({ embeds: [noticeEmbed('error', trg(interaction, 'Disponible uniquement sur un serveur.'))], flags: MessageFlags.Ephemeral });
     return;
   }
   const guildId = interaction.guildId;
@@ -39,7 +40,7 @@ export async function handleEconomyButton(interaction: ButtonInteraction): Promi
   const id = interaction.customId;
 
   if (!config.enabled) {
-    await interaction.reply({ embeds: [noticeEmbed('neutral', 'L’économie est désactivée sur ce serveur.')], flags: MessageFlags.Ephemeral });
+    await interaction.reply({ embeds: [noticeEmbed('neutral', trg(guildId, 'L’économie est désactivée sur ce serveur.'))], flags: MessageFlags.Ephemeral });
     return;
   }
 
@@ -76,7 +77,7 @@ export async function handleEconomyButton(interaction: ButtonInteraction): Promi
   if (id === 'eco_btn_leaderboard') {
     const entries = economyStorage.getLeaderboard(guildId, config.leaderboardSize);
     if (entries.length === 0) {
-      await interaction.reply({ embeds: [noticeEmbed('warning', 'Aucun membre n’a encore de solde.')], flags: MessageFlags.Ephemeral });
+      await interaction.reply({ embeds: [noticeEmbed('warning', trg(guildId, 'Aucun membre n’a encore de solde.'))], flags: MessageFlags.Ephemeral });
       return;
     }
     const medals = ['🥇', '🥈', '🥉'];
@@ -93,7 +94,7 @@ export async function handleEconomyButton(interaction: ButtonInteraction): Promi
   if (id === 'eco_btn_shop') {
     const items = economyStorage.getShopItems(guildId).filter((i) => i.enabled);
     if (items.length === 0) {
-      await interaction.reply({ embeds: [noticeEmbed('warning', 'La boutique est vide pour le moment.')], flags: MessageFlags.Ephemeral });
+      await interaction.reply({ embeds: [noticeEmbed('warning', trg(guildId, 'La boutique est vide pour le moment.'))], flags: MessageFlags.Ephemeral });
       return;
     }
     const wallet = economyStorage.getWallet(guildId, me.id, me);
@@ -126,18 +127,18 @@ export async function handleEconomyButton(interaction: ButtonInteraction): Promi
     return;
   }
 
-  await interaction.reply({ embeds: [noticeEmbed('error', 'Action inconnue.')], flags: MessageFlags.Ephemeral });
+  await interaction.reply({ embeds: [noticeEmbed('error', trg(guildId, 'Action inconnue.'))], flags: MessageFlags.Ephemeral });
 }
 
 /** Bouton "Classement" sous la carte /rank : classement XP du serveur. */
 export async function handleRankButton(interaction: ButtonInteraction): Promise<void> {
   if (!interaction.guildId || !interaction.guild) {
-    await interaction.reply({ embeds: [noticeEmbed('error', 'Disponible uniquement sur un serveur.')], flags: MessageFlags.Ephemeral });
+    await interaction.reply({ embeds: [noticeEmbed('error', trg(interaction, 'Disponible uniquement sur un serveur.'))], flags: MessageFlags.Ephemeral });
     return;
   }
   const top = levelingStorage.getLeaderboard(interaction.guildId, undefined, 10);
   if (top.length === 0) {
-    await interaction.reply({ embeds: [noticeEmbed('info', 'Personne n’a encore gagné d’XP ici.')], flags: MessageFlags.Ephemeral });
+    await interaction.reply({ embeds: [noticeEmbed('info', trg(interaction, 'Personne n’a encore gagné d’XP ici.'))], flags: MessageFlags.Ephemeral });
     return;
   }
   const medals = ['🥇', '🥈', '🥉'];

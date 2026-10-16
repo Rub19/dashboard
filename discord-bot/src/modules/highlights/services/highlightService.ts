@@ -3,6 +3,7 @@ import { baseEmbed } from '../../../utils/embeds.js';
 import { highlightStorage } from '../storage/highlightStorage.js';
 import { boldKeyword, matchesKeyword } from './matching.js';
 import { logger } from '../../../utils/logger.js';
+import { trg } from '../../../utils/tr.js';
 
 /** Anti-spam : un même (utilisateur, mot-clé) ne redéclenche pas un DM avant ce délai. */
 const COOLDOWN_MINUTES = 15;
@@ -68,13 +69,13 @@ class HighlightService {
 
     const embed = baseEmbed('default', { timestamp: message.createdAt })
       .setAuthor({ name: message.author.tag, iconURL: message.author.displayAvatarURL() })
-      .setTitle(`👁️ Mot-clé surveillé : "${keyword}"`)
+      .setTitle(trg(message, '👁️ Mot-clé surveillé : "{keyword}"', { keyword }))
       .setDescription(boldKeyword(preview, keyword))
       .addFields(
-        { name: 'Serveur', value: message.guild!.name, inline: true },
-        { name: 'Salon', value: `<#${message.channelId}>`, inline: true }
+        { name: trg(message, 'Serveur'), value: message.guild!.name, inline: true },
+        { name: trg(message, 'Salon'), value: `<#${message.channelId}>`, inline: true }
       )
-      .addFields({ name: 'Lien', value: `[Aller au message](${message.url})` });
+      .addFields({ name: trg(message, 'Lien'), value: trg(message, '[Aller au message]({url})', { url: message.url }) });
 
     // Fermé aux DM, permissions manquantes, utilisateur bloqué le bot… on échoue en silence.
     await user.send({ embeds: [embed] }).catch(() => {});

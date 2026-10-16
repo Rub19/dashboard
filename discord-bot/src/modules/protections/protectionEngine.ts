@@ -31,6 +31,7 @@ import { guildConfigService } from '../../services/guildConfigService.js';
 import { ownerImmunityService } from '../../services/ownerImmunityService.js';
 import { securityStorage } from '../security/storage/securityStorage.js';
 import { logger } from '../../utils/logger.js';
+import { trg } from '../../utils/tr.js';
 
 type Undo = () => Promise<unknown>;
 interface Hit {
@@ -321,11 +322,11 @@ class ProtectionEngine {
       .setTitle(def.label)
       .setDescription(`**${a.tag}** (<@${a.id}>) · ${a.detail}`)
       .addFields(
-        { name: 'Sanction', value: a.result, inline: true },
-        ...(a.repaired ? [{ name: 'Réparé', value: `${a.repaired} action${a.repaired > 1 ? 's' : ''} annulée${a.repaired > 1 ? 's' : ''}`, inline: true }] : []),
-        ...(a.locked ? [{ name: 'Serveur', value: 'Verrouillé (permissions retirées)', inline: true }] : [])
+        { name: trg(guild, 'Sanction'), value: a.result, inline: true },
+        ...(a.repaired ? [{ name: trg(guild, 'Réparé'), value: trg(guild, '{repaired} action{v1} annulée{v2}', { repaired: a.repaired, v1: a.repaired > 1 ? 's' : '', v2: a.repaired > 1 ? 's' : '' }), inline: true }] : []),
+        ...(a.locked ? [{ name: trg(guild, 'Serveur'), value: trg(guild, 'Verrouillé (permissions retirées)'), inline: true }] : [])
       )
-      .setFooter({ text: `ID ${a.id}` })
+      .setFooter({ text: trg(guild, 'ID {id}', { id: a.id }) })
       .setTimestamp();
     const ch = this.logChannel(guild, s);
     if (ch) {
@@ -671,7 +672,7 @@ class ProtectionEngine {
     if (!ch || !('createInvite' in ch)) return;
     const invite = await ch.createInvite({ maxAge: 86400, maxUses: 1, unique: true, reason: 'Etho · Anti-kick : invitation de retour' });
     const user = await guild.client.users.fetch(userId);
-    await user.send(`Tu as été expulsé de **${guild.name}** pendant une attaque. Voici ton invitation pour revenir : ${invite.url}`);
+    await user.send(trg(guild, 'Tu as été expulsé de **{name}** pendant une attaque. Voici ton invitation pour revenir : {url}', { name: guild.name, url: invite.url }));
   }
 
   private async recreateChannel(guild: Guild, channelId: string, entry: GuildAuditLogsEntry) {
@@ -775,7 +776,7 @@ class ProtectionEngine {
     });
     const s = protectionStore.get(guild.id, 'antiInviteDelete');
     const log = this.logChannel(guild, s);
-    await log?.send({ content: `Invitation recréée : ${invite.url}`, allowedMentions: { parse: [] } }).catch(() => {});
+    await log?.send({ content: trg(guild, 'Invitation recréée : {url}', { url: invite.url }), allowedMentions: { parse: [] } }).catch(() => {});
   }
 
   // --- Instantanés (avant suppression) -----------------------------------------------------------------------------
@@ -842,7 +843,7 @@ class ProtectionEngine {
         if (!fix.length) return;
         await guild.roles.setPositions(fix.map(([role, position]) => ({ role, position }))).catch((err) => logger.warn('[Protections] Réorganisation :', err?.message));
         const ch = this.logChannel(guild, s);
-        await ch?.send({ embeds: [new EmbedBuilder().setColor(0xf59e0b).setTitle('Anti-réorganisation de rôle').setDescription(`${fix.length} rôle${fix.length > 1 ? 's' : ''} remis à leur place.`).setTimestamp()] }).catch(() => {});
+        await ch?.send({ embeds: [new EmbedBuilder().setColor(0xf59e0b).setTitle(trg(guild, 'Anti-réorganisation de rôle')).setDescription(trg(guild, '{length} rôle{v1} remis à leur place.', { length: fix.length, v1: fix.length > 1 ? 's' : '' })).setTimestamp()] }).catch(() => {});
       }, 2000)
     );
   }
@@ -978,7 +979,7 @@ class ProtectionEngine {
               .setColor(0x6b7280)
               .setAuthor({ name: message.author.tag, iconURL: message.author.displayAvatarURL() })
               .setDescription((message.content || '').slice(0, 4000) || null)
-              .setFooter({ text: 'Message supprimé · remis par Etho' })
+              .setFooter({ text: trg(message, 'Message supprimé · remis par Etho') })
               .setTimestamp(message.createdAt),
           ],
           files,
@@ -1000,7 +1001,7 @@ class ProtectionEngine {
     const ch = this.logChannel(message.guild, s);
     if (ch) {
       await ch
-        .send({ embeds: [new EmbedBuilder().setColor(0xf59e0b).setAuthor({ name: 'Anti-suppression de réaction' }).setDescription(`<@${user.id}> a retiré ${emoji} sur [un message](${message.url}) dans <#${message.channelId}>.`).setTimestamp()], allowedMentions: { parse: [] } })
+        .send({ embeds: [new EmbedBuilder().setColor(0xf59e0b).setAuthor({ name: trg(message, 'Anti-suppression de réaction') }).setDescription(trg(message, '<@{id}> a retiré {emoji} sur [un message]({url}) dans <#{channelId}>.', { id: user.id, emoji, url: message.url, channelId: message.channelId })).setTimestamp()], allowedMentions: { parse: [] } })
         .catch(() => {});
     }
     await this.evaluate(message.guild, 'antiReactionRemove', user.id, { channelId: message.channelId, detail: `a retiré ${emoji} dans <#${message.channelId}>` });
@@ -1019,7 +1020,7 @@ class ProtectionEngine {
     if (await this.exemptAuthor(message.guild, 'antiGhostPing', s, message.author.id, message.member)) return;
     if (s.ghostNotify && message.channel.isSendable()) {
       await message.channel
-        .send({ embeds: [new EmbedBuilder().setColor(0xf59e0b).setDescription(`Ghost ping : <@${message.author.id}> a mentionné ${targets.join(', ')} puis a supprimé son message.`)], allowedMentions: { parse: [] } })
+        .send({ embeds: [new EmbedBuilder().setColor(0xf59e0b).setDescription(trg(message, 'Ghost ping : <@{id}> a mentionné {v1} puis a supprimé son message.', { id: message.author.id, v1: targets.join(', ') }))], allowedMentions: { parse: [] } })
         .catch(() => {});
     }
     await this.evaluate(message.guild, 'antiGhostPing', message.author.id, { channelId: message.channelId, member: message.member, detail: `ghost ping sur ${targets.join(', ')}` });

@@ -14,6 +14,7 @@ import {
   createSpotifyEmbed,
   formatMs,
 } from '../../modules/spotify/ui/spotifyEmbed.js';
+import { trg } from '../../utils/tr.js';
 
 export const spotifyCommand: Command = {
   name: 'spotify',
@@ -214,14 +215,14 @@ export const spotifyCommand: Command = {
           const embed = new EmbedBuilder()
             .setColor(SPOTIFY_GREEN)
             .setAuthor({
-              name: `${targetUser.username} sur Spotify`,
+              name: trg(ctx, '{username} sur Spotify', { username: targetUser.username }),
               iconURL: targetUser.displayAvatarURL(),
             })
-            .setTitle('Aucune écoute en cours')
+            .setTitle(trg(ctx, 'Aucune écoute en cours'))
             .setDescription(
               targetUser.id === ctx.author.id
-                ? 'Vous n\'écoutez actuellement aucun titre sur Spotify.\n\nLancez Spotify sur votre appareil ou associez votre compte via `/spotify login`.'
-                : `${targetUser.username} n'écoute actuellement aucun titre sur Spotify.`
+                ? trg(ctx, 'Vous n\'écoutez actuellement aucun titre sur Spotify.\n\nLancez Spotify sur votre appareil ou associez votre compte via `/spotify login`.')
+                : trg(ctx, '{username} n\'écoute actuellement aucun titre sur Spotify.', { username: targetUser.username })
             );
 
           if (targetUser.id === ctx.author.id && !spotifyService.isConnected(ctx.author.id)) {
@@ -229,7 +230,7 @@ export const spotifyCommand: Command = {
             const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
               new ButtonBuilder()
                 .setStyle(ButtonStyle.Link)
-                .setLabel('Connecter Spotify')
+                .setLabel(trg(ctx, 'Connecter Spotify'))
                 .setURL(loginUrl)
                 .setEmoji('🟢')
             );
@@ -271,8 +272,8 @@ export const spotifyCommand: Command = {
               .setColor(SPOTIFY_GREEN)
               .setDescription(
                 query
-                  ? `Lecture lancée pour **${query}** sur Spotify.`
-                  : 'Lecture reprise sur votre appareil Spotify actif.'
+                  ? trg(ctx, 'Lecture lancée pour **{query}** sur Spotify.', { query })
+                  : trg(ctx, 'Lecture reprise sur votre appareil Spotify actif.')
               ),
           ],
         });
@@ -293,7 +294,7 @@ export const spotifyCommand: Command = {
           embeds: [
             new EmbedBuilder()
               .setColor(SPOTIFY_GREEN)
-              .setDescription('Lecture Spotify mise en pause ⏸️'),
+              .setDescription(trg(ctx, 'Lecture Spotify mise en pause ⏸️')),
           ],
         });
         return;
@@ -313,7 +314,7 @@ export const spotifyCommand: Command = {
           embeds: [
             new EmbedBuilder()
               .setColor(SPOTIFY_GREEN)
-              .setDescription('Lecture Spotify reprise ▶️'),
+              .setDescription(trg(ctx, 'Lecture Spotify reprise ▶️')),
           ],
         });
         return;
@@ -333,7 +334,7 @@ export const spotifyCommand: Command = {
           embeds: [
             new EmbedBuilder()
               .setColor(SPOTIFY_GREEN)
-              .setDescription('Passage au titre suivant ⏭️'),
+              .setDescription(trg(ctx, 'Passage au titre suivant ⏭️')),
           ],
         });
         return;
@@ -353,7 +354,7 @@ export const spotifyCommand: Command = {
           embeds: [
             new EmbedBuilder()
               .setColor(SPOTIFY_GREEN)
-              .setDescription('Retour au titre précédent ⏮️'),
+              .setDescription(trg(ctx, 'Retour au titre précédent ⏮️')),
           ],
         });
         return;
@@ -366,7 +367,7 @@ export const spotifyCommand: Command = {
 
         if (isNaN(seconds) || seconds < 0) {
           await ctx.reply({
-            embeds: [ctx.createEmbed('error').setDescription('Veuillez indiquer un nombre de secondes valide.')],
+            embeds: [ctx.createEmbed('error').setDescription(trg(ctx, 'Veuillez indiquer un nombre de secondes valide.'))],
             ephemeral: true,
           });
           return;
@@ -385,7 +386,7 @@ export const spotifyCommand: Command = {
           embeds: [
             new EmbedBuilder()
               .setColor(SPOTIFY_GREEN)
-              .setDescription(`Position de lecture déplacée à **${formatMs(seconds * 1000)}** ⏱️`),
+              .setDescription(trg(ctx, 'Position de lecture déplacée à **{v0}** ⏱️', { v0: formatMs(seconds * 1000) })),
           ],
         });
         return;
@@ -398,7 +399,7 @@ export const spotifyCommand: Command = {
 
         if (isNaN(percent) || percent < 0 || percent > 100) {
           await ctx.reply({
-            embeds: [ctx.createEmbed('error').setDescription('Le volume doit être compris entre 0 et 100%.')],
+            embeds: [ctx.createEmbed('error').setDescription(trg(ctx, 'Le volume doit être compris entre 0 et 100%.'))],
             ephemeral: true,
           });
           return;
@@ -417,7 +418,7 @@ export const spotifyCommand: Command = {
           embeds: [
             new EmbedBuilder()
               .setColor(SPOTIFY_GREEN)
-              .setDescription(`Volume Spotify ajusté à **${percent}%** 🔊`),
+              .setDescription(trg(ctx, 'Volume Spotify ajusté à **{percent}%** 🔊', { percent })),
           ],
         });
         return;
@@ -432,7 +433,7 @@ export const spotifyCommand: Command = {
 
         if (!['off', 'track', 'context'].includes(mode)) {
           await ctx.reply({
-            embeds: [ctx.createEmbed('error').setDescription('Modes valides : `off`, `track`, `context`.')],
+            embeds: [ctx.createEmbed('error').setDescription(trg(ctx, 'Modes valides : `off`, `track`, `context`.'))],
             ephemeral: true,
           });
           return;
@@ -451,7 +452,7 @@ export const spotifyCommand: Command = {
           embeds: [
             new EmbedBuilder()
               .setColor(SPOTIFY_GREEN)
-              .setDescription(`Mode répétition réglé sur **${mode}** 🔁`),
+              .setDescription(trg(ctx, 'Mode répétition réglé sur **{mode}** 🔁', { mode })),
           ],
         });
         return;
@@ -476,7 +477,7 @@ export const spotifyCommand: Command = {
           embeds: [
             new EmbedBuilder()
               .setColor(SPOTIFY_GREEN)
-              .setDescription(`Lecture aléatoire **${enabled ? 'activée' : 'désactivée'}** 🔀`),
+              .setDescription(trg(ctx, 'Lecture aléatoire **{v0}** 🔀', { v0: enabled ? 'activée' : 'désactivée' })),
           ],
         });
         return;
@@ -501,7 +502,7 @@ export const spotifyCommand: Command = {
             embeds: [
               new EmbedBuilder()
                 .setColor(SPOTIFY_GREEN)
-                .setDescription(`Titre ajouté à votre file d'attente Spotify : **${res.trackName}** 🎵`),
+                .setDescription(trg(ctx, 'Titre ajouté à votre file d\'attente Spotify : **{trackName}** 🎵', { trackName: res.trackName })),
             ],
           });
           return;
@@ -510,7 +511,7 @@ export const spotifyCommand: Command = {
         const queueData = await spotifyService.getQueue(ctx.author.id);
         if (!queueData) {
           await ctx.reply({
-            embeds: [ctx.createEmbed('error').setDescription('Impossible de récupérer votre file d\'attente Spotify.')],
+            embeds: [ctx.createEmbed('error').setDescription(trg(ctx, 'Impossible de récupérer votre file d\'attente Spotify.'))],
             ephemeral: true,
           });
           return;
@@ -518,12 +519,12 @@ export const spotifyCommand: Command = {
 
         const embed = new EmbedBuilder()
           .setColor(SPOTIFY_GREEN)
-          .setTitle('File d\'attente Spotify')
-          .setFooter({ text: 'Spotify Connect • ETHONE' });
+          .setTitle(trg(ctx, 'File d\'attente Spotify'))
+          .setFooter({ text: trg(ctx, 'Spotify Connect • ETHONE') });
 
         if (queueData.current) {
           embed.addFields({
-            name: '▶️ En cours de lecture',
+            name: trg(ctx, '▶️ En cours de lecture'),
             value: `**${queueData.current.name}** — ${queueData.current.artists.join(', ')} (${formatMs(queueData.current.durationMs)})`,
           });
         }
@@ -533,13 +534,13 @@ export const spotifyCommand: Command = {
             (t, i) => `\`${i + 1}.\` **[${t.name}](${t.url})** — ${t.artists.join(', ')} (${formatMs(t.durationMs)})`
           );
           embed.addFields({
-            name: `À suivre (${queueData.queue.length})`,
+            name: trg(ctx, 'À suivre ({length})', { length: queueData.queue.length }),
             value: queueLines.join('\n'),
           });
         } else {
           embed.addFields({
-            name: 'À suivre',
-            value: 'La file d\'attente est vide.',
+            name: trg(ctx, 'À suivre'),
+            value: trg(ctx, 'La file d\'attente est vide.'),
           });
         }
 
@@ -561,7 +562,7 @@ export const spotifyCommand: Command = {
           embeds: [
             new EmbedBuilder()
               .setColor(SPOTIFY_GREEN)
-              .setDescription(`💚 **${res.trackTitle || 'Titre'}** ajouté à vos titres likés !`),
+              .setDescription(trg(ctx, '💚 **{v0}** ajouté à vos titres likés !', { v0: res.trackTitle || 'Titre' })),
           ],
         });
         return;
@@ -581,7 +582,7 @@ export const spotifyCommand: Command = {
           embeds: [
             new EmbedBuilder()
               .setColor(SPOTIFY_GREEN)
-              .setDescription(`💔 **${res.trackTitle || 'Titre'}** retiré de vos titres likés.`),
+              .setDescription(trg(ctx, '💔 **{v0}** retiré de vos titres likés.', { v0: res.trackTitle || 'Titre' })),
           ],
         });
         return;
@@ -594,8 +595,8 @@ export const spotifyCommand: Command = {
             embeds: [
               new EmbedBuilder()
                 .setColor(SPOTIFY_GREEN)
-                .setTitle('Appareils Spotify')
-                .setDescription('Aucun appareil Spotify actif détecté. Lancez l\'application Spotify sur votre téléphone ou PC.'),
+                .setTitle(trg(ctx, 'Appareils Spotify'))
+                .setDescription(trg(ctx, 'Aucun appareil Spotify actif détecté. Lancez l\'application Spotify sur votre téléphone ou PC.')),
             ],
             ephemeral: true,
           });
@@ -610,9 +611,9 @@ export const spotifyCommand: Command = {
 
         const embed = new EmbedBuilder()
           .setColor(SPOTIFY_GREEN)
-          .setTitle('Vos appareils Spotify connectés')
+          .setTitle(trg(ctx, 'Vos appareils Spotify connectés'))
           .setDescription(lines.join('\n\n'))
-          .setFooter({ text: 'Utilisez /spotify device <nom/id> pour changer d\'appareil' });
+          .setFooter({ text: trg(ctx, 'Utilisez /spotify device <nom/id> pour changer d\'appareil') });
 
         await ctx.reply({ embeds: [embed] });
         return;
@@ -625,7 +626,7 @@ export const spotifyCommand: Command = {
 
         if (!target) {
           await ctx.reply({
-            embeds: [ctx.createEmbed('error').setDescription('Veuillez préciser le nom ou l\'ID de l\'appareil cible.')],
+            embeds: [ctx.createEmbed('error').setDescription(trg(ctx, 'Veuillez préciser le nom ou l\'ID de l\'appareil cible.'))],
             ephemeral: true,
           });
           return;
@@ -642,7 +643,7 @@ export const spotifyCommand: Command = {
           await ctx.reply({
             embeds: [
               ctx.createEmbed('error').setDescription(
-                `Appareil introuvable. Tapez \`/spotify devices\` pour voir vos appareils disponibles.`
+                trg(ctx, 'Appareil introuvable. Tapez `/spotify devices` pour voir vos appareils disponibles.')
               ),
             ],
             ephemeral: true,
@@ -663,7 +664,7 @@ export const spotifyCommand: Command = {
           embeds: [
             new EmbedBuilder()
               .setColor(SPOTIFY_GREEN)
-              .setDescription(`Lecture Spotify transférée sur **${match.name}** (${match.type}) 🎧`),
+              .setDescription(trg(ctx, 'Lecture Spotify transférée sur **{name}** ({type}) 🎧', { name: match.name, type: match.type })),
           ],
         });
         return;
@@ -681,7 +682,7 @@ export const spotifyCommand: Command = {
           await ctx.reply({
             embeds: [
               ctx.createEmbed('error').setDescription(
-                'Impossible de récupérer vos tops titres. Vérifiez votre connexion Spotify via `/spotify login`.'
+                trg(ctx, 'Impossible de récupérer vos tops titres. Vérifiez votre connexion Spotify via `/spotify login`.')
               ),
             ],
             ephemeral: true,
@@ -703,13 +704,13 @@ export const spotifyCommand: Command = {
         const embed = new EmbedBuilder()
           .setColor(SPOTIFY_GREEN)
           .setAuthor({
-            name: `${ctx.author.username} — Top Titres Spotify`,
+            name: trg(ctx, '{username} — Top Titres Spotify', { username: ctx.author.username }),
             iconURL: ctx.author.displayAvatarURL(),
           })
-          .setTitle(`Vos titres les plus écoutés (${periodLabel})`)
+          .setTitle(trg(ctx, 'Vos titres les plus écoutés ({periodLabel})', { periodLabel }))
           .setDescription(lines.join('\n'))
           .setThumbnail(tracks[0]?.albumArt || null)
-          .setFooter({ text: 'Spotify Statistics • ETHONE' });
+          .setFooter({ text: trg(ctx, 'Spotify Statistics • ETHONE') });
 
         await ctx.reply({ embeds: [embed] });
         return;
@@ -727,7 +728,7 @@ export const spotifyCommand: Command = {
           await ctx.reply({
             embeds: [
               ctx.createEmbed('error').setDescription(
-                'Impossible de récupérer vos tops artistes. Vérifiez votre connexion Spotify via `/spotify login`.'
+                trg(ctx, 'Impossible de récupérer vos tops artistes. Vérifiez votre connexion Spotify via `/spotify login`.')
               ),
             ],
             ephemeral: true,
@@ -750,13 +751,13 @@ export const spotifyCommand: Command = {
         const embed = new EmbedBuilder()
           .setColor(SPOTIFY_GREEN)
           .setAuthor({
-            name: `${ctx.author.username} — Top Artistes Spotify`,
+            name: trg(ctx, '{username} — Top Artistes Spotify', { username: ctx.author.username }),
             iconURL: ctx.author.displayAvatarURL(),
           })
-          .setTitle(`Vos artistes les plus écoutés (${periodLabel})`)
+          .setTitle(trg(ctx, 'Vos artistes les plus écoutés ({periodLabel})', { periodLabel }))
           .setDescription(lines.join('\n'))
           .setThumbnail(artists[0]?.image || null)
-          .setFooter({ text: 'Spotify Statistics • ETHONE' });
+          .setFooter({ text: trg(ctx, 'Spotify Statistics • ETHONE') });
 
         await ctx.reply({ embeds: [embed] });
         return;
@@ -765,7 +766,7 @@ export const spotifyCommand: Command = {
       case 'vc': {
         if (!ctx.guild || !ctx.member) {
           await ctx.reply({
-            embeds: [ctx.createEmbed('error').setDescription('Cette commande ne peut être exécutée que dans un serveur Discord.')],
+            embeds: [ctx.createEmbed('error').setDescription(trg(ctx, 'Cette commande ne peut être exécutée que dans un serveur Discord.'))],
             ephemeral: true,
           });
           return;
@@ -784,11 +785,11 @@ export const spotifyCommand: Command = {
           embeds: [
             new EmbedBuilder()
               .setColor(SPOTIFY_GREEN)
-              .setTitle('Diffusion Spotify vers le salon vocal')
+              .setTitle(trg(ctx, 'Diffusion Spotify vers le salon vocal'))
               .setDescription(
-                `🎶 **${res.trackTitle}** est diffusé en direct dans le salon **${res.channelName}** !`
+                trg(ctx, '🎶 **{trackTitle}** est diffusé en direct dans le salon **{channelName}** !', { trackTitle: res.trackTitle, channelName: res.channelName })
               )
-              .setFooter({ text: 'Audio Bridge • ETHONE Music Engine' }),
+              .setFooter({ text: trg(ctx, 'Audio Bridge • ETHONE Music Engine') }),
           ],
         });
         return;
@@ -798,7 +799,7 @@ export const spotifyCommand: Command = {
         const loginUrl = spotifyService.getLoginUrl(ctx.author.id);
         const embed = new EmbedBuilder()
           .setColor(SPOTIFY_GREEN)
-          .setTitle('Associer votre compte Spotify')
+          .setTitle(trg(ctx, 'Associer votre compte Spotify'))
           .setDescription(
             'Cliquez sur le bouton ci-dessous pour connecter votre compte Spotify.\n\n' +
               'Cela vous permettra de contrôler votre lecteur, liker des titres et diffuser votre musique directement depuis Discord avec Etho !'
@@ -807,7 +808,7 @@ export const spotifyCommand: Command = {
         const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
           new ButtonBuilder()
             .setStyle(ButtonStyle.Link)
-            .setLabel('Se connecter à Spotify')
+            .setLabel(trg(ctx, 'Se connecter à Spotify'))
             .setURL(loginUrl)
             .setEmoji('🟢')
         );
@@ -824,8 +825,8 @@ export const spotifyCommand: Command = {
               .setColor(SPOTIFY_GREEN)
               .setDescription(
                 removed
-                  ? 'Votre compte Spotify a été dissocié avec succès.'
-                  : 'Aucun compte Spotify n\'était associé à votre profil.'
+                  ? trg(ctx, 'Votre compte Spotify a été dissocié avec succès.')
+                  : trg(ctx, 'Aucun compte Spotify n\'était associé à votre profil.')
               ),
           ],
           ephemeral: true,
@@ -835,7 +836,7 @@ export const spotifyCommand: Command = {
 
       default:
         await ctx.reply({
-          embeds: [ctx.createEmbed('error').setDescription('Sous-commande inconnue. Tapez `/spotify` pour voir la liste.')],
+          embeds: [ctx.createEmbed('error').setDescription(trg(ctx, 'Sous-commande inconnue. Tapez `/spotify` pour voir la liste.'))],
           ephemeral: true,
         });
     }

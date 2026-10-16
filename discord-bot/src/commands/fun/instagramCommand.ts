@@ -2,6 +2,7 @@ import { SlashCommandBuilder } from "discord.js";
 import { Command, CommandContext } from "../../types/command.js";
 import { instagramService } from "../../modules/fun/services/instagramService.js";
 import { buildInstagramPostEmbed, buildInstagramUserEmbed } from "../../modules/fun/ui/instagramEmbeds.js";
+import { trg } from '../../utils/tr.js';
 
 export const instagramCommand: Command = {
   name: "instagram",
@@ -45,7 +46,7 @@ export const instagramCommand: Command = {
     const firstArg = ctx.args[0];
     if (!firstArg) {
       await ctx.reply({
-        content: "❌ Utilisation : `!instagram user <pseudo>` ou `!instagram post <url>`",
+        content: trg(ctx, '❌ Utilisation : `!instagram user <pseudo>` ou `!instagram post <url>`'),
       });
       return;
     }
@@ -54,7 +55,7 @@ export const instagramCommand: Command = {
     if (sub === "post" || firstArg.includes("instagram.com/p/") || firstArg.includes("instagram.com/reel/")) {
       const postArg = sub === "post" ? ctx.args.slice(1).join(" ") : firstArg;
       if (!postArg) {
-        await ctx.reply({ content: "❌ Veuillez préciser une URL de publication Instagram." });
+        await ctx.reply({ content: trg(ctx, '❌ Veuillez préciser une URL de publication Instagram.') });
         return;
       }
       const post = instagramService.getPostInfo(postArg);
@@ -65,7 +66,7 @@ export const instagramCommand: Command = {
 
     const username = sub === "user" ? ctx.args.slice(1).join(" ") : firstArg;
     if (!username) {
-      await ctx.reply({ content: "❌ Veuillez préciser un pseudo Instagram." });
+      await ctx.reply({ content: trg(ctx, '❌ Veuillez préciser un pseudo Instagram.') });
       return;
     }
     const user = instagramService.getUserInfo(username);

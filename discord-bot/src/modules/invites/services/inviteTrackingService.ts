@@ -7,6 +7,7 @@ import { inviteRepository } from '../storage/inviteRepository.js';
 import { Referral } from '../types/index.js';
 import { logService } from '../../logs/services/logService.js';
 import { logger } from '../../../utils/logger.js';
+import { trg } from '../../../utils/tr.js';
 
 export class InviteTrackingService {
   public async handleMemberJoin(member: GuildMember): Promise<void> {
@@ -97,13 +98,13 @@ export class InviteTrackingService {
             await channel.send({ embeds: [noticeEmbed('success', msg, { title: 'Nouveau membre', icon: 'welcome' })] }).catch(() => null);
           } else if (risk.suspicious && settings.notificationEvents.onSuspiciousJoin) {
             const warnEmbed = baseEmbed('error')
-              .setTitle('⚠️ Invitation Suspecte Interceptée')
+              .setTitle(trg(member, '⚠️ Invitation Suspecte Interceptée'))
               .setDescription(
-                `**${member.user.tag}** a rejoint avec le code \`\`${inviteCode}\`\` (Inviteur: <@${inviterId}>).`
+                trg(member, '**{tag}** a rejoint avec le code ``{inviteCode}`` (Inviteur: <@{inviterId}>).', { tag: member.user.tag, inviteCode, inviterId })
               )
               .addFields([
-                { name: 'Risk Score', value: `**${risk.riskScore} / 100** (${risk.riskLevel})`, inline: true },
-                { name: 'Motif', value: risk.reason || 'Comportement suspect', inline: true },
+                { name: trg(member, 'Risk Score'), value: `**${risk.riskScore} / 100** (${risk.riskLevel})`, inline: true },
+                { name: trg(member, 'Motif'), value: risk.reason || 'Comportement suspect', inline: true },
               ]);
 
             await channel.send({ embeds: [warnEmbed] }).catch(() => null);

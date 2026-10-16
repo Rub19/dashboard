@@ -23,6 +23,7 @@ import { logger } from '../utils/logger.js';
 import { brandIcon } from '../utils/embeds.js';
 import { container, separator, text } from '../utils/components.js';
 import { icon } from '../utils/v2.js';
+import { trg } from '../utils/tr.js';
 
 const SUPPORT_URL = 'https://discord.gg/WvEcyBuP45';
 
@@ -66,20 +67,20 @@ export const guildJoinService = {
       new StringSelectMenuBuilder()
         .setCustomId(`guild_join:language:${guild.id}`)
         .addOptions([
-          { label: 'Français', value: 'fr', emoji: '🇫🇷', default: currentLang === 'fr' },
-          { label: 'English', value: 'en', emoji: '🇬🇧', default: currentLang === 'en' },
-          { label: 'Español', value: 'es', emoji: '🇪🇸', default: currentLang === 'es' },
-          { label: 'Deutsch', value: 'de', emoji: '🇩🇪', default: currentLang === 'de' },
+          { label: trg(guild, 'Français'), value: 'fr', emoji: '🇫🇷', default: currentLang === 'fr' },
+          { label: trg(guild, 'English'), value: 'en', emoji: '🇬🇧', default: currentLang === 'en' },
+          { label: trg(guild, 'Español'), value: 'es', emoji: '🇪🇸', default: currentLang === 'es' },
+          { label: trg(guild, 'Deutsch'), value: 'de', emoji: '🇩🇪', default: currentLang === 'de' },
         ])
     );
     const linksRow = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
       new ButtonBuilder()
-        .setLabel('Dashboard du serveur')
+        .setLabel(trg(guild, 'Dashboard du serveur'))
         .setStyle(ButtonStyle.Link)
         .setURL('https:' + '/' + `/ethone.dev/discord/?guildId=${guild.id}`)
         .setEmoji('📊'),
       new ButtonBuilder()
-        .setLabel('Serveur support')
+        .setLabel(trg(guild, 'Serveur support'))
         .setStyle(ButtonStyle.Link)
         .setURL(SUPPORT_URL)
         .setEmoji('🛟')
@@ -240,7 +241,7 @@ export const guildJoinService = {
     const member = interaction.member as GuildMember | null;
     if (!member || !member.permissions.has(PermissionFlagsBits.ManageGuild)) {
       await interaction.reply({
-        content: '❌ Seuls les membres ayant la permission **Gérer le serveur** peuvent modifier ces réglages.',
+        content: trg(interaction, '❌ Seuls les membres ayant la permission **Gérer le serveur** peuvent modifier ces réglages.'),
         ephemeral: true,
       });
       return;
@@ -261,10 +262,10 @@ export const guildJoinService = {
 
       const embed = new EmbedBuilder()
         .setColor(0x10b981)
-        .setTitle('✅ Salon système configuré')
-        .setDescription(`Le salon <#${channelId}> a été défini comme salon système pour les alertes et notifications.`)
+        .setTitle(trg(interaction, '✅ Salon système configuré'))
+        .setDescription(trg(interaction, 'Le salon <#{channelId}> a été défini comme salon système pour les alertes et notifications.', { channelId }))
         .setFooter({
-          text: 'ETHONE',
+          text: trg(interaction, 'ETHONE'),
           iconURL:
             interaction.client?.user?.displayAvatarURL?.({ extension: 'png', size: 128 }) || brandIcon('ethone'),
         });
@@ -288,10 +289,10 @@ export const guildJoinService = {
 
       const embed = new EmbedBuilder()
         .setColor(0x10b981)
-        .setTitle('⚙️ Langue mise à jour')
+        .setTitle(trg(interaction, '⚙️ Langue mise à jour'))
         .setDescription(confirmationTexts[lang] || confirmationTexts.fr)
         .setFooter({
-          text: 'ETHONE',
+          text: trg(interaction, 'ETHONE'),
           iconURL:
             interaction.client?.user?.displayAvatarURL?.({ extension: 'png', size: 128 }) || brandIcon('ethone'),
         });
@@ -307,7 +308,7 @@ export const guildJoinService = {
     const member = interaction.member as GuildMember | null;
     if (!member || !member.permissions.has(PermissionFlagsBits.ManageGuild)) {
       await interaction.reply({
-        content: '❌ Seuls les membres ayant la permission **Gérer le serveur** peuvent effectuer cette action.',
+        content: trg(interaction, '❌ Seuls les membres ayant la permission **Gérer le serveur** peuvent effectuer cette action.'),
         ephemeral: true,
       });
       return;
@@ -326,7 +327,7 @@ export const guildJoinService = {
       const me = guild.members.me;
       if (!me || !me.permissions.has(PermissionFlagsBits.ManageChannels)) {
         await interaction.reply({
-          content: '❌ Le bot a besoin de la permission **Gérer les salons** pour créer automatiquement le salon système.',
+          content: trg(interaction, '❌ Le bot a besoin de la permission **Gérer les salons** pour créer automatiquement le salon système.'),
           ephemeral: true,
         });
         return;
@@ -374,10 +375,10 @@ export const guildJoinService = {
 
       const embed = new EmbedBuilder()
         .setColor(0x10b981)
-        .setTitle('⚡ Salon système créé')
-        .setDescription(`Le salon ${targetChannel} a été créé et défini comme salon système pour ETHONE.`)
+        .setTitle(trg(interaction, '⚡ Salon système créé'))
+        .setDescription(trg(interaction, 'Le salon {targetChannel} a été créé et défini comme salon système pour ETHONE.', { targetChannel }))
         .setFooter({
-          text: 'ETHONE',
+          text: trg(interaction, 'ETHONE'),
           iconURL:
             interaction.client?.user?.displayAvatarURL?.({ extension: 'png', size: 128 }) || brandIcon('ethone'),
         });

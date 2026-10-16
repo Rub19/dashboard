@@ -12,6 +12,7 @@ import {
 import { ForumPostItem, ChannelItem, CategoryTreeItem, ChannelTreeData, ChannelPermissionOverride } from '../types/index.js';
 import { logService } from '../../logs/services/logService.js';
 import { logger } from '../../../utils/logger.js';
+import { trg } from '../../../utils/tr.js';
 
 export class ServerChannelService {
   /**
@@ -134,7 +135,7 @@ export class ServerChannelService {
     }
   ): Promise<{ success: boolean; channel?: ChannelItem; error?: string }> {
     const guild = client.guilds.cache.get(guildId);
-    if (!guild) return { success: false, error: 'Serveur introuvable.' };
+    if (!guild) return { success: false, error: trg(guildId, 'Serveur introuvable.') };
 
     try {
       const overwrites: any[] = [];
@@ -200,10 +201,10 @@ export class ServerChannelService {
     }>
   ): Promise<{ success: boolean; channel?: ChannelItem; error?: string }> {
     const guild = client.guilds.cache.get(guildId);
-    if (!guild) return { success: false, error: 'Serveur introuvable.' };
+    if (!guild) return { success: false, error: trg(guildId, 'Serveur introuvable.') };
 
     const ch = guild.channels.cache.get(channelId);
-    if (!ch) return { success: false, error: 'Salon introuvable.' };
+    if (!ch) return { success: false, error: trg(guildId, 'Salon introuvable.') };
 
     try {
       const updated = await (ch as any).edit({
@@ -233,10 +234,10 @@ export class ServerChannelService {
     reason: string = 'Supprimé via ETHONE Dashboard'
   ): Promise<{ success: boolean; error?: string }> {
     const guild = client.guilds.cache.get(guildId);
-    if (!guild) return { success: false, error: 'Serveur introuvable.' };
+    if (!guild) return { success: false, error: trg(guildId, 'Serveur introuvable.') };
 
     const ch = guild.channels.cache.get(channelId);
-    if (!ch) return { success: false, error: 'Salon introuvable.' };
+    if (!ch) return { success: false, error: trg(guildId, 'Salon introuvable.') };
 
     try {
       const channelName = ch.name;
@@ -310,10 +311,10 @@ export class ServerChannelService {
     deny: string[]
   ): Promise<{ success: boolean; error?: string }> {
     const guild = client.guilds.cache.get(guildId);
-    if (!guild) return { success: false, error: 'Serveur introuvable.' };
+    if (!guild) return { success: false, error: trg(guildId, 'Serveur introuvable.') };
 
     const ch = guild.channels.cache.get(channelId);
-    if (!ch || !('permissionOverwrites' in ch)) return { success: false, error: 'Salon non configurable.' };
+    if (!ch || !('permissionOverwrites' in ch)) return { success: false, error: trg(guildId, 'Salon non configurable.') };
 
     try {
       const allowBits = allow.reduce((acc, p) => (PermissionFlagsBits as any)[p] ? acc | (PermissionFlagsBits as any)[p] : acc, 0n);

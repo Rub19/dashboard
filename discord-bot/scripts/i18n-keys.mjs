@@ -1,45 +1,38 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import ts from 'typescript';
 
 const root = path.resolve(import.meta.dirname, '../src');
-const files = [];
-const walk = (d) => {
-  for (const f of fs.readdirSync(d, { withFileTypes: true })) {
-    const p = path.join(d, f.name);
-    if (f.isDirectory()) walk(p);
-    else if (p.endsWith('.ts')) files.push(p);
-  }
-};
-walk(root);
-
-const LITERAL = /'((?:[^'\\]|\\.)*)'|"((?:[^"\\]|\\.)*)"|`((?:[^`\\$]|\\.)*)`/g;
 const keys = new Set();
 
-for (const file of files) {
+const literals = (node, out) => {
+  if (!node) return;
+  if (ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node)) out.push(node.text);
+  else if (ts.isConditionalExpression(node)) {
+    literals(node.whenTrue, out);
+    literals(node.whenFalse, out);
+  } else if (ts.isParenthesizedExpression(node)) literals(node.expression, out);
+};
+
+for (const rel of fs.readdirSync(root, { recursive: true })) {
+  if (!rel.endsWith('.ts')) continue;
+  const file = path.join(root, rel);
   const src = fs.readFileSync(file, 'utf8');
-  if (!/from '[./]*utils\/tr\.js'/.test(src)) continue;
-  for (const m of src.matchAll(/\b(?:t|tr|trg)\(/g)) {
-    let depth = 1;
-    let i = m.index + m[0].length;
-    while (i < src.length && depth > 0) {
-      const ch = src[i];
-      if (ch === "'" || ch === '"' || ch === '`') {
-        const end = src.indexOf(ch, i + 1);
-        i = end < 0 ? src.length : end + 1;
-        continue;
+  if (!/utils\/tr\.js'|from '\.\/tr\.js'/.test(src) && !rel.endsWith(path.join('utils', 'tr.ts'))) continue;
+  const sf = ts.createSourceFile(file, src, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+  const visit = (n) => {
+    if (ts.isCallExpression(n) && ts.isIdentifier(n.expression)) {
+      const name = n.expression.text;
+      const idx = name === 't' ? 0 : name === 'tr' || name === 'trg' ? 1 : -1;
+      if (idx >= 0) {
+        const out = [];
+        literals(n.arguments[idx], out);
+        for (const s of out) if (/[A-Za-zÀ-ÿ]{2}/.test(s)) keys.add(s);
       }
-      if (ch === '(') depth++;
-      if (ch === ')') depth--;
-      i++;
     }
-    const args = src.slice(m.index + m[0].length, i - 1);
-    const firstObj = args.indexOf('{ ');
-    const head = firstObj > 0 ? args.slice(0, firstObj) : args;
-    for (const l of head.matchAll(LITERAL)) {
-      const s = (l[1] ?? l[2] ?? l[3]).replace(/\\'/g, "'").replace(/\\"/g, '"').replace(/\\n/g, '\n');
-      if (/[A-Za-zÀ-ÿ]{2}/.test(s)) keys.add(s);
-    }
-  }
+    ts.forEachChild(n, visit);
+  };
+  visit(sf);
 }
 
 const maps = [
@@ -59,6 +52,5 @@ const out = process.argv[2];
 const sorted = [...keys].sort();
 if (out) {
   const existing = fs.existsSync(out) ? JSON.parse(fs.readFileSync(out, 'utf8')) : {};
-  const missing = sorted.filter((k) => !(k in existing));
-  console.log(JSON.stringify(missing, null, 1));
+  console.log(JSON.stringify(sorted.filter((k) => !(k in existing)), null, 1));
 } else console.log(JSON.stringify(sorted, null, 1));

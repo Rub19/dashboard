@@ -12,6 +12,7 @@ import { logService } from '../../logs/services/logService.js';
 import { logger } from '../../../utils/logger.js';
 import { baseEmbed } from '../../../utils/embeds.js';
 import { OnboardingRunner } from './onboardingRunner.js';
+import { trg } from '../../../utils/tr.js';
 
 export class OnboardingService {
   public static async startOnboarding(member: GuildMember): Promise<void> {
@@ -114,7 +115,7 @@ export class OnboardingService {
         await member.send({
           embeds: [
             baseEmbed('success', { footerText: member.guild.name })
-              .setTitle('🎉 Onboarding terminé avec succès !')
+              .setTitle(trg(member, '🎉 Onboarding terminé avec succès !'))
               .setDescription(rendered),
           ],
         });

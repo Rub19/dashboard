@@ -2,6 +2,7 @@ import { PermissionFlagsBits, SlashCommandBuilder, MessageFlags } from 'discord.
 import { Command, CommandContext } from '../../../types/command.js';
 import { statrolesStorage } from '../storage/statrolesStorage.js';
 import { statrolesEngine } from '../services/statrolesEngine.js';
+import { trg } from '../../../utils/tr.js';
 
 /**
  * /statroles — list (règles du serveur), check (pourquoi un membre a ou non le rôle), run (applique maintenant, Gérer le
@@ -21,7 +22,7 @@ export const statrolesCommand: Command = {
 
   async execute(ctx: CommandContext): Promise<void> {
     if (!ctx.guild || !ctx.isSlash || !ctx.interaction) {
-      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('❌ Utilise la commande slash **/statroles** sur un serveur.')], ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(trg(ctx, '❌ Utilise la commande slash **/statroles** sur un serveur.'))], ephemeral: true });
       return;
     }
     const i = ctx.interaction;
@@ -31,14 +32,14 @@ export const statrolesCommand: Command = {
 
     if (sub === 'list') {
       if (conf.rules.length === 0) {
-        await ctx.reply({ embeds: [ctx.createEmbed('info').setDescription('Aucune règle. Créez-les depuis le dashboard : **Statroles**.')], ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('info').setDescription(trg(ctx, 'Aucune règle. Créez-les depuis le dashboard : **Statroles**.'))], ephemeral: true });
         return;
       }
       const embed = ctx
         .createEmbed('info')
-        .setTitle(`🏅 Statroles (${conf.rules.length})`)
-        .setDescription(conf.enabled ? 'Module actif : les règles sont appliquées toutes les 10 minutes.' : 'Module **désactivé** : rien n’est attribué (`/module nom:statroles activer:True`).');
-      for (const r of conf.rules.slice(0, 10)) embed.addFields({ name: `${r.enabled ? '🟢' : '⚪'} ${r.name}`, value: `Rôle <@&${r.roleId}> · ${r.removeWhenNotMatching ? 'retiré si les conditions ne sont plus remplies' : 'conservé une fois obtenu'}` });
+        .setTitle(trg(ctx, '🏅 Statroles ({length})', { length: conf.rules.length }))
+        .setDescription(conf.enabled ? trg(ctx, 'Module actif : les règles sont appliquées toutes les 10 minutes.') : trg(ctx, 'Module **désactivé** : rien n’est attribué (`/module nom:statroles activer:True`).'));
+      for (const r of conf.rules.slice(0, 10)) embed.addFields({ name: `${r.enabled ? '🟢' : '⚪'} ${r.name}`, value: trg(ctx, 'Rôle <@&{roleId}> · {v1}', { roleId: r.roleId, v1: r.removeWhenNotMatching ? 'retiré si les conditions ne sont plus remplies' : 'conservé une fois obtenu' }) });
       await ctx.reply({ embeds: [embed] });
       return;
     }
@@ -47,7 +48,7 @@ export const statrolesCommand: Command = {
       const user = i.options.getUser('membre') ?? i.user;
       const member = await guild.members.fetch(user.id).catch(() => null);
       if (!member) {
-        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('❌ Membre introuvable sur ce serveur.')], ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(trg(ctx, '❌ Membre introuvable sur ce serveur.'))], ephemeral: true });
         return;
       }
       const results = statrolesEngine.check(guild, member);
@@ -59,11 +60,11 @@ export const statrolesCommand: Command = {
     }
 
     if (!ctx.member?.permissions.has(PermissionFlagsBits.ManageGuild)) {
-      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('⛔ Réservé aux membres qui ont la permission **Gérer le serveur**.')], ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(trg(ctx, '⛔ Réservé aux membres qui ont la permission **Gérer le serveur**.'))], ephemeral: true });
       return;
     }
     if (!conf.enabled) {
-      await ctx.reply({ embeds: [ctx.createEmbed('warning').setDescription('Le module est désactivé : `/module nom:statroles activer:True`.')], ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('warning').setDescription(trg(ctx, 'Le module est désactivé : `/module nom:statroles activer:True`.'))], ephemeral: true });
       return;
     }
     await i.deferReply({ flags: MessageFlags.Ephemeral });
@@ -72,7 +73,7 @@ export const statrolesCommand: Command = {
       embeds: [
         ctx
           .createEmbed(s.errors ? 'warning' : 'success')
-          .setTitle('🏅 Statroles appliqués')
+          .setTitle(trg(ctx, '🏅 Statroles appliqués'))
           .setDescription(`➕ ${s.added} · ➖ ${s.removed}${s.errors ? ` · ⚠️ ${s.errors} erreur(s)` : ''}${s.skipped ? ` · ⏭️ ${s.skipped} reporté(s) au prochain passage` : ''}${s.issues.length ? `\n\n${s.issues.map((x) => `⚠️ ${x}`).join('\n')}` : ''}`),
       ],
     });

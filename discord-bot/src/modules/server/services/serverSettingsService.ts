@@ -2,6 +2,7 @@ import { Client, Guild } from 'discord.js';
 import { ServerSettingsData } from '../types/index.js';
 import { logService } from '../../logs/services/logService.js';
 import { logger } from '../../../utils/logger.js';
+import { trg } from '../../../utils/tr.js';
 
 export class ServerSettingsService {
   /**
@@ -50,7 +51,7 @@ export class ServerSettingsService {
     }
   ): Promise<{ success: boolean; settings?: ServerSettingsData; error?: string }> {
     const guild = client.guilds.cache.get(guildId);
-    if (!guild) return { success: false, error: 'Serveur introuvable.' };
+    if (!guild) return { success: false, error: trg(guildId, 'Serveur introuvable.') };
 
     try {
       await guild.edit({

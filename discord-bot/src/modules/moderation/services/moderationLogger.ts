@@ -4,6 +4,7 @@ import { moderationRepository } from '../storage/moderationRepository.js';
 import { logger } from '../../../utils/logger.js';
 import { baseEmbed, successEmbed } from '../../../utils/embeds.js';
 import { isSendableTarget, sendToConfiguredChannel } from '../../../utils/channelSend.js';
+import { trg } from '../../../utils/tr.js';
 
 export class ModerationLogger {
   public static async logCase(discordClient: Client, modCase: ModerationCase): Promise<void> {
@@ -33,21 +34,21 @@ export class ModerationLogger {
         footerText: `ID: ${modCase.id} • ETHONE Moderation Center 2.0`,
         timestamp: new Date(modCase.createdAt),
       })
-        .setTitle(`👮 Case #${modCase.caseNumber} — ${modCase.action}`)
-        .setDescription(`Sanction appliquée à <@${modCase.userId}> (${modCase.userTag})`)
+        .setTitle(trg(guild, '👮 Case #{caseNumber} — {action}', { caseNumber: modCase.caseNumber, action: modCase.action }))
+        .setDescription(trg(guild, 'Sanction appliquée à <@{userId}> ({userTag})', { userId: modCase.userId, userTag: modCase.userTag }))
         .addFields(
-          { name: '👤 Utilisateur', value: `<@${modCase.userId}> (\`${modCase.userId}\`)`, inline: true },
-          { name: '🛡️ Modérateur', value: `<@${modCase.moderatorId}> (\`${modCase.moderatorTag}\`)`, inline: true },
-          { name: '⚡ Source', value: `\`${modCase.source}\``, inline: true },
-          { name: '📝 Motif', value: modCase.reason || 'Aucun motif', inline: false }
+          { name: trg(guild, '👤 Utilisateur'), value: `<@${modCase.userId}> (\`${modCase.userId}\`)`, inline: true },
+          { name: trg(guild, '🛡️ Modérateur'), value: `<@${modCase.moderatorId}> (\`${modCase.moderatorTag}\`)`, inline: true },
+          { name: trg(guild, '⚡ Source'), value: `\`${modCase.source}\``, inline: true },
+          { name: trg(guild, '📝 Motif'), value: modCase.reason || 'Aucun motif', inline: false }
         );
 
       if (modCase.durationSeconds) {
-        embed.addFields({ name: '⏱️ Durée', value: durationStr, inline: true });
+        embed.addFields({ name: trg(guild, '⏱️ Durée'), value: durationStr, inline: true });
       }
       if (modCase.expiresAt) {
         embed.addFields({
-          name: '⌛ Expiration',
+          name: trg(guild, '⌛ Expiration'),
           value: `<t:${Math.floor(new Date(modCase.expiresAt).getTime() / 1000)}:R>`,
           inline: true,
         });
@@ -76,13 +77,13 @@ export class ModerationLogger {
       if (!channel || !isSendableTarget(channel)) return;
 
       const embed = successEmbed({ footerText: `Case #${modCase.caseNumber} • Révocation` })
-        .setTitle(`↩️ Révocation — Case #${modCase.caseNumber} (${modCase.action})`)
+        .setTitle(trg(guild, '↩️ Révocation — Case #{caseNumber} ({action})', { caseNumber: modCase.caseNumber, action: modCase.action }))
         .setDescription(
-          `La sanction sur <@${modCase.userId}> a été annulée/révoquée par **${revertedBy}**.`
+          trg(guild, 'La sanction sur <@{userId}> a été annulée/révoquée par **{revertedBy}**.', { userId: modCase.userId, revertedBy })
         )
         .addFields(
-          { name: 'Motif initial', value: modCase.reason, inline: true },
-          { name: 'Motif de révocation', value: revertReason || 'Aucun motif spécifié', inline: true }
+          { name: trg(guild, 'Motif initial'), value: modCase.reason, inline: true },
+          { name: trg(guild, 'Motif de révocation'), value: revertReason || 'Aucun motif spécifié', inline: true }
         );
 
       await sendToConfiguredChannel(channel, { embeds: [embed] });

@@ -14,6 +14,7 @@
  */
 
 import { logger } from '../../utils/logger.js';
+import { trg } from '../../utils/tr.js';
 
 export interface GuildLock {
   guildId: string;
@@ -83,7 +84,7 @@ export class GuildOperationLockService {
         return {
           acquired: false,
           currentHolder: existing.holder,
-          error: `Une opération de type "${action}" est déjà en cours sur ce serveur (exécutée par ${existing.holder}).`,
+          error: trg(guildId, 'Une opération de type "{action}" est déjà en cours sur ce serveur (exécutée par {holder}).', { action, holder: existing.holder }),
         };
       } else {
         // Expired lease: reclaim

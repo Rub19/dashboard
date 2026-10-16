@@ -6,6 +6,7 @@ import {
 import { Command, CommandContext } from '../../../types/command.js';
 import { welcomeRepository } from '../storage/welcomeRepository.js';
 import { emitConfigUpdated } from '../../../services/syncConfigEmitter.js';
+import { trg } from '../../../utils/tr.js';
 
 // Only status/toggle here — channel, verified/unverified roles, and the
 // button label/prompt text stay dashboard-only, matching how the rest of
@@ -34,7 +35,7 @@ export const verificationCommand: Command = {
 
   async execute(ctx: CommandContext): Promise<void> {
     if (!ctx.guild) {
-      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('Cette commande doit être utilisée sur un serveur.')], ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(trg(ctx, 'Cette commande doit être utilisée sur un serveur.'))], ephemeral: true });
       return;
     }
 
@@ -54,8 +55,8 @@ export const verificationCommand: Command = {
             .createEmbed(active ? 'success' : 'neutral')
             .setDescription(
               active
-                ? '✅ Vérification **activée** : les nouveaux membres devront cliquer sur le bouton de vérification avant de recevoir leurs rôles automatiques.'
-                : '⚪ Vérification **désactivée** : les nouveaux membres reçoivent leurs rôles automatiques normalement dès leur arrivée.'
+                ? trg(guildId, '✅ Vérification **activée** : les nouveaux membres devront cliquer sur le bouton de vérification avant de recevoir leurs rôles automatiques.')
+                : trg(guildId, '⚪ Vérification **désactivée** : les nouveaux membres reçoivent leurs rôles automatiques normalement dès leur arrivée.')
             ),
         ],
         ephemeral: true,
@@ -67,14 +68,14 @@ export const verificationCommand: Command = {
     const config = welcomeRepository.getVerificationConfig(guildId);
     const embed = ctx
       .createEmbed(config.enabled ? 'success' : 'neutral')
-      .setAuthor({ name: `Vérification — ${ctx.guild.name}`, iconURL: ctx.guild.iconURL({ size: 128 }) ?? undefined })
-      .setDescription(config.enabled ? '🟢 **Activée**' : '⚪ **Désactivée**')
+      .setAuthor({ name: trg(guildId, 'Vérification — {name}', { name: ctx.guild.name }), iconURL: ctx.guild.iconURL({ size: 128 }) ?? undefined })
+      .setDescription(config.enabled ? trg(guildId, '🟢 **Activée**') : trg(guildId, '⚪ **Désactivée**'))
       .addFields(
-        { name: 'Salon', value: config.channelId ? `<#${config.channelId}>` : 'Non défini', inline: true },
-        { name: 'Rôle vérifié', value: config.verifiedRoleId ? `<@&${config.verifiedRoleId}>` : 'Non défini', inline: true },
-        { name: 'Rôle non-vérifié', value: config.unverifiedRoleId ? `<@&${config.unverifiedRoleId}>` : 'Non défini', inline: true }
+        { name: trg(guildId, 'Salon'), value: config.channelId ? `<#${config.channelId}>` : trg(guildId, 'Non défini'), inline: true },
+        { name: trg(guildId, 'Rôle vérifié'), value: config.verifiedRoleId ? `<@&${config.verifiedRoleId}>` : trg(guildId, 'Non défini'), inline: true },
+        { name: trg(guildId, 'Rôle non-vérifié'), value: config.unverifiedRoleId ? `<@&${config.unverifiedRoleId}>` : trg(guildId, 'Non défini'), inline: true }
       )
-      .setFooter({ text: 'Réglages détaillés (salon, rôles, texte) : Dashboard → Discord → Bienvenue' });
+      .setFooter({ text: trg(guildId, 'Réglages détaillés (salon, rôles, texte) : Dashboard → Discord → Bienvenue') });
 
     await ctx.reply({ embeds: [embed] });
   },

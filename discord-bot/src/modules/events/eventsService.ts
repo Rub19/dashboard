@@ -2,6 +2,7 @@ import { Client, GuildScheduledEventEntityType, GuildScheduledEventPrivacyLevel 
 import { DiscordEvent, EventStatus, RSVPStatus } from './eventsTypes.js';
 import { eventRepository } from './eventsRepository.js';
 import { logger } from '../../utils/logger.js';
+import { trg } from '../../utils/tr.js';
 
 export class EventService {
   public static createEvent(data: Partial<DiscordEvent> & { guildId: string; title: string }): DiscordEvent {
@@ -80,7 +81,7 @@ export class EventService {
 
   public static cancelEvent(guildId: string, eventId: string, reason?: string): { success: boolean; event?: DiscordEvent; error?: string } {
     const event = eventRepository.getEventById(guildId, eventId);
-    if (!event) return { success: false, error: 'Événement introuvable.' };
+    if (!event) return { success: false, error: trg(guildId, 'Événement introuvable.') };
 
     event.status = 'CANCELLED';
     event.updatedAt = new Date().toISOString();
@@ -92,12 +93,12 @@ export class EventService {
 
   public static rescheduleEvent(guildId: string, eventId: string, newStartDate: string, newEndDate: string): { success: boolean; event?: DiscordEvent; error?: string } {
     const event = eventRepository.getEventById(guildId, eventId);
-    if (!event) return { success: false, error: 'Événement introuvable.' };
+    if (!event) return { success: false, error: trg(guildId, 'Événement introuvable.') };
 
     const start = new Date(newStartDate);
     const end = new Date(newEndDate);
     if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-      return { success: false, error: 'Dates invalides.' };
+      return { success: false, error: trg(guildId, 'Dates invalides.') };
     }
 
     const durationMinutes = Math.round((end.getTime() - start.getTime()) / 60000);

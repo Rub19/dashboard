@@ -13,6 +13,7 @@ import { musicNotifier } from './musicNotifier.js';
 import { voiceStayService } from './voiceStayService.js';
 import { logger } from '../../../utils/logger.js';
 import { isModuleEnabled } from '../../../services/moduleRegistry.js';
+import { trg } from '../../../utils/tr.js';
 
 class MusicService {
   private client: Client | null = null;
@@ -122,7 +123,7 @@ class MusicService {
         if (member) {
           return {
             success: false,
-            error: 'Vous devez impérativement être connecté dans un salon vocal pour lancer la musique.',
+            error: trg(guild, 'Vous devez impérativement être connecté dans un salon vocal pour lancer la musique.'),
           };
         }
 
@@ -138,7 +139,7 @@ class MusicService {
         } else {
           return {
             success: false,
-            error: 'Aucun salon vocal disponible ou accessible pour lancer la lecture.',
+            error: trg(guild, 'Aucun salon vocal disponible ou accessible pour lancer la lecture.'),
           };
         }
       }
@@ -178,10 +179,10 @@ class MusicService {
         return {
           success: false,
           error:
-            "Impossible de lire cette playlist/album Spotify (privée, vide ou inaccessible). Vérifie qu'elle est publique et réessaie.",
+            trg(guild, 'Impossible de lire cette playlist/album Spotify (privée, vide ou inaccessible). Vérifie qu\'elle est publique et réessaie.'),
         };
       }
-      return { success: false, error: 'Aucun titre correspondant trouvé.' };
+      return { success: false, error: trg(guild, 'Aucun titre correspondant trouvé.') };
     }
     // Mode aléatoire : on mélange la playlist importée (Fisher-Yates) avant de la mettre en file.
     if (options?.shuffle && tracks.length > 1) {
@@ -209,7 +210,7 @@ class MusicService {
         })();
         const outcome = await Promise.race([startPromise, new Promise<'pending'>((r) => setTimeout(() => r('pending'), 2500))]);
         if (outcome === 'noconnect') return { success: false, error: NO_CONNECTION };
-        if (outcome === false) return { success: false, error: 'Échec du lancement audio.' };
+        if (outcome === false) return { success: false, error: trg(guild, 'Échec du lancement audio.') };
         if (outcome === 'pending') {
           startPromise
             .then((late) => {
@@ -218,7 +219,7 @@ class MusicService {
             .catch((err) => logger.warn('[MusicService] Lancement tardif en échec :', err));
         }
       } else if (!(await player.playTrack(track))) {
-        return { success: false, error: 'Échec du lancement audio.' };
+        return { success: false, error: trg(guild, 'Échec du lancement audio.') };
       }
       queuePosition = 0;
     } else if (options?.playNext) {
@@ -256,7 +257,7 @@ class MusicService {
     if (!perm.allowed) return { success: false, error: perm.reason };
 
     const player = this.getPlayer(guildId, false);
-    if (!player) return { success: false, error: 'Aucun lecteur actif sur ce serveur.' };
+    if (!player) return { success: false, error: trg(guildId, 'Aucun lecteur actif sur ce serveur.') };
 
     const ok = player.pause();
     return { success: ok };
@@ -267,7 +268,7 @@ class MusicService {
     if (!perm.allowed) return { success: false, error: perm.reason };
 
     const player = this.getPlayer(guildId, false);
-    if (!player) return { success: false, error: 'Aucun lecteur actif sur ce serveur.' };
+    if (!player) return { success: false, error: trg(guildId, 'Aucun lecteur actif sur ce serveur.') };
 
     const ok = player.resume();
     return { success: ok };
@@ -278,7 +279,7 @@ class MusicService {
     if (!perm.allowed) return { success: false, error: perm.reason };
 
     const player = this.getPlayer(guildId, false);
-    if (!player) return { success: false, error: 'Aucun lecteur actif sur ce serveur.' };
+    if (!player) return { success: false, error: trg(guildId, 'Aucun lecteur actif sur ce serveur.') };
 
     const nextTrack = await player.skip();
     return { success: true, nextTrack };
@@ -289,7 +290,7 @@ class MusicService {
     if (!perm.allowed) return { success: false, error: perm.reason };
 
     const player = this.getPlayer(guildId, false);
-    if (!player) return { success: false, error: 'Aucun lecteur actif sur ce serveur.' };
+    if (!player) return { success: false, error: trg(guildId, 'Aucun lecteur actif sur ce serveur.') };
 
     const prevTrack = await player.previous();
     return { success: true, prevTrack };
@@ -300,7 +301,7 @@ class MusicService {
     if (!perm.allowed) return { success: false, error: perm.reason };
 
     const player = this.getPlayer(guildId, false);
-    if (!player) return { success: false, error: 'Aucun lecteur actif sur ce serveur.' };
+    if (!player) return { success: false, error: trg(guildId, 'Aucun lecteur actif sur ce serveur.') };
 
     player.stop();
     return { success: true };
@@ -311,7 +312,7 @@ class MusicService {
     if (!perm.allowed) return { success: false, error: perm.reason };
 
     const player = this.getPlayer(guildId, false);
-    if (!player) return { success: false, error: 'Aucun lecteur actif sur ce serveur.' };
+    if (!player) return { success: false, error: trg(guildId, 'Aucun lecteur actif sur ce serveur.') };
 
     const ok = player.seek(positionSeconds);
     return { success: ok };
@@ -340,7 +341,7 @@ class MusicService {
     if (!perm.allowed) return { success: false, error: perm.reason };
 
     const player = this.getPlayer(guildId, false);
-    if (!player) return { success: false, error: 'Aucun lecteur actif.' };
+    if (!player) return { success: false, error: trg(guildId, 'Aucun lecteur actif.') };
 
     player.queue.shuffle();
     player.setStateCallback((s) => musicEventBus.emitStateUpdate(s));
@@ -363,7 +364,7 @@ class MusicService {
     if (!perm.allowed) return { success: false, error: perm.reason };
 
     const player = this.getPlayer(guildId, false);
-    if (!player) return { success: false, error: 'Aucun lecteur actif.' };
+    if (!player) return { success: false, error: trg(guildId, 'Aucun lecteur actif.') };
 
     const ok = player.queue.reorder(fromIndex, toIndex);
     if (ok) musicEventBus.emitStateUpdate(player.getState());
@@ -372,7 +373,7 @@ class MusicService {
 
   public removeFromQueue(guildId: string, index: number, member: GuildMember | null): { success: boolean; removed?: Track | null; error?: string } {
     const player = this.getPlayer(guildId, false);
-    if (!player) return { success: false, error: 'Aucun lecteur actif.' };
+    if (!player) return { success: false, error: trg(guildId, 'Aucun lecteur actif.') };
 
     const track = player.queue.getTracks()[index];
     const perm = MusicPermissionService.canExecuteAction(member, guildId, 'REMOVE', track?.requestedBy?.id);
@@ -388,7 +389,7 @@ class MusicService {
     if (!perm.allowed) return { success: false, error: perm.reason };
 
     const player = this.getPlayer(guildId, false);
-    if (!player) return { success: false, error: 'Aucun lecteur actif.' };
+    if (!player) return { success: false, error: trg(guildId, 'Aucun lecteur actif.') };
 
     player.queue.clear();
     musicEventBus.emitStateUpdate(player.getState());
@@ -439,7 +440,7 @@ class MusicService {
     const requestedBy = { id: createdBy.id, tag: createdBy.tag, avatar: null };
     const tracks = await musicProviderManager.resolveMany(sourceUrl, requestedBy);
     if (tracks.length === 0) {
-      return { success: false, count: 0, error: "Impossible de résoudre cette playlist (lien invalide, ou identifiants Spotify non configurés côté bot)." };
+      return { success: false, count: 0, error: trg(guildId, 'Impossible de résoudre cette playlist (lien invalide, ou identifiants Spotify non configurés côté bot).') };
     }
     const playlist = this.createPlaylist(guildId, name, createdBy, tracks);
     return { success: true, playlist, count: tracks.length };
@@ -449,7 +450,7 @@ class MusicService {
     const list = this.getPlaylists(guild.id);
     const pl = list.find((p) => p.id === playlistId);
     if (!pl || pl.tracks.length === 0) {
-      return { success: false, count: 0, error: 'Playlist introuvable ou vide.' };
+      return { success: false, count: 0, error: trg(guild, 'Playlist introuvable ou vide.') };
     }
 
     let count = 0;

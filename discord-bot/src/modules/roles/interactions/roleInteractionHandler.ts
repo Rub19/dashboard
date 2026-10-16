@@ -2,6 +2,7 @@ import { ButtonInteraction, GuildMember, StringSelectMenuInteraction, MessageFla
 import { rolePanelService } from '../services/rolePanelService.js';
 import { logger } from '../../../utils/logger.js';
 import { baseEmbed } from '../../../utils/embeds.js';
+import { trg } from '../../../utils/tr.js';
 
 export async function handleRoleButton(interaction: ButtonInteraction): Promise<void> {
   const parts = interaction.customId.split(':');
@@ -12,7 +13,7 @@ export async function handleRoleButton(interaction: ButtonInteraction): Promise<
   const member = interaction.member as GuildMember | null;
 
   if (!member) {
-    await interaction.reply({ embeds: [baseEmbed('error').setDescription('❌ Erreur de récupération du membre.')], flags: MessageFlags.Ephemeral });
+    await interaction.reply({ embeds: [baseEmbed('error').setDescription(trg(interaction, '❌ Erreur de récupération du membre.'))], flags: MessageFlags.Ephemeral });
     return;
   }
 
@@ -34,7 +35,7 @@ export async function handleRoleSelect(interaction: StringSelectMenuInteraction)
   const member = interaction.member as GuildMember | null;
 
   if (!member) {
-    await interaction.reply({ embeds: [baseEmbed('error').setDescription('❌ Erreur de récupération du membre.')], flags: MessageFlags.Ephemeral });
+    await interaction.reply({ embeds: [baseEmbed('error').setDescription(trg(interaction, '❌ Erreur de récupération du membre.'))], flags: MessageFlags.Ephemeral });
     return;
   }
 
@@ -44,7 +45,7 @@ export async function handleRoleSelect(interaction: StringSelectMenuInteraction)
     const panel = rolePanelService.getPanel(interaction.guildId!, panelId);
 
     if (!panel) {
-      await interaction.editReply({ embeds: [baseEmbed('error').setDescription('❌ Panneau de rôles introuvable.')] });
+      await interaction.editReply({ embeds: [baseEmbed('error').setDescription(trg(interaction, '❌ Panneau de rôles introuvable.'))] });
       return;
     }
 
@@ -55,7 +56,7 @@ export async function handleRoleSelect(interaction: StringSelectMenuInteraction)
     }
 
     await interaction.editReply({
-      embeds: [baseEmbed('success').setDescription(messages.length > 0 ? messages.join('\n') : '✅ Vos rôles ont été mis à jour.')],
+      embeds: [baseEmbed('success').setDescription(messages.length > 0 ? messages.join('\n') : trg(interaction, '✅ Vos rôles ont été mis à jour.'))],
     });
   } catch (err: any) {
     logger.error('Erreur handleRoleSelect :', err);

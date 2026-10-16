@@ -18,6 +18,7 @@ import { AIImageService } from './aiImageService.js';
 import { logger } from '../../../utils/logger.js';
 import { baseEmbed } from '../../../utils/embeds.js';
 import { BotAiMonitorService } from '../../botControl/services/botAiMonitorService.js';
+import { trg } from '../../../utils/tr.js';
 
 const botAiMonitorService = BotAiMonitorService.getInstance();
 
@@ -84,11 +85,11 @@ export class AIService {
     if (safetyCheck.flagged) {
       if (safetyCheck.bannedWordDetected) {
         await message.reply({
-          embeds: [baseEmbed('error').setDescription(`🚫 **AutoMod** : Votre message a été bloqué car il contient un terme interdit (\`${safetyCheck.bannedWordDetected}\`).`)],
+          embeds: [baseEmbed('error').setDescription(trg(guildId, '🚫 **AutoMod** : Votre message a été bloqué car il contient un terme interdit (`{bannedWordDetected}`).', { bannedWordDetected: safetyCheck.bannedWordDetected }))],
         });
       } else {
         await message.reply({
-          embeds: [baseEmbed('warning').setDescription('⚠️ Désolé, cette demande ne respecte pas les consignes de sécurité et directives de l\'assistant.')],
+          embeds: [baseEmbed('warning').setDescription(trg(guildId, '⚠️ Désolé, cette demande ne respecte pas les consignes de sécurité et directives de l\'assistant.'))],
         });
       }
       return true;
@@ -229,7 +230,7 @@ export class AIService {
     } catch (err: any) {
       logger.error('[AIService] Erreur génération réponse IA :', err);
       await message.reply({
-        embeds: [baseEmbed('error').setDescription("L'assistant IA est temporairement indisponible. Veuillez réessayer dans un instant.")],
+        embeds: [baseEmbed('error').setDescription(trg(guildId, 'L\'assistant IA est temporairement indisponible. Veuillez réessayer dans un instant.'))],
       }).catch(() => {});
       return false;
     }

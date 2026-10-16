@@ -12,6 +12,7 @@ import {
 } from "../../modules/lastfm/ui/lastfmEmbeds.js";
 import { funService } from "../../modules/fun/services/funService.js";
 import { buildLyricsEmbed } from "../../modules/fun/ui/funEmbeds.js";
+import { trg } from '../../utils/tr.js';
 
 function resolveUsername(ctx: CommandContext, explicitUsername?: string | null): string | null {
   if (explicitUsername && explicitUsername.trim()) {
@@ -174,12 +175,12 @@ export const lastfmCommand: Command = {
     if (sub === "login") {
       const username = explicitUser?.trim();
       if (!username) {
-        await ctx.reply({ content: "❌ Veuillez renseigner votre pseudo Last.fm (ex: `/lastfm login rj`)." });
+        await ctx.reply({ content: trg(ctx, '❌ Veuillez renseigner votre pseudo Last.fm (ex: `/lastfm login rj`).') });
         return;
       }
       lastFmStorage.set(ctx.author.id, username);
       await ctx.reply({
-        content: `✅ Votre compte Last.fm **${username}** a été associé à votre profil Discord avec succès ! Vous pouvez désormais taper \`/lastfm nowplaying\` sans paramètre.`,
+        content: trg(ctx, '✅ Votre compte Last.fm **{username}** a été associé à votre profil Discord avec succès ! Vous pouvez désormais taper `/lastfm nowplaying` sans paramètre.', { username }),
       });
       return;
     }
@@ -187,9 +188,9 @@ export const lastfmCommand: Command = {
     if (sub === "logout") {
       const removed = lastFmStorage.delete(ctx.author.id);
       if (removed) {
-        await ctx.reply({ content: "✅ Votre compte Last.fm a été dissocié avec succès." });
+        await ctx.reply({ content: trg(ctx, '✅ Votre compte Last.fm a été dissocié avec succès.') });
       } else {
-        await ctx.reply({ content: "ℹ️ Aucun compte Last.fm n'était associé à votre profil Discord." });
+        await ctx.reply({ content: trg(ctx, 'ℹ️ Aucun compte Last.fm n\'était associé à votre profil Discord.') });
       }
       return;
     }
@@ -336,7 +337,7 @@ export const lastfmCommand: Command = {
     if (sub === "toptracks") {
       const tracks = await lastFmService.getTopTracks(username, period, 5);
       const embed = buildRecentTracksEmbed(username, tracks);
-      embed.setTitle(`Top Morceaux de ${username}`);
+      embed.setTitle(trg(ctx, 'Top Morceaux de {username}', { username }));
       if (ctx.isSlash && ctx.interaction) {
         await ctx.interaction.editReply({ embeds: [embed] });
       } else {

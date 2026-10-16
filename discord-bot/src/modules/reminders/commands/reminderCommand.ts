@@ -3,6 +3,7 @@ import { Command, CommandContext } from '../../../types/command.js';
 import { reminderStorage } from '../storage/reminderStorage.js';
 import { parseDuration } from '../services/reminderService.js';
 import { emitConfigUpdated } from '../../../services/syncConfigEmitter.js';
+import { trg } from '../../../utils/tr.js';
 
 const MAX_PER_USER = 25;
 
@@ -63,14 +64,14 @@ export const reminderCommand: Command = {
     const userId = ctx.author.id;
     if (!guildId || !channelId) {
       await ctx.reply({
-        embeds: [ctx.createEmbed('error').setDescription('❌ À utiliser sur un serveur.')],
+        embeds: [ctx.createEmbed('error').setDescription(trg(guildId, '❌ À utiliser sur un serveur.'))],
         ephemeral: true,
       });
       return;
     }
     if (!ctx.isSlash) {
       await ctx.reply({
-        embeds: [ctx.createEmbed('info').setDescription('ℹ️ Utilise la commande slash `/reminder`.')],
+        embeds: [ctx.createEmbed('info').setDescription(trg(guildId, 'ℹ️ Utilise la commande slash `/reminder`.'))],
         ephemeral: true,
       });
       return;
@@ -89,7 +90,7 @@ export const reminderCommand: Command = {
           embeds: [
             ctx
               .createEmbed('error')
-              .setDescription('❌ Délai invalide. Exemples : `10m`, `2h`, `1d`, `1w`, `1h30m`. (max 1 an)'),
+              .setDescription(trg(guildId, '❌ Délai invalide. Exemples : `10m`, `2h`, `1d`, `1w`, `1h30m`. (max 1 an)')),
           ],
           ephemeral: true,
         });
@@ -97,7 +98,7 @@ export const reminderCommand: Command = {
       }
       if (ms < 30_000) {
         await ctx.reply({
-          embeds: [ctx.createEmbed('error').setDescription('❌ Le délai minimum est de 30 secondes.')],
+          embeds: [ctx.createEmbed('error').setDescription(trg(guildId, '❌ Le délai minimum est de 30 secondes.'))],
           ephemeral: true,
         });
         return;
@@ -107,7 +108,7 @@ export const reminderCommand: Command = {
       if (existing.length >= MAX_PER_USER) {
         await ctx.reply({
           embeds: [
-            ctx.createEmbed('error').setDescription(`❌ Tu as déjà ${MAX_PER_USER} rappels en attente. Annules-en un d'abord.`),
+            ctx.createEmbed('error').setDescription(trg(guildId, '❌ Tu as déjà {MAX_PER_USER} rappels en attente. Annules-en un d\'abord.', { MAX_PER_USER })),
           ],
           ephemeral: true,
         });
@@ -130,12 +131,12 @@ export const reminderCommand: Command = {
         embeds: [
           ctx
             .createEmbed('success')
-            .setTitle('⏰ Rappel programmé')
-            .setDescription(`Je te rappellerai **<t:${unix}:R>** (<t:${unix}:F>).`)
+            .setTitle(trg(guildId, '⏰ Rappel programmé'))
+            .setDescription(trg(guildId, 'Je te rappellerai **<t:{unix}:R>** (<t:{unix1}:F>).', { unix, unix1: unix }))
             .addFields(
-              { name: 'Message', value: message.slice(0, 1000) },
-              { name: 'Récurrence', value: recurrence === 'none' ? 'Une fois' : recurrence === 'daily' ? 'Quotidien' : 'Hebdomadaire', inline: true },
-              { name: 'ID', value: `\`${reminder.id}\``, inline: true }
+              { name: trg(guildId, 'Message'), value: message.slice(0, 1000) },
+              { name: trg(guildId, 'Récurrence'), value: recurrence === 'none' ? trg(guildId, 'Une fois') : recurrence === 'daily' ? 'Quotidien' : 'Hebdomadaire', inline: true },
+              { name: trg(guildId, 'ID'), value: `\`${reminder.id}\``, inline: true }
             ),
         ],
         ephemeral: true,
@@ -147,12 +148,12 @@ export const reminderCommand: Command = {
       const list = reminderStorage.listForUser(guildId, userId);
       if (list.length === 0) {
         await ctx.reply({
-          embeds: [ctx.createEmbed('neutral').setDescription('Aucun rappel en attente. `/reminder add` pour en créer un.')],
+          embeds: [ctx.createEmbed('neutral').setDescription(trg(guildId, 'Aucun rappel en attente. `/reminder add` pour en créer un.'))],
           ephemeral: true,
         });
         return;
       }
-      const embed = ctx.createEmbed('default').setTitle(`⏰ Tes rappels (${list.length})`);
+      const embed = ctx.createEmbed('default').setTitle(trg(guildId, '⏰ Tes rappels ({length})', { length: list.length }));
       for (const r of list.slice(0, 15)) {
         const unix = Math.floor(new Date(r.remindAt).getTime() / 1000);
         embed.addFields({
@@ -169,14 +170,14 @@ export const reminderCommand: Command = {
     const target = reminderStorage.get(id);
     if (!target || target.userId !== userId || target.guildId !== guildId) {
       await ctx.reply({
-        embeds: [ctx.createEmbed('error').setDescription("❌ Rappel introuvable (ou il ne t'appartient pas).")],
+        embeds: [ctx.createEmbed('error').setDescription(trg(guildId, '❌ Rappel introuvable (ou il ne t\'appartient pas).'))],
         ephemeral: true,
       });
       return;
     }
     reminderStorage.delete(id);
     await ctx.reply({
-      embeds: [ctx.createEmbed('success').setDescription(`✅ Rappel \`${id}\` annulé.`)],
+      embeds: [ctx.createEmbed('success').setDescription(trg(guildId, '✅ Rappel `{id}` annulé.', { id }))],
       ephemeral: true,
     });
   },

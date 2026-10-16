@@ -3,6 +3,7 @@ import { Command, CommandContext } from '../../../types/command.js';
 import { birthdayStorage, daysUntil } from '../storage/birthdayStorage.js';
 import { emitConfigUpdated } from '../../../services/syncConfigEmitter.js';
 import { SLASH_DESTINATION_TYPES } from '../../../utils/channelSend.js';
+import { trg } from '../../../utils/tr.js';
 
 const MONTHS_FR = [
   'janvier', 'février', 'mars', 'avril', 'mai', 'juin',
@@ -47,7 +48,7 @@ export const birthdayCommand: Command = {
     const guildId = ctx.guild?.id;
     if (!guildId || !ctx.isSlash) {
       await ctx.reply({
-        embeds: [ctx.createEmbed('error').setDescription('❌ Commande slash à utiliser sur un serveur.')],
+        embeds: [ctx.createEmbed('error').setDescription(trg(guildId, '❌ Commande slash à utiliser sur un serveur.'))],
         ephemeral: true,
       });
       return;
@@ -60,7 +61,7 @@ export const birthdayCommand: Command = {
       const year = ctx.interaction!.options.getInteger('annee');
       if (day > daysInMonth(month)) {
         await ctx.reply({
-          embeds: [ctx.createEmbed('error').setDescription(`❌ ${MONTHS_FR[month - 1]} n'a pas ${day} jours.`)],
+          embeds: [ctx.createEmbed('error').setDescription(trg(guildId, '❌ {v0} n\'a pas {day} jours.', { v0: MONTHS_FR[month - 1], day }))],
           ephemeral: true,
         });
         return;
@@ -84,7 +85,7 @@ export const birthdayCommand: Command = {
     if (sub === 'remove') {
       const ok = birthdayStorage.delete(guildId, ctx.author.id);
       await ctx.reply({
-        embeds: [ctx.createEmbed(ok ? 'success' : 'info').setDescription(ok ? '✅ Anniversaire supprimé.' : 'ℹ️ Tu n\'avais pas d\'anniversaire enregistré.')],
+        embeds: [ctx.createEmbed(ok ? 'success' : 'info').setDescription(ok ? trg(guildId, '✅ Anniversaire supprimé.') : trg(guildId, 'ℹ️ Tu n\'avais pas d\'anniversaire enregistré.'))],
         ephemeral: true,
       });
       return;
@@ -92,23 +93,23 @@ export const birthdayCommand: Command = {
 
     if (sub === 'list') {
       const ov = birthdayStorage.getOverview(guildId);
-      const embed = ctx.createEmbed('default').setTitle('🎂 Anniversaires à venir');
+      const embed = ctx.createEmbed('default').setTitle(trg(guildId, '🎂 Anniversaires à venir'));
       if (ov.today.length > 0) {
         embed.addFields({
-          name: "🎉 Aujourd'hui",
+          name: trg(guildId, '🎉 Aujourd\'hui'),
           value: ov.today.map((t) => `<@${t.userId}>${t.age !== null ? ` (${t.age} ans)` : ''}`).join('\n'),
         });
       }
       if (ov.upcoming.length > 0) {
         embed.addFields({
-          name: '📅 Prochains (30 j)',
+          name: trg(guildId, '📅 Prochains (30 j)'),
           value: ov.upcoming
             .map((u) => `<@${u.userId}> — ${u.day} ${MONTHS_FR[u.month - 1]} *(dans ${u.inDays} j)*`)
             .join('\n'),
         });
       }
       if (ov.today.length === 0 && ov.upcoming.length === 0) {
-        embed.setDescription('Aucun anniversaire dans les 30 prochains jours. `/birthday set` pour enregistrer le tien.');
+        embed.setDescription(trg(guildId, 'Aucun anniversaire dans les 30 prochains jours. `/birthday set` pour enregistrer le tien.'));
       }
       await ctx.reply({ embeds: [embed] });
       return;
@@ -117,7 +118,7 @@ export const birthdayCommand: Command = {
     // config (admin)
     if (!ctx.member?.permissions.has(PermissionFlagsBits.ManageGuild)) {
       await ctx.reply({
-        embeds: [ctx.createEmbed('error').setDescription('❌ Réservé aux gérants du serveur (`Gérer le serveur`).')],
+        embeds: [ctx.createEmbed('error').setDescription(trg(guildId, '❌ Réservé aux gérants du serveur (`Gérer le serveur`).'))],
         ephemeral: true,
       });
       return;
@@ -140,13 +141,13 @@ export const birthdayCommand: Command = {
         embeds: [
           ctx
             .createEmbed(c.enabled ? 'default' : 'neutral')
-            .setTitle('🎂 Configuration anniversaires')
+            .setTitle(trg(guildId, '🎂 Configuration anniversaires'))
             .addFields(
-              { name: 'État', value: c.enabled ? '🟢 Actif' : '⚪ Inactif', inline: true },
-              { name: 'Salon', value: c.announceChannelId ? `<#${c.announceChannelId}>` : '—', inline: true },
-              { name: 'Heure', value: `${c.announceHour}h`, inline: true },
-              { name: 'Rôle', value: c.birthdayRoleId ? `<@&${c.birthdayRoleId}>` : '—', inline: true },
-              { name: 'Message', value: c.message }
+              { name: trg(guildId, 'État'), value: c.enabled ? trg(guildId, '🟢 Actif') : trg(guildId, '⚪ Inactif'), inline: true },
+              { name: trg(guildId, 'Salon'), value: c.announceChannelId ? `<#${c.announceChannelId}>` : '—', inline: true },
+              { name: trg(guildId, 'Heure'), value: `${c.announceHour}h`, inline: true },
+              { name: trg(guildId, 'Rôle'), value: c.birthdayRoleId ? `<@&${c.birthdayRoleId}>` : '—', inline: true },
+              { name: trg(guildId, 'Message'), value: c.message }
             ),
         ],
         ephemeral: true,
@@ -160,7 +161,7 @@ export const birthdayCommand: Command = {
       embeds: [
         ctx
           .createEmbed('success')
-          .setTitle('🎂 Configuration mise à jour')
+          .setTitle(trg(guildId, '🎂 Configuration mise à jour'))
           .setDescription(
             [
               `État : ${updated.enabled ? 'actif' : 'inactif'}`,

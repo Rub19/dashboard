@@ -5,6 +5,7 @@ import { moderationRepository } from '../storage/moderationRepository.js';
 import { securityEventBus } from '../../automod/services/securityEventBus.js';
 import { logger } from '../../../utils/logger.js';
 import { isSendableTarget, sendToConfiguredChannel } from '../../../utils/channelSend.js';
+import { trg } from '../../../utils/tr.js';
 
 interface ModActionRecord {
   moderatorId: string;
@@ -110,14 +111,14 @@ export class StaffAbuseDetector {
     if (!channel || !isSendableTarget(channel)) return;
 
     const embed = baseEmbed('default', { color: Colors.DarkRed, footerText: 'Staff Abuse Guard • ETHONE Security' })
-      .setTitle('🚨 ALERTE SÉCURITÉ STAFF — Activité de Modération Anormale')
+      .setTitle(trg(guildId, '🚨 ALERTE SÉCURITÉ STAFF — Activité de Modération Anormale'))
       .setDescription(
-        `Le modérateur <@${moderatorId}> (**${moderatorTag}**) a effectué une vague inhabituelle d'actions disciplinaires.`
+        trg(guildId, 'Le modérateur <@{moderatorId}> (**{moderatorTag}**) a effectué une vague inhabituelle d\'actions disciplinaires.', { moderatorId, moderatorTag })
       )
       .addFields(
-        { name: 'Détail de la détection', value: details, inline: false },
-        { name: 'Niveau de Risque', value: '🔥 **CRITIQUE**', inline: true },
-        { name: 'Recommandation', value: 'Vérifier si le compte du modérateur est compromis.', inline: true }
+        { name: trg(guildId, 'Détail de la détection'), value: details, inline: false },
+        { name: trg(guildId, 'Niveau de Risque'), value: trg(guildId, '🔥 **CRITIQUE**'), inline: true },
+        { name: trg(guildId, 'Recommandation'), value: trg(guildId, 'Vérifier si le compte du modérateur est compromis.'), inline: true }
       );
 
     await sendToConfiguredChannel(channel, {

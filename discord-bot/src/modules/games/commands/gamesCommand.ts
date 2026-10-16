@@ -8,6 +8,7 @@ import { gamesService } from '../services/gamesService.js';
 import { gamesStorage } from '../storage/gamesStorage.js';
 import { getAppEmoji } from '../../../services/appEmojis.js';
 import { displayCurrencySymbol } from '../../economy/currencyEmoji.js';
+import { trg } from '../../../utils/tr.js';
 
 export const blackjackCommand: Command = {
   name: 'blackjack',
@@ -26,7 +27,7 @@ export const blackjackCommand: Command = {
     ) as SlashCommandBuilder,
   execute: async (ctx: CommandContext) => {
     if (!ctx.guildId || !ctx.channel) {
-      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('Cette commande doit être exécutée dans un salon de serveur.')] });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(trg(ctx, 'Cette commande doit être exécutée dans un salon de serveur.'))] });
       return;
     }
 
@@ -87,7 +88,7 @@ export const rouletteCommand: Command = {
     ) as SlashCommandBuilder,
   execute: async (ctx: CommandContext) => {
     if (!ctx.guildId) {
-      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('Cette commande doit être exécutée dans un serveur.')] });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(trg(ctx, 'Cette commande doit être exécutée dans un serveur.'))] });
       return;
     }
 
@@ -140,12 +141,12 @@ export const diceCommand: Command = {
     ) as SlashCommandBuilder,
   execute: async (ctx: CommandContext) => {
     if (!ctx.guildId || !ctx.channel) {
-      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('Cette commande doit être exécutée dans un salon de serveur.')] });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(trg(ctx, 'Cette commande doit être exécutée dans un salon de serveur.'))] });
       return;
     }
 
     if (!ctx.isSlash || !ctx.interaction) {
-      await ctx.reply({ embeds: [ctx.createEmbed('info').setDescription('Cette commande est disponible via la commande slash `/dice mise adversaire`.')] });
+      await ctx.reply({ embeds: [ctx.createEmbed('info').setDescription(trg(ctx, 'Cette commande est disponible via la commande slash `/dice mise adversaire`.'))] });
       return;
     }
 
@@ -164,7 +165,7 @@ export const diceCommand: Command = {
     if (res.error) {
       await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(`${res.error}`)], ephemeral: true });
     } else {
-      await ctx.reply({ embeds: [ctx.createEmbed('info').setDescription(`Défi envoyé à <@${opponent.id}> !`)], ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('info').setDescription(trg(ctx, 'Défi envoyé à <@{id}> !', { id: opponent.id }))], ephemeral: true });
     }
   },
 };
@@ -199,7 +200,7 @@ export const casinoCommand: Command = {
     ) as SlashCommandBuilder,
   execute: async (ctx: CommandContext) => {
     if (!ctx.guildId) {
-      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('Cette commande doit être exécutée dans un serveur.')] });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(trg(ctx, 'Cette commande doit être exécutée dans un serveur.'))] });
       return;
     }
 
@@ -219,15 +220,15 @@ export const casinoCommand: Command = {
       }
 
       const embed = new EmbedBuilder()
-        .setAuthor({ name: `Roue de la Fortune · ${ctx.author.username} · Ethone Coin`, iconURL: ctx.author.displayAvatarURL() })
-        .setTitle(res.isJackpot ? `🎰 JACKPOT HISTORIQUE !` : `🎡 Roue quotidienne tournée !`)
+        .setAuthor({ name: trg(ctx, 'Roue de la Fortune · {username} · Ethone Coin', { username: ctx.author.username }), iconURL: ctx.author.displayAvatarURL() })
+        .setTitle(res.isJackpot ? trg(ctx, '🎰 JACKPOT HISTORIQUE !') : trg(ctx, '🎡 Roue quotidienne tournée !'))
         .setColor(res.isJackpot ? 0xf59e0b : 0x10b981)
         .setDescription(
           `Félicitations <@${ctx.author.id}> !\n\n` +
           `Vous avez remporté **${res.prize?.toLocaleString('fr-FR')} ${currencySymbol} ${currencyName}** !\n` +
           `Votre nouveau solde : **${gamesService.getBalance(ctx.guildId, ctx.author.id, ctx.author.username).toLocaleString('fr-FR')}** ${currencySymbol}`
         )
-        .setFooter({ text: 'Revenez dans 24 heures pour un nouveau tirage gratuit ! • Portefeuille Ethone Coin' })
+        .setFooter({ text: trg(ctx, 'Revenez dans 24 heures pour un nouveau tirage gratuit ! • Portefeuille Ethone Coin') })
         .setTimestamp();
 
       await ctx.reply({ embeds: [embed] });
@@ -237,7 +238,7 @@ export const casinoCommand: Command = {
     if (sub === 'jackpot') {
       const jackpot = gamesStorage.getJackpot(ctx.guildId);
       const embed = new EmbedBuilder()
-        .setTitle(`${sparkles} CAGNOTTE PROGRESSIVE DU CASINO`)
+        .setTitle(trg(ctx, '{sparkles} CAGNOTTE PROGRESSIVE DU CASINO', { sparkles }))
         .setColor(0xf59e0b)
         .setDescription(
           `La cagnotte actuelle s'élève à :\n` +
@@ -247,7 +248,7 @@ export const casinoCommand: Command = {
           `• 2% de chaque mise de Blackjack, Roulette et 5% des duels de dés alimentent en continu cette cagnotte.\n` +
           `• Gagnez des ${currencyName} gratuitement avec \`/daily\` et \`/work\` !`
         )
-        .setFooter({ text: 'ETHONE Casino Engine · Alimentation continue 24/7 • Système Ethone Coin' })
+        .setFooter({ text: trg(ctx, 'ETHONE Casino Engine · Alimentation continue 24/7 • Système Ethone Coin') })
         .setTimestamp();
 
       await ctx.reply({ embeds: [embed] });
@@ -257,16 +258,16 @@ export const casinoCommand: Command = {
     if (sub === 'top') {
       const overview = gamesStorage.getOverview(ctx.guildId);
       const embed = new EmbedBuilder()
-        .setTitle(`🏆 TOP GAGNANTS DU CASINO`)
+        .setTitle(trg(ctx, '🏆 TOP GAGNANTS DU CASINO'))
         .setColor(0x3b82f6)
         .setDescription(
           overview.topWinners.length > 0
             ? overview.topWinners
                 .map((w, idx) => `**${idx + 1}.** **${w.username}** — +**${w.totalWon.toLocaleString('fr-FR')}** ${currencySymbol} (*${w.gamesPlayed} parties*)`)
                 .join('\n')
-            : 'Aucun gagnant enregistré pour le moment. Soyez le premier en jouant à `/blackjack` ou `/roulette` !'
+            : trg(ctx, 'Aucun gagnant enregistré pour le moment. Soyez le premier en jouant à `/blackjack` ou `/roulette` !')
         )
-        .setFooter({ text: `Module Économie & Casino Ethone Coin` })
+        .setFooter({ text: trg(ctx, 'Module Économie & Casino Ethone Coin') })
         .setTimestamp();
 
       await ctx.reply({ embeds: [embed] });
@@ -276,22 +277,22 @@ export const casinoCommand: Command = {
     if (sub === 'stats') {
       const overview = gamesStorage.getOverview(ctx.guildId);
       const embed = new EmbedBuilder()
-        .setTitle(`📊 STATISTIQUES DU CASINO`)
+        .setTitle(trg(ctx, '📊 STATISTIQUES DU CASINO'))
         .setColor(0x8b5cf6)
         .addFields(
-          { name: '💰 Cagnotte Jackpot', value: `${overview.jackpotPool.toLocaleString('fr-FR')} ${currencySymbol}`, inline: true },
-          { name: '🎲 Parties jouées', value: `${overview.totalGamesPlayed.toLocaleString('fr-FR')}`, inline: true },
-          { name: '🪙 Total des mises', value: `${overview.totalBets.toLocaleString('fr-FR')} ${currencySymbol}`, inline: true },
-          { name: '💸 Total reversé', value: `${overview.totalPayouts.toLocaleString('fr-FR')} ${currencySymbol}`, inline: true },
+          { name: trg(ctx, '💰 Cagnotte Jackpot'), value: `${overview.jackpotPool.toLocaleString('fr-FR')} ${currencySymbol}`, inline: true },
+          { name: trg(ctx, '🎲 Parties jouées'), value: `${overview.totalGamesPlayed.toLocaleString('fr-FR')}`, inline: true },
+          { name: trg(ctx, '🪙 Total des mises'), value: `${overview.totalBets.toLocaleString('fr-FR')} ${currencySymbol}`, inline: true },
+          { name: trg(ctx, '💸 Total reversé'), value: `${overview.totalPayouts.toLocaleString('fr-FR')} ${currencySymbol}`, inline: true },
           {
-            name: '🌟 Plus gros gain',
+            name: trg(ctx, '🌟 Plus gros gain'),
             value: overview.biggestWin
-              ? `**${overview.biggestWin.username}** avec +**${overview.biggestWin.amount.toLocaleString('fr-FR')}** ${currencySymbol} (*${overview.biggestWin.game}*)`
-              : 'Aucun',
+              ? trg(ctx, '**{username}** avec +**{v1}** {currencySymbol} (*{game}*)', { username: overview.biggestWin.username, v1: overview.biggestWin.amount.toLocaleString('fr-FR'), currencySymbol, game: overview.biggestWin.game })
+              : trg(ctx, 'Aucun'),
             inline: false,
           }
         )
-        .setFooter({ text: `Système Monétaire Ethone Coin` })
+        .setFooter({ text: trg(ctx, 'Système Monétaire Ethone Coin') })
         .setTimestamp();
 
       await ctx.reply({ embeds: [embed] });

@@ -6,6 +6,7 @@ import { logger } from '../../../utils/logger.js';
 import { BotJobSchedulerService } from '../../../modules/botControl/services/botJobSchedulerService.js';
 import { isSendableTarget, sendToConfiguredChannel } from '../../../utils/channelSend.js';
 import { isModuleEnabled } from '../../../services/moduleRegistry.js';
+import { trg } from '../../../utils/tr.js';
 
 type SendableChannel = TextChannel | NewsChannel | ThreadChannel;
 
@@ -110,7 +111,7 @@ class BirthdayService {
     });
 
     const embed = baseEmbed('default', { color: '#FF6BAA' })
-      .setTitle('🎂 Anniversaire du jour')
+      .setTitle(trg(guildId, '🎂 Anniversaire du jour'))
       .setDescription(lines.join('\n'));
 
     await sendToConfiguredChannel(

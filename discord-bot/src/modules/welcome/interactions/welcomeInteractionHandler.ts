@@ -11,6 +11,7 @@ import { OnboardingService } from '../services/onboardingService.js';
 import { welcomeRepository } from '../storage/welcomeRepository.js';
 import { logger } from '../../../utils/logger.js';
 import { baseEmbed, successEmbed, errorEmbed, infoEmbed } from '../../../utils/embeds.js';
+import { trg } from '../../../utils/tr.js';
 
 export class WelcomeInteractionHandler {
   public static async handleButton(interaction: ButtonInteraction): Promise<void> {
@@ -28,7 +29,7 @@ export class WelcomeInteractionHandler {
       await interaction.editReply({
         embeds: [
           verifyEmbed
-            .setTitle(res.success ? '✅ Vérification réussie !' : '❌ Échec de la vérification')
+            .setTitle(res.success ? trg(interaction, '✅ Vérification réussie !') : trg(interaction, '❌ Échec de la vérification'))
             .setDescription(res.message),
         ],
       });
@@ -50,7 +51,7 @@ export class WelcomeInteractionHandler {
       // Ton "info" : c'est une simple consultation du règlement, pas une confirmation de
       // succès — le vert était utilisé ici par erreur (incohérence corrigée).
       const embed = infoEmbed({ footerText: 'Cliquez sur le bouton ci-dessous pour accepter le règlement.' })
-        .setTitle(`📜 Règlement de ${interaction.guild?.name}`)
+        .setTitle(trg(guildId, '📜 Règlement de {name}', { name: interaction.guild?.name }))
         .setDescription(
           rulesList.map((r, i) => `**${i + 1}.** ${r.replace(/^\d+\.\s*/, '')}`).join('\n\n')
         );
@@ -58,7 +59,7 @@ export class WelcomeInteractionHandler {
       const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
         new ButtonBuilder()
           .setCustomId(`welcome_rules_accept:${guildId}`)
-          .setLabel('J’ai lu et j’accepte le règlement')
+          .setLabel(trg(guildId, 'J’ai lu et j’accepte le règlement'))
           .setEmoji('✅')
           .setStyle(ButtonStyle.Success)
       );
@@ -92,11 +93,11 @@ export class WelcomeInteractionHandler {
       await interaction.editReply({
         embeds: [
           successEmbed()
-            .setTitle('✅ Règlement accepté avec succès !')
+            .setTitle(trg(interaction, '✅ Règlement accepté avec succès !'))
             .setDescription(
               verifRes.success
-                ? 'Merci d’avoir accepté les règles ! Votre compte a été automatiquement vérifié et les salons sont débloqués.'
-                : 'Merci d’avoir accepté le règlement du serveur. Bienvenue parmi nous !'
+                ? trg(interaction, 'Merci d’avoir accepté les règles ! Votre compte a été automatiquement vérifié et les salons sont débloqués.')
+                : trg(interaction, 'Merci d’avoir accepté le règlement du serveur. Bienvenue parmi nous !')
             ),
         ],
       });
@@ -114,11 +115,11 @@ export class WelcomeInteractionHandler {
         await interaction.editReply({
           embeds: [
             successEmbed()
-              .setTitle(res.added ? '🎭 Rôle attribué !' : '🎭 Rôle retiré')
+              .setTitle(res.added ? trg(interaction, '🎭 Rôle attribué !') : trg(interaction, '🎭 Rôle retiré'))
               .setDescription(
                 res.added
-                  ? `Le rôle **@${res.roleName}** vous a été attribué avec succès.`
-                  : `Le rôle **@${res.roleName}** vous a été retiré.`
+                  ? trg(interaction, 'Le rôle **@{roleName}** vous a été attribué avec succès.', { roleName: res.roleName })
+                  : trg(interaction, 'Le rôle **@{roleName}** vous a été retiré.', { roleName: res.roleName })
               ),
           ],
         });
@@ -134,7 +135,7 @@ export class WelcomeInteractionHandler {
     if (customId.startsWith('welcome_channel:')) {
       const channelId = customId.split(':')[1];
       await interaction.reply({
-        embeds: [baseEmbed('info').setDescription(`📍 Rendez-vous dans le salon <#${channelId}> !`)],
+        embeds: [baseEmbed('info').setDescription(trg(interaction, '📍 Rendez-vous dans le salon <#{channelId}> !', { channelId }))],
         flags: MessageFlags.Ephemeral,
       });
       return;

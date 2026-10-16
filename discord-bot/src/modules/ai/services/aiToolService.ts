@@ -2,6 +2,7 @@ import { Message, TextChannel, ThreadChannel, ChannelType, Guild, User } from 'd
 import { ticketService } from '../../tickets/services/ticketService.js';
 import { ticketRepository } from '../../tickets/storage/ticketRepository.js';
 import { logger } from '../../../utils/logger.js';
+import { trg } from '../../../utils/tr.js';
 
 export class AIToolService {
   /**
@@ -53,7 +54,7 @@ export class AIToolService {
       });
 
       await thread.send({
-        content: `👋 Bonjour <@${message.author.id}> ! Nous sommes dans votre thread privé avec **${assistantName}**. Vos questions et l'historique de cette session sont conservés ici.`,
+        content: trg(message, '👋 Bonjour <@{id}> ! Nous sommes dans votre thread privé avec **{assistantName}**. Vos questions et l\'historique de cette session sont conservés ici.', { id: message.author.id, assistantName }),
       });
 
       return thread;

@@ -10,6 +10,7 @@ import { economyService } from '../services/economyService.js';
 import { cooldownService } from '../../../services/cooldownService.js';
 import { buttonRow, container, footer, sectionWithThumbnail, separator, text, toneToColor } from '../../../utils/components.js';
 import { displayCurrencySymbol } from '../currencyEmoji.js';
+import { trg } from '../../../utils/tr.js';
 
 // /pay gets its own small fixed cooldown independent of the guild's
 // admin-configurable commandCooldown (which defaults to disabled) — this one
@@ -65,7 +66,7 @@ export const economyCommand: Command = {
 
   async execute(ctx: CommandContext): Promise<void> {
     if (!ctx.guild || !ctx.member) {
-      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('Cette commande doit être utilisée sur un serveur.')], ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(trg(ctx, 'Cette commande doit être utilisée sur un serveur.'))], ephemeral: true });
       return;
     }
 
@@ -77,7 +78,7 @@ export const economyCommand: Command = {
     const me = { id: ctx.author.id, username: ctx.author.username, avatarUrl: ctx.author.displayAvatarURL() };
 
     if (!config.enabled && sub !== 'shop') {
-      await ctx.reply({ embeds: [ctx.createEmbed('neutral').setDescription('⚪ L’économie est désactivée sur ce serveur.')], ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('neutral').setDescription(trg(guildId, '⚪ L’économie est désactivée sur ce serveur.'))], ephemeral: true });
       return;
     }
 
@@ -108,9 +109,9 @@ export const economyCommand: Command = {
       const result = economyService.claimDaily(guildId, me);
       if (!result.ok) {
         if (result.reason === 'cooldown') {
-          await ctx.reply({ embeds: [ctx.createEmbed('warning').setDescription(`⏳ Vous avez déjà réclamé votre bonus. Revenez dans environ **${humanDuration(result.remainingMs || 0)}**.`)], ephemeral: true });
+          await ctx.reply({ embeds: [ctx.createEmbed('warning').setDescription(trg(guildId, '⏳ Vous avez déjà réclamé votre bonus. Revenez dans environ **{v0}**.', { v0: humanDuration(result.remainingMs || 0) }))], ephemeral: true });
         } else {
-          await ctx.reply({ embeds: [ctx.createEmbed('neutral').setDescription('⚪ L’économie est désactivée sur ce serveur.')], ephemeral: true });
+          await ctx.reply({ embeds: [ctx.createEmbed('neutral').setDescription(trg(guildId, '⚪ L’économie est désactivée sur ce serveur.'))], ephemeral: true });
         }
         return;
       }
@@ -128,9 +129,9 @@ export const economyCommand: Command = {
       const result = economyService.work(guildId, me);
       if (!result.ok) {
         if (result.reason === 'cooldown') {
-          await ctx.reply({ embeds: [ctx.createEmbed('warning').setDescription(`⏳ Tu as déjà travaillé récemment. Prochain boulot dans **${humanDuration(result.remainingMs || 0)}**.`)], ephemeral: true });
+          await ctx.reply({ embeds: [ctx.createEmbed('warning').setDescription(trg(guildId, '⏳ Tu as déjà travaillé récemment. Prochain boulot dans **{v0}**.', { v0: humanDuration(result.remainingMs || 0) }))], ephemeral: true });
         } else {
-          await ctx.reply({ embeds: [ctx.createEmbed('neutral').setDescription('⚪ Le travail est désactivé sur ce serveur.')], ephemeral: true });
+          await ctx.reply({ embeds: [ctx.createEmbed('neutral').setDescription(trg(guildId, '⚪ Le travail est désactivé sur ce serveur.'))], ephemeral: true });
         }
         return;
       }
@@ -182,7 +183,7 @@ export const economyCommand: Command = {
     if (sub === 'pay') {
       const { onCooldown, remainingSeconds } = cooldownService.checkAndApply(guildId, ctx.author.id, 'economy-pay', PAY_COOLDOWN_SECONDS, false);
       if (onCooldown) {
-        await ctx.reply({ embeds: [ctx.createEmbed('warning').setDescription(`⏳ Merci de patienter encore ${remainingSeconds}s avant un nouveau transfert.`)], ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('warning').setDescription(trg(guildId, '⏳ Merci de patienter encore {remainingSeconds}s avant un nouveau transfert.', { remainingSeconds }))], ephemeral: true });
         return;
       }
 
@@ -212,7 +213,7 @@ export const economyCommand: Command = {
     if (sub === 'leaderboard') {
       const entries = economyStorage.getLeaderboard(guildId, config.leaderboardSize);
       if (entries.length === 0) {
-        await ctx.reply({ embeds: [ctx.createEmbed('info').setDescription('Aucun membre n’a encore de solde sur ce serveur.')] });
+        await ctx.reply({ embeds: [ctx.createEmbed('info').setDescription(trg(guildId, 'Aucun membre n’a encore de solde sur ce serveur.'))] });
         return;
       }
       const medals = ['🥇', '🥈', '🥉'];
@@ -250,7 +251,7 @@ export const economyCommand: Command = {
             : `**-${fmt(result.amount, sym)}**\nNouveau solde : **${fmt(result.balance, sym)}**`
         ),
         separator(false),
-        buttonRow(new ButtonBuilder().setCustomId(`eco_btn_gamble_${result.amount}`).setLabel('Rejouer la même mise').setEmoji('🎲').setStyle(ButtonStyle.Secondary)),
+        buttonRow(new ButtonBuilder().setCustomId(`eco_btn_gamble_${result.amount}`).setLabel(trg(guildId, 'Rejouer la même mise')).setEmoji('🎲').setStyle(ButtonStyle.Secondary)),
       ]);
       await ctx.reply({ components: [card], componentsV2: true });
       return;
@@ -259,7 +260,7 @@ export const economyCommand: Command = {
     if (sub === 'shop') {
       const items = economyStorage.getShopItems(guildId).filter((i) => i.enabled);
       if (items.length === 0) {
-        await ctx.reply({ embeds: [ctx.createEmbed('info').setDescription('La boutique est vide pour le moment.')] });
+        await ctx.reply({ embeds: [ctx.createEmbed('info').setDescription(trg(guildId, 'La boutique est vide pour le moment.'))] });
         return;
       }
       const wallet = economyStorage.getWallet(guildId, ctx.author.id, me);

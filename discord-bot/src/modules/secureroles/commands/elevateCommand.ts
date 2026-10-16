@@ -3,6 +3,7 @@ import { Command, CommandContext } from '../../../types/command.js';
 import { endMemberSession, elevate } from '../services/secureRolesService.js';
 import { noticeEmbed } from '../../../utils/embeds.js';
 import { buildGrantedEmbed, buildSetupEmbed } from '../services/secureMessages.js';
+import { trg } from '../../../utils/tr.js';
 
 /**
  * /elevate — obtient ses permissions sensibles pour une durée limitée. Première utilisation (après invitation par un
@@ -21,7 +22,7 @@ export const elevateCommand: Command = {
 
   async execute(ctx: CommandContext): Promise<void> {
     if (!ctx.guild || !ctx.isSlash || !ctx.interaction || !ctx.member) {
-      await ctx.reply({ embeds: [noticeEmbed('error', 'Utilise la commande slash **/elevate** sur un serveur.')], ephemeral: true });
+      await ctx.reply({ embeds: [noticeEmbed('error', trg(ctx, 'Utilise la commande slash **/elevate** sur un serveur.'))], ephemeral: true });
       return;
     }
     const i = ctx.interaction;
@@ -30,7 +31,7 @@ export const elevateCommand: Command = {
 
     if (i.options.getBoolean('terminer')) {
       const ended = await endMemberSession(member);
-      await i.editReply({ embeds: [noticeEmbed(ended ? 'success' : 'info', ended ? 'Session terminée : tes permissions sensibles ont été retirées.' : 'Tu n’as pas de session en cours.')] });
+      await i.editReply({ embeds: [noticeEmbed(ended ? 'success' : 'info', ended ? trg(ctx, 'Session terminée : tes permissions sensibles ont été retirées.') : trg(ctx, 'Tu n’as pas de session en cours.'))] });
       return;
     }
 
@@ -43,13 +44,13 @@ export const elevateCommand: Command = {
         await i.editReply({ embeds: [buildSetupEmbed(res.secret, res.uri)] });
         return;
       case 'need_code':
-        await i.editReply({ embeds: [noticeEmbed('info', 'Envoie le code de ton application : `/elevate code:123456`.')] });
+        await i.editReply({ embeds: [noticeEmbed('info', trg(ctx, 'Envoie le code de ton application : `/elevate code:123456`.'))] });
         return;
       case 'wrong_code':
-        await i.editReply({ embeds: [noticeEmbed('error', `Code incorrect ou déjà utilisé. Il te reste ${res.remaining} essai${res.remaining > 1 ? 's' : ''} avant un blocage de 10 minutes.`)] });
+        await i.editReply({ embeds: [noticeEmbed('error', trg(ctx, 'Code incorrect ou déjà utilisé. Il te reste {remaining} essai{v1} avant un blocage de 10 minutes.', { remaining: res.remaining, v1: res.remaining > 1 ? 's' : '' }))] });
         return;
       case 'locked':
-        await i.editReply({ embeds: [noticeEmbed('error', `Trop d’essais : réessaie <t:${Math.floor(res.until.getTime() / 1000)}:R>.`)] });
+        await i.editReply({ embeds: [noticeEmbed('error', trg(ctx, 'Trop d’essais : réessaie <t:{v0}:R>.', { v0: Math.floor(res.until.getTime() / 1000) }))] });
         return;
       default:
         await i.editReply({ embeds: [noticeEmbed('error', res.message)] });

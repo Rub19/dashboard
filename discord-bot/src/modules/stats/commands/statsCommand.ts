@@ -5,6 +5,7 @@ import { statsQueries } from '../services/statsQueries.js';
 import { renderBarChart, renderMemberCard, formatCompact } from '../images/statsImages.js';
 import { emitConfigUpdated } from '../../../services/syncConfigEmitter.js';
 import { RankedEntry } from '../types/stats.js';
+import { trg } from '../../../utils/tr.js';
 
 const PERIODS = [7, 30, 60, 90, 365];
 const MEDALS = ['🥇', '🥈', '🥉'];
@@ -75,7 +76,7 @@ export const statsCommand: Command = {
   async execute(ctx: CommandContext): Promise<void> {
     const guild = ctx.guild;
     if (!guild || !ctx.isSlash || !ctx.interaction) {
-      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('❌ Utilise la commande slash **/stats** sur un serveur.')], ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(trg(ctx, '❌ Utilise la commande slash **/stats** sur un serveur.'))], ephemeral: true });
       return;
     }
     const i = ctx.interaction;
@@ -85,18 +86,18 @@ export const statsCommand: Command = {
 
     if (sub === 'reset') {
       if (!ctx.member?.permissions.has(PermissionFlagsBits.ManageGuild)) {
-        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('⛔ Réservé aux membres qui ont la permission **Gérer le serveur**.')], ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(trg(guildId, '⛔ Réservé aux membres qui ont la permission **Gérer le serveur**.'))], ephemeral: true });
         return;
       }
       statsStorage.clearGuild(guildId);
       emitConfigUpdated('stats', guildId, statsStorage.getConfig(guildId), 'DISCORD_COMMAND', ctx.author.id);
-      await ctx.reply({ embeds: [ctx.createEmbed('success').setDescription('🧹 Toutes les statistiques de ce serveur ont été effacées.')], ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('success').setDescription(trg(guildId, '🧹 Toutes les statistiques de ce serveur ont été effacées.'))], ephemeral: true });
       return;
     }
 
     if (!config.enabled) {
       await ctx.reply({
-        embeds: [ctx.createEmbed('warning').setDescription('📊 Le module **Statistiques** n’est pas actif sur ce serveur. Un membre avec « Gérer le serveur » peut l’activer avec `/module nom:stats activer:True` ou depuis le dashboard : les données se collectent à partir de l’activation.')],
+        embeds: [ctx.createEmbed('warning').setDescription(trg(guildId, '📊 Le module **Statistiques** n’est pas actif sur ce serveur. Un membre avec « Gérer le serveur » peut l’activer avec `/module nom:stats activer:True` ou depuis le dashboard : les données se collectent à partir de l’activation.'))],
         ephemeral: true,
       });
       return;
@@ -127,12 +128,12 @@ export const statsCommand: Command = {
         .setTitle(`📊 ${guild.name}`)
         .setImage('attachment://stats.png')
         .addFields(
-          { name: 'Messages', value: formatCompact(summary.totals.messages), inline: true },
-          { name: 'Vocal', value: `${formatCompact(summary.totals.voiceHours)} h`, inline: true },
-          { name: 'Membres actifs', value: formatCompact(summary.totals.activeUsers), inline: true },
-          { name: 'Arrivées / départs', value: `+${summary.totals.joins} / −${summary.totals.leaves}`, inline: true },
-          { name: 'Top membres', value: lines(summary.topMembersMessages, (e) => `<@${e.id}>`, msgs), inline: true },
-          { name: 'Top salons', value: lines(summary.topChannelsMessages, (e) => `<#${e.id}>`, msgs), inline: true }
+          { name: trg(guildId, 'Messages'), value: formatCompact(summary.totals.messages), inline: true },
+          { name: trg(guildId, 'Vocal'), value: `${formatCompact(summary.totals.voiceHours)} h`, inline: true },
+          { name: trg(guildId, 'Membres actifs'), value: formatCompact(summary.totals.activeUsers), inline: true },
+          { name: trg(guildId, 'Arrivées / départs'), value: `+${summary.totals.joins} / −${summary.totals.leaves}`, inline: true },
+          { name: trg(guildId, 'Top membres'), value: lines(summary.topMembersMessages, (e) => `<@${e.id}>`, msgs), inline: true },
+          { name: trg(guildId, 'Top salons'), value: lines(summary.topChannelsMessages, (e) => `<#${e.id}>`, msgs), inline: true }
         );
       if (since) embed.setFooter({ text: since });
       await i.editReply({ embeds: [embed], files: [new AttachmentBuilder(png, { name: 'stats.png' })] });
@@ -159,7 +160,7 @@ export const statsCommand: Command = {
         topChannels,
         series: stats.series,
       });
-      await i.editReply({ files: [new AttachmentBuilder(png, { name: `stats-${user.id}.png` })], content: since ?? '' });
+      await i.editReply({ files: [new AttachmentBuilder(png, { name: trg(guildId, 'stats-{id}.png', { id: user.id }) })], content: since ?? '' });
       return;
     }
 
@@ -170,7 +171,7 @@ export const statsCommand: Command = {
       const body = entries.length
         ? entries.map((e, idx) => `${MEDALS[idx] ?? `**${idx + 1}.**`} <@${e.id}> — **${type === 'voice' ? hrs(e.value) : msgs(e.value)}**`).join('\n')
         : 'Aucune donnée sur cette période.';
-      const embed = ctx.createEmbed('info').setTitle(`🏆 Top ${type === 'voice' ? 'vocal' : 'messages'} — ${days} jours`).setDescription(body);
+      const embed = ctx.createEmbed('info').setTitle(trg(guildId, '🏆 Top {v0} — {days} jours', { v0: type === 'voice' ? 'vocal' : 'messages', days })).setDescription(body);
       if (since) embed.setFooter({ text: since });
       await i.editReply({ embeds: [embed], allowedMentions: { parse: [] } });
       return;
@@ -179,7 +180,7 @@ export const statsCommand: Command = {
     if (sub === 'channel') {
       const channel = i.options.getChannel('salon') ?? i.channel;
       if (!channel || !('id' in channel)) {
-        await i.editReply({ embeds: [ctx.createEmbed('error').setDescription('❌ Salon introuvable.')] });
+        await i.editReply({ embeds: [ctx.createEmbed('error').setDescription(trg(guildId, '❌ Salon introuvable.'))] });
         return;
       }
       const stats = statsQueries.channel(guildId, channel.id, days);
@@ -196,8 +197,8 @@ export const statsCommand: Command = {
         .createEmbed('info')
         .setTitle(`📈 #${'name' in channel && channel.name ? channel.name : channel.id}`)
         .setImage('attachment://channel.png')
-        .setDescription(isVoice ? `**${hrs(stats.totals.voiceHours)}** de vocal sur ${days} jours` : `**${formatCompact(stats.totals.messages)}** messages sur ${days} jours`)
-        .addFields({ name: 'Membres les plus actifs', value: lines(top, (e) => `<@${e.id}>`, isVoice ? hrs : msgs) });
+        .setDescription(isVoice ? trg(guildId, '**{v0}** de vocal sur {days} jours', { v0: hrs(stats.totals.voiceHours), days }) : trg(guildId, '**{v0}** messages sur {days} jours', { v0: formatCompact(stats.totals.messages), days }))
+        .addFields({ name: trg(guildId, 'Membres les plus actifs'), value: lines(top, (e) => `<@${e.id}>`, isVoice ? hrs : msgs) });
       if (since) embed.setFooter({ text: since });
       await i.editReply({ embeds: [embed], files: [new AttachmentBuilder(png, { name: 'channel.png' })], allowedMentions: { parse: [] } });
     }

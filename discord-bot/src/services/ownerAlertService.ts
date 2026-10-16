@@ -1,6 +1,7 @@
 import { EmbedBuilder, type Guild } from 'discord.js';
 import { guildConfigService } from './guildConfigService.js';
 import { logger } from '../utils/logger.js';
+import { trg } from '../utils/tr.js';
 
 /**
  * « Prévenir le propriétaire en MP » (Réglages de la console, désactivé par défaut) : lors d'une alerte grave
@@ -20,8 +21,8 @@ export async function notifyOwnerByDm(guild: Guild, title: string, description: 
     const embed = new EmbedBuilder()
       .setColor(0xef4444)
       .setTitle(`🚨 ${title}`)
-      .setDescription(`${description}\n\nServeur : **${guild.name}**`)
-      .setFooter({ text: 'Désactivable dans la console Etho › Réglages' })
+      .setDescription(trg(guild, '{description}\n\nServeur : **{name}**', { description, name: guild.name }))
+      .setFooter({ text: trg(guild, 'Désactivable dans la console Etho › Réglages') })
       .setTimestamp();
     await owner.send({ embeds: [embed] });
     return true;

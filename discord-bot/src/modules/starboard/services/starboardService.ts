@@ -16,6 +16,7 @@ import { starboardStorage } from '../storage/starboardStorage.js';
 import { StarboardConfig, StarboardEntry } from '../types/starboard.js';
 import { logger } from '../../../utils/logger.js';
 import { canBotSendTo, isSendableTarget, sendToConfiguredChannel } from '../../../utils/channelSend.js';
+import { trg } from '../../../utils/tr.js';
 
 type StarboardTextChannel = TextChannel | NewsChannel | ThreadChannel;
 
@@ -115,7 +116,7 @@ class StarboardService {
       (a) => !((a.contentType?.startsWith('image/') ?? false) || IMAGE_EXT.test(a.name ?? ''))
     );
     if (nonImageAttachment) {
-      embed.addFields({ name: 'Pièce jointe', value: `[${nonImageAttachment.name}](${nonImageAttachment.url})` });
+      embed.addFields({ name: trg(message, 'Pièce jointe'), value: `[${nonImageAttachment.name}](${nonImageAttachment.url})` });
     }
 
     return embed;

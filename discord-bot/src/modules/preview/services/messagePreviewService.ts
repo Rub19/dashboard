@@ -12,6 +12,7 @@ import { buildAutomodWarnEmbed } from '../../automod/services/actionEngine.js';
 import { buildEmergencyEmbed } from '../../health/services/emergencyService.js';
 import { buildGrantedEmbed, buildSetupEmbed } from '../../secureroles/services/secureMessages.js';
 import { logger } from '../../../utils/logger.js';
+import { trg } from '../../../utils/tr.js';
 
 /**
  * Aperçu des messages du bot : envoie en message privé un exemplaire de chaque message que le bot sait produire, construit
@@ -48,11 +49,11 @@ export function buildCatalog(client: Client, guild: Guild): PreviewEntry[] {
   const noComponents = (m: BaseMessageOptions): BaseMessageOptions => ({ embeds: m.embeds });
 
   const list: PreviewEntry[] = [
-    { id: 'status-success', category: 'statuts', title: 'Succès', message: { embeds: [noticeEmbed('success', 'L’action a bien été effectuée.')] } },
-    { id: 'status-error', category: 'statuts', title: 'Erreur', message: { embeds: [noticeEmbed('error', 'Une erreur est survenue. Réessaie dans un instant.')] } },
-    { id: 'status-warning', category: 'statuts', title: 'Avertissement', message: { embeds: [noticeEmbed('warning', 'Attention : cette action est sensible.')] } },
-    { id: 'status-info', category: 'statuts', title: 'Information', message: { embeds: [noticeEmbed('info', 'Voici une information sur le serveur.')] } },
-    { id: 'status-denied', category: 'statuts', title: 'Accès refusé', message: { embeds: [noticeEmbed('denied', 'Tu n’as pas la permission d’utiliser cette commande.')] } },
+    { id: 'status-success', category: 'statuts', title: 'Succès', message: { embeds: [noticeEmbed('success', trg(guild, 'L’action a bien été effectuée.'))] } },
+    { id: 'status-error', category: 'statuts', title: 'Erreur', message: { embeds: [noticeEmbed('error', trg(guild, 'Une erreur est survenue. Réessaie dans un instant.'))] } },
+    { id: 'status-warning', category: 'statuts', title: 'Avertissement', message: { embeds: [noticeEmbed('warning', trg(guild, 'Attention : cette action est sensible.'))] } },
+    { id: 'status-info', category: 'statuts', title: 'Information', message: { embeds: [noticeEmbed('info', trg(guild, 'Voici une information sur le serveur.'))] } },
+    { id: 'status-denied', category: 'statuts', title: 'Accès refusé', message: { embeds: [noticeEmbed('denied', trg(guild, 'Tu n’as pas la permission d’utiliser cette commande.'))] } },
 
     { id: 'general-ping', category: 'general', title: '/ping', message: noComponents(buildPingMessage(client, guildConfig, 42)) },
     { id: 'general-settings', category: 'general', title: '/settings', message: noComponents(buildSettingsMessage(guildConfig, SAMPLE.username)) },
@@ -104,7 +105,7 @@ export async function sendPreview(client: Client, guild: Guild, userId: string, 
   const result: PreviewResult = { total: entries.length, sent: 0, failed: 0, dmClosed: false };
 
   try {
-    await user.send({ embeds: [noticeEmbed('info', `Voici ${entries.length} message(s) du bot, avec des données d’exemple (rien n’est modifié sur **${guild.name}**). Les boutons et menus sont retirés : ils ne fonctionnent pas en message privé.`, { title: 'Aperçu des messages du bot' })] });
+    await user.send({ embeds: [noticeEmbed('info', trg(guild, 'Voici {length} message(s) du bot, avec des données d’exemple (rien n’est modifié sur **{name}**). Les boutons et menus sont retirés : ils ne fonctionnent pas en message privé.', { length: entries.length, name: guild.name }), { title: 'Aperçu des messages du bot' })] });
   } catch {
     result.dmClosed = true;
     return result;

@@ -8,6 +8,7 @@ import { baseEmbed } from '../../../utils/embeds.js';
 import { ownerImmunityService } from '../../../services/ownerImmunityService.js';
 import { guildConfigService } from '../../../services/guildConfigService.js';
 import { formatString, getTranslation } from '../../../utils/i18n.js';
+import { trg } from '../../../utils/tr.js';
 
 export interface ExecuteSanctionParams {
   guildId: string;
@@ -64,22 +65,22 @@ export class SanctionService {
       // Le Bot Owner est immunisé contre toute sanction, sur tous les serveurs —
       // protection "god mode" globale (même logique que moderation/permissions/hierarchy.ts).
       if (ownerImmunityService.isOwnerImmune(targetMember.id)) {
-        return { success: false, error: 'Ce membre est immunisé contre toute sanction (Bot Owner).' };
+        return { success: false, error: trg(guild, 'Ce membre est immunisé contre toute sanction (Bot Owner).') };
       }
 
       if (targetMember.id === guild.ownerId) {
-        return { success: false, error: 'Impossible de sanctionner le propriétaire du serveur.' };
+        return { success: false, error: trg(guild, 'Impossible de sanctionner le propriétaire du serveur.') };
       }
 
       if (targetMember.id === discordClient.user?.id) {
-        return { success: false, error: 'Le bot ne peut pas se sanctionner lui-même.' };
+        return { success: false, error: trg(guild, 'Le bot ne peut pas se sanctionner lui-même.') };
       }
 
       // Vérifier la hiérarchie du bot
       if (!targetMember.manageable && params.action !== 'WARN') {
         return {
           success: false,
-          error: "Le rôle le plus élevé du bot est inférieur ou égal à celui de l'utilisateur.",
+          error: trg(guild, 'Le rôle le plus élevé du bot est inférieur ou égal à celui de l\'utilisateur.'),
         };
       }
     }
@@ -108,7 +109,7 @@ export class SanctionService {
 
         case 'TIMEOUT': {
           if (!targetMember) {
-            return { success: false, error: 'Le membre doit être présent sur le serveur pour être exclu (Timeout).' };
+            return { success: false, error: trg(guild, 'Le membre doit être présent sur le serveur pour être exclu (Timeout).') };
           }
           const durMs = (params.durationSeconds || 600) * 1000;
           await targetMember.timeout(durMs, `${params.moderatorTag}: ${params.reason}`);
@@ -117,7 +118,7 @@ export class SanctionService {
 
         case 'KICK': {
           if (!targetMember) {
-            return { success: false, error: 'Le membre doit être présent sur le serveur pour être expulsé.' };
+            return { success: false, error: trg(guild, 'Le membre doit être présent sur le serveur pour être expulsé.') };
           }
           const kickEmbed = baseEmbed('default', {
             color: Colors.Orange,
@@ -166,7 +167,7 @@ export class SanctionService {
 
         case 'QUARANTINE': {
           if (!targetMember) {
-            return { success: false, error: 'Le membre doit être présent sur le serveur pour être mis en quarantaine.' };
+            return { success: false, error: trg(guild, 'Le membre doit être présent sur le serveur pour être mis en quarantaine.') };
           }
           const settings = moderationRepository.getSettings(params.guildId);
           if (settings.quarantineRoleId) {

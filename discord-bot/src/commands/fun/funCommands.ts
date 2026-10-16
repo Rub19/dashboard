@@ -15,6 +15,7 @@ import {
   buildReverseImageEmbed,
   buildTvShowEmbed,
 } from '../../modules/fun/ui/funEmbeds.js';
+import { trg } from '../../utils/tr.js';
 
 export const lyricsCommand: Command = {
   name: 'lyrics',
@@ -33,7 +34,7 @@ export const lyricsCommand: Command = {
       : ctx.args.join(' ');
 
     if (!query || !query.trim()) {
-      await ctx.reply({ content: '❌ Veuillez préciser le nom d\'une chanson (ex: `/lyrics Bohemian Rhapsody`).' });
+      await ctx.reply({ content: trg(ctx, '❌ Veuillez préciser le nom d\'une chanson (ex: `/lyrics Bohemian Rhapsody`).') });
       return;
     }
 
@@ -83,7 +84,7 @@ export const quoteCommand: Command = {
     }
 
     if (!text.trim()) {
-      await ctx.reply({ content: '❌ Veuillez fournir le texte à citer (ex: `/quote "La vie est belle" Coluche`).' });
+      await ctx.reply({ content: trg(ctx, '❌ Veuillez fournir le texte à citer (ex: `/quote "La vie est belle" Coluche`).') });
       return;
     }
 
@@ -110,7 +111,7 @@ export const duckduckgoimageCommand: Command = {
       : ctx.args.join(' ');
 
     if (!query || !query.trim()) {
-      await ctx.reply({ content: '❌ Veuillez indiquer un sujet de recherche.' });
+      await ctx.reply({ content: trg(ctx, '❌ Veuillez indiquer un sujet de recherche.') });
       return;
     }
 
@@ -123,11 +124,11 @@ export const duckduckgoimageCommand: Command = {
       const ddgWebLink = `https://duckduckgo.com/?q=${encodeURIComponent(query)}&iax=images&ia=images`;
       const embed = new EmbedBuilder()
         .setColor(0xf97316)
-        .setTitle(`🔍 Images DuckDuckGo : ${query}`)
-        .setDescription(`Consultez directement la galerie DuckDuckGo pour : **${query}**`)
+        .setTitle(trg(ctx, '🔍 Images DuckDuckGo : {query}', { query }))
+        .setDescription(trg(ctx, 'Consultez directement la galerie DuckDuckGo pour : **{query}**', { query }))
         .setURL(ddgWebLink);
       const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
-        new ButtonBuilder().setLabel('Ouvrir sur DuckDuckGo').setStyle(ButtonStyle.Link).setURL(ddgWebLink)
+        new ButtonBuilder().setLabel(trg(ctx, 'Ouvrir sur DuckDuckGo')).setStyle(ButtonStyle.Link).setURL(ddgWebLink)
       );
 
       if (ctx.isSlash && ctx.interaction) {
@@ -143,13 +144,13 @@ export const duckduckgoimageCommand: Command = {
       .setColor(0xf97316)
       .setTitle(`🖼️ ${img.title}`)
       .setImage(img.fullUrl)
-      .setFooter({ text: 'Etho Fun • DuckDuckGo Image' })
+      .setFooter({ text: trg(ctx, 'Etho Fun • DuckDuckGo Image') })
       .setTimestamp();
 
     const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
-      new ButtonBuilder().setLabel('Voir en plein écran').setStyle(ButtonStyle.Link).setURL(img.fullUrl),
+      new ButtonBuilder().setLabel(trg(ctx, 'Voir en plein écran')).setStyle(ButtonStyle.Link).setURL(img.fullUrl),
       new ButtonBuilder()
-        .setLabel('Recherche DuckDuckGo')
+        .setLabel(trg(ctx, 'Recherche DuckDuckGo'))
         .setStyle(ButtonStyle.Link)
         .setURL(`https://duckduckgo.com/?q=${encodeURIComponent(query)}&iax=images&ia=images`)
     );
@@ -177,7 +178,7 @@ export const imageCommand: Command = {
       : ctx.args.join(' ');
 
     if (!query || !query.trim()) {
-      await ctx.reply({ content: '❌ Veuillez indiquer un sujet de recherche.' });
+      await ctx.reply({ content: trg(ctx, '❌ Veuillez indiquer un sujet de recherche.') });
       return;
     }
 
@@ -191,11 +192,11 @@ export const imageCommand: Command = {
     if (images.length === 0) {
       const embed = new EmbedBuilder()
         .setColor(0x4285f4)
-        .setTitle(`🔍 Google Images : ${query}`)
-        .setDescription(`Consultez directement la galerie Google Images pour : **${query}**`)
+        .setTitle(trg(ctx, '🔍 Google Images : {query}', { query }))
+        .setDescription(trg(ctx, 'Consultez directement la galerie Google Images pour : **{query}**', { query }))
         .setURL(googleImagesUrl);
       const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
-        new ButtonBuilder().setLabel('Ouvrir sur Google Images').setStyle(ButtonStyle.Link).setURL(googleImagesUrl)
+        new ButtonBuilder().setLabel(trg(ctx, 'Ouvrir sur Google Images')).setStyle(ButtonStyle.Link).setURL(googleImagesUrl)
       );
 
       if (ctx.isSlash && ctx.interaction) {
@@ -211,12 +212,12 @@ export const imageCommand: Command = {
       .setColor(0x4285f4)
       .setTitle(`🖼️ ${img.title}`)
       .setImage(img.fullUrl)
-      .setFooter({ text: 'Etho Fun • Google & Web Image' })
+      .setFooter({ text: trg(ctx, 'Etho Fun • Google & Web Image') })
       .setTimestamp();
 
     const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
-      new ButtonBuilder().setLabel('Image originale').setStyle(ButtonStyle.Link).setURL(img.fullUrl),
-      new ButtonBuilder().setLabel('Recherche Google').setStyle(ButtonStyle.Link).setURL(googleImagesUrl)
+      new ButtonBuilder().setLabel(trg(ctx, 'Image originale')).setStyle(ButtonStyle.Link).setURL(img.fullUrl),
+      new ButtonBuilder().setLabel(trg(ctx, 'Recherche Google')).setStyle(ButtonStyle.Link).setURL(googleImagesUrl)
     );
 
     if (ctx.isSlash && ctx.interaction) {
@@ -246,7 +247,7 @@ export const reverseimageCommand: Command = {
     }
 
     if (!url || !url.startsWith('http')) {
-      await ctx.reply({ content: '❌ Veuillez fournir une URL d\'image valide (http:// ou https://) ou joindre une image.' });
+      await ctx.reply({ content: trg(ctx, '❌ Veuillez fournir une URL d\'image valide (http:// ou https://) ou joindre une image.') });
       return;
     }
 
@@ -272,7 +273,7 @@ export const tvshowCommand: Command = {
       : ctx.args.join(' ');
 
     if (!title || !title.trim()) {
-      await ctx.reply({ content: '❌ Veuillez préciser le nom d\'une série (ex: `/tvshow Breaking Bad`).' });
+      await ctx.reply({ content: trg(ctx, '❌ Veuillez préciser le nom d\'une série (ex: `/tvshow Breaking Bad`).') });
       return;
     }
 
@@ -315,7 +316,7 @@ export const movieCommand: Command = {
       : ctx.args.join(' ');
 
     if (!title || !title.trim()) {
-      await ctx.reply({ content: '❌ Veuillez préciser le nom d\'un film (ex: `/movie Inception`).' });
+      await ctx.reply({ content: trg(ctx, '❌ Veuillez préciser le nom d\'un film (ex: `/movie Inception`).') });
       return;
     }
 
@@ -358,7 +359,7 @@ export const gameCommand: Command = {
       : ctx.args.join(' ');
 
     if (!title || !title.trim()) {
-      await ctx.reply({ content: '❌ Veuillez préciser le nom d\'un jeu vidéo (ex: `/game Cyberpunk 2077`).' });
+      await ctx.reply({ content: trg(ctx, '❌ Veuillez préciser le nom d\'un jeu vidéo (ex: `/game Cyberpunk 2077`).') });
       return;
     }
 
@@ -503,7 +504,7 @@ export const funMasterCommand: Command = {
         return gameCommand.execute(subCtx);
       default:
         await ctx.reply({
-          content: '🎮 **Commandes Fun disponibles :**\n• `/lyrics <query>`\n• `/quote <text>`\n• `/image <search>`\n• `/duckduckgoimage <search>`\n• `/reverseimage <url>`\n• `/tiktok <user|video>`\n• `/pinterest <search|pin|user>`\n• `/movie <title>`\n• `/tvshow <title>`\n• `/game <title>`',
+          content: trg(ctx, '🎮 **Commandes Fun disponibles :**\n• `/lyrics <query>`\n• `/quote <text>`\n• `/image <search>`\n• `/duckduckgoimage <search>`\n• `/reverseimage <url>`\n• `/tiktok <user|video>`\n• `/pinterest <search|pin|user>`\n• `/movie <title>`\n• `/tvshow <title>`\n• `/game <title>`'),
         });
     }
   },

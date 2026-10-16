@@ -6,6 +6,7 @@ import {
   User,
 } from 'discord.js';
 import { SpotifyTrack } from '../types/spotify.js';
+import { trg } from '../../../utils/tr.js';
 
 export const SPOTIFY_GREEN = 0x1db954;
 
@@ -113,7 +114,7 @@ export async function handleSpotifyButton(interaction: any): Promise<void> {
 
   if (interaction.user.id !== targetUserId) {
     await interaction.reply({
-      content: 'Vous ne pouvez contrôler que votre propre session Spotify (ou tapez `/spotify login` pour associer votre compte).',
+      content: trg(interaction, 'Vous ne pouvez contrôler que votre propre session Spotify (ou tapez `/spotify login` pour associer votre compte).'),
       ephemeral: true,
     });
     return;
@@ -123,7 +124,7 @@ export async function handleSpotifyButton(interaction: any): Promise<void> {
 
   if (action === 'vc') {
     if (!interaction.guild || !interaction.member) {
-      await interaction.reply({ content: 'Cette action doit être effectuée sur un serveur.', ephemeral: true });
+      await interaction.reply({ content: trg(interaction, 'Cette action doit être effectuée sur un serveur.'), ephemeral: true });
       return;
     }
     await interaction.deferReply({ ephemeral: true });
@@ -132,7 +133,7 @@ export async function handleSpotifyButton(interaction: any): Promise<void> {
       await interaction.editReply({ content: res.error || 'Impossible de diffuser dans le salon vocal.' });
       return;
     }
-    await interaction.editReply({ content: `🎶 **${res.trackTitle}** est maintenant diffusé dans le salon vocal **${res.channelName}** !` });
+    await interaction.editReply({ content: trg(interaction, '🎶 **{trackTitle}** est maintenant diffusé dans le salon vocal **{channelName}** !', { trackTitle: res.trackTitle, channelName: res.channelName }) });
     return;
   }
 

@@ -5,6 +5,7 @@ import { PresenceService } from '../../modules/presence/services/presenceService
 import { discordOwnerPanel } from '../../modules/presence/ui/discordOwnerPanel.js';
 import { DiscordStatus, DiscordActivityType } from '../../modules/presence/types/index.js';
 import { errorEmbed, warningEmbed } from '../../utils/embeds.js';
+import { trg } from '../../utils/tr.js';
 
 /**
  * /status — Affiche ou modifie le statut Discord & l'activité globale du bot.
@@ -73,7 +74,7 @@ export const statusCommand: Command = {
   execute: async (ctx: CommandContext) => {
     if (ctx.author.id !== config.botOwnerId) {
       await ctx.reply({
-        embeds: [errorEmbed().setDescription('⛔ **Accès refusé** : cette commande est réservée au Bot Owner — le statut Discord du bot est global et partagé par tous les serveurs.')],
+        embeds: [errorEmbed().setDescription(trg(ctx, '⛔ **Accès refusé** : cette commande est réservée au Bot Owner — le statut Discord du bot est global et partagé par tous les serveurs.'))],
         ephemeral: true,
       });
       return;
@@ -119,7 +120,7 @@ export const statusCommand: Command = {
 
     if (result.rateLimited) {
       await ctx.reply({
-        embeds: [warningEmbed().setDescription('⏳ Limite de mise à jour Gateway atteinte (max 5 changements/minute). Réessayez dans quelques instants.')],
+        embeds: [warningEmbed().setDescription(trg(ctx, '⏳ Limite de mise à jour Gateway atteinte (max 5 changements/minute). Réessayez dans quelques instants.'))],
         ephemeral: true,
       });
       return;

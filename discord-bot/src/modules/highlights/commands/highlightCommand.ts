@@ -3,6 +3,7 @@ import { Command, CommandContext } from '../../../types/command.js';
 import { highlightStorage, MAX_KEYWORDS_PER_USER } from '../storage/highlightStorage.js';
 import { HIGHLIGHT_KEYWORD_MAX_LENGTH, HIGHLIGHT_KEYWORD_MIN_LENGTH } from '../types/highlight.js';
 import { emitConfigUpdated } from '../../../services/syncConfigEmitter.js';
+import { trg } from '../../../utils/tr.js';
 
 function normKeyword(raw: string): string {
   return raw.trim();
@@ -85,7 +86,7 @@ export const highlightCommand: Command = {
     const guildId = ctx.guild?.id;
     if (!guildId || !ctx.isSlash) {
       await ctx.reply({
-        embeds: [ctx.createEmbed('error').setDescription('❌ Commande slash à utiliser sur un serveur.')],
+        embeds: [ctx.createEmbed('error').setDescription(trg(guildId, '❌ Commande slash à utiliser sur un serveur.'))],
         ephemeral: true,
       });
       return;
@@ -100,7 +101,7 @@ export const highlightCommand: Command = {
           embeds: [
             ctx
               .createEmbed('error')
-              .setDescription(`❌ Le mot-clé doit faire entre ${HIGHLIGHT_KEYWORD_MIN_LENGTH} et ${HIGHLIGHT_KEYWORD_MAX_LENGTH} caractères.`),
+              .setDescription(trg(guildId, '❌ Le mot-clé doit faire entre {HIGHLIGHT_KEYWORD_MIN_LENGTH} et {HIGHLIGHT_KEYWORD_MAX_LENGTH} caractères.', { HIGHLIGHT_KEYWORD_MIN_LENGTH, HIGHLIGHT_KEYWORD_MAX_LENGTH })),
           ],
           ephemeral: true,
         });
@@ -108,21 +109,21 @@ export const highlightCommand: Command = {
       }
       if (highlightStorage.has(guildId, userId, keyword)) {
         await ctx.reply({
-          embeds: [ctx.createEmbed('error').setDescription(`❌ Tu surveilles déjà \`${keyword}\`.`)],
+          embeds: [ctx.createEmbed('error').setDescription(trg(guildId, '❌ Tu surveilles déjà `{keyword}`.', { keyword }))],
           ephemeral: true,
         });
         return;
       }
       if (!highlightStorage.canAddMore(guildId, userId)) {
         await ctx.reply({
-          embeds: [ctx.createEmbed('error').setDescription(`❌ Limite de ${MAX_KEYWORDS_PER_USER} mots-clés atteinte.`)],
+          embeds: [ctx.createEmbed('error').setDescription(trg(guildId, '❌ Limite de {MAX_KEYWORDS_PER_USER} mots-clés atteinte.', { MAX_KEYWORDS_PER_USER }))],
           ephemeral: true,
         });
         return;
       }
       highlightStorage.add({ guildId, userId, keyword });
       await ctx.reply({
-        embeds: [ctx.createEmbed('success').setDescription(`✅ Mot-clé \`${keyword}\` surveillé. Tu recevras un DM quand quelqu'un d'autre l'écrit.`)],
+        embeds: [ctx.createEmbed('success').setDescription(trg(guildId, '✅ Mot-clé `{keyword}` surveillé. Tu recevras un DM quand quelqu\'un d\'autre l\'écrit.', { keyword }))],
         ephemeral: true,
       });
       return;
@@ -135,7 +136,7 @@ export const highlightCommand: Command = {
         embeds: [
           ctx
             .createEmbed(ok ? 'success' : 'error')
-            .setDescription(ok ? `✅ Mot-clé \`${keyword}\` retiré.` : `❌ Tu ne surveilles pas \`${keyword}\`.`),
+            .setDescription(ok ? trg(guildId, '✅ Mot-clé `{keyword}` retiré.', { keyword }) : trg(guildId, '❌ Tu ne surveilles pas `{keyword}`.', { keyword })),
         ],
         ephemeral: true,
       });
@@ -145,15 +146,15 @@ export const highlightCommand: Command = {
     if (sub === 'list') {
       const keywords = highlightStorage.listForUser(guildId, userId);
       const config = highlightStorage.getConfig(guildId, userId);
-      const embed = ctx.createEmbed('default').setTitle('👁️ Tes highlights');
-      embed.addFields({ name: 'État', value: config.enabled ? '🟢 Actif' : '⚪ En pause', inline: true });
+      const embed = ctx.createEmbed('default').setTitle(trg(guildId, '👁️ Tes highlights'));
+      embed.addFields({ name: trg(guildId, 'État'), value: config.enabled ? trg(guildId, '🟢 Actif') : trg(guildId, '⚪ En pause'), inline: true });
       embed.addFields({
-        name: `Mots-clés (${keywords.length}/${MAX_KEYWORDS_PER_USER})`,
-        value: keywords.length > 0 ? keywords.map((k) => `\`${k.keyword}\``).join(', ') : 'Aucun. `/highlight add` pour commencer.',
+        name: trg(guildId, 'Mots-clés ({length}/{MAX_KEYWORDS_PER_USER})', { length: keywords.length, MAX_KEYWORDS_PER_USER }),
+        value: keywords.length > 0 ? keywords.map((k) => `\`${k.keyword}\``).join(', ') : trg(guildId, 'Aucun. `/highlight add` pour commencer.'),
       });
       if (config.ignoredChannelIds.length > 0) {
         embed.addFields({
-          name: 'Salons ignorés',
+          name: trg(guildId, 'Salons ignorés'),
           value: config.ignoredChannelIds.map((id) => `<#${id}>`).join(', '),
         });
       }
@@ -169,7 +170,7 @@ export const highlightCommand: Command = {
         embeds: [
           ctx
             .createEmbed('success')
-            .setDescription(active ? '🟢 Highlights réactivés.' : '⚪ Highlights mis en pause (tes mots-clés sont conservés).'),
+            .setDescription(active ? trg(guildId, '🟢 Highlights réactivés.') : trg(guildId, '⚪ Highlights mis en pause (tes mots-clés sont conservés).')),
         ],
         ephemeral: true,
       });
@@ -181,7 +182,7 @@ export const highlightCommand: Command = {
       const config = highlightStorage.getConfig(guildId, userId);
       if (config.ignoredChannelIds.includes(channel.id)) {
         await ctx.reply({
-          embeds: [ctx.createEmbed('info').setDescription(`ℹ️ <#${channel.id}> est déjà ignoré.`)],
+          embeds: [ctx.createEmbed('info').setDescription(trg(guildId, 'ℹ️ <#{id}> est déjà ignoré.', { id: channel.id }))],
           ephemeral: true,
         });
         return;
@@ -189,7 +190,7 @@ export const highlightCommand: Command = {
       const mutedConfig = highlightStorage.updateConfig(guildId, userId, { ignoredChannelIds: [...config.ignoredChannelIds, channel.id] });
       emitConfigUpdated('highlights', guildId, { ...mutedConfig, userId }, 'DISCORD_COMMAND', userId);
       await ctx.reply({
-        embeds: [ctx.createEmbed('success').setDescription(`✅ <#${channel.id}> ignoré — plus aucun highlight depuis ce salon.`)],
+        embeds: [ctx.createEmbed('success').setDescription(trg(guildId, '✅ <#{id}> ignoré — plus aucun highlight depuis ce salon.', { id: channel.id }))],
         ephemeral: true,
       });
       return;
@@ -200,7 +201,7 @@ export const highlightCommand: Command = {
     const config = highlightStorage.getConfig(guildId, userId);
     if (!config.ignoredChannelIds.includes(channel.id)) {
       await ctx.reply({
-        embeds: [ctx.createEmbed('info').setDescription(`ℹ️ <#${channel.id}> n'était pas ignoré.`)],
+        embeds: [ctx.createEmbed('info').setDescription(trg(guildId, 'ℹ️ <#{id}> n\'était pas ignoré.', { id: channel.id }))],
         ephemeral: true,
       });
       return;
@@ -210,7 +211,7 @@ export const highlightCommand: Command = {
     });
     emitConfigUpdated('highlights', guildId, { ...unmutedConfig, userId }, 'DISCORD_COMMAND', userId);
     await ctx.reply({
-      embeds: [ctx.createEmbed('success').setDescription(`✅ <#${channel.id}> réactivé pour les highlights.`)],
+      embeds: [ctx.createEmbed('success').setDescription(trg(guildId, '✅ <#{id}> réactivé pour les highlights.', { id: channel.id }))],
       ephemeral: true,
     });
   },

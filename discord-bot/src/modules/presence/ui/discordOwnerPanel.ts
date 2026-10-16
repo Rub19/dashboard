@@ -19,6 +19,7 @@ import { SmartPresenceEngine } from '../services/smartPresenceEngine.js';
 import { baseEmbed, BRAND_COLORS } from '../../../utils/embeds.js';
 import { buttonRow, container, footer, separator, text, V2_FLAGS } from '../../../utils/components.js';
 import type { DiscordActivityType, DiscordStatus } from '../types/index.js';
+import { trg } from '../../../utils/tr.js';
 
 const ACTOR = 'Bot Owner (Discord DM)';
 
@@ -148,7 +149,7 @@ export class DiscordOwnerPanel {
   public async handleButton(interaction: ButtonInteraction): Promise<void> {
     if (interaction.user.id !== config.botOwnerId) {
       await interaction.reply({
-        embeds: [baseEmbed('error').setDescription('⛔ Accès refusé : cette action est réservée au propriétaire du bot.')],
+        embeds: [baseEmbed('error').setDescription(trg(interaction, '⛔ Accès refusé : cette action est réservée au propriétaire du bot.'))],
         flags: MessageFlags.Ephemeral,
       });
       return;
@@ -163,10 +164,10 @@ export class DiscordOwnerPanel {
       const current = presence.getCurrentState().activity;
       const modal = new ModalBuilder()
         .setCustomId(`owner_presence_modal_${id}`)
-        .setTitle(id === 'streamer' ? 'Mode streamer' : 'Activité personnalisée');
+        .setTitle(id === 'streamer' ? trg(interaction, 'Mode streamer') : trg(interaction, 'Activité personnalisée'));
       const title = new TextInputBuilder()
         .setCustomId('name')
-        .setLabel(id === 'streamer' ? 'Titre affiché' : 'Texte (affiché après « Joue à »)')
+        .setLabel(id === 'streamer' ? trg(interaction, 'Titre affiché') : trg(interaction, 'Texte (affiché après « Joue à »)'))
         .setStyle(TextInputStyle.Short)
         .setMaxLength(120)
         .setRequired(true)
@@ -177,7 +178,7 @@ export class DiscordOwnerPanel {
           new ActionRowBuilder<TextInputBuilder>().addComponents(
             new TextInputBuilder()
               .setCustomId('url')
-              .setLabel('Lien de ta chaîne (Twitch ou YouTube)')
+              .setLabel(trg(interaction, 'Lien de ta chaîne (Twitch ou YouTube)'))
               .setPlaceholder('https://www.twitch.tv/ta-chaine')
               .setStyle(TextInputStyle.Short)
               .setRequired(true)
@@ -216,7 +217,7 @@ export class DiscordOwnerPanel {
 
   public async handleModal(interaction: ModalSubmitInteraction): Promise<void> {
     if (interaction.user.id !== config.botOwnerId) {
-      await interaction.reply({ content: '⛔ Accès refusé.', flags: MessageFlags.Ephemeral });
+      await interaction.reply({ content: trg(interaction, '⛔ Accès refusé.'), flags: MessageFlags.Ephemeral });
       return;
     }
     const name = interaction.fields.getTextInputValue('name').trim();

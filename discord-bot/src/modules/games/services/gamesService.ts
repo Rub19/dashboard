@@ -19,6 +19,7 @@ import {
 import { economyStorage } from '../../economy/storage/economyStorage.js';
 import { logger } from '../../../utils/logger.js';
 import { getAppEmoji } from '../../../services/appEmojis.js';
+import { trg } from '../../../utils/tr.js';
 
 const SUITS = ['♠', '♥', '♦', '♣'] as const;
 const VALUES = [
@@ -146,19 +147,19 @@ class GamesService {
   ): Promise<{ error?: string; messageId?: string }> {
     const config = gamesStorage.getConfig(guildId);
     if (!config.enabled || !config.blackjackEnabled) {
-      return { error: "Le Blackjack n'est pas activé sur ce serveur." };
+      return { error: trg(guildId, 'Le Blackjack n\'est pas activé sur ce serveur.') };
     }
 
     const { name: currencyName, symbol: currencySymbol } = this.getCurrency(guildId);
 
     if (bet < config.minBet || bet > config.maxBet) {
-      return { error: `La mise doit être comprise entre **${config.minBet}** et **${config.maxBet.toLocaleString('fr-FR')}** ${currencySymbol} ${currencyName}.` };
+      return { error: trg(guildId, 'La mise doit être comprise entre **{minBet}** et **{v1}** {currencySymbol} {currencyName}.', { minBet: config.minBet, v1: config.maxBet.toLocaleString('fr-FR'), currencySymbol, currencyName }) };
     }
 
     const currentBal = this.getBalance(guildId, user.id, user.username);
     const deducted = this.deductBalance(guildId, user.id, user.username, bet, `[Ethone Casino] Blackjack: mise de ${bet} ${currencySymbol}`);
     if (!deducted) {
-      return { error: `Fonds insuffisants en ${currencyName} ! Votre solde actuel est de **${currentBal.toLocaleString('fr-FR')}** ${currencySymbol}. Vous avez besoin de **${bet.toLocaleString('fr-FR')}** ${currencySymbol}. (Tapez \`/daily\` ou \`/work\` pour en obtenir !)` };
+      return { error: trg(guildId, 'Fonds insuffisants en {currencyName} ! Votre solde actuel est de **{v1}** {currencySymbol}. Vous avez besoin de **{v3}** {currencySymbol4}. (Tapez `/daily` ou `/work` pour en obtenir !)', { currencyName, v1: currentBal.toLocaleString('fr-FR'), currencySymbol, v3: bet.toLocaleString('fr-FR'), currencySymbol4: currencySymbol }) };
     }
 
     // Alimentation de la cagnotte Jackpot en Ethone Coins
@@ -205,9 +206,9 @@ class GamesService {
     const embed = this.buildBlackjackEmbed(game, user, game.status !== 'playing');
     const row = this.buildBlackjackControls(game);
 
-    if (!this.client) return { error: 'Client Discord indisponible' };
+    if (!this.client) return { error: trg(guildId, 'Client Discord indisponible') };
     const channel = await this.client.channels.fetch(channelId).catch(() => null);
-    if (!channel || !(channel instanceof TextChannel)) return { error: 'Salon introuvable' };
+    if (!channel || !(channel instanceof TextChannel)) return { error: trg(guildId, 'Salon introuvable') };
 
     const msg = await channel.send({
       embeds: [embed],
@@ -332,12 +333,12 @@ class GamesService {
   private async handleBlackjackButton(interaction: ButtonInteraction, action: string, gameId: string) {
     const game = this.activeBlackjackGames.get(gameId);
     if (!game) {
-      await interaction.reply({ content: 'Partie introuvable ou déjà terminée.', ephemeral: true });
+      await interaction.reply({ content: trg(interaction, 'Partie introuvable ou déjà terminée.'), ephemeral: true });
       return;
     }
 
     if (interaction.user.id !== game.userId) {
-      await interaction.reply({ content: "Vous n'êtes pas le joueur de cette table !", ephemeral: true });
+      await interaction.reply({ content: trg(interaction, 'Vous n\'êtes pas le joueur de cette table !'), ephemeral: true });
       return;
     }
 
@@ -380,7 +381,7 @@ class GamesService {
       const { name: currencyName, symbol: currencySymbol } = this.getCurrency(game.guildId);
       const deducted = this.deductBalance(game.guildId, game.userId, game.username, game.bet, `[Ethone Casino] Blackjack: doubler la mise (${game.bet} ${currencySymbol})`);
       if (!deducted) {
-        await interaction.reply({ content: `Fonds insuffisants en ${currencyName} pour doubler votre mise !`, ephemeral: true });
+        await interaction.reply({ content: trg(interaction, 'Fonds insuffisants en {currencyName} pour doubler votre mise !', { currencyName }), ephemeral: true });
         return;
       }
       game.bet *= 2;
@@ -475,19 +476,19 @@ class GamesService {
   ): Promise<{ error?: string; resultEmbed?: EmbedBuilder }> {
     const config = gamesStorage.getConfig(guildId);
     if (!config.enabled || !config.rouletteEnabled) {
-      return { error: "La Roulette Royale n'est pas activée sur ce serveur." };
+      return { error: trg(guildId, 'La Roulette Royale n\'est pas activée sur ce serveur.') };
     }
 
     const { name: currencyName, symbol: currencySymbol } = this.getCurrency(guildId);
 
     if (bet < config.minBet || bet > config.maxBet) {
-      return { error: `La mise doit être comprise entre **${config.minBet}** et **${config.maxBet.toLocaleString('fr-FR')}** ${currencySymbol} ${currencyName}.` };
+      return { error: trg(guildId, 'La mise doit être comprise entre **{minBet}** et **{v1}** {currencySymbol} {currencyName}.', { minBet: config.minBet, v1: config.maxBet.toLocaleString('fr-FR'), currencySymbol, currencyName }) };
     }
 
     const currentBal = this.getBalance(guildId, user.id, user.username);
     const deducted = this.deductBalance(guildId, user.id, user.username, bet, `[Ethone Casino] Roulette: mise sur ${betChoice} (${bet} ${currencySymbol})`);
     if (!deducted) {
-      return { error: `Fonds insuffisants en ${currencyName} ! Votre solde est de **${currentBal.toLocaleString('fr-FR')}** ${currencySymbol}. Il vous manque **${(bet - currentBal).toLocaleString('fr-FR')}** ${currencySymbol}. (Tapez \`/daily\` pour recharger !)` };
+      return { error: trg(guildId, 'Fonds insuffisants en {currencyName} ! Votre solde est de **{v1}** {currencySymbol}. Il vous manque **{v3}** {currencySymbol4}. (Tapez `/daily` pour recharger !)', { currencyName, v1: currentBal.toLocaleString('fr-FR'), currencySymbol, v3: (bet - currentBal).toLocaleString('fr-FR'), currencySymbol4: currencySymbol }) };
     }
 
     // Contribution continue à la cagnotte Jackpot en Ethone Coins
@@ -554,8 +555,8 @@ class GamesService {
 
     const newBal = this.getBalance(guildId, user.id, user.username);
     const embed = new EmbedBuilder()
-      .setAuthor({ name: `Roulette Royale · ${user.username} · Ethone Coin System`, iconURL: user.displayAvatarURL() })
-      .setTitle(won ? `${sparkles} GAGNÉ ! (+${(payout - bet).toLocaleString('fr-FR')} ${currencySymbol} ${currencyName})` : `💥 PERDU ! (-${bet.toLocaleString('fr-FR')} ${currencySymbol} ${currencyName})`)
+      .setAuthor({ name: trg(guildId, 'Roulette Royale · {username} · Ethone Coin System', { username: user.username }), iconURL: user.displayAvatarURL() })
+      .setTitle(won ? trg(guildId, '{sparkles} GAGNÉ ! (+{v1} {currencySymbol} {currencyName})', { sparkles, v1: (payout - bet).toLocaleString('fr-FR'), currencySymbol, currencyName }) : trg(guildId, '💥 PERDU ! (-{v0} {currencySymbol} {currencyName})', { v0: bet.toLocaleString('fr-FR'), currencySymbol, currencyName }))
       .setColor(won ? (isGreen ? 0x10b981 : isRed ? 0xef4444 : 0x0f172a) : 0x64748b)
       .setDescription(
         `La roue a tourné et la bille s'est arrêtée sur :\n` +
@@ -564,7 +565,7 @@ class GamesService {
         `Multiplicateur : **${won ? `x${multiplier}` : 'x0'}**\n` +
         `Nouveau solde : **${newBal.toLocaleString('fr-FR')}** ${currencySymbol} ${currencyName}`
       )
-      .setFooter({ text: `Cagnotte Jackpot : ${gamesStorage.getJackpot(guildId).toLocaleString('fr-FR')} ${currencySymbol} • Portefeuille Ethone Coin` })
+      .setFooter({ text: trg(guildId, 'Cagnotte Jackpot : {v0} {currencySymbol} • Portefeuille Ethone Coin', { v0: gamesStorage.getJackpot(guildId).toLocaleString('fr-FR'), currencySymbol }) })
       .setTimestamp();
 
     return { resultEmbed: embed };
@@ -580,31 +581,31 @@ class GamesService {
   ): Promise<{ error?: string; messageId?: string }> {
     const config = gamesStorage.getConfig(guildId);
     if (!config.enabled || !config.diceEnabled) {
-      return { error: "Les duels de dés ne sont pas activés sur ce serveur." };
+      return { error: trg(guildId, 'Les duels de dés ne sont pas activés sur ce serveur.') };
     }
 
     if (challenger.id === opponent.id) {
-      return { error: 'Vous ne pouvez pas vous défier vous-même !' };
+      return { error: trg(guildId, 'Vous ne pouvez pas vous défier vous-même !') };
     }
 
     if (opponent.bot) {
-      return { error: 'Vous ne pouvez pas défier un bot au duel de dés.' };
+      return { error: trg(guildId, 'Vous ne pouvez pas défier un bot au duel de dés.') };
     }
 
     const { name: currencyName, symbol: currencySymbol } = this.getCurrency(guildId);
 
     if (bet < config.minBet || bet > config.maxBet) {
-      return { error: `La mise de duel doit être comprise entre **${config.minBet}** et **${config.maxBet.toLocaleString('fr-FR')}** ${currencySymbol} ${currencyName}.` };
+      return { error: trg(guildId, 'La mise de duel doit être comprise entre **{minBet}** et **{v1}** {currencySymbol} {currencyName}.', { minBet: config.minBet, v1: config.maxBet.toLocaleString('fr-FR'), currencySymbol, currencyName }) };
     }
 
     const cBalance = this.getBalance(guildId, challenger.id, challenger.username);
     if (cBalance < bet) {
-      return { error: `Vous n'avez pas assez de ${currencyName} pour lancer ce duel (**${cBalance.toLocaleString('fr-FR')}** ${currencySymbol} disponible, **${bet.toLocaleString('fr-FR')}** requis).` };
+      return { error: trg(guildId, 'Vous n\'avez pas assez de {currencyName} pour lancer ce duel (**{v1}** {currencySymbol} disponible, **{v3}** requis).', { currencyName, v1: cBalance.toLocaleString('fr-FR'), currencySymbol, v3: bet.toLocaleString('fr-FR') }) };
     }
 
     const oBalance = this.getBalance(guildId, opponent.id, opponent.username);
     if (oBalance < bet) {
-      return { error: `${opponent.username} n'a pas assez de ${currencyName} pour honorer cette mise (**${oBalance.toLocaleString('fr-FR')}** ${currencySymbol} disponible).` };
+      return { error: trg(guildId, '{username} n\'a pas assez de {currencyName} pour honorer cette mise (**{v2}** {currencySymbol} disponible).', { username: opponent.username, currencyName, v2: oBalance.toLocaleString('fr-FR'), currencySymbol }) };
     }
 
     const duelId = `dice_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
@@ -624,31 +625,31 @@ class GamesService {
     const row = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
       new ButtonBuilder()
         .setCustomId(`dice:accept:${duelId}`)
-        .setLabel('⚔️ Accepter le duel')
+        .setLabel(trg(guildId, '⚔️ Accepter le duel'))
         .setStyle(ButtonStyle.Success),
       new ButtonBuilder()
         .setCustomId(`dice:decline:${duelId}`)
-        .setLabel('❌ Refuser')
+        .setLabel(trg(guildId, '❌ Refuser'))
         .setStyle(ButtonStyle.Danger)
     );
 
     const embed = new EmbedBuilder()
-      .setTitle(`🎲 Défi Duel de Dés !`)
+      .setTitle(trg(guildId, '🎲 Défi Duel de Dés !'))
       .setColor(0xf97316)
       .setDescription(
         `<@${challenger.id}> défie <@${opponent.id}> en duel de dés !\n\n` +
         `💰 **Mise en jeu :** ${bet.toLocaleString('fr-FR')} ${currencySymbol} ${currencyName} chacun (Pot total : ${(bet * 2).toLocaleString('fr-FR')} ${currencySymbol})\n` +
         `🎯 **Règle :** Chaque joueur lance 2 dés (2d6). Le plus haut score remporte la mise !`
       )
-      .setFooter({ text: 'Ce défi expire automatiquement dans 2 minutes • Portefeuille Ethone Coin' })
+      .setFooter({ text: trg(guildId, 'Ce défi expire automatiquement dans 2 minutes • Portefeuille Ethone Coin') })
       .setTimestamp();
 
-    if (!this.client) return { error: 'Client Discord indisponible' };
+    if (!this.client) return { error: trg(guildId, 'Client Discord indisponible') };
     const channel = await this.client.channels.fetch(channelId).catch(() => null);
-    if (!channel || !(channel instanceof TextChannel)) return { error: 'Salon introuvable' };
+    if (!channel || !(channel instanceof TextChannel)) return { error: trg(guildId, 'Salon introuvable') };
 
     const msg = await channel.send({
-      content: `<@${opponent.id}>, vous avez reçu un défi !`,
+      content: trg(guildId, '<@{id}>, vous avez reçu un défi !', { id: opponent.id }),
       embeds: [embed],
       components: [row],
     });
@@ -662,12 +663,12 @@ class GamesService {
   private async handleDiceDuelButton(interaction: ButtonInteraction, action: string, duelId: string) {
     const duel = this.activeDuels.get(duelId);
     if (!duel || duel.status !== 'pending') {
-      await interaction.reply({ content: 'Ce duel est expiré ou déjà terminé.', ephemeral: true });
+      await interaction.reply({ content: trg(interaction, 'Ce duel est expiré ou déjà terminé.'), ephemeral: true });
       return;
     }
 
     if (interaction.user.id !== duel.opponentId && interaction.user.id !== duel.challengerId) {
-      await interaction.reply({ content: "Vous n'êtes pas convié à ce duel !", ephemeral: true });
+      await interaction.reply({ content: trg(interaction, 'Vous n\'êtes pas convié à ce duel !'), ephemeral: true });
       return;
     }
 
@@ -676,7 +677,7 @@ class GamesService {
       duel.status = 'declined';
       this.activeDuels.delete(duelId);
       await interaction.update({
-        content: `❌ Le duel a été annulé par <@${interaction.user.id}>.`,
+        content: trg(interaction, '❌ Le duel a été annulé par <@{id}>.', { id: interaction.user.id }),
         components: [],
       });
       return;
@@ -684,7 +685,7 @@ class GamesService {
 
     if (action === 'accept') {
       if (interaction.user.id !== duel.opponentId) {
-        await interaction.reply({ content: "Seul l'adversaire défié peut accepter ce duel !", ephemeral: true });
+        await interaction.reply({ content: trg(interaction, 'Seul l\'adversaire défié peut accepter ce duel !'), ephemeral: true });
         return;
       }
 
@@ -697,7 +698,7 @@ class GamesService {
       if (!cDeduct || !oDeduct) {
         if (cDeduct) this.addBalance(duel.guildId, duel.challengerId, duel.challengerName, duel.bet, '[Ethone Casino] Remboursement duel');
         if (oDeduct) this.addBalance(duel.guildId, duel.opponentId, duel.opponentName, duel.bet, '[Ethone Casino] Remboursement duel');
-        await interaction.reply({ content: `Un des joueurs n'a plus assez de ${currencyName} pour lancer le duel.`, ephemeral: true });
+        await interaction.reply({ content: trg(interaction, 'Un des joueurs n\'a plus assez de {currencyName} pour lancer le duel.', { currencyName }), ephemeral: true });
         return;
       }
 
@@ -750,14 +751,14 @@ class GamesService {
       });
 
       const embed = new EmbedBuilder()
-        .setTitle('🎲 RÉSULTAT DU DUEL DE DÉS !')
+        .setTitle(trg(interaction, '🎲 RÉSULTAT DU DUEL DE DÉS !'))
         .setColor(duel.winnerId ? 0x10b981 : 0x64748b)
         .setDescription(
           `**${duel.challengerName}** a lancé : \`[${cD1}] + [${cD2}] = ${cTotal}\` 🎲\n` +
           `**${duel.opponentName}** a lancé : \`[${oD1}] + [${oD2}] = ${oTotal}\` 🎲\n\n` +
           `### ${resultText}`
         )
-        .setFooter({ text: `5% (${jackpotContribution.toLocaleString('fr-FR')} ${currencySymbol}) reversés au Jackpot Ethone Coin.` })
+        .setFooter({ text: trg(interaction, '5% ({v0} {currencySymbol}) reversés au Jackpot Ethone Coin.', { v0: jackpotContribution.toLocaleString('fr-FR'), currencySymbol }) })
         .setTimestamp();
 
       await interaction.update({

@@ -3,6 +3,7 @@ import { Command, CommandContext } from '../../../types/command.js';
 import { starboardStorage } from '../storage/starboardStorage.js';
 import { emitConfigUpdated } from '../../../services/syncConfigEmitter.js';
 import { SLASH_DESTINATION_TYPES } from '../../../utils/channelSend.js';
+import { trg } from '../../../utils/tr.js';
 
 /** Valide un emoji : unicode simple OU emoji custom `<:name:id>` / `<a:name:id>`. */
 function normalizeEmoji(raw: string): string | null {
@@ -113,7 +114,7 @@ export const starboardCommand: Command = {
     const guildId = ctx.guild?.id;
     if (!guildId) {
       await ctx.reply({
-        embeds: [ctx.createEmbed('error').setDescription('❌ Cette commande doit être utilisée sur un serveur.')],
+        embeds: [ctx.createEmbed('error').setDescription(trg(guildId, '❌ Cette commande doit être utilisée sur un serveur.'))],
         ephemeral: true,
       });
       return;
@@ -124,7 +125,7 @@ export const starboardCommand: Command = {
         embeds: [
           ctx
             .createEmbed('info')
-            .setDescription('ℹ️ Utilise la commande slash `/starboard` pour configurer le starboard.'),
+            .setDescription(trg(guildId, 'ℹ️ Utilise la commande slash `/starboard` pour configurer le starboard.')),
         ],
         ephemeral: true,
       });
@@ -141,7 +142,7 @@ export const starboardCommand: Command = {
 
       if (emojiRaw && !emoji) {
         await ctx.reply({
-          embeds: [ctx.createEmbed('error').setDescription('❌ Emoji invalide. Donne un emoji unicode (⭐) ou custom `<:nom:id>`.')],
+          embeds: [ctx.createEmbed('error').setDescription(trg(guildId, '❌ Emoji invalide. Donne un emoji unicode (⭐) ou custom `<:nom:id>`.'))],
           ephemeral: true,
         });
         return;
@@ -159,9 +160,9 @@ export const starboardCommand: Command = {
         embeds: [
           ctx
             .createEmbed('success')
-            .setTitle('⭐ Starboard activé')
+            .setTitle(trg(guildId, '⭐ Starboard activé'))
             .setDescription(
-              `Les messages qui atteignent **${config.threshold}** ${config.emoji} seront republiés dans <#${channel.id}>.`
+              trg(guildId, 'Les messages qui atteignent **{threshold}** {emoji} seront republiés dans <#{id}>.', { threshold: config.threshold, emoji: config.emoji, id: channel.id })
             ),
         ],
       });
@@ -173,7 +174,7 @@ export const starboardCommand: Command = {
       const channelConfig = starboardStorage.updateConfig(guildId, { channelId: channel.id });
       emitConfigUpdated('starboard', guildId, channelConfig, 'DISCORD_COMMAND', ctx.author.id);
       await ctx.reply({
-        embeds: [ctx.createEmbed('success').setDescription(`✅ Salon du starboard : <#${channel.id}>.`)],
+        embeds: [ctx.createEmbed('success').setDescription(trg(guildId, '✅ Salon du starboard : <#{id}>.', { id: channel.id }))],
       });
       return;
     }
@@ -183,7 +184,7 @@ export const starboardCommand: Command = {
       const config = starboardStorage.updateConfig(guildId, { threshold: value });
       emitConfigUpdated('starboard', guildId, config, 'DISCORD_COMMAND', ctx.author.id);
       await ctx.reply({
-        embeds: [ctx.createEmbed('success').setDescription(`✅ Seuil : **${config.threshold}** ${config.emoji}.`)],
+        embeds: [ctx.createEmbed('success').setDescription(trg(guildId, '✅ Seuil : **{threshold}** {emoji}.', { threshold: config.threshold, emoji: config.emoji }))],
       });
       return;
     }
@@ -192,7 +193,7 @@ export const starboardCommand: Command = {
       const emoji = normalizeEmoji(ctx.interaction!.options.getString('emoji', true));
       if (!emoji) {
         await ctx.reply({
-          embeds: [ctx.createEmbed('error').setDescription('❌ Emoji invalide. Donne un emoji unicode (⭐) ou custom `<:nom:id>`.')],
+          embeds: [ctx.createEmbed('error').setDescription(trg(guildId, '❌ Emoji invalide. Donne un emoji unicode (⭐) ou custom `<:nom:id>`.'))],
           ephemeral: true,
         });
         return;
@@ -200,7 +201,7 @@ export const starboardCommand: Command = {
       const emojiConfig = starboardStorage.updateConfig(guildId, { emoji });
       emitConfigUpdated('starboard', guildId, emojiConfig, 'DISCORD_COMMAND', ctx.author.id);
       await ctx.reply({
-        embeds: [ctx.createEmbed('success').setDescription(`✅ Emoji déclencheur : ${emoji}.`)],
+        embeds: [ctx.createEmbed('success').setDescription(trg(guildId, '✅ Emoji déclencheur : {emoji}.', { emoji }))],
       });
       return;
     }
@@ -218,7 +219,7 @@ export const starboardCommand: Command = {
 
       if (Object.keys(patch).length === 0) {
         await ctx.reply({
-          embeds: [ctx.createEmbed('info').setDescription('ℹ️ Aucune option fournie.')],
+          embeds: [ctx.createEmbed('info').setDescription(trg(guildId, 'ℹ️ Aucune option fournie.'))],
           ephemeral: true,
         });
         return;
@@ -230,7 +231,7 @@ export const starboardCommand: Command = {
         embeds: [
           ctx
             .createEmbed('success')
-            .setTitle('⭐ Options mises à jour')
+            .setTitle(trg(guildId, '⭐ Options mises à jour'))
             .setDescription(
               [
                 `Auto-étoile : ${config.selfStarAllowed ? 'autorisée' : 'refusée'}`,
@@ -264,8 +265,8 @@ export const starboardCommand: Command = {
             .createEmbed('success')
             .setDescription(
               added
-                ? `✅ <#${channel.id}> est désormais ignoré par le starboard.`
-                : `✅ <#${channel.id}> n'est plus ignoré par le starboard.`
+                ? trg(guildId, '✅ <#{id}> est désormais ignoré par le starboard.', { id: channel.id })
+                : trg(guildId, '✅ <#{id}> n\'est plus ignoré par le starboard.', { id: channel.id })
             ),
         ],
       });
@@ -279,7 +280,7 @@ export const starboardCommand: Command = {
           embeds: [
             ctx
               .createEmbed('error')
-              .setDescription('❌ Configure d\'abord un salon avec `/starboard setup`.'),
+              .setDescription(trg(guildId, '❌ Configure d\'abord un salon avec `/starboard setup`.')),
           ],
           ephemeral: true,
         });
@@ -291,7 +292,7 @@ export const starboardCommand: Command = {
         embeds: [
           ctx
             .createEmbed(next.enabled ? 'success' : 'neutral')
-            .setDescription(next.enabled ? '✅ Starboard activé.' : '⏸️ Starboard désactivé.'),
+            .setDescription(next.enabled ? trg(guildId, '✅ Starboard activé.') : trg(guildId, '⏸️ Starboard désactivé.')),
         ],
       });
       return;
@@ -302,16 +303,16 @@ export const starboardCommand: Command = {
     const config = starboardStorage.getConfig(guildId);
     const embed = ctx
       .createEmbed(overview.enabled ? 'default' : 'neutral')
-      .setTitle('⭐ Configuration du Starboard')
+      .setTitle(trg(guildId, '⭐ Configuration du Starboard'))
       .addFields(
-        { name: 'État', value: overview.enabled ? '🟢 Actif' : '⚪ Inactif', inline: true },
-        { name: 'Salon', value: overview.channelId ? `<#${overview.channelId}>` : '—', inline: true },
-        { name: 'Emoji', value: overview.emoji, inline: true },
-        { name: 'Seuil', value: `${overview.threshold} ⭐`, inline: true },
-        { name: 'Messages étoilés', value: `${overview.postedEntries}`, inline: true },
-        { name: '⭐ cumulées', value: `${overview.totalStars}`, inline: true },
+        { name: trg(guildId, 'État'), value: overview.enabled ? trg(guildId, '🟢 Actif') : trg(guildId, '⚪ Inactif'), inline: true },
+        { name: trg(guildId, 'Salon'), value: overview.channelId ? `<#${overview.channelId}>` : '—', inline: true },
+        { name: trg(guildId, 'Emoji'), value: overview.emoji, inline: true },
+        { name: trg(guildId, 'Seuil'), value: `${overview.threshold} ⭐`, inline: true },
+        { name: trg(guildId, 'Messages étoilés'), value: `${overview.postedEntries}`, inline: true },
+        { name: trg(guildId, '⭐ cumulées'), value: `${overview.totalStars}`, inline: true },
         {
-          name: 'Options',
+          name: trg(guildId, 'Options'),
           value: [
             `Auto-étoile : ${config.selfStarAllowed ? 'oui' : 'non'}`,
             `Bots ignorés : ${config.ignoreBots ? 'oui' : 'non'}`,
@@ -326,8 +327,8 @@ export const starboardCommand: Command = {
 
     if (overview.topMessage && overview.channelId) {
       embed.addFields({
-        name: 'Record',
-        value: `${overview.topMessage.starCount} ⭐ sur un message`,
+        name: trg(guildId, 'Record'),
+        value: trg(guildId, '{starCount} ⭐ sur un message', { starCount: overview.topMessage.starCount }),
       });
     }
 

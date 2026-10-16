@@ -20,6 +20,7 @@ import { logger } from '../../../utils/logger.js';
 import { isModuleEnabled } from '../../../services/moduleRegistry.js';
 import { analyticsService } from '../../analytics/services/analyticsService.js';
 import { noticeEmbed } from '../../../utils/embeds.js';
+import { trg } from '../../../utils/tr.js';
 
 export class TemporaryVoiceService {
   // Map of active deletion countdown timers: roomId -> NodeJS.Timeout
@@ -37,7 +38,7 @@ export class TemporaryVoiceService {
     try {
       const channel = guild.channels.cache.get(textChannelId);
       if (!channel || !channel.isTextBased()) {
-        return { success: false, error: 'Salon textuel introuvable ou invalide.' };
+        return { success: false, error: trg(guild, 'Salon textuel introuvable ou invalide.') };
       }
 
       const settings = voiceRepository.getSettings(guild.id);
@@ -346,7 +347,7 @@ export class TemporaryVoiceService {
 
     const activeRooms = voiceRepository.getRooms(guild.id);
     if (activeRooms.length >= settings.maxRoomsPerGuild) {
-      await member.send({ embeds: [noticeEmbed('warning', `Le serveur a atteint la limite de ${settings.maxRoomsPerGuild} salons vocaux.`)] }).catch(() => null);
+      await member.send({ embeds: [noticeEmbed('warning', trg(guild, 'Le serveur a atteint la limite de {maxRoomsPerGuild} salons vocaux.', { maxRoomsPerGuild: settings.maxRoomsPerGuild }))] }).catch(() => null);
       await member.voice.disconnect('Limite atteinte').catch(() => null);
       return null;
     }
@@ -365,7 +366,7 @@ export class TemporaryVoiceService {
     const cooldownMs = settings.creationCooldownSeconds * 1000;
     if (now - lastCreated < cooldownMs) {
       const waitSec = Math.ceil((cooldownMs - (now - lastCreated)) / 1000);
-      await member.send({ embeds: [noticeEmbed('warning', `Merci de patienter encore ${waitSec}s.`)] }).catch(() => null);
+      await member.send({ embeds: [noticeEmbed('warning', trg(guild, 'Merci de patienter encore {waitSec}s.', { waitSec }))] }).catch(() => null);
       await member.voice.disconnect('Cooldown actif').catch(() => null);
       return null;
     }
@@ -376,7 +377,7 @@ export class TemporaryVoiceService {
         : hub.allowedRoles.some((rId) => member.roles.cache.has(rId));
 
       if (!hasRole && !member.permissions.has('Administrator')) {
-        await member.send({ embeds: [noticeEmbed('denied', `Rôles requis non possédés pour **${hub.name}**.`)] }).catch(() => null);
+        await member.send({ embeds: [noticeEmbed('denied', trg(guild, 'Rôles requis non possédés pour **{name}**.', { name: hub.name }))] }).catch(() => null);
         await member.voice.disconnect('Rôle requis non possédé').catch(() => null);
         return null;
       }

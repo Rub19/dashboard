@@ -2,6 +2,7 @@ import { Client, Guild } from 'discord.js';
 import { ServerEmojiItem, ServerStickerItem } from '../types/index.js';
 import { logService } from '../../logs/services/logService.js';
 import { logger } from '../../../utils/logger.js';
+import { trg } from '../../../utils/tr.js';
 
 export class ServerEmojiService {
   /**
@@ -89,15 +90,15 @@ export class ServerEmojiService {
     payload: { name: string; imageBase64OrUrl: string }
   ): Promise<{ success: boolean; emoji?: ServerEmojiItem; error?: string }> {
     const guild = client.guilds.cache.get(guildId);
-    if (!guild) return { success: false, error: 'Serveur introuvable.' };
+    if (!guild) return { success: false, error: trg(guildId, 'Serveur introuvable.') };
 
     // Image envoyée par le tableau de bord en base64 uniquement : le bot ne télécharge aucune URL venue de l'extérieur.
     const name = String(payload?.name ?? '').trim();
-    if (!/^[A-Za-z0-9_]{2,32}$/.test(name)) return { success: false, error: 'Nom : 2 à 32 caractères, lettres, chiffres ou « _ ».' };
+    if (!/^[A-Za-z0-9_]{2,32}$/.test(name)) return { success: false, error: trg(guildId, 'Nom : 2 à 32 caractères, lettres, chiffres ou « _ ».') };
     const m = String(payload?.imageBase64OrUrl ?? '').match(/^data:image\/(png|jpeg|gif|webp);base64,([A-Za-z0-9+/=]+)$/);
-    if (!m) return { success: false, error: 'Image invalide : PNG, JPG, GIF ou WebP.' };
+    if (!m) return { success: false, error: trg(guildId, 'Image invalide : PNG, JPG, GIF ou WebP.') };
     const bytes = Buffer.from(m[2], 'base64');
-    if (bytes.length > 256 * 1024) return { success: false, error: 'Image trop lourde : 256 Ko maximum pour un émoji Discord.' };
+    if (bytes.length > 256 * 1024) return { success: false, error: trg(guildId, 'Image trop lourde : 256 Ko maximum pour un émoji Discord.') };
 
     try {
       const created = await guild.emojis.create({
@@ -150,10 +151,10 @@ export class ServerEmojiService {
     emojiId: string
   ): Promise<{ success: boolean; error?: string }> {
     const guild = client.guilds.cache.get(guildId);
-    if (!guild) return { success: false, error: 'Serveur introuvable.' };
+    if (!guild) return { success: false, error: trg(guildId, 'Serveur introuvable.') };
 
     const emoji = guild.emojis.cache.get(emojiId);
-    if (!emoji) return { success: false, error: 'Emoji introuvable.' };
+    if (!emoji) return { success: false, error: trg(guildId, 'Emoji introuvable.') };
 
     try {
       const name = emoji.name;
@@ -185,14 +186,14 @@ export class ServerEmojiService {
     payload: { name: string }
   ): Promise<{ success: boolean; emoji?: ServerEmojiItem; error?: string }> {
     const guild = client.guilds.cache.get(guildId);
-    if (!guild) return { success: false, error: 'Serveur introuvable.' };
+    if (!guild) return { success: false, error: trg(guildId, 'Serveur introuvable.') };
 
     const emoji = guild.emojis.cache.get(emojiId) || (await guild.emojis.fetch(emojiId).catch(() => null));
-    if (!emoji) return { success: false, error: 'Émoji introuvable.' };
+    if (!emoji) return { success: false, error: trg(guildId, 'Émoji introuvable.') };
 
     const name = String(payload?.name ?? '').trim();
     if (!/^[A-Za-z0-9_]{2,32}$/.test(name)) {
-      return { success: false, error: 'Nom : 2 à 32 caractères, lettres, chiffres ou « _ ».' };
+      return { success: false, error: trg(guildId, 'Nom : 2 à 32 caractères, lettres, chiffres ou « _ ».') };
     }
 
     try {

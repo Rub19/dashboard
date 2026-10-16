@@ -15,6 +15,7 @@ import { analyticsWriteBuffer } from '../../analytics/storage/analyticsWriteBuff
 import { logger } from '../../../utils/logger.js';
 import { sanctionConfig } from '../sanctionConfig.js';
 import { onCaseCreated } from './sanctionPipeline.js';
+import { trg } from '../../../utils/tr.js';
 
 export class CaseService {
   public static createCase(
@@ -145,11 +146,11 @@ export class CaseService {
   ): { success: boolean; case?: ModerationCase; error?: string } {
     const existing = moderationRepository.getCaseByNumber(guildId, caseNumber);
     if (!existing) {
-      return { success: false, error: `Case #${caseNumber} introuvable.` };
+      return { success: false, error: trg(guildId, 'Case #{caseNumber} introuvable.', { caseNumber }) };
     }
 
     if (existing.status === 'REVOKED') {
-      return { success: false, error: `La Case #${caseNumber} a déjà été révoquée.` };
+      return { success: false, error: trg(guildId, 'La Case #{caseNumber} a déjà été révoquée.', { caseNumber }) };
     }
 
     const updated = moderationRepository.updateCase(guildId, caseNumber, {
@@ -163,7 +164,7 @@ export class CaseService {
     });
 
     if (!updated) {
-      return { success: false, error: 'Échec de la mise à jour.' };
+      return { success: false, error: trg(guildId, 'Échec de la mise à jour.') };
     }
 
     // Lever la sanction sur Discord si c'est un timeout ou un ban
@@ -326,7 +327,7 @@ export class CaseService {
     actor: { id: string; tag: string }
   ): { success: boolean; case?: ModerationCase; error?: string } {
     const updated = moderationRepository.assignCase(guildId, caseNumber, assignedTo);
-    if (!updated) return { success: false, error: `Case #${caseNumber} introuvable.` };
+    if (!updated) return { success: false, error: trg(guildId, 'Case #{caseNumber} introuvable.', { caseNumber }) };
 
     moderationRepository.addAuditLog({
       id: `AUDIT-${Date.now()}`,
@@ -352,7 +353,7 @@ export class CaseService {
     actor: { id: string; tag: string }
   ): { success: boolean; case?: ModerationCase; error?: string } {
     const updated = moderationRepository.relateCase(guildId, caseNumber, relationships);
-    if (!updated) return { success: false, error: `Case #${caseNumber} introuvable.` };
+    if (!updated) return { success: false, error: trg(guildId, 'Case #{caseNumber} introuvable.', { caseNumber }) };
 
     moderationRepository.addAuditLog({
       id: `AUDIT-${Date.now()}`,

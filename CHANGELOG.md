@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.125 — 2026-10-16
+
+**Tout le bot dans la langue du serveur**
+
+- Les réponses, messages privés, boutons, menus et fenêtres de près de 1 000 textes du bot (musique, économie, jeux, salons vocaux, bienvenue, rappels, tags, starboard, sondages, tickets, Spotify, sécurité…) suivent la langue choisie pour le serveur : français, anglais, espagnol ou allemand.
+- Les messages personnalisés écrits par l'équipe restent tels quels.
+
 ## v1.75.124 — 2026-10-16
 
 **Le bot parle la langue du serveur : sanctions et signalements**

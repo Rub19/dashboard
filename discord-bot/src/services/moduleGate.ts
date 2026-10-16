@@ -1,6 +1,7 @@
 import type { EmbedBuilder } from 'discord.js';
 import { getModule, isModuleEnabled, moduleForCommand } from './moduleRegistry.js';
 import { noticeEmbed } from '../utils/embeds.js';
+import { trg } from '../utils/tr.js';
 
 const DASHBOARD_URL = 'https://ethone.dev/discord';
 
@@ -76,5 +77,5 @@ export function disabledComponentEmbed(guildId: string | null | undefined, custo
   if (!hit) return null;
   const def = getModule(hit[1]);
   if (!def || isModuleEnabled(guildId, def.id)) return null;
-  return noticeEmbed('error', `Le module **${def.emoji} ${def.label}** est désactivé sur ce serveur : cette action n'est pas disponible pour le moment.`, { title: 'Module désactivé' });
+  return noticeEmbed('error', trg(guildId, 'Le module **{emoji} {label}** est désactivé sur ce serveur : cette action n\'est pas disponible pour le moment.', { emoji: def.emoji, label: def.label }), { title: 'Module désactivé' });
 }

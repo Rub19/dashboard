@@ -1,6 +1,7 @@
 import { DiscordEvent, EventParticipant, RSVPStatus } from './eventsTypes.js';
 import { eventRepository } from './eventsRepository.js';
 import { logger } from '../../utils/logger.js';
+import { trg } from '../../utils/tr.js';
 
 export interface RSVPResult {
   success: boolean;
@@ -23,11 +24,11 @@ export class EventRSVPService {
   ): RSVPResult {
     const event = eventRepository.getEventById(guildId, eventId);
     if (!event) {
-      return { success: false, error: 'Événement introuvable.' };
+      return { success: false, error: trg(guildId, 'Événement introuvable.') };
     }
 
     if (event.status === 'CANCELLED' || event.status === 'COMPLETED') {
-      return { success: false, error: "L'événement est déjà terminé ou a été annulé." };
+      return { success: false, error: trg(guildId, 'L\'événement est déjà terminé ou a été annulé.') };
     }
 
     const currentParticipant = eventRepository.getParticipant(eventId, user.id);
@@ -47,7 +48,7 @@ export class EventRSVPService {
           if (!event.capacity.waitlistEnabled) {
             return {
               success: false,
-              error: 'Cet événement a atteint sa capacité maximale et les inscriptions sont fermées.',
+              error: trg(guildId, 'Cet événement a atteint sa capacité maximale et les inscriptions sont fermées.'),
             };
           }
 

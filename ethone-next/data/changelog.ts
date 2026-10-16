@@ -57841,6 +57841,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_124_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_124_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_124_de);
 
+const v1_75_125_fr: ChangelogEntry = {
+  version: "v1.75.125",
+  date: "2026-10-16",
+  title: "Tout le bot dans la langue du serveur",
+  items: [
+    "Les réponses, messages privés, boutons, menus et fenêtres de près de 1 000 textes du bot (musique, économie, jeux, salons vocaux, bienvenue, rappels, tags, starboard, sondages, tickets, Spotify, sécurité…) suivent la langue choisie pour le serveur : français, anglais, espagnol ou allemand.",
+    "Les messages personnalisés écrits par l'équipe restent tels quels.",
+  ],
+};
+
+const v1_75_125_en: ChangelogEntry = {
+  version: "v1.75.125",
+  date: "2026-10-16",
+  title: "The whole bot in the server's language",
+  items: [
+    "Replies, DMs, buttons, menus and modals across nearly 1,000 bot texts (music, economy, games, voice channels, welcome, reminders, tags, starboard, polls, tickets, Spotify, security…) now follow the language chosen for the server: French, English, Spanish or German.",
+    "Custom messages written by the staff stay as they are.",
+  ],
+};
+
+const v1_75_125_es: ChangelogEntry = {
+  version: "v1.75.125",
+  date: "2026-10-16",
+  title: "Todo el bot en el idioma del servidor",
+  items: [
+    "Las respuestas, mensajes privados, botones, menús y ventanas de casi 1000 textos del bot (música, economía, juegos, canales de voz, bienvenida, recordatorios, tags, starboard, encuestas, tickets, Spotify, seguridad…) siguen el idioma elegido para el servidor: francés, inglés, español o alemán.",
+    "Los mensajes personalizados escritos por el equipo se quedan tal cual.",
+  ],
+};
+
+const v1_75_125_de: ChangelogEntry = {
+  version: "v1.75.125",
+  date: "2026-10-16",
+  title: "Der ganze Bot in der Sprache des Servers",
+  items: [
+    "Antworten, DMs, Buttons, Menüs und Fenster von fast 1.000 Bot-Texten (Musik, Wirtschaft, Spiele, Sprachkanäle, Willkommen, Erinnerungen, Tags, Starboard, Umfragen, Tickets, Spotify, Sicherheit…) folgen jetzt der für den Server gewählten Sprache: Französisch, Englisch, Spanisch oder Deutsch.",
+    "Vom Team geschriebene eigene Nachrichten bleiben unverändert.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_125_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_125_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_125_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_125_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

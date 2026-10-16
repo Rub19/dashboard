@@ -10,6 +10,7 @@ import {
 } from '../types/spotify.js';
 import { musicService } from '../../music/services/musicService.js';
 import { logger } from '../../../utils/logger.js';
+import { trg } from '../../../utils/tr.js';
 
 const SPOTIFY_CLIENT_ID = '6619fbf6315e4e68948dc08532251912';
 const REDIRECT_URI = 'https://ethone.dev/';
@@ -652,7 +653,7 @@ class SpotifyService {
   ): Promise<{ success: boolean; trackTitle?: string; channelName?: string; error?: string }> {
     const voiceChannel = member.voice.channel;
     if (!voiceChannel) {
-      return { success: false, error: 'Vous devez être connecté dans un salon vocal pour diffuser votre musique Spotify.' };
+      return { success: false, error: trg(guild, 'Vous devez être connecté dans un salon vocal pour diffuser votre musique Spotify.') };
     }
 
     let track = await this.getPlaybackState(member.id);
@@ -661,7 +662,7 @@ class SpotifyService {
     }
 
     if (!track || !track.name) {
-      return { success: false, error: 'Aucun titre Spotify détecté (lancez Spotify sur votre appareil ou associez votre compte via `/spotify login`).' };
+      return { success: false, error: trg(guild, 'Aucun titre Spotify détecté (lancez Spotify sur votre appareil ou associez votre compte via `/spotify login`).') };
     }
 
     const searchQuery = track.url || `${track.name} ${track.artists.join(' ')}`;

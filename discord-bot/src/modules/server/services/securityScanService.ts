@@ -22,6 +22,7 @@ import { container, separator, text, type ContainerPart } from '../../../utils/c
 import { icon } from '../../../utils/v2.js';
 import { logger } from '../../../utils/logger.js';
 import { DiscordLogService } from '../../logs/services/discordLogService.js';
+import { trg } from '../../../utils/tr.js';
 
 /**
  * Scan de sécurité réel : lit l'état du serveur Discord (rôles, salons, réglages, bots) et des modules de
@@ -421,7 +422,7 @@ export function buildScanReport(guild: Guild, result: ScanResult, previous: Scan
   parts.push(
     new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
       new ButtonBuilder()
-        .setLabel('Voir le rapport complet')
+        .setLabel(trg(guild, 'Voir le rapport complet'))
         .setStyle(ButtonStyle.Link)
         .setURL(`https://ethone.dev/discord/?guildId=${guild.id}&view=scan`)
         .setEmoji('📊')

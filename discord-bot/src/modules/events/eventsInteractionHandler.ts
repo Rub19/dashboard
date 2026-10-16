@@ -7,6 +7,7 @@ import { RSVPStatus } from './eventsTypes.js';
 import { baseEmbed } from '../../utils/embeds.js';
 import { guildConfigService } from '../../services/guildConfigService.js';
 import { formatString, getTranslation } from '../../utils/i18n.js';
+import { trg } from '../../utils/tr.js';
 
 export async function handleEventButton(interaction: ButtonInteraction): Promise<boolean> {
   const customId = interaction.customId;
@@ -15,7 +16,7 @@ export async function handleEventButton(interaction: ButtonInteraction): Promise
   }
 
   if (!interaction.guildId) {
-    await interaction.reply({ embeds: [baseEmbed('error').setDescription('❌ Cette action ne peut être effectuée que sur un serveur.')], flags: MessageFlags.Ephemeral });
+    await interaction.reply({ embeds: [baseEmbed('error').setDescription(trg(interaction, '❌ Cette action ne peut être effectuée que sur un serveur.'))], flags: MessageFlags.Ephemeral });
     return true;
   }
 

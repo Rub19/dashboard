@@ -9,6 +9,7 @@ import { cooldownService } from '../../../services/cooldownService.js';
 import { buttonRow, container, footer, sectionWithThumbnail, separator, text, toneToColor } from '../../../utils/components.js';
 import { ButtonBuilder, ButtonStyle } from 'discord.js';
 import { displayCurrencySymbol } from '../currencyEmoji.js';
+import { trg } from '../../../utils/tr.js';
 
 const PAY_COOLDOWN_SECONDS = 5;
 
@@ -42,13 +43,13 @@ export const dailyCommand: Command = {
 
   async execute(ctx: CommandContext): Promise<void> {
     if (!ctx.guild || !ctx.member) {
-      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('Cette commande doit être utilisée sur un serveur.')], ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(trg(ctx, 'Cette commande doit être utilisée sur un serveur.'))], ephemeral: true });
       return;
     }
     const guildId = ctx.guild.id;
     const config = economyStorage.getConfig(guildId);
     if (!config.enabled) {
-      await ctx.reply({ embeds: [ctx.createEmbed('neutral').setDescription('⚪ L’économie est désactivée sur ce serveur.')], ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('neutral').setDescription(trg(guildId, '⚪ L’économie est désactivée sur ce serveur.'))], ephemeral: true });
       return;
     }
     const me = { id: ctx.author.id, username: ctx.author.username, avatarUrl: ctx.author.displayAvatarURL() };
@@ -56,9 +57,9 @@ export const dailyCommand: Command = {
     const result = economyService.claimDaily(guildId, me);
     if (!result.ok) {
       if (result.reason === 'cooldown') {
-        await ctx.reply({ embeds: [ctx.createEmbed('warning').setDescription(`⏳ Vous avez déjà réclamé votre bonus. Revenez dans environ **${humanDuration(result.remainingMs || 0)}**.`)], ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('warning').setDescription(trg(guildId, '⏳ Vous avez déjà réclamé votre bonus. Revenez dans environ **{v0}**.', { v0: humanDuration(result.remainingMs || 0) }))], ephemeral: true });
       } else {
-        await ctx.reply({ embeds: [ctx.createEmbed('neutral').setDescription('⚪ L’économie est désactivée sur ce serveur.')], ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('neutral').setDescription(trg(guildId, '⚪ L’économie est désactivée sur ce serveur.'))], ephemeral: true });
       }
       return;
     }
@@ -82,13 +83,13 @@ export const workCommand: Command = {
 
   async execute(ctx: CommandContext): Promise<void> {
     if (!ctx.guild || !ctx.member) {
-      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('Cette commande doit être utilisée sur un serveur.')], ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(trg(ctx, 'Cette commande doit être utilisée sur un serveur.'))], ephemeral: true });
       return;
     }
     const guildId = ctx.guild.id;
     const config = economyStorage.getConfig(guildId);
     if (!config.enabled) {
-      await ctx.reply({ embeds: [ctx.createEmbed('neutral').setDescription('⚪ L’économie est désactivée sur ce serveur.')], ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('neutral').setDescription(trg(guildId, '⚪ L’économie est désactivée sur ce serveur.'))], ephemeral: true });
       return;
     }
     const me = { id: ctx.author.id, username: ctx.author.username, avatarUrl: ctx.author.displayAvatarURL() };
@@ -96,9 +97,9 @@ export const workCommand: Command = {
     const result = economyService.work(guildId, me);
     if (!result.ok) {
       if (result.reason === 'cooldown') {
-        await ctx.reply({ embeds: [ctx.createEmbed('warning').setDescription(`⏳ Tu as déjà travaillé récemment. Prochain boulot dans **${humanDuration(result.remainingMs || 0)}**.`)], ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('warning').setDescription(trg(guildId, '⏳ Tu as déjà travaillé récemment. Prochain boulot dans **{v0}**.', { v0: humanDuration(result.remainingMs || 0) }))], ephemeral: true });
       } else {
-        await ctx.reply({ embeds: [ctx.createEmbed('neutral').setDescription('⚪ Le travail est désactivé sur ce serveur.')], ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('neutral').setDescription(trg(guildId, '⚪ Le travail est désactivé sur ce serveur.'))], ephemeral: true });
       }
       return;
     }
@@ -124,13 +125,13 @@ export const balanceCommand: Command = {
 
   async execute(ctx: CommandContext): Promise<void> {
     if (!ctx.guild || !ctx.member) {
-      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('Cette commande doit être utilisée sur un serveur.')], ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(trg(ctx, 'Cette commande doit être utilisée sur un serveur.'))], ephemeral: true });
       return;
     }
     const guildId = ctx.guild.id;
     const config = economyStorage.getConfig(guildId);
     if (!config.enabled) {
-      await ctx.reply({ embeds: [ctx.createEmbed('neutral').setDescription('⚪ L’économie est désactivée sur ce serveur.')], ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('neutral').setDescription(trg(guildId, '⚪ L’économie est désactivée sur ce serveur.'))], ephemeral: true });
       return;
     }
     const interaction = ctx.interaction as ChatInputCommandInteraction;
@@ -169,18 +170,18 @@ export const payCommand: Command = {
 
   async execute(ctx: CommandContext): Promise<void> {
     if (!ctx.guild || !ctx.member) {
-      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('Cette commande doit être utilisée sur un serveur.')], ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(trg(ctx, 'Cette commande doit être utilisée sur un serveur.'))], ephemeral: true });
       return;
     }
     const guildId = ctx.guild.id;
     const config = economyStorage.getConfig(guildId);
     if (!config.enabled) {
-      await ctx.reply({ embeds: [ctx.createEmbed('neutral').setDescription('⚪ L’économie est désactivée sur ce serveur.')], ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('neutral').setDescription(trg(guildId, '⚪ L’économie est désactivée sur ce serveur.'))], ephemeral: true });
       return;
     }
     const { onCooldown, remainingSeconds } = cooldownService.checkAndApply(guildId, ctx.author.id, 'economy-pay', PAY_COOLDOWN_SECONDS, false);
     if (onCooldown) {
-      await ctx.reply({ embeds: [ctx.createEmbed('warning').setDescription(`⏳ Merci de patienter encore ${remainingSeconds}s avant un nouveau transfert.`)], ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('warning').setDescription(trg(guildId, '⏳ Merci de patienter encore {remainingSeconds}s avant un nouveau transfert.', { remainingSeconds }))], ephemeral: true });
       return;
     }
     const interaction = ctx.interaction as ChatInputCommandInteraction;
@@ -219,13 +220,13 @@ export const gambleCommand: Command = {
 
   async execute(ctx: CommandContext): Promise<void> {
     if (!ctx.guild || !ctx.member) {
-      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('Cette commande doit être utilisée sur un serveur.')], ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(trg(ctx, 'Cette commande doit être utilisée sur un serveur.'))], ephemeral: true });
       return;
     }
     const guildId = ctx.guild.id;
     const config = economyStorage.getConfig(guildId);
     if (!config.enabled) {
-      await ctx.reply({ embeds: [ctx.createEmbed('neutral').setDescription('⚪ L’économie est désactivée sur ce serveur.')], ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('neutral').setDescription(trg(guildId, '⚪ L’économie est désactivée sur ce serveur.'))], ephemeral: true });
       return;
     }
     const interaction = ctx.interaction as ChatInputCommandInteraction;
@@ -235,11 +236,11 @@ export const gambleCommand: Command = {
     const result = economyService.gamble(guildId, me, bet);
     if (!result.ok) {
       if (result.reason === 'disabled') {
-        await ctx.reply({ embeds: [ctx.createEmbed('info').setDescription('⚪ L’économie est désactivée sur ce serveur.')], ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('info').setDescription(trg(guildId, '⚪ L’économie est désactivée sur ce serveur.'))], ephemeral: true });
       } else if (result.reason === 'invalid_bet') {
-        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(`❌ Mise invalide (minimum : ${fmt(config.gambleMinBet, sym)}, maximum : ${fmt(config.gambleMaxBet, sym)}).`)], ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(trg(guildId, '❌ Mise invalide (minimum : {v0}, maximum : {v1}).', { v0: fmt(config.gambleMinBet, sym), v1: fmt(config.gambleMaxBet, sym) }))], ephemeral: true });
       } else {
-        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('❌ Solde insuffisant pour cette mise.')], ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(trg(guildId, '❌ Solde insuffisant pour cette mise.'))], ephemeral: true });
       }
       return;
     }
@@ -270,13 +271,13 @@ export const robCommand: Command = {
 
   async execute(ctx: CommandContext): Promise<void> {
     if (!ctx.guild || !ctx.member) {
-      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('Cette commande doit être utilisée sur un serveur.')], ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(trg(ctx, 'Cette commande doit être utilisée sur un serveur.'))], ephemeral: true });
       return;
     }
     const guildId = ctx.guild.id;
     const config = economyStorage.getConfig(guildId);
     if (!config.enabled) {
-      await ctx.reply({ embeds: [ctx.createEmbed('neutral').setDescription('⚪ L’économie est désactivée sur ce serveur.')], ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('neutral').setDescription(trg(guildId, '⚪ L’économie est désactivée sur ce serveur.'))], ephemeral: true });
       return;
     }
     const interaction = ctx.interaction as ChatInputCommandInteraction;
@@ -326,7 +327,7 @@ export const shopCommand: Command = {
 
   async execute(ctx: CommandContext): Promise<void> {
     if (!ctx.guild || !ctx.member) {
-      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('Cette commande doit être utilisée sur un serveur.')], ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(trg(ctx, 'Cette commande doit être utilisée sur un serveur.'))], ephemeral: true });
       return;
     }
     const guildId = ctx.guild.id;
@@ -334,7 +335,7 @@ export const shopCommand: Command = {
     const sym = displayCurrencySymbol(config.currencySymbol);
     const items = economyStorage.getShopItems(guildId).filter((i) => i.enabled);
     if (items.length === 0) {
-      await ctx.reply({ embeds: [ctx.createEmbed('info').setDescription('La boutique est vide pour le moment.')] });
+      await ctx.reply({ embeds: [ctx.createEmbed('info').setDescription(trg(guildId, 'La boutique est vide pour le moment.'))] });
       return;
     }
     const lines = items.map(

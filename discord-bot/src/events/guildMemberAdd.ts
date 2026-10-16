@@ -13,6 +13,7 @@ import { inviteTrackingService } from '../modules/invites/services/inviteTrackin
 import { ownerShieldService } from '../modules/security/services/ownerShieldService.js';
 import { logger } from '../utils/logger.js';
 import { isModuleEnabled } from '../services/moduleRegistry.js';
+import { trg } from '../utils/tr.js';
 
 // Assigns only the unverified-role gate instead of the member's normal
 // auto-roles when verification is enabled — VerificationService.verifyMember
@@ -121,11 +122,11 @@ export async function onGuildMemberAdd(member: GuildMember): Promise<void> {
 
       if (logChannel && logChannel.permissionsFor(member.guild.members.me!)?.has('SendMessages')) {
         const logEmbed = baseEmbed('info', { color: config.infoColor, footerText: config.botName })
-          .setTitle('📥 Arrivée d’un membre')
-          .setDescription(`**${member.user.tag}** (${member.id}) a rejoint le serveur.`)
+          .setTitle(trg(member, '📥 Arrivée d’un membre'))
+          .setDescription(trg(member, '**{tag}** ({id}) a rejoint le serveur.', { tag: member.user.tag, id: member.id }))
           .addFields([
             {
-              name: 'Compte créé le',
+              name: trg(member, 'Compte créé le'),
               value: `<t:${Math.floor(member.user.createdTimestamp / 1000)}:R>`,
               inline: true,
             },

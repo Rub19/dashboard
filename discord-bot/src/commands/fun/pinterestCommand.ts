@@ -6,6 +6,7 @@ import {
   buildPinterestSearchEmbed,
   buildPinterestUserEmbed,
 } from "../../modules/fun/ui/pinterestEmbeds.js";
+import { trg } from '../../utils/tr.js';
 
 export const pinterestCommand: Command = {
   name: "pinterest",
@@ -62,7 +63,7 @@ export const pinterestCommand: Command = {
     const firstArg = ctx.args[0];
     if (!firstArg) {
       await ctx.reply({
-        content: "❌ Utilisation : `!pinterest search <mots-clés>`, `!pinterest pin <url>`, ou `!pinterest user <pseudo>`",
+        content: trg(ctx, '❌ Utilisation : `!pinterest search <mots-clés>`, `!pinterest pin <url>`, ou `!pinterest user <pseudo>`'),
       });
       return;
     }
@@ -71,7 +72,7 @@ export const pinterestCommand: Command = {
     if (sub === "pin") {
       const pinArg = ctx.args.slice(1).join(" ");
       if (!pinArg) {
-        await ctx.reply({ content: "❌ Veuillez préciser une URL ou un ID d'épingle Pinterest." });
+        await ctx.reply({ content: trg(ctx, '❌ Veuillez préciser une URL ou un ID d\'épingle Pinterest.') });
         return;
       }
       const pin = pinterestService.getPinInfo(pinArg);
@@ -83,7 +84,7 @@ export const pinterestCommand: Command = {
     if (sub === "user") {
       const userArg = ctx.args.slice(1).join(" ");
       if (!userArg) {
-        await ctx.reply({ content: "❌ Veuillez préciser un pseudo Pinterest." });
+        await ctx.reply({ content: trg(ctx, '❌ Veuillez préciser un pseudo Pinterest.') });
         return;
       }
       const user = pinterestService.getUserInfo(userArg);
@@ -94,7 +95,7 @@ export const pinterestCommand: Command = {
 
     const query = sub === "search" ? ctx.args.slice(1).join(" ") : ctx.args.join(" ");
     if (!query) {
-      await ctx.reply({ content: "❌ Veuillez préciser des mots-clés de recherche Pinterest." });
+      await ctx.reply({ content: trg(ctx, '❌ Veuillez préciser des mots-clés de recherche Pinterest.') });
       return;
     }
     const res = pinterestService.searchPins(query);

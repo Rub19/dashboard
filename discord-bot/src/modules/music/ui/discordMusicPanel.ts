@@ -24,6 +24,7 @@ import {
   V2_EPHEMERAL_FLAGS,
   V2_FLAGS,
 } from '../../../utils/components.js';
+import { trg } from '../../../utils/tr.js';
 
 const FALLBACK_THUMB = 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500&auto=format&fit=crop&q=80';
 
@@ -144,8 +145,8 @@ export class DiscordMusicPanel {
     const card = container(toneToColor('info', gConf.infoColor), [
       sectionWithThumbnail(lines, track.thumbnail || FALLBACK_THUMB, track.title),
       new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
-        new ButtonBuilder().setCustomId('music_queue').setLabel('Voir la file').setEmoji('📜').setStyle(ButtonStyle.Secondary),
-        new ButtonBuilder().setCustomId('music_panel').setLabel('Lecteur').setEmoji('🎛️').setStyle(ButtonStyle.Primary),
+        new ButtonBuilder().setCustomId('music_queue').setLabel(trg(guildId, 'Voir la file')).setEmoji('📜').setStyle(ButtonStyle.Secondary),
+        new ButtonBuilder().setCustomId('music_panel').setLabel(trg(guildId, 'Lecteur')).setEmoji('🎛️').setStyle(ButtonStyle.Primary),
       ),
     ]);
     return { components: [card] };

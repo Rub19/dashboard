@@ -27,6 +27,7 @@ import { formatString, getTranslation } from '../utils/i18n.js';
 import { noticeEmbed } from '../utils/embeds.js';
 import { disabledModuleEmbeds } from '../services/moduleGate.js';
 import { isModuleEnabled } from '../services/moduleRegistry.js';
+import { trg } from '../utils/tr.js';
 
 export async function onMessageCreate(message: Message) {
   // Ignorer les bots
@@ -166,7 +167,7 @@ export async function onMessageCreate(message: Message) {
   // Mode maintenance global : seules les commandes du propriétaire sont acceptées
   const botGlobalSettings = BotConfigService.getInstance().getSettings();
   if (botGlobalSettings.maintenanceMode && message.author.id !== config.botOwnerId) {
-    await message.reply({ embeds: [noticeEmbed('warning', `**Bot en maintenance** : ${botGlobalSettings.maintenanceReason || 'Le bot est actuellement en maintenance. Veuillez réessayer plus tard.'}`, { title: 'Maintenance', icon: 'warning' })] }).catch(() => {});
+    await message.reply({ embeds: [noticeEmbed('warning', trg(guildId, '**Bot en maintenance** : {v0}', { v0: botGlobalSettings.maintenanceReason || 'Le bot est actuellement en maintenance. Veuillez réessayer plus tard.' }), { title: 'Maintenance', icon: 'warning' })] }).catch(() => {});
     return;
   }
 
@@ -298,7 +299,7 @@ export async function onMessageCreate(message: Message) {
   } catch (error) {
     logger.error(`Erreur lors de l'exécution de la commande préfixe ${prefix}${command.name} :`, error);
     try {
-      await message.reply({ embeds: [noticeEmbed('error', "Une erreur est survenue lors de l'exécution de la commande.")] });
+      await message.reply({ embeds: [noticeEmbed('error', trg(guildId, 'Une erreur est survenue lors de l\'exécution de la commande.'))] });
     } catch {
       // Ignorer si permissions manquantes
     }

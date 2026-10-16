@@ -12,6 +12,7 @@ import { formatString, getTranslation } from '../../../utils/i18n.js';
 import { SLASH_DESTINATION_TYPES, isSendableTarget, sendToConfiguredChannel } from '../../../utils/channelSend.js';
 import { nativePollService, nativeIncompatibilityError, toPollEmoji, validateNativeInput, NATIVE_MAX_HOURS } from '../services/nativePollService.js';
 import { DiscordPollSchema } from '../types/index.js';
+import { trg } from '../../../utils/tr.js';
 
 /** "🍕 Pizza; Burger; 🥗 Salade" -> réponses, l'emoji de tête (facultatif) est détecté. */
 export function parseSlashAnswers(raw: string): Array<{ text: string; emoji?: string }> {
@@ -143,7 +144,7 @@ export const pollCommand: Command = {
     if (subcommand === 'create') {
       const i = ctx.isSlash ? ctx.interaction : null;
       if (!i) {
-        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('Utilise la commande slash `/poll create`.')], ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(trg(guildId, 'Utilise la commande slash `/poll create`.'))], ephemeral: true });
         return;
       }
       const question = i.options.getString('question', true).trim();
@@ -175,7 +176,7 @@ export const pollCommand: Command = {
         });
         if (!created.success) return void (await fail(created.error || 'Erreur inconnue.'));
         await ctx.reply({
-          embeds: [ctx.createEmbed('success').setDescription(`Sondage natif publié dans <#${created.poll!.channelId}> (ID \`${created.poll!.id}\`).`)],
+          embeds: [ctx.createEmbed('success').setDescription(trg(guildId, 'Sondage natif publié dans <#{channelId}> (ID `{id}`).', { channelId: created.poll!.channelId, id: created.poll!.id }))],
           ephemeral: true,
         });
         return;
@@ -219,7 +220,7 @@ export const pollCommand: Command = {
       poll.panelConfig.channelId = msg.channelId || channel.id;
       poll.panelConfig.messageId = msg.id;
       pollRepository.savePoll(poll);
-      await ctx.reply({ embeds: [ctx.createEmbed('success').setDescription(`Sondage publié dans <#${poll.panelConfig.channelId}> (ID \`${poll.id}\`).`)], ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('success').setDescription(trg(guildId, 'Sondage publié dans <#{channelId}> (ID `{id}`).', { channelId: poll.panelConfig.channelId, id: poll.id }))], ephemeral: true });
       return;
     }
 
@@ -249,7 +250,7 @@ export const pollCommand: Command = {
             )
             .join('\n\n')
         )
-        .setFooter({ text: 'ETHONE Sondages' });
+        .setFooter({ text: trg(guildId, 'ETHONE Sondages') });
 
       await ctx.reply({ embeds: [embed] });
       return;

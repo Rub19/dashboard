@@ -10,6 +10,7 @@ import { guildConfigService } from '../../services/guildConfigService.js';
 import { aiRepository } from '../../modules/ai/storage/aiRepository.js';
 import { formatString, getTranslation, SupportedLanguage } from '../../utils/i18n.js';
 import { logger } from '../../utils/logger.js';
+import { trg } from '../../utils/tr.js';
 
 export const languageCommand: Command = {
   name: 'language',
@@ -69,22 +70,22 @@ export const languageCommand: Command = {
       const buttonsRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
         new ButtonBuilder()
           .setCustomId('set_lang_fr')
-          .setLabel('Français')
+          .setLabel(trg(guildId, 'Français'))
           .setEmoji('🇫🇷')
           .setStyle(currentLang === 'fr' ? ButtonStyle.Primary : ButtonStyle.Secondary),
         new ButtonBuilder()
           .setCustomId('set_lang_en')
-          .setLabel('English')
+          .setLabel(trg(guildId, 'English'))
           .setEmoji('🇬🇧')
           .setStyle(currentLang === 'en' ? ButtonStyle.Primary : ButtonStyle.Secondary),
         new ButtonBuilder()
           .setCustomId('set_lang_es')
-          .setLabel('Español')
+          .setLabel(trg(guildId, 'Español'))
           .setEmoji('🇪🇸')
           .setStyle(currentLang === 'es' ? ButtonStyle.Primary : ButtonStyle.Secondary),
         new ButtonBuilder()
           .setCustomId('set_lang_de')
-          .setLabel('Deutsch')
+          .setLabel(trg(guildId, 'Deutsch'))
           .setEmoji('🇩🇪')
           .setStyle(currentLang === 'de' ? ButtonStyle.Primary : ButtonStyle.Secondary)
       );
@@ -136,7 +137,7 @@ export const languageCommand: Command = {
       .setTitle(`${tNew.lang_flag} ${tNew.lang_changed_title}`)
       .setDescription(tNew.lang_changed_desc)
       .addFields({
-        name: '🌐 Language / Idioma / Sprache',
+        name: trg(guildId, '🌐 Language / Idioma / Sprache'),
         value: `**${tNew.lang_flag} ${tNew.lang_name}** (\`${selectedLang.toUpperCase()}\`)`,
         inline: true,
       })

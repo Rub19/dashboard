@@ -11,6 +11,7 @@ import { DiscordAuditAdapter } from '../modules/logs/services/discordAuditAdapte
 import { inviteTrackingService } from '../modules/invites/services/inviteTrackingService.js';
 import { levelingService } from '../modules/leveling/services/levelingService.js';
 import { logger } from '../utils/logger.js';
+import { trg } from '../utils/tr.js';
 
 export async function onGuildMemberRemove(member: GuildMember | PartialGuildMember): Promise<void> {
   try {
@@ -78,8 +79,8 @@ export async function onGuildMemberRemove(member: GuildMember | PartialGuildMemb
 
       if (logChannel && logChannel.permissionsFor(member.guild.members.me!)?.has('SendMessages')) {
         const logEmbed = baseEmbed('error', { color: config.errorColor, footerText: config.botName })
-          .setTitle('📤 Départ d’un membre')
-          .setDescription(`**${member.user?.tag || 'Membre inconnu'}** (${member.id}) a quitté le serveur.`);
+          .setTitle(trg(member, '📤 Départ d’un membre'))
+          .setDescription(trg(member, '**{v0}** ({id}) a quitté le serveur.', { v0: member.user?.tag || 'Membre inconnu', id: member.id }));
 
         await logChannel.send({ embeds: [logEmbed] });
       }

@@ -3,6 +3,7 @@ import { Command, CommandContext } from '../../../types/command.js';
 import { tagStorage, MAX_TAGS_PER_GUILD } from '../storage/tagStorage.js';
 import { TAG_NAME_RE } from '../types/tag.js';
 import { emitConfigUpdated } from '../../../services/syncConfigEmitter.js';
+import { trg } from '../../../utils/tr.js';
 
 function normName(raw: string): string {
   return raw.trim().toLowerCase().replace(/\s+/g, '-').slice(0, 32);
@@ -65,7 +66,7 @@ export const tagCommand: Command = {
     const guildId = ctx.guild?.id;
     if (!guildId || !ctx.isSlash) {
       await ctx.reply({
-        embeds: [ctx.createEmbed('error').setDescription('❌ Commande slash à utiliser sur un serveur.')],
+        embeds: [ctx.createEmbed('error').setDescription(trg(guildId, '❌ Commande slash à utiliser sur un serveur.'))],
         ephemeral: true,
       });
       return;
@@ -78,7 +79,7 @@ export const tagCommand: Command = {
       const tag = tagStorage.get(guildId, name);
       if (!tag) {
         await ctx.reply({
-          embeds: [ctx.createEmbed('error').setDescription(`❌ Aucun tag \`${name}\`. \`/tag list\` pour les voir.`)],
+          embeds: [ctx.createEmbed('error').setDescription(trg(guildId, '❌ Aucun tag `{name}`. `/tag list` pour les voir.', { name }))],
           ephemeral: true,
         });
         return;
@@ -92,7 +93,7 @@ export const tagCommand: Command = {
       const list = tagStorage.getGuild(guildId);
       if (list.length === 0) {
         await ctx.reply({
-          embeds: [ctx.createEmbed('neutral').setDescription('Aucun tag. `/tag add` pour en créer un.')],
+          embeds: [ctx.createEmbed('neutral').setDescription(trg(guildId, 'Aucun tag. `/tag add` pour en créer un.'))],
           ephemeral: true,
         });
         return;
@@ -101,7 +102,7 @@ export const tagCommand: Command = {
         embeds: [
           ctx
             .createEmbed('default')
-            .setTitle(`Tags du serveur (${list.length})`)
+            .setTitle(trg(guildId, 'Tags du serveur ({length})', { length: list.length }))
             .setDescription(list.map((t) => `\`${t.name}\``).join(' · ')),
         ],
       });
@@ -112,19 +113,19 @@ export const tagCommand: Command = {
       const name = normName(ctx.interaction!.options.getString('nom', true));
       const tag = tagStorage.get(guildId, name);
       if (!tag) {
-        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(`❌ Aucun tag \`${name}\`.`)], ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(trg(guildId, '❌ Aucun tag `{name}`.', { name }))], ephemeral: true });
         return;
       }
       await ctx.reply({
         embeds: [
           ctx
             .createEmbed('default')
-            .setTitle(`Tag \`${tag.name}\``)
+            .setTitle(trg(guildId, 'Tag `{name}`', { name: tag.name }))
             .addFields(
-              { name: 'Auteur', value: tag.createdBy ? `<@${tag.createdBy}>` : '—', inline: true },
-              { name: 'Usages', value: `${tag.uses}`, inline: true },
-              { name: 'Modifié', value: `<t:${Math.floor(new Date(tag.updatedAt).getTime() / 1000)}:R>`, inline: true },
-              { name: 'Contenu', value: tag.content.slice(0, 1000) }
+              { name: trg(guildId, 'Auteur'), value: tag.createdBy ? `<@${tag.createdBy}>` : '—', inline: true },
+              { name: trg(guildId, 'Usages'), value: `${tag.uses}`, inline: true },
+              { name: trg(guildId, 'Modifié'), value: `<t:${Math.floor(new Date(tag.updatedAt).getTime() / 1000)}:R>`, inline: true },
+              { name: trg(guildId, 'Contenu'), value: tag.content.slice(0, 1000) }
             ),
         ],
       });
@@ -134,7 +135,7 @@ export const tagCommand: Command = {
     // add / edit / remove — modération
     if (!canManage) {
       await ctx.reply({
-        embeds: [ctx.createEmbed('error').setDescription('❌ Réservé aux membres avec `Gérer les messages`.')],
+        embeds: [ctx.createEmbed('error').setDescription(trg(guildId, '❌ Réservé aux membres avec `Gérer les messages`.'))],
         ephemeral: true,
       });
       return;
@@ -145,21 +146,21 @@ export const tagCommand: Command = {
       const content = ctx.interaction!.options.getString('contenu', true).trim();
       if (!TAG_NAME_RE.test(name)) {
         await ctx.reply({
-          embeds: [ctx.createEmbed('error').setDescription('❌ Nom invalide. Autorisé : `a-z`, `0-9`, `_`, `-` (max 32).')],
+          embeds: [ctx.createEmbed('error').setDescription(trg(guildId, '❌ Nom invalide. Autorisé : `a-z`, `0-9`, `_`, `-` (max 32).'))],
           ephemeral: true,
         });
         return;
       }
       if (tagStorage.get(guildId, name)) {
         await ctx.reply({
-          embeds: [ctx.createEmbed('error').setDescription(`❌ Le tag \`${name}\` existe déjà. Utilise \`/tag edit\`.`)],
+          embeds: [ctx.createEmbed('error').setDescription(trg(guildId, '❌ Le tag `{name}` existe déjà. Utilise `/tag edit`.', { name }))],
           ephemeral: true,
         });
         return;
       }
       if (!tagStorage.canAddMore(guildId)) {
         await ctx.reply({
-          embeds: [ctx.createEmbed('error').setDescription(`❌ Limite de ${MAX_TAGS_PER_GUILD} tags atteinte.`)],
+          embeds: [ctx.createEmbed('error').setDescription(trg(guildId, '❌ Limite de {MAX_TAGS_PER_GUILD} tags atteinte.', { MAX_TAGS_PER_GUILD }))],
           ephemeral: true,
         });
         return;
@@ -167,7 +168,7 @@ export const tagCommand: Command = {
       const createdTag = tagStorage.set({ guildId, name, content, createdBy: ctx.author.id });
       emitConfigUpdated('tags', guildId, createdTag, 'DISCORD_COMMAND', ctx.author.id);
       await ctx.reply({
-        embeds: [ctx.createEmbed('success').setDescription(`✅ Tag \`${name}\` créé. \`/tag get ${name}\` pour l'afficher.`)],
+        embeds: [ctx.createEmbed('success').setDescription(trg(guildId, '✅ Tag `{name}` créé. `/tag get {name1}` pour l\'afficher.', { name, name1: name }))],
         ephemeral: true,
       });
       return;
@@ -178,13 +179,13 @@ export const tagCommand: Command = {
       const content = ctx.interaction!.options.getString('contenu', true).trim();
       const existing = tagStorage.get(guildId, name);
       if (!existing) {
-        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(`❌ Aucun tag \`${name}\`.`)], ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(trg(guildId, '❌ Aucun tag `{name}`.', { name }))], ephemeral: true });
         return;
       }
       const editedTag = tagStorage.set({ guildId, name, content, createdBy: existing.createdBy });
       emitConfigUpdated('tags', guildId, editedTag, 'DISCORD_COMMAND', ctx.author.id);
       await ctx.reply({
-        embeds: [ctx.createEmbed('success').setDescription(`✅ Tag \`${name}\` modifié.`)],
+        embeds: [ctx.createEmbed('success').setDescription(trg(guildId, '✅ Tag `{name}` modifié.', { name }))],
         ephemeral: true,
       });
       return;
@@ -194,7 +195,7 @@ export const tagCommand: Command = {
     const name = normName(ctx.interaction!.options.getString('nom', true));
     const ok = tagStorage.delete(guildId, name);
     await ctx.reply({
-      embeds: [ctx.createEmbed(ok ? 'success' : 'error').setDescription(ok ? `✅ Tag \`${name}\` supprimé.` : `❌ Aucun tag \`${name}\`.`)],
+      embeds: [ctx.createEmbed(ok ? 'success' : 'error').setDescription(ok ? trg(guildId, '✅ Tag `{name}` supprimé.', { name }) : trg(guildId, '❌ Aucun tag `{name}`.', { name }))],
       ephemeral: true,
     });
   },

@@ -12,6 +12,7 @@ import { logStorage } from '../../logs/storage/logStorage.js';
 import { baseEmbed } from '../../../utils/embeds.js';
 import { logger } from '../../../utils/logger.js';
 import { CORE_MODULE_IDS, MODULES, isModuleEnabled } from '../../../services/moduleRegistry.js';
+import { trg } from '../../../utils/tr.js';
 
 /**
  * Contacts d'urgence : quand un problème sérieux est détecté (permission manquante, salon configuré supprimé, rôle caché
@@ -121,7 +122,7 @@ export function buildEmergencyEmbed(guild: Guild, issues: EmergencyIssue[], test
   const body = test
     ? 'Ceci est un **test** : si vous voyez ce message, les contacts d’urgence de ce serveur sont bien prévenus.'
     : issues.map((i) => `**${i.title}** — ${i.detail}`).join('\n');
-  return baseEmbed(test ? 'info' : 'error').setTitle(test ? '🧪 Test des contacts d’urgence' : '🚨 Problème sérieux détecté').setDescription(body.slice(0, 3800)).setFooter({ text: `${guild.name} · ETHONE` });
+  return baseEmbed(test ? 'info' : 'error').setTitle(test ? trg(guild, '🧪 Test des contacts d’urgence') : trg(guild, '🚨 Problème sérieux détecté')).setDescription(body.slice(0, 3800)).setFooter({ text: trg(guild, '{name} · ETHONE', { name: guild.name }) });
 }
 
 /** Envoie l'alerte : message dans le salon (avec mentions). Aucun message privé n'est envoyé de la propre initiative du bot : seulement pour le test demandé depuis le dashboard. */

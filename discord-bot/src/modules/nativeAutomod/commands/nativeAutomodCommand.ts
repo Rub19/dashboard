@@ -6,6 +6,7 @@ import {
   TRIGGER_LABELS,
   type NativeRuleView,
 } from '../services/nativeAutomodService.js';
+import { trg } from '../../../utils/tr.js';
 
 const ACTION_LABELS: Record<string, string> = {
   block_message: 'blocage',
@@ -75,7 +76,7 @@ export const nativeAutomodCommand: Command = {
     const guild = ctx.guild;
     const i = ctx.interaction;
     if (!guild || !ctx.isSlash || !i) {
-      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('Utilise la commande slash `/automod-native` dans un serveur.')], ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(trg(ctx, 'Utilise la commande slash `/automod-native` dans un serveur.'))], ephemeral: true });
       return;
     }
     await ctx.deferReply({ ephemeral: true });
@@ -89,18 +90,18 @@ export const nativeAutomodCommand: Command = {
           ? '🎉 **Badge Débloqué !** (100+ règles actives sur Discord, badge présent sur le profil).'
           : `⏳ **Progression : ${stats.totalRules} / 100 règles** (${percent}%)\n> Discord attribue automatiquement le badge « Uses AutoMod » dès que 100 règles actives sont créées par le bot.`;
         const embed = ctx.createEmbed(stats.badgeUnlocked ? 'success' : 'default')
-          .setTitle("Badge Discord « Uses AutoMod »")
-          .setDescription(`${badgeStatus}\n\n**Serveurs gérés :** ${stats.guildCount}\n**Règles actives configurées :** ${stats.totalRules}\n\n*Conseil : utilise \`/automod-native deploy-all\` pour déployer le pack complet (jusqu'à 6 règles/serveur).*`);
+          .setTitle(trg(ctx, 'Badge Discord « Uses AutoMod »'))
+          .setDescription(trg(ctx, '{badgeStatus}\n\n**Serveurs gérés :** {guildCount}\n**Règles actives configurées :** {totalRules}\n\n*Conseil : utilise `/automod-native deploy-all` pour déployer le pack complet (jusqu\'à 6 règles/serveur).*', { badgeStatus, guildCount: stats.guildCount, totalRules: stats.totalRules }));
         await ctx.editReply({ embeds: [embed] });
       } else if (sub === 'deploy-all') {
         const res = await nativeAutomodService.deployToAllGuilds(ctx.client, { alertChannelId: i.options.getChannel('alert')?.id, reason });
         const embed = ctx.createEmbed(res.badgeUnlocked ? 'success' : 'default')
-          .setTitle("Déploiement global AutoMod")
-          .setDescription(`**Serveurs traités :** ${res.processedGuilds}\n**Nouvelles règles créées :** ${res.totalCreated}\n**Règles existantes conservées :** ${res.totalSkipped}\n**Total actuel de règles actives :** ${res.totalActiveRules} / 100\n\n${res.badgeUnlocked ? '✨ Objectif 100 règles atteint ! Discord actualise le badge sur le profil sous peu.' : 'Il manque encore ' + (100 - res.totalActiveRules) + ' règle(s) pour le seuil des 100.'}`);
+          .setTitle(trg(ctx, 'Déploiement global AutoMod'))
+          .setDescription(trg(ctx, '**Serveurs traités :** {processedGuilds}\n**Nouvelles règles créées :** {totalCreated}\n**Règles existantes conservées :** {totalSkipped}\n**Total actuel de règles actives :** {totalActiveRules} / 100\n\n{v4}', { processedGuilds: res.processedGuilds, totalCreated: res.totalCreated, totalSkipped: res.totalSkipped, totalActiveRules: res.totalActiveRules, v4: res.badgeUnlocked ? '✨ Objectif 100 règles atteint ! Discord actualise le badge sur le profil sous peu.' : 'Il manque encore ' + (100 - res.totalActiveRules) + ' règle(s) pour le seuil des 100.' }));
         await ctx.editReply({ embeds: [embed] });
       } else if (sub === 'toggle') {
         const rule = await nativeAutomodService.toggle(guild, i.options.getString('rule', true), i.options.getBoolean('enabled', true), reason);
-        await ctx.editReply({ embeds: [ctx.createEmbed('success').setDescription(`Règle **${rule.name}** ${rule.enabled ? 'activée' : 'désactivée'}.`)] });
+        await ctx.editReply({ embeds: [ctx.createEmbed('success').setDescription(trg(ctx, 'Règle **{name}** {v1}.', { name: rule.name, v1: rule.enabled ? 'activée' : 'désactivée' }))] });
       } else if (sub === 'preset') {
         const { created, skipped } = await nativeAutomodService.createRecommended(guild, { alertChannelId: i.options.getChannel('alert')?.id, reason });
         const text = [
@@ -109,12 +110,12 @@ export const nativeAutomodCommand: Command = {
         ]
           .filter(Boolean)
           .join('\n\n');
-        await ctx.editReply({ embeds: [ctx.createEmbed(created.length ? 'success' : 'warning').setTitle('AutoMod natif — règles recommandées').setDescription(text)] });
+        await ctx.editReply({ embeds: [ctx.createEmbed(created.length ? 'success' : 'warning').setTitle(trg(ctx, 'AutoMod natif — règles recommandées')).setDescription(text)] });
       } else {
         const rules = await nativeAutomodService.list(guild);
         const description = rules.length ? rules.map(line).join('\n').slice(0, 4000) : "Aucune règle AutoMod native. Utilise `/automod-native preset` pour créer les règles recommandées.";
         await ctx.editReply({
-          embeds: [ctx.createEmbed('default').setTitle(`AutoMod natif — ${rules.length} règle(s)`).setDescription(description).setFooter({ text: 'Exécuté par Discord, même si le bot est hors ligne.' })],
+          embeds: [ctx.createEmbed('default').setTitle(trg(ctx, 'AutoMod natif — {length} règle(s)', { length: rules.length })).setDescription(description).setFooter({ text: trg(ctx, 'Exécuté par Discord, même si le bot est hors ligne.') })],
         });
       }
     } catch (err) {

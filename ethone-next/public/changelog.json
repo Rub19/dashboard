@@ -1,5 +1,14 @@
 [
   {
+    "version": "v1.75.125",
+    "date": "2026-10-16",
+    "title": "Tout le bot dans la langue du serveur",
+    "items": [
+      "Les réponses, messages privés, boutons, menus et fenêtres de près de 1 000 textes du bot (musique, économie, jeux, salons vocaux, bienvenue, rappels, tags, starboard, sondages, tickets, Spotify, sécurité…) suivent la langue choisie pour le serveur : français, anglais, espagnol ou allemand.",
+      "Les messages personnalisés écrits par l'équipe restent tels quels."
+    ]
+  },
+  {
     "version": "v1.75.124",
     "date": "2026-10-16",
     "title": "Le bot parle la langue du serveur : sanctions et signalements",
@@ -603,14 +612,6 @@
       "Sections repliables, barre d'accent sur les réglages modifiés, confirmation « Enregistré » et remise par défaut en un clic.",
       "Accueil des réglages : interrupteurs rapides (sons, notifications, vibrations, animations, dock, Dynamic Island) et accès direct à toutes les catégories ; les raccourcis ouvrent enfin la bonne catégorie.",
       "Transitions orientées entre catégories et liens Précédent / Suivant en bas de page."
-    ]
-  },
-  {
-    "version": "v1.69.1",
-    "date": "2026-10-11",
-    "title": "Mobile : widget de l'accueil visible",
-    "items": [
-      "Accueil sur téléphone : le widget choisi dans les onglets s'affiche bien (il restait invisible)."
     ]
   }
 ]

@@ -13,6 +13,7 @@ import { CommandConditionEngine } from './commandConditionEngine.js';
 import { CommandActionExecutor } from './commandActionExecutor.js';
 import { logger } from '../../../utils/logger.js';
 import { baseEmbed } from '../../../utils/embeds.js';
+import { trg } from '../../../utils/tr.js';
 
 // Per-user cooldown cache: key = `${commandId}:${userId}`
 const cooldownCache = new Map<string, number>();
@@ -82,7 +83,7 @@ export class CustomCommandService {
 
     if (!replied) {
       await interaction
-        .reply({ embeds: [baseEmbed('success').setDescription('✅ Commande exécutée.')], flags: MessageFlags.Ephemeral })
+        .reply({ embeds: [baseEmbed('success').setDescription(trg(ctx, '✅ Commande exécutée.'))], flags: MessageFlags.Ephemeral })
         .catch(() => null);
     }
 

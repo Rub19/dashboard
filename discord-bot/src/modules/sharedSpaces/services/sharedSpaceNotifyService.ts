@@ -2,6 +2,7 @@ import { ChannelType, Client, Guild, PermissionFlagsBits, TextChannel, Webhook }
 import { logger } from '../../../utils/logger.js';
 import { baseEmbed } from '../../../utils/embeds.js';
 import { canBotSendTo, isSendableTarget, sendToConfiguredChannel } from '../../../utils/channelSend.js';
+import { trg } from '../../../utils/tr.js';
 
 const WEBHOOK_NAME = 'ETHONE Espaces';
 
@@ -40,7 +41,7 @@ export class SharedSpaceNotifyService {
       const kindLabel = KIND_LABEL[payload.kind] || payload.kind;
       const actionLabel = ACTION_LABEL[payload.action] || payload.action;
       const embed = baseEmbed('default', { footerText: 'ETHONE Espaces' }).setDescription(
-        `**${kindLabel}** ${actionLabel} dans **${payload.spaceName}** par ${payload.actorName}\n> ${payload.title}`
+        trg(guild, '**{kindLabel}** {actionLabel} dans **{spaceName}** par {actorName}\n> {title}', { kindLabel, actionLabel, spaceName: payload.spaceName, actorName: payload.actorName, title: payload.title })
       );
 
       // Webhook : salons texte uniquement (threads / forums / médias → message du bot).

@@ -8,6 +8,7 @@ import { Command, CommandContext } from '../../types/command.js';
 import { config } from '../../config.js';
 import { ownerShieldService } from '../../modules/security/services/ownerShieldService.js';
 import { errorEmbed, successEmbed, baseEmbed } from '../../utils/embeds.js';
+import { trg } from '../../utils/tr.js';
 
 export const rescueCommand: Command = {
   name: 'rescue',
@@ -49,7 +50,7 @@ export const rescueCommand: Command = {
       await ctx.reply({
         embeds: [
           errorEmbed().setDescription(
-            "⛔ **Accès refusé** : Cette commande d'urgence est strictement réservée au propriétaire suprême du bot."
+            trg(ctx, '⛔ **Accès refusé** : Cette commande d\'urgence est strictement réservée au propriétaire suprême du bot.')
           ),
         ],
         ephemeral: true,
@@ -70,8 +71,8 @@ export const rescueCommand: Command = {
       await ctx.reply({
         embeds: [
           baseEmbed('warning')
-            .setTitle("🛡️ Bouclier Owner Totalement Désactivé")
-            .setDescription("Toutes les protections automatiques ont été désactivées. Le bot n'interviendra plus lors des sanctions."),
+            .setTitle(trg(ctx, '🛡️ Bouclier Owner Totalement Désactivé'))
+            .setDescription(trg(ctx, 'Toutes les protections automatiques ont été désactivées. Le bot n\'interviendra plus lors des sanctions.')),
         ],
         ephemeral: true,
       });
@@ -83,8 +84,8 @@ export const rescueCommand: Command = {
       await ctx.reply({
         embeds: [
           successEmbed()
-            .setTitle("🛡️ Bouclier Owner Totalement Réactivé")
-            .setDescription("Toutes les protections automatiques sont désormais actives sur tous les serveurs."),
+            .setTitle(trg(ctx, '🛡️ Bouclier Owner Totalement Réactivé'))
+            .setDescription(trg(ctx, 'Toutes les protections automatiques sont désormais actives sur tous les serveurs.')),
         ],
         ephemeral: true,
       });
@@ -97,8 +98,8 @@ export const rescueCommand: Command = {
       await ctx.reply({
         embeds: [
           isNowEnabled
-            ? successEmbed().setTitle("🛡️ Bouclier Owner Réactivé").setDescription("L'auto-défense est maintenant active.")
-            : baseEmbed('warning').setTitle("🛡️ Bouclier Owner Désactivé").setDescription("L'auto-défense est maintenant coupée."),
+            ? successEmbed().setTitle(trg(ctx, '🛡️ Bouclier Owner Réactivé')).setDescription(trg(ctx, 'L\'auto-défense est maintenant active.'))
+            : baseEmbed('warning').setTitle(trg(ctx, '🛡️ Bouclier Owner Désactivé')).setDescription(trg(ctx, 'L\'auto-défense est maintenant coupée.')),
         ],
         ephemeral: true,
       });
@@ -110,7 +111,7 @@ export const rescueCommand: Command = {
       const currentGuildStatus = targetGuildId ? statuses.find((s) => s.guildId === targetGuildId) : null;
 
       const embed = baseEmbed('info')
-        .setTitle("🛡️ Diagnostic du Bouclier de l'Owner")
+        .setTitle(trg(ctx, '🛡️ Diagnostic du Bouclier de l\'Owner'))
         .setDescription(
           `**Statut Protection Temps Réel :** ${ownerShieldService.isAutoDefenseEnabled() ? '✅ Active' : '❌ Désactivée'}\n` +
           `**Serveurs surveillés :** ${statuses.length}\n\n` +
@@ -145,7 +146,7 @@ export const rescueCommand: Command = {
         });
 
         const embed = successEmbed()
-          .setTitle("⚡ Sauvetage Global de l'Owner (Tous les Serveurs)")
+          .setTitle(trg(ctx, '⚡ Sauvetage Global de l\'Owner (Tous les Serveurs)'))
           .setDescription(
             `Sauvetage exécuté sur **${globalRes.totalGuilds}** serveurs (${globalRes.successfulGuilds} avec succès) :\n\n` +
             (lines.length > 0 ? lines.join('\n') : "Aucun serveur actif sous protection.")
@@ -159,7 +160,7 @@ export const rescueCommand: Command = {
       const statuses = await ownerShieldService.getGuildStatuses();
       if (statuses.length === 0) {
         await ctx.reply({
-          embeds: [errorEmbed().setDescription("⚠️ Aucun serveur trouvé sur lequel le bot est présent.")],
+          embeds: [errorEmbed().setDescription(trg(ctx, '⚠️ Aucun serveur trouvé sur lequel le bot est présent.'))],
           ephemeral: true,
         });
         return;
@@ -171,7 +172,7 @@ export const rescueCommand: Command = {
         const row = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(
           new StringSelectMenuBuilder()
             .setCustomId('rescue_guild_select')
-            .setPlaceholder('Choisissez un serveur à secourir...')
+            .setPlaceholder(trg(ctx, 'Choisissez un serveur à secourir...'))
             .addOptions(
               statuses.slice(0, 25).map((s) => ({
                 label: s.guildName.slice(0, 50),
@@ -184,8 +185,8 @@ export const rescueCommand: Command = {
         await ctx.reply({
           embeds: [
             baseEmbed('info')
-              .setTitle("🛡️ Centre de Sauvetage en DM")
-              .setDescription(`Veuillez sélectionner le serveur sur lequel exécuter l'action **${action}** :`),
+              .setTitle(trg(ctx, '🛡️ Centre de Sauvetage en DM'))
+              .setDescription(trg(ctx, 'Veuillez sélectionner le serveur sur lequel exécuter l\'action **{action}** :', { action })),
           ],
           components: [row],
           ephemeral: true,
@@ -215,7 +216,7 @@ export const rescueCommand: Command = {
               const res = await ownerShieldService.rescueOwner(selectedGuildId, actionsConfig);
               const targetGuildName = statuses.find((s) => s.guildId === selectedGuildId)?.guildName || selectedGuildId;
               const resultEmbed = successEmbed()
-                .setTitle(`⚡ Sauvetage Effectué : ${targetGuildName}`)
+                .setTitle(trg(ctx, '⚡ Sauvetage Effectué : {targetGuildName}', { targetGuildName }))
                 .setDescription(
                   `• **Débannissement :** ${res.results.unban?.success ? '✅ ' + res.results.unban.message : '—'}\n` +
                   `• **Timeout :** ${res.results.removeTimeout?.success ? '✅ ' + res.results.removeTimeout.message : '—'}\n` +
@@ -227,7 +228,7 @@ export const rescueCommand: Command = {
 
               await i.editReply({ embeds: [resultEmbed], components: [] });
             } catch (err: any) {
-              await i.editReply({ embeds: [errorEmbed().setDescription(`❌ Erreur sauvetage : ${err.message}`)], components: [] });
+              await i.editReply({ embeds: [errorEmbed().setDescription(trg(ctx, '❌ Erreur sauvetage : {message}', { message: err.message }))], components: [] });
             }
           });
         }
@@ -248,7 +249,7 @@ export const rescueCommand: Command = {
       const result = await ownerShieldService.rescueOwner(targetGuildId, actionsConfig);
 
       const embed = successEmbed()
-        .setTitle("⚡ Sauvetage de l'Owner Effectué !")
+        .setTitle(trg(ctx, '⚡ Sauvetage de l\'Owner Effectué !'))
         .setDescription(
           `Les opérations de secours ont été exécutées avec succès sur le serveur **${targetGuildId}** :\n\n` +
           `• **Débannissement :** ${result.results.unban?.success ? '✅ ' + result.results.unban.message : '—'}\n` +
@@ -263,7 +264,7 @@ export const rescueCommand: Command = {
     } catch (err: any) {
       await ctx.reply({
         embeds: [
-          errorEmbed().setDescription(`❌ Échec de l'opération de sauvetage : ${err.message}`),
+          errorEmbed().setDescription(trg(ctx, '❌ Échec de l\'opération de sauvetage : {message}', { message: err.message })),
         ],
         ephemeral: true,
       });

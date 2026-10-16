@@ -18,6 +18,7 @@ import { baseEmbed, noticeEmbed } from '../../../utils/embeds.js';
 import { logger } from '../../../utils/logger.js';
 import { emitConfigUpdated } from '../../../services/syncConfigEmitter.js';
 import { SLASH_DESTINATION_TYPES } from '../../../utils/channelSend.js';
+import { trg } from '../../../utils/tr.js';
 
 /**
  * `auditRepository.updateConfig` fusionne `routing` au runtime, mais son type
@@ -99,7 +100,7 @@ export function buildLogsPanel(guild: Guild, activeBucket: LogBucket = 'general'
     color: config.enabled ? 0x5865f2 : 0x6b7280,
     footerText: 'ETHONE • Logs',
   })
-    .setTitle(`${config.enabled ? '🟢' : '⚪'} Configuration des logs`)
+    .setTitle(trg(guild, '{v0} Configuration des logs', { v0: config.enabled ? '🟢' : '⚪' }))
     .setDescription(
       [
         config.enabled
@@ -116,7 +117,7 @@ export function buildLogsPanel(guild: Guild, activeBucket: LogBucket = 'general'
 
   const channelSelect = new ChannelSelectMenuBuilder()
     .setCustomId(`logs_pick:${activeBucket}`)
-    .setPlaceholder(`Salon pour « ${LOG_BUCKETS[activeBucket].label} »`)
+    .setPlaceholder(trg(guild, 'Salon pour « {label} »', { label: LOG_BUCKETS[activeBucket].label }))
     .addChannelTypes(...SLASH_DESTINATION_TYPES)
     .setMinValues(0)
     .setMaxValues(1);
@@ -131,7 +132,7 @@ export function buildLogsPanel(guild: Guild, activeBucket: LogBucket = 'general'
 
   const retentionSelect = new StringSelectMenuBuilder()
     .setCustomId('logs_retention')
-    .setPlaceholder("Durée de rétention de l'historique")
+    .setPlaceholder(trg(guild, 'Durée de rétention de l\'historique'))
     .addOptions(
       RETENTION_OPTIONS.map((o) => ({
         label: o.label,
@@ -143,17 +144,17 @@ export function buildLogsPanel(guild: Guild, activeBucket: LogBucket = 'general'
   const actionButtons = [
     new ButtonBuilder()
       .setCustomId('logs_toggle')
-      .setLabel(config.enabled ? 'Désactiver' : 'Activer')
+      .setLabel(config.enabled ? trg(guild, 'Désactiver') : trg(guild, 'Activer'))
       .setStyle(config.enabled ? ButtonStyle.Danger : ButtonStyle.Success),
     new ButtonBuilder()
       .setCustomId(`logs_clear:${activeBucket}`)
-      .setLabel('Retirer ce salon')
+      .setLabel(trg(guild, 'Retirer ce salon'))
       .setStyle(ButtonStyle.Secondary)
       .setDisabled(!routing[channelIdKey(activeBucket)]),
     new ButtonBuilder()
       .setCustomId('logs_verbosity_cycle:' + activeBucket)
       .setLabel(
-        `Verbosité : ${THRESHOLD_LABELS[routing[`${activeBucket}Threshold` as keyof AuditChannelRouting] as ChannelLogThreshold]}`
+        trg(guild, 'Verbosité : {v0}', { v0: THRESHOLD_LABELS[routing[`${activeBucket}Threshold` as keyof AuditChannelRouting] as ChannelLogThreshold] })
       )
       .setStyle(ButtonStyle.Secondary),
   ];
@@ -181,7 +182,7 @@ export async function handleLogsInteraction(
   const perms =
     member && typeof member.permissions !== 'string' ? member.permissions : interaction.memberPermissions;
   if (!perms?.has('ManageGuild')) {
-    await interaction.reply({ embeds: [noticeEmbed('error', "Il te faut la permission « Gérer le serveur ».")], flags: MessageFlags.Ephemeral });
+    await interaction.reply({ embeds: [noticeEmbed('error', trg(interaction, 'Il te faut la permission « Gérer le serveur ».'))], flags: MessageFlags.Ephemeral });
     return;
   }
 
@@ -240,7 +241,7 @@ export async function handleLogsInteraction(
     logger.error('[Logs] Échec du traitement de l\'interaction du panneau :', err);
     if (!interaction.replied && !interaction.deferred) {
       await interaction
-        .reply({ embeds: [noticeEmbed('error', "Une erreur est survenue. Réessaie.")], flags: MessageFlags.Ephemeral })
+        .reply({ embeds: [noticeEmbed('error', trg(guildId, 'Une erreur est survenue. Réessaie.'))], flags: MessageFlags.Ephemeral })
         .catch(() => {});
     }
   }

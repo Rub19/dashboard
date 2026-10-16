@@ -12,6 +12,7 @@ import { StreamPlatform } from '../types/streamer.js';
 import { getAppEmoji } from '../../../services/appEmojis.js';
 import { BRAND_COLORS } from '../../../utils/embeds.js';
 import { SLASH_DESTINATION_TYPES } from '../../../utils/channelSend.js';
+import { trg } from '../../../utils/tr.js';
 
 export const streamerCommand: Command = {
   name: 'streamer',
@@ -178,7 +179,7 @@ export const streamerCommand: Command = {
 
     if (!ctx.isSlash || !ctx.interaction) {
       await ctx.reply({
-        embeds: [ctx.createEmbed('error').setDescription('Cette commande s\'utilise uniquement via `/streamer`.')],
+        embeds: [ctx.createEmbed('error').setDescription(trg(guildId, 'Cette commande s\'utilise uniquement via `/streamer`.'))],
         ephemeral: true,
       });
       return;
@@ -210,7 +211,7 @@ export const streamerCommand: Command = {
           embeds: [
             ctx
               .createEmbed('error')
-              .setDescription(`${errorEmoji} La chaîne **${username}** sur **${platform.toUpperCase()}** est déjà enregistrée.`),
+              .setDescription(trg(guildId, '{errorEmoji} La chaîne **{username}** sur **{v2}** est déjà enregistrée.', { errorEmoji, username, v2: platform.toUpperCase() })),
           ],
           ephemeral: true,
         });
@@ -251,7 +252,7 @@ export const streamerCommand: Command = {
 
       const embed = new EmbedBuilder()
         .setColor(BRAND_COLORS.success)
-        .setTitle(`${checkEmoji} Streamer ajouté avec succès`)
+        .setTitle(trg(guildId, '{checkEmoji} Streamer ajouté avec succès', { checkEmoji }))
         .setDescription(
           `La chaîne **${added.displayName || added.username}** (${platform.toUpperCase()}) a été ajoutée aux alertes !\n\n` +
             `📍 **Salon d'annonce :** ${added.channelId ? `<#${added.channelId}>` : config.defaultChannelId ? `<#${config.defaultChannelId}> (défaut)` : '*Aucun salon configuré*'}\n` +
@@ -261,7 +262,7 @@ export const streamerCommand: Command = {
             `📡 **Statut actuel :** ${probe.isLive ? `${onlineEmoji} **EN DIRECT** (${probe.viewers} spectateurs)` : '⚫ Hors ligne'}`
         )
         .setThumbnail(probe.avatarUrl || null)
-        .setFooter({ text: 'ETHONE Streamers · Alertes automatiques 24/7' });
+        .setFooter({ text: trg(guildId, 'ETHONE Streamers · Alertes automatiques 24/7') });
 
       await interaction.editReply({ embeds: [embed] });
       return;
@@ -278,7 +279,7 @@ export const streamerCommand: Command = {
           embeds: [
             ctx
               .createEmbed('error')
-              .setDescription(`${errorEmoji} Aucun streamer trouvé pour **${username}** sur **${platform.toUpperCase()}**.`),
+              .setDescription(trg(guildId, '{errorEmoji} Aucun streamer trouvé pour **{username}** sur **{v2}**.', { errorEmoji, username, v2: platform.toUpperCase() })),
           ],
           ephemeral: true,
         });
@@ -289,7 +290,7 @@ export const streamerCommand: Command = {
         embeds: [
           ctx
             .createEmbed('success')
-            .setDescription(`${checkEmoji} La chaîne **${username}** (${platform.toUpperCase()}) a été retirée des alertes.`),
+            .setDescription(trg(guildId, '{checkEmoji} La chaîne **{username}** ({v2}) a été retirée des alertes.', { checkEmoji, username, v2: platform.toUpperCase() })),
         ],
       });
       return;
@@ -302,9 +303,9 @@ export const streamerCommand: Command = {
           embeds: [
             ctx
               .createEmbed('info')
-              .setTitle('📡 Aucun streamer configuré')
+              .setTitle(trg(guildId, '📡 Aucun streamer configuré'))
               .setDescription(
-                'Ajoutez votre premier créateur avec `/streamer add <plateforme> <chaine>` ou rendez-vous sur le Dashboard dans le module **Streamers** !'
+                trg(guildId, 'Ajoutez votre premier créateur avec `/streamer add <plateforme> <chaine>` ou rendez-vous sur le Dashboard dans le module **Streamers** !')
               ),
           ],
           ephemeral: true,
@@ -321,9 +322,9 @@ export const streamerCommand: Command = {
 
       const embed = new EmbedBuilder()
         .setColor(BRAND_COLORS.primary)
-        .setTitle(`📡 Streamers surveillés (${list.length})`)
+        .setTitle(trg(guildId, '📡 Streamers surveillés ({length})', { length: list.length }))
         .setDescription(lines.join('\n\n'))
-        .setFooter({ text: `Module ${config.enabled ? 'Activé' : 'Désactivé'} · Surveillance toutes les 2 min` })
+        .setFooter({ text: trg(guildId, 'Module {v0} · Surveillance toutes les 2 min', { v0: config.enabled ? 'Activé' : 'Désactivé' }) })
         .setTimestamp();
 
       await ctx.reply({ embeds: [embed] });
@@ -379,7 +380,7 @@ export const streamerCommand: Command = {
 
       const embed = new EmbedBuilder()
         .setColor(BRAND_COLORS.success)
-        .setTitle(`${checkEmoji} Configuration Streamers mise à jour`)
+        .setTitle(trg(guildId, '{checkEmoji} Configuration Streamers mise à jour', { checkEmoji }))
         .setDescription(
           `• **Statut du module :** ${updated.enabled ? '✅ Activé' : '❌ Désactivé'}\n` +
             `• **Salon par défaut :** ${updated.defaultChannelId ? `<#${updated.defaultChannelId}>` : '*Aucun*'}\n` +

@@ -4,6 +4,7 @@ import { protectionStore } from '../modules/protections/protectionStore.js';
 import { PROTECTIONS } from '../modules/protections/catalog.js';
 import { securityStorage } from '../modules/security/storage/securityStorage.js';
 import { logger } from '../utils/logger.js';
+import { trg } from '../utils/tr.js';
 
 /**
  * « Rapport de sécurité hebdomadaire » (Réglages de la console, désactivé par défaut) : chaque lundi vers 9 h (UTC),
@@ -41,7 +42,7 @@ export function buildWeeklyReport(guild: Guild, now = Date.now()): EmbedBuilder 
 
   return new EmbedBuilder()
     .setColor(todo.length ? 0xf59e0b : 0x22c55e)
-    .setTitle(`🛡️ Rapport de sécurité — ${guild.name}`)
+    .setTitle(trg(guild, '🛡️ Rapport de sécurité — {name}', { name: guild.name }))
     .setDescription(
       [
         `**Incidents (7 jours) :** ${incidents.length}`,
@@ -53,7 +54,7 @@ export function buildWeeklyReport(guild: Guild, now = Date.now()): EmbedBuilder 
         todo.length ? `**À regarder :**\n${todo.map((t) => `• ${t}`).join('\n')}` : '✅ Rien à signaler.',
       ].join('\n')
     )
-    .setFooter({ text: 'Désactivable dans la console Etho › Réglages' })
+    .setFooter({ text: trg(guild, 'Désactivable dans la console Etho › Réglages') })
     .setTimestamp(now);
 }
 

@@ -12,6 +12,7 @@ import { formatString, getTranslation } from '../../../utils/i18n.js';
 import { BRAND_COLORS, baseEmbed } from '../../../utils/embeds.js';
 import { emitConfigUpdated } from '../../../services/syncConfigEmitter.js';
 import { securityStorage } from '../../security/storage/securityStorage.js';
+import { trg } from '../../../utils/tr.js';
 
 export const antiraidCommand: Command = {
   name: 'antiraid',
@@ -102,9 +103,9 @@ export const antiraidCommand: Command = {
         await ctx.reply({
           embeds: [
             baseEmbed('neutral')
-              .setAuthor({ name: `Anti-Raid — ${ctx.guild.name}`, iconURL: ctx.guild.iconURL({ size: 128 }) ?? undefined })
+              .setAuthor({ name: trg(guildId, 'Anti-Raid — {name}', { name: ctx.guild.name }), iconURL: ctx.guild.iconURL({ size: 128 }) ?? undefined })
               .setDescription(
-                '## ⚪ Désactivé\nAucune détection ni sanction automatique sur ce serveur. Les réglages sont conservés.\n\n**Réactiver :** `/antiraid toggle actif:True`'
+                trg(guildId, '## ⚪ Désactivé\nAucune détection ni sanction automatique sur ce serveur. Les réglages sont conservés.\n\n**Réactiver :** `/antiraid toggle actif:True`')
               ),
           ],
         });
@@ -128,33 +129,33 @@ export const antiraidCommand: Command = {
       detectors.push('Spam, mentions, bots, comptes récents : `/protection liste`');
 
       const embed = baseEmbed('default', { color: levelColors[metrics.threatLevel] || BRAND_COLORS.success })
-        .setAuthor({ name: `Anti-Raid — ${ctx.guild.name}`, iconURL: ctx.guild.iconURL({ size: 128 }) ?? undefined })
-        .setDescription(`**${threatLine}** · Risk Score **${metrics.currentRiskScore}/100**`)
+        .setAuthor({ name: trg(guildId, 'Anti-Raid — {name}', { name: ctx.guild.name }), iconURL: ctx.guild.iconURL({ size: 128 }) ?? undefined })
+        .setDescription(trg(guildId, '**{threatLine}** · Risk Score **{currentRiskScore}/100**', { threatLine, currentRiskScore: metrics.currentRiskScore }))
         .addFields(
           {
-            name: 'Mode d\'urgence',
-            value: metrics.raidModeActive ? '🔴 **RAID MODE ACTIF**' : 'Aucun',
+            name: trg(guildId, 'Mode d\'urgence'),
+            value: metrics.raidModeActive ? trg(guildId, '🔴 **RAID MODE ACTIF**') : trg(guildId, 'Aucun'),
             inline: true,
           },
           {
-            name: 'Verrouillage',
+            name: trg(guildId, 'Verrouillage'),
             value: metrics.lockdownActive
-              ? `🔴 ${metrics.lockedChannelsCount} salon${metrics.lockedChannelsCount > 1 ? 's' : ''} verrouillé${metrics.lockedChannelsCount > 1 ? 's' : ''}`
-              : 'Aucun',
+              ? trg(guildId, '🔴 {lockedChannelsCount} salon{v1} verrouillé{v2}', { lockedChannelsCount: metrics.lockedChannelsCount, v1: metrics.lockedChannelsCount > 1 ? 's' : '', v2: metrics.lockedChannelsCount > 1 ? 's' : '' })
+              : trg(guildId, 'Aucun'),
             inline: true,
           },
           {
-            name: 'Activité (60 s)',
-            value: `${metrics.joinsPerMinute} arrivées · ${metrics.messagesPerMinute} msg · ${metrics.mentionsPerMinute} mentions`,
+            name: trg(guildId, 'Activité (60 s)'),
+            value: trg(guildId, '{joinsPerMinute} arrivées · {messagesPerMinute} msg · {mentionsPerMinute} mentions', { joinsPerMinute: metrics.joinsPerMinute, messagesPerMinute: metrics.messagesPerMinute, mentionsPerMinute: metrics.mentionsPerMinute }),
             inline: false,
           },
           {
-            name: 'Détecteurs',
+            name: trg(guildId, 'Détecteurs'),
             value: detectors.join('\n'),
             inline: false,
           }
         )
-        .setFooter({ text: '/antiraid toggle · trustbot · raidmode · lockdown · /protection' });
+        .setFooter({ text: trg(guildId, '/antiraid toggle · trustbot · raidmode · lockdown · /protection') });
 
       await ctx.reply({ embeds: [embed] });
       return;
@@ -170,8 +171,8 @@ export const antiraidCommand: Command = {
             .createEmbed(active ? 'success' : 'neutral')
             .setDescription(
               active
-                ? '🛡️ Anti-Raid **activé** sur ce serveur.'
-                : '⚪ Anti-Raid **entièrement désactivé** sur ce serveur (plus aucune détection ni expulsion automatique).'
+                ? trg(guildId, '🛡️ Anti-Raid **activé** sur ce serveur.')
+                : trg(guildId, '⚪ Anti-Raid **entièrement désactivé** sur ce serveur (plus aucune détection ni expulsion automatique).')
             ),
         ],
         ephemeral: true,
@@ -196,8 +197,8 @@ export const antiraidCommand: Command = {
             .createEmbed('success')
             .setDescription(
               added
-                ? `✅ **${bot.tag}** est maintenant un bot autorisé (ne sera plus expulsé).`
-                : `✅ **${bot.tag}** a été retiré des bots autorisés.`
+                ? trg(guildId, '✅ **{tag}** est maintenant un bot autorisé (ne sera plus expulsé).', { tag: bot.tag })
+                : trg(guildId, '✅ **{tag}** a été retiré des bots autorisés.', { tag: bot.tag })
             ),
         ],
         ephemeral: true,

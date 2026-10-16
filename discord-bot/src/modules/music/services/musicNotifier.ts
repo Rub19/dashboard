@@ -1,6 +1,7 @@
 import { Client, TextBasedChannel } from 'discord.js';
 import { baseEmbed } from '../../../utils/embeds.js';
 import { logger } from '../../../utils/logger.js';
+import { trg } from '../../../utils/tr.js';
 
 /**
  * Remonte les erreurs de lecture dans le salon texte où /play a été lancé.
@@ -58,7 +59,7 @@ class MusicNotifier {
       const channel = (await this.client.channels.fetch(channelId).catch(() => null)) as TextBasedChannel | null;
       if (!channel || !('send' in channel)) return;
       const embed = baseEmbed('info', { footerText: 'ETHONE • Musique' })
-        .setTitle('ℹ️ Lecture via une autre source')
+        .setTitle(trg(guildId, 'ℹ️ Lecture via une autre source'))
         .setDescription(`**${title.slice(0, 200)}**\n${text}`);
       await channel.send({ embeds: [embed] });
     } catch (err) {
@@ -78,9 +79,9 @@ class MusicNotifier {
       const channel = (await this.client.channels.fetch(channelId).catch(() => null)) as TextBasedChannel | null;
       if (!channel || !('send' in channel)) return;
       const embed = baseEmbed('warning', { footerText: 'ETHONE • Musique' })
-        .setTitle('⚠️ Lecture impossible')
+        .setTitle(trg(guildId, '⚠️ Lecture impossible'))
         .setDescription(`**${title.slice(0, 200)}**\n${this.hint(detail)}`)
-        .addFields({ name: 'Détail technique', value: `\`\`\`${this.summarize(detail)}\`\`\`` });
+        .addFields({ name: trg(guildId, 'Détail technique'), value: `\`\`\`${this.summarize(detail)}\`\`\`` });
       await channel.send({ embeds: [embed] });
     } catch (err) {
       logger.warn('[MusicNotifier] envoi impossible :', err);

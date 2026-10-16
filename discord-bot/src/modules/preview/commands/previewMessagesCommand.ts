@@ -2,6 +2,7 @@ import { PermissionFlagsBits, SlashCommandBuilder, MessageFlags } from 'discord.
 import { Command, CommandContext } from '../../../types/command.js';
 import { PREVIEW_CATEGORIES, sendPreview } from '../services/messagePreviewService.js';
 import { noticeEmbed } from '../../../utils/embeds.js';
+import { trg } from '../../../utils/tr.js';
 
 /** /previewmessages — envoie en message privé un exemplaire de chaque message du bot (données d'exemple). */
 export const previewMessagesCommand: Command = {
@@ -22,20 +23,20 @@ export const previewMessagesCommand: Command = {
 
   async execute(ctx: CommandContext): Promise<void> {
     if (!ctx.guild || !ctx.isSlash || !ctx.interaction) {
-      await ctx.reply({ embeds: [noticeEmbed('error', 'Utilise la commande slash **/previewmessages** sur un serveur.')], ephemeral: true });
+      await ctx.reply({ embeds: [noticeEmbed('error', trg(ctx, 'Utilise la commande slash **/previewmessages** sur un serveur.'))], ephemeral: true });
       return;
     }
     if (!ctx.member?.permissions.has(PermissionFlagsBits.ManageGuild)) {
-      await ctx.reply({ embeds: [noticeEmbed('denied', 'Réservé aux membres qui ont la permission **Gérer le serveur**.')], ephemeral: true });
+      await ctx.reply({ embeds: [noticeEmbed('denied', trg(ctx, 'Réservé aux membres qui ont la permission **Gérer le serveur**.'))], ephemeral: true });
       return;
     }
     const i = ctx.interaction;
     await i.deferReply({ flags: MessageFlags.Ephemeral });
     const res = await sendPreview(i.client, ctx.guild, i.user.id, i.options.getString('categorie'));
     if (res.dmClosed) {
-      await i.editReply({ embeds: [noticeEmbed('error', 'Je ne peux pas t’écrire en message privé. Autorise les messages privés des membres de ce serveur (Paramètres de confidentialité), puis réessaie.')] });
+      await i.editReply({ embeds: [noticeEmbed('error', trg(ctx, 'Je ne peux pas t’écrire en message privé. Autorise les messages privés des membres de ce serveur (Paramètres de confidentialité), puis réessaie.'))] });
       return;
     }
-    await i.editReply({ embeds: [noticeEmbed(res.failed === 0 ? 'success' : 'warning', `${res.sent}/${res.total} message(s) envoyé(s) en message privé${res.failed ? ` · ${res.failed} n’ont pas pu être envoyés` : ''}.`)] });
+    await i.editReply({ embeds: [noticeEmbed(res.failed === 0 ? 'success' : 'warning', trg(ctx, '{sent}/{total} message(s) envoyé(s) en message privé{v2}.', { sent: res.sent, total: res.total, v2: res.failed ? ` · ${res.failed} n’ont pas pu être envoyés` : '' }))] });
   },
 };

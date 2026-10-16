@@ -4,6 +4,7 @@ import { pollRepository } from '../storage/pollRepository.js';
 import { isSendableTarget, sendToConfiguredChannel } from '../../../utils/channelSend.js';
 import { logger } from '../../../utils/logger.js';
 import { isModuleEnabled } from '../../../services/moduleRegistry.js';
+import { trg } from '../../../utils/tr.js';
 
 /**
  * Sondages natifs Discord (champ `poll` d'un message). Discord gère le vote, l'affichage et la clôture ;
@@ -113,7 +114,7 @@ export class NativePollService {
       msg = await sendToConfiguredChannel(channel, payload, { postTitle: input.question.trim() });
     } catch (err: any) {
       logger.warn('[NativePoll] envoi impossible :', err);
-      return { success: false, error: `Envoi du sondage impossible : ${err?.message || 'erreur Discord'}` };
+      return { success: false, error: trg(msg, 'Envoi du sondage impossible : {v0}', { v0: err?.message || 'erreur Discord' }) };
     }
 
     const now = new Date();
@@ -227,9 +228,9 @@ export class NativePollService {
   /** Termine un sondage natif avant l'heure (`message.poll.end()`) et fige le décompte. */
   public async end(client: Client | undefined, guildId: string, pollId: string): Promise<{ success: boolean; poll?: DiscordPoll; error?: string }> {
     const poll = pollRepository.getPollById(guildId, pollId);
-    if (!poll || !poll.native) return { success: false, error: 'Sondage natif introuvable.' };
+    if (!poll || !poll.native) return { success: false, error: trg(guildId, 'Sondage natif introuvable.') };
     if (poll.status === 'ENDED') return { success: true, poll };
-    if (!client) return { success: false, error: 'Bot indisponible.' };
+    if (!client) return { success: false, error: trg(guildId, 'Bot indisponible.') };
 
     try {
       const channel: any = await client.channels.fetch(poll.channelId!);
@@ -245,7 +246,7 @@ export class NativePollService {
       return { success: true, poll: synced.status === 'ENDED' ? synced : this.finish(synced, Date.now()) };
     } catch (err: any) {
       if (err?.code === 10008 || err?.code === 10003) return { success: true, poll: this.finish(poll, Date.now()) };
-      return { success: false, error: `Clôture impossible : ${err?.message || 'erreur Discord'}` };
+      return { success: false, error: trg(guildId, 'Clôture impossible : {v0}', { v0: err?.message || 'erreur Discord' }) };
     }
   }
 

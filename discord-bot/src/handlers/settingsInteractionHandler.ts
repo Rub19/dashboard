@@ -19,6 +19,7 @@ import { aiRepository } from '../modules/ai/storage/aiRepository.js';
 import { baseEmbed } from '../utils/embeds.js';
 import { formatString, getTranslation, SupportedLanguage, TranslationDictionary } from '../utils/i18n.js';
 import { logger } from '../utils/logger.js';
+import { trg } from '../utils/tr.js';
 
 function backButton(t: TranslationDictionary): ButtonBuilder {
   return new ButtonBuilder()
@@ -539,7 +540,7 @@ export async function handleSettingsButton(interaction: ButtonInteraction): Prom
         .setTitle(`${t.lang_flag} ${t.lang_changed_title}`)
         .setDescription(t.lang_changed_desc)
         .addFields({
-          name: '🌐 Language / Idioma / Sprache',
+          name: trg(guildId, '🌐 Language / Idioma / Sprache'),
           value: `**${t.lang_flag} ${t.lang_name}** (\`${targetLang.toUpperCase()}\`)`,
           inline: true,
         });
@@ -547,22 +548,22 @@ export async function handleSettingsButton(interaction: ButtonInteraction): Prom
       const buttonsRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
         new ButtonBuilder()
           .setCustomId('set_lang_fr')
-          .setLabel('Français')
+          .setLabel(trg(guildId, 'Français'))
           .setEmoji('🇫🇷')
           .setStyle(targetLang === 'fr' ? ButtonStyle.Primary : ButtonStyle.Secondary),
         new ButtonBuilder()
           .setCustomId('set_lang_en')
-          .setLabel('English')
+          .setLabel(trg(guildId, 'English'))
           .setEmoji('🇬🇧')
           .setStyle(targetLang === 'en' ? ButtonStyle.Primary : ButtonStyle.Secondary),
         new ButtonBuilder()
           .setCustomId('set_lang_es')
-          .setLabel('Español')
+          .setLabel(trg(guildId, 'Español'))
           .setEmoji('🇪🇸')
           .setStyle(targetLang === 'es' ? ButtonStyle.Primary : ButtonStyle.Secondary),
         new ButtonBuilder()
           .setCustomId('set_lang_de')
-          .setLabel('Deutsch')
+          .setLabel(trg(guildId, 'Deutsch'))
           .setEmoji('🇩🇪')
           .setStyle(targetLang === 'de' ? ButtonStyle.Primary : ButtonStyle.Secondary)
       );

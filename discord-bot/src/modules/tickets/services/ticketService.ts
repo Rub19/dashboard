@@ -40,6 +40,7 @@ import {
   statusToTagKey,
   TicketStatusTagKey,
 } from './ticketForum.js';
+import { trg } from '../../../utils/tr.js';
 
 class TicketService {
   private discordClient: Client | null = null;
@@ -364,9 +365,9 @@ class TicketService {
       .setTitle(`${category.emoji} ${ticket.id} • ${category.name}`)
       .setDescription(renderedWelcome)
       .addFields(
-        { name: '👤 Demandeur', value: `<@${user.id}> (${user.tag})`, inline: true },
-        { name: '🚦 Priorité', value: `\`${ticket.priority}\``, inline: true },
-        { name: '📌 Statut', value: `\`${ticket.status}\``, inline: true }
+        { name: trg(guild, '👤 Demandeur'), value: `<@${user.id}> (${user.tag})`, inline: true },
+        { name: trg(guild, '🚦 Priorité'), value: `\`${ticket.priority}\``, inline: true },
+        { name: trg(guild, '📌 Statut'), value: `\`${ticket.status}\``, inline: true }
       );
 
     // Form answers si disponibles
@@ -375,7 +376,7 @@ class TicketService {
         .map(([k, v]) => `**${k}** : ${v}`)
         .join('\n');
       embed.addFields({
-        name: '📋 Réponses au formulaire',
+        name: trg(guild, '📋 Réponses au formulaire'),
         value: answersText.slice(0, 1024),
         inline: false,
       });
@@ -383,29 +384,29 @@ class TicketService {
 
     embed
       .setFooter({
-        text: `ETHONE Helpdesk 2.0 • Utilisez les boutons ci-dessous pour gérer ce ticket.`,
+        text: trg(guild, 'ETHONE Helpdesk 2.0 • Utilisez les boutons ci-dessous pour gérer ce ticket.'),
       })
       .setTimestamp();
 
     const row1 = new ActionRowBuilder<ButtonBuilder>().addComponents(
       new ButtonBuilder()
         .setCustomId(`ticket_close:${ticket.id}`)
-        .setLabel('Fermer')
+        .setLabel(trg(guild, 'Fermer'))
         .setEmoji('🔒')
         .setStyle(ButtonStyle.Danger),
       new ButtonBuilder()
         .setCustomId(`ticket_claim:${ticket.id}`)
-        .setLabel('Prendre en charge')
+        .setLabel(trg(guild, 'Prendre en charge'))
         .setEmoji('👤')
         .setStyle(ButtonStyle.Primary),
       new ButtonBuilder()
         .setCustomId(`ticket_priority:${ticket.id}`)
-        .setLabel('Priorité')
+        .setLabel(trg(guild, 'Priorité'))
         .setEmoji('📌')
         .setStyle(ButtonStyle.Secondary),
       new ButtonBuilder()
         .setCustomId(`ticket_transcript:${ticket.id}`)
-        .setLabel('Transcript')
+        .setLabel(trg(guild, 'Transcript'))
         .setEmoji('📄')
         .setStyle(ButtonStyle.Secondary)
     );
@@ -460,7 +461,7 @@ class TicketService {
         const channel = (await resolveTicketChannel(guild, ticket)) as TextChannel | undefined;
         if (channel) {
           await channel.send({
-            embeds: [baseEmbed('info').setDescription(`🙋 **${staffUser.tag}** a pris en charge ce ticket.`)],
+            embeds: [baseEmbed('info').setDescription(trg(guildId, '🙋 **{tag}** a pris en charge ce ticket.', { tag: staffUser.tag }))],
           });
         }
       } catch (err) {
@@ -693,8 +694,8 @@ class TicketService {
             ? 'Ce post est archivé et verrouillé.'
             : 'Le salon sera supprimé automatiquement dans 5 secondes.',
         })
-          .setTitle(`🔒 Ticket Fermé • ${ticket.id}`)
-          .setDescription(`Ce ticket a été clôturé par **${closedBy.tag}**.\n**Motif** : ${reason}`);
+          .setTitle(trg(guild, '🔒 Ticket Fermé • {id}', { id: ticket.id }))
+          .setDescription(trg(guild, 'Ce ticket a été clôturé par **{tag}**.\n**Motif** : {reason}', { tag: closedBy.tag, reason }));
 
         await channel.send({ embeds: [embed] });
 

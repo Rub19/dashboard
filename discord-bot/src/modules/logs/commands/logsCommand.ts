@@ -11,6 +11,7 @@ import {
   type LogBucket,
 } from '../interactions/logsInteractionHandler.js';
 import { SLASH_DESTINATION_TYPES, canBotSendTo } from '../../../utils/channelSend.js';
+import { trg } from '../../../utils/tr.js';
 
 const BUCKET_CHOICES = (Object.keys(LOG_BUCKETS) as LogBucket[]).map((b) => ({
   name: `${LOG_BUCKETS[b].emoji} ${LOG_BUCKETS[b].label}`,
@@ -105,14 +106,14 @@ export const logsCommand: Command = {
     const guild = ctx.guild;
     if (!guild) {
       await ctx.reply({
-        embeds: [ctx.createEmbed('error').setDescription('❌ Commande réservée aux serveurs.')],
+        embeds: [ctx.createEmbed('error').setDescription(trg(ctx, '❌ Commande réservée aux serveurs.'))],
         ephemeral: true,
       });
       return;
     }
     if (!ctx.isSlash || !ctx.interaction) {
       await ctx.reply({
-        embeds: [ctx.createEmbed('info').setDescription('ℹ️ Utilise la commande slash `/logs`.')],
+        embeds: [ctx.createEmbed('info').setDescription(trg(ctx, 'ℹ️ Utilise la commande slash `/logs`.'))],
         ephemeral: true,
       });
       return;
@@ -134,7 +135,7 @@ export const logsCommand: Command = {
           embeds: [
             ctx
               .createEmbed('error')
-              .setDescription(`❌ Il me manque **Envoyer des messages** ou **Intégrer des liens** dans <#${channel.id}>.`),
+              .setDescription(trg(ctx, '❌ Il me manque **Envoyer des messages** ou **Intégrer des liens** dans <#{id}>.', { id: channel.id })),
           ],
           ephemeral: true,
         });
@@ -156,9 +157,9 @@ export const logsCommand: Command = {
         embeds: [
           ctx
             .createEmbed('success')
-            .setTitle('📋 Journaux activés')
+            .setTitle(trg(ctx, '📋 Journaux activés'))
             .setDescription(
-              `Tous les événements (arrivées, messages supprimés, sanctions, sécurité…) seront envoyés dans <#${channel.id}>.\nUtilise \`/logs setup\` pour répartir les catégories dans des salons séparés.`
+              trg(ctx, 'Tous les événements (arrivées, messages supprimés, sanctions, sécurité…) seront envoyés dans <#{id}>.\nUtilise `/logs setup` pour répartir les catégories dans des salons séparés.', { id: channel.id })
             ),
         ],
       });
@@ -176,7 +177,7 @@ export const logsCommand: Command = {
             .setDescription(
               channel
                 ? `${LOG_BUCKETS[bucket].emoji} **${LOG_BUCKETS[bucket].label}** → <#${channel.id}>.`
-                : `${LOG_BUCKETS[bucket].emoji} **${LOG_BUCKETS[bucket].label}** ne sera plus envoyé dans un salon dédié.`
+                : trg(ctx, '{emoji} **{label}** ne sera plus envoyé dans un salon dédié.', { emoji: LOG_BUCKETS[bucket].emoji, label: LOG_BUCKETS[bucket].label })
             ),
         ],
       });
@@ -192,7 +193,7 @@ export const logsCommand: Command = {
           ctx
             .createEmbed('success')
             .setDescription(
-              `${LOG_BUCKETS[bucket].emoji} **${LOG_BUCKETS[bucket].label}** : verbosité réglée sur **${THRESHOLD_LABELS[level]}**.`
+              trg(ctx, '{emoji} **{label}** : verbosité réglée sur **{v2}**.', { emoji: LOG_BUCKETS[bucket].emoji, label: LOG_BUCKETS[bucket].label, v2: THRESHOLD_LABELS[level] })
             ),
         ],
       });
@@ -209,8 +210,8 @@ export const logsCommand: Command = {
             .createEmbed('success')
             .setDescription(
               days === 0
-                ? "🗂️ L'historique des logs est désormais conservé **sans limite**."
-                : `🗂️ L'historique des logs est conservé **${days} jours**.`
+                ? trg(ctx, '🗂️ L\'historique des logs est désormais conservé **sans limite**.')
+                : trg(ctx, '🗂️ L\'historique des logs est conservé **{days} jours**.', { days })
             ),
         ],
       });
@@ -222,7 +223,7 @@ export const logsCommand: Command = {
       emitConfigUpdated('logs', guild.id, disabledConfig, 'DISCORD_COMMAND', ctx.author.id);
       await ctx.reply({
         embeds: [
-          ctx.createEmbed('neutral').setDescription('⏸️ Journaux désactivés. La configuration est conservée — `/logs setup` pour réactiver.'),
+          ctx.createEmbed('neutral').setDescription(trg(ctx, '⏸️ Journaux désactivés. La configuration est conservée — `/logs setup` pour réactiver.')),
         ],
       });
       return;
@@ -241,7 +242,7 @@ export const logsCommand: Command = {
       embeds: [
         ctx
           .createEmbed(config.enabled ? 'default' : 'neutral')
-          .setTitle(`${config.enabled ? '🟢' : '⚪'} Journaux du serveur`)
+          .setTitle(trg(ctx, '{v0} Journaux du serveur', { v0: config.enabled ? '🟢' : '⚪' }))
           .setDescription(
             [
               config.enabled ? 'Module **actif**.' : 'Module **inactif** — `/logs setup` pour démarrer.',

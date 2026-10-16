@@ -2,6 +2,7 @@ import { CategoryChannel, ChannelType, Guild, PermissionFlagsBits } from 'discor
 import { z } from 'zod';
 import { voiceRepository } from '../storage/voiceRepository.js';
 import type { VoiceHub } from '../types/index.js';
+import { trg } from '../../../utils/tr.js';
 
 const snowflake = z.string().regex(/^\d{5,25}$/);
 
@@ -78,7 +79,7 @@ export function createHub(guild: Guild, input: z.infer<typeof CreateHubSchema>):
 
 export function updateHub(guild: Guild, hubId: string, patch: z.infer<typeof UpdateHubSchema>): { hub?: VoiceHub; error?: string; notFound?: boolean } {
   const existing = voiceRepository.getHubById(hubId);
-  if (!existing || existing.guildId !== guild.id) return { notFound: true, error: 'Hub introuvable' };
+  if (!existing || existing.guildId !== guild.id) return { notFound: true, error: trg(guild, 'Hub introuvable') };
   if (patch.channelId && patch.channelId !== existing.channelId) {
     const problem = checkTriggerChannel(guild, patch.channelId, existing.type, existing.id);
     if (problem) return { error: problem };

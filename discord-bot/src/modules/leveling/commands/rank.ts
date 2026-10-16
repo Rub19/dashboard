@@ -14,6 +14,7 @@ import { formatString, getTranslation } from '../../../utils/i18n.js';
 import { renderRankCardFor } from '../services/rankCardService.js';
 import { logger } from '../../../utils/logger.js';
 import { container, sectionWithThumbnail, separator, text, footer, progressBar, toneToColor, buttonRow } from '../../../utils/components.js';
+import { trg } from '../../../utils/tr.js';
 
 export const rankCommand: Command = {
   name: 'rank',
@@ -58,8 +59,8 @@ export const rankCommand: Command = {
     try {
       const png = await renderRankCardFor(guild, targetUser);
       await ctx.reply({
-        files: [new AttachmentBuilder(png, { name: `rank-${targetUser.id}.png` })],
-        components: [new ActionRowBuilder<ButtonBuilder>().addComponents(new ButtonBuilder().setCustomId('rank_btn_leaderboard').setLabel('Classement').setEmoji('🏆').setStyle(ButtonStyle.Secondary))],
+        files: [new AttachmentBuilder(png, { name: trg(ctx, 'rank-{id}.png', { id: targetUser.id }) })],
+        components: [new ActionRowBuilder<ButtonBuilder>().addComponents(new ButtonBuilder().setCustomId('rank_btn_leaderboard').setLabel(trg(ctx, 'Classement')).setEmoji('🏆').setStyle(ButtonStyle.Secondary))],
       });
       return;
     } catch (err) {
@@ -83,7 +84,7 @@ export const rankCommand: Command = {
       text(`**${t.leveling_field_progress}** — ${progress.progressPercentage}%\n\`${bar}\` ${progress.currentLevelXp.toLocaleString('fr-FR')} / ${progress.nextLevelXp.toLocaleString('fr-FR')} XP`),
       separator(false),
       buttonRow(
-        new ButtonBuilder().setCustomId('rank_btn_leaderboard').setLabel('Classement').setEmoji('🏆').setStyle(ButtonStyle.Secondary)
+        new ButtonBuilder().setCustomId('rank_btn_leaderboard').setLabel(trg(ctx, 'Classement')).setEmoji('🏆').setStyle(ButtonStyle.Secondary)
       ),
       footer(formatString(t.leveling_rank_footer, { guildName: guild.name })),
     ]);

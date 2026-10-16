@@ -16,6 +16,7 @@ import { syncAutomodRule } from './automodSync.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { baseEmbed } from '../../utils/embeds.js';
 import { config } from '../../config.js';
+import { trg } from '../../utils/tr.js';
 
 const PUNISH_LABEL: Record<Punish, string> = { none: 'Aucune (alerte)', timeout: 'Timeout', derank: 'Retirer les rôles', kick: 'Expulser', ban: 'Bannir' };
 const dur = (s: number) => (s % 86400 === 0 ? `${s / 86400} j` : s % 3600 === 0 ? `${s / 3600} h` : s % 60 === 0 ? `${s / 60} min` : `${s} s`);
@@ -32,7 +33,7 @@ const consoleButton = (guildId: string, key?: string) =>
         new ActionRowBuilder<ButtonBuilder>().addComponents(
           new ButtonBuilder()
             .setStyle(ButtonStyle.Link)
-            .setLabel('Ouvrir dans la console')
+            .setLabel(trg(guildId, 'Ouvrir dans la console'))
             .setURL(`${config.dashboardUrl.replace(/\/$/, '')}/discord?guildId=${guildId}&view=protections${key ? `&p=${key}` : ''}`)
         ),
       ]
@@ -116,7 +117,7 @@ export const protectionCommand: Command = {
 
   execute: async (ctx: CommandContext) => {
     if (!ctx.guild) {
-      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('Commande réservée aux serveurs.')], ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(trg(ctx, 'Commande réservée aux serveurs.'))], ephemeral: true });
       return;
     }
     const guild = ctx.guild;
@@ -135,9 +136,9 @@ export const protectionCommand: Command = {
       const active = PROTECTIONS.filter((p) => all[p.key].enabled).length;
       const incomplete = PROTECTIONS.filter((p) => all[p.key].enabled && !all[p.key].logChannelId && p.kind !== 'rollback').length;
       const embed = baseEmbed('default')
-        .setAuthor({ name: `Protections — ${guild.name}`, iconURL: guild.iconURL({ size: 128 }) ?? undefined })
+        .setAuthor({ name: trg(ctx, 'Protections — {name}', { name: guild.name }), iconURL: guild.iconURL({ size: 128 }) ?? undefined })
         .setDescription(
-          `**${active}/${PROTECTIONS.length}** actives${incomplete ? ` · ⚠️ ${incomplete} sans salon de log` : ''}${protectionStore.getLockdown(guild.id) ? '\n🔒 **Serveur verrouillé** · `/protection deverrouiller`' : ''}`
+          trg(ctx, '**{active}/{length}** actives{v2}{v3}', { active, length: PROTECTIONS.length, v2: incomplete ? ` · ⚠️ ${incomplete} sans salon de log` : '', v3: protectionStore.getLockdown(guild.id) ? '\n🔒 **Serveur verrouillé** · `/protection deverrouiller`' : '' })
         )
         .addFields(
           PROTECTION_CATEGORIES.map((cat) => {
@@ -146,7 +147,7 @@ export const protectionCommand: Command = {
             return { name: `${cat} · ${on}/${list.length}`, value: list.map((p) => `${all[p.key].enabled ? '🟢' : '⚫'} ${p.label}`).join('\n'), inline: true };
           })
         )
-        .setFooter({ text: '/protection voir · activer · desactiver · punition · seuil · salon' });
+        .setFooter({ text: trg(ctx, '/protection voir · activer · desactiver · punition · seuil · salon') });
       await ctx.reply({ embeds: [embed], components: consoleButton(guild.id) });
       return;
     }
@@ -154,7 +155,7 @@ export const protectionCommand: Command = {
     if (sub === 'deverrouiller') {
       const restored = await protectionEngine.liftLockdown(guild);
       await ctx.reply({
-        embeds: [ctx.createEmbed(restored ? 'success' : 'info').setDescription(restored ? `🔓 Permissions rendues à ${restored} rôle${restored > 1 ? 's' : ''}.` : "Le serveur n'est pas verrouillé.")],
+        embeds: [ctx.createEmbed(restored ? 'success' : 'info').setDescription(restored ? trg(ctx, '🔓 Permissions rendues à {restored} rôle{v1}.', { restored, v1: restored > 1 ? 's' : '' }) : trg(ctx, 'Le serveur n\'est pas verrouillé.'))],
         ephemeral: true,
       });
       return;
@@ -165,12 +166,12 @@ export const protectionCommand: Command = {
       const all = protectionStore.all(guild.id);
       const keys = PROTECTIONS.filter((p) => all[p.key].enabled).map((p) => p.key);
       for (const key of keys) protectionStore.update(guild.id, key, { logChannelId: channel.id });
-      await ctx.reply({ embeds: [ctx.createEmbed('success').setDescription(`📋 Alertes de ${keys.length} protection${keys.length > 1 ? 's' : ''} envoyées dans <#${channel.id}>.`)], ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('success').setDescription(trg(ctx, '📋 Alertes de {length} protection{v1} envoyées dans <#{id}>.', { length: keys.length, v1: keys.length > 1 ? 's' : '', id: channel.id }))], ephemeral: true });
       return;
     }
 
     if (!def) {
-      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('Protection introuvable. Tape `/protection liste` pour voir les noms.')], ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(trg(ctx, 'Protection introuvable. Tape `/protection liste` pour voir les noms.'))], ephemeral: true });
       return;
     }
     const s = protectionStore.get(guild.id, def.key);
@@ -210,7 +211,7 @@ export const protectionCommand: Command = {
 
     if (sub === 'seuil' && it) {
       if (def.kind !== 'quota') {
-        await ctx.reply({ embeds: [ctx.createEmbed('info').setDescription(`**${def.label}** n'a pas de seuil : elle agit dès la première action.`)], ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('info').setDescription(trg(ctx, '**{label}** n\'a pas de seuil : elle agit dès la première action.', { label: def.label }))], ephemeral: true });
         return;
       }
       const next = await save({ quotaMax: it.options.getInteger('nombre', true), quotaSeconds: it.options.getInteger('secondes', true) });
@@ -221,10 +222,10 @@ export const protectionCommand: Command = {
     if (sub === 'salon' && it) {
       const channel = it.options.getChannel('salon', true);
       await save({ logChannelId: channel.id });
-      await ctx.reply({ embeds: [ctx.createEmbed('success').setDescription(`📋 **${def.label}** envoie ses alertes dans <#${channel.id}>.`)], ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('success').setDescription(trg(ctx, '📋 **{label}** envoie ses alertes dans <#{id}>.', { label: def.label, id: channel.id }))], ephemeral: true });
       return;
     }
 
-    await ctx.reply({ embeds: [ctx.createEmbed('info').setDescription('Usage : `/protection liste`, `voir`, `activer`, `desactiver`, `punition`, `seuil`, `salon`, `deverrouiller`.')], ephemeral: true });
+    await ctx.reply({ embeds: [ctx.createEmbed('info').setDescription(trg(ctx, 'Usage : `/protection liste`, `voir`, `activer`, `desactiver`, `punition`, `seuil`, `salon`, `deverrouiller`.'))], ephemeral: true });
   },
 };

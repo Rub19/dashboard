@@ -63,6 +63,7 @@ import { logger } from '../utils/logger.js';
 const botCommandStatsService = BotCommandStatsService.getInstance();
 const botTelemetryService = BotTelemetryService.getInstance();
 import { formatString, getTranslation } from '../utils/i18n.js';
+import { trg } from '../utils/tr.js';
 
 // Component/modal handlers (buttons, select menus, modals) previously ran
 // with no try/catch at all, unlike the slash-command path below — a throw
@@ -334,7 +335,7 @@ export async function onInteractionCreate(interaction: Interaction) {
     await interaction.reply({
       embeds: [
         baseEmbed('warning')
-          .setTitle('🛠️ Bot en maintenance')
+          .setTitle(trg(interaction, '🛠️ Bot en maintenance'))
           .setDescription(botGlobalSettings.maintenanceReason || 'Le bot est actuellement en maintenance. Veuillez réessayer plus tard.')
       ],
       flags: MessageFlags.Ephemeral,
@@ -347,7 +348,7 @@ export async function onInteractionCreate(interaction: Interaction) {
   // Vérifier si les slash commands sont désactivées sur ce serveur (sauf /settings qui reste toujours accessible aux admins)
   if (!guildConfig.slashCommandsEnabled && interaction.commandName !== 'settings') {
     await interaction.reply({
-      embeds: [baseEmbed('error').setDescription(`${guildConfig.emojis.error} Les commandes Slash sont actuellement **désactivées** sur ce serveur par les administrateurs.`)],
+      embeds: [baseEmbed('error').setDescription(trg(interaction, '{error} Les commandes Slash sont actuellement **désactivées** sur ce serveur par les administrateurs.', { error: guildConfig.emojis.error }))],
       flags: MessageFlags.Ephemeral,
     });
     return;
@@ -365,7 +366,7 @@ export async function onInteractionCreate(interaction: Interaction) {
     }
     logger.warn(`Commande Slash introuvable : ${interaction.commandName}`);
     await interaction.reply({
-      embeds: [baseEmbed('error').setDescription('❌ Cette commande n\'est plus disponible.')],
+      embeds: [baseEmbed('error').setDescription(trg(interaction, '❌ Cette commande n\'est plus disponible.'))],
       flags: MessageFlags.Ephemeral,
     });
     return;

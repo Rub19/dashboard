@@ -20,6 +20,7 @@ import {
 import { logger } from '../../../utils/logger.js';
 import { getAppEmoji } from '../../../services/appEmojis.js';
 import { BRAND_COLORS } from '../../../utils/embeds.js';
+import { trg } from '../../../utils/tr.js';
 
 const PLATFORM_COLORS: Record<StreamPlatform, number> = {
   twitch: 0x9146ff,
@@ -505,19 +506,19 @@ export class StreamerService {
         const offlineEmbed = new EmbedBuilder()
           .setColor(0x475569) // slate gray
           .setAuthor({
-            name: `${PLATFORM_NAMES[streamer.platform]} · Diffusion terminée`,
+            name: trg(msg, '{v0} · Diffusion terminée', { v0: PLATFORM_NAMES[streamer.platform] }),
             iconURL: PLATFORM_ICONS[streamer.platform],
           })
-          .setTitle(`⚫ ${streamer.displayName || streamer.username} a terminé son direct`)
+          .setTitle(trg(msg, '⚫ {v0} a terminé son direct', { v0: streamer.displayName || streamer.username }))
           .setDescription(
-            `La diffusion sur **${PLATFORM_NAMES[streamer.platform]}** est terminée.\nMerci à toutes et à tous d'avoir suivi le stream !`
+            trg(msg, 'La diffusion sur **{v0}** est terminée.\nMerci à toutes et à tous d\'avoir suivi le stream !', { v0: PLATFORM_NAMES[streamer.platform] })
           )
-          .setFooter({ text: 'ETHONE Stream Alerts · Stream hors ligne' })
+          .setFooter({ text: trg(msg, 'ETHONE Stream Alerts · Stream hors ligne') })
           .setTimestamp();
 
         const replayRow = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
           new ButtonBuilder()
-            .setLabel(`Voir la chaîne ${PLATFORM_NAMES[streamer.platform]}`)
+            .setLabel(trg(msg, 'Voir la chaîne {v0}', { v0: PLATFORM_NAMES[streamer.platform] }))
             .setStyle(ButtonStyle.Link)
             .setURL(streamer.streamUrl || `https://${streamer.platform}.com/${streamer.username}`)
             .setEmoji('🎬')

@@ -17,6 +17,7 @@ import { guildConfigService } from './guildConfigService.js';
 import { baseEmbed, noticeEmbed } from '../utils/embeds.js';
 import { FONT_STACK, registerCardFonts } from '../utils/cardFonts.js';
 import { logger } from '../utils/logger.js';
+import { trg } from '../utils/tr.js';
 
 /**
  * Captcha à l'arrivée (page « Outils » de la console) : le nouveau membre doit recopier un code affiché en image
@@ -129,8 +130,8 @@ export async function onMemberJoin(member: GuildMember): Promise<void> {
       content: `<@${member.id}>`,
       embeds: [
         baseEmbed('info')
-          .setTitle('Vérification')
-          .setDescription(`Bienvenue ! Prouve que tu n'es pas un robot : clique sur le bouton et recopie le code. Tu as **${cfg.delayMinutes} minutes**.`),
+          .setTitle(trg(member, 'Vérification'))
+          .setDescription(trg(member, 'Bienvenue ! Prouve que tu n\'es pas un robot : clique sur le bouton et recopie le code. Tu as **{delayMinutes} minutes**.', { delayMinutes: cfg.delayMinutes })),
       ],
       components: [startButton(member.id)],
       allowedMentions: { users: [member.id] },
@@ -147,7 +148,7 @@ function challenge(guild: Guild, userId: string, note?: string) {
   return {
     embeds: [
       baseEmbed('info')
-        .setTitle('Recopie ce code')
+        .setTitle(trg(guild, 'Recopie ce code'))
         .setDescription(
           `${note ? `${note}\n\n` : ''}Clique sur « Saisir le code » et recopie les ${entry.code.length} caractères (majuscules ou minuscules).\n` +
             `Essai${left > 1 ? 's' : ''} restant${left > 1 ? 's' : ''} : **${left}** · fin <t:${Math.floor(entry.deadline / 1000)}:R>`
@@ -157,7 +158,7 @@ function challenge(guild: Guild, userId: string, note?: string) {
     files: [new AttachmentBuilder(renderCaptcha(entry.code), { name: 'captcha.png' })],
     components: [
       new ActionRowBuilder<ButtonBuilder>().addComponents(
-        new ButtonBuilder().setCustomId('captcha_answer').setLabel('Saisir le code').setStyle(ButtonStyle.Primary)
+        new ButtonBuilder().setCustomId('captcha_answer').setLabel(trg(guild, 'Saisir le code')).setStyle(ButtonStyle.Primary)
       ),
     ],
   };
@@ -168,21 +169,21 @@ export async function handleCaptchaButton(interaction: ButtonInteraction): Promi
   if (!guild) return;
   const cfg = cfgOf(guild.id);
   if (!cfg.enabled) {
-    await interaction.reply({ embeds: [noticeEmbed('warning', "Le captcha n'est plus actif sur ce serveur.")], flags: MessageFlags.Ephemeral });
+    await interaction.reply({ embeds: [noticeEmbed('warning', trg(interaction, 'Le captcha n\'est plus actif sur ce serveur.'))], flags: MessageFlags.Ephemeral });
     return;
   }
   if (interaction.customId === 'captcha_answer') {
     if (!pending.get(keyOf(guild.id, interaction.user.id))?.code) {
-      await interaction.reply({ embeds: [noticeEmbed('warning', 'Clique d\'abord sur « Commencer la vérification ».')], flags: MessageFlags.Ephemeral });
+      await interaction.reply({ embeds: [noticeEmbed('warning', trg(interaction, 'Clique d\'abord sur « Commencer la vérification ».'))], flags: MessageFlags.Ephemeral });
       return;
     }
     await interaction.showModal(
       new ModalBuilder()
         .setCustomId('captcha_modal')
-        .setTitle('Vérification')
+        .setTitle(trg(interaction, 'Vérification'))
         .addComponents(
           new ActionRowBuilder<TextInputBuilder>().addComponents(
-            new TextInputBuilder().setCustomId('code').setLabel('Code affiché sur l\'image').setStyle(TextInputStyle.Short).setMinLength(3).setMaxLength(10).setRequired(true)
+            new TextInputBuilder().setCustomId('code').setLabel(trg(interaction, 'Code affiché sur l\'image')).setStyle(TextInputStyle.Short).setMinLength(3).setMaxLength(10).setRequired(true)
           )
         )
     );
@@ -191,13 +192,13 @@ export async function handleCaptchaButton(interaction: ButtonInteraction): Promi
   // captcha_start[:userId]
   const target = interaction.customId.split(':')[1];
   if (target && target !== interaction.user.id) {
-    await interaction.reply({ embeds: [noticeEmbed('warning', "Ce bouton n'est pas pour toi : utilise celui du message épinglé du salon.")], flags: MessageFlags.Ephemeral });
+    await interaction.reply({ embeds: [noticeEmbed('warning', trg(interaction, 'Ce bouton n\'est pas pour toi : utilise celui du message épinglé du salon.'))], flags: MessageFlags.Ephemeral });
     return;
   }
   const member = await guild.members.fetch(interaction.user.id).catch(() => null);
   const verified = member && cfg.givenRoles.length > 0 && cfg.givenRoles.every((r) => member.roles.cache.has(r));
   if (verified && !pending.has(keyOf(guild.id, interaction.user.id))) {
-    await interaction.reply({ embeds: [noticeEmbed('success', 'Tu es déjà vérifié.')], flags: MessageFlags.Ephemeral });
+    await interaction.reply({ embeds: [noticeEmbed('success', trg(interaction, 'Tu es déjà vérifié.'))], flags: MessageFlags.Ephemeral });
     return;
   }
   await interaction.reply({ ...challenge(guild, interaction.user.id), flags: MessageFlags.Ephemeral });
@@ -209,19 +210,19 @@ export async function handleCaptchaModal(interaction: ModalSubmitInteraction): P
   const cfg = cfgOf(guild.id);
   const entry = pending.get(keyOf(guild.id, interaction.user.id));
   if (!entry?.code) {
-    await interaction.reply({ embeds: [noticeEmbed('warning', 'Clique d\'abord sur « Commencer la vérification ».')], flags: MessageFlags.Ephemeral });
+    await interaction.reply({ embeds: [noticeEmbed('warning', trg(interaction, 'Clique d\'abord sur « Commencer la vérification ».'))], flags: MessageFlags.Ephemeral });
     return;
   }
   const answer = interaction.fields.getTextInputValue('code').trim().toUpperCase();
   if (answer === entry.code) {
     await pass(guild, interaction.user.id);
-    await interaction.reply({ embeds: [noticeEmbed('success', 'Vérification réussie, bienvenue !')], flags: MessageFlags.Ephemeral });
+    await interaction.reply({ embeds: [noticeEmbed('success', trg(interaction, 'Vérification réussie, bienvenue !'))], flags: MessageFlags.Ephemeral });
     return;
   }
   entry.attempts += 1;
   entry.code = null;
   if (entry.attempts >= cfg.attempts) {
-    await interaction.reply({ embeds: [noticeEmbed('error', 'Code incorrect, plus aucun essai.')], flags: MessageFlags.Ephemeral });
+    await interaction.reply({ embeds: [noticeEmbed('error', trg(interaction, 'Code incorrect, plus aucun essai.'))], flags: MessageFlags.Ephemeral });
     await fail(guild, interaction.user.id, 'attempts');
     return;
   }
@@ -249,7 +250,7 @@ async function fail(guild: Guild, userId: string, why: 'timeout' | 'attempts') {
   const reason = why === 'timeout' ? 'délai dépassé' : 'trop d\'essais';
   let outcome = 'aucune sanction';
   if (cfg.failAction === 'kick' && member.kickable) {
-    await member.send(`Tu as été expulsé de **${guild.name}** : captcha non validé (${reason}). Tu peux revenir et réessayer.`).catch(() => null);
+    await member.send(trg(guild, 'Tu as été expulsé de **{name}** : captcha non validé ({reason}). Tu peux revenir et réessayer.', { name: guild.name, reason })).catch(() => null);
     outcome = (await member.kick(`Captcha échoué (${reason})`).then(() => true).catch(() => false)) ? 'expulsé' : 'expulsion impossible';
   } else if (cfg.failAction === 'ban' && member.bannable) {
     outcome = (await member.ban({ reason: `Captcha échoué (${reason})` }).then(() => true).catch(() => false)) ? 'banni' : 'bannissement impossible';
@@ -270,8 +271,8 @@ export async function ensureCaptchaPanel(guild: Guild): Promise<void> {
     .send({
       embeds: [
         baseEmbed('info')
-          .setTitle('Vérification')
-          .setDescription('Pour accéder au serveur, clique sur le bouton et recopie le code affiché.'),
+          .setTitle(trg(guild, 'Vérification'))
+          .setDescription(trg(guild, 'Pour accéder au serveur, clique sur le bouton et recopie le code affiché.')),
       ],
       components: [startButton()],
     })

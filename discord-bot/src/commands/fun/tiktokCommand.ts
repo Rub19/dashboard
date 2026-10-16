@@ -2,6 +2,7 @@ import { SlashCommandBuilder } from "discord.js";
 import { Command, CommandContext } from "../../types/command.js";
 import { tiktokService } from "../../modules/fun/services/tiktokService.js";
 import { buildTikTokUserEmbed, buildTikTokVideoEmbed } from "../../modules/fun/ui/tiktokEmbeds.js";
+import { trg } from '../../utils/tr.js';
 
 export const tiktokCommand: Command = {
   name: "tiktok",
@@ -38,7 +39,7 @@ export const tiktokCommand: Command = {
         const url = (ctx.interaction as any).options.getString("url", true);
         const video = await tiktokService.getVideoInfo(url);
         if (!video) {
-          await ctx.interaction.editReply({ content: "❌ URL TikTok invalide ou vidéo inaccessible." });
+          await ctx.interaction.editReply({ content: trg(ctx, '❌ URL TikTok invalide ou vidéo inaccessible.') });
           return;
         }
         const { embed, row } = buildTikTokVideoEmbed(video);
@@ -50,7 +51,7 @@ export const tiktokCommand: Command = {
     const firstArg = ctx.args[0];
     if (!firstArg) {
       await ctx.reply({
-        content: "❌ Utilisation : `!tiktok user <pseudo>` ou `!tiktok video <url>`",
+        content: trg(ctx, '❌ Utilisation : `!tiktok user <pseudo>` ou `!tiktok video <url>`'),
       });
       return;
     }
@@ -58,7 +59,7 @@ export const tiktokCommand: Command = {
     if (firstArg.toLowerCase() === "user" || (!firstArg.startsWith("http") && ctx.args.length === 1)) {
       const username = firstArg.toLowerCase() === "user" ? ctx.args.slice(1).join(" ") : firstArg;
       if (!username) {
-        await ctx.reply({ content: "❌ Veuillez préciser un pseudo TikTok." });
+        await ctx.reply({ content: trg(ctx, '❌ Veuillez préciser un pseudo TikTok.') });
         return;
       }
       const user = tiktokService.getUserInfo(username);
@@ -70,7 +71,7 @@ export const tiktokCommand: Command = {
     const videoUrl = firstArg.toLowerCase() === "video" ? ctx.args.slice(1).join(" ") : firstArg;
     const video = await tiktokService.getVideoInfo(videoUrl);
     if (!video) {
-      await ctx.reply({ content: "❌ URL TikTok invalide ou vidéo introuvable." });
+      await ctx.reply({ content: trg(ctx, '❌ URL TikTok invalide ou vidéo introuvable.') });
       return;
     }
     const { embed, row } = buildTikTokVideoEmbed(video);

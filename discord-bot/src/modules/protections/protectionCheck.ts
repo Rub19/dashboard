@@ -1,6 +1,7 @@
 import { EmbedBuilder, PermissionFlagsBits, type Guild } from 'discord.js';
 import { getProtection } from './catalog.js';
 import { protectionStore } from './protectionStore.js';
+import { trg } from '../../utils/tr.js';
 
 /**
  * « Tester » une protection depuis la console : le propriétaire est toujours ignoré par les protections, il ne peut
@@ -80,7 +81,7 @@ export async function checkProtection(guild: Guild, key: string, sendLog = true)
     let sent = false;
     if (can && sendLog && 'send' in ch) {
       sent = await ch
-        .send({ embeds: [new EmbedBuilder().setColor(0x6b7280).setTitle(`🧪 Test — ${def.label}`).setDescription('Message de test envoyé depuis la console Etho : les alertes de cette protection arriveront ici.').setTimestamp()] })
+        .send({ embeds: [new EmbedBuilder().setColor(0x6b7280).setTitle(trg(guild, '🧪 Test — {label}', { label: def.label })).setDescription(trg(guild, 'Message de test envoyé depuis la console Etho : les alertes de cette protection arriveront ici.')).setTimestamp()] })
         .then(() => true)
         .catch(() => false);
     }

@@ -5,6 +5,7 @@ import { serverStatsService, computeStat, renderName, computeName, COUNTER_PRESE
 import { TOKEN_DOCS } from '../services/counterTemplate.js';
 import { StatType } from '../types/serverStats.js';
 import { emitConfigUpdated } from '../../../services/syncConfigEmitter.js';
+import { trg } from '../../../utils/tr.js';
 
 const TYPE_LABELS: Record<StatType, string> = {
   members: 'Membres', humans: 'Humains', bots: 'Bots', online: 'En ligne',
@@ -80,7 +81,7 @@ export const serverStatsCommand: Command = {
     const guild = ctx.guild;
     if (!guild || !ctx.isSlash) {
       await ctx.reply({
-        embeds: [ctx.createEmbed('error').setDescription('❌ Commande slash à utiliser sur un serveur.')],
+        embeds: [ctx.createEmbed('error').setDescription(trg(ctx, '❌ Commande slash à utiliser sur un serveur.'))],
         ephemeral: true,
       });
       return;
@@ -90,7 +91,7 @@ export const serverStatsCommand: Command = {
     if (sub === 'tokens') {
       const groups = new Map<string, string[]>();
       for (const t of TOKEN_DOCS) groups.set(t.group, [...(groups.get(t.group) ?? []), `\`${t.token}\` — ${t.label} (ex. ${t.example})`]);
-      const embed = ctx.createEmbed('info').setTitle('🧩 Jetons des compteurs').setDescription('Mélangez texte, emojis et jetons : « 🕐 {time12:UTC} UTC », « {members_until:next} avant {members_next} ».');
+      const embed = ctx.createEmbed('info').setTitle(trg(ctx, '🧩 Jetons des compteurs')).setDescription(trg(ctx, 'Mélangez texte, emojis et jetons : « 🕐 {time12:UTC} UTC », « {members_until:next} avant {members_next} ».'));
       for (const [group, lines] of groups) embed.addFields({ name: group, value: lines.join(String.fromCharCode(10)).slice(0, 1024) });
       await ctx.reply({ embeds: [embed] });
       return;
@@ -100,7 +101,7 @@ export const serverStatsCommand: Command = {
       await ctx.deferReply({ ephemeral: true });
       try {
         const res = await serverStatsService.createCategory(guild, ctx.interaction!.options.getString('modele', true) as 'draftbot' | 'statbot');
-        await ctx.reply({ embeds: [ctx.createEmbed('success').setDescription(`📊 Catégorie créée avec ${res.channelIds.length} compteur(s) : ${res.channelIds.map((id) => `<#${id}>`).join(' ')}`)] });
+        await ctx.reply({ embeds: [ctx.createEmbed('success').setDescription(trg(ctx, '📊 Catégorie créée avec {length} compteur(s) : {v1}', { length: res.channelIds.length, v1: res.channelIds.map((id) => `<#${id}>`).join(' ') }))] });
       } catch (err) {
         await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(`❌ ${err instanceof Error ? err.message : 'Création impossible.'}`)] });
       }
@@ -114,25 +115,25 @@ export const serverStatsCommand: Command = {
       const role = ctx.interaction!.options.getRole('role');
 
       if (channel.type === ChannelType.GuildCategory) {
-        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('❌ Une catégorie ne peut pas être un compteur.')], ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(trg(ctx, '❌ Une catégorie ne peut pas être un compteur.'))], ephemeral: true });
         return;
       }
       if (type === 'custom' && !format) {
-        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('❌ Le type « Modèle personnalisé » demande l’option `format` (voir `/serverstats tokens`).')], ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(trg(ctx, '❌ Le type « Modèle personnalisé » demande l’option `format` (voir `/serverstats tokens`).'))], ephemeral: true });
         return;
       }
       if (type === 'roleMembers' && !role) {
-        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('❌ Le type « Membres d\'un rôle » nécessite l\'option `role`.')], ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(trg(ctx, '❌ Le type « Membres d\'un rôle » nécessite l\'option `role`.'))], ephemeral: true });
         return;
       }
       if (!serverStatsStorage.get(guild.id, channel.id) && !serverStatsStorage.canAddMore(guild.id)) {
-        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(`❌ Limite de ${MAX_STAT_CHANNELS} salons compteurs atteinte.`)], ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(trg(ctx, '❌ Limite de {MAX_STAT_CHANNELS} salons compteurs atteinte.', { MAX_STAT_CHANNELS }))], ephemeral: true });
         return;
       }
       const me = guild.members.me;
       const gc = channel as GuildChannel;
       if (me && !gc.permissionsFor(me)?.has(PermissionFlagsBits.ManageChannels)) {
-        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('❌ Il me faut la permission **Gérer les salons** sur ce salon.')], ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(trg(ctx, '❌ Il me faut la permission **Gérer les salons** sur ce salon.'))], ephemeral: true });
         return;
       }
 
@@ -148,7 +149,7 @@ export const serverStatsCommand: Command = {
       const preview = computeName(guild, stat).name;
       await ctx.reply({
         embeds: [
-          ctx.createEmbed('success').setTitle('📊 Salon compteur ajouté').setDescription(`<#${channel.id}> → **${preview}**\nMise à jour toutes les ${serverStatsStorage.getConfig(guild.id).updateIntervalMinutes} min.`),
+          ctx.createEmbed('success').setTitle(trg(ctx, '📊 Salon compteur ajouté')).setDescription(trg(ctx, '<#{id}> → **{preview}**\nMise à jour toutes les {updateIntervalMinutes} min.', { id: channel.id, preview, updateIntervalMinutes: serverStatsStorage.getConfig(guild.id).updateIntervalMinutes })),
         ],
         ephemeral: true,
       });
@@ -159,7 +160,7 @@ export const serverStatsCommand: Command = {
       const channel = ctx.interaction!.options.getChannel('salon', true);
       const ok = serverStatsStorage.delete(guild.id, channel.id);
       await ctx.reply({
-        embeds: [ctx.createEmbed(ok ? 'success' : 'info').setDescription(ok ? `✅ <#${channel.id}> n'est plus un compteur.` : 'ℹ️ Ce salon n\'était pas un compteur.')],
+        embeds: [ctx.createEmbed(ok ? 'success' : 'info').setDescription(ok ? trg(ctx, '✅ <#{id}> n\'est plus un compteur.', { id: channel.id }) : trg(ctx, 'ℹ️ Ce salon n\'était pas un compteur.'))],
         ephemeral: true,
       });
       return;
@@ -168,14 +169,14 @@ export const serverStatsCommand: Command = {
     if (sub === 'list') {
       const list = serverStatsStorage.getGuild(guild.id);
       if (list.length === 0) {
-        await ctx.reply({ embeds: [ctx.createEmbed('neutral').setDescription('Aucun salon compteur. `/serverstats add` pour en créer.')], ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('neutral').setDescription(trg(ctx, 'Aucun salon compteur. `/serverstats add` pour en créer.'))], ephemeral: true });
         return;
       }
-      const embed = ctx.createEmbed('default').setTitle(`📊 Salons compteurs (${list.length})`);
+      const embed = ctx.createEmbed('default').setTitle(trg(ctx, '📊 Salons compteurs ({length})', { length: list.length }));
       for (const s of list) {
         embed.addFields({
           name: TYPE_LABELS[s.type] + (s.roleId ? ` (<@&${s.roleId}>)` : ''),
-          value: `<#${s.channelId}> · format \`${s.template}\`${s.lastValue !== null ? ` · actuel : ${s.lastValue}` : ''}`,
+          value: trg(ctx, '<#{channelId}> · format `{template}`{v2}', { channelId: s.channelId, template: s.template, v2: s.lastValue !== null ? ` · actuel : ${s.lastValue}` : '' }),
         });
       }
       await ctx.reply({ embeds: [embed] });
@@ -185,7 +186,7 @@ export const serverStatsCommand: Command = {
     if (sub === 'refresh') {
       await ctx.deferReply({ ephemeral: true });
       await serverStatsService.forceRefresh(guild).catch(() => {});
-      await ctx.reply({ embeds: [ctx.createEmbed('success').setDescription('✅ Compteurs rafraîchis.')] });
+      await ctx.reply({ embeds: [ctx.createEmbed('success').setDescription(trg(ctx, '✅ Compteurs rafraîchis.'))] });
       return;
     }
 
@@ -198,7 +199,7 @@ export const serverStatsCommand: Command = {
     if (Object.keys(patch).length === 0) {
       const c = serverStatsStorage.getConfig(guild.id);
       await ctx.reply({
-        embeds: [ctx.createEmbed(c.enabled ? 'default' : 'neutral').setDescription(`État : ${c.enabled ? '🟢 actif' : '⚪ inactif'}\nIntervalle : ${c.updateIntervalMinutes} min`)],
+        embeds: [ctx.createEmbed(c.enabled ? 'default' : 'neutral').setDescription(trg(ctx, 'État : {v0}\nIntervalle : {updateIntervalMinutes} min', { v0: c.enabled ? '🟢 actif' : '⚪ inactif', updateIntervalMinutes: c.updateIntervalMinutes }))],
         ephemeral: true,
       });
       return;
@@ -206,7 +207,7 @@ export const serverStatsCommand: Command = {
     const updated = serverStatsStorage.updateConfig(guild.id, patch);
     emitConfigUpdated('serverStats', guild.id, updated, 'DISCORD_COMMAND', ctx.author.id);
     await ctx.reply({
-      embeds: [ctx.createEmbed('success').setDescription(`✅ État : ${updated.enabled ? 'actif' : 'inactif'} · intervalle : ${updated.updateIntervalMinutes} min`)],
+      embeds: [ctx.createEmbed('success').setDescription(trg(ctx, '✅ État : {v0} · intervalle : {updateIntervalMinutes} min', { v0: updated.enabled ? 'actif' : 'inactif', updateIntervalMinutes: updated.updateIntervalMinutes }))],
       ephemeral: true,
     });
   },

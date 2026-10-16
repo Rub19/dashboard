@@ -2,6 +2,7 @@ import { SlashCommandBuilder } from 'discord.js';
 import { Command, CommandContext } from '../../../types/command.js';
 import { afkStorage } from '../storage/afkStorage.js';
 import { afkService } from '../services/afkService.js';
+import { trg } from '../../../utils/tr.js';
 
 export const afkCommand: Command = {
   name: 'afk',
@@ -18,7 +19,7 @@ export const afkCommand: Command = {
     const guildId = ctx.guild?.id;
     if (!guildId) {
       await ctx.reply({
-        embeds: [ctx.createEmbed('error').setDescription('❌ À utiliser sur un serveur.')],
+        embeds: [ctx.createEmbed('error').setDescription(trg(guildId, '❌ À utiliser sur un serveur.'))],
         ephemeral: true,
       });
       return;
@@ -27,7 +28,7 @@ export const afkCommand: Command = {
     const config = afkStorage.getConfig(guildId);
     if (!config.enabled) {
       await ctx.reply({
-        embeds: [ctx.createEmbed('error').setDescription('❌ Le module AFK est désactivé sur ce serveur.')],
+        embeds: [ctx.createEmbed('error').setDescription(trg(guildId, '❌ Le module AFK est désactivé sur ce serveur.'))],
         ephemeral: true,
       });
       return;
@@ -45,8 +46,8 @@ export const afkCommand: Command = {
           .createEmbed('success')
           .setDescription(
             already
-              ? `💤 Ton statut AFK est mis à jour : *${reason}*`
-              : `💤 Tu es maintenant AFK : *${reason}*\nJe préviendrai ceux qui te mentionnent, et je retirerai ton statut dès que tu reparleras.`
+              ? trg(guildId, '💤 Ton statut AFK est mis à jour : *{reason}*', { reason })
+              : trg(guildId, '💤 Tu es maintenant AFK : *{reason}*\nJe préviendrai ceux qui te mentionnent, et je retirerai ton statut dès que tu reparleras.', { reason })
           ),
       ],
       ephemeral: true,

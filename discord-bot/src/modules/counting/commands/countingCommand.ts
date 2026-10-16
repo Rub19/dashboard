@@ -2,6 +2,7 @@ import { ChannelType, PermissionFlagsBits, SlashCommandBuilder } from 'discord.j
 import { Command, CommandContext } from '../../../types/command.js';
 import { countingStorage } from '../storage/countingStorage.js';
 import { emitConfigUpdated } from '../../../services/syncConfigEmitter.js';
+import { trg } from '../../../utils/tr.js';
 
 /**
  * /counting — status (tout le monde), setup et reset (réservés à « Gérer le serveur »).
@@ -26,7 +27,7 @@ export const countingCommand: Command = {
 
   async execute(ctx: CommandContext): Promise<void> {
     if (!ctx.guild) {
-      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('❌ À utiliser sur un serveur.')], ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(trg(ctx, '❌ À utiliser sur un serveur.'))], ephemeral: true });
       return;
     }
     const guildId = ctx.guild.id;
@@ -34,26 +35,26 @@ export const countingCommand: Command = {
     const isStaff = ctx.member?.permissions.has(PermissionFlagsBits.ManageGuild) ?? false;
 
     if ((sub === 'setup' || sub === 'reset') && !isStaff) {
-      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('⛔ Réservé aux membres qui ont la permission **Gérer le serveur**.')], ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(trg(guildId, '⛔ Réservé aux membres qui ont la permission **Gérer le serveur**.'))], ephemeral: true });
       return;
     }
 
     if (sub === 'setup') {
       const channel = ctx.isSlash ? ctx.interaction!.options.getChannel('salon', true) : ctx.message?.mentions.channels.first();
       if (!channel || !('id' in channel)) {
-        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('❌ Indique le salon : `/counting setup salon:#comptage`.')], ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(trg(guildId, '❌ Indique le salon : `/counting setup salon:#comptage`.'))], ephemeral: true });
         return;
       }
       const updated = countingStorage.updateConfig(guildId, { channelId: channel.id, enabled: true, count: 0, lastUserId: null });
       emitConfigUpdated('counting', guildId, updated, 'DISCORD_COMMAND', ctx.author.id);
-      await ctx.reply({ embeds: [ctx.createEmbed('success').setDescription(`🔢 Le jeu de comptage est actif dans <#${channel.id}>. Premier nombre : **1**.`)] });
+      await ctx.reply({ embeds: [ctx.createEmbed('success').setDescription(trg(guildId, '🔢 Le jeu de comptage est actif dans <#{id}>. Premier nombre : **1**.', { id: channel.id }))] });
       return;
     }
 
     if (sub === 'reset') {
       const updated = countingStorage.resetCount(guildId);
       emitConfigUpdated('counting', guildId, updated, 'DISCORD_COMMAND', ctx.author.id);
-      await ctx.reply({ embeds: [ctx.createEmbed('success').setDescription('🔄 Compteur remis à zéro. Prochain nombre : **1**.')] });
+      await ctx.reply({ embeds: [ctx.createEmbed('success').setDescription(trg(guildId, '🔄 Compteur remis à zéro. Prochain nombre : **1**.'))] });
       return;
     }
 
@@ -63,17 +64,17 @@ export const countingCommand: Command = {
       .map((e, i) => `**${i + 1}.** <@${e.userId}> — ${e.correct} juste${e.correct > 1 ? 's' : ''}${e.mistakes ? `, ${e.mistakes} erreur${e.mistakes > 1 ? 's' : ''}` : ''}`);
     const embed = ctx
       .createEmbed('info')
-      .setTitle('🔢 Comptage')
+      .setTitle(trg(guildId, '🔢 Comptage'))
       .setDescription(
         config.enabled && config.channelId
-          ? `Salon : <#${config.channelId}>\nNombre actuel : **${config.count}** — prochain : **${config.count + 1}**`
-          : 'Le jeu n’est pas actif. Un membre avec « Gérer le serveur » peut le lancer : `/counting setup`.'
+          ? trg(guildId, 'Salon : <#{channelId}>\nNombre actuel : **{count}** — prochain : **{v2}**', { channelId: config.channelId, count: config.count, v2: config.count + 1 })
+          : trg(guildId, 'Le jeu n’est pas actif. Un membre avec « Gérer le serveur » peut le lancer : `/counting setup`.')
       )
       .addFields(
-        { name: '🏆 Record', value: String(config.highScore), inline: true },
-        { name: '✅ Justes', value: String(config.totalCorrect), inline: true },
-        { name: '❌ Erreurs', value: String(config.totalMistakes), inline: true },
-        { name: 'Classement', value: board.join('\n') || 'Personne n’a encore compté.' }
+        { name: trg(guildId, '🏆 Record'), value: String(config.highScore), inline: true },
+        { name: trg(guildId, '✅ Justes'), value: String(config.totalCorrect), inline: true },
+        { name: trg(guildId, '❌ Erreurs'), value: String(config.totalMistakes), inline: true },
+        { name: trg(guildId, 'Classement'), value: board.join('\n') || 'Personne n’a encore compté.' }
       );
     await ctx.reply({ embeds: [embed] });
   },

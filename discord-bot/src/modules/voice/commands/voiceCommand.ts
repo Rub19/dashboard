@@ -10,6 +10,7 @@ import { TemporaryVoiceService } from '../services/temporaryVoiceService.js';
 import { voiceRepository } from '../storage/voiceRepository.js';
 import { DiscordVoicePanel } from '../ui/discordVoicePanel.js';
 import { baseEmbed, successEmbed } from '../../../utils/embeds.js';
+import { trg } from '../../../utils/tr.js';
 
 export const voiceCommand: Command = {
   name: 'voice',
@@ -62,7 +63,7 @@ export const voiceCommand: Command = {
 
   execute: async (ctx: CommandContext) => {
     if (!ctx.guild || !ctx.member) {
-      await ctx.reply({ embeds: [baseEmbed('error').setDescription('❌ Cette commande doit être exécutée dans un serveur Discord.')], ephemeral: true });
+      await ctx.reply({ embeds: [baseEmbed('error').setDescription(trg(ctx, '❌ Cette commande doit être exécutée dans un serveur Discord.'))], ephemeral: true });
       return;
     }
 
@@ -88,7 +89,7 @@ export const voiceCommand: Command = {
         const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
           new ButtonBuilder()
             .setCustomId(`voice_delete:${existing.id}`)
-            .setLabel('Supprimer mon salon actif')
+            .setLabel(trg(ctx, 'Supprimer mon salon actif'))
             .setEmoji('🗑️')
             .setStyle(ButtonStyle.Danger)
         );
@@ -138,7 +139,7 @@ export const voiceCommand: Command = {
       }
 
       const embed = successEmbed({ footerText: 'ETHONE Vocal' })
-        .setTitle('🎉 Votre Salon Vocal est prêt !')
+        .setTitle(trg(ctx, '🎉 Votre Salon Vocal est prêt !'))
         .setDescription(
           `Votre salon **${result.channel.name}** a été créé avec succès dans <#${result.channel.id}>.\n\n` +
           `**📍 Retrouvez le Panneau de Contrôle :**\n` +
@@ -158,7 +159,7 @@ export const voiceCommand: Command = {
       const userRooms = voiceRepository.getRoomsByOwner(guild.id, member.id);
       if (userRooms.length === 0) {
         await ctx.reply({
-          embeds: [baseEmbed('error').setDescription('❌ Vous ne possédez aucun salon vocal temporaire actif à supprimer.')],
+          embeds: [baseEmbed('error').setDescription(trg(ctx, '❌ Vous ne possédez aucun salon vocal temporaire actif à supprimer.'))],
           ephemeral: true,
         });
         return;
@@ -169,7 +170,7 @@ export const voiceCommand: Command = {
       await TemporaryVoiceService.deleteRoomChannel(guild, room.id, `Supprimé par ${member.user.tag} via /voice delete`);
 
       await ctx.reply({
-        embeds: [baseEmbed('success').setDescription(`🗑️ Votre salon vocal **${room.name}** a été fermé et supprimé avec succès.`)],
+        embeds: [baseEmbed('success').setDescription(trg(ctx, '🗑️ Votre salon vocal **{name}** a été fermé et supprimé avec succès.', { name: room.name }))],
         ephemeral: true,
       });
       return;
@@ -180,7 +181,7 @@ export const voiceCommand: Command = {
       const userRooms = voiceRepository.getRoomsByOwner(guild.id, member.id);
       if (userRooms.length === 0) {
         await ctx.reply({
-          embeds: [baseEmbed('info').setDescription('ℹ️ Vous ne possédez aucun salon vocal temporaire actif actuellement.\nUtilisez `/voice create` pour en ouvrir un en 1 seconde !')],
+          embeds: [baseEmbed('info').setDescription(trg(ctx, 'ℹ️ Vous ne possédez aucun salon vocal temporaire actif actuellement.\nUtilisez `/voice create` pour en ouvrir un en 1 seconde !'))],
           ephemeral: true,
         });
         return;
@@ -188,15 +189,15 @@ export const voiceCommand: Command = {
 
       const room = userRooms[0];
       const embed = baseEmbed(room.isLocked ? 'error' : 'success', { footerText: 'ETHONE Vocal' })
-        .setTitle(`🎙️ Statut de votre salon : ${room.name}`)
-        .setDescription(`Salon : <#${room.id}>`)
+        .setTitle(trg(ctx, '🎙️ Statut de votre salon : {name}', { name: room.name }))
+        .setDescription(trg(ctx, 'Salon : <#{id}>', { id: room.id }))
         .addFields(
-          { name: '👥 Participants', value: `${room.currentUsers?.length || 0} / ${room.userLimit > 0 ? room.userLimit : 'Illimité'}`, inline: true },
-          { name: '🛡️ Verrouillage', value: room.isLocked ? '🔒 Verrouillé' : '🔓 Ouvert', inline: true },
-          { name: '📋 Whitelist', value: `${(room.allowedUserIds || room.whitelist || []).length} membres`, inline: true },
-          { name: '⛔ Banlist', value: `${(room.blockedUserIds || room.banlist || []).length} membres`, inline: true },
-          { name: '🎧 Qualité audio', value: `${Math.round(room.bitrate / 1000)} kbps`, inline: true },
-          { name: '⏱️ Statut', value: room.status === 'EMPTY_COUNTDOWN' ? '⏳ Nettoyage en cours' : '🟢 Actif', inline: true }
+          { name: trg(ctx, '👥 Participants'), value: `${room.currentUsers?.length || 0} / ${room.userLimit > 0 ? room.userLimit : 'Illimité'}`, inline: true },
+          { name: trg(ctx, '🛡️ Verrouillage'), value: room.isLocked ? trg(ctx, '🔒 Verrouillé') : trg(ctx, '🔓 Ouvert'), inline: true },
+          { name: trg(ctx, '📋 Whitelist'), value: trg(ctx, '{length} membres', { length: (room.allowedUserIds || room.whitelist || []).length }), inline: true },
+          { name: trg(ctx, '⛔ Banlist'), value: trg(ctx, '{length} membres', { length: (room.blockedUserIds || room.banlist || []).length }), inline: true },
+          { name: trg(ctx, '🎧 Qualité audio'), value: trg(ctx, '{v0} kbps', { v0: Math.round(room.bitrate / 1000) }), inline: true },
+          { name: trg(ctx, '⏱️ Statut'), value: room.status === 'EMPTY_COUNTDOWN' ? trg(ctx, '⏳ Nettoyage en cours') : trg(ctx, '🟢 Actif'), inline: true }
         );
 
       await ctx.reply({ embeds: [embed], ephemeral: true });
@@ -210,7 +211,7 @@ export const voiceCommand: Command = {
         !member.permissions.has(PermissionsBitField.Flags.Administrator)
       ) {
         await ctx.reply({
-          embeds: [baseEmbed('error').setDescription('🔒 Vous devez posséder la permission **Gérer les salons** pour publier le panneau de création permanent.')],
+          embeds: [baseEmbed('error').setDescription(trg(ctx, '🔒 Vous devez posséder la permission **Gérer les salons** pour publier le panneau de création permanent.'))],
           ephemeral: true,
         });
         return;
@@ -218,7 +219,7 @@ export const voiceCommand: Command = {
 
       const channel = ctx.channel;
       if (!channel || !channel.isTextBased()) {
-        await ctx.reply({ embeds: [baseEmbed('error').setDescription('❌ Ce canal n’est pas un salon textuel valide.')], ephemeral: true });
+        await ctx.reply({ embeds: [baseEmbed('error').setDescription(trg(ctx, '❌ Ce canal n’est pas un salon textuel valide.'))], ephemeral: true });
         return;
       }
 
@@ -226,12 +227,12 @@ export const voiceCommand: Command = {
       const res = await TemporaryVoiceService.publishCreationPanel(guild, channel.id);
 
       if (!res.success) {
-        await ctx.reply({ embeds: [baseEmbed('error').setDescription(`❌ Erreur lors de la publication : ${res.error}`)], ephemeral: true });
+        await ctx.reply({ embeds: [baseEmbed('error').setDescription(trg(ctx, '❌ Erreur lors de la publication : {error}', { error: res.error }))], ephemeral: true });
         return;
       }
 
       await ctx.reply({
-        embeds: [baseEmbed('success').setDescription(`✅ Le **Panneau de création de salon vocal** a été publié avec succès dans <#${channel.id}> !`)],
+        embeds: [baseEmbed('success').setDescription(trg(ctx, '✅ Le **Panneau de création de salon vocal** a été publié avec succès dans <#{id}> !', { id: channel.id }))],
         ephemeral: true,
       });
       return;

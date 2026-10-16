@@ -3,6 +3,7 @@ import { Command, CommandContext } from '../../../types/command.js';
 import { stickyStorage } from '../storage/stickyStorage.js';
 import { stickyService } from '../services/stickyService.js';
 import { emitConfigUpdated } from '../../../services/syncConfigEmitter.js';
+import { trg } from '../../../utils/tr.js';
 
 const HEX = /^#([0-9A-Fa-f]{6})$/;
 
@@ -76,14 +77,14 @@ export const stickyCommand: Command = {
     const guild = ctx.guild;
     if (!guild) {
       await ctx.reply({
-        embeds: [ctx.createEmbed('error').setDescription('❌ Cette commande doit être utilisée sur un serveur.')],
+        embeds: [ctx.createEmbed('error').setDescription(trg(ctx, '❌ Cette commande doit être utilisée sur un serveur.'))],
         ephemeral: true,
       });
       return;
     }
     if (!ctx.isSlash) {
       await ctx.reply({
-        embeds: [ctx.createEmbed('info').setDescription('ℹ️ Utilise la commande slash `/sticky`.')],
+        embeds: [ctx.createEmbed('info').setDescription(trg(ctx, 'ℹ️ Utilise la commande slash `/sticky`.'))],
         ephemeral: true,
       });
       return;
@@ -101,7 +102,7 @@ export const stickyCommand: Command = {
 
       if (colorRaw && !HEX.test(colorRaw.trim())) {
         await ctx.reply({
-          embeds: [ctx.createEmbed('error').setDescription('❌ Couleur invalide. Format attendu : `#RRGGBB`.')],
+          embeds: [ctx.createEmbed('error').setDescription(trg(ctx, '❌ Couleur invalide. Format attendu : `#RRGGBB`.'))],
           ephemeral: true,
         });
         return;
@@ -130,8 +131,8 @@ export const stickyCommand: Command = {
         embeds: [
           ctx
             .createEmbed('success')
-            .setTitle('📌 Sticky configuré')
-            .setDescription(`Le message restera en bas de <#${channel.id}>.`),
+            .setTitle(trg(ctx, '📌 Sticky configuré'))
+            .setDescription(trg(ctx, 'Le message restera en bas de <#{id}>.', { id: channel.id })),
         ],
       });
       return;
@@ -142,7 +143,7 @@ export const stickyCommand: Command = {
       const existing = stickyStorage.get(guild.id, channel.id);
       if (!existing) {
         await ctx.reply({
-          embeds: [ctx.createEmbed('info').setDescription(`ℹ️ Aucun sticky sur <#${channel.id}>.`)],
+          embeds: [ctx.createEmbed('info').setDescription(trg(ctx, 'ℹ️ Aucun sticky sur <#{id}>.', { id: channel.id }))],
           ephemeral: true,
         });
         return;
@@ -150,7 +151,7 @@ export const stickyCommand: Command = {
       await stickyService.clearPosted(guild, channel.id).catch(() => {});
       stickyStorage.delete(guild.id, channel.id);
       await ctx.reply({
-        embeds: [ctx.createEmbed('success').setDescription(`✅ Sticky retiré de <#${channel.id}>.`)],
+        embeds: [ctx.createEmbed('success').setDescription(trg(ctx, '✅ Sticky retiré de <#{id}>.', { id: channel.id }))],
       });
       return;
     }
@@ -160,7 +161,7 @@ export const stickyCommand: Command = {
       const existing = stickyStorage.get(guild.id, channel.id);
       if (!existing) {
         await ctx.reply({
-          embeds: [ctx.createEmbed('error').setDescription(`❌ Aucun sticky sur <#${channel.id}>.`)],
+          embeds: [ctx.createEmbed('error').setDescription(trg(ctx, '❌ Aucun sticky sur <#{id}>.', { id: channel.id }))],
           ephemeral: true,
         });
         return;
@@ -176,7 +177,7 @@ export const stickyCommand: Command = {
         embeds: [
           ctx
             .createEmbed(next.enabled ? 'success' : 'neutral')
-            .setDescription(next.enabled ? `✅ Sticky réactivé sur <#${channel.id}>.` : `⏸️ Sticky mis en pause sur <#${channel.id}>.`),
+            .setDescription(next.enabled ? trg(ctx, '✅ Sticky réactivé sur <#{id}>.', { id: channel.id }) : trg(ctx, '⏸️ Sticky mis en pause sur <#{id}>.', { id: channel.id })),
         ],
       });
       return;
@@ -186,15 +187,15 @@ export const stickyCommand: Command = {
       const list = stickyStorage.getGuild(guild.id);
       if (list.length === 0) {
         await ctx.reply({
-          embeds: [ctx.createEmbed('neutral').setDescription('Aucun sticky configuré. Utilise `/sticky set`.')],
+          embeds: [ctx.createEmbed('neutral').setDescription(trg(ctx, 'Aucun sticky configuré. Utilise `/sticky set`.'))],
           ephemeral: true,
         });
         return;
       }
-      const embed = ctx.createEmbed('default').setTitle('📌 Stickies du serveur');
+      const embed = ctx.createEmbed('default').setTitle(trg(ctx, '📌 Stickies du serveur'));
       for (const s of list.slice(0, 20)) {
         embed.addFields({
-          name: `${s.enabled ? '🟢' : '⏸️'} ${s.asEmbed ? 'Embed' : 'Texte'} · ${s.repostCount} repos.`,
+          name: trg(ctx, '{v0} {v1} · {repostCount} repos.', { v0: s.enabled ? '🟢' : '⏸️', v1: s.asEmbed ? 'Embed' : 'Texte', repostCount: s.repostCount }),
           value: `<#${s.channelId}>\n> ${s.content.slice(0, 80)}${s.content.length > 80 ? '…' : ''}`,
         });
       }
@@ -207,7 +208,7 @@ export const stickyCommand: Command = {
     const sticky = stickyStorage.get(guild.id, channel.id);
     if (!sticky) {
       await ctx.reply({
-        embeds: [ctx.createEmbed('info').setDescription(`ℹ️ Aucun sticky sur <#${channel.id}>.`)],
+        embeds: [ctx.createEmbed('info').setDescription(trg(ctx, 'ℹ️ Aucun sticky sur <#{id}>.', { id: channel.id }))],
         ephemeral: true,
       });
       return;
@@ -216,13 +217,13 @@ export const stickyCommand: Command = {
       embeds: [
         ctx
           .createEmbed(sticky.enabled ? 'default' : 'neutral')
-          .setTitle(`📌 Sticky de #${channel.name}`)
+          .setTitle(trg(ctx, '📌 Sticky de #{name}', { name: channel.name }))
           .addFields(
-            { name: 'État', value: sticky.enabled ? '🟢 Actif' : '⏸️ En pause', inline: true },
-            { name: 'Format', value: sticky.asEmbed ? `Embed (${sticky.color})` : 'Texte simple', inline: true },
-            { name: 'Anti-rebond', value: `${sticky.cooldownSeconds}s`, inline: true },
-            { name: 'Repositionnements', value: `${sticky.repostCount}`, inline: true },
-            { name: 'Contenu', value: sticky.content.slice(0, 1000) || '—' }
+            { name: trg(ctx, 'État'), value: sticky.enabled ? trg(ctx, '🟢 Actif') : trg(ctx, '⏸️ En pause'), inline: true },
+            { name: trg(ctx, 'Format'), value: sticky.asEmbed ? trg(ctx, 'Embed ({color})', { color: sticky.color }) : trg(ctx, 'Texte simple'), inline: true },
+            { name: trg(ctx, 'Anti-rebond'), value: `${sticky.cooldownSeconds}s`, inline: true },
+            { name: trg(ctx, 'Repositionnements'), value: `${sticky.repostCount}`, inline: true },
+            { name: trg(ctx, 'Contenu'), value: sticky.content.slice(0, 1000) || '—' }
           ),
       ],
       ephemeral: true,

@@ -17,6 +17,7 @@ import {
 import { CORE_MODULE_IDS, MODULES, MODULE_PRESETS, applyModuleSelection, isModuleEnabled, type ModulePresetId } from './moduleRegistry.js';
 import { brandIcon, baseEmbed, noticeEmbed } from '../utils/embeds.js';
 import { logger } from '../utils/logger.js';
+import { trg } from '../utils/tr.js';
 
 /**
  * Configuration rapide à l'arrivée du bot.
@@ -101,8 +102,8 @@ export const guildSetupService = {
     const list = (xs: typeof states) => (xs.length ? xs.map((s) => `${s.m.emoji} ${s.m.label}`).join('  ·  ') : '—');
 
     const embed = baseEmbed('primary')
-      .setAuthor({ name: 'ETHONE · Configuration rapide', iconURL: brandIcon('ethone') })
-      .setTitle(isWelcome ? '👋 Merci d\'avoir ajouté ETHONE !' : '⚙️ Modules du serveur')
+      .setAuthor({ name: trg(guildId, 'ETHONE · Configuration rapide'), iconURL: brandIcon('ethone') })
+      .setTitle(isWelcome ? trg(guildId, '👋 Merci d\'avoir ajouté ETHONE !') : trg(guildId, '⚙️ Modules du serveur'))
       .setDescription(
         [
           isWelcome
@@ -114,10 +115,10 @@ export const guildSetupService = {
       )
       .setThumbnail(brandIcon('ethone'))
       .addFields(
-        { name: `✅ Actifs (${active.length})`, value: list(active).slice(0, 1024) },
-        { name: `⚪ Désactivés (${inactive.length})`, value: list(inactive).slice(0, 1024) },
+        { name: trg(guildId, '✅ Actifs ({length})', { length: active.length }), value: list(active).slice(0, 1024) },
+        { name: trg(guildId, '⚪ Désactivés ({length})', { length: inactive.length }), value: list(inactive).slice(0, 1024) },
         {
-          name: 'Préréglages',
+          name: trg(guildId, 'Préréglages'),
           value: (Object.keys(MODULE_PRESETS) as ModulePresetId[]).map((id) => `${MODULE_PRESETS[id].emoji} **${MODULE_PRESETS[id].label}** — ${MODULE_PRESETS[id].description}`).join('\n'),
         }
       );
@@ -144,8 +145,8 @@ export const guildSetupService = {
       )
     );
     const footerRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
-      new ButtonBuilder().setLabel('Configuration détaillée').setEmoji('🌐').setStyle(ButtonStyle.Link).setURL(DASHBOARD_URL),
-      new ButtonBuilder().setCustomId('qsetup:done').setLabel('Terminé').setEmoji('✔️').setStyle(ButtonStyle.Success)
+      new ButtonBuilder().setLabel(trg(guildId, 'Configuration détaillée')).setEmoji('🌐').setStyle(ButtonStyle.Link).setURL(DASHBOARD_URL),
+      new ButtonBuilder().setCustomId('qsetup:done').setLabel(trg(guildId, 'Terminé')).setEmoji('✔️').setStyle(ButtonStyle.Success)
     );
 
     return { embeds: [embed], components: [...rows, presetRow, footerRow] };
@@ -155,7 +156,7 @@ export const guildSetupService = {
   async handle(interaction: ButtonInteraction | StringSelectMenuInteraction): Promise<void> {
     const guildId = interaction.guildId;
     if (!guildId || !interaction.memberPermissions?.has(PermissionFlagsBits.ManageGuild)) {
-      await interaction.reply({ embeds: [noticeEmbed('denied', 'Seuls les membres qui ont la permission **Gérer le serveur** peuvent modifier la configuration.')], flags: MessageFlags.Ephemeral });
+      await interaction.reply({ embeds: [noticeEmbed('denied', trg(guildId, 'Seuls les membres qui ont la permission **Gérer le serveur** peuvent modifier la configuration.'))], flags: MessageFlags.Ephemeral });
       return;
     }
     const [, kind, arg] = interaction.customId.split(':');
@@ -183,9 +184,9 @@ export const guildSetupService = {
       this.markDone(guildId);
       const active = MODULES.filter((m) => isModuleEnabled(guildId, m.id));
       const embed = baseEmbed('success')
-        .setAuthor({ name: 'ETHONE · Configuration rapide', iconURL: brandIcon('ethone') })
-        .setTitle('✅ Configuration enregistrée')
-        .setDescription(`${active.length} module(s) actif(s) : ${active.map((m) => `${m.emoji} ${m.label}`).join('  ·  ') || '—'}\n\nPour changer plus tard : \`/module\` ou le dashboard.`)
+        .setAuthor({ name: trg(guildId, 'ETHONE · Configuration rapide'), iconURL: brandIcon('ethone') })
+        .setTitle(trg(guildId, '✅ Configuration enregistrée'))
+        .setDescription(trg(guildId, '{length} module(s) actif(s) : {v1}\n\nPour changer plus tard : `/module` ou le dashboard.', { length: active.length, v1: active.map((m) => `${m.emoji} ${m.label}`).join('  ·  ') || '—' }))
         .setThumbnail(brandIcon('ethone'));
       await interaction.update({ embeds: [embed], components: [] });
     }

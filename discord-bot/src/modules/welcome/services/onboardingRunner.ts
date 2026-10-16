@@ -30,6 +30,7 @@ import { logger } from '../../../utils/logger.js';
 import { noticeEmbed } from '../../../utils/embeds.js';
 import { isSendableTarget, sendToConfiguredChannel } from '../../../utils/channelSend.js';
 import { cardFileName } from '../images/animatedCard.js';
+import { trg } from '../../../utils/tr.js';
 
 /**
  * Moteur d'Onboarding : présente au membre, étape par étape, le parcours configuré sur le dashboard
@@ -134,7 +135,7 @@ export class OnboardingRunner {
     const embed = new EmbedBuilder()
       .setColor(colorFor(guild))
       .setTitle(VariableParser.parse(step.title, ctx).slice(0, 256))
-      .setFooter({ text: `Étape ${index + 1}/${steps.length} • ${guild.name}`, iconURL: guild.iconURL() || undefined });
+      .setFooter({ text: trg(ctx, 'Étape {v0}/{length} • {name}', { v0: index + 1, length: steps.length, name: guild.name }), iconURL: guild.iconURL() || undefined });
 
     let description = VariableParser.parse(step.description, ctx);
     if (step.type === 'RULES' && step.rulesList.length > 0) {
@@ -142,7 +143,7 @@ export class OnboardingRunner {
         '\n\n' + step.rulesList.map((r, i) => `**${i + 1}.** ${VariableParser.parse(r.replace(/^\d+\.\s*/, ''), ctx)}`).join('\n');
     }
     embed.setDescription(description.slice(0, 4000));
-    if (note) embed.addFields({ name: 'Ton choix', value: note.slice(0, 1024) });
+    if (note) embed.addFields({ name: trg(ctx, 'Ton choix'), value: note.slice(0, 1024) });
 
     const files: AttachmentBuilder[] = [];
     if (index === 0) {
@@ -169,7 +170,7 @@ export class OnboardingRunner {
       const current = new Set(member.roles.cache.keys());
       const select = new StringSelectMenuBuilder()
         .setCustomId(makeId('roles', guild.id, member.id, step.id))
-        .setPlaceholder('Choisis tes rôles…')
+        .setPlaceholder(trg(ctx, 'Choisis tes rôles…'))
         .setMinValues(0)
         .setMaxValues(Math.max(1, Math.min(step.maxRoleSelections || 1, step.roleChoices.length, 25)))
         .addOptions(
@@ -192,7 +193,7 @@ export class OnboardingRunner {
       buttons.push(
         new ButtonBuilder()
           .setCustomId(makeId('ask', guild.id, member.id, step.id))
-          .setLabel('Répondre')
+          .setLabel(trg(ctx, 'Répondre'))
           .setEmoji('✍️')
           .setStyle(ButtonStyle.Primary)
       );
@@ -213,7 +214,7 @@ export class OnboardingRunner {
         buttons.push(
           new ButtonBuilder()
             .setCustomId(makeId(isLast ? 'done' : 'next', guild.id, member.id, step.id))
-            .setLabel(isLast ? 'Terminer' : skippable ? label.next : label.next)
+            .setLabel(isLast ? trg(ctx, 'Terminer') : skippable ? label.next : label.next)
             .setEmoji(isLast ? '🎉' : label.emoji)
             .setStyle(step.type === 'RULES' || isLast ? ButtonStyle.Success : ButtonStyle.Secondary)
         );
@@ -256,13 +257,13 @@ export class OnboardingRunner {
     parsed: ParsedId
   ): Promise<{ guild: Guild; member: GuildMember; flow: OnboardingFlow; steps: OnboardingStep[]; index: number } | null> {
     if (interaction.user.id !== parsed.userId) {
-      await interaction.reply({ embeds: [noticeEmbed('error', 'Ce parcours ne t’est pas destiné.')], flags: MessageFlags.Ephemeral }).catch(() => {});
+      await interaction.reply({ embeds: [noticeEmbed('error', trg(interaction, 'Ce parcours ne t’est pas destiné.'))], flags: MessageFlags.Ephemeral }).catch(() => {});
       return null;
     }
     const guild = client.guilds.cache.get(parsed.guildId);
     const member = guild ? await guild.members.fetch(parsed.userId).catch(() => null) : null;
     if (!guild || !member) {
-      await interaction.reply({ embeds: [noticeEmbed('error', 'Je ne te trouve plus sur ce serveur.')], flags: MessageFlags.Ephemeral }).catch(() => {});
+      await interaction.reply({ embeds: [noticeEmbed('error', trg(interaction, 'Je ne te trouve plus sur ce serveur.'))], flags: MessageFlags.Ephemeral }).catch(() => {});
       return null;
     }
     const flow = welcomeRepository.getOnboardingFlow(guild.id);
@@ -273,7 +274,7 @@ export class OnboardingRunner {
     if (index < 0) {
       // Étape supprimée ou remplacée depuis l'envoi du message.
       await interaction
-        .reply({ embeds: [noticeEmbed('info', 'Ce parcours a été modifié : demande à un administrateur de le relancer.')], flags: MessageFlags.Ephemeral })
+        .reply({ embeds: [noticeEmbed('info', trg(interaction, 'Ce parcours a été modifié : demande à un administrateur de le relancer.'))], flags: MessageFlags.Ephemeral })
         .catch(() => {});
       return null;
     }
@@ -306,7 +307,7 @@ export class OnboardingRunner {
     const ctx = contextFor(member);
     const done = new EmbedBuilder()
       .setColor(0x57f287)
-      .setTitle('🎉 Parcours terminé !')
+      .setTitle(trg(ctx, '🎉 Parcours terminé !'))
       .setDescription(
         `Bienvenue vraiment sur **${member.guild.name}**, ${member.displayName} ! ` +
           (flow.completionRoleId ? 'Tes accès ont été débloqués.' : 'Profite bien de la communauté.') +
@@ -367,7 +368,7 @@ export class OnboardingRunner {
     if (step.type === 'ROLE_SELECTION' && step.required && step.roleChoices.length > 0) {
       const has = step.roleChoices.some((c) => member.roles.cache.has(c.roleId));
       if (!has) {
-        await interaction.reply({ embeds: [noticeEmbed('warning', 'Choisis au moins un rôle dans la liste avant de continuer.')], flags: MessageFlags.Ephemeral }).catch(() => {});
+        await interaction.reply({ embeds: [noticeEmbed('warning', trg(ctx, 'Choisis au moins un rôle dans la liste avant de continuer.'))], flags: MessageFlags.Ephemeral }).catch(() => {});
         return;
       }
     }
@@ -400,7 +401,7 @@ export class OnboardingRunner {
     }
     const done = new EmbedBuilder()
       .setColor(0x57f287)
-      .setTitle('🎉 Parcours terminé !')
+      .setTitle(trg(interaction, '🎉 Parcours terminé !'))
       .setDescription(`Bienvenue vraiment sur **${member.guild.name}**, ${member.displayName} !` + (flow.completionRoleId ? ' Tes accès ont été débloqués.' : ''))
       .setFooter({ text: member.guild.name, iconURL: member.guild.iconURL() || undefined });
     await interaction.editReply({ embeds: [done], components: [], files: [], attachments: [] });
@@ -416,7 +417,7 @@ export class OnboardingRunner {
 
     const bot = guild.members.me;
     if (!bot || !bot.permissions.has(PermissionFlagsBits.ManageRoles)) {
-      await interaction.reply({ embeds: [noticeEmbed('error', 'Je n’ai pas la permission de gérer les rôles sur ce serveur.')], flags: MessageFlags.Ephemeral }).catch(() => {});
+      await interaction.reply({ embeds: [noticeEmbed('error', trg(ctx, 'Je n’ai pas la permission de gérer les rôles sur ce serveur.'))], flags: MessageFlags.Ephemeral }).catch(() => {});
       return;
     }
 

@@ -24,6 +24,7 @@ import { logService } from '../../logs/services/logService.js';
 import { raidModeService } from '../../antiRaid/services/raidModeService.js';
 import { baseEmbed, noticeEmbed, type EmbedTone } from '../../../utils/embeds.js';
 import { isModuleEnabled } from '../../../services/moduleRegistry.js';
+import { trg } from '../../../utils/tr.js';
 
 export interface ShieldInterceptionEvent {
   id: string;
@@ -351,7 +352,7 @@ export class OwnerShieldService {
     const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
       new ButtonBuilder()
         .setCustomId(`sh_restore_${guildId}`)
-        .setLabel('👑 Rétablir Tout')
+        .setLabel(trg(guildId, '👑 Rétablir Tout'))
         .setStyle(ButtonStyle.Primary)
     );
 
@@ -359,7 +360,7 @@ export class OwnerShieldService {
       row.addComponents(
         new ButtonBuilder()
           .setCustomId(`sh_ban_${guildId}_${culpritId}`)
-          .setLabel('🔨 Bannir le saboteur')
+          .setLabel(trg(guildId, '🔨 Bannir le saboteur'))
           .setStyle(ButtonStyle.Danger)
       );
     }
@@ -367,7 +368,7 @@ export class OwnerShieldService {
     row.addComponents(
       new ButtonBuilder()
         .setCustomId(`sh_lockdown_${guildId}`)
-        .setLabel('🔒 Verrouiller le Serveur')
+        .setLabel(trg(guildId, '🔒 Verrouiller le Serveur'))
         .setStyle(ButtonStyle.Secondary)
     );
 
@@ -392,7 +393,7 @@ export class OwnerShieldService {
    */
   public async handleButtonInteraction(interaction: ButtonInteraction): Promise<void> {
     if (!this.isOwner(interaction.user.id)) {
-      await interaction.reply({ embeds: [noticeEmbed('denied', "**Accès refusé** : Cette action d'urgence est réservée au fondateur du bot.")], flags: MessageFlags.Ephemeral });
+      await interaction.reply({ embeds: [noticeEmbed('denied', trg(interaction, '**Accès refusé** : Cette action d\'urgence est réservée au fondateur du bot.'))], flags: MessageFlags.Ephemeral });
       return;
     }
 
@@ -417,7 +418,7 @@ export class OwnerShieldService {
             `• Rôles & Admin : ${res.results.adminRole?.roleName || res.results.restoreRoles?.message || 'OK'}` +
             (res.inviteUrl ? `\n\n🔗 [Lien d'invitation direct](${res.inviteUrl})` : ''))] });
       } catch (err: any) {
-        await interaction.editReply({ embeds: [noticeEmbed('error', `Échec du sauvetage : ${err.message}`)] });
+        await interaction.editReply({ embeds: [noticeEmbed('error', trg(guildId, 'Échec du sauvetage : {message}', { message: err.message }))] });
       }
       return;
     }
@@ -433,9 +434,9 @@ export class OwnerShieldService {
         await guild.bans.create(culpritId, {
           reason: "⚡ Sanction immédiate déclenchée par l'Owner via les boutons d'alerte DM",
         });
-        await interaction.editReply({ embeds: [noticeEmbed('success', `**Saboteur (<@${culpritId}>) banni avec succès de ${guild.name} !**`)] });
+        await interaction.editReply({ embeds: [noticeEmbed('success', trg(guildId, '**Saboteur (<@{culpritId}>) banni avec succès de {name} !**', { culpritId, name: guild.name }))] });
       } catch (err: any) {
-        await interaction.editReply({ embeds: [noticeEmbed('error', `Échec du bannissement du saboteur : ${err.message}`)] });
+        await interaction.editReply({ embeds: [noticeEmbed('error', trg(guildId, 'Échec du bannissement du saboteur : {message}', { message: err.message }))] });
       }
       return;
     }
@@ -447,9 +448,9 @@ export class OwnerShieldService {
         const guild = this.client?.guilds.cache.get(guildId);
         if (!guild) throw new Error("Serveur introuvable");
         await raidModeService.activateRaidMode(guild, "⚡ Confinement d'urgence déclenché par l'Owner via DM", 'OWNER_SHIELD');
-        await interaction.editReply({ embeds: [noticeEmbed('denied', `**Serveur ${guild.name} placé en confinement d'urgence (Raid Mode & Lockdown activés) !**`)] });
+        await interaction.editReply({ embeds: [noticeEmbed('denied', trg(guildId, '**Serveur {name} placé en confinement d\'urgence (Raid Mode & Lockdown activés) !**', { name: guild.name }))] });
       } catch (err: any) {
-        await interaction.editReply({ embeds: [noticeEmbed('error', `Échec du verrouillage : ${err.message}`)] });
+        await interaction.editReply({ embeds: [noticeEmbed('error', trg(guildId, 'Échec du verrouillage : {message}', { message: err.message }))] });
       }
       return;
     }
@@ -1121,8 +1122,8 @@ export class OwnerShieldService {
           ],
           components: [
             new ActionRowBuilder<ButtonBuilder>().addComponents(
-              new ButtonBuilder().setStyle(ButtonStyle.Link).setLabel('Réinviter le bot (Administrateur)').setURL(inviteBotUrl),
-              new ButtonBuilder().setStyle(ButtonStyle.Link).setLabel('Dashboard').setURL('https://ethone.dev/owner/shield'),
+              new ButtonBuilder().setStyle(ButtonStyle.Link).setLabel(trg(guild, 'Réinviter le bot (Administrateur)')).setURL(inviteBotUrl),
+              new ButtonBuilder().setStyle(ButtonStyle.Link).setLabel(trg(guild, 'Dashboard')).setURL('https://ethone.dev/owner/shield'),
             ),
           ],
         }).catch(() => null);

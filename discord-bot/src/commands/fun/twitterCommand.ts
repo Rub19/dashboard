@@ -2,6 +2,7 @@ import { SlashCommandBuilder } from "discord.js";
 import { Command, CommandContext } from "../../types/command.js";
 import { twitterService } from "../../modules/fun/services/twitterService.js";
 import { buildTwitterPostEmbed, buildTwitterUserEmbed } from "../../modules/fun/ui/twitterEmbeds.js";
+import { trg } from '../../utils/tr.js';
 
 export const twitterCommand: Command = {
   name: "twitter",
@@ -45,7 +46,7 @@ export const twitterCommand: Command = {
     const firstArg = ctx.args[0];
     if (!firstArg) {
       await ctx.reply({
-        content: "❌ Utilisation : `!twitter user <pseudo>` ou `!twitter post <url>`",
+        content: trg(ctx, '❌ Utilisation : `!twitter user <pseudo>` ou `!twitter post <url>`'),
       });
       return;
     }
@@ -54,7 +55,7 @@ export const twitterCommand: Command = {
     if (sub === "post" || firstArg.includes("x.com/") || firstArg.includes("twitter.com/")) {
       const postArg = sub === "post" ? ctx.args.slice(1).join(" ") : firstArg;
       if (!postArg) {
-        await ctx.reply({ content: "❌ Veuillez préciser une URL de post X." });
+        await ctx.reply({ content: trg(ctx, '❌ Veuillez préciser une URL de post X.') });
         return;
       }
       const post = twitterService.getPostInfo(postArg);
@@ -65,7 +66,7 @@ export const twitterCommand: Command = {
 
     const username = sub === "user" ? ctx.args.slice(1).join(" ") : firstArg;
     if (!username) {
-      await ctx.reply({ content: "❌ Veuillez préciser un pseudo X." });
+      await ctx.reply({ content: trg(ctx, '❌ Veuillez préciser un pseudo X.') });
       return;
     }
     const user = twitterService.getUserInfo(username);

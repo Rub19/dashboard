@@ -3,6 +3,7 @@ import { countingStorage } from '../storage/countingStorage.js';
 import { CountingConfig } from '../types/counting.js';
 import { baseEmbed } from '../../../utils/embeds.js';
 import { logger } from '../../../utils/logger.js';
+import { trg } from '../../../utils/tr.js';
 
 /** Un message compte s'il COMMENCE par un nombre entier (« 12 », « 12 bravo ») ; le reste du salon est ignoré. */
 const NUMBER_AT_START = /^\s*(\d{1,15})(?!\d)/;
@@ -77,11 +78,11 @@ class CountingService {
           ? `Tu ne peux pas compter deux fois de suite, ${message.author}.`
           : `${message.author} a écrit **${verdict.given}** au lieu de **${verdict.expected}**.`;
       const embed = baseEmbed('error')
-        .setTitle(verdict.reset ? '💥 Compteur remis à zéro' : '❌ Mauvais nombre')
+        .setTitle(verdict.reset ? trg(message, '💥 Compteur remis à zéro') : trg(message, '❌ Mauvais nombre'))
         .setDescription(
           verdict.reset
-            ? `${why}\nOn était à **${verdict.previousCount}**. Recommencez à **1** !`
-            : `${why}\nLe prochain nombre est **${verdict.expected}**.`
+            ? trg(message, '{why}\nOn était à **{previousCount}**. Recommencez à **1** !', { why, previousCount: verdict.previousCount })
+            : trg(message, '{why}\nLe prochain nombre est **{expected}**.', { why, expected: verdict.expected })
         );
       if ('send' in message.channel) await message.channel.send({ embeds: [embed], allowedMentions: { users: [message.author.id] } });
     } catch (err) {

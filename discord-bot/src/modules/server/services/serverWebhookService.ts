@@ -2,6 +2,7 @@ import { Client, Guild, TextChannel, Webhook } from 'discord.js';
 import { ServerWebhookItem } from '../types/index.js';
 import { logService } from '../../logs/services/logService.js';
 import { logger } from '../../../utils/logger.js';
+import { trg } from '../../../utils/tr.js';
 
 export class ServerWebhookService {
   /**
@@ -41,11 +42,11 @@ export class ServerWebhookService {
     payload: { channelId: string; name: string; avatar?: string }
   ): Promise<{ success: boolean; webhook?: ServerWebhookItem; error?: string }> {
     const guild = client.guilds.cache.get(guildId);
-    if (!guild) return { success: false, error: 'Serveur introuvable.' };
+    if (!guild) return { success: false, error: trg(guildId, 'Serveur introuvable.') };
 
     const channel = guild.channels.cache.get(payload.channelId) as TextChannel | undefined;
     if (!channel || !('createWebhook' in channel)) {
-      return { success: false, error: 'Salon textuel non éligible pour un webhook.' };
+      return { success: false, error: trg(guildId, 'Salon textuel non éligible pour un webhook.') };
     }
 
     try {
@@ -90,12 +91,12 @@ export class ServerWebhookService {
     webhookId: string
   ): Promise<{ success: boolean; error?: string }> {
     const guild = client.guilds.cache.get(guildId);
-    if (!guild) return { success: false, error: 'Serveur introuvable.' };
+    if (!guild) return { success: false, error: trg(guildId, 'Serveur introuvable.') };
 
     try {
       const webhooks = await guild.fetchWebhooks();
       const target = webhooks.get(webhookId);
-      if (!target) return { success: false, error: 'Webhook introuvable.' };
+      if (!target) return { success: false, error: trg(guildId, 'Webhook introuvable.') };
 
       const whName = target.name;
       await target.delete('Supprimé via ETHONE Dashboard');

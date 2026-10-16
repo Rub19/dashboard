@@ -4,6 +4,7 @@ struct NotesView: View {
     @Environment(AppModel.self) private var model
     @State private var query = ""
     @State private var editing: NoteDraft?
+    @Namespace private var zoom
 
     private var filtered: [Item] {
         let sorted = model.notes.items.sorted { $0.updatedAt > $1.updatedAt }
@@ -21,18 +22,29 @@ struct NotesView: View {
                     Button {
                         editing = NoteDraft(item: note)
                     } label: {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(note.title).font(.headline).foregroundStyle(.primary).lineLimit(1)
+                        VStack(alignment: .leading, spacing: 5) {
+                            Text(note.title.isEmpty ? "Sans titre" : note.title)
+                                .font(.headline)
+                                .tracking(-0.2)
+                                .foregroundStyle(.primary)
+                                .lineLimit(1)
                             if !note.plainBody.isEmpty {
-                                Text(note.plainBody).font(.subheadline).foregroundStyle(.secondary).lineLimit(2)
+                                Text(note.plainBody.replacingOccurrences(of: "\n", with: " "))
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                                    .lineLimit(2)
                             }
-                            Text(note.updatedAt, format: .dateTime.day().month(.abbreviated).hour().minute())
-                                .font(.caption).foregroundStyle(.tertiary)
+                            Text(note.updatedAt, format: .relative(presentation: .named))
+                                .font(.caption)
+                                .foregroundStyle(.tertiary)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.vertical, 4)
+                        .padding(.vertical, 6)
+                        .contentShape(.rect)
                     }
-                    .listRowBackground(GlassRowBackground())
+                    .buttonStyle(.plain)
+                    .matchedTransitionSource(id: note.id, in: zoom)
+                    .listRowBackground(Rectangle().fill(.thinMaterial))
                     .swipeActions(edge: .trailing) {
                         Button(role: .destructive) {
                             Task { await model.notes.delete(note) }
@@ -40,10 +52,14 @@ struct NotesView: View {
                     }
                 }
             }
+            .listStyle(.insetGrouped)
             .scrollContentBackground(.hidden)
+            .animation(Motion.snap, value: filtered.map(\.id))
             .overlay {
                 if model.notes.items.isEmpty && model.notes.hasLoaded {
-                    ContentUnavailableView("Aucune note", systemImage: "note.text", description: Text("Créez votre première note avec le bouton +."))
+                    ContentUnavailableView("Aucune note", systemImage: "note.text", description: Text("Touchez le crayon pour écrire votre première note. Elle apparaîtra aussitôt sur votre ordinateur."))
+                } else if !query.isEmpty && filtered.isEmpty {
+                    ContentUnavailableView.search(text: query)
                 }
             }
             .refreshable { await model.notes.refresh() }
@@ -53,10 +69,13 @@ struct NotesView: View {
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button { editing = NoteDraft(item: nil) } label: { Image(systemName: "square.and.pencil") }
+                        .accessibilityLabel("Nouvelle note")
+                        .matchedTransitionSource(id: "new-note", in: zoom)
                 }
             }
             .sheet(item: $editing) { draft in
                 NoteEditorView(draft: draft)
+                    .navigationTransition(.zoom(sourceID: draft.item?.id ?? "new-note", in: zoom))
             }
         }
     }
@@ -89,7 +108,8 @@ struct NoteEditorView: View {
         NavigationStack {
             VStack(spacing: 12) {
                 TextField("Titre", text: $title)
-                    .font(.title2.bold())
+                    .font(.title2.weight(.semibold))
+                    .tracking(-0.5)
                     .padding(14)
                     .glassEffect(.regular, in: .rect(cornerRadius: 18))
                 TextEditor(text: $text)

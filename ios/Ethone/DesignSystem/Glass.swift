@@ -79,7 +79,7 @@ struct AmbientBackground: View {
 
 extension View {
     func sectionTitle() -> some View {
-        self.font(.footnote.weight(.semibold)).foregroundStyle(.secondary).textCase(.uppercase)
+        self.font(.subheadline.weight(.semibold)).foregroundStyle(.secondary)
     }
 }
 

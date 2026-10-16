@@ -15,7 +15,7 @@ struct TasksView: View {
         NavigationStack {
             List {
                 Section {
-                    VStack(spacing: 10) {
+                    VStack(spacing: 12) {
                         HStack {
                             TextField("Ajouter une tâche…", text: $newTitle)
                                 .focused($focused)
@@ -38,7 +38,16 @@ struct TasksView: View {
                         }
                     }
                     .padding(.vertical, 4)
-                    .listRowBackground(GlassRowBackground())
+                    .listRowBackground(Rectangle().fill(.thinMaterial))
+                } header: {
+                    VStack(alignment: .leading, spacing: 12) {
+                        AccentRule()
+                        EthoneHeadline(first: "Tâches", second: open.isEmpty ? "Tout est fait." : "\(open.count) à faire.", size: .title)
+                    }
+                    .textCase(nil)
+                    .foregroundStyle(.primary)
+                    .padding(.bottom, 8)
+                    .padding(.leading, -4)
                 }
 
                 if let message = model.tasks.errorMessage {
@@ -48,23 +57,28 @@ struct TasksView: View {
                 if !open.isEmpty {
                     Section {
                         ForEach(open) { row($0) }
-                    } header: { Text("À faire · \(open.count)").sectionTitle() }
+                    } header: { sectionHeader("À faire", count: open.count) }
                 }
 
                 if !done.isEmpty {
                     Section {
                         ForEach(done) { row($0) }
-                    } header: { Text("Terminées · \(done.count)").sectionTitle() }
+                    } header: { sectionHeader("Terminées", count: done.count) }
                 }
             }
+            .listStyle(.insetGrouped)
             .scrollContentBackground(.hidden)
+            .animation(Motion.snap, value: model.tasks.items.map(\.id))
+            .animation(Motion.snap, value: model.tasks.items.map(\.isDone))
             .overlay {
                 if model.tasks.items.isEmpty && model.tasks.hasLoaded {
-                    ContentUnavailableView("Aucune tâche", systemImage: "checklist", description: Text("Ajoutez une tâche ci-dessus."))
+                    ContentUnavailableView("Aucune tâche", systemImage: "checklist", description: Text("Écrivez votre première tâche dans le champ ci-dessus."))
+                        .padding(.top, 160)
                 }
             }
             .refreshable { await model.tasks.refresh() }
             .navigationTitle("Tâches")
+            .toolbarVisibility(.hidden, for: .navigationBar)
             .ethoneScreen()
             .scrollDismissesKeyboard(.interactively)
         }
@@ -81,8 +95,9 @@ struct TasksView: View {
             } label: {
                 Image(systemName: task.isDone ? "checkmark.circle.fill" : "circle")
                     .font(.title2)
-                    .foregroundStyle(task.isDone ? Theme.success : Color.secondary)
+                    .foregroundStyle(task.isDone ? Theme.accent : Color.secondary)
                     .contentTransition(.symbolEffect(.replace))
+                    .symbolEffect(.bounce, value: task.isDone)
             }
             .buttonStyle(.plain)
             .sensoryFeedback(.success, trigger: task.isDone)
@@ -107,13 +122,22 @@ struct TasksView: View {
             Spacer()
         }
         .padding(.vertical, 4)
-        .listRowBackground(GlassRowBackground())
+        .listRowBackground(Rectangle().fill(.thinMaterial))
         .swipeActions(edge: .trailing) {
             Button(role: .destructive) {
                 NotificationManager.cancelTask(id: task.id)
                 Task { await model.tasks.delete(task) }
             } label: { Label("Supprimer", systemImage: "trash") }
         }
+    }
+
+    private func sectionHeader(_ title: String, count: Int) -> some View {
+        HStack(spacing: 6) {
+            Text(title)
+            Text("\(count)").foregroundStyle(.tertiary).monospacedDigit().contentTransition(.numericText())
+        }
+        .sectionTitle()
+        .textCase(nil)
     }
 
     private func priorityLabel(_ task: Item) -> String? {

@@ -25,29 +25,18 @@ struct HomeView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 16) {
-                    header
+                VStack(alignment: .leading, spacing: 18) {
+                    header.reveal(0)
 
-                    quickActionsRow
+                    quickActionsRow.reveal(1)
 
                     if model.soundscape.isPlaying {
                         soundscapeCard
                     }
 
-                    GlassEffectContainer(spacing: 14) {
-                        HStack(spacing: 14) {
-                            stat(value: "\(openTasks.count)", label: "Tâches ouvertes", systemImage: "checklist", tint: Theme.accent)
-                            stat(value: "\(model.notes.items.count)", label: "Notes", systemImage: "note.text", tint: Theme.teal)
-                        }
-                    }
-                    GlassEffectContainer(spacing: 14) {
-                        HStack(spacing: 14) {
-                            stat(value: "\(doneToday)/\(model.habits.activeHabits.count)", label: "Habitudes du jour", systemImage: "flame.fill", tint: Color(hex: 0xF59E0B))
-                            stat(value: "\(bestStreak)j", label: "Meilleure série", systemImage: "bolt.fill", tint: Theme.violet)
-                        }
-                    }
+                    statsPanel.reveal(2)
 
-                    focusCard
+                    focusCard.reveal(3)
 
                     if !todayEvents.isEmpty {
                         agendaCard
@@ -77,23 +66,23 @@ struct HomeView: View {
             .refreshable { await model.refreshAll() }
             .scrollDismissesKeyboard(.interactively)
             .navigationTitle("Accueil")
+            .toolbarVisibility(.hidden, for: .navigationBar)
             .ethoneScreen()
-            .toolbarTitleDisplayMode(.inlineLarge)
         }
     }
 
     private var quickActionsRow: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
+        ScrollView(.horizontal) {
             HStack(spacing: 10) {
                 quickChip(title: "Brain", systemImage: "sparkles", tint: Theme.accent) {
                     model.morePath = [.brain]
                     model.requestedTab = .more
                 }
-                quickChip(title: "Soundscape", systemImage: "waveform.circle.fill", tint: Theme.teal) {
+                quickChip(title: "Soundscape", systemImage: "waveform.circle.fill", tint: Theme.accent) {
                     model.morePath = [.soundscape]
                     model.requestedTab = .more
                 }
-                quickChip(title: "Clip", systemImage: "paperclip", tint: Theme.violet) {
+                quickChip(title: "Clip", systemImage: "paperclip", tint: Theme.accent) {
                     model.morePath = [.clip]
                     model.requestedTab = .more
                 }
@@ -101,39 +90,49 @@ struct HomeView: View {
                     model.morePath = [.discord]
                     model.requestedTab = .more
                 }
-                quickChip(title: "Agenda", systemImage: "calendar", tint: Theme.warning) {
+                quickChip(title: "Agenda", systemImage: "calendar", tint: Theme.accent) {
                     model.morePath = [.calendar]
                     model.requestedTab = .more
                 }
-                quickChip(title: "Espaces", systemImage: "person.2.fill", tint: Color(hex: 0x10B981)) {
+                quickChip(title: "Espaces", systemImage: "person.2.fill", tint: Theme.accent)) {
                     model.morePath = [.spaces]
                     model.requestedTab = .more
                 }
             }
             .padding(.vertical, 2)
+            .scrollTargetLayout()
+        }
+        .scrollIndicators(.hidden)
+        .contentMargins(.horizontal, 16, for: .scrollContent)
+        .padding(.horizontal, -16)
+        .scrollTargetBehavior(.viewAligned)
+        .mask {
+            LinearGradient(stops: [.init(color: .clear, location: 0), .init(color: .black, location: 0.04), .init(color: .black, location: 0.9), .init(color: .clear, location: 1)], startPoint: .leading, endPoint: .trailing)
         }
     }
 
     private func quickChip(title: String, systemImage: String, tint: Color, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            HStack(spacing: 6) {
-                Image(systemName: systemImage).foregroundStyle(tint)
+            HStack(spacing: 8) {
+                Image(systemName: systemImage)
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(tint)
                 Text(title).font(.subheadline.weight(.medium)).foregroundStyle(.primary)
             }
             .padding(.horizontal, 14)
-            .padding(.vertical, 9)
-            .glassEffect(Glass.regular.tint(tint.opacity(0.12)), in: .capsule)
+            .padding(.vertical, 10)
+            .glassEffect(.regular.interactive(), in: .capsule)
         }
         .buttonStyle(.plain)
     }
 
     private var soundscapeCard: some View {
         let soundscape = model.soundscape
-        return GlassCard(tint: Theme.teal.opacity(0.2)) {
+        return GlassCard(tint: Theme.accent.opacity(0.14)) {
             HStack(spacing: 12) {
                 Image(systemName: "waveform")
                     .font(.title2)
-                    .foregroundStyle(Theme.teal)
+                    .foregroundStyle(Theme.accent)
                     .symbolEffect(.variableColor.iterative.reversing, isActive: soundscape.isPlaying)
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Soundscape en cours").font(.headline)
@@ -167,7 +166,7 @@ struct HomeView: View {
                         model.morePath = [.calendar]
                         model.requestedTab = .more
                     } label: {
-                        Text("Voir tout").font(.caption.weight(.medium)).foregroundStyle(Theme.accentSoft)
+                        Text("Voir tout").font(.caption.weight(.medium)).foregroundStyle(Theme.accent)
                     }
                 }
                 ForEach(todayEvents.prefix(4)) { event in
@@ -175,7 +174,7 @@ struct HomeView: View {
                         if let start = event.startAt {
                             Text(start.formatted(date: .omitted, time: .shortened))
                                 .font(.caption.weight(.semibold).monospacedDigit())
-                                .foregroundStyle(Theme.accentSoft)
+                                .foregroundStyle(Theme.accent)
                                 .frame(width: 48, alignment: .leading)
                         }
                         VStack(alignment: .leading, spacing: 2) {
@@ -264,7 +263,7 @@ struct HomeView: View {
                     Button {
                         model.requestedTab = .notes
                     } label: {
-                        Text("Toutes").font(.caption.weight(.medium)).foregroundStyle(Theme.teal)
+                        Text("Toutes").font(.caption.weight(.medium)).foregroundStyle(Theme.accent)
                     }
                 }
                 ForEach(recentNotes) { note in
@@ -272,7 +271,7 @@ struct HomeView: View {
                         model.requestedTab = .notes
                     } label: {
                         HStack(spacing: 12) {
-                            Image(systemName: "note.text").foregroundStyle(Theme.teal)
+                            Image(systemName: "note.text").foregroundStyle(Theme.accent)
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(note.title.isEmpty ? "Sans titre" : note.title).font(.subheadline.weight(.medium)).lineLimit(1).foregroundStyle(.primary)
                                 if !note.plainBody.isEmpty {
@@ -296,7 +295,7 @@ struct HomeView: View {
             HStack(spacing: 14) {
                 Image(systemName: focus.phase == .focus || !focus.isActive ? "timer" : "cup.and.saucer.fill")
                     .font(.title2)
-                    .foregroundStyle(Theme.accentSoft)
+                    .foregroundStyle(Theme.accent)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(focus.isActive ? (focus.isPaused ? "Focus en pause" : "Focus en cours") : "Focus").font(.headline)
                     if focus.isActive {
@@ -323,32 +322,70 @@ struct HomeView: View {
     }
 
     private var header: some View {
-        HStack(spacing: 14) {
-            AvatarView(url: auth.user?.avatarURL, name: auth.user?.displayName ?? "E", size: 52, status: .online)
-            VStack(alignment: .leading, spacing: 2) {
-                Text(greeting).font(.title3.weight(.semibold))
-                Text(auth.user?.email ?? "").font(.footnote).foregroundStyle(.secondary)
+        VStack(alignment: .leading, spacing: 14) {
+            HStack(alignment: .center) {
+                Text(Date.now.formatted(.dateTime.weekday(.wide).day().month(.wide)).capitalized)
+                    .font(.subheadline.weight(.medium))
+                    .foregroundStyle(.secondary)
+                Spacer()
+                Button {
+                    model.morePath = [.profile]
+                    model.requestedTab = .more
+                } label: {
+                    AvatarView(url: auth.user?.avatarURL, name: auth.user?.displayName ?? "E", size: 40, status: .online)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Profil")
             }
-            Spacer()
+            AccentRule()
+            EthoneHeadline(first: "\(salutation),", second: auth.user?.displayName ?? "")
         }
-        .padding(.top, 4)
+        .padding(.top, 12)
     }
 
-    private var greeting: String {
+    private var salutation: String {
         let hour = Calendar.current.component(.hour, from: Date())
-        let salutation = hour < 6 ? "Bonne nuit" : hour < 18 ? "Bonjour" : "Bonsoir"
-        return "\(salutation), \(auth.user?.displayName ?? "")"
+        return hour < 6 ? "Bonne nuit" : hour < 18 ? "Bonjour" : "Bonsoir"
     }
 
-    private func stat(value: String, label: String, systemImage: String, tint: Color) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Image(systemName: systemImage).font(.title3).foregroundStyle(tint)
-            Text(value).font(.system(size: 28, weight: .bold, design: .rounded)).contentTransition(.numericText())
-            Text(label).font(.footnote).foregroundStyle(.secondary)
+    /// The day at a glance as one connected strip, numbers first, hairlines between.
+    private var statsPanel: some View {
+        HStack(spacing: 0) {
+            stat(value: "\(openTasks.count)", label: "Tâches") { model.requestedTab = .tasks }
+            Divider().frame(height: 40)
+            stat(value: "\(model.notes.items.count)", label: "Notes") { model.requestedTab = .notes }
+            Divider().frame(height: 40)
+            stat(value: "\(doneToday)/\(model.habits.activeHabits.count)", label: "Habitudes") {
+                model.morePath = [.habits]
+                model.requestedTab = .more
+            }
+            Divider().frame(height: 40)
+            stat(value: "\(bestStreak) j", label: "Série") {
+                model.morePath = [.habits]
+                model.requestedTab = .more
+            }
         }
-        .padding(16)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .glassEffect(Glass.regular.tint(tint.opacity(0.18)), in: .rect(cornerRadius: Theme.cardRadius))
+        .padding(.vertical, 16)
+        .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
+    }
+
+    private func stat(value: String, label: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            VStack(spacing: 4) {
+                Text(value)
+                    .font(.title2.weight(.semibold))
+                    .tracking(-0.6)
+                    .monospacedDigit()
+                    .contentTransition(.numericText())
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+                Text(label).font(.caption).foregroundStyle(.secondary)
+            }
+            .frame(maxWidth: .infinity)
+            .contentShape(.rect)
+        }
+        .buttonStyle(.plain)
+        .accessibilityElement(children: .combine)
     }
 
     private func addQuickTask() {

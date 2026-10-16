@@ -11,7 +11,7 @@ struct FocusView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 20) {
-                    timerRing
+                    timerRing.reveal(0)
 
                     if !focus.isActive {
                         GlassCard {
@@ -53,16 +53,18 @@ struct FocusView: View {
             let remaining = focus.isActive ? focus.remaining(at: context.date) : TimeInterval(selectedPreset.work * 60)
             let progress = focus.isActive ? focus.progress(at: context.date) : 0
             ZStack {
-                Circle().stroke(Color.primary.opacity(0.10), lineWidth: 16)
+                Circle().stroke(Color.primary.opacity(0.08), lineWidth: 14)
                 Circle()
                     .trim(from: 0, to: progress)
-                    .stroke(ringColor.gradient, style: StrokeStyle(lineWidth: 16, lineCap: .round))
+                    .stroke(AngularGradient(colors: [ringColor.opacity(0.35), ringColor], center: .center, startAngle: .degrees(0), endAngle: .degrees(360 * max(progress, 0.01))), style: StrokeStyle(lineWidth: 14, lineCap: .round))
                     .rotationEffect(.degrees(-90))
+                    .shadow(color: ringColor.opacity(focus.isActive && !focus.isPaused ? 0.55 : 0), radius: 12)
                     .animation(.linear(duration: 0.4), value: progress)
                 VStack(spacing: 6) {
                     Text(FocusManager.format(remaining))
-                        .font(.system(size: 60, weight: .bold, design: .rounded).monospacedDigit())
-                        .contentTransition(.numericText())
+                        .font(.system(size: 64, weight: .semibold).monospacedDigit())
+                        .tracking(-2)
+                        .contentTransition(.numericText(countsDown: true))
                     Text(phaseTitle).font(.subheadline.weight(.medium)).foregroundStyle(.secondary)
                 }
             }
@@ -91,8 +93,8 @@ struct FocusView: View {
 
     private var presetPicker: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Préréglage").sectionTitle().padding(.leading, 4)
-            ScrollView(.horizontal, showsIndicators: false) {
+            Text("Durée").sectionTitle().padding(.leading, 4)
+            ScrollView(.horizontal) {
                 GlassEffectContainer(spacing: 10) {
                     HStack(spacing: 10) {
                         ForEach(FocusPreset.allCases) { preset in
@@ -112,6 +114,13 @@ struct FocusView: View {
                     .padding(.horizontal, 2)
                 }
             }
+            .scrollIndicators(.hidden)
+            .contentMargins(.horizontal, 16, for: .scrollContent)
+            .padding(.horizontal, -16)
+            .mask {
+                LinearGradient(stops: [.init(color: .clear, location: 0), .init(color: .black, location: 0.04), .init(color: .black, location: 0.9), .init(color: .clear, location: 1)], startPoint: .leading, endPoint: .trailing)
+            }
+            .sensoryFeedback(.selection, trigger: selectedPreset)
         }
     }
 
@@ -153,23 +162,26 @@ struct FocusView: View {
     }
 
     private var todayCard: some View {
-        GlassEffectContainer(spacing: 14) {
-            HStack(spacing: 14) {
-                statTile(value: "\(focus.sessionsToday)", label: "Sessions aujourd'hui", systemImage: "checkmark.seal.fill", tint: Theme.success)
-                statTile(value: "\(focus.minutesToday) min", label: "Concentration", systemImage: "hourglass", tint: Theme.accent)
-            }
+        HStack(spacing: 0) {
+            statTile(value: "\(focus.sessionsToday)", label: "Sessions aujourd'hui")
+            Divider().frame(height: 40)
+            statTile(value: "\(focus.minutesToday) min", label: "Concentration")
         }
+        .padding(.vertical, 16)
+        .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
     }
 
-    private func statTile(value: String, label: String, systemImage: String, tint: Color) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Image(systemName: systemImage).font(.title3).foregroundStyle(tint)
-            Text(value).font(.system(size: 26, weight: .bold, design: .rounded))
-            Text(label).font(.footnote).foregroundStyle(.secondary)
+    private func statTile(value: String, label: String) -> some View {
+        VStack(spacing: 4) {
+            Text(value)
+                .font(.title2.weight(.semibold))
+                .tracking(-0.6)
+                .monospacedDigit()
+                .contentTransition(.numericText())
+            Text(label).font(.caption).foregroundStyle(.secondary)
         }
-        .padding(16)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .glassEffect(Glass.regular.tint(tint.opacity(0.15)), in: .rect(cornerRadius: Theme.cardRadius))
+        .frame(maxWidth: .infinity)
+        .accessibilityElement(children: .combine)
     }
 
     private var historyCard: some View {

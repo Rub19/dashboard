@@ -57755,6 +57755,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_122_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_122_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_122_de);
 
+const v1_75_123_fr: ChangelogEntry = {
+  version: "v1.75.123",
+  date: "2026-10-16",
+  title: "Fils de signalement archivés à la clôture",
+  items: [
+    "Quand un signalement est résolu ou refusé (dashboard ou boutons Discord), son fil est archivé au lieu de rester ouvert dans le salon de l'équipe.",
+  ],
+};
+
+const v1_75_123_en: ChangelogEntry = {
+  version: "v1.75.123",
+  date: "2026-10-16",
+  title: "Report threads archived on close",
+  items: [
+    "When a report is resolved or dismissed (dashboard or Discord buttons), its thread is archived instead of staying open in the staff channel.",
+  ],
+};
+
+const v1_75_123_es: ChangelogEntry = {
+  version: "v1.75.123",
+  date: "2026-10-16",
+  title: "Hilos de reporte archivados al cerrar",
+  items: [
+    "Cuando un reporte se resuelve o se rechaza (panel o botones de Discord), su hilo se archiva en lugar de quedar abierto en el canal del equipo.",
+  ],
+};
+
+const v1_75_123_de: ChangelogEntry = {
+  version: "v1.75.123",
+  date: "2026-10-16",
+  title: "Meldungs-Threads beim Schließen archiviert",
+  items: [
+    "Wird eine Meldung erledigt oder abgelehnt (Dashboard oder Discord-Buttons), wird ihr Thread archiviert, statt im Team-Kanal offen zu bleiben.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_123_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_123_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_123_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_123_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

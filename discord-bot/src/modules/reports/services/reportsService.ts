@@ -204,6 +204,11 @@ class ReportsService {
           .catch(() => null);
       }
     }
+    const posted = reports[0] ? reportsStorage.getThread(guild.id, reports[0].reportedUserId) : undefined;
+    if (conf.threadPerReport && posted) {
+      const thread = await guild.channels.fetch(posted.messageId).catch(() => null);
+      if (thread?.isThread()) await thread.setArchived(true, `Signalement ${label}`).catch(() => null);
+    }
   }
 
   /** Publie ou met à jour le message de l'équipe. `isNew` : mentionne le rôle de l'équipe si le réglage est activé. */

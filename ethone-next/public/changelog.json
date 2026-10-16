@@ -1,5 +1,13 @@
 [
   {
+    "version": "v1.75.123",
+    "date": "2026-10-16",
+    "title": "Fils de signalement archivés à la clôture",
+    "items": [
+      "Quand un signalement est résolu ou refusé (dashboard ou boutons Discord), son fil est archivé au lieu de rester ouvert dans le salon de l'équipe."
+    ]
+  },
+  {
     "version": "v1.75.122",
     "date": "2026-10-16",
     "title": "/report ouvert à tous les membres",
@@ -605,15 +613,6 @@
       "Console Discord : chaque page de module affiche ses blocs en onglets sur téléphone ; la page Protections s'ouvre en liste puis en détail avec un bouton retour.",
       "Réglages, Profil, Habitudes, Tâches et Agenda : en-têtes et indicateurs compactés pour voir l'essentiel sans défiler.",
       "Le bouton « Retour à ETHONE » de la console devient une simple icône sur téléphone."
-    ]
-  },
-  {
-    "version": "v1.68.1",
-    "date": "2026-10-10",
-    "title": "Connexion stable sur mobile",
-    "items": [
-      "Page de connexion : plus de tremblement sur téléphone (le fond ne suit plus le doigt, animations coûteuses coupées sur écran tactile).",
-      "Connexion plus compacte sur mobile : tout le formulaire et les connexions Google, GitHub et Discord tiennent à l'écran."
     ]
   }
 ]

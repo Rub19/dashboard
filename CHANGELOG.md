@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.123 — 2026-10-16
+
+**Fils de signalement archivés à la clôture**
+
+- Quand un signalement est résolu ou refusé (dashboard ou boutons Discord), son fil est archivé au lieu de rester ouvert dans le salon de l'équipe.
+
 ## v1.75.122 — 2026-10-16
 
 **/report ouvert à tous les membres**

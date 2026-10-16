@@ -57673,6 +57673,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_120_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_120_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_120_de);
 
+const v1_75_121_fr: ChangelogEntry = {
+  version: "v1.75.121",
+  date: "2026-10-16",
+  title: "Activer une fonction active aussi son module",
+  items: [
+    "Activer la bienvenue, les départs, les rôles automatiques ou les signalements depuis leur page allume aussi le module : le réglage ne reste plus sans effet quand le module était coupé.",
+  ],
+};
+
+const v1_75_121_en: ChangelogEntry = {
+  version: "v1.75.121",
+  date: "2026-10-16",
+  title: "Turning on a feature turns on its module",
+  items: [
+    "Turning on welcome, goodbye, auto roles or reports from their page now also turns on the module, so the setting no longer does nothing when the module was off.",
+  ],
+};
+
+const v1_75_121_es: ChangelogEntry = {
+  version: "v1.75.121",
+  date: "2026-10-16",
+  title: "Activar una función activa también su módulo",
+  items: [
+    "Activar la bienvenida, las despedidas, los roles automáticos o los reportes desde su página también enciende el módulo: el ajuste ya no queda sin efecto si el módulo estaba apagado.",
+  ],
+};
+
+const v1_75_121_de: ChangelogEntry = {
+  version: "v1.75.121",
+  date: "2026-10-16",
+  title: "Eine Funktion einschalten schaltet auch ihr Modul ein",
+  items: [
+    "Wer Willkommen, Abschied, Auto-Rollen oder Meldungen auf ihrer Seite einschaltet, schaltet jetzt auch das Modul ein: Die Einstellung bleibt nicht mehr wirkungslos, wenn das Modul aus war.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_121_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_121_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_121_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_121_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.121 — 2026-10-16
+
+**Activer une fonction active aussi son module**
+
+- Activer la bienvenue, les départs, les rôles automatiques ou les signalements depuis leur page allume aussi le module : le réglage ne reste plus sans effet quand le module était coupé.
+
 ## v1.75.120 — 2026-10-16
 
 **Messages de sanction personnalisables et pages rangées**

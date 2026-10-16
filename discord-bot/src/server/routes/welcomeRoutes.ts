@@ -1,5 +1,6 @@
 import express, { Request, Response } from 'express';
 import { ChannelType, Client, PermissionFlagsBits } from 'discord.js';
+import { enableForUse } from '../../services/moduleRegistry.js';
 import { welcomeService } from '../../modules/welcome/services/welcomeService.js';
 import { welcomeRepository } from '../../modules/welcome/storage/welcomeRepository.js';
 import { PREBUILT_TEMPLATES } from '../../modules/welcome/types/templates.js';
@@ -42,6 +43,7 @@ export function createWelcomeRouter(discordClient: Client) {
     const guildId = String(req.params.guildId);
     try {
       const updated = welcomeService.updateConfig(guildId, req.body);
+      if (updated.welcome?.enabled || updated.goodbye?.enabled || updated.welcome?.dm?.enabled) enableForUse(guildId, 'welcome', req.user?.id);
       res.json({ success: true, config: updated });
     } catch (err: any) {
       handleClientError(err, res, 'Données invalides');

@@ -1,5 +1,6 @@
 import express, { Request, Response } from 'express';
 import { Client } from 'discord.js';
+import { enableForUse } from '../../services/moduleRegistry.js';
 import { autoRoleService } from '../../modules/roles/services/autoRoleService.js';
 import { rolePanelService } from '../../modules/roles/services/rolePanelService.js';
 import { RolePermissionService } from '../../modules/roles/services/rolePermissionService.js';
@@ -46,6 +47,7 @@ export function createRoleRouter(discordClient: Client) {
       const guildId = String(req.params.guildId);
       try {
         const updated = autoRoleService.updateConfig(guildId, req.body);
+        if (updated.enabled || updated.temp?.enabled || updated.voice?.enabled) enableForUse(guildId, 'roles', req.user?.id);
         emitConfigUpdated('autorole', guildId, updated, 'DASHBOARD', req.user?.id);
         res.json({ success: true, config: updated });
       } catch (err: any) {

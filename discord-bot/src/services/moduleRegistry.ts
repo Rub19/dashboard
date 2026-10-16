@@ -366,6 +366,11 @@ export function isModuleEnabled(guildId: string, moduleId: string): boolean {
   return true;
 }
 
+/** Allume le module d'une fonction qu'une page vient d'activer, sinon le réglage resterait sans effet. */
+export function enableForUse(guildId: string, moduleId: string, userId?: string): void {
+  if (!isModuleEnabled(guildId, moduleId)) setModuleEnabled(guildId, moduleId, true, 'DASHBOARD', userId);
+}
+
 /** Active ou désactive un module. Renvoie false si l'identifiant est inconnu. */
 export function setModuleEnabled(guildId: string, moduleId: string, enabled: boolean, source: 'DASHBOARD' | 'DISCORD_COMMAND' = 'DASHBOARD', userId?: string, emit = true): boolean {
   const def = BY_ID.get(moduleId);

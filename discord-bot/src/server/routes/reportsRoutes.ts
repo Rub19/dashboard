@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import { Client } from 'discord.js';
 import { z } from 'zod';
+import { enableForUse } from '../../services/moduleRegistry.js';
 import { reportsStorage } from '../../modules/reports/storage/reportsStorage.js';
 import { reportsService } from '../../modules/reports/services/reportsService.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
@@ -59,6 +60,7 @@ export function createReportSystemRouter(client: Client) {
       return;
     }
     const updated = reportsStorage.updateConfig(guildId, parsed.data);
+    if (updated.enabled) enableForUse(guildId, 'reports', req.user?.id);
     emitConfigUpdated('reports', guildId, updated, 'DASHBOARD', req.user?.id);
     res.json({ success: true, config: updated });
   });

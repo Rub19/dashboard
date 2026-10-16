@@ -4,6 +4,7 @@ import { moderationRepository } from '../../moderation/storage/moderationReposit
 import { logService } from '../../logs/services/logService.js';
 import { logger } from '../../../utils/logger.js';
 import { ownerImmunityService } from '../../../services/ownerImmunityService.js';
+import { trq } from '../../../utils/tr.js';
 
 export class ServerMemberService {
   /**
@@ -137,15 +138,15 @@ export class ServerMemberService {
     const flags: string[] = [];
     let riskScore = 0;
     if (accountAgeDays < 3) {
-      flags.push('Compte créé il y a moins de 72h');
+      flags.push(trq('Compte créé il y a moins de 72h'));
       riskScore += 45;
     }
     if (!member.user.avatar) {
-      flags.push('Aucun avatar personnalisé (Avatar par défaut Discord)');
+      flags.push(trq('Aucun avatar personnalisé (Avatar par défaut Discord)'));
       riskScore += 20;
     }
     if (serverStayDays < 1) {
-      flags.push('A rejoint le serveur aujourd’hui');
+      flags.push(trq('A rejoint le serveur aujourd’hui'));
       riskScore += 15;
     }
 
@@ -225,18 +226,18 @@ export class ServerMemberService {
     actorTag: string = 'ETHONE Dashboard'
   ): Promise<{ success: boolean; message: string }> {
     const guild = client.guilds.cache.get(guildId);
-    if (!guild) return { success: false, message: 'Serveur introuvable.' };
+    if (!guild) return { success: false, message: trq('Serveur introuvable.') };
 
     const member = await guild.members.fetch(userId).catch(() => null);
     if (!member && action !== 'ban') {
-      return { success: false, message: 'Membre introuvable sur le serveur.' };
+      return { success: false, message: trq('Membre introuvable sur le serveur.') };
     }
 
     // Le Bot Owner est immunisé contre toute action punitive déclenchée depuis le Dashboard —
     // protection "god mode" globale (même logique que moderation/permissions/hierarchy.ts).
     const punitiveActions = ['timeout', 'kick', 'ban', 'voice_mute', 'voice_kick'];
     if (ownerImmunityService.isOwnerImmune(userId) && punitiveActions.includes(action)) {
-      return { success: false, message: 'Ce membre est immunisé contre toute action punitive (Bot Owner).' };
+      return { success: false, message: trq('Ce membre est immunisé contre toute action punitive (Bot Owner).') };
     }
 
     try {
@@ -252,12 +253,12 @@ export class ServerMemberService {
             target: { id: userId, type: 'USER', name: member!.user.username, tag: member!.user.tag },
             reason: payload.reason || `Timeout de ${minutes}m`,
           });
-          return { success: true, message: `Membre exclu temporairement pendant ${minutes} minutes.` };
+          return { success: true, message: trq('Membre exclu temporairement pendant {minutes} minutes.', { minutes }) };
         }
 
         case 'untimeout': {
           await member!.timeout(null, 'Annulation du timeout via Dashboard');
-          return { success: true, message: 'Exclusion temporaire levée avec succès.' };
+          return { success: true, message: trq('Exclusion temporaire levée avec succès.') };
         }
 
         case 'kick': {
@@ -270,7 +271,7 @@ export class ServerMemberService {
             target: { id: userId, type: 'USER', name: member!.user.username, tag: member!.user.tag },
             reason: payload.reason || 'Expulsé via Dashboard',
           });
-          return { success: true, message: 'Membre expulsé du serveur.' };
+          return { success: true, message: trq('Membre expulsé du serveur.') };
         }
 
         case 'ban': {
@@ -283,44 +284,44 @@ export class ServerMemberService {
             target: { id: userId, type: 'USER', name: member ? member.user.username : userId, tag: member ? member.user.tag : userId },
             reason: payload.reason || 'Banni via Dashboard',
           });
-          return { success: true, message: 'Utilisateur banni définitivement du serveur.' };
+          return { success: true, message: trq('Utilisateur banni définitivement du serveur.') };
         }
 
         case 'add_role': {
-          if (!payload.roleId) return { success: false, message: 'roleId requis.' };
+          if (!payload.roleId) return { success: false, message: trq('roleId requis.') };
           await member!.roles.add(payload.roleId);
-          return { success: true, message: 'Rôle attribué avec succès.' };
+          return { success: true, message: trq('Rôle attribué avec succès.') };
         }
 
         case 'remove_role': {
-          if (!payload.roleId) return { success: false, message: 'roleId requis.' };
+          if (!payload.roleId) return { success: false, message: trq('roleId requis.') };
           await member!.roles.remove(payload.roleId);
-          return { success: true, message: 'Rôle retiré avec succès.' };
+          return { success: true, message: trq('Rôle retiré avec succès.') };
         }
 
         case 'nickname': {
           await member!.setNickname(payload.nickname || null);
-          return { success: true, message: 'Pseudo mis à jour avec succès.' };
+          return { success: true, message: trq('Pseudo mis à jour avec succès.') };
         }
 
         case 'voice_mute': {
-          if (!member!.voice.channelId) return { success: false, message: 'Membre non connecté en vocal.' };
+          if (!member!.voice.channelId) return { success: false, message: trq('Membre non connecté en vocal.') };
           await member!.voice.setMute(payload.mute !== false);
-          return { success: true, message: 'Statut du micro mis à jour.' };
+          return { success: true, message: trq('Statut du micro mis à jour.') };
         }
 
         case 'voice_kick': {
-          if (!member!.voice.channelId) return { success: false, message: 'Membre non connecté en vocal.' };
+          if (!member!.voice.channelId) return { success: false, message: trq('Membre non connecté en vocal.') };
           await member!.voice.disconnect('Déconnecté via Dashboard');
-          return { success: true, message: 'Membre déconnecté du salon vocal.' };
+          return { success: true, message: trq('Membre déconnecté du salon vocal.') };
         }
 
         default:
-          return { success: false, message: 'Action inconnue.' };
+          return { success: false, message: trq('Action inconnue.') };
       }
     } catch (err: any) {
       logger.error(`[ServerMemberService] Erreur action ${action} sur ${userId}:`, err);
-      return { success: false, message: `Erreur Discord: ${err.message}` };
+      return { success: false, message: trq('Erreur Discord: {message}', { message: err.message }) };
     }
   }
 }

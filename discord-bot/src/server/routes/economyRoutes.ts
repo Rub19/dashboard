@@ -5,6 +5,7 @@ import { economyService } from '../../modules/economy/services/economyService.js
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { rateLimit } from '../middleware/antiAbuseMiddleware.js';
 import { handleClientError } from '../utils/routeError.js';
+import { trq } from '../../utils/tr.js';
 
 export function createEconomyRouter(discordClient: Client) {
   const router = express.Router({ mergeParams: true });
@@ -96,7 +97,7 @@ export function createEconomyRouter(discordClient: Client) {
     const guildId = String(req.params.guildId);
     const userId = req.user?.id || req.body?.userId;
     if (!userId) {
-      res.status(401).json({ error: 'Session du bot ou identifiant membre requis.' });
+      res.status(401).json({ error: trq('Session du bot ou identifiant membre requis.') });
       return;
     }
     const guild = discordClient.guilds.cache.get(guildId);
@@ -109,7 +110,7 @@ export function createEconomyRouter(discordClient: Client) {
     const result = economyService.claimDaily(guildId, userRef);
     if (!result.ok) {
       res.status(400).json({
-        error: result.reason === 'cooldown' ? 'Bonus déjà réclamé.' : 'L’économie est désactivée sur ce serveur.',
+        error: result.reason === 'cooldown' ? trq('Bonus déjà réclamé.') : trq('L’économie est désactivée sur ce serveur.'),
         reason: result.reason,
         remainingMs: result.remainingMs,
       });
@@ -123,7 +124,7 @@ export function createEconomyRouter(discordClient: Client) {
     const guildId = String(req.params.guildId);
     const userId = req.user?.id || req.body?.userId;
     if (!userId) {
-      res.status(401).json({ error: 'Session du bot ou identifiant membre requis.' });
+      res.status(401).json({ error: trq('Session du bot ou identifiant membre requis.') });
       return;
     }
     const guild = discordClient.guilds.cache.get(guildId);
@@ -136,7 +137,7 @@ export function createEconomyRouter(discordClient: Client) {
     const result = economyService.work(guildId, userRef);
     if (!result.ok) {
       res.status(400).json({
-        error: result.reason === 'cooldown' ? 'Vous avez déjà travaillé récemment.' : 'Le travail est désactivé sur ce serveur.',
+        error: result.reason === 'cooldown' ? trq('Vous avez déjà travaillé récemment.') : trq('Le travail est désactivé sur ce serveur.'),
         reason: result.reason,
         remainingMs: result.remainingMs,
       });
@@ -151,17 +152,17 @@ export function createEconomyRouter(discordClient: Client) {
     const itemId = String(req.params.itemId);
     const userId = req.user?.id;
     if (!userId) {
-      res.status(401).json({ error: 'Session du bot requise.' });
+      res.status(401).json({ error: trq('Session du bot requise.') });
       return;
     }
     const guild = discordClient.guilds.cache.get(guildId);
     if (!guild) {
-      res.status(404).json({ error: 'Serveur introuvable.' });
+      res.status(404).json({ error: trq('Serveur introuvable.') });
       return;
     }
     const member = await guild.members.fetch(userId).catch(() => null);
     if (!member) {
-      res.status(404).json({ error: 'Vous devez être membre de ce serveur pour effectuer un achat.' });
+      res.status(404).json({ error: trq('Vous devez être membre de ce serveur pour effectuer un achat.') });
       return;
     }
     const result = await economyService.purchaseRole(guildId, member, itemId);
@@ -185,7 +186,7 @@ export function createEconomyRouter(discordClient: Client) {
     const note = typeof req.body?.note === 'string' && req.body.note.trim() ? req.body.note.trim() : 'Ajustement dashboard';
 
     if (!Number.isFinite(amount) || amount === 0) {
-      res.status(400).json({ error: 'Montant invalide (doit être un entier non nul).' });
+      res.status(400).json({ error: trq('Montant invalide (doit être un entier non nul).') });
       return;
     }
 
@@ -196,7 +197,7 @@ export function createEconomyRouter(discordClient: Client) {
 
     const currentWallet = economyStorage.getWallet(guildId, userId, { username, avatarUrl });
     if (amount < 0 && currentWallet.balance + amount < 0) {
-      res.status(400).json({ error: `Solde insuffisant (solde actuel : ${currentWallet.balance}).` });
+      res.status(400).json({ error: trq('Solde insuffisant (solde actuel : {balance}).', { balance: currentWallet.balance }) });
       return;
     }
 

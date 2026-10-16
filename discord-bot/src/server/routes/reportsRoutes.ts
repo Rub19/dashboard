@@ -7,6 +7,7 @@ import { reportsService } from '../../modules/reports/services/reportsService.js
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { handleClientError } from '../utils/routeError.js';
 import { isSendableTarget } from '../../utils/channelSend.js';
+import { trq } from '../../utils/tr.js';
 
 const snowflake = z.string().regex(/^\d{5,25}$/);
 
@@ -42,21 +43,21 @@ export function createReportSystemRouter(client: Client) {
       .strict()
       .safeParse(req.body);
     if (!parsed.success) {
-      res.status(400).json({ error: 'Configuration invalide', details: parsed.error.flatten() });
+      res.status(400).json({ error: trq('Configuration invalide'), details: parsed.error.flatten() });
       return;
     }
     const guild = client.guilds.cache.get(guildId);
     // Salon et rôle doivent exister sur CE serveur : jamais un identifiant quelconque.
     if (parsed.data.channelId && !isSendableTarget(guild?.channels.cache.get(parsed.data.channelId))) {
-      res.status(400).json({ error: 'Salon introuvable sur ce serveur' });
+      res.status(400).json({ error: trq('Salon introuvable sur ce serveur') });
       return;
     }
     if ([parsed.data.staffRoleId, ...(parsed.data.moderatorRoleIds ?? []), ...(parsed.data.mentionRoleIds ?? [])].some((id) => id && !guild?.roles.cache.has(id))) {
-      res.status(400).json({ error: 'Rôle introuvable sur ce serveur' });
+      res.status(400).json({ error: trq('Rôle introuvable sur ce serveur') });
       return;
     }
     if (parsed.data.enabled && !(parsed.data.channelId ?? reportsStorage.getConfig(guildId).channelId)) {
-      res.status(400).json({ error: 'Choisissez d’abord le salon des signalements (ou utilisez l’installation en un clic).' });
+      res.status(400).json({ error: trq('Choisissez d’abord le salon des signalements (ou utilisez l’installation en un clic).') });
       return;
     }
     const updated = reportsStorage.updateConfig(guildId, parsed.data);
@@ -71,11 +72,11 @@ export function createReportSystemRouter(client: Client) {
     const guild = client.guilds.cache.get(guildId);
     const parsed = z.object({ channelId: snowflake.nullable().optional(), staffRoleId: snowflake.nullable().optional() }).strict().safeParse(req.body ?? {});
     if (!guild || !parsed.success) {
-      res.status(400).json({ error: 'Serveur ou paramètres invalides' });
+      res.status(400).json({ error: trq('Serveur ou paramètres invalides') });
       return;
     }
     if (parsed.data.staffRoleId && !guild.roles.cache.has(parsed.data.staffRoleId)) {
-      res.status(400).json({ error: 'Rôle introuvable sur ce serveur' });
+      res.status(400).json({ error: trq('Rôle introuvable sur ce serveur') });
       return;
     }
     try {

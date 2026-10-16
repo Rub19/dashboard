@@ -8,6 +8,7 @@ import { CommandActionExecutor } from '../../modules/customCommands/services/com
 import { logger } from '../../utils/logger.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { handleRouteError, handleClientError } from '../utils/routeError.js';
+import { trq } from '../../utils/tr.js';
 
 const MAX_COMMANDS_PER_GUILD = 50;
 
@@ -32,7 +33,7 @@ export function createCustomCommandRouter(client: Client) {
     const cmd = customCommandStorage.getById(id);
     // Jamais la commande d'un autre serveur, même avec son identifiant.
     if (!cmd || cmd.guildId !== String(req.params.guildId)) {
-      res.status(404).json({ error: 'Commande introuvable' });
+      res.status(404).json({ error: trq('Commande introuvable') });
       return;
     }
     res.json({ command: cmd });
@@ -44,25 +45,25 @@ export function createCustomCommandRouter(client: Client) {
     const existing = customCommandStorage.getCommands(guildId);
 
     if (existing.length >= MAX_COMMANDS_PER_GUILD) {
-      res.status(400).json({ error: `Limite de ${MAX_COMMANDS_PER_GUILD} commandes atteinte.` });
+      res.status(400).json({ error: trq('Limite de {MAX_COMMANDS_PER_GUILD} commandes atteinte.', { MAX_COMMANDS_PER_GUILD }) });
       return;
     }
 
     const { name } = req.body;
     if (!name) {
-      res.status(400).json({ error: 'Nom de commande requis' });
+      res.status(400).json({ error: trq('Nom de commande requis') });
       return;
     }
 
     const conflictBuiltin = ['help', 'ping', 'prefix', 'settings', 'ticket', 'ban', 'kick', 'warn', 'clear', 'rank', 'leaderboard', 'xp', 'giveaway', 'suggest'];
     if (conflictBuiltin.includes(name.toLowerCase())) {
-      res.status(400).json({ error: 'Ce nom est réservé par une commande système existante.' });
+      res.status(400).json({ error: trq('Ce nom est réservé par une commande système existante.') });
       return;
     }
 
     const existsAlready = customCommandStorage.getByName(guildId, name);
     if (existsAlready) {
-      res.status(409).json({ error: `Une commande nommée "${name}" existe déjà.` });
+      res.status(409).json({ error: trq('Une commande nommée "{name}" existe déjà.', { name }) });
       return;
     }
 
@@ -82,7 +83,7 @@ export function createCustomCommandRouter(client: Client) {
 
     const tpl = CUSTOM_COMMAND_TEMPLATES.find((t) => t.name === templateName);
     if (!tpl) {
-      res.status(404).json({ error: 'Template introuvable' });
+      res.status(404).json({ error: trq('Template introuvable') });
       return;
     }
 
@@ -108,7 +109,7 @@ export function createCustomCommandRouter(client: Client) {
     const existing = customCommandStorage.getById(id);
 
     if (!existing || existing.guildId !== guildId) {
-      res.status(404).json({ error: 'Commande introuvable' });
+      res.status(404).json({ error: trq('Commande introuvable') });
       return;
     }
 
@@ -128,13 +129,13 @@ export function createCustomCommandRouter(client: Client) {
     const existing = customCommandStorage.getById(id);
 
     if (!existing || existing.guildId !== guildId) {
-      res.status(404).json({ error: 'Commande introuvable' });
+      res.status(404).json({ error: trq('Commande introuvable') });
       return;
     }
 
     const dup = customCommandStorage.duplicate(id);
     if (!dup) {
-      res.status(500).json({ error: 'Erreur lors de la duplication' });
+      res.status(500).json({ error: trq('Erreur lors de la duplication') });
       return;
     }
 
@@ -149,7 +150,7 @@ export function createCustomCommandRouter(client: Client) {
     const existing = customCommandStorage.getById(id);
 
     if (!existing || existing.guildId !== guildId) {
-      res.status(404).json({ error: 'Commande introuvable' });
+      res.status(404).json({ error: trq('Commande introuvable') });
       return;
     }
 
@@ -165,7 +166,7 @@ export function createCustomCommandRouter(client: Client) {
     const existing = customCommandStorage.getById(id);
 
     if (!existing || existing.guildId !== guildId) {
-      res.status(404).json({ error: 'Commande introuvable' });
+      res.status(404).json({ error: trq('Commande introuvable') });
       return;
     }
 
@@ -180,7 +181,7 @@ export function createCustomCommandRouter(client: Client) {
     const cmd = customCommandStorage.getById(id);
 
     if (!cmd || cmd.guildId !== guildId) {
-      res.status(404).json({ error: 'Commande introuvable' });
+      res.status(404).json({ error: trq('Commande introuvable') });
       return;
     }
 

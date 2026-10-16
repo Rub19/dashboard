@@ -242,7 +242,7 @@ export const spotifyCommand: Command = {
           return;
         }
 
-        const embed = createSpotifyEmbed(track, targetUser, isPresence);
+        const embed = createSpotifyEmbed(track, targetUser, isPresence, ctx);
         if (targetUser.id === ctx.author.id && spotifyService.isConnected(ctx.author.id)) {
           const row = createSpotifyActionRow(ctx.author.id, track.isPlaying, track.isSaved);
           await ctx.reply({ embeds: [embed], components: [row] });

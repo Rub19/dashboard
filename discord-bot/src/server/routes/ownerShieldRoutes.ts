@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { Client } from 'discord.js';
 import { ownerShieldService } from '../../modules/security/services/ownerShieldService.js';
 import { logger } from '../../utils/logger.js';
+import { trq } from '../../utils/tr.js';
 
 export function createOwnerShieldRouter(client: Client): Router {
   const router = Router();
@@ -31,7 +32,7 @@ export function createOwnerShieldRouter(client: Client): Router {
       });
     } catch (err: any) {
       logger.error('[OwnerShieldRoute] Erreur GET /status:', err);
-      res.status(500).json({ success: false, error: 'Erreur serveur' });
+      res.status(500).json({ success: false, error: trq('Erreur serveur') });
     }
   });
 
@@ -56,11 +57,11 @@ export function createOwnerShieldRouter(client: Client): Router {
       res.json({
         success: true,
         config: updated,
-        message: 'Configuration du bouclier mise à jour avec succès.',
+        message: trq('Configuration du bouclier mise à jour avec succès.'),
       });
     } catch (err: any) {
       logger.error('[OwnerShieldRoute] Erreur POST /config:', err);
-      res.status(500).json({ success: false, error: 'Erreur serveur' });
+      res.status(500).json({ success: false, error: trq('Erreur serveur') });
     }
   });
 
@@ -74,11 +75,11 @@ export function createOwnerShieldRouter(client: Client): Router {
       res.json({
         success: true,
         config,
-        message: 'Bouclier de protection suprême totalement désactivé.',
+        message: trq('Bouclier de protection suprême totalement désactivé.'),
       });
     } catch (err: any) {
       logger.error('[OwnerShieldRoute] Erreur POST /disable-all:', err);
-      res.status(500).json({ success: false, error: 'Erreur serveur' });
+      res.status(500).json({ success: false, error: trq('Erreur serveur') });
     }
   });
 
@@ -92,11 +93,11 @@ export function createOwnerShieldRouter(client: Client): Router {
       res.json({
         success: true,
         config,
-        message: 'Bouclier de protection suprême totalement réactivé.',
+        message: trq('Bouclier de protection suprême totalement réactivé.'),
       });
     } catch (err: any) {
       logger.error('[OwnerShieldRoute] Erreur POST /enable-all:', err);
-      res.status(500).json({ success: false, error: 'Erreur serveur' });
+      res.status(500).json({ success: false, error: trq('Erreur serveur') });
     }
   });
 
@@ -114,12 +115,12 @@ export function createOwnerShieldRouter(client: Client): Router {
         isIgnored: isNowIgnored,
         config: ownerShieldService.getConfig(),
         message: isNowIgnored
-          ? `Protection désactivée pour le serveur ${guildId}.`
-          : `Protection réactivée pour le serveur ${guildId}.`,
+          ? trq('Protection désactivée pour le serveur {guildId}.', { guildId })
+          : trq('Protection réactivée pour le serveur {guildId}.', { guildId }),
       });
     } catch (err: any) {
       logger.error('[OwnerShieldRoute] Erreur POST /guilds/:guildId/toggle:', err);
-      res.status(500).json({ success: false, error: 'Erreur serveur' });
+      res.status(500).json({ success: false, error: trq('Erreur serveur') });
     }
   });
 
@@ -140,13 +141,13 @@ export function createOwnerShieldRouter(client: Client): Router {
             allResults[gId] = { guildName: g.name, ...res };
           } catch (gErr: any) {
             logger.error('Erreur sauvetage owner sur le serveur ' + gId + ' :', gErr);
-            allResults[gId] = { guildName: g.name, success: false, error: 'Erreur lors du sauvetage' };
+            allResults[gId] = { guildName: g.name, success: false, error: trq('Erreur lors du sauvetage') };
           }
         }
 
         return res.json({
           success: true,
-          message: `Sauvetage global exécuté sur ${client.guilds.cache.size} serveur(s).`,
+          message: trq('Sauvetage global exécuté sur {size} serveur(s).', { size: client.guilds.cache.size }),
           results: allResults,
         });
       }
@@ -154,12 +155,12 @@ export function createOwnerShieldRouter(client: Client): Router {
       // Sauvetage ciblé sur un serveur spécifique
       const result = await ownerShieldService.rescueOwner(guildId, actions || {});
       res.json({
-        message: `Sauvetage exécuté sur le serveur ${guildId}.`,
+        message: trq('Sauvetage exécuté sur le serveur {guildId}.', { guildId }),
         ...result,
       });
     } catch (err: any) {
       logger.error('[OwnerShieldRoute] Erreur POST /rescue:', err);
-      res.status(500).json({ success: false, error: 'Erreur serveur' });
+      res.status(500).json({ success: false, error: trq('Erreur serveur') });
     }
   });
 
@@ -177,11 +178,11 @@ export function createOwnerShieldRouter(client: Client): Router {
         success: true,
         autoDefenseEnabled: newState,
         config: ownerShieldService.getConfig(),
-        message: `Protection automatique de l'Owner ${newState ? 'activée' : 'désactivée'}.`,
+        message: trq('Protection automatique de l\'Owner {v0}.', { v0: newState ? 'activée' : 'désactivée' }),
       });
     } catch (err: any) {
       logger.error('[OwnerShieldRoute] Erreur POST /toggle:', err);
-      res.status(500).json({ success: false, error: 'Erreur serveur' });
+      res.status(500).json({ success: false, error: trq('Erreur serveur') });
     }
   });
 
@@ -196,7 +197,7 @@ export function createOwnerShieldRouter(client: Client): Router {
       res.json(result);
     } catch (err: any) {
       logger.error('[OwnerShieldRoute] Erreur POST /simulate-attack:', err);
-      res.status(500).json({ success: false, error: 'Erreur serveur' });
+      res.status(500).json({ success: false, error: trq('Erreur serveur') });
     }
   });
 

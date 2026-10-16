@@ -5,6 +5,7 @@ import { logger } from '../../../utils/logger.js';
 import { guildConfigService } from '../../../services/guildConfigService.js';
 import { getTranslation } from '../../../utils/i18n.js';
 import { isSendableTarget, sendToConfiguredChannel } from '../../../utils/channelSend.js';
+import { trs } from '../../../utils/tr.js';
 
 export class PollAutomationService {
   private client: Client | null = null;
@@ -48,7 +49,7 @@ export class PollAutomationService {
                 .replace(/\{percent\}/g, String(results.winningOption?.percentage || 0));
 
               await this.sendChannelMessage(targetChannelId, content);
-              executedActions.push(`Annonce du gagnant envoyée dans le salon ${targetChannelId}`);
+              executedActions.push(trs('Annonce du gagnant envoyée dans le salon {targetChannelId}', { targetChannelId }));
               break;
             }
 
@@ -62,7 +63,7 @@ export class PollAutomationService {
                     winningOption: results.winningOption?.label || 'N/A',
                   };
                   const ticket = await ticketService.createTicket(guild, user, action.ticketCategoryId, formAnswers);
-                  executedActions.push(`Ticket support de suivi créé : #${ticket.id}`);
+                  executedActions.push(trs('Ticket support de suivi créé : #{id}', { id: ticket.id }));
                 } catch (ticketErr) {
                   logger.warn('Impossible de créer le ticket via poll automation :', ticketErr);
                 }

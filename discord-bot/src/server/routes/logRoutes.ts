@@ -10,6 +10,7 @@ import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { DiscordLogService } from '../../modules/logs/services/discordLogService.js';
 import { isLogCategoryKey } from '../../modules/logs/services/logCategories.js';
 import { handleClientError } from '../utils/routeError.js';
+import { trq } from '../../utils/tr.js';
 
 export function createLogRouter(discordClient: Client) {
   const router = express.Router({ mergeParams: true });
@@ -74,7 +75,7 @@ export function createLogRouter(discordClient: Client) {
     logQueue.flush();
     const investigation = InvestigationService.investigateEvent(eventId, guildId);
     if (!investigation) {
-      res.status(404).json({ error: 'Événement introuvable pour enquête' });
+      res.status(404).json({ error: trq('Événement introuvable pour enquête') });
       return;
     }
     res.json(investigation);
@@ -171,7 +172,7 @@ export function createLogRouter(discordClient: Client) {
     const guildId = String(req.params.guildId);
     const category = req.body?.category;
     if (!isLogCategoryKey(category)) {
-      res.status(400).json({ error: 'Catégorie inconnue.' });
+      res.status(400).json({ error: trq('Catégorie inconnue.') });
       return;
     }
     const result = await DiscordLogService.sendTest(guildId, category);

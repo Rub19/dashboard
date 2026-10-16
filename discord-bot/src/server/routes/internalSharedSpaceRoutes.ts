@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import { Client } from 'discord.js';
 import { SharedSpaceNotifyService, SharedSpaceNotifyPayload } from '../../modules/sharedSpaces/services/sharedSpaceNotifyService.js';
+import { trq } from '../../utils/tr.js';
 
 const SNOWFLAKE_RE = /^\d{17,20}$/;
 const KIND_RE = /^(task|event|note)$/;
@@ -41,7 +42,7 @@ export function createInternalSharedSpaceRouter(discordClient: Client) {
   router.post('/notify', async (req: Request, res: Response): Promise<void> => {
     const payload = validateNotifyPayload(req.body);
     if (!payload) {
-      res.status(400).json({ error: 'Requête invalide.' });
+      res.status(400).json({ error: trq('Requête invalide.') });
       return;
     }
 

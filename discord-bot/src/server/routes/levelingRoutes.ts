@@ -11,6 +11,7 @@ import { rateLimit } from '../middleware/antiAbuseMiddleware.js';
 import { handleClientError } from '../utils/routeError.js';
 import { RankCardStyleSchema } from '../../modules/leveling/types/levelingConfig.js';
 import { renderRankCardFor } from '../../modules/leveling/services/rankCardService.js';
+import { trq } from '../../utils/tr.js';
 
 export function createLevelingRouter(discordClient: Client) {
   const router = express.Router({ mergeParams: true });
@@ -61,7 +62,7 @@ export function createLevelingRouter(discordClient: Client) {
     const delta = Number(req.body?.delta);
 
     if (!Number.isFinite(delta) || delta === 0) {
-      res.status(400).json({ error: 'delta invalide' });
+      res.status(400).json({ error: trq('delta invalide') });
       return;
     }
 
@@ -100,7 +101,7 @@ export function createLevelingRouter(discordClient: Client) {
     const viewer = req.user?.id ? await discordClient.users.fetch(req.user.id).catch(() => null) : null;
     const user = viewer ?? discordClient.user;
     if (!guild || !user) {
-      res.status(404).json({ error: 'Serveur introuvable' });
+      res.status(404).json({ error: trq('Serveur introuvable') });
       return;
     }
     const accent = typeof req.body?.accentColor === 'string' && /^#[0-9a-fA-F]{6}$/.test(req.body.accentColor) ? req.body.accentColor : undefined;
@@ -165,11 +166,11 @@ export function createLevelingRouter(discordClient: Client) {
   const checkTarget = (guildId: string, b: z.infer<typeof BoostBody>): string | null => {
     const needsTarget = ['role', 'channel', 'category', 'member'].includes(b.targetType);
     if (!needsTarget) return null;
-    if (!b.targetId) return 'Choisissez la cible du multiplicateur.';
+    if (!b.targetId) return trq('Choisissez la cible du multiplicateur.');
     const guild = discordClient.guilds.cache.get(guildId);
-    if (b.targetType === 'role' && !guild?.roles.cache.has(b.targetId)) return 'Rôle introuvable sur ce serveur';
-    if (b.targetType === 'channel' && !guild?.channels.cache.has(b.targetId)) return 'Salon introuvable sur ce serveur';
-    if (b.targetType === 'category' && guild?.channels.cache.get(b.targetId)?.type !== 4) return 'Catégorie introuvable sur ce serveur';
+    if (b.targetType === 'role' && !guild?.roles.cache.has(b.targetId)) return trq('Rôle introuvable sur ce serveur');
+    if (b.targetType === 'channel' && !guild?.channels.cache.has(b.targetId)) return trq('Salon introuvable sur ce serveur');
+    if (b.targetType === 'category' && guild?.channels.cache.get(b.targetId)?.type !== 4) return trq('Catégorie introuvable sur ce serveur');
     return null;
   };
 
@@ -177,7 +178,7 @@ export function createLevelingRouter(discordClient: Client) {
     const guildId = String(req.params.guildId);
     const parsed = BoostBody.safeParse(req.body);
     if (!parsed.success) {
-      res.status(400).json({ error: 'Multiplicateur invalide', details: parsed.error.flatten() });
+      res.status(400).json({ error: trq('Multiplicateur invalide'), details: parsed.error.flatten() });
       return;
     }
     const problem = checkTarget(guildId, parsed.data);
@@ -186,7 +187,7 @@ export function createLevelingRouter(discordClient: Client) {
       return;
     }
     if (parsed.data.startTime && parsed.data.endTime && parsed.data.endTime <= parsed.data.startTime) {
-      res.status(400).json({ error: 'La fin doit être après le début.' });
+      res.status(400).json({ error: trq('La fin doit être après le début.') });
       return;
     }
     try {
@@ -205,7 +206,7 @@ export function createLevelingRouter(discordClient: Client) {
     const parsed = z.object({ enabled: z.boolean() }).strict().safeParse(req.body);
     const existing = levelingStorage.getBoosts(guildId).find((b) => b.id === String(req.params.boostId));
     if (!parsed.success || !existing) {
-      res.status(parsed.success ? 404 : 400).json({ error: parsed.success ? 'Multiplicateur introuvable' : 'Requête invalide' });
+      res.status(parsed.success ? 404 : 400).json({ error: parsed.success ? trq('Multiplicateur introuvable') : trq('Requête invalide') });
       return;
     }
     const saved = levelingStorage.saveBoost(guildId, { ...existing, enabled: parsed.data.enabled });
@@ -224,12 +225,12 @@ export function createLevelingRouter(discordClient: Client) {
     const channelId = String(req.query.channelId ?? '');
     const scope = req.query.scope === 'voice' ? 'voice' : 'messages';
     if (!guild || !/^\d{5,25}$/.test(userId)) {
-      res.status(400).json({ error: 'Identifiant de membre invalide' });
+      res.status(400).json({ error: trq('Identifiant de membre invalide') });
       return;
     }
     const member = await guild.members.fetch(userId).catch(() => null);
     if (!member) {
-      res.status(404).json({ error: 'Membre introuvable sur ce serveur' });
+      res.status(404).json({ error: trq('Membre introuvable sur ce serveur') });
       return;
     }
     const ch = channelId ? guild.channels.cache.get(channelId) : undefined;
@@ -260,10 +261,10 @@ export function createLevelingRouter(discordClient: Client) {
 
     if (targetUserId) {
       xpWriteBuffer.resetUser(guildId, targetUserId);
-      res.json({ success: true, message: 'Utilisateur réinitialisé' });
+      res.json({ success: true, message: trq('Utilisateur réinitialisé') });
     } else {
       xpWriteBuffer.resetGuild(guildId);
-      res.json({ success: true, message: 'Serveur réinitialisé' });
+      res.json({ success: true, message: trq('Serveur réinitialisé') });
     }
   });
 

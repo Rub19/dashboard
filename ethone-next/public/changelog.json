@@ -1,5 +1,17 @@
 [
   {
+    "version": "v1.75.128",
+    "date": "2026-10-16",
+    "title": "Traduction des réponses du bot, rôles et membres, messages de sanction",
+    "items": [
+      "Les messages d'erreur et de confirmation renvoyés par le bot au dashboard sont traduits dans la langue choisie (anglais, espagnol, allemand).",
+      "Rôles et membres : les membres de chaque rôle sensible s'affichent directement sous le rôle ; un clic sur un membre ouvre son inspection.",
+      "Les noms des permissions sensibles sont traduits.",
+      "Messages de sanction et Bienvenue : le contenu ne disparaît plus quand on change d'onglet.",
+      "Inspection d'un membre : la carte s'affiche correctement et la page défile jusqu'à elle."
+    ]
+  },
+  {
     "version": "v1.75.127",
     "date": "2026-10-16",
     "title": "La pièce du serveur partout dans Jeux et casino",
@@ -601,14 +613,6 @@
       "Mission Control est supprimé (bouton du dock, raccourci F2 et écran).",
       "Météo du dock : « Prévisions sur 5 jours » et « ressenti » s'affichent enfin en clair (au lieu des clés de traduction).",
       "Control Center : aux couleurs du thème et indique si tes réglages sont bien enregistrés sur ton compte."
-    ]
-  },
-  {
-    "version": "v1.70.2",
-    "date": "2026-10-11",
-    "title": "Mobile : Connexions compactes",
-    "items": [
-      "Connexions sur téléphone : chaque service tient sur une ligne (nom, état, bouton), l'en-tête est plus court et les blocs de présentation sont masqués."
     ]
   }
 ]

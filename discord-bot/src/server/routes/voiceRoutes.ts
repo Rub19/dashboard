@@ -10,6 +10,7 @@ import { logger } from '../../utils/logger.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { rateLimit } from '../middleware/antiAbuseMiddleware.js';
 import { handleClientError } from '../utils/routeError.js';
+import { trq } from '../../utils/tr.js';
 
 export function createVoiceRouter(client: Client): Router {
   const router = Router({ mergeParams: true });
@@ -22,7 +23,7 @@ export function createVoiceRouter(client: Client): Router {
       res.json(data);
     } catch (err: any) {
       logger.error('Erreur voice/overview :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -32,14 +33,14 @@ export function createVoiceRouter(client: Client): Router {
       const guildId = req.params.guildId as string;
       const guild = client.guilds.cache.get(guildId);
       if (!guild) {
-        return res.status(404).json({ error: 'Serveur Discord introuvable ou bot non connecté' });
+        return res.status(404).json({ error: trq('Serveur Discord introuvable ou bot non connecté') });
       }
 
       const settings = voiceRepository.getSettings(guildId);
       const targetChannelId = (req.body.channelId || settings.creationTextChannelId || settings.panelChannelId) as string;
 
       if (!targetChannelId) {
-        return res.status(400).json({ error: 'Veuillez spécifier un salon textuel pour le panneau de création.' });
+        return res.status(400).json({ error: trq('Veuillez spécifier un salon textuel pour le panneau de création.') });
       }
 
       const result = await TemporaryVoiceService.publishCreationPanel(guild, targetChannelId);
@@ -49,13 +50,13 @@ export function createVoiceRouter(client: Client): Router {
 
       res.json({
         success: true,
-        message: 'Panneau de création publié avec succès.',
+        message: trq('Panneau de création publié avec succès.'),
         channelId: targetChannelId,
         messageId: result.messageId,
       });
     } catch (err: any) {
       logger.error('Erreur voice/panel/publish :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -67,7 +68,7 @@ export function createVoiceRouter(client: Client): Router {
       res.json({ hubs });
     } catch (err: any) {
       logger.error('Erreur voice/hubs :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -80,7 +81,7 @@ export function createVoiceRouter(client: Client): Router {
   router.post('/hubs/quick', rateLimit('CONFIG', { byGuild: true, actionName: 'voice_quick_setup' }), async (req: Request, res: Response) => {
     const guildId = req.params.guildId as string;
     const guild = client.guilds.cache.get(guildId);
-    if (!guild) return res.status(404).json({ error: 'Serveur Discord introuvable ou bot non connecté' });
+    if (!guild) return res.status(404).json({ error: trq('Serveur Discord introuvable ou bot non connecté') });
     try {
       const out = await quickSetup(guild);
       emitConfigUpdated('voice', guildId, { hub: out.hub }, 'DASHBOARD', req.user?.id);
@@ -95,8 +96,8 @@ export function createVoiceRouter(client: Client): Router {
     const guildId = req.params.guildId as string;
     const guild = client.guilds.cache.get(guildId);
     const parsed = CreateHubSchema.safeParse(req.body);
-    if (!guild) return res.status(404).json({ error: 'Serveur Discord introuvable ou bot non connecté' });
-    if (!parsed.success) return res.status(400).json({ error: 'Hub invalide : un salon vocal déclencheur est requis', details: parsed.error.flatten() });
+    if (!guild) return res.status(404).json({ error: trq('Serveur Discord introuvable ou bot non connecté') });
+    if (!parsed.success) return res.status(400).json({ error: trq('Hub invalide : un salon vocal déclencheur est requis'), details: parsed.error.flatten() });
     const out = createHub(guild, parsed.data);
     if (!out.hub) return res.status(400).json({ error: out.error });
     emitConfigUpdated('voice', guildId, { hub: out.hub }, 'DASHBOARD', req.user?.id);
@@ -108,8 +109,8 @@ export function createVoiceRouter(client: Client): Router {
     const guildId = req.params.guildId as string;
     const guild = client.guilds.cache.get(guildId);
     const parsed = UpdateHubSchema.safeParse(req.body);
-    if (!guild) return res.status(404).json({ error: 'Serveur Discord introuvable ou bot non connecté' });
-    if (!parsed.success) return res.status(400).json({ error: 'Réglages du hub invalides', details: parsed.error.flatten() });
+    if (!guild) return res.status(404).json({ error: trq('Serveur Discord introuvable ou bot non connecté') });
+    if (!parsed.success) return res.status(400).json({ error: trq('Réglages du hub invalides'), details: parsed.error.flatten() });
     const out = updateHub(guild, req.params.id as string, parsed.data);
     if (!out.hub) return res.status(out.notFound ? 404 : 400).json({ error: out.error });
     emitConfigUpdated('voice', guildId, { hub: out.hub }, 'DASHBOARD', req.user?.id);
@@ -121,12 +122,12 @@ export function createVoiceRouter(client: Client): Router {
     try {
       const guildId = req.params.guildId as string;
       const deleted = voiceRepository.deleteHub(guildId, req.params.id as string);
-      if (!deleted) return res.status(404).json({ error: 'Hub introuvable' });
+      if (!deleted) return res.status(404).json({ error: trq('Hub introuvable') });
       emitConfigUpdated('voice', guildId, { hubDeleted: req.params.id }, 'DASHBOARD', req.user?.id);
       res.json({ success: true });
     } catch (err: any) {
       logger.error('Erreur suppression voice/hubs :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -138,7 +139,7 @@ export function createVoiceRouter(client: Client): Router {
       res.json({ rooms });
     } catch (err: any) {
       logger.error('Erreur voice/rooms :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -149,7 +150,7 @@ export function createVoiceRouter(client: Client): Router {
       const id = req.params.id as string;
       const room = voiceRepository.getRoomById(id);
       if (!room || room.guildId !== guildId) {
-        return res.status(404).json({ error: 'Salon introuvable' });
+        return res.status(404).json({ error: trq('Salon introuvable') });
       }
 
       const timeline = voiceRepository.getRoomTimeline(id);
@@ -162,7 +163,7 @@ export function createVoiceRouter(client: Client): Router {
       });
     } catch (err: any) {
       logger.error('Erreur voice/rooms/:id/details :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -172,10 +173,10 @@ export function createVoiceRouter(client: Client): Router {
       const guildId = req.params.guildId as string;
       const id = req.params.id as string;
       const { userId, action } = req.body;
-      if (!userId) return res.status(400).json({ error: 'userId requis' });
+      if (!userId) return res.status(400).json({ error: trq('userId requis') });
 
       const room = voiceRepository.getRoomById(id);
-      if (!room || room.guildId !== guildId) return res.status(404).json({ error: 'Salon introuvable' });
+      if (!room || room.guildId !== guildId) return res.status(404).json({ error: trq('Salon introuvable') });
 
       const guild = client.guilds.cache.get(guildId);
       const discordChannel = guild?.channels.cache.get(id) as VoiceChannel | undefined;
@@ -195,7 +196,7 @@ export function createVoiceRouter(client: Client): Router {
       res.json({ success: true, whitelist: room.allowedUserIds || room.whitelist || [] });
     } catch (err: any) {
       logger.error('Erreur voice/rooms/:id/whitelist :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -205,10 +206,10 @@ export function createVoiceRouter(client: Client): Router {
       const guildId = req.params.guildId as string;
       const id = req.params.id as string;
       const { userId, action } = req.body;
-      if (!userId) return res.status(400).json({ error: 'userId requis' });
+      if (!userId) return res.status(400).json({ error: trq('userId requis') });
 
       const room = voiceRepository.getRoomById(id);
-      if (!room || room.guildId !== guildId) return res.status(404).json({ error: 'Salon introuvable' });
+      if (!room || room.guildId !== guildId) return res.status(404).json({ error: trq('Salon introuvable') });
 
       const guild = client.guilds.cache.get(guildId);
       const discordChannel = guild?.channels.cache.get(id) as VoiceChannel | undefined;
@@ -228,7 +229,7 @@ export function createVoiceRouter(client: Client): Router {
       res.json({ success: true, banlist: room.blockedUserIds || room.banlist || [] });
     } catch (err: any) {
       logger.error('Erreur voice/rooms/:id/banlist :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -241,7 +242,7 @@ export function createVoiceRouter(client: Client): Router {
 
       const room = voiceRepository.getRoomById(roomId);
       if (!room || room.guildId !== guildId || room.status === 'DELETED') {
-        return res.status(404).json({ error: 'Salon introuvable ou déjà supprimé' });
+        return res.status(404).json({ error: trq('Salon introuvable ou déjà supprimé') });
       }
 
       const guild = client.guilds.cache.get(guildId);
@@ -249,7 +250,7 @@ export function createVoiceRouter(client: Client): Router {
 
       switch (action) {
         case 'rename': {
-          if (!value || typeof value !== 'string') return res.status(400).json({ error: 'Nouveau nom requis' });
+          if (!value || typeof value !== 'string') return res.status(400).json({ error: trq('Nouveau nom requis') });
           room.name = value.trim();
           voiceRepository.saveRoom(room);
           if (discordChannel) await discordChannel.setName(room.name).catch(() => null);
@@ -322,7 +323,7 @@ export function createVoiceRouter(client: Client): Router {
 
         case 'set_limit': {
           const lim = parseInt(value, 10);
-          if (isNaN(lim) || lim < 0 || lim > 99) return res.status(400).json({ error: 'Limite invalide' });
+          if (isNaN(lim) || lim < 0 || lim > 99) return res.status(400).json({ error: trq('Limite invalide') });
           room.userLimit = lim;
           voiceRepository.saveRoom(room);
           if (discordChannel) await discordChannel.setUserLimit(lim).catch(() => null);
@@ -338,7 +339,7 @@ export function createVoiceRouter(client: Client): Router {
         }
 
         case 'kick': {
-          if (!targetUserId) return res.status(400).json({ error: 'Membre cible requis' });
+          if (!targetUserId) return res.status(400).json({ error: trq('Membre cible requis') });
           if (discordChannel) {
             await VoicePermissionService.kickMember(discordChannel, targetUserId, 'Expulsé via le Dashboard');
           }
@@ -354,7 +355,7 @@ export function createVoiceRouter(client: Client): Router {
         }
 
         case 'mute': {
-          if (!targetUserId) return res.status(400).json({ error: 'Membre cible requis' });
+          if (!targetUserId) return res.status(400).json({ error: trq('Membre cible requis') });
           const shouldMute = value !== false;
           if (discordChannel) {
             await VoicePermissionService.muteMember(discordChannel, targetUserId, shouldMute);
@@ -372,7 +373,7 @@ export function createVoiceRouter(client: Client): Router {
         }
 
         case 'transfer': {
-          if (!targetUserId) return res.status(400).json({ error: 'Nouveau propriétaire requis' });
+          if (!targetUserId) return res.status(400).json({ error: trq('Nouveau propriétaire requis') });
           const newOwnerTag = req.body.targetUserTag || 'Nouveau Propriétaire';
           VoiceOwnershipService.transferOwnership(
             room,
@@ -390,17 +391,17 @@ export function createVoiceRouter(client: Client): Router {
           } else {
             voiceRepository.deleteRoom(roomId);
           }
-          return res.json({ success: true, message: 'Salon supprimé' });
+          return res.json({ success: true, message: trq('Salon supprimé') });
         }
 
         default:
-          return res.status(400).json({ error: 'Action inconnue' });
+          return res.status(400).json({ error: trq('Action inconnue') });
       }
 
       res.json({ success: true, room });
     } catch (err: any) {
       logger.error('Erreur room action :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -412,7 +413,7 @@ export function createVoiceRouter(client: Client): Router {
       res.json({ sessions });
     } catch (err: any) {
       logger.error('Erreur voice/sessions :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -452,7 +453,7 @@ export function createVoiceRouter(client: Client): Router {
       });
     } catch (err: any) {
       logger.error('Erreur voice/analytics :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -464,7 +465,7 @@ export function createVoiceRouter(client: Client): Router {
       res.json({ settings });
     } catch (err: any) {
       logger.error('Erreur voice/settings :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -477,7 +478,7 @@ export function createVoiceRouter(client: Client): Router {
       res.json({ settings: updated });
     } catch (err: any) {
       logger.error('Erreur update voice/settings :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -487,14 +488,14 @@ export function createVoiceRouter(client: Client): Router {
       const userId = req.params.userId as string;
       // Préférences PERSONNELLES (valables sur tous les serveurs) : seul le membre concerné peut les lire ou les changer.
       if (req.user?.id !== userId) {
-        res.status(403).json({ error: 'Tu ne peux consulter que tes propres préférences.' });
+        res.status(403).json({ error: trq('Tu ne peux consulter que tes propres préférences.') });
         return;
       }
       const prefs = voiceRepository.getUserPreferences(userId);
       res.json({ preferences: prefs || null });
     } catch (err: any) {
       logger.error('Erreur voice/preferences :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -503,7 +504,7 @@ export function createVoiceRouter(client: Client): Router {
     try {
       const userId = req.params.userId as string;
       if (req.user?.id !== userId) {
-        res.status(403).json({ error: 'Tu ne peux modifier que tes propres préférences.' });
+        res.status(403).json({ error: trq('Tu ne peux modifier que tes propres préférences.') });
         return;
       }
       // L'identifiant vient toujours de la session, jamais du corps de la requête.
@@ -514,7 +515,7 @@ export function createVoiceRouter(client: Client): Router {
       res.json({ preferences: saved });
     } catch (err: any) {
       logger.error('Erreur save voice/preferences :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 

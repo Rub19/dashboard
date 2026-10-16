@@ -7,6 +7,7 @@ import { logger } from '../../utils/logger.js';
 import { requireStringParam } from '../utils/params.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { handleRouteError } from '../utils/routeError.js';
+import { trq } from '../../utils/tr.js';
 
 const RewardSchema = z.object({
   name: z.string().max(80).optional(),
@@ -109,7 +110,7 @@ export function createInviteRouter(client: Client): Router {
       });
     } catch (err: any) {
       logger.error('Erreur invites/overview :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -130,7 +131,7 @@ export function createInviteRouter(client: Client): Router {
       res.json({ leaderboard });
     } catch (err: any) {
       logger.error('Erreur invites/leaderboard :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -159,7 +160,7 @@ export function createInviteRouter(client: Client): Router {
       });
     } catch (err: any) {
       logger.error('Erreur invites/users/:userId :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -169,7 +170,7 @@ export function createInviteRouter(client: Client): Router {
       const guildId = requireStringParam(req.params.guildId, 'guildId');
       const guild = client.guilds.cache.get(guildId);
       if (!guild) {
-        return res.status(404).json({ error: 'Serveur introuvable' });
+        return res.status(404).json({ error: trq('Serveur introuvable') });
       }
 
       const snapshots = inviteRepository.getSnapshots(guildId);
@@ -188,7 +189,7 @@ export function createInviteRouter(client: Client): Router {
       res.json({ links });
     } catch (err: any) {
       logger.error('Erreur invites/links :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 

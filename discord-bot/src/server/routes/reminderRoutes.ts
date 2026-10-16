@@ -4,6 +4,7 @@ import { reminderStorage } from '../../modules/reminders/storage/reminderStorage
 import { parseDuration, reminderService } from '../../modules/reminders/services/reminderService.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { DESTINATION_CHANNEL_TYPES } from '../../utils/channelSend.js';
+import { trq } from '../../utils/tr.js';
 
 const MAX_PER_USER = 25;
 
@@ -41,27 +42,27 @@ export function createReminderRouter(client: Client) {
     const guildId = String(req.params.guildId);
     const userId = req.user?.id;
     if (!userId) {
-      res.status(401).json({ error: 'Non authentifié' });
+      res.status(401).json({ error: trq('Non authentifié') });
       return;
     }
     const { in: durationRaw, message, channelId, recurrence } = req.body ?? {};
     const ms = typeof durationRaw === 'string' ? parseDuration(durationRaw) : null;
     if (ms === null || ms < 30_000) {
-      res.status(400).json({ error: 'Délai invalide (min 30s, ex: 10m, 2h, 1d, 1h30m).' });
+      res.status(400).json({ error: trq('Délai invalide (min 30s, ex: 10m, 2h, 1d, 1h30m).') });
       return;
     }
     if (typeof message !== 'string' || !message.trim() || message.length > 1500) {
-      res.status(400).json({ error: 'Message requis (1500 caractères max).' });
+      res.status(400).json({ error: trq('Message requis (1500 caractères max).') });
       return;
     }
     const guild = client.guilds.cache.get(guildId);
     const chan = typeof channelId === 'string' && guild?.channels.cache.get(channelId);
     if (!chan) {
-      res.status(400).json({ error: 'Salon invalide.' });
+      res.status(400).json({ error: trq('Salon invalide.') });
       return;
     }
     if (reminderStorage.listForUser(guildId, userId).length >= MAX_PER_USER) {
-      res.status(429).json({ error: `Limite de ${MAX_PER_USER} rappels en attente atteinte.` });
+      res.status(429).json({ error: trq('Limite de {MAX_PER_USER} rappels en attente atteinte.', { MAX_PER_USER }) });
       return;
     }
     const rec = recurrence === 'daily' || recurrence === 'weekly' ? recurrence : 'none';
@@ -82,7 +83,7 @@ export function createReminderRouter(client: Client) {
     const id = String(req.params.id);
     const target = reminderStorage.get(id);
     if (!target || target.guildId !== guildId) {
-      res.status(404).json({ error: 'Rappel introuvable' });
+      res.status(404).json({ error: trq('Rappel introuvable') });
       return;
     }
     const ok = await reminderService.triggerNow(id);
@@ -94,7 +95,7 @@ export function createReminderRouter(client: Client) {
     const id = String(req.params.id);
     const target = reminderStorage.get(id);
     if (!target || target.guildId !== guildId) {
-      res.status(404).json({ error: 'Rappel introuvable' });
+      res.status(404).json({ error: trq('Rappel introuvable') });
       return;
     }
     // La route est déjà réservée aux admins/gérants du serveur par

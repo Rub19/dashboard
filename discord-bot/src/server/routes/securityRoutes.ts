@@ -4,6 +4,7 @@ import { securityStorage } from '../../modules/security/storage/securityStorage.
 import { securityEngine } from '../../modules/security/services/securityEngine.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { handleRouteError, handleClientError } from '../utils/routeError.js';
+import { trq } from '../../utils/tr.js';
 
 export function createSecurityRouter(discordClient: Client) {
   const router = express.Router({ mergeParams: true });
@@ -49,7 +50,7 @@ export function createSecurityRouter(discordClient: Client) {
 
     const guild = discordClient.guilds.cache.get(guildId);
     if (!guild) {
-      res.status(404).json({ error: 'Serveur Discord introuvable.' });
+      res.status(404).json({ error: trq('Serveur Discord introuvable.') });
       return;
     }
 
@@ -66,7 +67,7 @@ export function createSecurityRouter(discordClient: Client) {
     const guildId = String(req.params.guildId);
     const guild = discordClient.guilds.cache.get(guildId);
     if (!guild) {
-      res.status(404).json({ error: 'Serveur Discord introuvable.' });
+      res.status(404).json({ error: trq('Serveur Discord introuvable.') });
       return;
     }
 
@@ -92,7 +93,7 @@ export function createSecurityRouter(discordClient: Client) {
 
     const resolved = securityStorage.resolveIncident(guildId, incidentId);
     if (!resolved) {
-      res.status(404).json({ error: 'Incident introuvable.' });
+      res.status(404).json({ error: trq('Incident introuvable.') });
       return;
     }
 

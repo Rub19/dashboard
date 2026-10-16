@@ -13,6 +13,7 @@ import { logger } from '../../utils/logger.js';
 import { handleClientError, handleRouteError } from '../utils/routeError.js';
 import { rateLimit, idempotent, guildLock } from '../middleware/antiAbuseMiddleware.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
+import { trq } from '../../utils/tr.js';
 
 export function createModerationRouter(discordClient: Client) {
   ModerationService.initialize(discordClient);
@@ -77,7 +78,7 @@ export function createModerationRouter(discordClient: Client) {
     const caseNumber = Number(req.params.caseNumber);
 
     if (isNaN(caseNumber)) {
-      res.status(400).json({ error: 'Numéro de case invalide' });
+      res.status(400).json({ error: trq('Numéro de case invalide') });
       return;
     }
 
@@ -116,12 +117,12 @@ export function createModerationRouter(discordClient: Client) {
 
       const actionValidation = CaseActionSchema.safeParse(action);
       if (!actionValidation.success) {
-        res.status(400).json({ error: 'Action disciplinaire invalide' });
+        res.status(400).json({ error: trq('Action disciplinaire invalide') });
         return;
       }
 
       if (!userId) {
-        res.status(400).json({ error: 'Identifiant utilisateur (userId) manquant' });
+        res.status(400).json({ error: trq('Identifiant utilisateur (userId) manquant') });
         return;
       }
 
@@ -167,7 +168,7 @@ export function createModerationRouter(discordClient: Client) {
     const { reason = 'Pardon / Révocation manuelle' } = req.body;
 
     if (isNaN(caseNumber)) {
-      res.status(400).json({ error: 'Numéro de case invalide' });
+      res.status(400).json({ error: trq('Numéro de case invalide') });
       return;
     }
 
@@ -248,7 +249,7 @@ export function createModerationRouter(discordClient: Client) {
     const guildId = String(req.params.guildId);
     const guild = discordClient.guilds.cache.get(guildId);
     if (!guild) {
-      res.status(404).json({ error: 'Serveur introuvable' });
+      res.status(404).json({ error: trq('Serveur introuvable') });
       return;
     }
 
@@ -272,7 +273,7 @@ export function createModerationRouter(discordClient: Client) {
     const { userId, reason } = req.body;
 
     if (!userId) {
-      res.status(400).json({ error: 'userId manquant' });
+      res.status(400).json({ error: trq('userId manquant') });
       return;
     }
 
@@ -309,7 +310,7 @@ export function createModerationRouter(discordClient: Client) {
 
     const modCase = ModerationService.getCaseByNumber(guildId, caseNumber);
     if (!modCase) {
-      res.status(404).json({ error: 'Case introuvable' });
+      res.status(404).json({ error: trq('Case introuvable') });
       return;
     }
 
@@ -338,7 +339,7 @@ export function createModerationRouter(discordClient: Client) {
 
     const modCase = ModerationService.getCaseByNumber(guildId, caseNumber);
     if (!modCase) {
-      res.status(404).json({ error: 'Case introuvable' });
+      res.status(404).json({ error: trq('Case introuvable') });
       return;
     }
 
@@ -357,13 +358,13 @@ export function createModerationRouter(discordClient: Client) {
     const { content } = req.body;
 
     if (!content || typeof content !== 'string') {
-      res.status(400).json({ error: 'Contenu de note requis' });
+      res.status(400).json({ error: trq('Contenu de note requis') });
       return;
     }
 
     const modCase = ModerationService.getCaseByNumber(guildId, caseNumber);
     if (!modCase) {
-      res.status(404).json({ error: 'Case introuvable' });
+      res.status(404).json({ error: trq('Case introuvable') });
       return;
     }
 
@@ -418,7 +419,7 @@ export function createModerationRouter(discordClient: Client) {
     const guildId = String(req.params.guildId);
     const { channelId } = req.body ?? {};
     if (channelId !== null && typeof channelId !== 'string') {
-      res.status(400).json({ error: 'channelId doit être une chaîne ou null' });
+      res.status(400).json({ error: trq('channelId doit être une chaîne ou null') });
       return;
     }
     const updated = sanctionService.updateConfig(guildId, { modLogChannelId: channelId });
@@ -435,7 +436,7 @@ export function createModerationRouter(discordClient: Client) {
     const guildId = String(req.params.guildId);
     const parsed = WarningEscalationSchema.partial().safeParse(req.body);
     if (!parsed.success) {
-      res.status(400).json({ error: 'Paramètres invalides' });
+      res.status(400).json({ error: trq('Paramètres invalides') });
       return;
     }
     const updated = sanctionService.updateConfig(guildId, { warningEscalation: parsed.data as WarningEscalation });
@@ -462,7 +463,7 @@ export function createModerationRouter(discordClient: Client) {
     const { assignedTo } = req.body;
 
     if (isNaN(caseNumber)) {
-      res.status(400).json({ error: 'Numéro de case invalide' });
+      res.status(400).json({ error: trq('Numéro de case invalide') });
       return;
     }
 
@@ -489,7 +490,7 @@ export function createModerationRouter(discordClient: Client) {
     const { relationships } = req.body;
 
     if (isNaN(caseNumber)) {
-      res.status(400).json({ error: 'Numéro de case invalide' });
+      res.status(400).json({ error: trq('Numéro de case invalide') });
       return;
     }
 
@@ -567,7 +568,7 @@ export function createModerationRouter(discordClient: Client) {
     );
 
     if (!updated) {
-      res.status(404).json({ error: 'Signalement introuvable' });
+      res.status(404).json({ error: trq('Signalement introuvable') });
       return;
     }
 
@@ -586,7 +587,7 @@ export function createModerationRouter(discordClient: Client) {
     const updated = ModerationService.assignReport(guildId, reportId, mod);
 
     if (!updated) {
-      res.status(404).json({ error: 'Signalement introuvable' });
+      res.status(404).json({ error: trq('Signalement introuvable') });
       return;
     }
 

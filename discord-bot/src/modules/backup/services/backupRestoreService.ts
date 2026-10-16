@@ -17,6 +17,7 @@ import { BackupIntegrityService } from './backupIntegrityService.js';
 import { BackupDiffService } from './backupDiffService.js';
 import { discordApiRetryManager } from '../../../services/resilience/discordApiRetryManager.js';
 import { logger } from '../../../utils/logger.js';
+import { trq } from '../../../utils/tr.js';
 
 export class BackupRestoreService {
   /**
@@ -59,7 +60,7 @@ export class BackupRestoreService {
             action: 'SKIP',
             type: 'ROLE',
             name: bRole.name,
-            reason: 'Rôle système ou géré par intégration Discord',
+            reason: trq('Rôle système ou géré par intégration Discord'),
           });
           willSkip++;
           continue;
@@ -80,7 +81,7 @@ export class BackupRestoreService {
             type: 'ROLE',
             name: bRole.name,
             targetId: existing.id,
-            details: 'Mise à jour des permissions et propriétés',
+            details: trq('Mise à jour des permissions et propriétés'),
           });
           willModify++;
         }
@@ -97,7 +98,7 @@ export class BackupRestoreService {
                 type: 'ROLE',
                 name: liveRole.name,
                 targetId: liveRole.id,
-                reason: 'Absent de la sauvegarde (Mode destructif)',
+                reason: trq('Absent de la sauvegarde (Mode destructif)'),
               });
               willDelete++;
             }
@@ -125,7 +126,7 @@ export class BackupRestoreService {
               action: 'CREATE',
               type: 'CATEGORY',
               name: bCat.name,
-              details: `Catégorie à créer à la position ${bCat.position}`,
+              details: trq('Catégorie à créer à la position {position}', { position: bCat.position }),
             });
             willCreate++;
           } else {
@@ -134,7 +135,7 @@ export class BackupRestoreService {
               type: 'CATEGORY',
               name: bCat.name,
               targetId: existing.id,
-              details: 'Synchronisation de la position et des permissions',
+              details: trq('Synchronisation de la position et des permissions'),
             });
             willModify++;
           }
@@ -155,7 +156,7 @@ export class BackupRestoreService {
               action: 'CREATE',
               type: 'CHANNEL',
               name: bChan.name,
-              details: `Type: ${bChan.typeName || bChan.type}, Catégorie: ${bChan.parentName || 'Aucune'}`,
+              details: trq('Type: {v0}, Catégorie: {v1}', { v0: bChan.typeName || bChan.type, v1: bChan.parentName || 'Aucune' }),
             });
             willCreate++;
           } else {
@@ -164,7 +165,7 @@ export class BackupRestoreService {
               type: 'CHANNEL',
               name: bChan.name,
               targetId: existing.id,
-              details: 'Synchronisation du sujet, slowmode et bitrate',
+              details: trq('Synchronisation du sujet, slowmode et bitrate'),
             });
             willModify++;
           }
@@ -185,7 +186,7 @@ export class BackupRestoreService {
                 type: 'CATEGORY',
                 name: liveChan.name,
                 targetId: liveChan.id,
-                reason: 'Catégorie absente du snapshot',
+                reason: trq('Catégorie absente du snapshot'),
               });
               willDelete++;
             }
@@ -196,7 +197,7 @@ export class BackupRestoreService {
                 type: 'CHANNEL',
                 name: liveChan.name,
                 targetId: liveChan.id,
-                reason: 'Salon absent du snapshot',
+                reason: trq('Salon absent du snapshot'),
               });
               willDelete++;
             }
@@ -212,7 +213,7 @@ export class BackupRestoreService {
         action: 'MODIFY',
         type: 'ETHONE',
         name: `${moduleCount} modules ETHONE`,
-        details: 'Restauration complète des configurations sans altérer Discord',
+        details: trq('Restauration complète des configurations sans altérer Discord'),
       });
       willModify += moduleCount;
     }
@@ -268,7 +269,7 @@ export class BackupRestoreService {
     // 2. Vérification rigoureuse d'intégrité préalable
     const validation = BackupIntegrityService.validateForRestore(backup, guildId);
     if (!validation.ready) {
-      throw new Error(`Restauration rejetée : ${validation.error}`);
+      throw new Error(trq('Restauration rejetée : {error}', { error: validation.error }));
     }
 
     const guild = client.guilds.cache.get(guildId) || null;
@@ -292,19 +293,19 @@ export class BackupRestoreService {
 
     try {
       // 3. Capture de Rollback automatique de l'état actuel du serveur
-      job.logs.push(`[${new Date().toLocaleTimeString()}] Capture automatique du Rollback snapshot...`);
+      job.logs.push(trq('[{v0}] Capture automatique du Rollback snapshot...', { v0: new Date().toLocaleTimeString() }));
       const rollbackSnapshot = await BackupCollectorService.createSnapshot({
         guild,
         guildId,
         name: `Rollback auto avant restauration de ${backup.name}`,
-        description: `Snapshot créé automatiquement avant la restauration du job ${jobId}`,
+        description: trq('Snapshot créé automatiquement avant la restauration du job {jobId}', { jobId }),
         type: 'ROLLBACK',
         isProtected: true,
         creator: { id: 'bot', tag: 'ETHONE Disaster Recovery' },
       });
       backupRepository.save(rollbackSnapshot);
       job.rollbackBackupId = rollbackSnapshot.backupId;
-      job.logs.push(`[${new Date().toLocaleTimeString()}] Rollback snapshot sécurisé : ${rollbackSnapshot.backupId}`);
+      job.logs.push(trq('[{v0}] Rollback snapshot sécurisé : {backupId}', { v0: new Date().toLocaleTimeString(), backupId: rollbackSnapshot.backupId }));
       job.progressPercent = 15;
       job.status = 'APPLYING';
       job.currentStep = 'Application des modifications...';
@@ -318,7 +319,7 @@ export class BackupRestoreService {
       // 4. Catégories (Créées en premier pour que les salons puissent référencer leur parentId)
       if (selectedComponents.includes('CATEGORIES') && guild) {
         job.currentStep = 'Restauration des catégories...';
-        job.logs.push(`[${new Date().toLocaleTimeString()}] Restauration de ${backup.data.categories.length} catégories...`);
+        job.logs.push(trq('[{v0}] Restauration de {length} catégories...', { v0: new Date().toLocaleTimeString(), length: backup.data.categories.length }));
 
         for (const bCat of backup.data.categories) {
           try {
@@ -327,7 +328,7 @@ export class BackupRestoreService {
             );
             if (existing) {
               categoryIdMapping.set(bCat.id, existing.id);
-              job.logs.push(`- Catégorie synchronisée : ${bCat.name}`);
+              job.logs.push(trq('- Catégorie synchronisée : {name}', { name: bCat.name }));
             } else {
               const created = await discordApiRetryManager.executeWithRetry(
                 () =>
@@ -335,15 +336,15 @@ export class BackupRestoreService {
                     name: bCat.name,
                     type: ChannelType.GuildCategory,
                     position: bCat.position,
-                    reason: `ETHONE Restore: ${backup.name}`,
+                    reason: trq('ETHONE Restore: {name}', { name: backup.name }),
                   }),
                 { operationName: `restore_create_category_${bCat.name}` }
               );
               categoryIdMapping.set(bCat.id, created.id);
-              job.logs.push(`- Catégorie créée : ${bCat.name}`);
+              job.logs.push(trq('- Catégorie créée : {name}', { name: bCat.name }));
             }
           } catch (err: any) {
-            job.errors.push(`Erreur catégorie ${bCat.name}: ${err.message}`);
+            job.errors.push(trq('Erreur catégorie {name}: {message}', { name: bCat.name, message: err.message }));
           }
         }
         job.progressPercent = 35;
@@ -353,7 +354,7 @@ export class BackupRestoreService {
       // 5. Application des Rôles (Créés avant les salons afin que les permissions overwrites puissent les référencer)
       if (selectedComponents.includes('ROLES') && guild) {
         job.currentStep = 'Restauration des rôles...';
-        job.logs.push(`[${new Date().toLocaleTimeString()}] Restauration de ${backup.data.roles.length} rôles...`);
+        job.logs.push(trq('[{v0}] Restauration de {length} rôles...', { v0: new Date().toLocaleTimeString(), length: backup.data.roles.length }));
 
         const botMember = guild.members.me;
         const botHighestRole = botMember?.roles.highest.position || 0;
@@ -382,10 +383,10 @@ export class BackupRestoreService {
                   { operationName: `restore_edit_role_${bRole.name}` }
                 ).catch(() => null);
                 roleIdMapping.set(bRole.id, existing.id);
-                job.logs.push(`- Rôle mis à jour : @${bRole.name}`);
+                job.logs.push(trq('- Rôle mis à jour : @{name}', { name: bRole.name }));
               } else {
                 roleIdMapping.set(bRole.id, existing.id);
-                job.logs.push(`- Rôle ignoré (hiérarchie supérieure au bot) : @${bRole.name}`);
+                job.logs.push(trq('- Rôle ignoré (hiérarchie supérieure au bot) : @{name}', { name: bRole.name }));
               }
             } else {
               const created = await discordApiRetryManager.executeWithRetry(
@@ -396,12 +397,12 @@ export class BackupRestoreService {
                     hoist: bRole.hoist,
                     mentionable: bRole.mentionable,
                     permissions: BigInt(bRole.permissions || 0),
-                    reason: `ETHONE Restore: ${backup.name}`,
+                    reason: trq('ETHONE Restore: {name}', { name: backup.name }),
                   }),
                 { operationName: `restore_create_role_${bRole.name}` }
               );
               roleIdMapping.set(bRole.id, created.id);
-              job.logs.push(`- Rôle créé : @${bRole.name}`);
+              job.logs.push(trq('- Rôle créé : @{name}', { name: bRole.name }));
             }
           } catch (err: any) {
             job.errors.push(`Erreur rôle ${bRole.name}: ${err.message}`);
@@ -451,7 +452,7 @@ export class BackupRestoreService {
               if (mappedOverwrites.length > 0 && 'permissionOverwrites' in existing) {
                 await (existing as any).permissionOverwrites.set(mappedOverwrites).catch(() => null);
               }
-              job.logs.push(`- Salon synchronisé : #${bChan.name}`);
+              job.logs.push(trq('- Salon synchronisé : #{name}', { name: bChan.name }));
             } else {
               const created = await discordApiRetryManager.executeWithRetry(
                 () =>
@@ -465,15 +466,15 @@ export class BackupRestoreService {
                     rateLimitPerUser: bChan.rateLimitPerUser,
                     bitrate: bChan.bitrate,
                     userLimit: bChan.userLimit,
-                    reason: `ETHONE Restore: ${backup.name}`,
+                    reason: trq('ETHONE Restore: {name}', { name: backup.name }),
                   }),
                 { operationName: `restore_create_channel_${bChan.name}` }
               );
               channelIdMapping.set(bChan.id, created.id);
-              job.logs.push(`- Salon créé : #${bChan.name}`);
+              job.logs.push(trq('- Salon créé : #{name}', { name: bChan.name }));
             }
           } catch (err: any) {
-            job.errors.push(`Erreur salon ${bChan.name}: ${err.message}`);
+            job.errors.push(trq('Erreur salon {name}: {message}', { name: bChan.name, message: err.message }));
           }
         }
         job.progressPercent = 75;
@@ -489,7 +490,7 @@ export class BackupRestoreService {
           channelIdMapping
         );
         this.restoreEthoneConfigs(guildId, remappedConfigs);
-        job.logs.push(`- Configurations ETHONE réappliquées (${Object.keys(remappedConfigs).length} modules remappés)`);
+        job.logs.push(trq('- Configurations ETHONE réappliquées ({length} modules remappés)', { length: Object.keys(remappedConfigs).length }));
       }
 
       // 8. Réconciliation Post-Restore & Contrôle d'intégrité réel
@@ -512,24 +513,24 @@ export class BackupRestoreService {
 
       if (remainingDivergences > 0) {
         job.logs.push(
-          `[${new Date().toLocaleTimeString()}] Réconciliation : ${remainingDivergences} divergence(s) détectée(s) après restauration.`
+          trq('[{v0}] Réconciliation : {remainingDivergences} divergence(s) détectée(s) après restauration.', { v0: new Date().toLocaleTimeString(), remainingDivergences })
         );
       } else {
         job.logs.push(
-          `[${new Date().toLocaleTimeString()}] Réconciliation parfaite : 100% de la structure Discord est alignée sur le snapshot.`
+          trq('[{v0}] Réconciliation parfaite : 100% de la structure Discord est alignée sur le snapshot.', { v0: new Date().toLocaleTimeString() })
         );
       }
 
       job.progressPercent = 100;
       job.status = job.errors.length > 0 ? 'PARTIAL' : 'COMPLETED';
       job.completedAt = new Date().toISOString();
-      job.logs.push(`[${new Date().toLocaleTimeString()}] Restauration terminée avec succès (${job.status})`);
+      job.logs.push(trq('[{v0}] Restauration terminée avec succès ({status})', { v0: new Date().toLocaleTimeString(), status: job.status }));
       backupRepository.saveJob(job);
 
       return job;
     } catch (fatalErr: any) {
       job.status = 'FAILED';
-      job.errors.push(`Erreur fatale de restauration : ${fatalErr.message}`);
+      job.errors.push(trq('Erreur fatale de restauration : {message}', { message: fatalErr.message }));
       job.completedAt = new Date().toISOString();
       backupRepository.saveJob(job);
       throw fatalErr;

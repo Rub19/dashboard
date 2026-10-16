@@ -3,6 +3,7 @@ import { Client } from 'discord.js';
 import { z } from 'zod';
 import { countingStorage } from '../../modules/counting/storage/countingStorage.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
+import { trq } from '../../utils/tr.js';
 
 /** API Dashboard du module Comptage (derrière authMiddleware + createGuildAuthMiddleware, cf. server/index.ts). */
 export function createCountingRouter(client: Client) {
@@ -40,14 +41,14 @@ export function createCountingRouter(client: Client) {
       .strict();
     const parsed = schema.safeParse(req.body);
     if (!parsed.success) {
-      res.status(400).json({ error: 'Configuration invalide', details: parsed.error.flatten() });
+      res.status(400).json({ error: trq('Configuration invalide'), details: parsed.error.flatten() });
       return;
     }
     // Le salon doit exister sur ce serveur (et être textuel) : jamais un identifiant quelconque.
     if (parsed.data.channelId) {
       const channel = client.guilds.cache.get(guildId)?.channels.cache.get(parsed.data.channelId);
       if (!channel || !channel.isTextBased()) {
-        res.status(400).json({ error: 'Salon introuvable sur ce serveur' });
+        res.status(400).json({ error: trq('Salon introuvable sur ce serveur') });
         return;
       }
     }
@@ -70,7 +71,7 @@ export function createCountingRouter(client: Client) {
     const guildId = String(req.params.guildId);
     const count = typeof req.body?.count === 'number' && Number.isInteger(req.body.count) && req.body.count >= 0 ? req.body.count : null;
     if (count === null) {
-      res.status(400).json({ error: 'Nombre entier positif requis' });
+      res.status(400).json({ error: trq('Nombre entier positif requis') });
       return;
     }
     const updated = countingStorage.setCount(guildId, count);

@@ -4,6 +4,7 @@ import { securityStorage } from '../../modules/security/storage/securityStorage.
 import { AntiNukeConfigSchema } from '../../modules/security/types/securityConfig.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { handleRouteError, handleClientError } from '../utils/routeError.js';
+import { trq } from '../../utils/tr.js';
 
 const NUKE_INCIDENT_TYPES = ['MASS_BAN', 'MASS_CHANNEL_DELETE', 'MASS_ROLE_DELETE'];
 
@@ -73,7 +74,7 @@ export function createAntiNukeRouter(_discordClient: Client) {
     const incidentId = String(req.params.incidentId);
     const resolved = securityStorage.resolveIncident(guildId, incidentId);
     if (!resolved) {
-      res.status(404).json({ error: 'Incident introuvable.' });
+      res.status(404).json({ error: trq('Incident introuvable.') });
       return;
     }
     res.json({ success: true });

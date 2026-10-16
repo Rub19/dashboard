@@ -29,18 +29,19 @@ export function buildProgressBar(progressMs: number, durationMs: number, size = 
   return `${formatMs(progressMs)} ${left}🔘${right} ${formatMs(durationMs)}`;
 }
 
-export function createSpotifyEmbed(track: SpotifyTrack, user: User, isLivePresence = false): EmbedBuilder {
+export function createSpotifyEmbed(track: SpotifyTrack, user: User, isLivePresence = false, scope?: unknown): EmbedBuilder {
+  const t = (s: string, v?: Record<string, unknown>) => trg(scope, s, v);
   const embed = new EmbedBuilder()
     .setColor(SPOTIFY_GREEN)
     .setAuthor({
-      name: `${user.username} sur Spotify`,
+      name: t('{username} sur Spotify', { username: user.username }),
       iconURL: user.displayAvatarURL(),
       url: track.url || undefined,
     })
-    .setTitle(track.name || 'Titre inconnu')
+    .setTitle(track.name || t('Titre inconnu'))
     .setURL(track.url || 'https://open.spotify.com')
     .setFooter({
-      text: isLivePresence ? 'Détecté via Discord Presence • Spotify' : 'Synchronisé via Spotify Connect • ETHONE',
+      text: t(isLivePresence ? 'Détecté via Discord Presence • Spotify' : 'Synchronisé via Spotify Connect • ETHONE'),
       iconURL: 'https://open.spotify.com/favicon.ico',
     });
 
@@ -48,10 +49,10 @@ export function createSpotifyEmbed(track: SpotifyTrack, user: User, isLivePresen
     embed.setThumbnail(track.albumArt);
   }
 
-  const artists = track.artists.length > 0 ? track.artists.join(', ') : 'Artiste inconnu';
+  const artists = track.artists.length > 0 ? track.artists.join(', ') : t('Artiste inconnu');
   const lines: string[] = [
-    `**Artiste :** ${artists}`,
-    `**Album :** ${track.album || 'Single'}`,
+    t('**Artiste :** {artists}', { artists }),
+    t('**Album :** {album}', { album: track.album || 'Single' }),
     '',
     buildProgressBar(track.progressMs, track.durationMs),
     '',
@@ -59,13 +60,13 @@ export function createSpotifyEmbed(track: SpotifyTrack, user: User, isLivePresen
 
   if (track.device) {
     const devIcon = track.device.type === 'Smartphone' ? '📱' : track.device.type === 'Computer' ? '💻' : '🔊';
-    lines.push(`${devIcon} **Appareil :** ${track.device.name} • 🔊 **${track.device.volume_percent}%**`);
+    lines.push(`${devIcon} ${t('**Appareil :** {name}', { name: track.device.name })} • 🔊 **${track.device.volume_percent}%**`);
   } else if (isLivePresence) {
-    lines.push(`🟢 **En écoute active sur Spotify**`);
+    lines.push(`🟢 ${t('**En écoute active sur Spotify**')}`);
   }
 
   if (track.isSaved) {
-    lines.push(`💚 **Ce titre fait partie de vos favoris**`);
+    lines.push(`💚 ${t('**Ce titre fait partie de vos favoris**')}`);
   }
 
   embed.setDescription(lines.join('\n'));
@@ -162,7 +163,7 @@ export async function handleSpotifyButton(interaction: any): Promise<void> {
   await new Promise((r) => setTimeout(r, 450));
   const updatedTrack = await spotifyService.getPlaybackState(targetUserId);
   if (updatedTrack) {
-    const embed = createSpotifyEmbed(updatedTrack, interaction.user);
+    const embed = createSpotifyEmbed(updatedTrack, interaction.user, false, interaction);
     const row = createSpotifyActionRow(targetUserId, updatedTrack.isPlaying, updatedTrack.isSaved);
     await interaction.editReply({ embeds: [embed], components: [row] });
   }

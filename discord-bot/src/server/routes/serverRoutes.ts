@@ -14,6 +14,7 @@ import { logger } from '../../utils/logger.js';
 import { handleRouteError } from '../utils/routeError.js';
 import { protectionLogCoverage, runSecurityScan, securityScanStore } from '../../modules/server/services/securityScanService.js';
 import { applyProtectionSetup, planProtectionSetup } from '../../modules/server/services/protectionSetupService.js';
+import { trq } from '../../utils/tr.js';
 
 export function createServerRouter(client: Client): Router {
   const router = Router({ mergeParams: true });
@@ -24,12 +25,12 @@ export function createServerRouter(client: Client): Router {
       const guildId = req.params.guildId as string;
       const data = await ServerOverviewService.getOverview(client, guildId);
       if (!data) {
-        return res.status(404).json({ error: 'Serveur introuvable.' });
+        return res.status(404).json({ error: trq('Serveur introuvable.') });
       }
       res.json(data);
     } catch (err: any) {
       logger.error('Erreur server/overview :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -40,7 +41,7 @@ export function createServerRouter(client: Client): Router {
       res.json(health);
     } catch (err: any) {
       logger.error('Erreur server/health :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -53,7 +54,7 @@ export function createServerRouter(client: Client): Router {
       res.json(results);
     } catch (err: any) {
       logger.error('Erreur server/search :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -75,7 +76,7 @@ export function createServerRouter(client: Client): Router {
       res.json(data);
     } catch (err: any) {
       logger.error('Erreur server/members :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -86,12 +87,12 @@ export function createServerRouter(client: Client): Router {
       const userId = req.params.userId as string;
       const profile = await ServerMemberService.getMemberProfile(client, guildId, userId);
       if (!profile) {
-        return res.status(404).json({ error: 'Membre introuvable.' });
+        return res.status(404).json({ error: trq('Membre introuvable.') });
       }
       res.json({ profile });
     } catch (err: any) {
       logger.error('Erreur server/members/:userId :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -110,7 +111,7 @@ export function createServerRouter(client: Client): Router {
       res.json(result);
     } catch (err: any) {
       logger.error('Erreur server/members/:userId/action :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -136,7 +137,7 @@ export function createServerRouter(client: Client): Router {
       res.status(201).json(result);
     } catch (err: any) {
       logger.error('Erreur creation server/channels :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -152,7 +153,7 @@ export function createServerRouter(client: Client): Router {
       res.json(result);
     } catch (err: any) {
       logger.error('Erreur modification server/channels/:id :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -169,7 +170,7 @@ export function createServerRouter(client: Client): Router {
       res.json(result);
     } catch (err: any) {
       logger.error('Erreur suppression server/channels/:id :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -182,7 +183,7 @@ export function createServerRouter(client: Client): Router {
       res.json({ overwrites });
     } catch (err: any) {
       logger.error('Erreur server/channels/:id/permissions :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -206,7 +207,7 @@ export function createServerRouter(client: Client): Router {
       res.json(result);
     } catch (err: any) {
       logger.error('Erreur modification permissions salon :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -218,7 +219,7 @@ export function createServerRouter(client: Client): Router {
       res.json({ roles });
     } catch (err: any) {
       logger.error('Erreur server/roles :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -233,7 +234,7 @@ export function createServerRouter(client: Client): Router {
       res.status(201).json(result);
     } catch (err: any) {
       logger.error('Erreur creation server/roles :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -249,7 +250,7 @@ export function createServerRouter(client: Client): Router {
       res.json(result);
     } catch (err: any) {
       logger.error('Erreur modification server/roles/:id :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -266,7 +267,7 @@ export function createServerRouter(client: Client): Router {
       res.json(result);
     } catch (err: any) {
       logger.error('Erreur suppression server/roles/:id :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -279,7 +280,7 @@ export function createServerRouter(client: Client): Router {
       res.json({ members });
     } catch (err: any) {
       logger.error('Erreur server/roles/:id/members :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -291,7 +292,7 @@ export function createServerRouter(client: Client): Router {
       res.json({ matrix });
     } catch (err: any) {
       logger.error('Erreur server/permissions/matrix :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -301,17 +302,17 @@ export function createServerRouter(client: Client): Router {
       const guildId = req.params.guildId as string;
       const { userId, channelId, permission } = req.body;
       if (!userId || !channelId || !permission) {
-        return res.status(400).json({ error: 'userId, channelId et permission sont requis.' });
+        return res.status(400).json({ error: trq('userId, channelId et permission sont requis.') });
       }
 
       const result = await ServerPermissionDebugger.debugPermission(client, guildId, userId, channelId, permission);
       if (!result) {
-        return res.status(404).json({ error: 'Éléments introuvables pour le diagnostic.' });
+        return res.status(404).json({ error: trq('Éléments introuvables pour le diagnostic.') });
       }
       res.json(result);
     } catch (err: any) {
       logger.error('Erreur server/permissions/debug :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -323,7 +324,7 @@ export function createServerRouter(client: Client): Router {
       res.json(data);
     } catch (err: any) {
       logger.error('Erreur server/emojis :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -338,7 +339,7 @@ export function createServerRouter(client: Client): Router {
       res.status(201).json(result);
     } catch (err: any) {
       logger.error('Erreur creation emoji :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -354,7 +355,7 @@ export function createServerRouter(client: Client): Router {
       res.json(result);
     } catch (err: any) {
       logger.error('Erreur suppression emoji :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -370,7 +371,7 @@ export function createServerRouter(client: Client): Router {
       res.json(result);
     } catch (err: any) {
       logger.error('Erreur renommage emoji :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -382,7 +383,7 @@ export function createServerRouter(client: Client): Router {
       res.json({ webhooks });
     } catch (err: any) {
       logger.error('Erreur server/webhooks :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -397,7 +398,7 @@ export function createServerRouter(client: Client): Router {
       res.status(201).json(result);
     } catch (err: any) {
       logger.error('Erreur creation webhook :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -413,7 +414,7 @@ export function createServerRouter(client: Client): Router {
       res.json(result);
     } catch (err: any) {
       logger.error('Erreur suppression webhook :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -422,11 +423,11 @@ export function createServerRouter(client: Client): Router {
     try {
       const guildId = req.params.guildId as string;
       const settings = ServerSettingsService.getSettings(client, guildId);
-      if (!settings) return res.status(404).json({ error: 'Serveur introuvable.' });
+      if (!settings) return res.status(404).json({ error: trq('Serveur introuvable.') });
       res.json({ settings });
     } catch (err: any) {
       logger.error('Erreur server/settings :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -442,20 +443,20 @@ export function createServerRouter(client: Client): Router {
       res.json(result);
     } catch (err: any) {
       logger.error('Erreur mise à jour server/settings :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
   // Scan de sécurité : lancé à la demande (et gardé), dernier résultat, réglages du scan automatique.
   router.get('/security-scan', async (req: Request, res: Response) => {
     if (req.guildAccess === 'admin') {
-      res.status(403).json({ error: 'Lecture seule : seuls le propriétaire et les owners Etho peuvent lancer un scan.', code: 'READ_ONLY' });
+      res.status(403).json({ error: trq('Lecture seule : seuls le propriétaire et les owners Etho peuvent lancer un scan.'), code: 'READ_ONLY' });
       return;
     }
     try {
       const result = await runSecurityScan(client, String(req.params.guildId));
       if (!result) {
-        res.status(404).json({ error: 'Serveur introuvable pour le bot.' });
+        res.status(404).json({ error: trq('Serveur introuvable pour le bot.') });
         return;
       }
       res.json(result);
@@ -468,16 +469,16 @@ export function createServerRouter(client: Client): Router {
   router.post('/protection-setup', async (req: Request, res: Response) => {
     const guild = client.guilds.cache.get(String(req.params.guildId));
     if (!guild) {
-      res.status(404).json({ error: 'Serveur introuvable pour le bot.' });
+      res.status(404).json({ error: trq('Serveur introuvable pour le bot.') });
       return;
     }
     const { serverType, severity, alertChannelId, overwrite, apply } = req.body ?? {};
     if (!['community', 'friends', 'large'].includes(serverType) || !['watch', 'balanced', 'strict'].includes(severity)) {
-      res.status(400).json({ error: 'Type de serveur ou sévérité invalide.' });
+      res.status(400).json({ error: trq('Type de serveur ou sévérité invalide.') });
       return;
     }
     if (alertChannelId != null && !guild.channels.cache.get(String(alertChannelId))?.isTextBased()) {
-      res.status(400).json({ error: 'Salon des alertes introuvable ou non textuel.' });
+      res.status(400).json({ error: trq('Salon des alertes introuvable ou non textuel.') });
       return;
     }
     const input = { serverType, severity, alertChannelId: alertChannelId ? String(alertChannelId) : null, overwrite: overwrite === true };
@@ -493,7 +494,7 @@ export function createServerRouter(client: Client): Router {
   router.get('/log-coverage', (req: Request, res: Response) => {
     const guild = client.guilds.cache.get(String(req.params.guildId));
     if (!guild) {
-      res.status(404).json({ error: 'Serveur introuvable pour le bot.' });
+      res.status(404).json({ error: trq('Serveur introuvable pour le bot.') });
       return;
     }
     res.json(protectionLogCoverage(guild));
@@ -517,14 +518,14 @@ export function createServerRouter(client: Client): Router {
     if (channelId === null || typeof channelId === 'string') {
       const channel = channelId ? guild?.channels.cache.get(channelId) : null;
       if (channelId && !channel?.isTextBased()) {
-        res.status(400).json({ error: 'Salon introuvable ou non textuel.' });
+        res.status(400).json({ error: trq('Salon introuvable ou non textuel.') });
         return;
       }
       patch.channelId = channelId;
     }
     const auto = securityScanStore.setAuto(guildId, patch);
     if (auto.enabled && !auto.channelId) {
-      res.status(400).json({ error: 'Choisis un salon pour le rapport.', auto });
+      res.status(400).json({ error: trq('Choisis un salon pour le rapport.'), auto });
       return;
     }
     res.json({ auto });
@@ -539,7 +540,7 @@ export function createServerRouter(client: Client): Router {
       res.json({ logs: result.entries, total: result.total });
     } catch (err: any) {
       logger.error('Erreur server/audit :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 

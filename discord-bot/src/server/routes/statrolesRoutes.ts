@@ -6,6 +6,7 @@ import { statrolesEngine, roleIssue } from '../../modules/statroles/services/sta
 import { StatroleRuleSchema, treeStats, MAX_DEPTH, MAX_NODES, Condition, StatroleRule } from '../../modules/statroles/types/statroles.js';
 import { statsStorage } from '../../modules/stats/storage/statsStorage.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
+import { trq } from '../../utils/tr.js';
 
 function countLeaves(node: Condition): number {
   return node.kind === 'group' ? node.children.reduce((n, c) => n + countLeaves(c), 0) : 1;
@@ -17,13 +18,13 @@ function validateRule(client: Client, guildId: string, body: unknown): { rule?: 
   if (!parsed.success) return { error: `Règle invalide : ${parsed.error.issues[0]?.path.join('.') || ''} ${parsed.error.issues[0]?.message ?? ''}`.trim() };
   const rule = parsed.data;
   const s = treeStats(rule.root);
-  if (s.depth > MAX_DEPTH) return { error: `Les groupes sont imbriqués sur trop de niveaux (maximum ${MAX_DEPTH}).` };
-  if (s.nodes > MAX_NODES) return { error: `Trop de conditions (maximum ${MAX_NODES}).` };
-  if (countLeaves(rule.root) === 0) return { error: 'Ajoutez au moins une condition : une règle sans condition ne correspondrait à personne.' };
+  if (s.depth > MAX_DEPTH) return { error: trq('Les groupes sont imbriqués sur trop de niveaux (maximum {MAX_DEPTH}).', { MAX_DEPTH }) };
+  if (s.nodes > MAX_NODES) return { error: trq('Trop de conditions (maximum {MAX_NODES}).', { MAX_NODES }) };
+  if (countLeaves(rule.root) === 0) return { error: trq('Ajoutez au moins une condition : une règle sans condition ne correspondrait à personne.') };
   const guild = client.guilds.cache.get(guildId);
-  if (!guild) return { error: 'Serveur introuvable' };
+  if (!guild) return { error: trq('Serveur introuvable') };
   const issue = roleIssue(guild, rule.roleId);
-  if (issue) return { error: `Ce rôle ne peut pas être attribué : ${issue}.` };
+  if (issue) return { error: trq('Ce rôle ne peut pas être attribué : {issue}.', { issue }) };
   return { rule };
 }
 
@@ -46,7 +47,7 @@ export function createStatrolesRouter(client: Client) {
     const guildId = String(req.params.guildId);
     const parsed = z.object({ enabled: z.boolean() }).strict().safeParse(req.body);
     if (!parsed.success) {
-      res.status(400).json({ error: 'Configuration invalide' });
+      res.status(400).json({ error: trq('Configuration invalide') });
       return;
     }
     const updated = statrolesStorage.updateConfig(guildId, { enabled: parsed.data.enabled });
@@ -63,7 +64,7 @@ export function createStatrolesRouter(client: Client) {
     }
     const isNew = !statrolesStorage.getConfig(guildId).rules.some((r) => r.id === v.rule!.id);
     if (isNew && statrolesStorage.getConfig(guildId).rules.length >= 25) {
-      res.status(429).json({ error: 'Limite de 25 règles atteinte.' });
+      res.status(429).json({ error: trq('Limite de 25 règles atteinte.') });
       return;
     }
     const updated = statrolesStorage.upsertRule(guildId, v.rule);
@@ -92,11 +93,11 @@ export function createStatrolesRouter(client: Client) {
   router.post('/run', async (req: Request, res: Response): Promise<void> => {
     const guild = client.guilds.cache.get(String(req.params.guildId));
     if (!guild) {
-      res.status(404).json({ error: 'Serveur introuvable' });
+      res.status(404).json({ error: trq('Serveur introuvable') });
       return;
     }
     if (!statrolesStorage.getConfig(guild.id).enabled) {
-      res.status(409).json({ error: 'Activez le module avant d’appliquer les règles.' });
+      res.status(409).json({ error: trq('Activez le module avant d’appliquer les règles.') });
       return;
     }
     res.json({ success: true, summary: await statrolesEngine.run(guild) });

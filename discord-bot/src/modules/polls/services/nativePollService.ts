@@ -5,6 +5,7 @@ import { isSendableTarget, sendToConfiguredChannel } from '../../../utils/channe
 import { logger } from '../../../utils/logger.js';
 import { isModuleEnabled } from '../../../services/moduleRegistry.js';
 import { trg } from '../../../utils/tr.js';
+import { trq } from '../../../utils/tr.js';
 
 /**
  * Sondages natifs Discord (champ `poll` d'un message). Discord gère le vote, l'affichage et la clôture ;
@@ -44,15 +45,15 @@ const SUPPORTED_TYPES = ['SINGLE_CHOICE', 'MULTIPLE_CHOICE', 'YES_NO'];
 export function nativeIncompatibilityError(o: NativeIncompatibilities): string | null {
   const bad: string[] = [];
   if (o.quorum) bad.push('le quorum');
-  if (o.secret) bad.push('le vote secret / anonyme');
-  if (o.weights) bad.push('la pondération des voix');
-  if (o.eligibility) bad.push("les conditions d'éligibilité");
-  if (o.automations) bad.push('les décisions automatiques');
-  if (o.resultsVisibility) bad.push("la visibilité personnalisée des résultats");
-  if (o.multipleQuestions) bad.push('plusieurs questions');
-  if (o.type && !SUPPORTED_TYPES.includes(o.type)) bad.push(`le mode de scrutin ${o.type}`);
+  if (o.secret) bad.push(trq('le vote secret / anonyme'));
+  if (o.weights) bad.push(trq('la pondération des voix'));
+  if (o.eligibility) bad.push(trq('les conditions d\'éligibilité'));
+  if (o.automations) bad.push(trq('les décisions automatiques'));
+  if (o.resultsVisibility) bad.push(trq('la visibilité personnalisée des résultats'));
+  if (o.multipleQuestions) bad.push(trq('plusieurs questions'));
+  if (o.type && !SUPPORTED_TYPES.includes(o.type)) bad.push(trq('le mode de scrutin {type}', { type: o.type }));
   if (!bad.length) return null;
-  return `Un sondage natif Discord ne gère pas : ${bad.join(', ')}. Désactive « natif » pour utiliser ces options, ou retire-les.`;
+  return trq('Un sondage natif Discord ne gère pas : {v0}. Désactive « natif » pour utiliser ces options, ou retire-les.', { v0: bad.join(', ') });
 }
 
 /** Emoji Unicode ou personnalisé `<:nom:id>` → format accepté par discord.js ; sinon ignoré. */
@@ -67,16 +68,16 @@ export function toPollEmoji(raw?: string): string | { id: string; name: string; 
 /** Erreur de validation en français, ou null si les paramètres sont acceptables par Discord. */
 export function validateNativeInput(i: Pick<NativePollInput, 'question' | 'answers' | 'durationHours'>): string | null {
   const q = i.question.trim();
-  if (!q) return 'La question du sondage est vide.';
-  if (q.length > 300) return 'La question d’un sondage natif est limitée à 300 caractères.';
-  if (i.answers.length < 2 || i.answers.length > NATIVE_MAX_ANSWERS) return `Un sondage natif accepte de 2 à ${NATIVE_MAX_ANSWERS} réponses.`;
+  if (!q) return trq('La question du sondage est vide.');
+  if (q.length > 300) return trq('La question d’un sondage natif est limitée à 300 caractères.');
+  if (i.answers.length < 2 || i.answers.length > NATIVE_MAX_ANSWERS) return trq('Un sondage natif accepte de 2 à {NATIVE_MAX_ANSWERS} réponses.', { NATIVE_MAX_ANSWERS });
   for (const a of i.answers) {
     const t = a.text.trim();
-    if (!t) return 'Une réponse est vide.';
-    if (t.length > 55) return `La réponse « ${t.slice(0, 20)}… » dépasse 55 caractères (limite Discord).`;
+    if (!t) return trq('Une réponse est vide.');
+    if (t.length > 55) return trq('La réponse « {v0}… » dépasse 55 caractères (limite Discord).', { v0: t.slice(0, 20) });
   }
   const d = i.durationHours ?? 24;
-  if (!Number.isFinite(d) || d < 1 || d > NATIVE_MAX_HOURS) return `La durée d’un sondage natif doit être comprise entre 1 et ${NATIVE_MAX_HOURS} heures.`;
+  if (!Number.isFinite(d) || d < 1 || d > NATIVE_MAX_HOURS) return trq('La durée d’un sondage natif doit être comprise entre 1 et {NATIVE_MAX_HOURS} heures.', { NATIVE_MAX_HOURS });
   return null;
 }
 
@@ -106,7 +107,7 @@ export class NativePollService {
     if (invalid) return { success: false, error: invalid };
 
     const channel = await client.channels.fetch(input.channelId).catch(() => null);
-    if (!channel || !isSendableTarget(channel)) return { success: false, error: 'Salon Discord invalide ou inaccessible.' };
+    if (!channel || !isSendableTarget(channel)) return { success: false, error: trq('Salon Discord invalide ou inaccessible.') };
 
     const payload = buildNativePollPayload(input);
     let msg;

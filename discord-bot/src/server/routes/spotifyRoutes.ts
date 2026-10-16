@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import { Client } from 'discord.js';
 import { spotifyService } from '../../modules/spotify/services/spotifyService.js';
+import { trq } from '../../utils/tr.js';
 
 export function createSpotifyRouter(discordClient: Client) {
   const router = express.Router({ mergeParams: true });
@@ -41,7 +42,7 @@ export function createSpotifyRouter(discordClient: Client) {
     const { action, query, seconds, percent, mode, enabled, deviceId } = req.body || {};
 
     if (!action || typeof action !== 'string') {
-      res.status(400).json({ error: 'Action manquante.' });
+      res.status(400).json({ error: trq('Action manquante.') });
       return;
     }
 
@@ -75,13 +76,13 @@ export function createSpotifyRouter(discordClient: Client) {
         break;
       case 'transfer':
         if (!deviceId) {
-          res.status(400).json({ error: 'deviceId manquant pour le transfert.' });
+          res.status(400).json({ error: trq('deviceId manquant pour le transfert.') });
           return;
         }
         result = await spotifyService.transferPlayback(userId, String(deviceId));
         break;
       default:
-        res.status(400).json({ error: `Action "${action}" non supportée.` });
+        res.status(400).json({ error: trq('Action "{action}" non supportée.', { action }) });
         return;
     }
 
@@ -151,13 +152,13 @@ export function createSpotifyRouter(discordClient: Client) {
     const guild = discordClient.guilds.cache.get(guildId);
 
     if (!guild) {
-      res.status(404).json({ error: 'Guilde introuvable.' });
+      res.status(404).json({ error: trq('Guilde introuvable.') });
       return;
     }
 
     const member = guild.members.cache.get(userId);
     if (!member) {
-      res.status(400).json({ error: 'Membre non trouvé sur le serveur.' });
+      res.status(400).json({ error: trq('Membre non trouvé sur le serveur.') });
       return;
     }
 

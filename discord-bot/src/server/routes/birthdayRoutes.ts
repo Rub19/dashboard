@@ -5,6 +5,7 @@ import { BirthdayConfigSchema } from '../../modules/birthdays/types/birthday.js'
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { DESTINATION_CHANNEL_TYPES, sendToConfiguredChannel } from '../../utils/channelSend.js';
 import { baseEmbed } from '../../utils/embeds.js';
+import { trq } from '../../utils/tr.js';
 
 /**
  * API Dashboard du module Birthdays.
@@ -31,7 +32,7 @@ export function createBirthdayRouter(client: Client) {
     });
     const parsed = allowed.safeParse(req.body);
     if (!parsed.success) {
-      res.status(400).json({ error: 'Configuration invalide', details: parsed.error.flatten() });
+      res.status(400).json({ error: trq('Configuration invalide'), details: parsed.error.flatten() });
       return;
     }
     const updated = birthdayStorage.updateConfig(guildId, parsed.data);
@@ -54,22 +55,22 @@ export function createBirthdayRouter(client: Client) {
     const guildId = String(req.params.guildId);
     const config = birthdayStorage.getConfig(guildId);
     if (!config.announceChannelId) {
-      res.status(400).json({ error: "Aucun salon d'annonce configuré" });
+      res.status(400).json({ error: trq('Aucun salon d\'annonce configuré') });
       return;
     }
     const guild = client.guilds.cache.get(guildId);
     if (!guild) {
-      res.status(404).json({ error: 'Serveur introuvable' });
+      res.status(404).json({ error: trq('Serveur introuvable') });
       return;
     }
     const channel = await client.channels.fetch(config.announceChannelId).catch(() => null);
     if (!channel || !channel.isTextBased()) {
-      res.status(400).json({ error: "Salon d'annonce introuvable ou inaccessible" });
+      res.status(400).json({ error: trq('Salon d\'annonce introuvable ou inaccessible') });
       return;
     }
     const now = new Date();
     const testEmbed = baseEmbed('default', { color: '#FF6BAA' })
-      .setTitle('🎂 [TEST] Anniversaire du jour')
+      .setTitle(trq('🎂 [TEST] Anniversaire du jour'))
       .setDescription(
         config.message
           .replaceAll('{user}', config.mentionUser && req.user?.id ? `<@${req.user.id}>` : '**Membre Test**')

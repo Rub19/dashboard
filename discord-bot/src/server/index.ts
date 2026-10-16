@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import { requestLang, translateFields } from '../utils/tr.js';
 import http from 'node:http';
 import path from 'node:path';
 import cookieParser from 'cookie-parser';
@@ -122,6 +123,13 @@ export function startWebServer(client: Client): http.Server {
     })
   );
   app.use(cookieParser());
+  app.use((req, _res, next) => requestLang.run(String(req.cookies?.ethone_lang ?? 'fr'), next));
+  app.use(/^\/api\/guilds\/[^/]+\/(security|anti-raid|invites|backups|forms|polls|statroles|server)(\/|$)/, (req, res, next) => {
+    if (req.method !== 'GET' || /config/i.test(req.originalUrl)) return next();
+    const json = res.json.bind(res);
+    res.json = (body: unknown) => json(translateFields(body));
+    next();
+  });
   // Les émojis arrivent en base64 (256 Ko max côté Discord ≈ 350 Ko encodés) : limite relevée pour cette seule route.
   const jsonDefault = express.json();
   const jsonEmoji = express.json({ limit: '600kb' });

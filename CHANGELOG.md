@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.128 — 2026-10-16
+
+**Traduction des réponses du bot, rôles et membres, messages de sanction**
+
+- Les messages d'erreur et de confirmation renvoyés par le bot au dashboard sont traduits dans la langue choisie (anglais, espagnol, allemand).
+- Rôles et membres : les membres de chaque rôle sensible s'affichent directement sous le rôle ; un clic sur un membre ouvre son inspection.
+- Les noms des permissions sensibles sont traduits.
+- Messages de sanction et Bienvenue : le contenu ne disparaît plus quand on change d'onglet.
+- Inspection d'un membre : la carte s'affiche correctement et la page défile jusqu'à elle.
+
 ## v1.75.127 — 2026-10-16
 
 **La pièce du serveur partout dans Jeux et casino**

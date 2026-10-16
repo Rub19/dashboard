@@ -12,6 +12,7 @@ import {
 import { requireStringParam } from '../utils/params.js';
 import { handleClientError, handleRouteError } from '../utils/routeError.js';
 import { logger } from '../../utils/logger.js';
+import { trq } from '../../utils/tr.js';
 
 /**
  * API Dashboard de l'AutoMod natif de Discord (règles exécutées par Discord lui-même).
@@ -49,7 +50,7 @@ export function createNativeAutomodRouter(client: Client): Router {
     try {
       const guild = guildOf(req);
       if (!guild) {
-        res.status(404).json({ success: false, error: 'Serveur introuvable : le bot n’y est pas présent.' });
+        res.status(404).json({ success: false, error: trq('Serveur introuvable : le bot n’y est pas présent.') });
         return;
       }
       res.json({ success: true, rules: await nativeAutomodService.list(guild) });
@@ -63,7 +64,7 @@ export function createNativeAutomodRouter(client: Client): Router {
     try {
       const guild = guildOf(req);
       if (!guild) {
-        res.status(404).json({ success: false, error: 'Serveur introuvable : le bot n’y est pas présent.' });
+        res.status(404).json({ success: false, error: trq('Serveur introuvable : le bot n’y est pas présent.') });
         return;
       }
       const rule = await nativeAutomodService.create(guild, req.body, reasonOf(req));
@@ -79,7 +80,7 @@ export function createNativeAutomodRouter(client: Client): Router {
     try {
       const guild = guildOf(req);
       if (!guild) {
-        res.status(404).json({ success: false, error: 'Serveur introuvable : le bot n’y est pas présent.' });
+        res.status(404).json({ success: false, error: trq('Serveur introuvable : le bot n’y est pas présent.') });
         return;
       }
       const alertChannelId = typeof req.body?.alertChannelId === 'string' && req.body.alertChannelId ? req.body.alertChannelId : undefined;
@@ -95,7 +96,7 @@ export function createNativeAutomodRouter(client: Client): Router {
     try {
       const guild = guildOf(req);
       if (!guild) {
-        res.status(404).json({ success: false, error: 'Serveur introuvable : le bot n’y est pas présent.' });
+        res.status(404).json({ success: false, error: trq('Serveur introuvable : le bot n’y est pas présent.') });
         return;
       }
       const ruleId = requireStringParam(req.params.ruleId, 'ruleId');
@@ -111,7 +112,7 @@ export function createNativeAutomodRouter(client: Client): Router {
     try {
       const guild = guildOf(req);
       if (!guild) {
-        res.status(404).json({ success: false, error: 'Serveur introuvable : le bot n’y est pas présent.' });
+        res.status(404).json({ success: false, error: trq('Serveur introuvable : le bot n’y est pas présent.') });
         return;
       }
       const ruleId = requireStringParam(req.params.ruleId, 'ruleId');
@@ -127,7 +128,7 @@ export function createNativeAutomodRouter(client: Client): Router {
     try {
       const guild = guildOf(req);
       if (!guild) {
-        res.status(404).json({ success: false, error: 'Serveur introuvable : le bot n’y est pas présent.' });
+        res.status(404).json({ success: false, error: trq('Serveur introuvable : le bot n’y est pas présent.') });
         return;
       }
       const ruleId = requireStringParam(req.params.ruleId, 'ruleId');

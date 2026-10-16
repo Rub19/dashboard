@@ -12,6 +12,7 @@ import { rateLimiterService } from '../../services/resilience/rateLimiterService
 import { guildOperationLockService } from '../../services/resilience/guildOperationLockService.js';
 import { idempotencyService } from '../../services/resilience/idempotencyService.js';
 import { handleRouteError } from '../utils/routeError.js';
+import { trq } from '../../utils/tr.js';
 
 export function createResilienceRouter(): Router {
   const router = Router();
@@ -40,7 +41,7 @@ export function createResilienceRouter(): Router {
     try {
       const { guildId } = req.body;
       if (!guildId) {
-        res.status(400).json({ success: false, error: 'guildId requis pour la réconciliation.' });
+        res.status(400).json({ success: false, error: trq('guildId requis pour la réconciliation.') });
         return;
       }
 
@@ -67,7 +68,7 @@ export function createResilienceRouter(): Router {
   router.post('/chaos/reset', (req: Request, res: Response) => {
     circuitBreakerRegistry.resetAll();
     healthStatusService.setSystemState('HEALTHY', 'All circuits reset to nominal');
-    res.json({ success: true, message: 'Circuits rétablis et santé déclarée HEALTHY.' });
+    res.json({ success: true, message: trq('Circuits rétablis et santé déclarée HEALTHY.') });
   });
 
   // 7. GET /api/resilience/rate-limits - Métriques du rate limiter

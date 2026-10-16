@@ -7,6 +7,7 @@ import { logger } from '../../utils/logger.js';
 import { requireStringParam } from '../utils/params.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { aiDailyBudget } from '../../modules/ai/services/aiDailyBudget.js';
+import { trq } from '../../utils/tr.js';
 
 const PersonalitySchema = z
   .object({
@@ -69,7 +70,7 @@ export function createAiRouter(client: Client): Router {
       res.json(overview);
     } catch (err: any) {
       logger.error('Erreur GET /ai/overview :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -81,7 +82,7 @@ export function createAiRouter(client: Client): Router {
       res.json(settings.personality);
     } catch (err: any) {
       logger.error('Erreur GET /ai/personality :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -98,7 +99,7 @@ export function createAiRouter(client: Client): Router {
       res.json(updated.personality);
     } catch (err: any) {
       logger.error('Erreur PUT /ai/personality :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -129,7 +130,7 @@ export function createAiRouter(client: Client): Router {
       res.json(BEHAVIOR_FIELDS(aiRepository.getSettings(guildId)));
     } catch (err: any) {
       logger.error('Erreur GET /ai/settings :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -166,7 +167,7 @@ export function createAiRouter(client: Client): Router {
       res.json(BEHAVIOR_FIELDS(updated));
     } catch (err: any) {
       logger.error('Erreur PUT /ai/settings :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -191,7 +192,7 @@ export function createAiRouter(client: Client): Router {
       });
     } catch (err: any) {
       logger.error('Erreur GET /ai/channels :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -200,7 +201,7 @@ export function createAiRouter(client: Client): Router {
       const guildId = requireStringParam(req.params.guildId, 'guildId');
       const parsed = ChannelRuleSchema.safeParse(req.body?.rule);
       if (!parsed.success) {
-        return res.status(400).json({ error: 'Règle de salon invalide' });
+        return res.status(400).json({ error: trq('Règle de salon invalide') });
       }
       const rule = parsed.data;
       // « INHERIT » retire la règle : le salon reprend le mode général.
@@ -222,7 +223,7 @@ export function createAiRouter(client: Client): Router {
       res.json(updated.channelRules);
     } catch (err: any) {
       logger.error('Erreur PUT /ai/channels :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -234,7 +235,7 @@ export function createAiRouter(client: Client): Router {
       res.json({ sources, total: sources.length });
     } catch (err: any) {
       logger.error('Erreur GET /ai/knowledge :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -265,7 +266,7 @@ export function createAiRouter(client: Client): Router {
       res.status(201).json(source);
     } catch (err: any) {
       logger.error('Erreur POST /ai/knowledge :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -275,12 +276,12 @@ export function createAiRouter(client: Client): Router {
       const id = requireStringParam(req.params.id, 'id');
       const success = aiRepository.deleteKnowledgeSource(guildId, id);
       if (!success) {
-        return res.status(404).json({ error: 'Source introuvable' });
+        return res.status(404).json({ error: trq('Source introuvable') });
       }
-      res.json({ success: true, message: 'Source supprimée' });
+      res.json({ success: true, message: trq('Source supprimée') });
     } catch (err: any) {
       logger.error('Erreur DELETE /ai/knowledge/:id :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -292,7 +293,7 @@ export function createAiRouter(client: Client): Router {
       res.json(settings.tools);
     } catch (err: any) {
       logger.error('Erreur GET /ai/tools :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -309,7 +310,7 @@ export function createAiRouter(client: Client): Router {
       res.json(updated.tools);
     } catch (err: any) {
       logger.error('Erreur PUT /ai/tools :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -321,7 +322,7 @@ export function createAiRouter(client: Client): Router {
       res.json(settings.memory);
     } catch (err: any) {
       logger.error('Erreur GET /ai/memory :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -333,7 +334,7 @@ export function createAiRouter(client: Client): Router {
       res.json({ success: true, removedCount: removed });
     } catch (err: any) {
       logger.error('Erreur DELETE /ai/memory/user/:userId :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -345,7 +346,7 @@ export function createAiRouter(client: Client): Router {
       res.json(analytics);
     } catch (err: any) {
       logger.error('Erreur GET /ai/analytics :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -355,13 +356,13 @@ export function createAiRouter(client: Client): Router {
       const guildId = requireStringParam(req.params.guildId, 'guildId');
       const { query } = req.body;
       if (!query || typeof query !== 'string') {
-        return res.status(400).json({ error: 'La requête est requise' });
+        return res.status(400).json({ error: trq('La requête est requise') });
       }
       const testResult = await aiService.testPlayground(guildId, query);
       res.json(testResult);
     } catch (err: any) {
       logger.error('Erreur POST /ai/test :', err);
-      res.status(500).json({ error: 'Erreur lors du test playground' });
+      res.status(500).json({ error: trq('Erreur lors du test playground') });
     }
   });
 
@@ -373,7 +374,7 @@ export function createAiRouter(client: Client): Router {
       res.json(published);
     } catch (err: any) {
       logger.error('Erreur POST /ai/publish :', err);
-      res.status(500).json({ error: 'Erreur lors de la publication' });
+      res.status(500).json({ error: trq('Erreur lors de la publication') });
     }
   });
 

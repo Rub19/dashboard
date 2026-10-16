@@ -15,6 +15,7 @@ import { rateLimit, idempotent, guildLock } from '../middleware/antiAbuseMiddlew
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { handleRouteError, handleClientError, clientErrorMessage } from '../utils/routeError.js';
 import { DESTINATION_CHANNEL_TYPES, canBotSendTo } from '../../utils/channelSend.js';
+import { trq } from '../../utils/tr.js';
 
 export function createWelcomeRouter(discordClient: Client) {
   const router = express.Router({ mergeParams: true });
@@ -75,7 +76,7 @@ export function createWelcomeRouter(discordClient: Client) {
 
     const guild = discordClient.guilds.cache.get(guildId);
     if (!guild) {
-      res.status(404).json({ error: 'Serveur Discord introuvable' });
+      res.status(404).json({ error: trq('Serveur Discord introuvable') });
       return;
     }
 
@@ -133,14 +134,14 @@ export function createWelcomeRouter(discordClient: Client) {
     const guildId = String(req.params.guildId);
     const userId = req.user?.id;
     if (!userId) {
-      res.status(401).json({ error: 'Session du bot requise.' });
+      res.status(401).json({ error: trq('Session du bot requise.') });
       return;
     }
     try {
       const guild = discordClient.guilds.cache.get(guildId);
       const member = guild ? await guild.members.fetch(userId).catch(() => null) : null;
       if (!guild || !member) {
-        res.status(404).json({ error: 'Tu dois être membre de ce serveur pour recevoir l\'aperçu.' });
+        res.status(404).json({ error: trq('Tu dois être membre de ce serveur pour recevoir l\'aperçu.') });
         return;
       }
       const flow = welcomeRepository.getOnboardingFlow(guildId);
@@ -149,14 +150,14 @@ export function createWelcomeRouter(discordClient: Client) {
         res.status(409).json({
           success: false,
           via,
-          error: 'Impossible de t\'envoyer l\'aperçu : tes messages privés sont fermés et aucun salon de secours n\'est configuré.',
+          error: trq('Impossible de t\'envoyer l\'aperçu : tes messages privés sont fermés et aucun salon de secours n\'est configuré.'),
         });
         return;
       }
       res.json({ success: true, via });
     } catch (err: any) {
       logger.error('Erreur welcome/onboarding/preview :', err);
-      res.status(500).json({ error: 'Aperçu impossible.' });
+      res.status(500).json({ error: trq('Aperçu impossible.') });
     }
   });
 
@@ -189,7 +190,7 @@ export function createWelcomeRouter(discordClient: Client) {
 
     const tpl = PREBUILT_TEMPLATES.find((t) => t.id === templateId);
     if (!tpl) {
-      res.status(404).json({ error: 'Template introuvable' });
+      res.status(404).json({ error: trq('Template introuvable') });
       return;
     }
 
@@ -304,7 +305,7 @@ export function createWelcomeRouter(discordClient: Client) {
       res.send(buffer);
     } catch (err: any) {
       logger.error('Erreur preview card :', err);
-      res.status(500).json({ error: 'Échec de la génération de l’image' });
+      res.status(500).json({ error: trq('Échec de la génération de l’image') });
     }
   });
 

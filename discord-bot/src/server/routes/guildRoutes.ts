@@ -5,6 +5,7 @@ import { statsService } from '../../services/statsService.js';
 import { authMiddleware } from '../middleware/auth.js';
 import { createGuildAuthMiddleware, fetchUserGuilds, CachedUserGuilds } from '../middleware/guildAuth.js';
 import { requireStringParam } from '../utils/params.js';
+import { trq } from '../../utils/tr.js';
 
 export function createGuildRouter(client: Client): express.Router {
   const router = express.Router();
@@ -16,7 +17,7 @@ export function createGuildRouter(client: Client): express.Router {
    */
   router.get('/', authMiddleware, async (req: Request, res: Response): Promise<void> => {
     if (!req.user) {
-      res.status(401).json({ error: 'Non authentifié' });
+      res.status(401).json({ error: trq('Non authentifié') });
       return;
     }
 
@@ -63,7 +64,7 @@ export function createGuildRouter(client: Client): express.Router {
 
       res.json({ guilds: manageableGuilds });
     } catch (err) {
-      res.status(500).json({ error: 'Impossible de récupérer la liste des serveurs' });
+      res.status(500).json({ error: trq('Impossible de récupérer la liste des serveurs') });
     }
   });
 

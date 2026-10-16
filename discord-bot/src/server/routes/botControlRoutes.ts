@@ -14,6 +14,7 @@ import { BotConfigService } from '../../modules/botControl/services/botConfigSer
 import { z } from 'zod';
 import { rateLimit, idempotent } from '../middleware/antiAbuseMiddleware.js';
 import { handleRouteError, handleClientError } from '../utils/routeError.js';
+import { trq } from '../../utils/tr.js';
 
 export function createBotControlRouter(client: Client): Router {
   const router = Router();
@@ -280,7 +281,7 @@ export function createBotControlRouter(client: Client): Router {
   // config.botOwnerId. A client-supplied header/body field must never be
   // trusted for this: it can be set to anything by the caller.
   router.post('/restart', (req: Request, res: Response) => {
-    res.json({ success: true, message: 'Bot restart scheduled in 1 second' });
+    res.json({ success: true, message: trq('Bot restart scheduled in 1 second') });
 
     setTimeout(() => {
       process.exit(0);
@@ -290,7 +291,7 @@ export function createBotControlRouter(client: Client): Router {
   // Remote Update — see /restart above for the authorization note.
   router.post('/update', (req: Request, res: Response) => {
     // Le bot ne peut pas se mettre à jour lui-même : la mise à jour se fait par git pull + pm2 restart sur le serveur.
-    res.status(501).json({ success: false, error: 'Mise à jour à distance non prise en charge : utilise git pull puis pm2 restart sur le serveur.' });
+    res.status(501).json({ success: false, error: trq('Mise à jour à distance non prise en charge : utilise git pull puis pm2 restart sur le serveur.') });
   });
 
   return router;

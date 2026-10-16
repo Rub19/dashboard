@@ -3,6 +3,7 @@ import { Client } from 'discord.js';
 import { afkStorage } from '../../modules/afk/storage/afkStorage.js';
 import { AfkConfigSchema } from '../../modules/afk/types/afk.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
+import { trq } from '../../utils/tr.js';
 
 /**
  * API Dashboard du module AFK.
@@ -24,7 +25,7 @@ export function createAfkRouter(_client: Client) {
     const allowed = AfkConfigSchema.partial().omit({ guildId: true, updatedAt: true });
     const parsed = allowed.safeParse(req.body);
     if (!parsed.success) {
-      res.status(400).json({ error: 'Configuration invalide', details: parsed.error.flatten() });
+      res.status(400).json({ error: trq('Configuration invalide'), details: parsed.error.flatten() });
       return;
     }
     const updated = afkStorage.updateConfig(guildId, parsed.data);

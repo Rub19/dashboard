@@ -12,6 +12,7 @@ import { CaptchaConfigSchema, CommandRuleSchema, SupportersConfigSchema } from '
 import { ensureCaptchaPanel, pendingCount } from '../../services/captchaService.js';
 import { supporterCount, sweepSupporters } from '../../services/supportersService.js';
 import { DEFAULT_RULE } from '../../services/commandRulesService.js';
+import { trq } from '../../utils/tr.js';
 
 /**
  * Pages « Réglages » et « Accès » de la console (format Keeper). Monté derrière createGuildAuthMiddleware :
@@ -44,7 +45,7 @@ export function createConsoleRouter(client: Client): Router {
   router.get('/access', async (req: Request, res: Response) => {
     const guild = guildOf(req);
     if (!guild) {
-      res.status(404).json({ error: 'Serveur introuvable pour le bot.' });
+      res.status(404).json({ error: trq('Serveur introuvable pour le bot.') });
       return;
     }
     try {
@@ -66,7 +67,7 @@ export function createConsoleRouter(client: Client): Router {
 
   const requireGuildOwner = (req: Request, res: Response): boolean => {
     if (req.guildAccess === 'owner') return true;
-    res.status(403).json({ error: 'Seul le propriétaire du serveur peut gérer les owners Etho.', code: 'OWNER_ONLY' });
+    res.status(403).json({ error: trq('Seul le propriétaire du serveur peut gérer les owners Etho.'), code: 'OWNER_ONLY' });
     return false;
   };
 
@@ -75,16 +76,16 @@ export function createConsoleRouter(client: Client): Router {
     const guild = guildOf(req);
     const userId = String(req.body?.userId ?? '');
     if (!guild || !SNOWFLAKE.test(userId)) {
-      res.status(400).json({ error: 'Membre invalide.' });
+      res.status(400).json({ error: trq('Membre invalide.') });
       return;
     }
     const member = await guild.members.fetch(userId).catch(() => null);
     if (!member) {
-      res.status(404).json({ error: 'Ce membre n\'est pas sur le serveur.' });
+      res.status(404).json({ error: trq('Ce membre n\'est pas sur le serveur.') });
       return;
     }
     if (member.user.bot) {
-      res.status(400).json({ error: 'Un bot ne peut pas être owner Etho.' });
+      res.status(400).json({ error: trq('Un bot ne peut pas être owner Etho.') });
       return;
     }
     const current = guildConfigService.getConfig(guild.id).ethoOwners ?? [];
@@ -98,7 +99,7 @@ export function createConsoleRouter(client: Client): Router {
     if (!requireGuildOwner(req, res)) return;
     const guild = guildOf(req);
     if (!guild) {
-      res.status(404).json({ error: 'Serveur introuvable pour le bot.' });
+      res.status(404).json({ error: trq('Serveur introuvable pour le bot.') });
       return;
     }
     const current = guildConfigService.getConfig(guild.id).ethoOwners ?? [];
@@ -149,7 +150,7 @@ export function createConsoleRouter(client: Client): Router {
   router.get('/settings', (req: Request, res: Response) => {
     const guild = guildOf(req);
     if (!guild) {
-      res.status(404).json({ error: 'Serveur introuvable pour le bot.' });
+      res.status(404).json({ error: trq('Serveur introuvable pour le bot.') });
       return;
     }
     const conf = guildConfigService.getConfig(guild.id);
@@ -166,21 +167,21 @@ export function createConsoleRouter(client: Client): Router {
   router.patch('/settings', (req: Request, res: Response) => {
     const guild = guildOf(req);
     if (!guild) {
-      res.status(404).json({ error: 'Serveur introuvable pour le bot.' });
+      res.status(404).json({ error: trq('Serveur introuvable pour le bot.') });
       return;
     }
     const { prefix, systemChannelId, ownerDmAlerts, weeklyReport } = req.body ?? {};
     const patch: Record<string, unknown> = {};
     if (prefix !== undefined) {
       if (typeof prefix !== 'string' || !prefix.trim() || prefix.length > 5 || /\s/.test(prefix)) {
-        res.status(400).json({ error: 'Préfixe invalide (1 à 5 caractères, sans espace).' });
+        res.status(400).json({ error: trq('Préfixe invalide (1 à 5 caractères, sans espace).') });
         return;
       }
       patch.prefix = prefix;
     }
     if (systemChannelId !== undefined) {
       if (systemChannelId !== null && !guild.channels.cache.get(String(systemChannelId))?.isTextBased()) {
-        res.status(400).json({ error: 'Salon système introuvable ou non textuel.' });
+        res.status(400).json({ error: trq('Salon système introuvable ou non textuel.') });
         return;
       }
       patch.systemChannelId = systemChannelId;
@@ -196,7 +197,7 @@ export function createConsoleRouter(client: Client): Router {
   router.get('/commands', (req: Request, res: Response) => {
     const guild = guildOf(req);
     if (!guild) {
-      res.status(404).json({ error: 'Serveur introuvable pour le bot.' });
+      res.status(404).json({ error: trq('Serveur introuvable pour le bot.') });
       return;
     }
     const rules = guildConfigService.getConfig(guild.id).commandRules ?? {};
@@ -221,11 +222,11 @@ export function createConsoleRouter(client: Client): Router {
     const guild = guildOf(req);
     const name = String(req.params.name).toLowerCase();
     if (!guild) {
-      res.status(404).json({ error: 'Serveur introuvable pour le bot.' });
+      res.status(404).json({ error: trq('Serveur introuvable pour le bot.') });
       return;
     }
     if (!commandRegistry.getAllCommands().some((c) => c.name === name)) {
-      res.status(404).json({ error: 'Commande inconnue.' });
+      res.status(404).json({ error: trq('Commande inconnue.') });
       return;
     }
     const rules = { ...(guildConfigService.getConfig(guild.id).commandRules ?? {}) };
@@ -233,7 +234,7 @@ export function createConsoleRouter(client: Client): Router {
     for (const k of ['allowedRoles', 'deniedRoles', 'allowedChannels'] as const) {
       if (body[k] !== undefined) {
         if (!Array.isArray(body[k]) || body[k].some((id: unknown) => typeof id !== 'string' || !SNOWFLAKE.test(id))) {
-          res.status(400).json({ error: 'Identifiants invalides.' });
+          res.status(400).json({ error: trq('Identifiants invalides.') });
           return;
         }
         body[k] = [...new Set(body[k] as string[])];
@@ -266,7 +267,7 @@ export function createConsoleRouter(client: Client): Router {
   router.get('/tools', (req: Request, res: Response) => {
     const guild = guildOf(req);
     if (!guild) {
-      res.status(404).json({ error: 'Serveur introuvable pour le bot.' });
+      res.status(404).json({ error: trq('Serveur introuvable pour le bot.') });
       return;
     }
     res.json(toolsView(guild.id));
@@ -281,7 +282,7 @@ export function createConsoleRouter(client: Client): Router {
     }
     for (const k of channels) {
       const v = body[k];
-      if (v !== undefined && v !== null && !(typeof v === 'string' && guild.channels.cache.get(v)?.isTextBased())) return 'Salon introuvable ou non textuel.';
+      if (v !== undefined && v !== null && !(typeof v === 'string' && guild.channels.cache.get(v)?.isTextBased())) return trq('Salon introuvable ou non textuel.');
     }
     return null;
   };
@@ -289,7 +290,7 @@ export function createConsoleRouter(client: Client): Router {
   router.patch('/tools/captcha', async (req: Request, res: Response) => {
     const guild = guildOf(req);
     if (!guild) {
-      res.status(404).json({ error: 'Serveur introuvable pour le bot.' });
+      res.status(404).json({ error: trq('Serveur introuvable pour le bot.') });
       return;
     }
     const { panelMessageId: _ignored, ...body } = req.body ?? {};
@@ -305,7 +306,7 @@ export function createConsoleRouter(client: Client): Router {
       return;
     }
     if (parsed.data.enabled && !parsed.data.channelId) {
-      res.status(400).json({ error: "Choisis d'abord le salon de vérification." });
+      res.status(400).json({ error: trq('Choisis d\'abord le salon de vérification.') });
       return;
     }
     // Nouveau salon : l'ancien panneau n'y est plus, on en reposte un.
@@ -318,7 +319,7 @@ export function createConsoleRouter(client: Client): Router {
   router.patch('/tools/supporters', async (req: Request, res: Response) => {
     const guild = guildOf(req);
     if (!guild) {
-      res.status(404).json({ error: 'Serveur introuvable pour le bot.' });
+      res.status(404).json({ error: trq('Serveur introuvable pour le bot.') });
       return;
     }
     const body = req.body ?? {};
@@ -329,19 +330,19 @@ export function createConsoleRouter(client: Client): Router {
     }
     const parsed = SupportersConfigSchema.safeParse({ ...guildConfigService.getConfig(guild.id).supporters, ...body });
     if (!parsed.success) {
-      res.status(400).json({ error: 'Réglage invalide.' });
+      res.status(400).json({ error: trq('Réglage invalide.') });
       return;
     }
     if (parsed.data.enabled && parsed.data.mode !== 'tag' && !parsed.data.statusText.trim()) {
-      res.status(400).json({ error: 'Indique le texte à chercher dans le statut perso.' });
+      res.status(400).json({ error: trq('Indique le texte à chercher dans le statut perso.') });
       return;
     }
     if (parsed.data.enabled && !parsed.data.roleId) {
-      res.status(400).json({ error: "Choisis d'abord le rôle à donner." });
+      res.status(400).json({ error: trq('Choisis d\'abord le rôle à donner.') });
       return;
     }
     if (parsed.data.roleId && !guild.roles.cache.get(parsed.data.roleId)?.editable) {
-      res.status(400).json({ error: "Etho ne peut pas donner ce rôle : il doit être placé sous le rôle d'Etho." });
+      res.status(400).json({ error: trq('Etho ne peut pas donner ce rôle : il doit être placé sous le rôle d\'Etho.') });
       return;
     }
     guildConfigService.updateConfig(guild.id, { supporters: parsed.data }, { source: 'DASHBOARD', actorId: req.user?.id });
@@ -427,7 +428,7 @@ export function createConsoleRouter(client: Client): Router {
     const kind = (req.body?.kind ?? req.query.kind) === 'role' ? 'role' : 'user';
     const scope = String(req.body?.scope ?? req.query.scope ?? 'global');
     if (!SNOWFLAKE.test(id) || !['global', 'anti-raid', 'anti-nuke'].includes(scope)) {
-      res.status(400).json({ error: 'Entrée de whitelist invalide.' });
+      res.status(400).json({ error: trq('Entrée de whitelist invalide.') });
       return null;
     }
     return { id, kind: kind as WlKind, scope: scope as 'global' | 'anti-raid' | 'anti-nuke' };
@@ -463,11 +464,11 @@ export function createConsoleRouter(client: Client): Router {
     const guild = guildOf(req);
     const userId = String(req.body?.userId ?? '');
     if (!guild || !SNOWFLAKE.test(userId)) {
-      res.status(400).json({ error: 'Compte invalide.' });
+      res.status(400).json({ error: trq('Compte invalide.') });
       return;
     }
     if (userId === guild.ownerId || userId === client.user?.id) {
-      res.status(400).json({ error: 'Ce compte ne peut pas être blacklisté.' });
+      res.status(400).json({ error: trq('Ce compte ne peut pas être blacklisté.') });
       return;
     }
     const result = await addToBlacklist(guild, userId, String(req.body?.reason ?? ''), req.user?.id ?? null);
@@ -492,12 +493,12 @@ export function createConsoleRouter(client: Client): Router {
     [PermissionFlagsBits.MentionEveryone, 'Mentionner tout le monde'],
   ];
   const dangerousOf = (perms: { has: (f: bigint) => boolean }) =>
-    perms.has(PermissionFlagsBits.Administrator) ? ['Administrateur'] : DANGEROUS_PERMS.filter(([f]) => perms.has(f)).map(([, l]) => l);
+    perms.has(PermissionFlagsBits.Administrator) ? [trq('Administrateur')] : DANGEROUS_PERMS.filter(([f]) => perms.has(f)).map(([, l]) => trq(l));
 
   router.get('/roles', async (req: Request, res: Response) => {
     const guild = guildOf(req);
     if (!guild) {
-      res.status(404).json({ error: 'Serveur introuvable pour le bot.' });
+      res.status(404).json({ error: trq('Serveur introuvable pour le bot.') });
       return;
     }
     const myTop = guild.members.me?.roles.highest.position ?? 0;
@@ -523,12 +524,12 @@ export function createConsoleRouter(client: Client): Router {
     const guild = guildOf(req);
     const userId = String(req.params.userId);
     if (!guild || !SNOWFLAKE.test(userId)) {
-      res.status(400).json({ error: 'Membre invalide.' });
+      res.status(400).json({ error: trq('Membre invalide.') });
       return;
     }
     const member = await guild.members.fetch(userId).catch(() => null);
     if (!member) {
-      res.status(404).json({ error: 'Ce membre n\'est pas sur le serveur.' });
+      res.status(404).json({ error: trq('Ce membre n\'est pas sur le serveur.') });
       return;
     }
     const me = guild.members.me;

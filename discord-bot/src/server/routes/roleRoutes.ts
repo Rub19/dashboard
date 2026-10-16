@@ -9,6 +9,7 @@ import { logger } from '../../utils/logger.js';
 import { rateLimit, idempotent } from '../middleware/antiAbuseMiddleware.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { handleRouteError, handleClientError } from '../utils/routeError.js';
+import { trq } from '../../utils/tr.js';
 
 export function createRoleRouter(discordClient: Client) {
   const router = express.Router({ mergeParams: true });
@@ -27,7 +28,7 @@ export function createRoleRouter(discordClient: Client) {
     const guildId = String(req.params.guildId);
     const guild = discordClient.guilds.cache.get(guildId);
     if (!guild) {
-      res.status(404).json({ error: 'Serveur introuvable ou bot non connecté' });
+      res.status(404).json({ error: trq('Serveur introuvable ou bot non connecté') });
       return;
     }
     try {
@@ -92,19 +93,19 @@ export function createRoleRouter(discordClient: Client) {
 
     const guild = discordClient.guilds.cache.get(guildId);
     if (!guild) {
-      res.status(404).json({ error: 'Serveur introuvable.' });
+      res.status(404).json({ error: trq('Serveur introuvable.') });
       return;
     }
 
     const panel = rolePanelService.getPanel(guildId, panelId);
     if (!panel) {
-      res.status(404).json({ error: 'Panel introuvable.' });
+      res.status(404).json({ error: trq('Panel introuvable.') });
       return;
     }
 
     const targetChannelId = channelId || panel.channelId;
     if (!targetChannelId) {
-      res.status(400).json({ error: 'Veuillez sélectionner un salon textuel de destination.' });
+      res.status(400).json({ error: trq('Veuillez sélectionner un salon textuel de destination.') });
       return;
     }
 
@@ -113,7 +114,7 @@ export function createRoleRouter(discordClient: Client) {
       res.json(result);
     } catch (err: any) {
       logger.error('Erreur publication Role Panel :', err);
-      res.status(500).json({ error: 'Échec de la publication sur Discord.' });
+      res.status(500).json({ error: trq('Échec de la publication sur Discord.') });
     }
   });
 
@@ -124,7 +125,7 @@ export function createRoleRouter(discordClient: Client) {
 
     const guild = discordClient.guilds.cache.get(guildId);
     if (!guild) {
-      res.status(404).json({ error: 'Serveur introuvable.' });
+      res.status(404).json({ error: trq('Serveur introuvable.') });
       return;
     }
 
@@ -144,7 +145,7 @@ export function createRoleRouter(discordClient: Client) {
     try {
       const duplicated = rolePanelService.duplicatePanel(guildId, panelId);
       if (!duplicated) {
-        res.status(404).json({ error: 'Panel original introuvable.' });
+        res.status(404).json({ error: trq('Panel original introuvable.') });
         return;
       }
       res.json({ success: true, panel: duplicated });
@@ -174,7 +175,7 @@ export function createRoleRouter(discordClient: Client) {
     const guildId = String(req.params.guildId);
     const guild = discordClient.guilds.cache.get(guildId);
     if (!guild) {
-      res.status(404).json({ error: 'Serveur introuvable.' });
+      res.status(404).json({ error: trq('Serveur introuvable.') });
       return;
     }
     try {
@@ -193,14 +194,14 @@ export function createRoleRouter(discordClient: Client) {
     const guildId = String(req.params.guildId);
     const guild = discordClient.guilds.cache.get(guildId);
     if (!guild) {
-      res.status(404).json({ error: 'Serveur introuvable.' });
+      res.status(404).json({ error: trq('Serveur introuvable.') });
       return;
     }
     const presetId = String(req.body?.presetId || '');
     const presets = RolePermissionService.generatePresets(guild);
     const selected = presets.find((p) => p.id === presetId);
     if (!selected) {
-      res.status(400).json({ error: 'Préset invalide.' });
+      res.status(400).json({ error: trq('Préset invalide.') });
       return;
     }
     try {

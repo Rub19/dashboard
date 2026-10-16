@@ -67,6 +67,10 @@ function convert(lit, sf) {
 
 const q = (s) => `'${s.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\n/g, '\\n')}'`;
 
+const FN = process.env.FN || '';
+const API_PROPS = process.env.PROPS ? new Set(process.env.PROPS.split(',')) : new Set(['reason', 'message', 'error', 'warning', 'details', 'summary', 'label', 'description', 'title', 'text', 'detail', 'hint', 'action', 'note']);
+const SENTENCE = /[éèêàçùû]|[A-Za-z]{3,}\s+[A-Za-z]{2,}/;
+
 export function wrapFile(file) {
   const src = fs.readFileSync(file, 'utf8');
   const sf = ts.createSourceFile(file, src, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
@@ -81,6 +85,12 @@ export function wrapFile(file) {
       const ok = node.name.text === 'error' || (p && ts.isCallExpression(p) && ts.isPropertyAccessExpression(p.expression) && PROP_PARENTS.has(p.expression.name.text));
       if (ok) target = node.initializer;
     }
+    if (FN) {
+      if (ts.isCallExpression(node) && ts.isPropertyAccessExpression(node.expression) && node.expression.name.text === 'push') target = node.arguments[0];
+      if (ts.isNewExpression(node) && node.expression.getText(sf) === 'Error' && node.arguments?.[0]) target = node.arguments[0];
+      if (ts.isReturnStatement(node) && node.expression) target = node.expression;
+      if (ts.isPropertyAssignment(node) && ts.isIdentifier(node.name) && API_PROPS.has(node.name.text)) target = node.initializer;
+    }
     if (target && (ts.isConditionalExpression(target))) {
       for (const br of [target.whenTrue, target.whenFalse]) tryWrap(br);
     } else if (target) tryWrap(target);
@@ -90,21 +100,27 @@ export function wrapFile(file) {
     if (!lit || inSlashData(lit)) return;
     const c = convert(lit, sf);
     if (!c) return;
+    const varsTxt = c.vars?.length ? `, { ${c.vars.map(([n, e]) => (n === e ? n : `${n}: ${e}`)).join(', ')} }` : '';
+    if (FN) {
+      if (!SENTENCE.test(c.key.replace(/\{\w+\}/g, ' '))) return;
+      edits.push([lit.getStart(sf), lit.getEnd(), `${FN}(${q(c.key)}${varsTxt})`]);
+      return;
+    }
     const names = scopeNames(lit);
     const g = SCOPE.find((n) => names.has(n));
     if (!g) return;
-    const varsTxt = c.vars?.length ? `, { ${c.vars.map(([n, e]) => (n === e ? n : `${n}: ${e}`)).join(', ')} }` : '';
     edits.push([lit.getStart(sf), lit.getEnd(), `trg(${g}, ${q(c.key)}${varsTxt})`]);
   };
   visit(sf);
   if (!edits.length) return 0;
   let out = src;
   for (const [a, b, r] of edits.sort((x, y) => y[0] - x[0])) out = out.slice(0, a) + r + out.slice(b);
-  if (!/import \{[^}]*\btrg\b[^}]*\} from '[^']*utils\/tr\.js'/.test(out)) {
+  const fnName = FN || 'trg';
+  if (!new RegExp(`import \\{[^}]*\\b${fnName}\\b[^}]*\\} from '[^']*utils/tr\\.js'`).test(out)) {
     const lines = out.split('\n');
     let last = -1;
     for (let i = 0; i < lines.length; i++) if (/^import .* from ['"]|^import ['"]|^\} from ['"]/.test(lines[i])) last = i;
-    lines.splice(last + 1, 0, `import { trg } from '${relImport(file)}';`);
+    lines.splice(last + 1, 0, `import { ${fnName} } from '${relImport(file)}';`);
     out = lines.join('\n');
   }
   fs.writeFileSync(file, out);

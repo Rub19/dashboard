@@ -5,6 +5,7 @@ import { RepeatMode, Track } from '../../modules/music/types/music.js';
 import { musicProviderManager } from '../../modules/music/providers/musicProvider.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { handleClientError } from '../utils/routeError.js';
+import { trq } from '../../utils/tr.js';
 
 export function createMusicRouter(discordClient: Client) {
   const router = express.Router({ mergeParams: true });
@@ -22,13 +23,13 @@ export function createMusicRouter(discordClient: Client) {
     const { query, playNext, channelId, shuffle } = req.body;
 
     if (!query || typeof query !== 'string') {
-      res.status(400).json({ error: 'Paramètre "query" manquant ou invalide.' });
+      res.status(400).json({ error: trq('Paramètre "query" manquant ou invalide.') });
       return;
     }
 
     const guild = discordClient.guilds.cache.get(guildId);
     if (!guild) {
-      res.status(404).json({ error: "Le bot n'est pas présent sur ce serveur." });
+      res.status(404).json({ error: trq('Le bot n\'est pas présent sur ce serveur.') });
       return;
     }
 
@@ -87,7 +88,7 @@ export function createMusicRouter(discordClient: Client) {
     const { position } = req.body;
     const pos = Number(position);
     if (isNaN(pos) || pos < 0) {
-      res.status(400).json({ error: 'Position invalide.' });
+      res.status(400).json({ error: trq('Position invalide.') });
       return;
     }
     const result = musicService.seek(guildId, pos, null);
@@ -100,7 +101,7 @@ export function createMusicRouter(discordClient: Client) {
     const { volume } = req.body;
     const vol = Number(volume);
     if (isNaN(vol) || vol < 0 || vol > 100) {
-      res.status(400).json({ error: 'Le volume doit être compris entre 0 et 100.' });
+      res.status(400).json({ error: trq('Le volume doit être compris entre 0 et 100.') });
       return;
     }
     const result = musicService.setVolume(guildId, vol, null);
@@ -126,7 +127,7 @@ export function createMusicRouter(discordClient: Client) {
     const guildId = String(req.params.guildId);
     const { mode } = req.body;
     if (!['OFF', 'SONG', 'QUEUE'].includes(mode)) {
-      res.status(400).json({ error: 'Mode de répétition invalide (OFF, SONG, QUEUE).' });
+      res.status(400).json({ error: trq('Mode de répétition invalide (OFF, SONG, QUEUE).') });
       return;
     }
     const result = musicService.setRepeatMode(guildId, mode as RepeatMode, null);
@@ -141,7 +142,7 @@ export function createMusicRouter(discordClient: Client) {
     const to = Number(toIndex);
 
     if (isNaN(from) || isNaN(to)) {
-      res.status(400).json({ error: 'Indices fromIndex et toIndex requis.' });
+      res.status(400).json({ error: trq('Indices fromIndex et toIndex requis.') });
       return;
     }
 
@@ -155,7 +156,7 @@ export function createMusicRouter(discordClient: Client) {
     const rawIndex = req.params.index;
     const index = parseInt(Array.isArray(rawIndex) ? String(rawIndex[0]) : String(rawIndex), 10);
     if (isNaN(index)) {
-      res.status(400).json({ error: 'Index invalide.' });
+      res.status(400).json({ error: trq('Index invalide.') });
       return;
     }
     const result = musicService.removeFromQueue(guildId, index, null);
@@ -183,7 +184,7 @@ export function createMusicRouter(discordClient: Client) {
   router.get('/import', async (req: Request, res: Response): Promise<void> => {
     const url = String(req.query.url || '').trim();
     if (!/^https?:\/\//i.test(url)) {
-      res.status(400).json({ error: 'Colle un lien de playlist / album (Spotify, YouTube…).' });
+      res.status(400).json({ error: trq('Colle un lien de playlist / album (Spotify, YouTube…).') });
       return;
     }
     try {
@@ -201,7 +202,7 @@ export function createMusicRouter(discordClient: Client) {
         })),
       });
     } catch {
-      res.status(502).json({ error: 'Impossible de lire cette playlist pour le moment.' });
+      res.status(502).json({ error: trq('Impossible de lire cette playlist pour le moment.') });
     }
   });
 
@@ -216,7 +217,7 @@ export function createMusicRouter(discordClient: Client) {
     const guildId = String(req.params.guildId);
     const { name, tracks, sourceUrl } = req.body;
     if (!name || typeof name !== 'string') {
-      res.status(400).json({ error: 'Nom de playlist requis.' });
+      res.status(400).json({ error: trq('Nom de playlist requis.') });
       return;
     }
     const createdBy = {
@@ -275,7 +276,7 @@ export function createMusicRouter(discordClient: Client) {
     const guildId = String(req.params.guildId);
     const { userId, track } = req.body;
     if (!track) {
-      res.status(400).json({ error: 'Track requis.' });
+      res.status(400).json({ error: trq('Track requis.') });
       return;
     }
     const result = musicService.toggleFavorite(guildId, userId || 'dashboard', track);

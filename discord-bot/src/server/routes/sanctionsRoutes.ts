@@ -11,6 +11,7 @@ import { ModerationService } from '../../modules/moderation/services/moderationS
 import { reportsService } from '../../modules/reports/services/reportsService.js';
 import type { ModerationCase } from '../../modules/moderation/types/case.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
+import { trq } from '../../utils/tr.js';
 
 const ORIGIN = (c: ModerationCase) => (c.source === 'MANUAL' ? 'moderators' : c.source === 'DISCORD' ? 'discord' : 'auto');
 const OPEN_REPORT = ['NEW', 'REVIEWING', 'ESCALATED'];
@@ -55,7 +56,7 @@ export function createSanctionsRouter(client: Client) {
     const roles = [...(body.appeals?.deciderRoleIds ?? []), ...(body.appeals?.mentionRoleIds ?? []), ...(body.presets?.reasons ?? []).flatMap((p: { roleIds?: string[] }) => p.roleIds ?? [])];
     const channels = [body.appeals?.channelId, body.guard?.alertChannelId].filter(Boolean);
     if (roles.some((id: string) => !guild?.roles.cache.has(id)) || channels.some((id: string) => !guild?.channels.cache.has(id))) {
-      res.status(400).json({ error: 'Rôle ou salon introuvable sur ce serveur' });
+      res.status(400).json({ error: trq('Rôle ou salon introuvable sur ce serveur') });
       return;
     }
     try {
@@ -63,7 +64,7 @@ export function createSanctionsRouter(client: Client) {
       emitConfigUpdated('sanctions', gid(req), next, 'DASHBOARD', req.user?.id);
       res.json({ config: next });
     } catch (err: any) {
-      res.status(400).json({ error: 'Réglages invalides', details: err?.issues?.slice?.(0, 3) });
+      res.status(400).json({ error: trq('Réglages invalides'), details: err?.issues?.slice?.(0, 3) });
     }
   });
 
@@ -101,7 +102,7 @@ export function createSanctionsRouter(client: Client) {
   router.get('/cases/:n', (req: Request, res: Response): void => {
     const c = moderationRepository.getCaseByNumber(gid(req), Number(req.params.n));
     if (!c) {
-      res.status(404).json({ error: 'Dossier introuvable' });
+      res.status(404).json({ error: trq('Dossier introuvable') });
       return;
     }
     const cfg = sanctionConfig.get(gid(req));
@@ -126,14 +127,14 @@ export function createSanctionsRouter(client: Client) {
       })
       .safeParse(req.body);
     if (!parsed.success) {
-      res.status(400).json({ error: 'Sanction invalide' });
+      res.status(400).json({ error: trq('Sanction invalide') });
       return;
     }
     const d = parsed.data;
     const cfg = sanctionConfig.get(gid(req));
     const preset = d.presetId ? cfg.presets.reasons.find((p) => p.id === d.presetId) : undefined;
     if (!d.reason.trim() && !preset && d.action === 'WARN' && cfg.replies.requireReason) {
-      res.status(400).json({ error: 'Une raison est obligatoire pour avertir sur ce serveur.' });
+      res.status(400).json({ error: trq('Une raison est obligatoire pour avertir sur ce serveur.') });
       return;
     }
     const mod = req.user?.id ? await client.users.fetch(req.user.id).catch(() => null) : null;
@@ -193,7 +194,7 @@ export function createSanctionsRouter(client: Client) {
     const who = { id: req.user?.id ?? 'dashboard', tag: mod?.tag ?? 'Dashboard' };
     const reports = moderationRepository.getReports(gid(req), { reportedUserId: String(req.params.userId) }).filter((r) => OPEN_REPORT.includes(r.status));
     if (!guild || !reports.length) {
-      res.status(404).json({ error: 'Aucun signalement en cours pour ce membre' });
+      res.status(404).json({ error: trq('Aucun signalement en cours pour ce membre') });
       return;
     }
     for (const r of reports) ModerationService.updateReportStatus(gid(req), r.id, status, who);

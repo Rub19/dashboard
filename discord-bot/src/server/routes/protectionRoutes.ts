@@ -7,6 +7,7 @@ import { syncAutomodRule } from '../../modules/protections/automodSync.js';
 import { checkProtection } from '../../modules/protections/protectionCheck.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { handleRouteError } from '../utils/routeError.js';
+import { trq } from '../../utils/tr.js';
 
 /** Permissions dont Etho a besoin pour détecter et réparer (bandeau « Permission à vérifier »). */
 const NEEDED: [keyof typeof PermissionFlagsBits, string][] = [
@@ -55,7 +56,7 @@ export function createProtectionRouter(client: Client): Router {
     const guild = guildOf(req);
     const key = String(req.params.key);
     if (!guild || !getProtection(key)) {
-      res.status(404).json({ error: 'Protection ou serveur introuvable.' });
+      res.status(404).json({ error: trq('Protection ou serveur introuvable.') });
       return;
     }
     const parsed = PatchSchema.safeParse(req.body ?? {});
@@ -68,11 +69,11 @@ export function createProtectionRouter(client: Client): Router {
     const badChannel = [p.logChannelId, ...(p.wlChannels ?? []), ...(p.wlCategories ?? [])].find((id) => id && !guild.channels.cache.has(id));
     const badRole = [...(p.mentionRoleIds ?? []), ...(p.wlRoles ?? []), ...(p.watchedRoles ?? [])].find((id) => !guild.roles.cache.has(id));
     if (badChannel || badRole) {
-      res.status(400).json({ error: badChannel ? 'Salon introuvable sur ce serveur.' : 'Rôle introuvable sur ce serveur.' });
+      res.status(400).json({ error: badChannel ? trq('Salon introuvable sur ce serveur.') : trq('Rôle introuvable sur ce serveur.') });
       return;
     }
     if (p.watchedPerms?.some((perm) => !(perm in PermissionFlagsBits))) {
-      res.status(400).json({ error: 'Permission inconnue.' });
+      res.status(400).json({ error: trq('Permission inconnue.') });
       return;
     }
     const updated = protectionStore.update(guild.id, key, p);
@@ -86,7 +87,7 @@ export function createProtectionRouter(client: Client): Router {
     const guild = guildOf(req);
     const key = String(req.params.key);
     if (!guild || !getProtection(key)) {
-      res.status(404).json({ error: 'Protection ou serveur introuvable.' });
+      res.status(404).json({ error: trq('Protection ou serveur introuvable.') });
       return;
     }
     try {
@@ -99,7 +100,7 @@ export function createProtectionRouter(client: Client): Router {
   router.post('/lockdown/lift', async (req: Request, res: Response) => {
     const guild = guildOf(req);
     if (!guild) {
-      res.status(404).json({ error: 'Serveur introuvable pour le bot.' });
+      res.status(404).json({ error: trq('Serveur introuvable pour le bot.') });
       return;
     }
     const restored = await protectionEngine.liftLockdown(guild);
@@ -109,7 +110,7 @@ export function createProtectionRouter(client: Client): Router {
   router.post('/rollback/now', async (req: Request, res: Response) => {
     const guild = guildOf(req);
     if (!guild) {
-      res.status(404).json({ error: 'Serveur introuvable pour le bot.' });
+      res.status(404).json({ error: trq('Serveur introuvable pour le bot.') });
       return;
     }
     try {

@@ -6,6 +6,7 @@ import { GuildModules } from '../../types/guildConfig.js';
 import { authMiddleware } from '../middleware/auth.js';
 import { createGuildAuthMiddleware } from '../middleware/guildAuth.js';
 import { getModule, isModuleEnabled, listModuleStates, setModuleEnabled } from '../../services/moduleRegistry.js';
+import { trq } from '../../utils/tr.js';
 
 interface ModuleDefinition {
   id: keyof GuildModules;
@@ -100,13 +101,13 @@ export function createModuleRouter(client: Client): express.Router {
     const { enabled } = req.body;
 
     if (typeof enabled !== 'boolean') {
-      res.status(400).json({ error: 'La propriété "enabled" (boolean) est requise' });
+      res.status(400).json({ error: trq('La propriété "enabled" (boolean) est requise') });
       return;
     }
 
     const def = getModule(moduleId);
     if (!def) {
-      res.status(404).json({ error: `Module introuvable : ${moduleId}` });
+      res.status(404).json({ error: trq('Module introuvable : {moduleId}', { moduleId }) });
       return;
     }
 
@@ -117,7 +118,7 @@ export function createModuleRouter(client: Client): express.Router {
         module: { id: def.id, name: def.label, description: def.description, icon: 'Puzzle', available: true, enabled: isModuleEnabled(guildId, moduleId) },
       });
     } catch (err) {
-      res.status(500).json({ error: 'Erreur lors de la mise à jour du module' });
+      res.status(500).json({ error: trq('Erreur lors de la mise à jour du module') });
     }
   });
 

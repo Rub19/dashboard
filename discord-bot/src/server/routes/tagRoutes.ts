@@ -4,6 +4,7 @@ import { tagStorage, MAX_TAGS_PER_GUILD } from '../../modules/tags/storage/tagSt
 import { TAG_NAME_RE } from '../../modules/tags/types/tag.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { isSendableTarget, sendToConfiguredChannel } from '../../utils/channelSend.js';
+import { trq } from '../../utils/tr.js';
 
 /**
  * API Dashboard du module Tags.
@@ -24,17 +25,17 @@ export function createTagRouter(_client: Client) {
     const guildId = String(req.params.guildId);
     const name = String(req.params.name).toLowerCase();
     if (!TAG_NAME_RE.test(name)) {
-      res.status(400).json({ error: 'Nom invalide (a-z 0-9 _ - , max 32).' });
+      res.status(400).json({ error: trq('Nom invalide (a-z 0-9 _ - , max 32).') });
       return;
     }
     const content = typeof req.body?.content === 'string' ? req.body.content : '';
     if (!content.trim() || content.length > 2000) {
-      res.status(400).json({ error: 'Contenu requis (2000 caractères max).' });
+      res.status(400).json({ error: trq('Contenu requis (2000 caractères max).') });
       return;
     }
     const existing = tagStorage.get(guildId, name);
     if (!existing && !tagStorage.canAddMore(guildId)) {
-      res.status(429).json({ error: `Limite de ${MAX_TAGS_PER_GUILD} tags atteinte.` });
+      res.status(429).json({ error: trq('Limite de {MAX_TAGS_PER_GUILD} tags atteinte.', { MAX_TAGS_PER_GUILD }) });
       return;
     }
     const tag = tagStorage.set({
@@ -58,28 +59,28 @@ export function createTagRouter(_client: Client) {
     const channelId = String(req.body?.channelId || '');
     const tag = tagStorage.get(guildId, name);
     if (!tag) {
-      res.status(404).json({ error: 'Tag introuvable.' });
+      res.status(404).json({ error: trq('Tag introuvable.') });
       return;
     }
     if (!channelId) {
-      res.status(400).json({ error: 'Salon de destination requis.' });
+      res.status(400).json({ error: trq('Salon de destination requis.') });
       return;
     }
     const guild = _client.guilds.cache.get(guildId);
     if (!guild) {
-      res.status(404).json({ error: 'Serveur introuvable.' });
+      res.status(404).json({ error: trq('Serveur introuvable.') });
       return;
     }
     const channel = await guild.channels.fetch(channelId).catch(() => null);
     if (!channel || !isSendableTarget(channel)) {
-      res.status(400).json({ error: 'Salon inaccessible par Etho.' });
+      res.status(400).json({ error: trq('Salon inaccessible par Etho.') });
       return;
     }
     try {
       const sent = await sendToConfiguredChannel(channel, { content: tag.content }, { postTitle: `🏷️ ${tag.name}` });
       res.json({ success: true, messageId: sent.id, channelName: 'name' in channel ? channel.name : 'salon' });
     } catch (err: any) {
-      res.status(500).json({ error: 'Impossible d’envoyer le tag dans ce salon.' });
+      res.status(500).json({ error: trq('Impossible d’envoyer le tag dans ce salon.') });
     }
   });
 

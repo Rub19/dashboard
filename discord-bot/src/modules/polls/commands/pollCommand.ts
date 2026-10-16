@@ -12,7 +12,7 @@ import { formatString, getTranslation } from '../../../utils/i18n.js';
 import { SLASH_DESTINATION_TYPES, isSendableTarget, sendToConfiguredChannel } from '../../../utils/channelSend.js';
 import { nativePollService, nativeIncompatibilityError, toPollEmoji, validateNativeInput, NATIVE_MAX_HOURS } from '../services/nativePollService.js';
 import { DiscordPollSchema } from '../types/index.js';
-import { trg } from '../../../utils/tr.js';
+import { guildLang, requestLang, trg } from '../../../utils/tr.js';
 
 /** "🍕 Pizza; Burger; 🥗 Salade" -> réponses, l'emoji de tête (facultatif) est détecté. */
 export function parseSlashAnswers(raw: string): Array<{ text: string; emoji?: string }> {
@@ -158,13 +158,13 @@ export const pollCommand: Command = {
       const fail = (msg: string) => ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(msg)], ephemeral: true });
 
       if (!channel || !isSendableTarget(channel)) return void (await fail(t.poll_invalid_channel));
-      const invalid = validateNativeInput({ question, answers, durationHours });
+      const invalid = requestLang.run(guildLang(guildId), () => validateNativeInput({ question, answers, durationHours }));
       if (invalid) return void (await fail(invalid));
 
       if (natif) {
-        const conflict = nativeIncompatibilityError({ quorum: quorum !== null, secret });
+        const conflict = requestLang.run(guildLang(guildId), () => nativeIncompatibilityError({ quorum: quorum !== null, secret }));
         if (conflict) return void (await fail(conflict));
-        const created = await nativePollService.create(ctx.client, {
+        const created = await requestLang.run(guildLang(guildId), () => nativePollService.create(ctx.client, {
           guildId,
           channelId: channel.id,
           question,
@@ -173,8 +173,8 @@ export const pollCommand: Command = {
           multiselect,
           creatorId: ctx.user.id,
           creatorTag: ctx.user.username,
-        });
-        if (!created.success) return void (await fail(created.error || 'Erreur inconnue.'));
+        }));
+        if (!created.success) return void (await fail(created.error || trg(guildId, 'Erreur inconnue.')));
         await ctx.reply({
           embeds: [ctx.createEmbed('success').setDescription(trg(guildId, 'Sondage natif publié dans <#{channelId}> (ID `{id}`).', { channelId: created.poll!.channelId, id: created.poll!.id }))],
           ephemeral: true,

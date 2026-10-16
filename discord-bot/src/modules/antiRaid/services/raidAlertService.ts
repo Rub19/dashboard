@@ -7,6 +7,7 @@ import { logger } from '../../../utils/logger.js';
 import { guildConfigService } from '../../../services/guildConfigService.js';
 import { formatString, getTranslation } from '../../../utils/i18n.js';
 import { baseEmbed } from '../../../utils/embeds.js';
+import { guildLang, translateStored } from '../../../utils/tr.js';
 import { isSendableTarget, sendToConfiguredChannel } from '../../../utils/channelSend.js';
 
 interface AlertParams {
@@ -31,8 +32,11 @@ class RaidAlertService {
     signals: string[];
     incidentId?: string;
   }): Promise<void> {
-    const { guild, threatLevel, riskScore, title, reason, actionsTaken, signals, incidentId } =
-      params;
+    const { guild, threatLevel, riskScore, actionsTaken, incidentId } = params;
+    const lang = guildLang(guild);
+    const title = translateStored(params.title, lang);
+    const reason = translateStored(params.reason, lang);
+    const signals = params.signals.map((s) => translateStored(s, lang));
     const config = raidConfigService.getConfig(guild.id);
     const t = getTranslation(guildConfigService.getConfig(guild.id).language);
 

@@ -6,6 +6,7 @@ import { statsQueries } from '../../modules/stats/services/statsQueries.js';
 import { statsCollector } from '../../modules/stats/services/statsCollector.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import type { RankedEntry } from '../../modules/stats/types/stats.js';
+import { trq } from '../../utils/tr.js';
 
 const ALLOWED_DAYS = [7, 30, 60, 90, 180, 365];
 
@@ -57,7 +58,7 @@ export function createStatsRouter(client: Client) {
     const guildId = String(req.params.guildId);
     const parsed = z.object({ enabled: z.boolean() }).strict().safeParse(req.body);
     if (!parsed.success) {
-      res.status(400).json({ error: 'Configuration invalide', details: parsed.error.flatten() });
+      res.status(400).json({ error: trq('Configuration invalide'), details: parsed.error.flatten() });
       return;
     }
     const updated = statsStorage.updateConfig(guildId, { enabled: parsed.data.enabled });
@@ -130,7 +131,7 @@ export function createStatsRouter(client: Client) {
     const guildId = String(req.params.guildId);
     const userId = String(req.params.userId);
     if (!/^\d{5,25}$/.test(userId)) {
-      res.status(400).json({ error: 'Identifiant de membre invalide' });
+      res.status(400).json({ error: trq('Identifiant de membre invalide') });
       return;
     }
     const guild = client.guilds.cache.get(guildId);

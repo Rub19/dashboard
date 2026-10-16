@@ -7,6 +7,7 @@ import { config } from '../../config.js';
 import { authMiddleware } from '../middleware/auth.js';
 import { rateLimit, idempotent, guildLock } from '../middleware/antiAbuseMiddleware.js';
 import { handleRouteError } from '../utils/routeError.js';
+import { trq } from '../../utils/tr.js';
 
 /**
  * Applique réellement une mutation générique (module/path/value) sur le module concerné.
@@ -49,7 +50,7 @@ export function createSyncRouter(): Router {
   // 1. GET /api/sync/stream - Flux SSE global réservé EXCLUSIVEMENT au Bot Owner
   router.get('/stream', authMiddleware, (req: Request, res: Response): void => {
     if (!req.user || req.user.id !== config.botOwnerId) {
-      res.status(403).json({ error: 'Accès interdit. Le flux SSE global est réservé au propriétaire du bot.' });
+      res.status(403).json({ error: trq('Accès interdit. Le flux SSE global est réservé au propriétaire du bot.') });
       return;
     }
     const clientId = `sse_global_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
@@ -60,7 +61,7 @@ export function createSyncRouter(): Router {
   router.get('/audit', authMiddleware, (req: Request, res: Response): void => {
     const guildId = req.query.guildId as string | undefined;
     if (!guildId && req.user?.id !== config.botOwnerId) {
-      res.status(403).json({ error: 'Accès interdit. L\'audit global est réservé au propriétaire du bot.' });
+      res.status(403).json({ error: trq('Accès interdit. L\'audit global est réservé au propriétaire du bot.') });
       return;
     }
     const limit = parseInt(req.query.limit as string) || 50;
@@ -89,13 +90,13 @@ export function createSyncRouter(): Router {
     try {
       const { guildId, module, path, value, previousValue, expectedVersion, correlationId } = req.body;
       if (!module || !path) {
-        res.status(400).json({ success: false, error: 'Champs module et path obligatoires.' });
+        res.status(400).json({ success: false, error: trq('Champs module et path obligatoires.') });
         return;
       }
 
       // Si aucune guildId (mutation globale), seul le Bot Owner peut exécuter
       if (!guildId && req.user?.id !== config.botOwnerId) {
-        res.status(403).json({ success: false, error: 'Mutations globales réservées au propriétaire du bot.' });
+        res.status(403).json({ success: false, error: trq('Mutations globales réservées au propriétaire du bot.') });
         return;
       }
 
@@ -191,7 +192,7 @@ export function createGuildSyncRouter(): Router {
       const guildId = req.params.guildId as string;
       const { module, action, resourceId, field } = req.body;
       if (!module || !action) {
-        res.status(400).json({ success: false, error: 'Champs module et action obligatoires pour la réparation.' });
+        res.status(400).json({ success: false, error: trq('Champs module et action obligatoires pour la réparation.') });
         return;
       }
 
@@ -240,7 +241,7 @@ export function createGuildSyncRouter(): Router {
     const { module, path, value, previousValue, expectedVersion, correlationId } = req.body;
 
     if (!module || !path) {
-      res.status(400).json({ success: false, error: 'Champs module et path obligatoires.' });
+      res.status(400).json({ success: false, error: trq('Champs module et path obligatoires.') });
       return;
     }
 

@@ -7,7 +7,11 @@ let current = "fr";
 
 /** Langue du site, fixée par le SettingsProvider à chaque rendu. */
 export function setTxLang(lang: string) {
+  if (lang === current) return;
   current = lang;
+  if (typeof document !== "undefined" && location.hostname.endsWith("ethone.dev")) {
+    document.cookie = `ethone_lang=${lang}; Domain=.ethone.dev; Path=/; Max-Age=31536000; SameSite=Lax; Secure`;
+  }
 }
 
 /** Texte français traduit dans la langue du site (le français sert de clé), avec ses variables {nom}. */

@@ -7,6 +7,7 @@ import { EventsCheckinService } from '../../modules/events/eventsCheckinService.
 import { RSVPStatus, AttendanceStatus } from '../../modules/events/eventsTypes.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { handleRouteError } from '../utils/routeError.js';
+import { trq } from '../../utils/tr.js';
 
 export function createEventRouter(client?: Client): Router {
   const router = Router({ mergeParams: true });
@@ -64,7 +65,7 @@ export function createEventRouter(client?: Client): Router {
       const event = eventRepository.getEventById(guildId, eventId);
 
       if (!event) {
-        return res.status(404).json({ success: false, error: 'Event not found' });
+        return res.status(404).json({ success: false, error: trq('Event not found') });
       }
 
       res.json({ success: true, event });
@@ -80,7 +81,7 @@ export function createEventRouter(client?: Client): Router {
       const eventData = req.body;
 
       if (!eventData.title || !eventData.startDate) {
-        return res.status(400).json({ success: false, error: 'title and startDate are required' });
+        return res.status(400).json({ success: false, error: trq('title and startDate are required') });
       }
 
       // L'organisateur est la personne connectée au dashboard, jamais une valeur envoyée par le client.
@@ -116,7 +117,7 @@ export function createEventRouter(client?: Client): Router {
 
       const updated = EventService.updateEvent(guildId, eventId, updates);
       if (!updated) {
-        return res.status(404).json({ success: false, error: 'Event not found' });
+        return res.status(404).json({ success: false, error: trq('Event not found') });
       }
 
       emitConfigUpdated('events', guildId, updated, 'DASHBOARD', req.user?.id);
@@ -152,7 +153,7 @@ export function createEventRouter(client?: Client): Router {
       const { newStartDate, newEndDate } = req.body;
 
       if (!newStartDate || !newEndDate) {
-        return res.status(400).json({ success: false, error: 'newStartDate and newEndDate are required' });
+        return res.status(400).json({ success: false, error: trq('newStartDate and newEndDate are required') });
       }
 
       const result = EventService.rescheduleEvent(guildId, eventId, newStartDate, newEndDate);
@@ -174,7 +175,7 @@ export function createEventRouter(client?: Client): Router {
 
       const duplicated = EventService.duplicateEvent(guildId, eventId);
       if (!duplicated) {
-        return res.status(404).json({ success: false, error: 'Source event not found' });
+        return res.status(404).json({ success: false, error: trq('Source event not found') });
       }
 
       res.status(201).json({ success: true, event: duplicated });
@@ -192,7 +193,7 @@ export function createEventRouter(client?: Client): Router {
 
       // L'événement doit appartenir à CE serveur : sinon un admin d'un serveur lirait les inscrits d'un autre.
       if (!eventRepository.getEventById(guildId, eventId)) {
-        res.status(404).json({ success: false, error: 'Événement introuvable sur ce serveur.' });
+        res.status(404).json({ success: false, error: trq('Événement introuvable sur ce serveur.') });
         return;
       }
       let participants = eventRepository.getParticipants(eventId);
@@ -214,7 +215,7 @@ export function createEventRouter(client?: Client): Router {
       const { userId, username, displayName, avatarUrl, status } = req.body;
 
       if (!userId || !username || !status) {
-        return res.status(400).json({ success: false, error: 'userId, username, and status are required' });
+        return res.status(400).json({ success: false, error: trq('userId, username, and status are required') });
       }
 
       const result = EventRSVPService.handleRSVP(
@@ -266,7 +267,7 @@ export function createEventRouter(client?: Client): Router {
       const userId = String(req.params.userId);
 
       if (!eventRepository.getEventById(guildId, eventId)) {
-        res.status(404).json({ success: false, error: 'Événement introuvable sur ce serveur.' });
+        res.status(404).json({ success: false, error: trq('Événement introuvable sur ce serveur.') });
         return;
       }
       const removed = eventRepository.removeParticipant(eventId, userId);
@@ -284,7 +285,7 @@ export function createEventRouter(client?: Client): Router {
 
       const event = eventRepository.getEventById(guildId, eventId);
       if (!event) {
-        return res.status(404).json({ success: false, error: 'Event not found' });
+        return res.status(404).json({ success: false, error: trq('Event not found') });
       }
 
       const participants = eventRepository.getParticipants(eventId);

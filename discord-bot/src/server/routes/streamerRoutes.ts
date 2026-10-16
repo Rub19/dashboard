@@ -5,6 +5,7 @@ import { streamerService } from '../../modules/streamers/services/streamerServic
 import { StreamPlatformSchema, StreamerConfigSchema, StreamerPingModeSchema } from '../../modules/streamers/types/streamer.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { DESTINATION_CHANNEL_TYPES } from '../../utils/channelSend.js';
+import { trq } from '../../utils/tr.js';
 
 export function createStreamerRouter(client: Client) {
   const router = express.Router({ mergeParams: true });
@@ -35,7 +36,7 @@ export function createStreamerRouter(client: Client) {
     });
     const parsed = allowed.safeParse(req.body);
     if (!parsed.success) {
-      res.status(400).json({ error: 'Configuration invalide', details: parsed.error.flatten() });
+      res.status(400).json({ error: trq('Configuration invalide'), details: parsed.error.flatten() });
       return;
     }
     const updated = streamerStorage.updateConfig(guildId, parsed.data);
@@ -61,7 +62,7 @@ export function createStreamerRouter(client: Client) {
 
     const platParse = StreamPlatformSchema.safeParse(platform);
     if (!platParse.success || !username || typeof username !== 'string') {
-      res.status(400).json({ error: 'Plateforme (twitch|youtube|kick) et pseudo requis' });
+      res.status(400).json({ error: trq('Plateforme (twitch|youtube|kick) et pseudo requis') });
       return;
     }
 
@@ -72,7 +73,7 @@ export function createStreamerRouter(client: Client) {
       (s) => s.platform === plat && s.username.toLowerCase() === cleanUser.toLowerCase()
     );
     if (existing) {
-      res.status(409).json({ error: 'Ce streamer est déjà enregistré sur ce serveur' });
+      res.status(409).json({ error: trq('Ce streamer est déjà enregistré sur ce serveur') });
       return;
     }
 
@@ -118,7 +119,7 @@ export function createStreamerRouter(client: Client) {
     const id = String(req.params.id);
     const ok = streamerStorage.removeStreamer(guildId, id);
     if (!ok) {
-      res.status(404).json({ error: 'Streamer introuvable' });
+      res.status(404).json({ error: trq('Streamer introuvable') });
       return;
     }
     emitConfigUpdated('streamers', guildId, { action: 'deleted', id }, 'DASHBOARD', req.user?.id);
@@ -154,7 +155,7 @@ export function createStreamerRouter(client: Client) {
     });
 
     if (!updated) {
-      res.status(404).json({ error: 'Streamer introuvable' });
+      res.status(404).json({ error: trq('Streamer introuvable') });
       return;
     }
     emitConfigUpdated('streamers', guildId, { action: 'updated', streamer: updated }, 'DASHBOARD', req.user?.id);
@@ -167,7 +168,7 @@ export function createStreamerRouter(client: Client) {
     const id = String(req.params.id);
     const streamer = streamerStorage.getStreamer(guildId, id);
     if (!streamer) {
-      res.status(404).json({ error: 'Streamer introuvable' });
+      res.status(404).json({ error: trq('Streamer introuvable') });
       return;
     }
 

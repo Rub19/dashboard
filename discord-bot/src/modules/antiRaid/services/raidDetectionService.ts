@@ -25,6 +25,7 @@ import { raidAlertService } from './raidAlertService.js';
 import { logService } from '../../logs/services/logService.js';
 import { logger } from '../../../utils/logger.js';
 import { ownerImmunityService } from '../../../services/ownerImmunityService.js';
+import { trs } from '../../../utils/tr.js';
 
 class RaidDetectionService {
   /**
@@ -108,13 +109,13 @@ class RaidDetectionService {
         );
         if (trustedInvite) {
           memberInfo.actionTaken = 'MONITOR';
-          memberInfo.riskContributions.push('Bot non whitelisté (mais invité par un admin — toléré)');
+          memberInfo.riskContributions.push(trs('Bot non whitelisté (mais invité par un admin — toléré)'));
           raidCache.recordJoin(guild.id, memberInfo);
           return;
         }
 
         memberInfo.actionTaken = 'KICKED_UNTRUSTED_BOT';
-        memberInfo.riskContributions.push('Bot non whitelisté');
+        memberInfo.riskContributions.push(trs('Bot non whitelisté'));
 
         try {
           await member.kick('Bot non autorisé (Protection Anti-Raid)');
@@ -122,8 +123,8 @@ class RaidDetectionService {
             guild,
             threatLevel: 'SUSPICIOUS',
             riskScore: 35,
-            title: '🤖 Bot Non Autorisé Bloqué',
-            reason: `Le bot **${member.user.tag}** a tenté de rejoindre mais n'est pas autorisé.`,
+            title: trs('🤖 Bot Non Autorisé Bloqué'),
+            reason: trs('Le bot **{tag}** a tenté de rejoindre mais n\'est pas autorisé.', { tag: member.user.tag }),
             actionsTaken: ['KICK', 'ALERT_STAFF'],
             signals: ['Tentative d’ajout de bot non whitelisté'],
           });
@@ -138,7 +139,7 @@ class RaidDetectionService {
     if (!isBot && config.accountAge.enabled && config.accountAge.tiers.length > 0) {
       for (const tier of config.accountAge.tiers) {
         if (ageHours < tier.ageThresholdHours) {
-          memberInfo.riskContributions.push(`Compte créé il y a moins de ${tier.ageThresholdHours}h`);
+          memberInfo.riskContributions.push(trs('Compte créé il y a moins de {ageThresholdHours}h', { ageThresholdHours: tier.ageThresholdHours }));
           for (const action of tier.actions) {
             await raidActionService.executeMemberAction(
               member,
@@ -221,7 +222,7 @@ class RaidDetectionService {
       logService.raid(guild.id, 'JOIN_RAID', {
         actor: { id: 'ANTI_RAID', tag: 'Anti-Raid Engine', isBot: true },
         target: { id: guild.id, type: 'SERVER', name: guild.name },
-        reason: `${joinsInWindow} arrivées en ${config.joinRaid.timeWindowSeconds}s (Score: ${risk.score}/100)`,
+        reason: trs('{joinsInWindow} arrivées en {timeWindowSeconds}s (Score: {score}/100)', { joinsInWindow, timeWindowSeconds: config.joinRaid.timeWindowSeconds, score: risk.score }),
         incidentId: incident.id,
         metadata: {
           threatLevel: risk.threatLevel,
@@ -237,8 +238,8 @@ class RaidDetectionService {
         guild,
         threatLevel: risk.threatLevel,
         riskScore: risk.score,
-        title: '🚨 JOIN RAID DÉTECTÉ',
-        reason: `${joinsInWindow} membres ont rejoint en ${config.joinRaid.timeWindowSeconds} secondes.`,
+        title: trs('🚨 JOIN RAID DÉTECTÉ'),
+        reason: trs('{joinsInWindow} membres ont rejoint en {timeWindowSeconds} secondes.', { joinsInWindow, timeWindowSeconds: config.joinRaid.timeWindowSeconds }),
         actionsTaken: executedActions,
         signals: risk.activeSignals,
         incidentId: incident.id,
@@ -352,8 +353,8 @@ class RaidDetectionService {
             guild,
             threatLevel: 'DANGEROUS',
             riskScore: 65,
-            title: '🔔 Mention Raid Détecté',
-            reason: `**${message.author.tag}** a tenté un mass ping (${mentionsCount} mentions, everyone: ${hasEveryoneOrHere}).`,
+            title: trs('🔔 Mention Raid Détecté'),
+            reason: trs('**{tag}** a tenté un mass ping ({mentionsCount} mentions, everyone: {hasEveryoneOrHere}).', { tag: message.author.tag, mentionsCount, hasEveryoneOrHere }),
             actionsTaken: done,
             signals: [`Burst mentions: ${userMentionsWindow} en ${config.mentionRaid.timeWindowSeconds}s`],
           });
@@ -394,8 +395,8 @@ class RaidDetectionService {
             guild,
             threatLevel: 'ELEVATED',
             riskScore: 50,
-            title: '💬 Message Spam Raid Détecté',
-            reason: `**${message.author.tag}** envoie des messages trop rapidement (${userMsgsInWindow} msgs / ${config.messageRaid.timeWindowSeconds}s ou ${duplicates} répétitions).`,
+            title: trs('💬 Message Spam Raid Détecté'),
+            reason: trs('**{tag}** envoie des messages trop rapidement ({userMsgsInWindow} msgs / {timeWindowSeconds}s ou {duplicates} répétitions).', { tag: message.author.tag, userMsgsInWindow, timeWindowSeconds: config.messageRaid.timeWindowSeconds, duplicates }),
             actionsTaken: done,
             signals: ['Spam intensif de messages répétés'],
           });
@@ -433,8 +434,8 @@ class RaidDetectionService {
         guild,
         threatLevel: 'CRITICAL',
         riskScore: 90,
-        title: '💥 SERVER NUKE DÉTECTÉ (Salons)',
-        reason: `Activité destructrice sur les salons (${deletes} suppressions en ${config.serverNuke.timeWindowSeconds}s).`,
+        title: trs('💥 SERVER NUKE DÉTECTÉ (Salons)'),
+        reason: trs('Activité destructrice sur les salons ({deletes} suppressions en {timeWindowSeconds}s).', { deletes, timeWindowSeconds: config.serverNuke.timeWindowSeconds }),
         actionsTaken: ['LOCKDOWN', 'ALERT_STAFF'],
         signals: ['Salons modifiés ou détruits en rafale'],
       });
@@ -465,8 +466,8 @@ class RaidDetectionService {
         guild,
         threatLevel: 'CRITICAL',
         riskScore: 92,
-        title: '💥 SERVER NUKE DÉTECTÉ (Rôles)',
-        reason: `Activité destructrice sur les rôles (${deletes} suppressions en ${config.serverNuke.timeWindowSeconds}s).`,
+        title: trs('💥 SERVER NUKE DÉTECTÉ (Rôles)'),
+        reason: trs('Activité destructrice sur les rôles ({deletes} suppressions en {timeWindowSeconds}s).', { deletes, timeWindowSeconds: config.serverNuke.timeWindowSeconds }),
         actionsTaken: ['LOCKDOWN', 'ALERT_STAFF'],
         signals: ['Rôles détruits ou créés en rafale'],
       });
@@ -502,8 +503,8 @@ class RaidDetectionService {
         guild,
         threatLevel: 'CRITICAL',
         riskScore: 95,
-        title: '☢️ MASS BAN / MASS KICK DÉTECTÉ',
-        reason: `Sanctions massives exécutées (${bans} bans, ${kicks} kicks en ${config.massMod.timeWindowSeconds}s).`,
+        title: trs('☢️ MASS BAN / MASS KICK DÉTECTÉ'),
+        reason: trs('Sanctions massives exécutées ({bans} bans, {kicks} kicks en {timeWindowSeconds}s).', { bans, kicks, timeWindowSeconds: config.massMod.timeWindowSeconds }),
         actionsTaken: ['ALERT_STAFF', 'LOCKDOWN'],
         signals: [`Exécuteur suspect : ${entry.executorId || 'Inconnu'}`],
       });

@@ -4,6 +4,7 @@ import { stickyStorage } from '../../modules/stickyMessages/storage/stickyStorag
 import { stickyService } from '../../modules/stickyMessages/services/stickyService.js';
 import { StickyMessageSchema } from '../../modules/stickyMessages/types/sticky.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
+import { trq } from '../../utils/tr.js';
 
 /**
  * API Dashboard du module Sticky Messages.
@@ -24,7 +25,7 @@ export function createStickyRouter(discordClient: Client) {
     const channelId = String(req.params.channelId);
     const sticky = stickyStorage.get(guildId, channelId);
     if (!sticky) {
-      res.status(404).json({ error: 'Aucun sticky sur ce salon' });
+      res.status(404).json({ error: trq('Aucun sticky sur ce salon') });
       return;
     }
     res.json(sticky);
@@ -44,11 +45,11 @@ export function createStickyRouter(discordClient: Client) {
     });
     const parsed = allowed.safeParse(req.body);
     if (!parsed.success) {
-      res.status(400).json({ error: 'Configuration invalide', details: parsed.error.flatten() });
+      res.status(400).json({ error: trq('Configuration invalide'), details: parsed.error.flatten() });
       return;
     }
     if (!parsed.data.content && !stickyStorage.get(guildId, channelId)) {
-      res.status(400).json({ error: 'Le contenu est requis pour créer un sticky' });
+      res.status(400).json({ error: trq('Le contenu est requis pour créer un sticky') });
       return;
     }
 
@@ -81,7 +82,7 @@ export function createStickyRouter(discordClient: Client) {
     const channelId = String(req.params.channelId);
     const guild = discordClient.guilds.cache.get(guildId);
     if (!guild) {
-      res.status(404).json({ error: 'Serveur introuvable' });
+      res.status(404).json({ error: trq('Serveur introuvable') });
       return;
     }
     await stickyService.forceRepost(guild, channelId).catch(() => {});

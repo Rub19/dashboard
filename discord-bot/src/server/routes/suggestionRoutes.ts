@@ -7,6 +7,7 @@ import { SuggestionPriority, SuggestionStatus } from '../../modules/suggestions/
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { rateLimit } from '../middleware/antiAbuseMiddleware.js';
 import { handleRouteError } from '../utils/routeError.js';
+import { trq } from '../../utils/tr.js';
 
 export function createSuggestionRouter(discordClient: Client) {
   const router = express.Router({ mergeParams: true });
@@ -14,7 +15,7 @@ export function createSuggestionRouter(discordClient: Client) {
   // Toute route « /:id » ne vise qu'une suggestion de CE serveur (jamais celle d'un autre, même avec son identifiant).
   router.param('id', (req, res, next, id) => {
     if (suggestionStorage.getById(String(id))?.guildId !== String(req.params.guildId)) {
-      res.status(404).json({ error: 'Suggestion introuvable' });
+      res.status(404).json({ error: trq('Suggestion introuvable') });
       return;
     }
     next();
@@ -24,7 +25,7 @@ export function createSuggestionRouter(discordClient: Client) {
   router.param('id', (req, res, next, id) => {
     const found = suggestionStorage.getById(String(id));
     if (found && found.guildId !== String(req.params.guildId)) {
-      res.status(404).json({ error: 'Suggestion introuvable' });
+      res.status(404).json({ error: trq('Suggestion introuvable') });
       return;
     }
     next();
@@ -49,7 +50,7 @@ export function createSuggestionRouter(discordClient: Client) {
     const id = String(req.params.id);
     const suggestion = suggestionStorage.getById(id);
     if (!suggestion) {
-      res.status(404).json({ error: 'Suggestion introuvable' });
+      res.status(404).json({ error: trq('Suggestion introuvable') });
       return;
     }
     res.json({ suggestion });
@@ -61,7 +62,7 @@ export function createSuggestionRouter(discordClient: Client) {
     try {
       const { title, description, category, tags } = req.body;
       if (!title || !description) {
-        res.status(400).json({ error: 'Titre et description requis' });
+        res.status(400).json({ error: trq('Titre et description requis') });
         return;
       }
 
@@ -102,7 +103,7 @@ export function createSuggestionRouter(discordClient: Client) {
       );
 
       if (!updated) {
-        res.status(404).json({ error: 'Suggestion introuvable' });
+        res.status(404).json({ error: trq('Suggestion introuvable') });
         return;
       }
 
@@ -119,7 +120,7 @@ export function createSuggestionRouter(discordClient: Client) {
     const user = (req as any).user;
 
     if (!content) {
-      res.status(400).json({ error: 'Contenu du commentaire requis' });
+      res.status(400).json({ error: trq('Contenu du commentaire requis') });
       return;
     }
 
@@ -135,7 +136,7 @@ export function createSuggestionRouter(discordClient: Client) {
       });
 
       if (!updated) {
-        res.status(404).json({ error: 'Suggestion introuvable' });
+        res.status(404).json({ error: trq('Suggestion introuvable') });
         return;
       }
 
@@ -153,7 +154,7 @@ export function createSuggestionRouter(discordClient: Client) {
 
     const updated = suggestionStorage.update(id, { priority: priority as SuggestionPriority });
     if (!updated) {
-      res.status(404).json({ error: 'Suggestion introuvable' });
+      res.status(404).json({ error: trq('Suggestion introuvable') });
       return;
     }
 

@@ -4,6 +4,7 @@ import { randomBytes, timingSafeEqual } from 'node:crypto';
 import { config } from '../../config.js';
 import { authMiddleware, DiscordUserPayload } from '../middleware/auth.js';
 import { logger } from '../../utils/logger.js';
+import { trq } from '../../utils/tr.js';
 
 export const authRouter = express.Router();
 
@@ -124,7 +125,7 @@ const devUserPayload: DiscordUserPayload = {
  */
 authRouter.all('/dev-login', (req: Request, res: Response) => {
   if (process.env.ALLOW_DEV_AUTH_BYPASS !== 'true' || process.env.NODE_ENV !== 'development') {
-    res.status(404).json({ error: 'Not found' });
+    res.status(404).json({ error: trq('Not found') });
     return;
   }
   const token = jwt.sign(devUserPayload, config.jwtSecret, { expiresIn: '7d' });
@@ -247,7 +248,7 @@ authRouter.get('/callback', async (req: Request, res: Response): Promise<void> =
 authRouter.post('/mobile/exchange', (req: Request, res: Response) => {
   const token = consumeMobileCode(req.body?.code);
   if (!token) {
-    res.status(401).json({ error: 'Code invalide ou expiré.' });
+    res.status(401).json({ error: trq('Code invalide ou expiré.') });
     return;
   }
   res.json({ token });
@@ -285,7 +286,7 @@ async function freshDiscordProfile(userId: string, accessToken?: string) {
 
 authRouter.get('/me', authMiddleware, async (req: Request, res: Response) => {
   if (!req.user) {
-    res.status(401).json({ error: 'Non connecté' });
+    res.status(401).json({ error: trq('Non connecté') });
     return;
   }
   const { accessToken, ...safeUser } = req.user;

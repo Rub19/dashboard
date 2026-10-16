@@ -5,6 +5,7 @@ import { giveawayService } from '../../modules/giveaways/services/giveawayServic
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { handleRouteError } from '../utils/routeError.js';
 import { DESTINATION_CHANNEL_TYPES } from '../../utils/channelSend.js';
+import { trq } from '../../utils/tr.js';
 
 export function createGiveawayRouter(discordClient: Client) {
   const router = express.Router({ mergeParams: true });
@@ -12,7 +13,7 @@ export function createGiveawayRouter(discordClient: Client) {
   // Chaque action vise un giveaway de CE serveur : sinon un admin pourrait agir sur le tirage d'un autre serveur.
   const sameGuild = (req: Request, giveawayId: string, res: Response): boolean => {
     if (giveawayStorage.getById(giveawayId)?.guildId === String(req.params.guildId)) return true;
-    res.status(404).json({ success: false, error: 'Tirage introuvable sur ce serveur.' });
+    res.status(404).json({ success: false, error: trq('Tirage introuvable sur ce serveur.') });
     return false;
   };
 
@@ -76,7 +77,7 @@ export function createGiveawayRouter(discordClient: Client) {
       } = req.body;
 
       if (!channelId || !prize || !durationMinutes) {
-        res.status(400).json({ error: 'Champs requis manquants (channelId, prize, durationMinutes)' });
+        res.status(400).json({ error: trq('Champs requis manquants (channelId, prize, durationMinutes)') });
         return;
       }
 
@@ -159,7 +160,7 @@ export function createGiveawayRouter(discordClient: Client) {
     if (!sameGuild(req, giveawayId, res)) return;
     const gw = giveawayStorage.getById(giveawayId);
     if (!gw) {
-      res.status(404).json({ error: 'Giveaway introuvable' });
+      res.status(404).json({ error: trq('Giveaway introuvable') });
       return;
     }
     res.json({ participants: gw.participants });
@@ -172,7 +173,7 @@ export function createGiveawayRouter(discordClient: Client) {
 
     // Le tirage doit appartenir à CE serveur (sinon un admin pourrait retirer des participants ailleurs).
     if (giveawayStorage.getById(giveawayId)?.guildId !== guildId) {
-      res.status(404).json({ success: false, error: 'Tirage introuvable sur ce serveur.' });
+      res.status(404).json({ success: false, error: trq('Tirage introuvable sur ce serveur.') });
       return;
     }
     const ok = giveawayStorage.removeParticipant(giveawayId, userId);

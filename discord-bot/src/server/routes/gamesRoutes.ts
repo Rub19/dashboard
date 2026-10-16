@@ -7,6 +7,7 @@ import { economyStorage } from '../../modules/economy/storage/economyStorage.js'
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { GamesConfigSchema } from '../../modules/games/types/games.js';
 import { logger } from '../../utils/logger.js';
+import { trq } from '../../utils/tr.js';
 
 /** Plafond de la cagnotte alimentée depuis le dashboard. */
 const JACKPOT_MAX = 10_000_000;
@@ -50,12 +51,12 @@ export function createGamesRoutes(client: Client): Router {
     // Champs connus seulement (la cagnotte ne se règle pas ici : elle passe par /jackpot/seed, contrôlée et plafonnée).
     const parsed = ConfigPatchSchema.safeParse(req.body ?? {});
     if (!parsed.success) {
-      res.status(400).json({ error: 'invalid_config', message: 'Réglages du casino invalides.', details: parsed.error.flatten() });
+      res.status(400).json({ error: 'invalid_config', message: trq('Réglages du casino invalides.'), details: parsed.error.flatten() });
       return;
     }
     const merged = { ...gamesStorage.getConfig(guildId), ...parsed.data };
     if (merged.minBet > merged.maxBet) {
-      res.status(400).json({ error: 'invalid_config', message: 'La mise minimale dépasse la mise maximale.' });
+      res.status(400).json({ error: 'invalid_config', message: trq('La mise minimale dépasse la mise maximale.') });
       return;
     }
     const updated = gamesStorage.updateConfig(guildId, parsed.data);
@@ -76,16 +77,16 @@ export function createGamesRoutes(client: Client): Router {
     const guildId = String(req.params.guildId);
     const amount = Number(req.body?.amount);
     if (!Number.isInteger(amount) || amount < 1 || amount > 1_000_000) {
-      res.status(400).json({ error: 'invalid_amount', message: 'Montant invalide (entre 1 et 1 000 000).' });
+      res.status(400).json({ error: 'invalid_amount', message: trq('Montant invalide (entre 1 et 1 000 000).') });
       return;
     }
     // La cagnotte crée de la monnaie : refusée quand le casino ou l'économie est coupé (comme les parties), et plafonnée.
     if (!gamesStorage.getConfig(guildId).enabled || !economyStorage.getConfig(guildId).enabled) {
-      res.status(403).json({ error: 'disabled', message: 'Le casino ou l’économie est désactivé sur ce serveur : active-les avant d’alimenter la cagnotte.' });
+      res.status(403).json({ error: 'disabled', message: trq('Le casino ou l’économie est désactivé sur ce serveur : active-les avant d’alimenter la cagnotte.') });
       return;
     }
     if (gamesStorage.getJackpot(guildId) + amount > JACKPOT_MAX) {
-      res.status(400).json({ error: 'jackpot_cap', message: `La cagnotte est plafonnée à ${JACKPOT_MAX.toLocaleString('fr-FR')}.` });
+      res.status(400).json({ error: 'jackpot_cap', message: trq('La cagnotte est plafonnée à {v0}.', { v0: JACKPOT_MAX.toLocaleString('fr-FR') }) });
       return;
     }
     const updated = gamesStorage.addToJackpot(guildId, amount);

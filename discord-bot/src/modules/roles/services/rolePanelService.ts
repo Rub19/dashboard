@@ -18,6 +18,7 @@ import { RoleItemStyle, RolePanel, RolePanelSchema } from '../types/rolePanel.js
 import { logService } from '../../logs/services/logService.js';
 import { logger } from '../../../utils/logger.js';
 import { isSensitiveRole } from '../../../utils/roleSafety.js';
+import { trg, trq } from '../../../utils/tr.js';
 
 class RolePanelService {
   private panelsPath = path.resolve(process.cwd(), 'data', 'role_panels.json');
@@ -150,14 +151,14 @@ class RolePanelService {
     panelId: string
   ): Promise<{ valid: boolean; errors: string[]; warnings: string[] }> {
     const panel = this.getPanel(guild.id, panelId);
-    if (!panel) throw new Error('Panel introuvable.');
+    if (!panel) throw new Error(trq('Panel introuvable.'));
 
     const errors: string[] = [];
     const warnings: string[] = [];
     const botMember = guild.members.me;
 
     if (!botMember || !botMember.permissions.has(PermissionFlagsBits.ManageRoles)) {
-      errors.push('Le bot ne possède pas la permission ManageRoles.');
+      errors.push(trq('Le bot ne possède pas la permission ManageRoles.'));
     }
 
     const botHighest = botMember ? botMember.roles.highest.position : 0;
@@ -166,10 +167,10 @@ class RolePanelService {
     if (panel.channelId) {
       const channel = guild.channels.cache.get(panel.channelId);
       if (!channel) {
-        errors.push(`Le salon textuel ${panel.channelId} a été supprimé de Discord.`);
+        errors.push(trq('Le salon textuel {channelId} a été supprimé de Discord.', { channelId: panel.channelId }));
       }
     } else {
-      warnings.push('Aucun salon textuel n’est encore associé à ce panel.');
+      warnings.push(trq('Aucun salon textuel n’est encore associé à ce panel.'));
     }
 
     // Vérifier le message
@@ -178,7 +179,7 @@ class RolePanelService {
       if (channel) {
         const msg = await channel.messages.fetch(panel.messageId).catch(() => null);
         if (!msg) {
-          warnings.push('Le message Discord n’a pas été trouvé (il a peut-être été supprimé).');
+          warnings.push(trq('Le message Discord n’a pas été trouvé (il a peut-être été supprimé).'));
         }
       }
     }
@@ -187,10 +188,10 @@ class RolePanelService {
     for (const item of panel.items) {
       const role = guild.roles.cache.get(item.roleId);
       if (!role) {
-        errors.push(`Le rôle "${item.label}" (${item.roleId}) n'existe plus sur Discord.`);
+        errors.push(trq('Le rôle "{label}" ({roleId}) n\'existe plus sur Discord.', { label: item.label, roleId: item.roleId }));
       } else if (role.position >= botHighest) {
         errors.push(
-          `Le rôle "${role.name}" est supérieur ou égal au rôle du bot dans la hiérarchie.`
+          trq('Le rôle "{name}" est supérieur ou égal au rôle du bot dans la hiérarchie.', { name: role.name })
         );
       }
     }
@@ -215,11 +216,11 @@ class RolePanelService {
     channelId: string
   ): Promise<{ success: boolean; messageId: string; channelName: string }> {
     const panel = this.getPanel(guild.id, panelId);
-    if (!panel) throw new Error('Panel introuvable.');
+    if (!panel) throw new Error(trq('Panel introuvable.'));
 
     const channel = guild.channels.cache.get(channelId) as TextChannel | undefined;
     if (!channel || channel.type !== ChannelType.GuildText) {
-      throw new Error('Salon textuel introuvable ou invalide.');
+      throw new Error(trq('Salon textuel introuvable ou invalide.'));
     }
 
     // Construction de l'embed
@@ -316,8 +317,8 @@ class RolePanelService {
     await logService.log(guild, {
       category: 'roles',
       type: 'ROLE_UPDATE',
-      title: '📢 Panel de Rôles Déployé',
-      description: `Le panel **${panel.name}** a été publié avec succès dans <#${channel.id}>.`,
+      title: trq('📢 Panel de Rôles Déployé'),
+      description: trq('Le panel **{name}** a été publié avec succès dans <#{id}>.', { name: panel.name, id: channel.id }),
       color: '#10B981',
       channelId: channel.id,
       channelName: channel.name,
@@ -347,24 +348,24 @@ class RolePanelService {
     const guild = member.guild;
     const panel = this.getPanel(guild.id, panelId);
     if (!panel) {
-      return { success: false, message: 'Ce panneau de rôles n’est plus disponible.', action: 'denied' };
+      return { success: false, message: trg(guild, 'Ce panneau de rôles n’est plus disponible.'), action: 'denied' };
     }
 
     const item = panel.items.find((i) => i.id === itemId);
     if (!item) {
-      return { success: false, message: 'Ce rôle n’est plus configuré.', action: 'denied' };
+      return { success: false, message: trg(guild, 'Ce rôle n’est plus configuré.'), action: 'denied' };
     }
 
     const role = guild.roles.cache.get(item.roleId);
     if (!role) {
-      return { success: false, message: 'Ce rôle a été supprimé du serveur.', action: 'denied' };
+      return { success: false, message: trg(guild, 'Ce rôle a été supprimé du serveur.'), action: 'denied' };
     }
 
     const botMember = guild.members.me;
     if (!botMember || !botMember.permissions.has(PermissionFlagsBits.ManageRoles)) {
       return {
         success: false,
-        message: 'Le bot ne dispose pas de la permission de gérer les rôles.',
+        message: trg(guild, 'Le bot ne dispose pas de la permission de gérer les rôles.'),
         action: 'denied',
       };
     }
@@ -372,7 +373,7 @@ class RolePanelService {
     if (role.position >= botMember.roles.highest.position) {
       return {
         success: false,
-        message: 'Le bot ne peut pas attribuer ce rôle car il est supérieur à son propre rôle.',
+        message: trg(guild, 'Le bot ne peut pas attribuer ce rôle car il est supérieur à son propre rôle.'),
         action: 'denied',
       };
     }
@@ -384,7 +385,7 @@ class RolePanelService {
         const prereqRole = guild.roles.cache.get(item.prerequisiteRoleId);
         return {
           success: false,
-          message: `🔒 Vous devez posséder le rôle **@${prereqRole?.name || 'Requis'}** pour obtenir ce rôle.`,
+          message: trg(guild, '🔒 Vous devez posséder le rôle **@{v0}** pour obtenir ce rôle.', { v0: prereqRole?.name || 'Requis' }),
           action: 'denied',
         };
       }
@@ -434,8 +435,8 @@ class RolePanelService {
       await logService.log(guild, {
         category: 'roles',
         type: 'ROLE_UPDATE',
-        title: '🎭 Rôle Retiré',
-        description: `**${member.user.tag}** a retiré le rôle **@${role.name}** via le panel **${panel.name}**.`,
+        title: trg(guild, '🎭 Rôle Retiré'),
+        description: trg(guild, '**{tag}** a retiré le rôle **@{name}** via le panel **{name2}**.', { tag: member.user.tag, name: role.name, name2: panel.name }),
         color: '#EF4444',
         userId: member.id,
         userTag: member.user.tag,
@@ -448,13 +449,13 @@ class RolePanelService {
 
       return {
         success: true,
-        message: `🗑️ Le rôle **@${role.name}** vous a été retiré.`,
+        message: trg(guild, '🗑️ Le rôle **@{name}** vous a été retiré.', { name: role.name }),
         action: 'removed',
       };
     } else {
       if (isSensitiveRole(role)) {
         logger.warn(`[RolePanel] Rôle sensible refusé (${role.name}) sur ${member.guild.id}`);
-        return { success: false, message: `❌ Le rôle **@${role.name}** a des permissions de modération : il ne peut pas être pris en libre-service.`, action: 'denied' };
+        return { success: false, message: trg(guild, '❌ Le rôle **@{name}** a des permissions de modération : il ne peut pas être pris en libre-service.', { name: role.name }), action: 'denied' };
       }
       await member.roles.add(role, 'Attribution par utilisateur (Role Panel)');
 
@@ -466,8 +467,8 @@ class RolePanelService {
       await logService.log(guild, {
         category: 'roles',
         type: 'ROLE_UPDATE',
-        title: '🎭 Rôle Attribué',
-        description: `**${member.user.tag}** a obtenu le rôle **@${role.name}** via le panel **${panel.name}**.`,
+        title: trg(guild, '🎭 Rôle Attribué'),
+        description: trg(guild, '**{tag}** a obtenu le rôle **@{name}** via le panel **{name2}**.', { tag: member.user.tag, name: role.name, name2: panel.name }),
         color: '#10B981',
         userId: member.id,
         userTag: member.user.tag,
@@ -480,7 +481,7 @@ class RolePanelService {
 
       return {
         success: true,
-        message: `✅ Le rôle **@${role.name}** vous a été attribué !${extraText}`,
+        message: trg(guild, '✅ Le rôle **@{name}** vous a été attribué !{extraText}', { name: role.name, extraText }),
         action: 'added',
       };
     }

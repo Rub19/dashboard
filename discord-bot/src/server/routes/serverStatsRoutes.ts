@@ -6,6 +6,7 @@ import { renderTemplate, needsMemberFetch, TOKEN_DOCS } from '../../modules/serv
 import { StatChannelSchema, StatsConfigSchema } from '../../modules/serverStats/types/serverStats.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { handleClientError } from '../utils/routeError.js';
+import { trq } from '../../utils/tr.js';
 
 /**
  * API Dashboard du module Server Stats.
@@ -27,7 +28,7 @@ export function createServerStatsRouter(client: Client) {
     const allowed = StatsConfigSchema.partial().omit({ guildId: true, updatedAt: true });
     const parsed = allowed.safeParse(req.body);
     if (!parsed.success) {
-      res.status(400).json({ error: 'Configuration invalide', details: parsed.error.flatten() });
+      res.status(400).json({ error: trq('Configuration invalide'), details: parsed.error.flatten() });
       return;
     }
     const updated = serverStatsStorage.updateConfig(guildId, parsed.data);
@@ -45,7 +46,7 @@ export function createServerStatsRouter(client: Client) {
     const guild = client.guilds.cache.get(String(req.params.guildId));
     const template = typeof req.body?.template === 'string' ? req.body.template.slice(0, 100) : '';
     if (!guild || !template) {
-      res.status(400).json({ error: 'Serveur ou modèle manquant' });
+      res.status(400).json({ error: trq('Serveur ou modèle manquant') });
       return;
     }
     if (needsMemberFetch(template)) await guild.members.fetch().catch(() => {});
@@ -57,7 +58,7 @@ export function createServerStatsRouter(client: Client) {
     const guild = client.guilds.cache.get(String(req.params.guildId));
     const preset = String(req.body?.preset ?? '');
     if (!guild || !COUNTER_PRESETS.some((p) => p.id === preset)) {
-      res.status(400).json({ error: 'Serveur ou ensemble inconnu' });
+      res.status(400).json({ error: trq('Serveur ou ensemble inconnu') });
       return;
     }
     try {
@@ -75,11 +76,11 @@ export function createServerStatsRouter(client: Client) {
     const allowed = StatChannelSchema.partial().omit({ guildId: true, channelId: true, lastValue: true, createdAt: true });
     const parsed = allowed.safeParse(req.body);
     if (!parsed.success || !parsed.data.type) {
-      res.status(400).json({ error: 'Type de statistique requis', details: parsed.success ? undefined : parsed.error.flatten() });
+      res.status(400).json({ error: trq('Type de statistique requis'), details: parsed.success ? undefined : parsed.error.flatten() });
       return;
     }
     if (!serverStatsStorage.get(guildId, channelId) && !serverStatsStorage.canAddMore(guildId)) {
-      res.status(429).json({ error: `Limite de ${MAX_STAT_CHANNELS} salons compteurs atteinte.` });
+      res.status(429).json({ error: trq('Limite de {MAX_STAT_CHANNELS} salons compteurs atteinte.', { MAX_STAT_CHANNELS }) });
       return;
     }
     const stat = serverStatsStorage.upsert({
@@ -103,7 +104,7 @@ export function createServerStatsRouter(client: Client) {
   router.post('/refresh', async (req: Request, res: Response): Promise<void> => {
     const guild = client.guilds.cache.get(String(req.params.guildId));
     if (!guild) {
-      res.status(404).json({ error: 'Serveur introuvable' });
+      res.status(404).json({ error: trq('Serveur introuvable') });
       return;
     }
     await serverStatsService.forceRefresh(guild).catch(() => {});

@@ -9,6 +9,7 @@ import { AutoModRiskEngine } from '../../modules/automod/services/autoModRiskEng
 import { rateLimit, idempotent, guildLock } from '../middleware/antiAbuseMiddleware.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { handleRouteError, handleClientError } from '../utils/routeError.js';
+import { trq } from '../../utils/tr.js';
 
 export function createAutoModRouter(discordClient: Client) {
   const router = express.Router({ mergeParams: true });
@@ -117,7 +118,7 @@ export function createAutoModRouter(discordClient: Client) {
       try {
         const updated = autoModRepository.updateRule(guildId, ruleId, req.body);
         if (!updated) {
-          res.status(404).json({ error: 'Règle introuvable' });
+          res.status(404).json({ error: trq('Règle introuvable') });
           return;
         }
         res.json({ success: true, rule: updated });
@@ -153,7 +154,7 @@ export function createAutoModRouter(discordClient: Client) {
     const { messageContent, userId, channelId } = req.body;
 
     if (!messageContent || typeof messageContent !== 'string') {
-      res.status(400).json({ error: 'Contenu de message requis pour le test' });
+      res.status(400).json({ error: trq('Contenu de message requis pour le test') });
       return;
     }
 
@@ -186,7 +187,7 @@ export function createAutoModRouter(discordClient: Client) {
     const guildId = String(req.params.guildId);
     const { userId } = req.body;
     if (!userId) {
-      res.status(400).json({ error: 'userId manquant' });
+      res.status(400).json({ error: trq('userId manquant') });
       return;
     }
     try {
@@ -212,7 +213,7 @@ export function createAutoModRouter(discordClient: Client) {
 
     const user = member?.user || discordClient.users.cache.get(userId);
     if (!user) {
-      res.status(404).json({ error: 'Utilisateur introuvable' });
+      res.status(404).json({ error: trq('Utilisateur introuvable') });
       return;
     }
 

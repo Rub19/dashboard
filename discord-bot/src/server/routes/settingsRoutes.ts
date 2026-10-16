@@ -8,6 +8,7 @@ import { PREVIEW_CATEGORIES, sendPreview } from '../../modules/preview/services/
 import { authMiddleware } from '../middleware/auth.js';
 import { createGuildAuthMiddleware } from '../middleware/guildAuth.js';
 import { handleRouteError } from '../utils/routeError.js';
+import { trq } from '../../utils/tr.js';
 
 const PatchSettingsSchema = z.object({
   botName: z.string().min(1).max(32).optional(),
@@ -87,7 +88,7 @@ export function createSettingsRouter(client: Client): express.Router {
     const parsed = PatchSettingsSchema.safeParse(req.body);
     if (!parsed.success) {
       res.status(400).json({
-        error: 'Données de configuration invalides',
+        error: trq('Données de configuration invalides'),
         details: parsed.error.format(),
       });
       return;
@@ -100,7 +101,7 @@ export function createSettingsRouter(client: Client): express.Router {
       });
       res.json({ success: true, config: updated });
     } catch (err) {
-      res.status(500).json({ error: 'Erreur lors de la sauvegarde des paramètres' });
+      res.status(500).json({ error: trq('Erreur lors de la sauvegarde des paramètres') });
     }
   });
 
@@ -111,7 +112,7 @@ export function createSettingsRouter(client: Client): express.Router {
   router.post('/:guildId/settings/emergency-test', authMiddleware, guildAuth, async (req: Request, res: Response): Promise<void> => {
     const guild = client.guilds.cache.get(String(req.params.guildId));
     if (!guild) {
-      res.status(404).json({ error: 'Serveur introuvable ou bot non connecté' });
+      res.status(404).json({ error: trq('Serveur introuvable ou bot non connecté') });
       return;
     }
     const delivered = await notify(guild, [], true);
@@ -126,11 +127,11 @@ export function createSettingsRouter(client: Client): express.Router {
     const guild = client.guilds.cache.get(String(req.params.guildId));
     const category = typeof req.body?.category === 'string' ? req.body.category : null;
     if (!guild || !req.user?.id) {
-      res.status(404).json({ error: 'Serveur introuvable ou bot non connecté' });
+      res.status(404).json({ error: trq('Serveur introuvable ou bot non connecté') });
       return;
     }
     if (category && !PREVIEW_CATEGORIES.some(([k]) => k === category)) {
-      res.status(400).json({ error: 'Catégorie inconnue' });
+      res.status(400).json({ error: trq('Catégorie inconnue') });
       return;
     }
     try {
@@ -144,7 +145,7 @@ export function createSettingsRouter(client: Client): express.Router {
   router.get('/:guildId/settings/health', authMiddleware, guildAuth, (req: Request, res: Response): void => {
     const guild = client.guilds.cache.get(String(req.params.guildId));
     if (!guild) {
-      res.status(404).json({ error: 'Serveur introuvable ou bot non connecté' });
+      res.status(404).json({ error: trq('Serveur introuvable ou bot non connecté') });
       return;
     }
     res.json({ issues: collectIssues(guild) });

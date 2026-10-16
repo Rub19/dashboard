@@ -23,7 +23,7 @@ for (const rel of fs.readdirSync(root, { recursive: true })) {
   const visit = (n) => {
     if (ts.isCallExpression(n) && ts.isIdentifier(n.expression)) {
       const name = n.expression.text;
-      const idx = name === 't' ? 0 : name === 'tr' || name === 'trg' ? 1 : -1;
+      const idx = name === 't' || name === 'trq' || name === 'trs' ? 0 : name === 'tr' || name === 'trg' ? 1 : -1;
       if (idx >= 0) {
         const out = [];
         literals(n.arguments[idx], out);

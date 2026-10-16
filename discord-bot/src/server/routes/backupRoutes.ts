@@ -8,6 +8,7 @@ import { rateLimit, idempotent, guildLock } from '../middleware/antiAbuseMiddlew
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { clientErrorMessage } from '../utils/routeError.js';
 import { z } from 'zod';
+import { trq } from '../../utils/tr.js';
 
 // Champs inconnus ignorés (l'ancienne page renvoie l'objet complet, guildId compris).
 const BackupSettingsPatchSchema = z
@@ -43,7 +44,7 @@ export function createBackupRouter(client: Client): Router {
       res.json(overview);
     } catch (err: any) {
       logger.error('Erreur GET /backups/overview :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -62,7 +63,7 @@ export function createBackupRouter(client: Client): Router {
       res.json({ backups, total: backups.length });
     } catch (err: any) {
       logger.error('Erreur GET /backups :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -78,7 +79,7 @@ export function createBackupRouter(client: Client): Router {
       const { name, description, type, isProtected, includedComponents } = req.body;
 
       if (!name || typeof name !== 'string') {
-        return res.status(400).json({ error: 'Le nom de la sauvegarde est requis' });
+        return res.status(400).json({ error: trq('Le nom de la sauvegarde est requis') });
       }
 
       const user = (req as any).user || { id: 'admin', username: 'DashboardAdmin' };
@@ -99,7 +100,7 @@ export function createBackupRouter(client: Client): Router {
       res.status(201).json(snapshot);
     } catch (err: any) {
       logger.error('Erreur POST /backups :', err);
-      res.status(500).json({ error: 'Erreur lors de la création de la sauvegarde' });
+      res.status(500).json({ error: trq('Erreur lors de la création de la sauvegarde') });
     }
   });
 
@@ -115,7 +116,7 @@ export function createBackupRouter(client: Client): Router {
         const { payload, allowCrossGuildMigration } = req.body;
 
         if (!payload || typeof payload !== 'object') {
-          return res.status(400).json({ error: 'Payload de sauvegarde requis' });
+          return res.status(400).json({ error: trq('Payload de sauvegarde requis') });
         }
 
         const user = (req as any).user || { id: 'admin', username: 'DashboardAdmin' };
@@ -145,7 +146,7 @@ export function createBackupRouter(client: Client): Router {
       res.json(settings);
     } catch (err: any) {
       logger.error('Erreur GET /backups/settings :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -155,14 +156,14 @@ export function createBackupRouter(client: Client): Router {
       // Bornes strictes : la rétention et la fréquence déterminent l'espace disque utilisé sur le serveur du bot.
       const parsed = BackupSettingsPatchSchema.safeParse(req.body ?? {});
       if (!parsed.success) {
-        return res.status(400).json({ error: 'Réglages de sauvegarde invalides', details: parsed.error.flatten() });
+        return res.status(400).json({ error: trq('Réglages de sauvegarde invalides'), details: parsed.error.flatten() });
       }
       const updated = backupRepository.saveSettings(guildId, parsed.data);
       emitConfigUpdated('backups', guildId, updated, 'DASHBOARD', req.user?.id);
       res.json(updated);
     } catch (err: any) {
       logger.error('Erreur PUT /backups/settings :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -173,14 +174,14 @@ export function createBackupRouter(client: Client): Router {
       const { backupAId, backupBId } = req.body;
 
       if (!backupAId || !backupBId) {
-        return res.status(400).json({ error: 'backupAId et backupBId sont requis' });
+        return res.status(400).json({ error: trq('backupAId et backupBId sont requis') });
       }
 
       const diff = await backupService.compare(guildId, backupAId, backupBId);
       res.json(diff);
     } catch (err: any) {
       logger.error('Erreur POST /backups/compare :', err);
-      res.status(500).json({ error: 'Erreur lors de la comparaison' });
+      res.status(500).json({ error: trq('Erreur lors de la comparaison') });
     }
   });
 
@@ -191,12 +192,12 @@ export function createBackupRouter(client: Client): Router {
       const jobId = requireStringParam(req.params.jobId, 'jobId');
       const job = backupService.getJob(guildId, jobId);
       if (!job) {
-        return res.status(404).json({ error: 'Job introuvable' });
+        return res.status(404).json({ error: trq('Job introuvable') });
       }
       res.json(job);
     } catch (err: any) {
       logger.error('Erreur GET /backups/jobs/:jobId :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -207,12 +208,12 @@ export function createBackupRouter(client: Client): Router {
       const backupId = requireStringParam(req.params.backupId, 'backupId');
       const result = backupService.getBackup(guildId, backupId);
       if (!result.snapshot) {
-        return res.status(404).json({ error: 'Sauvegarde introuvable' });
+        return res.status(404).json({ error: trq('Sauvegarde introuvable') });
       }
       res.json(result);
     } catch (err: any) {
       logger.error('Erreur GET /backups/:backupId :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -225,7 +226,7 @@ export function createBackupRouter(client: Client): Router {
       res.json(testResult);
     } catch (err: any) {
       logger.error('Erreur POST /backups/:backupId/test :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -236,7 +237,7 @@ export function createBackupRouter(client: Client): Router {
       const backupId = requireStringParam(req.params.backupId, 'backupId');
       const result = backupService.getBackup(guildId, backupId);
       if (!result.snapshot) {
-        return res.status(404).json({ error: 'Sauvegarde introuvable' });
+        return res.status(404).json({ error: trq('Sauvegarde introuvable') });
       }
 
       const fileName = `${result.snapshot.backupId}.ethone-backup.json`;
@@ -245,7 +246,7 @@ export function createBackupRouter(client: Client): Router {
       res.send(JSON.stringify(result.snapshot, null, 2));
     } catch (err: any) {
       logger.error('Erreur GET /backups/:backupId/download :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -263,13 +264,13 @@ export function createBackupRouter(client: Client): Router {
       });
 
       if (!ok) {
-        return res.status(404).json({ error: 'Sauvegarde introuvable' });
+        return res.status(404).json({ error: trq('Sauvegarde introuvable') });
       }
 
       res.json({ success: true, isProtected: Boolean(isProtected) });
     } catch (err: any) {
       logger.error('Erreur PATCH /backups/:backupId/protect :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: trq('Erreur serveur') });
     }
   });
 
@@ -286,10 +287,10 @@ export function createBackupRouter(client: Client): Router {
       });
 
       if (!ok) {
-        return res.status(404).json({ error: 'Sauvegarde introuvable' });
+        return res.status(404).json({ error: trq('Sauvegarde introuvable') });
       }
 
-      res.json({ success: true, message: 'Sauvegarde supprimée avec succès' });
+      res.json({ success: true, message: trq('Sauvegarde supprimée avec succès') });
     } catch (err: any) {
       logger.error('Erreur DELETE /backups/:backupId :', err);
       res.status(400).json({ error: clientErrorMessage(err, 'Erreur lors de la suppression') });
@@ -314,7 +315,7 @@ export function createBackupRouter(client: Client): Router {
       res.json(plan);
     } catch (err: any) {
       logger.error('Erreur POST /backups/:backupId/preview-restore :', err);
-      res.status(500).json({ error: 'Erreur lors de la prévisualisation' });
+      res.status(500).json({ error: trq('Erreur lors de la prévisualisation') });
     }
   });
 
@@ -335,7 +336,7 @@ export function createBackupRouter(client: Client): Router {
         const guild = client.guilds.cache.get(guildId);
         if (guild && confirmServerName !== guild.name) {
           return res.status(400).json({
-            error: `Le nom du serveur saisi ne correspond pas ("${guild.name}"). Confirmation destructive refusée.`,
+            error: trq('Le nom du serveur saisi ne correspond pas ("{name}"). Confirmation destructive refusée.', { name: guild.name }),
           });
         }
       }
@@ -354,7 +355,7 @@ export function createBackupRouter(client: Client): Router {
       res.json(job);
     } catch (err: any) {
       logger.error('Erreur POST /backups/:backupId/restore :', err);
-      res.status(500).json({ error: 'Erreur lors du lancement de la restauration' });
+      res.status(500).json({ error: trq('Erreur lors du lancement de la restauration') });
     }
   });
 

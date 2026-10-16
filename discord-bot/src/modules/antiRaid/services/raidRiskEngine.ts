@@ -1,6 +1,7 @@
 import { ThreatLevel } from '../types/antiRaid.js';
 import { raidCache } from './raidCache.js';
 import { raidConfigService } from './raidConfigService.js';
+import { trs } from '../../../utils/tr.js';
 
 export interface RiskAnalysisResult {
   score: number; // 0 to 100
@@ -35,13 +36,13 @@ class RaidRiskEngine {
 
     if (joins10s >= joinThreshold) {
       joinRisk += 25;
-      signals.push(`Burst de joins intense (${joins10s} arrivées en 10s)`);
+      signals.push(trs('Burst de joins intense ({joins10s} arrivées en 10s)', { joins10s }));
     } else if (joins30s >= joinThreshold) {
       joinRisk += 18;
-      signals.push(`Vitesse de join élevée (${joins30s} en 30s)`);
+      signals.push(trs('Vitesse de join élevée ({joins30s} en 30s)', { joins30s }));
     } else if (joins60s > baselineJoinsPerMin * 5 && joins60s >= 5) {
       joinRisk += 12;
-      signals.push(`Anomalie de joins vs trafic normal (${joins60s}/min vs ~${baselineJoinsPerMin.toFixed(1)}/min)`);
+      signals.push(trs('Anomalie de joins vs trafic normal ({joins60s}/min vs ~{v1}/min)', { joins60s, v1: baselineJoinsPerMin.toFixed(1) }));
     }
 
     // Inspecter les membres récents des 30 dernières secondes
@@ -52,11 +53,11 @@ class RaidRiskEngine {
 
       if (recentAccountCount >= 3) {
         joinRisk += 8;
-        signals.push(`${recentAccountCount} nouveaux comptes créés il y a <24h`);
+        signals.push(trs('{recentAccountCount} nouveaux comptes créés il y a <24h', { recentAccountCount }));
       }
       if (defaultAvatarCount >= 4 && defaultAvatarCount / recentMembers.length > 0.6) {
         joinRisk += 7;
-        signals.push(`Forte proportion de comptes sans avatar (${defaultAvatarCount}/${recentMembers.length})`);
+        signals.push(trs('Forte proportion de comptes sans avatar ({defaultAvatarCount}/{length})', { defaultAvatarCount, length: recentMembers.length }));
       }
     }
     joinRisk = Math.min(35, joinRisk);
@@ -68,18 +69,18 @@ class RaidRiskEngine {
 
     if (messages10s > 25) {
       messageRisk += 12;
-      signals.push(`Spam de messages massif (${messages10s} msgs en 10s)`);
+      signals.push(trs('Spam de messages massif ({messages10s} msgs en 10s)', { messages10s }));
     } else if (messages10s > 15) {
       messageRisk += 6;
-      signals.push(`Fréquence de messages élevée (${messages10s} msgs en 10s)`);
+      signals.push(trs('Fréquence de messages élevée ({messages10s} msgs en 10s)', { messages10s }));
     }
 
     if (mentions10s >= 10) {
       messageRisk += 15;
-      signals.push(`Rafale de mentions suspecte (${mentions10s} mentions en 10s)`);
+      signals.push(trs('Rafale de mentions suspecte ({mentions10s} mentions en 10s)', { mentions10s }));
     } else if (mentions10s >= 5) {
       messageRisk += 8;
-      signals.push(`Nombre élevé de mentions (${mentions10s} mentions en 10s)`);
+      signals.push(trs('Nombre élevé de mentions ({mentions10s} mentions en 10s)', { mentions10s }));
     }
     messageRisk = Math.min(25, messageRisk);
 
@@ -93,29 +94,29 @@ class RaidRiskEngine {
 
     if (channelDeletes >= config.serverNuke.maxChannelDeletes) {
       nukeRisk += 18;
-      signals.push(`Suppression massive de salons (${channelDeletes} en 15s)`);
+      signals.push(trs('Suppression massive de salons ({channelDeletes} en 15s)', { channelDeletes }));
     } else if (channelDeletes >= 1) {
       nukeRisk += 5;
     }
 
     if (roleDeletes >= config.serverNuke.maxRoleDeletes) {
       nukeRisk += 18;
-      signals.push(`Suppression massive de rôles (${roleDeletes} en 15s)`);
+      signals.push(trs('Suppression massive de rôles ({roleDeletes} en 15s)', { roleDeletes }));
     }
 
     if (channelCreates >= config.serverNuke.maxChannelCreates) {
       nukeRisk += 10;
-      signals.push(`Création en masse de salons (${channelCreates} en 15s)`);
+      signals.push(trs('Création en masse de salons ({channelCreates} en 15s)', { channelCreates }));
     }
 
     if (roleCreates >= config.serverNuke.maxRoleCreates) {
       nukeRisk += 10;
-      signals.push(`Création en masse de rôles (${roleCreates} en 15s)`);
+      signals.push(trs('Création en masse de rôles ({roleCreates} en 15s)', { roleCreates }));
     }
 
     if (webhookCreates >= config.serverNuke.maxWebhookCreates) {
       nukeRisk += 8;
-      signals.push(`Créations suspectes de webhooks (${webhookCreates} en 15s)`);
+      signals.push(trs('Créations suspectes de webhooks ({webhookCreates} en 15s)', { webhookCreates }));
     }
     nukeRisk = Math.min(30, nukeRisk);
 
@@ -126,14 +127,14 @@ class RaidRiskEngine {
 
     if (bans15s >= config.massMod.maxBans) {
       modRisk += 20;
-      signals.push(`Bans massifs détectés (${bans15s} bans en 15s)`);
+      signals.push(trs('Bans massifs détectés ({bans15s} bans en 15s)', { bans15s }));
     } else if (bans15s >= 2) {
       modRisk += 8;
     }
 
     if (kicks15s >= config.massMod.maxKicks) {
       modRisk += 18;
-      signals.push(`Expulsions massives détectées (${kicks15s} kicks en 15s)`);
+      signals.push(trs('Expulsions massives détectées ({kicks15s} kicks en 15s)', { kicks15s }));
     } else if (kicks15s >= 2) {
       modRisk += 7;
     }
@@ -144,7 +145,7 @@ class RaidRiskEngine {
     const recentBots = recentMembers.filter((m) => m.isBot);
     if (recentBots.length >= config.botRaid.maxBotsInWindow) {
       botRisk += 15;
-      signals.push(`Ajout de bots en rafale (${recentBots.length} bots en 30s)`);
+      signals.push(trs('Ajout de bots en rafale ({length} bots en 30s)', { length: recentBots.length }));
     } else if (recentBots.length >= 1) {
       botRisk += 5;
     }
@@ -155,7 +156,7 @@ class RaidRiskEngine {
     const leaves30s = raidCache.getLeavesInWindow(guildId, 30);
     if (leaves30s >= 10) {
       leaveRisk += 12;
-      signals.push(`Vague anormale de départs de membres (${leaves30s} départs en 30s)`);
+      signals.push(trs('Vague anormale de départs de membres ({leaves30s} départs en 30s)', { leaves30s }));
     } else if (leaves30s >= 5) {
       leaveRisk += 5;
     }

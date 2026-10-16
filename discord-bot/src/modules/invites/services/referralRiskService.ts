@@ -1,6 +1,7 @@
 import { GuildMember } from 'discord.js';
 import { RiskLevel } from '../types/index.js';
 import { inviteRepository } from '../storage/inviteRepository.js';
+import { trq } from '../../../utils/tr.js';
 
 export interface RiskEvaluation {
   riskScore: number;
@@ -30,13 +31,13 @@ export class ReferralRiskService {
     // 1. Check account age
     if (accountAgeHours < 2) {
       score += 55;
-      reasons.push(`Compte très récent (${Math.round(accountAgeHours * 60)} min)`);
+      reasons.push(trq('Compte très récent ({v0} min)', { v0: Math.round(accountAgeHours * 60) }));
     } else if (accountAgeHours < 24) {
       score += 35;
-      reasons.push(`Compte créé il y a moins de 24h`);
+      reasons.push(trq('Compte créé il y a moins de 24h'));
     } else if (accountAgeDays < 7) {
       score += 15;
-      reasons.push(`Compte créé il y a moins d'une semaine`);
+      reasons.push(trq('Compte créé il y a moins d\'une semaine'));
     }
 
     // 2. Check burst joins for this inviter in the last 3 minutes
@@ -48,7 +49,7 @@ export class ReferralRiskService {
 
     if (recentByInviter.length >= 4) {
       score += 40;
-      reasons.push(`Vague rapide d'invitations (${recentByInviter.length} joins en < 3 min)`);
+      reasons.push(trq('Vague rapide d\'invitations ({length} joins en < 3 min)', { length: recentByInviter.length }));
     }
 
     // 3. Check inviter's churn history
@@ -58,7 +59,7 @@ export class ReferralRiskService {
       const leaveRate = leftCount / allByInviter.length;
       if (leaveRate >= 0.7) {
         score += 25;
-        reasons.push(`Taux de désertion élevé de l'inviteur (${Math.round(leaveRate * 100)}% de départs)`);
+        reasons.push(trq('Taux de désertion élevé de l\'inviteur ({v0}% de départs)', { v0: Math.round(leaveRate * 100) }));
       }
     }
 

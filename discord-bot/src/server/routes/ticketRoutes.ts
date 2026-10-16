@@ -19,6 +19,7 @@ import { logger } from '../../utils/logger.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { rateLimit, idempotent } from '../middleware/antiAbuseMiddleware.js';
 import { handleRouteError, handleClientError } from '../utils/routeError.js';
+import { trq } from '../../utils/tr.js';
 
 export function createTicketRouter(discordClient: Client) {
   const router = express.Router({ mergeParams: true });
@@ -92,7 +93,7 @@ export function createTicketRouter(discordClient: Client) {
       const ticketId = String(req.params.ticketId);
       const ticket = ticketService.getTicketById(guildId, ticketId);
       if (!ticket) {
-        res.status(404).json({ error: 'Ticket introuvable' });
+        res.status(404).json({ error: trq('Ticket introuvable') });
         return;
       }
       res.json({ ticket });
@@ -113,7 +114,7 @@ export function createTicketRouter(discordClient: Client) {
       const staffTag = me ? me.globalName || me.username : req.body.staffTag;
       const staffAvatar = me ? (me.avatar ? `https://cdn.discordapp.com/avatars/${me.id}/${me.avatar}.png` : null) : req.body.staffAvatar;
       if (!staffId || !staffTag) {
-        res.status(400).json({ error: 'staffId et staffTag sont requis.' });
+        res.status(400).json({ error: trq('staffId et staffTag sont requis.') });
         return;
       }
       const ticket = await ticketService.claimTicket(guildId, ticketId, {
@@ -222,7 +223,7 @@ export function createTicketRouter(discordClient: Client) {
       const ticketId = String(req.params.ticketId);
       const { content, author } = req.body;
       if (!content || !content.trim()) {
-        res.status(400).json({ error: 'Le contenu de la note est requis.' });
+        res.status(400).json({ error: trq('Le contenu de la note est requis.') });
         return;
       }
       const ticket = await ticketService.addInternalNote(
@@ -246,7 +247,7 @@ export function createTicketRouter(discordClient: Client) {
 
       const guild = discordClient.guilds.cache.get(guildId);
       if (!guild) {
-        res.status(404).json({ error: 'Serveur Discord introuvable' });
+        res.status(404).json({ error: trq('Serveur Discord introuvable') });
         return;
       }
 
@@ -271,7 +272,7 @@ export function createTicketRouter(discordClient: Client) {
 
       const guild = discordClient.guilds.cache.get(guildId);
       if (!guild) {
-        res.status(404).json({ error: 'Serveur Discord introuvable' });
+        res.status(404).json({ error: trq('Serveur Discord introuvable') });
         return;
       }
 
@@ -383,25 +384,25 @@ export function createTicketRouter(discordClient: Client) {
 
     const guild = discordClient.guilds.cache.get(guildId);
     if (!guild) {
-      res.status(404).json({ error: 'Serveur introuvable' });
+      res.status(404).json({ error: trq('Serveur introuvable') });
       return;
     }
 
     const panel = ticketService.getPanels(guildId).find((p) => p.id === panelId);
     if (!panel) {
-      res.status(404).json({ error: 'Panel introuvable' });
+      res.status(404).json({ error: trq('Panel introuvable') });
       return;
     }
 
     const targetChannelId = channelId || panel.channelId;
     if (!targetChannelId) {
-      res.status(400).json({ error: 'Veuillez sélectionner un salon textuel de destination.' });
+      res.status(400).json({ error: trq('Veuillez sélectionner un salon textuel de destination.') });
       return;
     }
 
     const channel = guild.channels.cache.get(targetChannelId) as TextChannel | undefined;
     if (!channel || channel.type !== ChannelType.GuildText) {
-      res.status(400).json({ error: 'Le salon sélectionné est introuvable ou n’est pas textuel.' });
+      res.status(400).json({ error: trq('Le salon sélectionné est introuvable ou n’est pas textuel.') });
       return;
     }
 
@@ -413,7 +414,7 @@ export function createTicketRouter(discordClient: Client) {
           panel.description ||
             'Besoin d’aide ou d’une question ? Cliquez sur le bouton ci-dessous pour créer un ticket.'
         )
-        .setFooter({ text: `${guild.name} • Système de Support` })
+        .setFooter({ text: trq('{name} • Système de Support', { name: guild.name }) })
         .setTimestamp();
 
       const allCategories = ticketService.getCategories(guildId);
@@ -459,7 +460,7 @@ export function createTicketRouter(discordClient: Client) {
       res.json({ success: true, messageId: sent.id, channelName: channel.name });
     } catch (err: any) {
       logger.error('Erreur publication panel tickets :', err);
-      res.status(500).json({ error: 'Impossible de publier le panel sur Discord' });
+      res.status(500).json({ error: trq('Impossible de publier le panel sur Discord') });
     }
   });
 
@@ -546,7 +547,7 @@ export function createTicketRouter(discordClient: Client) {
       if (updated.mode === 'forum') {
         const guild = discordClient.guilds.cache.get(guildId);
         if (guild) await resolveConfiguredForum(guild, updated.forumChannelId);
-        else if (!updated.forumChannelId) throw new Error('Sélectionnez le forum des tickets.');
+        else if (!updated.forumChannelId) throw new Error(trq('Sélectionnez le forum des tickets.'));
       }
       ticketService.saveConfig(guildId, updated);
       emitConfigUpdated('tickets', guildId, updated, 'DASHBOARD', req.user?.id);
@@ -562,7 +563,7 @@ export function createTicketRouter(discordClient: Client) {
     try {
       const guild = discordClient.guilds.cache.get(guildId);
       if (!guild) {
-        res.status(404).json({ error: 'Serveur Discord introuvable' });
+        res.status(404).json({ error: trq('Serveur Discord introuvable') });
         return;
       }
       const current = ticketService.getConfig(guildId);
@@ -605,7 +606,7 @@ export function createTicketRouter(discordClient: Client) {
       }
     }
 
-    res.status(404).send('Transcript introuvable pour ce ticket.');
+    res.status(404).send(trq('Transcript introuvable pour ce ticket.'));
   });
 
   // 12. Catégories Discord du serveur

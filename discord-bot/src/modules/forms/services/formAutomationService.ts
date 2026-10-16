@@ -3,6 +3,7 @@ import { DiscordForm, FormResponse, AutomationTrigger } from '../types/index.js'
 import { ticketService } from '../../tickets/services/ticketService.js';
 import { logger } from '../../../utils/logger.js';
 import { isSendableTarget, sendToConfiguredChannel } from '../../../utils/channelSend.js';
+import { trs } from '../../../utils/tr.js';
 
 export class FormAutomationService {
   private client: Client | null = null;
@@ -43,7 +44,7 @@ export class FormAutomationService {
               if (!action.targetRoleId) break;
               const success = await this.assignRole(form.guildId, response.userId, action.targetRoleId);
               if (success) {
-                executedActionSummaries.push(`Rôle attribué : ${action.targetRoleId}`);
+                executedActionSummaries.push(trs('Rôle attribué : {targetRoleId}', { targetRoleId: action.targetRoleId }));
               }
               break;
             }
@@ -52,7 +53,7 @@ export class FormAutomationService {
               if (!action.targetRoleId) break;
               const success = await this.removeRole(form.guildId, response.userId, action.targetRoleId);
               if (success) {
-                executedActionSummaries.push(`Rôle retiré : ${action.targetRoleId}`);
+                executedActionSummaries.push(trs('Rôle retiré : {targetRoleId}', { targetRoleId: action.targetRoleId }));
               }
               break;
             }
@@ -61,7 +62,7 @@ export class FormAutomationService {
               if (!action.messageTemplate) break;
               const content = this.interpolate(action.messageTemplate, form, response);
               await this.sendDm(response.userId, content);
-              executedActionSummaries.push(`DM envoyé à l'utilisateur`);
+              executedActionSummaries.push(trs('DM envoyé à l\'utilisateur'));
               break;
             }
 
@@ -70,7 +71,7 @@ export class FormAutomationService {
               if (!targetChannelId || !action.messageTemplate) break;
               const content = this.interpolate(action.messageTemplate, form, response);
               await this.sendChannelMessage(targetChannelId, content);
-              executedActionSummaries.push(`Message envoyé dans le salon ${targetChannelId}`);
+              executedActionSummaries.push(trs('Message envoyé dans le salon {targetChannelId}', { targetChannelId }));
               break;
             }
 
@@ -86,7 +87,7 @@ export class FormAutomationService {
                     responses: Object.fromEntries(response.answers.map((a) => [a.fieldLabel, a.value])),
                   };
                   const ticket = await ticketService.createTicket(guild, user, action.ticketCategoryId, formAnswers);
-                  executedActionSummaries.push(`Ticket support créé : #${ticket.id}`);
+                  executedActionSummaries.push(trs('Ticket support créé : #{id}', { id: ticket.id }));
                 } catch (ticketErr) {
                   logger.warn('Impossible de créer le ticket via l\'automation form :', ticketErr);
                 }
@@ -97,7 +98,7 @@ export class FormAutomationService {
             case 'ADD_TAG': {
               if (action.tagToAdd && !response.tags.includes(action.tagToAdd)) {
                 response.tags.push(action.tagToAdd);
-                executedActionSummaries.push(`Tag ajouté : ${action.tagToAdd}`);
+                executedActionSummaries.push(trs('Tag ajouté : {tagToAdd}', { tagToAdd: action.tagToAdd }));
               }
               break;
             }

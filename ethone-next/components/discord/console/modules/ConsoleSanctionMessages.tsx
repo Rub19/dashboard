@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { RotateCcw } from "lucide-react";
 import { SPRING_LAYOUT, SPRING_PILL } from "@/lib/ease";
+import { pageStagger } from "@/lib/motion-variants";
 import { cn } from "@/lib/utils";
 import { ConsolePage, EmptyLine, Panel, Row, Segmented, Select, Switch } from "../kit";
 import { ColorField } from "../welcome/MessageEditor";
@@ -204,7 +205,7 @@ export default function ConsoleSanctionMessages({ guildId }: { guildId: string }
       </div>
 
       <AnimatePresence mode="wait" initial={false}>
-        <motion.div key={key} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4, transition: { duration: 0.1 } }} transition={SPRING_LAYOUT} className="space-y-3 sm:space-y-5">
+        <motion.div key={key} variants={pageStagger} initial="initial" animate="animate" exit={{ opacity: 0, y: -4, transition: { duration: 0.1 } }} transition={SPRING_LAYOUT} className="space-y-3 sm:space-y-5">
           <div className="grid items-start gap-3 sm:gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)]">
             <Panel title={tx("Réponse de /{key}", { key })} actions={<Switch checked={cur.reply.enabled} onChange={(v) => enable("reply", v)} label={tx("Réponse personnalisée")} />}>
               <Row label={tx("Visible par")}>

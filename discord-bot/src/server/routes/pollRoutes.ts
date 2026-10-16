@@ -11,6 +11,7 @@ import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { handleRouteError } from '../utils/routeError.js';
 import { nativePollService, nativeIncompatibilityError, NATIVE_POLL_LOCKED_ERROR } from '../../modules/polls/services/nativePollService.js';
 import { DESTINATION_CHANNEL_TYPES, isSendableTarget, sendToConfiguredChannel } from '../../utils/channelSend.js';
+import { trq } from '../../utils/tr.js';
 
 export function createPollRouter(client: Client): Router {
   const router = Router({ mergeParams: true });
@@ -172,17 +173,17 @@ export function createPollRouter(client: Client): Router {
     const parsed = DiscordPollSchema.safeParse(candidate);
     if (!parsed.success) {
       const issue = parsed.error.issues[0];
-      res.status(400).json({ success: false, error: `Sondage invalide (${issue.path.join('.') || 'corps'}) : ${issue.message}` });
+      res.status(400).json({ success: false, error: trq('Sondage invalide ({v0}) : {message}', { v0: issue.path.join('.') || 'corps', message: issue.message }) });
       return;
     }
     const newPoll: DiscordPoll = parsed.data;
     if (newPoll.questions.some((q) => q.options.length < 2)) {
-      res.status(400).json({ success: false, error: 'Chaque question doit avoir au moins 2 options.' });
+      res.status(400).json({ success: false, error: trq('Chaque question doit avoir au moins 2 options.') });
       return;
     }
     // Le vote se fait par boutons sous le message : Discord en affiche au plus 10 (2 rangées de 5).
     if (newPoll.questions.some((q) => q.options.length > 10)) {
-      res.status(400).json({ success: false, error: 'Un sondage Etho accepte 10 choix au maximum (boutons Discord).' });
+      res.status(400).json({ success: false, error: trq('Un sondage Etho accepte 10 choix au maximum (boutons Discord).') });
       return;
     }
 
@@ -202,7 +203,7 @@ export function createPollRouter(client: Client): Router {
     const poll = pollRepository.getPollById(guildId, pollId);
 
     if (!poll) {
-      return res.status(404).json({ success: false, error: 'Sondage introuvable.' });
+      return res.status(404).json({ success: false, error: trq('Sondage introuvable.') });
     }
 
     res.json({ success: true, poll });
@@ -215,7 +216,7 @@ export function createPollRouter(client: Client): Router {
     const existing = pollRepository.getPollById(guildId, pollId);
 
     if (!existing) {
-      return res.status(404).json({ success: false, error: 'Sondage introuvable.' });
+      return res.status(404).json({ success: false, error: trq('Sondage introuvable.') });
     }
 
     const parsed = DiscordPollSchema.safeParse({
@@ -233,7 +234,7 @@ export function createPollRouter(client: Client): Router {
     });
     if (!parsed.success) {
       const issue = parsed.error.issues[0];
-      return res.status(400).json({ success: false, error: `Modification invalide (${issue.path.join('.') || 'corps'}) : ${issue.message}` });
+      return res.status(400).json({ success: false, error: trq('Modification invalide ({v0}) : {message}', { v0: issue.path.join('.') || 'corps', message: issue.message }) });
     }
 
     const saved = pollRepository.savePoll(parsed.data);
@@ -248,10 +249,10 @@ export function createPollRouter(client: Client): Router {
     const deleted = pollRepository.deletePoll(guildId, pollId);
 
     if (!deleted) {
-      return res.status(404).json({ success: false, error: 'Sondage introuvable.' });
+      return res.status(404).json({ success: false, error: trq('Sondage introuvable.') });
     }
 
-    res.json({ success: true, message: 'Sondage supprimé.' });
+    res.json({ success: true, message: trq('Sondage supprimé.') });
   });
 
   // POST /api/guilds/:guildId/polls/:pollId/reset-votes : remet le scrutin à zéro (le sondage est conservé)
@@ -261,7 +262,7 @@ export function createPollRouter(client: Client): Router {
     const poll = pollRepository.getPollById(guildId, pollId);
 
     if (!poll) {
-      return res.status(404).json({ success: false, error: 'Sondage introuvable.' });
+      return res.status(404).json({ success: false, error: trq('Sondage introuvable.') });
     }
 
     const removed = pollRepository.clearPollVotes(guildId, pollId);
@@ -346,7 +347,7 @@ export function createPollRouter(client: Client): Router {
     const memberCount = client.guilds.cache.get(guildId)?.memberCount;
     const results = pollResultService.calculateResults(guildId, pollId, memberCount && memberCount > 0 ? memberCount : undefined);
     if (!results) {
-      return res.status(404).json({ success: false, error: 'Résultats non disponibles.' });
+      return res.status(404).json({ success: false, error: trq('Résultats non disponibles.') });
     }
     res.json({ success: true, results });
   });
@@ -357,7 +358,7 @@ export function createPollRouter(client: Client): Router {
     const pollId = requireStringParam(req.params.pollId, 'pollId');
     const poll = pollRepository.getPollById(guildId, pollId);
     if (!poll) {
-      return res.status(404).json({ success: false, error: 'Sondage introuvable.' });
+      return res.status(404).json({ success: false, error: trq('Sondage introuvable.') });
     }
 
     let votes = pollRepository.getVotes(guildId, pollId);
@@ -393,7 +394,7 @@ export function createPollRouter(client: Client): Router {
     const userAvatar = sessionUser?.avatar;
 
     if (!userId) {
-      return res.status(401).json({ success: false, error: 'Utilisateur non identifié.' });
+      return res.status(401).json({ success: false, error: trq('Utilisateur non identifié.') });
     }
 
     // Rôles, ancienneté du compte et du membre : lus sur Discord, jamais dans le corps de la requête (sinon on pourrait
@@ -401,7 +402,7 @@ export function createPollRouter(client: Client): Router {
     const guildForVote = client.guilds.cache.get(guildId);
     const voterMember = guildForVote ? await guildForVote.members.fetch(userId).catch(() => null) : null;
     if (!voterMember) {
-      return res.status(403).json({ success: false, error: 'Vous devez être membre de ce serveur pour voter.' });
+      return res.status(403).json({ success: false, error: trq('Vous devez être membre de ce serveur pour voter.') });
     }
     const dayMs = 24 * 60 * 60 * 1000;
     const voterRoleIds = [...voterMember.roles.cache.keys()];
@@ -457,7 +458,7 @@ export function createPollRouter(client: Client): Router {
 
     const poll = pollRepository.getPollById(guildId, pollId);
     if (!poll) {
-      return res.status(404).json({ success: false, error: 'Sondage introuvable.' });
+      return res.status(404).json({ success: false, error: trq('Sondage introuvable.') });
     }
     if (poll.native) {
       return res.status(400).json({ success: false, error: NATIVE_POLL_LOCKED_ERROR });
@@ -465,13 +466,13 @@ export function createPollRouter(client: Client): Router {
 
     const targetChannelId = channelId || poll.panelConfig.channelId;
     if (!targetChannelId) {
-      return res.status(400).json({ success: false, error: 'Aucun salon spécifié pour déployer le panneau.' });
+      return res.status(400).json({ success: false, error: trq('Aucun salon spécifié pour déployer le panneau.') });
     }
 
     try {
       const channel = await client.channels.fetch(targetChannelId);
       if (!channel || !isSendableTarget(channel)) {
-        return res.status(400).json({ success: false, error: 'Salon Discord invalide ou inaccessible.' });
+        return res.status(400).json({ success: false, error: trq('Salon Discord invalide ou inaccessible.') });
       }
 
       const embed = discordPollPanel.buildPanelEmbed(poll);
@@ -490,7 +491,7 @@ export function createPollRouter(client: Client): Router {
 
       res.json({
         success: true,
-        message: 'Panneau de sondage déployé avec succès sur Discord.',
+        message: trq('Panneau de sondage déployé avec succès sur Discord.'),
         messageId: msg.id,
       });
     } catch (err: any) {

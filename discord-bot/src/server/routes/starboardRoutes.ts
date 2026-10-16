@@ -6,6 +6,7 @@ import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { DESTINATION_CHANNEL_TYPES, canBotSendTo, isSendableTarget, sendToConfiguredChannel } from '../../utils/channelSend.js';
 import { rateLimit } from '../middleware/antiAbuseMiddleware.js';
 import { handleRouteError } from '../utils/routeError.js';
+import { trq } from '../../utils/tr.js';
 
 /**
  * API Dashboard du module Starboard.
@@ -32,7 +33,7 @@ export function createStarboardRouter(discordClient: Client) {
     const allowed = StarboardConfigSchema.partial().omit({ guildId: true, createdAt: true, updatedAt: true });
     const parsed = allowed.safeParse(req.body);
     if (!parsed.success) {
-      res.status(400).json({ error: 'Configuration invalide', details: parsed.error.flatten() });
+      res.status(400).json({ error: trq('Configuration invalide'), details: parsed.error.flatten() });
       return;
     }
     const updated = starboardStorage.updateConfig(guildId, parsed.data);
@@ -75,22 +76,22 @@ export function createStarboardRouter(discordClient: Client) {
     const guildId = String(req.params.guildId);
     const config = starboardStorage.getConfig(guildId);
     if (!config.channelId) {
-      res.status(400).json({ error: "Aucun salon d'honneur configuré." });
+      res.status(400).json({ error: trq('Aucun salon d\'honneur configuré.') });
       return;
     }
     const guild = discordClient.guilds.cache.get(guildId);
     if (!guild) {
-      res.status(404).json({ error: 'Serveur introuvable.' });
+      res.status(404).json({ error: trq('Serveur introuvable.') });
       return;
     }
     const channel = await guild.channels.fetch(config.channelId).catch(() => null);
     if (!channel || !isSendableTarget(channel)) {
-      res.status(400).json({ error: 'Salon Discord introuvable ou inaccessible par Etho.' });
+      res.status(400).json({ error: trq('Salon Discord introuvable ou inaccessible par Etho.') });
       return;
     }
     const botMember = guild.members.me;
     if (!canBotSendTo(channel, botMember)) {
-      res.status(403).json({ error: 'Etho n’a pas la permission d’envoyer des messages dans ce salon.' });
+      res.status(403).json({ error: trq('Etho n’a pas la permission d’envoyer des messages dans ce salon.') });
       return;
     }
 
@@ -100,14 +101,14 @@ export function createStarboardRouter(discordClient: Client) {
         name: req.user?.username || 'Équipe ETHONE',
         iconURL: discordClient.user?.displayAvatarURL(),
       })
-      .setTitle('⭐ Publication de test Starboard')
+      .setTitle(trq('⭐ Publication de test Starboard'))
       .setDescription(
         `Ce message confirme que le salon <#${config.channelId}> est correctement configuré.\n` +
         `Seuil requis : **${config.threshold}** réaction(s) ${config.emoji}.\n` +
         `Auto-étoile : **${config.selfStarAllowed ? 'Autorisée' : 'Désactivée'}**.`
       )
       .setFooter({
-        text: `${config.threshold} ${config.emoji} • Test Dashboard`,
+        text: trq('{threshold} {emoji} • Test Dashboard', { threshold: config.threshold, emoji: config.emoji }),
       })
       .setTimestamp();
 

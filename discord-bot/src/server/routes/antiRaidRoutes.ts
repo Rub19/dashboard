@@ -9,6 +9,7 @@ import { raidCache } from '../../modules/antiRaid/services/raidCache.js';
 import { AntiRaidConfigSchema } from '../../modules/antiRaid/types/antiRaid.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { handleRouteError, handleClientError, clientErrorMessage } from '../utils/routeError.js';
+import { trq } from '../../utils/tr.js';
 
 export function createAntiRaidRouter(discordClient: Client) {
   const router = express.Router({ mergeParams: true });
@@ -63,7 +64,7 @@ export function createAntiRaidRouter(discordClient: Client) {
 
     const guild = discordClient.guilds.cache.get(guildId);
     if (!guild) {
-      res.status(404).json({ error: 'Serveur Discord introuvable' });
+      res.status(404).json({ error: trq('Serveur Discord introuvable') });
       return;
     }
 
@@ -92,7 +93,7 @@ export function createAntiRaidRouter(discordClient: Client) {
 
     const guild = discordClient.guilds.cache.get(guildId);
     if (!guild) {
-      res.status(404).json({ error: 'Serveur Discord introuvable' });
+      res.status(404).json({ error: trq('Serveur Discord introuvable') });
       return;
     }
 
@@ -121,7 +122,7 @@ export function createAntiRaidRouter(discordClient: Client) {
 
     const guild = discordClient.guilds.cache.get(guildId);
     if (!guild) {
-      res.status(404).json({ error: 'Serveur Discord introuvable' });
+      res.status(404).json({ error: trq('Serveur Discord introuvable') });
       return;
     }
 
@@ -171,7 +172,7 @@ export function createAntiRaidRouter(discordClient: Client) {
     try {
       const incident = raidIncidentService.getIncidentById(guildId, incidentId);
       if (!incident) {
-        res.status(404).json({ error: 'Incident introuvable' });
+        res.status(404).json({ error: trq('Incident introuvable') });
         return;
       }
       res.json({ success: true, incident });
@@ -216,7 +217,7 @@ export function createAntiRaidRouter(discordClient: Client) {
       emitConfigUpdated('antiRaid', guildId, updated, 'DASHBOARD', req.user?.id);
       res.json({
         success: true,
-        message: 'Blocage des invitations désactivé avec succès',
+        message: trq('Blocage des invitations désactivé avec succès'),
         config: updated,
       });
     } catch (err: any) {

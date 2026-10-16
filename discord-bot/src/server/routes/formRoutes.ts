@@ -8,6 +8,7 @@ import { requireStringParam } from '../utils/params.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { handleRouteError, handleClientError } from '../utils/routeError.js';
 import { isSendableTarget, sendToConfiguredChannel } from '../../utils/channelSend.js';
+import { trq } from '../../utils/tr.js';
 
 export function createFormRouter(client: Client): Router {
   const router = Router({ mergeParams: true });
@@ -114,7 +115,7 @@ export function createFormRouter(client: Client): Router {
     const formId = requireStringParam(req.params.formId, 'formId');
     const form = formRepository.getFormById(guildId, formId);
     if (!form) {
-      return res.status(404).json({ success: false, error: 'Formulaire introuvable' });
+      return res.status(404).json({ success: false, error: trq('Formulaire introuvable') });
     }
     res.json({ success: true, form });
   });
@@ -125,7 +126,7 @@ export function createFormRouter(client: Client): Router {
     const formId = requireStringParam(req.params.formId, 'formId');
     const existing = formRepository.getFormById(guildId, formId);
     if (!existing) {
-      return res.status(404).json({ success: false, error: 'Formulaire introuvable' });
+      return res.status(404).json({ success: false, error: trq('Formulaire introuvable') });
     }
 
     try {
@@ -149,7 +150,7 @@ export function createFormRouter(client: Client): Router {
     const formId = requireStringParam(req.params.formId, 'formId');
     const published = formService.publishForm(guildId, formId);
     if (!published) {
-      return res.status(404).json({ success: false, error: 'Formulaire introuvable' });
+      return res.status(404).json({ success: false, error: trq('Formulaire introuvable') });
     }
     res.json({ success: true, form: published });
   });
@@ -160,7 +161,7 @@ export function createFormRouter(client: Client): Router {
     const formId = requireStringParam(req.params.formId, 'formId');
     const deleted = formRepository.deleteForm(guildId, formId);
     if (!deleted) {
-      return res.status(404).json({ success: false, error: 'Formulaire introuvable' });
+      return res.status(404).json({ success: false, error: trq('Formulaire introuvable') });
     }
     res.json({ success: true });
   });
@@ -171,7 +172,7 @@ export function createFormRouter(client: Client): Router {
     const formId = requireStringParam(req.params.formId, 'formId');
     const dup = formRepository.duplicateForm(guildId, formId, req.body?.title);
     if (!dup) {
-      return res.status(404).json({ success: false, error: 'Formulaire introuvable' });
+      return res.status(404).json({ success: false, error: trq('Formulaire introuvable') });
     }
     res.json({ success: true, form: dup });
   });
@@ -205,7 +206,7 @@ export function createFormRouter(client: Client): Router {
     const responseId = requireStringParam(req.params.responseId, 'responseId');
     const response = formRepository.getResponseById(guildId, responseId);
     if (!response) {
-      return res.status(404).json({ success: false, error: 'Réponse introuvable' });
+      return res.status(404).json({ success: false, error: trq('Réponse introuvable') });
     }
     res.json({ success: true, response });
   });
@@ -240,7 +241,7 @@ export function createFormRouter(client: Client): Router {
     const { content } = req.body;
 
     if (!content || !content.trim()) {
-      return res.status(400).json({ success: false, error: 'Contenu de la note requis' });
+      return res.status(400).json({ success: false, error: trq('Contenu de la note requis') });
     }
 
     const updated = formService.addNote({
@@ -252,7 +253,7 @@ export function createFormRouter(client: Client): Router {
     });
 
     if (!updated) {
-      return res.status(404).json({ success: false, error: 'Réponse introuvable' });
+      return res.status(404).json({ success: false, error: trq('Réponse introuvable') });
     }
     res.json({ success: true, response: updated });
   });
@@ -271,7 +272,7 @@ export function createFormRouter(client: Client): Router {
     });
 
     if (!updated) {
-      return res.status(404).json({ success: false, error: 'Réponse introuvable' });
+      return res.status(404).json({ success: false, error: trq('Réponse introuvable') });
     }
     res.json({ success: true, response: updated });
   });
@@ -306,18 +307,18 @@ export function createFormRouter(client: Client): Router {
     const form = formRepository.getFormById(guildId, formId);
 
     if (!form) {
-      return res.status(404).json({ success: false, error: 'Formulaire introuvable' });
+      return res.status(404).json({ success: false, error: trq('Formulaire introuvable') });
     }
 
     const targetChannelId = channelId || form.panelConfig.channelId;
     if (!targetChannelId) {
-      return res.status(400).json({ success: false, error: 'Salon de destination manquant' });
+      return res.status(400).json({ success: false, error: trq('Salon de destination manquant') });
     }
 
     try {
       const channel = await client.channels.fetch(targetChannelId).catch(() => null);
       if (!channel || !isSendableTarget(channel)) {
-        return res.status(400).json({ success: false, error: 'Salon Discord introuvable ou inaccessible' });
+        return res.status(400).json({ success: false, error: trq('Salon Discord introuvable ou inaccessible') });
       }
 
       const embed = discordFormPanel.buildPanelEmbed(form);

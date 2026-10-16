@@ -5,6 +5,7 @@ import { statsStorage } from '../../stats/storage/statsStorage.js';
 import { Condition, Operator, RulePreview, RunSummary, StatroleRule } from '../types/statroles.js';
 import { logger } from '../../../utils/logger.js';
 import { isModuleEnabled } from '../../../services/moduleRegistry.js';
+import { trq } from '../../../utils/tr.js';
 
 /** Plafond de changements de rôles par passage : évite une rafale (et des limites d'API) si une règle vient d'être créée. */
 const MAX_CHANGES_PER_RUN = 250;
@@ -81,9 +82,9 @@ export function evaluate(node: Condition, m: MemberFacts, ctx: EvalContext): boo
 export function roleIssue(guild: Guild, roleId: string): string | null {
   const role = guild.roles.cache.get(roleId);
   if (!role) return 'rôle introuvable';
-  if (role.managed) return 'rôle géré par une intégration';
-  if (role.id === guild.id) return 'le rôle @everyone ne peut pas être attribué';
-  if (!role.editable) return 'le rôle est au-dessus du rôle du bot (ou « Gérer les rôles » manque)';
+  if (role.managed) return trq('rôle géré par une intégration');
+  if (role.id === guild.id) return trq('le rôle @everyone ne peut pas être attribué');
+  if (!role.editable) return trq('le rôle est au-dessus du rôle du bot (ou « Gérer les rôles » manque)');
   return null;
 }
 
@@ -112,9 +113,9 @@ class StatrolesEngine {
     await guild.members.fetch().catch(() => undefined);
     const ctx = makeContext(guild.id);
     const warnings: string[] = [];
-    if (needsStats(rule.root) && !statsStorage.isEnabled(guild.id)) warnings.push('Le module Statistiques est désactivé : les conditions de messages et de vocal comptent 0 tant qu’il n’est pas activé.');
+    if (needsStats(rule.root) && !statsStorage.isEnabled(guild.id)) warnings.push(trq('Le module Statistiques est désactivé : les conditions de messages et de vocal comptent 0 tant qu’il n’est pas activé.'));
     const issue = roleIssue(guild, rule.roleId);
-    if (issue) warnings.push(`Rôle non attribuable : ${issue}.`);
+    if (issue) warnings.push(trq('Rôle non attribuable : {issue}.', { issue }));
     let matching = 0;
     let holders = 0;
     let toAdd = 0;

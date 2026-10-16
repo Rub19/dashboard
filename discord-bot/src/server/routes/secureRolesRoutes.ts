@@ -5,6 +5,7 @@ import { secureRolesStorage as store } from '../../modules/secureroles/storage/s
 import { inviteMember, resetMember, restoreRole, secureRole, endSession, sensitiveNames } from '../../modules/secureroles/services/secureRolesService.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { handleClientError } from '../utils/routeError.js';
+import { trq } from '../../utils/tr.js';
 
 const snowflake = z.string().regex(/^\d{5,25}$/);
 
@@ -17,7 +18,7 @@ export function createSecureRolesRouter(client: Client) {
     const guildId = String(req.params.guildId);
     const guild = client.guilds.cache.get(guildId);
     if (!guild) {
-      res.status(404).json({ error: 'Serveur introuvable ou bot non connecté' });
+      res.status(404).json({ error: trq('Serveur introuvable ou bot non connecté') });
       return;
     }
     const conf = store.getConfig(guildId);
@@ -68,11 +69,11 @@ export function createSecureRolesRouter(client: Client) {
     const guildId = String(req.params.guildId);
     const parsed = z.object({ enabled: z.boolean(), sessionMinutes: z.number().int().min(5).max(240) }).partial().strict().safeParse(req.body);
     if (!parsed.success) {
-      res.status(400).json({ error: 'Configuration invalide' });
+      res.status(400).json({ error: trq('Configuration invalide') });
       return;
     }
     if (parsed.data.enabled === false && store.getConfig(guildId).roles.length > 0) {
-      res.status(400).json({ error: 'Restaurez d’abord tous les rôles sécurisés : désactiver le module maintenant enfermerait votre équipe hors de ses permissions.' });
+      res.status(400).json({ error: trq('Restaurez d’abord tous les rôles sécurisés : désactiver le module maintenant enfermerait votre équipe hors de ses permissions.') });
       return;
     }
     store.updateConfig(guildId, parsed.data);
@@ -84,7 +85,7 @@ export function createSecureRolesRouter(client: Client) {
     const guild = client.guilds.cache.get(String(req.params.guildId));
     const parsed = z.object({ roleId: snowflake }).strict().safeParse(req.body);
     if (!guild || !parsed.success) {
-      res.status(400).json({ error: 'Requête invalide' });
+      res.status(400).json({ error: trq('Requête invalide') });
       return;
     }
     try {
@@ -99,7 +100,7 @@ export function createSecureRolesRouter(client: Client) {
   router.delete('/roles/:roleId', async (req: Request, res: Response): Promise<void> => {
     const guild = client.guilds.cache.get(String(req.params.guildId));
     if (!guild || !snowflake.safeParse(req.params.roleId).success) {
-      res.status(400).json({ error: 'Requête invalide' });
+      res.status(400).json({ error: trq('Requête invalide') });
       return;
     }
     try {
@@ -113,7 +114,7 @@ export function createSecureRolesRouter(client: Client) {
 
   router.post('/members/:userId/invite', (req: Request, res: Response): void => {
     if (!snowflake.safeParse(req.params.userId).success) {
-      res.status(400).json({ error: 'Membre invalide' });
+      res.status(400).json({ error: trq('Membre invalide') });
       return;
     }
     try {
@@ -128,7 +129,7 @@ export function createSecureRolesRouter(client: Client) {
   router.post('/members/:userId/reset', async (req: Request, res: Response): Promise<void> => {
     const guild = client.guilds.cache.get(String(req.params.guildId));
     if (!guild || !snowflake.safeParse(req.params.userId).success) {
-      res.status(400).json({ error: 'Requête invalide' });
+      res.status(400).json({ error: trq('Requête invalide') });
       return;
     }
     await resetMember(guild, String(req.params.userId), req.user?.id ?? null);
@@ -140,7 +141,7 @@ export function createSecureRolesRouter(client: Client) {
     const guild = client.guilds.cache.get(String(req.params.guildId));
     const session = guild ? store.activeSessionFor(guild.id, String(req.params.userId)) : undefined;
     if (!guild || !session) {
-      res.status(404).json({ error: 'Aucune session en cours pour ce membre' });
+      res.status(404).json({ error: trq('Aucune session en cours pour ce membre') });
       return;
     }
     await endSession(guild, session.id, 'manual');

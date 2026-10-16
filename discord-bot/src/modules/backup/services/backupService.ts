@@ -19,6 +19,7 @@ import { BackupRestoreService } from './backupRestoreService.js';
 import { backupSchedulerService } from './backupSchedulerService.js';
 import { logService } from '../../logs/services/logService.js';
 import { logger } from '../../../utils/logger.js';
+import { trs } from '../../../utils/tr.js';
 
 export class BackupService {
   private client: Client | null = null;
@@ -83,7 +84,7 @@ export class BackupService {
           computedChecksum: '',
           expectedChecksum: '',
           schemaValid: false,
-          reason: 'Sauvegarde introuvable',
+          reason: trs('Sauvegarde introuvable'),
         },
       };
     }
@@ -178,7 +179,7 @@ export class BackupService {
   }): Promise<BackupSnapshot> {
     const integrity = BackupIntegrityService.verifySnapshot(params.rawPayload);
     if (!integrity.valid) {
-      throw new Error(`Fichier de sauvegarde invalide : ${integrity.reason}`);
+      throw new Error(trs('Fichier de sauvegarde invalide : {reason}', { reason: integrity.reason }));
     }
 
     let snapshot = BackupIntegrityService.migrateSchema(params.rawPayload);
@@ -187,7 +188,7 @@ export class BackupService {
     if (snapshot.guildId !== params.guildId) {
       if (!params.allowCrossGuildMigration) {
         throw new Error(
-          `Ce fichier de sauvegarde appartient au serveur Discord "${snapshot.guildId}". Pour l'importer sur ce serveur ("${params.guildId}"), activez explicitement l'option de migration inter-serveur.`
+          trs('Ce fichier de sauvegarde appartient au serveur Discord "{guildId}". Pour l\'importer sur ce serveur ("{guildId1}"), activez explicitement l\'option de migration inter-serveur.', { guildId: snapshot.guildId, guildId1: params.guildId })
         );
       }
       // Re-bind to current guild and re-sign
@@ -210,9 +211,9 @@ export class BackupService {
     mode?: RestoreMode;
     selectedComponents?: BackupComponent[];
   }): Promise<RestorePlan> {
-    if (!this.client) throw new Error('Client Discord non initialisé');
+    if (!this.client) throw new Error(trs('Client Discord non initialisé'));
     const backup = backupRepository.getById(params.guildId, params.backupId);
-    if (!backup) throw new Error('Sauvegarde introuvable');
+    if (!backup) throw new Error(trs('Sauvegarde introuvable'));
 
     return await BackupRestoreService.generatePreviewPlan({
       client: this.client,
@@ -232,9 +233,9 @@ export class BackupService {
     selectedComponents?: BackupComponent[];
     actor: { id: string; tag: string };
   }): Promise<RestoreJob> {
-    if (!this.client) throw new Error('Client Discord non initialisé');
+    if (!this.client) throw new Error(trs('Client Discord non initialisé'));
     const backup = backupRepository.getById(params.guildId, params.backupId);
-    if (!backup) throw new Error('Sauvegarde introuvable');
+    if (!backup) throw new Error(trs('Sauvegarde introuvable'));
 
     const job = await BackupRestoreService.executeRestore({
       client: this.client,
@@ -305,22 +306,22 @@ export class BackupService {
     notes: string[];
   } {
     const backup = backupRepository.getById(guildId, backupId);
-    if (!backup) throw new Error('Sauvegarde introuvable');
+    if (!backup) throw new Error(trs('Sauvegarde introuvable'));
 
     const integrity = BackupIntegrityService.verifySnapshot(backup);
     const notes: string[] = [];
 
     if (integrity.valid) {
-      notes.push('Intégrité cryptographique SHA-256 validée.');
+      notes.push(trs('Intégrité cryptographique SHA-256 validée.'));
     } else {
-      notes.push(`Échec intégrité : ${integrity.reason}`);
+      notes.push(trs('Échec intégrité : {reason}', { reason: integrity.reason }));
     }
 
     if (backup.data.roles.length === 0) {
-      notes.push('Attention : aucun rôle inclus dans ce snapshot.');
+      notes.push(trs('Attention : aucun rôle inclus dans ce snapshot.'));
     }
     if (backup.data.channels.length === 0) {
-      notes.push('Attention : aucun salon inclus dans ce snapshot.');
+      notes.push(trs('Attention : aucun salon inclus dans ce snapshot.'));
     }
 
     return {

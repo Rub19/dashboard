@@ -57980,6 +57980,63 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_127_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_127_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_127_de);
 
+const v1_75_128_fr: ChangelogEntry = {
+  version: "v1.75.128",
+  date: "2026-10-16",
+  title: "Traduction des réponses du bot, rôles et membres, messages de sanction",
+  items: [
+    "Les messages d'erreur et de confirmation renvoyés par le bot au dashboard sont traduits dans la langue choisie (anglais, espagnol, allemand).",
+    "Rôles et membres : les membres de chaque rôle sensible s'affichent directement sous le rôle ; un clic sur un membre ouvre son inspection.",
+    "Les noms des permissions sensibles sont traduits.",
+    "Messages de sanction et Bienvenue : le contenu ne disparaît plus quand on change d'onglet.",
+    "Inspection d'un membre : la carte s'affiche correctement et la page défile jusqu'à elle.",
+  ],
+};
+
+const v1_75_128_en: ChangelogEntry = {
+  version: "v1.75.128",
+  date: "2026-10-16",
+  title: "Bot replies translated, roles and members, sanction messages",
+  items: [
+    "Error and confirmation messages sent by the bot to the dashboard are translated into the chosen language (English, Spanish, German).",
+    "Roles and members: the members of each sensitive role are shown right under the role; click a member to inspect them.",
+    "Sensitive permission names are translated.",
+    "Sanction messages and Welcome: content no longer disappears when switching tabs.",
+    "Member inspection: the card now shows properly and the page scrolls to it.",
+  ],
+};
+
+const v1_75_128_es: ChangelogEntry = {
+  version: "v1.75.128",
+  date: "2026-10-16",
+  title: "Respuestas del bot traducidas, roles y miembros, mensajes de sanción",
+  items: [
+    "Los mensajes de error y confirmación que el bot envía al panel se traducen al idioma elegido (inglés, español, alemán).",
+    "Roles y miembros: los miembros de cada rol sensible aparecen directamente bajo el rol; haz clic en un miembro para inspeccionarlo.",
+    "Los nombres de los permisos sensibles están traducidos.",
+    "Mensajes de sanción y Bienvenida: el contenido ya no desaparece al cambiar de pestaña.",
+    "Inspección de un miembro: la tarjeta se muestra bien y la página se desplaza hasta ella.",
+  ],
+};
+
+const v1_75_128_de: ChangelogEntry = {
+  version: "v1.75.128",
+  date: "2026-10-16",
+  title: "Bot-Antworten übersetzt, Rollen und Mitglieder, Sanktionsnachrichten",
+  items: [
+    "Fehler- und Bestätigungsmeldungen des Bots im Dashboard werden in die gewählte Sprache übersetzt (Englisch, Spanisch, Deutsch).",
+    "Rollen und Mitglieder: Die Mitglieder jeder sensiblen Rolle erscheinen direkt unter der Rolle; ein Klick auf ein Mitglied öffnet die Prüfung.",
+    "Die Namen sensibler Berechtigungen sind übersetzt.",
+    "Sanktionsnachrichten und Willkommen: Der Inhalt verschwindet beim Tabwechsel nicht mehr.",
+    "Mitgliedsprüfung: Die Karte wird korrekt angezeigt und die Seite scrollt zu ihr.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_128_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_128_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_128_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_128_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

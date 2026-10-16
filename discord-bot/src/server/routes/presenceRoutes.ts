@@ -9,6 +9,7 @@ import { BotIdentityService } from '../../modules/presence/services/botIdentityS
 import { config } from '../../config.js';
 import { rateLimit, idempotent } from '../middleware/antiAbuseMiddleware.js';
 import { handleRouteError, handleClientError } from '../utils/routeError.js';
+import { trq } from '../../utils/tr.js';
 
 export function createPresenceRouter(client: Client): Router {
   const router = Router({ mergeParams: true });
@@ -57,7 +58,7 @@ export function createPresenceRouter(client: Client): Router {
     try {
       const { status, activity, reason, force } = req.body;
       if (!status || !activity || !activity.type || !activity.name) {
-        res.status(400).json({ success: false, error: 'Champs status et activity (type, name) obligatoires.' });
+        res.status(400).json({ success: false, error: trq('Champs status et activity (type, name) obligatoires.') });
         return;
       }
 
@@ -79,8 +80,8 @@ export function createPresenceRouter(client: Client): Router {
         data: result.state,
         rateLimited: result.rateLimited,
         message: result.rateLimited
-          ? 'Protection rate limit atteinte (max 5 updates/60s). Veuillez patienter.'
-          : 'Présence mise à jour avec succès.',
+          ? trq('Protection rate limit atteinte (max 5 updates/60s). Veuillez patienter.')
+          : trq('Présence mise à jour avec succès.'),
       });
     } catch (err: any) {
       handleRouteError(err, res, 'Erreur serveur', { success: false });
@@ -166,10 +167,10 @@ export function createPresenceRouter(client: Client): Router {
       const actor = req.user?.username || (req.user?.id === config.botOwnerId ? 'Bot Owner' : 'Staff');
       const applied = schedulerService.applyProfile(id, actor);
       if (!applied) {
-        res.status(404).json({ success: false, error: `Profil ${id} introuvable.` });
+        res.status(404).json({ success: false, error: trq('Profil {id} introuvable.', { id }) });
         return;
       }
-      res.json({ success: true, message: 'Profil appliqué avec succès.', state: presenceService.getCurrentState() });
+      res.json({ success: true, message: trq('Profil appliqué avec succès.'), state: presenceService.getCurrentState() });
     } catch (err: any) {
       handleRouteError(err, res, 'Erreur serveur', { success: false });
     }
@@ -227,7 +228,7 @@ export function createPresenceRouter(client: Client): Router {
     try {
       const { username } = req.body;
       if (!username || typeof username !== 'string') {
-        res.status(400).json({ success: false, error: 'Nouveau nom d\'utilisateur requis.' });
+        res.status(400).json({ success: false, error: trq('Nouveau nom d\'utilisateur requis.') });
         return;
       }
       const result = await identityService.setUsername(username);
@@ -242,7 +243,7 @@ export function createPresenceRouter(client: Client): Router {
     try {
       const { avatarUrl } = req.body;
       if (!avatarUrl) {
-        res.status(400).json({ success: false, error: 'URL ou buffer d\'avatar requis.' });
+        res.status(400).json({ success: false, error: trq('URL ou buffer d\'avatar requis.') });
         return;
       }
       const result = await identityService.setAvatar(avatarUrl);

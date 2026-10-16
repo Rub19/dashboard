@@ -7,6 +7,7 @@ import {
   HighlightUserConfigSchema,
 } from '../../modules/highlights/types/highlight.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
+import { trq } from '../../utils/tr.js';
 
 /**
  * API Dashboard du module Highlights.
@@ -46,7 +47,7 @@ export function createHighlightsRouter(client: Client) {
     const guildId = String(req.params.guildId);
     const userId = req.user?.id;
     if (!userId) {
-      res.status(401).json({ error: 'Non authentifié' });
+      res.status(401).json({ error: trq('Non authentifié') });
       return;
     }
     res.json({
@@ -60,13 +61,13 @@ export function createHighlightsRouter(client: Client) {
     const guildId = String(req.params.guildId);
     const userId = req.user?.id;
     if (!userId) {
-      res.status(401).json({ error: 'Non authentifié' });
+      res.status(401).json({ error: trq('Non authentifié') });
       return;
     }
     const allowed = HighlightUserConfigSchema.partial().pick({ enabled: true, ignoredChannelIds: true });
     const parsed = allowed.safeParse(req.body);
     if (!parsed.success) {
-      res.status(400).json({ error: 'Configuration invalide', details: parsed.error.flatten() });
+      res.status(400).json({ error: trq('Configuration invalide'), details: parsed.error.flatten() });
       return;
     }
     const updated = highlightStorage.updateConfig(guildId, userId, parsed.data);
@@ -78,23 +79,23 @@ export function createHighlightsRouter(client: Client) {
     const guildId = String(req.params.guildId);
     const userId = req.user?.id;
     if (!userId) {
-      res.status(401).json({ error: 'Non authentifié' });
+      res.status(401).json({ error: trq('Non authentifié') });
       return;
     }
     const raw = req.body?.keyword;
     const keyword = typeof raw === 'string' ? raw.trim() : '';
     if (keyword.length < HIGHLIGHT_KEYWORD_MIN_LENGTH || keyword.length > HIGHLIGHT_KEYWORD_MAX_LENGTH) {
       res.status(400).json({
-        error: `Mot-clé invalide (${HIGHLIGHT_KEYWORD_MIN_LENGTH}-${HIGHLIGHT_KEYWORD_MAX_LENGTH} caractères).`,
+        error: trq('Mot-clé invalide ({HIGHLIGHT_KEYWORD_MIN_LENGTH}-{HIGHLIGHT_KEYWORD_MAX_LENGTH} caractères).', { HIGHLIGHT_KEYWORD_MIN_LENGTH, HIGHLIGHT_KEYWORD_MAX_LENGTH }),
       });
       return;
     }
     if (highlightStorage.has(guildId, userId, keyword)) {
-      res.status(409).json({ error: 'Ce mot-clé est déjà surveillé.' });
+      res.status(409).json({ error: trq('Ce mot-clé est déjà surveillé.') });
       return;
     }
     if (!highlightStorage.canAddMore(guildId, userId)) {
-      res.status(429).json({ error: `Limite de ${MAX_KEYWORDS_PER_USER} mots-clés atteinte.` });
+      res.status(429).json({ error: trq('Limite de {MAX_KEYWORDS_PER_USER} mots-clés atteinte.', { MAX_KEYWORDS_PER_USER }) });
       return;
     }
     const created = highlightStorage.add({ guildId, userId, keyword });
@@ -105,13 +106,13 @@ export function createHighlightsRouter(client: Client) {
     const guildId = String(req.params.guildId);
     const userId = req.user?.id;
     if (!userId) {
-      res.status(401).json({ error: 'Non authentifié' });
+      res.status(401).json({ error: trq('Non authentifié') });
       return;
     }
     const keyword = decodeURIComponent(String(req.params.keyword));
     const ok = highlightStorage.remove(guildId, userId, keyword);
     if (!ok) {
-      res.status(404).json({ error: 'Mot-clé introuvable' });
+      res.status(404).json({ error: trq('Mot-clé introuvable') });
       return;
     }
     res.json({ success: true });

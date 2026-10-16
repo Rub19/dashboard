@@ -8,6 +8,7 @@ import { useToast } from "@/components/ToastProvider";
 import { confirmDialog } from "@/lib/confirmDialog";
 import { useBotSessionUser } from "@/lib/hooks/useBotSessionUser";
 import { SPRING_LAYOUT, SPRING_PILL } from "@/lib/ease";
+import { pageStagger } from "@/lib/motion-variants";
 import { cn } from "@/lib/utils";
 import { BOT_API_URL, ChannelAdder, Chip, ConsolePage, EmptyLine, Panel, Row, Segmented, Select, Stepper, Switch, useGuildApi } from "../kit";
 import MessageEditor, { VarField } from "../welcome/MessageEditor";
@@ -303,7 +304,7 @@ export default function ConsoleWelcome({ guildId }: { guildId: string }) {
       <div className="space-y-3 sm:space-y-5">
         <TabBar tab={tab} onChange={setTab} dots={{ arrival: welcome.enabled, dm: welcome.dm.enabled, leave: goodbye.enabled, ghost: ghostPing.enabled }} />
         <AnimatePresence mode="wait" initial={false}>
-          <motion.div key={tab} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4, transition: { duration: 0.12 } }} transition={SPRING_LAYOUT} className="space-y-3 sm:space-y-5">
+          <motion.div key={tab} variants={pageStagger} initial="initial" animate="animate" exit={{ opacity: 0, y: -4, transition: { duration: 0.12 } }} transition={SPRING_LAYOUT} className="space-y-3 sm:space-y-5">
             {tab === "arrival" && (
               <>
                 {channelSettings(welcome, (p) => w(p as Partial<Config["welcome"]>), "Arrivée")}

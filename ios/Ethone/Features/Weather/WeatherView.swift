@@ -66,7 +66,7 @@ struct WeatherView: View {
             VStack(alignment: .leading, spacing: 8) {
                 Text(weather.placeName).font(.headline)
                 HStack(alignment: .firstTextBaseline) {
-                    Text("\(Int(now.temperature.rounded()))°").font(.system(size: 76, weight: .thin, design: .rounded))
+                    Text("\(Int(now.temperature.rounded()))°").font(.system(size: 80, weight: .light)).tracking(-3)
                     Spacer()
                     Image(systemName: WeatherCode.symbol(now.code, isDay: now.isDay))
                         .symbolRenderingMode(.multicolor)

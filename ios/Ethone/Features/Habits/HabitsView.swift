@@ -10,6 +10,24 @@ struct HabitsView: View {
                 if let message = model.habits.errorMessage {
                     Text(message).font(.footnote).foregroundStyle(Theme.danger).listRowBackground(Color.clear)
                 }
+                if !model.habits.activeHabits.isEmpty {
+                    let done = model.habits.activeHabits.filter { model.habits.isDone($0) }.count
+                    let total = model.habits.activeHabits.count
+                    Section {
+                        EmptyView()
+                    } header: {
+                        VStack(alignment: .leading, spacing: 12) {
+                            AccentRule()
+                            EthoneHeadline(first: "Habitudes", second: done == total ? "Journée complète." : "\(done) sur \(total) aujourd'hui.", size: .title)
+                            ProgressView(value: Double(done), total: Double(max(total, 1)))
+                                .tint(Theme.accent)
+                                .animation(Motion.snap, value: done)
+                        }
+                        .textCase(nil)
+                        .foregroundStyle(.primary)
+                        .padding(.leading, -4)
+                    }
+                }
                 ForEach(model.habits.activeHabits) { habit in
                     HabitRow(habit: habit)
                         .listRowBackground(GlassRowBackground())
@@ -33,6 +51,7 @@ struct HabitsView: View {
             }
             .refreshable { await model.habits.refresh() }
             .navigationTitle("Habitudes")
+            .toolbarTitleDisplayMode(.inline)
             .ethoneScreen()
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
@@ -57,8 +76,9 @@ struct HabitRow: View {
             } label: {
                 Image(systemName: done ? "checkmark.circle.fill" : "circle")
                     .font(.system(size: 30))
-                    .foregroundStyle(done ? Theme.success : Color.secondary)
+                    .foregroundStyle(done ? Theme.accent : Color.secondary)
                     .contentTransition(.symbolEffect(.replace))
+                    .symbolEffect(.bounce, value: done)
             }
             .buttonStyle(.plain)
             .sensoryFeedback(.success, trigger: done)
@@ -67,13 +87,20 @@ struct HabitRow: View {
                 HStack(spacing: 8) {
                     Text(habit.emoji ?? "🎯")
                     Text(habit.name).font(.headline).lineLimit(1)
-                    if streak > 0 { GlassPill(text: "\(streak) j", systemImage: "flame.fill", tint: Color(hex: 0xF59E0B).opacity(0.5)) }
+                    if streak > 0 {
+                        Label("\(streak) j", systemImage: "flame.fill")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(Color(hex: 0xF59E0B))
+                            .symbolEffect(.breathe, isActive: done)
+                            .contentTransition(.numericText())
+                    }
                 }
                 HStack(spacing: 3) {
                     ForEach(model.habits.history(habit)) { entry in
-                        RoundedRectangle(cornerRadius: 3)
-                            .fill(entry.done ? Theme.accent : Color.primary.opacity(0.12))
+                        RoundedRectangle(cornerRadius: 3, style: .continuous)
+                            .fill(entry.done ? Theme.accent : Color.primary.opacity(0.1))
                             .frame(width: 10, height: 10)
+                            .animation(Motion.snap, value: entry.done)
                     }
                 }
             }
@@ -103,7 +130,9 @@ struct AddHabitSheet: View {
                             Text(choice).font(.title)
                                 .padding(8)
                                 .background(choice == emoji ? Theme.accent.opacity(0.3) : Color.clear, in: .circle)
-                                .onTapGesture { emoji = choice }
+                                .scaleEffect(choice == emoji ? 1.12 : 1)
+                                .onTapGesture { withAnimation(Motion.snap) { emoji = choice } }
+                                .accessibilityAddTraits(choice == emoji ? .isSelected : [])
                         }
                     }
                 }
@@ -116,6 +145,7 @@ struct AddHabitSheet: View {
                 }
             }
             .scrollContentBackground(.hidden)
+            .sensoryFeedback(.selection, trigger: emoji)
             .navigationTitle("Nouvelle habitude")
             .ethoneScreen()
             .navigationBarTitleDisplayMode(.inline)

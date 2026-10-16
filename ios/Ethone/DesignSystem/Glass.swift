@@ -31,15 +31,16 @@ struct GlassPill: View {
     }
 }
 
+/// Row background for grouped lists: one translucent material per section (List clips the group corners),
+/// so rows read as a single block like Settings instead of a stack of separate capsules.
 struct GlassRowBackground: View {
     var cornerRadius: CGFloat = 20
     var tint: Color? = nil
 
     var body: some View {
-        RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-            .fill(Color.clear)
-            .glassEffect(Glass.regular.tint(tint), in: .rect(cornerRadius: cornerRadius))
-            .padding(.vertical, 3)
+        Rectangle()
+            .fill(.thinMaterial)
+            .overlay((tint ?? .clear).opacity(0.5))
     }
 }
 
@@ -161,7 +162,7 @@ struct AvatarView: View {
 
 extension View {
     func ethoneScreen() -> some View {
-        containerBackground(for: .navigation) { AmbientBackground() }
+        reveal(0).containerBackground(for: .navigation) { AmbientBackground() }
     }
 }
 

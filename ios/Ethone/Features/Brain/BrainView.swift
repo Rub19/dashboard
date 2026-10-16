@@ -22,16 +22,22 @@ struct BrainView: View {
                         intro
                     }
                     ForEach(chat.messages) { message in
-                        bubble(message).id(message.id)
+                        bubble(message)
+                            .id(message.id)
+                            .transition(.asymmetric(insertion: .scale(scale: 0.92, anchor: message.role == .user ? .bottomTrailing : .bottomLeading).combined(with: .opacity), removal: .opacity))
                     }
                     if chat.isThinking {
-                        HStack {
-                            ProgressView()
-                            Text("Brain réfléchit…").foregroundStyle(.secondary)
+                        HStack(spacing: 10) {
+                            Image(systemName: "ellipsis")
+                                .font(.title3.weight(.bold))
+                                .foregroundStyle(Theme.accent)
+                                .symbolEffect(.variableColor.iterative, options: .repeating)
+                            Text("Brain réfléchit").foregroundStyle(.secondary)
                             Spacer()
                         }
                         .padding(14)
                         .glassEffect(.regular, in: .rect(cornerRadius: 20))
+                        .transition(.opacity.combined(with: .offset(y: 8)))
                         .id("thinking")
                     }
                     if let message = chat.errorMessage {
@@ -40,6 +46,8 @@ struct BrainView: View {
                 }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 12)
+                .animation(Motion.snap, value: chat.messages.count)
+                .animation(Motion.snap, value: chat.isThinking)
             }
             .scrollDismissesKeyboard(.interactively)
             .onChange(of: chat.messages.count) { _, _ in
@@ -64,27 +72,44 @@ struct BrainView: View {
     }
 
     private var intro: some View {
-        VStack(spacing: 16) {
+        VStack(alignment: .leading, spacing: 18) {
             ETHBrainOrb()
-                .frame(width: 110, height: 110)
-            Text("Posez une question sur vos tâches, votre agenda ou vos habitudes.")
-                .multilineTextAlignment(.center)
-                .foregroundStyle(.secondary)
-            if chat.engine == .device, let reason = chat.deviceUnavailableReason {
-                Text(reason).font(.footnote).foregroundStyle(Theme.warning).multilineTextAlignment(.center)
+                .frame(width: 84, height: 84)
+                .reveal(0)
+            VStack(alignment: .leading, spacing: 12) {
+                AccentRule()
+                EthoneHeadline(first: "Votre assistant,", second: "branché sur votre journée.", size: .title)
             }
-            VStack(spacing: 10) {
-                ForEach(suggestions, id: \.self) { suggestion in
+            .reveal(1)
+            Text("Posez une question sur vos tâches, votre agenda ou vos habitudes.")
+                .foregroundStyle(.secondary)
+                .reveal(2)
+            if chat.engine == .device, let reason = chat.deviceUnavailableReason {
+                Label(reason, systemImage: "exclamationmark.triangle.fill").font(.footnote).foregroundStyle(Theme.warning)
+            }
+            VStack(spacing: 0) {
+                ForEach(Array(suggestions.enumerated()), id: \.element) { index, suggestion in
                     Button {
                         send(suggestion)
                     } label: {
-                        Text(suggestion).frame(maxWidth: .infinity).padding(.vertical, 6)
+                        HStack {
+                            Text(suggestion).foregroundStyle(.primary)
+                            Spacer()
+                            Image(systemName: "arrow.up.right").font(.footnote.weight(.semibold)).foregroundStyle(.secondary)
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 14)
+                        .contentShape(.rect)
                     }
-                    .buttonStyle(.glass)
+                    .buttonStyle(.plain)
+                    if index < suggestions.count - 1 { Divider().padding(.leading, 16) }
                 }
             }
+            .glassEffect(.regular, in: .rect(cornerRadius: 22))
+            .reveal(3)
         }
-        .padding(.top, 20)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.top, 12)
     }
 
     private func bubble(_ message: ChatMessage) -> some View {
@@ -113,8 +138,10 @@ struct BrainView: View {
                 send(input)
             } label: {
                 Image(systemName: "arrow.up").fontWeight(.bold).padding(6)
+                    .symbolEffect(.bounce, value: chat.messages.count)
             }
             .buttonStyle(.glassProminent)
+            .sensoryFeedback(.impact(weight: .light), trigger: chat.messages.count)
             .buttonBorderShape(.circle)
             .disabled(chat.isThinking || input.trimmingCharacters(in: .whitespaces).isEmpty)
         }

@@ -7,6 +7,8 @@ struct CalendarView: View {
     @State private var displayedMonth = Date()
     @State private var selectedDay = Date()
     @State private var editing: EventDraft?
+    @State private var monthDirection = 1
+    @Namespace private var selection
 
     private let calendar = Calendar.current
 
@@ -43,6 +45,8 @@ struct CalendarView: View {
             }
         }
         .sheet(item: $editing) { draft in EventEditorView(draft: draft) }
+        .sensoryFeedback(.selection, trigger: selectedDay)
+        .sensoryFeedback(.impact(weight: .light), trigger: displayedMonth)
     }
 
     private var monthHeader: some View {
@@ -53,7 +57,10 @@ struct CalendarView: View {
             Spacer()
             Text(displayedMonth, format: .dateTime.month(.wide).year())
                 .font(.title3.weight(.semibold))
+                .tracking(-0.4)
                 .textCase(.none)
+                .contentTransition(.interpolate)
+                .animation(Motion.snap, value: displayedMonth)
             Spacer()
             Button { shiftMonth(1) } label: { Image(systemName: "chevron.right") }
                 .buttonStyle(.glass)
@@ -96,8 +103,20 @@ struct CalendarView: View {
                         }
                     }
                 }
+                .id(displayedMonth)
+                .transition(.asymmetric(
+                    insertion: .offset(x: CGFloat(monthDirection) * 60).combined(with: .opacity),
+                    removal: .offset(x: CGFloat(-monthDirection) * 60).combined(with: .opacity)
+                ))
             }
+            .clipped()
         }
+        .gesture(
+            DragGesture(minimumDistance: 24).onEnded { value in
+                guard abs(value.translation.width) > abs(value.translation.height), abs(value.translation.width) > 50 else { return }
+                shiftMonth(value.translation.width < 0 ? 1 : -1)
+            }
+        )
     }
 
     private func dayCell(_ day: Date) -> some View {
@@ -105,7 +124,7 @@ struct CalendarView: View {
         let isToday = calendar.isDateInToday(day)
         let count = ethoneEvents(on: day).count + (showDeviceCalendar ? deviceEvents(on: day).count : 0)
         return Button {
-            selectedDay = day
+            withAnimation(Motion.snap) { selectedDay = day }
         } label: {
             VStack(spacing: 3) {
                 Text("\(calendar.component(.day, from: day))")
@@ -118,7 +137,9 @@ struct CalendarView: View {
             .frame(maxWidth: .infinity, minHeight: 44)
             .background {
                 if isSelected {
-                    RoundedRectangle(cornerRadius: 14, style: .continuous).fill(Color(hex: Theme.readableTint(Theme.currentAccentHex)).gradient)
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .fill(Color(hex: Theme.readableTint(Theme.currentAccentHex)).gradient)
+                        .matchedGeometryEffect(id: "selected-day", in: selection)
                 } else if isToday {
                     RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(Theme.accent, lineWidth: 1.5)
                 }
@@ -130,8 +151,10 @@ struct CalendarView: View {
     private var dayList: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(selectedDay, format: .dateTime.weekday(.wide).day().month(.wide))
-                .font(.headline)
+                .font(.title3.weight(.semibold))
+                .tracking(-0.4)
                 .padding(.leading, 4)
+                .contentTransition(.interpolate)
 
             let mine = ethoneEvents(on: selectedDay)
             let others = showDeviceCalendar ? deviceEvents(on: selectedDay) : []
@@ -141,8 +164,9 @@ struct CalendarView: View {
             }
             ForEach(mine) { event in
                 Button { editing = EventDraft(item: event, day: selectedDay) } label: {
-                    GlassCard(tint: Theme.accent.opacity(0.18)) {
-                        HStack {
+                    GlassCard {
+                        HStack(spacing: 12) {
+                            Capsule().fill(Theme.accent).frame(width: 3).frame(maxHeight: .infinity)
                             VStack(alignment: .leading, spacing: 3) {
                                 Text(event.title).font(.headline).foregroundStyle(.primary)
                                 if let start = event.startAt {
@@ -209,7 +233,9 @@ struct CalendarView: View {
     }
 
     private func shiftMonth(_ delta: Int) {
-        if let next = calendar.date(byAdding: .month, value: delta, to: displayedMonth) { displayedMonth = next }
+        guard let next = calendar.date(byAdding: .month, value: delta, to: displayedMonth) else { return }
+        monthDirection = delta
+        withAnimation(Motion.snap) { displayedMonth = next }
     }
 
     private func reloadDevice() {

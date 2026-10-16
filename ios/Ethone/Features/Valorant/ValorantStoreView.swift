@@ -56,7 +56,7 @@ struct ValorantStoreView: View {
                             remoteImage(item.image, size: 44)
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(item.name).font(.subheadline.weight(.semibold))
-                                Text(Self.typeLabel(item.type)).font(.caption2).foregroundStyle(.secondary).textCase(.uppercase)
+                                Text(Self.typeLabel(item.type)).font(.caption2).foregroundStyle(.secondary)
                             }
                             Spacer()
                             VStack(alignment: .trailing, spacing: 2) {

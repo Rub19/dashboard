@@ -27,6 +27,7 @@ import { useToast } from "@/components/ToastProvider";
 import { cn } from "@/lib/utils";
 import { SPRING_PILL } from "@/lib/ease";
 import { pageStagger, staggerItem } from "@/lib/motion-variants";
+import { tx } from "@/lib/tx";
 
 export type BotJobType = "cron" | "buffer_flush" | "cleanup" | "sync" | "backup";
 export type BotJobStatus = "idle" | "running" | "failed" | "disabled";
@@ -400,7 +401,7 @@ export default function BotJobsClient() {
         const updated = json.data as BotJobInfo;
         setJobs((prev) => prev.map((j) => (j.id === job.id ? updated : j)));
         if (selectedJob?.id === job.id) setSelectedJob(updated);
-        toast?.success(`Tâche "${job.name}" exécutée (${elapsed}ms)`);
+        toast?.success(tx("Tâche \"{name}\" exécutée ({elapsed}ms)", { name: job.name, elapsed }));
 
         setLogs((prev) => [
           {
@@ -429,7 +430,7 @@ export default function BotJobsClient() {
               : j
           )
         );
-        toast?.success(`Tâche "${job.name}" déclenchée avec succès (${measuredDuration}ms)`);
+        toast?.success(tx("Tâche \"{name}\" déclenchée avec succès ({measuredDuration}ms)", { name: job.name, measuredDuration }));
         setLogs((prev) => [
           {
             id: `log_${Date.now()}`,
@@ -444,7 +445,7 @@ export default function BotJobsClient() {
         ]);
       }
     } catch {
-      toast?.error(`Erreur réseau lors de l'exécution de "${job.name}"`);
+      toast?.error(tx("Erreur réseau lors de l'exécution de \"{name}\"", { name: job.name }));
       setJobs((prev) =>
         prev.map((j) => (j.id === job.id ? { ...j, status: "failed" as BotJobStatus, failureCount: j.failureCount + 1 } : j))
       );
@@ -456,7 +457,7 @@ export default function BotJobsClient() {
   const handleRunAllIdle = async () => {
     if (runningCycle) return;
     setRunningCycle(true);
-    toast?.info("Lancement du cycle ordonnancé...");
+    toast?.info(tx("Lancement du cycle ordonnancé..."));
     let completedCount = 0;
 
     for (const job of jobs) {
@@ -496,7 +497,7 @@ export default function BotJobsClient() {
 
     setRunningJobId(null);
     setRunningCycle(false);
-    toast?.success(`Cycle complet terminé : ${completedCount} tâches exécutées`);
+    toast?.success(tx("Cycle complet terminé : {completedCount} tâches exécutées", { completedCount }));
   };
 
   const filteredJobs = useMemo(() => {
@@ -545,25 +546,25 @@ export default function BotJobsClient() {
               className="inline-flex h-8 items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-3 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-hover)] transition-all cursor-pointer active:scale-[0.97]"
             >
               <ArrowLeft className="h-3.5 w-3.5" />
-              <span>Hub Discord</span>
+              <span>{tx("Hub Discord")}</span>
             </Link>
             <span className="text-[var(--text-muted)]/50">•</span>
             <Link
               href="/discord/bot"
               className="text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors truncate"
             >
-              Centre de Contrôle
+              {tx("Centre de Contrôle")}
             </Link>
             <span className="text-[var(--text-muted)]/50">•</span>
             <span className="text-xs font-semibold text-[var(--text-primary)] truncate">
-              Tâches de Fond & Cron
+              {tx("Tâches de Fond & Cron")}
             </span>
           </div>
 
           <div className="flex items-center gap-2.5">
             <div className="hidden md:flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--surface-raised)]/60 border border-[var(--panel-border)] text-xs font-mono text-[var(--text-muted)]">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>Ordonnanceur Actif</span>
+              <span>{tx("Ordonnanceur Actif")}</span>
             </div>
             <button
               onClick={fetchJobs}
@@ -571,7 +572,7 @@ export default function BotJobsClient() {
               className="inline-flex h-8 items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-3 text-xs font-semibold text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-hover)] transition-all disabled:opacity-50 cursor-pointer active:scale-[0.97]"
             >
               <RefreshCw className={cn("w-3.5 h-3.5 text-[var(--accent-primary)]", loading && "animate-spin")} />
-              <span className="hidden sm:inline">Actualiser</span>
+              <span className="hidden sm:inline">{tx("Actualiser")}</span>
             </button>
           </div>
         </div>
@@ -587,13 +588,13 @@ export default function BotJobsClient() {
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-lg bg-[var(--surface-raised)] border border-[var(--panel-border)] text-[11px] font-mono font-semibold text-[var(--accent-primary)]">
               <ListRestart className="w-3.5 h-3.5" />
-              <span>ETHO BOT CRON & QUEUE ENGINE</span>
+              <span>{tx("ETHO BOT CRON & QUEUE ENGINE")}</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--text-primary)]">
-              Tâches Planifiées & Files d&apos;Attente
+              {tx("Tâches Planifiées & Files d'Attente")}
             </h1>
             <p className="text-xs sm:text-sm text-[var(--text-muted)] max-w-2xl leading-relaxed">
-              Supervision en temps réel des {jobs.length} tâches périodiques du bot Etho : purges de tampons, rétention des journaux, cycles de modération et synchronisations de serveurs.
+              {tx("Supervision en temps réel des")}{" "} {jobs.length} {" "}{tx("tâches périodiques du bot Etho : purges de tampons, rétention des journaux, cycles de modération et synchronisations de serveurs.")}
             </p>
           </div>
 
@@ -604,7 +605,7 @@ export default function BotJobsClient() {
               className="inline-flex h-9 items-center gap-2 px-4 rounded-xl bg-[var(--accent-primary)] text-[var(--accent-contrast)] font-semibold text-xs shadow-sm hover:opacity-95 transition-all disabled:opacity-50 cursor-pointer active:scale-[0.97]"
             >
               <Play className={cn("w-3.5 h-3.5", runningCycle && "animate-spin")} />
-              <span>{runningCycle ? "Cycle en cours..." : "Exécuter tout le cycle"}</span>
+              <span>{runningCycle ? tx("Cycle en cours...") : tx("Exécuter tout le cycle")}</span>
             </button>
 
             <div className="flex items-center gap-1 p-1 rounded-xl bg-[var(--surface-raised)] border border-[var(--panel-border)]">
@@ -619,7 +620,7 @@ export default function BotJobsClient() {
                 )}
               >
                 <LayoutGrid className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Grille</span>
+                <span className="hidden sm:inline">{tx("Grille")}</span>
               </button>
               <button
                 type="button"
@@ -632,7 +633,7 @@ export default function BotJobsClient() {
                 )}
               >
                 <Layout className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Keeper</span>
+                <span className="hidden sm:inline">{tx("Keeper")}</span>
               </button>
               <button
                 type="button"
@@ -645,7 +646,7 @@ export default function BotJobsClient() {
                 )}
               >
                 <Activity className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Télémétrie</span>
+                <span className="hidden sm:inline">{tx("Télémétrie")}</span>
               </button>
             </div>
           </div>
@@ -662,11 +663,11 @@ export default function BotJobsClient() {
             className="p-3.5 rounded-2xl bg-[var(--surface-raised)]/70 border border-[var(--panel-border)] space-y-1"
           >
             <div className="flex items-center justify-between text-[11px] text-[var(--text-muted)]">
-              <span>Tâches Totales</span>
+              <span>{tx("Tâches Totales")}</span>
               <ListRestart className="w-3.5 h-3.5 text-[var(--accent-primary)]" />
             </div>
             <div className="text-xl font-bold tracking-tight text-[var(--text-primary)]">{kpis.total}</div>
-            <div className="text-[10px] text-[var(--text-muted)]">100% enregistrées</div>
+            <div className="text-[10px] text-[var(--text-muted)]">{tx("100% enregistrées")}</div>
           </motion.div>
 
           <motion.div
@@ -674,11 +675,11 @@ export default function BotJobsClient() {
             className="p-3.5 rounded-2xl bg-[var(--surface-raised)]/70 border border-[var(--panel-border)] space-y-1"
           >
             <div className="flex items-center justify-between text-[11px] text-[var(--text-muted)]">
-              <span>En Attente (Idle)</span>
+              <span>{tx("En Attente (Idle)")}</span>
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
             </div>
             <div className="text-xl font-bold tracking-tight text-emerald-400">{kpis.idleCount}</div>
-            <div className="text-[10px] text-[var(--text-muted)]">Prêtes à exécuter</div>
+            <div className="text-[10px] text-[var(--text-muted)]">{tx("Prêtes à exécuter")}</div>
           </motion.div>
 
           <motion.div
@@ -686,11 +687,11 @@ export default function BotJobsClient() {
             className="p-3.5 rounded-2xl bg-[var(--surface-raised)]/70 border border-[var(--panel-border)] space-y-1"
           >
             <div className="flex items-center justify-between text-[11px] text-[var(--text-muted)]">
-              <span>En Cours (Running)</span>
+              <span>{tx("En Cours (Running)")}</span>
               <Play className="w-3.5 h-3.5 text-sky-400" />
             </div>
             <div className="text-xl font-bold tracking-tight text-sky-400">{kpis.runningCount}</div>
-            <div className="text-[10px] text-[var(--text-muted)]">Threads actifs</div>
+            <div className="text-[10px] text-[var(--text-muted)]">{tx("Threads actifs")}</div>
           </motion.div>
 
           <motion.div
@@ -698,13 +699,13 @@ export default function BotJobsClient() {
             className="p-3.5 rounded-2xl bg-[var(--surface-raised)]/70 border border-[var(--panel-border)] space-y-1"
           >
             <div className="flex items-center justify-between text-[11px] text-[var(--text-muted)]">
-              <span>Échecs Détectés</span>
+              <span>{tx("Échecs Détectés")}</span>
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
             </div>
             <div className="text-xl font-bold tracking-tight text-[var(--text-primary)]">
               {kpis.failedCount === 0 ? "0" : kpis.failedCount}
             </div>
-            <div className="text-[10px] text-emerald-400 font-medium">Santé optimale</div>
+            <div className="text-[10px] text-emerald-400 font-medium">{tx("Santé optimale")}</div>
           </motion.div>
 
           <motion.div
@@ -712,11 +713,11 @@ export default function BotJobsClient() {
             className="p-3.5 rounded-2xl bg-[var(--surface-raised)]/70 border border-[var(--panel-border)] space-y-1"
           >
             <div className="flex items-center justify-between text-[11px] text-[var(--text-muted)]">
-              <span>Durée Moyenne</span>
+              <span>{tx("Durée Moyenne")}</span>
               <Timer className="w-3.5 h-3.5 text-purple-400" />
             </div>
-            <div className="text-xl font-bold tracking-tight text-purple-400">{kpis.avgDuration} ms</div>
-            <div className="text-[10px] text-[var(--text-muted)]">Temps d&apos;exécution</div>
+            <div className="text-xl font-bold tracking-tight text-purple-400">{kpis.avgDuration} {" "}{tx("ms")}</div>
+            <div className="text-[10px] text-[var(--text-muted)]">{tx("Temps d'exécution")}</div>
           </motion.div>
 
           <motion.div
@@ -724,13 +725,13 @@ export default function BotJobsClient() {
             className="p-3.5 rounded-2xl bg-[var(--surface-raised)]/70 border border-[var(--panel-border)] space-y-1"
           >
             <div className="flex items-center justify-between text-[11px] text-[var(--text-muted)]">
-              <span>Cycles Cumulés</span>
+              <span>{tx("Cycles Cumulés")}</span>
               <Zap className="w-3.5 h-3.5 text-amber-400" />
             </div>
             <div className="text-xl font-bold tracking-tight text-amber-400">
               {kpis.totalRuns.toLocaleString("fr-FR")}
             </div>
-            <div className="text-[10px] text-[var(--text-muted)]">Ticks mesurés</div>
+            <div className="text-[10px] text-[var(--text-muted)]">{tx("Ticks mesurés")}</div>
           </motion.div>
         </motion.div>
 
@@ -740,7 +741,7 @@ export default function BotJobsClient() {
             <input
               ref={searchInputRef}
               type="text"
-              placeholder="Rechercher une tâche (Nom, ID, catégorie...) — Appuyez sur '/'"
+              placeholder={tx("Rechercher une tâche (Nom, ID, catégorie...) — Appuyez sur '/'")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-2 rounded-xl bg-[var(--surface-base)] border border-[var(--panel-border)] focus:border-[var(--accent-primary)] focus:outline-none text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] transition-all"
@@ -774,7 +775,7 @@ export default function BotJobsClient() {
                     className="absolute inset-0 rounded-lg bg-[var(--accent-primary)] -z-0"
                   />
                 )}
-                <span className="relative z-10">Toutes ({jobs.length})</span>
+                <span className="relative z-10">{tx("Toutes (")}{jobs.length})</span>
               </button>
               {(["sync", "cleanup", "buffer_flush", "cron", "backup"] as BotJobType[]).map((t) => {
                 const count = jobs.filter((j) => j.type === t).length;
@@ -809,13 +810,13 @@ export default function BotJobsClient() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
-              aria-label="Filtrer par statut d'exécution"
+              aria-label={tx("Filtrer par statut d'exécution")}
               className="h-8 px-3 rounded-xl bg-[var(--surface-base)] border border-[var(--panel-border)] text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)] cursor-pointer"
             >
-              <option value="ALL">Tous les statuts</option>
-              <option value="idle">Prêtes (idle)</option>
-              <option value="running">En cours (running)</option>
-              <option value="failed">Échecs (failed)</option>
+              <option value="ALL">{tx("Tous les statuts")}</option>
+              <option value="idle">{tx("Prêtes (idle)")}</option>
+              <option value="running">{tx("En cours (running)")}</option>
+              <option value="failed">{tx("Échecs (failed)")}</option>
             </select>
           </div>
         </div>
@@ -823,9 +824,9 @@ export default function BotJobsClient() {
         {filteredJobs.length === 0 ? (
           <div className="p-12 text-center rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-3">
             <ListRestart className="w-10 h-10 text-[var(--text-muted)] mx-auto opacity-50" />
-            <h3 className="text-base font-bold text-[var(--text-primary)]">Aucune tâche trouvée</h3>
+            <h3 className="text-base font-bold text-[var(--text-primary)]">{tx("Aucune tâche trouvée")}</h3>
             <p className="text-xs text-[var(--text-muted)] max-w-sm mx-auto">
-              Aucune tâche ne correspond aux critères de filtre ou à ta recherche actuelle.
+              {tx("Aucune tâche ne correspond aux critères de filtre ou à ta recherche actuelle.")}
             </p>
             <button
               onClick={() => {
@@ -835,7 +836,7 @@ export default function BotJobsClient() {
               }}
               className="px-4 py-2 rounded-xl bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] hover:bg-[var(--accent-primary)] hover:text-[var(--accent-contrast)] text-xs font-semibold transition-all cursor-pointer"
             >
-              Réinitialiser les filtres
+              {tx("Réinitialiser les filtres")}
             </button>
           </div>
         ) : viewMode === "GRID" ? (
@@ -888,17 +889,17 @@ export default function BotJobsClient() {
                         {job.status === "running" || isRunning ? (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-sky-500/10 border border-sky-500/25 text-[10px] font-semibold text-sky-400">
                             <span className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-ping" />
-                            En cours
+                            {tx("En cours")}
                           </span>
                         ) : job.status === "failed" ? (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-rose-500/10 border border-rose-500/25 text-[10px] font-semibold text-rose-400">
                             <span className="w-1.5 h-1.5 rounded-full bg-rose-400" />
-                            Échec
+                            {tx("Échec")}
                           </span>
                         ) : (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-[10px] font-semibold text-emerald-400">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                            Prête
+                            {tx("Prête")}
                           </span>
                         )}
                       </div>
@@ -922,9 +923,9 @@ export default function BotJobsClient() {
 
                   <div className="pt-4 mt-3 flex items-center justify-between gap-3 border-t border-[var(--panel-border)]">
                     <div className="flex items-center gap-3 text-xs font-mono text-[var(--text-muted)]">
-                      <span className="font-semibold text-[var(--text-primary)]">{job.durationMs}ms</span>
+                      <span className="font-semibold text-[var(--text-primary)]">{job.durationMs}{tx("ms")}</span>
                       <span>•</span>
-                      <span>{job.totalRuns.toLocaleString("fr-FR")} runs</span>
+                      <span>{job.totalRuns.toLocaleString("fr-FR")} {" "}{tx("runs")}</span>
                     </div>
 
                     <button
@@ -937,7 +938,7 @@ export default function BotJobsClient() {
                       className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--surface-base)] hover:bg-[var(--accent-primary)] hover:text-[var(--accent-contrast)] border border-[var(--panel-border)] hover:border-[var(--accent-primary)] text-xs font-semibold text-[var(--text-primary)] transition-all disabled:opacity-50 cursor-pointer active:scale-[0.97]"
                     >
                       <Play className={cn("w-3 h-3", isRunning && "animate-spin")} />
-                      <span>{isRunning ? "Exécution..." : "Exécuter"}</span>
+                      <span>{isRunning ? tx("Exécution...") : tx("Exécuter")}</span>
                     </button>
                   </div>
                 </motion.div>
@@ -994,10 +995,10 @@ export default function BotJobsClient() {
                     <div className="flex items-center gap-3 shrink-0">
                       <div className="text-right hidden sm:block">
                         <span className="text-xs font-mono font-semibold text-[var(--text-primary)] block">
-                          {job.durationMs}ms
+                          {job.durationMs}{tx("ms")}
                         </span>
                         <span className="text-[10px] text-[var(--text-muted)] block">
-                          {job.totalRuns} exécutions
+                          {job.totalRuns} {" "}{tx("exécutions")}
                         </span>
                       </div>
 
@@ -1026,7 +1027,7 @@ export default function BotJobsClient() {
                   <div className="flex items-start justify-between gap-3">
                     <div className="space-y-1">
                       <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-[var(--surface-base)] border border-[var(--panel-border)] text-[10px] font-mono text-[var(--accent-primary)]">
-                        <span>ID : {selectedJob.id}</span>
+                        <span>{tx("ID :")}{" "} {selectedJob.id}</span>
                       </div>
                       <h2 className="text-lg font-bold text-[var(--text-primary)]">
                         {selectedJob.name}
@@ -1037,7 +1038,7 @@ export default function BotJobsClient() {
                     </div>
 
                     <span className="px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 text-xs font-semibold">
-                      {selectedJob.status === "idle" ? "Prête (idle)" : selectedJob.status}
+                      {selectedJob.status === "idle" ? tx("Prête (idle)") : selectedJob.status}
                     </span>
                   </div>
 
@@ -1047,28 +1048,28 @@ export default function BotJobsClient() {
 
                   <div className="grid grid-cols-2 gap-3 text-xs">
                     <div className="p-3 rounded-xl bg-[var(--surface-base)] border border-[var(--panel-border)]">
-                      <span className="text-[10px] text-[var(--text-muted)] block">Fréquence</span>
+                      <span className="text-[10px] text-[var(--text-muted)] block">{tx("Fréquence")}</span>
                       <span className="font-semibold text-[var(--text-primary)] block mt-0.5">
                         {selectedJob.intervalDescription}
                       </span>
                     </div>
 
                     <div className="p-3 rounded-xl bg-[var(--surface-base)] border border-[var(--panel-border)]">
-                      <span className="text-[10px] text-[var(--text-muted)] block">Type d&apos;action</span>
+                      <span className="text-[10px] text-[var(--text-muted)] block">{tx("Type d'action")}</span>
                       <span className="font-semibold text-[var(--text-primary)] block mt-0.5 capitalize">
                         {TYPE_CONFIG[selectedJob.type].label}
                       </span>
                     </div>
 
                     <div className="p-3 rounded-xl bg-[var(--surface-base)] border border-[var(--panel-border)]">
-                      <span className="text-[10px] text-[var(--text-muted)] block">Durée mesurée</span>
+                      <span className="text-[10px] text-[var(--text-muted)] block">{tx("Durée mesurée")}</span>
                       <span className="font-mono font-semibold text-[var(--text-primary)] block mt-0.5">
-                        {selectedJob.durationMs} ms
+                        {selectedJob.durationMs} {" "}{tx("ms")}
                       </span>
                     </div>
 
                     <div className="p-3 rounded-xl bg-[var(--surface-base)] border border-[var(--panel-border)]">
-                      <span className="text-[10px] text-[var(--text-muted)] block">Total exécutions</span>
+                      <span className="text-[10px] text-[var(--text-muted)] block">{tx("Total exécutions")}</span>
                       <span className="font-mono font-semibold text-[var(--text-primary)] block mt-0.5">
                         {selectedJob.totalRuns.toLocaleString("fr-FR")}
                       </span>
@@ -1077,11 +1078,11 @@ export default function BotJobsClient() {
 
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-xs">
-                      <span className="font-semibold text-[var(--text-primary)]">Idempotence garantie</span>
-                      <span className="text-emerald-400 font-mono text-[11px]">Oui (sans effet de bord)</span>
+                      <span className="font-semibold text-[var(--text-primary)]">{tx("Idempotence garantie")}</span>
+                      <span className="text-emerald-400 font-mono text-[11px]">{tx("Oui (sans effet de bord)")}</span>
                     </div>
                     <div className="flex items-center justify-between text-xs">
-                      <span className="font-semibold text-[var(--text-primary)]">Dernière synchronisation</span>
+                      <span className="font-semibold text-[var(--text-primary)]">{tx("Dernière synchronisation")}</span>
                       <span className="text-[var(--text-muted)] font-mono text-[11px]">{lastRefreshedAt}</span>
                     </div>
                   </div>
@@ -1093,7 +1094,7 @@ export default function BotJobsClient() {
                   >
                     <Play className={cn("w-3.5 h-3.5", runningJobId === selectedJob.id && "animate-spin")} />
                     <span>
-                      {runningJobId === selectedJob.id ? "Exécution de la tâche..." : "Déclencher l'exécution maintenant"}
+                      {runningJobId === selectedJob.id ? tx("Exécution de la tâche...") : tx("Déclencher l'exécution maintenant")}
                     </span>
                   </button>
                 </div>
@@ -1106,42 +1107,42 @@ export default function BotJobsClient() {
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-base font-bold text-[var(--text-primary)]">
-                    Chronologie & Ordonnancement des Minuteries
+                    {tx("Chronologie & Ordonnancement des Minuteries")}
                   </h3>
                   <p className="text-xs text-[var(--text-muted)]">
-                    Décomposition par cadence des {jobs.length} processus exécutés en arrière-plan.
+                    {tx("Décomposition par cadence des")}{" "} {jobs.length} {" "}{tx("processus exécutés en arrière-plan.")}
                   </p>
                 </div>
-                <span className="text-xs font-mono text-[var(--text-muted)]">Synchronisé : {lastRefreshedAt}</span>
+                <span className="text-xs font-mono text-[var(--text-muted)]">{tx("Synchronisé :")}{" "} {lastRefreshedAt}</span>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
                 <div className="p-4 rounded-2xl bg-[var(--surface-base)] border border-[var(--panel-border)] space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-[var(--text-primary)]">Ultra-Rapides (10s - 30s)</span>
+                    <span className="text-xs font-bold text-[var(--text-primary)]">{tx("Ultra-Rapides (10s - 30s)")}</span>
                     <span className="text-xs font-mono px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-400">
-                      5 tâches
+                      {tx("5 tâches")}
                     </span>
                   </div>
                   <ul className="space-y-1.5 text-[11px] text-[var(--text-muted)]">
                     <li className="flex items-center justify-between">
-                      <span>• Écriture de l&apos;XP</span>
+                      <span>{tx("• Écriture de l'XP")}</span>
                       <span className="font-mono">10s</span>
                     </li>
                     <li className="flex items-center justify-between">
-                      <span>• Écriture des statistiques</span>
+                      <span>{tx("• Écriture des statistiques")}</span>
                       <span className="font-mono">30s</span>
                     </li>
                     <li className="flex items-center justify-between">
-                      <span>• Sortie du mode raid</span>
+                      <span>{tx("• Sortie du mode raid")}</span>
                       <span className="font-mono">30s</span>
                     </li>
                     <li className="flex items-center justify-between">
-                      <span>• Sanctions expirées</span>
+                      <span>{tx("• Sanctions expirées")}</span>
                       <span className="font-mono">30s</span>
                     </li>
                     <li className="flex items-center justify-between">
-                      <span>• Rappels programmés</span>
+                      <span>{tx("• Rappels programmés")}</span>
                       <span className="font-mono">30s</span>
                     </li>
                   </ul>
@@ -1149,26 +1150,26 @@ export default function BotJobsClient() {
 
                 <div className="p-4 rounded-2xl bg-[var(--surface-base)] border border-[var(--panel-border)] space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-[var(--text-primary)]">Cadence Régulière (1m - 5m)</span>
+                    <span className="text-xs font-bold text-[var(--text-primary)]">{tx("Cadence Régulière (1m - 5m)")}</span>
                     <span className="text-xs font-mono px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400">
-                      4 tâches
+                      {tx("4 tâches")}
                     </span>
                   </div>
                   <ul className="space-y-1.5 text-[11px] text-[var(--text-muted)]">
                     <li className="flex items-center justify-between">
-                      <span>• Événements communautaires</span>
+                      <span>{tx("• Événements communautaires")}</span>
                       <span className="font-mono">1m</span>
                     </li>
                     <li className="flex items-center justify-between">
-                      <span>• Planning de présence</span>
+                      <span>{tx("• Planning de présence")}</span>
                       <span className="font-mono">5m</span>
                     </li>
                     <li className="flex items-center justify-between">
-                      <span>• Salons de statistiques</span>
+                      <span>{tx("• Salons de statistiques")}</span>
                       <span className="font-mono">5m</span>
                     </li>
                     <li className="flex items-center justify-between">
-                      <span>• Inactivité des tickets</span>
+                      <span>{tx("• Inactivité des tickets")}</span>
                       <span className="font-mono">5m</span>
                     </li>
                   </ul>
@@ -1176,30 +1177,30 @@ export default function BotJobsClient() {
 
                 <div className="p-4 rounded-2xl bg-[var(--surface-base)] border border-[var(--panel-border)] space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-[var(--text-primary)]">Périodiques (10m - 12h)</span>
+                    <span className="text-xs font-bold text-[var(--text-primary)]">{tx("Périodiques (10m - 12h)")}</span>
                     <span className="text-xs font-mono px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-400">
-                      6 tâches
+                      {tx("6 tâches")}
                     </span>
                   </div>
                   <ul className="space-y-1.5 text-[11px] text-[var(--text-muted)]">
                     <li className="flex items-center justify-between">
-                      <span>• Suivi des invitations</span>
+                      <span>{tx("• Suivi des invitations")}</span>
                       <span className="font-mono">10m</span>
                     </li>
                     <li className="flex items-center justify-between">
-                      <span>• Anniversaires</span>
+                      <span>{tx("• Anniversaires")}</span>
                       <span className="font-mono">15m</span>
                     </li>
                     <li className="flex items-center justify-between">
-                      <span>• Scan de sécurité proactif</span>
+                      <span>{tx("• Scan de sécurité proactif")}</span>
                       <span className="font-mono">15m</span>
                     </li>
                     <li className="flex items-center justify-between">
-                      <span>• Sauvegardes automatiques</span>
+                      <span>{tx("• Sauvegardes automatiques")}</span>
                       <span className="font-mono">15m</span>
                     </li>
                     <li className="flex items-center justify-between">
-                      <span>• Rétention des journaux</span>
+                      <span>{tx("• Rétention des journaux")}</span>
                       <span className="font-mono">12h</span>
                     </li>
                   </ul>
@@ -1209,11 +1210,11 @@ export default function BotJobsClient() {
 
             <div className="p-6 rounded-3xl bg-[var(--surface-raised)] border border-[var(--panel-border)] space-y-4">
               <h3 className="text-base font-bold text-[var(--text-primary)]">
-                Journal des Déclenchements Récents
+                {tx("Journal des Déclenchements Récents")}
               </h3>
               {logs.length === 0 ? (
                 <div className="p-6 text-center text-xs text-[var(--text-muted)] rounded-2xl bg-[var(--surface-base)] border border-[var(--panel-border)]">
-                  Aucun déclenchement manuel enregistré dans cette session. Utilise le bouton &quot;Exécuter&quot; pour tester une tâche.
+                  {tx("Aucun déclenchement manuel enregistré dans cette session. Utilise le bouton \"Exécuter\" pour tester une tâche.")}
                 </div>
               ) : (
                 <div className="space-y-2">
@@ -1228,7 +1229,7 @@ export default function BotJobsClient() {
                         <span className="text-[var(--text-muted)]">({log.jobId})</span>
                       </div>
                       <div className="flex items-center gap-4 text-[var(--text-muted)]">
-                        <span>{log.durationMs}ms</span>
+                        <span>{log.durationMs}{tx("ms")}</span>
                         <span>{log.executedAt}</span>
                         <span className="text-emerald-400 font-semibold">{log.statusText}</span>
                       </div>
@@ -1275,25 +1276,25 @@ export default function BotJobsClient() {
 
               <div className="grid grid-cols-2 gap-3 text-xs">
                 <div className="p-3 rounded-xl bg-[var(--surface-raised)] border border-[var(--panel-border)]">
-                  <span className="text-[10px] text-[var(--text-muted)] block">Cadence</span>
+                  <span className="text-[10px] text-[var(--text-muted)] block">{tx("Cadence")}</span>
                   <span className="font-semibold text-[var(--text-primary)] block mt-0.5">
                     {selectedJob.intervalDescription}
                   </span>
                 </div>
                 <div className="p-3 rounded-xl bg-[var(--surface-raised)] border border-[var(--panel-border)]">
-                  <span className="text-[10px] text-[var(--text-muted)] block">Dernier temps</span>
+                  <span className="text-[10px] text-[var(--text-muted)] block">{tx("Dernier temps")}</span>
                   <span className="font-mono font-semibold text-[var(--text-primary)] block mt-0.5">
-                    {selectedJob.durationMs} ms
+                    {selectedJob.durationMs} {" "}{tx("ms")}
                   </span>
                 </div>
                 <div className="p-3 rounded-xl bg-[var(--surface-raised)] border border-[var(--panel-border)]">
-                  <span className="text-[10px] text-[var(--text-muted)] block">Exécutions</span>
+                  <span className="text-[10px] text-[var(--text-muted)] block">{tx("Exécutions")}</span>
                   <span className="font-mono font-semibold text-[var(--text-primary)] block mt-0.5">
                     {selectedJob.totalRuns.toLocaleString("fr-FR")}
                   </span>
                 </div>
                 <div className="p-3 rounded-xl bg-[var(--surface-raised)] border border-[var(--panel-border)]">
-                  <span className="text-[10px] text-[var(--text-muted)] block">Échecs</span>
+                  <span className="text-[10px] text-[var(--text-muted)] block">{tx("Échecs")}</span>
                   <span className="font-mono font-semibold text-emerald-400 block mt-0.5">
                     {selectedJob.failureCount}
                   </span>
@@ -1306,7 +1307,7 @@ export default function BotJobsClient() {
                   onClick={() => setInspectorOpen(false)}
                   className="flex-1 py-2.5 rounded-xl bg-[var(--surface-raised)] hover:bg-[var(--surface-hover)] border border-[var(--panel-border)] text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all cursor-pointer"
                 >
-                  Fermer
+                  {tx("Fermer")}
                 </button>
                 <button
                   type="button"
@@ -1317,7 +1318,7 @@ export default function BotJobsClient() {
                   className="flex-1 py-2.5 rounded-xl bg-[var(--accent-primary)] hover:opacity-95 text-[var(--accent-contrast)] text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer"
                 >
                   <Play className={cn("w-3.5 h-3.5", runningJobId === selectedJob.id && "animate-spin")} />
-                  <span>{runningJobId === selectedJob.id ? "En cours..." : "Exécuter maintenant"}</span>
+                  <span>{runningJobId === selectedJob.id ? tx("En cours...") : tx("Exécuter maintenant")}</span>
                 </button>
               </div>
             </motion.div>

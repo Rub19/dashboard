@@ -7,6 +7,7 @@ import { sinceLabel } from "@/lib/discord/security-scan";
 import { pageStagger } from "@/lib/motion-variants";
 import { cn } from "@/lib/utils";
 import { ConsolePage, EmptyLine, GhostButton, Panel, Row, Segmented, StatTile, Stepper, roleColor, useGuildApi } from "../kit";
+import { tx } from "@/lib/tx";
 
 type RoleRow = { id: string; name: string; color: string; memberCount: number; sensitive: string[]; secured: boolean; editable: boolean };
 type MemberRow = { userId: string; displayName: string; avatar: string | null; roleNames: string[]; status: "none" | "invited" | "pending" | "active"; sessionExpiresAt: string | null; lockedUntil: string | null };
@@ -52,24 +53,24 @@ export default function ConsoleSecureRoles({ guildId }: { guildId: string }) {
     return r;
   };
   const secure = async (r: RoleRow) => {
-    if (!(await confirmDialog(`Sécuriser « ${r.name} » ? Ses ${r.memberCount} membre(s) perdent ses permissions sensibles jusqu'à ce qu'ils valident un code avec /elevate. Ils sont invités automatiquement.`, { title: "Sécuriser le rôle", confirmLabel: "Sécuriser" })))
+    if (!(await confirmDialog(tx("Sécuriser « {name} » ? Ses {memberCount} membre(s) perdent ses permissions sensibles jusqu'à ce qu'ils valident un code avec /elevate. Ils sont invités automatiquement.", { name: r.name, memberCount: r.memberCount }), { title: tx("Sécuriser le rôle"), confirmLabel: tx("Sécuriser") })))
       return;
     await call(`role:${r.id}`, "/secure-roles/roles", "POST", { roleId: r.id });
   };
   const restore = async (r: RoleRow) => {
-    if (!(await confirmDialog(`Restaurer « ${r.name} » ? Le rôle retrouve toutes ses permissions sans code.`, { title: "Restaurer le rôle", confirmLabel: "Restaurer" }))) return;
+    if (!(await confirmDialog(tx("Restaurer « {name} » ? Le rôle retrouve toutes ses permissions sans code.", { name: r.name }), { title: tx("Restaurer le rôle"), confirmLabel: tx("Restaurer") }))) return;
     await call(`role:${r.id}`, `/secure-roles/roles/${r.id}`, "DELETE");
   };
   const resetMember = async (m: MemberRow) => {
-    if (!(await confirmDialog(`Réinitialiser l'authentification de ${m.displayName} ? Sa session est fermée et il devra être réinvité (téléphone perdu, compte suspect).`, { title: "Réinitialiser", confirmLabel: "Réinitialiser" }))) return;
+    if (!(await confirmDialog(tx("Réinitialiser l'authentification de {displayName} ? Sa session est fermée et il devra être réinvité (téléphone perdu, compte suspect).", { displayName: m.displayName }), { title: tx("Réinitialiser"), confirmLabel: tx("Réinitialiser") }))) return;
     await call(`m:${m.userId}`, `/secure-roles/members/${m.userId}/reset`, "POST", {});
   };
 
   if (!ov) {
     return (
-      <ConsolePage title="Rôles sécurisés">
+      <ConsolePage title={tx("Rôles sécurisés")}>
         <Panel>
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         </Panel>
       </ConsolePage>
     );
@@ -79,42 +80,42 @@ export default function ConsoleSecureRoles({ guildId }: { guildId: string }) {
   const sessions = ov.members.filter((m) => m.sessionExpiresAt).length;
 
   return (
-    <ConsolePage title="Rôles sécurisés">
+    <ConsolePage title={tx("Rôles sécurisés")}>
       {!ov.config.enabled && (
         <Panel>
-          <p className="px-5 py-3 text-xs text-[var(--warning)]">Module désactivé. Active-le avec l&apos;interrupteur en haut de la page avant de sécuriser un rôle.</p>
+          <p className="px-5 py-3 text-xs text-[var(--warning)]">{tx("Module désactivé. Active-le avec l'interrupteur en haut de la page avant de sécuriser un rôle.")}</p>
         </Panel>
       )}
       {!ov.bot.canManageRoles && (
         <Panel>
-          <p className="px-5 py-3 text-xs text-[var(--danger)]">Etho n&apos;a pas la permission « Gérer les rôles » : il ne peut ni sécuriser ni ouvrir de session.</p>
+          <p className="px-5 py-3 text-xs text-[var(--danger)]">{tx("Etho n'a pas la permission « Gérer les rôles » : il ne peut ni sécuriser ni ouvrir de session.")}</p>
         </Panel>
       )}
 
       <motion.div variants={pageStagger} className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatTile label="Rôles sécurisés" value={secured.length} hint="25 au maximum" />
-        <StatTile label="Membres protégés" value={ov.members.filter((m) => m.status === "active").length} hint={`sur ${ov.members.length}`} />
-        <StatTile label="Sessions ouvertes" value={sessions} />
-        <StatTile label="En attente" value={ov.members.filter((m) => m.status === "invited" || m.status === "pending").length} hint="invités ou en configuration" />
+        <StatTile label={tx("Rôles sécurisés")} value={secured.length} hint={tx("25 au maximum")} />
+        <StatTile label={tx("Membres protégés")} value={ov.members.filter((m) => m.status === "active").length} hint={tx("sur {length}", { length: ov.members.length })} />
+        <StatTile label={tx("Sessions ouvertes")} value={sessions} />
+        <StatTile label={tx("En attente")} value={ov.members.filter((m) => m.status === "invited" || m.status === "pending").length} hint={tx("invités ou en configuration")} />
       </motion.div>
 
-      <Panel title="Fonctionnement">
-        <Row label="Comment ça marche" hint="Seuls les membres invités par un administrateur peuvent s'enrôler.">
+      <Panel title={tx("Fonctionnement")}>
+        <Row label={tx("Comment ça marche")} hint={tx("Seuls les membres invités par un administrateur peuvent s'enrôler.")}>
           <p className="text-xs leading-relaxed text-[var(--text-muted)]">
-            Un membre invité tape <code className="rounded bg-[var(--surface-hover)] px-1">/elevate</code> : Etho lui donne une clé pour son application d&apos;authentification. Ensuite,{" "}
-            <code className="rounded bg-[var(--surface-hover)] px-1">/elevate code:123456</code> rend les permissions sensibles pendant la durée de session.
+            {tx("Un membre invité tape")}{" "} <code className="rounded bg-[var(--surface-hover)] px-1">{tx("/elevate")}</code> {" "}{tx(": Etho lui donne une clé pour son application d'authentification. Ensuite,")}{" "}
+            <code className="rounded bg-[var(--surface-hover)] px-1">{tx("/elevate code:123456")}</code> {" "}{tx("rend les permissions sensibles pendant la durée de session.")}
           </p>
         </Row>
-        <Row label="Durée d'une session">
+        <Row label={tx("Durée d'une session")}>
           <Stepper value={ov.config.sessionMinutes} min={5} max={240} step={5} unit="minutes" onCommit={(n) => call("cfg", "/secure-roles/config", "PUT", { sessionMinutes: n })} />
         </Row>
       </Panel>
 
       <Panel
-        title="Rôles"
+        title={tx("Rôles")}
         actions={
           <Segmented
-            label="Rôles affichés"
+            label={tx("Rôles affichés")}
             value={roleFilter}
             options={[
               ["sensitive", "Avec permissions sensibles"],
@@ -125,7 +126,7 @@ export default function ConsoleSecureRoles({ guildId }: { guildId: string }) {
         }
       >
         {shownRoles.length === 0 ? (
-          <EmptyLine>Aucun rôle avec des permissions sensibles.</EmptyLine>
+          <EmptyLine>{tx("Aucun rôle avec des permissions sensibles.")}</EmptyLine>
         ) : (
           <ul>
             {shownRoles.map((r) => (
@@ -134,20 +135,20 @@ export default function ConsoleSecureRoles({ guildId }: { guildId: string }) {
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-[13px] font-semibold text-[var(--text-primary)]">
                     {r.name}
-                    {r.secured && <span className="ml-2 text-[11px] font-semibold text-[var(--success)]">Sécurisé</span>}
+                    {r.secured && <span className="ml-2 text-[11px] font-semibold text-[var(--success)]">{tx("Sécurisé")}</span>}
                   </p>
                   <p className="truncate text-[11px] text-[var(--text-muted)]">
-                    {r.memberCount} membre{r.memberCount > 1 ? "s" : ""}
+                    {r.memberCount} {" "}{tx("membre")}{r.memberCount > 1 ? "s" : ""}
                     {r.sensitive.length ? ` · ${r.sensitive.join(", ")}` : ""}
                   </p>
                 </div>
                 {r.secured ? (
                   <GhostButton disabled={busy === `role:${r.id}`} onClick={() => restore(r)}>
-                    Restaurer
+                    {tx("Restaurer")}
                   </GhostButton>
                 ) : (
                   <GhostButton disabled={!ov.config.enabled || !r.editable || r.sensitive.length === 0 || busy === `role:${r.id}`} onClick={() => secure(r)}>
-                    {r.editable ? "Sécuriser" : "Au-dessus d'Etho"}
+                    {r.editable ? tx("Sécuriser") : tx("Au-dessus d'Etho")}
                   </GhostButton>
                 )}
               </li>
@@ -156,9 +157,9 @@ export default function ConsoleSecureRoles({ guildId }: { guildId: string }) {
         )}
       </Panel>
 
-      <Panel title="Équipe" subtitle="Membres qui ont un rôle sécurisé.">
+      <Panel title={tx("Équipe")} subtitle={tx("Membres qui ont un rôle sécurisé.")}>
         {ov.members.length === 0 ? (
-          <EmptyLine>Personne n&apos;a de rôle sécurisé.</EmptyLine>
+          <EmptyLine>{tx("Personne n'a de rôle sécurisé.")}</EmptyLine>
         ) : (
           <ul>
             {ov.members.map((m) => (
@@ -169,24 +170,24 @@ export default function ConsoleSecureRoles({ guildId }: { guildId: string }) {
                   <p className="truncate text-[13px] font-semibold text-[var(--text-primary)]">{m.displayName}</p>
                   <p className="truncate text-[11px] text-[var(--text-muted)]">
                     <span className={STATUS[m.status][1]}>{STATUS[m.status][0]}</span> · {m.roleNames.join(", ")}
-                    {m.sessionExpiresAt ? ` · session jusqu'à ${new Date(m.sessionExpiresAt).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}` : ""}
-                    {m.lockedUntil && new Date(m.lockedUntil) > new Date() ? " · bloqué (trop d'essais)" : ""}
+                    {m.sessionExpiresAt ? tx(" · session jusqu'à {v0}", { v0: new Date(m.sessionExpiresAt).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }) }) : ""}
+                    {m.lockedUntil && new Date(m.lockedUntil) > new Date() ? tx(" · bloqué (trop d'essais)") : ""}
                   </p>
                 </div>
                 <div className="flex gap-1.5">
                   {(m.status === "none" || m.status === "invited") && (
                     <GhostButton disabled={busy === `m:${m.userId}`} onClick={() => call(`m:${m.userId}`, `/secure-roles/members/${m.userId}/invite`, "POST", {})}>
-                      {m.status === "invited" ? "Réinviter" : "Inviter"}
+                      {m.status === "invited" ? tx("Réinviter") : tx("Inviter")}
                     </GhostButton>
                   )}
                   {m.sessionExpiresAt && (
                     <GhostButton disabled={busy === `m:${m.userId}`} onClick={() => call(`m:${m.userId}`, `/secure-roles/members/${m.userId}/revoke`, "POST", {})}>
-                      Terminer la session
+                      {tx("Terminer la session")}
                     </GhostButton>
                   )}
                   {(m.status === "pending" || m.status === "active") && (
                     <GhostButton disabled={busy === `m:${m.userId}`} onClick={() => resetMember(m)}>
-                      Réinitialiser
+                      {tx("Réinitialiser")}
                     </GhostButton>
                   )}
                 </div>
@@ -196,9 +197,9 @@ export default function ConsoleSecureRoles({ guildId }: { guildId: string }) {
         )}
       </Panel>
 
-      <Panel title="Journal">
+      <Panel title={tx("Journal")}>
         {ov.audit.length === 0 ? (
-          <EmptyLine>Aucune action pour l&apos;instant.</EmptyLine>
+          <EmptyLine>{tx("Aucune action pour l'instant.")}</EmptyLine>
         ) : (
           <ul className="max-h-80 overflow-y-auto">
             {ov.audit.map((a) => (

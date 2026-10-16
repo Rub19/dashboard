@@ -124,9 +124,9 @@ export const antiraidCommand: Command = {
 
       const detectors: string[] = [];
       const d = (on: boolean, label: string) => `${on ? '🟢' : '⚫'} ${label}`;
-      detectors.push(d(raidCfg.joinRaid.enabled, 'Vague d\'arrivées'));
+      detectors.push(d(raidCfg.joinRaid.enabled, trg(ctx, 'Vague d\'arrivées')));
       // Spam, mentions, bots, comptes récents et destructions : voir /protection liste.
-      detectors.push('Spam, mentions, bots, comptes récents : `/protection liste`');
+      detectors.push(trg(ctx, 'Spam, mentions, bots, comptes récents : `/protection liste`'));
 
       const embed = baseEmbed('default', { color: levelColors[metrics.threatLevel] || BRAND_COLORS.success })
         .setAuthor({ name: trg(guildId, 'Anti-Raid — {name}', { name: ctx.guild.name }), iconURL: ctx.guild.iconURL({ size: 128 }) ?? undefined })

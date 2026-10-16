@@ -6,6 +6,7 @@ import { confirmDialog } from "@/lib/confirmDialog";
 import { pageStagger } from "@/lib/motion-variants";
 import { cn } from "@/lib/utils";
 import { ConsolePage, EmptyLine, GhostButton, Panel, Segmented, StatTile, useGuildApi } from "../kit";
+import { tx } from "@/lib/tx";
 
 type Point = { day: string; messages: number; voiceHours: number; joins: number; leaves: number; members: number | null; activeUsers: number };
 type Ranked = { id: string; value: number; name: string; avatarUrl?: string | null };
@@ -54,7 +55,7 @@ export default function ConsoleStats({ guildId }: { guildId: string }) {
   }, [api, days, sort, q]);
 
   const clearData = async () => {
-    if (!(await confirmDialog("Effacer toutes les statistiques collectées sur ce serveur ? C'est définitif.", { title: "Effacer les statistiques", confirmLabel: "Effacer" }))) return;
+    if (!(await confirmDialog(tx("Effacer toutes les statistiques collectées sur ce serveur ? C'est définitif."), { title: tx("Effacer les statistiques"), confirmLabel: tx("Effacer") }))) return;
     if (await api("/stats/data", { method: "DELETE" })) void load();
   };
 
@@ -62,28 +63,28 @@ export default function ConsoleStats({ guildId }: { guildId: string }) {
   const max = Math.max(1, ...series.map((p) => p[metric] ?? 0));
 
   return (
-    <ConsolePage title="Statistiques" actions={<Segmented label="Période" value={days} options={DAYS.map((d) => [d, d === 365 ? "1 an" : `${d} j`] as const)} onChange={setDays} />}>
+    <ConsolePage title={tx("Statistiques")} actions={<Segmented label={tx("Période")} value={days} options={DAYS.map((d) => [d, d === 365 ? "1 an" : `${d} j`] as const)} onChange={setDays} />}>
       {ov && !ov.config.enabled && (
         <Panel>
-          <p className="px-5 py-3 text-xs text-[var(--warning)]">Module désactivé : Etho ne collecte plus l&apos;activité. Active-le avec l&apos;interrupteur en haut de la page.</p>
+          <p className="px-5 py-3 text-xs text-[var(--warning)]">{tx("Module désactivé : Etho ne collecte plus l'activité. Active-le avec l'interrupteur en haut de la page.")}</p>
         </Panel>
       )}
 
       <motion.div variants={pageStagger} className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatTile label="Messages" value={ov ? fmt(ov.totals.messages) : "—"} />
-        <StatTile label="Heures de vocal" value={ov ? fmt(ov.totals.voiceHours) : "—"} />
-        <StatTile label="Membres actifs" value={ov ? fmt(ov.totals.activeUsers) : "—"} hint={ov?.memberCount ? `sur ${fmt(ov.memberCount)} membres` : undefined} />
-        <StatTile label="Arrivées / départs" value={ov ? `+${fmt(ov.totals.joins)} / −${fmt(ov.totals.leaves)}` : "—"} />
+        <StatTile label={tx("Messages")} value={ov ? fmt(ov.totals.messages) : "—"} />
+        <StatTile label={tx("Heures de vocal")} value={ov ? fmt(ov.totals.voiceHours) : "—"} />
+        <StatTile label={tx("Membres actifs")} value={ov ? fmt(ov.totals.activeUsers) : "—"} hint={ov?.memberCount ? tx("sur {v0} membres", { v0: fmt(ov.memberCount) }) : undefined} />
+        <StatTile label={tx("Arrivées / départs")} value={ov ? `+${fmt(ov.totals.joins)} / −${fmt(ov.totals.leaves)}` : "—"} />
       </motion.div>
 
-      <Panel title="Activité" actions={<Segmented label="Mesure" value={metric} options={Object.entries(METRIC) as [Metric, string][]} onChange={setMetric} />}>
+      <Panel title={tx("Activité")} actions={<Segmented label={tx("Mesure")} value={metric} options={Object.entries(METRIC) as [Metric, string][]} onChange={setMetric} />}>
         {!ov ? (
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         ) : series.every((p) => !p[metric]) ? (
-          <EmptyLine>Aucune activité enregistrée sur cette période.</EmptyLine>
+          <EmptyLine>{tx("Aucune activité enregistrée sur cette période.")}</EmptyLine>
         ) : (
           <div className="px-5 pb-4 pt-5">
-            <div className="flex h-36 items-end gap-px" role="img" aria-label={`${METRIC[metric]} par jour`}>
+            <div className="flex h-36 items-end gap-px" role="img" aria-label={tx("{v0} par jour", { v0: METRIC[metric] })}>
               {series.map((p) => (
                 <motion.div
                   key={p.day}
@@ -97,7 +98,7 @@ export default function ConsoleStats({ guildId }: { guildId: string }) {
             </div>
             <div className="mt-1.5 flex justify-between text-[10px] text-[var(--text-muted)]">
               <span>{series[0] && new Date(series[0].day).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}</span>
-              <span>max {fmt(max)}</span>
+              <span>{tx("max")}{" "} {fmt(max)}</span>
               <span>{series.at(-1) && new Date(series.at(-1)!.day).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}</span>
             </div>
           </div>
@@ -105,23 +106,23 @@ export default function ConsoleStats({ guildId }: { guildId: string }) {
       </Panel>
 
       <div className="grid gap-4 md:grid-cols-2">
-        <TopList title="Salons les plus actifs" items={ov?.topChannelsMessages} unit="messages" prefix="#" />
-        <TopList title="Salons vocaux" items={ov?.topChannelsVoice} unit="h" prefix="🔊 " />
+        <TopList title={tx("Salons les plus actifs")} items={ov?.topChannelsMessages} unit="messages" prefix="#" />
+        <TopList title={tx("Salons vocaux")} items={ov?.topChannelsVoice} unit="h" prefix="🔊 " />
       </div>
 
       <Panel
-        title="Classement des membres"
+        title={tx("Classement des membres")}
         actions={
           <div className="flex flex-wrap items-center gap-2">
             <input
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="Rechercher"
-              aria-label="Rechercher un membre"
+              placeholder={tx("Rechercher")}
+              aria-label={tx("Rechercher un membre")}
               className="h-8 w-36 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/70"
             />
             <Segmented
-              label="Tri"
+              label={tx("Tri")}
               value={sort}
               options={[
                 ["messages", "Messages"],
@@ -134,9 +135,9 @@ export default function ConsoleStats({ guildId }: { guildId: string }) {
         }
       >
         {!rows ? (
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         ) : rows.length === 0 ? (
-          <EmptyLine>{q ? "Aucun membre trouvé." : "Aucune activité sur cette période."}</EmptyLine>
+          <EmptyLine>{q ? tx("Aucun membre trouvé.") : tx("Aucune activité sur cette période.")}</EmptyLine>
         ) : (
           <ul>
             {rows.map((r) => (
@@ -145,7 +146,7 @@ export default function ConsoleStats({ guildId }: { guildId: string }) {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 {r.avatarUrl ? <img src={r.avatarUrl} alt="" className="h-7 w-7 rounded-full" /> : <span className="h-7 w-7 rounded-full bg-[var(--panel-border)]" />}
                 <p className="min-w-0 flex-1 truncate text-[13px] font-semibold text-[var(--text-primary)]">{r.name}</p>
-                <span className="w-20 text-right text-xs tabular-nums text-[var(--text-primary)]">{fmt(r.messages)} msg</span>
+                <span className="w-20 text-right text-xs tabular-nums text-[var(--text-primary)]">{fmt(r.messages)} {" "}{tx("msg")}</span>
                 <span className="w-16 text-right text-xs tabular-nums text-[var(--text-muted)]">{fmt(r.voiceHours)} h</span>
               </li>
             ))}
@@ -153,10 +154,10 @@ export default function ConsoleStats({ guildId }: { guildId: string }) {
         )}
       </Panel>
 
-      <Panel title="Données">
+      <Panel title={tx("Données")}>
         <div className="flex items-center justify-between gap-3 px-5 py-3.5">
-          <p className="text-[11px] text-[var(--text-muted)]">Supprime tout l&apos;historique d&apos;activité de ce serveur (messages, vocal, arrivées).</p>
-          <GhostButton onClick={clearData}>Effacer les statistiques</GhostButton>
+          <p className="text-[11px] text-[var(--text-muted)]">{tx("Supprime tout l'historique d'activité de ce serveur (messages, vocal, arrivées).")}</p>
+          <GhostButton onClick={clearData}>{tx("Effacer les statistiques")}</GhostButton>
         </div>
       </Panel>
     </ConsolePage>
@@ -168,9 +169,9 @@ function TopList({ title, items, unit, prefix }: { title: string; items?: Ranked
   return (
     <Panel title={title}>
       {!items ? (
-        <EmptyLine>Chargement…</EmptyLine>
+        <EmptyLine>{tx("Chargement…")}</EmptyLine>
       ) : items.length === 0 ? (
-        <EmptyLine>Rien sur cette période.</EmptyLine>
+        <EmptyLine>{tx("Rien sur cette période.")}</EmptyLine>
       ) : (
         <ul className="space-y-2 px-5 py-4">
           {items.slice(0, 6).map((i) => (

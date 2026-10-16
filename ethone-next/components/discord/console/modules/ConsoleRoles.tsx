@@ -9,6 +9,7 @@ import { useToast } from "@/components/ToastProvider";
 import { SPRING_LAYOUT } from "@/lib/ease";
 import { cn } from "@/lib/utils";
 import { ConsolePage, EmptyLine, GhostButton, Panel, RoleAdder, Row, Segmented, Switch, TextField, useGuildApi } from "../kit";
+import { tx } from "@/lib/tx";
 
 type Item = { id: string; roleId: string; label: string; emoji: string | null; description: string | null; style: "Primary" | "Secondary" | "Success" | "Danger"; prerequisiteRoleId: string | null; mutuallyExclusiveRoleIds: string[] };
 type Group = { id: string; name: string; mode: "toggle" | "single_exclusive" | "multi_limit"; minSelect: number; maxSelect: number; itemIds: string[] };
@@ -45,12 +46,12 @@ export default function ConsoleRoles({ guildId }: { guildId: string }) {
     const r = await api<{ messageId: string; channelName: string }>(`/roles/panels/${p.id}/publish`, { method: "POST", json: { channelId } });
     setBusy(null);
     if (r) {
-      success("Menu publié", `Dans #${r.channelName}.`);
+      success(tx("Menu publié"), tx("Dans #{channelName}.", { channelName: r.channelName }));
       setPanels((list) => list?.map((x) => (x.id === p.id ? { ...x, channelId, messageId: r.messageId, status: "active" } : x)) ?? null);
     }
   };
   const remove = async (p: RolePanel) => {
-    if (!(await confirmDialog(`Supprimer « ${p.name} » ?${p.messageId ? " Le message publié sur Discord est supprimé aussi." : ""}`, { title: "Supprimer le menu", confirmLabel: "Supprimer" }))) return;
+    if (!(await confirmDialog(tx("Supprimer « {name} » ?{v1}", { name: p.name, v1: p.messageId ? " Le message publié sur Discord est supprimé aussi." : "" }), { title: tx("Supprimer le menu"), confirmLabel: tx("Supprimer") }))) return;
     const r = await api(`/roles/panels/${p.id}?deleteMessage=true`, { method: "DELETE" });
     if (r) setPanels((list) => list?.filter((x) => x.id !== p.id) ?? null);
   };
@@ -58,12 +59,12 @@ export default function ConsoleRoles({ guildId }: { guildId: string }) {
   const channelName = (id: string | null) => (id ? channels.find((c) => c.id === id)?.name ?? null : null);
 
   return (
-    <ConsolePage title="Menus de rôles">
-      <Panel title="Menus de rôles" subtitle="Les membres choisissent eux-mêmes leurs rôles." actions={<GhostButton onClick={addPanel}>Nouveau menu</GhostButton>}>
+    <ConsolePage title={tx("Menus de rôles")}>
+      <Panel title={tx("Menus de rôles")} subtitle={tx("Les membres choisissent eux-mêmes leurs rôles.")} actions={<GhostButton onClick={addPanel}>{tx("Nouveau menu")}</GhostButton>}>
         {!panels ? (
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         ) : panels.length === 0 ? (
-          <EmptyLine>Aucun menu de rôles.</EmptyLine>
+          <EmptyLine>{tx("Aucun menu de rôles.")}</EmptyLine>
         ) : (
           <ul>
             {panels.map((p) => (
@@ -73,10 +74,10 @@ export default function ConsoleRoles({ guildId }: { guildId: string }) {
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-[13px] font-semibold text-[var(--text-primary)]">{p.name}</p>
                     <p className={cn("truncate text-[11px]", p.status === "error" ? "text-[var(--danger)]" : "text-[var(--text-muted)]")}>
-                      {p.items.length} rôle{p.items.length > 1 ? "s" : ""} · {p.componentType === "buttons" ? "boutons" : "menu déroulant"} · {p.status === "error" ? "erreur à la dernière vérification" : p.messageId && channelName(p.channelId) ? `publié dans #${channelName(p.channelId)}` : "pas encore publié"}
+                      {p.items.length} {" "}{tx("rôle")}{p.items.length > 1 ? "s" : ""} · {p.componentType === "buttons" ? "boutons" : tx("menu déroulant")} · {p.status === "error" ? tx("erreur à la dernière vérification") : p.messageId && channelName(p.channelId) ? tx("publié dans #{v0}", { v0: channelName(p.channelId) }) : tx("pas encore publié")}
                     </p>
                   </div>
-                  <span className="text-xs text-[var(--text-muted)]">{open === p.id ? "Fermer" : "Modifier"}</span>
+                  <span className="text-xs text-[var(--text-muted)]">{open === p.id ? tx("Fermer") : tx("Modifier")}</span>
                 </button>
                 <AnimatePresence initial={false}>
                   {open === p.id && (
@@ -113,21 +114,21 @@ function PanelEditor({ guildId, panel, publishing, onSave, onPublish, onDelete }
 
   return (
     <div className="border-t border-[var(--panel-border)]">
-      <Row label="Nom" hint="Pour t'y retrouver ici.">
+      <Row label={tx("Nom")} hint={tx("Pour t'y retrouver ici.")}>
         <TextField value={panel.name} maxLength={50} onCommit={(v) => save({ name: v })} />
       </Row>
-      <Row label="Titre du message">
+      <Row label={tx("Titre du message")}>
         <TextField value={panel.title} maxLength={256} width="w-full" onCommit={(v) => save({ title: v })} />
       </Row>
-      <Row label="Texte">
+      <Row label={tx("Texte")}>
         <textarea value={desc} maxLength={2000} rows={2} onChange={(e) => setDesc(e.target.value)} onBlur={() => desc.trim() && desc !== panel.description && save({ description: desc })} className={input} />
       </Row>
-      <Row label="Couleur">
-        <input type="color" value={/^#[0-9a-f]{6}$/i.test(panel.color) ? panel.color : "#5865f2"} onChange={(e) => save({ color: e.target.value })} aria-label="Couleur du menu" className="h-9 w-14 cursor-pointer rounded-lg border border-[var(--panel-border)] bg-transparent" />
+      <Row label={tx("Couleur")}>
+        <input type="color" value={/^#[0-9a-f]{6}$/i.test(panel.color) ? panel.color : "#5865f2"} onChange={(e) => save({ color: e.target.value })} aria-label={tx("Couleur du menu")} className="h-9 w-14 cursor-pointer rounded-lg border border-[var(--panel-border)] bg-transparent" />
       </Row>
-      <Row label="Affichage">
+      <Row label={tx("Affichage")}>
         <Segmented
-          label="Affichage"
+          label={tx("Affichage")}
           value={panel.componentType}
           options={[
             ["buttons", "Boutons"],
@@ -136,17 +137,17 @@ function PanelEditor({ guildId, panel, publishing, onSave, onPublish, onDelete }
           onChange={(v) => save({ componentType: v })}
         />
       </Row>
-      <Row label="Un seul rôle à la fois" hint="Choisir un rôle retire les autres du menu.">
-        <Switch checked={exclusive} onChange={setExclusive} label="Un seul rôle à la fois" />
+      <Row label={tx("Un seul rôle à la fois")} hint={tx("Choisir un rôle retire les autres du menu.")}>
+        <Switch checked={exclusive} onChange={setExclusive} label={tx("Un seul rôle à la fois")} />
       </Row>
-      <Row label="Rôles proposés" hint="25 au plus. Le libellé est le texte du bouton.">
+      <Row label={tx("Rôles proposés")} hint={tx("25 au plus. Le libellé est le texte du bouton.")}>
         <div className="space-y-1.5">
           <AnimatePresence initial={false}>
             {panel.items.map((i) => (
               <motion.div key={i.id} layout initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, height: 0 }} transition={SPRING_LAYOUT} className="flex items-center gap-2">
                 <TextField value={i.emoji ?? ""} maxLength={8} width="w-14" placeholder="🙂" onCommit={(v) => setItem(i.id, { emoji: v || null })} />
                 <TextField value={i.label} maxLength={80} onCommit={(v) => setItem(i.id, { label: v })} />
-                <button type="button" onClick={() => save({ items: panel.items.filter((x) => x.id !== i.id) })} aria-label={`Retirer ${i.label}`} className="rounded-md p-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover)] hover:text-[var(--danger)]">
+                <button type="button" onClick={() => save({ items: panel.items.filter((x) => x.id !== i.id) })} aria-label={tx("Retirer {label}", { label: i.label })} className="rounded-md p-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover)] hover:text-[var(--danger)]">
                   <X className="h-3.5 w-3.5" />
                 </button>
               </motion.div>
@@ -161,18 +162,18 @@ function PanelEditor({ guildId, panel, publishing, onSave, onPublish, onDelete }
           )}
         </div>
       </Row>
-      <Row label="Publier dans" hint={panel.messageId ? "Republier dans le même salon met le message à jour." : undefined}>
+      <Row label={tx("Publier dans")} hint={panel.messageId ? tx("Republier dans le même salon met le message à jour.") : undefined}>
         <div className="flex flex-wrap items-center gap-2">
           <div className="min-w-[12rem] flex-1">
-            <ChannelPicker guildId={guildId} value={target} filterTypes={[0, 5]} allowClear={false} placeholder="Choisir un salon" onChange={setTarget} />
+            <ChannelPicker guildId={guildId} value={target} filterTypes={[0, 5]} allowClear={false} placeholder={tx("Choisir un salon")} onChange={setTarget} />
           </div>
           <GhostButton onClick={() => onPublish(target)} disabled={!target || publishing || panel.items.length === 0}>
-            {publishing ? "Publication…" : panel.messageId ? "Republier" : "Publier"}
+            {publishing ? tx("Publication…") : panel.messageId ? tx("Republier") : tx("Publier")}
           </GhostButton>
         </div>
       </Row>
       <div className="flex justify-end border-t border-[var(--panel-border)] px-5 py-3">
-        <GhostButton onClick={onDelete}>Supprimer le menu</GhostButton>
+        <GhostButton onClick={onDelete}>{tx("Supprimer le menu")}</GhostButton>
       </div>
     </div>
   );

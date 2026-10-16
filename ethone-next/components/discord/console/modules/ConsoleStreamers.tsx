@@ -8,6 +8,7 @@ import { sinceLabel } from "@/lib/discord/security-scan";
 import { SPRING_LAYOUT } from "@/lib/ease";
 import { pageStagger } from "@/lib/motion-variants";
 import { ConsolePage, EmptyLine, GhostButton, Panel, RoleChips, Row, Segmented, Select, StatTile, Stepper, Switch, TextField, useGuildApi } from "../kit";
+import { tx } from "@/lib/tx";
 
 type Platform = "twitch" | "youtube" | "kick";
 type PingMode = "default" | "none" | "here" | "everyone" | "role";
@@ -79,7 +80,7 @@ export default function ConsoleStreamers({ guildId }: { guildId: string }) {
   const [simData, setSimData] = useState({
     platform: "twitch" as Platform,
     username: "Gotaga",
-    title: "[TEST] Live test alerte ETHONE",
+    title: tx("[TEST] Live test alerte ETHONE"),
     game: "Just Chatting",
     viewers: 4500,
     assignLiveRole: false,
@@ -134,7 +135,7 @@ export default function ConsoleStreamers({ guildId }: { guildId: string }) {
     }
   };
   const remove = async (s: Streamer) => {
-    if (!(await confirmDialog(`Ne plus suivre ${s.displayName || s.username} (${PLATFORM[s.platform]}) ?`, { title: "Retirer", confirmLabel: "Retirer" }))) return;
+    if (!(await confirmDialog(tx("Ne plus suivre {v0} ({v1}) ?", { v0: s.displayName || s.username, v1: PLATFORM[s.platform] }), { title: tx("Retirer"), confirmLabel: tx("Retirer") }))) return;
     if (await api(`/streamers/${s.id}`, { method: "DELETE" })) setList((l) => l?.filter((x) => x.id !== s.id) ?? null);
   };
   const test = async (s: Streamer) => {
@@ -146,9 +147,9 @@ export default function ConsoleStreamers({ guildId }: { guildId: string }) {
 
   if (!cfg) {
     return (
-      <ConsolePage title="Alertes streamers">
+      <ConsolePage title={tx("Alertes streamers")}>
         <Panel>
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         </Panel>
       </ConsolePage>
     );
@@ -157,46 +158,46 @@ export default function ConsoleStreamers({ guildId }: { guildId: string }) {
   const noChannel = !cfg.defaultChannelId && !cfg.twitchChannelId && !cfg.youtubeChannelId && !cfg.kickChannelId;
 
   return (
-    <ConsolePage title="Alertes streamers">
+    <ConsolePage title={tx("Alertes streamers")}>
       {!cfg.enabled ? (
         <Panel>
-          <p className="px-5 py-3 text-xs text-[var(--warning)]">Module désactivé : aucun live n&apos;est annoncé. Active-le avec l&apos;interrupteur en haut de la page.</p>
+          <p className="px-5 py-3 text-xs text-[var(--warning)]">{tx("Module désactivé : aucun live n'est annoncé. Active-le avec l'interrupteur en haut de la page.")}</p>
         </Panel>
       ) : (
         noChannel && (
           <Panel>
-            <p className="px-5 py-3 text-xs text-[var(--warning)]">Choisis un salon d&apos;alerte : sans salon, les lives ne sont pas annoncés.</p>
+            <p className="px-5 py-3 text-xs text-[var(--warning)]">{tx("Choisis un salon d'alerte : sans salon, les lives ne sont pas annoncés.")}</p>
           </Panel>
         )
       )}
 
       <motion.div variants={pageStagger} className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatTile label="Streamers suivis" value={list ? streamers.length : "—"} />
-        <StatTile label="En direct" value={list ? streamers.filter((s) => s.isLive).length : "—"} accent={streamers.some((s) => s.isLive) ? "var(--danger)" : undefined} />
-        <StatTile label="En pause" value={list ? streamers.filter((s) => s.paused).length : "—"} />
-        <StatTile label="Vérification" value={`${cfg.checkIntervalMinutes} min`} />
+        <StatTile label={tx("Streamers suivis")} value={list ? streamers.length : "—"} />
+        <StatTile label={tx("En direct")} value={list ? streamers.filter((s) => s.isLive).length : "—"} accent={streamers.some((s) => s.isLive) ? "var(--danger)" : undefined} />
+        <StatTile label={tx("En pause")} value={list ? streamers.filter((s) => s.paused).length : "—"} />
+        <StatTile label={tx("Vérification")} value={`${cfg.checkIntervalMinutes} min`} />
       </motion.div>
 
-      <Panel title="Streamers" actions={<GhostButton onClick={() => setSimulating(true)}>Simuler un live</GhostButton>}>
+      <Panel title={tx("Streamers")} actions={<GhostButton onClick={() => setSimulating(true)}>{tx("Simuler un live")}</GhostButton>}>
         <div className="flex flex-wrap items-center gap-2 px-5 py-3">
-          <Segmented label="Plateforme" value={platform} options={Object.entries(PLATFORM) as [Platform, string][]} onChange={setPlatform} />
+          <Segmented label={tx("Plateforme")} value={platform} options={Object.entries(PLATFORM) as [Platform, string][]} onChange={setPlatform} />
           <input
             value={username}
             maxLength={100}
             onChange={(e) => setUsername(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && username.trim() && add()}
-            placeholder={platform === "youtube" ? "@chaîne ou identifiant" : "Pseudo de la chaîne"}
-            aria-label="Pseudo de la chaîne"
+            placeholder={platform === "youtube" ? tx("@chaîne ou identifiant") : tx("Pseudo de la chaîne")}
+            aria-label={tx("Pseudo de la chaîne")}
             className="h-8 w-52 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-2.5 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/70"
           />
           <GhostButton disabled={!username.trim() || busy === "add"} onClick={add}>
-            {busy === "add" ? "Vérification…" : "Suivre"}
+            {busy === "add" ? tx("Vérification…") : tx("Suivre")}
           </GhostButton>
         </div>
         {!list ? (
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         ) : streamers.length === 0 ? (
-          <EmptyLine>Aucun streamer suivi.</EmptyLine>
+          <EmptyLine>{tx("Aucun streamer suivi.")}</EmptyLine>
         ) : (
           <ul>
             {streamers.map((s) => (
@@ -206,45 +207,45 @@ export default function ConsoleStreamers({ guildId }: { guildId: string }) {
                   {s.avatarUrl ? <img src={s.avatarUrl} alt="" className="h-8 w-8 rounded-full" /> : <span className="h-8 w-8 rounded-full bg-[var(--panel-border)]" />}
                   <button type="button" onClick={() => setOpen(open === s.id ? null : s.id)} aria-expanded={open === s.id} className="min-w-0 flex-1 text-left">
                     <p className="truncate text-[13px] font-semibold text-[var(--text-primary)]">
-                      {s.isLive && <span className="mr-1.5 rounded bg-[var(--danger)] px-1 py-px text-[10px] font-bold text-white">LIVE</span>}
+                      {s.isLive && <span className="mr-1.5 rounded bg-[var(--danger)] px-1 py-px text-[10px] font-bold text-white">{tx("LIVE")}</span>}
                       {s.displayName || s.username} <span className="font-normal text-[var(--text-muted)]">· {PLATFORM[s.platform]}</span>
                     </p>
                     <p className="truncate text-[11px] text-[var(--text-muted)]">
-                      {s.isLive ? `${s.title ?? ""}${s.game ? ` · ${s.game}` : ""}${s.viewers != null ? ` · ${s.viewers} spectateurs` : ""}` : s.lastLiveAt ? `Dernier live ${sinceLabel(s.lastLiveAt)}` : "Pas encore vu en direct"}
+                      {s.isLive ? `${s.title ?? ""}${s.game ? ` · ${s.game}` : ""}${s.viewers != null ? ` · ${s.viewers} spectateurs` : ""}` : s.lastLiveAt ? tx("Dernier live {v0}", { v0: sinceLabel(s.lastLiveAt) }) : tx("Pas encore vu en direct")}
                     </p>
                   </button>
-                  <Switch checked={!s.paused} onChange={(v) => patchStreamer(s, { paused: !v })} label={`Alertes pour ${s.username}`} />
+                  <Switch checked={!s.paused} onChange={(v) => patchStreamer(s, { paused: !v })} label={tx("Alertes pour {username}", { username: s.username })} />
                 </div>
                 <AnimatePresence initial={false}>
                   {open === s.id && (
                     <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={SPRING_LAYOUT} className="overflow-hidden">
                       <div className="border-t border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))]/40">
-                        <Row label="Salon" hint="Vide : salon de la plateforme ou salon par défaut.">
-                          <ChannelPicker guildId={guildId} value={s.channelId ?? ""} filterTypes={[0, 5]} placeholder="Salon par défaut" onChange={(id) => patchStreamer(s, { channelId: id || null })} />
+                        <Row label={tx("Salon")} hint={tx("Vide : salon de la plateforme ou salon par défaut.")}>
+                          <ChannelPicker guildId={guildId} value={s.channelId ?? ""} filterTypes={[0, 5]} placeholder={tx("Salon par défaut")} onChange={(id) => patchStreamer(s, { channelId: id || null })} />
                         </Row>
-                        <Row label="Mention">
-                          <Segmented label="Mention" value={s.pingMode} options={[["default", "Par défaut"], ...PING] as [PingMode, string][]} onChange={(v) => patchStreamer(s, { pingMode: v })} />
+                        <Row label={tx("Mention")}>
+                          <Segmented label={tx("Mention")} value={s.pingMode} options={[["default", "Par défaut"], ...PING] as [PingMode, string][]} onChange={(v) => patchStreamer(s, { pingMode: v })} />
                         </Row>
                         {s.pingMode === "role" && (
-                          <Row label="Rôle mentionné">
+                          <Row label={tx("Rôle mentionné")}>
                             <RoleChips guildId={guildId} ids={s.pingRoleId ? [s.pingRoleId] : []} max={1} onChange={(ids) => patchStreamer(s, { pingRoleId: ids[0] ?? null })} />
                           </Row>
                         )}
-                        <Row label="Spectateurs minimum" hint="0 = toujours annoncer.">
+                        <Row label={tx("Spectateurs minimum")} hint={tx("0 = toujours annoncer.")}>
                           <Stepper value={s.minViewers} min={0} max={100000} step={5} unit="spectateurs" onCommit={(n) => patchStreamer(s, { minViewers: n })} />
                         </Row>
-                        <Row label="Jeu" hint="N'annoncer que ce jeu (vide : tous).">
-                          <TextField value={s.gameFilter ?? ""} maxLength={80} placeholder="Tous les jeux" allowEmpty onCommit={(v) => patchStreamer(s, { gameFilter: v })} />
+                        <Row label={tx("Jeu")} hint={tx("N'annoncer que ce jeu (vide : tous).")}>
+                          <TextField value={s.gameFilter ?? ""} maxLength={80} placeholder={tx("Tous les jeux")} allowEmpty onCommit={(v) => patchStreamer(s, { gameFilter: v })} />
                         </Row>
-                        <Row label="Message personnalisé" hint="Vide : message par défaut.">
-                          <TextField value={s.customMessage ?? ""} maxLength={1000} width="w-full" placeholder="Message par défaut" allowEmpty onCommit={(v) => patchStreamer(s, { customMessage: v })} />
+                        <Row label={tx("Message personnalisé")} hint={tx("Vide : message par défaut.")}>
+                          <TextField value={s.customMessage ?? ""} maxLength={1000} width="w-full" placeholder={tx("Message par défaut")} allowEmpty onCommit={(v) => patchStreamer(s, { customMessage: v })} />
                         </Row>
                         <div className="flex items-center gap-1.5 border-t border-[var(--panel-border)] px-5 py-3">
                           <GhostButton disabled={busy === `test:${s.id}`} onClick={() => test(s)}>
-                            {busy === `test:${s.id}` ? "Envoi…" : "Envoyer une alerte de test"}
+                            {busy === `test:${s.id}` ? tx("Envoi…") : tx("Envoyer une alerte de test")}
                           </GhostButton>
                           <span className="flex-1" />
-                          <GhostButton onClick={() => remove(s)}>Retirer</GhostButton>
+                          <GhostButton onClick={() => remove(s)}>{tx("Retirer")}</GhostButton>
                         </div>
                       </div>
                     </motion.div>
@@ -260,52 +261,52 @@ export default function ConsoleStreamers({ guildId }: { guildId: string }) {
         <Panel>
           <div className="flex items-center justify-between gap-3 px-5 py-3">
             <p className="text-xs text-[var(--text-primary)]">{note}</p>
-            <GhostButton onClick={() => setNote(null)}>OK</GhostButton>
+            <GhostButton onClick={() => setNote(null)}>{tx("OK")}</GhostButton>
           </div>
         </Panel>
       )}
 
-      <Panel title="Où annoncer">
-        <Row label="Salon par défaut">
-          <ChannelPicker guildId={guildId} value={cfg.defaultChannelId ?? ""} filterTypes={[0, 5]} placeholder="Choisir un salon" onChange={(id) => save({ defaultChannelId: id || null })} />
+      <Panel title={tx("Où annoncer")}>
+        <Row label={tx("Salon par défaut")}>
+          <ChannelPicker guildId={guildId} value={cfg.defaultChannelId ?? ""} filterTypes={[0, 5]} placeholder={tx("Choisir un salon")} onChange={(id) => save({ defaultChannelId: id || null })} />
         </Row>
         {(["twitch", "youtube", "kick"] as const).map((p) => (
-          <Row key={p} label={`Salon ${PLATFORM[p]}`} hint="Vide : salon par défaut.">
-            <ChannelPicker guildId={guildId} value={cfg[`${p}ChannelId`] ?? ""} filterTypes={[0, 5]} placeholder="Salon par défaut" onChange={(id) => save({ [`${p}ChannelId`]: id || null } as Partial<Config>)} />
+          <Row key={p} label={tx("Salon {v0}", { v0: PLATFORM[p] })} hint={tx("Vide : salon par défaut.")}>
+            <ChannelPicker guildId={guildId} value={cfg[`${p}ChannelId`] ?? ""} filterTypes={[0, 5]} placeholder={tx("Salon par défaut")} onChange={(id) => save({ [`${p}ChannelId`]: id || null } as Partial<Config>)} />
           </Row>
         ))}
-        <Row label="Mention par défaut">
-          <Segmented label="Mention par défaut" value={cfg.defaultPing} options={PING} onChange={(v) => save({ defaultPing: v })} />
+        <Row label={tx("Mention par défaut")}>
+          <Segmented label={tx("Mention par défaut")} value={cfg.defaultPing} options={PING} onChange={(v) => save({ defaultPing: v })} />
         </Row>
         {cfg.defaultPing === "role" && (
-          <Row label="Rôle mentionné">
+          <Row label={tx("Rôle mentionné")}>
             <RoleChips guildId={guildId} ids={cfg.defaultRoleId ? [cfg.defaultRoleId] : []} max={1} onChange={(ids) => save({ defaultRoleId: ids[0] ?? null })} />
           </Row>
         )}
       </Panel>
 
-      <Panel title="Alerte">
-        <Row label="Message" hint="{streamer}, {platform}, {title}, {game}, {url}">
-          <textarea value={message} maxLength={1000} rows={3} onChange={(e) => setMessage(e.target.value)} onBlur={() => message.trim() && message !== cfg.defaultMessage && save({ defaultMessage: message })} aria-label="Message d'alerte" className={field} />
+      <Panel title={tx("Alerte")}>
+        <Row label={tx("Message")} hint={tx("{streamer}, {platform}, {title}, {game}, {url}")}>
+          <textarea value={message} maxLength={1000} rows={3} onChange={(e) => setMessage(e.target.value)} onBlur={() => message.trim() && message !== cfg.defaultMessage && save({ defaultMessage: message })} aria-label={tx("Message d'alerte")} className={field} />
         </Row>
-        <Row label="Afficher les spectateurs">
-          <Switch checked={cfg.showViewers} onChange={(v) => save({ showViewers: v })} label="Afficher les spectateurs" />
+        <Row label={tx("Afficher les spectateurs")}>
+          <Switch checked={cfg.showViewers} onChange={(v) => save({ showViewers: v })} label={tx("Afficher les spectateurs")} />
         </Row>
-        <Row label="Afficher le jeu">
-          <Switch checked={cfg.showGame} onChange={(v) => save({ showGame: v })} label="Afficher le jeu" />
+        <Row label={tx("Afficher le jeu")}>
+          <Switch checked={cfg.showGame} onChange={(v) => save({ showGame: v })} label={tx("Afficher le jeu")} />
         </Row>
-        <Row label="Miniature du live">
-          <Switch checked={cfg.showThumbnail} onChange={(v) => save({ showThumbnail: v })} label="Miniature du live" />
+        <Row label={tx("Miniature du live")}>
+          <Switch checked={cfg.showThumbnail} onChange={(v) => save({ showThumbnail: v })} label={tx("Miniature du live")} />
         </Row>
-        <Row label="À la fin du live">
-          <Select value={cfg.offlineAction} options={OFFLINE} onChange={(v) => save({ offlineAction: v })} aria-label="À la fin du live" />
+        <Row label={tx("À la fin du live")}>
+          <Select value={cfg.offlineAction} options={OFFLINE} onChange={(v) => save({ offlineAction: v })} aria-label={tx("À la fin du live")} />
         </Row>
-        <Row label="Délai entre deux alertes" hint="Pour un même streamer (coupure puis reprise du live).">
+        <Row label={tx("Délai entre deux alertes")} hint={tx("Pour un même streamer (coupure puis reprise du live).")}>
           <Stepper value={cfg.cooldownMinutes} min={0} max={180} step={5} unit="minutes" onCommit={(n) => save({ cooldownMinutes: n })} />
         </Row>
-        <Row label="Rôle « En live »" hint="Donné au membre Discord lié pendant son live.">
+        <Row label={tx("Rôle « En live »")} hint={tx("Donné au membre Discord lié pendant son live.")}>
           <div className="flex flex-wrap items-center gap-3">
-            <Switch checked={cfg.autoLiveRoleEnabled} onChange={(v) => save({ autoLiveRoleEnabled: v })} label="Rôle En live" />
+            <Switch checked={cfg.autoLiveRoleEnabled} onChange={(v) => save({ autoLiveRoleEnabled: v })} label={tx("Rôle En live")} />
             {cfg.autoLiveRoleEnabled && <RoleChips guildId={guildId} ids={cfg.liveRoleId ? [cfg.liveRoleId] : []} max={1} onChange={(ids) => save({ liveRoleId: ids[0] ?? null })} />}
           </div>
         </Row>
@@ -323,42 +324,42 @@ export default function ConsoleStreamers({ guildId }: { guildId: string }) {
             >
               <div className="mb-4 flex items-center justify-between">
                 <div>
-                  <h3 className="text-sm font-bold text-[var(--text-primary)]">Simulateur d&apos;alerte en direct</h3>
-                  <p className="text-xs text-[var(--text-muted)]">Envoie une alerte de test dans le salon configuré pour valider le rendu Discord.</p>
+                  <h3 className="text-sm font-bold text-[var(--text-primary)]">{tx("Simulateur d'alerte en direct")}</h3>
+                  <p className="text-xs text-[var(--text-muted)]">{tx("Envoie une alerte de test dans le salon configuré pour valider le rendu Discord.")}</p>
                 </div>
-                <GhostButton onClick={() => setSimulating(false)}>Fermer</GhostButton>
+                <GhostButton onClick={() => setSimulating(false)}>{tx("Fermer")}</GhostButton>
               </div>
               <div className="space-y-3">
-                <Row label="Plateforme">
+                <Row label={tx("Plateforme")}>
                   <Segmented
-                    label="Plateforme"
+                    label={tx("Plateforme")}
                     value={simData.platform}
                     options={Object.entries(PLATFORM) as [Platform, string][]}
                     onChange={(p) => setSimData((s) => ({ ...s, platform: p }))}
                   />
                 </Row>
-                <Row label="Nom du streamer">
+                <Row label={tx("Nom du streamer")}>
                   <input
                     value={simData.username}
                     onChange={(e) => setSimData((s) => ({ ...s, username: e.target.value }))}
                     className="h-9 w-full rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-3 text-sm text-[var(--text-primary)] outline-none"
                   />
                 </Row>
-                <Row label="Titre du live">
+                <Row label={tx("Titre du live")}>
                   <input
                     value={simData.title}
                     onChange={(e) => setSimData((s) => ({ ...s, title: e.target.value }))}
                     className="h-9 w-full rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-3 text-sm text-[var(--text-primary)] outline-none"
                   />
                 </Row>
-                <Row label="Jeu / Catégorie">
+                <Row label={tx("Jeu / Catégorie")}>
                   <input
                     value={simData.game}
                     onChange={(e) => setSimData((s) => ({ ...s, game: e.target.value }))}
                     className="h-9 w-full rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-3 text-sm text-[var(--text-primary)] outline-none"
                   />
                 </Row>
-                <Row label="Spectateurs">
+                <Row label={tx("Spectateurs")}>
                   <Stepper
                     value={simData.viewers}
                     min={1}
@@ -368,23 +369,23 @@ export default function ConsoleStreamers({ guildId }: { guildId: string }) {
                     onCommit={(n) => setSimData((s) => ({ ...s, viewers: n }))}
                   />
                 </Row>
-                <Row label="Tester le rôle @En Live" hint="Vérifie si Etho peut attribuer le rôle configuré.">
+                <Row label={tx("Tester le rôle @En Live")} hint={tx("Vérifie si Etho peut attribuer le rôle configuré.")}>
                   <Switch
                     checked={simData.assignLiveRole}
                     onChange={(v) => setSimData((s) => ({ ...s, assignLiveRole: v }))}
-                    label="Attribuer le rôle"
+                    label={tx("Attribuer le rôle")}
                   />
                 </Row>
               </div>
               <div className="mt-5 flex justify-end gap-2 border-t border-[var(--panel-border)] pt-4">
-                <GhostButton onClick={() => setSimulating(false)}>Annuler</GhostButton>
+                <GhostButton onClick={() => setSimulating(false)}>{tx("Annuler")}</GhostButton>
                 <button
                   type="button"
                   disabled={busy === "simulate" || !simData.username.trim()}
                   onClick={runSimulation}
                   className="rounded-lg bg-[var(--accent-primary)] px-4 py-2 text-xs font-bold text-white transition-opacity hover:opacity-90 disabled:opacity-40"
                 >
-                  {busy === "simulate" ? "Envoi…" : "Déclencher l'alerte"}
+                  {busy === "simulate" ? tx("Envoi…") : tx("Déclencher l'alerte")}
                 </button>
               </div>
             </motion.div>

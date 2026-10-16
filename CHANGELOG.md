@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.126 — 2026-10-16
+
+**Dashboard Discord traduit et commandes slash localisées**
+
+- Tout le dashboard Discord (console du serveur, modules, sécurité, centre de contrôle du bot, assistant d'installation) s'affiche dans la langue choisie sur le site : français, anglais, espagnol ou allemand.
+- Les descriptions des commandes slash dans le sélecteur de Discord suivent la langue de chaque membre.
+- Le rapport de sécurité hebdomadaire et le statut /antiraid suivent la langue du serveur.
+
 ## v1.75.125 — 2026-10-16
 
 **Tout le bot dans la langue du serveur**

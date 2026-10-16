@@ -8,6 +8,7 @@ import { Field, NumberField, Section, Switch, ToggleField, inputCls } from "@/co
 import { cn } from "@/lib/utils";
 import Select from "@/components/ui/Select";
 import MarkdownContent from "@/components/MarkdownContent";
+import { tx } from "@/lib/tx";
 
 export interface LevelingSettings {
   enabled: boolean;
@@ -119,11 +120,11 @@ export function RankCardPreview({ url, accentColor, rankCard }: { url: string; a
   return (
     <div className="relative overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40" style={{ aspectRatio: "934 / 300" }}>
       {/* eslint-disable-next-line @next/next/no-img-element -- image blob générée par le bot */}
-      {src && <img src={src} alt="Aperçu de la carte /rank" className={cn("h-full w-full object-contain transition-opacity duration-200", loading && "opacity-60")} />}
+      {src && <img src={src} alt={tx("Aperçu de la carte /rank")} className={cn("h-full w-full object-contain transition-opacity duration-200", loading && "opacity-60")} />}
       {!src && !error && <div className="skeleton-shimmer absolute inset-0" />}
       {error && (
         <p className="absolute inset-0 flex items-center justify-center gap-2 text-xs text-[var(--text-muted)]">
-          <ImageIcon className="h-4 w-4" /> Aperçu indisponible : le bot ne répond pas.
+          <ImageIcon className="h-4 w-4" /> {" "}{tx("Aperçu indisponible : le bot ne répond pas.")}
         </p>
       )}
     </div>
@@ -209,96 +210,96 @@ export default function LevelingSettingsPanel({ guildId, config: rawConfig, savi
     <div className="space-y-6 pb-24">
       <div className="flex items-start justify-between gap-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
         <div>
-          <h2 className="text-lg font-bold text-[var(--text-primary)]">Niveaux</h2>
-          <p className="text-sm text-[var(--text-muted)]">Système de niveaux qui récompense l&apos;activité des membres. Désactivé par défaut : personne ne gagne d&apos;XP tant que tu ne l&apos;actives pas.</p>
+          <h2 className="text-lg font-bold text-[var(--text-primary)]">{tx("Niveaux")}</h2>
+          <p className="text-sm text-[var(--text-muted)]">{tx("Système de niveaux qui récompense l'activité des membres. Désactivé par défaut : personne ne gagne d'XP tant que tu ne l'actives pas.")}</p>
         </div>
-        <Switch checked={config.enabled} disabled={disabled || saving} label="Activer les niveaux" onChange={(v) => void onSave({ enabled: v })} />
+        <Switch checked={config.enabled} disabled={disabled || saving} label={tx("Activer les niveaux")} onChange={(v) => void onSave({ enabled: v })} />
       </div>
 
-      <Section title="Annonce d'un nouveau niveau" text="Message envoyé quand un membre passe un niveau.">
+      <Section title={tx("Annonce d'un nouveau niveau")} text={tx("Message envoyé quand un membre passe un niveau.")}>
         <div className="space-y-5">
-          <Field label="Où annoncer">
+          <Field label={tx("Où annoncer")}>
             <Select
               value={draft.levelUpChannelType}
               onChange={(v) => set({ levelUpChannelType: v as LevelingSettings["levelUpChannelType"] })}
               className="w-full"
-              aria-label="Où annoncer"
+              aria-label={tx("Où annoncer")}
               options={LEVELUP_TYPES.map(([k, l]) => ({ id: k, label: l }))}
             />
           </Field>
           {draft.levelUpChannelType === "specific_channel" && (
-            <Field label="Salon">
+            <Field label={tx("Salon")}>
               <ChannelPicker value={draft.levelUpChannelId} guildId={guildId} filterTypes={[0, 5]} onChange={(id) => set({ levelUpChannelId: id || null })} />
             </Field>
           )}
-          <Field label="Message personnalisé">
+          <Field label={tx("Message personnalisé")}>
             <textarea value={draft.levelUpMessage} maxLength={500} rows={3} onChange={(e) => set({ levelUpMessage: e.target.value })} className={cn(inputCls, "h-auto py-2")} />
             <Chips vars={VARS} onPick={(v) => set({ levelUpMessage: `${draft.levelUpMessage}${v}`.slice(0, 500) })} />
           </Field>
         </div>
-        <Field label="Aperçu">
-          <EmbedPreview color={draft.accentColor} title="🎉 Niveau supérieur !" text={fill(draft.levelUpMessage)} />
+        <Field label={tx("Aperçu")}>
+          <EmbedPreview color={draft.accentColor} title={tx("🎉 Niveau supérieur !")} text={fill(draft.levelUpMessage)} />
         </Field>
       </Section>
 
-      <Section title="Gain d'XP" text="Combien d'XP rapporte l'activité.">
-        <NumberField label="XP minimum par message" value={draft.minXp} min={1} max={100} onChange={(n) => set({ minXp: n })} />
-        <NumberField label="XP maximum par message" value={draft.maxXp} min={5} max={200} hint={draft.minXp > draft.maxXp ? "Le maximum doit être supérieur au minimum." : "Un nombre au hasard entre le minimum et le maximum."} onChange={(n) => set({ maxXp: n })} />
-        <NumberField label="Délai entre deux gains (secondes)" value={draft.cooldownSeconds} min={5} max={300} onChange={(n) => set({ cooldownSeconds: n })} />
-        <NumberField label="Longueur minimale d'un message" value={draft.minMessageLength} min={0} max={50} hint="Les messages plus courts ne rapportent rien." onChange={(n) => set({ minMessageLength: n })} />
-        <NumberField label="Niveau maximum (0 = aucun)" value={draft.maxLevel} min={0} max={1000} onChange={(n) => set({ maxLevel: n })} />
+      <Section title={tx("Gain d'XP")} text={tx("Combien d'XP rapporte l'activité.")}>
+        <NumberField label={tx("XP minimum par message")} value={draft.minXp} min={1} max={100} onChange={(n) => set({ minXp: n })} />
+        <NumberField label={tx("XP maximum par message")} value={draft.maxXp} min={5} max={200} hint={draft.minXp > draft.maxXp ? tx("Le maximum doit être supérieur au minimum.") : tx("Un nombre au hasard entre le minimum et le maximum.")} onChange={(n) => set({ maxXp: n })} />
+        <NumberField label={tx("Délai entre deux gains (secondes)")} value={draft.cooldownSeconds} min={5} max={300} onChange={(n) => set({ cooldownSeconds: n })} />
+        <NumberField label={tx("Longueur minimale d'un message")} value={draft.minMessageLength} min={0} max={50} hint={tx("Les messages plus courts ne rapportent rien.")} onChange={(n) => set({ minMessageLength: n })} />
+        <NumberField label={tx("Niveau maximum (0 = aucun)")} value={draft.maxLevel} min={0} max={1000} onChange={(n) => set({ maxLevel: n })} />
       </Section>
 
-      <Section title="XP en vocal" text="Les membres gagnent de l'XP à chaque minute passée en vocal.">
-        <ToggleField label="XP en vocal" text="Activer l'XP dans les salons vocaux" checked={draft.voiceXpEnabled} onChange={(v) => set({ voiceXpEnabled: v })} />
-        <NumberField label="XP par minute" value={draft.voiceXpPerMinute} min={1} max={50} disabled={!draft.voiceXpEnabled} onChange={(n) => set({ voiceXpPerMinute: n })} />
-        <NumberField label="Membres minimum dans le salon" value={draft.voiceXpMinMembers} min={1} max={10} disabled={!draft.voiceXpEnabled} hint="2 évite de gagner de l'XP tout seul dans un salon." onChange={(n) => set({ voiceXpMinMembers: n })} />
-        <ToggleField label="Muet ou en sourdine" text="Pas d'XP tant que le membre est muet ou en sourdine" checked={draft.voiceXpIgnoreMuted} disabled={!draft.voiceXpEnabled} onChange={(v) => set({ voiceXpIgnoreMuted: v })} />
+      <Section title={tx("XP en vocal")} text={tx("Les membres gagnent de l'XP à chaque minute passée en vocal.")}>
+        <ToggleField label={tx("XP en vocal")} text={tx("Activer l'XP dans les salons vocaux")} checked={draft.voiceXpEnabled} onChange={(v) => set({ voiceXpEnabled: v })} />
+        <NumberField label={tx("XP par minute")} value={draft.voiceXpPerMinute} min={1} max={50} disabled={!draft.voiceXpEnabled} onChange={(n) => set({ voiceXpPerMinute: n })} />
+        <NumberField label={tx("Membres minimum dans le salon")} value={draft.voiceXpMinMembers} min={1} max={10} disabled={!draft.voiceXpEnabled} hint={tx("2 évite de gagner de l'XP tout seul dans un salon.")} onChange={(n) => set({ voiceXpMinMembers: n })} />
+        <ToggleField label={tx("Muet ou en sourdine")} text={tx("Pas d'XP tant que le membre est muet ou en sourdine")} checked={draft.voiceXpIgnoreMuted} disabled={!draft.voiceXpEnabled} onChange={(v) => set({ voiceXpIgnoreMuted: v })} />
       </Section>
 
-      <Section title="Salons et rôles" text="Où et pour qui l'XP ne compte pas.">
-        <Field label="Salons sans gain d'XP" hint="Une catégorie exclut tous ses salons.">
+      <Section title={tx("Salons et rôles")} text={tx("Où et pour qui l'XP ne compte pas.")}>
+        <Field label={tx("Salons sans gain d'XP")} hint={tx("Une catégorie exclut tous ses salons.")}>
           <MultiChannelPicker guildId={guildId} value={draft.excludedChannelIds} onChange={(v) => set({ excludedChannelIds: v })} />
         </Field>
-        <Field label="Rôles sans gain d'XP">
+        <Field label={tx("Rôles sans gain d'XP")}>
           <MultiRolePicker guildId={guildId} value={draft.excludedRoleIds} onChange={(v) => set({ excludedRoleIds: v })} />
         </Field>
         <div className="lg:col-span-2">
           <button type="button" onClick={onOpenBoosts} className="cursor-pointer text-sm font-semibold text-[#8ea1ff] hover:underline">
-            Bonus d&apos;XP par rôle ou par salon → onglet « Boosts »
+            {tx("Bonus d'XP par rôle ou par salon → onglet « Boosts »")}
           </button>
         </div>
       </Section>
 
-      <Section title="Options supplémentaires">
-        <ToggleField label="XP dans les fils de discussion" text="Les messages dans les fils rapportent de l'XP" checked={draft.xpInThreads} onChange={(v) => set({ xpInThreads: v })} />
-        <ToggleField label="XP dans les forums" text="Les messages dans les posts de forum rapportent de l'XP" checked={draft.xpInForums} onChange={(v) => set({ xpInForums: v })} />
-        <ToggleField label="XP des bots" text="Les bots peuvent gagner de l'XP" checked={draft.allowBots} onChange={(v) => set({ allowBots: v })} />
-        <ToggleField label="Départ du serveur" text="Conserver l'XP d'un membre qui quitte le serveur" checked={draft.keepXpOnLeave} onChange={(v) => set({ keepXpOnLeave: v })} />
+      <Section title={tx("Options supplémentaires")}>
+        <ToggleField label={tx("XP dans les fils de discussion")} text={tx("Les messages dans les fils rapportent de l'XP")} checked={draft.xpInThreads} onChange={(v) => set({ xpInThreads: v })} />
+        <ToggleField label={tx("XP dans les forums")} text={tx("Les messages dans les posts de forum rapportent de l'XP")} checked={draft.xpInForums} onChange={(v) => set({ xpInForums: v })} />
+        <ToggleField label={tx("XP des bots")} text={tx("Les bots peuvent gagner de l'XP")} checked={draft.allowBots} onChange={(v) => set({ allowBots: v })} />
+        <ToggleField label={tx("Départ du serveur")} text={tx("Conserver l'XP d'un membre qui quitte le serveur")} checked={draft.keepXpOnLeave} onChange={(v) => set({ keepXpOnLeave: v })} />
       </Section>
 
-      <Section title="Classements" text="Où les membres peuvent voir le classement.">
-        <ToggleField label="Classement sur Discord" text="Autoriser la commande /leaderboard" checked={draft.leaderboardOnDiscord} onChange={(v) => set({ leaderboardOnDiscord: v })} />
+      <Section title={tx("Classements")} text={tx("Où les membres peuvent voir le classement.")}>
+        <ToggleField label={tx("Classement sur Discord")} text={tx("Autoriser la commande /leaderboard")} checked={draft.leaderboardOnDiscord} onChange={(v) => set({ leaderboardOnDiscord: v })} />
         <div className="space-y-2">
-          <ToggleField label="Classement en ligne" text="Rendre le classement visible sur une page publique" checked={draft.leaderboardPublic} onChange={(v) => set({ leaderboardPublic: v })} />
+          <ToggleField label={tx("Classement en ligne")} text={tx("Rendre le classement visible sur une page publique")} checked={draft.leaderboardPublic} onChange={(v) => set({ leaderboardPublic: v })} />
           {draft.leaderboardPublic && config.leaderboardPublic && (
             <a href={publicUrl} target="_blank" rel="noopener noreferrer" className="block break-all text-xs text-[#8ea1ff] hover:underline">
               {publicUrl}
             </a>
           )}
-          {draft.leaderboardPublic && !config.leaderboardPublic && <p className="text-xs text-[var(--text-muted)]">Le lien apparaît après l&apos;enregistrement. Seuls le pseudo, l&apos;avatar, le niveau et l&apos;XP sont affichés.</p>}
+          {draft.leaderboardPublic && !config.leaderboardPublic && <p className="text-xs text-[var(--text-muted)]">{tx("Le lien apparaît après l'enregistrement. Seuls le pseudo, l'avatar, le niveau et l'XP sont affichés.")}</p>}
         </div>
       </Section>
 
-      <Section id="rank-card" title="Personnalisation" text="Couleurs des annonces et apparence de la carte /rank (aussi réglable sur Discord avec /xp carte).">
-        <ColorField label="Couleur du système de niveaux" value={draft.accentColor} fallback="#f59e0b" onChange={(v) => set({ accentColor: v })} />
-        <ColorField label="Fond de la carte /rank" value={draft.rankCard.backgroundColor} fallback={RANK_CARD_DEFAULTS.backgroundColor} onChange={(v) => setCard({ backgroundColor: v })} />
-        <ColorField label="Texte de la carte" value={draft.rankCard.textColor} fallback={RANK_CARD_DEFAULTS.textColor} onChange={(v) => setCard({ textColor: v })} />
-        <Field label="Police de la carte">
-          <Select value={draft.rankCard.font} onChange={(v) => setCard({ font: v as RankCardStyle["font"] })} className="w-full" aria-label="Police de la carte" options={FONTS.map(([id, label]) => ({ id, label }))} />
+      <Section id="rank-card" title={tx("Personnalisation")} text={tx("Couleurs des annonces et apparence de la carte /rank (aussi réglable sur Discord avec /xp carte).")}>
+        <ColorField label={tx("Couleur du système de niveaux")} value={draft.accentColor} fallback="#f59e0b" onChange={(v) => set({ accentColor: v })} />
+        <ColorField label={tx("Fond de la carte /rank")} value={draft.rankCard.backgroundColor} fallback={RANK_CARD_DEFAULTS.backgroundColor} onChange={(v) => setCard({ backgroundColor: v })} />
+        <ColorField label={tx("Texte de la carte")} value={draft.rankCard.textColor} fallback={RANK_CARD_DEFAULTS.textColor} onChange={(v) => setCard({ textColor: v })} />
+        <Field label={tx("Police de la carte")}>
+          <Select value={draft.rankCard.font} onChange={(v) => setCard({ font: v as RankCardStyle["font"] })} className="w-full" aria-label={tx("Police de la carte")} options={FONTS.map(([id, label]) => ({ id, label }))} />
         </Field>
-        <Field label="Forme de l'avatar">
-          <div role="radiogroup" aria-label="Forme de l'avatar" className="flex gap-1 rounded-xl border border-[var(--panel-border)] p-1">
+        <Field label={tx("Forme de l'avatar")}>
+          <div role="radiogroup" aria-label={tx("Forme de l'avatar")} className="flex gap-1 rounded-xl border border-[var(--panel-border)] p-1">
             {SHAPES.map(([id, label]) => (
               <button
                 key={id}
@@ -316,7 +317,7 @@ export default function LevelingSettingsPanel({ guildId, config: rawConfig, savi
             ))}
           </div>
         </Field>
-        <Field label="Image de fond (lien https)" hint={bgInvalid ? "Le lien doit commencer par https://" : "Laisse vide pour un fond uni."}>
+        <Field label={tx("Image de fond (lien https)")} hint={bgInvalid ? tx("Le lien doit commencer par https://") : tx("Laisse vide pour un fond uni.")}>
           <input
             value={bgDraft}
             maxLength={500}
@@ -331,57 +332,57 @@ export default function LevelingSettingsPanel({ guildId, config: rawConfig, savi
           />
         </Field>
         {draft.rankCard.backgroundUrl && (
-          <NumberField label="Voile sur l'image (%)" value={draft.rankCard.overlayOpacity} min={0} max={90} hint="Assombrit l'image pour garder le texte lisible." onChange={(n) => setCard({ overlayOpacity: n })} />
+          <NumberField label={tx("Voile sur l'image (%)")} value={draft.rankCard.overlayOpacity} min={0} max={90} hint={tx("Assombrit l'image pour garder le texte lisible.")} onChange={(n) => setCard({ overlayOpacity: n })} />
         )}
         <div className="space-y-2 lg:col-span-2">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-semibold text-[var(--text-primary)]">Aperçu de la carte /rank</span>
+            <span className="text-sm font-semibold text-[var(--text-primary)]">{tx("Aperçu de la carte /rank")}</span>
             <button type="button" onClick={() => set({ rankCard: RANK_CARD_DEFAULTS })} className="cursor-pointer text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)]">
-              Apparence par défaut
+              {tx("Apparence par défaut")}
             </button>
           </div>
           {rankPreviewUrl && !disabled ? (
             <RankCardPreview url={rankPreviewUrl} accentColor={draft.accentColor} rankCard={draft.rankCard} />
           ) : (
-            <p className="text-xs text-[var(--text-muted)]">L&apos;aperçu apparaît quand le bot est sur ce serveur.</p>
+            <p className="text-xs text-[var(--text-muted)]">{tx("L'aperçu apparaît quand le bot est sur ce serveur.")}</p>
           )}
         </div>
       </Section>
 
-      <Section title="Récompenses de niveau" text="Les rôles eux-mêmes se créent dans l'onglet « Rôles Récompenses ».">
-        <Field label="Attribution">
+      <Section title={tx("Récompenses de niveau")} text={tx("Les rôles eux-mêmes se créent dans l'onglet « Rôles Récompenses ».")}>
+        <Field label={tx("Attribution")}>
           <Select
             value={draft.rewardType}
             onChange={(v) => set({ rewardType: v as LevelingSettings["rewardType"] })}
             className="w-full"
-            aria-label="Attribution"
+            aria-label={tx("Attribution")}
             options={[
-              { id: "cumulative", label: "Cumulative : on garde tous les rôles débloqués" },
-              { id: "progressive", label: "Progressive : seul le rôle du palier le plus haut est gardé" },
+              { id: "cumulative", label: tx("Cumulative : on garde tous les rôles débloqués") },
+              { id: "progressive", label: tx("Progressive : seul le rôle du palier le plus haut est gardé") },
             ]}
           />
         </Field>
-        <Field label="Annonce d'une récompense">
+        <Field label={tx("Annonce d'une récompense")}>
           <Select
             value={draft.rewardAnnounceType}
             onChange={(v) => set({ rewardAnnounceType: v as LevelingSettings["rewardAnnounceType"] })}
             className="w-full"
-            aria-label="Annonce d'une récompense"
+            aria-label={tx("Annonce d'une récompense")}
             options={REWARD_TYPES.map(([k, l]) => ({ id: k, label: l }))}
           />
         </Field>
         {draft.rewardAnnounceType === "specific_channel" && (
-          <Field label="Salon des récompenses">
+          <Field label={tx("Salon des récompenses")}>
             <ChannelPicker value={draft.rewardChannelId} guildId={guildId} filterTypes={[0, 5]} onChange={(id) => set({ rewardChannelId: id || null })} />
           </Field>
         )}
         {(draft.rewardAnnounceType === "same_channel" || draft.rewardAnnounceType === "specific_channel" || draft.rewardAnnounceType === "dm") && (
           <>
-            <Field label="Message de récompense">
+            <Field label={tx("Message de récompense")}>
               <textarea value={draft.rewardMessage} maxLength={500} rows={3} onChange={(e) => set({ rewardMessage: e.target.value })} className={cn(inputCls, "h-auto py-2")} />
               <Chips vars={REWARD_VARS} onPick={(v) => set({ rewardMessage: `${draft.rewardMessage}${v}`.slice(0, 500) })} />
             </Field>
-            <Field label="Aperçu">
+            <Field label={tx("Aperçu")}>
               <EmbedPreview color={draft.accentColor} text={fill(draft.rewardMessage)} />
             </Field>
           </>
@@ -390,13 +391,13 @@ export default function LevelingSettingsPanel({ guildId, config: rawConfig, savi
 
       {dirty && (
         <div className="fixed inset-x-0 bottom-24 z-30 mx-auto flex w-[min(92vw,640px)] items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)] p-3">
-          <p className="text-sm text-[var(--text-muted)]">{invalid ? "Corrige les champs en rouge avant d'enregistrer." : "Tu as des modifications non enregistrées."}</p>
+          <p className="text-sm text-[var(--text-muted)]">{invalid ? tx("Corrige les champs en rouge avant d'enregistrer.") : tx("Tu as des modifications non enregistrées.")}</p>
           <div className="flex gap-2">
             <button type="button" onClick={() => setDraft(config)} className="cursor-pointer rounded-lg px-3 py-2 text-sm font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)]">
-              Annuler
+              {tx("Annuler")}
             </button>
             <button type="button" disabled={saving || invalid || disabled} onClick={() => void onSave(draft)} className="cursor-pointer rounded-lg bg-[var(--accent-primary)] px-4 py-2 text-sm font-semibold text-[var(--accent-contrast)] hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50">
-              {saving ? "Enregistrement…" : "Enregistrer"}
+              {saving ? tx("Enregistrement…") : tx("Enregistrer")}
             </button>
           </div>
         </div>

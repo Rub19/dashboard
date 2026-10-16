@@ -4,6 +4,7 @@ import { Suspense, type ComponentType } from "react";
 import dynamic from "next/dynamic";
 import ModuleSkeleton from "@/components/discord/ModuleSkeleton";
 import { EmbedContext } from "./embedContext";
+import { tx } from "@/lib/tx";
 
 /**
  * Page complète d'un module affichée dans la console (barre latérale Keeper conservée) au lieu de l'ancien écran
@@ -13,7 +14,7 @@ import { EmbedContext } from "./embedContext";
  */
 
 const load = (loader: () => Promise<ComponentType | { default: ComponentType }>) =>
-  dynamic(loader, { ssr: false, loading: () => <ModuleSkeleton label="Chargement du module" /> });
+  dynamic(loader, { ssr: false, loading: () => <ModuleSkeleton label={tx("Chargement du module")} /> });
 
 const PAGES: Record<string, ComponentType> = {
   overview: load(() => import("@/app/discord/overview/OverviewClient")),
@@ -24,7 +25,7 @@ const PAGES: Record<string, ComponentType> = {
 
 /** Modules refaits en pages natives de la console (format Keeper) : ils reçoivent le serveur directement. */
 const native = (loader: () => Promise<{ default: ComponentType<{ guildId: string }> }>) =>
-  dynamic(loader, { ssr: false, loading: () => <ModuleSkeleton label="Chargement du module" /> });
+  dynamic(loader, { ssr: false, loading: () => <ModuleSkeleton label={tx("Chargement du module")} /> });
 const NATIVE: Record<string, ComponentType<{ guildId: string }>> = {
   suggestions: native(() => import("./modules/ConsoleSuggestions")),
   roles: native(() => import("./modules/ConsoleRoles")),
@@ -82,7 +83,7 @@ export default function ModuleEmbed({ moduleId, guildId }: { moduleId: string; g
   return (
     <EmbedContext.Provider value={true}>
       <div className="console-embed">
-        <Suspense fallback={<ModuleSkeleton label="Chargement du module" />}>
+        <Suspense fallback={<ModuleSkeleton label={tx("Chargement du module")} />}>
           <Page />
         </Suspense>
       </div>

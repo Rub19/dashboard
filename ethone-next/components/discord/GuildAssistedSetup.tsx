@@ -10,6 +10,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { SPRING_LAYOUT } from "@/lib/ease";
 import { cn } from "@/lib/utils";
 import type { DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
+import { tx } from "@/lib/tx";
 
 const API_BASE = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -116,7 +117,7 @@ export default function GuildAssistedSetup({ guild, onFinish, onCancel, onManual
     setLoadingPlan(true);
     fetchPlan(serverType, severity, overwrite)
       .then((items) => !cancelled && setPlan(items))
-      .catch((err) => !cancelled && showError("Configuration assistée", err instanceof Error ? err.message : "Bot injoignable"))
+      .catch((err) => !cancelled && showError(tx("Configuration assistée"), err instanceof Error ? err.message : tx("Bot injoignable")))
       .finally(() => !cancelled && setLoadingPlan(false));
     return () => {
       cancelled = true;
@@ -135,9 +136,9 @@ export default function GuildAssistedSetup({ guild, onFinish, onCancel, onManual
       const items = await fetchPlan(serverType, severity, overwrite, true);
       setPlan(items);
       setDone(true);
-      success("Etho est configuré", `${changes.length} protection${changes.length > 1 ? "s" : ""} réglée${changes.length > 1 ? "s" : ""}.`);
+      success(tx("Etho est configuré"), tx("{length} protection{v1} réglée{v2}.", { length: changes.length, v1: changes.length > 1 ? "s" : "", v2: changes.length > 1 ? "s" : "" }));
     } catch (err) {
-      showError("Configuration assistée", err instanceof Error ? err.message : "Bot injoignable");
+      showError(tx("Configuration assistée"), err instanceof Error ? err.message : tx("Bot injoignable"));
     } finally {
       setApplying(false);
     }
@@ -174,12 +175,12 @@ export default function GuildAssistedSetup({ guild, onFinish, onCancel, onManual
             className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]"
           >
             <Sliders className="h-3.5 w-3.5" />
-            Réglage manuel
+            {tx("Réglage manuel")}
           </button>
         )}
       </div>
 
-      <ol className="grid grid-cols-4 gap-2" aria-label="Étapes">
+      <ol className="grid grid-cols-4 gap-2" aria-label={tx("Étapes")}>
         {STEPS.map((label, idx) => {
           const reached = done || idx <= step;
           return (
@@ -209,23 +210,23 @@ export default function GuildAssistedSetup({ guild, onFinish, onCancel, onManual
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[var(--success)]/15 text-[var(--success)]">
                     <Check className="h-6 w-6" />
                   </div>
-                  <h2 className="text-lg font-bold text-[var(--text-primary)]">Etho est configuré</h2>
-                  <p className="text-sm text-[var(--text-muted)]">Tu peux affiner chaque protection quand tu veux.</p>
+                  <h2 className="text-lg font-bold text-[var(--text-primary)]">{tx("Etho est configuré")}</h2>
+                  <p className="text-sm text-[var(--text-muted)]">{tx("Tu peux affiner chaque protection quand tu veux.")}</p>
                 </div>
               ) : step === 0 ? (
                 <>
                   <div>
-                    <h2 className="text-base font-bold text-[var(--text-primary)]">Quel genre de serveur as-tu ?</h2>
-                    <p className="mt-0.5 text-xs text-[var(--text-muted)]">Etho choisit les protections adaptées.</p>
+                    <h2 className="text-base font-bold text-[var(--text-primary)]">{tx("Quel genre de serveur as-tu ?")}</h2>
+                    <p className="mt-0.5 text-xs text-[var(--text-muted)]">{tx("Etho choisit les protections adaptées.")}</p>
                   </div>
-                  <div role="radiogroup" aria-label="Type de serveur" className="grid gap-2 sm:grid-cols-3">
+                  <div role="radiogroup" aria-label={tx("Type de serveur")} className="grid gap-2 sm:grid-cols-3">
                     {SERVER_TYPES.map((t) => (
                       <OptionCard key={t.id} active={serverType === t.id} onPick={() => setServerType(t.id)} title={t.title} hint={t.hint} Icon={t.icon} />
                     ))}
                   </div>
                   {counts[serverType] !== undefined && (
                     <p className="text-xs font-medium text-[var(--text-muted)]">
-                      {counts[serverType]} protections seront actives.
+                      {counts[serverType]} {" "}{tx("protections seront actives.")}
                       {serverType === "large" && " Les 4 protections vocales de ce type ne sont pas encore disponibles sur Etho."}
                     </p>
                   )}
@@ -233,10 +234,10 @@ export default function GuildAssistedSetup({ guild, onFinish, onCancel, onManual
               ) : step === 1 ? (
                 <>
                   <div>
-                    <h2 className="text-base font-bold text-[var(--text-primary)]">À quel point Etho doit-il être sévère ?</h2>
-                    <p className="mt-0.5 text-xs text-[var(--text-muted)]">La sanction est adaptée au type d&apos;abus.</p>
+                    <h2 className="text-base font-bold text-[var(--text-primary)]">{tx("À quel point Etho doit-il être sévère ?")}</h2>
+                    <p className="mt-0.5 text-xs text-[var(--text-muted)]">{tx("La sanction est adaptée au type d'abus.")}</p>
                   </div>
-                  <div role="radiogroup" aria-label="Sévérité" className="grid gap-2 sm:grid-cols-3">
+                  <div role="radiogroup" aria-label={tx("Sévérité")} className="grid gap-2 sm:grid-cols-3">
                     {SEVERITIES.map((s) => (
                       <OptionCard key={s.id} active={severity === s.id} onPick={() => setSeverity(s.id)} title={s.title} hint={s.hint} Icon={s.icon} />
                     ))}
@@ -245,37 +246,37 @@ export default function GuildAssistedSetup({ guild, onFinish, onCancel, onManual
               ) : step === 2 ? (
                 <>
                   <div>
-                    <h2 className="text-base font-bold text-[var(--text-primary)]">Où Etho doit-il te prévenir ?</h2>
-                    <p className="mt-0.5 text-xs text-[var(--text-muted)]">Un salon privé, visible par le staff, de préférence.</p>
+                    <h2 className="text-base font-bold text-[var(--text-primary)]">{tx("Où Etho doit-il te prévenir ?")}</h2>
+                    <p className="mt-0.5 text-xs text-[var(--text-muted)]">{tx("Un salon privé, visible par le staff, de préférence.")}</p>
                   </div>
                   <div className="grid items-center gap-2 sm:grid-cols-[10rem_1fr]">
-                    <span className="text-xs font-semibold text-[var(--text-primary)]">Salon des alertes</span>
+                    <span className="text-xs font-semibold text-[var(--text-primary)]">{tx("Salon des alertes")}</span>
                     <ChannelPicker
                       guildId={guild.id}
                       value={channelId}
                       onChange={(id) => setChannelId(id)}
                       filterTypes={[0, 5]}
                       allowClear
-                      emptyLabel="Pas de salon pour l'instant"
-                      placeholder="Choisir un salon"
+                      emptyLabel={tx("Pas de salon pour l'instant")}
+                      placeholder={tx("Choisir un salon")}
                     />
                   </div>
                   {!channelId && (
                     <p className="rounded-lg border border-[var(--warning)]/30 bg-[var(--warning)]/10 p-3 text-xs text-[var(--text-primary)]">
-                      Sans salon, les protections agissent mais personne n&apos;est prévenu. Sur Discord, la commande /setup peut créer ce salon pour toi.
+                      {tx("Sans salon, les protections agissent mais personne n'est prévenu. Sur Discord, la commande /setup peut créer ce salon pour toi.")}
                     </p>
                   )}
                 </>
               ) : (
                 <>
-                  <h2 className="text-base font-bold text-[var(--text-primary)]">Voilà ce qui va changer</h2>
+                  <h2 className="text-base font-bold text-[var(--text-primary)]">{tx("Voilà ce qui va changer")}</h2>
                   {loadingPlan && !plan ? (
                     <div className="flex items-center gap-2 py-6 text-xs text-[var(--text-muted)]">
-                      <Loader2 className="h-4 w-4 animate-spin" /> Calcul par le bot…
+                      <Loader2 className="h-4 w-4 animate-spin" /> {" "}{tx("Calcul par le bot…")}
                     </div>
                   ) : plan ? (
                     <>
-                      {changes.length === 0 && <p className="text-xs text-[var(--text-muted)]">Tout est déjà en place : rien à appliquer.</p>}
+                      {changes.length === 0 && <p className="text-xs text-[var(--text-muted)]">{tx("Tout est déjà en place : rien à appliquer.")}</p>}
                       <div className={cn("space-y-4", loadingPlan && "opacity-60")}>
                         {Object.entries(grouped).map(([cat, list]) => (
                           <div key={cat} className="space-y-1.5">
@@ -297,8 +298,8 @@ export default function GuildAssistedSetup({ guild, onFinish, onCancel, onManual
                       <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-[var(--panel-border)] p-3">
                         <input type="checkbox" checked={overwrite} onChange={(e) => setOverwrite(e.target.checked)} className="mt-0.5 accent-[var(--accent-primary)]" />
                         <span>
-                          <span className="block text-xs font-semibold text-[var(--text-primary)]">Appliquer le niveau aussi aux protections déjà réglées</span>
-                          <span className="block text-[11px] text-[var(--text-muted)]">Sinon, elles sont activées en gardant leurs réglages actuels.</span>
+                          <span className="block text-xs font-semibold text-[var(--text-primary)]">{tx("Appliquer le niveau aussi aux protections déjà réglées")}</span>
+                          <span className="block text-[11px] text-[var(--text-muted)]">{tx("Sinon, elles sont activées en gardant leurs réglages actuels.")}</span>
                         </span>
                       </label>
                     </>
@@ -319,12 +320,12 @@ export default function GuildAssistedSetup({ guild, onFinish, onCancel, onManual
               className="flex items-center gap-1 text-xs font-semibold text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)]"
             >
               <ArrowLeft className="h-3.5 w-3.5" />
-              Retour
+              {tx("Retour")}
             </button>
           )}
           {done ? (
             <button type="button" onClick={onFinish} className="rounded-lg bg-[var(--accent-primary)] px-4 py-2 text-xs font-semibold text-[var(--accent-contrast)] transition-[filter,transform] hover:brightness-110 active:scale-[0.97]">
-              Voir la vue d&apos;ensemble
+              {tx("Voir la vue d'ensemble")}
             </button>
           ) : step < 3 ? (
             <button
@@ -332,7 +333,7 @@ export default function GuildAssistedSetup({ guild, onFinish, onCancel, onManual
               onClick={() => setStep((s) => s + 1)}
               className="flex items-center gap-1.5 rounded-lg bg-[var(--accent-primary)] px-4 py-2 text-xs font-semibold text-[var(--accent-contrast)] transition-[filter,transform] hover:brightness-110 active:scale-[0.97]"
             >
-              Continuer
+              {tx("Continuer")}
               <ArrowRight className="h-3.5 w-3.5" />
             </button>
           ) : (
@@ -343,7 +344,7 @@ export default function GuildAssistedSetup({ guild, onFinish, onCancel, onManual
               className="flex items-center gap-2 rounded-lg bg-[var(--accent-primary)] px-4 py-2 text-xs font-semibold text-[var(--accent-contrast)] transition-[filter,transform] hover:brightness-110 active:scale-[0.97] disabled:opacity-50"
             >
               {applying && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
-              {changes.length ? `Appliquer (${changes.length})` : "Appliquer"}
+              {changes.length ? tx("Appliquer ({length})", { length: changes.length }) : tx("Appliquer")}
             </button>
           )}
         </div>

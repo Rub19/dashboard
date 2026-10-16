@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { pageStagger } from "@/lib/motion-variants";
 import { ConsolePage, EmptyLine, Panel, Segmented, StatTile, useGuildApi } from "../kit";
 import { PageTitle } from "../sanctions/shared";
+import { tx } from "@/lib/tx";
 
 type Stats = {
   days: number;
@@ -50,10 +51,10 @@ export default function ConsoleModStats({ guildId }: { guildId: string }) {
 
   return (
     <ConsolePage
-      title={<PageTitle title="Statistiques" text="Qui sanctionne quoi, ce qui revient le plus, qui est le plus sanctionné." />}
+      title={<PageTitle title={tx("Statistiques")} text={tx("Qui sanctionne quoi, ce qui revient le plus, qui est le plus sanctionné.")} />}
       actions={
         <Segmented
-          label="Période"
+          label={tx("Période")}
           value={days}
           options={[
             [7, "7 jours"],
@@ -65,15 +66,15 @@ export default function ConsoleModStats({ guildId }: { guildId: string }) {
       }
     >
       <motion.div key={days} variants={pageStagger} initial="initial" animate="animate" className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatTile label="Sanctions" value={s?.total ?? "—"} />
-        <StatTile label="Automatiques" value={s?.automatic ?? "—"} />
-        <StatTile label="Signalements en cours" value={s?.reportsOpen ?? "—"} />
-        <StatTile label="Appels en attente" value={s?.appealsPending ?? "—"} />
+        <StatTile label={tx("Sanctions")} value={s?.total ?? "—"} />
+        <StatTile label={tx("Automatiques")} value={s?.automatic ?? "—"} />
+        <StatTile label={tx("Signalements en cours")} value={s?.reportsOpen ?? "—"} />
+        <StatTile label={tx("Appels en attente")} value={s?.appealsPending ?? "—"} />
       </motion.div>
 
-      <Panel title="Par jour">
+      <Panel title={tx("Par jour")}>
         {!s ? (
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         ) : (
           <div className="flex h-40 items-end gap-1 px-5 pb-4 pt-6">
             {s.perDay.map((d, i) => (
@@ -94,11 +95,11 @@ export default function ConsoleModStats({ guildId }: { guildId: string }) {
       </Panel>
 
       <div className="grid gap-3 sm:gap-5 lg:grid-cols-2">
-        <Panel title="Par type">{!s ? <EmptyLine>Chargement…</EmptyLine> : s.byType.length === 0 ? <EmptyLine>Aucune sanction sur la période.</EmptyLine> : <Bars rows={s.byType.map((t) => ({ id: t.action, label: t.label, count: t.count }))} />}</Panel>
-        <Panel title="Modérateurs">{!s ? <EmptyLine>Chargement…</EmptyLine> : s.moderators.length === 0 ? <EmptyLine>Aucune sanction manuelle.</EmptyLine> : <Bars rows={s.moderators.map((m) => ({ id: m.id, label: m.tag, count: m.count }))} />}</Panel>
+        <Panel title={tx("Par type")}>{!s ? <EmptyLine>{tx("Chargement…")}</EmptyLine> : s.byType.length === 0 ? <EmptyLine>{tx("Aucune sanction sur la période.")}</EmptyLine> : <Bars rows={s.byType.map((t) => ({ id: t.action, label: t.label, count: t.count }))} />}</Panel>
+        <Panel title={tx("Modérateurs")}>{!s ? <EmptyLine>{tx("Chargement…")}</EmptyLine> : s.moderators.length === 0 ? <EmptyLine>{tx("Aucune sanction manuelle.")}</EmptyLine> : <Bars rows={s.moderators.map((m) => ({ id: m.id, label: m.tag, count: m.count }))} />}</Panel>
       </div>
 
-      <Panel title="Membres les plus sanctionnés">{!s ? <EmptyLine>Chargement…</EmptyLine> : s.members.length === 0 ? <EmptyLine>Personne sur la période.</EmptyLine> : <Bars rows={s.members.map((m) => ({ id: m.id, label: m.tag, count: m.count }))} />}</Panel>
+      <Panel title={tx("Membres les plus sanctionnés")}>{!s ? <EmptyLine>{tx("Chargement…")}</EmptyLine> : s.members.length === 0 ? <EmptyLine>{tx("Personne sur la période.")}</EmptyLine> : <Bars rows={s.members.map((m) => ({ id: m.id, label: m.tag, count: m.count }))} />}</Panel>
     </ConsolePage>
   );
 }

@@ -10,6 +10,7 @@ import { pageStagger } from "@/lib/motion-variants";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/components/ToastProvider";
 import { ConsolePage, EmptyLine, GhostButton, Panel, RoleAdder, Row, StatTile, Stepper, Switch, TextField, useGuildApi } from "../kit";
+import { tx } from "@/lib/tx";
 
 type EcoConfig = {
   enabled: boolean;
@@ -252,9 +253,9 @@ export default function ConsoleEconomy({ guildId }: { guildId: string }) {
 
   if (!cfg) {
     return (
-      <ConsolePage title="Économie">
+      <ConsolePage title={tx("Économie")}>
         <Panel>
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         </Panel>
       </ConsolePage>
     );
@@ -262,26 +263,26 @@ export default function ConsoleEconomy({ guildId }: { guildId: string }) {
   const sym = cfg.currencySymbol;
 
   return (
-    <ConsolePage title="Économie">
+    <ConsolePage title={tx("Économie")}>
       {!cfg.enabled && (
         <Panel>
-          <p className="px-5 py-3 text-xs text-[var(--warning)]">Module désactivé : les commandes et les gains sont en pause. Active-le avec l&apos;interrupteur en haut de la page.</p>
+          <p className="px-5 py-3 text-xs text-[var(--warning)]">{tx("Module désactivé : les commandes et les gains sont en pause. Active-le avec l'interrupteur en haut de la page.")}</p>
         </Panel>
       )}
 
       <motion.div variants={pageStagger} className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatTile label="En circulation" value={activity ? <Amount n={activity.totalCirculating} sym={sym} iconUrl={cfg.currencyCustomIconUrl} /> : "—"} hint="Somme de tous les soldes" />
-        <StatTile label="Volume 24 h" value={activity ? <Amount n={activity.volume24h} sym={sym} iconUrl={cfg.currencyCustomIconUrl} /> : "—"} hint={activity ? `${activity.transactions24h} mouvement${activity.transactions24h > 1 ? "s" : ""}` : undefined} />
-        <StatTile label="Plus gros solde" value={top?.[0] ? <Amount n={top[0].balance} sym={sym} iconUrl={cfg.currencyCustomIconUrl} /> : "—"} hint={top?.[0]?.username} />
-        <StatTile label="Boutique" value={shop.length} hint={`article${shop.length > 1 ? "s" : ""} en vente`} />
+        <StatTile label={tx("En circulation")} value={activity ? <Amount n={activity.totalCirculating} sym={sym} iconUrl={cfg.currencyCustomIconUrl} /> : "—"} hint={tx("Somme de tous les soldes")} />
+        <StatTile label={tx("Volume 24 h")} value={activity ? <Amount n={activity.volume24h} sym={sym} iconUrl={cfg.currencyCustomIconUrl} /> : "—"} hint={activity ? tx("{transactions24h} mouvement{v1}", { transactions24h: activity.transactions24h, v1: activity.transactions24h > 1 ? "s" : "" }) : undefined} />
+        <StatTile label={tx("Plus gros solde")} value={top?.[0] ? <Amount n={top[0].balance} sym={sym} iconUrl={cfg.currencyCustomIconUrl} /> : "—"} hint={top?.[0]?.username} />
+        <StatTile label={tx("Boutique")} value={shop.length} hint={tx("article{v0} en vente", { v0: shop.length > 1 ? "s" : "" })} />
       </motion.div>
 
-      <Panel title="Monnaie" subtitle="Configuration de la devise, choix de la pièce et règles d'émission.">
-        <Row label="Nom de la monnaie" hint="Le nom complet affiché dans les commandes et soldes.">
+      <Panel title={tx("Monnaie")} subtitle={tx("Configuration de la devise, choix de la pièce et règles d'émission.")}>
+        <Row label={tx("Nom de la monnaie")} hint={tx("Le nom complet affiché dans les commandes et soldes.")}>
           <TextField value={cfg.currencyName} maxLength={32} onCommit={(v) => save({ currencyName: v })} />
         </Row>
 
-        <Row label="Pièce du serveur" hint="Choisis la pièce officielle Etho, un emoji populaire ou importe un fichier personnalisé.">
+        <Row label={tx("Pièce du serveur")} hint={tx("Choisis la pièce officielle Etho, un emoji populaire ou importe un fichier personnalisé.")}>
           <div className="w-full space-y-3">
             <div className="flex flex-wrap items-center gap-2">
               <button
@@ -295,7 +296,7 @@ export default function ConsoleEconomy({ guildId }: { guildId: string }) {
                 )}
               >
                 <EthoCoin size={16} />
-                <span>Pièce Etho (Défaut)</span>
+                <span>{tx("Pièce Etho (Défaut)")}</span>
               </button>
 
               <button
@@ -309,7 +310,7 @@ export default function ConsoleEconomy({ guildId }: { guildId: string }) {
                 )}
               >
                 <Sparkles className="h-4 w-4" />
-                <span>Emojis & Symboles</span>
+                <span>{tx("Emojis & Symboles")}</span>
               </button>
 
               <button
@@ -323,7 +324,7 @@ export default function ConsoleEconomy({ guildId }: { guildId: string }) {
                 )}
               >
                 <Upload className="h-4 w-4" />
-                <span>Importer un fichier / URL</span>
+                <span>{tx("Importer un fichier / URL")}</span>
               </button>
             </div>
 
@@ -335,16 +336,16 @@ export default function ConsoleEconomy({ guildId }: { guildId: string }) {
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <p className="text-sm font-semibold text-[var(--text-primary)]">Pièce Officielle Etho</p>
+                      <p className="text-sm font-semibold text-[var(--text-primary)]">{tx("Pièce Officielle Etho")}</p>
                       <span className="rounded-full bg-amber-500/15 border border-amber-500/30 px-2 py-0.5 text-[10px] font-semibold text-amber-400">
-                        Par défaut
+                        {tx("Par défaut")}
                       </span>
                     </div>
                     <p className="mt-1 text-xs text-[var(--text-muted)]">
-                      Pièce métallique dorée frappée du monogramme Etho avec reflets et sillons gravés.
+                      {tx("Pièce métallique dorée frappée du monogramme Etho avec reflets et sillons gravés.")}
                     </p>
                     <div className="mt-2 flex items-center gap-2 font-mono text-xs text-[var(--text-primary)]">
-                      <span className="text-[var(--text-muted)]">Aperçu en direct :</span>
+                      <span className="text-[var(--text-muted)]">{tx("Aperçu en direct :")}</span>
                       <span className="font-semibold text-amber-400">1 500</span>
                       <EthoCoin size={16} />
                     </div>
@@ -353,12 +354,12 @@ export default function ConsoleEconomy({ guildId }: { guildId: string }) {
                 {isEthoCoin(cfg.currencySymbol, cfg.currencyCustomIconUrl) ? (
                   <div className="flex items-center gap-1.5 rounded-lg border border-[var(--success)]/30 bg-[var(--success)]/10 px-3 py-1.5 text-xs font-medium text-[var(--success)] self-start sm:self-auto">
                     <Check className="h-3.5 w-3.5" />
-                    <span>Active</span>
+                    <span>{tx("Active")}</span>
                   </div>
                 ) : (
                   <div className="self-start sm:self-auto">
                     <GhostButton onClick={handleSelectEtho}>
-                      Activer la pièce Etho
+                      {tx("Activer la pièce Etho")}
                     </GhostButton>
                   </div>
                 )}
@@ -368,8 +369,8 @@ export default function ConsoleEconomy({ guildId }: { guildId: string }) {
             {coinTab === "emoji" && (
               <div className="space-y-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-4">
                 <div>
-                  <p className="text-xs font-semibold text-[var(--text-primary)]">Pièces et devises populaires</p>
-                  <p className="text-[11px] text-[var(--text-muted)]">Clique sur une pièce pour l&apos;appliquer instantanément.</p>
+                  <p className="text-xs font-semibold text-[var(--text-primary)]">{tx("Pièces et devises populaires")}</p>
+                  <p className="text-[11px] text-[var(--text-muted)]">{tx("Clique sur une pièce pour l'appliquer instantanément.")}</p>
                 </div>
                 <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
                   {POPULAR_COINS.map((c) => {
@@ -393,18 +394,18 @@ export default function ConsoleEconomy({ guildId }: { guildId: string }) {
                   })}
                 </div>
                 <div className="pt-2 border-t border-[var(--panel-border)]">
-                  <p className="text-xs font-semibold text-[var(--text-primary)] mb-1.5">Emoji ou code personnalisé</p>
+                  <p className="text-xs font-semibold text-[var(--text-primary)] mb-1.5">{tx("Emoji ou code personnalisé")}</p>
                   <div className="flex flex-wrap items-center gap-2">
                     <input
                       type="text"
                       value={cfg.currencySymbol}
                       maxLength={32}
                       onChange={(e) => save({ currencySymbol: e.target.value, currencyCustomIconUrl: null })}
-                      placeholder="Ex: 💎, 🍪, <:monnaie:123> ou ETH"
+                      placeholder={tx("Ex: 💎, 🍪, <:monnaie:123> ou ETH")}
                       className="h-9 w-48 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-3 text-xs text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/70"
                     />
                     <div className="flex items-center gap-2 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-hover)] px-3 py-1.5 font-mono text-xs">
-                      <span className="text-[var(--text-muted)]">Aperçu :</span>
+                      <span className="text-[var(--text-muted)]">{tx("Aperçu :")}</span>
                       <span className="font-semibold text-[var(--text-primary)]">1 500 {cfg.currencySymbol}</span>
                     </div>
                   </div>
@@ -431,10 +432,10 @@ export default function ConsoleEconomy({ guildId }: { guildId: string }) {
                 >
                   <Upload className="h-6 w-6 text-[var(--text-muted)] mb-2" />
                   <p className="text-xs font-semibold text-[var(--text-primary)]">
-                    Glisse une image ici ou clique pour parcourir
+                    {tx("Glisse une image ici ou clique pour parcourir")}
                   </p>
                   <p className="mt-1 text-[11px] text-[var(--text-muted)]">
-                    PNG, SVG, WebP ou JPG (recommandé : transparent, ratio 1:1, max 1 Mo)
+                    {tx("PNG, SVG, WebP ou JPG (recommandé : transparent, ratio 1:1, max 1 Mo)")}
                   </p>
                 </div>
 
@@ -443,11 +444,11 @@ export default function ConsoleEconomy({ guildId }: { guildId: string }) {
                     type="url"
                     value={customUrlInput}
                     onChange={(e) => setCustomUrlInput(e.target.value)}
-                    placeholder="Ou colle une URL directe (https://.../coin.png)"
+                    placeholder={tx("Ou colle une URL directe (https://.../coin.png)")}
                     className="h-9 min-w-0 flex-1 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-3 text-xs text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/70"
                   />
                   <GhostButton onClick={handleApplyCustomUrl} disabled={!customUrlInput.trim()}>
-                    Appliquer l&apos;URL
+                    {tx("Appliquer l'URL")}
                   </GhostButton>
                 </div>
 
@@ -456,15 +457,15 @@ export default function ConsoleEconomy({ guildId }: { guildId: string }) {
                     <div className="flex items-center gap-3">
                       <img
                         src={cfg.currencyCustomIconUrl}
-                        alt="Pièce personnalisée"
+                        alt={tx("Pièce personnalisée")}
                         width={36}
                         height={36}
                         className="h-9 w-9 rounded-full object-cover border border-[var(--panel-border)] shadow-xs"
                       />
                       <div>
-                        <p className="text-xs font-semibold text-[var(--text-primary)]">Pièce personnalisée active</p>
+                        <p className="text-xs font-semibold text-[var(--text-primary)]">{tx("Pièce personnalisée active")}</p>
                         <div className="flex items-center gap-1.5 font-mono text-xs text-[var(--text-muted)] mt-0.5">
-                          <span>Aperçu :</span>
+                          <span>{tx("Aperçu :")}</span>
                           <span className="font-semibold text-[var(--text-primary)]">1 500</span>
                           <img
                             src={cfg.currencyCustomIconUrl}
@@ -478,7 +479,7 @@ export default function ConsoleEconomy({ guildId }: { guildId: string }) {
                     </div>
                     <div className="self-start sm:self-auto">
                       <GhostButton onClick={handleSelectEtho}>
-                        Rétablir la pièce Etho
+                        {tx("Rétablir la pièce Etho")}
                       </GhostButton>
                     </div>
                   </div>
@@ -488,7 +489,7 @@ export default function ConsoleEconomy({ guildId }: { guildId: string }) {
           </div>
         </Row>
 
-        <Row label="Solde de départ" hint="Donné à chaque nouveau membre.">
+        <Row label={tx("Solde de départ")} hint={tx("Donné à chaque nouveau membre.")}>
           <Stepper
             value={cfg.startingBalance}
             min={0}
@@ -498,13 +499,13 @@ export default function ConsoleEconomy({ guildId }: { guildId: string }) {
             onCommit={(n) => save({ startingBalance: n })}
           />
         </Row>
-        <Row label="Virements entre membres" hint="Commande /pay.">
-          <Switch checked={cfg.transfersEnabled} onChange={(v) => save({ transfersEnabled: v })} label="Virements entre membres" />
+        <Row label={tx("Virements entre membres")} hint={tx("Commande /pay.")}>
+          <Switch checked={cfg.transfersEnabled} onChange={(v) => save({ transfersEnabled: v })} label={tx("Virements entre membres")} />
         </Row>
       </Panel>
 
-      <Panel title="Bonus quotidien" subtitle="Commande /daily.">
-        <Row label="Montant">
+      <Panel title={tx("Bonus quotidien")} subtitle={tx("Commande /daily.")}>
+        <Row label={tx("Montant")}>
           <Range
             min={cfg.dailyAmountMin}
             max={cfg.dailyAmountMax}
@@ -514,20 +515,20 @@ export default function ConsoleEconomy({ guildId }: { guildId: string }) {
             onMax={(n) => save({ dailyAmountMax: n })}
           />
         </Row>
-        <Row label="Délai">
+        <Row label={tx("Délai")}>
           <Stepper value={cfg.dailyCooldownHours} min={1} max={72} unit="h" onCommit={(n) => save({ dailyCooldownHours: n })} />
         </Row>
-        <Row label="Bonus de série" hint="Ajouté par jour consécutif, jusqu'au plafond.">
+        <Row label={tx("Bonus de série")} hint={tx("Ajouté par jour consécutif, jusqu'au plafond.")}>
           <div className="flex flex-wrap items-center gap-3">
             <Stepper
               value={cfg.dailyStreakBonus}
               min={0}
               max={10000}
               step={5}
-              unit={<span className="inline-flex items-center gap-1"><CoinBadge sym={sym} iconUrl={cfg.currencyCustomIconUrl} size={14} /> / jour</span>}
+              unit={<span className="inline-flex items-center gap-1"><CoinBadge sym={sym} iconUrl={cfg.currencyCustomIconUrl} size={14} /> {" "}{tx("/ jour")}</span>}
               onCommit={(n) => save({ dailyStreakBonus: n })}
             />
-            <span className="text-xs text-[var(--text-muted)]">plafond</span>
+            <span className="text-xs text-[var(--text-muted)]">{tx("plafond")}</span>
             <Stepper
               value={cfg.dailyStreakMaxBonus}
               min={0}
@@ -540,66 +541,66 @@ export default function ConsoleEconomy({ guildId }: { guildId: string }) {
         </Row>
       </Panel>
 
-      <Panel title="Gains" subtitle="Ce que rapporte l'activité.">
-        <Row label="Par message" hint="Un petit montant au hasard, avec un délai pour que le spam ne rapporte rien.">
-          <Switch checked={cfg.passiveEarnEnabled} onChange={(v) => save({ passiveEarnEnabled: v })} label="Gain par message" />
+      <Panel title={tx("Gains")} subtitle={tx("Ce que rapporte l'activité.")}>
+        <Row label={tx("Par message")} hint={tx("Un petit montant au hasard, avec un délai pour que le spam ne rapporte rien.")}>
+          <Switch checked={cfg.passiveEarnEnabled} onChange={(v) => save({ passiveEarnEnabled: v })} label={tx("Gain par message")} />
         </Row>
         <Collapse open={cfg.passiveEarnEnabled}>
-          <Row label="Montant par message">
+          <Row label={tx("Montant par message")}>
             <Range min={cfg.passiveEarnMin} max={cfg.passiveEarnMax} limit={1000} unit={<CoinBadge sym={sym} iconUrl={cfg.currencyCustomIconUrl} size={14} />} onMin={(n) => save({ passiveEarnMin: n })} onMax={(n) => save({ passiveEarnMax: n })} />
           </Row>
-          <Row label="Délai entre deux gains">
+          <Row label={tx("Délai entre deux gains")}>
             <Stepper value={cfg.passiveEarnCooldownSeconds} min={5} max={600} step={5} unit="s" onCommit={(n) => save({ passiveEarnCooldownSeconds: n })} />
           </Row>
-          <Row label="Longueur minimale" hint="Les messages plus courts ne rapportent rien.">
-            <Stepper value={cfg.passiveEarnMinMessageLength} min={0} max={50} unit="caractères" onCommit={(n) => save({ passiveEarnMinMessageLength: n })} />
+          <Row label={tx("Longueur minimale")} hint={tx("Les messages plus courts ne rapportent rien.")}>
+            <Stepper value={cfg.passiveEarnMinMessageLength} min={0} max={50} unit={tx("caractères")} onCommit={(n) => save({ passiveEarnMinMessageLength: n })} />
           </Row>
         </Collapse>
-        <Row label="Petit boulot" hint="Commande /work : un gain modeste mais sûr.">
-          <Switch checked={cfg.workEnabled} onChange={(v) => save({ workEnabled: v })} label="Petit boulot" />
+        <Row label={tx("Petit boulot")} hint={tx("Commande /work : un gain modeste mais sûr.")}>
+          <Switch checked={cfg.workEnabled} onChange={(v) => save({ workEnabled: v })} label={tx("Petit boulot")} />
         </Row>
         <Collapse open={cfg.workEnabled}>
-          <Row label="Montant">
+          <Row label={tx("Montant")}>
             <Range min={cfg.workAmountMin} max={cfg.workAmountMax} limit={100000} unit={<CoinBadge sym={sym} iconUrl={cfg.currencyCustomIconUrl} size={14} />} onMin={(n) => save({ workAmountMin: n })} onMax={(n) => save({ workAmountMax: n })} />
           </Row>
-          <Row label="Délai">
+          <Row label={tx("Délai")}>
             <Stepper value={cfg.workCooldownMinutes} min={1} max={1440} step={5} unit="min" onCommit={(n) => save({ workCooldownMinutes: n })} />
           </Row>
         </Collapse>
       </Panel>
 
-      <Panel title="Paris et vols">
-        <Row label="Mise au pari" hint="Commande /gamble.">
+      <Panel title={tx("Paris et vols")}>
+        <Row label={tx("Mise au pari")} hint={tx("Commande /gamble.")}>
           <Range min={cfg.gambleMinBet} max={cfg.gambleMaxBet} limit={1000000} unit={<CoinBadge sym={sym} iconUrl={cfg.currencyCustomIconUrl} size={14} />} onMin={(n) => save({ gambleMinBet: n })} onMax={(n) => save({ gambleMaxBet: n })} />
         </Row>
-        <Row label="Gain d'un pari réussi" hint="La mise est multipliée par ce nombre.">
+        <Row label={tx("Gain d'un pari réussi")} hint={tx("La mise est multipliée par ce nombre.")}>
           <Stepper value={cfg.gambleWinMultiplier} min={1} max={5} step={0.1} unit="×" onCommit={(n) => save({ gambleWinMultiplier: n })} />
         </Row>
-        <Row label="Vol" hint="Commande /rob : risqué pour le voleur.">
-          <Switch checked={cfg.robEnabled} onChange={(v) => save({ robEnabled: v })} label="Vol" />
+        <Row label={tx("Vol")} hint={tx("Commande /rob : risqué pour le voleur.")}>
+          <Switch checked={cfg.robEnabled} onChange={(v) => save({ robEnabled: v })} label={tx("Vol")} />
         </Row>
         <Collapse open={cfg.robEnabled}>
-          <Row label="Chance de réussite">
+          <Row label={tx("Chance de réussite")}>
             <Stepper value={Math.round(cfg.robSuccessRate * 100)} min={0} max={100} step={5} unit="%" onCommit={(n) => save({ robSuccessRate: n / 100 })} />
           </Row>
-          <Row label="Part volée au maximum">
-            <Stepper value={cfg.robMaxStealPercent} min={1} max={100} unit="% du solde" onCommit={(n) => save({ robMaxStealPercent: n })} />
+          <Row label={tx("Part volée au maximum")}>
+            <Stepper value={cfg.robMaxStealPercent} min={1} max={100} unit={tx("% du solde")} onCommit={(n) => save({ robMaxStealPercent: n })} />
           </Row>
-          <Row label="Amende en cas d'échec">
-            <Stepper value={cfg.robFailPenaltyPercent} min={0} max={100} unit="% du solde" onCommit={(n) => save({ robFailPenaltyPercent: n })} />
+          <Row label={tx("Amende en cas d'échec")}>
+            <Stepper value={cfg.robFailPenaltyPercent} min={0} max={100} unit={tx("% du solde")} onCommit={(n) => save({ robFailPenaltyPercent: n })} />
           </Row>
-          <Row label="Délai">
+          <Row label={tx("Délai")}>
             <Stepper value={cfg.robCooldownMinutes} min={1} max={1440} step={5} unit="min" onCommit={(n) => save({ robCooldownMinutes: n })} />
           </Row>
-          <Row label="Solde minimum de la cible" hint="Les membres plus pauvres ne peuvent pas être volés.">
+          <Row label={tx("Solde minimum de la cible")} hint={tx("Les membres plus pauvres ne peuvent pas être volés.")}>
             <Stepper value={cfg.robMinTargetBalance} min={0} max={1000000} step={50} unit={<CoinBadge sym={sym} iconUrl={cfg.currencyCustomIconUrl} size={14} />} onCommit={(n) => save({ robMinTargetBalance: n })} />
           </Row>
         </Collapse>
       </Panel>
 
-      <Panel title="Boutique" subtitle="Des rôles à acheter avec la monnaie du serveur." actions={<RoleAdder guildId={guildId} label="Article" excludeIds={shop.map((i) => i.roleId)} onPick={(r) => saveItem({ roleId: r.id, roleName: r.name, label: r.name, price: 100, enabled: true })} />}>
+      <Panel title={tx("Boutique")} subtitle={tx("Des rôles à acheter avec la monnaie du serveur.")} actions={<RoleAdder guildId={guildId} label={tx("Article")} excludeIds={shop.map((i) => i.roleId)} onPick={(r) => saveItem({ roleId: r.id, roleName: r.name, label: r.name, price: 100, enabled: true })} />}>
         {shop.length === 0 ? (
-          <EmptyLine>Aucun article. Ajoute un rôle à vendre.</EmptyLine>
+          <EmptyLine>{tx("Aucun article. Ajoute un rôle à vendre.")}</EmptyLine>
         ) : (
           <ul>
             <AnimatePresence initial={false}>
@@ -615,14 +616,14 @@ export default function ConsoleEconomy({ guildId }: { guildId: string }) {
                 >
                   <div className="min-w-0 flex-1">
                     <TextField value={item.label} maxLength={60} width="w-full max-w-xs" onCommit={(v) => saveItem({ ...item, label: v })} />
-                    <p className="mt-1 text-[11px] text-[var(--text-muted)]">Rôle @{item.roleName}</p>
+                    <p className="mt-1 text-[11px] text-[var(--text-muted)]">{tx("Rôle @")}{item.roleName}</p>
                   </div>
                   <Stepper value={item.price} min={0} max={10000000} step={50} unit={<CoinBadge sym={sym} iconUrl={cfg.currencyCustomIconUrl} size={14} />} onCommit={(n) => saveItem({ ...item, price: n })} />
-                  <Switch checked={item.enabled} onChange={(v) => saveItem({ ...item, enabled: v })} label={item.enabled ? `Retirer ${item.label} de la vente` : `Mettre ${item.label} en vente`} />
+                  <Switch checked={item.enabled} onChange={(v) => saveItem({ ...item, enabled: v })} label={item.enabled ? tx("Retirer {label} de la vente", { label: item.label }) : tx("Mettre {label} en vente", { label: item.label })} />
                   <button
                     type="button"
                     onClick={() => deleteItem(item.id)}
-                    aria-label={`Supprimer ${item.label}`}
+                    aria-label={tx("Supprimer {label}", { label: item.label })}
                     className="rounded-lg p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--danger)]/10 hover:text-[var(--danger)]"
                   >
                     <Trash2 className="h-4 w-4" />
@@ -636,10 +637,10 @@ export default function ConsoleEconomy({ guildId }: { guildId: string }) {
 
       <div className="grid gap-5 lg:grid-cols-2">
         <Panel
-          title="Classement"
+          title={tx("Classement")}
           actions={
             <GhostButton onClick={() => { setAdjustingUser(null); setShowManualInput((prev) => !prev); }}>
-              {showManualInput ? "Fermer" : "Ajuster un solde"}
+              {showManualInput ? tx("Fermer") : tx("Ajuster un solde")}
             </GhostButton>
           }
         >
@@ -655,12 +656,12 @@ export default function ConsoleEconomy({ guildId }: { guildId: string }) {
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <p className="text-xs font-semibold text-[var(--text-primary)]">
-                      {adjustingUser ? `Ajuster le solde de @${adjustingUser.username}` : "Ajuster un membre par identifiant"}
+                      {adjustingUser ? tx("Ajuster le solde de @{username}", { username: adjustingUser.username }) : tx("Ajuster un membre par identifiant")}
                     </p>
                     <button
                       type="button"
                       onClick={() => { setAdjustingUser(null); setShowManualInput(false); }}
-                      aria-label="Fermer"
+                      aria-label={tx("Fermer")}
                       className="rounded p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                     >
                       <Trash2 className="h-3.5 w-3.5 rotate-45" />
@@ -671,13 +672,13 @@ export default function ConsoleEconomy({ guildId }: { guildId: string }) {
                       type="text"
                       value={manualUserId}
                       onChange={(e) => setManualUserId(e.target.value.trim())}
-                      placeholder="Identifiant Discord (ex: 123456789012345678)"
+                      placeholder={tx("Identifiant Discord (ex: 123456789012345678)")}
                       className="h-8 w-full rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-2.5 font-mono text-xs text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/70"
                     />
                   )}
                   {adjustingUser && (
                     <p className="font-mono text-xs text-[var(--text-muted)]">
-                      Solde actuel : <span className="text-[var(--text-primary)] inline-flex items-center gap-1">{fmt(adjustingUser.balance)} <CoinBadge sym={sym} iconUrl={cfg.currencyCustomIconUrl} size={14} /></span>
+                      {tx("Solde actuel :")}{" "} <span className="text-[var(--text-primary)] inline-flex items-center gap-1">{fmt(adjustingUser.balance)} <CoinBadge sym={sym} iconUrl={cfg.currencyCustomIconUrl} size={14} /></span>
                     </p>
                   )}
                   <div className="flex flex-wrap items-center gap-2">
@@ -690,7 +691,7 @@ export default function ConsoleEconomy({ guildId }: { guildId: string }) {
                           adjustMode === "credit" ? "bg-[var(--success)]/20 text-[var(--success)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                         )}
                       >
-                        + Créditer
+                        {tx("+ Créditer")}
                       </button>
                       <button
                         type="button"
@@ -700,7 +701,7 @@ export default function ConsoleEconomy({ guildId }: { guildId: string }) {
                           adjustMode === "debit" ? "bg-[var(--danger)]/20 text-[var(--danger)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                         )}
                       >
-                        − Débiter
+                        {tx("− Débiter")}
                       </button>
                     </div>
                     <Stepper value={adjustAmount} min={1} max={1000000} step={50} unit={<CoinBadge sym={sym} iconUrl={cfg.currencyCustomIconUrl} size={14} />} onCommit={(n) => setAdjustAmount(n)} />
@@ -721,13 +722,13 @@ export default function ConsoleEconomy({ guildId }: { guildId: string }) {
                     type="text"
                     value={adjustNote}
                     onChange={(e) => setAdjustNote(e.target.value)}
-                    placeholder="Motif facultatif (ex: Récompense, Concours, Régularisation)"
+                    placeholder={tx("Motif facultatif (ex: Récompense, Concours, Régularisation)")}
                     maxLength={100}
                     className="h-8 w-full rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/70"
                   />
                   <div className="flex justify-end gap-2 pt-1">
                     <GhostButton onClick={() => { setAdjustingUser(null); setShowManualInput(false); }}>
-                      Annuler
+                      {tx("Annuler")}
                     </GhostButton>
                     <button
                       type="button"
@@ -735,7 +736,7 @@ export default function ConsoleEconomy({ guildId }: { guildId: string }) {
                       onClick={() => handleAdjust(adjustingUser || { userId: manualUserId })}
                       className="rounded-lg bg-[var(--accent-primary)] px-3 py-1.5 text-xs font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-40"
                     >
-                      {adjustBusy ? "En cours…" : "Confirmer"}
+                      {adjustBusy ? tx("En cours…") : tx("Confirmer")}
                     </button>
                   </div>
                 </div>
@@ -743,9 +744,9 @@ export default function ConsoleEconomy({ guildId }: { guildId: string }) {
             )}
           </AnimatePresence>
           {!top ? (
-            <EmptyLine>Chargement…</EmptyLine>
+            <EmptyLine>{tx("Chargement…")}</EmptyLine>
           ) : top.length === 0 ? (
-            <EmptyLine>Personne n&apos;a encore de solde.</EmptyLine>
+            <EmptyLine>{tx("Personne n'a encore de solde.")}</EmptyLine>
           ) : (
             <ol>
               {top.map((w) => (
@@ -765,7 +766,7 @@ export default function ConsoleEconomy({ guildId }: { guildId: string }) {
                     onClick={() => { setAdjustingUser(w); setShowManualInput(false); }}
                     className="rounded-md border border-[var(--panel-border)] px-2 py-1 text-[11px] font-semibold text-[var(--text-muted)] transition-colors hover:border-[var(--accent-primary)]/50 hover:text-[var(--text-primary)]"
                   >
-                    Ajuster
+                    {tx("Ajuster")}
                   </button>
                 </li>
               ))}
@@ -773,11 +774,11 @@ export default function ConsoleEconomy({ guildId }: { guildId: string }) {
           )}
         </Panel>
 
-        <Panel title="Derniers mouvements">
+        <Panel title={tx("Derniers mouvements")}>
           {!txs ? (
-            <EmptyLine>Chargement…</EmptyLine>
+            <EmptyLine>{tx("Chargement…")}</EmptyLine>
           ) : txs.length === 0 ? (
-            <EmptyLine>Aucun mouvement pour l&apos;instant.</EmptyLine>
+            <EmptyLine>{tx("Aucun mouvement pour l'instant.")}</EmptyLine>
           ) : (
             <ul>
               {txs.map((t) => {
@@ -787,7 +788,7 @@ export default function ConsoleEconomy({ guildId }: { guildId: string }) {
                     <span className="min-w-0 flex-1">
                       <span className="block truncate text-[var(--text-primary)]">{TX_LABEL[t.type] ?? t.type}</span>
                       <span className="block truncate text-[11px] text-[var(--text-muted)]">
-                        {who ?? `Membre ${t.userId.slice(-4)}`} · {sinceLabel(t.createdAt)}
+                        {who ?? tx("Membre {v0}", { v0: t.userId.slice(-4) })} · {sinceLabel(t.createdAt)}
                       </span>
                     </span>
                     <span className="shrink-0 font-mono text-xs tabular-nums inline-flex items-center gap-1" style={{ color: t.amount >= 0 ? "var(--success)" : "var(--danger)" }}>
@@ -809,7 +810,7 @@ export default function ConsoleEconomy({ guildId }: { guildId: string }) {
 function Range({ min, max, limit, unit, onMin, onMax }: { min: number; max: number; limit: number; unit: ReactNode; onMin: (n: number) => void; onMax: (n: number) => void }) {
   return (
     <div className="flex flex-wrap items-center gap-3">
-      <span className="text-xs text-[var(--text-muted)]">de</span>
+      <span className="text-xs text-[var(--text-muted)]">{tx("de")}</span>
       <Stepper value={min} min={0} max={max} step={limit >= 10000 ? 10 : 1} onCommit={onMin} />
       <span className="text-xs text-[var(--text-muted)]">à</span>
       <Stepper value={max} min={min} max={limit} step={limit >= 10000 ? 10 : 1} unit={unit} onCommit={onMax} />

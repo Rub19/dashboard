@@ -9,6 +9,7 @@ import { useToast } from "@/components/ToastProvider";
 import { confirmDialog } from "@/lib/confirmDialog";
 import { cn } from "@/lib/utils";
 import { Chip, ConsolePage, EmptyLine, GhostButton, Panel, RoleChips, Row, Segmented, Select, Stepper, Switch, useGuildApi } from "../kit";
+import { tx } from "@/lib/tx";
 
 type Temp = { enabled: boolean; roleIds: string[]; durationMinutes: number; waitForScreening: boolean };
 type Voice = { enabled: boolean; roleIds: string[]; memberMode: "allow" | "deny"; memberRoleIds: string[]; channelMode: "allow" | "deny"; channelIds: string[]; ignoreBots: boolean };
@@ -72,7 +73,7 @@ function ChannelChips({ guildId, ids, onChange }: { guildId: string; ids: string
         ))}
       </AnimatePresence>
       <div className="relative">
-        <GhostButton onClick={() => setOpen((v) => !v)} expanded={open}>+ Ajouter un salon ou une catégorie</GhostButton>
+        <GhostButton onClick={() => setOpen((v) => !v)} expanded={open}>{tx("+ Ajouter un salon ou une catégorie")}</GhostButton>
         <AnimatePresence>
           {open && (
             <motion.div
@@ -82,10 +83,10 @@ function ChannelChips({ guildId, ids, onChange }: { guildId: string; ids: string
               transition={SPRING_PILL}
               className="absolute left-0 top-full z-50 mt-1.5 w-72 overflow-hidden rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] shadow-2xl"
             >
-              <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={(e) => e.key === "Escape" && setOpen(false)} placeholder="Rechercher un salon vocal ou une catégorie" className="w-full border-b border-[var(--panel-border)] bg-transparent px-3.5 py-2.5 text-[13px] text-[var(--text-primary)] outline-none" />
+              <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={(e) => e.key === "Escape" && setOpen(false)} placeholder={tx("Rechercher un salon vocal ou une catégorie")} className="w-full border-b border-[var(--panel-border)] bg-transparent px-3.5 py-2.5 text-[13px] text-[var(--text-primary)] outline-none" />
               <ul className="max-h-64 overflow-y-auto p-1.5">
                 {shown.length === 0 ? (
-                  <li className="px-3 py-4 text-center text-xs text-[var(--text-muted)]">Aucun résultat.</li>
+                  <li className="px-3 py-4 text-center text-xs text-[var(--text-muted)]">{tx("Aucun résultat.")}</li>
                 ) : (
                   shown.map((c) => (
                     <li key={c.id}>
@@ -133,12 +134,12 @@ export default function ConsoleAutoRoles({ guildId }: { guildId: string }) {
   }, [load]);
 
   const syncNow = async () => {
-    if (!(await confirmDialog(`Donner les rôles à l'arrivée aux ${missing} membre${missing === 1 ? "" : "s"} qui ne les ont pas encore ?`, { title: "Donner maintenant", confirmLabel: "Donner les rôles" }))) return;
+    if (!(await confirmDialog(tx("Donner les rôles à l'arrivée aux {missing} membre{v1} qui ne les ont pas encore ?", { missing, v1: missing === 1 ? "" : "s" }), { title: tx("Donner maintenant"), confirmLabel: tx("Donner les rôles") }))) return;
     setSyncing(true);
     const r = await api<{ updated: number }>("/roles/autorole/sync", { method: "POST", json: {} });
     setSyncing(false);
     if (r) {
-      success("Rôles donnés", `${r.updated} membre${r.updated > 1 ? "s" : ""} mis à jour.`);
+      success(tx("Rôles donnés"), tx("{updated} membre{v1} mis à jour.", { updated: r.updated, v1: r.updated > 1 ? "s" : "" }));
       void load();
     }
   };
@@ -153,9 +154,9 @@ export default function ConsoleAutoRoles({ guildId }: { guildId: string }) {
 
   if (!cfg)
     return (
-      <ConsolePage title="Rôles automatiques">
+      <ConsolePage title={tx("Rôles automatiques")}>
         <Panel>
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         </Panel>
       </ConsolePage>
     );
@@ -170,57 +171,57 @@ export default function ConsoleAutoRoles({ guildId }: { guildId: string }) {
     <ConsolePage
       title={
         <span className="block">
-          Rôles automatiques
-          <span className="mt-1 block text-sm font-normal tracking-normal text-[var(--text-muted)]">Rôles donnés à l&apos;arrivée, pour un temps limité ou pendant une présence en vocal.</span>
+          {tx("Rôles automatiques")}
+          <span className="mt-1 block text-sm font-normal tracking-normal text-[var(--text-muted)]">{tx("Rôles donnés à l'arrivée, pour un temps limité ou pendant une présence en vocal.")}</span>
         </span>
       }
     >
-      <Section title="Rôles à l'arrivée" on={cfg.enabled} onToggle={(v) => save({ enabled: v })}>
-        <Row label="Nouveaux membres" hint="Donnés à chaque membre qui rejoint le serveur.">
+      <Section title={tx("Rôles à l'arrivée")} on={cfg.enabled} onToggle={(v) => save({ enabled: v })}>
+        <Row label={tx("Nouveaux membres")} hint={tx("Donnés à chaque membre qui rejoint le serveur.")}>
           <RoleChips guildId={guildId} ids={cfg.roleIds} addLabel="Ajouter un rôle" onChange={(ids) => save({ roleIds: ids, applyToHumans: true })} />
         </Row>
-        <Row label="Bots ajoutés" hint="Donnés aux bots invités sur le serveur.">
+        <Row label={tx("Bots ajoutés")} hint={tx("Donnés aux bots invités sur le serveur.")}>
           <RoleChips guildId={guildId} ids={botIds} addLabel="Ajouter un rôle" onChange={(ids) => save({ botRoleIds: ids, useSeparateBotRoles: true, applyToBots: ids.length > 0 })} />
         </Row>
-        <Row label="Attendre la vérification" hint="Les rôles arrivent quand le membre a accepté les règles du serveur.">
-          <Switch checked={cfg.waitForScreening} onChange={(v) => save({ waitForScreening: v })} label="Attendre la vérification" />
+        <Row label={tx("Attendre la vérification")} hint={tx("Les rôles arrivent quand le membre a accepté les règles du serveur.")}>
+          <Switch checked={cfg.waitForScreening} onChange={(v) => save({ waitForScreening: v })} label={tx("Attendre la vérification")} />
         </Row>
-        <Row label="Délai" hint="Laisse le temps à l'anti-raid de passer. 0 : immédiat.">
+        <Row label={tx("Délai")} hint={tx("Laisse le temps à l'anti-raid de passer. 0 : immédiat.")}>
           <Stepper value={cfg.delaySeconds} min={0} max={86400} unit="s" onCommit={(n) => save({ delaySeconds: n })} />
         </Row>
-        <Row label="Membres déjà présents" hint={cfg.roleIds.length === 0 ? "Choisis d'abord les rôles à donner." : missing ? `${missing} membre${missing > 1 ? "s" : ""} n'${missing > 1 ? "ont" : "a"} pas encore ces rôles.` : "Tout le monde a déjà ces rôles."}>
+        <Row label={tx("Membres déjà présents")} hint={cfg.roleIds.length === 0 ? tx("Choisis d'abord les rôles à donner.") : missing ? tx("{missing} membre{v1} n'{v2} pas encore ces rôles.", { missing, v1: missing > 1 ? "s" : "", v2: missing > 1 ? "ont" : "a" }) : tx("Tout le monde a déjà ces rôles.")}>
           <GhostButton onClick={syncNow} disabled={!missing || syncing || cfg.roleIds.length === 0 || !cfg.enabled}>
-            {syncing ? "Attribution…" : "Donner maintenant"}
+            {syncing ? tx("Attribution…") : tx("Donner maintenant")}
           </GhostButton>
         </Row>
-        <Row label="Rattrapage automatique" hint="Redonne les rôles manquants à intervalle régulier.">
+        <Row label={tx("Rattrapage automatique")} hint={tx("Redonne les rôles manquants à intervalle régulier.")}>
           <div className="flex flex-wrap items-center gap-3">
-            <Switch checked={cfg.scheduledSyncEnabled} onChange={(v) => save({ scheduledSyncEnabled: v })} label="Rattrapage automatique" />
+            <Switch checked={cfg.scheduledSyncEnabled} onChange={(v) => save({ scheduledSyncEnabled: v })} label={tx("Rattrapage automatique")} />
             {cfg.scheduledSyncEnabled && <Stepper value={cfg.scheduledSyncIntervalHours} min={1} max={168} unit="h" onCommit={(n) => save({ scheduledSyncIntervalHours: n })} />}
           </div>
         </Row>
       </Section>
 
-      <Section title="Rôle temporaire à l'arrivée" on={temp.enabled} onToggle={(v) => setTemp({ enabled: v })}>
-        <Row label="Rôles" hint="Par exemple un rôle « Nouveau » qui ouvre un salon d'accueil.">
+      <Section title={tx("Rôle temporaire à l'arrivée")} on={temp.enabled} onToggle={(v) => setTemp({ enabled: v })}>
+        <Row label={tx("Rôles")} hint={tx("Par exemple un rôle « Nouveau » qui ouvre un salon d'accueil.")}>
           <RoleChips guildId={guildId} ids={temp.roleIds} addLabel="Ajouter un rôle" onChange={(ids) => setTemp({ roleIds: ids })} />
         </Row>
-        <Row label="Retiré après" hint="Le rôle est retiré automatiquement, même si Etho redémarre entre-temps.">
-          <Select value={temp.durationMinutes} options={DURATIONS} onChange={(v) => setTemp({ durationMinutes: v })} aria-label="Durée du rôle temporaire" />
+        <Row label={tx("Retiré après")} hint={tx("Le rôle est retiré automatiquement, même si Etho redémarre entre-temps.")}>
+          <Select value={temp.durationMinutes} options={DURATIONS} onChange={(v) => setTemp({ durationMinutes: v })} aria-label={tx("Durée du rôle temporaire")} />
         </Row>
-        <Row label="Attendre la vérification">
-          <Switch checked={temp.waitForScreening} onChange={(v) => setTemp({ waitForScreening: v })} label="Attendre la vérification" />
+        <Row label={tx("Attendre la vérification")}>
+          <Switch checked={temp.waitForScreening} onChange={(v) => setTemp({ waitForScreening: v })} label={tx("Attendre la vérification")} />
         </Row>
       </Section>
 
-      <Section title="Rôles en vocal" on={voice.enabled} onToggle={(v) => setVoice({ enabled: v })}>
-        <Row label="Rôles donnés" hint="Donnés en entrant dans un salon vocal concerné, retirés en le quittant.">
+      <Section title={tx("Rôles en vocal")} on={voice.enabled} onToggle={(v) => setVoice({ enabled: v })}>
+        <Row label={tx("Rôles donnés")} hint={tx("Donnés en entrant dans un salon vocal concerné, retirés en le quittant.")}>
           <RoleChips guildId={guildId} ids={voice.roleIds} addLabel="Ajouter un rôle" onChange={(ids) => setVoice({ roleIds: ids })} />
         </Row>
-        <Row label="Membres concernés" hint={voice.memberRoleIds.length ? (voice.memberMode === "allow" ? "Seuls les membres avec un de ces rôles." : "Tout le monde sauf les membres avec un de ces rôles.") : "Vide : tous les membres."}>
+        <Row label={tx("Membres concernés")} hint={voice.memberRoleIds.length ? (voice.memberMode === "allow" ? tx("Seuls les membres avec un de ces rôles.") : tx("Tout le monde sauf les membres avec un de ces rôles.")) : tx("Vide : tous les membres.")}>
           <div className="space-y-2">
             <Segmented
-              label="Membres concernés"
+              label={tx("Membres concernés")}
               value={voice.memberMode}
               options={[
                 ["allow", "Rôles autorisés"],
@@ -231,10 +232,10 @@ export default function ConsoleAutoRoles({ guildId }: { guildId: string }) {
             <RoleChips guildId={guildId} ids={voice.memberRoleIds} addLabel="Ajouter un rôle" onChange={(ids) => setVoice({ memberRoleIds: ids })} />
           </div>
         </Row>
-        <Row label="Salons concernés" hint={voice.channelIds.length ? (voice.channelMode === "allow" ? "Seulement ces salons (une catégorie inclut ses salons)." : "Tous les salons sauf ceux-ci.") : "Vide : tous les salons vocaux."}>
+        <Row label={tx("Salons concernés")} hint={voice.channelIds.length ? (voice.channelMode === "allow" ? tx("Seulement ces salons (une catégorie inclut ses salons).") : tx("Tous les salons sauf ceux-ci.")) : tx("Vide : tous les salons vocaux.")}>
           <div className="space-y-2">
             <Segmented
-              label="Salons concernés"
+              label={tx("Salons concernés")}
               value={voice.channelMode}
               options={[
                 ["allow", "Salons autorisés"],
@@ -245,15 +246,15 @@ export default function ConsoleAutoRoles({ guildId }: { guildId: string }) {
             <ChannelChips guildId={guildId} ids={voice.channelIds} onChange={(ids) => setVoice({ channelIds: ids })} />
           </div>
         </Row>
-        <Row label="Ignorer les bots">
-          <Switch checked={voice.ignoreBots} onChange={(v) => setVoice({ ignoreBots: v })} label="Ignorer les bots" />
+        <Row label={tx("Ignorer les bots")}>
+          <Switch checked={voice.ignoreBots} onChange={(v) => setVoice({ ignoreBots: v })} label={tx("Ignorer les bots")} />
         </Row>
       </Section>
 
       <Panel>
         <p className="flex items-start gap-2.5 px-5 py-4 text-xs leading-relaxed text-[var(--text-muted)]">
           <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-[var(--success)]" />
-          Etho ne donne jamais un rôle avec une permission dangereuse, ni un rôle placé au-dessus du sien. Rien n&apos;est donné à un compte que la protection retire.
+          {tx("Etho ne donne jamais un rôle avec une permission dangereuse, ni un rôle placé au-dessus du sien. Rien n'est donné à un compte que la protection retire.")}
         </p>
       </Panel>
     </ConsolePage>

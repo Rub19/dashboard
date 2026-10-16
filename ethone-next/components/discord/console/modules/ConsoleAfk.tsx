@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { sinceLabel } from "@/lib/discord/security-scan";
 import { pageStagger } from "@/lib/motion-variants";
 import { ConsolePage, EmptyLine, GhostButton, Panel, Row, StatTile, Stepper, Switch, useGuildApi, useMemberNames } from "../kit";
+import { tx } from "@/lib/tx";
 
 type Config = { enabled: boolean; clearOnMessage: boolean; notifyOnMention: boolean; prefixNickname: boolean; autoDeleteSeconds: number };
 type Overview = { activeCount: number; totalMentionsWhileAway: number; members: { userId: string; reason: string; since: string; mentionCount: number }[] };
@@ -39,41 +40,41 @@ export default function ConsoleAfk({ guildId }: { guildId: string }) {
     <ConsolePage title="AFK">
       {cfg && !cfg.enabled && (
         <Panel>
-          <p className="px-5 py-3 text-xs text-[var(--warning)]">Module désactivé : /afk ne fonctionne pas. Active-le avec l&apos;interrupteur en haut de la page.</p>
+          <p className="px-5 py-3 text-xs text-[var(--warning)]">{tx("Module désactivé : /afk ne fonctionne pas. Active-le avec l'interrupteur en haut de la page.")}</p>
         </Panel>
       )}
 
       <motion.div variants={pageStagger} className="grid grid-cols-2 gap-3">
-        <StatTile label="Membres absents" value={ov?.activeCount ?? "—"} />
-        <StatTile label="Mentions pendant l'absence" value={ov?.totalMentionsWhileAway ?? "—"} />
+        <StatTile label={tx("Membres absents")} value={ov?.activeCount ?? "—"} />
+        <StatTile label={tx("Mentions pendant l'absence")} value={ov?.totalMentionsWhileAway ?? "—"} />
       </motion.div>
 
-      <Panel title="Comportement">
+      <Panel title={tx("Comportement")}>
         {!cfg ? (
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         ) : (
           <>
-            <Row label="Retour automatique" hint="Le statut AFK est retiré dès que le membre écrit un message.">
-              <Switch checked={cfg.clearOnMessage} onChange={(v) => save({ clearOnMessage: v })} label="Retour automatique" />
+            <Row label={tx("Retour automatique")} hint={tx("Le statut AFK est retiré dès que le membre écrit un message.")}>
+              <Switch checked={cfg.clearOnMessage} onChange={(v) => save({ clearOnMessage: v })} label={tx("Retour automatique")} />
             </Row>
-            <Row label="Répondre aux mentions" hint="Etho prévient qu'un membre mentionné est absent, avec sa raison.">
-              <Switch checked={cfg.notifyOnMention} onChange={(v) => save({ notifyOnMention: v })} label="Répondre aux mentions" />
+            <Row label={tx("Répondre aux mentions")} hint={tx("Etho prévient qu'un membre mentionné est absent, avec sa raison.")}>
+              <Switch checked={cfg.notifyOnMention} onChange={(v) => save({ notifyOnMention: v })} label={tx("Répondre aux mentions")} />
             </Row>
-            <Row label="Préfixe [AFK]" hint="Ajoute [AFK] devant le pseudo (permission « Gérer les pseudos »).">
-              <Switch checked={cfg.prefixNickname} onChange={(v) => save({ prefixNickname: v })} label="Préfixe [AFK]" />
+            <Row label={tx("Préfixe [AFK]")} hint={tx("Ajoute [AFK] devant le pseudo (permission « Gérer les pseudos »).")}>
+              <Switch checked={cfg.prefixNickname} onChange={(v) => save({ prefixNickname: v })} label={tx("Préfixe [AFK]")} />
             </Row>
-            <Row label="Effacer les réponses d'Etho" hint="0 = les réponses restent.">
+            <Row label={tx("Effacer les réponses d'Etho")} hint={tx("0 = les réponses restent.")}>
               <Stepper value={cfg.autoDeleteSeconds} min={0} max={60} unit="secondes" onCommit={(n) => save({ autoDeleteSeconds: n })} />
             </Row>
           </>
         )}
       </Panel>
 
-      <Panel title="Membres absents">
+      <Panel title={tx("Membres absents")}>
         {!ov ? (
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         ) : ov.members.length === 0 ? (
-          <EmptyLine>Personne n&apos;est AFK en ce moment.</EmptyLine>
+          <EmptyLine>{tx("Personne n'est AFK en ce moment.")}</EmptyLine>
         ) : (
           <ul>
             {ov.members.map((m) => (
@@ -81,10 +82,10 @@ export default function ConsoleAfk({ guildId }: { guildId: string }) {
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-[13px] font-semibold text-[var(--text-primary)]">{names[m.userId]?.displayName ?? m.userId}</p>
                   <p className="truncate text-[11px] text-[var(--text-muted)]">
-                    {m.reason} · parti {sinceLabel(m.since)} · {m.mentionCount} mention{m.mentionCount > 1 ? "s" : ""}
+                    {m.reason} {" "}{tx("· parti")}{" "} {sinceLabel(m.since)} · {m.mentionCount} {" "}{tx("mention")}{m.mentionCount > 1 ? "s" : ""}
                   </p>
                 </div>
-                <GhostButton onClick={() => clear(m.userId)}>Retirer</GhostButton>
+                <GhostButton onClick={() => clear(m.userId)}>{tx("Retirer")}</GhostButton>
               </li>
             ))}
           </ul>

@@ -6,6 +6,7 @@ import ChannelPicker from "../ChannelPicker";
 import { SPRING_LAYOUT } from "@/lib/ease";
 import { cn } from "@/lib/utils";
 import { ConsolePage, EmptyLine, Panel, RoleChips, Row, Segmented, Switch, useGuildApi } from "./kit";
+import { tx } from "@/lib/tx";
 
 type Captcha = {
   enabled: boolean;
@@ -61,9 +62,9 @@ export default function ConsoleTools({ guildId }: { guildId: string }) {
 
   if (!tools) {
     return (
-      <ConsolePage title="Outils">
+      <ConsolePage title={tx("Outils")}>
         <Panel>
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         </Panel>
       </ConsolePage>
     );
@@ -72,37 +73,37 @@ export default function ConsoleTools({ guildId }: { guildId: string }) {
   const s = tools.supporters;
 
   return (
-    <ConsolePage title="Outils">
+    <ConsolePage title={tx("Outils")}>
       <Panel
-        title="Captcha à l'arrivée"
-        subtitle={`${plural(tools.captchaPending, "membre", "membres")} en cours de vérification.`}
+        title={tx("Captcha à l'arrivée")}
+        subtitle={tx("{v0} en cours de vérification.", { v0: plural(tools.captchaPending, "membre", "membres") })}
         actions={
           <Switch
             checked={c.enabled}
             onChange={(v) => saveCaptcha({ enabled: v })}
             disabled={!c.enabled && !c.channelId}
-            label={c.enabled ? "Désactiver le captcha" : "Activer le captcha"}
+            label={c.enabled ? tx("Désactiver le captcha") : tx("Activer le captcha")}
           />
         }
       >
-        <Row label="Salon de vérification" hint="Etho y poste le bouton « Commencer la vérification ». Les nouveaux membres doivent pouvoir le voir.">
-          <ChannelPicker guildId={guildId} value={c.channelId} filterTypes={[0, 5]} allowClear={false} placeholder="Choisir un salon" onChange={(id) => id && saveCaptcha({ channelId: id })} />
+        <Row label={tx("Salon de vérification")} hint={tx("Etho y poste le bouton « Commencer la vérification ». Les nouveaux membres doivent pouvoir le voir.")}>
+          <ChannelPicker guildId={guildId} value={c.channelId} filterTypes={[0, 5]} allowClear={false} placeholder={tx("Choisir un salon")} onChange={(id) => id && saveCaptcha({ channelId: id })} />
         </Row>
-        {!c.channelId && <p className="border-t border-[var(--panel-border)] px-5 py-2.5 text-[11px] text-[var(--warning)]">Choisis un salon de vérification pour pouvoir activer le captcha.</p>}
-        <Row label="Rôles donnés" hint="Après la réussite (ex. le rôle qui ouvre les salons).">
+        {!c.channelId && <p className="border-t border-[var(--panel-border)] px-5 py-2.5 text-[11px] text-[var(--warning)]">{tx("Choisis un salon de vérification pour pouvoir activer le captcha.")}</p>}
+        <Row label={tx("Rôles donnés")} hint={tx("Après la réussite (ex. le rôle qui ouvre les salons).")}>
           <RoleChips guildId={guildId} ids={c.givenRoles} onChange={(ids) => saveCaptcha({ givenRoles: ids })} />
         </Row>
-        <Row label="Rôles retirés" hint="Après la réussite (ex. un rôle « Non vérifié »).">
+        <Row label={tx("Rôles retirés")} hint={tx("Après la réussite (ex. un rôle « Non vérifié »).")}>
           <RoleChips guildId={guildId} ids={c.removedRoles} onChange={(ids) => saveCaptcha({ removedRoles: ids })} />
         </Row>
-        <Row label="Tentatives">
-          <Segmented label="Tentatives" value={c.attempts} options={[1, 2, 3, 4, 5].map((n) => [n, String(n)] as const)} onChange={(v) => saveCaptcha({ attempts: v })} />
+        <Row label={tx("Tentatives")}>
+          <Segmented label={tx("Tentatives")} value={c.attempts} options={[1, 2, 3, 4, 5].map((n) => [n, String(n)] as const)} onChange={(v) => saveCaptcha({ attempts: v })} />
         </Row>
-        <Row label="Délai" hint="En minutes, pour réussir le captcha.">
-          <Segmented label="Délai" value={c.delayMinutes} options={[2, 5, 10, 15, 30, 60].map((n) => [n, String(n)] as const)} onChange={(v) => saveCaptcha({ delayMinutes: v })} />
+        <Row label={tx("Délai")} hint={tx("En minutes, pour réussir le captcha.")}>
+          <Segmented label={tx("Délai")} value={c.delayMinutes} options={[2, 5, 10, 15, 30, 60].map((n) => [n, String(n)] as const)} onChange={(v) => saveCaptcha({ delayMinutes: v })} />
         </Row>
-        <Row label="En cas d'échec">
-          <div role="radiogroup" aria-label="En cas d'échec" className="grid gap-2 sm:grid-cols-3">
+        <Row label={tx("En cas d'échec")}>
+          <div role="radiogroup" aria-label={tx("En cas d'échec")} className="grid gap-2 sm:grid-cols-3">
             {FAIL_ACTIONS.map((a) => (
               <button
                 key={a.id}
@@ -123,24 +124,24 @@ export default function ConsoleTools({ guildId }: { guildId: string }) {
             ))}
           </div>
         </Row>
-        <Row label="Mention à l'arrivée" hint="Mentionne le nouveau membre dans le salon de vérification (message supprimé ensuite).">
-          <Switch checked={c.mentionOnJoin} onChange={(v) => saveCaptcha({ mentionOnJoin: v })} label="Mention à l'arrivée" />
+        <Row label={tx("Mention à l'arrivée")} hint={tx("Mentionne le nouveau membre dans le salon de vérification (message supprimé ensuite).")}>
+          <Switch checked={c.mentionOnJoin} onChange={(v) => saveCaptcha({ mentionOnJoin: v })} label={tx("Mention à l'arrivée")} />
         </Row>
-        <Row label="Salon des logs" hint="Échecs et sanctions y sont notés.">
+        <Row label={tx("Salon des logs")} hint={tx("Échecs et sanctions y sont notés.")}>
           <ChannelPicker
             guildId={guildId}
             value={c.logChannelId}
             filterTypes={[0, 5]}
-            placeholder="Choisir un salon"
-            emptyLabel="Pas de salon"
+            placeholder={tx("Choisir un salon")}
+            emptyLabel={tx("Pas de salon")}
             onChange={(id) => saveCaptcha({ logChannelId: id || null })}
           />
         </Row>
         <AnimatePresence initial={false}>
           {c.logChannelId && (
             <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} transition={SPRING_LAYOUT}>
-              <Row label="Noter les réussites">
-                <Switch checked={c.logSuccess} onChange={(v) => saveCaptcha({ logSuccess: v })} label="Noter les réussites" />
+              <Row label={tx("Noter les réussites")}>
+                <Switch checked={c.logSuccess} onChange={(v) => saveCaptcha({ logSuccess: v })} label={tx("Noter les réussites")} />
               </Row>
             </motion.div>
           )}
@@ -148,12 +149,12 @@ export default function ConsoleTools({ guildId }: { guildId: string }) {
       </Panel>
 
       <Panel
-        title="Soutiens"
-        subtitle={`${plural(tools.supportersCount, "soutien", "soutiens")} en ce moment.`}
-        actions={<Switch checked={s.enabled} onChange={(v) => saveSupporters({ enabled: v })} disabled={!s.enabled && (!s.roleId || (s.mode !== "tag" && !s.statusText.trim()))} label={s.enabled ? "Désactiver les soutiens" : "Activer les soutiens"} />}
+        title={tx("Soutiens")}
+        subtitle={tx("{v0} en ce moment.", { v0: plural(tools.supportersCount, "soutien", "soutiens") })}
+        actions={<Switch checked={s.enabled} onChange={(v) => saveSupporters({ enabled: v })} disabled={!s.enabled && (!s.roleId || (s.mode !== "tag" && !s.statusText.trim()))} label={s.enabled ? tx("Désactiver les soutiens") : tx("Activer les soutiens")} />}
       >
-        <Row label="Comment reconnaître un soutien">
-          <div role="radiogroup" aria-label="Comment reconnaître un soutien" className="grid gap-2 sm:grid-cols-3">
+        <Row label={tx("Comment reconnaître un soutien")}>
+          <div role="radiogroup" aria-label={tx("Comment reconnaître un soutien")} className="grid gap-2 sm:grid-cols-3">
             {SUPPORT_MODES.map((m) => (
               <button
                 key={m.id}
@@ -175,13 +176,13 @@ export default function ConsoleTools({ guildId }: { guildId: string }) {
         <AnimatePresence initial={false}>
           {s.mode !== "tag" && (
             <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} transition={SPRING_LAYOUT}>
-              <Row label="Texte du statut" hint="Majuscules ou minuscules, peu importe (ex. le lien d'invitation du serveur).">
+              <Row label={tx("Texte du statut")} hint={tx("Majuscules ou minuscules, peu importe (ex. le lien d'invitation du serveur).")}>
                 <StatusTextField value={s.statusText} onCommit={(t) => saveSupporters({ statusText: t, ...(t.trim() ? {} : { enabled: false }) })} />
               </Row>
             </motion.div>
           )}
         </AnimatePresence>
-        <Row label="Rôle donné" hint="Retiré automatiquement s'il enlève le tag. Le rôle doit être sous celui d'Etho.">
+        <Row label={tx("Rôle donné")} hint={tx("Retiré automatiquement s'il enlève le tag. Le rôle doit être sous celui d'Etho.")}>
           <RoleChips guildId={guildId} ids={s.roleId ? [s.roleId] : []} max={1} onChange={(ids) => saveSupporters({ roleId: ids[0] ?? null, ...(ids.length ? {} : { enabled: false }) })} />
         </Row>
       </Panel>
@@ -201,7 +202,7 @@ function StatusTextField({ value, onCommit }: { value: string; onCommit: (t: str
       onBlur={() => draft !== value && onCommit(draft)}
       onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()}
       placeholder="discord.gg/monserveur"
-      aria-label="Texte du statut"
+      aria-label={tx("Texte du statut")}
       className="h-9 w-full max-w-sm rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-3 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/70"
     />
   );

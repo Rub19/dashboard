@@ -36,22 +36,22 @@ export function buildWeeklyReport(guild: Guild, now = Date.now()): EmbedBuilder 
   const adminRoles = guild.roles.cache.filter((r) => r.id !== guild.id && !r.managed && r.permissions.has(PermissionFlagsBits.Administrator)).map((r) => r.name);
 
   const todo: string[] = [];
-  if (active === 0) todo.push('Aucune protection n’est activée.');
-  if (above > 0) todo.push(`${above} rôle${above > 1 ? 's sont' : ' est'} au-dessus d’Etho : il ne pourra pas les retirer à un attaquant.`);
-  if (missing.length) todo.push(`Permissions manquantes : ${missing.join(', ')}.`);
+  if (active === 0) todo.push(trg(guild, 'Aucune protection n’est activée.'));
+  if (above > 0) todo.push(trg(guild, above > 1 ? '{n} rôles sont au-dessus d’Etho : il ne pourra pas les retirer à un attaquant.' : '{n} rôle est au-dessus d’Etho : il ne pourra pas le retirer à un attaquant.', { n: above }));
+  if (missing.length) todo.push(trg(guild, 'Permissions manquantes : {list}.', { list: missing.join(', ') }));
 
   return new EmbedBuilder()
     .setColor(todo.length ? 0xf59e0b : 0x22c55e)
     .setTitle(trg(guild, '🛡️ Rapport de sécurité — {name}', { name: guild.name }))
     .setDescription(
       [
-        `**Incidents (7 jours) :** ${incidents.length}`,
+        trg(guild, '**Incidents (7 jours) :** {n}', { n: incidents.length }),
         ...top.map(([t, n]) => `• ${t} : ${n}`),
         '',
-        `**Protections actives :** ${active}/${PROTECTIONS.length}`,
-        `**Rôles administrateurs :** ${adminRoles.length ? adminRoles.slice(0, 10).join(', ') : 'aucun'}`,
+        trg(guild, '**Protections actives :** {n}/{total}', { n: active, total: PROTECTIONS.length }),
+        trg(guild, '**Rôles administrateurs :** {list}', { list: adminRoles.length ? adminRoles.slice(0, 10).join(', ') : trg(guild, 'aucun') }),
         '',
-        todo.length ? `**À regarder :**\n${todo.map((t) => `• ${t}`).join('\n')}` : '✅ Rien à signaler.',
+        todo.length ? `${trg(guild, '**À regarder :**')}\n${todo.map((t) => `• ${t}`).join('\n')}` : `✅ ${trg(guild, 'Rien à signaler.')}`,
       ].join('\n')
     )
     .setFooter({ text: trg(guild, 'Désactivable dans la console Etho › Réglages') })

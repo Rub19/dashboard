@@ -33,6 +33,7 @@ import { useDiscordSync } from "@/lib/useDiscordSync";
 import { cn, formatApiError } from "@/lib/utils";
 import { GuildSelector } from "@/components/GuildSelector";
 import Select from "@/components/ui/Select";
+import { tx } from "@/lib/tx";
 
 const BOT_CLIENT_ID = "1545139931154878464";
 const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=1436565368055&scope=bot%20applications.commands`;
@@ -65,7 +66,7 @@ const ACTION_CHOICES: Array<{ id: RaidAction; label: string; hint: string }> = [
 function ActionPicker({ actions, onChange }: { actions: RaidAction[]; onChange: (next: RaidAction[]) => void }) {
   return (
     <div>
-      <p className="mb-2 text-xs font-medium text-[var(--text-muted)]">Actions automatiques</p>
+      <p className="mb-2 text-xs font-medium text-[var(--text-muted)]">{tx("Actions automatiques")}</p>
       <div className="stagger-children grid grid-cols-1 gap-2 sm:grid-cols-2">
         {ACTION_CHOICES.map((choice) => {
           const checked = actions.includes(choice.id);
@@ -91,7 +92,7 @@ function ActionPicker({ actions, onChange }: { actions: RaidAction[]; onChange: 
         })}
       </div>
       {actions.length === 0 && (
-        <p className="mt-2 text-xs text-amber-300/90">Aucune action cochée : la protection détecte et journalise, sans sanctionner personne.</p>
+        <p className="mt-2 text-xs text-amber-300/90">{tx("Aucune action cochée : la protection détecte et journalise, sans sanctionner personne.")}</p>
       )}
     </div>
   );
@@ -541,7 +542,7 @@ export default function AntiRaidDashboardPage() {
   const handleSaveConfig = async () => {
     if (!selectedGuild) return;
     if (!BOT_API_URL) {
-      showError("Bot injoignable : la configuration anti-raid n'a pas été enregistrée.");
+      showError(tx("Bot injoignable : la configuration anti-raid n'a pas été enregistrée."));
       return;
     }
     setIsSaving(true);
@@ -554,13 +555,13 @@ export default function AntiRaidDashboardPage() {
       });
 
       if (res.ok) {
-        success("Configuration Anti-Raid enregistrée", "Les réglages ont été synchronisés avec le bot.");
+        success(tx("Configuration Anti-Raid enregistrée"), tx("Les réglages ont été synchronisés avec le bot."));
       } else {
         throw new Error();
       }
     } catch {
       // Pas de « sauvegarde locale » présentée comme un succès : la protection n'a pas changé sur le serveur.
-      showError("Configuration non enregistrée : le bot n'a pas répondu ou l'a refusée. La protection n'a pas changé.");
+      showError(tx("Configuration non enregistrée : le bot n'a pas répondu ou l'a refusée. La protection n'a pas changé."));
     } finally {
       setIsSaving(false);
     }
@@ -573,10 +574,10 @@ export default function AntiRaidDashboardPage() {
 
     setConfirmModal({
       open: true,
-      title: targetState ? "🚨 Activer le Raid Mode d'urgence ?" : "🔓 Désactiver le Raid Mode ?",
+      title: targetState ? tx("🚨 Activer le Raid Mode d'urgence ?") : tx("🔓 Désactiver le Raid Mode ?"),
       description: targetState
-        ? "Le Raid Mode placera le serveur en sécurité maximale : blocage des nouveaux membres, quarantaine automatique et surveillance accrue."
-        : "Le Raid Mode sera levé et les autorisations standard restaurées.",
+        ? tx("Le Raid Mode placera le serveur en sécurité maximale : blocage des nouveaux membres, quarantaine automatique et surveillance accrue.")
+        : tx("Le Raid Mode sera levé et les autorisations standard restaurées."),
       action: async () => {
         setIsActionLoading(true);
         try {
@@ -595,11 +596,11 @@ export default function AntiRaidDashboardPage() {
             currentRiskScore: targetState ? Math.max(85, prev.currentRiskScore) : 15,
           }));
           success(
-            targetState ? "🚨 Raid Mode Activé" : "🔓 Raid Mode Désactivé",
-            targetState ? "Le serveur est protégé en mode d'urgence." : "Retour au niveau normal."
+            targetState ? tx("🚨 Raid Mode Activé") : tx("🔓 Raid Mode Désactivé"),
+            targetState ? tx("Le serveur est protégé en mode d'urgence.") : tx("Retour au niveau normal.")
           );
         } catch (err: unknown) {
-          showError("Échec de l'action", formatApiError(err, "Impossible de modifier le Raid Mode. Vérifie que le bot est en ligne."));
+          showError(tx("Échec de l'action"), formatApiError(err, "Impossible de modifier le Raid Mode. Vérifie que le bot est en ligne."));
         } finally {
           setIsActionLoading(false);
           setConfirmModal((prev) => ({ ...prev, open: false }));
@@ -614,10 +615,10 @@ export default function AntiRaidDashboardPage() {
 
     setConfirmModal({
       open: true,
-      title: targetState ? "🔒 Déclencher le Lockdown d'urgence ?" : "🔓 Lever le Lockdown ?",
+      title: targetState ? tx("🔒 Déclencher le Lockdown d'urgence ?") : tx("🔓 Lever le Lockdown ?"),
       description: targetState
-        ? "Tous les salons de discussion seront immédiatement verrouillés pour @everyone."
-        : "Les permissions d'écriture normales seront restituées sur tous les salons.",
+        ? tx("Tous les salons de discussion seront immédiatement verrouillés pour @everyone.")
+        : tx("Les permissions d'écriture normales seront restituées sur tous les salons."),
       action: async () => {
         setIsActionLoading(true);
         try {
@@ -634,9 +635,9 @@ export default function AntiRaidDashboardPage() {
             lockdownActive: data.lockdownActive,
             lockedChannelsCount: data.affectedChannelsCount || (targetState ? 12 : 0),
           }));
-          success(targetState ? "🔒 Lockdown Activé" : "🔓 Lockdown Levé");
+          success(targetState ? tx("🔒 Lockdown Activé") : tx("🔓 Lockdown Levé"));
         } catch (err: unknown) {
-          showError("Échec du Lockdown", formatApiError(err, "Impossible de modifier le statut de verrouillage. Vérifie que le bot est en ligne."));
+          showError(tx("Échec du Lockdown"), formatApiError(err, "Impossible de modifier le statut de verrouillage. Vérifie que le bot est en ligne."));
         } finally {
           setIsActionLoading(false);
           setConfirmModal((prev) => ({ ...prev, open: false }));
@@ -657,9 +658,9 @@ export default function AntiRaidDashboardPage() {
       });
       const data = await res.json().catch(() => null);
       if (!res.ok) throw new Error(formatApiError(data?.error, `Erreur HTTP ${res.status}`));
-      success("Mise en quarantaine effectuée", `${data.quarantinedCount} membres suspects ont été isolés.`);
+      success(tx("Mise en quarantaine effectuée"), tx("{quarantinedCount} membres suspects ont été isolés.", { quarantinedCount: data.quarantinedCount }));
     } catch (err: unknown) {
-      showError("Échec de la quarantaine", formatApiError(err, "Impossible d'isoler les membres récents."));
+      showError(tx("Échec de la quarantaine"), formatApiError(err, "Impossible d'isoler les membres récents."));
     } finally {
       setIsActionLoading(false);
     }
@@ -703,15 +704,15 @@ export default function AntiRaidDashboardPage() {
       }
 
       success(
-        "Invitations débloquées",
-        "Le blocage des invitations a été désactivé (OFF). Les liens d'invitation sont de nouveau actifs."
+        tx("Invitations débloquées"),
+        tx("Le blocage des invitations a été désactivé (OFF). Les liens d'invitation sont de nouveau actifs.")
       );
     } catch (err: unknown) {
       setSettings((prev) => ({
         ...prev,
         raidMode: { ...prev.raidMode, blockAllInvites: previous },
       }));
-      showError("Erreur lors du déblocage des invitations", formatApiError(err, "Impossible de débloquer les invitations sur le bot."));
+      showError(tx("Erreur lors du déblocage des invitations"), formatApiError(err, "Impossible de débloquer les invitations sur le bot."));
     } finally {
       setIsActionLoading(false);
     }
@@ -757,7 +758,7 @@ export default function AntiRaidDashboardPage() {
         ...prev,
         raidMode: { ...prev.raidMode, blockAllInvites: previous },
       }));
-      showError("Erreur lors de la modification des invitations", formatApiError(err, "Impossible de mettre à jour le blocage des invitations sur le bot."));
+      showError(tx("Erreur lors de la modification des invitations"), formatApiError(err, "Impossible de mettre à jour le blocage des invitations sur le bot."));
     }
   };
 
@@ -771,7 +772,7 @@ export default function AntiRaidDashboardPage() {
           <Link
             href={selectedGuild ? `/discord/security?guildId=${selectedGuild.id}` : "/discord/security"}
             className="p-1.5 rounded-xl text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70 transition-colors"
-            title="Retour au hub Sécurité"
+            title={tx("Retour au hub Sécurité")}
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
@@ -781,12 +782,12 @@ export default function AntiRaidDashboardPage() {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-base font-semibold tracking-tight text-[var(--text-primary)]">Centre Anti-Raid</h1>
+                <h1 className="text-base font-semibold tracking-tight text-[var(--text-primary)]">{tx("Centre Anti-Raid")}</h1>
                 <span className="text-xs uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-red-500/20 text-red-300 border border-red-500/30">
-                  Live Guard
+                  {tx("Live Guard")}
                 </span>
               </div>
-              <p className="text-xs text-[var(--text-muted)]">Détection multi-vecteurs, calcul du risque & riposte automatique</p>
+              <p className="text-xs text-[var(--text-muted)]">{tx("Détection multi-vecteurs, calcul du risque & riposte automatique")}</p>
             </div>
           </div>
         </div>
@@ -803,13 +804,13 @@ export default function AntiRaidDashboardPage() {
               }}
             />
           ) : (
-            <span className="text-xs text-[var(--text-muted)]">Aucun serveur administrable</span>
+            <span className="text-xs text-[var(--text-muted)]">{tx("Aucun serveur administrable")}</span>
           )}
 
           <button
             onClick={fetchLiveStatus}
             className="p-2 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-[var(--text-primary)]/10 border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
-            title="Rafraîchir les métriques"
+            title={tx("Rafraîchir les métriques")}
           >
             <RefreshCw className="w-4 h-4" />
           </button>
@@ -820,7 +821,7 @@ export default function AntiRaidDashboardPage() {
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-medium shadow-sm transition-all disabled:opacity-50"
           >
             <Save className="w-3.5 h-3.5" />
-            {isSaving ? "Enregistrement..." : "Sauvegarder"}
+            {isSaving ? tx("Enregistrement...") : tx("Sauvegarder")}
           </button>
         </div>
       </div>
@@ -834,9 +835,9 @@ export default function AntiRaidDashboardPage() {
                 <Bot className="h-5 w-5" />
               </div>
               <div>
-                <p className="font-semibold text-[var(--text-primary)] text-sm">Le bot ETHONE n&apos;est pas installé sur ce serveur</p>
+                <p className="font-semibold text-[var(--text-primary)] text-sm">{tx("Le bot ETHONE n'est pas installé sur ce serveur")}</p>
                 <p className="mt-0.5 text-[var(--text-muted)]">
-                  Invite le bot sur « {selectedGuild.name} » pour activer la surveillance et les protections Anti-Raid en temps réel.
+                  {tx("Invite le bot sur «")}{" "} {selectedGuild.name} {" "}{tx("» pour activer la surveillance et les protections Anti-Raid en temps réel.")}
                 </p>
               </div>
             </div>
@@ -846,7 +847,7 @@ export default function AntiRaidDashboardPage() {
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[var(--accent-primary)] px-4 py-2 text-sm font-semibold text-[var(--accent-contrast)] hover:brightness-110 shrink-0 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
             >
-              Inviter le bot
+              {tx("Inviter le bot")}
             </a>
           </div>
         )}
@@ -859,11 +860,11 @@ export default function AntiRaidDashboardPage() {
           )}
         >
           <div>
-            <p className="text-sm font-semibold text-[var(--text-primary)]">Anti-Raid {settings.enabled ? "— actif" : "— désactivé"}</p>
+            <p className="text-sm font-semibold text-[var(--text-primary)]">{tx("Anti-Raid")}{" "} {settings.enabled ? tx("— actif") : tx("— désactivé")}</p>
             <p className="text-xs text-[var(--text-muted)]">
               {settings.enabled
-                ? "Tous les détecteurs cochés ci-dessous sont appliqués (join raid, spam messages, mentions, bots…)."
-                : "Aucune détection ni sanction automatique. Les réglages sont conservés."}
+                ? tx("Tous les détecteurs cochés ci-dessous sont appliqués (join raid, spam messages, mentions, bots…).")
+                : tx("Aucune détection ni sanction automatique. Les réglages sont conservés.")}
             </p>
           </div>
           <button
@@ -911,7 +912,7 @@ export default function AntiRaidDashboardPage() {
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-xl">{threat.icon}</span>
                   <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
-                    Statut de Sécurité Global
+                    {tx("Statut de Sécurité Global")}
                   </span>
                   <span
                     className={cn(
@@ -925,7 +926,7 @@ export default function AntiRaidDashboardPage() {
                   </span>
                 </div>
                 <h2 className="text-2xl font-bold text-[var(--text-primary)] tracking-tight">
-                  Risk Score :{" "}
+                  {tx("Risk Score :")}{" "}
                   <span className={cn("font-mono text-3xl", threat.text)}>
                     {metrics.currentRiskScore}
                   </span>
@@ -933,10 +934,10 @@ export default function AntiRaidDashboardPage() {
                 </h2>
                 <p className="text-xs text-[var(--text-muted)] mt-1 max-w-lg">
                   {metrics.raidModeActive
-                    ? "🚨 Mode Raid d'urgence actif. Les protections automatiques et les restrictions sont appliquées."
+                    ? tx("🚨 Mode Raid d'urgence actif. Les protections automatiques et les restrictions sont appliquées.")
                     : metrics.currentRiskScore > 40
-                    ? "Anomalie détectée dans le flux d'événements. Surveillance renforcée."
-                    : "Aucune activité suspecte détectée. Le serveur est en état de sécurité optimal."}
+                    ? tx("Anomalie détectée dans le flux d'événements. Surveillance renforcée.")
+                    : tx("Aucune activité suspecte détectée. Le serveur est en état de sécurité optimal.")}
                 </p>
               </div>
 
@@ -953,12 +954,12 @@ export default function AntiRaidDashboardPage() {
                   )}
                 >
                   <Flame className="w-4 h-4" />
-                  {metrics.raidModeActive ? "END RAID MODE" : "ACTIVATE RAID MODE"}
+                  {metrics.raidModeActive ? tx("END RAID MODE") : tx("ACTIVATE RAID MODE")}
                 </button>
 
                 <div className="flex items-center justify-between text-xs text-[var(--text-muted)] px-1 font-mono">
-                  <span>Protection : ACTIVE</span>
-                  <span>Auto-Exit : {settings.raidMode.autoExitMinutesWithoutActivity}m</span>
+                  <span>{tx("Protection : ACTIVE")}</span>
+                  <span>{tx("Auto-Exit :")}{" "} {settings.raidMode.autoExitMinutesWithoutActivity}m</span>
                 </div>
               </div>
             </div>
@@ -966,11 +967,11 @@ export default function AntiRaidDashboardPage() {
             {/* Score Progress Bar */}
             <div className="mt-4 pt-4 border-t border-[var(--panel-border)]">
               <div className="flex justify-between text-xs text-[var(--text-muted)] mb-1.5 font-mono">
-                <span>0 Safe</span>
-                <span>20 Suspicious</span>
-                <span>40 Elevated</span>
-                <span>60 Dangerous</span>
-                <span>80 Critical Raid</span>
+                <span>{tx("0 Safe")}</span>
+                <span>{tx("20 Suspicious")}</span>
+                <span>{tx("40 Elevated")}</span>
+                <span>{tx("60 Dangerous")}</span>
+                <span>{tx("80 Critical Raid")}</span>
               </div>
               <div className="h-2 w-full bg-[var(--surface-raised)]/40 rounded-full overflow-hidden p-0.5 border border-[var(--panel-border)]">
                 <div
@@ -997,9 +998,9 @@ export default function AntiRaidDashboardPage() {
             <div>
               <h3 className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-1 flex items-center gap-1.5">
                 <Zap className="w-3.5 h-3.5 text-amber-400" />
-                Contrôles Manuels d'Urgence
+                {tx("Contrôles Manuels d'Urgence")}
               </h3>
-              <p className="text-xs text-[var(--text-muted)]">Interventions rapides applicables en un clic</p>
+              <p className="text-xs text-[var(--text-muted)]">{tx("Interventions rapides applicables en un clic")}</p>
             </div>
 
             <div className="grid grid-cols-2 gap-2">
@@ -1014,7 +1015,7 @@ export default function AntiRaidDashboardPage() {
                 )}
               >
                 {metrics.lockdownActive ? <Unlock className="w-3.5 h-3.5" /> : <Lock className="w-3.5 h-3.5" />}
-                {metrics.lockdownActive ? "Déverrouiller" : "Lockdown Salons"}
+                {metrics.lockdownActive ? tx("Déverrouiller") : tx("Lockdown Salons")}
               </button>
 
               <button
@@ -1023,7 +1024,7 @@ export default function AntiRaidDashboardPage() {
                 className="px-3 py-2 rounded-xl text-xs font-semibold border border-amber-500/30 bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 transition-all flex items-center justify-center gap-1.5"
               >
                 <UserX className="w-3.5 h-3.5" />
-                Quarantine Joins
+                {tx("Quarantine Joins")}
               </button>
 
               <button
@@ -1037,7 +1038,7 @@ export default function AntiRaidDashboardPage() {
                 )}
               >
                 <Radio className="w-3.5 h-3.5" />
-                {settings.raidMode.blockAllInvites ? "Invites Bloquées (ON)" : "Invites Actives (OFF)"}
+                {settings.raidMode.blockAllInvites ? tx("Invites Bloquées (ON)") : tx("Invites Actives (OFF)")}
               </button>
 
               <button
@@ -1047,7 +1048,7 @@ export default function AntiRaidDashboardPage() {
                 className="px-3 py-2 rounded-xl text-xs font-semibold border border-rose-500/30 bg-rose-500/10 text-rose-300 hover:bg-rose-500/20 transition-all flex items-center justify-center gap-1.5"
               >
                 <Flame className="w-3.5 h-3.5" />
-                Riposte Immédiate
+                {tx("Riposte Immédiate")}
               </button>
             </div>
 
@@ -1057,17 +1058,17 @@ export default function AntiRaidDashboardPage() {
                 <div className="flex items-center gap-2 text-rose-200">
                   <Radio className="w-4 h-4 text-rose-400 shrink-0 animate-pulse" />
                   <span className="text-xs leading-tight">
-                    <strong>Invites bloquées :</strong> Nouveaux arrivants rejetés.
+                    <strong>{tx("Invites bloquées :")}</strong> {" "}{tx("Nouveaux arrivants rejetés.")}
                   </span>
                 </div>
                 <button
                   onClick={handleForceUnblockInvites}
                   disabled={isActionLoading}
                   className="px-2.5 py-1.5 rounded-xl bg-rose-500/30 hover:bg-rose-500/40 border border-rose-500/50 text-rose-100 font-bold transition-all text-xs shrink-0 cursor-pointer flex items-center gap-1 shadow-sm"
-                  title="Force immédiatement le déblocage de toutes les invitations (OFF)"
+                  title={tx("Force immédiatement le déblocage de toutes les invitations (OFF)")}
                 >
                   <Unlock className="w-3.5 h-3.5" />
-                  Tout Enlever (OFF)
+                  {tx("Tout Enlever (OFF)")}
                 </button>
               </div>
             ) : (
@@ -1075,16 +1076,16 @@ export default function AntiRaidDashboardPage() {
                 onClick={handleForceUnblockInvites}
                 disabled={isActionLoading}
                 className="mt-2 w-full py-1.5 px-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70 text-xs font-medium flex items-center justify-center gap-1.5 transition-all cursor-pointer"
-                title="Garantit que toutes les invitations sont actives et débloquées"
+                title={tx("Garantit que toutes les invitations sont actives et débloquées")}
               >
                 <Unlock className="w-3 h-3 text-[var(--accent-primary)]" />
-                Forcer Invitations en OFF (Débloqué)
+                {tx("Forcer Invitations en OFF (Débloqué)")}
               </button>
             )}
 
             <div className="flex items-center justify-between text-xs text-[var(--text-muted)] pt-1 border-t border-[var(--panel-border)] font-mono mt-2">
-              <span>Salons verrouillés : {metrics.lockedChannelsCount}</span>
-              <span>Quarantaine : {metrics.quarantinedMembersCount}</span>
+              <span>{tx("Salons verrouillés :")}{" "} {metrics.lockedChannelsCount}</span>
+              <span>{tx("Quarantaine :")}{" "} {metrics.quarantinedMembersCount}</span>
             </div>
           </div>
         </div>
@@ -1094,15 +1095,15 @@ export default function AntiRaidDashboardPage() {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-[var(--accent-primary)]" />
-              <h3 className="text-sm font-semibold text-[var(--text-primary)] tracking-wide">Live Security Activity</h3>
-              <span className="text-xs text-[var(--text-muted)]">(Fenêtre glissante 60s)</span>
+              <h3 className="text-sm font-semibold text-[var(--text-primary)] tracking-wide">{tx("Live Security Activity")}</h3>
+              <span className="text-xs text-[var(--text-muted)]">{tx("(Fenêtre glissante 60s)")}</span>
             </div>
-            <span className="text-xs text-[var(--text-muted)] font-mono">Sync automatique 4s</span>
+            <span className="text-xs text-[var(--text-muted)] font-mono">{tx("Sync automatique 4s")}</span>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
             <div className="p-3 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] flex flex-col justify-between">
-              <span className="text-xs text-[var(--text-muted)] uppercase font-medium">Joins / min</span>
+              <span className="text-xs text-[var(--text-muted)] uppercase font-medium">{tx("Joins / min")}</span>
               <div className="flex items-baseline justify-between mt-1">
                 <span className="text-xl font-bold text-[var(--text-primary)] font-mono">{metrics.joinsPerMinute}</span>
                 <Users className="w-4 h-4 text-[var(--info)]/60" />
@@ -1110,7 +1111,7 @@ export default function AntiRaidDashboardPage() {
             </div>
 
             <div className="p-3 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] flex flex-col justify-between">
-              <span className="text-xs text-[var(--text-muted)] uppercase font-medium">Messages / min</span>
+              <span className="text-xs text-[var(--text-muted)] uppercase font-medium">{tx("Messages / min")}</span>
               <div className="flex items-baseline justify-between mt-1">
                 <span className="text-xl font-bold text-[var(--text-primary)] font-mono">{metrics.messagesPerMinute}</span>
                 <Hash className="w-4 h-4 text-[var(--accent-primary)]/60" />
@@ -1118,7 +1119,7 @@ export default function AntiRaidDashboardPage() {
             </div>
 
             <div className="p-3 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] flex flex-col justify-between">
-              <span className="text-xs text-[var(--text-muted)] uppercase font-medium">Mentions / min</span>
+              <span className="text-xs text-[var(--text-muted)] uppercase font-medium">{tx("Mentions / min")}</span>
               <div className="flex items-baseline justify-between mt-1">
                 <span className="text-xl font-bold text-[var(--text-primary)] font-mono">{metrics.mentionsPerMinute}</span>
                 <Radio className="w-4 h-4 text-amber-400/60" />
@@ -1126,7 +1127,7 @@ export default function AntiRaidDashboardPage() {
             </div>
 
             <div className="p-3 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] flex flex-col justify-between">
-              <span className="text-xs text-[var(--text-muted)] uppercase font-medium">Bans / min</span>
+              <span className="text-xs text-[var(--text-muted)] uppercase font-medium">{tx("Bans / min")}</span>
               <div className="flex items-baseline justify-between mt-1">
                 <span className="text-xl font-bold text-[var(--text-primary)] font-mono">{metrics.bansPerMinute}</span>
                 <UserX className="w-4 h-4 text-red-400/60" />
@@ -1134,7 +1135,7 @@ export default function AntiRaidDashboardPage() {
             </div>
 
             <div className="p-3 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] flex flex-col justify-between">
-              <span className="text-xs text-[var(--text-muted)] uppercase font-medium">Bots Ajoutés</span>
+              <span className="text-xs text-[var(--text-muted)] uppercase font-medium">{tx("Bots Ajoutés")}</span>
               <div className="flex items-baseline justify-between mt-1">
                 <span className="text-xl font-bold text-[var(--text-primary)] font-mono">{metrics.botsAddedPerMinute}</span>
                 <Sparkles className="w-4 h-4 text-[var(--accent-primary)]/60" />
@@ -1142,7 +1143,7 @@ export default function AntiRaidDashboardPage() {
             </div>
 
             <div className="p-3 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] flex flex-col justify-between">
-              <span className="text-xs text-[var(--text-muted)] uppercase font-medium">Salons Modifiés</span>
+              <span className="text-xs text-[var(--text-muted)] uppercase font-medium">{tx("Salons Modifiés")}</span>
               <div className="flex items-baseline justify-between mt-1">
                 <span className="text-xl font-bold text-[var(--text-primary)] font-mono">{metrics.channelsChangedPerMinute}</span>
                 <Layers className="w-4 h-4 text-cyan-400/60" />
@@ -1150,7 +1151,7 @@ export default function AntiRaidDashboardPage() {
             </div>
 
             <div className="p-3 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] flex flex-col justify-between">
-              <span className="text-xs text-[var(--text-muted)] uppercase font-medium">Rôles Modifiés</span>
+              <span className="text-xs text-[var(--text-muted)] uppercase font-medium">{tx("Rôles Modifiés")}</span>
               <div className="flex items-baseline justify-between mt-1">
                 <span className="text-xl font-bold text-[var(--text-primary)] font-mono">{metrics.rolesChangedPerMinute}</span>
                 <Shield className="w-4 h-4 text-[var(--accent-primary)]/60" />
@@ -1158,7 +1159,7 @@ export default function AntiRaidDashboardPage() {
             </div>
 
             <div className="p-3 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] flex flex-col justify-between">
-              <span className="text-xs text-[var(--text-muted)] uppercase font-medium">Webhooks</span>
+              <span className="text-xs text-[var(--text-muted)] uppercase font-medium">{tx("Webhooks")}</span>
               <div className="flex items-baseline justify-between mt-1">
                 <span className="text-xl font-bold text-[var(--text-primary)] font-mono">{metrics.webhooksChangedPerMinute}</span>
                 <Terminal className="w-4 h-4 text-yellow-400/60" />
@@ -1166,7 +1167,7 @@ export default function AntiRaidDashboardPage() {
             </div>
 
             <div className="p-3 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] flex flex-col justify-between">
-              <span className="text-xs text-[var(--text-muted)] uppercase font-medium">Départs / min</span>
+              <span className="text-xs text-[var(--text-muted)] uppercase font-medium">{tx("Départs / min")}</span>
               <div className="flex items-baseline justify-between mt-1">
                 <span className="text-xl font-bold text-[var(--text-primary)] font-mono">{metrics.leavesPerMinute}</span>
                 <Clock className="w-4 h-4 text-[var(--text-muted)]" />
@@ -1174,7 +1175,7 @@ export default function AntiRaidDashboardPage() {
             </div>
 
             <div className="p-3 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] flex flex-col justify-between">
-              <span className="text-xs text-[var(--text-muted)] uppercase font-medium">Score de Menace</span>
+              <span className="text-xs text-[var(--text-muted)] uppercase font-medium">{tx("Score de Menace")}</span>
               <div className="flex items-baseline justify-between mt-1">
                 <span className={cn("text-xl font-bold font-mono", threat.text)}>
                   {metrics.currentRiskScore}
@@ -1199,7 +1200,7 @@ export default function AntiRaidDashboardPage() {
               )}
             >
               {activeTab === "overview" && <motion.span layoutId="antiraid-tab" transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute inset-0 rounded-xl bg-[var(--accent-primary)] shadow-sm" />}
-              <span className="relative">👥 Join Raid</span>
+              <span className="relative">{tx("👥 Join Raid")}</span>
             </button>
 
             <button
@@ -1212,7 +1213,7 @@ export default function AntiRaidDashboardPage() {
               )}
             >
               {activeTab === "message" && <motion.span layoutId="antiraid-tab" transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute inset-0 rounded-xl bg-[var(--accent-primary)] shadow-sm" />}
-              <span className="relative">💬 Message Spam</span>
+              <span className="relative">{tx("💬 Message Spam")}</span>
             </button>
 
             <button
@@ -1225,7 +1226,7 @@ export default function AntiRaidDashboardPage() {
               )}
             >
               {activeTab === "mention" && <motion.span layoutId="antiraid-tab" transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute inset-0 rounded-xl bg-[var(--accent-primary)] shadow-sm" />}
-              <span className="relative">🔔 Mention Raid</span>
+              <span className="relative">{tx("🔔 Mention Raid")}</span>
             </button>
 
             <button
@@ -1238,7 +1239,7 @@ export default function AntiRaidDashboardPage() {
               )}
             >
               {activeTab === "bots" && <motion.span layoutId="antiraid-tab" transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute inset-0 rounded-xl bg-[var(--accent-primary)] shadow-sm" />}
-              <span className="relative">🤖 Bot Raid</span>
+              <span className="relative">{tx("🤖 Bot Raid")}</span>
             </button>
 
             <button
@@ -1251,7 +1252,7 @@ export default function AntiRaidDashboardPage() {
               )}
             >
               {activeTab === "nuke" && <motion.span layoutId="antiraid-tab" transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute inset-0 rounded-xl bg-[var(--accent-primary)] shadow-sm" />}
-              <span className="relative">💥 Anti-Nuke</span>
+              <span className="relative">{tx("💥 Anti-Nuke")}</span>
             </button>
 
             <button
@@ -1264,7 +1265,7 @@ export default function AntiRaidDashboardPage() {
               )}
             >
               {activeTab === "accountAge" && <motion.span layoutId="antiraid-tab" transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute inset-0 rounded-xl bg-[var(--accent-primary)] shadow-sm" />}
-              <span className="relative">🔐 Account Age</span>
+              <span className="relative">{tx("🔐 Account Age")}</span>
             </button>
 
             <button
@@ -1277,7 +1278,7 @@ export default function AntiRaidDashboardPage() {
               )}
             >
               {activeTab === "whitelist" && <motion.span layoutId="antiraid-tab" transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute inset-0 rounded-xl bg-[var(--accent-primary)] shadow-sm" />}
-              <span className="relative">🛡️ Whitelist</span>
+              <span className="relative">{tx("🛡️ Whitelist")}</span>
             </button>
 
             <button
@@ -1290,7 +1291,7 @@ export default function AntiRaidDashboardPage() {
               )}
             >
               {activeTab === "incidents" && <motion.span layoutId="antiraid-tab" transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute inset-0 rounded-xl bg-[var(--accent-primary)] shadow-sm" />}
-              <span className="relative">📜 Incidents & Dossiers ({incidents.length})</span>
+              <span className="relative">{tx("📜 Incidents & Dossiers (")}{incidents.length})</span>
             </button>
           </div>
 
@@ -1301,9 +1302,9 @@ export default function AntiRaidDashboardPage() {
               <div className="stagger-children space-y-5">
                 <div className="flex items-center justify-between pb-3 border-b border-[var(--panel-border)]">
                   <div>
-                    <h4 className="text-sm font-semibold text-[var(--text-primary)]">Protection contre les Join Raids</h4>
+                    <h4 className="text-sm font-semibold text-[var(--text-primary)]">{tx("Protection contre les Join Raids")}</h4>
                     <p className="text-xs text-[var(--text-muted)]">
-                      Détecte les vagues massives d'arrivées et les bots programmés pour envahir le serveur.
+                      {tx("Détecte les vagues massives d'arrivées et les bots programmés pour envahir le serveur.")}
                     </p>
                   </div>
                   <input
@@ -1324,7 +1325,7 @@ export default function AntiRaidDashboardPage() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                     <label className="text-xs font-medium text-[var(--text-muted)] block mb-1.5">
-                      Seuil de membres (Threshold)
+                      {tx("Seuil de membres (Threshold)")}
                     </label>
                     <input
                       type="number"
@@ -1339,12 +1340,12 @@ export default function AntiRaidDashboardPage() {
                       }
                       className="w-full bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl px-3 py-2 text-sm text-[var(--text-primary)] focus:outline-none focus:border-red-500/50"
                     />
-                    <span className="text-xs text-[var(--text-muted)] mt-1 block">Ex: 10 membres</span>
+                    <span className="text-xs text-[var(--text-muted)] mt-1 block">{tx("Ex: 10 membres")}</span>
                   </div>
 
                   <div>
                     <label className="text-xs font-medium text-[var(--text-muted)] block mb-1.5">
-                      Fenêtre temporelle (Time Window)
+                      {tx("Fenêtre temporelle (Time Window)")}
                     </label>
                     <input
                       type="number"
@@ -1359,12 +1360,12 @@ export default function AntiRaidDashboardPage() {
                       }
                       className="w-full bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl px-3 py-2 text-sm text-[var(--text-primary)] focus:outline-none focus:border-red-500/50"
                     />
-                    <span className="text-xs text-[var(--text-muted)] mt-1 block">Ex: 10 secondes</span>
+                    <span className="text-xs text-[var(--text-muted)] mt-1 block">{tx("Ex: 10 secondes")}</span>
                   </div>
 
                   <div>
                     <label className="text-xs font-medium text-[var(--text-muted)] block mb-1.5">
-                      Âge minimum de compte (Jours)
+                      {tx("Âge minimum de compte (Jours)")}
                     </label>
                     <input
                       type="number"
@@ -1379,7 +1380,7 @@ export default function AntiRaidDashboardPage() {
                       }
                       className="w-full bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl px-3 py-2 text-sm text-[var(--text-primary)] focus:outline-none focus:border-red-500/50"
                     />
-                    <span className="text-xs text-[var(--text-muted)] mt-1 block">0 = désactivé</span>
+                    <span className="text-xs text-[var(--text-muted)] mt-1 block">{tx("0 = désactivé")}</span>
                   </div>
                 </div>
 
@@ -1400,7 +1401,7 @@ export default function AntiRaidDashboardPage() {
                       className="w-4 h-4 accent-red-500 rounded cursor-pointer"
                     />
                     <label htmlFor="penalizeNoAvatar" className="text-xs text-[var(--text-primary)] cursor-pointer">
-                      Pénaliser les comptes sans photo de profil (augmente le Risk Score de join)
+                      {tx("Pénaliser les comptes sans photo de profil (augmente le Risk Score de join)")}
                     </label>
                   </div>
                 </div>
@@ -1412,9 +1413,9 @@ export default function AntiRaidDashboardPage() {
               <div className="stagger-children space-y-5">
                 <div className="flex items-center justify-between pb-3 border-b border-[var(--panel-border)]">
                   <div>
-                    <h4 className="text-sm font-semibold text-[var(--text-primary)]">Protection Message & Spam Raid</h4>
+                    <h4 className="text-sm font-semibold text-[var(--text-primary)]">{tx("Protection Message & Spam Raid")}</h4>
                     <p className="text-xs text-[var(--text-muted)]">
-                      Surveille les cadences excessives de messages et la répétition en boucle de textes identiques.
+                      {tx("Surveille les cadences excessives de messages et la répétition en boucle de textes identiques.")}
                     </p>
                   </div>
                   <input
@@ -1435,7 +1436,7 @@ export default function AntiRaidDashboardPage() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                     <label className="text-xs font-medium text-[var(--text-muted)] block mb-1.5">
-                      Messages max par utilisateur
+                      {tx("Messages max par utilisateur")}
                     </label>
                     <input
                       type="number"
@@ -1454,7 +1455,7 @@ export default function AntiRaidDashboardPage() {
 
                   <div>
                     <label className="text-xs font-medium text-[var(--text-muted)] block mb-1.5">
-                      Fenêtre temporelle (Secondes)
+                      {tx("Fenêtre temporelle (Secondes)")}
                     </label>
                     <input
                       type="number"
@@ -1473,7 +1474,7 @@ export default function AntiRaidDashboardPage() {
 
                   <div>
                     <label className="text-xs font-medium text-[var(--text-muted)] block mb-1.5">
-                      Seuil de messages dupliqués
+                      {tx("Seuil de messages dupliqués")}
                     </label>
                     <input
                       type="number"
@@ -1498,18 +1499,18 @@ export default function AntiRaidDashboardPage() {
 
                 {settings.messageRaid.actions.includes("TIMEOUT") && (
                   <div className="max-w-xs">
-                    <label className="text-xs font-medium text-[var(--text-muted)] block mb-1.5">Durée du timeout automatique</label>
+                    <label className="text-xs font-medium text-[var(--text-muted)] block mb-1.5">{tx("Durée du timeout automatique")}</label>
                     <Select
                       value={String(settings.messageRaid.timeoutDurationSeconds)}
                       onChange={(v) =>
                         setSettings((prev) => ({ ...prev, messageRaid: { ...prev.messageRaid, timeoutDurationSeconds: parseInt(v, 10) || 600 } }))
                       }
                       options={[
-                        { id: "60", label: "1 minute" },
-                        { id: "300", label: "5 minutes" },
-                        { id: "600", label: "10 minutes" },
-                        { id: "3600", label: "1 heure" },
-                        { id: "86400", label: "1 jour" },
+                        { id: "60", label: tx("1 minute") },
+                        { id: "300", label: tx("5 minutes") },
+                        { id: "600", label: tx("10 minutes") },
+                        { id: "3600", label: tx("1 heure") },
+                        { id: "86400", label: tx("1 jour") },
                       ]}
                     />
                   </div>
@@ -1522,9 +1523,9 @@ export default function AntiRaidDashboardPage() {
               <div className="stagger-children space-y-5">
                 <div className="flex items-center justify-between pb-3 border-b border-[var(--panel-border)]">
                   <div>
-                    <h4 className="text-sm font-semibold text-[var(--text-primary)]">Protection Mention Raid & Mass Pings</h4>
+                    <h4 className="text-sm font-semibold text-[var(--text-primary)]">{tx("Protection Mention Raid & Mass Pings")}</h4>
                     <p className="text-xs text-[var(--text-muted)]">
-                      Interdit les pings de masse (@everyone, @here, ou listes de dizaines de membres).
+                      {tx("Interdit les pings de masse (@everyone, @here, ou listes de dizaines de membres).")}
                     </p>
                   </div>
                   <input
@@ -1545,7 +1546,7 @@ export default function AntiRaidDashboardPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="text-xs font-medium text-[var(--text-muted)] block mb-1.5">
-                      Mentions max par message
+                      {tx("Mentions max par message")}
                     </label>
                     <input
                       type="number"
@@ -1578,7 +1579,7 @@ export default function AntiRaidDashboardPage() {
                       className="w-4 h-4 accent-red-500 rounded cursor-pointer"
                     />
                     <label htmlFor="blockEveryone" className="text-xs text-[var(--text-primary)] ml-2 cursor-pointer">
-                      Bloquer tout non-staff tentant @everyone ou @here (sanctions selon les actions ci-dessous)
+                      {tx("Bloquer tout non-staff tentant @everyone ou @here (sanctions selon les actions ci-dessous)")}
                     </label>
                   </div>
                 </div>
@@ -1595,9 +1596,9 @@ export default function AntiRaidDashboardPage() {
               <div className="stagger-children space-y-5">
                 <div className="flex items-center justify-between pb-3 border-b border-[var(--panel-border)]">
                   <div>
-                    <h4 className="text-sm font-semibold text-[var(--text-primary)]">Protection Bot Raid</h4>
+                    <h4 className="text-sm font-semibold text-[var(--text-primary)]">{tx("Protection Bot Raid")}</h4>
                     <p className="text-xs text-[var(--text-muted)]">
-                      Empêche l'ajout de faux bots ou bots malveillants par des utilisateurs compromis.
+                      {tx("Empêche l'ajout de faux bots ou bots malveillants par des utilisateurs compromis.")}
                     </p>
                   </div>
                   <input
@@ -1618,10 +1619,10 @@ export default function AntiRaidDashboardPage() {
                 <div className="p-3 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] flex items-center justify-between">
                   <div>
                     <span className="text-xs font-semibold text-[var(--text-primary)] block">
-                      Expulsion automatique des bots non-whitelistés
+                      {tx("Expulsion automatique des bots non-whitelistés")}
                     </span>
                     <span className="text-xs text-[var(--text-muted)]">
-                      Tout bot rejoignant sans figurer dans la whitelist sera expulsé sur-le-champ.
+                      {tx("Tout bot rejoignant sans figurer dans la whitelist sera expulsé sur-le-champ.")}
                     </span>
                   </div>
                   <input
@@ -1646,9 +1647,9 @@ export default function AntiRaidDashboardPage() {
               <div className="stagger-children space-y-5">
                 <div className="flex items-center justify-between pb-3 border-b border-[var(--panel-border)]">
                   <div>
-                    <h4 className="text-sm font-semibold text-[var(--text-primary)]">Protection Server Nuke & Anti-Détournement</h4>
+                    <h4 className="text-sm font-semibold text-[var(--text-primary)]">{tx("Protection Server Nuke & Anti-Détournement")}</h4>
                     <p className="text-xs text-[var(--text-muted)]">
-                      Détecte les suppressions en rafale de salons, de rôles ou l'attribution illégitime de permissions d'Admin.
+                      {tx("Détecte les suppressions en rafale de salons, de rôles ou l'attribution illégitime de permissions d'Admin.")}
                     </p>
                   </div>
                   <input
@@ -1669,7 +1670,7 @@ export default function AntiRaidDashboardPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div>
                     <label className="text-xs font-medium text-[var(--text-muted)] block mb-1.5">
-                      Suppression max de salons (10s)
+                      {tx("Suppression max de salons (10s)")}
                     </label>
                     <input
                       type="number"
@@ -1688,7 +1689,7 @@ export default function AntiRaidDashboardPage() {
 
                   <div>
                     <label className="text-xs font-medium text-[var(--text-muted)] block mb-1.5">
-                      Suppression max de rôles (10s)
+                      {tx("Suppression max de rôles (10s)")}
                     </label>
                     <input
                       type="number"
@@ -1707,7 +1708,7 @@ export default function AntiRaidDashboardPage() {
 
                   <div>
                     <label className="text-xs font-medium text-[var(--text-muted)] block mb-1.5">
-                      Créations max de webhooks (10s)
+                      {tx("Créations max de webhooks (10s)")}
                     </label>
                     <input
                       type="number"
@@ -1726,7 +1727,7 @@ export default function AntiRaidDashboardPage() {
                 </div>
 
                 <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-xs text-red-200">
-                  ⚠️ En cas de détection d'un Server Nuke, le bot passe immédiatement en Lockdown total et alerte l'équipe d'administration.
+                  {tx("⚠️ En cas de détection d'un Server Nuke, le bot passe immédiatement en Lockdown total et alerte l'équipe d'administration.")}
                 </div>
               </div>
             )}
@@ -1736,9 +1737,9 @@ export default function AntiRaidDashboardPage() {
               <div className="stagger-children space-y-5">
                 <div className="flex items-center justify-between pb-3 border-b border-[var(--panel-border)]">
                   <div>
-                    <h4 className="text-sm font-semibold text-[var(--text-primary)]">Paliers d'ancienneté de compte</h4>
+                    <h4 className="text-sm font-semibold text-[var(--text-primary)]">{tx("Paliers d'ancienneté de compte")}</h4>
                     <p className="text-xs text-[var(--text-muted)]">
-                      Applique des actions graduées selon l'âge du compte Discord lors de l'arrivée.
+                      {tx("Applique des actions graduées selon l'âge du compte Discord lors de l'arrivée.")}
                     </p>
                   </div>
                   <input
@@ -1763,7 +1764,7 @@ export default function AntiRaidDashboardPage() {
                     >
                       <div>
                         <span className="text-xs font-semibold text-[var(--text-primary)]">
-                          Compte de moins de {tier.ageThresholdHours} heure(s)
+                          {tx("Compte de moins de")}{" "} {tier.ageThresholdHours} {" "}{tx("heure(s)")}
                         </span>
                         <div className="flex gap-1.5 mt-1">
                           {tier.actions.map((act) => (
@@ -1786,20 +1787,20 @@ export default function AntiRaidDashboardPage() {
             {activeTab === "whitelist" && (
               <div className="stagger-children space-y-5">
                 <div className="pb-3 border-b border-[var(--panel-border)]">
-                  <h4 className="text-sm font-semibold text-[var(--text-primary)]">Gestion de la Whitelist & Confiance</h4>
+                  <h4 className="text-sm font-semibold text-[var(--text-primary)]">{tx("Gestion de la Whitelist & Confiance")}</h4>
                   <p className="text-xs text-[var(--text-muted)]">
-                    Les utilisateurs, rôles et bots de confiance sont exemptés des restrictions de spam standard.
+                    {tx("Les utilisateurs, rôles et bots de confiance sont exemptés des restrictions de spam standard.")}
                   </p>
                 </div>
 
                 <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-200">
-                  🔒 <strong>Règle de sécurité absolue :</strong> La whitelist ne désactive jamais les protections critiques contre les suppressions massives de salons ou les server nukes.
+                  🔒 <strong>{tx("Règle de sécurité absolue :")}</strong> {" "}{tx("La whitelist ne désactive jamais les protections critiques contre les suppressions massives de salons ou les server nukes.")}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="text-xs font-medium text-[var(--text-muted)] block mb-1">
-                      IDs Utilisateurs de Confiance (séparés par des virgules)
+                      {tx("IDs Utilisateurs de Confiance (séparés par des virgules)")}
                     </label>
                     <textarea
                       rows={3}
@@ -1823,7 +1824,7 @@ export default function AntiRaidDashboardPage() {
 
                   <div>
                     <label className="text-xs font-medium text-[var(--text-muted)] block mb-1">
-                      IDs Bots Autorisés (séparés par des virgules)
+                      {tx("IDs Bots Autorisés (séparés par des virgules)")}
                     </label>
                     <textarea
                       rows={3}
@@ -1853,15 +1854,15 @@ export default function AntiRaidDashboardPage() {
               <div className="stagger-children space-y-4">
                 <div className="pb-3 border-b border-[var(--panel-border)] flex items-center justify-between">
                   <div>
-                    <h4 className="text-sm font-semibold text-[var(--text-primary)]">Journal des Incidents Anti-Raid</h4>
-                    <p className="text-xs text-[var(--text-muted)]">Historique des attaques et dossiers d'investigation</p>
+                    <h4 className="text-sm font-semibold text-[var(--text-primary)]">{tx("Journal des Incidents Anti-Raid")}</h4>
+                    <p className="text-xs text-[var(--text-muted)]">{tx("Historique des attaques et dossiers d'investigation")}</p>
                   </div>
-                  <span className="text-xs text-[var(--text-muted)] font-mono">{incidents.length} incident(s) enregistré(s)</span>
+                  <span className="text-xs text-[var(--text-muted)] font-mono">{incidents.length} {" "}{tx("incident(s) enregistré(s)")}</span>
                 </div>
 
                 {incidents.length === 0 ? (
                   <div className="pop-in py-12 text-center text-[var(--text-muted)] text-xs">
-                    Aucun incident enregistré sur ce serveur.
+                    {tx("Aucun incident enregistré sur ce serveur.")}
                   </div>
                 ) : (
                   <div className="stagger-children space-y-2">
@@ -1878,12 +1879,12 @@ export default function AntiRaidDashboardPage() {
                               {inc.type}
                             </span>
                             <span className="text-xs text-[var(--text-muted)] font-mono">
-                              Max Risk: {inc.maxRiskScore}/100
+                              {tx("Max Risk:")}{" "} {inc.maxRiskScore}/100
                             </span>
                           </div>
                           <p className="text-xs text-[var(--text-muted)]">{inc.triggerReason}</p>
                           <span className="text-xs text-[var(--text-muted)] font-mono mt-1 block">
-                            {new Date(inc.startedAt).toLocaleString("fr-FR")} • {inc.affectedCount} membres impliqués
+                            {new Date(inc.startedAt).toLocaleString("fr-FR")} • {inc.affectedCount} {" "}{tx("membres impliqués")}
                           </span>
                         </div>
 
@@ -1892,7 +1893,7 @@ export default function AntiRaidDashboardPage() {
                           className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-[var(--text-primary)]/10 hover:bg-[var(--text-primary)]/15 text-[var(--text-primary)] flex items-center gap-1.5 shrink-0 transition-colors"
                         >
                           <Eye className="w-3.5 h-3.5" />
-                          Investigate Incident
+                          {tx("Investigate Incident")}
                         </button>
                       </div>
                     ))}
@@ -1914,8 +1915,8 @@ export default function AntiRaidDashboardPage() {
                   🔍
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-[var(--text-primary)]">Dossier d'Investigation #{selectedIncident.id}</h3>
-                  <span className="text-xs text-[var(--text-muted)]">Type : {selectedIncident.type}</span>
+                  <h3 className="text-base font-bold text-[var(--text-primary)]">{tx("Dossier d'Investigation #")}{selectedIncident.id}</h3>
+                  <span className="text-xs text-[var(--text-muted)]">{tx("Type :")}{" "} {selectedIncident.type}</span>
                 </div>
               </div>
               <button
@@ -1928,22 +1929,22 @@ export default function AntiRaidDashboardPage() {
 
             <div className="grid grid-cols-3 gap-2 text-center text-xs font-mono">
               <div className="p-2.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
-                <span className="text-[var(--text-muted)] block text-xs">MAX RISK SCORE</span>
+                <span className="text-[var(--text-muted)] block text-xs">{tx("MAX RISK SCORE")}</span>
                 <span className="text-red-400 font-bold text-base">{selectedIncident.maxRiskScore}/100</span>
               </div>
               <div className="p-2.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
-                <span className="text-[var(--text-muted)] block text-xs">MEMBRES TOUCHÉS</span>
+                <span className="text-[var(--text-muted)] block text-xs">{tx("MEMBRES TOUCHÉS")}</span>
                 <span className="text-[var(--text-primary)] font-bold text-base">{selectedIncident.affectedCount}</span>
               </div>
               <div className="p-2.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
-                <span className="text-[var(--text-muted)] block text-xs">RÉSOLUTION</span>
+                <span className="text-[var(--text-muted)] block text-xs">{tx("RÉSOLUTION")}</span>
                 <span className="text-[var(--success)] font-bold text-base">{selectedIncident.status}</span>
               </div>
             </div>
 
             <div>
               <h4 className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-1.5">
-                Signaux Déclencheurs
+                {tx("Signaux Déclencheurs")}
               </h4>
               <div className="p-3 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs text-[var(--text-muted)] space-y-1">
                 {selectedIncident.triggerSignals.map((sig, i) => (
@@ -1957,7 +1958,7 @@ export default function AntiRaidDashboardPage() {
 
             <div>
               <h4 className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-1.5">
-                Membres Impliqués ({selectedIncident.involvedMembers.length})
+                {tx("Membres Impliqués (")}{selectedIncident.involvedMembers.length})
               </h4>
               <div className="stagger-children space-y-1.5 max-h-48 overflow-y-auto os-scroll">
                 {selectedIncident.involvedMembers.map((m, idx) => (
@@ -1967,9 +1968,9 @@ export default function AntiRaidDashboardPage() {
                   >
                     <div>
                       <span className="font-semibold text-[var(--text-primary)]">{m.userTag}</span>
-                      <span className="text-xs text-[var(--text-muted)] font-mono ml-2">ID: {m.userId}</span>
+                      <span className="text-xs text-[var(--text-muted)] font-mono ml-2">{tx("ID:")}{" "} {m.userId}</span>
                       <div className="text-xs text-[var(--text-muted)]">
-                        Âge du compte : {m.accountAgeDays}j • Avatar : {m.hasDefaultAvatar ? "Défaut (Aucun)" : "Présent"}
+                        {tx("Âge du compte :")}{" "} {m.accountAgeDays}{tx("j • Avatar :")}{" "} {m.hasDefaultAvatar ? tx("Défaut (Aucun)") : tx("Présent")}
                       </div>
                     </div>
                     <span className="text-xs font-mono px-2 py-0.5 rounded bg-red-500/20 text-red-300">
@@ -1985,7 +1986,7 @@ export default function AntiRaidDashboardPage() {
                 onClick={() => setSelectedIncident(null)}
                 className="px-4 py-1.5 rounded-xl bg-[var(--text-primary)]/10 hover:bg-[var(--text-primary)]/15 text-[var(--text-primary)] text-xs font-medium"
               >
-                Fermer
+                {tx("Fermer")}
               </button>
             </div>
           </div>
@@ -2003,13 +2004,13 @@ export default function AntiRaidDashboardPage() {
                 onClick={() => setConfirmModal((prev) => ({ ...prev, open: false }))}
                 className="px-4 py-2 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-[var(--text-primary)]/10 text-[var(--text-primary)] text-xs font-medium"
               >
-                Annuler
+                {tx("Annuler")}
               </button>
               <button
                 onClick={confirmModal.action}
                 className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-bold shadow-sm"
               >
-                Confirmer l'Action
+                {tx("Confirmer l'Action")}
               </button>
             </div>
           </div>

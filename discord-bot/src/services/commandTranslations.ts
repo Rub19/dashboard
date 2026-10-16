@@ -10,6 +10,12 @@ export type SiteLang = (typeof SITE_LANGS)[number];
 const FILE = path.resolve(process.cwd(), 'data', 'command_i18n.json');
 const NAMES: Record<SiteLang, string> = { fr: 'French', en: 'English', es: 'Spanish', de: 'German' };
 const MAX_TRIES = 3;
+const DISCORD_LOCALES: [SiteLang, string[]][] = [
+  ['fr', ['fr']],
+  ['en', ['en-US', 'en-GB']],
+  ['es', ['es-ES', 'es-419']],
+  ['de', ['de']],
+];
 const BATCH = 40;
 
 /**
@@ -40,12 +46,44 @@ class CommandTranslations {
     return this.cache[lang]?.[text] ?? text;
   }
 
+  /** Ajoute aux descriptions d'une commande (et de ses options) leurs traductions pour le sélecteur de Discord. */
+  localize<T>(json: T): T {
+    const walk = (node: any) => {
+      if (!node || typeof node !== 'object') return;
+      if (typeof node.description === 'string' && node.description) {
+        const loc: Record<string, string> = { ...(node.description_localizations ?? {}) };
+        for (const [lang, locales] of DISCORD_LOCALES) {
+          const v = this.cache[lang]?.[node.description];
+          if (v && v !== node.description) for (const l of locales) loc[l] = v.slice(0, 100);
+        }
+        if (Object.keys(loc).length) node.description_localizations = loc;
+      }
+      for (const o of node.options ?? []) walk(o);
+    };
+    walk(json);
+    return json;
+  }
+
   /** Lance en arrière-plan la traduction des textes manquants (un seul passage à la fois par langue). */
   ensure(lang: SiteLang, texts: string[]): void {
     const missing = [...new Set(texts.filter((s) => s && !this.cache[lang]?.[s] && (this.tries.get(`${lang}:${s}`) ?? 0) < MAX_TRIES))];
     if (!missing.length || this.running.has(lang) || !process.env.GROQ_API_KEY) return;
     this.running.add(lang);
     void this.translate(lang, missing).finally(() => this.running.delete(lang));
+  }
+
+  /** Traduit tout de suite ce qui manque dans chaque langue. Renvoie le nombre de textes ajoutés. */
+  async fill(texts: string[]): Promise<number> {
+    if (!process.env.GROQ_API_KEY) return 0;
+    const before = SITE_LANGS.reduce((n, l) => n + Object.keys(this.cache[l] ?? {}).length, 0);
+    for (const lang of SITE_LANGS) {
+      const missing = [...new Set(texts.filter((s) => s && !this.cache[lang]?.[s] && (this.tries.get(`${lang}:${s}`) ?? 0) < MAX_TRIES))];
+      if (missing.length && !this.running.has(lang)) {
+        this.running.add(lang);
+        await this.translate(lang, missing).finally(() => this.running.delete(lang));
+      }
+    }
+    return SITE_LANGS.reduce((n, l) => n + Object.keys(this.cache[l] ?? {}).length, 0) - before;
   }
 
   private async translate(lang: SiteLang, texts: string[]): Promise<void> {

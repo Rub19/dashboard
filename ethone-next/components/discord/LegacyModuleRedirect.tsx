@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import ModuleSkeleton from "@/components/discord/ModuleSkeleton";
+import { tx } from "@/lib/tx";
 
 /**
  * Ancienne adresse d'un module (`/discord/<module>/?guildId=…`) : le module vit maintenant dans la console. On garde
@@ -17,5 +18,5 @@ export default function LegacyModuleRedirect({ module, view, tab }: { module?: s
     if (tab) params.set("tab", tab);
     window.location.replace(`/discord/?${params.toString()}`);
   }, [module, view, tab]);
-  return <ModuleSkeleton label="Ouverture du module" />;
+  return <ModuleSkeleton label={tx("Ouverture du module")} />;
 }

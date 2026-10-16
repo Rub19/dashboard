@@ -4,6 +4,7 @@ import { effectiveFont } from "@/lib/fonts";
 import { activityJournal } from "@/lib/activity-journal";
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { deepEqual } from "@/lib/equal";
+import { setTxLang } from "@/lib/tx";
 import { useProfiles, type Profile } from "@/lib/hooks/useProfiles";
 import { loadSettings, saveSettings, saveSettingsAsync, loadSettingsAsync, migrateSettings, cleanClientId, getWriteAt, setWriteAt, Settings, DEFAULTS, type ThemeMode } from "@/lib/settings";
 import { applyPreset, type Preset } from "@/lib/preset-engine";
@@ -478,6 +479,8 @@ export default function SettingsProvider({
       clearTimeout(saveTimeoutRef.current);
     }
   }, []);
+
+  setTxLang(settings.language || "fr");
 
   return (
     <ActiveProfileContext.Provider value={activeContext}>

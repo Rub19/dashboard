@@ -21,6 +21,7 @@ import {
 import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGuilds } from "@/lib/hooks/useDiscordOAuth";
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { GuildSelector } from "@/components/GuildSelector";
+import { tx } from "@/lib/tx";
 
 const BOT_CLIENT_ID = "1545139931154878464";
 const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=1436565368055&scope=bot%20applications.commands`;
@@ -83,10 +84,10 @@ export default function SecurityHubPage() {
               <Link
                 href={`/discord${queryParam}`}
                 className="inline-flex h-8 items-center gap-1.5 rounded-xl bg-[var(--surface-raised)] border border-[var(--panel-border)] px-3 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] transition-all cursor-pointer shadow-sm"
-                title="Retour au hub Discord"
+                title={tx("Retour au hub Discord")}
               >
                 <ArrowLeft className="h-3.5 w-3.5 text-[var(--text-muted)]" />
-                <span>Retour Discord</span>
+                <span>{tx("Retour Discord")}</span>
               </Link>
             </div>
             <div className="flex items-center gap-3">
@@ -94,9 +95,9 @@ export default function SecurityHubPage() {
                 <ShieldAlert className="w-6 h-6" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold tracking-tight">Sécurité & Défense</h1>
+                <h1 className="text-2xl font-bold tracking-tight">{tx("Sécurité & Défense")}</h1>
                 <p className="text-xs text-[var(--text-muted)]">
-                  Protection active contre les raids de membres, les spams massifs et les attaques administratives (nukes).
+                  {tx("Protection active contre les raids de membres, les spams massifs et les attaques administratives (nukes).")}
                 </p>
               </div>
             </div>
@@ -115,7 +116,7 @@ export default function SecurityHubPage() {
           />
         ) : !discordLoading ? (
           <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 text-center text-sm text-[var(--text-muted)]">
-            Connecte un serveur Discord où tu es administrateur.
+            {tx("Connecte un serveur Discord où tu es administrateur.")}
           </div>
         ) : null}
 
@@ -127,9 +128,9 @@ export default function SecurityHubPage() {
                 <Bot className="h-5 w-5" />
               </div>
               <div>
-                <p className="font-semibold text-[var(--text-primary)] text-sm">Le bot ETHONE n&apos;est pas installé sur ce serveur</p>
+                <p className="font-semibold text-[var(--text-primary)] text-sm">{tx("Le bot ETHONE n'est pas installé sur ce serveur")}</p>
                 <p className="mt-0.5 text-[var(--text-muted)]">
-                  Invite le bot sur « {selectedGuild.name} » pour activer les protections Anti-Raid et Anti-Nuke.
+                  {tx("Invite le bot sur «")}{" "} {selectedGuild.name} {" "}{tx("» pour activer les protections Anti-Raid et Anti-Nuke.")}
                 </p>
               </div>
             </div>
@@ -139,7 +140,7 @@ export default function SecurityHubPage() {
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[var(--accent-primary)] px-4 py-2 text-sm font-semibold text-[var(--accent-contrast)] hover:brightness-110 shrink-0 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
             >
-              Inviter le bot
+              {tx("Inviter le bot")}
             </a>
           </div>
         )}
@@ -155,36 +156,35 @@ export default function SecurityHubPage() {
                     <ShieldAlert className="w-6 h-6" />
                   </div>
                   <div>
-                    <h2 className="text-lg font-semibold text-[var(--text-primary)]">Anti-Raid</h2>
-                    <p className="text-xs text-[var(--text-muted)]">Défense en temps réel contre les vagues d&apos;arrivées et le spam</p>
+                    <h2 className="text-lg font-semibold text-[var(--text-primary)]">{tx("Anti-Raid")}</h2>
+                    <p className="text-xs text-[var(--text-muted)]">{tx("Défense en temps réel contre les vagues d'arrivées et le spam")}</p>
                   </div>
                 </div>
                 <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-red-500/15 text-red-300 border border-red-500/30">
-                  Temps Réel
+                  {tx("Temps Réel")}
                 </span>
               </div>
 
               <p className="text-xs text-[var(--text-muted)] leading-relaxed">
-                Surveillance continue des métriques du serveur : détection des vagues de comptes récents, spams de mentions,
-                flood de messages, verrouillage d&apos;urgence automatique (Lockdown) et isolation des attaquants.
+                {tx("Surveillance continue des métriques du serveur : détection des vagues de comptes récents, spams de mentions, flood de messages, verrouillage d'urgence automatique (Lockdown) et isolation des attaquants.")}
               </p>
 
               <div className="grid grid-cols-2 gap-2 pt-2">
                 <div className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
                   <Users className="w-4 h-4 text-red-400 shrink-0" />
-                  <span>Join Raid & Mass Join</span>
+                  <span>{tx("Join Raid & Mass Join")}</span>
                 </div>
                 <div className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
                   <Flame className="w-4 h-4 text-red-400 shrink-0" />
-                  <span>Message & Mention Flood</span>
+                  <span>{tx("Message & Mention Flood")}</span>
                 </div>
                 <div className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
                   <Lock className="w-4 h-4 text-red-400 shrink-0" />
-                  <span>Auto Lockdown & Captcha</span>
+                  <span>{tx("Auto Lockdown & Captcha")}</span>
                 </div>
                 <div className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
                   <Radio className="w-4 h-4 text-red-400 shrink-0" />
-                  <span>Score de risque en direct</span>
+                  <span>{tx("Score de risque en direct")}</span>
                 </div>
               </div>
             </div>
@@ -194,7 +194,7 @@ export default function SecurityHubPage() {
                 href={`/discord/security/anti-raid${queryParam}`}
                 className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-semibold transition-colors"
               >
-                <span>Configurer l&apos;Anti-Raid</span>
+                <span>{tx("Configurer l'Anti-Raid")}</span>
                 <ChevronRight className="w-4 h-4" />
               </Link>
             </div>
@@ -209,36 +209,35 @@ export default function SecurityHubPage() {
                     <Zap className="w-6 h-6" />
                   </div>
                   <div>
-                    <h2 className="text-lg font-semibold text-[var(--text-primary)]">Anti-Nuke</h2>
-                    <p className="text-xs text-[var(--text-muted)]">Protection interne contre les comptes administrateurs compromis</p>
+                    <h2 className="text-lg font-semibold text-[var(--text-primary)]">{tx("Anti-Nuke")}</h2>
+                    <p className="text-xs text-[var(--text-muted)]">{tx("Protection interne contre les comptes administrateurs compromis")}</p>
                   </div>
                 </div>
                 <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/15 text-amber-300 border border-amber-500/30">
-                  Haute Priorité
+                  {tx("Haute Priorité")}
                 </span>
               </div>
 
               <p className="text-xs text-[var(--text-muted)] leading-relaxed">
-                Protection contre la destruction de serveur : seuils stricts sur les expulsions/bannissements en masse,
-                suppression de salons ou rôles, création de webhooks malveillants, et quarantaine automatique des fautifs.
+                {tx("Protection contre la destruction de serveur : seuils stricts sur les expulsions/bannissements en masse, suppression de salons ou rôles, création de webhooks malveillants, et quarantaine automatique des fautifs.")}
               </p>
 
               <div className="grid grid-cols-2 gap-2 pt-2">
                 <div className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
                   <UserX className="w-4 h-4 text-amber-400 shrink-0" />
-                  <span>Limites Kicks & Bans</span>
+                  <span>{tx("Limites Kicks & Bans")}</span>
                 </div>
                 <div className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
                   <FileCode className="w-4 h-4 text-amber-400 shrink-0" />
-                  <span>Suppression Salons & Rôles</span>
+                  <span>{tx("Suppression Salons & Rôles")}</span>
                 </div>
                 <div className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
                   <Shield className="w-4 h-4 text-amber-400 shrink-0" />
-                  <span>Quarantaine instantanée</span>
+                  <span>{tx("Quarantaine instantanée")}</span>
                 </div>
                 <div className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
                   <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
-                  <span>Alertes & Logs Staff</span>
+                  <span>{tx("Alertes & Logs Staff")}</span>
                 </div>
               </div>
             </div>
@@ -248,7 +247,7 @@ export default function SecurityHubPage() {
                 href={`/discord/security/anti-nuke${queryParam}`}
                 className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold transition-colors"
               >
-                <span>Configurer l&apos;Anti-Nuke</span>
+                <span>{tx("Configurer l'Anti-Nuke")}</span>
                 <ChevronRight className="w-4 h-4" />
               </Link>
             </div>

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { EmptyLine, useGuildApi } from "../kit";
+import { tx } from "@/lib/tx";
 
 type OptionResult = { optionId: string; label: string; emoji?: string; votesCount: number; weightedPoints: number };
 type Results = {
@@ -39,7 +40,7 @@ export default function PollInsights({ guildId, pollId, anonymous }: { guildId: 
     };
   }, [api, pollId, anonymous]);
 
-  if (!results) return <EmptyLine>Chargement des résultats…</EmptyLine>;
+  if (!results) return <EmptyLine>{tx("Chargement des résultats…")}</EmptyLine>;
   const options = results.questionsResults[0]?.options ?? [];
   const weighted = options.some((o) => o.weightedPoints !== o.votesCount);
   const label = (id: string) => options.find((o) => o.optionId === id)?.label ?? "choix retiré";
@@ -48,7 +49,7 @@ export default function PollInsights({ guildId, pollId, anonymous }: { guildId: 
   return (
     <div className="space-y-2 text-xs">
       <p className="text-[var(--text-muted)]">
-        {results.uniqueParticipants} votant{results.uniqueParticipants > 1 ? "s" : ""} · {results.participationRate} % des membres
+        {results.uniqueParticipants} {" "}{tx("votant")}{results.uniqueParticipants > 1 ? "s" : ""} · {results.participationRate} {" "}{tx("% des membres")}
         {quorum && (
           <>
             {" · "}
@@ -59,11 +60,11 @@ export default function PollInsights({ guildId, pollId, anonymous }: { guildId: 
       </p>
       {weighted && (
         <p className="text-[var(--text-muted)]">
-          Points avec le poids des rôles : {options.map((o) => `${o.emoji ? `${o.emoji} ` : ""}${o.label} ${o.weightedPoints}`).join(" · ")}
+          {tx("Points avec le poids des rôles :")}{" "} {options.map((o) => `${o.emoji ? `${o.emoji} ` : ""}${o.label} ${o.weightedPoints}`).join(" · ")}
         </p>
       )}
       {anonymous ? (
-        <p className="text-[var(--text-muted)]">Vote anonyme : les noms des votants ne sont pas affichés.</p>
+        <p className="text-[var(--text-muted)]">{tx("Vote anonyme : les noms des votants ne sont pas affichés.")}</p>
       ) : votes && votes.length > 0 ? (
         <ul className="max-h-48 overflow-y-auto rounded-lg border border-[var(--panel-border)]">
           {votes.map((v) => (

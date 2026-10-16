@@ -48,6 +48,7 @@ import { cn } from "@/lib/utils";
 import Select from "@/components/ui/Select";
 import ModuleSkeleton from "@/components/discord/ModuleSkeleton";
 import { SPRING_PILL } from "@/lib/ease";
+import { tx } from "@/lib/tx";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || process.env.NEXT_PUBLIC_BOT_API_URL || "https://raspy-fog-bf5b.rub19-mailpro.workers.dev";
 
@@ -324,7 +325,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
 
   const insertTag = (tag: string) => {
     setActivityName((prev) => `${prev} ${tag}`.trim());
-    toast.info(`Variable ${tag} insérée`);
+    toast.info(tx("Variable {tag} insérée", { tag }));
   };
 
   const handleApplyPresence = async (overrideStatus?: DiscordStatus, overrideActivity?: any, force = false) => {
@@ -338,7 +339,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
     const streamTarget = targetStatus === "streaming" || targetActivity.type === "Streaming";
     const streamLink = targetActivity.url || streamUrl;
     if (streamTarget && !/^https?:\/\/\S+$/.test(streamLink || "")) {
-      toast.error("Ajoute le lien de ta chaîne (Twitch ou YouTube) pour le Mode Streamer.");
+      toast.error(tx("Ajoute le lien de ta chaîne (Twitch ou YouTube) pour le Mode Streamer."));
       return;
     }
 
@@ -370,12 +371,12 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
       });
 
       if (res.ok) {
-        toast.success("Présence mise à jour avec succès sur Discord !");
+        toast.success(tx("Présence mise à jour avec succès sur Discord !"));
       } else {
-        toast.info("Présence enregistrée localement.");
+        toast.info(tx("Présence enregistrée localement."));
       }
     } catch {
-      toast.info("Présence mise à jour (mode local).");
+      toast.info(tx("Présence mise à jour (mode local)."));
     } finally {
       setSaving(false);
     }
@@ -392,7 +393,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
         },
         true
       );
-      toast.success("Mode Streamer Twitch activé (Pastille violette) !");
+      toast.success(tx("Mode Streamer Twitch activé (Pastille violette) !"));
     } else if (mode === "dnd") {
       await handleApplyPresence(
         "dnd",
@@ -402,7 +403,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
         },
         true
       );
-      toast.warning("Mode Ne Pas Déranger (DND) activé !");
+      toast.warning(tx("Mode Ne Pas Déranger (DND) activé !"));
     } else if (mode === "invisible") {
       await handleApplyPresence(
         "invisible",
@@ -412,7 +413,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
         },
         true
       );
-      toast.info("Mode Invisible activé (Hors-ligne visuel) !");
+      toast.info(tx("Mode Invisible activé (Hors-ligne visuel) !"));
     } else {
       await handleApplyPresence(
         "online",
@@ -422,7 +423,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
         },
         true
       );
-      toast.success("Statut En Ligne activé !");
+      toast.success(tx("Statut En Ligne activé !"));
     }
   };
 
@@ -444,10 +445,10 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
         }
         setLastUpdated(new Date().toISOString());
         setPresenceSource(`profil:${p.name}`);
-        toast.success(`Profil "${p.name}" activé.`);
+        toast.success(tx("Profil \"{name}\" activé.", { name: p.name }));
       }
     } catch {
-      toast.info("Profil appliqué.");
+      toast.info(tx("Profil appliqué."));
     } finally {
       setSaving(false);
     }
@@ -462,21 +463,21 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ enabled: nextState }),
       });
-      toast.success(nextState ? "Rotation automatique activée !" : "Rotation arrêtée.");
+      toast.success(nextState ? tx("Rotation automatique activée !") : tx("Rotation arrêtée."));
       setRotationConfig((prev) => ({ ...prev, enabled: nextState }));
     } catch {
       setRotationConfig((prev) => ({ ...prev, enabled: nextState }));
-      toast.info(nextState ? "Rotation activée." : "Rotation désactivée.");
+      toast.info(nextState ? tx("Rotation activée.") : tx("Rotation désactivée."));
     }
   };
 
   const handleAddRotationItem = () => {
     if (!newRotText.trim()) {
-      toast.error("Veuillez saisir un texte d'activité.");
+      toast.error(tx("Veuillez saisir un texte d'activité."));
       return;
     }
     if (newRotType === "Streaming" && !/^https?:\/\/\S+$/.test(newRotUrl || "")) {
-      toast.error("Ajoute le lien de la chaîne pour une activité en direct.");
+      toast.error(tx("Ajoute le lien de la chaîne pour une activité en direct."));
       return;
     }
     const newItem = {
@@ -492,12 +493,12 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
     }));
     setNewRotText("");
     setNewRotUrl("");
-    toast.success("Activité ajoutée à la rotation.");
+    toast.success(tx("Activité ajoutée à la rotation."));
   };
 
   const handleQuickAddRotationTemplate = (type: DiscordActivityType, text: string, url?: string) => {
     if (type === "Streaming" && !/^https?:\/\/\S+$/.test(url || "")) {
-      toast.error("Renseigne d'abord le lien de ta chaîne dans le Mode Streamer.");
+      toast.error(tx("Renseigne d'abord le lien de ta chaîne dans le Mode Streamer."));
       return;
     }
     const newItem = {
@@ -511,7 +512,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
       ...prev,
       activities: [...prev.activities, newItem],
     }));
-    toast.success(`Activité "${text}" ajoutée à la rotation !`);
+    toast.success(tx("Activité \"{text}\" ajoutée à la rotation !", { text }));
   };
 
   const handleRemoveRotationItem = (id: string) => {
@@ -519,7 +520,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
       ...prev,
       activities: prev.activities.filter((a) => a.id !== id),
     }));
-    toast.info("Activité retirée de la rotation.");
+    toast.info(tx("Activité retirée de la rotation."));
   };
 
   const handleSaveRotationConfig = async () => {
@@ -531,9 +532,9 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(rotationConfig),
       });
-      toast.success("Configuration de rotation enregistrée.");
+      toast.success(tx("Configuration de rotation enregistrée."));
     } catch {
-      toast.info("Configuration de rotation enregistrée localement.");
+      toast.info(tx("Configuration de rotation enregistrée localement."));
     } finally {
       setSaving(false);
     }
@@ -543,14 +544,14 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
     const isMaint = currentStatus === "dnd" && activityName.toLowerCase().includes("maintenance");
     if (isMaint) {
       await handleApplyPresence("online", { type: "Watching", name: "{guildCount} serveurs • /help" }, true);
-      toast.success("Mode normal rétabli !");
+      toast.success(tx("Mode normal rétabli !"));
     } else {
       await handleApplyPresence(
         "dnd",
         { type: "Watching", name: "Maintenance technique ETHONE • DND" },
         true
       );
-      toast.warning("Mode Maintenance (DND) activé en urgence !");
+      toast.warning(tx("Mode Maintenance (DND) activé en urgence !"));
     }
   };
 
@@ -566,13 +567,13 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
       });
       const json = await res.json().catch(() => null);
       if (res.ok && json?.success) {
-        toast.success("Nom d'utilisateur mis à jour !");
+        toast.success(tx("Nom d'utilisateur mis à jour !"));
         setIdentity((prev) => ({ ...prev, username: editUsername.trim() }));
       } else {
         toast.error(formatApiError(json?.error, "Impossible de modifier le nom (limite Discord: 2/2h)."));
       }
     } catch {
-      toast.info("Nom d'utilisateur mis à jour localement.");
+      toast.info(tx("Nom d'utilisateur mis à jour localement."));
       setIdentity((prev) => ({ ...prev, username: editUsername.trim() }));
     } finally {
       setSaving(false);
@@ -598,14 +599,14 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
       });
       const json = await res.json().catch(() => null);
       if (res.ok && json?.success) {
-        toast.success("Avatar du bot mis à jour avec succès !");
+        toast.success(tx("Avatar du bot mis à jour avec succès !"));
         setIdentity((prev) => ({ ...prev, avatarUrl: json.avatarUrl || prev.avatarUrl }));
         setNewAvatarFile(null);
       } else {
         toast.error(formatApiError(json?.error, "Impossible de changer l'avatar (limite Discord: 2/h)."));
       }
     } catch {
-      toast.info("Avatar mis à jour localement.");
+      toast.info(tx("Avatar mis à jour localement."));
     } finally {
       setUploadingAvatar(false);
     }
@@ -637,25 +638,25 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
               className="inline-flex h-8 items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-3 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-hover)] transition-all cursor-pointer active:scale-[0.97]"
             >
               <ArrowLeft className="h-3.5 w-3.5" />
-              <span>Centre de Contrôle</span>
+              <span>{tx("Centre de Contrôle")}</span>
             </Link>
             <span className="text-[var(--text-muted)]/50">•</span>
             <Link
               href="/discord"
               className="text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors truncate"
             >
-              Hub Discord
+              {tx("Hub Discord")}
             </Link>
           </div>
 
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--surface-raised)]/60 border border-[var(--panel-border)] text-xs font-mono text-[var(--text-muted)]">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>Shard 0 • 24ms</span>
+              <span>{tx("Shard 0 • 24ms")}</span>
             </div>
             <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/25 text-xs font-semibold text-[var(--accent-primary)]">
               <ShieldCheck className="w-3 h-3" />
-              <span>Owner {identity.ownerId.slice(0, 6)}…</span>
+              <span>{tx("Owner")}{" "} {identity.ownerId.slice(0, 6)}…</span>
             </div>
           </div>
         </div>
@@ -671,13 +672,13 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-lg bg-[var(--surface-raised)] border border-[var(--panel-border)] text-[11px] font-mono font-semibold text-[var(--accent-primary)]">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>PRESENCE & RICH ACTIVITIES</span>
+              <span>{tx("PRESENCE & RICH ACTIVITIES")}</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--text-primary)]">
-              Gestion de la Présence & Activités
+              {tx("Gestion de la Présence & Activités")}
             </h1>
             <p className="text-xs sm:text-sm text-[var(--text-muted)] max-w-2xl leading-relaxed">
-              Pilotez en direct le statut visible du bot (En ligne, Ne Pas Déranger, Invisible), le mode streamer Twitch, les activités riches et la rotation automatique.
+              {tx("Pilotez en direct le statut visible du bot (En ligne, Ne Pas Déranger, Invisible), le mode streamer Twitch, les activités riches et la rotation automatique.")}
             </p>
           </div>
 
@@ -693,7 +694,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
               )}
             >
               <ShieldAlert className="w-3.5 h-3.5 text-rose-400" />
-              <span>{currentStatus === "dnd" ? "Quitter DND" : "Mode DND Focus"}</span>
+              <span>{currentStatus === "dnd" ? tx("Quitter DND") : tx("Mode DND Focus")}</span>
             </button>
 
             <button
@@ -703,7 +704,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
               className="px-3.5 py-2 rounded-xl text-xs font-medium bg-[var(--surface-raised)]/60 hover:bg-[var(--surface-raised)] border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--text-primary)] flex items-center gap-1.5 transition-colors disabled:opacity-50 cursor-pointer active:scale-[0.97]"
             >
               <RefreshCw className={cn("w-3.5 h-3.5", refreshing && "animate-spin text-[var(--accent-primary)]")} />
-              <span>Actualiser</span>
+              <span>{tx("Actualiser")}</span>
             </button>
           </div>
         </motion.div>
@@ -711,7 +712,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
         <div className="py-4 flex flex-wrap items-center justify-between gap-3 border-b border-[var(--panel-border)]">
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-xs font-bold text-[var(--text-muted)] flex items-center gap-1.5 mr-1">
-              <Zap className="w-3.5 h-3.5 text-amber-400" /> Modes Rapides (1-Clic) :
+              <Zap className="w-3.5 h-3.5 text-amber-400" /> {" "}{tx("Modes Rapides (1-Clic) :")}
             </span>
             <button
               type="button"
@@ -719,7 +720,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
               className="px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer active:scale-[0.97]"
             >
               <span className="w-2 h-2 rounded-full bg-emerald-400" />
-              <span>En Ligne</span>
+              <span>{tx("En Ligne")}</span>
             </button>
             <button
               type="button"
@@ -727,7 +728,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
               className="px-3 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer active:scale-[0.97]"
             >
               <span className="w-2 h-2 rounded-full bg-rose-500" />
-              <span>Ne Pas Déranger (DND)</span>
+              <span>{tx("Ne Pas Déranger (DND)")}</span>
             </button>
             <button
               type="button"
@@ -735,7 +736,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
               className="px-3 py-1.5 rounded-xl bg-neutral-500/10 hover:bg-neutral-500/20 text-neutral-300 border border-neutral-500/30 text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer active:scale-[0.97]"
             >
               <EyeOff className="w-3 h-3 text-neutral-400" />
-              <span>Invisible (Invi)</span>
+              <span>{tx("Invisible (Invi)")}</span>
             </button>
             <button
               type="button"
@@ -743,19 +744,19 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
               className="px-3 py-1.5 rounded-xl bg-purple-500/15 hover:bg-purple-500/25 text-purple-300 border border-purple-500/40 text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer active:scale-[0.97]"
             >
               <Video className="w-3 h-3 text-purple-400" />
-              <span>Mode Streamer Twitch 🟣</span>
+              <span>{tx("Mode Streamer Twitch 🟣")}</span>
             </button>
           </div>
         </div>
 
         <div className="flex items-center gap-1 overflow-x-auto scrollbar-none py-3 border-b border-[var(--panel-border)]">
           {[
-            { id: "overview", label: "Présence Directe", icon: Sparkles },
-            { id: "rotation", label: "Moteur de Rotation", icon: ListRestart, count: rotationConfig.activities.length },
-            { id: "schedule", label: "Horaires & Profils", icon: Calendar, count: profiles.length },
-            { id: "servers", label: "Préférences Serveurs", icon: Server, count: guilds.length },
-            { id: "identity", label: "Studio d'Identité", icon: User },
-            { id: "history", label: "Journal d'Audit", icon: History },
+            { id: "overview", label: tx("Présence Directe"), icon: Sparkles },
+            { id: "rotation", label: tx("Moteur de Rotation"), icon: ListRestart, count: rotationConfig.activities.length },
+            { id: "schedule", label: tx("Horaires & Profils"), icon: Calendar, count: profiles.length },
+            { id: "servers", label: tx("Préférences Serveurs"), icon: Server, count: guilds.length },
+            { id: "identity", label: tx("Studio d'Identité"), icon: User },
+            { id: "history", label: tx("Journal d'Audit"), icon: History },
           ].map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -800,7 +801,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-4">
         {loading ? (
-          <ModuleSkeleton compact className="px-0 sm:px-0" label="Chargement de la présence du bot…" />
+          <ModuleSkeleton compact className="px-0 sm:px-0" label={tx("Chargement de la présence du bot…")} />
         ) : (
           <>
             {activeTab === "overview" && (
@@ -824,7 +825,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                             "absolute bottom-0 right-0 w-6 h-6 rounded-full border-4 border-[#07090E] flex items-center justify-center transition-all",
                             statusDotColor[currentStatus]
                           )}
-                          title={`Statut : ${currentStatus}`}
+                          title={tx("Statut : {currentStatus}", { currentStatus })}
                         >
                           {currentStatus === "dnd" && <span className="w-2 h-0.5 bg-white rounded-full" />}
                           {currentStatus === "idle" && <Moon className="w-2.5 h-2.5 text-[#07090E]" />}
@@ -839,7 +840,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                             {identity.username}
                           </h2>
                           <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#5865f2] text-white tracking-wider uppercase">
-                            BOT
+                            {tx("BOT")}
                           </span>
                           <span className="text-xs text-[var(--text-muted)] font-mono">
                             #{identity.discriminator}
@@ -858,7 +859,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                                 : "bg-amber-500/10 text-amber-400 border-amber-500/25"
                             )}
                           >
-                            {currentStatus === "online" ? "En Ligne" : currentStatus === "streaming" ? "Mode Streamer" : currentStatus === "dnd" ? "Ne Pas Déranger" : currentStatus === "invisible" ? "Invisible" : "Inactif"}
+                            {currentStatus === "online" ? tx("En Ligne") : currentStatus === "streaming" ? tx("Mode Streamer") : currentStatus === "dnd" ? tx("Ne Pas Déranger") : currentStatus === "invisible" ? tx("Invisible") : tx("Inactif")}
                           </span>
                         </div>
 
@@ -880,7 +881,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                           </span>
 
                           <span className="text-sm font-medium text-[var(--text-primary)]">
-                            {resolvedPreviewText || "Aucune activité en cours"}
+                            {resolvedPreviewText || tx("Aucune activité en cours")}
                           </span>
 
                           {activityType === "Streaming" && streamUrl && (
@@ -891,7 +892,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                               className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-purple-500/15 border border-purple-500/30 text-xs font-semibold text-purple-300 hover:bg-purple-500/25 transition-all"
                             >
                               <ExternalLink className="w-3 h-3" />
-                              <span>Regarder le Stream</span>
+                              <span>{tx("Regarder le Stream")}</span>
                             </a>
                           )}
                         </div>
@@ -899,15 +900,15 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                         <div className="flex flex-wrap items-center gap-4 text-xs text-[var(--text-muted)] pt-1">
                           <span className="flex items-center gap-1">
                             <Globe className="w-3.5 h-3.5 text-[var(--accent-primary)]" />
-                            <span>Portée Globale</span>
+                            <span>{tx("Portée Globale")}</span>
                           </span>
                           <span className="flex items-center gap-1">
                             <Clock className="w-3.5 h-3.5 text-[var(--text-muted)]" />
-                            <span>Origine : <code className="text-[var(--text-primary)] font-mono">{presenceSource}</code></span>
+                            <span>{tx("Origine :")}{" "} <code className="text-[var(--text-primary)] font-mono">{presenceSource}</code></span>
                           </span>
                           <span className="flex items-center gap-1">
                             <Timer className="w-3.5 h-3.5 text-[var(--text-muted)]" />
-                            <span>Actualisé : {new Date(lastUpdated).toLocaleTimeString("fr-FR")}</span>
+                            <span>{tx("Actualisé :")}{" "} {new Date(lastUpdated).toLocaleTimeString("fr-FR")}</span>
                           </span>
                         </div>
                       </div>
@@ -917,9 +918,9 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                       <div className="flex items-center justify-between text-xs text-[var(--text-muted)]">
                         <span className="font-semibold text-[var(--text-primary)] flex items-center gap-1.5">
                           <ShieldCheck className="w-4 h-4 text-[var(--accent-primary)]" />
-                          Rate Limit Gateway
+                          {tx("Rate Limit Gateway")}
                         </span>
-                        <span className="font-mono text-[var(--accent-primary)]">5 / 60s max</span>
+                        <span className="font-mono text-[var(--accent-primary)]">{tx("5 / 60s max")}</span>
                       </div>
                       <div className="w-full h-2 rounded-full bg-[var(--panel-border)] overflow-hidden">
                         <div
@@ -930,9 +931,9 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                         />
                       </div>
                       <div className="text-xs text-[var(--text-muted)] flex items-center justify-between">
-                        <span>État Gateway :</span>
+                        <span>{tx("État Gateway :")}</span>
                         <span className={rateLimited ? "text-rose-400 font-semibold" : "text-emerald-400 font-semibold"}>
-                          {rateLimited ? "Protection Anti-Spam Active" : "Prêt pour mise à jour"}
+                          {rateLimited ? tx("Protection Anti-Spam Active") : tx("Prêt pour mise à jour")}
                         </span>
                       </div>
                     </div>
@@ -945,20 +946,20 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                       <div>
                         <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
                           <Radio className="w-4 h-4 text-[var(--accent-primary)]" />
-                          1. Statut Visible sur Discord
+                          {tx("1. Statut Visible sur Discord")}
                         </h3>
                         <p className="text-xs text-[var(--text-muted)] mt-0.5">
-                          Choisis la pastille d&apos;état affichée sur le profil du bot
+                          {tx("Choisis la pastille d'état affichée sur le profil du bot")}
                         </p>
                       </div>
 
                       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
                         {[
-                          { id: "online", label: "En Ligne", dot: "bg-[var(--success)]", desc: "Disponible et actif" },
-                          { id: "streaming", label: "Mode Streamer", dot: "bg-purple-500", desc: "Pastille violette live" },
-                          { id: "idle", label: "Inactif", dot: "bg-amber-400", desc: "Absence temporaire" },
-                          { id: "dnd", label: "Ne Pas Déranger", dot: "bg-rose-500", desc: "Maintenance / DND" },
-                          { id: "invisible", label: "Invisible (Invi)", dot: "bg-neutral-500", desc: "Hors ligne visuel" },
+                          { id: "online", label: tx("En Ligne"), dot: "bg-[var(--success)]", desc: tx("Disponible et actif") },
+                          { id: "streaming", label: tx("Mode Streamer"), dot: "bg-purple-500", desc: tx("Pastille violette live") },
+                          { id: "idle", label: tx("Inactif"), dot: "bg-amber-400", desc: tx("Absence temporaire") },
+                          { id: "dnd", label: tx("Ne Pas Déranger"), dot: "bg-rose-500", desc: tx("Maintenance / DND") },
+                          { id: "invisible", label: tx("Invisible (Invi)"), dot: "bg-neutral-500", desc: tx("Hors ligne visuel") },
                         ].map((s) => {
                           const isSelected = currentStatus === s.id;
                           return (
@@ -1010,10 +1011,10 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                         <div>
                           <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
                             <Sliders className="w-4 h-4 text-[var(--accent-primary)]" />
-                            2. Type d&apos;Activité & Mode Streamer
+                            {tx("2. Type d'Activité & Mode Streamer")}
                           </h3>
                           <p className="text-xs text-[var(--text-muted)] mt-0.5">
-                            Le verbe qui précède le texte sur le profil Discord
+                            {tx("Le verbe qui précède le texte sur le profil Discord")}
                           </p>
                         </div>
 
@@ -1032,7 +1033,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                           )}
                         >
                           <Video className="w-3 h-3 text-purple-400" />
-                          <span>Mode Streamer</span>
+                          <span>{tx("Mode Streamer")}</span>
                         </button>
                       </div>
 
@@ -1079,7 +1080,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                         <div className="p-4 rounded-xl bg-purple-950/20 border border-purple-500/30 space-y-2">
                           <label className="text-xs font-semibold text-purple-300 flex items-center gap-1.5">
                             <Video className="w-3.5 h-3.5 text-purple-400" />
-                            URL du Stream (Twitch ou YouTube obligatoire pour la pastille violette)
+                            {tx("URL du Stream (Twitch ou YouTube obligatoire pour la pastille violette)")}
                           </label>
                           <input
                             type="url"
@@ -1089,7 +1090,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                             className="w-full px-3.5 py-2 rounded-lg bg-[var(--surface-raised)] border border-purple-500/30 text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-purple-400 font-mono"
                           />
                           <p className="text-[11px] text-purple-300/80">
-                            Discord diffuse la pastille violette « Streame » avec bouton « Regarder » vers ce lien.
+                            {tx("Discord diffuse la pastille violette « Streame » avec bouton « Regarder » vers ce lien.")}
                           </p>
                         </div>
                       )}
@@ -1099,10 +1100,10 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                       <div>
                         <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
                           <Sparkles className="w-4 h-4 text-[var(--accent-primary)]" />
-                          3. Texte de l&apos;Activité & Variables Dynamiques
+                          {tx("3. Texte de l'Activité & Variables Dynamiques")}
                         </h3>
                         <p className="text-xs text-[var(--text-muted)] mt-0.5">
-                          Saisis le texte ou clique sur une variable pour l&apos;insérer dynamiquement
+                          {tx("Saisis le texte ou clique sur une variable pour l'insérer dynamiquement")}
                         </p>
                       </div>
 
@@ -1111,18 +1112,18 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                           type="text"
                           value={activityName}
                           onChange={(e) => setActivityName(e.target.value)}
-                          placeholder="Ex: Valorant | {guildCount} serveurs"
+                          placeholder={tx("Ex: Valorant | {guildCount} serveurs")}
                           maxLength={128}
                           className="w-full px-4 py-2.5 rounded-xl bg-[var(--surface-raised)]/60 border border-[var(--panel-border)] text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--accent-primary)]"
                         />
                         <div className="flex items-center justify-between text-xs text-[var(--text-muted)] px-1">
-                          <span>Aperçu résolu : <strong className="text-[var(--text-primary)]">{resolvedPreviewText}</strong></span>
-                          <span>{activityName.length} / 128 caractères</span>
+                          <span>{tx("Aperçu résolu :")}{" "} <strong className="text-[var(--text-primary)]">{resolvedPreviewText}</strong></span>
+                          <span>{activityName.length} {" "}{tx("/ 128 caractères")}</span>
                         </div>
                       </div>
 
                       <div>
-                        <span className="text-xs font-semibold text-[var(--text-muted)] block mb-2">Variables disponibles :</span>
+                        <span className="text-xs font-semibold text-[var(--text-muted)] block mb-2">{tx("Variables disponibles :")}</span>
                         <div className="flex flex-wrap gap-2">
                           {DYNAMIC_VARIABLES.map((v) => (
                             <button
@@ -1146,11 +1147,11 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                           className="px-6 py-2.5 rounded-xl bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] font-semibold text-xs flex items-center gap-2 disabled:opacity-50 transition-all cursor-pointer active:scale-[0.97]"
                         >
                           <Save className="w-4 h-4" />
-                          <span>{saving ? "Application en cours..." : "Appliquer Immédiatement sur Discord"}</span>
+                          <span>{saving ? tx("Application en cours...") : tx("Appliquer Immédiatement sur Discord")}</span>
                         </button>
 
                         <span className="text-xs text-[var(--text-muted)] font-mono">
-                          Mise à jour directe Gateway
+                          {tx("Mise à jour directe Gateway")}
                         </span>
                       </div>
                     </div>
@@ -1161,9 +1162,9 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                       <div>
                         <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
                           <Zap className="w-4 h-4 text-amber-400" />
-                          Profils Rapides (1-Clic)
+                          {tx("Profils Rapides (1-Clic)")}
                         </h3>
-                        <p className="text-xs text-[var(--text-muted)] mt-0.5">Basculez instantanément vers un préréglage</p>
+                        <p className="text-xs text-[var(--text-muted)] mt-0.5">{tx("Basculez instantanément vers un préréglage")}</p>
                       </div>
 
                       <div className="space-y-2 max-h-[480px] overflow-y-auto scrollbar-thin pr-1">
@@ -1209,7 +1210,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                                     : "bg-[var(--surface-raised)] hover:bg-[var(--accent-primary)] text-[var(--text-muted)] hover:text-[var(--accent-contrast)]"
                                 )}
                               >
-                                {isActive ? "Actif" : "Activer"}
+                                {isActive ? tx("Actif") : tx("Activer")}
                               </button>
                             </div>
                           );
@@ -1220,30 +1221,30 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                     <div className="p-5 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-4">
                       <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
                         <Activity className="w-4 h-4 text-[var(--accent-primary)]" />
-                        Statistiques de Présence
+                        {tx("Statistiques de Présence")}
                       </h3>
 
                       <div className="grid grid-cols-2 gap-3">
                         <div className="p-3 rounded-xl bg-[var(--surface-raised)]/60 border border-[var(--panel-border)]">
-                          <span className="text-xs text-[var(--text-muted)]">Total Changements</span>
+                          <span className="text-xs text-[var(--text-muted)]">{tx("Total Changements")}</span>
                           <p className="text-lg font-bold text-[var(--text-primary)] font-mono mt-1">{stats.totalChanges}</p>
                         </div>
                         <div className="p-3 rounded-xl bg-[var(--surface-raised)]/60 border border-[var(--panel-border)]">
-                          <span className="text-xs text-[var(--text-muted)]">Rotations Exécutées</span>
+                          <span className="text-xs text-[var(--text-muted)]">{tx("Rotations Exécutées")}</span>
                           <p className="text-lg font-bold text-[var(--accent-primary)] font-mono mt-1">{stats.rotationsExecuted}</p>
                         </div>
                         <div className="p-3 rounded-xl bg-[var(--surface-raised)]/60 border border-[var(--panel-border)]">
-                          <span className="text-xs text-[var(--text-muted)]">Rate Limits</span>
+                          <span className="text-xs text-[var(--text-muted)]">{tx("Rate Limits")}</span>
                           <p className="text-lg font-bold text-emerald-400 font-mono mt-1">{stats.rateLimitHits}</p>
                         </div>
                         <div className="p-3 rounded-xl bg-[var(--surface-raised)]/60 border border-[var(--panel-border)]">
-                          <span className="text-xs text-[var(--text-muted)]">Uptime Gateway</span>
+                          <span className="text-xs text-[var(--text-muted)]">{tx("Uptime Gateway")}</span>
                           <p className="text-lg font-bold text-[var(--accent-primary)] font-mono mt-1">{stats.currentUptimeHours}h</p>
                         </div>
                       </div>
 
                       <div className="pt-2 text-xs text-[var(--text-muted)] flex items-center justify-between border-t border-[var(--panel-border)]">
-                        <span>Dernière synchronisation :</span>
+                        <span>{tx("Dernière synchronisation :")}</span>
                         <span className="font-mono text-[var(--text-primary)]">
                           {new Date(lastUpdated).toLocaleTimeString("fr-FR")}
                         </span>
@@ -1261,10 +1262,10 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                     <div>
                       <h2 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-2">
                         <ListRestart className="w-5 h-5 text-[var(--accent-primary)]" />
-                        Moteur de Rotation Automatique d&apos;Activités
+                        {tx("Moteur de Rotation Automatique d'Activités")}
                       </h2>
                       <p className="text-xs text-[var(--text-muted)] mt-1">
-                        Faites défiler plusieurs activités automatiquement (Streamer, Spotify, Anti-Raid, Gaming, etc.)
+                        {tx("Faites défiler plusieurs activités automatiquement (Streamer, Spotify, Anti-Raid, Gaming, etc.)")}
                       </p>
                     </div>
 
@@ -1280,7 +1281,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                         )}
                       >
                         <RotateCcw className={cn("w-4 h-4", rotationConfig.enabled && "animate-spin text-[var(--success)]")} />
-                        <span>{rotationConfig.enabled ? "Rotation Activée" : "Rotation Désactivée"}</span>
+                        <span>{rotationConfig.enabled ? tx("Rotation Activée") : tx("Rotation Désactivée")}</span>
                       </button>
 
                       <button
@@ -1290,7 +1291,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                         className="px-4 py-2 rounded-xl bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer active:scale-[0.97]"
                       >
                         <Save className="w-3.5 h-3.5" />
-                        <span>Sauvegarder</span>
+                        <span>{tx("Sauvegarder")}</span>
                       </button>
                     </div>
                   </div>
@@ -1299,7 +1300,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                     <div className="p-4 rounded-xl bg-[var(--surface-raised)]/60 border border-[var(--panel-border)] space-y-2">
                       <label className="text-xs font-semibold text-[var(--text-muted)] flex items-center gap-1.5">
                         <Timer className="w-3.5 h-3.5 text-[var(--accent-primary)]" />
-                        Intervalle de rotation (secondes)
+                        {tx("Intervalle de rotation (secondes)")}
                       </label>
                       <input
                         type="number"
@@ -1314,13 +1315,13 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                         }
                         className="w-full px-3 py-2 rounded-lg bg-[var(--surface-raised)] border border-[var(--panel-border)] text-sm text-[var(--text-primary)] font-mono focus:outline-none focus:border-[var(--accent-primary)]"
                       />
-                      <p className="text-[11px] text-[var(--text-muted)]">Minimum 30s (Protection anti-spam Discord)</p>
+                      <p className="text-[11px] text-[var(--text-muted)]">{tx("Minimum 30s (Protection anti-spam Discord)")}</p>
                     </div>
 
                     <div className="p-4 rounded-xl bg-[var(--surface-raised)]/60 border border-[var(--panel-border)] space-y-2">
                       <label className="text-xs font-semibold text-[var(--text-muted)] flex items-center gap-1.5">
                         <Shuffle className="w-3.5 h-3.5 text-[var(--accent-primary)]" />
-                        Stratégie d&apos;ordonnancement
+                        {tx("Stratégie d'ordonnancement")}
                       </label>
                       <Select
                         value={rotationConfig.order}
@@ -1331,33 +1332,33 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                           }))
                         }
                         className="w-full"
-                        aria-label="Stratégie d'ordonnancement"
+                        aria-label={tx("Stratégie d'ordonnancement")}
                         options={[
-                          { id: "sequential", label: "Séquentiel (Cycle 1, 2, 3...)" },
-                          { id: "random", label: "Aléatoire Pur (Random)" },
-                          { id: "weighted", label: "Pondéré selon le Poids" },
+                          { id: "sequential", label: tx("Séquentiel (Cycle 1, 2, 3...)") },
+                          { id: "random", label: tx("Aléatoire Pur (Random)") },
+                          { id: "weighted", label: tx("Pondéré selon le Poids") },
                         ]}
                       />
-                      <p className="text-[11px] text-[var(--text-muted)]">Détermine le choix de la prochaine activité</p>
+                      <p className="text-[11px] text-[var(--text-muted)]">{tx("Détermine le choix de la prochaine activité")}</p>
                     </div>
 
                     <div className="p-4 rounded-xl bg-[var(--surface-raised)]/60 border border-[var(--panel-border)] space-y-2">
                       <label className="text-xs font-semibold text-[var(--text-muted)] flex items-center gap-1.5">
                         <Clock className="w-3.5 h-3.5 text-[var(--accent-primary)]" />
-                        Prochaine rotation
+                        {tx("Prochaine rotation")}
                       </label>
                       <div className="px-3 py-2 rounded-lg bg-[var(--surface-raised)] border border-[var(--panel-border)] text-sm font-mono text-[var(--accent-primary)] flex items-center justify-between">
-                        <span>{rotationConfig.enabled ? "Dans quelques secondes" : "En pause"}</span>
+                        <span>{rotationConfig.enabled ? tx("Dans quelques secondes") : tx("En pause")}</span>
                         <span className="w-2 h-2 rounded-full bg-[var(--accent-primary)]" />
                       </div>
-                      <p className="text-[11px] text-[var(--text-muted)]">Horodatage précis synchronisé</p>
+                      <p className="text-[11px] text-[var(--text-muted)]">{tx("Horodatage précis synchronisé")}</p>
                     </div>
                   </div>
                 </div>
 
                 <div className="p-5 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-3">
                   <span className="text-xs font-bold text-[var(--text-muted)] block">
-                    Modèles d&apos;activités rapides à ajouter dans la rotation :
+                    {tx("Modèles d'activités rapides à ajouter dans la rotation :")}
                   </span>
                   <div className="flex flex-wrap gap-2">
                     <button
@@ -1366,7 +1367,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                       className="px-3 py-1.5 rounded-lg bg-purple-500/15 hover:bg-purple-500/25 border border-purple-500/30 text-purple-300 text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
                     >
                       <Video className="w-3.5 h-3.5" />
-                      <span>+ Mode Streamer Twitch</span>
+                      <span>{tx("+ Mode Streamer Twitch")}</span>
                     </button>
                     <button
                       type="button"
@@ -1374,7 +1375,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                       className="px-3 py-1.5 rounded-lg bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-500/30 text-cyan-300 text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
                     >
                       <Headphones className="w-3.5 h-3.5" />
-                      <span>+ Spotify Vibes</span>
+                      <span>{tx("+ Spotify Vibes")}</span>
                     </button>
                     <button
                       type="button"
@@ -1382,7 +1383,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                       className="px-3 py-1.5 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
                     >
                       <ShieldCheck className="w-3.5 h-3.5" />
-                      <span>+ Bouclier Anti-Raid</span>
+                      <span>{tx("+ Bouclier Anti-Raid")}</span>
                     </button>
                     <button
                       type="button"
@@ -1390,7 +1391,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                       className="px-3 py-1.5 rounded-lg bg-blue-500/15 hover:bg-blue-500/25 border border-blue-500/30 text-blue-300 text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
                     >
                       <Bot className="w-3.5 h-3.5" />
-                      <span>+ VS Code Dev</span>
+                      <span>{tx("+ VS Code Dev")}</span>
                     </button>
                     <button
                       type="button"
@@ -1398,7 +1399,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                       className="px-3 py-1.5 rounded-lg bg-orange-500/15 hover:bg-orange-500/25 border border-orange-500/30 text-orange-300 text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
                     >
                       <Flame className="w-3.5 h-3.5" />
-                      <span>+ Minecraft Gaming</span>
+                      <span>{tx("+ Minecraft Gaming")}</span>
                     </button>
                     <button
                       type="button"
@@ -1406,7 +1407,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                       className="px-3 py-1.5 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
                     >
                       <Trophy className="w-3.5 h-3.5" />
-                      <span>+ Compétition Esports</span>
+                      <span>{tx("+ Compétition Esports")}</span>
                     </button>
                   </div>
                 </div>
@@ -1414,7 +1415,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                 <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-6">
                   <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
                     <Layers className="w-4 h-4 text-[var(--accent-primary)]" />
-                    Activités dans le Cycle ({rotationConfig.activities.length})
+                    {tx("Activités dans le Cycle (")}{rotationConfig.activities.length})
                   </h3>
 
                   <div className="space-y-3">
@@ -1443,7 +1444,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                             </div>
                             {item.url && (
                               <span className="text-xs text-purple-300 font-mono mt-1 block">
-                                Stream : {item.url}
+                                {tx("Stream :")}{" "} {item.url}
                               </span>
                             )}
                           </div>
@@ -1452,7 +1453,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                         <div className="flex items-center gap-4">
                           {rotationConfig.order === "weighted" && (
                             <div className="flex items-center gap-1.5 text-xs text-[var(--text-muted)]">
-                              <span>Poids :</span>
+                              <span>{tx("Poids :")}</span>
                               <span className="font-mono font-bold text-[var(--text-primary)]">{item.weight || 10}</span>
                             </div>
                           )}
@@ -1460,7 +1461,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                             type="button"
                             onClick={() => handleRemoveRotationItem(item.id)}
                             className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
-                            title="Supprimer cette activité"
+                            title={tx("Supprimer cette activité")}
                           >
                             <X className="w-4 h-4" />
                           </button>
@@ -1472,7 +1473,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                   <div className="p-4 rounded-xl bg-[var(--surface-raised)]/40 border border-dashed border-[var(--panel-border)] space-y-4">
                     <h4 className="text-xs font-bold text-[var(--text-muted)] flex items-center gap-1.5">
                       <Sparkles className="w-3.5 h-3.5 text-[var(--accent-primary)]" />
-                      Ajouter une activité personnalisée
+                      {tx("Ajouter une activité personnalisée")}
                     </h4>
 
                     <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
@@ -1482,13 +1483,13 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                           onChange={(v) => setNewRotType(v as DiscordActivityType)}
                           size="sm"
                           className="w-full"
-                          aria-label="Type d'activité"
+                          aria-label={tx("Type d'activité")}
                           options={[
-                            { id: "Playing", label: "Playing" },
-                            { id: "Streaming", label: "Streaming" },
-                            { id: "Listening", label: "Listening" },
-                            { id: "Watching", label: "Watching" },
-                            { id: "Competing", label: "Competing" },
+                            { id: "Playing", label: tx("Playing") },
+                            { id: "Streaming", label: tx("Streaming") },
+                            { id: "Listening", label: tx("Listening") },
+                            { id: "Watching", label: tx("Watching") },
+                            { id: "Competing", label: tx("Competing") },
                           ]}
                         />
                       </div>
@@ -1498,7 +1499,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                           type="text"
                           value={newRotText}
                           onChange={(e) => setNewRotText(e.target.value)}
-                          placeholder="Texte (ex: {guildCount} serveurs en ligne)"
+                          placeholder={tx("Texte (ex: {guildCount} serveurs en ligne)")}
                           className="w-full px-3 py-2 rounded-lg bg-[var(--surface-raised)] border border-[var(--panel-border)] text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)]"
                         />
                       </div>
@@ -1509,7 +1510,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                           onClick={handleAddRotationItem}
                           className="w-full px-4 py-2 rounded-lg bg-[var(--accent-primary)] text-[var(--accent-contrast)] text-xs font-semibold transition-all cursor-pointer active:scale-[0.97]"
                         >
-                          Ajouter
+                          {tx("Ajouter")}
                         </button>
                       </div>
                     </div>
@@ -1519,7 +1520,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                         type="url"
                         value={newRotUrl}
                         onChange={(e) => setNewRotUrl(e.target.value)}
-                        placeholder="URL Twitch / YouTube (ex: https://www.twitch.tv/ta-chaine)"
+                        placeholder={tx("URL Twitch / YouTube (ex: https://www.twitch.tv/ta-chaine)")}
                         className="w-full px-3 py-2 rounded-lg bg-[var(--surface-raised)] border border-purple-500/30 text-xs text-[var(--text-primary)] font-mono"
                       />
                     )}
@@ -1534,10 +1535,10 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                   <div>
                     <h2 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-2">
                       <Zap className="w-5 h-5 text-amber-400" />
-                      Profils de Présence Prédéfinis
+                      {tx("Profils de Présence Prédéfinis")}
                     </h2>
                     <p className="text-xs text-[var(--text-muted)] mt-1">
-                      Des ambiances configurées d&apos;un clic pour le streaming, le gaming, la musique, la maintenance ou le mode invisible
+                      {tx("Des ambiances configurées d'un clic pour le streaming, le gaming, la musique, la maintenance ou le mode invisible")}
                     </p>
                   </div>
 
@@ -1570,7 +1571,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                           className="w-full py-2 rounded-xl bg-[var(--surface-raised)] hover:bg-[var(--accent-primary)] text-[var(--text-primary)] hover:text-[var(--accent-contrast)] text-xs font-semibold transition-colors flex items-center justify-center gap-1.5 cursor-pointer active:scale-[0.97]"
                         >
                           <Play className="w-3.5 h-3.5" />
-                          <span>Appliquer ce profil</span>
+                          <span>{tx("Appliquer ce profil")}</span>
                         </button>
                       </div>
                     ))}
@@ -1582,14 +1583,14 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                     <div>
                       <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
                         <Calendar className="w-4 h-4 text-[var(--accent-primary)]" />
-                        Planning Hebdomadaire Automatique
+                        {tx("Planning Hebdomadaire Automatique")}
                       </h3>
                       <p className="text-xs text-[var(--text-muted)] mt-0.5">
-                        Définis quel profil activer selon les plages horaires de la semaine
+                        {tx("Définis quel profil activer selon les plages horaires de la semaine")}
                       </p>
                     </div>
                     <span className="text-xs font-mono text-[var(--accent-primary)] px-2.5 py-1 rounded-lg bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/30">
-                      Europe/Paris
+                      {tx("Europe/Paris")}
                     </span>
                   </div>
 
@@ -1597,35 +1598,35 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                     <table className="w-full text-xs text-left">
                       <thead className="bg-[var(--surface-raised)]/80 text-[var(--text-muted)] uppercase tracking-wider text-[10px]">
                         <tr className="border-b border-[var(--panel-border)]">
-                          <th className="py-2.5 px-4">Créneau</th>
-                          <th className="py-2.5 px-4">Lundi - Vendredi</th>
-                          <th className="py-2.5 px-4">Samedi - Dimanche</th>
-                          <th className="py-2.5 px-4 text-right">Action</th>
+                          <th className="py-2.5 px-4">{tx("Créneau")}</th>
+                          <th className="py-2.5 px-4">{tx("Lundi - Vendredi")}</th>
+                          <th className="py-2.5 px-4">{tx("Samedi - Dimanche")}</th>
+                          <th className="py-2.5 px-4 text-right">{tx("Action")}</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-[var(--panel-border)] text-[var(--text-muted)]">
                         <tr className="hover:bg-[var(--surface-hover)]/40">
-                          <td className="py-3 px-4 font-semibold text-[var(--text-primary)]">08:00 - 18:00 (Journée)</td>
-                          <td className="py-3 px-4 text-[var(--accent-primary)] font-medium">Surveillance Communauté</td>
-                          <td className="py-3 px-4 text-purple-300 font-medium">Mode Streamer Live</td>
+                          <td className="py-3 px-4 font-semibold text-[var(--text-primary)]">{tx("08:00 - 18:00 (Journée)")}</td>
+                          <td className="py-3 px-4 text-[var(--accent-primary)] font-medium">{tx("Surveillance Communauté")}</td>
+                          <td className="py-3 px-4 text-purple-300 font-medium">{tx("Mode Streamer Live")}</td>
                           <td className="py-3 px-4 text-right">
-                            <span className="text-[var(--accent-primary)] hover:underline cursor-pointer">Modifier</span>
+                            <span className="text-[var(--accent-primary)] hover:underline cursor-pointer">{tx("Modifier")}</span>
                           </td>
                         </tr>
                         <tr className="hover:bg-[var(--surface-hover)]/40">
-                          <td className="py-3 px-4 font-semibold text-[var(--text-primary)]">18:00 - 23:00 (Soirée)</td>
-                          <td className="py-3 px-4 text-purple-300 font-medium">Mode Streamer Live</td>
-                          <td className="py-3 px-4 text-cyan-400 font-medium">Spotify Vibes</td>
+                          <td className="py-3 px-4 font-semibold text-[var(--text-primary)]">{tx("18:00 - 23:00 (Soirée)")}</td>
+                          <td className="py-3 px-4 text-purple-300 font-medium">{tx("Mode Streamer Live")}</td>
+                          <td className="py-3 px-4 text-cyan-400 font-medium">{tx("Spotify Vibes")}</td>
                           <td className="py-3 px-4 text-right">
-                            <span className="text-[var(--accent-primary)] hover:underline cursor-pointer">Modifier</span>
+                            <span className="text-[var(--accent-primary)] hover:underline cursor-pointer">{tx("Modifier")}</span>
                           </td>
                         </tr>
                         <tr className="hover:bg-[var(--surface-hover)]/40">
-                          <td className="py-3 px-4 font-semibold text-[var(--text-primary)]">23:00 - 08:00 (Nuit)</td>
-                          <td className="py-3 px-4 text-amber-400 font-medium">Mode Nuit (Inactif)</td>
-                          <td className="py-3 px-4 text-neutral-400 font-medium">Mode Invisible (Fantôme)</td>
+                          <td className="py-3 px-4 font-semibold text-[var(--text-primary)]">{tx("23:00 - 08:00 (Nuit)")}</td>
+                          <td className="py-3 px-4 text-amber-400 font-medium">{tx("Mode Nuit (Inactif)")}</td>
+                          <td className="py-3 px-4 text-neutral-400 font-medium">{tx("Mode Invisible (Fantôme)")}</td>
                           <td className="py-3 px-4 text-right">
-                            <span className="text-[var(--accent-primary)] hover:underline cursor-pointer">Modifier</span>
+                            <span className="text-[var(--accent-primary)] hover:underline cursor-pointer">{tx("Modifier")}</span>
                           </td>
                         </tr>
                       </tbody>
@@ -1641,10 +1642,10 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                   <div>
                     <h2 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-2">
                       <Server className="w-5 h-5 text-[var(--accent-primary)]" />
-                      Serveurs Installés & Préférences Déclaratives
+                      {tx("Serveurs Installés & Préférences Déclaratives")}
                     </h2>
                     <p className="text-xs text-[var(--text-muted)] mt-1">
-                      Définis le profil préféré pour chaque serveur Discord où Etho est installé
+                      {tx("Définis le profil préféré pour chaque serveur Discord où Etho est installé")}
                     </p>
                   </div>
 
@@ -1652,11 +1653,11 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                     <table className="w-full text-xs text-left">
                       <thead className="bg-[var(--surface-raised)]/80 text-[var(--text-muted)] uppercase tracking-wider text-[10px]">
                         <tr className="border-b border-[var(--panel-border)]">
-                          <th className="py-3 px-4">Serveur Discord</th>
-                          <th className="py-3 px-4">ID de Guilde</th>
-                          <th className="py-3 px-4">Profil Préféré</th>
-                          <th className="py-3 px-4">Dernière Maj</th>
-                          <th className="py-3 px-4 text-right">Action</th>
+                          <th className="py-3 px-4">{tx("Serveur Discord")}</th>
+                          <th className="py-3 px-4">{tx("ID de Guilde")}</th>
+                          <th className="py-3 px-4">{tx("Profil Préféré")}</th>
+                          <th className="py-3 px-4">{tx("Dernière Maj")}</th>
+                          <th className="py-3 px-4 text-right">{tx("Action")}</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-[var(--panel-border)] text-[var(--text-muted)]">
@@ -1670,7 +1671,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                                 <span className="font-semibold text-[var(--text-primary)] block">{g.guildName}</span>
                                 <span className="text-xs text-[var(--accent-primary)] flex items-center gap-1">
                                   <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-primary)]" />
-                                  Bot Installé
+                                  {tx("Bot Installé")}
                                 </span>
                               </div>
                             </td>
@@ -1681,7 +1682,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                                 onChange={(v) => setRowProfileByGuild((prev) => ({ ...prev, [g.guildId]: v }))}
                                 size="sm"
                                 className="min-w-48"
-                                aria-label={`Profil à appliquer pour ${g.guildName}`}
+                                aria-label={tx("Profil à appliquer pour {guildName}", { guildName: g.guildName })}
                                 options={profiles.map((p) => ({ id: p.id, label: `${p.name}` }))}
                               />
                             </td>
@@ -1694,7 +1695,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                                 onClick={() => handleApplyProfile(rowProfileByGuild[g.guildId] ?? g.preferredProfileId)}
                                 className="px-3 py-1.5 rounded-xl bg-[var(--accent-primary)] text-[var(--accent-contrast)] font-medium text-xs transition-all cursor-pointer active:scale-[0.97]"
                               >
-                                Appliquer
+                                {tx("Appliquer")}
                               </button>
                             </td>
                           </tr>
@@ -1712,10 +1713,10 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                   <div>
                     <h2 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-2">
                       <User className="w-5 h-5 text-[var(--accent-primary)]" />
-                      Studio d&apos;Identité du Bot
+                      {tx("Studio d'Identité du Bot")}
                     </h2>
                     <p className="text-xs text-[var(--text-muted)] mt-1">
-                      Gestion de l&apos;avatar et du nom d&apos;utilisateur du bot avec suivi strict des quotas Discord
+                      {tx("Gestion de l'avatar et du nom d'utilisateur du bot avec suivi strict des quotas Discord")}
                     </p>
                   </div>
 
@@ -1723,7 +1724,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                     <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/60 border border-[var(--panel-border)] space-y-4">
                       <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
                         <ImageIcon className="w-4 h-4 text-[var(--accent-primary)]" />
-                        Avatar du Bot
+                        {tx("Avatar du Bot")}
                       </h3>
 
                       <div className="flex items-center gap-5">
@@ -1733,12 +1734,12 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                           className="w-20 h-20 rounded-full border-2 border-[var(--panel-border)] object-cover bg-[var(--surface-raised)]"
                         />
                         <div>
-                          <span className="text-xs text-[var(--text-muted)] block mb-1">Changements restants :</span>
+                          <span className="text-xs text-[var(--text-muted)] block mb-1">{tx("Changements restants :")}</span>
                           <div className="flex items-center gap-2">
                             <span className="text-lg font-bold font-mono text-[var(--accent-primary)]">
                               {identity.avatarChangesRemaining} / 2
                             </span>
-                            <span className="text-xs text-[var(--text-muted)] font-mono">(cycle de 60m)</span>
+                            <span className="text-xs text-[var(--text-muted)] font-mono">{tx("(cycle de 60m)")}</span>
                           </div>
                         </div>
                       </div>
@@ -1746,7 +1747,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                       <div className="pt-2 space-y-2">
                         <label className="w-full py-2.5 px-4 rounded-xl border border-dashed border-[var(--panel-border)] hover:border-[var(--accent-primary)]/40 hover:bg-[var(--accent-primary)]/10 text-xs text-[var(--text-muted)] flex items-center justify-center gap-2 cursor-pointer transition-all">
                           <Upload className="w-4 h-4 text-[var(--accent-primary)]" />
-                          <span>{newAvatarFile ? newAvatarFile.name : "Téléverser un nouvel avatar (PNG/JPG)"}</span>
+                          <span>{newAvatarFile ? newAvatarFile.name : tx("Téléverser un nouvel avatar (PNG/JPG)")}</span>
                           <input
                             type="file"
                             accept="image/*"
@@ -1754,7 +1755,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                             onChange={(e) => {
                               if (e.target.files?.[0]) {
                                 setNewAvatarFile(e.target.files[0]);
-                                toast.info("Image sélectionnée.");
+                                toast.info(tx("Image sélectionnée."));
                               }
                             }}
                           />
@@ -1768,7 +1769,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                               className="flex-1 py-2 rounded-xl bg-[var(--accent-primary)] text-[var(--accent-contrast)] text-xs font-semibold disabled:opacity-50 flex items-center justify-center gap-1.5 cursor-pointer active:scale-[0.97]"
                             >
                               <Save className="w-3.5 h-3.5" />
-                              <span>{uploadingAvatar ? "Envoi..." : "Appliquer l'avatar"}</span>
+                              <span>{uploadingAvatar ? tx("Envoi...") : tx("Appliquer l'avatar")}</span>
                             </button>
                             <button
                               type="button"
@@ -1776,7 +1777,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                               disabled={uploadingAvatar}
                               className="px-3 py-2 rounded-xl bg-[var(--surface-raised)] text-[var(--text-muted)] text-xs font-medium cursor-pointer"
                             >
-                              Annuler
+                              {tx("Annuler")}
                             </button>
                           </div>
                         )}
@@ -1786,25 +1787,25 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                     <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/60 border border-[var(--panel-border)] space-y-4">
                       <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
                         <User className="w-4 h-4 text-[var(--accent-primary)]" />
-                        Nom d&apos;Utilisateur
+                        {tx("Nom d'Utilisateur")}
                       </h3>
 
                       <div>
-                        <span className="text-xs text-[var(--text-muted)] block mb-1">Changements restants :</span>
+                        <span className="text-xs text-[var(--text-muted)] block mb-1">{tx("Changements restants :")}</span>
                         <div className="flex items-center gap-2 mb-3">
                           <span className="text-lg font-bold font-mono text-[var(--accent-primary)]">
                             {identity.usernameChangesRemaining} / 2
                           </span>
-                          <span className="text-xs text-[var(--text-muted)] font-mono">(cycle de 2h)</span>
+                          <span className="text-xs text-[var(--text-muted)] font-mono">{tx("(cycle de 2h)")}</span>
                         </div>
 
                         <div className="space-y-2">
-                          <label className="text-xs font-semibold text-[var(--text-muted)]">Modifier le pseudo Discord :</label>
+                          <label className="text-xs font-semibold text-[var(--text-muted)]">{tx("Modifier le pseudo Discord :")}</label>
                           <input
                             type="text"
                             value={editUsername}
                             onChange={(e) => setEditUsername(e.target.value)}
-                            placeholder="Etho"
+                            placeholder={tx("Etho")}
                             maxLength={32}
                             className="w-full px-3.5 py-2 rounded-xl bg-[var(--surface-raised)] border border-[var(--panel-border)] text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)]"
                           />
@@ -1816,7 +1817,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                           disabled={saving || editUsername === identity.username}
                           className="mt-4 w-full py-2.5 rounded-xl bg-[var(--accent-primary)] text-[var(--accent-contrast)] text-xs font-semibold disabled:opacity-50 cursor-pointer active:scale-[0.97]"
                         >
-                          Enregistrer le nouveau nom
+                          {tx("Enregistrer le nouveau nom")}
                         </button>
                       </div>
                     </div>
@@ -1830,19 +1831,19 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                 <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-6">
                   <h2 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-2">
                     <History className="w-5 h-5 text-[var(--accent-primary)]" />
-                    Journal d&apos;Audit des Changements de Présence
+                    {tx("Journal d'Audit des Changements de Présence")}
                   </h2>
 
                   <div className="overflow-x-auto rounded-xl border border-[var(--panel-border)]">
                     <table className="w-full text-xs text-left">
                       <thead className="bg-[var(--surface-raised)]/80 text-[var(--text-muted)] uppercase tracking-wider text-[10px]">
                         <tr className="border-b border-[var(--panel-border)]">
-                          <th className="py-3 px-3">Date & Heure</th>
-                          <th className="py-3 px-3">Auteur / Source</th>
-                          <th className="py-3 px-3">Transition Statut</th>
-                          <th className="py-3 px-3">Activité Appliquée</th>
-                          <th className="py-3 px-3">Raison</th>
-                          <th className="py-3 px-3 text-right">Portée</th>
+                          <th className="py-3 px-3">{tx("Date & Heure")}</th>
+                          <th className="py-3 px-3">{tx("Auteur / Source")}</th>
+                          <th className="py-3 px-3">{tx("Transition Statut")}</th>
+                          <th className="py-3 px-3">{tx("Activité Appliquée")}</th>
+                          <th className="py-3 px-3">{tx("Raison")}</th>
+                          <th className="py-3 px-3 text-right">{tx("Portée")}</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-[var(--panel-border)] text-[var(--text-muted)] font-mono">
@@ -1868,7 +1869,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                             <td className="py-3 px-3 text-[var(--text-primary)]">
                               <span className="font-semibold text-[var(--accent-primary)]">{item.newActivity}</span>
                             </td>
-                            <td className="py-3 px-3 text-[var(--text-muted)] text-xs">{item.reason || "Mise à jour"}</td>
+                            <td className="py-3 px-3 text-[var(--text-muted)] text-xs">{item.reason || tx("Mise à jour")}</td>
                             <td className="py-3 px-3 text-right">
                               <span className="px-2 py-0.5 rounded text-xs font-bold bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/30">
                                 {item.scope || "global"}

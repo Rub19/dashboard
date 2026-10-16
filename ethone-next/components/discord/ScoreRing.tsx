@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { animate, motion, useMotionValue, useReducedMotion, useTransform } from "framer-motion";
 import { scoreColor } from "@/lib/discord/security-scan";
+import { tx } from "@/lib/tx";
 
 /**
  * Anneau de score (0–100) : l'arc se remplit avec un ressort et le chiffre compte jusqu'à la valeur.
@@ -28,7 +29,7 @@ export default function ScoreRing({ score, size = 96, stroke = 8 }: { score: num
   }, [progress, reduced, value]);
 
   return (
-    <div className="relative shrink-0" style={{ width: size, height: size }} role="img" aria-label={`Score ${value} sur 100`}>
+    <div className="relative shrink-0" style={{ width: size, height: size }} role="img" aria-label={tx("Score {value} sur 100", { value })}>
       <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="-rotate-90">
         <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="var(--panel-border)" strokeWidth={stroke} />
         <motion.circle

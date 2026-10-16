@@ -8,6 +8,7 @@ import { useToast } from "@/components/ToastProvider";
 import { confirmDialog } from "@/lib/confirmDialog";
 import { SPRING_LAYOUT } from "@/lib/ease";
 import { cn } from "@/lib/utils";
+import { tx } from "@/lib/tx";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 const POLL_MS = 30_000;
@@ -100,7 +101,7 @@ export default function OwnerBotSection({ itemClass }: { itemClass: string }) {
 
   const restart = async () => {
     if (restarting) return;
-    if (!(await confirmDialog("Redémarrer le bot ? Il sera hors ligne quelques secondes (musique en cours coupée)."))) return;
+    if (!(await confirmDialog(tx("Redémarrer le bot ? Il sera hors ligne quelques secondes (musique en cours coupée).")))) return;
     setRestarting(true);
     restartingRef.current = true;
     try {
@@ -111,7 +112,7 @@ export default function OwnerBotSection({ itemClass }: { itemClass: string }) {
       await new Promise((r) => setTimeout(r, 4000));
       while (Date.now() - started < 120_000) {
         if (await load()) {
-          success("Bot redémarré", "Etho est de nouveau en ligne.");
+          success(tx("Bot redémarré"), tx("Etho est de nouveau en ligne."));
           return;
         }
         await new Promise((r) => setTimeout(r, 3000));
@@ -132,7 +133,7 @@ export default function OwnerBotSection({ itemClass }: { itemClass: string }) {
 
   return (
     <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={SPRING_LAYOUT} className="space-y-1.5 pt-2">
-      <span className="block px-2 text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Pilotage Etho</span>
+      <span className="block px-2 text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">{tx("Pilotage Etho")}</span>
 
       <div className="mx-0.5 space-y-2.5 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)] p-3 text-xs">
         <div className="flex items-center justify-between gap-2">
@@ -141,25 +142,25 @@ export default function OwnerBotSection({ itemClass }: { itemClass: string }) {
               {!restarting && <span className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-40" style={{ background: st.color }} />}
               <span className="relative inline-flex h-2 w-2 rounded-full" style={{ background: restarting ? "var(--warning)" : st.color }} />
             </span>
-            {restarting ? "Redémarrage…" : st.label}
+            {restarting ? tx("Redémarrage…") : st.label}
           </span>
           <span className="font-mono text-[11px] text-[var(--text-muted)]">v{data.globalStatus.version}</span>
         </div>
         <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-[var(--text-muted)]">
-          <span className="flex items-center gap-1.5" title="Temps depuis le dernier démarrage">
+          <span className="flex items-center gap-1.5" title={tx("Temps depuis le dernier démarrage")}>
             <Clock className="h-3.5 w-3.5" />
             {formatUptime(data.globalStatus.uptimeSeconds)}
           </span>
           {typeof ping === "number" && (
-            <span className="flex items-center gap-1.5" title="Latence avec Discord">
+            <span className="flex items-center gap-1.5" title={tx("Latence avec Discord")}>
               <Activity className="h-3.5 w-3.5" />
-              {ping} ms
+              {ping} {" "}{tx("ms")}
             </span>
           )}
           {typeof ram === "number" && (
-            <span className="flex items-center gap-1.5" title="Mémoire utilisée">
+            <span className="flex items-center gap-1.5" title={tx("Mémoire utilisée")}>
               <Cpu className="h-3.5 w-3.5" />
-              {Math.round(ram)} Mo
+              {Math.round(ram)} {" "}{tx("Mo")}
             </span>
           )}
           <span
@@ -167,7 +168,7 @@ export default function OwnerBotSection({ itemClass }: { itemClass: string }) {
             title={data.globalStatus.statusMessage}
           >
             <AlertTriangle className="h-3.5 w-3.5" />
-            {data.globalStatus.activeIncidentsCount} incident{data.globalStatus.activeIncidentsCount > 1 ? "s" : ""}
+            {data.globalStatus.activeIncidentsCount} {" "}{tx("incident")}{data.globalStatus.activeIncidentsCount > 1 ? "s" : ""}
           </span>
         </div>
         <button
@@ -177,7 +178,7 @@ export default function OwnerBotSection({ itemClass }: { itemClass: string }) {
           className="flex w-full items-center justify-center gap-2 rounded-md border border-[var(--panel-border)] py-2 font-semibold text-xs text-[var(--text-primary)] transition-[background-color,transform] duration-150 hover:bg-[var(--surface-hover,var(--surface-raised))] active:scale-[0.98] disabled:cursor-wait disabled:opacity-60"
         >
           <RotateCw className={cn("h-3.5 w-3.5", restarting && "animate-spin")} />
-          {restarting ? "Redémarrage en cours" : "Redémarrer le bot"}
+          {restarting ? tx("Redémarrage en cours") : tx("Redémarrer le bot")}
         </button>
       </div>
 
@@ -187,7 +188,7 @@ export default function OwnerBotSection({ itemClass }: { itemClass: string }) {
         aria-expanded={toolsOpen}
         className="flex w-full items-center justify-between rounded px-3 py-2 text-xs font-semibold text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)]"
       >
-        <span>Outils du bot · {LINKS.length}</span>
+        <span>{tx("Outils du bot ·")}{" "} {LINKS.length}</span>
         <motion.span animate={{ rotate: toolsOpen ? 180 : 0 }} transition={SPRING_LAYOUT} aria-hidden>
           ▾
         </motion.span>

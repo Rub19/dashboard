@@ -13,6 +13,7 @@ import { cleanLogText, failingChecks, fetchLastScan, scoreColor, sinceLabel, typ
 import { protectionCount } from "./console/ConsoleProtections";
 import type { ConsoleView } from "./HubSidebar";
 import type { DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
+import { tx } from "@/lib/tx";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -84,7 +85,7 @@ export default function GuildOverviewScreen({ guild, guildSettings, onOpenScan, 
       .slice(0, 2)
       .map((c: ScanCheck) => ({ id: c.id, tone: c.severity === "important" ? ("danger" as const) : ("warning" as const), title: c.title, action: "Voir le détail", onClick: () => open("scan") })),
     ...(logGap.length
-      ? [{ id: "log-gap", tone: "warning" as const, title: `${logGap.length} protection${logGap.length > 1 ? "s" : ""} sans salon de log`, action: "Choisir un salon", onClick: () => onOpenLogs?.() }]
+      ? [{ id: "log-gap", tone: "warning" as const, title: tx("{length} protection{v1} sans salon de log", { length: logGap.length, v1: logGap.length > 1 ? "s" : "" }), action: "Choisir un salon", onClick: () => onOpenLogs?.() }]
       : []),
   ];
 
@@ -119,7 +120,7 @@ export default function GuildOverviewScreen({ guild, guildSettings, onOpenScan, 
       {/* Quatre indicateurs */}
       <motion.div variants={staggerItem} className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <button type="button" onClick={() => open("protections")} className={cn(tile, "relative overflow-hidden p-4 text-left transition-colors hover:border-[var(--text-primary)]/15")}>
-          <Head icon={ShieldCheck}>Protections actives</Head>
+          <Head icon={ShieldCheck}>{tx("Protections actives")}</Head>
           <p className="mt-2 text-2xl font-bold tabular-nums text-[var(--text-primary)]">
             {protections ? protections.active : "—"}
             <span className="text-[var(--text-muted)]">/{protections?.total ?? "—"}</span>
@@ -134,25 +135,25 @@ export default function GuildOverviewScreen({ guild, guildSettings, onOpenScan, 
           </span>
         </button>
         <button type="button" onClick={() => open("scan")} className={cn(tile, "p-4 text-left transition-colors hover:border-[var(--text-primary)]/15")}>
-          <Head icon={ScanFace}>Scan de sécurité</Head>
+          <Head icon={ScanFace}>{tx("Scan de sécurité")}</Head>
           {lastScan ? (
             <p className="mt-2 text-2xl font-bold tabular-nums" title={sinceLabel(lastScan.scannedAt)}>
               <span style={{ color: scoreColor(lastScan.score) }}>{lastScan.score}</span>
               <span className="text-[var(--text-muted)]">/100</span>
             </p>
           ) : (
-            <p className="mt-2 text-sm font-semibold text-[var(--text-primary)]">Lancer un scan</p>
+            <p className="mt-2 text-sm font-semibold text-[var(--text-primary)]">{tx("Lancer un scan")}</p>
           )}
         </button>
         <div className={cn(tile, "p-4")}>
-          <Head icon={Siren}>Mode raid</Head>
+          <Head icon={Siren}>{tx("Mode raid")}</Head>
           <div className="mt-2 flex items-center justify-between gap-2">
-            <p className="text-2xl font-bold text-[var(--text-primary)]">{raidMode === null ? "—" : raidMode ? "Actif" : "Inactif"}</p>
+            <p className="text-2xl font-bold text-[var(--text-primary)]">{raidMode === null ? "—" : raidMode ? tx("Actif") : tx("Inactif")}</p>
             <button
               type="button"
               role="switch"
               aria-checked={raidMode === true}
-              aria-label="Mode raid"
+              aria-label={tx("Mode raid")}
               disabled={raidBusy || raidMode === null}
               onClick={toggleRaid}
               className={cn("relative h-5 w-9 shrink-0 rounded-full transition-colors duration-200 disabled:opacity-50", raidMode ? "bg-[var(--danger)]" : "bg-[var(--panel-border)]")}
@@ -162,14 +163,14 @@ export default function GuildOverviewScreen({ guild, guildSettings, onOpenScan, 
           </div>
         </div>
         <button type="button" onClick={() => open("settings")} className={cn(tile, "p-4 text-left transition-colors hover:border-[var(--text-primary)]/15")}>
-          <Head icon={Settings}>Préfixe</Head>
+          <Head icon={Settings}>{tx("Préfixe")}</Head>
           <p className="mt-2 font-mono text-2xl font-bold text-[var(--text-primary)]">{guildSettings?.prefix || "!"}</p>
         </button>
       </motion.div>
 
       {/* Gérer le serveur */}
       <motion.section variants={staggerItem} className="space-y-3">
-        <h2 className="text-sm font-bold text-[var(--text-primary)]">Gérer le serveur</h2>
+        <h2 className="text-sm font-bold text-[var(--text-primary)]">{tx("Gérer le serveur")}</h2>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {SHORTCUTS.map(({ view, icon: Ico, title, text }) => (
             <motion.button
@@ -202,13 +203,13 @@ export default function GuildOverviewScreen({ guild, guildSettings, onOpenScan, 
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="text-sm font-bold text-[var(--text-primary)]">Timeline des Incidents en Direct</h3>
+              <h3 className="text-sm font-bold text-[var(--text-primary)]">{tx("Timeline des Incidents en Direct")}</h3>
               <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[9px] font-bold text-emerald-400">
-                Temps Réel
+                {tx("Temps Réel")}
               </span>
             </div>
             <p className="text-xs text-[var(--text-muted)] mt-0.5">
-              Historique visuel des événements de sécurité (sanctions auto-mod, détections anti-raid, alertes).
+              {tx("Historique visuel des événements de sécurité (sanctions auto-mod, détections anti-raid, alertes).")}
             </p>
           </div>
         </div>
@@ -218,7 +219,7 @@ export default function GuildOverviewScreen({ guild, guildSettings, onOpenScan, 
           className="shrink-0 flex items-center justify-center gap-2 rounded-xl bg-[var(--accent-primary)] px-3.5 py-2 text-xs font-bold text-[var(--accent-contrast)] hover:opacity-90 active:scale-95 transition-all cursor-pointer shadow-sm"
         >
           <History className="h-3.5 w-3.5" />
-          <span>Consulter les incidents</span>
+          <span>{tx("Consulter les incidents")}</span>
         </button>
       </motion.div>
 
@@ -232,11 +233,11 @@ export default function GuildOverviewScreen({ guild, guildSettings, onOpenScan, 
               onClick={() => (onOpenView ? onOpenView("logs", { logsTab: "incidents" }) : onOpenLogs?.())}
               className="text-xs font-semibold text-[var(--accent-primary)] hover:underline cursor-pointer"
             >
-              Timeline incidents
+              {tx("Timeline incidents")}
             </button>
             <span className="text-[var(--text-muted)]">•</span>
             <button type="button" onClick={() => open("logs")} className="text-xs font-semibold text-[var(--success)] hover:underline cursor-pointer">
-              Tout voir
+              {tx("Tout voir")}
             </button>
           </div>
         </div>
@@ -254,7 +255,7 @@ export default function GuildOverviewScreen({ guild, guildSettings, onOpenScan, 
           ) : (
             <p className="flex items-center gap-2.5 px-4 py-3 text-[13px] text-[var(--text-muted)]">
               <CircleCheck className="h-4 w-4 text-[var(--success)]" strokeWidth={2} />
-              {activity === null ? "Logs indisponibles pour l'instant." : "Rien à signaler. Etho veille."}
+              {activity === null ? tx("Logs indisponibles pour l'instant.") : tx("Rien à signaler. Etho veille.")}
             </p>
           )}
         </div>

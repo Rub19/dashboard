@@ -126,6 +126,7 @@ import { modCommand } from '../modules/moderation/commands/mod.js';
 import { config } from '../config.js';
 import { Command } from '../types/command.js';
 import { logger } from '../utils/logger.js';
+import { commandTranslations } from '../services/commandTranslations.js';
 import { BotErrorIncidentService } from '../modules/botControl/services/botErrorIncidentService.js';
 
 const PREFIX_ONLY_SHORTCUTS = new Set([
@@ -339,10 +340,10 @@ class CommandRegistry {
   /**
    * Enregistre les Slash Commands auprès de l'API REST de Discord
    */
-  public async deploySlashCommands(): Promise<void> {
+  public async deploySlashCommands(fillTranslations = true): Promise<void> {
     const slashDataList = this.getAllCommands()
       .filter((cmd) => cmd.slashData !== undefined && !PREFIX_ONLY_SHORTCUTS.has(cmd.name))
-      .map((cmd) => cmd.slashData!.toJSON());
+      .map((cmd) => commandTranslations.localize(cmd.slashData!.toJSON()));
     // Menus contextuels (clic droit) : déployés avec les commandes slash
     const contextMenus = REPORT_CONTEXT_MENUS.map((m) => m.data.toJSON());
 
@@ -363,6 +364,18 @@ class CommandRegistry {
         { body: [...slashDataList, ...contextMenus] }
       );
       logger.success('Slash commands déployées globalement avec succès (tous les serveurs, propagation ~1h).');
+      if (fillTranslations) {
+        const texts: string[] = [];
+        const collect = (n: { description?: string; options?: unknown[] }) => {
+          if (n.description) texts.push(n.description);
+          for (const o of n.options ?? []) collect(o as typeof n);
+        };
+        slashDataList.forEach((j) => collect(j as never));
+        void commandTranslations
+          .fill(texts)
+          .then((added) => (added > 0 ? this.deploySlashCommands(false) : undefined))
+          .catch((err) => logger.warn('Traductions des commandes slash :', err?.message));
+      }
 
       // Les commandes globales apparaissent déjà sur tous les serveurs, y compris
       // celui de dev. Les enregistrer AUSSI en commandes de guilde les faisait

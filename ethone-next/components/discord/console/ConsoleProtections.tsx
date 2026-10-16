@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { ChannelAdder, Chip, EmptyLine, GhostButton, MemberPicker, RoleChips, Segmented, Select, Stepper, Switch, useGuildApi } from "./kit";
 import type { ConsoleView } from "../HubSidebar";
 import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
+import { tx } from "@/lib/tx";
 
 type Punish = "none" | "timeout" | "derank" | "kick" | "ban";
 type Kind = "quota" | "watched" | "link" | "words" | "toxicity" | "scam" | "alt" | "rollback" | "reorder";
@@ -188,7 +189,7 @@ function Sentence({ text }: { text: string }) {
       {bold(before)}
       {after && (
         <>
-          Etho <strong className="font-semibold text-[var(--text-primary)]">{after.replace(/^Etho /, "").replace(/\.$/, "")}</strong>.
+          {tx("Etho")}{" "} <strong className="font-semibold text-[var(--text-primary)]">{after.replace(/^Etho /, "").replace(/\.$/, "")}</strong>.
         </>
       )}
     </p>
@@ -247,7 +248,7 @@ function DurationField({ seconds, onCommit, presets, max }: { seconds: number; o
         <input
           value={draft}
           inputMode="numeric"
-          aria-label="Durée"
+          aria-label={tx("Durée")}
           onChange={(e) => setDraft(e.target.value.replace(/\D/g, "").slice(0, 4))}
           onBlur={() => commit(Number(draft) || 1, u)}
           onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()}
@@ -260,7 +261,7 @@ function DurationField({ seconds, onCommit, presets, max }: { seconds: number; o
             setU(next);
             commit(Number(draft) || 1, next);
           }}
-          aria-label="Unité"
+          aria-label={tx("Unité")}
           size="sm"
           buttonClassName="h-full rounded-none rounded-r-lg border-y-0 border-r-0 border-l border-[var(--panel-border)] bg-transparent px-2.5"
         />
@@ -342,7 +343,7 @@ function MemberChips({ guildId, ids, onChange }: { guildId: string; ids: string[
       {ids.map((id) => (
         <Chip key={id} label={names[id] ?? "…"} onRemove={() => onChange(ids.filter((x) => x !== id))} />
       ))}
-      <MemberPicker guildId={guildId} label="Membre" excludeIds={ids} onPick={(m) => onChange([...ids, m.id])} />
+      <MemberPicker guildId={guildId} label={tx("Membre")} excludeIds={ids} onPick={(m) => onChange([...ids, m.id])} />
     </div>
   );
 }
@@ -358,7 +359,7 @@ function ChannelChips({ ids, channels, onChange, guildId, categories }: { ids: s
       ))}
       {categories ? (
         <div className="w-48">
-          <ChannelPicker guildId={guildId} value="" filterTypes={[4]} placeholder="+ Catégorie" onChange={(id) => id && !ids.includes(id) && onChange([...ids, id])} />
+          <ChannelPicker guildId={guildId} value="" filterTypes={[4]} placeholder={tx("+ Catégorie")} onChange={(id) => id && !ids.includes(id) && onChange([...ids, id])} />
         </div>
       ) : (
         <ChannelAdder guildId={guildId} excludeIds={ids} onPick={(c) => onChange([...ids, c.id])} />
@@ -441,13 +442,13 @@ export default function ConsoleProtections({
   };
 
   const liftLockdown = async () => {
-    if (!(await confirmDialog("Rendre aux rôles les permissions retirées par le verrouillage ?", { title: "Lever le verrouillage", confirmLabel: "Lever" }))) return;
+    if (!(await confirmDialog(tx("Rendre aux rôles les permissions retirées par le verrouillage ?"), { title: tx("Lever le verrouillage"), confirmLabel: tx("Lever") }))) return;
     setBusy("lift");
     const r = await api<Data & { restored: number }>("/protections/lockdown/lift", { method: "POST", json: {} });
     setBusy(null);
     if (r) {
       setData(r);
-      success("Verrouillage levé", `Permissions rendues à ${r.restored} rôle${r.restored > 1 ? "s" : ""}.`);
+      success(tx("Verrouillage levé"), tx("Permissions rendues à {restored} rôle{v1}.", { restored: r.restored, v1: r.restored > 1 ? "s" : "" }));
     }
   };
   const backupNow = async () => {
@@ -456,7 +457,7 @@ export default function ConsoleProtections({
     setBusy(null);
     if (r) {
       setData((d) => (d ? { ...d, lastBackupAt: r.lastBackupAt } : d));
-      success("Serveur capturé", "La sauvegarde est dans le module Sauvegardes.");
+      success(tx("Serveur capturé"), tx("La sauvegarde est dans le module Sauvegardes."));
     }
   };
 
@@ -469,9 +470,9 @@ export default function ConsoleProtections({
   if (!data)
     return (
       <div className="mx-auto w-full max-w-6xl">
-        <h1 className="text-2xl font-bold tracking-tight text-[var(--text-primary)] sm:text-3xl">Protections</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-[var(--text-primary)] sm:text-3xl">{tx("Protections")}</h1>
         <div className="mt-6 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]">
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         </div>
       </div>
     );
@@ -503,7 +504,7 @@ export default function ConsoleProtections({
   return (
     <motion.div initial={reduced ? false : { opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }} className="mx-auto w-full max-w-6xl space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-bold tracking-tight text-[var(--text-primary)] sm:text-3xl">Protections</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-[var(--text-primary)] sm:text-3xl">{tx("Protections")}</h1>
         <div className="flex items-center gap-2">
           {onOpenView && (
             <button
@@ -512,7 +513,7 @@ export default function ConsoleProtections({
               className="flex items-center gap-2 rounded-xl border border-[var(--panel-border)] px-3.5 py-2 text-[13px] font-semibold text-[var(--text-primary)] transition-[background-color,transform] hover:bg-[var(--surface-hover)] active:scale-[0.98] cursor-pointer"
             >
               <History className="h-4 w-4" />
-              <span>Incidents</span>
+              <span>{tx("Incidents")}</span>
             </button>
           )}
           {onOpenSetup && (
@@ -522,7 +523,7 @@ export default function ConsoleProtections({
               className="flex items-center gap-2 rounded-xl border border-[var(--panel-border)] px-3.5 py-2 text-[13px] font-semibold text-[var(--text-primary)] transition-[background-color,transform] hover:bg-[var(--surface-hover)] active:scale-[0.98] cursor-pointer"
             >
               <WandSparkles className="h-4 w-4" />
-              <span>Configuration assistée</span>
+              <span>{tx("Configuration assistée")}</span>
             </button>
           )}
         </div>
@@ -532,10 +533,10 @@ export default function ConsoleProtections({
         <div className="flex flex-wrap items-center gap-3 rounded-xl border border-[var(--danger)]/40 bg-[var(--danger)]/10 px-4 py-3">
           <Lock className="h-4 w-4 shrink-0 text-[var(--danger)]" />
           <p className="min-w-0 flex-1 text-[13px] text-[var(--text-primary)]">
-            <strong>Serveur verrouillé.</strong> {data.lockdown.reason}. Les permissions sensibles de {Object.keys(data.lockdown.roles).length} rôle{Object.keys(data.lockdown.roles).length > 1 ? "s" : ""} sont retirées.
+            <strong>{tx("Serveur verrouillé.")}</strong> {data.lockdown.reason}{tx(". Les permissions sensibles de")}{" "} {Object.keys(data.lockdown.roles).length} {" "}{tx("rôle")}{Object.keys(data.lockdown.roles).length > 1 ? "s" : ""} {" "}{tx("sont retirées.")}
           </p>
           <GhostButton onClick={liftLockdown} disabled={busy === "lift"}>
-            {busy === "lift" ? "…" : "Lever le verrouillage"}
+            {busy === "lift" ? "…" : tx("Lever le verrouillage")}
           </GhostButton>
         </div>
       )}
@@ -543,7 +544,7 @@ export default function ConsoleProtections({
         <div className="flex items-start gap-3 rounded-xl border border-[var(--warning)]/40 bg-[var(--warning)]/10 px-4 py-3">
           <TriangleAlert className="mt-0.5 h-4 w-4 shrink-0 text-[var(--warning)]" />
           <p className="text-[13px] text-[var(--text-primary)]">
-            <strong>Permission à vérifier sur Discord.</strong> Il manque à Etho : {data.missingPermissions.join(", ")}. Sans elles, certaines protections ne peuvent ni détecter ni réparer.
+            <strong>{tx("Permission à vérifier sur Discord.")}</strong> {" "}{tx("Il manque à Etho :")}{" "} {data.missingPermissions.join(", ")}{tx(". Sans elles, certaines protections ne peuvent ni détecter ni réparer.")}
           </p>
         </div>
       )}
@@ -552,9 +553,9 @@ export default function ConsoleProtections({
         <aside className={cn("space-y-3 lg:sticky lg:top-4 lg:self-start", isPhone && detailOpen && "hidden")}>
           <label className="flex h-10 items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 transition-colors focus-within:border-[var(--accent-primary)]/60">
             <Search className="h-4 w-4 text-[var(--text-muted)]" />
-            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Spam, liens, rôles…" aria-label="Chercher une protection" className="min-w-0 flex-1 bg-transparent text-sm text-[var(--text-primary)] outline-none placeholder:text-[var(--text-muted)]" />
+            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={tx("Spam, liens, rôles…")} aria-label={tx("Chercher une protection")} className="min-w-0 flex-1 bg-transparent text-sm text-[var(--text-primary)] outline-none placeholder:text-[var(--text-muted)]" />
           </label>
-          <nav aria-label="Catégories de protections" className="space-y-0.5">
+          <nav aria-label={tx("Catégories de protections")} className="space-y-0.5">
             {(["all", ...data.categories] as const).map((cat) => {
               const items = cat === "all" ? data.catalog : data.catalog.filter((d) => d.category === cat);
               const on = items.filter((d) => data.settings[d.key].enabled).length;
@@ -574,15 +575,15 @@ export default function ConsoleProtections({
                 >
                   {active && <motion.span layoutId="prot-cat" transition={SPRING_LAYOUT} className="absolute inset-0 -z-10 rounded-xl bg-[var(--surface-hover)]" />}
                   <Icon className={cn("h-4 w-4 shrink-0 transition-colors", active ? "text-[var(--accent-primary)]" : "text-[var(--text-muted)]")} />
-                  <span className={cn("min-w-0 flex-1 truncate font-medium", active ? "text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]")}>{cat === "all" ? "Toutes" : cat}</span>
-                  {locked ? <Lock className="h-3.5 w-3.5 text-[var(--text-muted)]" aria-label="Sauvegarde" /> : <span className="text-xs tabular-nums text-[var(--text-muted)]">{on}/{items.length}</span>}
+                  <span className={cn("min-w-0 flex-1 truncate font-medium", active ? "text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]")}>{cat === "all" ? tx("Toutes") : cat}</span>
+                  {locked ? <Lock className="h-3.5 w-3.5 text-[var(--text-muted)]" aria-label={tx("Sauvegarde")} /> : <span className="text-xs tabular-nums text-[var(--text-muted)]">{on}/{items.length}</span>}
                 </button>
               );
             })}
           </nav>
           <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-4">
             <div className="flex items-baseline justify-between">
-              <span className="text-[13px] font-medium text-[var(--text-muted)]">Protections actives</span>
+              <span className="text-[13px] font-medium text-[var(--text-muted)]">{tx("Protections actives")}</span>
               <span className="text-base font-bold tabular-nums text-[var(--text-primary)]">
                 {activeOn}
                 <span className="text-[var(--text-muted)]">/{activeTotal}</span>
@@ -595,7 +596,7 @@ export default function ConsoleProtections({
         </aside>
 
         <div className="min-w-0 space-y-4">
-          <div className="inline-flex flex-wrap gap-1 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-1" role="tablist" aria-label="Filtrer les protections">
+          <div className="inline-flex flex-wrap gap-1 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-1" role="tablist" aria-label={tx("Filtrer les protections")}>
             {(
               [
                 ["all", "Toutes", counts.all],
@@ -618,7 +619,7 @@ export default function ConsoleProtections({
               <motion.div key={`detail-${current.key}`} initial={reduced ? false : { opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} exit={reduced ? { opacity: 0 } : { opacity: 0, x: -16 }} transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }} className="overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]">
                 <button type="button" onClick={() => setDetailOpen(false)} className="flex w-full items-center gap-2 border-b border-[var(--panel-border)] px-5 py-3 text-[13px] font-semibold text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)] cursor-pointer">
                   <ArrowLeft className="h-4 w-4" />
-                  {category === "all" ? "Toutes les protections" : category}
+                  {category === "all" ? tx("Toutes les protections") : category}
                 </button>
                 <Detail
                   def={current}
@@ -636,7 +637,7 @@ export default function ConsoleProtections({
               </motion.div>
             ) : (
               <motion.div key={`list-${category}`} initial={reduced ? false : { opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }} className="space-y-4">
-                {shownCats.length === 0 && <p className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-5 py-10 text-center text-sm text-[var(--text-muted)]">Aucune protection ne correspond.</p>}
+                {shownCats.length === 0 && <p className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-5 py-10 text-center text-sm text-[var(--text-muted)]">{tx("Aucune protection ne correspond.")}</p>}
                 {shownCats.map((cat) => {
                   const meta = CATEGORY_META[cat];
                   const Icon = meta?.icon ?? LayoutGrid;
@@ -655,7 +656,7 @@ export default function ConsoleProtections({
                         </div>
                         {toggleable.length > 0 && (
                           <button type="button" onClick={() => void toggleCategory(cat)} className="shrink-0 rounded-xl border border-[var(--panel-border)] px-3 py-1.5 text-[13px] font-semibold text-[var(--text-primary)] transition-[background-color,transform] hover:bg-[var(--surface-hover)] active:scale-[0.97] cursor-pointer">
-                            {allOn ? "Tout désactiver" : "Tout activer"}
+                            {allOn ? tx("Tout désactiver") : tx("Tout activer")}
                           </button>
                         )}
                       </header>
@@ -675,12 +676,12 @@ export default function ConsoleProtections({
                               <button type="button" onClick={() => open(d.key)} className="min-w-0 flex-1 text-left cursor-pointer">
                                 <span className="flex items-center gap-2 text-sm font-semibold text-[var(--text-primary)]">
                                   {d.label}
-                                  {todo && <TriangleAlert className="h-3.5 w-3.5 text-[var(--warning)]" aria-label="À compléter" />}
+                                  {todo && <TriangleAlert className="h-3.5 w-3.5 text-[var(--warning)]" aria-label={tx("À compléter")} />}
                                 </span>
                                 <span className="mt-0.5 block text-[13px] text-[var(--text-muted)]">{todo ? "À compléter : choisis un salon de logs" + (d.specific === "watchedChannels" ? " et les salons surveillés" : d.kind === "words" ? " et les mots interdits" : "") + "." : d.description}</span>
                               </button>
                               {d.kind !== "rollback" && <Switch checked={st.enabled} onChange={(v) => save(d.key, { enabled: v })} label={`${d.label} ${st.enabled ? "activée" : "désactivée"}`} />}
-                              <button type="button" onClick={() => open(d.key)} aria-label={`Régler ${d.label}`} className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[var(--text-muted)] transition-[color,transform] group-hover:translate-x-0.5 group-hover:text-[var(--text-primary)] cursor-pointer">
+                              <button type="button" onClick={() => open(d.key)} aria-label={tx("Régler {label}", { label: d.label })} className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[var(--text-muted)] transition-[color,transform] group-hover:translate-x-0.5 group-hover:text-[var(--text-primary)] cursor-pointer">
                                 <ChevronRight className="h-4 w-4" />
                               </button>
                             </motion.li>
@@ -748,13 +749,13 @@ function Detail({
           <p className="mt-1 text-sm text-[var(--text-muted)]">{def.description}</p>
         </div>
         <div className="flex shrink-0 items-center gap-2.5 pt-1">
-          <span className={cn("text-[13px] font-semibold", s.enabled ? "text-[var(--success)]" : "text-[var(--text-muted)]")}>{s.enabled ? "Activée" : "Désactivée"}</span>
+          <span className={cn("text-[13px] font-semibold", s.enabled ? "text-[var(--success)]" : "text-[var(--text-muted)]")}>{s.enabled ? tx("Activée") : tx("Désactivée")}</span>
           <Switch checked={s.enabled} onChange={(v) => onSave({ enabled: v })} label={def.label} />
         </div>
       </header>
 
       <div className="mx-5 my-4 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))]/60 px-4 py-3.5 sm:mx-6">
-        <p className="mb-1 text-xs font-semibold text-[var(--text-muted)]">{s.enabled ? "Ce que fait Etho" : "Une fois activée"}</p>
+        <p className="mb-1 text-xs font-semibold text-[var(--text-muted)]">{s.enabled ? tx("Ce que fait Etho") : tx("Une fois activée")}</p>
         <Sentence text={describe(def, s)} />
         {def.aftermath && (
           <p className="mt-2 flex items-start gap-1.5 text-xs text-[var(--text-muted)]">
@@ -764,9 +765,9 @@ function Detail({
         )}
         <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-[var(--panel-border)] pt-3">
           <GhostButton onClick={runTest} disabled={testing}>
-            {testing ? "Test…" : "Tester la protection"}
+            {testing ? tx("Test…") : tx("Tester la protection")}
           </GhostButton>
-          <span className="text-[11px] text-[var(--text-muted)]">Vérifie les permissions d&apos;Etho, sa place dans les rôles et le salon de log (message de test).</span>
+          <span className="text-[11px] text-[var(--text-muted)]">{tx("Vérifie les permissions d'Etho, sa place dans les rôles et le salon de log (message de test).")}</span>
         </div>
         {checks && (
           <ul className="mt-2 space-y-1">
@@ -786,56 +787,56 @@ function Detail({
       <AnimatePresence initial={false} mode="wait">
         {!open ? (
           <motion.div key="folded" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col items-center gap-3 border-t border-[var(--panel-border)] px-6 py-10 text-center">
-            <p className="text-xs text-[var(--text-muted)]">Les réglages sont repliés tant que la protection est désactivée.</p>
-            <GhostButton onClick={onPrepare}>Préparer les réglages</GhostButton>
+            <p className="text-xs text-[var(--text-muted)]">{tx("Les réglages sont repliés tant que la protection est désactivée.")}</p>
+            <GhostButton onClick={onPrepare}>{tx("Préparer les réglages")}</GhostButton>
           </motion.div>
         ) : (
           <motion.div key="open" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} transition={SPRING_LAYOUT} className="overflow-hidden">
             {/* 1. Détection */}
             {def.kind !== "rollback" && (
-              <Section n={++n} title="Détection">
+              <Section n={++n} title={tx("Détection")}>
                 {def.kind === "quota" && (
-                  <Field label="Seuil" info="Nombre d'actions d'un même membre, dans la fenêtre de temps, avant la sanction.">
+                  <Field label={tx("Seuil")} info="Nombre d'actions d'un même membre, dans la fenêtre de temps, avant la sanction.">
                     <div className="flex flex-wrap items-center gap-2">
                       <Stepper value={s.quotaMax ?? 1} min={1} max={1000} unit={(s.quotaMax ?? 1) > 1 ? def.noun?.[1] : def.noun?.[0]} onCommit={(v) => onSave({ quotaMax: v })} />
-                      <span className="text-sm text-[var(--text-muted)]">en moins de</span>
+                      <span className="text-sm text-[var(--text-muted)]">{tx("en moins de")}</span>
                       <DurationField seconds={s.quotaSeconds ?? 60} max={604800} presets={WINDOW_PRESETS} onCommit={(v) => onSave({ quotaSeconds: v })} />
                     </div>
                   </Field>
                 )}
                 {def.specific === "maxPerMessage" && (
-                  <Field label="Mentions par message" hint="Au-delà, le message compte.">
+                  <Field label={tx("Mentions par message")} hint={tx("Au-delà, le message compte.")}>
                     <Stepper value={s.maxPerMessage ?? 5} min={1} max={50} unit="max" onCommit={(v) => onSave({ maxPerMessage: v })} />
                   </Field>
                 )}
                 {def.specific === "ghostPing" && (
                   <>
-                    <Field label="Délai" hint="Une mention supprimée dans ce délai après l'envoi compte comme un ghost ping.">
+                    <Field label={tx("Délai")} hint={tx("Une mention supprimée dans ce délai après l'envoi compte comme un ghost ping.")}>
                       <DurationField seconds={s.ghostMaxAgeSeconds ?? 60} max={3600} presets={[[30, "30 s"], [60, "1 min"], [300, "5 min"]]} onCommit={(v) => onSave({ ghostMaxAgeSeconds: v })} />
                     </Field>
-                    <Field label="Prévenir dans le salon" hint="Indique qui a mentionné qui, sans notifier personne une deuxième fois.">
-                      <Switch checked={s.ghostNotify ?? true} onChange={(v) => onSave({ ghostNotify: v })} label="Prévenir dans le salon" />
+                    <Field label={tx("Prévenir dans le salon")} hint={tx("Indique qui a mentionné qui, sans notifier personne une deuxième fois.")}>
+                      <Switch checked={s.ghostNotify ?? true} onChange={(v) => onSave({ ghostNotify: v })} label={tx("Prévenir dans le salon")} />
                     </Field>
                   </>
                 )}
                 {def.specific === "textWall" && (
                   <>
-                    <Field label="Caractères maximum" hint="Au-delà, le message est un pavé. Un emoji compte pour un caractère.">
-                      <Stepper value={s.maxChars ?? 1500} min={50} max={4000} step={50} unit="caractères" onCommit={(v) => onSave({ maxChars: v })} />
+                    <Field label={tx("Caractères maximum")} hint={tx("Au-delà, le message est un pavé. Un emoji compte pour un caractère.")}>
+                      <Stepper value={s.maxChars ?? 1500} min={50} max={4000} step={50} unit={tx("caractères")} onCommit={(v) => onSave({ maxChars: v })} />
                     </Field>
-                    <Field label="Lignes maximum" hint="Les sauts de ligne comptent, même les lignes vides.">
+                    <Field label={tx("Lignes maximum")} hint={tx("Les sauts de ligne comptent, même les lignes vides.")}>
                       <Stepper value={s.maxLines ?? 20} min={2} max={200} unit="lignes" onCommit={(v) => onSave({ maxLines: v })} />
                     </Field>
-                    <Field label="Ignorer les blocs de code" hint="Utile dans un salon d'entraide où l'on colle du code.">
-                      <Switch checked={s.ignoreCodeBlocks ?? false} onChange={(v) => onSave({ ignoreCodeBlocks: v })} label="Ignorer les blocs de code" />
+                    <Field label={tx("Ignorer les blocs de code")} hint={tx("Utile dans un salon d'entraide où l'on colle du code.")}>
+                      <Switch checked={s.ignoreCodeBlocks ?? false} onChange={(v) => onSave({ ignoreCodeBlocks: v })} label={tx("Ignorer les blocs de code")} />
                     </Field>
                   </>
                 )}
                 {def.specific === "duplicate" && (
                   <>
-                    <Field label="Comparaison" hint="« Très ressemblants » repère aussi une copie avec un mot ou un chiffre changé.">
+                    <Field label={tx("Comparaison")} hint={tx("« Très ressemblants » repère aussi une copie avec un mot ou un chiffre changé.")}>
                       <Segmented
-                        label="Comparaison"
+                        label={tx("Comparaison")}
                         value={s.matchMode ?? "similar"}
                         options={[
                           ["similar", "Très ressemblants"],
@@ -844,32 +845,32 @@ function Detail({
                         onChange={(v) => onSave({ matchMode: v })}
                       />
                     </Field>
-                    <Field label="Longueur minimale" hint="Les messages plus courts ne sont jamais comparés.">
-                      <Stepper value={s.minLength ?? 2} min={1} max={200} unit="caractères" onCommit={(v) => onSave({ minLength: v })} />
+                    <Field label={tx("Longueur minimale")} hint={tx("Les messages plus courts ne sont jamais comparés.")}>
+                      <Stepper value={s.minLength ?? 2} min={1} max={200} unit={tx("caractères")} onCommit={(v) => onSave({ minLength: v })} />
                     </Field>
                   </>
                 )}
                 {def.specific === "watchedChannels" && (
-                  <Field label="Salons surveillés" hint="Seuls ces salons (ou les salons de ces catégories) sont protégés. Obligatoire.">
+                  <Field label={tx("Salons surveillés")} hint={tx("Seuls ces salons (ou les salons de ces catégories) sont protégés. Obligatoire.")}>
                     <ChannelChips guildId={guildId} channels={channels} ids={s.watchedChannels ?? []} onChange={(ids) => onSave({ watchedChannels: ids })} />
                   </Field>
                 )}
                 {def.specific === "emojiAbuse" && (
                   <>
-                    <Field label="Emojis par message" hint="Un emoji composé (drapeau, famille, teinte de peau) compte pour un.">
+                    <Field label={tx("Emojis par message")} hint={tx("Un emoji composé (drapeau, famille, teinte de peau) compte pour un.")}>
                       <Stepper value={s.maxEmojis ?? 10} min={1} max={100} unit="max" onCommit={(v) => onSave({ maxEmojis: v })} />
                     </Field>
-                    <Field label="Emojis classiques" hint="😀, ❤️, 👍 et les autres emojis de Discord.">
-                      <Switch checked={s.countUnicode ?? true} disabled={(s.countUnicode ?? true) && !(s.countCustom ?? true)} onChange={(v) => onSave({ countUnicode: v })} label="Compter les emojis classiques" />
+                    <Field label={tx("Emojis classiques")} hint={tx("😀, ❤️, 👍 et les autres emojis de Discord.")}>
+                      <Switch checked={s.countUnicode ?? true} disabled={(s.countUnicode ?? true) && !(s.countCustom ?? true)} onChange={(v) => onSave({ countUnicode: v })} label={tx("Compter les emojis classiques")} />
                     </Field>
-                    <Field label="Emojis du serveur" hint="Les emojis personnalisés, animés compris.">
-                      <Switch checked={s.countCustom ?? true} disabled={(s.countCustom ?? true) && !(s.countUnicode ?? true)} onChange={(v) => onSave({ countCustom: v })} label="Compter les emojis du serveur" />
+                    <Field label={tx("Emojis du serveur")} hint={tx("Les emojis personnalisés, animés compris.")}>
+                      <Switch checked={s.countCustom ?? true} disabled={(s.countCustom ?? true) && !(s.countUnicode ?? true)} onChange={(v) => onSave({ countCustom: v })} label={tx("Compter les emojis du serveur")} />
                     </Field>
                   </>
                 )}
                 {def.kind === "watched" && (
                   <>
-                    <Field label="Permissions surveillées" hint={`Vide : ${defaultWatchedPerms.map((p) => PERMS.find(([k]) => k === p)?.[1] ?? p).join(", ").toLowerCase()}.`}>
+                    <Field label={tx("Permissions surveillées")} hint={tx("Vide : {v0}.", { v0: defaultWatchedPerms.map((p) => PERMS.find(([k]) => k === p)?.[1] ?? p).join(", ").toLowerCase() })}>
                       <div className="flex flex-wrap gap-1.5">
                         {PERMS.map(([k, l]) => {
                           const on = (s.watchedPerms ?? []).includes(k);
@@ -887,15 +888,15 @@ function Detail({
                         })}
                       </div>
                     </Field>
-                    <Field label="Rôles protégés" hint="Surveillés quelle que soit leur permission.">
+                    <Field label={tx("Rôles protégés")} hint={tx("Surveillés quelle que soit leur permission.")}>
                       <RoleChips guildId={guildId} ids={s.watchedRoles ?? []} onChange={(ids) => onSave({ watchedRoles: ids })} />
                     </Field>
                   </>
                 )}
                 {(def.kind === "link" || def.kind === "words") && (
-                  <Field label="Mode d'application" hint={s.enforcement === "automod" ? "Discord bloque le message avant sa publication (règle AutoMod créée par Etho)." : "Etho supprime le message juste après sa publication."}>
+                  <Field label={tx("Mode d'application")} hint={s.enforcement === "automod" ? tx("Discord bloque le message avant sa publication (règle AutoMod créée par Etho).") : tx("Etho supprime le message juste après sa publication.")}>
                     <Segmented
-                      label="Mode d'application"
+                      label={tx("Mode d'application")}
                       value={s.enforcement ?? "bot"}
                       options={[
                         ["bot", "Etho"],
@@ -907,7 +908,7 @@ function Detail({
                 )}
                 {def.kind === "link" && (
                   <>
-                    <Field label="Liens bloqués">
+                    <Field label={tx("Liens bloqués")}>
                       <div className="grid gap-2 sm:grid-cols-3">
                         {(
                           [
@@ -935,39 +936,39 @@ function Detail({
                         })}
                       </div>
                     </Field>
-                    <Field label="Domaines autorisés" hint="Un domaine couvre ses sous-domaines (youtube.com couvre m.youtube.com).">
+                    <Field label={tx("Domaines autorisés")} hint={tx("Un domaine couvre ses sous-domaines (youtube.com couvre m.youtube.com).")}>
                       <TagInput values={s.allowedDomains ?? []} max={100} placeholder="youtube.com" onChange={(v) => onSave({ allowedDomains: v })} />
                     </Field>
                   </>
                 )}
                 {def.kind === "words" && (
-                  <Field label="Mots interdits" hint="Mots entiers, majuscules et accents ignorés. Virgule pour en ajouter plusieurs.">
-                    <TagInput values={s.bannedWords ?? []} max={500} placeholder="Ajouter un mot" onChange={(v) => onSave({ bannedWords: v })} />
+                  <Field label={tx("Mots interdits")} hint={tx("Mots entiers, majuscules et accents ignorés. Virgule pour en ajouter plusieurs.")}>
+                    <TagInput values={s.bannedWords ?? []} max={500} placeholder={tx("Ajouter un mot")} onChange={(v) => onSave({ bannedWords: v })} />
                   </Field>
                 )}
                 {def.kind === "toxicity" && (
                   <>
-                    <Field label="Taux de toxicité maximal" hint="Plus bas, plus sévère, mais plus d'erreurs. Analyse locale en français et en anglais.">
+                    <Field label={tx("Taux de toxicité maximal")} hint={tx("Plus bas, plus sévère, mais plus d'erreurs. Analyse locale en français et en anglais.")}>
                       <Stepper value={s.toxicityThreshold ?? 90} min={10} max={100} step={5} unit="%" onCommit={(v) => onSave({ toxicityThreshold: v })} />
                     </Field>
-                    <Field label="Ignorer les toxicités sans cible" hint="Une insulte visant quelqu'un compte toujours.">
-                      <Switch checked={s.ignoreUntargeted ?? true} onChange={(v) => onSave({ ignoreUntargeted: v })} label="Ignorer les toxicités sans cible" />
+                    <Field label={tx("Ignorer les toxicités sans cible")} hint={tx("Une insulte visant quelqu'un compte toujours.")}>
+                      <Switch checked={s.ignoreUntargeted ?? true} onChange={(v) => onSave({ ignoreUntargeted: v })} label={tx("Ignorer les toxicités sans cible")} />
                     </Field>
                   </>
                 )}
-                {def.kind === "scam" && <p className="py-2 text-sm text-[var(--text-muted)]">Détection automatique : faux Nitro, faux sites Discord et Steam, jetons de compte collés, arnaques aux skins.</p>}
-                {def.kind === "reorder" && <p className="py-2 text-sm text-[var(--text-muted)]">Discord n&apos;indique pas qui déplace un rôle : il n&apos;y a donc ni seuil ni sanction. Désactive la protection le temps de réorganiser tes rôles toi-même.</p>}
+                {def.kind === "scam" && <p className="py-2 text-sm text-[var(--text-muted)]">{tx("Détection automatique : faux Nitro, faux sites Discord et Steam, jetons de compte collés, arnaques aux skins.")}</p>}
+                {def.kind === "reorder" && <p className="py-2 text-sm text-[var(--text-muted)]">{tx("Discord n'indique pas qui déplace un rôle : il n'y a donc ni seuil ni sanction. Désactive la protection le temps de réorganiser tes rôles toi-même.")}</p>}
                 {def.kind === "alt" && (
                   <>
-                    <Field label="Ancienneté minimale" hint="Âge du compte Discord.">
+                    <Field label={tx("Ancienneté minimale")} hint={tx("Âge du compte Discord.")}>
                       <Stepper value={s.minAccountAgeDays ?? 7} min={1} max={365} unit="jours" onCommit={(v) => onSave({ minAccountAgeDays: v })} />
                     </Field>
-                    <Field label="Message privé" hint="Vide : message par défaut.">
+                    <Field label={tx("Message privé")} hint={tx("Vide : message par défaut.")}>
                       <textarea
                         value={dm}
                         maxLength={500}
                         rows={2}
-                        placeholder="Désolé, ton compte Discord est trop récent pour rejoindre ce serveur. Reviens dans quelques jours."
+                        placeholder={tx("Désolé, ton compte Discord est trop récent pour rejoindre ce serveur. Reviens dans quelques jours.")}
                         onChange={(e) => setDm(e.target.value)}
                         onBlur={() => dm !== (s.dmMessage ?? "") && onSave({ dmMessage: dm })}
                         className="w-full rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/70"
@@ -979,10 +980,10 @@ function Detail({
             )}
 
             {def.kind === "rollback" && (
-              <Section n={++n} title="Sauvegarde">
-                <Field label="Fréquence">
+              <Section n={++n} title={tx("Sauvegarde")}>
+                <Field label={tx("Fréquence")}>
                   <Segmented
-                    label="Fréquence"
+                    label={tx("Fréquence")}
                     value={s.backupIntervalHours ?? 24}
                     options={[
                       [6, "6 h"],
@@ -993,12 +994,12 @@ function Detail({
                     onChange={(v) => onSave({ backupIntervalHours: v })}
                   />
                 </Field>
-                <Field label="Dernière capture" hint="Les captures se restaurent depuis le module Sauvegardes.">
+                <Field label={tx("Dernière capture")} hint={tx("Les captures se restaurent depuis le module Sauvegardes.")}>
                   <div className="flex flex-wrap items-center gap-3">
-                    <span className="text-sm text-[var(--text-primary)]">{lastBackupAt ? new Date(lastBackupAt).toLocaleString("fr-FR") : "Aucune pour l'instant"}</span>
+                    <span className="text-sm text-[var(--text-primary)]">{lastBackupAt ? new Date(lastBackupAt).toLocaleString("fr-FR") : tx("Aucune pour l'instant")}</span>
                     <GhostButton onClick={onBackupNow} disabled={busy === "backup"}>
                       <Camera className="h-3.5 w-3.5" />
-                      {busy === "backup" ? "Capture…" : "Capturer maintenant"}
+                      {busy === "backup" ? tx("Capture…") : tx("Capturer maintenant")}
                     </GhostButton>
                   </div>
                 </Field>
@@ -1007,7 +1008,7 @@ function Detail({
 
             {/* 2. Punition */}
             {hasPunish(def) && (
-              <Section n={++n} title="Punition">
+              <Section n={++n} title={tx("Punition")}>
                 <div className="grid grid-cols-2 gap-2 py-2 sm:grid-cols-3 xl:grid-cols-5">
                   {PUNISHMENTS.map((p) => {
                     const on = s.punish === p.id;
@@ -1025,9 +1026,9 @@ function Detail({
                   })}
                 </div>
                 {def.key === "antiWebhook" && (
-                  <Field label="Webhook créé">
+                  <Field label={tx("Webhook créé")}>
                     <Segmented
-                      label="Action sur le webhook"
+                      label={tx("Action sur le webhook")}
                       value={s.webhookAction ?? "delete"}
                       options={[
                         ["delete", "Supprimer le webhook"],
@@ -1041,7 +1042,7 @@ function Detail({
                 <AnimatePresence initial={false}>
                   {s.punish === "timeout" && (
                     <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
-                      <Field label="Durée du timeout">
+                      <Field label={tx("Durée du timeout")}>
                         <DurationField seconds={s.timeoutSeconds} max={28 * 86400} presets={TIMEOUT_PRESETS} onCommit={(v) => onSave({ timeoutSeconds: v })} />
                       </Field>
                     </motion.div>
@@ -1051,15 +1052,15 @@ function Detail({
                   <Field
                     label={
                       <span className="flex flex-wrap items-center gap-2">
-                        Verrouiller le serveur
-                        {def.lockdownAdvised && <span className="rounded-md bg-[var(--accent-primary)]/15 px-1.5 py-0.5 text-[10px] font-semibold text-[var(--accent-primary)]">Conseillé ici</span>}
+                        {tx("Verrouiller le serveur")}
+                        {def.lockdownAdvised && <span className="rounded-md bg-[var(--accent-primary)]/15 px-1.5 py-0.5 text-[10px] font-semibold text-[var(--accent-primary)]">{tx("Conseillé ici")}</span>}
                       </span>
                     }
                     info="Retire aussi les permissions sensibles de tous les rôles du serveur. Radical, mais stoppe net une attaque en cours. Le verrouillage se lève d'un clic."
                   >
                     <div className="flex items-center gap-3 pt-0.5">
-                      <Switch checked={s.lockdown} onChange={(v) => onSave({ lockdown: v })} label="Verrouiller le serveur" />
-                      <span className="text-xs text-[var(--text-muted)]">{s.lockdown ? "Activé" : "Désactivé"}</span>
+                      <Switch checked={s.lockdown} onChange={(v) => onSave({ lockdown: v })} label={tx("Verrouiller le serveur")} />
+                      <span className="text-xs text-[var(--text-muted)]">{s.lockdown ? tx("Activé") : tx("Désactivé")}</span>
                     </div>
                   </Field>
                 )}
@@ -1068,25 +1069,25 @@ function Detail({
 
             {/* 3. Alerte */}
             {hasAlert(def) && (
-              <Section n={++n} title="Alerte">
-                <Field label="Salon de log" hint={!s.logChannelId ? "Sans salon, la protection agit sans prévenir personne." : undefined}>
+              <Section n={++n} title={tx("Alerte")}>
+                <Field label={tx("Salon de log")} hint={!s.logChannelId ? tx("Sans salon, la protection agit sans prévenir personne.") : undefined}>
                   <div className="max-w-md">
-                    <ChannelPicker guildId={guildId} value={s.logChannelId ?? ""} filterTypes={[0, 5]} placeholder="Choisir un salon" onChange={(id) => onSave({ logChannelId: id || null })} />
+                    <ChannelPicker guildId={guildId} value={s.logChannelId ?? ""} filterTypes={[0, 5]} placeholder={tx("Choisir un salon")} onChange={(id) => onSave({ logChannelId: id || null })} />
                   </div>
                 </Field>
-                <Field label="Mentionner à chaque sanction">
+                <Field label={tx("Mentionner à chaque sanction")}>
                   <div className="space-y-2.5">
                     <RoleChips guildId={guildId} ids={s.mentionRoleIds} onChange={(ids) => onSave({ mentionRoleIds: ids })} />
                     <div className="flex items-center gap-3">
-                      <Switch checked={s.mentionEveryone} onChange={(v) => onSave({ mentionEveryone: v })} label="Mentionner aussi @everyone" />
-                      <span className="text-[13px] text-[var(--text-muted)]">Mentionner aussi @everyone</span>
+                      <Switch checked={s.mentionEveryone} onChange={(v) => onSave({ mentionEveryone: v })} label={tx("Mentionner aussi @everyone")} />
+                      <span className="text-[13px] text-[var(--text-muted)]">{tx("Mentionner aussi @everyone")}</span>
                     </div>
                   </div>
                 </Field>
                 {def.kind === "quota" && (
-                  <Field label="Logs" hint={s.logMode === "all" ? "Chaque action détectée est notée, même sous le seuil." : "Seules les sanctions sont notées."}>
+                  <Field label={tx("Logs")} hint={s.logMode === "all" ? tx("Chaque action détectée est notée, même sous le seuil.") : tx("Seules les sanctions sont notées.")}>
                     <Segmented
-                      label="Logs"
+                      label={tx("Logs")}
                       value={s.logMode}
                       options={[
                         ["abuse", "Abus seulement"],
@@ -1096,30 +1097,30 @@ function Detail({
                     />
                   </Field>
                 )}
-                <Field label="Avertir le propriétaire en cas d'abus" hint="Message privé au propriétaire du serveur (une fois par minute au plus).">
-                  <Switch checked={s.notifyOwner} onChange={(v) => onSave({ notifyOwner: v })} label="Avertir le propriétaire" />
+                <Field label={tx("Avertir le propriétaire en cas d'abus")} hint={tx("Message privé au propriétaire du serveur (une fois par minute au plus).")}>
+                  <Switch checked={s.notifyOwner} onChange={(v) => onSave({ notifyOwner: v })} label={tx("Avertir le propriétaire")} />
                 </Field>
               </Section>
             )}
 
             {/* 4. Whitelist */}
             {def.kind !== "rollback" && def.kind !== "reorder" && (
-              <Section n={++n} title="Whitelist">
+              <Section n={++n} title={tx("Whitelist")}>
                 {def.kind !== "alt" && (
                   <>
-                    <Field label="Owners Etho" hint="Les owners du bot sur ce serveur ne déclenchent pas la protection.">
-                      <Switch checked={s.ignoreEthoOwners} onChange={(v) => onSave({ ignoreEthoOwners: v })} label="Ignorer les owners Etho" />
+                    <Field label={tx("Owners Etho")} hint={tx("Les owners du bot sur ce serveur ne déclenchent pas la protection.")}>
+                      <Switch checked={s.ignoreEthoOwners} onChange={(v) => onSave({ ignoreEthoOwners: v })} label={tx("Ignorer les owners Etho")} />
                     </Field>
-                    <Field label="Whitelist globale" hint="Membres, bots et rôles de la page Whitelist.">
-                      <Switch checked={s.useGlobalWhitelist} onChange={(v) => onSave({ useGlobalWhitelist: v })} label="Appliquer la whitelist globale" />
+                    <Field label={tx("Whitelist globale")} hint={tx("Membres, bots et rôles de la page Whitelist.")}>
+                      <Switch checked={s.useGlobalWhitelist} onChange={(v) => onSave({ useGlobalWhitelist: v })} label={tx("Appliquer la whitelist globale")} />
                     </Field>
                   </>
                 )}
                 {!def.noWhitelistLimit && (
-                  <Field label="Limite de la whitelist" info="Immunité totale, ou un seuil à part pour les membres whitelistés.">
+                  <Field label={tx("Limite de la whitelist")} info="Immunité totale, ou un seuil à part pour les membres whitelistés.">
                     <div className="flex flex-wrap items-center gap-3">
                       <Segmented
-                        label="Limite de la whitelist"
+                        label={tx("Limite de la whitelist")}
                         value={s.exceptionQuotaMax == null ? "immune" : "quota"}
                         options={[
                           ["immune", "Immunité totale"],
@@ -1132,7 +1133,7 @@ function Detail({
                       {s.exceptionQuotaMax != null && (
                         <div className="flex flex-wrap items-center gap-2">
                           <Stepper value={s.exceptionQuotaMax} min={1} max={1000} unit="actions" onCommit={(v) => onSave({ exceptionQuotaMax: v })} />
-                          <span className="text-sm text-[var(--text-muted)]">en moins de</span>
+                          <span className="text-sm text-[var(--text-muted)]">{tx("en moins de")}</span>
                           <DurationField seconds={s.exceptionQuotaSeconds ?? s.quotaSeconds ?? 60} max={604800} presets={WINDOW_PRESETS} onCommit={(v) => onSave({ exceptionQuotaSeconds: v })} />
                         </div>
                       )}
@@ -1140,23 +1141,23 @@ function Detail({
                   </Field>
                 )}
                 <div className="pt-3">
-                  <p className="text-[13px] font-semibold text-[var(--text-primary)]">Propres à cette protection</p>
-                  <p className="text-[11px] text-[var(--text-muted)]">Ajoutés ou retirés immédiatement.</p>
+                  <p className="text-[13px] font-semibold text-[var(--text-primary)]">{tx("Propres à cette protection")}</p>
+                  <p className="text-[11px] text-[var(--text-muted)]">{tx("Ajoutés ou retirés immédiatement.")}</p>
                 </div>
-                <Field label={<span className="font-medium text-[var(--text-muted)]">Membres et bots</span>}>
+                <Field label={<span className="font-medium text-[var(--text-muted)]">{tx("Membres et bots")}</span>}>
                   <MemberChips guildId={guildId} ids={s.wlUsers} onChange={(ids) => onSave({ wlUsers: ids })} />
                 </Field>
                 {def.kind !== "alt" && (
-                  <Field label={<span className="font-medium text-[var(--text-muted)]">Rôles</span>}>
+                  <Field label={<span className="font-medium text-[var(--text-muted)]">{tx("Rôles")}</span>}>
                     <RoleChips guildId={guildId} ids={s.wlRoles} onChange={(ids) => onSave({ wlRoles: ids })} />
                   </Field>
                 )}
                 {def.channelExempt && (
                   <>
-                    <Field label={<span className="font-medium text-[var(--text-muted)]">Salons</span>}>
+                    <Field label={<span className="font-medium text-[var(--text-muted)]">{tx("Salons")}</span>}>
                       <ChannelChips guildId={guildId} channels={channels} ids={s.wlChannels} onChange={(ids) => onSave({ wlChannels: ids })} />
                     </Field>
-                    <Field label={<span className="font-medium text-[var(--text-muted)]">Catégories</span>}>
+                    <Field label={<span className="font-medium text-[var(--text-muted)]">{tx("Catégories")}</span>}>
                       <ChannelChips guildId={guildId} channels={channels} categories ids={s.wlCategories} onChange={(ids) => onSave({ wlCategories: ids })} />
                     </Field>
                   </>

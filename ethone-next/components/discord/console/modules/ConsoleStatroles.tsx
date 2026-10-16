@@ -8,6 +8,7 @@ import { sinceLabel } from "@/lib/discord/security-scan";
 import { SPRING_LAYOUT } from "@/lib/ease";
 import { pageStagger } from "@/lib/motion-variants";
 import { ConsolePage, EmptyLine, GhostButton, Panel, RoleChips, Row, StatTile, Switch, roleColor, useGuildApi } from "../kit";
+import { tx } from "@/lib/tx";
 
 /** Rôles de stats (format Keeper) : rôles donnés et retirés automatiquement selon l'activité des membres. */
 export default function ConsoleStatroles({ guildId }: { guildId: string }) {
@@ -53,7 +54,7 @@ export default function ConsoleStatroles({ guildId }: { guildId: string }) {
     if (res) setOv((o) => (o ? { ...o, config: res.config } : o));
   };
   const removeRule = async (r: Rule) => {
-    if (!(await confirmDialog(`Supprimer la règle « ${r.name} » ? Les rôles déjà donnés restent en place.`, { title: "Supprimer", confirmLabel: "Supprimer" }))) return;
+    if (!(await confirmDialog(tx("Supprimer la règle « {name} » ? Les rôles déjà donnés restent en place.", { name: r.name }), { title: tx("Supprimer"), confirmLabel: tx("Supprimer") }))) return;
     if (await api(`/statroles/rules/${r.id}`, { method: "DELETE" })) {
       setEditing(null);
       void load();
@@ -79,24 +80,24 @@ export default function ConsoleStatroles({ guildId }: { guildId: string }) {
 
   const editor = (r: Rule) => (
     <div className="border-t border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))]/40">
-      <Row label="Nom">
+      <Row label={tx("Nom")}>
         <input
           value={r.name}
           maxLength={60}
           onChange={(e) => setEditing({ ...r, name: e.target.value })}
-          aria-label="Nom de la règle"
+          aria-label={tx("Nom de la règle")}
           className="h-9 w-64 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-3 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/70"
         />
       </Row>
-      <Row label="Rôle donné" hint="Le rôle doit être sous le rôle d'Etho.">
+      <Row label={tx("Rôle donné")} hint={tx("Le rôle doit être sous le rôle d'Etho.")}>
         <RoleChips guildId={guildId} ids={r.roleId ? [r.roleId] : []} max={1} onChange={(ids) => setEditing({ ...r, roleId: ids[0] ?? "" })} />
-        {r.roleId && roleName(r.roleId) && !roleName(r.roleId)!.assignable && <p className="mt-1 text-[11px] text-[var(--warning)]">Etho ne peut pas donner ce rôle (trop haut ou géré par une intégration).</p>}
+        {r.roleId && roleName(r.roleId) && !roleName(r.roleId)!.assignable && <p className="mt-1 text-[11px] text-[var(--warning)]">{tx("Etho ne peut pas donner ce rôle (trop haut ou géré par une intégration).")}</p>}
       </Row>
-      <Row label="Retirer automatiquement" hint="Le rôle est retiré aux membres qui ne remplissent plus les conditions.">
-        <Switch checked={r.removeWhenNotMatching} onChange={(v) => setEditing({ ...r, removeWhenNotMatching: v })} label="Retirer automatiquement" />
+      <Row label={tx("Retirer automatiquement")} hint={tx("Le rôle est retiré aux membres qui ne remplissent plus les conditions.")}>
+        <Switch checked={r.removeWhenNotMatching} onChange={(v) => setEditing({ ...r, removeWhenNotMatching: v })} label={tx("Retirer automatiquement")} />
       </Row>
       <div className="border-t border-[var(--panel-border)] px-5 py-4">
-        <p className="mb-2 text-[13px] font-semibold text-[var(--text-primary)]">Conditions</p>
+        <p className="mb-2 text-[13px] font-semibold text-[var(--text-primary)]">{tx("Conditions")}</p>
         <GroupEditor group={r.root} roles={ov?.roles ?? []} depth={0} onChange={(root) => setEditing({ ...r, root })} />
       </div>
       {preview && (
@@ -114,7 +115,7 @@ export default function ConsoleStatroles({ guildId }: { guildId: string }) {
               <p className="text-[11px] text-[var(--text-muted)]">{label}</p>
             </div>
           ))}
-          {preview.sample.length > 0 && <p className="col-span-full text-left text-[11px] text-[var(--text-muted)]">Exemples : {preview.sample.map((s) => s.name).join(", ")}</p>}
+          {preview.sample.length > 0 && <p className="col-span-full text-left text-[11px] text-[var(--text-muted)]">{tx("Exemples :")}{" "} {preview.sample.map((s) => s.name).join(", ")}</p>}
           {preview.warnings.map((w) => (
             <p key={w} className="col-span-full text-left text-[11px] text-[var(--warning)]">
               {w}
@@ -124,58 +125,58 @@ export default function ConsoleStatroles({ guildId }: { guildId: string }) {
       )}
       <div className="flex flex-wrap items-center gap-1.5 border-t border-[var(--panel-border)] px-5 py-3">
         <GhostButton disabled={busy || !r.roleId} onClick={runPreview}>
-          Calculer l&apos;aperçu
+          {tx("Calculer l'aperçu")}
         </GhostButton>
         <button type="button" disabled={!canSave} onClick={() => saveRule(r)} className="rounded-lg bg-[var(--accent-primary)] px-3 py-1.5 text-xs font-bold text-white hover:opacity-90 disabled:opacity-40">
-          Enregistrer
+          {tx("Enregistrer")}
         </button>
-        <GhostButton onClick={() => setEditing(null)}>Annuler</GhostButton>
+        <GhostButton onClick={() => setEditing(null)}>{tx("Annuler")}</GhostButton>
         <span className="flex-1" />
-        {!isNew && <GhostButton onClick={() => removeRule(r)}>Supprimer</GhostButton>}
+        {!isNew && <GhostButton onClick={() => removeRule(r)}>{tx("Supprimer")}</GhostButton>}
       </div>
     </div>
   );
 
   return (
     <ConsolePage
-      title="Rôles de stats"
+      title={tx("Rôles de stats")}
       actions={
         <GhostButton disabled={busy || !ov?.config.enabled || rules.length === 0} onClick={runNow}>
-          Appliquer maintenant
+          {tx("Appliquer maintenant")}
         </GhostButton>
       }
     >
       {ov && !ov.config.enabled && (
         <Panel>
-          <p className="px-5 py-3 text-xs text-[var(--warning)]">Module désactivé : aucun rôle n&apos;est donné ni retiré. Active-le avec l&apos;interrupteur en haut de la page.</p>
+          <p className="px-5 py-3 text-xs text-[var(--warning)]">{tx("Module désactivé : aucun rôle n'est donné ni retiré. Active-le avec l'interrupteur en haut de la page.")}</p>
         </Panel>
       )}
       {ov && !ov.statsEnabled && (
         <Panel>
-          <p className="px-5 py-3 text-xs text-[var(--warning)]">Le module Statistiques est coupé : les conditions de messages et de vocal ne peuvent pas être évaluées.</p>
+          <p className="px-5 py-3 text-xs text-[var(--warning)]">{tx("Le module Statistiques est coupé : les conditions de messages et de vocal ne peuvent pas être évaluées.")}</p>
         </Panel>
       )}
 
       <motion.div variants={pageStagger} className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatTile label="Règles" value={ov ? rules.length : "—"} hint="25 au maximum" />
-        <StatTile label="Actives" value={ov ? rules.filter((r) => r.enabled).length : "—"} />
-        <StatTile label="Derniers rôles donnés" value={ov?.config.lastRun ? `+${ov.config.lastRun.added}` : "—"} hint={ov?.config.lastRunAt ? sinceLabel(ov.config.lastRunAt) : "Appliqué toutes les 10 min"} />
-        <StatTile label="Derniers retirés" value={ov?.config.lastRun ? `−${ov.config.lastRun.removed}` : "—"} />
+        <StatTile label={tx("Règles")} value={ov ? rules.length : "—"} hint={tx("25 au maximum")} />
+        <StatTile label={tx("Actives")} value={ov ? rules.filter((r) => r.enabled).length : "—"} />
+        <StatTile label={tx("Derniers rôles donnés")} value={ov?.config.lastRun ? `+${ov.config.lastRun.added}` : "—"} hint={ov?.config.lastRunAt ? sinceLabel(ov.config.lastRunAt) : tx("Appliqué toutes les 10 min")} />
+        <StatTile label={tx("Derniers retirés")} value={ov?.config.lastRun ? `−${ov.config.lastRun.removed}` : "—"} />
       </motion.div>
 
       <Panel
-        title="Règles"
-        subtitle="Etho vérifie les règles toutes les 10 minutes."
+        title={tx("Règles")}
+        subtitle={tx("Etho vérifie les règles toutes les 10 minutes.")}
         actions={
           rules.length < 25 && (
             <GhostButton disabled={!!editing && isNew} onClick={() => open(null)}>
-              Nouvelle règle
+              {tx("Nouvelle règle")}
             </GhostButton>
           )
         }
       >
         {!ov ? (
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         ) : (
           <>
             <AnimatePresence initial={false}>
@@ -185,7 +186,7 @@ export default function ConsoleStatroles({ guildId }: { guildId: string }) {
                 </motion.div>
               )}
             </AnimatePresence>
-            {rules.length === 0 && !(editing && isNew) && <EmptyLine>Aucune règle. Exemple : « Actif » pour 100 messages en 30 jours.</EmptyLine>}
+            {rules.length === 0 && !(editing && isNew) && <EmptyLine>{tx("Aucune règle. Exemple : « Actif » pour 100 messages en 30 jours.")}</EmptyLine>}
             <ul>
               {rules.map((r) => {
                 const role = roleName(r.roleId);
@@ -196,11 +197,11 @@ export default function ConsoleStatroles({ guildId }: { guildId: string }) {
                         <p className="truncate text-[13px] font-semibold text-[var(--text-primary)]">{r.name}</p>
                         <p className="flex items-center gap-1.5 truncate text-[11px] text-[var(--text-muted)]">
                           <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: roleColor(role?.color) }} />
-                          {role?.name ?? "rôle supprimé"} · {countLeaves(r.root)} condition{countLeaves(r.root) > 1 ? "s" : ""}
-                          {r.removeWhenNotMatching ? " · retiré automatiquement" : ""}
+                          {role?.name ?? tx("rôle supprimé")} · {countLeaves(r.root)} {" "}{tx("condition")}{countLeaves(r.root) > 1 ? "s" : ""}
+                          {r.removeWhenNotMatching ? tx(" · retiré automatiquement") : ""}
                         </p>
                       </button>
-                      <Switch checked={r.enabled} onChange={(v) => toggleRule(r, v)} label={`Activer ${r.name}`} />
+                      <Switch checked={r.enabled} onChange={(v) => toggleRule(r, v)} label={tx("Activer {name}", { name: r.name })} />
                     </div>
                     <AnimatePresence initial={false}>
                       {editing && !isNew && editing.id === r.id && (

@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { useToast } from "@/components/ToastProvider";
 import { BOT_API_URL, ConsolePage, EmptyLine, GhostButton, Panel, Row, Segmented, StatTile, useGuildApi } from "../kit";
 import FormEditor, { type FullForm } from "./FormEditor";
+import { tx } from "@/lib/tx";
 
 type FormStatus = "DRAFT" | "PUBLISHED" | "CLOSED" | "ARCHIVED";
 type RespStatus = "PENDING" | "REVIEWING" | "APPROVED" | "REJECTED" | "CHANGES_REQUESTED" | "ARCHIVED" | "SPAM";
@@ -89,11 +90,11 @@ export default function ConsoleForms({ guildId }: { guildId: string }) {
     if (r) void load();
   };
   const duplicate = async (f: Form) => {
-    const r = await api<{ form: Form }>(`/forms/${f.id}/duplicate`, { method: "POST", json: { title: `${f.title} (copie)` } });
+    const r = await api<{ form: Form }>(`/forms/${f.id}/duplicate`, { method: "POST", json: { title: tx("{title} (copie)", { title: f.title }) } });
     if (r?.form) setForms((l) => [...(l ?? []), r.form]);
   };
   const remove = async (f: Form) => {
-    if (!(await confirmDialog(`Supprimer le formulaire « ${f.title} » ?`, { title: "Supprimer", confirmLabel: "Supprimer" }))) return;
+    if (!(await confirmDialog(tx("Supprimer le formulaire « {title} » ?", { title: f.title }), { title: tx("Supprimer"), confirmLabel: tx("Supprimer") }))) return;
     if (await api(`/forms/${f.id}`, { method: "DELETE" })) {
       setForms((l) => l?.filter((x) => x.id !== f.id) ?? null);
       if (formId === f.id) setFormId(null);
@@ -114,7 +115,7 @@ export default function ConsoleForms({ guildId }: { guildId: string }) {
     setBusy(true);
     const r = await api<{ form: FullForm & Form }>("/forms", {
       method: "POST",
-      json: { title: "Nouveau formulaire", fields: [{ id: `f-${Date.now().toString(36)}`, type: "SHORT_TEXT", label: "Ton pseudo en jeu", description: "", placeholder: "", required: true, sectionId: "sec-1", order: 0, options: [] }] },
+      json: { title: tx("Nouveau formulaire"), fields: [{ id: `f-${Date.now().toString(36)}`, type: "SHORT_TEXT", label: tx("Ton pseudo en jeu"), description: "", placeholder: "", required: true, sectionId: "sec-1", order: 0, options: [] }] },
     });
     setBusy(false);
     if (r?.form) {
@@ -159,22 +160,22 @@ export default function ConsoleForms({ guildId }: { guildId: string }) {
 
   return (
     <ConsolePage
-      title="Formulaires"
+      title={tx("Formulaires")}
       actions={
         <GhostButton disabled={busy} onClick={createForm}>
-          Nouveau formulaire
+          {tx("Nouveau formulaire")}
         </GhostButton>
       }
     >
       <motion.div variants={pageStagger} className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatTile label="Publiés" value={stats ? stats.activeForms : "—"} hint={stats ? `sur ${stats.totalForms}` : undefined} />
-        <StatTile label="À traiter" value={stats?.pendingReviews ?? "—"} />
-        <StatTile label="Acceptées" value={stats?.approvedCount ?? "—"} />
-        <StatTile label="Refusées" value={stats?.rejectedCount ?? "—"} />
+        <StatTile label={tx("Publiés")} value={stats ? stats.activeForms : "—"} hint={stats ? tx("sur {totalForms}", { totalForms: stats.totalForms }) : undefined} />
+        <StatTile label={tx("À traiter")} value={stats?.pendingReviews ?? "—"} />
+        <StatTile label={tx("Acceptées")} value={stats?.approvedCount ?? "—"} />
+        <StatTile label={tx("Refusées")} value={stats?.rejectedCount ?? "—"} />
       </motion.div>
 
       {editing && (
-        <Panel title={`Modifier · ${editing.title}`}>
+        <Panel title={tx("Modifier · {title}", { title: editing.title })}>
           <FormEditor
             key={editing.id}
             guildId={guildId}
@@ -188,11 +189,11 @@ export default function ConsoleForms({ guildId }: { guildId: string }) {
         </Panel>
       )}
 
-      <Panel title="Formulaires du serveur">
+      <Panel title={tx("Formulaires du serveur")}>
         {!forms ? (
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         ) : forms.length === 0 ? (
-          <EmptyLine>Aucun formulaire. Crée-en un avec « Nouveau formulaire ».</EmptyLine>
+          <EmptyLine>{tx("Aucun formulaire. Crée-en un avec « Nouveau formulaire ».")}</EmptyLine>
         ) : (
           <ul>
             {forms.map((f) => (
@@ -209,7 +210,7 @@ export default function ConsoleForms({ guildId }: { guildId: string }) {
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-[13px] font-semibold text-[var(--text-primary)]">{f.title}</p>
                     <p className="truncate text-[11px] text-[var(--text-muted)]">
-                      <span className={cn(f.status === "PUBLISHED" && "text-[var(--success)]")}>{FORM_STATUS[f.status]}</span> · {f.fields.length} question{f.fields.length > 1 ? "s" : ""} · {f.category} · modifié{" "}
+                      <span className={cn(f.status === "PUBLISHED" && "text-[var(--success)]")}>{FORM_STATUS[f.status]}</span> · {f.fields.length} {" "}{tx("question")}{f.fields.length > 1 ? "s" : ""} · {f.category} {" "}{tx("· modifié")}{" "}
                       {sinceLabel(f.updatedAt)}
                     </p>
                   </div>
@@ -218,26 +219,26 @@ export default function ConsoleForms({ guildId }: { guildId: string }) {
                   {openForm === f.id && (
                     <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={SPRING_LAYOUT} className="overflow-hidden">
                       <div className="border-t border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))]/40">
-                        <Row label="Panneau Discord" hint={f.panelConfig.messageId ? "Déjà envoyé : un nouvel envoi poste un nouveau panneau." : "Message avec le bouton pour répondre au formulaire."}>
+                        <Row label={tx("Panneau Discord")} hint={f.panelConfig.messageId ? tx("Déjà envoyé : un nouvel envoi poste un nouveau panneau.") : tx("Message avec le bouton pour répondre au formulaire.")}>
                           <div className="flex flex-wrap items-center gap-2">
-                            <ChannelPicker guildId={guildId} value={panelChannel} filterTypes={[0, 5]} placeholder="Choisir un salon" onChange={(id) => setPanelChannel(id)} />
+                            <ChannelPicker guildId={guildId} value={panelChannel} filterTypes={[0, 5]} placeholder={tx("Choisir un salon")} onChange={(id) => setPanelChannel(id)} />
                             <GhostButton disabled={busy || f.status !== "PUBLISHED" || !(panelChannel || f.panelConfig.channelId)} onClick={() => sendPanel(f)}>
-                              Envoyer
+                              {tx("Envoyer")}
                             </GhostButton>
                           </div>
-                          {f.status !== "PUBLISHED" && <p className="mt-1 text-[11px] text-[var(--warning)]">Publie le formulaire avant d&apos;envoyer son panneau.</p>}
+                          {f.status !== "PUBLISHED" && <p className="mt-1 text-[11px] text-[var(--warning)]">{tx("Publie le formulaire avant d'envoyer son panneau.")}</p>}
                         </Row>
                         <div className="flex flex-wrap items-center gap-1.5 border-t border-[var(--panel-border)] px-5 py-3">
                           {f.status !== "PUBLISHED" && (
                             <GhostButton disabled={busy} onClick={() => publish(f)}>
-                              Publier
+                              {tx("Publier")}
                             </GhostButton>
                           )}
-                          <GhostButton onClick={() => setFormId(f.id)}>Voir les réponses</GhostButton>
-                          <GhostButton onClick={() => editForm(f.id)}>Modifier les questions</GhostButton>
-                          <GhostButton onClick={() => duplicate(f)}>Dupliquer</GhostButton>
+                          <GhostButton onClick={() => setFormId(f.id)}>{tx("Voir les réponses")}</GhostButton>
+                          <GhostButton onClick={() => editForm(f.id)}>{tx("Modifier les questions")}</GhostButton>
+                          <GhostButton onClick={() => duplicate(f)}>{tx("Dupliquer")}</GhostButton>
                           <span className="flex-1" />
-                          <GhostButton onClick={() => remove(f)}>Supprimer</GhostButton>
+                          <GhostButton onClick={() => remove(f)}>{tx("Supprimer")}</GhostButton>
                         </div>
                       </div>
                     </motion.div>
@@ -251,11 +252,11 @@ export default function ConsoleForms({ guildId }: { guildId: string }) {
 
       {current && (
         <Panel
-          title={`Réponses · ${current.title}`}
+          title={tx("Réponses · {title}", { title: current.title })}
           actions={
             <div className="flex flex-wrap items-center gap-2">
               <Segmented
-                label="Filtre"
+                label={tx("Filtre")}
                 value={filter}
                 options={[
                   ["todo", "À traiter"],
@@ -266,18 +267,18 @@ export default function ConsoleForms({ guildId }: { guildId: string }) {
                 onChange={setFilter}
               />
               <GhostButton disabled={exporting || (responses?.length ?? 0) === 0} onClick={() => exportResponses("csv")}>
-                {exporting ? "Export…" : "Exporter CSV"}
+                {exporting ? tx("Export…") : tx("Exporter CSV")}
               </GhostButton>
               <GhostButton disabled={exporting || (responses?.length ?? 0) === 0} onClick={() => exportResponses("json")}>
-                JSON
+                {tx("JSON")}
               </GhostButton>
             </div>
           }
         >
           {!responses ? (
-            <EmptyLine>Chargement…</EmptyLine>
+            <EmptyLine>{tx("Chargement…")}</EmptyLine>
           ) : shown.length === 0 ? (
-            <EmptyLine>{responses.length === 0 ? "Aucune réponse pour l'instant." : "Rien dans cette liste."}</EmptyLine>
+            <EmptyLine>{responses.length === 0 ? tx("Aucune réponse pour l'instant.") : tx("Rien dans cette liste.")}</EmptyLine>
           ) : (
             <ul>
               {shown.map((r) => (
@@ -294,7 +295,7 @@ export default function ConsoleForms({ guildId }: { guildId: string }) {
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-[13px] font-semibold text-[var(--text-primary)]">{r.userTag}</p>
                       <p className="truncate text-[11px] text-[var(--text-muted)]">
-                        {RESP_STATUS[r.status]} · envoyée {sinceLabel(r.submittedAt)}
+                        {RESP_STATUS[r.status]} {" "}{tx("· envoyée")}{" "} {sinceLabel(r.submittedAt)}
                         {r.assignedReviewerTag ? ` · ${r.assignedReviewerTag}` : ""}
                       </p>
                     </div>
@@ -316,7 +317,7 @@ export default function ConsoleForms({ guildId }: { guildId: string }) {
                             maxLength={1000}
                             rows={2}
                             onChange={(e) => setReason(e.target.value)}
-                            placeholder="Raison (facultatif), envoyée au membre avec la décision"
+                            placeholder={tx("Raison (facultatif), envoyée au membre avec la décision")}
                             className="w-full rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/70"
                           />
                           <div className="flex flex-wrap items-center gap-1.5">

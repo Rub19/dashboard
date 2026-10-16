@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { ImageIcon, RefreshCw, RotateCcw, Save } from "@/components/icons/ph";
 import { cn } from "@/lib/utils";
+import { tx } from "@/lib/tx";
 
 export type CardImageConfig = {
   enabled: boolean;
@@ -189,8 +190,8 @@ export default function WelcomeCardDesigner({
       <div className="stagger-children space-y-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 className="text-base font-bold text-[var(--text-primary)]">Carte de bienvenue</h2>
-            <p className="text-xs text-[var(--text-muted)]">L&apos;image envoyée à chaque arrivée (ou départ). Aussi réglable sur Discord avec <code className="font-mono">/bienvenue carte</code>.</p>
+            <h2 className="text-base font-bold text-[var(--text-primary)]">{tx("Carte de bienvenue")}</h2>
+            <p className="text-xs text-[var(--text-muted)]">{tx("L'image envoyée à chaque arrivée (ou départ). Aussi réglable sur Discord avec")}{" "} <code className="font-mono">{tx("/bienvenue carte")}</code>.</p>
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -198,7 +199,7 @@ export default function WelcomeCardDesigner({
               onClick={() => onChange(kind, { ...CARD_DEFAULTS, ...(kind === "goodbye" ? { titleText: "À BIENTÔT", tagText: "{membercount} membres restants", accentColor: "#ED4245" } : {}) })}
               className="inline-flex h-9 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] px-3 text-xs font-medium text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)]"
             >
-              <RotateCcw className="h-3.5 w-3.5" /> Réinitialiser
+              <RotateCcw className="h-3.5 w-3.5" /> {" "}{tx("Réinitialiser")}
             </button>
             <button
               type="button"
@@ -206,20 +207,20 @@ export default function WelcomeCardDesigner({
               disabled={saving}
               className="btn-sheen relative inline-flex h-9 items-center gap-1.5 rounded-[var(--inset-radius)] bg-[var(--accent-primary)] px-4 text-xs font-semibold text-[var(--accent-contrast)] transition-[filter,transform] hover:brightness-110 active:scale-[0.97] disabled:opacity-60"
             >
-              <Save className="h-3.5 w-3.5" /> {saving ? "Enregistrement…" : "Enregistrer"}
+              <Save className="h-3.5 w-3.5" /> {saving ? tx("Enregistrement…") : tx("Enregistrer")}
             </button>
           </div>
         </div>
 
-        <Segmented id="card-kind" value={kind} onChange={setKind} options={[{ id: "welcome", label: "Bienvenue" }, { id: "goodbye", label: "Départ" }]} />
+        <Segmented id="card-kind" value={kind} onChange={setKind} options={[{ id: "welcome", label: tx("Bienvenue") }, { id: "goodbye", label: tx("Départ") }]} />
 
         <label className="flex items-center justify-between gap-3 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 py-2.5">
-          <span className="text-sm text-[var(--text-primary)]">Envoyer la carte avec le message</span>
+          <span className="text-sm text-[var(--text-primary)]">{tx("Envoyer la carte avec le message")}</span>
           <input type="checkbox" checked={img.enabled} onChange={(e) => set({ enabled: e.target.checked })} className="h-4 w-4 accent-[var(--accent-primary)]" />
         </label>
 
         <div className="space-y-2">
-          <span className="text-xs font-semibold text-[var(--text-muted)]">Mise en page</span>
+          <span className="text-xs font-semibold text-[var(--text-muted)]">{tx("Mise en page")}</span>
           <div className="grid grid-cols-2 gap-2">
             {TEMPLATES.map((t) => (
               <button
@@ -241,14 +242,14 @@ export default function WelcomeCardDesigner({
         </div>
 
         <div className="space-y-2">
-          <span className="text-xs font-semibold text-[var(--text-muted)]">Couleur d&apos;accent</span>
+          <span className="text-xs font-semibold text-[var(--text-muted)]">{tx("Couleur d'accent")}</span>
           <div className="flex flex-wrap gap-2">
             {SWATCHES.map((c) => (
               <button
                 key={c}
                 type="button"
                 onClick={() => set({ accentColor: c })}
-                aria-label={`Accent ${c}`}
+                aria-label={tx("Accent {c}", { c })}
                 className={cn("h-7 w-7 rounded-full border-2 transition-transform hover:scale-110 active:scale-95", img.accentColor.toUpperCase() === c ? "border-[var(--text-primary)]" : "border-transparent")}
                 style={{ background: c }}
               />
@@ -256,18 +257,18 @@ export default function WelcomeCardDesigner({
           </div>
         </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-          <ColorField label="Accent" value={img.accentColor} onChange={(v) => set({ accentColor: v })} />
-          <ColorField label="Fond" value={img.backgroundColor} onChange={(v) => set({ backgroundColor: v })} />
-          <ColorField label="Texte" value={img.textColor} onChange={(v) => set({ textColor: v })} />
+          <ColorField label={tx("Accent")} value={img.accentColor} onChange={(v) => set({ accentColor: v })} />
+          <ColorField label={tx("Fond")} value={img.backgroundColor} onChange={(v) => set({ backgroundColor: v })} />
+          <ColorField label={tx("Texte")} value={img.textColor} onChange={(v) => set({ textColor: v })} />
         </div>
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div className="space-y-1.5">
-            <span className="text-xs font-semibold text-[var(--text-muted)]">Police</span>
+            <span className="text-xs font-semibold text-[var(--text-muted)]">{tx("Police")}</span>
             <Segmented id="card-font" value={img.font} onChange={(v) => set({ font: v })} options={FONTS} render={(o) => <span className={FONTS.find((f) => f.id === o.id)?.sample}>{o.label}</span>} />
           </div>
           <div className="space-y-1.5">
-            <span className="text-xs font-semibold text-[var(--text-muted)]">Avatar</span>
+            <span className="text-xs font-semibold text-[var(--text-muted)]">{tx("Avatar")}</span>
             <Segmented
               id="card-shape"
               value={img.avatarShape}
@@ -295,7 +296,7 @@ export default function WelcomeCardDesigner({
             </label>
           ))}
           <div className="flex flex-wrap items-center gap-1.5">
-            <span className="text-[11px] text-[var(--text-muted)]">Insérer :</span>
+            <span className="text-[11px] text-[var(--text-muted)]">{tx("Insérer :")}</span>
             {VARIABLES.map((v) => (
               <button key={v} type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => insertVariable(v)} className="rounded-full border border-[var(--panel-border)] px-2 py-0.5 font-mono text-[11px] text-[var(--text-muted)] transition-colors hover:border-[var(--accent-primary)]/40 hover:text-[var(--text-primary)] active:scale-95">
                 {v}
@@ -305,7 +306,7 @@ export default function WelcomeCardDesigner({
         </div>
 
         <div className="space-y-2">
-          <span className="text-xs font-semibold text-[var(--text-muted)]">Image de fond (facultatif)</span>
+          <span className="text-xs font-semibold text-[var(--text-muted)]">{tx("Image de fond (facultatif)")}</span>
           <div className="flex gap-2">
             <input
               value={bgDraft}
@@ -316,14 +317,14 @@ export default function WelcomeCardDesigner({
             />
             {img.customBackgroundUrl && (
               <button type="button" onClick={() => set({ customBackgroundUrl: null })} className="shrink-0 rounded-[var(--inset-radius)] border border-[var(--panel-border)] px-3 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)]">
-                Retirer
+                {tx("Retirer")}
               </button>
             )}
           </div>
-          {bgDraft && !/^https:\/\/\S+$/i.test(bgDraft.trim()) && <p className="text-[11px] text-[var(--danger)]">Le lien doit commencer par https://</p>}
+          {bgDraft && !/^https:\/\/\S+$/i.test(bgDraft.trim()) && <p className="text-[11px] text-[var(--danger)]">{tx("Le lien doit commencer par https://")}</p>}
           <label className={cn("block space-y-1", !img.customBackgroundUrl && "opacity-50")}>
             <span className="flex justify-between text-[11px] text-[var(--text-muted)]">
-              <span>Voile sur l&apos;image (lisibilité)</span>
+              <span>{tx("Voile sur l'image (lisibilité)")}</span>
               <span className="tabular-nums">{img.overlayOpacity} %</span>
             </span>
             <input type="range" min={0} max={90} step={5} value={img.overlayOpacity} disabled={!img.customBackgroundUrl} onChange={(e) => set({ overlayOpacity: Number(e.target.value) })} className="w-full accent-[var(--accent-primary)]" />
@@ -331,17 +332,17 @@ export default function WelcomeCardDesigner({
         </div>
 
         <label className="flex items-center justify-between gap-3 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 py-2.5">
-          <span className="text-sm text-[var(--text-primary)]">Afficher le nom du serveur</span>
+          <span className="text-sm text-[var(--text-primary)]">{tx("Afficher le nom du serveur")}</span>
           <input type="checkbox" checked={img.showServerName} onChange={(e) => set({ showServerName: e.target.checked })} className="h-4 w-4 accent-[var(--accent-primary)]" />
         </label>
 
         <label className={cn("flex items-center justify-between gap-3 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 py-2.5 transition-opacity", Boolean(img.customBackgroundUrl) && "opacity-50")}>
           <div className="space-y-0.5">
-            <span className="text-sm text-[var(--text-primary)]">Carte animée (GIF)</span>
+            <span className="text-sm text-[var(--text-primary)]">{tx("Carte animée (GIF)")}</span>
             <p className="text-[11px] text-[var(--text-muted)]">
               {img.customBackgroundUrl
-                ? "Désactivée avec une image de fond personnalisée (carte PNG statique)."
-                : "Animation fluide en boucle (lueurs d'accent, particules et halo respirant)."}
+                ? tx("Désactivée avec une image de fond personnalisée (carte PNG statique).")
+                : tx("Animation fluide en boucle (lueurs d'accent, particules et halo respirant).")}
             </p>
           </div>
           <input
@@ -357,10 +358,10 @@ export default function WelcomeCardDesigner({
       {/* Aperçu réel */}
       <div className="space-y-3 xl:sticky xl:top-4 xl:self-start">
         <div className="flex items-center justify-between">
-          <span className="text-xs font-semibold text-[var(--text-muted)]">Aperçu réel (généré par le bot)</span>
+          <span className="text-xs font-semibold text-[var(--text-muted)]">{tx("Aperçu réel (généré par le bot)")}</span>
           <div className="flex items-center gap-2">
             {img.enabled && img.animated && !img.customBackgroundUrl && (
-              <span className="rounded bg-[var(--accent-primary)]/15 px-1.5 py-0.5 text-[10px] font-bold uppercase text-[var(--accent-primary)]">GIF animé</span>
+              <span className="rounded bg-[var(--accent-primary)]/15 px-1.5 py-0.5 text-[10px] font-bold uppercase text-[var(--accent-primary)]">{tx("GIF animé")}</span>
             )}
             {loading && <RefreshCw className="h-3.5 w-3.5 animate-spin text-[var(--text-muted)]" />}
           </div>
@@ -368,18 +369,18 @@ export default function WelcomeCardDesigner({
         <div className="relative overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40" style={{ aspectRatio: "8 / 3" }}>
           {preview ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img key={preview} src={preview} alt="Aperçu de la carte" className={cn("pop-in h-full w-full object-cover transition-opacity", loading && "opacity-70")} />
+            <img key={preview} src={preview} alt={tx("Aperçu de la carte")} className={cn("pop-in h-full w-full object-cover transition-opacity", loading && "opacity-70")} />
           ) : (
             <div className="grid h-full place-items-center text-center text-xs text-[var(--text-muted)]">
               <span className="flex flex-col items-center gap-2">
                 <ImageIcon className="h-6 w-6" />
-                {previewError || "Génération de l’aperçu…"}
+                {previewError || tx("Génération de l’aperçu…")}
               </span>
             </div>
           )}
         </div>
-        {!img.enabled && <p className="text-xs text-[var(--warning)]">La carte est désactivée : le message partira sans image.</p>}
-        <p className="text-[11px] text-[var(--text-muted)]">L&apos;aperçu utilise ton avatar et le vrai nombre de membres du serveur. N&apos;oublie pas d&apos;enregistrer.</p>
+        {!img.enabled && <p className="text-xs text-[var(--warning)]">{tx("La carte est désactivée : le message partira sans image.")}</p>}
+        <p className="text-[11px] text-[var(--text-muted)]">{tx("L'aperçu utilise ton avatar et le vrai nombre de membres du serveur. N'oublie pas d'enregistrer.")}</p>
       </div>
     </div>
   );

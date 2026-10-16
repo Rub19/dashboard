@@ -22,6 +22,7 @@ import { GuildSelector } from "@/components/GuildSelector";
 import ReportsSetupPanel from "./ReportsSetupPanel";
 import { formatApiError } from "@/lib/format-error";
 import ModuleSkeleton from "@/components/discord/ModuleSkeleton";
+import { tx } from "@/lib/tx";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 const BOT_CLIENT_ID = "1545139931154878464";
@@ -173,14 +174,14 @@ export default function ReportsCenterClient() {
       );
 
       if (res.ok) {
-        success("Pris en charge", "Le signalement t'a été assigné.");
+        success(tx("Pris en charge"), tx("Le signalement t'a été assigné."));
         fetchReports();
       } else {
         const errBody = await res.json().catch(() => null);
-        showError("Erreur", formatApiError(errBody?.error, "Impossible d'assigner le signalement."));
+        showError(tx("Erreur"), formatApiError(errBody?.error, "Impossible d'assigner le signalement."));
       }
     } catch {
-      showError("Erreur", "Impossible d'assigner le signalement.");
+      showError(tx("Erreur"), tx("Impossible d'assigner le signalement."));
     }
   };
 
@@ -203,16 +204,16 @@ export default function ReportsCenterClient() {
       );
 
       if (res.ok) {
-        success("Signalement classé", "Le dossier a été classé sans suite.");
+        success(tx("Signalement classé"), tx("Le dossier a été classé sans suite."));
         setDismissingReport(null);
         setDismissReason("");
         fetchReports();
       } else {
         const errBody = await res.json().catch(() => null);
-        showError("Erreur", formatApiError(errBody?.error, "Impossible de classer le signalement."));
+        showError(tx("Erreur"), formatApiError(errBody?.error, "Impossible de classer le signalement."));
       }
     } catch {
-      showError("Erreur", "Impossible de classer le signalement.");
+      showError(tx("Erreur"), tx("Impossible de classer le signalement."));
     } finally {
       setIsSubmittingDismiss(false);
     }
@@ -239,17 +240,17 @@ export default function ReportsCenterClient() {
       );
 
       if (res.ok) {
-        success("Signalement créé", "Le dossier a été transmis à la file de modération.");
+        success(tx("Signalement créé"), tx("Le dossier a été transmis à la file de modération."));
         setIsNewReportOpen(false);
         setNewReportTargetId("");
         setNewReportReason("");
         fetchReports();
       } else {
         const errBody = await res.json().catch(() => null);
-        showError("Erreur", formatApiError(errBody?.error, "Impossible de consigner le signalement."));
+        showError(tx("Erreur"), formatApiError(errBody?.error, "Impossible de consigner le signalement."));
       }
     } catch {
-      showError("Erreur", "Impossible de consigner le signalement.");
+      showError(tx("Erreur"), tx("Impossible de consigner le signalement."));
     } finally {
       setIsSubmittingNewReport(false);
     }
@@ -283,13 +284,13 @@ export default function ReportsCenterClient() {
             </Link>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">Staff Console</span>
+                <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">{tx("Staff Console")}</span>
                 <span className="text-[var(--text-muted)]">/</span>
-                <span className="text-xs font-semibold text-amber-400">Reports Center</span>
+                <span className="text-xs font-semibold text-amber-400">{tx("Reports Center")}</span>
               </div>
               <h1 className="text-xl font-bold text-[var(--text-primary)] flex items-center gap-2">
                 <span className="icon-pop grid h-10 w-10 shrink-0 place-items-center rounded-[var(--inset-radius)] border border-current/25 bg-current/10 text-amber-400"><AlertTriangle className="h-5 w-5" /></span>
-                <span>File des Signalements Membres</span>
+                <span>{tx("File des Signalements Membres")}</span>
               </h1>
             </div>
           </div>
@@ -300,7 +301,7 @@ export default function ReportsCenterClient() {
               className="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-[var(--text-muted)]/70 text-xs font-bold transition-colors flex items-center gap-1.5"
             >
               <Plus className="w-4 h-4" />
-              <span>Consigner un Signalement</span>
+              <span>{tx("Consigner un Signalement")}</span>
             </button>
 
             {manageableGuilds.length > 0 && (
@@ -328,10 +329,10 @@ export default function ReportsCenterClient() {
               <Bot className="h-5 w-5 text-amber-400 shrink-0" />
               <div>
                 <p className="text-sm font-semibold text-amber-200">
-                  Bot non présent sur ce serveur
+                  {tx("Bot non présent sur ce serveur")}
                 </p>
                 <p className="text-xs text-amber-300/80">
-                  Pour accéder à la file des signalements membres sur <span className="font-semibold">{selectedGuild.name}</span>, invite le bot.
+                  {tx("Pour accéder à la file des signalements membres sur")}{" "} <span className="font-semibold">{selectedGuild.name}</span>{tx(", invite le bot.")}
                 </p>
               </div>
             </div>
@@ -342,7 +343,7 @@ export default function ReportsCenterClient() {
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-black text-xs font-semibold shrink-0 transition-colors"
             >
               <Bot className="h-3.5 w-3.5" />
-              Inviter le bot
+              {tx("Inviter le bot")}
             </a>
           </div>
         )}
@@ -361,7 +362,7 @@ export default function ReportsCenterClient() {
                     : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                 )}
               >
-                {st === "ALL" ? "Tous" : STATUS_CONFIG[st as ModerationReport["status"]].label}
+                {st === "ALL" ? tx("Tous") : STATUS_CONFIG[st as ModerationReport["status"]].label}
               </button>
             ))}
           </div>
@@ -372,7 +373,7 @@ export default function ReportsCenterClient() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Filtrer par id, membre, motif..."
+              placeholder={tx("Filtrer par id, membre, motif...")}
               className="w-full bg-[var(--surface-raised)]/80 border border-[var(--panel-border)] rounded-xl pl-9 pr-3 py-1.5 text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none focus:border-ethone-accent"
             />
           </div>
@@ -380,7 +381,7 @@ export default function ReportsCenterClient() {
 
         {/* LISTE DES SIGNALEMENTS */}
         {isLoading && reports.length === 0 ? (
-          <ModuleSkeleton compact className="px-0 sm:px-0" label="Chargement des signalements…" />
+          <ModuleSkeleton compact className="px-0 sm:px-0" label={tx("Chargement des signalements…")} />
         ) : filteredReports.length > 0 ? (
           <div className="stagger-children grid grid-cols-1 md:grid-cols-2 gap-4">
             {filteredReports.map((report) => {
@@ -407,7 +408,7 @@ export default function ReportsCenterClient() {
 
                     <div>
                       <div className="text-xs text-[var(--text-muted)] flex items-center gap-1.5">
-                        <span>Membre signalé :</span>
+                        <span>{tx("Membre signalé :")}</span>
                         <span className="font-bold text-[var(--text-primary)]">{report.reportedUserTag}</span>
                         <span className="font-mono text-xs text-[var(--text-muted)]">({report.reportedUserId})</span>
                       </div>
@@ -415,11 +416,11 @@ export default function ReportsCenterClient() {
                     </div>
 
                     <div className="text-xs text-[var(--text-muted)] flex items-center justify-between pt-2 border-t border-[var(--panel-border)]">
-                      <span>Signalé par : @{report.reporterUserTag}</span>
+                      <span>{tx("Signalé par : @")}{report.reporterUserTag}</span>
                       {report.assignedModerator ? (
-                        <span className="text-ethone-accent font-medium">Assigné à @{report.assignedModerator.tag}</span>
+                        <span className="text-ethone-accent font-medium">{tx("Assigné à @")}{report.assignedModerator.tag}</span>
                       ) : (
-                        <span className="text-[var(--text-muted)] italic">Non assigné</span>
+                        <span className="text-[var(--text-muted)] italic">{tx("Non assigné")}</span>
                       )}
                     </div>
                   </div>
@@ -431,7 +432,7 @@ export default function ReportsCenterClient() {
                       className="px-3 py-1.5 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-[var(--text-primary)]/10 text-xs font-semibold text-[var(--text-primary)] transition-colors flex items-center gap-1.5"
                     >
                       <User className="w-3.5 h-3.5" />
-                      <span>Profil Membre</span>
+                      <span>{tx("Profil Membre")}</span>
                     </Link>
 
                     <div className="flex items-center gap-2">
@@ -442,14 +443,14 @@ export default function ReportsCenterClient() {
                               onClick={() => handleAssignToMe(report.id)}
                               className="px-3 py-1.5 rounded-xl bg-[var(--info)]/10 text-[var(--info)] hover:bg-[var(--info)]/20 text-xs font-semibold transition-colors"
                             >
-                              Prendre en charge
+                              {tx("Prendre en charge")}
                             </button>
                           )}
                           <button
                             onClick={() => setDismissingReport(report)}
                             className="px-3 py-1.5 rounded-xl bg-[var(--surface-raised)] hover:bg-[var(--text-primary)]/20 text-[var(--text-muted)] text-xs font-semibold transition-colors"
                           >
-                            Classer
+                            {tx("Classer")}
                           </button>
                         </>
                       )}
@@ -462,8 +463,8 @@ export default function ReportsCenterClient() {
         ) : (
           <div className="p-12 text-center rounded-2xl bg-[var(--surface-raised)]/30 border border-[var(--panel-border)] space-y-2">
             <CheckCircle2 className="w-8 h-8 text-[var(--success)] mx-auto" />
-            <h3 className="text-sm font-bold text-[var(--text-primary)]">File de signalements vide</h3>
-            <p className="text-xs text-[var(--text-muted)]">Aucun signalement ne requiert d'attention dans cette catégorie.</p>
+            <h3 className="text-sm font-bold text-[var(--text-primary)]">{tx("File de signalements vide")}</h3>
+            <p className="text-xs text-[var(--text-muted)]">{tx("Aucun signalement ne requiert d'attention dans cette catégorie.")}</p>
           </div>
         )}
       </div>
@@ -475,7 +476,7 @@ export default function ReportsCenterClient() {
             <div className="flex items-center justify-between">
               <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
                 <Plus className="w-5 h-5 text-amber-400" />
-                <span>Consigner un Signalement Staff</span>
+                <span>{tx("Consigner un Signalement Staff")}</span>
               </h3>
               <button type="button" onClick={() => setIsNewReportOpen(false)} className="text-[var(--text-muted)] hover:text-[var(--text-primary)]">
                 <X className="w-5 h-5" />
@@ -484,42 +485,42 @@ export default function ReportsCenterClient() {
 
             <div className="space-y-3">
               <div>
-                <label className="text-xs font-semibold text-[var(--text-muted)] block mb-1">ID Discord du membre signalé</label>
+                <label className="text-xs font-semibold text-[var(--text-muted)] block mb-1">{tx("ID Discord du membre signalé")}</label>
                 <input
                   type="text"
                   required
                   value={newReportTargetId}
                   onChange={(e) => setNewReportTargetId(e.target.value)}
-                  placeholder="Ex : 123456789012345678"
+                  placeholder={tx("Ex : 123456789012345678")}
                   className="w-full bg-[var(--surface-raised)] border border-[var(--panel-border)] text-[var(--text-primary)] text-xs rounded-xl p-2.5 outline-none focus:border-ethone-accent"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-[var(--text-muted)] block mb-1">Catégorie</label>
+                <label className="text-xs font-semibold text-[var(--text-muted)] block mb-1">{tx("Catégorie")}</label>
                 <Select
                   value={newReportCategory}
                   onChange={setNewReportCategory}
                   size="sm"
                   options={[
-                    { id: "Spam", label: "Spam & Flood" },
-                    { id: "Harassment", label: "Harcèlement" },
-                    { id: "Toxicity", label: "Toxicitée" },
-                    { id: "NSFW", label: "Contenu Inapproprié" },
-                    { id: "Scam", label: "Arnaque / Phishing" },
-                    { id: "Other", label: "Autre" },
+                    { id: "Spam", label: tx("Spam & Flood") },
+                    { id: "Harassment", label: tx("Harcèlement") },
+                    { id: "Toxicity", label: tx("Toxicitée") },
+                    { id: "NSFW", label: tx("Contenu Inapproprié") },
+                    { id: "Scam", label: tx("Arnaque / Phishing") },
+                    { id: "Other", label: tx("Autre") },
                   ]}
                 />
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-[var(--text-muted)] block mb-1">Description des faits</label>
+                <label className="text-xs font-semibold text-[var(--text-muted)] block mb-1">{tx("Description des faits")}</label>
                 <textarea
                   required
                   rows={3}
                   value={newReportReason}
                   onChange={(e) => setNewReportReason(e.target.value)}
-                  placeholder="Détaillez le comportement ou l'infraction constatée..."
+                  placeholder={tx("Détaillez le comportement ou l'infraction constatée...")}
                   className="w-full bg-[var(--surface-raised)] border border-[var(--panel-border)] text-[var(--text-primary)] text-xs rounded-xl p-2.5 outline-none focus:border-ethone-accent resize-none"
                 />
               </div>
@@ -531,14 +532,14 @@ export default function ReportsCenterClient() {
                 onClick={() => setIsNewReportOpen(false)}
                 className="px-4 py-2 rounded-xl text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)]"
               >
-                Annuler
+                {tx("Annuler")}
               </button>
               <button
                 type="submit"
                 disabled={isSubmittingNewReport}
                 className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-[var(--text-muted)]/70 text-xs font-bold transition-all disabled:opacity-50"
               >
-                {isSubmittingNewReport ? "Création..." : "Enregistrer"}
+                {isSubmittingNewReport ? tx("Création...") : tx("Enregistrer")}
               </button>
             </div>
           </form>
@@ -550,31 +551,31 @@ export default function ReportsCenterClient() {
         <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4 bg-black/80 animate-in fade-in">
           <div className="w-full max-w-md rounded-2xl bg-[var(--surface-raised)] border border-[var(--panel-border)] p-6 space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-base font-bold text-[var(--text-primary)]">Classer le signalement {dismissingReport.id}</h3>
+              <h3 className="text-base font-bold text-[var(--text-primary)]">{tx("Classer le signalement")}{" "} {dismissingReport.id}</h3>
               <button onClick={() => setDismissingReport(null)} className="text-[var(--text-muted)] hover:text-[var(--text-primary)]">
                 <X className="w-5 h-5" />
               </button>
             </div>
             <div>
-              <label className="text-xs font-semibold text-[var(--text-muted)] block mb-1">Motif du classement</label>
+              <label className="text-xs font-semibold text-[var(--text-muted)] block mb-1">{tx("Motif du classement")}</label>
               <input
                 type="text"
                 value={dismissReason}
                 onChange={(e) => setDismissReason(e.target.value)}
-                placeholder="Ex : Preuves insuffisantes, malentendu..."
+                placeholder={tx("Ex : Preuves insuffisantes, malentendu...")}
                 className="w-full bg-[var(--surface-raised)] border border-[var(--panel-border)] text-[var(--text-primary)] text-xs rounded-xl p-2.5 outline-none focus:border-ethone-accent"
               />
             </div>
             <div className="flex justify-end gap-2 pt-2">
               <button onClick={() => setDismissingReport(null)} className="px-4 py-2 rounded-xl text-xs text-[var(--text-muted)]">
-                Annuler
+                {tx("Annuler")}
               </button>
               <button
                 onClick={handleDismissReport}
                 disabled={isSubmittingDismiss}
                 className="px-4 py-2 rounded-xl bg-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/20 text-[var(--text-primary)] text-xs font-bold"
               >
-                Confirmer le classement
+                {tx("Confirmer le classement")}
               </button>
             </div>
           </div>

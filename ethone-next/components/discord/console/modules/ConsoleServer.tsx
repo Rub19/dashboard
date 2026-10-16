@@ -9,6 +9,7 @@ import { sinceLabel } from "@/lib/discord/security-scan";
 import { pageStagger, staggerItem } from "@/lib/motion-variants";
 import { cn } from "@/lib/utils";
 import { ConsolePage, EmptyLine, GhostButton, Panel, Row, Segmented, Select, StatTile, Stepper, Switch, TextField, roleColor, useGuildApi } from "../kit";
+import { tx } from "@/lib/tx";
 
 type Tab = "overview" | "badges" | "channels" | "roles" | "emojis" | "webhooks" | "settings";
 type BadgeCount = { key: string; label: string; iconUrl: string; count: number };
@@ -91,7 +92,7 @@ export default function ConsoleServer({ guildId }: { guildId: string }) {
     return TABS.find(([id]) => id === wanted)?.[0] ?? "overview";
   });
   return (
-    <ConsolePage title="Serveur" actions={<Segmented label="Section" value={tab} options={TABS} onChange={setTab} />}>
+    <ConsolePage title={tx("Serveur")} actions={<Segmented label={tx("Section")} value={tab} options={TABS} onChange={setTab} />}>
       {tab === "overview" && <OverviewTab guildId={guildId} />}
       {tab === "badges" && <BadgesTab guildId={guildId} />}
       {tab === "channels" && <ChannelsTab guildId={guildId} />}
@@ -109,21 +110,21 @@ function OverviewTab({ guildId }: { guildId: string }) {
   useEffect(() => {
     api<Overview>("/server/overview").then((r) => r && setOv(r));
   }, [api]);
-  if (!ov) return <Panel><EmptyLine>Chargement…</EmptyLine></Panel>;
+  if (!ov) return <Panel><EmptyLine>{tx("Chargement…")}</EmptyLine></Panel>;
   const k = ov.kpis;
   return (
     <>
       <motion.div variants={pageStagger} initial="initial" animate="animate" className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatTile label="Membres" value={fmt(k.totalMembers)} hint={`${fmt(k.humans)} humains · ${fmt(k.bots)} bots`} />
-        <StatTile label="En ligne" value={k.onlineMembers ? fmt(k.onlineMembers) : "—"} hint={k.onlineMembers ? undefined : "Présences non visibles"} />
-        <StatTile label="Salons" value={fmt(k.channelsCount)} hint={`${k.textChannelsCount} textuels · ${k.voiceChannelsCount} vocaux`} />
-        <StatTile label="Rôles" value={fmt(k.rolesCount)} />
-        <StatTile label="Boosts" value={fmt(k.boostCount)} hint={`Niveau ${k.serverBoostLevel}`} />
-        <StatTile label="Emojis" value={fmt(k.emojisCount)} />
-        <StatTile label="Invitations actives" value={fmt(k.activeInvitesCount)} />
-        <StatTile label="Sanctions en cours" value={fmt(k.activeModerationCases)} />
+        <StatTile label={tx("Membres")} value={fmt(k.totalMembers)} hint={tx("{v0} humains · {v1} bots", { v0: fmt(k.humans), v1: fmt(k.bots) })} />
+        <StatTile label={tx("En ligne")} value={k.onlineMembers ? fmt(k.onlineMembers) : "—"} hint={k.onlineMembers ? undefined : tx("Présences non visibles")} />
+        <StatTile label={tx("Salons")} value={fmt(k.channelsCount)} hint={tx("{textChannelsCount} textuels · {voiceChannelsCount} vocaux", { textChannelsCount: k.textChannelsCount, voiceChannelsCount: k.voiceChannelsCount })} />
+        <StatTile label={tx("Rôles")} value={fmt(k.rolesCount)} />
+        <StatTile label={tx("Boosts")} value={fmt(k.boostCount)} hint={tx("Niveau {serverBoostLevel}", { serverBoostLevel: k.serverBoostLevel })} />
+        <StatTile label={tx("Emojis")} value={fmt(k.emojisCount)} />
+        <StatTile label={tx("Invitations actives")} value={fmt(k.activeInvitesCount)} />
+        <StatTile label={tx("Sanctions en cours")} value={fmt(k.activeModerationCases)} />
       </motion.div>
-      <Panel title={`Sécurité : ${ov.security.score}/100`} subtitle={`Créé ${sinceLabel(ov.guild.createdAt)} · propriétaire ${ov.guild.ownerTag}`}>
+      <Panel title={tx("Sécurité : {score}/100", { score: ov.security.score })} subtitle={tx("Créé {v0} · propriétaire {ownerTag}", { v0: sinceLabel(ov.guild.createdAt), ownerTag: ov.guild.ownerTag })}>
         <ul>
           {ov.security.factors.map((f) => (
             <li key={f.title} className="flex items-start gap-3 border-t border-[var(--panel-border)] px-5 py-2.5 first:border-t-0">
@@ -141,52 +142,52 @@ function OverviewTab({ guildId }: { guildId: string }) {
       </Panel>
       {ov.health && (
         <Panel
-          title={`Santé & Télémétrie d'Etho : ${ov.health.score}/100`}
-          subtitle={`Statut ${ov.health.status === "HEALTHY" ? "optimal" : ov.health.status === "DEGRADED" ? "dégradé" : "critique"} · Données système en direct`}
+          title={tx("Santé & Télémétrie d'Etho : {score}/100", { score: ov.health.score })}
+          subtitle={tx("Statut {v0} · Données système en direct", { v0: ov.health.status === "HEALTHY" ? "optimal" : ov.health.status === "DEGRADED" ? "dégradé" : "critique" })}
         >
           <div className="grid grid-cols-2 gap-3 p-5 sm:grid-cols-4">
             <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-hover)] p-3">
-              <span className="block text-xs text-[var(--text-muted)]">Passerelle Discord</span>
+              <span className="block text-xs text-[var(--text-muted)]">{tx("Passerelle Discord")}</span>
               <span className="mt-1 flex items-baseline gap-1 font-mono text-base font-bold text-[var(--text-primary)]">
-                {ov.health.components.discordGateway?.pingMs ?? "—"} <span className="text-xs font-normal text-[var(--text-muted)]">ms</span>
+                {ov.health.components.discordGateway?.pingMs ?? "—"} <span className="text-xs font-normal text-[var(--text-muted)]">{tx("ms")}</span>
               </span>
               <span className={cn("mt-1 block text-[10px] font-semibold", (ov.health.components.discordGateway?.pingMs ?? 0) < 150 ? "text-[var(--success)]" : "text-[var(--warning)]")}>
-                {ov.health.components.discordGateway?.status === "HEALTHY" ? "Excellente" : "Latence élevée"}
+                {ov.health.components.discordGateway?.status === "HEALTHY" ? tx("Excellente") : tx("Latence élevée")}
               </span>
             </div>
             <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-hover)] p-3">
-              <span className="block text-xs text-[var(--text-muted)]">Mémoire Node.js</span>
+              <span className="block text-xs text-[var(--text-muted)]">{tx("Mémoire Node.js")}</span>
               <span className="mt-1 flex items-baseline gap-1 font-mono text-base font-bold text-[var(--text-primary)]">
-                {ov.health.components.memory?.heapUsedMb ?? "—"} <span className="text-xs font-normal text-[var(--text-muted)]">/ {ov.health.components.memory?.heapTotalMb ?? "—"} Mo</span>
+                {ov.health.components.memory?.heapUsedMb ?? "—"} <span className="text-xs font-normal text-[var(--text-muted)]">/ {ov.health.components.memory?.heapTotalMb ?? "—"} {" "}{tx("Mo")}</span>
               </span>
               <span className="mt-1 block text-[10px] font-semibold text-[var(--success)]">
-                Tas V8 alloué
+                {tx("Tas V8 alloué")}
               </span>
             </div>
             <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-hover)] p-3">
-              <span className="block text-xs text-[var(--text-muted)]">Base de données</span>
+              <span className="block text-xs text-[var(--text-muted)]">{tx("Base de données")}</span>
               <span className="mt-1 flex items-baseline gap-1 font-mono text-base font-bold text-[var(--text-primary)]">
-                {ov.health.components.database?.latencyMs ?? "—"} <span className="text-xs font-normal text-[var(--text-muted)]">ms</span>
+                {ov.health.components.database?.latencyMs ?? "—"} <span className="text-xs font-normal text-[var(--text-muted)]">{tx("ms")}</span>
               </span>
               <span className="mt-1 block text-[10px] font-semibold text-[var(--success)]">
-                SQLite synchrone
+                {tx("SQLite synchrone")}
               </span>
             </div>
             <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-hover)] p-3">
-              <span className="block text-xs text-[var(--text-muted)]">Flux temps réel</span>
+              <span className="block text-xs text-[var(--text-muted)]">{tx("Flux temps réel")}</span>
               <span className="mt-1 flex items-baseline gap-1 font-mono text-base font-bold text-[var(--text-primary)]">
-                {ov.health.components.realtime?.connected ? "Actif" : "En attente"}
+                {ov.health.components.realtime?.connected ? tx("Actif") : tx("En attente")}
               </span>
               <span className="mt-1 block text-[10px] font-semibold text-[var(--success)]">
-                SSE / Synchronisé
+                {tx("SSE / Synchronisé")}
               </span>
             </div>
           </div>
         </Panel>
       )}
-      <Panel title="Activité récente">
+      <Panel title={tx("Activité récente")}>
         {ov.recentActivity.length === 0 ? (
-          <EmptyLine>Aucune activité enregistrée.</EmptyLine>
+          <EmptyLine>{tx("Aucune activité enregistrée.")}</EmptyLine>
         ) : (
           <ul>
             {ov.recentActivity.map((a) => (
@@ -222,7 +223,7 @@ function BadgesTab({ guildId }: { guildId: string }) {
   useEffect(() => {
     void load();
   }, [load]);
-  if (!scan) return <Panel><EmptyLine>{failed ? "Analyse indisponible pour le moment." : "Analyse des membres…"}</EmptyLine></Panel>;
+  if (!scan) return <Panel><EmptyLine>{failed ? tx("Analyse indisponible pour le moment.") : tx("Analyse des membres…")}</EmptyLine></Panel>;
   const grid = (list: BadgeCount[]) => (
     <motion.ul variants={pageStagger} initial="initial" animate="animate" className="grid grid-cols-2 gap-2 p-4 sm:grid-cols-3 lg:grid-cols-4">
       {list.map((b) => (
@@ -244,19 +245,19 @@ function BadgesTab({ guildId }: { guildId: string }) {
   return (
     <>
       <motion.div variants={pageStagger} initial="initial" animate="animate" className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatTile label="Humains analysés" value={fmt(scan.humans)} hint={`${fmt(scan.bots)} bots ignorés`} />
-        <StatTile label="Avec un badge" value={fmt(scan.withBadge)} hint={scan.humans ? `${Math.round((scan.withBadge / scan.humans) * 100)} % des membres` : undefined} />
-        <StatTile label="Boosters" value={fmt(scan.boosters)} />
-        <StatTile label="Badges au total" value={fmt([...scan.badges, ...scan.boosts].reduce((n, b) => n + b.count, 0))} />
+        <StatTile label={tx("Humains analysés")} value={fmt(scan.humans)} hint={tx("{v0} bots ignorés", { v0: fmt(scan.bots) })} />
+        <StatTile label={tx("Avec un badge")} value={fmt(scan.withBadge)} hint={scan.humans ? tx("{v0} % des membres", { v0: Math.round((scan.withBadge / scan.humans) * 100) }) : undefined} />
+        <StatTile label={tx("Boosters")} value={fmt(scan.boosters)} />
+        <StatTile label={tx("Badges au total")} value={fmt([...scan.badges, ...scan.boosts].reduce((n, b) => n + b.count, 0))} />
       </motion.div>
       <Panel
-        title="Badges de profil"
-        subtitle={`Analyse ${sinceLabel(scan.scannedAt)} · Nitro repéré par ses avantages visibles ; palier Nitro et badge Quête invisibles pour les bots`}
-        actions={<GhostButton disabled={busy} onClick={() => load(true)}>{busy ? "Analyse…" : "Relancer l'analyse"}</GhostButton>}
+        title={tx("Badges de profil")}
+        subtitle={tx("Analyse {v0} · Nitro repéré par ses avantages visibles ; palier Nitro et badge Quête invisibles pour les bots", { v0: sinceLabel(scan.scannedAt) })}
+        actions={<GhostButton disabled={busy} onClick={() => load(true)}>{busy ? tx("Analyse…") : tx("Relancer l'analyse")}</GhostButton>}
       >
         {grid(scan.badges)}
       </Panel>
-      <Panel title="Boosts du serveur" subtitle="Le badge de boost évolue avec l'ancienneté du boost.">
+      <Panel title={tx("Boosts du serveur")} subtitle={tx("Le badge de boost évolue avec l'ancienneté du boost.")}>
         {grid(scan.boosts)}
       </Panel>
     </>
@@ -297,7 +298,7 @@ function ChannelsTab({ guildId }: { guildId: string }) {
     if (await api(`/server/channels/${c.id}`, { method: "PUT", json: patch })) changed();
   };
   const remove = async (id: string, label: string) => {
-    if (!(await confirmDialog(`Supprimer « ${label} » sur Discord ? Les messages du salon seront perdus.`, { title: "Supprimer le salon", confirmLabel: "Supprimer" }))) return;
+    if (!(await confirmDialog(tx("Supprimer « {label} » sur Discord ? Les messages du salon seront perdus.", { label }), { title: tx("Supprimer le salon"), confirmLabel: tx("Supprimer") }))) return;
     if (await api(`/server/channels/${id}`, { method: "DELETE" })) changed();
   };
 
@@ -306,20 +307,20 @@ function ChannelsTab({ guildId }: { guildId: string }) {
       <button type="button" onClick={() => setOpen(open === c.id ? null : c.id)} aria-expanded={open === c.id} className="flex w-full items-center gap-2 px-5 py-2 text-left hover:bg-[var(--surface-hover)]">
         {isVoice(c.type) ? <Volume2 className="h-3.5 w-3.5 shrink-0 text-[var(--text-muted)]" /> : <Hash className="h-3.5 w-3.5 shrink-0 text-[var(--text-muted)]" />}
         <span className="min-w-0 flex-1 truncate text-[13px] text-[var(--text-primary)]">{c.name}</span>
-        {c.nsfw && <span className="text-[10px] text-[var(--danger)]">NSFW</span>}
-        {c.rateLimitPerUser > 0 && <span className="text-[10px] text-[var(--text-muted)]">lent {c.rateLimitPerUser}s</span>}
+        {c.nsfw && <span className="text-[10px] text-[var(--danger)]">{tx("NSFW")}</span>}
+        {c.rateLimitPerUser > 0 && <span className="text-[10px] text-[var(--text-muted)]">{tx("lent")}{" "} {c.rateLimitPerUser}s</span>}
       </button>
       {open === c.id && (
         <div className="border-t border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))]/40">
-          <Row label="Nom">
+          <Row label={tx("Nom")}>
             <TextField value={c.name} maxLength={100} onCommit={(v) => update(c, { name: v })} />
           </Row>
           {!isVoice(c.type) ? (
             <>
-              <Row label="Sujet">
+              <Row label={tx("Sujet")}>
                 <TextField value={c.topic ?? ""} maxLength={1024} width="w-full" allowEmpty onCommit={(v) => update(c, { topic: v })} />
               </Row>
-              <Row label="Mode lent" hint="Délai entre deux messages d'un membre.">
+              <Row label={tx("Mode lent")} hint={tx("Délai entre deux messages d'un membre.")}>
                 <Stepper value={c.rateLimitPerUser} min={0} max={21600} step={5} unit="secondes" onCommit={(n) => update(c, { rateLimitPerUser: n })} />
               </Row>
               <Row label="NSFW">
@@ -327,12 +328,12 @@ function ChannelsTab({ guildId }: { guildId: string }) {
               </Row>
             </>
           ) : (
-            <Row label="Places" hint="0 = sans limite.">
+            <Row label={tx("Places")} hint={tx("0 = sans limite.")}>
               <Stepper value={c.userLimit ?? 0} min={0} max={99} unit="membres" onCommit={(n) => update(c, { userLimit: n })} />
             </Row>
           )}
           <div className="flex justify-end border-t border-[var(--panel-border)] px-5 py-2.5">
-            <GhostButton onClick={() => remove(c.id, c.name)}>Supprimer le salon</GhostButton>
+            <GhostButton onClick={() => remove(c.id, c.name)}>{tx("Supprimer le salon")}</GhostButton>
           </div>
         </div>
       )}
@@ -341,10 +342,10 @@ function ChannelsTab({ guildId }: { guildId: string }) {
 
   return (
     <>
-      <Panel title="Créer">
+      <Panel title={tx("Créer")}>
         <div className="flex flex-wrap items-center gap-2 px-5 py-3">
           <Segmented
-            label="Type"
+            label={tx("Type")}
             value={type}
             options={[
               [0, "Textuel"],
@@ -353,27 +354,27 @@ function ChannelsTab({ guildId }: { guildId: string }) {
             ]}
             onChange={setType}
           />
-          <input value={name} maxLength={100} onChange={(e) => setName(e.target.value)} placeholder="Nom" aria-label="Nom du salon" className={`${SELECT} w-44`} />
-          {type !== 4 && <ChannelPicker guildId={guildId} value={parentId} filterTypes={[4]} placeholder="Sans catégorie" onChange={(id) => setParentId(id)} />}
+          <input value={name} maxLength={100} onChange={(e) => setName(e.target.value)} placeholder={tx("Nom")} aria-label={tx("Nom du salon")} className={`${SELECT} w-44`} />
+          {type !== 4 && <ChannelPicker guildId={guildId} value={parentId} filterTypes={[4]} placeholder={tx("Sans catégorie")} onChange={(id) => setParentId(id)} />}
           <GhostButton disabled={!name.trim() || busy} onClick={create}>
-            Créer
+            {tx("Créer")}
           </GhostButton>
         </div>
       </Panel>
       {!tree ? (
         <Panel>
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         </Panel>
       ) : (
         <>
           {tree.orphanChannels.length > 0 && (
-            <Panel title="Sans catégorie">
+            <Panel title={tx("Sans catégorie")}>
               <ul>{tree.orphanChannels.map(row)}</ul>
             </Panel>
           )}
           {tree.categories.map((cat) => (
-            <Panel key={cat.id} title={cat.name} actions={<GhostButton onClick={() => remove(cat.id, cat.name)}>Supprimer</GhostButton>}>
-              {cat.channels.length === 0 ? <EmptyLine>Catégorie vide.</EmptyLine> : <ul>{cat.channels.map(row)}</ul>}
+            <Panel key={cat.id} title={cat.name} actions={<GhostButton onClick={() => remove(cat.id, cat.name)}>{tx("Supprimer")}</GhostButton>}>
+              {cat.channels.length === 0 ? <EmptyLine>{tx("Catégorie vide.")}</EmptyLine> : <ul>{cat.channels.map(row)}</ul>}
             </Panel>
           ))}
         </>
@@ -408,29 +409,29 @@ function RolesTab({ guildId }: { guildId: string }) {
     if (!(await api(`/server/roles/${r.id}`, { method: "PUT", json: patch }))) void load();
   };
   const remove = async (r: Role) => {
-    if (!(await confirmDialog(`Supprimer le rôle « ${r.name} » (${r.memberCount} membre${r.memberCount > 1 ? "s" : ""}) sur Discord ?`, { title: "Supprimer le rôle", confirmLabel: "Supprimer" }))) return;
+    if (!(await confirmDialog(tx("Supprimer le rôle « {name} » ({memberCount} membre{v2}) sur Discord ?", { name: r.name, memberCount: r.memberCount, v2: r.memberCount > 1 ? "s" : "" }), { title: tx("Supprimer le rôle"), confirmLabel: tx("Supprimer") }))) return;
     if (await api(`/server/roles/${r.id}`, { method: "DELETE" })) void load();
   };
 
   const shown = (roles ?? []).filter((r) => !q.trim() || r.name.toLowerCase().includes(q.trim().toLowerCase())).sort((a, b) => b.position - a.position);
   return (
     <>
-      <Panel title="Créer un rôle">
+      <Panel title={tx("Créer un rôle")}>
         <div className="flex flex-wrap items-center gap-2 px-5 py-3">
-          <input value={name} maxLength={100} onChange={(e) => setName(e.target.value)} placeholder="Nom du rôle" aria-label="Nom du rôle" className={`${SELECT} w-52`} />
-          <input type="color" value={color} onChange={(e) => setColor(e.target.value)} aria-label="Couleur" className="h-9 w-10 cursor-pointer rounded border border-[var(--panel-border)] bg-transparent" />
+          <input value={name} maxLength={100} onChange={(e) => setName(e.target.value)} placeholder={tx("Nom du rôle")} aria-label={tx("Nom du rôle")} className={`${SELECT} w-52`} />
+          <input type="color" value={color} onChange={(e) => setColor(e.target.value)} aria-label={tx("Couleur")} className="h-9 w-10 cursor-pointer rounded border border-[var(--panel-border)] bg-transparent" />
           <GhostButton disabled={!name.trim()} onClick={create}>
-            Créer
+            {tx("Créer")}
           </GhostButton>
         </div>
       </Panel>
       <Panel
-        title="Rôles"
-        subtitle="Etho ne peut modifier que les rôles placés sous le sien."
-        actions={<input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Rechercher" aria-label="Rechercher un rôle" className={`${SELECT} h-8 w-36 text-xs`} />}
+        title={tx("Rôles")}
+        subtitle={tx("Etho ne peut modifier que les rôles placés sous le sien.")}
+        actions={<input value={q} onChange={(e) => setQ(e.target.value)} placeholder={tx("Rechercher")} aria-label={tx("Rechercher un rôle")} className={`${SELECT} h-8 w-36 text-xs`} />}
       >
         {!roles ? (
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         ) : (
           <ul>
             {shown.map((r) => {
@@ -442,7 +443,7 @@ function RolesTab({ guildId }: { guildId: string }) {
                     value={/^#[0-9a-f]{6}$/i.test(r.color) && r.color !== "#000000" ? r.color : "#99aab5"}
                     disabled={locked}
                     onChange={(e) => update(r, { color: e.target.value })}
-                    aria-label={`Couleur de ${r.name}`}
+                    aria-label={tx("Couleur de {name}", { name: r.name })}
                     className="h-6 w-7 shrink-0 cursor-pointer rounded border border-[var(--panel-border)] bg-transparent disabled:cursor-not-allowed disabled:opacity-50"
                   />
                   <div className="min-w-0 flex-1">
@@ -454,20 +455,20 @@ function RolesTab({ guildId }: { guildId: string }) {
                       <TextField value={r.name} maxLength={100} width="w-full max-w-xs" onCommit={(v) => update(r, { name: v })} />
                     )}
                     <p className="text-[11px] text-[var(--text-muted)]">
-                      {r.memberCount} membre{r.memberCount > 1 ? "s" : ""}
-                      {r.managed ? " · géré par une intégration" : !r.isEditableByBot ? " · au-dessus d'Etho" : ""}
+                      {r.memberCount} {" "}{tx("membre")}{r.memberCount > 1 ? "s" : ""}
+                      {r.managed ? tx(" · géré par une intégration") : !r.isEditableByBot ? tx(" · au-dessus d'Etho") : ""}
                     </p>
                   </div>
                   <label className="flex items-center gap-1.5 text-[11px] text-[var(--text-muted)]">
-                    <Switch checked={r.hoist} disabled={locked} onChange={(v) => update(r, { hoist: v })} label={`Afficher ${r.name} séparément`} />
-                    Séparé
+                    <Switch checked={r.hoist} disabled={locked} onChange={(v) => update(r, { hoist: v })} label={tx("Afficher {name} séparément", { name: r.name })} />
+                    {tx("Séparé")}
                   </label>
                   <label className="flex items-center gap-1.5 text-[11px] text-[var(--text-muted)]">
-                    <Switch checked={r.mentionable} disabled={locked} onChange={(v) => update(r, { mentionable: v })} label={`${r.name} mentionnable`} />
-                    Mentionnable
+                    <Switch checked={r.mentionable} disabled={locked} onChange={(v) => update(r, { mentionable: v })} label={tx("{name} mentionnable", { name: r.name })} />
+                    {tx("Mentionnable")}
                   </label>
                   <GhostButton disabled={locked} onClick={() => remove(r)}>
-                    Supprimer
+                    {tx("Supprimer")}
                   </GhostButton>
                 </li>
               );
@@ -521,29 +522,29 @@ function EmojisTab({ guildId }: { guildId: string }) {
     if (await api(`/server/emojis/${e.id}`, { method: "PATCH", json: { name: v } })) void load();
   };
   const remove = async (e: Emoji) => {
-    if (!(await confirmDialog(`Supprimer l'emoji :${e.name}: ?`, { title: "Supprimer", confirmLabel: "Supprimer" }))) return;
+    if (!(await confirmDialog(tx("Supprimer l'emoji :{name}: ?", { name: e.name }), { title: tx("Supprimer"), confirmLabel: tx("Supprimer") }))) return;
     if (await api(`/server/emojis/${e.id}`, { method: "DELETE" })) void load();
   };
 
   const validName = /^[a-zA-Z0-9_]{2,32}$/.test(name);
   return (
     <>
-      <Panel title="Ajouter un emoji" subtitle="PNG, JPG ou GIF de 256 Ko au maximum.">
+      <Panel title={tx("Ajouter un emoji")} subtitle={tx("PNG, JPG ou GIF de 256 Ko au maximum.")}>
         <div className="flex flex-wrap items-center gap-2 px-5 py-3">
-          <input ref={inputRef} type="file" accept="image/png,image/jpeg,image/gif,image/webp" onChange={(e) => pick(e.target.files?.[0])} aria-label="Image de l'emoji" className="text-xs text-[var(--text-muted)]" />
+          <input ref={inputRef} type="file" accept="image/png,image/jpeg,image/gif,image/webp" onChange={(e) => pick(e.target.files?.[0])} aria-label={tx("Image de l'emoji")} className="text-xs text-[var(--text-muted)]" />
           {/* eslint-disable-next-line @next/next/no-img-element */}
           {file && <img src={file} alt="" className="h-8 w-8 object-contain" />}
-          <input value={name} maxLength={32} onChange={(e) => setName(e.target.value.replace(/[^a-zA-Z0-9_]/g, "_"))} placeholder="nom_emoji" aria-label="Nom de l'emoji" className={`${SELECT} w-40 font-mono`} />
+          <input value={name} maxLength={32} onChange={(e) => setName(e.target.value.replace(/[^a-zA-Z0-9_]/g, "_"))} placeholder="nom_emoji" aria-label={tx("Nom de l'emoji")} className={`${SELECT} w-40 font-mono`} />
           <GhostButton disabled={!file || !validName || busy} onClick={upload}>
-            {busy ? "Envoi…" : "Ajouter"}
+            {busy ? tx("Envoi…") : tx("Ajouter")}
           </GhostButton>
         </div>
       </Panel>
-      <Panel title="Emojis" subtitle={data ? `${data.quota.usedStatic}/${data.quota.maxStatic} fixes · ${data.quota.usedAnimated}/${data.quota.maxAnimated} animés` : undefined}>
+      <Panel title={tx("Emojis")} subtitle={data ? tx("{usedStatic}/{maxStatic} fixes · {usedAnimated}/{maxAnimated} animés", { usedStatic: data.quota.usedStatic, maxStatic: data.quota.maxStatic, usedAnimated: data.quota.usedAnimated, maxAnimated: data.quota.maxAnimated }) : undefined}>
         {!data ? (
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         ) : data.emojis.length === 0 ? (
-          <EmptyLine>Aucun emoji.</EmptyLine>
+          <EmptyLine>{tx("Aucun emoji.")}</EmptyLine>
         ) : (
           <ul className="grid gap-px sm:grid-cols-2">
             {data.emojis.map((e) => (
@@ -553,14 +554,14 @@ function EmojisTab({ guildId }: { guildId: string }) {
                 <div className="min-w-0 flex-1">
                   <TextField value={e.name} maxLength={32} mono width="w-full" onCommit={(v) => rename(e, v)} />
                 </div>
-                <GhostButton onClick={() => remove(e)}>Supprimer</GhostButton>
+                <GhostButton onClick={() => remove(e)}>{tx("Supprimer")}</GhostButton>
               </li>
             ))}
           </ul>
         )}
       </Panel>
       {data && data.stickers.length > 0 && (
-        <Panel title="Stickers">
+        <Panel title={tx("Stickers")}>
           <div className="flex flex-wrap gap-3 px-5 py-4">
             {data.stickers.map((s) => (
               <div key={s.id} className="w-20 text-center">
@@ -587,15 +588,15 @@ function WebhooksTab({ guildId }: { guildId: string }) {
     void load();
   }, [load]);
   const remove = async (w: Webhook) => {
-    if (!(await confirmDialog(`Supprimer le webhook « ${w.name} » ? Ce qui l'utilise (bots, intégrations) cessera de publier dans #${w.channelName}.`, { title: "Supprimer", confirmLabel: "Supprimer" }))) return;
+    if (!(await confirmDialog(tx("Supprimer le webhook « {name} » ? Ce qui l'utilise (bots, intégrations) cessera de publier dans #{channelName}.", { name: w.name, channelName: w.channelName }), { title: tx("Supprimer"), confirmLabel: tx("Supprimer") }))) return;
     if (await api(`/server/webhooks/${w.id}`, { method: "DELETE" })) void load();
   };
   return (
-    <Panel title="Webhooks" subtitle="Un webhook inconnu peut publier au nom de n'importe qui : supprime ceux que tu ne reconnais pas.">
+    <Panel title={tx("Webhooks")} subtitle={tx("Un webhook inconnu peut publier au nom de n'importe qui : supprime ceux que tu ne reconnais pas.")}>
       {!hooks ? (
-        <EmptyLine>Chargement…</EmptyLine>
+        <EmptyLine>{tx("Chargement…")}</EmptyLine>
       ) : hooks.length === 0 ? (
-        <EmptyLine>Aucun webhook sur ce serveur.</EmptyLine>
+        <EmptyLine>{tx("Aucun webhook sur ce serveur.")}</EmptyLine>
       ) : (
         <ul>
           {hooks.map((w) => (
@@ -603,10 +604,10 @@ function WebhooksTab({ guildId }: { guildId: string }) {
               <div className="min-w-0 flex-1">
                 <p className="truncate text-[13px] font-semibold text-[var(--text-primary)]">{w.name}</p>
                 <p className="truncate text-[11px] text-[var(--text-muted)]">
-                  #{w.channelName} · créé par {w.creatorTag} · {sinceLabel(w.createdAt)}
+                  #{w.channelName} {" "}{tx("· créé par")}{" "} {w.creatorTag} · {sinceLabel(w.createdAt)}
                 </p>
               </div>
-              <GhostButton onClick={() => remove(w)}>Supprimer</GhostButton>
+              <GhostButton onClick={() => remove(w)}>{tx("Supprimer")}</GhostButton>
             </li>
           ))}
         </ul>
@@ -634,32 +635,32 @@ function SettingsTab({ guildId }: { guildId: string }) {
     if (r) setS(r.settings);
     else setS(previous);
   };
-  if (!s) return <Panel><EmptyLine>Chargement…</EmptyLine></Panel>;
+  if (!s) return <Panel><EmptyLine>{tx("Chargement…")}</EmptyLine></Panel>;
   return (
     <>
-      <Panel title="Profil du serveur">
-        <Row label="Nom">
+      <Panel title={tx("Profil du serveur")}>
+        <Row label={tx("Nom")}>
           <TextField value={s.name} maxLength={100} width="w-72" onCommit={(v) => save({ name: v })} />
         </Row>
-        <Row label="Description" hint={s.premiumTier < 1 ? "Visible dans la découverte (serveurs communautaires)." : undefined}>
-          <textarea value={desc} maxLength={120} rows={2} onChange={(e) => setDesc(e.target.value)} onBlur={() => desc !== (s.description ?? "") && save({ description: desc })} aria-label="Description" className={`${INPUT} h-auto py-2`} />
+        <Row label={tx("Description")} hint={s.premiumTier < 1 ? tx("Visible dans la découverte (serveurs communautaires).") : undefined}>
+          <textarea value={desc} maxLength={120} rows={2} onChange={(e) => setDesc(e.target.value)} onBlur={() => desc !== (s.description ?? "") && save({ description: desc })} aria-label={tx("Description")} className={`${INPUT} h-auto py-2`} />
         </Row>
         {s.vanityURLCode && (
-          <Row label="Lien personnalisé">
-            <code className="text-xs text-[var(--text-muted)]">discord.gg/{s.vanityURLCode}</code>
+          <Row label={tx("Lien personnalisé")}>
+            <code className="text-xs text-[var(--text-muted)]">{tx("discord.gg/")}{s.vanityURLCode}</code>
           </Row>
         )}
       </Panel>
-      <Panel title="Modération Discord">
-        <Row label="Niveau de vérification" hint="Conditions avant de pouvoir écrire.">
-          <Select value={s.verificationLevel} options={VERIFICATION_OPTIONS} onChange={(v) => save({ verificationLevel: v })} aria-label="Niveau de vérification" />
+      <Panel title={tx("Modération Discord")}>
+        <Row label={tx("Niveau de vérification")} hint={tx("Conditions avant de pouvoir écrire.")}>
+          <Select value={s.verificationLevel} options={VERIFICATION_OPTIONS} onChange={(v) => save({ verificationLevel: v })} aria-label={tx("Niveau de vérification")} />
         </Row>
-        <Row label="Filtre de contenu explicite" hint="Images analysées par Discord.">
-          <Select value={s.explicitContentFilter} options={FILTER_OPTIONS} onChange={(v) => save({ explicitContentFilter: v })} aria-label="Filtre de contenu explicite" />
+        <Row label={tx("Filtre de contenu explicite")} hint={tx("Images analysées par Discord.")}>
+          <Select value={s.explicitContentFilter} options={FILTER_OPTIONS} onChange={(v) => save({ explicitContentFilter: v })} aria-label={tx("Filtre de contenu explicite")} />
         </Row>
-        <Row label="Notifications par défaut">
+        <Row label={tx("Notifications par défaut")}>
           <Segmented
-            label="Notifications par défaut"
+            label={tx("Notifications par défaut")}
             value={s.defaultMessageNotifications}
             options={[
               [0, "Tous les messages"],
@@ -669,16 +670,16 @@ function SettingsTab({ guildId }: { guildId: string }) {
           />
         </Row>
       </Panel>
-      <Panel title="Salons spéciaux">
-        <Row label="Salon système Discord" hint="Messages de bienvenue et de boost de Discord.">
-          <ChannelPicker guildId={guildId} value={s.systemChannelId ?? ""} filterTypes={[0]} placeholder="Aucun" onChange={(id) => save({ systemChannelId: id || null })} />
+      <Panel title={tx("Salons spéciaux")}>
+        <Row label={tx("Salon système Discord")} hint={tx("Messages de bienvenue et de boost de Discord.")}>
+          <ChannelPicker guildId={guildId} value={s.systemChannelId ?? ""} filterTypes={[0]} placeholder={tx("Aucun")} onChange={(id) => save({ systemChannelId: id || null })} />
         </Row>
-        <Row label="Salon AFK">
-          <ChannelPicker guildId={guildId} value={s.afkChannelId ?? ""} filterTypes={[2]} placeholder="Aucun" onChange={(id) => save({ afkChannelId: id || null })} />
+        <Row label={tx("Salon AFK")}>
+          <ChannelPicker guildId={guildId} value={s.afkChannelId ?? ""} filterTypes={[2]} placeholder={tx("Aucun")} onChange={(id) => save({ afkChannelId: id || null })} />
         </Row>
-        <Row label="Délai d'inactivité AFK">
+        <Row label={tx("Délai d'inactivité AFK")}>
           <Segmented
-            label="Délai AFK"
+            label={tx("Délai AFK")}
             value={s.afkTimeout}
             options={[
               [60, "1 min"],

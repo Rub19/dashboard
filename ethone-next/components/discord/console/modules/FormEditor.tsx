@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ArrowDown, ArrowUp, Plus, Trash2 } from "@/components/icons/ph";
 import { GhostButton, RoleChips, Row, Segmented, Select, Stepper, Switch, useGuildApi } from "../kit";
+import { tx } from "@/lib/tx";
 
 /** Types qu'Etho affiche dans la fenêtre Discord (les autres demanderaient une page web, réservée au staff). */
 const TYPES: [string, string][] = [
@@ -60,19 +61,19 @@ export default function FormEditor({ guildId, form, onSaved, onCancel }: { guild
 
   return (
     <>
-      <Row label="Titre" hint="Les 45 premiers caractères s'affichent en haut de la fenêtre Discord.">
-        <input value={f.title} maxLength={100} onChange={(e) => set({ title: e.target.value })} aria-label="Titre" className={`${field} h-9 py-0`} />
+      <Row label={tx("Titre")} hint={tx("Les 45 premiers caractères s'affichent en haut de la fenêtre Discord.")}>
+        <input value={f.title} maxLength={100} onChange={(e) => set({ title: e.target.value })} aria-label={tx("Titre")} className={`${field} h-9 py-0`} />
       </Row>
-      <Row label="Description">
-        <textarea value={f.description} maxLength={1000} rows={2} onChange={(e) => set({ description: e.target.value })} aria-label="Description" className={field} />
+      <Row label={tx("Description")}>
+        <textarea value={f.description} maxLength={1000} rows={2} onChange={(e) => set({ description: e.target.value })} aria-label={tx("Description")} className={field} />
       </Row>
 
       <div className="border-t border-[var(--panel-border)] px-5 py-3.5">
-        <p className="mb-1 text-[13px] font-semibold text-[var(--text-primary)]">Questions</p>
-        <p className="mb-2 text-[11px] text-[var(--text-muted)]">Discord affiche 5 questions au maximum dans sa fenêtre de réponse.</p>
+        <p className="mb-1 text-[13px] font-semibold text-[var(--text-primary)]">{tx("Questions")}</p>
+        <p className="mb-2 text-[11px] text-[var(--text-muted)]">{tx("Discord affiche 5 questions au maximum dans sa fenêtre de réponse.")}</p>
         {incompatible && (
           <p className="mb-2 rounded-lg border border-[var(--warning)]/30 bg-[var(--warning)]/[0.06] px-3 py-2 text-[11px] text-[var(--warning)]">
-            Ce formulaire a plus de 5 questions ou des types que Discord n&apos;affiche pas : les membres ne peuvent pas y répondre. Garde 5 questions de texte au maximum.
+            {tx("Ce formulaire a plus de 5 questions ou des types que Discord n'affiche pas : les membres ne peuvent pas y répondre. Garde 5 questions de texte au maximum.")}
           </p>
         )}
         <div className="space-y-2">
@@ -80,7 +81,7 @@ export default function FormEditor({ guildId, form, onSaved, onCancel }: { guild
             <div key={q.id} className="space-y-1.5 rounded-lg border border-[var(--panel-border)] p-3">
               <div className="flex flex-wrap items-center gap-1.5">
                 <span className="w-5 text-center text-xs font-bold text-[var(--text-muted)]">{i + 1}</span>
-                <input value={q.label} maxLength={45} onChange={(e) => setField(i, { label: e.target.value })} placeholder="Question" aria-label={`Question ${i + 1}`} className={`${small} min-w-0 flex-1 text-sm`} />
+                <input value={q.label} maxLength={45} onChange={(e) => setField(i, { label: e.target.value })} placeholder={tx("Question")} aria-label={tx("Question {v0}", { v0: i + 1 })} className={`${small} min-w-0 flex-1 text-sm`} />
                 <Select
                   value={MODAL_TYPES.has(q.type) ? q.type : ""}
                   options={[
@@ -88,35 +89,35 @@ export default function FormEditor({ guildId, form, onSaved, onCancel }: { guild
                     ...TYPES,
                   ]}
                   onChange={(v) => setField(i, { type: v })}
-                  aria-label="Type de réponse"
+                  aria-label={tx("Type de réponse")}
                   size="sm"
                 />
-                <button type="button" disabled={i === 0} onClick={() => move(i, -1)} aria-label="Monter" className="rounded p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] disabled:opacity-30">
+                <button type="button" disabled={i === 0} onClick={() => move(i, -1)} aria-label={tx("Monter")} className="rounded p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] disabled:opacity-30">
                   <ArrowUp className="h-3.5 w-3.5" />
                 </button>
-                <button type="button" disabled={i === f.fields.length - 1} onClick={() => move(i, 1)} aria-label="Descendre" className="rounded p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] disabled:opacity-30">
+                <button type="button" disabled={i === f.fields.length - 1} onClick={() => move(i, 1)} aria-label={tx("Descendre")} className="rounded p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] disabled:opacity-30">
                   <ArrowDown className="h-3.5 w-3.5" />
                 </button>
-                <button type="button" onClick={() => set({ fields: f.fields.filter((_, j) => j !== i) })} aria-label="Retirer la question" className="rounded p-1 text-[var(--text-muted)] hover:text-[var(--danger)]">
+                <button type="button" onClick={() => set({ fields: f.fields.filter((_, j) => j !== i) })} aria-label={tx("Retirer la question")} className="rounded p-1 text-[var(--text-muted)] hover:text-[var(--danger)]">
                   <Trash2 className="h-3.5 w-3.5" />
                 </button>
               </div>
               <div className="flex flex-wrap items-center gap-2 pl-6">
-                <input value={q.placeholder} maxLength={100} onChange={(e) => setField(i, { placeholder: e.target.value })} placeholder="Exemple de réponse (facultatif)" aria-label="Exemple de réponse" className={`${small} min-w-0 flex-1`} />
+                <input value={q.placeholder} maxLength={100} onChange={(e) => setField(i, { placeholder: e.target.value })} placeholder={tx("Exemple de réponse (facultatif)")} aria-label={tx("Exemple de réponse")} className={`${small} min-w-0 flex-1`} />
                 <label className="flex items-center gap-1.5 text-[11px] text-[var(--text-muted)]">
-                  <Switch checked={q.required} onChange={(v) => setField(i, { required: v })} label="Obligatoire" />
-                  Obligatoire
+                  <Switch checked={q.required} onChange={(v) => setField(i, { required: v })} label={tx("Obligatoire")} />
+                  {tx("Obligatoire")}
                 </label>
                 {(q.type === "SHORT_TEXT" || q.type === "LONG_TEXT") && (
                   <span className="flex items-center gap-1 text-[11px] text-[var(--text-muted)]">
-                    Longueur max
+                    {tx("Longueur max")}
                     <input
                       type="number"
                       min={1}
                       max={q.type === "LONG_TEXT" ? 4000 : 400}
                       value={q.maxLength ?? ""}
                       onChange={(e) => setField(i, { maxLength: e.target.value ? Math.max(1, Math.min(q.type === "LONG_TEXT" ? 4000 : 400, Number(e.target.value))) : undefined })}
-                      aria-label="Longueur maximale"
+                      aria-label={tx("Longueur maximale")}
                       className={`${small} w-20`}
                     />
                   </span>
@@ -130,16 +131,16 @@ export default function FormEditor({ guildId, form, onSaved, onCancel }: { guild
                 set({ fields: [...f.fields, { id: newId(), type: "SHORT_TEXT", label: "", description: "", placeholder: "", required: true, sectionId: f.fields[0]?.sectionId ?? "section-1", order: f.fields.length, options: [] }] })
               }
             >
-              <Plus className="h-3.5 w-3.5" /> Question
+              <Plus className="h-3.5 w-3.5" /> {" "}{tx("Question")}
             </GhostButton>
           )}
         </div>
       </div>
 
       <div className="border-t border-[var(--panel-border)]">
-        <Row label="Délai entre deux réponses" hint="Par membre.">
+        <Row label={tx("Délai entre deux réponses")} hint={tx("Par membre.")}>
           <Segmented
-            label="Délai"
+            label={tx("Délai")}
             value={[0, 60, 1440, 10080].includes(f.antiSpam.cooldownMinutes) ? f.antiSpam.cooldownMinutes : 1440}
             options={[
               [0, "Aucun"],
@@ -150,39 +151,39 @@ export default function FormEditor({ guildId, form, onSaved, onCancel }: { guild
             onChange={(v) => set({ antiSpam: { ...f.antiSpam, cooldownMinutes: v } })}
           />
         </Row>
-        <Row label="Réponses par membre">
-          <Stepper value={f.antiSpam.maxSubmissionsPerUser} min={1} max={20} unit="réponse(s)" onCommit={(n) => set({ antiSpam: { ...f.antiSpam, maxSubmissionsPerUser: n } })} />
+        <Row label={tx("Réponses par membre")}>
+          <Stepper value={f.antiSpam.maxSubmissionsPerUser} min={1} max={20} unit={tx("réponse(s)")} onCommit={(n) => set({ antiSpam: { ...f.antiSpam, maxSubmissionsPerUser: n } })} />
         </Row>
-        <Row label="Compte Discord créé depuis">
+        <Row label={tx("Compte Discord créé depuis")}>
           <Stepper value={f.antiSpam.minAccountAgeDays} min={0} max={365} unit="jours" onCommit={(n) => set({ antiSpam: { ...f.antiSpam, minAccountAgeDays: n } })} />
         </Row>
-        <Row label="Sur le serveur depuis">
+        <Row label={tx("Sur le serveur depuis")}>
           <Stepper value={f.antiSpam.minGuildMembershipDays} min={0} max={365} unit="jours" onCommit={(n) => set({ antiSpam: { ...f.antiSpam, minGuildMembershipDays: n } })} />
         </Row>
-        <Row label="Rôles requis" hint="Vide : tout le monde.">
+        <Row label={tx("Rôles requis")} hint={tx("Vide : tout le monde.")}>
           <RoleChips guildId={guildId} ids={f.antiSpam.requiredRoleIds} onChange={(ids) => set({ antiSpam: { ...f.antiSpam, requiredRoleIds: ids } })} />
         </Row>
-        <Row label="Rôles exclus">
+        <Row label={tx("Rôles exclus")}>
           <RoleChips guildId={guildId} ids={f.antiSpam.forbiddenRoleIds} onChange={(ids) => set({ antiSpam: { ...f.antiSpam, forbiddenRoleIds: ids } })} />
         </Row>
       </div>
 
       <div className="border-t border-[var(--panel-border)]">
-        <Row label="Titre du panneau">
-          <input value={f.panelConfig.embedTitle} maxLength={256} onChange={(e) => set({ panelConfig: { ...f.panelConfig, embedTitle: e.target.value } })} aria-label="Titre du panneau" className={`${field} h-9 py-0`} />
+        <Row label={tx("Titre du panneau")}>
+          <input value={f.panelConfig.embedTitle} maxLength={256} onChange={(e) => set({ panelConfig: { ...f.panelConfig, embedTitle: e.target.value } })} aria-label={tx("Titre du panneau")} className={`${field} h-9 py-0`} />
         </Row>
-        <Row label="Texte du panneau">
-          <textarea value={f.panelConfig.embedDescription} maxLength={2000} rows={2} onChange={(e) => set({ panelConfig: { ...f.panelConfig, embedDescription: e.target.value } })} aria-label="Texte du panneau" className={field} />
+        <Row label={tx("Texte du panneau")}>
+          <textarea value={f.panelConfig.embedDescription} maxLength={2000} rows={2} onChange={(e) => set({ panelConfig: { ...f.panelConfig, embedDescription: e.target.value } })} aria-label={tx("Texte du panneau")} className={field} />
         </Row>
-        <Row label="Bouton">
+        <Row label={tx("Bouton")}>
           <div className="flex flex-wrap items-center gap-2">
-            <input value={f.panelConfig.buttonEmoji} maxLength={32} onChange={(e) => set({ panelConfig: { ...f.panelConfig, buttonEmoji: e.target.value } })} aria-label="Emoji du bouton" className={`${small} w-14 text-center`} />
-            <input value={f.panelConfig.buttonText} maxLength={80} onChange={(e) => set({ panelConfig: { ...f.panelConfig, buttonText: e.target.value } })} aria-label="Texte du bouton" className={`${small} w-48`} />
+            <input value={f.panelConfig.buttonEmoji} maxLength={32} onChange={(e) => set({ panelConfig: { ...f.panelConfig, buttonEmoji: e.target.value } })} aria-label={tx("Emoji du bouton")} className={`${small} w-14 text-center`} />
+            <input value={f.panelConfig.buttonText} maxLength={80} onChange={(e) => set({ panelConfig: { ...f.panelConfig, buttonText: e.target.value } })} aria-label={tx("Texte du bouton")} className={`${small} w-48`} />
             <input
               type="color"
               value={/^#[0-9a-f]{6}$/i.test(f.panelConfig.embedColor) ? f.panelConfig.embedColor : "#6366f1"}
               onChange={(e) => set({ panelConfig: { ...f.panelConfig, embedColor: e.target.value } })}
-              aria-label="Couleur du panneau"
+              aria-label={tx("Couleur du panneau")}
               className="h-8 w-9 cursor-pointer rounded border border-[var(--panel-border)] bg-transparent"
             />
           </div>
@@ -196,9 +197,9 @@ export default function FormEditor({ guildId, form, onSaved, onCancel }: { guild
           onClick={save}
           className="rounded-lg bg-[var(--accent-primary)] px-4 py-2 text-xs font-bold text-white hover:opacity-90 disabled:opacity-40"
         >
-          {busy ? "Enregistrement…" : "Enregistrer"}
+          {busy ? tx("Enregistrement…") : tx("Enregistrer")}
         </button>
-        <GhostButton onClick={onCancel}>Fermer</GhostButton>
+        <GhostButton onClick={onCancel}>{tx("Fermer")}</GhostButton>
       </div>
     </>
   );

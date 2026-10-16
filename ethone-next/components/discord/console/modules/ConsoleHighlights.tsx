@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { fetchGuildChannels, type ChannelOption } from "../../ChannelPicker";
 import { pageStagger } from "@/lib/motion-variants";
 import { ChannelAdder, Chip, ConsolePage, EmptyLine, GhostButton, Panel, Row, StatTile, Switch, useGuildApi } from "../kit";
+import { tx } from "@/lib/tx";
 
 type Overview = { totalWatchers: number; totalKeywords: number; pausedWatchers: number };
 type Mine = { config: { enabled: boolean; ignoredChannelIds: string[] }; keywords: { keyword: string }[]; maxKeywords: number };
@@ -55,25 +56,25 @@ export default function ConsoleHighlights({ guildId }: { guildId: string }) {
   const valid = word.trim().length >= 2 && word.trim().length <= 50;
 
   return (
-    <ConsolePage title="Highlights">
+    <ConsolePage title={tx("Highlights")}>
       <motion.div variants={pageStagger} className="grid grid-cols-2 gap-3 lg:grid-cols-3">
-        <StatTile label="Membres qui surveillent" value={ov?.totalWatchers ?? "—"} hint={ov?.pausedWatchers ? `dont ${ov.pausedWatchers} en pause` : undefined} />
-        <StatTile label="Mots-clés suivis" value={ov?.totalKeywords ?? "—"} />
-        <StatTile label="Mes mots-clés" value={mine ? `${mine.keywords.length}/${mine.maxKeywords}` : "—"} />
+        <StatTile label={tx("Membres qui surveillent")} value={ov?.totalWatchers ?? "—"} hint={ov?.pausedWatchers ? tx("dont {pausedWatchers} en pause", { pausedWatchers: ov.pausedWatchers }) : undefined} />
+        <StatTile label={tx("Mots-clés suivis")} value={ov?.totalKeywords ?? "—"} />
+        <StatTile label={tx("Mes mots-clés")} value={mine ? `${mine.keywords.length}/${mine.maxKeywords}` : "—"} />
       </motion.div>
 
-      <Panel title="Mes alertes" subtitle="Etho t'envoie un message privé quand un de tes mots-clés est écrit sur le serveur. Les mots-clés des autres membres restent privés.">
+      <Panel title={tx("Mes alertes")} subtitle={tx("Etho t'envoie un message privé quand un de tes mots-clés est écrit sur le serveur. Les mots-clés des autres membres restent privés.")}>
         {!mine ? (
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         ) : (
           <>
-            <Row label="Recevoir les alertes">
-              <Switch checked={mine.config.enabled} onChange={(v) => saveConfig({ enabled: v })} label="Recevoir les alertes" />
+            <Row label={tx("Recevoir les alertes")}>
+              <Switch checked={mine.config.enabled} onChange={(v) => saveConfig({ enabled: v })} label={tx("Recevoir les alertes")} />
             </Row>
-            <Row label="Mots-clés" hint="De 2 à 50 caractères.">
+            <Row label={tx("Mots-clés")} hint={tx("De 2 à 50 caractères.")}>
               <div className="space-y-2">
                 <div className="flex flex-wrap items-center gap-1.5">
-                  {mine.keywords.length === 0 && <span className="text-xs text-[var(--text-muted)]">Aucun mot-clé.</span>}
+                  {mine.keywords.length === 0 && <span className="text-xs text-[var(--text-muted)]">{tx("Aucun mot-clé.")}</span>}
                   {mine.keywords.map((k) => (
                     <Chip key={k.keyword} label={k.keyword} onRemove={() => remove(k.keyword)} />
                   ))}
@@ -85,18 +86,18 @@ export default function ConsoleHighlights({ guildId }: { guildId: string }) {
                       maxLength={50}
                       onChange={(e) => setWord(e.target.value)}
                       onKeyDown={(e) => e.key === "Enter" && valid && !busy && add()}
-                      placeholder="Nouveau mot-clé"
-                      aria-label="Nouveau mot-clé"
+                      placeholder={tx("Nouveau mot-clé")}
+                      aria-label={tx("Nouveau mot-clé")}
                       className="h-8 w-48 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-2.5 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/70"
                     />
                     <GhostButton disabled={!valid || busy} onClick={add}>
-                      Ajouter
+                      {tx("Ajouter")}
                     </GhostButton>
                   </div>
                 )}
               </div>
             </Row>
-            <Row label="Salons ignorés" hint="Aucune alerte pour les messages de ces salons.">
+            <Row label={tx("Salons ignorés")} hint={tx("Aucune alerte pour les messages de ces salons.")}>
               <div className="flex flex-wrap items-center gap-1.5">
                 {mine.config.ignoredChannelIds.map((id) => (
                   <Chip key={id} label={`#${channelName(id)}`} onRemove={() => saveConfig({ ignoredChannelIds: mine.config.ignoredChannelIds.filter((x) => x !== id) })} />

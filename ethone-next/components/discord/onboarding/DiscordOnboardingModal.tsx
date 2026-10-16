@@ -8,6 +8,7 @@ import Screen0Welcome from "./Screen0Welcome";
 import Screen1Security from "./Screen1Security";
 import Screen2Music from "./Screen2Music";
 import Screen3Community from "./Screen3Community";
+import { tx } from "@/lib/tx";
 
 interface DiscordOnboardingModalProps {
   isOpen: boolean;
@@ -111,7 +112,7 @@ export default function DiscordOnboardingModal({
         tabIndex={-1}
         role="dialog"
         aria-modal="true"
-        aria-label="Etho Onboarding"
+        aria-label={tx("Etho Onboarding")}
         className="relative w-full max-w-3xl max-h-[92vh] flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#07080d]/95 shadow-[0_32px_100px_-20px_rgba(0,0,0,0.9)] backdrop-blur-2xl outline-none"
       >
         <div className="relative z-10 flex items-center justify-between px-6 py-4 border-b border-white/[0.08] bg-white/[0.02]">
@@ -121,7 +122,7 @@ export default function DiscordOnboardingModal({
               <span className="relative inline-flex h-2 w-2 rounded-full bg-[#92C8D2]" />
             </span>
             <span className="text-xs font-bold tracking-wider uppercase text-zinc-300">
-              ETHO ONBOARDING
+              {tx("ETHO ONBOARDING")}
             </span>
           </div>
 
@@ -133,7 +134,7 @@ export default function DiscordOnboardingModal({
               ref={skipButtonRef}
               type="button"
               onClick={handleSkipPrompt}
-              aria-label="Fermer l'introduction"
+              aria-label={tx("Fermer l'introduction")}
               className="p-1.5 rounded-xl border border-white/10 bg-white/[0.04] text-zinc-400 hover:text-white hover:border-white/20 transition-all cursor-pointer"
             >
               <X className="w-4 h-4" />
@@ -171,7 +172,7 @@ export default function DiscordOnboardingModal({
             }`}
           >
             <ChevronLeft className="w-4 h-4" />
-            <span>Retour</span>
+            <span>{tx("Retour")}</span>
           </motion.button>
 
           <div className="flex items-center gap-1.5" role="tablist">
@@ -180,7 +181,7 @@ export default function DiscordOnboardingModal({
                 key={i}
                 type="button"
                 onClick={() => onStepChange(i)}
-                aria-label={`Aller à l'écran ${i + 1}`}
+                aria-label={tx("Aller à l'écran {v0}", { v0: i + 1 })}
                 className={`transition-all duration-300 rounded-lg cursor-pointer h-1.5 ${
                   currentStep === i
                     ? "w-8 bg-[#92C8D2]"
@@ -197,7 +198,7 @@ export default function DiscordOnboardingModal({
               onClick={handleNext}
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white text-black text-xs font-bold shadow-lg shadow-white/10 hover:bg-zinc-100 transition-all cursor-pointer"
             >
-              <span>Continuer</span>
+              <span>{tx("Continuer")}</span>
               <ChevronRight className="w-4 h-4" />
             </motion.button>
           ) : (
@@ -208,7 +209,7 @@ export default function DiscordOnboardingModal({
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#92C8D2] text-black text-xs font-bold shadow-lg shadow-[#92C8D2]/20 hover:bg-[#a6d5de] transition-all cursor-pointer"
             >
               <Check className="w-4 h-4" />
-              <span>Terminer</span>
+              <span>{tx("Terminer")}</span>
             </motion.button>
           )}
         </div>
@@ -225,10 +226,10 @@ export default function DiscordOnboardingModal({
                 <AlertCircle className="w-5 h-5" />
               </div>
               <h4 id={exitConfirmTitleId} className="text-sm font-bold text-white mb-1">
-                Passer l&apos;introduction ?
+                {tx("Passer l'introduction ?")}
               </h4>
               <p className="text-xs text-zinc-400 mb-5 leading-relaxed">
-                Tu pourras revoir cette introduction à tout moment depuis les réglages du bot.
+                {tx("Tu pourras revoir cette introduction à tout moment depuis les réglages du bot.")}
               </p>
               <div className="flex gap-2">
                 <motion.button
@@ -237,7 +238,7 @@ export default function DiscordOnboardingModal({
                   onClick={handleConfirmExit}
                   className="flex-1 py-2 px-3 rounded-xl border border-white/10 bg-white/[0.04] text-zinc-400 hover:text-white hover:border-white/20 text-xs font-semibold transition-all cursor-pointer"
                 >
-                  Quitter
+                  {tx("Quitter")}
                 </motion.button>
                 <motion.button
                   whileTap={SPRING_PRESS}
@@ -246,7 +247,7 @@ export default function DiscordOnboardingModal({
                   onClick={() => setShowExitConfirm(false)}
                   className="flex-1 py-2 px-3 rounded-xl bg-white text-black text-xs font-bold hover:bg-zinc-100 transition-all cursor-pointer"
                 >
-                  Continuer l&apos;intro
+                  {tx("Continuer l'intro")}
                 </motion.button>
               </div>
             </div>

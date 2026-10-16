@@ -12,6 +12,7 @@ import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
 import { confirmDialog } from "@/lib/confirmDialog";
 import { EASE_SNAP, SPRING_LAYOUT, SPRING_PILL } from "@/lib/ease";
 import { cn } from "@/lib/utils";
+import { tx } from "@/lib/tx";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 const MAX_BYTES = 256 * 1024;
@@ -139,18 +140,18 @@ export default function EmojiStudioClient() {
       }
       if (await uploadOne(d)) ok++;
     }
-    if (ok) success(`${ok} émoji${ok > 1 ? "s" : ""} ajouté${ok > 1 ? "s" : ""} au serveur.`);
+    if (ok) success(tx("{ok} émoji{v1} ajouté{v2} au serveur.", { ok, v1: ok > 1 ? "s" : "", v2: ok > 1 ? "s" : "" }));
   };
 
   const remove = async (e: ServerEmoji) => {
-    if (!(await confirmDialog(`Supprimer l'émoji :${e.name}: du serveur ?`))) return;
+    if (!(await confirmDialog(tx("Supprimer l'émoji :{name}: du serveur ?", { name: e.name })))) return;
     const before = emojis;
     setEmojis((list) => list.filter((x) => x.id !== e.id));
     try {
       const res = await fetch(`${base}/${e.id}`, { method: "DELETE", credentials: "include" });
       if (!res.ok) throw new Error();
       setQuota((q) => (q ? { ...q, usedStatic: q.usedStatic - (e.animated ? 0 : 1), usedAnimated: q.usedAnimated - (e.animated ? 1 : 0) } : q));
-      success(`:${e.name}: supprimé.`);
+      success(tx(":{name}: supprimé.", { name: e.name }));
     } catch {
       setEmojis(before);
       toastError("Suppression impossible : vérifie la permission « Gérer les expressions » du bot.");
@@ -197,7 +198,7 @@ export default function EmojiStudioClient() {
       if (!res.ok || !data?.success) throw new Error(data?.error || "Impossible de renommer cet émoji.");
       const newName = data.emoji?.name || trimmed;
       setEmojis((list) => list.map((x) => (x.id === e.id ? { ...x, name: newName } : x)));
-      success(`:${e.name}: renommé en :${newName}:`);
+      success(tx(":{name}: renommé en :{newName}:", { name: e.name, newName }));
       cancelRename();
     } catch (err) {
       toastError(err instanceof Error ? err.message : "Erreur lors du renommage.");
@@ -212,7 +213,7 @@ export default function EmojiStudioClient() {
   }, [emojis, filter, query]);
 
   if (!BOT_API_URL || !guildId || state === "loading") {
-    return <ModuleSkeleton label="Chargement des émojis…" />;
+    return <ModuleSkeleton label={tx("Chargement des émojis…")} />;
   }
 
   return (
@@ -222,13 +223,13 @@ export default function EmojiStudioClient() {
           guildId={guildId}
           icon="mod-emojis"
           tint="amber"
-          title="Émojis du serveur"
-          subtitle="Dépose tes images ou GIF animés : le bot les ajoute directement sur ton serveur."
+          title={tx("Émojis du serveur")}
+          subtitle={tx("Dépose tes images ou GIF animés : le bot les ajoute directement sur ton serveur.")}
           actions={
             <button
               type="button"
               onClick={() => void load()}
-              aria-label="Actualiser"
+              aria-label={tx("Actualiser")}
               className="grid h-9 w-9 place-items-center rounded-xl border border-[var(--panel-border)] text-[var(--text-muted)] transition-[background-color,color,transform] duration-150 hover:bg-[var(--surface-raised)] hover:text-[var(--text-primary)] active:scale-[0.94]"
             >
               <RefreshCw className="h-4 w-4" />
@@ -238,14 +239,14 @@ export default function EmojiStudioClient() {
 
         {state === "offline" ? (
           <div className="rounded-2xl border border-dashed border-[var(--panel-border)] p-8 text-center text-sm text-[var(--text-muted)]">
-            Le bot n&apos;a pas répondu pour ce serveur. Vérifie qu&apos;il est présent, puis actualise.
+            {tx("Le bot n'a pas répondu pour ce serveur. Vérifie qu'il est présent, puis actualise.")}
           </div>
         ) : (
           <>
             {quota && (
               <div className="grid gap-3 sm:grid-cols-2">
-                <QuotaBar label="Émojis fixes" used={quota.usedStatic} max={quota.maxStatic} />
-                <QuotaBar label="Émojis animés" used={quota.usedAnimated} max={quota.maxAnimated} hint={`Niveau de boost ${quota.boostTier}`} />
+                <QuotaBar label={tx("Émojis fixes")} used={quota.usedStatic} max={quota.maxStatic} />
+                <QuotaBar label={tx("Émojis animés")} used={quota.usedAnimated} max={quota.maxAnimated} hint={tx("Niveau de boost {boostTier}", { boostTier: quota.boostTier })} />
               </div>
             )}
 
@@ -272,14 +273,14 @@ export default function EmojiStudioClient() {
               <motion.div animate={{ y: dragging ? -4 : 0 }} transition={SPRING_LAYOUT} className="mx-auto mb-3 grid h-14 w-14 place-items-center rounded-2xl bg-[var(--accent-primary)]/12 text-[var(--accent-primary)]">
                 <Upload className="h-6 w-6" />
               </motion.div>
-              <p className="text-sm font-semibold">{dragging ? "Lâchez pour ajouter" : "Glisse tes images ici"}</p>
-              <p className="mt-1 text-xs text-[var(--text-muted)]">PNG, JPG, WebP ou GIF animé · 256 Ko maximum · jusqu&apos;à 20 à la fois</p>
+              <p className="text-sm font-semibold">{dragging ? tx("Lâchez pour ajouter") : tx("Glisse tes images ici")}</p>
+              <p className="mt-1 text-xs text-[var(--text-muted)]">{tx("PNG, JPG, WebP ou GIF animé · 256 Ko maximum · jusqu'à 20 à la fois")}</p>
               <button
                 type="button"
                 onClick={() => fileRef.current?.click()}
                 className="mt-4 inline-flex h-10 items-center gap-2 rounded-xl bg-[var(--accent-primary)] px-4 text-sm font-semibold text-[var(--accent-contrast)] shadow-sm transition-[filter,transform] duration-150 hover:brightness-110 active:scale-[0.97]"
               >
-                <Upload className="h-4 w-4" /> Choisir des fichiers
+                <Upload className="h-4 w-4" /> {" "}{tx("Choisir des fichiers")}
               </button>
             </motion.div>
 
@@ -296,10 +297,10 @@ export default function EmojiStudioClient() {
                 >
                   <div className="space-y-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)] p-4">
                     <div className="flex items-center justify-between gap-3">
-                      <h2 className="text-sm font-semibold">À ajouter ({drafts.length})</h2>
+                      <h2 className="text-sm font-semibold">{tx("À ajouter (")}{drafts.length})</h2>
                       <div className="flex gap-2">
                         <button type="button" onClick={() => setDrafts([])} className="rounded-xl px-3 py-2 text-xs font-medium text-[var(--text-muted)] transition-[color,transform] duration-150 hover:text-[var(--text-primary)] active:scale-[0.97]">
-                          Tout retirer
+                          {tx("Tout retirer")}
                         </button>
                         <button
                           type="button"
@@ -307,7 +308,7 @@ export default function EmojiStudioClient() {
                           disabled={drafts.some((d) => d.status === "uploading")}
                           className="inline-flex items-center gap-2 rounded-xl bg-[var(--accent-primary)] px-4 py-2 text-xs font-semibold text-[var(--accent-contrast)] transition-[filter,transform,opacity] duration-150 hover:brightness-110 active:scale-[0.97] disabled:opacity-50"
                         >
-                          <Check className="h-4 w-4" /> Ajouter au serveur
+                          <Check className="h-4 w-4" /> {" "}{tx("Ajouter au serveur")}
                         </button>
                       </div>
                     </div>
@@ -332,17 +333,17 @@ export default function EmojiStudioClient() {
                                 maxLength={32}
                                 onChange={(e) => setDrafts((list) => list.map((x) => (x.key === d.key ? { ...x, name: e.target.value.replace(/[^A-Za-z0-9_]/g, "_"), status: "ready", error: undefined } : x)))}
                                 className="w-full bg-transparent outline-none"
-                                aria-label="Nom de l'émoji"
+                                aria-label={tx("Nom de l'émoji")}
                               />
                               <span className="text-[var(--text-muted)]">:</span>
                             </label>
                             {/* Aperçu tel que dans un message Discord */}
                             <p className="flex items-center gap-1.5 truncate rounded-lg bg-[#313338] px-2.5 py-1.5 text-[13px] text-[#dbdee1]">
-                              Trop bien
+                              {tx("Trop bien")}
                               {/* eslint-disable-next-line @next/next/no-img-element */}
                               <img src={d.dataUrl} alt="" className="h-[22px] w-[22px] object-contain" />
                               <span className="text-[#949ba4]">
-                                {d.animated ? "animé" : "fixe"} · {Math.round(d.bytes / 1024)} Ko
+                                {d.animated ? tx("animé") : "fixe"} · {Math.round(d.bytes / 1024)} {" "}{tx("Ko")}
                               </span>
                             </p>
                             {d.error && <p className="text-xs text-[var(--danger)]">{d.error}</p>}
@@ -354,7 +355,7 @@ export default function EmojiStudioClient() {
                               <button
                                 type="button"
                                 onClick={() => setDrafts((list) => list.filter((x) => x.key !== d.key))}
-                                aria-label="Retirer"
+                                aria-label={tx("Retirer")}
                                 className="grid h-8 w-8 place-items-center rounded-lg text-[var(--text-muted)] transition-[background-color,color,transform] duration-150 hover:bg-[var(--surface-raised)] hover:text-[var(--text-primary)] active:scale-90"
                               >
                                 <X className="h-4 w-4" />
@@ -372,7 +373,7 @@ export default function EmojiStudioClient() {
             {/* Émojis du serveur */}
             <section className="space-y-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)] p-4 sm:p-5">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="flex gap-1 rounded-xl border border-[var(--panel-border)] p-1" role="tablist" aria-label="Filtrer les émojis">
+                <div className="flex gap-1 rounded-xl border border-[var(--panel-border)] p-1" role="tablist" aria-label={tx("Filtrer les émojis")}>
                   {(
                     [
                       ["all", "Tous", emojis.length],
@@ -397,12 +398,12 @@ export default function EmojiStudioClient() {
                 </div>
                 <label className="flex h-9 min-w-[200px] items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--input-bg)] px-3">
                   <Search className="h-4 w-4 text-[var(--text-muted)]" />
-                  <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Rechercher" className="w-full bg-transparent text-sm outline-none placeholder:text-[var(--text-muted)]" />
+                  <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={tx("Rechercher")} className="w-full bg-transparent text-sm outline-none placeholder:text-[var(--text-muted)]" />
                 </label>
               </div>
 
               {visible.length === 0 ? (
-                <p className="py-10 text-center text-sm text-[var(--text-muted)]">{emojis.length ? "Aucun émoji ne correspond." : "Ce serveur n'a pas encore d'émoji personnalisé."}</p>
+                <p className="py-10 text-center text-sm text-[var(--text-muted)]">{emojis.length ? tx("Aucun émoji ne correspond.") : tx("Ce serveur n'a pas encore d'émoji personnalisé.")}</p>
               ) : (
                 <div className="grid grid-cols-[repeat(auto-fill,minmax(112px,1fr))] gap-3">
                   <AnimatePresence mode="popLayout" initial={false}>
@@ -441,8 +442,8 @@ export default function EmojiStudioClient() {
                             <button
                               type="submit"
                               disabled={renaming}
-                              aria-label="Valider le nom"
-                              title="Valider"
+                              aria-label={tx("Valider le nom")}
+                              title={tx("Valider")}
                               className="grid h-6 w-6 shrink-0 place-items-center rounded text-[var(--success)] transition-colors hover:bg-[var(--success)]/15 active:scale-90"
                             >
                               {renaming ? <Loader2 className="h-3 w-3 animate-spin" /> : <Check className="h-3.5 w-3.5" />}
@@ -451,8 +452,8 @@ export default function EmojiStudioClient() {
                               type="button"
                               onClick={cancelRename}
                               disabled={renaming}
-                              aria-label="Annuler"
-                              title="Annuler"
+                              aria-label={tx("Annuler")}
+                              title={tx("Annuler")}
                               className="grid h-6 w-6 shrink-0 place-items-center rounded text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-raised)] active:scale-90"
                             >
                               <X className="h-3.5 w-3.5" />
@@ -462,18 +463,18 @@ export default function EmojiStudioClient() {
                           <p
                             onDoubleClick={() => !e.managed && startRename(e)}
                             className="w-full truncate text-center text-xs text-[var(--text-primary)]/85 cursor-default select-none"
-                            title={!e.managed ? `:${e.name}: (double-clique pour renommer)` : `:${e.name}:`}
+                            title={!e.managed ? tx(":{name}: (double-clique pour renommer)", { name: e.name }) : `:${e.name}:`}
                           >
                             :{e.name}:
                           </p>
                         )}
-                        {e.animated && <span className="absolute left-2 top-2 rounded bg-[var(--accent-primary)]/15 px-1.5 text-[10px] font-semibold text-[var(--accent-primary)]">GIF</span>}
+                        {e.animated && <span className="absolute left-2 top-2 rounded bg-[var(--accent-primary)]/15 px-1.5 text-[10px] font-semibold text-[var(--accent-primary)]">{tx("GIF")}</span>}
                         <div className="flex gap-1 opacity-70 transition-opacity group-hover:opacity-100">
                           <button
                             type="button"
                             onClick={() => void copyCode(e)}
-                            aria-label={`Copier le code de :${e.name}:`}
-                            title="Copier le code Discord"
+                            aria-label={tx("Copier le code de :{name}:", { name: e.name })}
+                            title={tx("Copier le code Discord")}
                             className="grid h-7 w-7 place-items-center rounded-lg text-[var(--text-muted)] transition-[background-color,color,transform] duration-150 hover:bg-[var(--surface-raised)] hover:text-[var(--text-primary)] active:scale-90"
                           >
                             {copied === e.id ? <Check className="h-3.5 w-3.5 text-[var(--success)]" /> : <Copy className="h-3.5 w-3.5" />}
@@ -483,8 +484,8 @@ export default function EmojiStudioClient() {
                               <button
                                 type="button"
                                 onClick={() => startRename(e)}
-                                aria-label={`Renommer :${e.name}:`}
-                                title="Renommer l'émoji"
+                                aria-label={tx("Renommer :{name}:", { name: e.name })}
+                                title={tx("Renommer l'émoji")}
                                 className="grid h-7 w-7 place-items-center rounded-lg text-[var(--text-muted)] transition-[background-color,color,transform] duration-150 hover:bg-[var(--surface-raised)] hover:text-[var(--text-primary)] active:scale-90"
                               >
                                 <Pencil className="h-3.5 w-3.5" />
@@ -492,8 +493,8 @@ export default function EmojiStudioClient() {
                               <button
                                 type="button"
                                 onClick={() => void remove(e)}
-                                aria-label={`Supprimer :${e.name}:`}
-                                title="Supprimer l'émoji"
+                                aria-label={tx("Supprimer :{name}:", { name: e.name })}
+                                title={tx("Supprimer l'émoji")}
                                 className="grid h-7 w-7 place-items-center rounded-lg text-[var(--text-muted)] transition-[background-color,color,transform] duration-150 hover:bg-[var(--danger)]/12 hover:text-[var(--danger)] active:scale-90"
                               >
                                 <Trash2 className="h-3.5 w-3.5" />

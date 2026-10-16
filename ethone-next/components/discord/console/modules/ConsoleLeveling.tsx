@@ -24,6 +24,7 @@ import { SPRING_LAYOUT } from "@/lib/ease";
 import { pageStagger } from "@/lib/motion-variants";
 import { cn } from "@/lib/utils";
 import { BOT_API_URL, ChannelAdder, Chip, ConsolePage, EmptyLine, GhostButton, Panel, RoleAdder, RoleChips, Row, Segmented, Select, StatTile, Stepper, Switch, TextField, roleColor, useGuildApi } from "../kit";
+import { tx } from "@/lib/tx";
 
 type Overview = { activeMembersCount: number; totalXpDistributed: number; totalLevels: number; topUser?: { username: string; level: number } | null };
 type Member = { userId: string; username: string; avatarUrl: string | null; totalXp: number; level: number; rank: number; progressPercentage: number };
@@ -85,9 +86,9 @@ export default function ConsoleLeveling({ guildId }: { guildId: string }) {
 
   if (!cfg) {
     return (
-      <ConsolePage title="Niveaux">
+      <ConsolePage title={tx("Niveaux")}>
         <Panel>
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         </Panel>
       </ConsolePage>
     );
@@ -96,116 +97,116 @@ export default function ConsoleLeveling({ guildId }: { guildId: string }) {
   const publicUrl = typeof window !== "undefined" ? `${window.location.origin}/leaderboard?guildId=${guildId}` : "";
 
   return (
-    <ConsolePage title="Niveaux">
+    <ConsolePage title={tx("Niveaux")}>
       {!cfg.enabled && (
         <Panel>
-          <p className="px-5 py-3 text-xs text-[var(--warning)]">Module désactivé : personne ne gagne d&apos;XP. Active-le avec l&apos;interrupteur en haut de la page.</p>
+          <p className="px-5 py-3 text-xs text-[var(--warning)]">{tx("Module désactivé : personne ne gagne d'XP. Active-le avec l'interrupteur en haut de la page.")}</p>
         </Panel>
       )}
 
       <motion.div variants={pageStagger} className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatTile label="Membres classés" value={ov ? fmt(ov.activeMembersCount) : "—"} />
-        <StatTile label="XP distribuée" value={ov ? fmt(ov.totalXpDistributed) : "—"} />
-        <StatTile label="Meilleur niveau" value={ov?.topUser ? `Niv. ${ov.topUser.level}` : "—"} hint={ov?.topUser?.username} />
-        <StatTile label="Récompenses" value={rewards.length} hint={`rôle${rewards.length > 1 ? "s" : ""} à débloquer`} />
+        <StatTile label={tx("Membres classés")} value={ov ? fmt(ov.activeMembersCount) : "—"} />
+        <StatTile label={tx("XP distribuée")} value={ov ? fmt(ov.totalXpDistributed) : "—"} />
+        <StatTile label={tx("Meilleur niveau")} value={ov?.topUser ? `Niv. ${ov.topUser.level}` : "—"} hint={ov?.topUser?.username} />
+        <StatTile label={tx("Récompenses")} value={rewards.length} hint={tx("rôle{v0} à débloquer", { v0: rewards.length > 1 ? "s" : "" })} />
       </motion.div>
 
-      <Panel title="Annonce d'un nouveau niveau">
-        <Row label="Où annoncer">
-          <Select value={cfg.levelUpChannelType} options={LEVELUP_TYPES} onChange={(v) => save({ levelUpChannelType: v })} aria-label="Où annoncer" />
+      <Panel title={tx("Annonce d'un nouveau niveau")}>
+        <Row label={tx("Où annoncer")}>
+          <Select value={cfg.levelUpChannelType} options={LEVELUP_TYPES} onChange={(v) => save({ levelUpChannelType: v })} aria-label={tx("Où annoncer")} />
         </Row>
         {cfg.levelUpChannelType === "specific_channel" && (
-          <Row label="Salon">
-            <ChannelPicker guildId={guildId} value={cfg.levelUpChannelId} filterTypes={[0, 5]} placeholder="Choisir un salon" onChange={(id) => save({ levelUpChannelId: id || null })} />
+          <Row label={tx("Salon")}>
+            <ChannelPicker guildId={guildId} value={cfg.levelUpChannelId} filterTypes={[0, 5]} placeholder={tx("Choisir un salon")} onChange={(id) => save({ levelUpChannelId: id || null })} />
           </Row>
         )}
         {cfg.levelUpChannelType !== "disabled" && (
-          <Row label="Message" hint="Variables : cliquer pour insérer.">
-            <MessageEditor value={cfg.levelUpMessage} vars={VARS} onCommit={(v) => save({ levelUpMessage: v })} preview={(v) => <EmbedPreview color={cfg.accentColor} title="Niveau supérieur !" text={fill(v)} />} />
+          <Row label={tx("Message")} hint={tx("Variables : cliquer pour insérer.")}>
+            <MessageEditor value={cfg.levelUpMessage} vars={VARS} onCommit={(v) => save({ levelUpMessage: v })} preview={(v) => <EmbedPreview color={cfg.accentColor} title={tx("Niveau supérieur !")} text={fill(v)} />} />
           </Row>
         )}
       </Panel>
 
-      <Panel title="Gain d'XP">
-        <Row label="XP par message" hint="Un nombre au hasard entre les deux.">
+      <Panel title={tx("Gain d'XP")}>
+        <Row label={tx("XP par message")} hint={tx("Un nombre au hasard entre les deux.")}>
           <div className="flex flex-wrap items-center gap-3">
-            <span className="text-xs text-[var(--text-muted)]">de</span>
+            <span className="text-xs text-[var(--text-muted)]">{tx("de")}</span>
             <Stepper value={cfg.minXp} min={1} max={Math.min(100, cfg.maxXp)} onCommit={(n) => save({ minXp: n })} />
             <span className="text-xs text-[var(--text-muted)]">à</span>
             <Stepper value={cfg.maxXp} min={Math.max(5, cfg.minXp)} max={200} unit="XP" onCommit={(n) => save({ maxXp: n })} />
           </div>
         </Row>
-        <Row label="Délai entre deux gains">
+        <Row label={tx("Délai entre deux gains")}>
           <Stepper value={cfg.cooldownSeconds} min={5} max={300} step={5} unit="s" onCommit={(n) => save({ cooldownSeconds: n })} />
         </Row>
-        <Row label="Longueur minimale" hint="Les messages plus courts ne rapportent rien.">
-          <Stepper value={cfg.minMessageLength} min={0} max={50} unit="caractères" onCommit={(n) => save({ minMessageLength: n })} />
+        <Row label={tx("Longueur minimale")} hint={tx("Les messages plus courts ne rapportent rien.")}>
+          <Stepper value={cfg.minMessageLength} min={0} max={50} unit={tx("caractères")} onCommit={(n) => save({ minMessageLength: n })} />
         </Row>
-        <Row label="Niveau maximum" hint="0 = aucun plafond.">
+        <Row label={tx("Niveau maximum")} hint={tx("0 = aucun plafond.")}>
           <Stepper value={cfg.maxLevel} min={0} max={1000} onCommit={(n) => save({ maxLevel: n })} />
         </Row>
-        <Row label="XP en vocal" hint="De l'XP à chaque minute passée en vocal.">
-          <Switch checked={cfg.voiceXpEnabled} onChange={(v) => save({ voiceXpEnabled: v })} label="XP en vocal" />
+        <Row label={tx("XP en vocal")} hint={tx("De l'XP à chaque minute passée en vocal.")}>
+          <Switch checked={cfg.voiceXpEnabled} onChange={(v) => save({ voiceXpEnabled: v })} label={tx("XP en vocal")} />
         </Row>
         <Collapse open={cfg.voiceXpEnabled}>
-          <Row label="XP par minute">
+          <Row label={tx("XP par minute")}>
             <Stepper value={cfg.voiceXpPerMinute} min={1} max={50} unit="XP" onCommit={(n) => save({ voiceXpPerMinute: n })} />
           </Row>
-          <Row label="Membres minimum dans le salon" hint="2 évite de gagner de l'XP tout seul.">
+          <Row label={tx("Membres minimum dans le salon")} hint={tx("2 évite de gagner de l'XP tout seul.")}>
             <Stepper value={cfg.voiceXpMinMembers} min={1} max={10} onCommit={(n) => save({ voiceXpMinMembers: n })} />
           </Row>
-          <Row label="Pas d'XP muet ou en sourdine">
-            <Switch checked={cfg.voiceXpIgnoreMuted} onChange={(v) => save({ voiceXpIgnoreMuted: v })} label="Pas d'XP muet ou en sourdine" />
+          <Row label={tx("Pas d'XP muet ou en sourdine")}>
+            <Switch checked={cfg.voiceXpIgnoreMuted} onChange={(v) => save({ voiceXpIgnoreMuted: v })} label={tx("Pas d'XP muet ou en sourdine")} />
           </Row>
         </Collapse>
       </Panel>
 
-      <Panel title="Où l'XP compte">
-        <Row label="Salons ignorés" hint="Une catégorie exclut tous ses salons.">
+      <Panel title={tx("Où l'XP compte")}>
+        <Row label={tx("Salons ignorés")} hint={tx("Une catégorie exclut tous ses salons.")}>
           <div className="flex flex-wrap items-center gap-1.5">
             {cfg.excludedChannelIds.map((id) => (
               <Chip key={id} label={`#${channelName(id)}`} onRemove={() => save({ excludedChannelIds: cfg.excludedChannelIds.filter((x) => x !== id) })} />
             ))}
-            <ChannelAdder guildId={guildId} label="Salon" excludeIds={cfg.excludedChannelIds} onPick={(c) => save({ excludedChannelIds: [...cfg.excludedChannelIds, c.id] })} />
+            <ChannelAdder guildId={guildId} label={tx("Salon")} excludeIds={cfg.excludedChannelIds} onPick={(c) => save({ excludedChannelIds: [...cfg.excludedChannelIds, c.id] })} />
           </div>
         </Row>
-        <Row label="Rôles ignorés">
+        <Row label={tx("Rôles ignorés")}>
           <RoleChips guildId={guildId} ids={cfg.excludedRoleIds} onChange={(ids) => save({ excludedRoleIds: ids })} />
         </Row>
-        <Row label="Fils de discussion">
-          <Switch checked={cfg.xpInThreads} onChange={(v) => save({ xpInThreads: v })} label="XP dans les fils" />
+        <Row label={tx("Fils de discussion")}>
+          <Switch checked={cfg.xpInThreads} onChange={(v) => save({ xpInThreads: v })} label={tx("XP dans les fils")} />
         </Row>
-        <Row label="Forums">
-          <Switch checked={cfg.xpInForums} onChange={(v) => save({ xpInForums: v })} label="XP dans les forums" />
+        <Row label={tx("Forums")}>
+          <Switch checked={cfg.xpInForums} onChange={(v) => save({ xpInForums: v })} label={tx("XP dans les forums")} />
         </Row>
-        <Row label="Bots">
-          <Switch checked={cfg.allowBots} onChange={(v) => save({ allowBots: v })} label="XP des bots" />
+        <Row label={tx("Bots")}>
+          <Switch checked={cfg.allowBots} onChange={(v) => save({ allowBots: v })} label={tx("XP des bots")} />
         </Row>
-        <Row label="Garder l'XP au départ" hint="Un membre qui revient retrouve son niveau.">
-          <Switch checked={cfg.keepXpOnLeave} onChange={(v) => save({ keepXpOnLeave: v })} label="Garder l'XP au départ" />
+        <Row label={tx("Garder l'XP au départ")} hint={tx("Un membre qui revient retrouve son niveau.")}>
+          <Switch checked={cfg.keepXpOnLeave} onChange={(v) => save({ keepXpOnLeave: v })} label={tx("Garder l'XP au départ")} />
         </Row>
       </Panel>
 
       <Panel
-        title="Récompenses"
-        subtitle="Un rôle donné en atteignant un niveau."
+        title={tx("Récompenses")}
+        subtitle={tx("Un rôle donné en atteignant un niveau.")}
         actions={
           <div className="flex items-center gap-2">
             <Stepper value={newLevel} min={1} max={1000} unit="niv." onCommit={setNewLevel} />
-            <RoleAdder guildId={guildId} label="Rôle" excludeIds={rewards.map((r) => r.roleId)} onPick={(r) => addReward(r.id)} />
+            <RoleAdder guildId={guildId} label={tx("Rôle")} excludeIds={rewards.map((r) => r.roleId)} onPick={(r) => addReward(r.id)} />
           </div>
         }
       >
         {rewards.length === 0 ? (
-          <EmptyLine>Aucune récompense. Choisis un niveau puis un rôle.</EmptyLine>
+          <EmptyLine>{tx("Aucune récompense. Choisis un niveau puis un rôle.")}</EmptyLine>
         ) : (
           <ul>
             <AnimatePresence initial={false}>
               {rewards.map((r) => (
                 <motion.li key={r.id} layout initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, height: 0 }} transition={SPRING_LAYOUT} className="flex items-center gap-3 border-t border-[var(--panel-border)] px-5 py-2.5 first:border-t-0">
-                  <span className="w-16 shrink-0 font-mono text-xs text-[var(--text-muted)]">Niv. {r.level}</span>
+                  <span className="w-16 shrink-0 font-mono text-xs text-[var(--text-muted)]">{tx("Niv.")}{" "} {r.level}</span>
                   <RewardRole guildId={guildId} roleId={r.roleId} />
-                  <button type="button" onClick={() => removeReward(r.id)} aria-label="Supprimer la récompense" className="ml-auto rounded-lg p-1.5 text-[var(--text-muted)] hover:bg-[var(--danger)]/10 hover:text-[var(--danger)]">
+                  <button type="button" onClick={() => removeReward(r.id)} aria-label={tx("Supprimer la récompense")} className="ml-auto rounded-lg p-1.5 text-[var(--text-muted)] hover:bg-[var(--danger)]/10 hover:text-[var(--danger)]">
                     <Trash2 className="h-4 w-4" />
                   </button>
                 </motion.li>
@@ -213,9 +214,9 @@ export default function ConsoleLeveling({ guildId }: { guildId: string }) {
             </AnimatePresence>
           </ul>
         )}
-        <Row label="Attribution">
+        <Row label={tx("Attribution")}>
           <Segmented
-            label="Attribution"
+            label={tx("Attribution")}
             value={cfg.rewardType}
             options={[
               ["cumulative", "Garder tous les rôles"],
@@ -224,51 +225,51 @@ export default function ConsoleLeveling({ guildId }: { guildId: string }) {
             onChange={(v) => save({ rewardType: v })}
           />
         </Row>
-        <Row label="Annonce">
-          <Select value={cfg.rewardAnnounceType} options={REWARD_TYPES} onChange={(v) => save({ rewardAnnounceType: v })} aria-label="Annonce d'une récompense" />
+        <Row label={tx("Annonce")}>
+          <Select value={cfg.rewardAnnounceType} options={REWARD_TYPES} onChange={(v) => save({ rewardAnnounceType: v })} aria-label={tx("Annonce d'une récompense")} />
         </Row>
         {cfg.rewardAnnounceType === "specific_channel" && (
-          <Row label="Salon des récompenses">
-            <ChannelPicker guildId={guildId} value={cfg.rewardChannelId} filterTypes={[0, 5]} placeholder="Choisir un salon" onChange={(id) => save({ rewardChannelId: id || null })} />
+          <Row label={tx("Salon des récompenses")}>
+            <ChannelPicker guildId={guildId} value={cfg.rewardChannelId} filterTypes={[0, 5]} placeholder={tx("Choisir un salon")} onChange={(id) => save({ rewardChannelId: id || null })} />
           </Row>
         )}
         {["same_channel", "specific_channel", "dm"].includes(cfg.rewardAnnounceType) && (
-          <Row label="Message de récompense">
+          <Row label={tx("Message de récompense")}>
             <MessageEditor value={cfg.rewardMessage} vars={REWARD_VARS} onCommit={(v) => save({ rewardMessage: v })} preview={(v) => <EmbedPreview color={cfg.accentColor} text={fill(v)} />} />
           </Row>
         )}
       </Panel>
 
-      <Panel title="Boosts d'XP" subtitle="Multiplicateurs (bonus ou malus) par rôle, salon, membre ou période.">
+      <Panel title={tx("Boosts d'XP")} subtitle={tx("Multiplicateurs (bonus ou malus) par rôle, salon, membre ou période.")}>
         <div className="console-embed px-5 py-4">
           <LevelingBoostsPanel guildId={guildId} boosts={boosts} disabled={false} onChanged={load} />
         </div>
       </Panel>
 
-      <Panel title="Carte /rank" subtitle="Aussi réglable sur Discord avec /xp carte." actions={<GhostButton onClick={() => save({ rankCard: RANK_CARD_DEFAULTS })}>Par défaut</GhostButton>}>
-        <Row label="Couleur du système">
+      <Panel title={tx("Carte /rank")} subtitle={tx("Aussi réglable sur Discord avec /xp carte.")} actions={<GhostButton onClick={() => save({ rankCard: RANK_CARD_DEFAULTS })}>{tx("Par défaut")}</GhostButton>}>
+        <Row label={tx("Couleur du système")}>
           <ColorInput value={cfg.accentColor} onCommit={(v) => save({ accentColor: v })} />
         </Row>
-        <Row label="Fond">
+        <Row label={tx("Fond")}>
           <ColorInput value={cfg.rankCard.backgroundColor} onCommit={(v) => saveCard({ backgroundColor: v })} />
         </Row>
-        <Row label="Texte">
+        <Row label={tx("Texte")}>
           <ColorInput value={cfg.rankCard.textColor} onCommit={(v) => saveCard({ textColor: v })} />
         </Row>
-        <Row label="Police">
-          <Select value={cfg.rankCard.font} options={FONTS} onChange={(v) => saveCard({ font: v })} aria-label="Police" />
+        <Row label={tx("Police")}>
+          <Select value={cfg.rankCard.font} options={FONTS} onChange={(v) => saveCard({ font: v })} aria-label={tx("Police")} />
         </Row>
-        <Row label="Avatar">
-          <Segmented label="Forme de l'avatar" value={cfg.rankCard.avatarShape} options={SHAPES} onChange={(v) => saveCard({ avatarShape: v })} />
+        <Row label={tx("Avatar")}>
+          <Segmented label={tx("Forme de l'avatar")} value={cfg.rankCard.avatarShape} options={SHAPES} onChange={(v) => saveCard({ avatarShape: v })} />
         </Row>
-        <Row label="Image de fond" hint="Lien https, vide pour un fond uni.">
+        <Row label={tx("Image de fond")} hint={tx("Lien https, vide pour un fond uni.")}>
           <TextField value={cfg.rankCard.backgroundUrl ?? ""} maxLength={500} placeholder="https://…" width="w-full max-w-sm" onCommit={(v) => /^https:\/\/\S+$/i.test(v) && saveCard({ backgroundUrl: v })} />
         </Row>
         {cfg.rankCard.backgroundUrl && (
-          <Row label="Voile sur l'image">
+          <Row label={tx("Voile sur l'image")}>
             <div className="flex items-center gap-2">
               <Stepper value={cfg.rankCard.overlayOpacity} min={0} max={90} step={5} unit="%" onCommit={(n) => saveCard({ overlayOpacity: n })} />
-              <GhostButton onClick={() => saveCard({ backgroundUrl: null })}>Retirer l&apos;image</GhostButton>
+              <GhostButton onClick={() => saveCard({ backgroundUrl: null })}>{tx("Retirer l'image")}</GhostButton>
             </div>
           </Row>
         )}
@@ -277,16 +278,16 @@ export default function ConsoleLeveling({ guildId }: { guildId: string }) {
         </div>
       </Panel>
 
-      <Panel title="Classements">
-        <Row label="Sur Discord" hint="Commande /leaderboard.">
-          <Switch checked={cfg.leaderboardOnDiscord} onChange={(v) => save({ leaderboardOnDiscord: v })} label="Classement sur Discord" />
+      <Panel title={tx("Classements")}>
+        <Row label={tx("Sur Discord")} hint={tx("Commande /leaderboard.")}>
+          <Switch checked={cfg.leaderboardOnDiscord} onChange={(v) => save({ leaderboardOnDiscord: v })} label={tx("Classement sur Discord")} />
         </Row>
-        <Row label="Page publique" hint="Pseudo, avatar, niveau et XP seulement.">
+        <Row label={tx("Page publique")} hint={tx("Pseudo, avatar, niveau et XP seulement.")}>
           <div className="flex flex-wrap items-center gap-3">
-            <Switch checked={cfg.leaderboardPublic} onChange={(v) => save({ leaderboardPublic: v })} label="Classement en ligne" />
+            <Switch checked={cfg.leaderboardPublic} onChange={(v) => save({ leaderboardPublic: v })} label={tx("Classement en ligne")} />
             {cfg.leaderboardPublic && (
               <a href={publicUrl} target="_blank" rel="noopener noreferrer" className="truncate text-xs text-[var(--accent-primary)] hover:underline">
-                Ouvrir la page
+                {tx("Ouvrir la page")}
               </a>
             )}
           </div>
@@ -294,14 +295,14 @@ export default function ConsoleLeveling({ guildId }: { guildId: string }) {
       </Panel>
 
       <Panel
-        title="Top 10"
-        subtitle="Ajuste l'XP d'un membre à la main."
+        title={tx("Top 10")}
+        subtitle={tx("Ajuste l'XP d'un membre à la main.")}
         actions={<Stepper value={xpStep} min={1} max={100000} step={50} unit="XP" onCommit={setXpStep} />}
       >
         {!members ? (
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         ) : members.length === 0 ? (
-          <EmptyLine>Personne n&apos;a encore d&apos;XP.</EmptyLine>
+          <EmptyLine>{tx("Personne n'a encore d'XP.")}</EmptyLine>
         ) : (
           <ol>
             {members.map((m, i) => (
@@ -320,14 +321,14 @@ export default function ConsoleLeveling({ guildId }: { guildId: string }) {
                   </span>
                 </span>
                 <span className="shrink-0 text-right text-xs">
-                  <span className="block font-semibold text-[var(--text-primary)]">Niv. {m.level}</span>
-                  <span className="block font-mono text-[11px] text-[var(--text-muted)]">{fmt(m.totalXp)} XP</span>
+                  <span className="block font-semibold text-[var(--text-primary)]">{tx("Niv.")}{" "} {m.level}</span>
+                  <span className="block font-mono text-[11px] text-[var(--text-muted)]">{fmt(m.totalXp)} {" "}{tx("XP")}</span>
                 </span>
                 <span className="flex shrink-0 gap-1">
-                  <button type="button" onClick={() => adjust(m, -xpStep)} aria-label={`Retirer ${xpStep} XP à ${m.username}`} className="rounded-md border border-[var(--panel-border)] p-1 text-[var(--text-muted)] hover:text-[var(--danger)]">
+                  <button type="button" onClick={() => adjust(m, -xpStep)} aria-label={tx("Retirer {xpStep} XP à {username}", { xpStep, username: m.username })} className="rounded-md border border-[var(--panel-border)] p-1 text-[var(--text-muted)] hover:text-[var(--danger)]">
                     <Minus className="h-3.5 w-3.5" />
                   </button>
-                  <button type="button" onClick={() => adjust(m, xpStep)} aria-label={`Ajouter ${xpStep} XP à ${m.username}`} className="rounded-md border border-[var(--panel-border)] p-1 text-[var(--text-muted)] hover:text-[var(--success)]">
+                  <button type="button" onClick={() => adjust(m, xpStep)} aria-label={tx("Ajouter {xpStep} XP à {username}", { xpStep, username: m.username })} className="rounded-md border border-[var(--panel-border)] p-1 text-[var(--text-muted)] hover:text-[var(--success)]">
                     <Plus className="h-3.5 w-3.5" />
                   </button>
                 </span>
@@ -349,7 +350,7 @@ function RewardRole({ guildId, roleId }: { guildId: string; roleId: string }) {
   return (
     <span className="flex min-w-0 items-center gap-2 text-[13px] text-[var(--text-primary)]">
       <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: roleColor(role?.color) }} />
-      <span className="truncate">{role ? `@${role.name}` : "Rôle introuvable"}</span>
+      <span className="truncate">{role ? `@${role.name}` : tx("Rôle introuvable")}</span>
     </span>
   );
 }
@@ -396,13 +397,13 @@ function ColorInput({ value, onCommit }: { value: string; onCommit: (v: string) 
   const valid = HEX.test(draft);
   return (
     <span className="flex items-center gap-2">
-      <input type="color" value={valid ? draft : "#000000"} onChange={(e) => setDraft(e.target.value)} onBlur={() => valid && draft !== value && onCommit(draft)} aria-label="Couleur" className="h-9 w-12 cursor-pointer rounded-lg border border-[var(--panel-border)] bg-transparent" />
+      <input type="color" value={valid ? draft : "#000000"} onChange={(e) => setDraft(e.target.value)} onBlur={() => valid && draft !== value && onCommit(draft)} aria-label={tx("Couleur")} className="h-9 w-12 cursor-pointer rounded-lg border border-[var(--panel-border)] bg-transparent" />
       <input
         value={draft}
         maxLength={7}
         onChange={(e) => setDraft(e.target.value)}
         onBlur={() => HEX.test(draft) && draft !== value && onCommit(draft)}
-        aria-label="Code couleur"
+        aria-label={tx("Code couleur")}
         className={cn("h-9 w-24 rounded-lg border bg-[var(--surface-base,var(--bg-main))] px-2.5 font-mono text-xs text-[var(--text-primary)] outline-none", valid ? "border-[var(--panel-border)]" : "border-[var(--danger)]/60")}
       />
     </span>

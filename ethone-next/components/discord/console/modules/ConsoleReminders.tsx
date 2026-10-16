@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import ChannelPicker, { fetchGuildChannels, type ChannelOption } from "../../ChannelPicker";
 import { pageStagger } from "@/lib/motion-variants";
 import { ConsolePage, EmptyLine, GhostButton, Panel, Row, Segmented, StatTile, useGuildApi, useMemberNames } from "../kit";
+import { tx } from "@/lib/tx";
 
 type Recurrence = "none" | "daily" | "weekly";
 type Reminder = { id: string; channelId: string; userId: string; message: string; remindAt: string; recurrence: Recurrence; delivered: boolean; deliveredCount: number };
@@ -64,20 +65,20 @@ export default function ConsoleReminders({ guildId }: { guildId: string }) {
   const canCreate = message.trim().length > 0 && DELAY_RE.test(delay.trim()) && !!channelId && !busy;
 
   return (
-    <ConsolePage title="Rappels">
+    <ConsolePage title={tx("Rappels")}>
       <motion.div variants={pageStagger} className="grid grid-cols-2 gap-3 lg:grid-cols-3">
-        <StatTile label="En attente" value={list ? pending.length : "—"} />
-        <StatTile label="Récurrents" value={list ? pending.filter((r) => r.recurrence !== "none").length : "—"} />
-        <StatTile label="Prochain" value={pending[0] ? when(pending[0].remindAt) : "—"} />
+        <StatTile label={tx("En attente")} value={list ? pending.length : "—"} />
+        <StatTile label={tx("Récurrents")} value={list ? pending.filter((r) => r.recurrence !== "none").length : "—"} />
+        <StatTile label={tx("Prochain")} value={pending[0] ? when(pending[0].remindAt) : "—"} />
       </motion.div>
 
-      <Panel title="Nouveau rappel" subtitle="Envoyé à ton nom dans le salon choisi.">
-        <Row label="Message">
-          <textarea value={message} maxLength={1500} rows={2} onChange={(e) => setMessage(e.target.value)} placeholder="Réunion staff dans 10 minutes" aria-label="Message du rappel" className={field} />
+      <Panel title={tx("Nouveau rappel")} subtitle={tx("Envoyé à ton nom dans le salon choisi.")}>
+        <Row label={tx("Message")}>
+          <textarea value={message} maxLength={1500} rows={2} onChange={(e) => setMessage(e.target.value)} placeholder={tx("Réunion staff dans 10 minutes")} aria-label={tx("Message du rappel")} className={field} />
         </Row>
-        <Row label="Dans" hint="Ex. 30m, 2h, 1j, 1h30m (30 secondes minimum).">
+        <Row label={tx("Dans")} hint={tx("Ex. 30m, 2h, 1j, 1h30m (30 secondes minimum).")}>
           <div className="flex flex-wrap items-center gap-2">
-            <input value={delay} maxLength={20} onChange={(e) => setDelay(e.target.value)} aria-label="Délai" className={`${field} h-9 w-28 py-0 font-mono`} />
+            <input value={delay} maxLength={20} onChange={(e) => setDelay(e.target.value)} aria-label={tx("Délai")} className={`${field} h-9 w-28 py-0 font-mono`} />
             <div className="flex flex-wrap gap-1">
               {PRESETS.map((p) => (
                 <button
@@ -92,24 +93,24 @@ export default function ConsoleReminders({ guildId }: { guildId: string }) {
             </div>
           </div>
         </Row>
-        <Row label="Répéter">
-          <Segmented label="Répéter" value={recurrence} options={Object.entries(REC) as [Recurrence, string][]} onChange={setRecurrence} />
+        <Row label={tx("Répéter")}>
+          <Segmented label={tx("Répéter")} value={recurrence} options={Object.entries(REC) as [Recurrence, string][]} onChange={setRecurrence} />
         </Row>
-        <Row label="Salon">
-          <ChannelPicker guildId={guildId} value={channelId} filterTypes={[0, 5]} placeholder="Choisir un salon" onChange={(id) => setChannelId(id)} />
+        <Row label={tx("Salon")}>
+          <ChannelPicker guildId={guildId} value={channelId} filterTypes={[0, 5]} placeholder={tx("Choisir un salon")} onChange={(id) => setChannelId(id)} />
         </Row>
         <div className="flex justify-end border-t border-[var(--panel-border)] px-5 py-3">
           <button type="button" disabled={!canCreate} onClick={create} className="rounded-lg bg-[var(--accent-primary)] px-4 py-2 text-xs font-bold text-white hover:opacity-90 disabled:opacity-40">
-            Programmer
+            {tx("Programmer")}
           </button>
         </div>
       </Panel>
 
-      <Panel title="Rappels programmés" subtitle="Créés avec /reminder ou depuis cette page.">
+      <Panel title={tx("Rappels programmés")} subtitle={tx("Créés avec /reminder ou depuis cette page.")}>
         {!list ? (
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         ) : pending.length === 0 ? (
-          <EmptyLine>Aucun rappel en attente.</EmptyLine>
+          <EmptyLine>{tx("Aucun rappel en attente.")}</EmptyLine>
         ) : (
           <ul>
             {pending.map((r) => (
@@ -121,8 +122,8 @@ export default function ConsoleReminders({ guildId }: { guildId: string }) {
                   </p>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <GhostButton disabled={busy} onClick={() => trigger(r)}>Déclencher</GhostButton>
-                  <GhostButton disabled={busy} onClick={() => cancel(r)}>Annuler</GhostButton>
+                  <GhostButton disabled={busy} onClick={() => trigger(r)}>{tx("Déclencher")}</GhostButton>
+                  <GhostButton disabled={busy} onClick={() => cancel(r)}>{tx("Annuler")}</GhostButton>
                 </div>
               </li>
             ))}

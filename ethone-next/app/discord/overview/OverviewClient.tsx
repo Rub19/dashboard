@@ -25,6 +25,7 @@ import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { useGuildOverview } from "@/lib/hooks/useGuildOverview";
 import { GuildSelector } from "@/components/GuildSelector";
 import { CardSkeleton } from "@/components/ui/Skeleton";
+import { tx } from "@/lib/tx";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 const BOT_CLIENT_ID = "1545139931154878464";
@@ -145,7 +146,7 @@ export default function OverviewClient() {
       <div className="flex min-h-[50vh] items-center justify-center p-8">
         <div className="max-w-sm rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 text-center">
           <LayoutDashboard className="mx-auto mb-3 h-8 w-8 text-[var(--text-muted)]" />
-          <p className="text-sm text-[var(--text-muted)]">Le serveur du bot n'est pas configuré ici.</p>
+          <p className="text-sm text-[var(--text-muted)]">{tx("Le serveur du bot n'est pas configuré ici.")}</p>
         </div>
       </div>
     );
@@ -163,9 +164,9 @@ export default function OverviewClient() {
               <LayoutDashboard className="h-6 w-6" />
             </div>
             <div>
-              <h1 className="text-xl font-bold">Vue d'ensemble</h1>
+              <h1 className="text-xl font-bold">{tx("Vue d'ensemble")}</h1>
               <p className="text-xs text-[var(--text-muted)]">
-                État en direct du bot, de la modération, de la musique et plus — pour ce serveur.
+                {tx("État en direct du bot, de la modération, de la musique et plus — pour ce serveur.")}
               </p>
             </div>
           </div>
@@ -175,7 +176,7 @@ export default function OverviewClient() {
             className="inline-flex h-9 shrink-0 cursor-pointer items-center gap-2 self-start rounded-xl border border-[var(--panel-border)] px-3.5 text-sm font-medium text-[var(--text-muted)] transition-colors hover:border-[var(--input-border-hover)] hover:text-[var(--text-primary)] disabled:opacity-50"
           >
             <RefreshCw className={`h-4 w-4 ${anyLoading ? "animate-spin" : ""}`} />
-            Actualiser
+            {tx("Actualiser")}
           </button>
         </div>
 
@@ -198,9 +199,9 @@ export default function OverviewClient() {
                 <Bot className="h-5 w-5" />
               </div>
               <div>
-                <p className="font-semibold text-[var(--text-primary)] text-sm">Le bot ETHONE n&apos;est pas installé sur ce serveur</p>
+                <p className="font-semibold text-[var(--text-primary)] text-sm">{tx("Le bot ETHONE n'est pas installé sur ce serveur")}</p>
                 <p className="mt-0.5 text-[var(--text-muted)]">
-                  Invite le bot sur « {selectedGuild.name} » pour activer la modération en temps réel, la musique, les tickets et les statistiques.
+                  {tx("Invite le bot sur «")}{" "} {selectedGuild.name} {" "}{tx("» pour activer la modération en temps réel, la musique, les tickets et les statistiques.")}
                 </p>
               </div>
             </div>
@@ -210,7 +211,7 @@ export default function OverviewClient() {
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[var(--accent-primary)] px-4 py-2 text-sm font-semibold text-[var(--accent-contrast)] hover:brightness-110 shrink-0 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
             >
-              <span>Inviter le bot</span>
+              <span>{tx("Inviter le bot")}</span>
               <ExternalLink className="h-3 w-3" />
             </a>
           </div>
@@ -218,70 +219,70 @@ export default function OverviewClient() {
 
         {!selectedGuild ? (
           <p className="pop-in py-8 text-center text-sm text-[var(--text-muted)]">
-            Aucun serveur administrable trouvé — connecte Discord dans les réglages.
+            {tx("Aucun serveur administrable trouvé — connecte Discord dans les réglages.")}
           </p>
         ) : (
           <>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <OverviewCard icon={<Server className="h-4 w-4" />} color="bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]" title="Statut" href="/discord/bot">
+              <OverviewCard icon={<Server className="h-4 w-4" />} color="bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]" title={tx("Statut")} href="/discord/bot">
                 {guild.loading ? (
                   <CardSkeleton />
                 ) : !isBotPresent ? (
-                  <CardError message="Bot non installé sur ce serveur." />
+                  <CardError message={tx("Bot non installé sur ce serveur.")} />
                 ) : guild.error || !guild.data?.botStatus ? (
                   <CardError />
                 ) : (
                   <>
                     <div className="flex items-center gap-2">
                       <span className={`h-2 w-2 rounded-full ${guild.data.botStatus.online ? "bg-[var(--success)]" : "bg-rose-400"}`} />
-                      <span className="text-lg font-bold">{guild.data.botStatus.online ? "En ligne" : "Hors ligne"}</span>
+                      <span className="text-lg font-bold">{guild.data.botStatus.online ? tx("En ligne") : tx("Hors ligne")}</span>
                     </div>
                     <p className="mt-1 text-xs text-[var(--text-muted)]">
-                      Uptime {formatUptime(guild.data.botStatus.uptimeMs)} · {guild.data.botStatus.pingMs} ms
+                      {tx("Uptime")}{" "} {formatUptime(guild.data.botStatus.uptimeMs)} · {guild.data.botStatus.pingMs} {" "}{tx("ms")}
                     </p>
                   </>
                 )}
               </OverviewCard>
 
-              <OverviewCard icon={<Users className="h-4 w-4" />} color="bg-cyan-500/15 text-cyan-400" title="Serveurs & Membres" href="/discord/bot">
+              <OverviewCard icon={<Users className="h-4 w-4" />} color="bg-cyan-500/15 text-cyan-400" title={tx("Serveurs & Membres")} href="/discord/bot">
                 {guild.loading || botWide.loading ? (
                   <CardSkeleton />
                 ) : !isBotPresent ? (
-                  <CardError message="Bot non installé sur ce serveur." />
+                  <CardError message={tx("Bot non installé sur ce serveur.")} />
                 ) : (
                   <>
-                    <p className="text-lg font-bold">{guild.data?.guild?.memberCount ?? "—"} membres</p>
+                    <p className="text-lg font-bold">{guild.data?.guild?.memberCount ?? "—"} {" "}{tx("membres")}</p>
                     <p className="mt-1 text-xs text-[var(--text-muted)]">
-                      {botWide.data?.guildsCount ?? "—"} serveurs gérés au total
+                      {botWide.data?.guildsCount ?? "—"} {" "}{tx("serveurs gérés au total")}
                     </p>
                   </>
                 )}
               </OverviewCard>
 
-              <OverviewCard icon={<ShieldCheck className="h-4 w-4" />} color="bg-[var(--info)]/15 text-[var(--info)]" title="Modération" href={`/discord/moderation?guildId=${gid}`}>
+              <OverviewCard icon={<ShieldCheck className="h-4 w-4" />} color="bg-[var(--info)]/15 text-[var(--info)]" title={tx("Modération")} href={`/discord/moderation?guildId=${gid}`}>
                 {moderation.loading ? (
                   <CardSkeleton />
                 ) : !isBotPresent ? (
-                  <CardError message="Bot non installé sur ce serveur." />
+                  <CardError message={tx("Bot non installé sur ce serveur.")} />
                 ) : moderation.error || !moderation.data ? (
                   <CardError />
                 ) : (
                   <>
-                    <p className="text-lg font-bold">{moderation.data.stats.casesToday} aujourd'hui</p>
+                    <p className="text-lg font-bold">{moderation.data.stats.casesToday} {" "}{tx("aujourd'hui")}</p>
                     <p className="mt-1 truncate text-xs text-[var(--text-muted)]">
                       {moderation.data.recentCases[0]
                         ? `${moderation.data.recentCases[0].type} — ${moderation.data.recentCases[0].targetTag || "membre"}`
-                        : "Aucun cas récent"}
+                        : tx("Aucun cas récent")}
                     </p>
                   </>
                 )}
               </OverviewCard>
 
-              <OverviewCard icon={<ShieldAlert className="h-4 w-4" />} color="bg-rose-500/15 text-rose-400" title="Sécurité" href={`/discord/security?guildId=${gid}`}>
+              <OverviewCard icon={<ShieldAlert className="h-4 w-4" />} color="bg-rose-500/15 text-rose-400" title={tx("Sécurité")} href={`/discord/security?guildId=${gid}`}>
                 {security.loading ? (
                   <CardSkeleton />
                 ) : !isBotPresent ? (
-                  <CardError message="Bot non installé sur ce serveur." />
+                  <CardError message={tx("Bot non installé sur ce serveur.")} />
                 ) : security.error || !security.data ? (
                   <CardError />
                 ) : (
@@ -295,69 +296,69 @@ export default function OverviewClient() {
                             : "text-rose-400"
                       }`}
                     >
-                      {security.data.status === "protected" ? "Protégé" : security.data.status === "warning" ? "Suspect" : "Alerte"}
+                      {security.data.status === "protected" ? tx("Protégé") : security.data.status === "warning" ? tx("Suspect") : tx("Alerte")}
                     </p>
                     <p className="mt-1 text-xs text-[var(--text-muted)]">
-                      {security.data.recentIncidents.length} incident(s) récent(s)
+                      {security.data.recentIncidents.length} {" "}{tx("incident(s) récent(s)")}
                     </p>
                   </>
                 )}
               </OverviewCard>
 
-              <OverviewCard icon={<Music2 className="h-4 w-4" />} color="bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]" title="Musique" href={`/discord/music?guildId=${gid}`}>
+              <OverviewCard icon={<Music2 className="h-4 w-4" />} color="bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]" title={tx("Musique")} href={`/discord/music?guildId=${gid}`}>
                 {music.loading ? (
                   <CardSkeleton />
                 ) : !isBotPresent ? (
-                  <CardError message="Bot non installé sur ce serveur." />
+                  <CardError message={tx("Bot non installé sur ce serveur.")} />
                 ) : music.error || !music.data ? (
                   <CardError />
                 ) : music.data.currentTrack && (music.data.status === "PLAYING" || music.data.status === "PAUSED") ? (
                   <>
                     <p className="truncate text-sm font-bold">{music.data.currentTrack.title}</p>
                     <p className="mt-1 truncate text-xs text-[var(--text-muted)]">
-                      {music.data.currentTrack.artist || (music.data.status === "PAUSED" ? "En pause" : "En lecture")}
+                      {music.data.currentTrack.artist || (music.data.status === "PAUSED" ? tx("En pause") : tx("En lecture"))}
                     </p>
                   </>
                 ) : (
-                  <p className="text-xs text-[var(--text-muted)]">Aucune lecture en cours.</p>
+                  <p className="text-xs text-[var(--text-muted)]">{tx("Aucune lecture en cours.")}</p>
                 )}
               </OverviewCard>
 
-              <OverviewCard icon={<Ticket className="h-4 w-4" />} color="bg-amber-500/15 text-amber-400" title="Tickets" href={`/discord/tickets?guildId=${gid}`}>
+              <OverviewCard icon={<Ticket className="h-4 w-4" />} color="bg-amber-500/15 text-amber-400" title={tx("Tickets")} href={`/discord/tickets?guildId=${gid}`}>
                 {tickets.loading ? (
                   <CardSkeleton />
                 ) : !isBotPresent ? (
-                  <CardError message="Bot non installé sur ce serveur." />
+                  <CardError message={tx("Bot non installé sur ce serveur.")} />
                 ) : tickets.error || !tickets.data ? (
                   <CardError />
                 ) : (
                   <>
-                    <p className="text-lg font-bold">{tickets.data.openCount} ouverts</p>
-                    <p className="mt-1 text-xs text-[var(--text-muted)]">{tickets.data.pendingCount} en attente</p>
+                    <p className="text-lg font-bold">{tickets.data.openCount} {" "}{tx("ouverts")}</p>
+                    <p className="mt-1 text-xs text-[var(--text-muted)]">{tickets.data.pendingCount} {" "}{tx("en attente")}</p>
                   </>
                 )}
               </OverviewCard>
 
-              <OverviewCard icon={<Gift className="h-4 w-4" />} color="bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]" title="Giveaways" href={`/discord/giveaways?guildId=${gid}`}>
+              <OverviewCard icon={<Gift className="h-4 w-4" />} color="bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]" title={tx("Giveaways")} href={`/discord/giveaways?guildId=${gid}`}>
                 {giveaways.loading ? (
                   <CardSkeleton />
                 ) : !isBotPresent ? (
-                  <CardError message="Bot non installé sur ce serveur." />
+                  <CardError message={tx("Bot non installé sur ce serveur.")} />
                 ) : giveaways.error || !giveaways.data ? (
                   <CardError />
                 ) : (
                   <>
-                    <p className="text-lg font-bold">{giveaways.data.activeCount} actif(s)</p>
-                    <p className="mt-1 text-xs text-[var(--text-muted)]">{giveaways.data.endedCount} terminé(s)</p>
+                    <p className="text-lg font-bold">{giveaways.data.activeCount} {" "}{tx("actif(s)")}</p>
+                    <p className="mt-1 text-xs text-[var(--text-muted)]">{giveaways.data.endedCount} {" "}{tx("terminé(s)")}</p>
                   </>
                 )}
               </OverviewCard>
 
-              <OverviewCard icon={<DatabaseBackup className="h-4 w-4" />} color="bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]" title="Backups" href={`/discord/backups?guildId=${gid}`}>
+              <OverviewCard icon={<DatabaseBackup className="h-4 w-4" />} color="bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]" title={tx("Backups")} href={`/discord/backups?guildId=${gid}`}>
                 {backups.loading ? (
                   <CardSkeleton />
                 ) : !isBotPresent ? (
-                  <CardError message="Bot non installé sur ce serveur." />
+                  <CardError message={tx("Bot non installé sur ce serveur.")} />
                 ) : backups.error || !backups.data ? (
                   <CardError />
                 ) : (
@@ -371,9 +372,9 @@ export default function OverviewClient() {
                             : "text-rose-400"
                       }`}
                     >
-                      {backups.data.kpis.healthStatus === "HEALTHY" ? "À jour" : backups.data.kpis.healthStatus === "WARNING" ? "À vérifier" : "Critique"}
+                      {backups.data.kpis.healthStatus === "HEALTHY" ? tx("À jour") : backups.data.kpis.healthStatus === "WARNING" ? tx("À vérifier") : tx("Critique")}
                     </p>
-                    <p className="mt-1 text-xs text-[var(--text-muted)]">Dernière : {formatRelative(backups.data.kpis.lastBackupAt)}</p>
+                    <p className="mt-1 text-xs text-[var(--text-muted)]">{tx("Dernière :")}{" "} {formatRelative(backups.data.kpis.lastBackupAt)}</p>
                   </>
                 )}
               </OverviewCard>
@@ -383,7 +384,7 @@ export default function OverviewClient() {
             <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
               <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold">
                 <Activity className="h-4 w-4 text-[var(--accent-primary)]" />
-                Activité récente
+                {tx("Activité récente")}
               </h3>
               {guild.loading ? (
                 <div className="space-y-2">
@@ -391,16 +392,16 @@ export default function OverviewClient() {
                   <CardSkeleton />
                 </div>
               ) : !isBotPresent ? (
-                <p className="text-xs text-[var(--text-muted)]">Bot non installé sur ce serveur.</p>
+                <p className="text-xs text-[var(--text-muted)]">{tx("Bot non installé sur ce serveur.")}</p>
               ) : guild.error || !guild.data?.stats?.recentActivities?.length ? (
-                <p className="text-xs text-[var(--text-muted)]">Aucune activité récente enregistrée.</p>
+                <p className="text-xs text-[var(--text-muted)]">{tx("Aucune activité récente enregistrée.")}</p>
               ) : (
                 <div className="stagger-children space-y-1.5">
                   {guild.data.stats.recentActivities.slice(0, 8).map((a) => (
                     <div key={a.id} className="flex items-center justify-between rounded-xl border border-[var(--panel-border)] px-3 py-2 text-xs">
                       <span className="truncate">
                         <span className="font-semibold text-[var(--text-primary)]">{a.userTag}</span>
-                        <span className="text-[var(--text-muted)]"> a utilisé </span>
+                        <span className="text-[var(--text-muted)]"> {" "}{tx("a utilisé")}{" "} </span>
                         <span className="text-[var(--accent-primary)]">/{a.commandName}</span>
                       </span>
                       <span className="shrink-0 text-[var(--text-muted)]">{formatRelative(a.timestamp)}</span>
@@ -412,42 +413,42 @@ export default function OverviewClient() {
 
             {/* Quick Actions */}
             <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
-              <h3 className="mb-3 text-sm font-semibold">Actions rapides</h3>
+              <h3 className="mb-3 text-sm font-semibold">{tx("Actions rapides")}</h3>
               <div className="flex flex-wrap gap-2">
                 <Link
                   href={`/discord/tickets?guildId=${gid}`}
                   className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface)] px-3 py-1.5 text-xs text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-raised)]"
                 >
                   <Ticket className="h-3.5 w-3.5 text-amber-400" />
-                  Voir les tickets
+                  {tx("Voir les tickets")}
                 </Link>
                 <Link
                   href={`/discord/giveaways?guildId=${gid}&tab=create`}
                   className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface)] px-3 py-1.5 text-xs text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-raised)]"
                 >
                   <Plus className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
-                  Lancer un giveaway
+                  {tx("Lancer un giveaway")}
                 </Link>
                 <Link
                   href={`/discord/moderation?guildId=${gid}`}
                   className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface)] px-3 py-1.5 text-xs text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-raised)]"
                 >
                   <ShieldCheck className="h-3.5 w-3.5 text-[var(--info)]" />
-                  Voir la modération
+                  {tx("Voir la modération")}
                 </Link>
                 <Link
                   href={`/discord/backups?guildId=${gid}`}
                   className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface)] px-3 py-1.5 text-xs text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-raised)]"
                 >
                   <DatabaseBackup className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
-                  Gérer les sauvegardes
+                  {tx("Gérer les sauvegardes")}
                 </Link>
                 <Link
                   href={`/discord/music?guildId=${gid}`}
                   className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface)] px-3 py-1.5 text-xs text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-raised)]"
                 >
                   <Music2 className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
-                  Ouvrir la musique
+                  {tx("Ouvrir la musique")}
                 </Link>
               </div>
             </div>

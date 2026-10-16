@@ -19,6 +19,7 @@ import {
 import { useToast } from "@/components/ToastProvider";
 import ClientImage from "@/components/ClientImage";
 import { ConsolePage, Panel, Segmented } from "../kit";
+import { tx } from "@/lib/tx";
 
 interface FunCommandMeta {
   name: string;
@@ -192,7 +193,7 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
       setCopiedCmd(cmdName);
       toast.show({
         type: "success",
-        title: "Copié dans le presse-papier",
+        title: tx("Copié dans le presse-papier"),
         message: textToCopy,
       });
       setTimeout(() => setCopiedCmd(null), 2000);
@@ -218,11 +219,11 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
             lyrics: match.plainLyrics || (match.syncedLyrics ? match.syncedLyrics.replace(/\[\d{2}:\d{2}\.\d{2,3}\]\s*/g, "") : "Pas de paroles textuelles disponibles."),
           });
         } else {
-          toast.show({ type: "error", title: "Aucune parole trouvée", message: lyricsQuery });
+          toast.show({ type: "error", title: tx("Aucune parole trouvée"), message: lyricsQuery });
         }
       }
     } catch {
-      toast.show({ type: "error", title: "Erreur réseau", message: "Impossible de joindre le service de paroles." });
+      toast.show({ type: "error", title: tx("Erreur réseau"), message: tx("Impossible de joindre le service de paroles.") });
     } finally {
       setLyricsLoading(false);
     }
@@ -250,11 +251,11 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
             summary: (s.summary || "").replace(/<[^>]+>/g, "").trim(),
           });
         } else {
-          toast.show({ type: "error", title: "Aucune série trouvée", message: tvQuery });
+          toast.show({ type: "error", title: tx("Aucune série trouvée"), message: tvQuery });
         }
       }
     } catch {
-      toast.show({ type: "error", title: "Erreur", message: "Impossible de charger les données TV." });
+      toast.show({ type: "error", title: tx("Erreur"), message: tx("Impossible de charger les données TV.") });
     } finally {
       setTvLoading(false);
     }
@@ -278,18 +279,18 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
             const summary = await summaryRes.json();
             setMovieData({
               title: summary.title || target,
-              description: summary.description || "Film",
+              description: summary.description || tx("Film"),
               poster: summary.originalimage?.source || summary.thumbnail?.source,
               synopsis: summary.extract || "Aucun synopsis.",
               url: summary.content_urls?.desktop?.page || `https://en.wikipedia.org/wiki/${encodeURIComponent(target)}`,
             });
           }
         } else {
-          toast.show({ type: "error", title: "Aucun film trouvé", message: movieQuery });
+          toast.show({ type: "error", title: tx("Aucun film trouvé"), message: movieQuery });
         }
       }
     } catch {
-      toast.show({ type: "error", title: "Erreur", message: "Impossible de joindre le répertoire cinéma." });
+      toast.show({ type: "error", title: tx("Erreur"), message: tx("Impossible de joindre le répertoire cinéma.") });
     } finally {
       setMovieLoading(false);
     }
@@ -332,11 +333,11 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
           }
           setGameData(partial);
         } else {
-          toast.show({ type: "error", title: "Aucun jeu trouvé", message: gameQuery });
+          toast.show({ type: "error", title: tx("Aucun jeu trouvé"), message: gameQuery });
         }
       }
     } catch {
-      toast.show({ type: "error", title: "Erreur", message: "Impossible de charger les données du jeu." });
+      toast.show({ type: "error", title: tx("Erreur"), message: tx("Impossible de charger les données du jeu.") });
     } finally {
       setGameLoading(false);
     }
@@ -373,7 +374,7 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
         }
       }
     } catch {
-      toast.show({ type: "error", title: "Erreur", message: "Impossible de rechercher les images." });
+      toast.show({ type: "error", title: tx("Erreur"), message: tx("Impossible de rechercher les images.") });
     } finally {
       setImageLoading(false);
     }
@@ -424,7 +425,7 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
           setLastfmTopArtists([]);
         }
       } catch {
-        toast.show({ type: "error", title: "Erreur Last.fm", message: "Impossible de joindre le service Last.fm." });
+        toast.show({ type: "error", title: tx("Erreur Last.fm"), message: tx("Impossible de joindre le service Last.fm.") });
       } finally {
         setLastfmLoading(false);
       }
@@ -433,15 +434,15 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
   );
 
   return (
-    <ConsolePage title="Fun & Médias">
+    <ConsolePage title={tx("Fun & Médias")}>
       <div className="space-y-6">
         <p className="text-xs text-[var(--text-muted)]">
-          Commandes interactives de divertissement et médias : Last.fm, paroles, citations, recherche d'images, films, séries TV et base de jeux vidéo.
+          {tx("Commandes interactives de divertissement et médias : Last.fm, paroles, citations, recherche d'images, films, séries TV et base de jeux vidéo.")}
         </p>
 
         <div className="flex flex-wrap items-center justify-between gap-3">
           <Segmented
-            label="Catégories Fun"
+            label={tx("Catégories Fun")}
             options={[
               ["catalog", "Catalogue des Commandes"],
               ["lastfm", "Studio Last.fm"],
@@ -457,7 +458,7 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
           />
           <div className="flex items-center gap-2 text-xs text-[var(--text-muted)] font-mono">
             <span className="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-            API & Bot synchronisés
+            {tx("API & Bot synchronisés")}
           </div>
         </div>
 
@@ -490,7 +491,7 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
                       <button
                         onClick={() => copyToClipboard(cmd.syntax, cmd.name)}
                         className="rounded-lg p-1.5 text-[var(--text-muted)] hover:bg-white/10 hover:text-[var(--text-primary)] transition-colors"
-                        aria-label="Copier la commande"
+                        aria-label={tx("Copier la commande")}
                       >
                         {isCopied ? (
                           <Check className="h-4 w-4 text-emerald-400 animate-bounce" />
@@ -505,15 +506,15 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
 
                   <div className="mt-6 space-y-3 pt-4 border-t border-[var(--panel-border)]/50">
                     <div>
-                      <p className="text-[11px] font-semibold text-[var(--text-muted)] mb-1">arguments</p>
+                      <p className="text-[11px] font-semibold text-[var(--text-muted)] mb-1">{tx("arguments")}</p>
                       <span className="inline-block rounded-md bg-[var(--surface-sunken)] px-2.5 py-1 font-mono text-[11px] italic text-[var(--text-secondary)] border border-[var(--panel-border)]">
                         {cmd.argumentName}
                       </span>
                     </div>
 
                     <div>
-                      <p className="text-[11px] font-semibold text-[var(--text-muted)] mb-1">permissions</p>
-                      <span className="font-mono text-[11px] text-[var(--text-muted)]">none</span>
+                      <p className="text-[11px] font-semibold text-[var(--text-muted)] mb-1">{tx("permissions")}</p>
+                      <span className="font-mono text-[11px] text-[var(--text-muted)]">{tx("none")}</span>
                     </div>
 
                     <div className="pt-1">
@@ -528,8 +529,8 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
 
         {tab === "lastfm" && (
           <Panel
-            title="Studio Last.fm (/lastfm)"
-            subtitle="Scrobbles réels, lecture en direct, historique et artistes les plus écoutés connectés à l'API Last.fm."
+            title={tx("Studio Last.fm (/lastfm)")}
+            subtitle={tx("Scrobbles réels, lecture en direct, historique et artistes les plus écoutés connectés à l'API Last.fm.")}
           >
             <div className="space-y-6 p-5">
               <div className="flex flex-col sm:flex-row gap-3">
@@ -538,7 +539,7 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
                   value={lastfmUsername}
                   onChange={(e) => setLastfmUsername(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && searchLastfm()}
-                  placeholder="Pseudo Last.fm (ex: rj)..."
+                  placeholder={tx("Pseudo Last.fm (ex: rj)...")}
                   className="flex-1 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-sunken)] px-3 py-2 text-sm text-[var(--text-primary)] focus:outline-none focus:border-[#d51007] font-mono"
                 />
                 <button
@@ -551,12 +552,12 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
                   ) : (
                     <Radio className="h-4 w-4 text-[#d51007]" />
                   )}
-                  <span>Interroger Last.fm</span>
+                  <span>{tx("Interroger Last.fm")}</span>
                 </button>
               </div>
 
               <div className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
-                <span>Comptes suggérés :</span>
+                <span>{tx("Comptes suggérés :")}</span>
                 {["rj", "ethone"].map((u) => (
                   <button
                     key={u}
@@ -579,12 +580,12 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
                         {lastfmNowPlaying.playing ? (
                           <>
                             <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                            En direct sur Last.fm
+                            {tx("En direct sur Last.fm")}
                           </>
                         ) : (
                           <>
                             <span className="h-1.5 w-1.5 rounded-full bg-zinc-400" />
-                            Dernier scrobble
+                            {tx("Dernier scrobble")}
                           </>
                         )}
                       </span>
@@ -627,7 +628,7 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
                           rel="noreferrer"
                           className="inline-flex items-center gap-1 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-sunken)] px-2.5 py-1 text-[11px] font-semibold text-[var(--text-secondary)] hover:text-white transition-colors"
                         >
-                          Last.fm ↗
+                          {tx("Last.fm ↗")}
                         </a>
                       )}
                       <a
@@ -638,13 +639,13 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
                         rel="noreferrer"
                         className="inline-flex items-center gap-1 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-[11px] font-semibold text-emerald-300 hover:bg-emerald-500/20 transition-colors"
                       >
-                        Spotify ↗
+                        {tx("Spotify ↗")}
                       </a>
                       <button
                         onClick={() => copyToClipboard(`/lastfm nowplaying username:${lastfmUsername}`, "lastfm-np")}
                         className="rounded-lg border border-[var(--panel-border)] bg-[var(--surface-sunken)] px-2.5 py-1 text-[11px] font-mono text-[var(--text-muted)] hover:text-white transition-colors"
                       >
-                        {copiedCmd === "lastfm-np" ? "✓ Copié" : "/lastfm nowplaying"}
+                        {copiedCmd === "lastfm-np" ? tx("✓ Copié") : tx("/lastfm nowplaying")}
                       </button>
                     </div>
                   </div>
@@ -652,7 +653,7 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
                   {lastfmTopArtists.length > 0 && (
                     <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-sunken)] p-5">
                       <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] mb-3">
-                        Top Artistes de la semaine
+                        {tx("Top Artistes de la semaine")}
                       </h4>
                       <div className="space-y-2">
                         {lastfmTopArtists.map((artist, idx) => (
@@ -665,7 +666,7 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
                               <span className="font-bold text-[var(--text-primary)] truncate">{artist.name}</span>
                             </div>
                             <span className="font-mono text-[11px] text-rose-300 shrink-0">
-                              {artist.playCount} écoutes
+                              {artist.playCount} {" "}{tx("écoutes")}
                             </span>
                           </div>
                         ))}
@@ -676,14 +677,14 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
               ) : (
                 <div className="rounded-xl border border-dashed border-[var(--panel-border)] p-8 text-center text-xs text-[var(--text-muted)]">
                   <Radio className="mx-auto h-8 w-8 text-[#d51007]/50 mb-2" />
-                  <p>Entre un pseudo Last.fm ci-dessus pour inspecter son profil en direct.</p>
+                  <p>{tx("Entre un pseudo Last.fm ci-dessus pour inspecter son profil en direct.")}</p>
                 </div>
               )}
 
               {lastfmRecent.length > 0 && (
                 <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-sunken)] p-5 space-y-3">
                   <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">
-                    Historique des scrobbles récents
+                    {tx("Historique des scrobbles récents")}
                   </h4>
                   <div className="divide-y divide-[var(--panel-border)]/40">
                     {lastfmRecent.map((track, i) => (
@@ -693,7 +694,7 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
                           <p className="text-[11px] text-[var(--text-muted)] truncate">{track.artist}</p>
                         </div>
                         <span className="text-[11px] font-mono text-[var(--text-muted)] shrink-0">
-                          {track.playing ? "🟢 En cours" : "Écouté"}
+                          {track.playing ? tx("🟢 En cours") : tx("Écouté")}
                         </span>
                       </div>
                     ))}
@@ -703,7 +704,7 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
 
               <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-5">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] mb-3">
-                  Commandes Discord Fun & Médias
+                  {tx("Commandes Discord Fun & Médias")}
                 </h4>
                 <div className="flex flex-wrap gap-2">
                   {[
@@ -720,7 +721,7 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
                       onClick={() => copyToClipboard(syntax, syntax)}
                       className="rounded-lg border border-[var(--panel-border)] bg-[var(--surface-sunken)] px-3 py-1.5 font-mono text-xs text-[var(--text-secondary)] hover:border-[#d51007]/40 hover:text-white transition-colors"
                     >
-                      {copiedCmd === syntax ? "✓ Copié !" : syntax}
+                      {copiedCmd === syntax ? tx("✓ Copié !") : syntax}
                     </button>
                   ))}
                 </div>
@@ -730,7 +731,7 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
         )}
 
         {tab === "lyrics" && (
-          <Panel title="Studio Paroles (Lyrics)" subtitle="Recherche instantanée de paroles avec synchronisation et durée.">
+          <Panel title={tx("Studio Paroles (Lyrics)")} subtitle={tx("Recherche instantanée de paroles avec synchronisation et durée.")}>
             <div className="space-y-4 p-5">
               <div className="flex gap-2">
                 <input
@@ -738,7 +739,7 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
                   value={lyricsQuery}
                   onChange={(e) => setLyricsQuery(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && searchLyrics()}
-                  placeholder="Titre du morceau ou artiste..."
+                  placeholder={tx("Titre du morceau ou artiste...")}
                   className="flex-1 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-sunken)] px-3 py-2 text-sm text-[var(--text-primary)] focus:outline-none focus:border-amber-400 font-mono"
                 />
                 <button
@@ -747,7 +748,7 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
                   className="flex items-center gap-2 rounded-lg bg-amber-400/20 border border-amber-400/40 px-4 py-2 text-xs font-semibold text-amber-400 hover:bg-amber-400/30 transition-colors"
                 >
                   <Search className="h-3.5 w-3.5" />
-                  {lyricsLoading ? "Recherche..." : "Rechercher"}
+                  {lyricsLoading ? tx("Recherche...") : tx("Rechercher")}
                 </button>
               </div>
 
@@ -774,11 +775,11 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
         )}
 
         {tab === "quote" && (
-          <Panel title="Générateur de Citations (Quote)" subtitle="Prévisualisation en temps réel du rendu Discord de la commande /quote.">
+          <Panel title={tx("Générateur de Citations (Quote)")} subtitle={tx("Prévisualisation en temps réel du rendu Discord de la commande /quote.")}>
             <div className="space-y-5 p-5">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">Texte de la citation</label>
+                  <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">{tx("Texte de la citation")}</label>
                   <textarea
                     rows={3}
                     value={quoteText}
@@ -787,7 +788,7 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">Auteur de la citation</label>
+                  <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">{tx("Auteur de la citation")}</label>
                   <input
                     type="text"
                     value={quoteAuthor}
@@ -798,7 +799,7 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
               </div>
 
               <div>
-                <p className="text-xs font-semibold text-[var(--text-muted)] mb-2">Aperçu Embed Discord :</p>
+                <p className="text-xs font-semibold text-[var(--text-muted)] mb-2">{tx("Aperçu Embed Discord :")}</p>
                 <div className="rounded-xl border border-blue-500/30 bg-[#2b2d31] p-4 text-white max-w-xl shadow-lg">
                   <div className="border-l-4 border-blue-500 pl-3 space-y-2">
                     <p className="text-sm italic text-zinc-200">« {quoteText} »</p>
@@ -806,7 +807,7 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
                       <div className="h-4 w-4 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold text-[10px]">
                         E
                       </div>
-                      <span>— {quoteAuthor || "Anonyme"}</span>
+                      <span>— {quoteAuthor || tx("Anonyme")}</span>
                     </div>
                   </div>
                 </div>
@@ -816,7 +817,7 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
         )}
 
         {tab === "images" && (
-          <Panel title="Recherche d'Images (Image & DuckDuckGo)" subtitle="Moteur de recherche d'images en ligne avec affichage en grille animée.">
+          <Panel title={tx("Recherche d'Images (Image & DuckDuckGo)")} subtitle={tx("Moteur de recherche d'images en ligne avec affichage en grille animée.")}>
             <div className="space-y-4 p-5">
               <div className="flex gap-2">
                 <input
@@ -824,7 +825,7 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
                   value={imageQuery}
                   onChange={(e) => setImageQuery(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && searchImages()}
-                  placeholder="Sujet de recherche d'image..."
+                  placeholder={tx("Sujet de recherche d'image...")}
                   className="flex-1 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-sunken)] px-3 py-2 text-sm text-[var(--text-primary)] focus:outline-none focus:border-amber-400 font-mono"
                 />
                 <button
@@ -833,7 +834,7 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
                   className="flex items-center gap-2 rounded-lg bg-amber-400/20 border border-amber-400/40 px-4 py-2 text-xs font-semibold text-amber-400 hover:bg-amber-400/30 transition-colors"
                 >
                   <Search className="h-3.5 w-3.5" />
-                  {imageLoading ? "Recherche..." : "Trouver"}
+                  {imageLoading ? tx("Recherche...") : tx("Trouver")}
                 </button>
               </div>
 
@@ -861,10 +862,10 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
         )}
 
         {tab === "reverse" && (
-          <Panel title="Recherche Inversée d'Image (Reverse Image)" subtitle="Analysez une image via Google Lens, Bing Visual Search, TinEye, Yandex et SauceNAO.">
+          <Panel title={tx("Recherche Inversée d'Image (Reverse Image)")} subtitle={tx("Analysez une image via Google Lens, Bing Visual Search, TinEye, Yandex et SauceNAO.")}>
             <div className="space-y-5 p-5">
               <div>
-                <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">URL publique de l'image</label>
+                <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">{tx("URL publique de l'image")}</label>
                 <input
                   type="text"
                   value={reverseUrl}
@@ -877,11 +878,11 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
               {reverseUrl.startsWith("http") && (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-5 items-start">
                   <div className="rounded-xl border border-[var(--panel-border)] overflow-hidden bg-black/30 aspect-video flex items-center justify-center">
-                    <ClientImage src={reverseUrl} alt="Aperçu" className="h-full w-full object-contain" />
+                    <ClientImage src={reverseUrl} alt={tx("Aperçu")} className="h-full w-full object-contain" />
                   </div>
 
                   <div className="md:col-span-2 space-y-2">
-                    <p className="text-xs font-semibold text-[var(--text-muted)]">Ouvrir la recherche inversée directe :</p>
+                    <p className="text-xs font-semibold text-[var(--text-muted)]">{tx("Ouvrir la recherche inversée directe :")}</p>
                     <div className="flex flex-wrap gap-2">
                       <a
                         href={`https://lens.google.com/uploadbyurl?url=${encodeURIComponent(reverseUrl)}`}
@@ -889,7 +890,7 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
                         rel="noreferrer"
                         className="rounded-lg bg-blue-500/10 border border-blue-500/30 px-3 py-1.5 text-xs font-medium text-blue-400 hover:bg-blue-500/20"
                       >
-                        Google Lens ↗
+                        {tx("Google Lens ↗")}
                       </a>
                       <a
                         href={`https://www.bing.com/images/search?view=detailv2&iss=sbi&FORM=SBIHMP&sbisrc=UrlPaste&q=imgurl:${encodeURIComponent(reverseUrl)}`}
@@ -897,7 +898,7 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
                         rel="noreferrer"
                         className="rounded-lg bg-cyan-500/10 border border-cyan-500/30 px-3 py-1.5 text-xs font-medium text-cyan-400 hover:bg-cyan-500/20"
                       >
-                        Bing Visual ↗
+                        {tx("Bing Visual ↗")}
                       </a>
                       <a
                         href={`https://tineye.com/search?url=${encodeURIComponent(reverseUrl)}`}
@@ -905,7 +906,7 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
                         rel="noreferrer"
                         className="rounded-lg bg-amber-500/10 border border-amber-500/30 px-3 py-1.5 text-xs font-medium text-amber-400 hover:bg-amber-500/20"
                       >
-                        TinEye ↗
+                        {tx("TinEye ↗")}
                       </a>
                       <a
                         href={`https://yandex.com/images/search?rpt=imageview&url=${encodeURIComponent(reverseUrl)}`}
@@ -913,7 +914,7 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
                         rel="noreferrer"
                         className="rounded-lg bg-red-500/10 border border-red-500/30 px-3 py-1.5 text-xs font-medium text-red-400 hover:bg-red-500/20"
                       >
-                        Yandex Images ↗
+                        {tx("Yandex Images ↗")}
                       </a>
                       <a
                         href={`https://saucenao.com/search.php?db=999&url=${encodeURIComponent(reverseUrl)}`}
@@ -921,7 +922,7 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
                         rel="noreferrer"
                         className="rounded-lg bg-purple-500/10 border border-purple-500/30 px-3 py-1.5 text-xs font-medium text-purple-400 hover:bg-purple-500/20"
                       >
-                        SauceNAO (Anime/Art) ↗
+                        {tx("SauceNAO (Anime/Art) ↗")}
                       </a>
                     </div>
                   </div>
@@ -933,7 +934,7 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
 
         {tab === "cinema" && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-            <Panel title="Séries TV (/tvshow)" subtitle="Recherche officielle TVMaze avec notes, saisons et statuts.">
+            <Panel title={tx("Séries TV (/tvshow)")} subtitle={tx("Recherche officielle TVMaze avec notes, saisons et statuts.")}>
               <div className="space-y-4 p-5">
                 <div className="flex gap-2">
                   <input
@@ -941,7 +942,7 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
                     value={tvQuery}
                     onChange={(e) => setTvQuery(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && searchTvShow()}
-                    placeholder="Nom de la série..."
+                    placeholder={tx("Nom de la série...")}
                     className="flex-1 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-sunken)] px-3 py-2 text-sm text-[var(--text-primary)] focus:outline-none focus:border-indigo-400 font-mono"
                   />
                   <button
@@ -949,7 +950,7 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
                     disabled={tvLoading}
                     className="rounded-lg bg-indigo-500/20 border border-indigo-500/40 px-3.5 py-2 text-xs font-semibold text-indigo-400 hover:bg-indigo-500/30"
                   >
-                    {tvLoading ? "..." : "Voir"}
+                    {tvLoading ? "..." : tx("Voir")}
                   </button>
                 </div>
 
@@ -963,7 +964,7 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
                     <div className="space-y-1.5 min-w-0">
                       <h4 className="font-bold text-sm text-[var(--text-primary)] truncate">{tvData.title}</h4>
                       <p className="text-[11px] text-indigo-400 font-medium">
-                        {tvData.rating ? `⭐ ${tvData.rating}/10` : "Non noté"} • {tvData.premiered?.slice(0, 4)}
+                        {tvData.rating ? `⭐ ${tvData.rating}/10` : tx("Non noté")} • {tvData.premiered?.slice(0, 4)}
                       </p>
                       <p className="text-[11px] text-[var(--text-muted)] line-clamp-3">{tvData.summary}</p>
                       {tvData.genres.length > 0 && (
@@ -975,7 +976,7 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
               </div>
             </Panel>
 
-            <Panel title="Cinéma & Films (/movie)" subtitle="Fiches complètes Wikipédia & Cinéma avec affiches et synopsis.">
+            <Panel title={tx("Cinéma & Films (/movie)")} subtitle={tx("Fiches complètes Wikipédia & Cinéma avec affiches et synopsis.")}>
               <div className="space-y-4 p-5">
                 <div className="flex gap-2">
                   <input
@@ -983,7 +984,7 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
                     value={movieQuery}
                     onChange={(e) => setMovieQuery(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && searchMovie()}
-                    placeholder="Nom du film..."
+                    placeholder={tx("Nom du film...")}
                     className="flex-1 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-sunken)] px-3 py-2 text-sm text-[var(--text-primary)] focus:outline-none focus:border-rose-400 font-mono"
                   />
                   <button
@@ -991,7 +992,7 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
                     disabled={movieLoading}
                     className="rounded-lg bg-rose-500/20 border border-rose-500/40 px-3.5 py-2 text-xs font-semibold text-rose-400 hover:bg-rose-500/30"
                   >
-                    {movieLoading ? "..." : "Voir"}
+                    {movieLoading ? "..." : tx("Voir")}
                   </button>
                 </div>
 
@@ -1012,7 +1013,7 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
                         rel="noreferrer"
                         className="inline-block text-[10px] text-rose-400 hover:underline"
                       >
-                        En savoir plus sur Wikipédia ↗
+                        {tx("En savoir plus sur Wikipédia ↗")}
                       </a>
                     </div>
                   </div>
@@ -1023,7 +1024,7 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
         )}
 
         {tab === "game" && (
-          <Panel title="Jeux Vidéo (/game)" subtitle="Recherche Steam & CheapShark avec jacquettes, notes Metacritic et développeurs.">
+          <Panel title={tx("Jeux Vidéo (/game)")} subtitle={tx("Recherche Steam & CheapShark avec jacquettes, notes Metacritic et développeurs.")}>
             <div className="space-y-4 p-5">
               <div className="flex gap-2">
                 <input
@@ -1031,7 +1032,7 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
                   value={gameQuery}
                   onChange={(e) => setGameQuery(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && searchGame()}
-                  placeholder="Nom du jeu vidéo..."
+                  placeholder={tx("Nom du jeu vidéo...")}
                   className="flex-1 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-sunken)] px-3 py-2 text-sm text-[var(--text-primary)] focus:outline-none focus:border-emerald-400 font-mono"
                 />
                 <button
@@ -1039,7 +1040,7 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
                   disabled={gameLoading}
                   className="rounded-lg bg-emerald-500/20 border border-emerald-500/40 px-4 py-2 text-xs font-semibold text-emerald-400 hover:bg-emerald-500/30"
                 >
-                  {gameLoading ? "..." : "Rechercher"}
+                  {gameLoading ? "..." : tx("Rechercher")}
                 </button>
               </div>
 
@@ -1055,15 +1056,15 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
                       <h4 className="font-bold text-base text-[var(--text-primary)] truncate">{gameData.title}</h4>
                       {gameData.metacritic && (
                         <span className="rounded bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 text-xs font-bold text-emerald-400">
-                          Metacritic: {gameData.metacritic}
+                          {tx("Metacritic:")}{" "} {gameData.metacritic}
                         </span>
                       )}
                     </div>
                     {gameData.developers && (
-                      <p className="text-xs text-[var(--text-muted)]">Développeur : {gameData.developers}</p>
+                      <p className="text-xs text-[var(--text-muted)]">{tx("Développeur :")}{" "} {gameData.developers}</p>
                     )}
                     {gameData.releaseDate && (
-                      <p className="text-xs text-[var(--text-muted)]">Sortie : {gameData.releaseDate}</p>
+                      <p className="text-xs text-[var(--text-muted)]">{tx("Sortie :")}{" "} {gameData.releaseDate}</p>
                     )}
                     {gameData.description && (
                       <p className="text-xs text-[var(--text-secondary)] line-clamp-3">{gameData.description}</p>
@@ -1075,7 +1076,7 @@ export default function ConsoleFun({ guildId: _guildId }: { guildId?: string } =
                         rel="noreferrer"
                         className="inline-flex items-center gap-1.5 text-xs text-emerald-400 hover:underline pt-1"
                       >
-                        Page Steam Store ↗
+                        {tx("Page Steam Store ↗")}
                       </a>
                     )}
                   </div>

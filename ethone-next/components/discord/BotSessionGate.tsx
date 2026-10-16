@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { SPRING_LAYOUT } from "@/lib/ease";
+import { tx } from "@/lib/tx";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 /** Au-delà, on affiche la page même sans réponse du bot (bot éteint, réseau lent) : chaque module gère ce cas. */
@@ -63,22 +64,21 @@ export default function BotSessionGate({ children }: { children: React.ReactNode
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/bot-icons/a_logo.gif" alt="" width={56} height={56} className="mx-auto mb-5 h-14 w-14 rounded-2xl" />
-        <h1 className="text-lg font-bold tracking-tight text-[var(--text-primary)]">Connecte-toi avec Discord</h1>
+        <h1 className="text-lg font-bold tracking-tight text-[var(--text-primary)]">{tx("Connecte-toi avec Discord")}</h1>
         <p className="mt-2 text-sm leading-relaxed text-[var(--text-muted)]">
-          Ta session avec le bot a expiré. Reconnecte-toi pour gérer tes serveurs ; tu reviendras
-          ensuite sur cette page.
+          {tx("Ta session avec le bot a expiré. Reconnecte-toi pour gérer tes serveurs ; tu reviendras ensuite sur cette page.")}
         </p>
         <a
           href={loginHref}
           className="mt-6 flex w-full items-center justify-center rounded-xl bg-[#5865F2] px-4 py-3 text-sm font-semibold text-white transition-[filter,transform] duration-150 hover:brightness-110 active:scale-[0.98]"
         >
-          Se connecter avec Discord
+          {tx("Se connecter avec Discord")}
         </a>
         <Link
           href="/"
           className="mt-3 inline-block text-xs font-medium text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)]"
         >
-          Retour à ETHONE
+          {tx("Retour à ETHONE")}
         </Link>
       </motion.div>
     </main>

@@ -8,6 +8,7 @@ import { confirmDialog } from "@/lib/confirmDialog";
 import { sinceLabel } from "@/lib/discord/security-scan";
 import { SPRING_LAYOUT } from "@/lib/ease";
 import { ConsolePage, EmptyLine, MemberPicker, Panel, useGuildApi } from "./kit";
+import { tx } from "@/lib/tx";
 
 type Entry = { userId: string; reason: string; addedAt: string; name: string; username: string | null; avatarUrl: string | null };
 
@@ -26,29 +27,29 @@ export default function ConsoleBlacklist({ guildId }: { guildId: string }) {
   }, [load]);
 
   const add = async (userId: string, name: string) => {
-    if (!(await confirmDialog(`Blacklister ${name} ? Il sera banni tout de suite, puis à chaque retour.`))) return;
+    if (!(await confirmDialog(tx("Blacklister {name} ? Il sera banni tout de suite, puis à chaque retour.", { name })))) return;
     const r = await api<{ banned: boolean }>("/console/blacklist", { method: "POST", json: { userId } });
     if (!r) return;
-    if (r.banned) success("Blacklist", `${name} est banni.`);
-    else info("Blacklist", `${name} est blacklisté, mais Etho n'a pas pu le bannir (permission « Bannir » ou rôle trop bas).`);
+    if (r.banned) success(tx("Blacklist"), tx("{name} est banni.", { name }));
+    else info(tx("Blacklist"), tx("{name} est blacklisté, mais Etho n'a pas pu le bannir (permission « Bannir » ou rôle trop bas).", { name }));
     void load();
   };
   const remove = async (e: Entry) => {
-    if (!(await confirmDialog(`Retirer ${e.name} de la blacklist ? Un ban déjà posé reste en place sur Discord.`))) return;
+    if (!(await confirmDialog(tx("Retirer {name} de la blacklist ? Un ban déjà posé reste en place sur Discord.", { name: e.name })))) return;
     if (await api(`/console/blacklist/${e.userId}`, { method: "DELETE" })) void load();
   };
 
   return (
-    <ConsolePage title="Blacklist">
+    <ConsolePage title={tx("Blacklist")}>
       <Panel
-        title="Comptes blacklistés"
-        subtitle="Banni tout de suite s'il est sur le serveur, puis à chaque retour."
+        title={tx("Comptes blacklistés")}
+        subtitle={tx("Banni tout de suite s'il est sur le serveur, puis à chaque retour.")}
         actions={<MemberPicker guildId={guildId} excludeIds={entries?.map((e) => e.userId) ?? []} onPick={(m) => add(m.id, m.displayName)} />}
       >
         {!entries ? (
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         ) : entries.length === 0 ? (
-          <EmptyLine>Personne n&apos;est blacklisté sur ce serveur.</EmptyLine>
+          <EmptyLine>{tx("Personne n'est blacklisté sur ce serveur.")}</EmptyLine>
         ) : (
           <ul>
             <AnimatePresence initial={false}>
@@ -71,13 +72,13 @@ export default function ConsoleBlacklist({ guildId }: { guildId: string }) {
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-[13px] font-medium text-[var(--text-primary)]">{e.name}</p>
                     <p className="truncate text-[11px] text-[var(--text-muted)]">
-                      {e.username ? `@${e.username} · ` : ""}ID {e.userId} · ajouté {sinceLabel(e.addedAt)}
+                      {e.username ? `@${e.username} · ` : ""}{tx("ID")}{" "} {e.userId} {" "}{tx("· ajouté")}{" "} {sinceLabel(e.addedAt)}
                     </p>
                   </div>
                   <button
                     type="button"
                     onClick={() => remove(e)}
-                    aria-label={`Retirer ${e.name}`}
+                    aria-label={tx("Retirer {name}", { name: e.name })}
                     className="rounded-lg p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--danger)]/10 hover:text-[var(--danger)]"
                   >
                     <Trash2 className="h-4 w-4" />

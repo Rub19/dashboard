@@ -70,6 +70,7 @@ import {
   consoleBrandMark,
 } from "./consoleMotion";
 import type { NavigatorCategory, NavigatorModule } from "./ModuleNavigator";
+import { tx } from "@/lib/tx";
 
 export type ConsoleView = "settings" | "access" | "logs" | "whitelist" | "blacklist" | "members" | "commands" | "tools" | "protections" | "automod" | "welcome" | "autoroles" | "sanctions" | "warnings" | "presets" | "reports" | "appeals" | "modstats" | "sanctionmessages";
 export type HubView = "home" | "modules" | "module" | "setup" | "scan" | ConsoleView;
@@ -296,16 +297,16 @@ export default function HubSidebar({
         ),
         viewItem("automod", "AutoMod", LFilter),
         { key: "scan", label: i18n("dSecurityScan", "Scan de sécurité"), icon: LScanFace, active: view === "scan", onClick: () => (onOpenScan ? onOpenScan() : router.push(`/discord?guildId=${selectedGuildId}&view=scan`)) },
-        { key: "logs-protection", label: "Logs de protection", icon: LHistory, active: view === "logs" && logsTab === "incidents", onClick: () => openView("logs", "", { logsTab: "incidents" }) },
+        { key: "logs-protection", label: tx("Logs de protection"), icon: LHistory, active: view === "logs" && logsTab === "incidents", onClick: () => openView("logs", "", { logsTab: "incidents" }) },
         { key: "setup", label: i18n("dAssistedSetup", "Configuration assistée"), icon: LWandSparkles, active: view === "setup", onClick: () => (onOpenSetup ? onOpenSetup() : router.push(`/discord/setup?guildId=${selectedGuildId}`)) },
       ],
     },
     {
-      title: "Accueil des membres",
+      title: tx("Accueil des membres"),
       items: [viewItem("welcome", "Bienvenue et départs", LHand), viewItem("autoroles", "Rôles automatiques", LSquareUserRound)],
     },
     {
-      title: "Sanctions",
+      title: tx("Sanctions"),
       items: [
         viewItem("sanctions", "Sanctions", LScale),
         viewItem("warnings", "Avertissements et paliers", LShieldAlert),
@@ -316,11 +317,11 @@ export default function HubSidebar({
       ],
     },
     {
-      title: "Modération",
+      title: tx("Modération"),
       items: [viewItem("commands", i18n("dCommands", "Commandes"), LGavel), viewItem("sanctionmessages", "Messages de sanction", LMessageSquareText), viewItem("members", i18n("dRolesAndMembers", "Rôles et membres"), LContact)],
     },
     {
-      title: "Accès",
+      title: tx("Accès"),
       items: [viewItem("whitelist", i18n("dWhitelist", "Whitelist"), LUsersRound), viewItem("blacklist", i18n("dBlacklist", "Blacklist"), LBan), viewItem("access", "Owners Etho", LUserRoundCog)],
     },
     {
@@ -333,7 +334,7 @@ export default function HubSidebar({
     {
       title: i18n("dServer", "Serveur"),
       items: [
-        { key: "logs-server", label: "Logs du serveur", icon: LScrollText, active: view === "logs" && logsTab !== "incidents", onClick: () => openView("logs", "", { logsTab: "journal" }) },
+        { key: "logs-server", label: tx("Logs du serveur"), icon: LScrollText, active: view === "logs" && logsTab !== "incidents", onClick: () => openView("logs", "", { logsTab: "journal" }) },
         viewItem("tools", i18n("dTools", "Outils"), LBriefcaseBusiness),
         viewItem("settings", i18n("dSettings", "Réglages"), LSettings),
       ],
@@ -379,7 +380,7 @@ export default function HubSidebar({
               <ShieldCheck className="h-5 w-5 text-emerald-400" />
             </motion.div>
             <span className="font-bold text-lg tracking-tight text-[var(--text-primary)]">
-              Etho
+              {tx("Etho")}
             </span>
           </div>
 
@@ -408,7 +409,7 @@ export default function HubSidebar({
               <span>{i18n("dSearchPlaceholder", "Rechercher un réglage... Ctrl K").replace(" Ctrl K", "")}</span>
             </div>
             <kbd className="rounded-md border border-[var(--panel-border)] bg-[var(--background)] px-2 py-0.5 text-xs font-mono text-[var(--text-muted)]">
-              Ctrl K
+              {tx("Ctrl K")}
             </kbd>
           </motion.button>
 
@@ -479,7 +480,7 @@ export default function HubSidebar({
                 className="flex items-center gap-2 text-[11px] text-[var(--warning)] hover:underline"
               >
                 <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--warning)]" />
-                {logGap.length} sans salon de log
+                {logGap.length} {" "}{tx("sans salon de log")}
               </button>
             )}
           </div>

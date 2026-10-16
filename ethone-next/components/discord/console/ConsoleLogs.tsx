@@ -10,6 +10,7 @@ import { SPRING_PILL } from "@/lib/ease";
 import { cn } from "@/lib/utils";
 import { BOT_API_URL, ConsolePage, EmptyLine, GhostButton, Panel, Select, useGuildApi } from "./kit";
 import DiscordIncidentsTimeline from "../DiscordIncidentsTimeline";
+import { tx } from "@/lib/tx";
 
 type AuditEvent = {
   id: string;
@@ -173,14 +174,14 @@ export default function ConsoleLogs({ guildId, initialTab = "incidents" }: { gui
   };
 
   const tabs = [
-    { id: "incidents" as const, label: "Incidents" },
-    { id: "journal" as const, label: "Journal" },
-    { id: "channels" as const, label: "Salons de log", count: gap.length || undefined },
+    { id: "incidents" as const, label: tx("Incidents") },
+    { id: "journal" as const, label: tx("Journal") },
+    { id: "channels" as const, label: tx("Salons de log"), count: gap.length || undefined },
   ];
 
   return (
     <ConsolePage
-      title="Logs"
+      title={tx("Logs")}
       actions={
         <div className="flex items-center gap-2">
           {isLive && (
@@ -189,7 +190,7 @@ export default function ConsoleLogs({ guildId, initialTab = "incidents" }: { gui
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--success)] opacity-75" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--success)]" />
               </span>
-              <span>En direct</span>
+              <span>{tx("En direct")}</span>
             </div>
           )}
           <div role="tablist" className="flex rounded-lg border border-[var(--panel-border)] p-0.5">
@@ -225,13 +226,13 @@ export default function ConsoleLogs({ guildId, initialTab = "incidents" }: { gui
               </span>
               <div className="min-w-0 flex-1">
                 <p className="text-[13px] font-semibold text-[var(--text-primary)]">
-                  {gap.length} protection{gap.length > 1 ? "s" : ""} sans salon de log
+                  {gap.length} {" "}{tx("protection")}{gap.length > 1 ? "s" : ""} {" "}{tx("sans salon de log")}
                 </p>
-                <p className="text-xs text-[var(--text-muted)]">Choisis un salon pour toutes les équiper d&apos;un coup ({gap.join(", ")}).</p>
+                <p className="text-xs text-[var(--text-muted)]">{tx("Choisis un salon pour toutes les équiper d'un coup (")}{gap.join(", ")}).</p>
               </div>
               <div className="flex items-center gap-2 sm:w-80">
                 <div className="flex-1">
-                  <ChannelPicker guildId={guildId} value={bulkChannel} onChange={(id) => setBulkChannel(id)} filterTypes={[0, 5]} placeholder="Choisir un salon" size="sm" />
+                  <ChannelPicker guildId={guildId} value={bulkChannel} onChange={(id) => setBulkChannel(id)} filterTypes={[0, 5]} placeholder={tx("Choisir un salon")} size="sm" />
                 </div>
                 <button
                   type="button"
@@ -239,19 +240,19 @@ export default function ConsoleLogs({ guildId, initialTab = "incidents" }: { gui
                   disabled={!bulkChannel}
                   className="flex shrink-0 items-center gap-1 rounded-lg bg-[var(--success)] px-3 py-1.5 text-xs font-semibold text-black transition-[filter,transform] hover:brightness-110 active:scale-[0.97] disabled:opacity-40"
                 >
-                  <Zap className="h-3.5 w-3.5" /> Appliquer
+                  <Zap className="h-3.5 w-3.5" /> {" "}{tx("Appliquer")}
                 </button>
               </div>
             </div>
           )}
 
           {[
-            { title: "Protections", list: PROTECTION_CATEGORIES },
-            { title: "Journal du serveur", list: SERVER_CATEGORIES },
+            { title: tx("Protections"), list: PROTECTION_CATEGORIES },
+            { title: tx("Journal du serveur"), list: SERVER_CATEGORIES },
           ].map((group) => (
             <Panel key={group.title} title={group.title}>
               {!config ? (
-                <EmptyLine>Chargement…</EmptyLine>
+                <EmptyLine>{tx("Chargement…")}</EmptyLine>
               ) : (
                 group.list.map((c) => {
                   const current = effective(c.key);
@@ -269,8 +270,8 @@ export default function ConsoleLogs({ guildId, initialTab = "incidents" }: { gui
                           onChange={(id) => setCategory(c.key, id || null)}
                           filterTypes={[0, 5]}
                           allowClear
-                          emptyLabel="Aucun salon"
-                          placeholder={current && !channels[c.key] ? "Salon de modération" : "Aucun salon"}
+                          emptyLabel={tx("Aucun salon")}
+                          placeholder={current && !channels[c.key] ? tx("Salon de modération") : tx("Aucun salon")}
                           size="sm"
                         />
                       </div>
@@ -330,21 +331,21 @@ function Journal({ guildId }: { guildId: string }) {
 
   return (
     <Panel
-      title="Journal"
-      subtitle={rows ? `${total.toLocaleString("fr-FR")} événement${total > 1 ? "s" : ""}` : undefined}
+      title={tx("Journal")}
+      subtitle={rows ? tx("{v0} événement{v1}", { v0: total.toLocaleString("fr-FR"), v1: total > 1 ? "s" : "" }) : undefined}
       actions={
         <div className="flex flex-wrap items-center justify-end gap-1.5">
-          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Rechercher" aria-label="Rechercher dans le journal" className={`${SELECT} w-32`} />
-          <Select value={module} options={MODULE_OPTIONS} onChange={(v) => setModule(v)} aria-label="Catégorie" size="sm" align="right" />
-          <Select value={severity} options={SEVERITIES} onChange={(v) => setSeverity(v)} aria-label="Gravité" size="sm" align="right" />
-          <Select value={period} options={PERIODS} onChange={(v) => setPeriod(v)} aria-label="Période" size="sm" align="right" />
+          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={tx("Rechercher")} aria-label={tx("Rechercher dans le journal")} className={`${SELECT} w-32`} />
+          <Select value={module} options={MODULE_OPTIONS} onChange={(v) => setModule(v)} aria-label={tx("Catégorie")} size="sm" align="right" />
+          <Select value={severity} options={SEVERITIES} onChange={(v) => setSeverity(v)} aria-label={tx("Gravité")} size="sm" align="right" />
+          <Select value={period} options={PERIODS} onChange={(v) => setPeriod(v)} aria-label={tx("Période")} size="sm" align="right" />
         </div>
       }
     >
       {!rows ? (
-        <EmptyLine>Chargement…</EmptyLine>
+        <EmptyLine>{tx("Chargement…")}</EmptyLine>
       ) : rows.length === 0 ? (
-        <EmptyLine>Aucun événement pour ces filtres.</EmptyLine>
+        <EmptyLine>{tx("Aucun événement pour ces filtres.")}</EmptyLine>
       ) : (
         <>
           <ul>
@@ -355,7 +356,7 @@ function Journal({ guildId }: { guildId: string }) {
                   <p className="truncate text-[13px] text-[var(--text-primary)]">{cleanLogText(e.reason || e.type.replace(/_/g, " ").toLowerCase())}</p>
                   <p className="truncate text-[11px] text-[var(--text-muted)]">
                     {label(e.module)}
-                    {e.actor?.tag ? ` · par ${e.actor.tag}` : ""}
+                    {e.actor?.tag ? tx(" · par {tag}", { tag: e.actor.tag }) : ""}
                     {e.target?.tag || e.target?.name ? ` · ${e.target.tag || e.target.name}` : ""}
                   </p>
                 </div>
@@ -366,7 +367,7 @@ function Journal({ guildId }: { guildId: string }) {
           {rows.length < total && (
             <div className="flex justify-center border-t border-[var(--panel-border)] px-5 py-3">
               <GhostButton disabled={loadingMore} onClick={more}>
-                {loadingMore ? "Chargement…" : `Afficher plus (${(total - rows.length).toLocaleString("fr-FR")} restants)`}
+                {loadingMore ? tx("Chargement…") : tx("Afficher plus ({v0} restants)", { v0: (total - rows.length).toLocaleString("fr-FR") })}
               </GhostButton>
             </div>
           )}

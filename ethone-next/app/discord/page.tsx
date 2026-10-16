@@ -51,6 +51,7 @@ import { EASE_SNAP, SPRING_PRESS } from "@/lib/ease";
 import { useMotionPref } from "@/lib/hooks/useMotionPref";
 import { fetchBotPresence } from "@/lib/hooks/useBotGuildIds";
 import { useI18n } from "@/lib/hooks/useI18n";
+import { tx } from "@/lib/tx";
 
 function CloudCheckIcon({ className = "h-4 w-4" }: { className?: string }) {
   return (
@@ -920,7 +921,7 @@ export default function DiscordDashboardPage() {
     if (!selectedGuild) return;
     navigator.clipboard.writeText(selectedGuild.id);
     setCopiedId(true);
-    success("ID copié", `L'identifiant de "${selectedGuild.name}" a été copié.`);
+    success(tx("ID copié"), tx("L'identifiant de \"{name}\" a été copié.", { name: selectedGuild.name }));
     setTimeout(() => setCopiedId(false), 2000);
   }, [selectedGuild, success]);
 
@@ -944,7 +945,7 @@ export default function DiscordDashboardPage() {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    success("Configuration exportée", "Le fichier de sauvegarde JSON a été téléchargé.");
+    success(tx("Configuration exportée"), tx("Le fichier de sauvegarde JSON a été téléchargé."));
   }, [selectedGuild, guildSettings, success]);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -966,9 +967,9 @@ export default function DiscordDashboardPage() {
             ...(typeof imported.mentionLimit === "number" ? { mentionLimit: imported.mentionLimit } : {}),
             ...(Array.isArray(imported.customCommands) ? { customCommands: imported.customCommands } : {}),
           }));
-          success("Configuration importée", "Les réglages ont été appliqués. Clique sur « Enregistrer » pour les synchroniser.");
+          success(tx("Configuration importée"), tx("Les réglages ont été appliqués. Clique sur « Enregistrer » pour les synchroniser."));
         } catch (err: any) {
-          showError("Erreur d'import", err.message || "Fichier de configuration invalide.");
+          showError(tx("Erreur d'import"), err.message || tx("Fichier de configuration invalide."));
         }
       };
       reader.readAsText(file);
@@ -990,12 +991,12 @@ export default function DiscordDashboardPage() {
       localStorage.setItem(`ethone:discord:settings:${selectedGuild.id}`, JSON.stringify(guildSettings));
     } catch {}
     if (!api) {
-      success("Configuration enregistrée (local)", "API du bot non configurée — réglages gardés dans ce navigateur.");
+      success(tx("Configuration enregistrée (local)"), tx("API du bot non configurée — réglages gardés dans ce navigateur."));
       setIsSaving(false);
       return;
     }
     if (botPresenceKnown && !botGuildIds.has(selectedGuild.id)) {
-      info("Sauvegardé localement", `Le bot n'est pas encore installé sur "${selectedGuild.name}". Les réglages seront synchronisés dès son invitation.`);
+      info(tx("Sauvegardé localement"), tx("Le bot n'est pas encore installé sur \"{name}\". Les réglages seront synchronisés dès son invitation.", { name: selectedGuild.name }));
       setIsSaving(false);
       return;
     }
@@ -1050,12 +1051,12 @@ export default function DiscordDashboardPage() {
       if (!raidRes.ok) failed.push(await formatError(raidRes, "anti-raid"));
       if (!modLogRes.ok) failed.push(await formatError(modLogRes, "salon de sanctions"));
       if (failed.length > 0) {
-        showError("Enregistrement partiel", `Échec : ${failed.join(", ")}.`);
+        showError(tx("Enregistrement partiel"), tx("Échec : {v0}.", { v0: failed.join(", ") }));
       } else {
-        success("Configuration enregistrée", `Préfixe, protections et salon de sanctions appliqués sur "${selectedGuild.name}".`);
+        success(tx("Configuration enregistrée"), tx("Préfixe, protections et salon de sanctions appliqués sur \"{name}\".", { name: selectedGuild.name }));
       }
     } catch {
-      showError("Erreur de sauvegarde", "Le bot n'a pas répondu — réglages gardés localement.");
+      showError(tx("Erreur de sauvegarde"), tx("Le bot n'a pas répondu — réglages gardés localement."));
     } finally {
       setIsSaving(false);
     }
@@ -1077,8 +1078,8 @@ export default function DiscordDashboardPage() {
       try {
         const ok = await setModuleEnabled(id, enabled);
         const title = NAV_MODULES_BASE.find((m) => m.id === id)?.title ?? id;
-        if (ok) success(enabled ? "Module activé" : "Module désactivé", `${title} : ${enabled ? "ses commandes sont de nouveau disponibles." : "ses commandes répondent maintenant « module désactivé »."}`);
-        else showError("Action refusée", `Impossible de modifier « ${title} » (droits ou bot injoignable).`);
+        if (ok) success(enabled ? tx("Module activé") : tx("Module désactivé"), `${title} : ${enabled ? "ses commandes sont de nouveau disponibles." : "ses commandes répondent maintenant « module désactivé »."}`);
+        else showError(tx("Action refusée"), tx("Impossible de modifier « {title} » (droits ou bot injoignable).", { title }));
       } finally {
         setPendingModuleIds((prev) => {
           const next = new Set(prev);
@@ -1243,7 +1244,7 @@ export default function DiscordDashboardPage() {
                 type="button"
                 onClick={() => setMenuOpen(true)}
                 className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-[var(--text-muted)] transition-colors hover:bg-white/[0.06] hover:text-[var(--text-primary)] lg:hidden"
-                aria-label="Ouvrir le menu des modules"
+                aria-label={tx("Ouvrir le menu des modules")}
               >
                 <Menu className="h-4 w-4" />
               </button>
@@ -1276,25 +1277,25 @@ export default function DiscordDashboardPage() {
                     : view === "protections"
                     ? i18n("dProtections", "Protections")
                     : view === "automod"
-                    ? "AutoMod"
+                    ? tx("AutoMod")
                     : view === "welcome"
-                    ? "Bienvenue et départs"
+                    ? tx("Bienvenue et départs")
                     : view === "autoroles"
-                    ? "Rôles automatiques"
+                    ? tx("Rôles automatiques")
                     : view === "sanctions"
-                    ? "Sanctions"
+                    ? tx("Sanctions")
                     : view === "warnings"
-                    ? "Avertissements et paliers"
+                    ? tx("Avertissements et paliers")
                     : view === "presets"
-                    ? "Raisons prédéfinies"
+                    ? tx("Raisons prédéfinies")
                     : view === "reports"
-                    ? "Signalements"
+                    ? tx("Signalements")
                     : view === "appeals"
-                    ? "Appels"
+                    ? tx("Appels")
                     : view === "modstats"
-                    ? "Statistiques"
+                    ? tx("Statistiques")
                     : view === "sanctionmessages"
-                    ? "Messages de sanction"
+                    ? tx("Messages de sanction")
                     : view === "scan"
                     ? i18n("dSecurityScan", "Scan de sécurité")
                     : view === "setup"
@@ -1325,7 +1326,7 @@ export default function DiscordDashboardPage() {
                 onClick={handleSaveSettings}
                 disabled={isSaving}
                 className="flex items-center gap-2 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer select-none"
-                title="Clique pour forcer la synchronisation"
+                title={tx("Clique pour forcer la synchronisation")}
               >
                 <CloudCheckIcon className={cn("h-4 w-4 shrink-0", isSaving ? "animate-pulse text-amber-400" : "text-emerald-400")} />
                 <span className="font-normal">
@@ -1342,7 +1343,7 @@ export default function DiscordDashboardPage() {
                   {botAuthRequired && (
                     <a href={botLoginHref} className={cn(calloutCls, "transition-colors hover:border-[var(--input-border-hover)]")}>
                       <span className="text-sm leading-relaxed text-[var(--text-muted)]">
-                        <strong className="font-semibold text-[var(--text-primary)]">Connecte le bot à ton compte Discord.</strong> Sans ça, le site ne voit ni les serveurs où le bot est actif, ni la musique en direct. Clique pour autoriser.
+                        <strong className="font-semibold text-[var(--text-primary)]">{tx("Connecte le bot à ton compte Discord.")}</strong> {" "}{tx("Sans ça, le site ne voit ni les serveurs où le bot est actif, ni la musique en direct. Clique pour autoriser.")}
                       </span>
                     </a>
                   )}
@@ -1351,14 +1352,14 @@ export default function DiscordDashboardPage() {
                       <div className="flex items-start gap-3">
                         <Bot className="mt-0.5 h-5 w-5 shrink-0 text-[var(--accent-primary)]" />
                         <div>
-                          <p className="text-sm font-semibold text-[var(--text-primary)]">Le bot ETHONE n&apos;est pas installé sur ce serveur</p>
+                          <p className="text-sm font-semibold text-[var(--text-primary)]">{tx("Le bot ETHONE n'est pas installé sur ce serveur")}</p>
                           <p className="mt-0.5 text-xs text-[var(--text-muted)]">
-                            Invite le bot sur « {selectedGuild.name} » pour activer la modération en temps réel, la musique, les tickets et les commandes personnalisées.
+                            {tx("Invite le bot sur «")}{" "} {selectedGuild.name} {" "}{tx("» pour activer la modération en temps réel, la musique, les tickets et les commandes personnalisées.")}
                           </p>
                         </div>
                       </div>
                       <a href={inviteHref} target="_blank" rel="noopener noreferrer" className={inviteBtnCls}>
-                        <span>Inviter le bot</span>
+                        <span>{tx("Inviter le bot")}</span>
                         <ExternalLink className="h-3 w-3" />
                       </a>
                     </div>
@@ -1446,7 +1447,7 @@ export default function DiscordDashboardPage() {
                   onToggle={handleModuleToggle}
                   recommendedIds={RECOMMENDED_MODULE_IDS}
                   pendingIds={pendingModuleIds}
-                  heading="Tous les modules"
+                  heading={tx("Tous les modules")}
                   summary={`${activeModuleCount} / ${totalModuleCount} modules activés`}
                 />
               )}
@@ -1471,13 +1472,13 @@ export default function DiscordDashboardPage() {
                         <div className="flex shrink-0 items-center gap-3">
                           {fullPage && (
                             <Link href={`${fullPage}?guildId=${selectedGuild.id}`} className="flex items-center gap-1 text-xs text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)]">
-                              Pleine page
+                              {tx("Pleine page")}
                               <ExternalLink className="h-3.5 w-3.5" />
                             </Link>
                           )}
                           {typeof panelOn === "boolean" && (
                             <label className="flex items-center gap-2 text-xs font-semibold text-[var(--text-muted)]">
-                              {panelOn ? "Activé" : "Désactivé"}
+                              {panelOn ? tx("Activé") : tx("Désactivé")}
                               <button
                                 type="button"
                                 role="switch"

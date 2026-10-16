@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import ChannelPicker, { fetchGuildChannels, invalidateGuildChannels, type ChannelOption } from "../../ChannelPicker";
 import { confirmDialog } from "@/lib/confirmDialog";
 import { ConsolePage, EmptyLine, GhostButton, Panel, Row, Stepper, TextField, useGuildApi } from "../kit";
+import { tx } from "@/lib/tx";
 
 type StatType = "members" | "humans" | "bots" | "online" | "boosts" | "boostTier" | "roles" | "channels" | "roleMembers" | "custom";
 type Counter = { channelId: string; type: StatType; template: string; roleId: string | null; lastValue: number | null; lastName: string | null };
@@ -65,7 +66,7 @@ export default function ConsoleServerStats({ guildId }: { guildId: string }) {
     if (await upsert(newChannel, template.trim())) setNewChannel("");
   };
   const remove = async (c: Counter) => {
-    if (!(await confirmDialog(`Retirer le compteur de « ${c.lastName ?? channelName(c.channelId)} » ? Le salon n'est pas supprimé.`, { title: "Retirer", confirmLabel: "Retirer" }))) return;
+    if (!(await confirmDialog(tx("Retirer le compteur de « {v0} » ? Le salon n'est pas supprimé.", { v0: c.lastName ?? channelName(c.channelId) }), { title: tx("Retirer"), confirmLabel: tx("Retirer") }))) return;
     if (await api(`/server-stats/channels/${c.channelId}`, { method: "DELETE" })) void load();
   };
   const setup = async (preset: string) => {
@@ -90,25 +91,25 @@ export default function ConsoleServerStats({ guildId }: { guildId: string }) {
   const groups = [...new Set(tokens.map((t) => t.group))];
 
   return (
-    <ConsolePage title="Salons compteurs" actions={<GhostButton disabled={busy || counters.length === 0} onClick={refresh}>Actualiser maintenant</GhostButton>}>
+    <ConsolePage title={tx("Salons compteurs")} actions={<GhostButton disabled={busy || counters.length === 0} onClick={refresh}>{tx("Actualiser maintenant")}</GhostButton>}>
       {ov && !ov.enabled && (
         <Panel>
-          <p className="px-5 py-3 text-xs text-[var(--warning)]">Module désactivé : les noms des salons ne sont plus mis à jour. Active-le avec l&apos;interrupteur en haut de la page.</p>
+          <p className="px-5 py-3 text-xs text-[var(--warning)]">{tx("Module désactivé : les noms des salons ne sont plus mis à jour. Active-le avec l'interrupteur en haut de la page.")}</p>
         </Panel>
       )}
 
-      <Panel title="Mise à jour">
-        <Row label="Fréquence" hint="Discord autorise 2 renommages d'un salon toutes les 10 minutes.">
+      <Panel title={tx("Mise à jour")}>
+        <Row label={tx("Fréquence")} hint={tx("Discord autorise 2 renommages d'un salon toutes les 10 minutes.")}>
           {ov ? <Stepper value={ov.updateIntervalMinutes} min={10} max={360} step={5} unit="minutes" onCommit={saveInterval} /> : <span className="text-xs text-[var(--text-muted)]">…</span>}
         </Row>
       </Panel>
 
-      <Panel title="Compteurs" subtitle={`${counters.length}/${MAX_COUNTERS} salons`}>
+      <Panel title={tx("Compteurs")} subtitle={tx("{length}/{MAX_COUNTERS} salons", { length: counters.length, MAX_COUNTERS })}>
         {!ov ? (
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         ) : counters.length === 0 ? (
           <div className="space-y-3 px-5 py-5">
-            <p className="text-center text-xs text-[var(--text-muted)]">Aucun compteur. Crée une catégorie prête à l&apos;emploi ou ajoute un salon ci-dessous.</p>
+            <p className="text-center text-xs text-[var(--text-muted)]">{tx("Aucun compteur. Crée une catégorie prête à l'emploi ou ajoute un salon ci-dessous.")}</p>
             <div className="flex flex-wrap justify-center gap-2">
               {presets.map((p) => (
                 <GhostButton key={p.id} disabled={busy} onClick={() => setup(p.id)}>
@@ -127,23 +128,23 @@ export default function ConsoleServerStats({ guildId }: { guildId: string }) {
                     <TextField value={c.template} maxLength={100} mono width="w-full max-w-sm" onCommit={(v) => upsert(c.channelId, v)} />
                   </div>
                 </div>
-                <GhostButton onClick={() => remove(c)}>Retirer</GhostButton>
+                <GhostButton onClick={() => remove(c)}>{tx("Retirer")}</GhostButton>
               </li>
             ))}
           </ul>
         )}
       </Panel>
 
-      <Panel title="Ajouter un compteur">
-        <Row label="Salon" hint="De préférence un salon vocal verrouillé.">
-          <ChannelPicker guildId={guildId} value={newChannel} filterTypes={[2, 0]} placeholder="Choisir un salon" onChange={(id) => setNewChannel(id)} />
+      <Panel title={tx("Ajouter un compteur")}>
+        <Row label={tx("Salon")} hint={tx("De préférence un salon vocal verrouillé.")}>
+          <ChannelPicker guildId={guildId} value={newChannel} filterTypes={[2, 0]} placeholder={tx("Choisir un salon")} onChange={(id) => setNewChannel(id)} />
         </Row>
-        <Row label="Nom affiché" hint={preview ? `Aperçu : ${preview}` : "Clique sur une variable pour l'ajouter."}>
+        <Row label={tx("Nom affiché")} hint={preview ? tx("Aperçu : {preview}", { preview }) : tx("Clique sur une variable pour l'ajouter.")}>
           <input
             value={template}
             maxLength={100}
             onChange={(e) => setTemplate(e.target.value)}
-            aria-label="Nom affiché"
+            aria-label={tx("Nom affiché")}
             className="h-9 w-full rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-3 font-mono text-sm text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/70"
           />
         </Row>
@@ -156,7 +157,7 @@ export default function ConsoleServerStats({ guildId }: { guildId: string }) {
                   <button
                     key={t.token}
                     type="button"
-                    title={`${t.label} (ex. ${t.example})`}
+                    title={tx("{label} (ex. {example})", { label: t.label, example: t.example })}
                     onClick={() => setTemplate((v) => `${v}${v.endsWith(" ") || !v ? "" : " "}${t.token}`.slice(0, 100))}
                     className="rounded-md border border-[var(--panel-border)] px-1.5 py-0.5 font-mono text-[11px] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                   >
@@ -173,7 +174,7 @@ export default function ConsoleServerStats({ guildId }: { guildId: string }) {
             onClick={add}
             className="rounded-lg bg-[var(--accent-primary)] px-4 py-2 text-xs font-bold text-white hover:opacity-90 disabled:opacity-40"
           >
-            Ajouter le compteur
+            {tx("Ajouter le compteur")}
           </button>
         </div>
       </Panel>

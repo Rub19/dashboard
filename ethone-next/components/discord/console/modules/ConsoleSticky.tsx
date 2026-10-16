@@ -8,6 +8,7 @@ import { SPRING_LAYOUT } from "@/lib/ease";
 import { pageStagger } from "@/lib/motion-variants";
 import { useToast } from "@/components/ToastProvider";
 import { ConsolePage, EmptyLine, GhostButton, Panel, Row, StatTile, Stepper, Switch, TextField, useGuildApi } from "../kit";
+import { tx } from "@/lib/tx";
 
 type Sticky = { channelId: string; content: string; asEmbed: boolean; title: string; color: string; enabled: boolean; cooldownSeconds: number; repostCount: number };
 type Overview = { total: number; active: number; totalReposts: number; channels: { channelId: string; enabled: boolean; repostCount: number; preview: string }[] };
@@ -76,7 +77,7 @@ export default function ConsoleSticky({ guildId }: { guildId: string }) {
     }
   };
   const remove = async (channelId: string) => {
-    if (!(await confirmDialog(`Retirer le message épinglé de #${channelName(channelId)} ?`, { title: "Retirer", confirmLabel: "Retirer" }))) return;
+    if (!(await confirmDialog(tx("Retirer le message épinglé de #{v0} ?", { v0: channelName(channelId) }), { title: tx("Retirer"), confirmLabel: tx("Retirer") }))) return;
     if (await api(`/sticky/config/${channelId}`, { method: "DELETE" })) {
       setOpen(null);
       void load();
@@ -87,33 +88,33 @@ export default function ConsoleSticky({ guildId }: { guildId: string }) {
   const canCreate = !!newChannel && !used.includes(newChannel) && newContent.trim().length > 0 && !busy;
 
   return (
-    <ConsolePage title="Messages épinglés">
+    <ConsolePage title={tx("Messages épinglés")}>
       <motion.div variants={pageStagger} className="grid grid-cols-2 gap-3 lg:grid-cols-3">
-        <StatTile label="Actifs" value={ov?.active ?? "—"} hint={ov ? `sur ${ov.total}` : undefined} />
-        <StatTile label="Republications" value={ov?.totalReposts ?? "—"} />
-        <StatTile label="Salons" value={ov?.total ?? "—"} />
+        <StatTile label={tx("Actifs")} value={ov?.active ?? "—"} hint={ov ? tx("sur {total}", { total: ov.total }) : undefined} />
+        <StatTile label={tx("Republications")} value={ov?.totalReposts ?? "—"} />
+        <StatTile label={tx("Salons")} value={ov?.total ?? "—"} />
       </motion.div>
 
-      <Panel title="Nouveau message épinglé" subtitle="Etho le republie en bas du salon après chaque nouveau message.">
-        <Row label="Salon">
-          <ChannelPicker guildId={guildId} value={newChannel} filterTypes={[0, 5]} placeholder="Choisir un salon" onChange={(id) => setNewChannel(id)} />
-          {used.includes(newChannel) && <p className="mt-1 text-[11px] text-[var(--warning)]">Ce salon a déjà un message épinglé : modifie-le dans la liste.</p>}
+      <Panel title={tx("Nouveau message épinglé")} subtitle={tx("Etho le republie en bas du salon après chaque nouveau message.")}>
+        <Row label={tx("Salon")}>
+          <ChannelPicker guildId={guildId} value={newChannel} filterTypes={[0, 5]} placeholder={tx("Choisir un salon")} onChange={(id) => setNewChannel(id)} />
+          {used.includes(newChannel) && <p className="mt-1 text-[11px] text-[var(--warning)]">{tx("Ce salon a déjà un message épinglé : modifie-le dans la liste.")}</p>}
         </Row>
-        <Row label="Message" hint="Markdown Discord, 2000 caractères.">
-          <textarea value={newContent} maxLength={2000} rows={3} onChange={(e) => setNewContent(e.target.value)} aria-label="Message épinglé" className={field} />
+        <Row label={tx("Message")} hint={tx("Markdown Discord, 2000 caractères.")}>
+          <textarea value={newContent} maxLength={2000} rows={3} onChange={(e) => setNewContent(e.target.value)} aria-label={tx("Message épinglé")} className={field} />
         </Row>
         <div className="flex justify-end border-t border-[var(--panel-border)] px-5 py-3">
           <button type="button" disabled={!canCreate} onClick={create} className="rounded-lg bg-[var(--accent-primary)] px-4 py-2 text-xs font-bold text-white hover:opacity-90 disabled:opacity-40">
-            Épingler
+            {tx("Épingler")}
           </button>
         </div>
       </Panel>
 
-      <Panel title="Salons avec un message épinglé">
+      <Panel title={tx("Salons avec un message épinglé")}>
         {!ov ? (
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         ) : ov.channels.length === 0 ? (
-          <EmptyLine>Aucun message épinglé.</EmptyLine>
+          <EmptyLine>{tx("Aucun message épinglé.")}</EmptyLine>
         ) : (
           <ul>
             {ov.channels.map((c) => (
@@ -122,43 +123,43 @@ export default function ConsoleSticky({ guildId }: { guildId: string }) {
                   <button type="button" onClick={() => toggle(c.channelId)} aria-expanded={open === c.channelId} className="min-w-0 flex-1 text-left">
                     <p className="truncate text-[13px] font-semibold text-[var(--text-primary)]">#{channelName(c.channelId)}</p>
                     <p className="truncate text-[11px] text-[var(--text-muted)]">
-                      {c.repostCount} republication{c.repostCount > 1 ? "s" : ""} · {c.preview}
+                      {c.repostCount} {" "}{tx("republication")}{c.repostCount > 1 ? "s" : ""} · {c.preview}
                     </p>
                   </button>
-                  <Switch checked={c.enabled} onChange={(v) => save(c.channelId, { enabled: v })} label={`Activer #${channelName(c.channelId)}`} />
+                  <Switch checked={c.enabled} onChange={(v) => save(c.channelId, { enabled: v })} label={tx("Activer #{v0}", { v0: channelName(c.channelId) })} />
                 </div>
                 <AnimatePresence initial={false}>
                   {open === c.channelId && (
                     <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={SPRING_LAYOUT} className="overflow-hidden">
                       <div className="border-t border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))]/40">
                         {!detail ? (
-                          <EmptyLine>Chargement…</EmptyLine>
+                          <EmptyLine>{tx("Chargement…")}</EmptyLine>
                         ) : (
                           <>
-                            <Row label="Message">
-                              <textarea value={draft} maxLength={2000} rows={4} onChange={(e) => setDraft(e.target.value)} onBlur={() => draft.trim() && draft !== detail.content && save(c.channelId, { content: draft.trim() })} aria-label="Message" className={field} />
+                            <Row label={tx("Message")}>
+                              <textarea value={draft} maxLength={2000} rows={4} onChange={(e) => setDraft(e.target.value)} onBlur={() => draft.trim() && draft !== detail.content && save(c.channelId, { content: draft.trim() })} aria-label={tx("Message")} className={field} />
                             </Row>
-                            <Row label="En embed" hint="Sinon, message texte simple.">
-                              <Switch checked={detail.asEmbed} onChange={(v) => save(c.channelId, { asEmbed: v })} label="En embed" />
+                            <Row label={tx("En embed")} hint={tx("Sinon, message texte simple.")}>
+                              <Switch checked={detail.asEmbed} onChange={(v) => save(c.channelId, { asEmbed: v })} label={tx("En embed")} />
                             </Row>
                             {detail.asEmbed && (
                               <>
-                                <Row label="Titre">
+                                <Row label={tx("Titre")}>
                                   <TextField value={detail.title} maxLength={256} width="w-72" onCommit={(v) => save(c.channelId, { title: v })} />
                                 </Row>
-                                <Row label="Couleur">
+                                <Row label={tx("Couleur")}>
                                   <span className="inline-flex items-center gap-2">
-                                    <input type="color" value={HEX.test(detail.color) ? detail.color : "#5865f2"} onChange={(e) => save(c.channelId, { color: e.target.value })} aria-label="Couleur" className="h-8 w-10 cursor-pointer rounded border border-[var(--panel-border)] bg-transparent" />
+                                    <input type="color" value={HEX.test(detail.color) ? detail.color : "#5865f2"} onChange={(e) => save(c.channelId, { color: e.target.value })} aria-label={tx("Couleur")} className="h-8 w-10 cursor-pointer rounded border border-[var(--panel-border)] bg-transparent" />
                                     <span className="font-mono text-xs text-[var(--text-muted)]">{detail.color}</span>
                                   </span>
                                 </Row>
                               </>
                             )}
-                            <Row label="Délai entre deux republications" hint="Évite de republier à chaque message d'une conversation rapide.">
+                            <Row label={tx("Délai entre deux republications")} hint={tx("Évite de republier à chaque message d'une conversation rapide.")}>
                               <Stepper value={detail.cooldownSeconds} min={2} max={120} unit="secondes" onCommit={(n) => save(c.channelId, { cooldownSeconds: n })} />
                             </Row>
                             <div className="border-t border-[var(--panel-border)] px-5 py-3">
-                              <p className="mb-2 text-[11px] font-semibold text-[var(--text-muted)]">Aperçu du rendu Discord</p>
+                              <p className="mb-2 text-[11px] font-semibold text-[var(--text-muted)]">{tx("Aperçu du rendu Discord")}</p>
                               {detail.asEmbed ? (
                                 <div
                                   className="rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] p-3"
@@ -167,25 +168,25 @@ export default function ConsoleSticky({ guildId }: { guildId: string }) {
                                   {detail.title && (
                                     <p className="mb-1 text-xs font-bold text-[var(--text-primary)]">{detail.title}</p>
                                   )}
-                                  <p className="whitespace-pre-wrap text-xs text-[var(--text-primary)]">{draft || "Message épinglé…"}</p>
-                                  <p className="mt-2 text-[10px] text-[var(--text-muted)]">Épinglé en bas de #{channelName(c.channelId)}</p>
+                                  <p className="whitespace-pre-wrap text-xs text-[var(--text-primary)]">{draft || tx("Message épinglé…")}</p>
+                                  <p className="mt-2 text-[10px] text-[var(--text-muted)]">{tx("Épinglé en bas de #")}{channelName(c.channelId)}</p>
                                 </div>
                               ) : (
                                 <div className="rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] p-3">
                                   <div className="mb-1.5 flex items-center gap-1.5">
-                                    <span className="text-xs font-semibold text-[var(--text-primary)]">Etho</span>
-                                    <span className="rounded bg-[var(--accent-primary)]/20 px-1 py-0.5 text-[9px] font-bold text-[var(--accent-primary)]">BOT</span>
+                                    <span className="text-xs font-semibold text-[var(--text-primary)]">{tx("Etho")}</span>
+                                    <span className="rounded bg-[var(--accent-primary)]/20 px-1 py-0.5 text-[9px] font-bold text-[var(--accent-primary)]">{tx("BOT")}</span>
                                   </div>
-                                  <p className="whitespace-pre-wrap text-xs text-[var(--text-primary)]">{draft || "Message épinglé…"}</p>
+                                  <p className="whitespace-pre-wrap text-xs text-[var(--text-primary)]">{draft || tx("Message épinglé…")}</p>
                                 </div>
                               )}
                             </div>
                             <div className="flex items-center gap-1.5 border-t border-[var(--panel-border)] px-5 py-3">
                               <GhostButton disabled={busy} onClick={() => repost(c.channelId)}>
-                                Republier maintenant
+                                {tx("Republier maintenant")}
                               </GhostButton>
                               <span className="flex-1" />
-                              <GhostButton onClick={() => remove(c.channelId)}>Retirer</GhostButton>
+                              <GhostButton onClick={() => remove(c.channelId)}>{tx("Retirer")}</GhostButton>
                             </div>
                           </>
                         )}

@@ -23,6 +23,7 @@ import { OAUTH_APP_CLIENT_IDS, startOAuthConnect } from "@/lib/oauth";
 import { ConsolePage, EmptyLine, Panel, Segmented, useGuildApi } from "../kit";
 import ClientImage from "@/components/ClientImage";
 import { cn } from "@/lib/utils";
+import { tx } from "@/lib/tx";
 
 interface Track {
   id: string;
@@ -176,7 +177,7 @@ export default function ConsoleSpotify({ guildId }: { guildId: string }) {
     await api("/spotify/disconnect", { method: "POST" });
     setConnected(false);
     setTrack(null);
-    info("Spotify", "Compte Spotify déconnecté.");
+    info(tx("Spotify"), tx("Compte Spotify déconnecté."));
   };
 
   const sendControl = async (action: string, payload: Record<string, unknown> = {}) => {
@@ -222,9 +223,9 @@ export default function ConsoleSpotify({ guildId }: { guildId: string }) {
     });
 
     if (nextSaved) {
-      success("Spotify", "Titre ajouté aux favoris.");
+      success(tx("Spotify"), tx("Titre ajouté aux favoris."));
     } else {
-      info("Spotify", "Titre retiré des favoris.");
+      info(tx("Spotify"), tx("Titre retiré des favoris."));
     }
   };
 
@@ -262,7 +263,7 @@ export default function ConsoleSpotify({ guildId }: { guildId: string }) {
     );
     setStreamingToVc(false);
     if (res?.success) {
-      success("Diffusion Vocale", `Titre diffusé dans le salon vocal ${res.channelName || ""} !`);
+      success(tx("Diffusion Vocale"), tx("Titre diffusé dans le salon vocal {v0} !", { v0: res.channelName || "" }));
     } else if (res?.error) {
       toastError("Diffusion Vocale", res.error);
     }
@@ -307,7 +308,7 @@ export default function ConsoleSpotify({ guildId }: { guildId: string }) {
 
   return (
     <ConsolePage
-      title="Spotify Connect"
+      title={tx("Spotify Connect")}
       actions={
         <div className="flex items-center gap-2">
           {connected ? (
@@ -315,7 +316,7 @@ export default function ConsoleSpotify({ guildId }: { guildId: string }) {
               onClick={handleDisconnect}
               className="inline-flex h-9 items-center gap-2 rounded-lg border border-red-500/20 bg-red-500/10 px-3 text-xs font-semibold text-red-400 transition-colors hover:bg-red-500/20"
             >
-              Déconnecter
+              {tx("Déconnecter")}
             </button>
           ) : (
             <button
@@ -325,18 +326,18 @@ export default function ConsoleSpotify({ guildId }: { guildId: string }) {
               <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.502 17.308c-.217.355-.678.469-1.033.252-2.83-1.73-6.392-2.122-10.587-1.164-.405.093-.812-.16-.904-.565-.093-.404.16-.811.565-.904 4.593-1.05 8.528-.607 11.707 1.348.355.217.469.678.252 1.033zm1.47-3.264c-.273.444-.855.586-1.299.313-3.24-1.992-8.18-2.568-12.012-1.405-.498.151-1.03-.134-1.181-.632-.151-.498.134-1.03.632-1.181 4.385-1.332 9.824-.689 13.547 1.606.444.273.586.855.313 1.299zm.126-3.398C15.22 8.354 8.825 8.134 5.138 9.253c-.6-.182-.962-.815-.78-1.415.182-.6.815-.962 1.415-.78 4.24 1.288 11.3 1.536 15.753-1.108.536-.318 1.233-.146 1.551.39.318.536.146 1.233-.39 1.551-4.995 2.964-12.164 2.684-17.069 1.205z" />
               </svg>
-              Connecter Spotify
+              {tx("Connecter Spotify")}
             </button>
           )}
         </div>
       }
     >
       <Panel
-        title="Lecteur en Direct"
+        title={tx("Lecteur en Direct")}
         subtitle={
           connected
-            ? "Contrôle ton lecteur Spotify personnel et diffuse-le dans le salon vocal."
-            : "Connecte ton compte pour piloter ton écoute en temps réel."
+            ? tx("Contrôle ton lecteur Spotify personnel et diffuse-le dans le salon vocal.")
+            : tx("Connecte ton compte pour piloter ton écoute en temps réel.")
         }
       >
         <div className="relative overflow-hidden p-5 sm:p-7">
@@ -386,7 +387,7 @@ export default function ConsoleSpotify({ guildId }: { guildId: string }) {
                         )}
                         <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
                       </span>
-                      {track?.isPlaying ? "En cours d'écoute" : "Pause"}
+                      {track?.isPlaying ? tx("En cours d'écoute") : tx("Pause")}
                     </span>
 
                     <div className="flex items-end gap-0.5 h-3">
@@ -408,12 +409,12 @@ export default function ConsoleSpotify({ guildId }: { guildId: string }) {
                   </div>
 
                   <h3 className="mt-1.5 truncate text-lg font-bold text-[var(--text-primary)] sm:text-xl">
-                    {track?.name || "Aucun titre en cours"}
+                    {track?.name || tx("Aucun titre en cours")}
                   </h3>
                   <p className="truncate text-xs text-[var(--text-muted)]">
                     {track?.artists && track.artists.length > 0
                       ? track.artists.join(", ")
-                      : "Lance la musique sur Spotify"}
+                      : tx("Lance la musique sur Spotify")}
                     {track?.album ? ` • ${track.album}` : ""}
                   </p>
                 </div>
@@ -429,7 +430,7 @@ export default function ConsoleSpotify({ guildId }: { guildId: string }) {
                       ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
                       : "border-[var(--panel-border)] bg-[var(--surface-hover)] text-[var(--text-muted)] hover:text-emerald-400"
                   )}
-                  aria-label="Ajouter aux favoris"
+                  aria-label={tx("Ajouter aux favoris")}
                 >
                   <Heart className={cn("h-4 w-4", track?.isSaved && "fill-current text-[#1DB954]")} />
                 </motion.button>
@@ -465,7 +466,7 @@ export default function ConsoleSpotify({ guildId }: { guildId: string }) {
                       "flex h-8 w-8 items-center justify-center rounded-lg transition-colors",
                       isShuffle ? "text-[#1DB954] bg-emerald-500/10" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                     )}
-                    aria-label="Lecture aléatoire"
+                    aria-label={tx("Lecture aléatoire")}
                   >
                     <Shuffle className="h-4 w-4" />
                   </motion.button>
@@ -475,7 +476,7 @@ export default function ConsoleSpotify({ guildId }: { guildId: string }) {
                     whileTap={{ scale: 0.9 }}
                     onClick={() => sendControl("previous")}
                     className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--text-primary)] hover:bg-[var(--surface-hover)]"
-                    aria-label="Titre précédent"
+                    aria-label={tx("Titre précédent")}
                   >
                     <SkipBack className="h-4 w-4" />
                   </motion.button>
@@ -485,7 +486,7 @@ export default function ConsoleSpotify({ guildId }: { guildId: string }) {
                     whileTap={{ scale: 0.92 }}
                     onClick={handleTogglePlay}
                     className="flex h-10 w-10 items-center justify-center rounded-full bg-[#1DB954] text-black shadow-lg shadow-[#1DB954]/30"
-                    aria-label={track?.isPlaying ? "Pause" : "Lecture"}
+                    aria-label={track?.isPlaying ? tx("Pause") : tx("Lecture")}
                   >
                     {track?.isPlaying ? <Pause className="h-5 w-5 fill-current" /> : <Play className="h-5 w-5 fill-current ml-0.5" />}
                   </motion.button>
@@ -495,7 +496,7 @@ export default function ConsoleSpotify({ guildId }: { guildId: string }) {
                     whileTap={{ scale: 0.9 }}
                     onClick={() => sendControl("next")}
                     className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--text-primary)] hover:bg-[var(--surface-hover)]"
-                    aria-label="Titre suivant"
+                    aria-label={tx("Titre suivant")}
                   >
                     <SkipForward className="h-4 w-4" />
                   </motion.button>
@@ -508,7 +509,7 @@ export default function ConsoleSpotify({ guildId }: { guildId: string }) {
                       "flex h-8 w-8 items-center justify-center rounded-lg transition-colors",
                       repeatMode !== "off" ? "text-[#1DB954] bg-emerald-500/10" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                     )}
-                    aria-label="Répétition"
+                    aria-label={tx("Répétition")}
                   >
                     <Repeat className="h-4 w-4" />
                   </motion.button>
@@ -544,7 +545,7 @@ export default function ConsoleSpotify({ guildId }: { guildId: string }) {
                     className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-indigo-500/30 bg-indigo-500/10 px-3 text-xs font-semibold text-indigo-300 transition-colors hover:bg-indigo-500/20 disabled:opacity-50"
                   >
                     <Users className="h-3.5 w-3.5" />
-                    {streamingToVc ? "Connexion..." : "Diffuser en Vocal"}
+                    {streamingToVc ? tx("Connexion...") : tx("Diffuser en Vocal")}
                   </motion.button>
                 </div>
               </div>
@@ -554,8 +555,8 @@ export default function ConsoleSpotify({ guildId }: { guildId: string }) {
       </Panel>
 
       <Panel
-        title="Recherche & File d'attente"
-        subtitle="Lance n'importe quel morceau Spotify ou ajoute-le à la file."
+        title={tx("Recherche & File d'attente")}
+        subtitle={tx("Lance n'importe quel morceau Spotify ou ajoute-le à la file.")}
       >
         <div className="p-5 space-y-4">
           <form onSubmit={handleSearch} className="flex gap-2">
@@ -563,7 +564,7 @@ export default function ConsoleSpotify({ guildId }: { guildId: string }) {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--text-muted)]" />
               <input
                 type="text"
-                placeholder="Rechercher un titre, artiste ou coller un lien Spotify..."
+                placeholder={tx("Rechercher un titre, artiste ou coller un lien Spotify...")}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="h-10 w-full rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)] pl-9 pr-3 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[#1DB954] focus:outline-none"
@@ -574,7 +575,7 @@ export default function ConsoleSpotify({ guildId }: { guildId: string }) {
               disabled={searching || !searchQuery.trim()}
               className="inline-flex h-10 items-center gap-2 rounded-lg bg-[#1DB954] px-4 text-xs font-bold text-black transition-transform hover:scale-105 active:scale-95 disabled:opacity-50"
             >
-              {searching ? "..." : "Jouer"}
+              {searching ? "..." : tx("Jouer")}
             </button>
           </form>
 
@@ -596,16 +597,16 @@ export default function ConsoleSpotify({ guildId }: { guildId: string }) {
                       onClick={() => sendControl("play", { query: item.url })}
                       className="rounded bg-[#1DB954]/10 border border-[#1DB954]/20 px-2.5 py-1 text-[11px] font-semibold text-[#1DB954] hover:bg-[#1DB954]/20"
                     >
-                      Écouter
+                      {tx("Écouter")}
                     </button>
                     <button
                       onClick={async () => {
                         await api("/spotify/queue", { method: "POST", json: { query: item.url } });
-                        success("File d'attente", `${item.name} ajouté.`);
+                        success(tx("File d'attente"), tx("{name} ajouté.", { name: item.name }));
                       }}
                       className="rounded border border-[var(--panel-border)] px-2.5 py-1 text-[11px] text-[var(--text-muted)] hover:bg-[var(--surface-hover)]"
                     >
-                      + File
+                      {tx("+ File")}
                     </button>
                   </div>
                 </div>
@@ -616,12 +617,12 @@ export default function ConsoleSpotify({ guildId }: { guildId: string }) {
       </Panel>
 
       <Panel
-        title="Appareils Connectés"
-        subtitle="Transférez la lecture instantanément sur un autre appareil Spotify."
+        title={tx("Appareils Connectés")}
+        subtitle={tx("Transférez la lecture instantanément sur un autre appareil Spotify.")}
       >
         <div className="divide-y divide-[var(--panel-border)]">
           {devices.length === 0 ? (
-            <EmptyLine>Aucun appareil Spotify actif détecté. Ouvre l&apos;application Spotify.</EmptyLine>
+            <EmptyLine>{tx("Aucun appareil Spotify actif détecté. Ouvre l'application Spotify.")}</EmptyLine>
           ) : (
             devices.map((dev) => (
               <div key={dev.id} className="flex items-center justify-between px-5 py-3.5">
@@ -641,12 +642,12 @@ export default function ConsoleSpotify({ guildId }: { guildId: string }) {
                       <p className="text-xs font-semibold text-[var(--text-primary)]">{dev.name}</p>
                       {dev.is_active && (
                         <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-400 border border-emerald-500/20">
-                          Actif
+                          {tx("Actif")}
                         </span>
                       )}
                     </div>
                     <p className="text-[11px] text-[var(--text-muted)]">
-                      {dev.type} • Volume {dev.volume_percent}%
+                      {dev.type} {" "}{tx("• Volume")}{" "} {dev.volume_percent}%
                     </p>
                   </div>
                 </div>
@@ -656,7 +657,7 @@ export default function ConsoleSpotify({ guildId }: { guildId: string }) {
                     onClick={() => sendControl("transfer", { deviceId: dev.id })}
                     className="rounded-lg border border-[var(--panel-border)] px-3 py-1 text-xs font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-hover)]"
                   >
-                    Transférer ici
+                    {tx("Transférer ici")}
                   </button>
                 )}
               </div>
@@ -666,12 +667,12 @@ export default function ConsoleSpotify({ guildId }: { guildId: string }) {
       </Panel>
 
       <Panel
-        title="Statistiques Personnelles"
-        subtitle="Découvre tes titres et artistes les plus écoutés sur Spotify."
+        title={tx("Statistiques Personnelles")}
+        subtitle={tx("Découvre tes titres et artistes les plus écoutés sur Spotify.")}
         actions={
           <div className="flex items-center gap-2">
             <Segmented
-              label="Type de statistiques"
+              label={tx("Type de statistiques")}
               options={[
                 ["tracks", "Top Titres"],
                 ["artists", "Top Artistes"],
@@ -680,7 +681,7 @@ export default function ConsoleSpotify({ guildId }: { guildId: string }) {
               onChange={(v) => setTopTab(v as "tracks" | "artists")}
             />
             <Segmented
-              label="Période"
+              label={tx("Période")}
               options={[
                 ["short_term", "4 sem."],
                 ["medium_term", "6 mois"],
@@ -695,7 +696,7 @@ export default function ConsoleSpotify({ guildId }: { guildId: string }) {
         <div className="divide-y divide-[var(--panel-border)]">
           {topTab === "tracks" ? (
             topTracks.length === 0 ? (
-              <EmptyLine>Aucune donnée statistique disponible.</EmptyLine>
+              <EmptyLine>{tx("Aucune donnée statistique disponible.")}</EmptyLine>
             ) : (
               topTracks.map((t, idx) => (
                 <div key={t.id} className="flex items-center justify-between px-5 py-3 hover:bg-[var(--surface-hover)] transition-colors">
@@ -716,7 +717,7 @@ export default function ConsoleSpotify({ guildId }: { guildId: string }) {
                     <button
                       onClick={() => sendControl("play", { query: t.url })}
                       className="rounded bg-[#1DB954]/10 border border-[#1DB954]/20 p-1.5 text-[#1DB954] hover:bg-[#1DB954]/20"
-                      aria-label="Lire"
+                      aria-label={tx("Lire")}
                     >
                       <Play className="h-3.5 w-3.5 fill-current" />
                     </button>
@@ -725,7 +726,7 @@ export default function ConsoleSpotify({ guildId }: { guildId: string }) {
               ))
             )
           ) : topArtists.length === 0 ? (
-            <EmptyLine>Aucun artiste disponible.</EmptyLine>
+            <EmptyLine>{tx("Aucun artiste disponible.")}</EmptyLine>
           ) : (
             topArtists.map((a, idx) => (
               <div key={a.id} className="flex items-center justify-between px-5 py-3 hover:bg-[var(--surface-hover)] transition-colors">
@@ -753,7 +754,7 @@ export default function ConsoleSpotify({ guildId }: { guildId: string }) {
                   rel="noreferrer"
                   className="rounded border border-[var(--panel-border)] px-2.5 py-1 text-[11px] text-[var(--text-muted)] hover:bg-[var(--surface-hover)]"
                 >
-                  Profil ↗
+                  {tx("Profil ↗")}
                 </a>
               </div>
             ))

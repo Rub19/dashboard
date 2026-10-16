@@ -9,6 +9,7 @@ import { pageStagger, staggerItem } from "@/lib/motion-variants";
 import { cn } from "@/lib/utils";
 import { ConsolePage, EmptyLine, GhostButton, Panel, Row, Segmented, Select, Stepper, Switch, useGuildApi } from "../kit";
 import { DURATIONS, EXPIRY_DAYS, INPUT, PageTitle, SEVERITIES, SavingBadge, useSanctionConfig, type Severity } from "../sanctions/shared";
+import { tx } from "@/lib/tx";
 
 type Tier = { id: string; enabled: boolean; count: number; unit: "infractions" | "points"; scope: "warns" | "protection" | "automod" | "all"; periodSeconds: number; action: "TIMEOUT" | "KICK" | "TEMPBAN" | "BAN"; durationSeconds: number; reason: string };
 type Cfg = {
@@ -51,9 +52,9 @@ export default function ConsoleWarnings({ guildId }: { guildId: string }) {
 
   if (!cfg)
     return (
-      <ConsolePage title="Avertissements et paliers">
+      <ConsolePage title={tx("Avertissements et paliers")}>
         <Panel>
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         </Panel>
       </ConsolePage>
     );
@@ -79,7 +80,7 @@ export default function ConsoleWarnings({ guildId }: { guildId: string }) {
   );
 
   return (
-    <ConsolePage title={<PageTitle title="Avertissements et paliers" text="Les avertissements comptent des points, et les paliers sanctionnent automatiquement les récidivistes." />} actions={<SavingBadge text={status} />}>
+    <ConsolePage title={<PageTitle title={tx("Avertissements et paliers")} text={tx("Les avertissements comptent des points, et les paliers sanctionnent automatiquement les récidivistes.")} />} actions={<SavingBadge text={status} />}>
       <motion.div variants={pageStagger} className="grid gap-3 sm:grid-cols-3">
         {STEPS.map(([b, t], i) => (
           <motion.div key={b} variants={staggerItem} className="flex items-start gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-3.5">
@@ -91,37 +92,37 @@ export default function ConsoleWarnings({ guildId }: { guildId: string }) {
         ))}
       </motion.div>
 
-      <Panel title={`Paliers automatiques · ${cfg.tiers.length}/10`} subtitle="Après chaque infraction, Etho applique le plus haut palier qu'elle vient de franchir, une seule fois. Un membre déjà muet plus longtemps ou déjà banni n'est pas sanctionné à nouveau.">
+      <Panel title={tx("Paliers automatiques · {length}/10", { length: cfg.tiers.length })} subtitle={tx("Après chaque infraction, Etho applique le plus haut palier qu'elle vient de franchir, une seule fois. Un membre déjà muet plus longtemps ou déjà banni n'est pas sanctionné à nouveau.")}>
         <div className="space-y-2.5 p-4">
-          {cfg.tiers.length === 0 && <p className="text-xs text-[var(--text-muted)]">Aucun palier. Exemple : 3 avertissements, mute 1 heure ; 5, ban 1 jour.</p>}
+          {cfg.tiers.length === 0 && <p className="text-xs text-[var(--text-muted)]">{tx("Aucun palier. Exemple : 3 avertissements, mute 1 heure ; 5, ban 1 jour.")}</p>}
           <AnimatePresence initial={false}>
             {cfg.tiers.map((t, i) => (
               <motion.div key={t.id} layout initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, height: 0 }} transition={SPRING_LAYOUT} className={cn("space-y-2 rounded-xl border border-[var(--panel-border)] p-3 transition-opacity", !t.enabled && "opacity-60")}>
                 <div className="flex flex-wrap items-center gap-2 text-xs text-[var(--text-muted)]">
                   <span className="grid h-5 w-5 place-items-center rounded-full bg-[var(--surface-hover)] text-[10px] font-bold text-[var(--text-primary)]">{i + 1}</span>À
-                  <input type="number" min={1} max={1000} value={t.count} onChange={(e) => setTier(t.id, { count: Math.max(1, Math.min(1000, Number(e.target.value) || 1)) })} aria-label="Seuil" className={cn(INPUT, "h-8 w-16 text-center font-mono")} />
-                  <Select size="sm" value={t.unit} aria-label="Compté en" options={[["infractions", "infractions"], ["points", "points"]]} onChange={(v) => setTier(t.id, { unit: v })} />
-                  de
-                  <Select size="sm" value={t.scope} aria-label="Infractions comptées" options={[["warns", "avertissements"], ["protection", "infractions de la protection"], ["automod", "infractions AutoMod"], ["all", "infractions de toute sorte"]]} onChange={(v) => setTier(t.id, { scope: v })} />
-                  <Select size="sm" value={t.periodSeconds} aria-label="Période" options={PERIODS} onChange={(v) => setTier(t.id, { periodSeconds: v })} />
+                  <input type="number" min={1} max={1000} value={t.count} onChange={(e) => setTier(t.id, { count: Math.max(1, Math.min(1000, Number(e.target.value) || 1)) })} aria-label={tx("Seuil")} className={cn(INPUT, "h-8 w-16 text-center font-mono")} />
+                  <Select size="sm" value={t.unit} aria-label={tx("Compté en")} options={[["infractions", "infractions"], ["points", "points"]]} onChange={(v) => setTier(t.id, { unit: v })} />
+                  {tx("de")}
+                  <Select size="sm" value={t.scope} aria-label={tx("Infractions comptées")} options={[["warns", "avertissements"], ["protection", "infractions de la protection"], ["automod", "infractions AutoMod"], ["all", "infractions de toute sorte"]]} onChange={(v) => setTier(t.id, { scope: v })} />
+                  <Select size="sm" value={t.periodSeconds} aria-label={tx("Période")} options={PERIODS} onChange={(v) => setTier(t.id, { periodSeconds: v })} />
                   <span className="ml-auto flex items-center gap-1">
-                    <Switch checked={t.enabled} onChange={(v) => setTier(t.id, { enabled: v })} label="Palier actif" />
-                    <button type="button" aria-label="Monter" disabled={i === 0} onClick={() => move(i, -1)} className="rounded p-1 hover:text-[var(--text-primary)] disabled:opacity-30">
+                    <Switch checked={t.enabled} onChange={(v) => setTier(t.id, { enabled: v })} label={tx("Palier actif")} />
+                    <button type="button" aria-label={tx("Monter")} disabled={i === 0} onClick={() => move(i, -1)} className="rounded p-1 hover:text-[var(--text-primary)] disabled:opacity-30">
                       <ArrowUp className="h-3.5 w-3.5" />
                     </button>
-                    <button type="button" aria-label="Descendre" disabled={i === cfg.tiers.length - 1} onClick={() => move(i, 1)} className="rounded p-1 hover:text-[var(--text-primary)] disabled:opacity-30">
+                    <button type="button" aria-label={tx("Descendre")} disabled={i === cfg.tiers.length - 1} onClick={() => move(i, 1)} className="rounded p-1 hover:text-[var(--text-primary)] disabled:opacity-30">
                       <ArrowDown className="h-3.5 w-3.5" />
                     </button>
-                    <button type="button" aria-label="Supprimer le palier" onClick={() => set("tiers", cfg.tiers.filter((x) => x.id !== t.id))} className="rounded p-1 text-[var(--danger)] hover:bg-[var(--danger)]/10">
+                    <button type="button" aria-label={tx("Supprimer le palier")} onClick={() => set("tiers", cfg.tiers.filter((x) => x.id !== t.id))} className="rounded p-1 text-[var(--danger)] hover:bg-[var(--danger)]/10">
                       <Trash2 className="h-3.5 w-3.5" />
                     </button>
                   </span>
                 </div>
                 <div className="flex flex-wrap items-center gap-2 pl-7 text-xs text-[var(--text-muted)]">
-                  Sanction :
-                  <Select size="sm" value={t.action} aria-label="Sanction" options={[["TIMEOUT", "Mute"], ["KICK", "Expulsion"], ["TEMPBAN", "Ban temporaire"], ["BAN", "Bannissement"]]} onChange={(v) => setTier(t.id, { action: v })} />
-                  {(t.action === "TIMEOUT" || t.action === "TEMPBAN") && <Select size="sm" value={t.durationSeconds} aria-label="Durée" options={DURATIONS} onChange={(v) => setTier(t.id, { durationSeconds: v })} />}
-                  <input value={t.reason} maxLength={300} onChange={(e) => setTier(t.id, { reason: e.target.value })} placeholder="Raison (sinon : « Palier automatique… »)" className={cn(INPUT, "h-8 min-w-0 flex-1 text-xs")} />
+                  {tx("Sanction :")}
+                  <Select size="sm" value={t.action} aria-label={tx("Sanction")} options={[["TIMEOUT", "Mute"], ["KICK", "Expulsion"], ["TEMPBAN", "Ban temporaire"], ["BAN", "Bannissement"]]} onChange={(v) => setTier(t.id, { action: v })} />
+                  {(t.action === "TIMEOUT" || t.action === "TEMPBAN") && <Select size="sm" value={t.durationSeconds} aria-label={tx("Durée")} options={DURATIONS} onChange={(v) => setTier(t.id, { durationSeconds: v })} />}
+                  <input value={t.reason} maxLength={300} onChange={(e) => setTier(t.id, { reason: e.target.value })} placeholder={tx("Raison (sinon : « Palier automatique… »)")} className={cn(INPUT, "h-8 min-w-0 flex-1 text-xs")} />
                 </div>
               </motion.div>
             ))}
@@ -129,18 +130,18 @@ export default function ConsoleWarnings({ guildId }: { guildId: string }) {
           {cfg.tiers.length < 10 && (
             <GhostButton onClick={() => set("tiers", [...cfg.tiers, { id: Math.random().toString(36).slice(2, 10), enabled: true, count: 3, unit: "infractions", scope: "warns", periodSeconds: 0, action: "TIMEOUT", durationSeconds: 3600, reason: "" }])}>
               <Plus className="h-3.5 w-3.5" />
-              Ajouter un palier
+              {tx("Ajouter un palier")}
             </GhostButton>
           )}
         </div>
       </Panel>
 
-      <Panel title="Avertissements">
+      <Panel title={tx("Avertissements")}>
         {toggle("Gravité", w.severityEnabled, (v) => setW({ severityEnabled: v }), "Légère, moyenne ou grave : chaque gravité vaut un nombre de points. Désactivée, chaque avertissement vaut 1 point (ou ceux de sa raison prédéfinie).")}
         <AnimatePresence initial={false}>
           {w.severityEnabled && (
             <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-              <Row label="Points par gravité" hint="Une raison prédéfinie peut avoir ses propres points.">
+              <Row label={tx("Points par gravité")} hint={tx("Une raison prédéfinie peut avoir ses propres points.")}>
                 <div className="flex flex-wrap items-center gap-4">
                   {SEVERITIES.map(([s, label]) => (
                     <span key={s} className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
@@ -150,39 +151,39 @@ export default function ConsoleWarnings({ guildId }: { guildId: string }) {
                   ))}
                 </div>
               </Row>
-              <Row label="Gravité par défaut">
-                <Segmented label="Gravité par défaut" value={w.defaultSeverity} options={SEVERITIES} onChange={(v) => setW({ defaultSeverity: v })} />
+              <Row label={tx("Gravité par défaut")}>
+                <Segmented label={tx("Gravité par défaut")} value={w.defaultSeverity} options={SEVERITIES} onChange={(v) => setW({ defaultSeverity: v })} />
               </Row>
             </motion.div>
           )}
         </AnimatePresence>
-        <Row label="Expiration" hint="Un avertissement expiré reste dans l'historique mais ne compte plus pour les paliers.">
-          <Select value={w.expiryDays} options={EXPIRY_DAYS} onChange={(v) => setW({ expiryDays: v })} aria-label="Expiration" />
+        <Row label={tx("Expiration")} hint={tx("Un avertissement expiré reste dans l'historique mais ne compte plus pour les paliers.")}>
+          <Select value={w.expiryDays} options={EXPIRY_DAYS} onChange={(v) => setW({ expiryDays: v })} aria-label={tx("Expiration")} />
         </Row>
-        <Row label="Infractions automatiques" hint="Points d'une infraction de la protection Etho (spam, lien, mention…) et d'une règle AutoMod.">
+        <Row label={tx("Infractions automatiques")} hint={tx("Points d'une infraction de la protection Etho (spam, lien, mention…) et d'une règle AutoMod.")}>
           <div className="flex flex-wrap items-center gap-4 text-xs text-[var(--text-muted)]">
             <span className="flex items-center gap-2">
-              Protection
+              {tx("Protection")}
               <Stepper value={w.autoPoints.protection} min={0} max={100} onCommit={(n) => setW({ autoPoints: { ...w.autoPoints, protection: n } })} />
             </span>
             <span className="flex items-center gap-2">
-              AutoMod
+              {tx("AutoMod")}
               <Stepper value={w.autoPoints.automod} min={0} max={100} onCommit={(n) => setW({ autoPoints: { ...w.autoPoints, automod: n } })} />
             </span>
           </div>
         </Row>
-        <Row label="Bonne conduite" hint="Les points baissent tout seuls quand le membre reste sans infraction.">
+        <Row label={tx("Bonne conduite")} hint={tx("Les points baissent tout seuls quand le membre reste sans infraction.")}>
           <div className="flex flex-wrap items-center gap-2 text-xs text-[var(--text-muted)]">
-            <Switch checked={w.goodConduct.enabled} onChange={(v) => setW({ goodConduct: { ...w.goodConduct, enabled: v } })} label="Bonne conduite" />
+            <Switch checked={w.goodConduct.enabled} onChange={(v) => setW({ goodConduct: { ...w.goodConduct, enabled: v } })} label={tx("Bonne conduite")} />
             −
             <Stepper value={w.goodConduct.points} min={1} max={100} disabled={!w.goodConduct.enabled} onCommit={(n) => setW({ goodConduct: { ...w.goodConduct, points: n } })} />
-            point tous les
-            <Select size="sm" value={w.goodConduct.periodDays} disabled={!w.goodConduct.enabled} aria-label="Période de bonne conduite" options={[[7, "7 jours"], [14, "14 jours"], [30, "30 jours"], [60, "60 jours"], [90, "90 jours"]]} onChange={(v) => setW({ goodConduct: { ...w.goodConduct, periodDays: v } })} />
+            {tx("point tous les")}
+            <Select size="sm" value={w.goodConduct.periodDays} disabled={!w.goodConduct.enabled} aria-label={tx("Période de bonne conduite")} options={[[7, "7 jours"], [14, "14 jours"], [30, "30 jours"], [60, "60 jours"], [90, "90 jours"]]} onChange={(v) => setW({ goodConduct: { ...w.goodConduct, periodDays: v } })} />
           </div>
         </Row>
       </Panel>
 
-      <Panel title="Réponses et messages privés">
+      <Panel title={tx("Réponses et messages privés")}>
         {toggle("MP au membre", r.dmMember, (v) => setR({ dmMember: v }), "Le membre reçoit sa sanction en message privé, avec le numéro du dossier et le bouton d'appel s'il est ouvert.")}
         {toggle("Nommer le modérateur", r.nameModerator, (v) => setR({ nameModerator: v }), "Sinon, le membre lit « L'équipe de modération ».")}
         {toggle("Masquer les réponses", r.hideReplies, (v) => setR({ hideReplies: v }), "La réponse des commandes de sanction n'est visible que du modérateur (commandes slash).")}
@@ -192,29 +193,29 @@ export default function ConsoleWarnings({ guildId }: { guildId: string }) {
         {toggle("Rappel de fin", r.endReminder, (v) => setR({ endReminder: v }), "Le membre est prévenu en MP quand son mute ou son ban temporaire se termine.")}
       </Panel>
 
-      <Panel title="Historique des membres">
+      <Panel title={tx("Historique des membres")}>
         {toggle("Sanctions de la protection", h.protection, (v) => setH({ protection: v }), "Bans, expulsions, timeouts et infractions des modules de messages. Regroupées par 10 minutes pendant un raid.")}
         {toggle("Infractions AutoMod", h.automod, (v) => setH({ automod: v }))}
         {toggle("Sanctions faites dans Discord", h.discord, (v) => setH({ discord: v }), "Bannir, expulser ou exclure à la main dans Discord crée aussi un dossier, au nom du modérateur.")}
         {toggle("Arrivées, départs et pseudos", h.joins, (v) => setH({ joins: v }), "Gardés 90 jours, chiffrés, affichés dans l'historique du membre.")}
       </Panel>
 
-      <Panel title="Garde-fou" actions={<Switch checked={g.enabled} onChange={(v) => setG({ enabled: v })} label="Garde-fou" />}>
-        <Row label="Sanctions par heure" hint="Au-delà, les owners sont prévenus : un modérateur qui sanctionne en rafale, c'est souvent un compte volé ou un abus.">
+      <Panel title={tx("Garde-fou")} actions={<Switch checked={g.enabled} onChange={(v) => setG({ enabled: v })} label={tx("Garde-fou")} />}>
+        <Row label={tx("Sanctions par heure")} hint={tx("Au-delà, les owners sont prévenus : un modérateur qui sanctionne en rafale, c'est souvent un compte volé ou un abus.")}>
           <Stepper value={g.perHour} min={1} max={500} onCommit={(n) => setG({ perHour: n })} />
         </Row>
-        <Row label="Salon d'alerte" hint="Sans salon, le propriétaire du serveur est prévenu en MP.">
-          <ChannelPicker guildId={guildId} value={g.alertChannelId ?? ""} filterTypes={[0, 5]} placeholder="Choisir un salon" onChange={(id) => setG({ alertChannelId: id || null })} />
+        <Row label={tx("Salon d'alerte")} hint={tx("Sans salon, le propriétaire du serveur est prévenu en MP.")}>
+          <ChannelPicker guildId={guildId} value={g.alertChannelId ?? ""} filterTypes={[0, 5]} placeholder={tx("Choisir un salon")} onChange={(id) => setG({ alertChannelId: id || null })} />
         </Row>
       </Panel>
 
-      <Panel title="Journal des sanctions" subtitle="Chaque nouveau dossier y est publié pour l'équipe.">
-        <Row label="Salon du journal">
+      <Panel title={tx("Journal des sanctions")} subtitle={tx("Chaque nouveau dossier y est publié pour l'équipe.")}>
+        <Row label={tx("Salon du journal")}>
           <ChannelPicker
             guildId={guildId}
             value={modLog ?? ""}
             filterTypes={[0, 5]}
-            placeholder="Choisir un salon"
+            placeholder={tx("Choisir un salon")}
             onChange={async (id) => {
               const res = await api<{ modLogChannelId: string | null }>("/moderation/mod-log-channel", { method: "PUT", json: { channelId: id || null } });
               if (res) setModLog(res.modLogChannelId);

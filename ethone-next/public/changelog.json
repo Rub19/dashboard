@@ -1,5 +1,15 @@
 [
   {
+    "version": "v1.75.126",
+    "date": "2026-10-16",
+    "title": "Dashboard Discord traduit et commandes slash localisées",
+    "items": [
+      "Tout le dashboard Discord (console du serveur, modules, sécurité, centre de contrôle du bot, assistant d'installation) s'affiche dans la langue choisie sur le site : français, anglais, espagnol ou allemand.",
+      "Les descriptions des commandes slash dans le sélecteur de Discord suivent la langue de chaque membre.",
+      "Le rapport de sécurité hebdomadaire et le statut /antiraid suivent la langue du serveur."
+    ]
+  },
+  {
     "version": "v1.75.125",
     "date": "2026-10-16",
     "title": "Tout le bot dans la langue du serveur",
@@ -599,19 +609,6 @@
     "items": [
       "Dans les Réglages, Ctrl K n'ouvre plus la palette générale en même temps que la recherche des réglages.",
       "Ctrl Z dans un champ texte annule la frappe, sans annuler un réglage."
-    ]
-  },
-  {
-    "version": "v1.70.0",
-    "date": "2026-10-11",
-    "title": "Réglages refaits de zéro",
-    "items": [
-      "Nouvelle page Réglages : navigation par groupes (Toi, Apparence, Son & alertes, Système, Sécurité, Plus) avec une pastille qui glisse d'une catégorie à l'autre.",
-      "Chaque catégorie s'ouvre avec un en-tête animé : nombre de réglages personnalisés, réinitialisation, annuler et rétablir.",
-      "Recherche Ctrl K : on tape, on choisit avec les flèches, et le réglage trouvé s'illumine à l'écran.",
-      "Sections repliables, barre d'accent sur les réglages modifiés, confirmation « Enregistré » et remise par défaut en un clic.",
-      "Accueil des réglages : interrupteurs rapides (sons, notifications, vibrations, animations, dock, Dynamic Island) et accès direct à toutes les catégories ; les raccourcis ouvrent enfin la bonne catégorie.",
-      "Transitions orientées entre catégories et liens Précédent / Suivant en bas de page."
     ]
   }
 ]

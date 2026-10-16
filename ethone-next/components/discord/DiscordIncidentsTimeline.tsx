@@ -18,6 +18,7 @@ import {
 } from "@/components/icons/ph";
 import { sinceLabel } from "@/lib/discord/security-scan";
 import { cn } from "@/lib/utils";
+import { tx } from "@/lib/tx";
 
 export type IncidentCategory = "ALL" | "AUTOMOD" | "ANTI_RAID" | "SANCTION" | "DETECTION";
 export type IncidentSeverity = "ALL" | "DANGER" | "WARNING" | "INFO";
@@ -149,7 +150,7 @@ export default function DiscordIncidentsTimeline({
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] p-3.5">
           <div className="flex items-center justify-between text-[var(--text-muted)]">
-            <span className="text-xs font-medium">Total incidents</span>
+            <span className="text-xs font-medium">{tx("Total incidents")}</span>
             <AlertOctagon className="h-4 w-4" />
           </div>
           <p className="mt-1.5 text-2xl font-bold tracking-tight text-[var(--text-primary)]">
@@ -159,7 +160,7 @@ export default function DiscordIncidentsTimeline({
 
         <div className="rounded-xl border border-rose-500/20 bg-rose-500/5 p-3.5">
           <div className="flex items-center justify-between text-rose-400">
-            <span className="text-xs font-medium">Critiques / Danger</span>
+            <span className="text-xs font-medium">{tx("Critiques / Danger")}</span>
             <Flame className="h-4 w-4" />
           </div>
           <p className="mt-1.5 text-2xl font-bold tracking-tight text-rose-400">
@@ -169,7 +170,7 @@ export default function DiscordIncidentsTimeline({
 
         <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-3.5">
           <div className="flex items-center justify-between text-emerald-400">
-            <span className="text-xs font-medium">Sanctions appliquées</span>
+            <span className="text-xs font-medium">{tx("Sanctions appliquées")}</span>
             <Zap className="h-4 w-4" />
           </div>
           <p className="mt-1.5 text-2xl font-bold tracking-tight text-emerald-400">
@@ -179,7 +180,7 @@ export default function DiscordIncidentsTimeline({
 
         <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-3.5">
           <div className="flex items-center justify-between text-amber-400">
-            <span className="text-xs font-medium">En cours d&apos;analyse</span>
+            <span className="text-xs font-medium">{tx("En cours d'analyse")}</span>
             <Clock className="h-4 w-4" />
           </div>
           <p className="mt-1.5 text-2xl font-bold tracking-tight text-amber-400">
@@ -196,7 +197,7 @@ export default function DiscordIncidentsTimeline({
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Rechercher par auteur, cible, motif ou action..."
+              placeholder={tx("Rechercher par auteur, cible, motif ou action...")}
               className="w-full rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised,transparent)] py-2 pl-9 pr-8 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] outline-none focus:border-[var(--accent-primary)]/70"
             />
             {searchQuery && (
@@ -212,7 +213,7 @@ export default function DiscordIncidentsTimeline({
 
           <div className="flex flex-wrap items-center gap-2 pt-1 text-xs">
             <span className="flex items-center gap-1 text-[var(--text-muted)]">
-              <Filter className="h-3 w-3" /> Module:
+              <Filter className="h-3 w-3" /> {" "}{tx("Module:")}
             </span>
             {(
               [
@@ -240,7 +241,7 @@ export default function DiscordIncidentsTimeline({
           </div>
 
           <div className="flex flex-wrap items-center gap-2 text-xs">
-            <span className="text-[var(--text-muted)]">Sévérité:</span>
+            <span className="text-[var(--text-muted)]">{tx("Sévérité:")}</span>
             {(
               [
                 ["ALL", "Toutes"],
@@ -264,7 +265,7 @@ export default function DiscordIncidentsTimeline({
               </button>
             ))}
 
-            <span className="ml-2 text-[var(--text-muted)]">Statut:</span>
+            <span className="ml-2 text-[var(--text-muted)]">{tx("Statut:")}</span>
             {(
               [
                 ["ALL", "Tous"],
@@ -295,26 +296,26 @@ export default function DiscordIncidentsTimeline({
         {events === null ? (
           <div className="flex flex-col items-center justify-center py-12 text-center text-[var(--text-muted)]">
             <div className="h-6 w-6 animate-spin rounded-full border-2 border-[var(--accent-primary)] border-t-transparent" />
-            <p className="mt-3 text-xs font-medium">Chargement des incidents en cours…</p>
+            <p className="mt-3 text-xs font-medium">{tx("Chargement des incidents en cours…")}</p>
           </div>
         ) : normalizedIncidents.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-center text-[var(--text-muted)]">
             <ShieldCheck className="h-9 w-9 text-emerald-400" />
             <p className="mt-3 text-sm font-semibold text-[var(--text-primary)]">
-              Aucun incident enregistré
+              {tx("Aucun incident enregistré")}
             </p>
             <p className="mt-1 text-xs text-[var(--text-muted)] max-w-sm">
-              Tous les modules de sécurité (AutoMod, Anti-Raid, Sanctions) sont opérationnels. Aucun incident n&apos;a été détecté sur ce serveur.
+              {tx("Tous les modules de sécurité (AutoMod, Anti-Raid, Sanctions) sont opérationnels. Aucun incident n'a été détecté sur ce serveur.")}
             </p>
           </div>
         ) : filteredIncidents.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-center text-[var(--text-muted)]">
             <ShieldCheck className="h-8 w-8 text-emerald-400" />
             <p className="mt-3 text-sm font-semibold text-[var(--text-primary)]">
-              Aucun incident correspondant aux filtres
+              {tx("Aucun incident correspondant aux filtres")}
             </p>
             <p className="mt-1 text-xs">
-              Modifie tes critères de recherche ou réinitialise les filtres.
+              {tx("Modifie tes critères de recherche ou réinitialise les filtres.")}
             </p>
             <button
               type="button"
@@ -326,7 +327,7 @@ export default function DiscordIncidentsTimeline({
               }}
               className="mt-4 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-1.5 text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--surface-hover)] active:scale-[0.97]"
             >
-              Réinitialiser les filtres
+              {tx("Réinitialiser les filtres")}
             </button>
           </div>
         ) : (
@@ -406,10 +407,10 @@ export default function DiscordIncidentsTimeline({
                             )}
                           >
                             {inc.status === "SANCTIONED"
-                              ? "Sanctionné"
+                              ? tx("Sanctionné")
                               : inc.status === "RESOLVED"
-                                ? "Résolu"
-                                : "En cours"}
+                                ? tx("Résolu")
+                                : tx("En cours")}
                           </span>
 
                           <span className="text-[11px] text-[var(--text-muted)]">
@@ -425,19 +426,19 @@ export default function DiscordIncidentsTimeline({
                       <div className="mt-3 flex flex-wrap items-center gap-3 border-t border-[var(--panel-border)]/50 pt-2.5 text-[11px]">
                         {inc.actionTaken && (
                           <span className="flex items-center gap-1 font-semibold text-emerald-400">
-                            <Zap className="h-3 w-3" /> Action : {inc.actionTaken}
+                            <Zap className="h-3 w-3" /> {" "}{tx("Action :")}{" "} {inc.actionTaken}
                           </span>
                         )}
 
                         {inc.actor && (
                           <span className="text-[var(--text-muted)]">
-                            Détecté par : <strong className="text-[var(--text-primary)]">{inc.actor}</strong>
+                            {tx("Détecté par :")}{" "} <strong className="text-[var(--text-primary)]">{inc.actor}</strong>
                           </span>
                         )}
 
                         {inc.target && (
                           <span className="flex items-center gap-1 text-[var(--text-muted)]">
-                            <UserX className="h-3 w-3 text-rose-400" /> Cible :{" "}
+                            <UserX className="h-3 w-3 text-rose-400" /> {" "}{tx("Cible :")}{" "}
                             <strong className="text-[var(--text-primary)]">{inc.target}</strong>
                           </span>
                         )}
@@ -453,11 +454,11 @@ export default function DiscordIncidentsTimeline({
                           >
                             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                               <div>
-                                <span className="font-semibold text-[var(--text-primary)]">Horodatage précis :</span>{" "}
+                                <span className="font-semibold text-[var(--text-primary)]">{tx("Horodatage précis :")}</span>{" "}
                                 {new Date(inc.timestamp).toLocaleString("fr-FR")}
                               </div>
                               <div>
-                                <span className="font-semibold text-[var(--text-primary)]">Identifiant :</span>{" "}
+                                <span className="font-semibold text-[var(--text-primary)]">{tx("Identifiant :")}</span>{" "}
                                 <code className="font-mono text-[10px]">{inc.id}</code>
                               </div>
                             </div>

@@ -8,6 +8,7 @@ import { EthoneIcon, type EthoneIconName } from "@/components/EthoneIcon";
 import { EASE_SNAP } from "@/lib/ease";
 import { useMotionPref } from "@/lib/hooks/useMotionPref";
 import { cn } from "@/lib/utils";
+import { tx } from "@/lib/tx";
 
 const TINTS = {
   emerald: { tile: "from-[var(--accent-primary)]/25 to-[var(--accent-primary)]/5 border-[var(--accent-primary)]/30", icon: "text-[var(--accent-primary)]" },
@@ -55,7 +56,7 @@ export default function PageHeader({
           className="group inline-flex items-center gap-1.5 rounded-md text-xs font-medium text-[var(--text-muted)] outline-none transition-colors hover:text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
         >
           <ArrowLeft className="h-3.5 w-3.5 transition-transform duration-300 [transition-timing-function:var(--ease-snap)] group-hover:-translate-x-0.5" />
-          Retour au hub Discord
+          {tx("Retour au hub Discord")}
         </Link>
       )}
       <div className="flex flex-wrap items-center justify-between gap-4">

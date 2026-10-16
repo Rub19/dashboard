@@ -8,6 +8,7 @@ import { pageStagger } from "@/lib/motion-variants";
 import { SPRING_LAYOUT } from "@/lib/ease";
 import { cn } from "@/lib/utils";
 import { BOT_API_URL, ConsolePage, EmptyLine, GhostButton, Panel, Row, Segmented, StatTile, Stepper, Switch, useGuildApi } from "../kit";
+import { tx } from "@/lib/tx";
 
 type BackupType = "FULL" | "PARTIAL" | "PRE_CHANGE" | "ROLLBACK";
 type Backup = {
@@ -141,40 +142,40 @@ export default function ConsoleBackups({ guildId }: { guildId: string }) {
     if (r) setNote(`« ${b.name} » : ${r.readiness === "READY" ? "intacte et restaurable" : r.readiness === "WARNING" ? "restaurable, avec des avertissements" : "corrompue"}. ${r.notes.join(" ")}`);
   };
   const remove = async (b: Backup) => {
-    if (!(await confirmDialog(`Supprimer la sauvegarde « ${b.name} » ? C'est définitif.`, { title: "Supprimer", confirmLabel: "Supprimer" }))) return;
+    if (!(await confirmDialog(tx("Supprimer la sauvegarde « {name} » ? C'est définitif.", { name: b.name }), { title: tx("Supprimer"), confirmLabel: tx("Supprimer") }))) return;
     if (await api(`/backups/${b.backupId}`, { method: "DELETE" })) void load();
   };
 
   const backups = (list ?? []).slice().sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 
   return (
-    <ConsolePage title="Sauvegardes">
+    <ConsolePage title={tx("Sauvegardes")}>
       <motion.div variants={pageStagger} className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatTile label="Sauvegardes" value={kpis?.totalBackups ?? (list ? backups.length : "—")} />
-        <StatTile label="Dernière" value={kpis?.lastBackupAt ? sinceLabel(kpis.lastBackupAt) : "—"} />
-        <StatTile label="Espace utilisé" value={kpis ? size(kpis.storageUsedBytes) : "—"} />
+        <StatTile label={tx("Sauvegardes")} value={kpis?.totalBackups ?? (list ? backups.length : "—")} />
+        <StatTile label={tx("Dernière")} value={kpis?.lastBackupAt ? sinceLabel(kpis.lastBackupAt) : "—"} />
+        <StatTile label={tx("Espace utilisé")} value={kpis ? size(kpis.storageUsedBytes) : "—"} />
         <StatTile
-          label="Prochaine automatique"
+          label={tx("Prochaine automatique")}
           value={kpis?.scheduledEnabled && kpis.nextScheduledAt ? new Date(kpis.nextScheduledAt).toLocaleString("fr-FR", { weekday: "short", hour: "2-digit", minute: "2-digit" }) : "—"}
-          hint={kpis && !kpis.scheduledEnabled ? "Planification coupée" : undefined}
+          hint={kpis && !kpis.scheduledEnabled ? tx("Planification coupée") : undefined}
           accent={kpis?.healthStatus === "CRITICAL" ? "var(--danger)" : undefined}
         />
       </motion.div>
 
-      <Panel title="Nouvelle sauvegarde" subtitle="Rôles, salons, catégories, permissions, emojis et réglages d'Etho.">
+      <Panel title={tx("Nouvelle sauvegarde")} subtitle={tx("Rôles, salons, catégories, permissions, emojis et réglages d'Etho.")}>
         <div className="flex flex-wrap items-center gap-3 px-5 py-3.5">
           <input
             value={name}
             maxLength={80}
             onChange={(e) => setName(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && name.trim() && create()}
-            placeholder="Nom (ex. avant refonte des salons)"
-            aria-label="Nom de la sauvegarde"
+            placeholder={tx("Nom (ex. avant refonte des salons)")}
+            aria-label={tx("Nom de la sauvegarde")}
             className="h-9 min-w-0 flex-1 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-3 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/70"
           />
           <label className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
-            <Switch checked={protect} onChange={setProtect} label="Protéger" />
-            Protéger
+            <Switch checked={protect} onChange={setProtect} label={tx("Protéger")} />
+            {tx("Protéger")}
           </label>
           <input
             ref={importInputRef}
@@ -187,10 +188,10 @@ export default function ConsoleBackups({ guildId }: { guildId: string }) {
             disabled={busy !== null}
             onClick={() => importInputRef.current?.click()}
           >
-            {busy === "import" ? "Importation…" : "Importer (.json)"}
+            {busy === "import" ? tx("Importation…") : tx("Importer (.json)")}
           </GhostButton>
           <button type="button" disabled={!name.trim() || busy === "create"} onClick={create} className="rounded-lg bg-[var(--accent-primary)] px-4 py-2 text-xs font-bold text-white hover:opacity-90 disabled:opacity-40">
-            {busy === "create" ? "Sauvegarde…" : "Sauvegarder maintenant"}
+            {busy === "create" ? tx("Sauvegarde…") : tx("Sauvegarder maintenant")}
           </button>
         </div>
       </Panel>
@@ -199,48 +200,48 @@ export default function ConsoleBackups({ guildId }: { guildId: string }) {
         <Panel>
           <div className="flex items-center justify-between gap-3 px-5 py-3">
             <p className="text-xs text-[var(--text-primary)]">{note}</p>
-            <GhostButton onClick={() => setNote(null)}>OK</GhostButton>
+            <GhostButton onClick={() => setNote(null)}>{tx("OK")}</GhostButton>
           </div>
         </Panel>
       )}
 
-      <Panel title="Sauvegardes du serveur" subtitle="Une sauvegarde protégée n'est jamais supprimée par la rétention.">
+      <Panel title={tx("Sauvegardes du serveur")} subtitle={tx("Une sauvegarde protégée n'est jamais supprimée par la rétention.")}>
         {!list ? (
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         ) : backups.length === 0 ? (
-          <EmptyLine>Aucune sauvegarde pour l&apos;instant.</EmptyLine>
+          <EmptyLine>{tx("Aucune sauvegarde pour l'instant.")}</EmptyLine>
         ) : (
           <ul>
             {backups.map((b) => (
               <li key={b.backupId} className="flex flex-wrap items-center gap-3 border-t border-[var(--panel-border)] px-5 py-3 first:border-t-0">
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-[13px] font-semibold text-[var(--text-primary)]">
-                    {b.isProtected && <span className="mr-1.5 text-[11px] text-[var(--success)]">Protégée</span>}
+                    {b.isProtected && <span className="mr-1.5 text-[11px] text-[var(--success)]">{tx("Protégée")}</span>}
                     {b.name}
                   </p>
                   <p className="truncate text-[11px] text-[var(--text-muted)]">
-                    <span className={cn(b.status !== "COMPLETED" && "text-[var(--danger)]")}>{b.status === "COMPLETED" ? TYPE[b.type] : b.status === "IN_PROGRESS" ? "En cours" : "Échec"}</span> · {sinceLabel(b.createdAt)} · {b.createdBy?.tag} · {b.objectCounts?.roles ?? 0} rôles,{" "}
-                    {b.objectCounts?.channels ?? 0} salons · {size(b.sizeBytes)}
+                    <span className={cn(b.status !== "COMPLETED" && "text-[var(--danger)]")}>{b.status === "COMPLETED" ? TYPE[b.type] : b.status === "IN_PROGRESS" ? tx("En cours") : tx("Échec")}</span> · {sinceLabel(b.createdAt)} · {b.createdBy?.tag} · {b.objectCounts?.roles ?? 0} {" "}{tx("rôles,")}{" "}
+                    {b.objectCounts?.channels ?? 0} {" "}{tx("salons ·")}{" "} {size(b.sizeBytes)}
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-1.5">
                   <GhostButton disabled={b.status !== "COMPLETED"} onClick={() => setRestoreFor(restoreFor === b.backupId ? null : b.backupId)}>
-                    {restoreFor === b.backupId ? "Fermer" : "Restaurer"}
+                    {restoreFor === b.backupId ? tx("Fermer") : tx("Restaurer")}
                   </GhostButton>
                   <GhostButton disabled={busy === b.backupId} onClick={() => verify(b)}>
-                    Vérifier
+                    {tx("Vérifier")}
                   </GhostButton>
                   <a
                     href={`${BOT_API_URL}/api/guilds/${guildId}/backups/${b.backupId}/download`}
                     className="rounded-lg border border-[var(--panel-border)] px-2.5 py-1.5 text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--surface-hover)]"
                   >
-                    Télécharger
+                    {tx("Télécharger")}
                   </a>
                   <GhostButton disabled={busy === b.backupId} onClick={() => toggleProtect(b)}>
-                    {b.isProtected ? "Ne plus protéger" : "Protéger"}
+                    {b.isProtected ? tx("Ne plus protéger") : tx("Protéger")}
                   </GhostButton>
                   <GhostButton disabled={b.isProtected} onClick={() => remove(b)}>
-                    Supprimer
+                    {tx("Supprimer")}
                   </GhostButton>
                 </div>
                 <AnimatePresence initial={false}>
@@ -256,36 +257,36 @@ export default function ConsoleBackups({ guildId }: { guildId: string }) {
         )}
       </Panel>
 
-      <Panel title="Planification et rétention">
+      <Panel title={tx("Planification et rétention")}>
         {!settings ? (
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         ) : (
           <>
-            <Row label="Sauvegarde automatique">
-              <Switch checked={settings.enabled} onChange={(v) => saveSettings({ enabled: v })} label="Sauvegarde automatique" />
+            <Row label={tx("Sauvegarde automatique")}>
+              <Switch checked={settings.enabled} onChange={(v) => saveSettings({ enabled: v })} label={tx("Sauvegarde automatique")} />
             </Row>
-            <Row label="Fréquence">
-              <Segmented label="Fréquence" value={settings.frequency} options={FREQ} onChange={(v) => saveSettings({ frequency: v })} />
+            <Row label={tx("Fréquence")}>
+              <Segmented label={tx("Fréquence")} value={settings.frequency} options={FREQ} onChange={(v) => saveSettings({ frequency: v })} />
             </Row>
             {(settings.frequency === "daily" || settings.frequency === "weekly") && (
-              <Row label="Heure">
+              <Row label={tx("Heure")}>
                 <input
                   type="time"
                   value={settings.preferredTime}
                   onChange={(e) => /^\d{2}:\d{2}$/.test(e.target.value) && saveSettings({ preferredTime: e.target.value })}
-                  aria-label="Heure de la sauvegarde"
+                  aria-label={tx("Heure de la sauvegarde")}
                   className="h-9 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-3 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/70"
                 />
               </Row>
             )}
-            <Row label="Garder au plus" hint="Les plus anciennes sont supprimées (sauf les protégées).">
+            <Row label={tx("Garder au plus")} hint={tx("Les plus anciennes sont supprimées (sauf les protégées).")}>
               <Stepper value={settings.retentionCount} min={1} max={30} unit="sauvegardes" onCommit={(n) => saveSettings({ retentionCount: n })} />
             </Row>
-            <Row label="Pendant">
+            <Row label={tx("Pendant")}>
               <Stepper value={settings.retentionDays} min={1} max={90} unit="jours" onCommit={(n) => saveSettings({ retentionDays: n })} />
             </Row>
-            <Row label="Avant les grosses modifications" hint="Etho sauvegarde avant une configuration assistée ou une restauration.">
-              <Switch checked={settings.autoBackupBeforeMajorChanges} onChange={(v) => saveSettings({ autoBackupBeforeMajorChanges: v })} label="Avant les grosses modifications" />
+            <Row label={tx("Avant les grosses modifications")} hint={tx("Etho sauvegarde avant une configuration assistée ou une restauration.")}>
+              <Switch checked={settings.autoBackupBeforeMajorChanges} onChange={(v) => saveSettings({ autoBackupBeforeMajorChanges: v })} label={tx("Avant les grosses modifications")} />
             </Row>
           </>
         )}
@@ -360,7 +361,7 @@ function RestorePanel({ guildId, backup, onDone }: { guildId: string; backup: Ba
       <div className="mt-3 space-y-2 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))]/40 p-4">
         <div className="flex items-center justify-between gap-3 text-xs">
           <span className="font-semibold text-[var(--text-primary)]">
-            {job.status === "COMPLETED" ? "Restauration terminée" : job.status === "PARTIAL" ? "Restauration partielle" : job.status === "FAILED" ? "Échec de la restauration" : job.currentStep}
+            {job.status === "COMPLETED" ? tx("Restauration terminée") : job.status === "PARTIAL" ? tx("Restauration partielle") : job.status === "FAILED" ? tx("Échec de la restauration") : job.currentStep}
           </span>
           <span className="tabular-nums text-[var(--text-muted)]">{job.progressPercent} %</span>
         </div>
@@ -379,14 +380,14 @@ function RestorePanel({ guildId, backup, onDone }: { guildId: string; backup: Ba
           </ul>
         )}
         <details className="text-[11px] text-[var(--text-muted)]" open={!finished}>
-          <summary className="cursor-pointer">Journal ({job.logs.length})</summary>
+          <summary className="cursor-pointer">{tx("Journal (")}{job.logs.length})</summary>
           <ul className="mt-1 max-h-40 overflow-y-auto font-mono">
             {job.logs.slice(-60).map((l, i) => (
               <li key={i}>{l}</li>
             ))}
           </ul>
         </details>
-        {job.rollbackBackupId && <p className="text-[11px] text-[var(--text-muted)]">Retour arrière possible : la sauvegarde protégée « Rollback auto » a été créée juste avant.</p>}
+        {job.rollbackBackupId && <p className="text-[11px] text-[var(--text-muted)]">{tx("Retour arrière possible : la sauvegarde protégée « Rollback auto » a été créée juste avant.")}</p>}
       </div>
     );
   }
@@ -394,11 +395,11 @@ function RestorePanel({ guildId, backup, onDone }: { guildId: string; backup: Ba
   return (
     <div className="mt-3 space-y-3 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))]/40 p-4">
       {available.length === 0 ? (
-        <p className="text-xs text-[var(--text-muted)]">Cette sauvegarde ne contient rien que le bot sache restaurer.</p>
+        <p className="text-xs text-[var(--text-muted)]">{tx("Cette sauvegarde ne contient rien que le bot sache restaurer.")}</p>
       ) : (
         <>
           <div>
-            <p className="mb-1.5 text-[11px] font-semibold text-[var(--text-muted)]">Restaurer</p>
+            <p className="mb-1.5 text-[11px] font-semibold text-[var(--text-muted)]">{tx("Restaurer")}</p>
             <div className="flex flex-wrap gap-1.5">
               {available.map(([k, label]) => (
                 <button
@@ -417,9 +418,9 @@ function RestorePanel({ guildId, backup, onDone }: { guildId: string; backup: Ba
             </div>
           </div>
           <div>
-            <p className="mb-1.5 text-[11px] font-semibold text-[var(--text-muted)]">Mode</p>
+            <p className="mb-1.5 text-[11px] font-semibold text-[var(--text-muted)]">{tx("Mode")}</p>
             <Segmented
-              label="Mode de restauration"
+              label={tx("Mode de restauration")}
               value={level}
               options={[
                 ["SAFE", "Ajouter et mettre à jour"],
@@ -428,13 +429,13 @@ function RestorePanel({ guildId, backup, onDone }: { guildId: string; backup: Ba
               onChange={setLevel}
             />
             <p className="mt-1 text-[11px] text-[var(--text-muted)]">
-              {level === "SAFE" ? "Recrée ce qui manque et remet les réglages de ce qui existe. Rien n'est supprimé." : "Supprime aussi les rôles et salons absents de la sauvegarde."}
+              {level === "SAFE" ? tx("Recrée ce qui manque et remet les réglages de ce qui existe. Rien n'est supprimé.") : tx("Supprime aussi les rôles et salons absents de la sauvegarde.")}
             </p>
           </div>
           <div>
-            <p className="mb-1.5 text-[11px] font-semibold text-[var(--text-muted)]">Ce qui va se passer</p>
+            <p className="mb-1.5 text-[11px] font-semibold text-[var(--text-muted)]">{tx("Ce qui va se passer")}</p>
             {planning || !plan ? (
-              <p className="text-xs text-[var(--text-muted)]">{components.length === 0 ? "Choisis au moins un élément." : "Calcul du plan…"}</p>
+              <p className="text-xs text-[var(--text-muted)]">{components.length === 0 ? tx("Choisis au moins un élément.") : tx("Calcul du plan…")}</p>
             ) : (
               <>
                 <div className="grid grid-cols-4 gap-2 text-center">
@@ -462,7 +463,7 @@ function RestorePanel({ guildId, backup, onDone }: { guildId: string; backup: Ba
                       .map((a, i) => (
                         <li key={i} className="flex items-center gap-2 border-t border-[var(--panel-border)] px-3 py-1.5 text-[11px] first:border-t-0">
                           <span className={cn("w-20 shrink-0 font-semibold", ACTION_LABEL[a.action][1])}>{ACTION_LABEL[a.action][0]}</span>
-                          <span className="w-16 shrink-0 text-[var(--text-muted)]">{a.type === "ROLE" ? "Rôle" : a.type === "CATEGORY" ? "Catégorie" : a.type === "CHANNEL" ? "Salon" : a.type}</span>
+                          <span className="w-16 shrink-0 text-[var(--text-muted)]">{a.type === "ROLE" ? tx("Rôle") : a.type === "CATEGORY" ? tx("Catégorie") : a.type === "CHANNEL" ? tx("Salon") : a.type}</span>
                           <span className="min-w-0 flex-1 truncate text-[var(--text-primary)]">{a.name}</span>
                           {a.reason && <span className="hidden truncate text-[var(--text-muted)] sm:block">{a.reason}</span>}
                         </li>
@@ -474,24 +475,24 @@ function RestorePanel({ guildId, backup, onDone }: { guildId: string; backup: Ba
           </div>
           {level === "DESTRUCTIVE" && (
             <div>
-              <p className="mb-1.5 text-[11px] font-semibold text-[var(--danger)]">Pour confirmer, tape le nom exact du serveur{serverName ? ` : « ${serverName} »` : ""}</p>
+              <p className="mb-1.5 text-[11px] font-semibold text-[var(--danger)]">{tx("Pour confirmer, tape le nom exact du serveur")}{serverName ? ` : « ${serverName} »` : ""}</p>
               <input
                 value={confirmName}
                 onChange={(e) => setConfirmName(e.target.value)}
-                aria-label="Nom du serveur pour confirmer"
+                aria-label={tx("Nom du serveur pour confirmer")}
                 className="h-9 w-full max-w-sm rounded-lg border border-[var(--danger)]/40 bg-[var(--surface-base,var(--bg-main))] px-3 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--danger)]"
               />
             </div>
           )}
           <div className="flex items-center justify-between gap-3">
-            <p className="text-[11px] text-[var(--text-muted)]">Etho crée d&apos;abord une sauvegarde « retour arrière » de l&apos;état actuel.</p>
+            <p className="text-[11px] text-[var(--text-muted)]">{tx("Etho crée d'abord une sauvegarde « retour arrière » de l'état actuel.")}</p>
             <button
               type="button"
               disabled={!plan || planning || changes === 0 || !destructiveOk}
               onClick={start}
               className={cn("rounded-lg px-4 py-2 text-xs font-bold text-white hover:opacity-90 disabled:opacity-40", level === "DESTRUCTIVE" ? "bg-[var(--danger)]" : "bg-[var(--accent-primary)]")}
             >
-              Restaurer ({changes} changement{changes > 1 ? "s" : ""})
+              {tx("Restaurer (")}{changes} {" "}{tx("changement")}{changes > 1 ? "s" : ""})
             </button>
           </div>
         </>

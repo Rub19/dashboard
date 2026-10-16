@@ -6,6 +6,7 @@ import { Check, Crown, Minus, Trash2 } from "@/components/icons/ph";
 import { confirmDialog } from "@/lib/confirmDialog";
 import { SPRING_LAYOUT } from "@/lib/ease";
 import { ConsolePage, EmptyLine, MemberPicker, Panel, useGuildApi } from "./kit";
+import { tx } from "@/lib/tx";
 
 type Level = "owner" | "etho_owner" | "admin";
 type Owner = { id: string; username: string; displayName: string; avatarUrl: string; role: "owner" | "etho_owner"; inServer?: boolean };
@@ -31,26 +32,26 @@ export default function ConsoleAccess({ guildId }: { guildId: string }) {
     if (await api("/console/access/owners", { method: "POST", json: { userId } })) void load();
   };
   const remove = async (o: Owner) => {
-    if (!(await confirmDialog(`Retirer ${o.displayName} des owners Etho ?`))) return;
+    if (!(await confirmDialog(tx("Retirer {displayName} des owners Etho ?", { displayName: o.displayName })))) return;
     if (await api(`/console/access/owners/${o.id}`, { method: "DELETE" })) void load();
   };
 
   const mark = (ok: boolean) =>
-    ok ? <Check className="mx-auto h-4 w-4 text-[var(--success)]" aria-label="Oui" /> : <Minus className="mx-auto h-4 w-4 text-[var(--text-muted)]" aria-label="Non" />;
+    ok ? <Check className="mx-auto h-4 w-4 text-[var(--success)]" aria-label={tx("Oui")} /> : <Minus className="mx-auto h-4 w-4 text-[var(--text-muted)]" aria-label={tx("Non")} />;
 
   return (
-    <ConsolePage title="Accès">
+    <ConsolePage title={tx("Accès")}>
       <div className="grid items-start gap-5 lg:grid-cols-[1fr_20rem]">
         <Panel
-          title="Owners Etho"
+          title={tx("Owners Etho")}
           actions={
             canManage ? (
-              <MemberPicker guildId={guildId} label="Ajouter un owner" humansOnly excludeIds={data?.owners.map((o) => o.id) ?? []} onPick={(m) => add(m.id)} />
+              <MemberPicker guildId={guildId} label={tx("Ajouter un owner")} humansOnly excludeIds={data?.owners.map((o) => o.id) ?? []} onPick={(m) => add(m.id)} />
             ) : null
           }
         >
           {!data ? (
-            <EmptyLine>Chargement…</EmptyLine>
+            <EmptyLine>{tx("Chargement…")}</EmptyLine>
           ) : (
             <ul>
               <AnimatePresence initial={false}>
@@ -71,17 +72,17 @@ export default function ConsoleAccess({ guildId }: { guildId: string }) {
                         <span className="truncate text-[13px] font-semibold text-[var(--text-primary)]">{o.displayName}</span>
                         {o.role === "owner" ? (
                           <span className="flex items-center gap-1 rounded-md bg-[var(--success)]/15 px-1.5 py-0.5 text-[10px] font-semibold text-[var(--success)]">
-                            <Crown className="h-3 w-3" /> Propriétaire
+                            <Crown className="h-3 w-3" /> {" "}{tx("Propriétaire")}
                           </span>
                         ) : (
-                          <span className="rounded-md bg-[var(--surface-hover)] px-1.5 py-0.5 text-[10px] font-semibold text-[var(--text-muted)]">Owner Etho</span>
+                          <span className="rounded-md bg-[var(--surface-hover)] px-1.5 py-0.5 text-[10px] font-semibold text-[var(--text-muted)]">{tx("Owner Etho")}</span>
                         )}
                       </div>
                       <p className="truncate text-[11px] text-[var(--text-muted)]">
                         {o.role === "owner"
-                          ? "Propriétaire du serveur Discord, toujours owner Etho"
+                          ? tx("Propriétaire du serveur Discord, toujours owner Etho")
                           : o.inServer === false
-                            ? "N'est plus sur le serveur"
+                            ? tx("N'est plus sur le serveur")
                             : `@${o.username}`}
                       </p>
                     </div>
@@ -89,7 +90,7 @@ export default function ConsoleAccess({ guildId }: { guildId: string }) {
                       <button
                         type="button"
                         onClick={() => remove(o)}
-                        aria-label={`Retirer ${o.displayName}`}
+                        aria-label={tx("Retirer {displayName}", { displayName: o.displayName })}
                         className="rounded-lg p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--danger)]/10 hover:text-[var(--danger)]"
                       >
                         <Trash2 className="h-4 w-4" />
@@ -101,20 +102,20 @@ export default function ConsoleAccess({ guildId }: { guildId: string }) {
             </ul>
           )}
           {data && !canManage && (
-            <p className="border-t border-[var(--panel-border)] px-5 py-3 text-[11px] text-[var(--text-muted)]">Seul le propriétaire du serveur ajoute ou retire des owners.</p>
+            <p className="border-t border-[var(--panel-border)] px-5 py-3 text-[11px] text-[var(--text-muted)]">{tx("Seul le propriétaire du serveur ajoute ou retire des owners.")}</p>
           )}
         </Panel>
 
-        <Panel title="Qui peut faire quoi">
+        <Panel title={tx("Qui peut faire quoi")}>
           {data && (
             <>
               <table className="w-full text-[11px]">
                 <thead>
                   <tr className="text-[var(--text-muted)]">
                     <th className="px-4 py-2.5 text-left font-medium" />
-                    <th className="px-1 py-2.5 font-medium">Propriétaire</th>
-                    <th className="px-1 py-2.5 font-medium">Owner Etho</th>
-                    <th className="px-1 py-2.5 font-medium">Admin</th>
+                    <th className="px-1 py-2.5 font-medium">{tx("Propriétaire")}</th>
+                    <th className="px-1 py-2.5 font-medium">{tx("Owner Etho")}</th>
+                    <th className="px-1 py-2.5 font-medium">{tx("Admin")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -129,7 +130,7 @@ export default function ConsoleAccess({ guildId }: { guildId: string }) {
                 </tbody>
               </table>
               <p className="border-t border-[var(--panel-border)] px-4 py-3 text-[11px] leading-relaxed text-[var(--text-muted)]">
-                Admin : membre avec la permission Administrateur ou Gérer le serveur sur Discord, sans être owner Etho.
+                {tx("Admin : membre avec la permission Administrateur ou Gérer le serveur sur Discord, sans être owner Etho.")}
               </p>
             </>
           )}

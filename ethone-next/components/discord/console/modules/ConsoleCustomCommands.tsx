@@ -7,6 +7,7 @@ import { SPRING_LAYOUT } from "@/lib/ease";
 import { pageStagger } from "@/lib/motion-variants";
 import { ConsolePage, EmptyLine, GhostButton, Panel, Row, Segmented, StatTile, Switch, useGuildApi } from "../kit";
 import CustomCommandEditor, { TRIGGERS, type Command, type Trigger } from "./CustomCommandEditor";
+import { tx } from "@/lib/tx";
 
 type Template = { name: string; description: string };
 
@@ -51,7 +52,7 @@ export default function ConsoleCustomCommands({ guildId }: { guildId: string }) 
     setBusy(true);
     const r = await api<{ command: Command }>("/custom-commands/create", {
       method: "POST",
-      json: { name: name.trim().toLowerCase(), description: reply.trim().slice(0, 90) || "Commande personnalisée", triggerType: trigger, defaultActions: [{ type: "send_response", response: { content: reply.trim() } }] },
+      json: { name: name.trim().toLowerCase(), description: reply.trim().slice(0, 90) || tx("Commande personnalisée"), triggerType: trigger, defaultActions: [{ type: "send_response", response: { content: reply.trim() } }] },
     });
     setBusy(false);
     if (r?.command) {
@@ -73,7 +74,7 @@ export default function ConsoleCustomCommands({ guildId }: { guildId: string }) 
     if (r?.command) setList((l) => [...(l ?? []), r.command]);
   };
   const remove = async (c: Command) => {
-    if (!(await confirmDialog(`Supprimer la commande « ${c.name} » ?`, { title: "Supprimer", confirmLabel: "Supprimer" }))) return;
+    if (!(await confirmDialog(tx("Supprimer la commande « {name} » ?", { name: c.name }), { title: tx("Supprimer"), confirmLabel: tx("Supprimer") }))) return;
     if (await api(`/custom-commands/${c.id}`, { method: "DELETE" })) {
       setList((l) => l?.filter((x) => x.id !== c.id) ?? null);
       setOpen(null);
@@ -85,26 +86,26 @@ export default function ConsoleCustomCommands({ guildId }: { guildId: string }) 
   const taken = commands.some((c) => c.name === name.trim().toLowerCase());
 
   return (
-    <ConsolePage title="Commandes personnalisées">
+    <ConsolePage title={tx("Commandes personnalisées")}>
       <motion.div variants={pageStagger} className="grid grid-cols-2 gap-3 lg:grid-cols-3">
-        <StatTile label="Commandes" value={list ? commands.length : "—"} hint={`${MAX} au maximum`} />
-        <StatTile label="Actives" value={list ? commands.filter((c) => c.enabled).length : "—"} />
-        <StatTile label="Utilisations" value={list ? commands.reduce((n, c) => n + (c.usageCount || 0), 0).toLocaleString("fr-FR") : "—"} />
+        <StatTile label={tx("Commandes")} value={list ? commands.length : "—"} hint={tx("{MAX} au maximum", { MAX })} />
+        <StatTile label={tx("Actives")} value={list ? commands.filter((c) => c.enabled).length : "—"} />
+        <StatTile label={tx("Utilisations")} value={list ? commands.reduce((n, c) => n + (c.usageCount || 0), 0).toLocaleString("fr-FR") : "—"} />
       </motion.div>
 
-      <Panel title="Nouvelle commande" subtitle="Commence par une réponse simple : conditions, embeds, boutons et rôles s'ajoutent ensuite dans la commande.">
-        <Row label="Nom" hint="Minuscules, chiffres, - et _.">
-          <input value={name} maxLength={32} onChange={(e) => setName(e.target.value.toLowerCase().replace(/\s+/g, "-"))} placeholder="regles" aria-label="Nom de la commande" className={`${field} h-9 max-w-xs py-0 font-mono`} />
-          {taken && <p className="mt-1 text-[11px] text-[var(--warning)]">Ce nom existe déjà.</p>}
+      <Panel title={tx("Nouvelle commande")} subtitle={tx("Commence par une réponse simple : conditions, embeds, boutons et rôles s'ajoutent ensuite dans la commande.")}>
+        <Row label={tx("Nom")} hint={tx("Minuscules, chiffres, - et _.")}>
+          <input value={name} maxLength={32} onChange={(e) => setName(e.target.value.toLowerCase().replace(/\s+/g, "-"))} placeholder="regles" aria-label={tx("Nom de la commande")} className={`${field} h-9 max-w-xs py-0 font-mono`} />
+          {taken && <p className="mt-1 text-[11px] text-[var(--warning)]">{tx("Ce nom existe déjà.")}</p>}
         </Row>
-        <Row label="Réponse">
-          <textarea value={reply} maxLength={2000} rows={3} onChange={(e) => setReply(e.target.value)} aria-label="Réponse" className={field} />
+        <Row label={tx("Réponse")}>
+          <textarea value={reply} maxLength={2000} rows={3} onChange={(e) => setReply(e.target.value)} aria-label={tx("Réponse")} className={field} />
         </Row>
-        <Row label="Déclenchement">
-          <Segmented label="Déclenchement" value={trigger} options={TRIGGERS} onChange={setTrigger} />
+        <Row label={tx("Déclenchement")}>
+          <Segmented label={tx("Déclenchement")} value={trigger} options={TRIGGERS} onChange={setTrigger} />
         </Row>
         <div className="flex flex-wrap items-center gap-2 border-t border-[var(--panel-border)] px-5 py-3">
-          {templates.length > 0 && <span className="text-[11px] text-[var(--text-muted)]">Modèles :</span>}
+          {templates.length > 0 && <span className="text-[11px] text-[var(--text-muted)]">{tx("Modèles :")}</span>}
           {templates.slice(0, 6).map((t) => (
             <GhostButton key={t.name} disabled={commands.length >= MAX} onClick={() => fromTemplate(t)}>
               /{t.name}
@@ -112,16 +113,16 @@ export default function ConsoleCustomCommands({ guildId }: { guildId: string }) 
           ))}
           <span className="flex-1" />
           <button type="button" disabled={!validName || taken || !reply.trim() || busy || commands.length >= MAX} onClick={create} className="rounded-lg bg-[var(--accent-primary)] px-4 py-2 text-xs font-bold text-white hover:opacity-90 disabled:opacity-40">
-            Créer la commande
+            {tx("Créer la commande")}
           </button>
         </div>
       </Panel>
 
-      <Panel title="Commandes du serveur">
+      <Panel title={tx("Commandes du serveur")}>
         {!list ? (
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         ) : commands.length === 0 ? (
-          <EmptyLine>Aucune commande personnalisée.</EmptyLine>
+          <EmptyLine>{tx("Aucune commande personnalisée.")}</EmptyLine>
         ) : (
           <ul>
             {commands.map((c) => (
@@ -131,11 +132,11 @@ export default function ConsoleCustomCommands({ guildId }: { guildId: string }) 
                     <p className="truncate font-mono text-[13px] font-semibold text-[var(--text-primary)]">/{c.name}</p>
                     <p className="truncate text-[11px] text-[var(--text-muted)]">
                       {c.usageCount || 0}× · {TRIGGERS.find(([t]) => t === c.triggerType)?.[1]}
-                      {c.conditions.length ? ` · ${c.conditions.length} condition(s)` : ""}
+                      {c.conditions.length ? tx(" · {length} condition(s)", { length: c.conditions.length }) : ""}
                       {replyOf(c) ? ` · ${replyOf(c)}` : ""}
                     </p>
                   </button>
-                  <Switch checked={c.enabled} onChange={(v) => toggle(c, v)} label={`Activer /${c.name}`} />
+                  <Switch checked={c.enabled} onChange={(v) => toggle(c, v)} label={tx("Activer /{name}", { name: c.name })} />
                 </div>
                 <AnimatePresence initial={false}>
                   {open === c.id && (
@@ -149,9 +150,9 @@ export default function ConsoleCustomCommands({ guildId }: { guildId: string }) 
                           footer={
                             <>
                               <GhostButton disabled={commands.length >= MAX} onClick={() => duplicate(c)}>
-                                Dupliquer
+                                {tx("Dupliquer")}
                               </GhostButton>
-                              <GhostButton onClick={() => remove(c)}>Supprimer</GhostButton>
+                              <GhostButton onClick={() => remove(c)}>{tx("Supprimer")}</GhostButton>
                             </>
                           }
                         />

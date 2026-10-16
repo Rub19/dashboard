@@ -45,6 +45,7 @@ import {
   consoleList,
   consoleRow,
 } from "./consoleMotion";
+import { tx } from "@/lib/tx";
 
 interface ServerPickerProps {
   guilds: DiscordGuild[];
@@ -242,7 +243,7 @@ export default function ServerPicker({
             >
               <ShieldCheck className="h-4 w-4 text-[var(--accent-primary)]" />
             </motion.div>
-            <span className="font-bold text-base tracking-tight text-[var(--text-primary)]">Etho</span>
+            <span className="font-bold text-base tracking-tight text-[var(--text-primary)]">{tx("Etho")}</span>
           </div>
 
           <motion.button
@@ -256,7 +257,7 @@ export default function ServerPicker({
               <span>{i18n("dSearchPlaceholder", "Rechercher réglage... Ctrl K")}</span>
             </div>
             <kbd className="rounded-sm border border-[var(--panel-border)] bg-[var(--background)] px-1.5 py-0.5 text-[10px] font-mono text-[var(--text-muted)]">
-              Ctrl K
+              {tx("Ctrl K")}
             </kbd>
           </motion.button>
 
@@ -376,7 +377,7 @@ export default function ServerPicker({
             className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[var(--panel-border)] pb-4"
           >
             <div className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
-              <span className="font-semibold text-[var(--text-primary)]">Etho</span>
+              <span className="font-semibold text-[var(--text-primary)]">{tx("Etho")}</span>
               <ChevronRight className="h-3 w-3" />
               <span className="text-[var(--accent-primary)] font-medium">{i18n("dMyServers", "Mes serveurs")}</span>
             </div>
@@ -402,8 +403,8 @@ export default function ServerPicker({
                   <DiscordIcon className="h-4 w-4" />
                 </span>
                 <span className="min-w-0 flex-1">
-                  <strong className="block font-semibold text-[var(--text-primary)]">Connecte le bot à ton compte Discord</strong>
-                  Permet d'accéder à tous les réglages et serveurs en temps réel.
+                  <strong className="block font-semibold text-[var(--text-primary)]">{tx("Connecte le bot à ton compte Discord")}</strong>
+                  {tx("Permet d'accéder à tous les réglages et serveurs en temps réel.")}
                 </span>
                 <ChevronRight className="h-4 w-4 shrink-0 text-[var(--text-muted)] transition-transform group-hover:translate-x-0.5 group-hover:text-[var(--text-primary)]" />
               </motion.a>
@@ -437,10 +438,10 @@ export default function ServerPicker({
               )}
               <div className="min-w-0">
                 <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[var(--text-primary)]">
-                  Bienvenue, {currentDisplayName}
+                  {tx("Bienvenue,")}{" "} {currentDisplayName}
                 </h1>
                 <p className="mt-0.5 text-xs sm:text-sm text-[var(--text-muted)]">
-                  Sélectionne un serveur pour configurer Etho.
+                  {tx("Sélectionne un serveur pour configurer Etho.")}
                 </p>
               </div>
             </motion.div>
@@ -452,7 +453,7 @@ export default function ServerPicker({
                   type="text"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Rechercher un serveur..."
+                  placeholder={tx("Rechercher un serveur...")}
                   className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] pl-10 pr-4 py-2.5 text-xs sm:text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] outline-none focus:border-[var(--accent-primary)] focus:ring-1 focus:ring-[var(--accent-primary)]/40 transition-all"
                 />
                 {query && (
@@ -468,12 +469,12 @@ export default function ServerPicker({
 
               {totalCount > 0 && (
                 <div className="flex items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-2 shrink-0">
-                  <span className="text-xs text-[var(--text-muted)]">Gérables</span>
+                  <span className="text-xs text-[var(--text-muted)]">{tx("Gérables")}</span>
                   <button
                     type="button"
                     role="switch"
                     aria-checked={onlyManageable}
-                    aria-label="Uniquement les serveurs gérables"
+                    aria-label={tx("Uniquement les serveurs gérables")}
                     onClick={onToggleManageable}
                     className={cn(
                       "relative h-5 w-10 shrink-0 cursor-pointer rounded-full border border-[var(--panel-border)] outline-none transition-colors duration-300",
@@ -497,9 +498,9 @@ export default function ServerPicker({
                   <DiscordIcon className="h-5 w-5" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-[var(--text-primary)]">Connexion Discord requise</h3>
+                  <h3 className="text-sm font-bold text-[var(--text-primary)]">{tx("Connexion Discord requise")}</h3>
                   <p className="mt-1 text-xs text-[var(--text-muted)]">
-                    Connecte ton compte Discord pour synchroniser et gérer tes serveurs.
+                    {tx("Connecte ton compte Discord pour synchroniser et gérer tes serveurs.")}
                   </p>
                 </div>
                 <button
@@ -509,15 +510,15 @@ export default function ServerPicker({
                   className="inline-flex items-center gap-2 rounded-xl bg-[var(--accent-primary)] px-4 py-2 text-xs font-bold text-[var(--accent-contrast)] hover:opacity-90 transition-all cursor-pointer"
                 >
                   <DiscordIcon className="h-4 w-4" />
-                  <span>Lier mon compte Discord</span>
+                  <span>{tx("Lier mon compte Discord")}</span>
                 </button>
               </motion.div>
             )}
 
             {isConnected && filteredInstalled.length === 0 && filteredUninstalled.length === 0 && (
               <motion.div variants={consoleFadeUp} className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-8 text-center space-y-3">
-                <p className="text-sm font-semibold text-[var(--text-primary)]">Aucun serveur Discord gérable trouvé</p>
-                <p className="text-xs text-[var(--text-muted)]">Il te faut la permission Administrateur ou Gérer le serveur.</p>
+                <p className="text-sm font-semibold text-[var(--text-primary)]">{tx("Aucun serveur Discord gérable trouvé")}</p>
+                <p className="text-xs text-[var(--text-muted)]">{tx("Il te faut la permission Administrateur ou Gérer le serveur.")}</p>
                 {inviteUrl && (
                   <a
                     href={inviteUrl}
@@ -525,7 +526,7 @@ export default function ServerPicker({
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 rounded-xl bg-[var(--accent-primary)] px-4 py-2 text-xs font-bold text-[var(--accent-contrast)] hover:opacity-90 transition-all cursor-pointer"
                   >
-                    <span>Inviter le bot sur un serveur</span>
+                    <span>{tx("Inviter le bot sur un serveur")}</span>
                     <ExternalLink className="h-3.5 w-3.5" />
                   </a>
                 )}
@@ -535,7 +536,7 @@ export default function ServerPicker({
             {filteredInstalled.length > 0 && (
               <motion.div variants={consoleFadeUp} className="space-y-3">
                 <div className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] px-0.5">
-                  SERVEURS GÉRÉS ({filteredInstalled.length})
+                  {tx("SERVEURS GÉRÉS (")}{filteredInstalled.length})
                 </div>
                 <motion.div variants={consoleList} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
                   {filteredInstalled.map((guild) => {
@@ -585,7 +586,7 @@ export default function ServerPicker({
                             <div>
                               <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-[10px] sm:text-[11px] font-semibold text-emerald-400">
                                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shrink-0" />
-                                <span>{protectionText || "Bot installé"}</span>
+                                <span>{protectionText || tx("Bot installé")}</span>
                               </span>
                             </div>
                           </div>
@@ -601,14 +602,14 @@ export default function ServerPicker({
 
             <motion.div variants={consoleFadeUp} className="space-y-3">
               <div className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] px-0.5">
-                INVITER SUR UN AUTRE SERVEUR ({filteredUninstalled.length})
+                {tx("INVITER SUR UN AUTRE SERVEUR (")}{filteredUninstalled.length})
               </div>
 
               {filteredUninstalled.length === 0 && guilds.length > 0 && (
                 <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-8 text-center text-xs text-[var(--text-muted)]">
                   {query
-                    ? "Aucun serveur ne correspond à ta recherche."
-                    : "Etho est déjà installé sur l'ensemble de tes serveurs !"}
+                    ? tx("Aucun serveur ne correspond à ta recherche.")
+                    : tx("Etho est déjà installé sur l'ensemble de tes serveurs !")}
                 </div>
               )}
 
@@ -657,7 +658,7 @@ export default function ServerPicker({
                         </div>
                         <div>
                           <span className="text-[11px] text-[var(--text-muted)] group-hover:text-[var(--text-primary)] font-medium transition-colors">
-                            Inviter le bot
+                            {tx("Inviter le bot")}
                           </span>
                         </div>
                       </div>

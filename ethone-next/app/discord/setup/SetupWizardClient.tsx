@@ -8,6 +8,7 @@ import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth"
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import GuildAssistedSetup from "@/components/discord/GuildAssistedSetup";
 import DiscordIcon from "@/components/DiscordIcon";
+import { tx } from "@/lib/tx";
 
 export default function SetupWizardClient() {
   const router = useRouter();
@@ -49,15 +50,15 @@ export default function SetupWizardClient() {
     return (
       <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-primary)] flex flex-col items-center justify-center p-6 text-center space-y-4">
         <DiscordIcon className="w-12 h-12 text-[var(--accent-primary)] mx-auto" />
-        <h1 className="text-xl font-bold">Connexion Discord requise</h1>
+        <h1 className="text-xl font-bold">{tx("Connexion Discord requise")}</h1>
         <p className="text-xs text-[var(--text-muted)] max-w-sm">
-          Connecte ton compte Discord pour configurer ton serveur.
+          {tx("Connecte ton compte Discord pour configurer ton serveur.")}
         </p>
         <button
           onClick={() => connect()}
           className="px-5 py-2.5 rounded-xl bg-[var(--accent-primary)] text-[var(--accent-contrast)] text-xs font-semibold cursor-pointer"
         >
-          Se connecter avec Discord
+          {tx("Se connecter avec Discord")}
         </button>
       </div>
     );
@@ -68,15 +69,15 @@ export default function SetupWizardClient() {
   if (!currentGuild) {
     return (
       <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-primary)] flex flex-col items-center justify-center p-6 text-center space-y-4">
-        <h1 className="text-xl font-bold">Aucun serveur administrable</h1>
+        <h1 className="text-xl font-bold">{tx("Aucun serveur administrable")}</h1>
         <p className="text-xs text-[var(--text-muted)]">
-          Il te faut les permissions d&apos;administrateur sur au moins un serveur.
+          {tx("Il te faut les permissions d'administrateur sur au moins un serveur.")}
         </p>
         <Link
           href="/discord"
           className="px-4 py-2 rounded-xl bg-zinc-800 text-xs font-semibold text-zinc-200"
         >
-          Retour au dashboard
+          {tx("Retour au dashboard")}
         </Link>
       </div>
     );
@@ -90,7 +91,7 @@ export default function SetupWizardClient() {
           className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
         >
           <ChevronLeft className="h-4 w-4" />
-          <span>Retour à {currentGuild.name}</span>
+          <span>{tx("Retour à")}{" "} {currentGuild.name}</span>
         </Link>
       </div>
 

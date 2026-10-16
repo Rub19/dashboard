@@ -56,6 +56,7 @@ import { useDiscordSync } from "@/lib/useDiscordSync";
 import ModuleSkeleton from "@/components/discord/ModuleSkeleton";
 import { SPRING_PILL } from "@/lib/ease";
 import { pageStagger, staggerItem } from "@/lib/motion-variants";
+import { tx } from "@/lib/tx";
 
 export type BotTab =
   | "overview"
@@ -224,7 +225,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
   }, [activeTab, isOwner, router]);
 
   const handleRemoteRestart = async () => {
-    if (!await confirmDialog("⚠️ Confirmation Propriétaire : Tu veux vraiment redémarrer le bot Discord à distance ?")) return;
+    if (!await confirmDialog(tx("⚠️ Confirmation Propriétaire : Tu veux vraiment redémarrer le bot Discord à distance ?"))) return;
     setRestartingBot(true);
     try {
       const res = await fetch(`${BOT_API_URL}/api/bot/restart`, {
@@ -251,13 +252,13 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
         } catch {}
       }
 
-      toast?.success?.("🚀 Le redémarrage à distance du bot Discord a été commandé avec succès !");
+      toast?.success?.(tx("🚀 Le redémarrage à distance du bot Discord a été commandé avec succès !"));
       setOwnerLogs((prev) => [
         { action: "RESTART_BOT", created_at: new Date().toISOString(), status: "SUCCESS" },
         ...prev,
       ]);
     } catch {
-      toast?.error?.("Erreur réseau lors de la commande de redémarrage.");
+      toast?.error?.(tx("Erreur réseau lors de la commande de redémarrage."));
     } finally {
       setRestartingBot(false);
     }
@@ -290,13 +291,13 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
         } catch {}
       }
 
-      toast?.success?.("⚡ La mise à jour du bot et le rechargement des modules ont été commandés !");
+      toast?.success?.(tx("⚡ La mise à jour du bot et le rechargement des modules ont été commandés !"));
       setOwnerLogs((prev) => [
         { action: "UPDATE_BOT", created_at: new Date().toISOString(), status: "SUCCESS" },
         ...prev,
       ]);
     } catch {
-      toast?.error?.("Erreur réseau.");
+      toast?.error?.(tx("Erreur réseau."));
     } finally {
       setUpdatingBot(false);
     }
@@ -629,7 +630,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
       const next = [...bannedWordsList, word];
       setBannedWordsList(next);
       saveAiBehaviorSettings({ bannedWords: next });
-      toast?.success?.(`Mot banni "${word}" ajouté à l'AutoMod.`);
+      toast?.success?.(tx("Mot banni \"{word}\" ajouté à l'AutoMod.", { word }));
     }
     setNewBannedWordInput("");
   };
@@ -638,7 +639,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
     const next = bannedWordsList.filter((w) => w !== word);
     setBannedWordsList(next);
     saveAiBehaviorSettings({ bannedWords: next });
-    toast?.info?.(`Mot banni "${word}" retiré.`);
+    toast?.info?.(tx("Mot banni \"{word}\" retiré.", { word }));
   };
 
   // Rôles détectés & présets de permissions : même moteur que /permissions côté
@@ -700,7 +701,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
         throw new Error(formatApiError(data?.error, ""));
       }
       setActiveRolePreset(presetId);
-      toast?.success?.(`Préset "${label}" appliqué avec succès.`);
+      toast?.success?.(tx("Préset \"{label}\" appliqué avec succès.", { label }));
     } catch (err) {
       toast?.error?.(errorReason(err, "Échec de l'application du préset."));
     } finally {
@@ -771,12 +772,12 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
       const json = await res.json().catch(() => null);
       if (res.ok && json?.success && json.data) {
         setIntegrations((prev) => prev.map((i) => (i.id === id ? json.data : i)));
-        toast?.success?.("Intégration testée avec succès.");
+        toast?.success?.(tx("Intégration testée avec succès."));
       } else {
         toast?.error?.(formatApiError(json?.error, "Échec du test d'intégration."));
       }
     } catch {
-      toast?.error?.("Erreur réseau lors du test d'intégration.");
+      toast?.error?.(tx("Erreur réseau lors du test d'intégration."));
     } finally {
       setTestingIntegrationId(null);
     }
@@ -815,12 +816,12 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
       const json = await res.json().catch(() => null);
       if (res.ok && json?.success && json.data) {
         setJobs((prev) => prev.map((j) => (j.id === jobId ? json.data : j)));
-        toast?.success?.(`Tâche "${json.data.name}" exécutée avec succès.`);
+        toast?.success?.(tx("Tâche \"{name}\" exécutée avec succès.", { name: json.data.name }));
       } else {
         toast?.error?.(formatApiError(json?.error, "Échec de l'exécution de la tâche."));
       }
     } catch {
-      toast?.error?.("Erreur réseau lors de l'exécution de la tâche.");
+      toast?.error?.(tx("Erreur réseau lors de l'exécution de la tâche."));
     } finally {
       setRunningJobId(null);
     }
@@ -868,9 +869,9 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
         }
       }
       if ((toast as any)?.success) {
-        (toast as any).success("Configuration opérationnelle enregistrée avec succès !");
+        (toast as any).success(tx("Configuration opérationnelle enregistrée avec succès !"));
       } else {
-        (toast as any)?.info?.("Configuration enregistrée !");
+        (toast as any)?.info?.(tx("Configuration enregistrée !"));
       }
     } catch (err) {
       (toast as any)?.error?.(errorReason(err, "Erreur lors de l'enregistrement."));
@@ -902,11 +903,11 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
           );
           const { pass, warn, critical, total } = json.data.summary;
           if (critical > 0) {
-            toast?.error?.(`Diagnostic terminé : ${critical} sous-système(s) critique(s) détecté(s).`);
+            toast?.error?.(tx("Diagnostic terminé : {critical} sous-système(s) critique(s) détecté(s).", { critical }));
           } else if (warn > 0) {
-            toast?.warning?.(`Diagnostic terminé : ${pass}/${total} opérationnels, ${warn} avertissement(s).`);
+            toast?.warning?.(tx("Diagnostic terminé : {pass}/{total} opérationnels, {warn} avertissement(s).", { pass, total, warn }));
           } else {
-            toast?.success?.(`Diagnostic exécuté : ${total}/${total} sous-systèmes 100% opérationnels !`);
+            toast?.success?.(tx("Diagnostic exécuté : {total}/{total1} sous-systèmes 100% opérationnels !", { total, total1: total }));
           }
           return;
         }
@@ -919,9 +920,9 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
           latency: "—",
         }))
       );
-      toast?.error?.("Bot injoignable : diagnostic impossible.");
+      toast?.error?.(tx("Bot injoignable : diagnostic impossible."));
     } catch {
-      toast?.error?.("Erreur lors du diagnostic.");
+      toast?.error?.(tx("Erreur lors du diagnostic."));
     } finally {
       setDiagnosticsRunning(false);
     }
@@ -945,9 +946,9 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
         rssMb: d.rssMbAfter ?? prev.rssMb,
       }));
       if (d.gcTriggered) {
-        (toast as any)?.success?.("Garbage collection forcé — mémoire réellement libérée.");
+        (toast as any)?.success?.(tx("Garbage collection forcé — mémoire réellement libérée."));
       } else {
-        (toast as any)?.info?.("Chiffres actualisés (GC non exposé sur ce process, aucune mémoire forcée à libérer).");
+        (toast as any)?.info?.(tx("Chiffres actualisés (GC non exposé sur ce process, aucune mémoire forcée à libérer)."));
       }
     } catch (err) {
       (toast as any)?.error?.(errorReason(err, "Erreur lors de l'optimisation."));
@@ -957,41 +958,41 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
   };
 
   const officialCommands = useMemo(() => [
-    { name: "/bot status", desc: "Affiche l'état technique, l'uptime et les ressources en direct", cat: "Général", perm: "Tous" },
-    { name: "/bot info", desc: "Informations détaillées, version et liens vers le Dashboard", cat: "Général", perm: "Tous" },
-    { name: "/bot ping", desc: "Mesure la latence Gateway WebSocket et API REST en direct", cat: "Général", perm: "Tous" },
-    { name: "/ask question:... [prive:bool]", desc: "Posez une question à l'assistant IA avec option réponse privée", cat: "Intelligence Artificielle", perm: "Tous" },
-    { name: "/summarize [nombre:5-50]", desc: "Résume les derniers messages échangés dans le salon textuel actuel", cat: "Intelligence Artificielle", perm: "Tous" },
-    { name: "/help", desc: "Affiche le catalogue interactif et multi-pages du serveur", cat: "Général", perm: "Tous" },
-    { name: "/ping", desc: "Vérifie la latence de communication du bot", cat: "Général", perm: "Tous" },
-    { name: "/settings", desc: "Panneau de personnalisation du serveur, couleurs et confidentialité", cat: "Administration", perm: "Gérer le serveur" },
-    { name: "/language [langue:fr|en|es|de]", desc: "Définit ou consulte la langue du bot (Français, English, Español, Deutsch)", cat: "Administration", perm: "Gérer le serveur" },
-    { name: "/prefix [nouveau:...]", desc: "Consulte ou modifie le préfixe textuel pour ce serveur", cat: "Administration", perm: "Gérer le serveur" },
-    { name: "/music play recherche:...", desc: "Joue une musique (salon vocal obligatoire)", cat: "Musique", perm: "Tous / DJ" },
-    { name: "/play recherche:...", desc: "Raccourci direct pour lancer une musique YouTube/Spotify", cat: "Musique", perm: "Tous / DJ" },
-    { name: "/skip", desc: "Passe au morceau suivant dans la file d'attente", cat: "Musique", perm: "Tous / DJ" },
-    { name: "/pause / /resume", desc: "Met en pause ou reprend la lecture en cours", cat: "Musique", perm: "Tous / DJ" },
-    { name: "/stop", desc: "Arrête la musique, vide la file et déconnecte le bot", cat: "Musique", perm: "Tous / DJ" },
-    { name: "/queue", desc: "Affiche la liste complète des morceaux à suivre", cat: "Musique", perm: "Tous / DJ" },
-    { name: "/nowplaying (ou /np)", desc: "Affiche le titre en cours et la barre de progression visuelle", cat: "Musique", perm: "Tous / DJ" },
-    { name: "/music panel", desc: "Affiche le panneau de contrôle musical interactif avec boutons", cat: "Musique", perm: "Tous / DJ" },
-    { name: "/ticket [sujet:...]", desc: "Ouvre un salon textuel privé d'assistance avec l'équipe", cat: "Support", perm: "Tous" },
-    { name: "/clear nombre:1-100 [membre:...]", desc: "Supprime les messages récents avec filtre anti-spam optionnel par utilisateur", cat: "Modération", perm: "Gérer les messages" },
-    { name: "/warn membre:... raison:...", desc: "Attribue un avertissement formel consigné dans le casier", cat: "Modération", perm: "Modération" },
-    { name: "/timeout membre:... duree:...", desc: "Exclut temporairement un membre de la parole", cat: "Modération", perm: "Modération" },
-    { name: "/kick membre:... raison:...", desc: "Expulse un membre du serveur", cat: "Modération", perm: "Expulser des membres" },
-    { name: "/ban membre:... raison:...", desc: "Bannit définitivement un utilisateur du serveur", cat: "Modération", perm: "Bannir des membres" },
-    { name: "/lock", desc: "Verrouille l'envoi de messages dans le salon pour les membres", cat: "Modération", perm: "Gérer les salons" },
-    { name: "/rank", desc: "Affiche ta carte de niveau, ton XP et ta réputation", cat: "Leveling", perm: "Tous" },
-    { name: "/leaderboard", desc: "Affiche le classement des membres les plus actifs", cat: "Leveling", perm: "Tous" },
-    { name: "/giveaway", desc: "Organise un tirage au sort automatique avec inscription bouton", cat: "Communauté", perm: "Gérer les événements" },
-    { name: "/poll question:...", desc: "Lance un sondage communautaire interactif en direct", cat: "Communauté", perm: "Tous" },
-    { name: "/form open id:...", desc: "Ouvre un formulaire de candidature dynamique modal", cat: "Support", perm: "Tous" },
-    { name: "/imagine prompt:... [style:...] [ratio:...]", desc: "Génération d'images haute fidélité via IA sécurisée (Flux/Pollinations)", cat: "Intelligence Artificielle", perm: "Tous" },
-    { name: "/ai-setup [salon:channel] [humeur:...] [images:bool] [bannir_mot:...]", desc: "Configuration du salon IA dédié, humeur du Thon, génération d'images et mots interdits", cat: "Administration", perm: "Administrateur" },
-    { name: "/permissions [action:analyser|preset_strict|preset_equilibre|preset_communaute]", desc: "Analyse multilingue des rôles et configuration des permissions en 1 clic", cat: "Administration", perm: "Administrateur" },
-    { name: "/balance · /daily · /work · /pay · /gamble · /shop · /economy leaderboard|buy", desc: "Économie virtuelle du serveur : Crédits ETHONE, quotidien, transferts, paris et boutique de rôles", cat: "Communauté", perm: "Tous" },
-    { name: "/verification status|toggle", desc: "Consulte ou active la porte de vérification anti-bot à l'arrivée des membres", cat: "Administration", perm: "Gérer le serveur" },
+    { name: "/bot status", desc: tx("Affiche l'état technique, l'uptime et les ressources en direct"), cat: "Général", perm: "Tous" },
+    { name: "/bot info", desc: tx("Informations détaillées, version et liens vers le Dashboard"), cat: "Général", perm: "Tous" },
+    { name: "/bot ping", desc: tx("Mesure la latence Gateway WebSocket et API REST en direct"), cat: "Général", perm: "Tous" },
+    { name: "/ask question:... [prive:bool]", desc: tx("Posez une question à l'assistant IA avec option réponse privée"), cat: "Intelligence Artificielle", perm: "Tous" },
+    { name: "/summarize [nombre:5-50]", desc: tx("Résume les derniers messages échangés dans le salon textuel actuel"), cat: "Intelligence Artificielle", perm: "Tous" },
+    { name: "/help", desc: tx("Affiche le catalogue interactif et multi-pages du serveur"), cat: "Général", perm: "Tous" },
+    { name: "/ping", desc: tx("Vérifie la latence de communication du bot"), cat: "Général", perm: "Tous" },
+    { name: "/settings", desc: tx("Panneau de personnalisation du serveur, couleurs et confidentialité"), cat: "Administration", perm: "Gérer le serveur" },
+    { name: "/language [langue:fr|en|es|de]", desc: tx("Définit ou consulte la langue du bot (Français, English, Español, Deutsch)"), cat: "Administration", perm: "Gérer le serveur" },
+    { name: "/prefix [nouveau:...]", desc: tx("Consulte ou modifie le préfixe textuel pour ce serveur"), cat: "Administration", perm: "Gérer le serveur" },
+    { name: "/music play recherche:...", desc: tx("Joue une musique (salon vocal obligatoire)"), cat: "Musique", perm: "Tous / DJ" },
+    { name: "/play recherche:...", desc: tx("Raccourci direct pour lancer une musique YouTube/Spotify"), cat: "Musique", perm: "Tous / DJ" },
+    { name: "/skip", desc: tx("Passe au morceau suivant dans la file d'attente"), cat: "Musique", perm: "Tous / DJ" },
+    { name: "/pause / /resume", desc: tx("Met en pause ou reprend la lecture en cours"), cat: "Musique", perm: "Tous / DJ" },
+    { name: "/stop", desc: tx("Arrête la musique, vide la file et déconnecte le bot"), cat: "Musique", perm: "Tous / DJ" },
+    { name: "/queue", desc: tx("Affiche la liste complète des morceaux à suivre"), cat: "Musique", perm: "Tous / DJ" },
+    { name: "/nowplaying (ou /np)", desc: tx("Affiche le titre en cours et la barre de progression visuelle"), cat: "Musique", perm: "Tous / DJ" },
+    { name: "/music panel", desc: tx("Affiche le panneau de contrôle musical interactif avec boutons"), cat: "Musique", perm: "Tous / DJ" },
+    { name: "/ticket [sujet:...]", desc: tx("Ouvre un salon textuel privé d'assistance avec l'équipe"), cat: "Support", perm: "Tous" },
+    { name: "/clear nombre:1-100 [membre:...]", desc: tx("Supprime les messages récents avec filtre anti-spam optionnel par utilisateur"), cat: "Modération", perm: "Gérer les messages" },
+    { name: "/warn membre:... raison:...", desc: tx("Attribue un avertissement formel consigné dans le casier"), cat: "Modération", perm: "Modération" },
+    { name: "/timeout membre:... duree:...", desc: tx("Exclut temporairement un membre de la parole"), cat: "Modération", perm: "Modération" },
+    { name: "/kick membre:... raison:...", desc: tx("Expulse un membre du serveur"), cat: "Modération", perm: "Expulser des membres" },
+    { name: "/ban membre:... raison:...", desc: tx("Bannit définitivement un utilisateur du serveur"), cat: "Modération", perm: "Bannir des membres" },
+    { name: "/lock", desc: tx("Verrouille l'envoi de messages dans le salon pour les membres"), cat: "Modération", perm: "Gérer les salons" },
+    { name: "/rank", desc: tx("Affiche ta carte de niveau, ton XP et ta réputation"), cat: "Leveling", perm: "Tous" },
+    { name: "/leaderboard", desc: tx("Affiche le classement des membres les plus actifs"), cat: "Leveling", perm: "Tous" },
+    { name: "/giveaway", desc: tx("Organise un tirage au sort automatique avec inscription bouton"), cat: "Communauté", perm: "Gérer les événements" },
+    { name: "/poll question:...", desc: tx("Lance un sondage communautaire interactif en direct"), cat: "Communauté", perm: "Tous" },
+    { name: "/form open id:...", desc: tx("Ouvre un formulaire de candidature dynamique modal"), cat: "Support", perm: "Tous" },
+    { name: "/imagine prompt:... [style:...] [ratio:...]", desc: tx("Génération d'images haute fidélité via IA sécurisée (Flux/Pollinations)"), cat: "Intelligence Artificielle", perm: "Tous" },
+    { name: "/ai-setup [salon:channel] [humeur:...] [images:bool] [bannir_mot:...]", desc: tx("Configuration du salon IA dédié, humeur du Thon, génération d'images et mots interdits"), cat: "Administration", perm: "Administrateur" },
+    { name: "/permissions [action:analyser|preset_strict|preset_equilibre|preset_communaute]", desc: tx("Analyse multilingue des rôles et configuration des permissions en 1 clic"), cat: "Administration", perm: "Administrateur" },
+    { name: "/balance · /daily · /work · /pay · /gamble · /shop · /economy leaderboard|buy", desc: tx("Économie virtuelle du serveur : Crédits ETHONE, quotidien, transferts, paris et boutique de rôles"), cat: "Communauté", perm: "Tous" },
+    { name: "/verification status|toggle", desc: tx("Consulte ou active la porte de vérification anti-bot à l'arrivée des membres"), cat: "Administration", perm: "Gérer le serveur" },
   ], []);
 
   // Real per-command usage stats (GET /api/bot/commands, see
@@ -1245,24 +1246,24 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
   );
 
   const statusConfig = {
-    online: { label: "En Ligne", dot: "bg-[var(--success)]", border: "border-[var(--success)]/20", text: "text-[var(--success)]" },
-    idle: { label: "Inactif", dot: "bg-amber-400", border: "border-amber-500/20", text: "text-amber-400" },
-    dnd: { label: "Ne Pas Déranger", dot: "bg-rose-400", border: "border-rose-500/20", text: "text-rose-400" },
-    invisible: { label: "Invisible", dot: "bg-[var(--surface-raised)]/40", border: "border-[var(--panel-border)]", text: "text-[var(--text-muted)]" },
+    online: { label: tx("En Ligne"), dot: "bg-[var(--success)]", border: "border-[var(--success)]/20", text: tx("text-[var(--success)]") },
+    idle: { label: tx("Inactif"), dot: "bg-amber-400", border: "border-amber-500/20", text: "text-amber-400" },
+    dnd: { label: tx("Ne Pas Déranger"), dot: "bg-rose-400", border: "border-rose-500/20", text: "text-rose-400" },
+    invisible: { label: tx("Invisible"), dot: "bg-[var(--surface-raised)]/40", border: "border-[var(--panel-border)]", text: tx("text-[var(--text-muted)]") },
   };
 
   const currentCfg = statusConfig[botCore.status as keyof typeof statusConfig] || statusConfig.online;
 
   const subsystemStatusConfig: Record<string, { label: string; dot: string; text: string }> = {
-    operational: { label: "Opérationnel", dot: "bg-[var(--success)]", text: "text-[var(--success)]" },
-    degraded: { label: "Dégradé", dot: "bg-amber-400", text: "text-amber-400" },
-    critical: { label: "Critique", dot: "bg-rose-400", text: "text-rose-400" },
+    operational: { label: tx("Opérationnel"), dot: "bg-[var(--success)]", text: tx("text-[var(--success)]") },
+    degraded: { label: tx("Dégradé"), dot: "bg-amber-400", text: "text-amber-400" },
+    critical: { label: tx("Critique"), dot: "bg-rose-400", text: "text-rose-400" },
   };
 
   const diagnosticStatusConfig: Record<string, { label: string; icon: any; chip: string; badge: string }> = {
-    passed: { label: "Opérationnel", icon: Check, chip: "bg-[var(--success)]/10 text-[var(--success)]", badge: "bg-[var(--success)]/10 text-[var(--success)] border-[var(--success)]/20" },
-    warning: { label: "Avertissement", icon: AlertTriangle, chip: "bg-amber-500/10 text-amber-400", badge: "bg-amber-500/10 text-amber-400 border-amber-500/20" },
-    critical: { label: "Critique", icon: XCircle, chip: "bg-rose-500/10 text-rose-400", badge: "bg-rose-500/10 text-rose-400 border-rose-500/20" },
+    passed: { label: tx("Opérationnel"), icon: Check, chip: "bg-[var(--success)]/10 text-[var(--success)]", badge: "bg-[var(--success)]/10 text-[var(--success)] border-[var(--success)]/20" },
+    warning: { label: tx("Avertissement"), icon: AlertTriangle, chip: "bg-amber-500/10 text-amber-400", badge: "bg-amber-500/10 text-amber-400 border-amber-500/20" },
+    critical: { label: tx("Critique"), icon: XCircle, chip: "bg-rose-500/10 text-rose-400", badge: "bg-rose-500/10 text-rose-400 border-rose-500/20" },
   };
 
   const filteredModules = useMemo(() => {
@@ -1278,15 +1279,15 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
     return (
       <div className="flex h-full flex-col items-center justify-center gap-3 bg-[var(--bg-main)] px-6 text-center">
         <ShieldAlert className="h-10 w-10 text-[var(--text-muted)]" />
-        <h1 className="text-lg font-bold text-[var(--text-primary)]">Accès réservé au propriétaire</h1>
+        <h1 className="text-lg font-bold text-[var(--text-primary)]">{tx("Accès réservé au propriétaire")}</h1>
         <p className="max-w-sm text-sm text-[var(--text-muted)]">
-          Le Centre de contrôle du bot (télémétrie, redémarrage, mise à jour) n&apos;est visible que par le propriétaire du bot.
+          {tx("Le Centre de contrôle du bot (télémétrie, redémarrage, mise à jour) n'est visible que par le propriétaire du bot.")}
         </p>
         <Link
           href="/discord"
           className="mt-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-4 py-2 text-sm font-medium text-[var(--text-primary)] transition-[color,background-color,border-color,transform] hover:bg-[var(--surface-raised)]/70 active:scale-[0.97]"
         >
-          Retour au Discord Hub
+          {tx("Retour au Discord Hub")}
         </Link>
       </div>
     );
@@ -1302,10 +1303,10 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
               className="inline-flex h-7 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-2.5 text-xs font-semibold text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] active:scale-[0.97]"
             >
               <ArrowLeft className="h-3.5 w-3.5" />
-              <span>Retour Discord</span>
+              <span>{tx("Retour Discord")}</span>
             </Link>
             <span className="text-[var(--text-muted)]">•</span>
-            <span className="text-[var(--text-muted)] font-medium">Bot Control Center</span>
+            <span className="text-[var(--text-muted)] font-medium">{tx("Bot Control Center")}</span>
           </div>
 
           <div className="flex items-center gap-3">
@@ -1321,7 +1322,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                 )}
               />
               <span className="text-[var(--text-muted)]">
-                {connectionState === "connected" ? "Sync SSE Active" : "Reconnexion..."}
+                {connectionState === "connected" ? tx("Sync SSE Active") : tx("Reconnexion...")}
               </span>
               {isSyncing && (
                 <span className="text-[var(--accent-primary)] animate-spin text-xs ml-1">●</span>
@@ -1333,10 +1334,10 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                 type="button"
                 onClick={() => setOwnerPanelOpen(true)}
                 className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/25 text-amber-300 text-xs font-semibold transition-all cursor-pointer active:scale-[0.97]"
-                title="Ouvrir la console système propriétaire PM2"
+                title={tx("Ouvrir la console système propriétaire PM2")}
               >
                 <Crown className="w-3.5 h-3.5 text-amber-400" />
-                <span>Console VPS (PM2)</span>
+                <span>{tx("Console VPS (PM2)")}</span>
               </button>
             )}
           </div>
@@ -1464,12 +1465,12 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h3 className="text-base font-bold text-[var(--text-primary)]">Console Système Propriétaire</h3>
+                      <h3 className="text-base font-bold text-[var(--text-primary)]">{tx("Console Système Propriétaire")}</h3>
                       <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-amber-500/15 text-amber-300 border border-amber-500/25">
-                        Root Verified
+                        {tx("Root Verified")}
                       </span>
                     </div>
-                    <p className="text-xs text-[var(--text-muted)] font-mono">rub19.mailpro@gmail.com • ethone-bot PM2</p>
+                    <p className="text-xs text-[var(--text-muted)] font-mono">{tx("rub19.mailpro@gmail.com • ethone-bot PM2")}</p>
                   </div>
                 </div>
                 <button
@@ -1483,34 +1484,34 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <div className="p-3 rounded-xl bg-[var(--surface-raised)]/60 border border-[var(--panel-border)]">
-                  <span className="text-[10px] text-[var(--text-muted)] block uppercase font-mono">Processus VPS PM2</span>
+                  <span className="text-[10px] text-[var(--text-muted)] block uppercase font-mono">{tx("Processus VPS PM2")}</span>
                   <span className="text-xs font-bold text-[var(--text-primary)] font-mono mt-1 flex items-center gap-1.5">
                     <span className="w-2 h-2 rounded-full bg-[var(--accent-primary)]" />
-                    ethone-bot
+                    {tx("ethone-bot")}
                   </span>
-                  <span className="text-[10px] text-[var(--success)] mt-0.5 block font-mono">Status: Online</span>
+                  <span className="text-[10px] text-[var(--success)] mt-0.5 block font-mono">{tx("Status: Online")}</span>
                 </div>
 
                 <div className="p-3 rounded-xl bg-[var(--surface-raised)]/60 border border-[var(--panel-border)]">
-                  <span className="text-[10px] text-[var(--text-muted)] block uppercase font-mono">Compte Suprême</span>
-                  <span className="text-xs font-bold text-amber-300 font-mono mt-1 block truncate" title="rub19.mailpro@gmail.com">
-                    rub19.mailpro
+                  <span className="text-[10px] text-[var(--text-muted)] block uppercase font-mono">{tx("Compte Suprême")}</span>
+                  <span className="text-xs font-bold text-amber-300 font-mono mt-1 block truncate" title={tx("rub19.mailpro@gmail.com")}>
+                    {tx("rub19.mailpro")}
                   </span>
-                  <span className="text-[10px] text-[var(--text-muted)] mt-0.5 block">Niveau Root</span>
+                  <span className="text-[10px] text-[var(--text-muted)] mt-0.5 block">{tx("Niveau Root")}</span>
                 </div>
 
                 <div className="p-3 rounded-xl bg-[var(--surface-raised)]/60 border border-[var(--panel-border)]">
-                  <span className="text-[10px] text-[var(--text-muted)] block uppercase font-mono">Gateway Shard</span>
-                  <span className="text-xs font-bold text-[var(--text-primary)] font-mono mt-1 block">{botCore.pingMs} ms</span>
-                  <span className="text-[10px] text-[var(--success)] mt-0.5 block">Shard 0 Live</span>
+                  <span className="text-[10px] text-[var(--text-muted)] block uppercase font-mono">{tx("Gateway Shard")}</span>
+                  <span className="text-xs font-bold text-[var(--text-primary)] font-mono mt-1 block">{botCore.pingMs} {" "}{tx("ms")}</span>
+                  <span className="text-[10px] text-[var(--success)] mt-0.5 block">{tx("Shard 0 Live")}</span>
                 </div>
 
                 <div className="p-3 rounded-xl bg-[var(--surface-raised)]/60 border border-[var(--panel-border)]">
-                  <span className="text-[10px] text-[var(--text-muted)] block uppercase font-mono">Audit Supabase</span>
+                  <span className="text-[10px] text-[var(--text-muted)] block uppercase font-mono">{tx("Audit Supabase")}</span>
                   <span className="text-xs font-bold text-[var(--text-primary)] font-mono mt-1 block">
-                    {ownerLogs.length} action(s)
+                    {ownerLogs.length} {" "}{tx("action(s)")}
                   </span>
-                  <span className="text-[10px] text-[var(--accent-primary)] mt-0.5 block font-mono">RLS Sécurisée</span>
+                  <span className="text-[10px] text-[var(--accent-primary)] mt-0.5 block font-mono">{tx("RLS Sécurisée")}</span>
                 </div>
               </div>
 
@@ -1522,7 +1523,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                   className="flex-1 px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-sm disabled:opacity-50 cursor-pointer active:scale-[0.97]"
                 >
                   <Power className={cn("w-4 h-4", restartingBot && "animate-spin")} />
-                  <span>{restartingBot ? "Redémarrage en cours..." : "Redémarrer PM2"}</span>
+                  <span>{restartingBot ? tx("Redémarrage en cours...") : tx("Redémarrer PM2")}</span>
                 </button>
 
                 <button
@@ -1532,14 +1533,14 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                   className="flex-1 px-4 py-2.5 rounded-xl bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] text-xs font-semibold flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97]"
                 >
                   <RefreshCw className={cn("w-4 h-4", updatingBot && "animate-spin")} />
-                  <span>{updatingBot ? "Mise à jour en cours..." : "Mettre à Jour"}</span>
+                  <span>{updatingBot ? tx("Mise à jour en cours...") : tx("Mettre à Jour")}</span>
                 </button>
               </div>
 
               {ownerLogs.length > 0 && (
                 <div className="pt-3 border-t border-[var(--panel-border)]">
                   <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider block mb-2">
-                    Dernières Actions Administratives
+                    {tx("Dernières Actions Administratives")}
                   </span>
                   <div className="space-y-1.5 max-h-36 overflow-y-auto">
                     {ownerLogs.map((log: any, idx: number) => (
@@ -1549,7 +1550,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                       >
                         <span className="font-mono text-amber-300 font-semibold">{log.action}</span>
                         <span className="text-[11px] text-[var(--text-muted)] font-mono">
-                          {log.created_at ? new Date(log.created_at).toLocaleString("fr-FR") : "À l'instant"}
+                          {log.created_at ? new Date(log.created_at).toLocaleString("fr-FR") : tx("À l'instant")}
                         </span>
                         <span className="px-2 py-0.2 rounded text-[10px] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/20 font-mono">
                           {log.status || "SUCCESS"}
@@ -1566,7 +1567,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         {loading ? (
-          <ModuleSkeleton compact className="px-0 sm:px-0" label="Chargement de la console du bot…" />
+          <ModuleSkeleton compact className="px-0 sm:px-0" label={tx("Chargement de la console du bot…")} />
         ) : (
           <>
             <motion.div
@@ -1579,7 +1580,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                 <div>
                   <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/25 text-xs font-semibold text-[var(--accent-primary)] mb-2">
                     <Sparkles className="w-3.5 h-3.5" />
-                    <span>Console d&apos;Administration Discord</span>
+                    <span>{tx("Console d'Administration Discord")}</span>
                     {botCore.version && botCore.version !== "—" && (
                       <>
                         <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-primary)]" />
@@ -1588,10 +1589,10 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                     )}
                   </div>
                   <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--text-primary)]">
-                    Centre de Contrôle Etho
+                    {tx("Centre de Contrôle Etho")}
                   </h1>
                   <p className="text-sm text-[var(--text-muted)] mt-1 max-w-2xl">
-                    Supervision temps réel, télémétrie gateway, modules dynamiques et santé opérationnelle du bot Discord.
+                    {tx("Supervision temps réel, télémétrie gateway, modules dynamiques et santé opérationnelle du bot Discord.")}
                   </p>
                 </div>
 
@@ -1601,17 +1602,17 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                     className="px-3.5 py-2 rounded-xl bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] text-xs font-semibold flex items-center gap-1.5 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] shadow-sm"
                   >
                     <Sparkles className="w-3.5 h-3.5" />
-                    <span>Mode Streamer & Présence</span>
+                    <span>{tx("Mode Streamer & Présence")}</span>
                   </Link>
                   <button
                     type="button"
                     onClick={fetchData}
                     disabled={refreshing}
                     className="px-3.5 py-2 rounded-xl bg-[var(--surface-raised)]/60 hover:bg-[var(--surface-raised)] border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--text-primary)] text-xs font-medium flex items-center gap-1.5 transition-all disabled:opacity-50 cursor-pointer active:scale-[0.97]"
-                    title="Actualiser les données"
+                    title={tx("Actualiser les données")}
                   >
                     <RefreshCw className={cn("w-3.5 h-3.5", refreshing && "animate-spin text-[var(--accent-primary)]")} />
-                    <span className="hidden sm:inline">Actualiser</span>
+                    <span className="hidden sm:inline">{tx("Actualiser")}</span>
                   </button>
                 </div>
               </motion.div>
@@ -1619,7 +1620,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
               <motion.div variants={staggerItem} className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
                 <Card variant="default" padding="none" className="p-4 hover:border-[var(--accent-primary)]/40 transition-all shadow-sm">
                   <div className="flex items-center justify-between text-xs text-[var(--text-muted)]">
-                    <span className="font-medium">Uptime Système</span>
+                    <span className="font-medium">{tx("Uptime Système")}</span>
                     <Timer className="w-4 h-4 text-[var(--accent-primary)]" />
                   </div>
                   <div className="mt-2 flex items-baseline gap-1.5">
@@ -1635,23 +1636,23 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
 
                 <Card variant="default" padding="none" className="p-4 hover:border-[var(--accent-primary)]/40 transition-all shadow-sm">
                   <div className="flex items-center justify-between text-xs text-[var(--text-muted)]">
-                    <span className="font-medium">Latence Gateway</span>
+                    <span className="font-medium">{tx("Latence Gateway")}</span>
                     <Wifi className="w-4 h-4 text-[var(--accent-primary)]" />
                   </div>
                   <div className="mt-2 flex items-baseline gap-1.5">
                     <span className="text-lg sm:text-xl font-bold font-mono text-[var(--accent-primary)]">
                       {botCore.pingMs}
                     </span>
-                    <span className="text-xs text-[var(--text-muted)] font-mono">ms</span>
+                    <span className="text-xs text-[var(--text-muted)] font-mono">{tx("ms")}</span>
                   </div>
                   <div className="mt-1 text-[11px] text-[var(--text-muted)] font-mono">
-                    Shard 0 • WebSocket Live
+                    {tx("Shard 0 • WebSocket Live")}
                   </div>
                 </Card>
 
                 <Card variant="default" padding="none" className="p-4 hover:border-[var(--accent-primary)]/40 transition-all shadow-sm">
                   <div className="flex items-center justify-between text-xs text-[var(--text-muted)]">
-                    <span className="font-medium">Membres Couverts</span>
+                    <span className="font-medium">{tx("Membres Couverts")}</span>
                     <Users className="w-4 h-4 text-[var(--accent-primary)]" />
                   </div>
                   <div className="mt-2 flex items-baseline gap-1.5">
@@ -1660,13 +1661,13 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                     </span>
                   </div>
                   <div className="mt-1 text-[11px] text-[var(--text-muted)]">
-                    Sur {servers.length} serveur{servers.length > 1 ? "s" : ""}
+                    {tx("Sur")}{" "} {servers.length} {" "}{tx("serveur")}{servers.length > 1 ? "s" : ""}
                   </div>
                 </Card>
 
                 <Card variant="default" padding="none" className="p-4 hover:border-[var(--accent-primary)]/40 transition-all shadow-sm">
                   <div className="flex items-center justify-between text-xs text-[var(--text-muted)]">
-                    <span className="font-medium">Modules Actifs</span>
+                    <span className="font-medium">{tx("Modules Actifs")}</span>
                     <Layers className="w-4 h-4 text-[var(--accent-primary)]" />
                   </div>
                   <div className="mt-2 flex items-baseline gap-1.5">
@@ -1676,7 +1677,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                     <span className="text-xs text-[var(--text-muted)] font-mono">/ {modules.length}</span>
                   </div>
                   <div className="mt-1 text-[11px] text-emerald-400 font-semibold">
-                    {modules.length > 0 && Math.round((enabledCount / modules.length) * 100)}% opérationnels
+                    {modules.length > 0 && Math.round((enabledCount / modules.length) * 100)}{tx("% opérationnels")}
                   </div>
                 </Card>
               </motion.div>

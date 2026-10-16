@@ -6,6 +6,7 @@ import ChannelPicker from "../../ChannelPicker";
 import { confirmDialog } from "@/lib/confirmDialog";
 import { pageStagger } from "@/lib/motion-variants";
 import { ConsolePage, EmptyLine, GhostButton, Panel, RoleChips, Row, StatTile, Stepper, Switch, useGuildApi, useMemberNames } from "../kit";
+import { tx } from "@/lib/tx";
 
 type Config = { enabled: boolean; announceChannelId: string | null; announceHour: number; message: string; birthdayRoleId: string | null; mentionUser: boolean };
 type Overview = { total: number; today: { userId: string; age: number | null }[]; upcoming: { userId: string; day: number; month: number; inDays: number }[] };
@@ -54,7 +55,7 @@ export default function ConsoleBirthdays({ guildId }: { guildId: string }) {
   };
 
   const deleteBirthday = async (userId: string) => {
-    if (!(await confirmDialog(`Retirer l'anniversaire de ${name(userId)} ?`, { title: "Retirer l'anniversaire", confirmLabel: "Retirer" }))) return;
+    if (!(await confirmDialog(tx("Retirer l'anniversaire de {v0} ?", { v0: name(userId) }), { title: tx("Retirer l'anniversaire"), confirmLabel: tx("Retirer") }))) return;
     setBusy(`del:${userId}`);
     const r = await api<{ success: boolean }>(`/birthdays/${userId}`, { method: "DELETE" });
     setBusy(null);
@@ -64,16 +65,16 @@ export default function ConsoleBirthdays({ guildId }: { guildId: string }) {
   };
 
   return (
-    <ConsolePage title="Anniversaires">
+    <ConsolePage title={tx("Anniversaires")}>
       {cfg && !cfg.enabled ? (
         <Panel>
-          <p className="px-5 py-3 text-xs text-[var(--warning)]">Module désactivé : aucun anniversaire n&apos;est annoncé. Active-le avec l&apos;interrupteur en haut de la page.</p>
+          <p className="px-5 py-3 text-xs text-[var(--warning)]">{tx("Module désactivé : aucun anniversaire n'est annoncé. Active-le avec l'interrupteur en haut de la page.")}</p>
         </Panel>
       ) : (
         cfg &&
         !cfg.announceChannelId && (
           <Panel>
-            <p className="px-5 py-3 text-xs text-[var(--warning)]">Choisis le salon d&apos;annonce : sans salon, rien n&apos;est publié.</p>
+            <p className="px-5 py-3 text-xs text-[var(--warning)]">{tx("Choisis le salon d'annonce : sans salon, rien n'est publié.")}</p>
           </Panel>
         )
       )}
@@ -83,37 +84,37 @@ export default function ConsoleBirthdays({ guildId }: { guildId: string }) {
           <div className="flex items-center justify-between px-5 py-3">
             <p className="text-xs text-[var(--text-primary)]">{note}</p>
             <button type="button" onClick={() => setNote(null)} className="text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)]">
-              Fermer
+              {tx("Fermer")}
             </button>
           </div>
         </Panel>
       )}
 
       <motion.div variants={pageStagger} className="grid grid-cols-2 gap-3 lg:grid-cols-3">
-        <StatTile label="Anniversaires enregistrés" value={ov?.total ?? "—"} hint="Ajoutés par les membres avec /birthday set" />
-        <StatTile label="Aujourd'hui" value={ov?.today.length ?? "—"} />
-        <StatTile label="Prochain" value={ov?.upcoming[0] ? (ov.upcoming[0].inDays === 0 ? "Aujourd'hui" : `Dans ${ov.upcoming[0].inDays} j`) : "—"} hint={ov?.upcoming[0] ? name(ov.upcoming[0].userId) : undefined} />
+        <StatTile label={tx("Anniversaires enregistrés")} value={ov?.total ?? "—"} hint={tx("Ajoutés par les membres avec /birthday set")} />
+        <StatTile label={tx("Aujourd'hui")} value={ov?.today.length ?? "—"} />
+        <StatTile label={tx("Prochain")} value={ov?.upcoming[0] ? (ov.upcoming[0].inDays === 0 ? "Aujourd'hui" : `Dans ${ov.upcoming[0].inDays} j`) : "—"} hint={ov?.upcoming[0] ? name(ov.upcoming[0].userId) : undefined} />
       </motion.div>
 
       <Panel
-        title="Annonce"
+        title={tx("Annonce")}
         actions={
           <GhostButton disabled={busy !== null || !cfg?.announceChannelId} onClick={testAnnounce}>
-            {busy === "test" ? "Envoi…" : "Tester l'annonce"}
+            {busy === "test" ? tx("Envoi…") : tx("Tester l'annonce")}
           </GhostButton>
         }
       >
         {!cfg ? (
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         ) : (
           <>
-            <Row label="Salon">
-              <ChannelPicker guildId={guildId} value={cfg.announceChannelId ?? ""} filterTypes={[0, 5]} placeholder="Choisir un salon" onChange={(id) => save({ announceChannelId: id || null })} />
+            <Row label={tx("Salon")}>
+              <ChannelPicker guildId={guildId} value={cfg.announceChannelId ?? ""} filterTypes={[0, 5]} placeholder={tx("Choisir un salon")} onChange={(id) => save({ announceChannelId: id || null })} />
             </Row>
-            <Row label="Heure" hint="Heure de l'annonce, chaque jour.">
+            <Row label={tx("Heure")} hint={tx("Heure de l'annonce, chaque jour.")}>
               <Stepper value={cfg.announceHour} min={0} max={23} unit="h" onCommit={(n) => save({ announceHour: n })} />
             </Row>
-            <Row label="Message" hint="Variables : {user} (le membre), {age} (si l'année est connue).">
+            <Row label={tx("Message")} hint={tx("Variables : {user} (le membre), {age} (si l'année est connue).")}>
               <textarea
                 value={message}
                 maxLength={500}
@@ -123,33 +124,33 @@ export default function ConsoleBirthdays({ guildId }: { guildId: string }) {
                 className="w-full rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/70"
               />
             </Row>
-            <Row label="Mentionner le membre" hint="Sinon son nom est affiché sans le notifier.">
-              <Switch checked={cfg.mentionUser} onChange={(v) => save({ mentionUser: v })} label="Mentionner le membre" />
+            <Row label={tx("Mentionner le membre")} hint={tx("Sinon son nom est affiché sans le notifier.")}>
+              <Switch checked={cfg.mentionUser} onChange={(v) => save({ mentionUser: v })} label={tx("Mentionner le membre")} />
             </Row>
-            <Row label="Rôle du jour" hint="Donné le jour de l'anniversaire, retiré le lendemain.">
+            <Row label={tx("Rôle du jour")} hint={tx("Donné le jour de l'anniversaire, retiré le lendemain.")}>
               <RoleChips guildId={guildId} ids={cfg.birthdayRoleId ? [cfg.birthdayRoleId] : []} max={1} onChange={(ids) => save({ birthdayRoleId: ids[0] ?? null })} />
             </Row>
           </>
         )}
       </Panel>
 
-      <Panel title="Prochains anniversaires">
+      <Panel title={tx("Prochains anniversaires")}>
         {!ov ? (
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         ) : ov.today.length + ov.upcoming.length === 0 ? (
-          <EmptyLine>Aucun anniversaire enregistré.</EmptyLine>
+          <EmptyLine>{tx("Aucun anniversaire enregistré.")}</EmptyLine>
         ) : (
           <ul>
             {ov.today.map((t) => (
               <li key={`t-${t.userId}`} className="flex items-center gap-3 border-t border-[var(--panel-border)] px-5 py-3 first:border-t-0">
-                <span className="w-16 shrink-0 text-center text-xs font-bold text-[var(--success)]">Aujourd&apos;hui</span>
+                <span className="w-16 shrink-0 text-center text-xs font-bold text-[var(--success)]">{tx("Aujourd'hui")}</span>
                 <p className="min-w-0 flex-1 truncate text-[13px] font-semibold text-[var(--text-primary)]">
                   🎂 {name(t.userId)}
-                  {t.age !== null && <span className="font-normal text-[var(--text-muted)]"> · {t.age} ans</span>}
+                  {t.age !== null && <span className="font-normal text-[var(--text-muted)]"> · {t.age} {" "}{tx("ans")}</span>}
                 </p>
                 <button
                   type="button"
-                  title={`Retirer l'anniversaire de ${name(t.userId)}`}
+                  title={tx("Retirer l'anniversaire de {v0}", { v0: name(t.userId) })}
                   disabled={busy !== null}
                   onClick={() => deleteBirthday(t.userId)}
                   className="text-sm text-[var(--text-muted)] transition-colors hover:text-[var(--danger)]"
@@ -166,10 +167,10 @@ export default function ConsoleBirthdays({ guildId }: { guildId: string }) {
                     {u.day} {MONTHS[u.month - 1]}
                   </span>
                   <p className="min-w-0 flex-1 truncate text-[13px] text-[var(--text-primary)]">{name(u.userId)}</p>
-                  <span className="text-[11px] text-[var(--text-muted)]">dans {u.inDays} j</span>
+                  <span className="text-[11px] text-[var(--text-muted)]">{tx("dans")}{" "} {u.inDays} j</span>
                   <button
                     type="button"
-                    title={`Retirer l'anniversaire de ${name(u.userId)}`}
+                    title={tx("Retirer l'anniversaire de {v0}", { v0: name(u.userId) })}
                     disabled={busy !== null}
                     onClick={() => deleteBirthday(u.userId)}
                     className="text-sm text-[var(--text-muted)] transition-colors hover:text-[var(--danger)]"

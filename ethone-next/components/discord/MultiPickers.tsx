@@ -5,6 +5,7 @@ import RolePicker, { fetchGuildRoles } from "./RolePicker";
 import ChannelPicker, { fetchGuildChannels } from "./ChannelPicker";
 import { X } from "@/components/icons/ph";
 import { inputCls } from "./SettingsUI";
+import { tx } from "@/lib/tx";
 
 interface Props {
   guildId: string;
@@ -21,7 +22,7 @@ function Chips({ ids, names, prefix, onRemove, disabled }: { ids: string[]; name
         <span key={id} className="inline-flex items-center gap-1 rounded-md bg-[#5865F2]/20 px-2 py-1 text-xs text-[#c9cdfb]">
           {prefix}
           {names[id] ?? id}
-          <button type="button" disabled={disabled} onClick={() => onRemove(id)} aria-label="Retirer" className="cursor-pointer rounded p-0.5 text-[#c9cdfb]/70 hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)]">
+          <button type="button" disabled={disabled} onClick={() => onRemove(id)} aria-label={tx("Retirer")} className="cursor-pointer rounded p-0.5 text-[#c9cdfb]/70 hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)]">
             <X className="h-3 w-3" />
           </button>
         </span>
@@ -43,7 +44,7 @@ export function MultiRolePicker({ guildId, value, onChange, disabled, placeholde
   return (
     <div className="space-y-2">
       <Chips ids={value} names={names} prefix="@" disabled={disabled} onRemove={(id) => onChange(value.filter((v) => v !== id))} />
-      <RolePicker value={null} guildId={guildId} disabled={disabled} placeholder={placeholder ?? "Ajouter un rôle"} onChange={(id) => id && !value.includes(id) && onChange([...value, id])} />
+      <RolePicker value={null} guildId={guildId} disabled={disabled} placeholder={placeholder ?? tx("Ajouter un rôle")} onChange={(id) => id && !value.includes(id) && onChange([...value, id])} />
     </div>
   );
 }
@@ -61,7 +62,7 @@ export function MultiChannelPicker({ guildId, value, onChange, disabled, placeho
   return (
     <div className="space-y-2">
       <Chips ids={value} names={names} prefix="#" disabled={disabled} onRemove={(id) => onChange(value.filter((v) => v !== id))} />
-      <ChannelPicker value={null} guildId={guildId} disabled={disabled} placeholder={placeholder ?? "Ajouter un salon"} onChange={(id) => id && !value.includes(id) && onChange([...value, id])} />
+      <ChannelPicker value={null} guildId={guildId} disabled={disabled} placeholder={placeholder ?? tx("Ajouter un salon")} onChange={(id) => id && !value.includes(id) && onChange([...value, id])} />
     </div>
   );
 }
@@ -81,7 +82,7 @@ export function TagInput({ value, onChange, placeholder, disabled, max = 200 }: 
         {value.map((t) => (
           <span key={t} className="inline-flex items-center gap-1 rounded-md bg-[var(--text-primary)]/10 px-2 py-1 text-xs text-[var(--text-primary)]">
             {t}
-            <button type="button" disabled={disabled} onClick={() => onChange(value.filter((v) => v !== t))} aria-label="Retirer" className="cursor-pointer rounded p-0.5 text-[var(--text-muted)] hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)]">
+            <button type="button" disabled={disabled} onClick={() => onChange(value.filter((v) => v !== t))} aria-label={tx("Retirer")} className="cursor-pointer rounded p-0.5 text-[var(--text-muted)] hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)]">
               <X className="h-3 w-3" />
             </button>
           </span>
@@ -126,19 +127,19 @@ export function MemberIdsInput({ value, onChange }: { value: string[]; onChange:
         {value.map((id) => (
           <span key={id} className="inline-flex items-center gap-1 rounded-md bg-[#5865F2]/20 px-2 py-1 font-mono text-xs text-[#c9cdfb]">
             {id}
-            <button type="button" onClick={() => onChange(value.filter((v) => v !== id))} aria-label="Retirer" className="cursor-pointer rounded px-1 text-[#c9cdfb]/70 hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)]">
+            <button type="button" onClick={() => onChange(value.filter((v) => v !== id))} aria-label={tx("Retirer")} className="cursor-pointer rounded px-1 text-[#c9cdfb]/70 hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)]">
               ×
             </button>
           </span>
         ))}
       </div>
       <div className="flex gap-2">
-        <input value={draft} onChange={(e) => setDraft(e.target.value)} onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), add())} placeholder="Identifiant du membre (clic droit → Copier l'identifiant)" className={inputCls + (bad ? " border-rose-500/60" : "")} />
+        <input value={draft} onChange={(e) => setDraft(e.target.value)} onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), add())} placeholder={tx("Identifiant du membre (clic droit → Copier l'identifiant)")} className={inputCls + (bad ? " border-rose-500/60" : "")} />
         <button type="button" onClick={add} className="cursor-pointer rounded-xl border border-[var(--text-primary)]/16 px-4 text-xs font-semibold text-[var(--text-primary)] transition hover:bg-[var(--text-primary)]/5">
-          Ajouter
+          {tx("Ajouter")}
         </button>
       </div>
-      {bad && <p className="text-[11px] text-rose-300">Un identifiant Discord est un nombre (ex. 123456789012345678).</p>}
+      {bad && <p className="text-[11px] text-rose-300">{tx("Un identifiant Discord est un nombre (ex. 123456789012345678).")}</p>}
     </div>
   );
 }

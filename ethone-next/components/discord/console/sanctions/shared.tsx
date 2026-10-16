@@ -7,6 +7,7 @@ import { Loader2, Search, X } from "lucide-react";
 import { SPRING_LAYOUT, SPRING_PILL } from "@/lib/ease";
 import { cn } from "@/lib/utils";
 import { useGuildApi, type MemberHit } from "../kit";
+import { tx } from "@/lib/tx";
 
 export type Severity = "light" | "medium" | "grave";
 export type Action = "WARN" | "NOTE" | "TIMEOUT" | "UNTIMEOUT" | "KICK" | "SOFTBAN" | "BAN" | "TEMPBAN" | "UNBAN" | "QUARANTINE";
@@ -166,7 +167,7 @@ export function Drawer({ open, onClose, title, subtitle, footer, children }: { o
                 <h2 className="text-base font-bold text-[var(--text-primary)]">{title}</h2>
                 {subtitle && <p className="mt-0.5 text-xs text-[var(--text-muted)]">{subtitle}</p>}
               </div>
-              <button type="button" onClick={onClose} aria-label="Fermer" className="rounded-md p-1 text-[var(--text-muted)] hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]">
+              <button type="button" onClick={onClose} aria-label={tx("Fermer")} className="rounded-md p-1 text-[var(--text-muted)] hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]">
                 <X className="h-4 w-4" />
               </button>
             </header>
@@ -228,7 +229,7 @@ export function MemberSearch({ guildId, value, onChange }: { guildId: string; va
           <p className="truncate text-sm font-semibold text-[var(--text-primary)]">{value.displayName}</p>
           <p className="truncate text-[11px] text-[var(--text-muted)]">@{value.username} · {value.id}</p>
         </div>
-        <button type="button" onClick={() => onChange(null)} aria-label="Changer de membre" className="rounded-md p-1 text-[var(--text-muted)] hover:bg-[var(--surface-hover)]">
+        <button type="button" onClick={() => onChange(null)} aria-label={tx("Changer de membre")} className="rounded-md p-1 text-[var(--text-muted)] hover:bg-[var(--surface-hover)]">
           <X className="h-4 w-4" />
         </button>
       </motion.div>
@@ -237,7 +238,7 @@ export function MemberSearch({ guildId, value, onChange }: { guildId: string; va
     <div className="space-y-1.5">
       <div className="relative">
         <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-muted)]" />
-        <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Nom ou identifiant du membre" className={cn(INPUT, "h-11 pl-9")} />
+        <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder={tx("Nom ou identifiant du membre")} className={cn(INPUT, "h-11 pl-9")} />
         {loading && <Loader2 className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-[var(--text-muted)]" />}
       </div>
       <AnimatePresence initial={false}>
@@ -252,7 +253,7 @@ export function MemberSearch({ guildId, value, onChange }: { guildId: string; va
                     <span className="block truncate text-[13px] font-semibold text-[var(--text-primary)]">{m.displayName}</span>
                     <span className="block truncate text-[11px] text-[var(--text-muted)]">@{m.username}</span>
                   </span>
-                  {m.bot && <span className="rounded bg-[var(--surface-hover)] px-1.5 py-0.5 text-[10px] text-[var(--text-muted)]">Bot</span>}
+                  {m.bot && <span className="rounded bg-[var(--surface-hover)] px-1.5 py-0.5 text-[10px] text-[var(--text-muted)]">{tx("Bot")}</span>}
                 </button>
               </li>
             ))}

@@ -6,6 +6,7 @@ import { ExternalLink, ImageIcon, Loader2 } from "lucide-react";
 import { SPRING_LAYOUT } from "@/lib/ease";
 import { cn } from "@/lib/utils";
 import { formatOf, iconSources, type IconSource, type MessageCommon, type Meta } from "./types";
+import { tx } from "@/lib/tx";
 
 export type Viewer = { name: string; username: string; avatar: string | null; id: string };
 
@@ -88,7 +89,7 @@ export default function DiscordPreview({ message, meta, viewer, dm, card }: Prop
         <div className="grid aspect-[16/7] place-items-center text-[11px] text-white/50">
           <span className="flex flex-col items-center gap-1.5">
             {bigImage.failed ? <ImageIcon className="h-4 w-4" /> : <Loader2 className="h-4 w-4 animate-spin" />}
-            {bigImage.failed ? "Aperçu indisponible" : "Rendu de l'image…"}
+            {bigImage.failed ? tx("Aperçu indisponible") : tx("Rendu de l'image…")}
           </span>
         </div>
       )}
@@ -190,8 +191,8 @@ export default function DiscordPreview({ message, meta, viewer, dm, card }: Prop
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5">
             <span className="text-[15px] font-medium text-white">{author.name}</span>
-            {author.app && <span className="rounded-[3px] bg-[#5865F2] px-1 py-px text-[10px] font-semibold leading-tight text-white">APP</span>}
-            <span className="text-[11px] text-[#949BA4]">Aujourd&apos;hui à {now}</span>
+            {author.app && <span className="rounded-[3px] bg-[#5865F2] px-1 py-px text-[10px] font-semibold leading-tight text-white">{tx("APP")}</span>}
+            <span className="text-[11px] text-[#949BA4]">{tx("Aujourd'hui à")}{" "} {now}</span>
           </div>
           {content && <Md text={content} className="block text-[15px] leading-[1.375] text-[#DBDEE1]" />}
           {body}

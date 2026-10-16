@@ -22,6 +22,7 @@ import { useToast } from "@/components/ToastProvider";
 import { SPRING_LAYOUT } from "@/lib/ease";
 import { cn } from "@/lib/utils";
 import { ChannelAdder, Chip, RoleChips, Switch, useGuildApi } from "../kit";
+import { tx } from "@/lib/tx";
 
 type Trigger = "keyword" | "spam" | "keyword_preset" | "mention_spam" | "member_profile";
 type Action = {
@@ -450,19 +451,19 @@ export default function ConsoleAutomodNative({ guildId }: { guildId: string }) {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-bold tracking-tight text-[var(--text-primary)]">
-              AutoMod
+              {tx("AutoMod")}
             </h1>
             <button
               type="button"
               onClick={() => setInfoOpen(!infoOpen)}
-              aria-label="Information AutoMod"
+              aria-label={tx("Information AutoMod")}
               className="rounded-full p-1 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
             >
               <Info className="h-4 w-4" />
             </button>
           </div>
           <p className="mt-1 text-xs text-[var(--text-muted)]">
-            Règles automatiques de modération natives Discord.
+            {tx("Règles automatiques de modération natives Discord.")}
           </p>
         </div>
 
@@ -475,7 +476,7 @@ export default function ConsoleAutomodNative({ guildId }: { guildId: string }) {
           className="flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3.5 py-2 text-xs font-semibold text-white shadow-sm hover:bg-emerald-500 transition-all cursor-pointer"
         >
           <Plus className="h-3.5 w-3.5" />
-          <span>Nouvelle règle</span>
+          <span>{tx("Nouvelle règle")}</span>
         </button>
       </div>
 
@@ -493,10 +494,10 @@ export default function ConsoleAutomodNative({ guildId }: { guildId: string }) {
                 <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
                 <div className="space-y-1">
                   <p className="font-semibold text-emerald-300">
-                    Modération native Discord intégrée
+                    {tx("Modération native Discord intégrée")}
                   </p>
                   <p className="leading-relaxed opacity-90">
-                    Ces règles sont exécutées directement par les serveurs de Discord avant même que les messages ne soient envoyés. Elles fonctionnent 24h/24, même si le bot est hors ligne.
+                    {tx("Ces règles sont exécutées directement par les serveurs de Discord avant même que les messages ne soient envoyés. Elles fonctionnent 24h/24, même si le bot est hors ligne.")}
                   </p>
                 </div>
               </div>
@@ -509,10 +510,10 @@ export default function ConsoleAutomodNative({ guildId }: { guildId: string }) {
         <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4">
           <div className="space-y-0.5">
             <p className="text-xs font-semibold text-emerald-300">
-              Installation recommandée en 1 clic
+              {tx("Installation recommandée en 1 clic")}
             </p>
             <p className="text-xs text-emerald-200/80">
-              Active la suite complète anti-phishing, anti-pub, grossièretés, raid et spam.
+              {tx("Active la suite complète anti-phishing, anti-pub, grossièretés, raid et spam.")}
             </p>
           </div>
           <button
@@ -522,7 +523,7 @@ export default function ConsoleAutomodNative({ guildId }: { guildId: string }) {
             className="flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3.5 py-1.5 text-xs font-bold text-white hover:bg-emerald-500 disabled:opacity-50 transition-colors cursor-pointer"
           >
             <Sparkles className="h-3.5 w-3.5" />
-            <span>{busy ? "Installation..." : "Installer les 6 règles"}</span>
+            <span>{busy ? tx("Installation...") : tx("Installer les 6 règles")}</span>
           </button>
         </div>
       )}
@@ -561,7 +562,7 @@ export default function ConsoleAutomodNative({ guildId }: { guildId: string }) {
                 <Switch
                   checked={r.enabled}
                   onChange={() => toggle(r.id, r.enabled)}
-                  label={`Activer ${r.name}`}
+                  label={tx("Activer {name}", { name: r.name })}
                 />
                 <button
                   type="button"
@@ -571,7 +572,7 @@ export default function ConsoleAutomodNative({ guildId }: { guildId: string }) {
                   }}
                   className="rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-3.5 py-1.5 text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--surface-hover,var(--surface-raised))] transition-colors cursor-pointer"
                 >
-                  Modifier
+                  {tx("Modifier")}
                 </button>
               </div>
             </div>
@@ -763,9 +764,9 @@ function RuleEditorView({
 
   const handleDelete = async () => {
     if (!initialRule || isNew) return;
-    const ok = await confirmDialog(`Supprimer la règle Discord « ${initialRule.name} » ?`, {
-      title: "Supprimer la règle",
-      confirmLabel: "Supprimer",
+    const ok = await confirmDialog(tx("Supprimer la règle Discord « {name} » ?", { name: initialRule.name }), {
+      title: tx("Supprimer la règle"),
+      confirmLabel: tx("Supprimer"),
     });
     if (!ok) return;
 
@@ -787,11 +788,11 @@ function RuleEditorView({
           className="flex items-center gap-2 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-1.5 text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--surface-hover)] transition-colors cursor-pointer"
         >
           <ArrowLeft className="h-4 w-4" />
-          <span>Retour</span>
+          <span>{tx("Retour")}</span>
         </button>
 
         <h1 className="truncate text-base font-bold text-[var(--text-primary)]">
-          {d.name || "Nouvelle règle"}
+          {d.name || tx("Nouvelle règle")}
         </h1>
 
         <div className="w-16" />
@@ -799,32 +800,32 @@ function RuleEditorView({
 
       <section className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-5 space-y-4">
         <h2 className="text-sm font-bold text-[var(--text-primary)]">
-          Général
+          {tx("Général")}
         </h2>
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <label className="block text-xs font-medium text-[var(--text-muted)] mb-1.5">
-              Nom
+              {tx("Nom")}
             </label>
             <input
               type="text"
               value={d.name}
               maxLength={100}
               onChange={(e) => setD((prev) => ({ ...prev, name: e.target.value }))}
-              placeholder="Nom de la règle"
+              placeholder={tx("Nom de la règle")}
               className="w-full rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-emerald-500/70"
             />
           </div>
 
           <div className="flex items-center justify-between sm:justify-start sm:gap-6 pt-2 sm:pt-6">
             <span className="text-xs font-medium text-[var(--text-primary)]">
-              Activée
+              {tx("Activée")}
             </span>
             <Switch
               checked={enabled}
               onChange={setEnabled}
-              label="Activer la règle"
+              label={tx("Activer la règle")}
             />
           </div>
         </div>
@@ -833,7 +834,7 @@ function RuleEditorView({
       <section className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-5 space-y-4">
         <div className="flex items-center gap-2">
           <h2 className="text-sm font-bold text-[var(--text-primary)]">
-            Déclencheur
+            {tx("Déclencheur")}
           </h2>
           <Info className="h-3.5 w-3.5 text-[var(--text-muted)]" />
         </div>
@@ -868,7 +869,7 @@ function RuleEditorView({
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label className="text-xs font-medium text-[var(--text-muted)]">
-                  Tags / Mots-clés
+                  {tx("Tags / Mots-clés")}
                 </label>
                 <span className="font-mono text-xs text-[var(--text-muted)]">
                   {d.keywords.length} / 1000
@@ -904,7 +905,7 @@ function RuleEditorView({
                       addKeywordsFromInput(newKeywordInput);
                     }
                   }}
-                  placeholder="Ajoute un mot-clé (Entrée ou virgule pour valider)..."
+                  placeholder={tx("Ajoute un mot-clé (Entrée ou virgule pour valider)...")}
                   className="flex-1 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-3 py-1.5 text-xs text-[var(--text-primary)] outline-none focus:border-emerald-500/70"
                 />
                 <button
@@ -912,18 +913,18 @@ function RuleEditorView({
                   onClick={() => addKeywordsFromInput(newKeywordInput)}
                   className="rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-1.5 text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--surface-hover)] cursor-pointer"
                 >
-                  Ajouter
+                  {tx("Ajouter")}
                 </button>
               </div>
               <p className="mt-1 text-[11px] text-[var(--text-muted)]">
-                Un mot-clé par ligne ou séparés par des virgules. Utilise * au début ou à la fin pour les correspondances partielles (*nitro*).
+                {tx("Un mot-clé par ligne ou séparés par des virgules. Utilise * au début ou à la fin pour les correspondances partielles (*nitro*).")}
               </p>
             </div>
 
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label className="text-xs font-medium text-[var(--text-muted)]">
-                  Expressions régulières
+                  {tx("Expressions régulières")}
                 </label>
                 <span className="font-mono text-xs text-[var(--text-muted)]">
                   {regexText.split("\n").filter((x) => x.trim()).length} / 10
@@ -933,18 +934,18 @@ function RuleEditorView({
                 value={regexText}
                 rows={2}
                 onChange={(e) => setRegexText(e.target.value)}
-                placeholder="(?i)discord\.gg\/\w+"
+                placeholder={tx("(?i)discord\\.gg\\/\\w+")}
                 className="w-full rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] p-2.5 font-mono text-xs text-[var(--text-primary)] outline-none focus:border-emerald-500/70"
               />
               <p className="mt-1 text-[11px] text-[var(--text-muted)]">
-                Format regex standard de Discord. Max 10. Ex: (?i)(nitro|gift).*(free|claim)
+                {tx("Format regex standard de Discord. Max 10. Ex: (?i)(nitro|gift).*(free|claim)")}
               </p>
             </div>
 
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label className="text-xs font-medium text-[var(--text-muted)]">
-                  Exceptions du déclencheur
+                  {tx("Exceptions du déclencheur")}
                 </label>
                 <span className="font-mono text-xs text-[var(--text-muted)]">
                   {d.allowList.length} / 100
@@ -978,7 +979,7 @@ function RuleEditorView({
                       addAllowFromInput(newAllowInput);
                     }
                   }}
-                  placeholder="Mot ou lien autorisé (Entrée pour valider)..."
+                  placeholder={tx("Mot ou lien autorisé (Entrée pour valider)...")}
                   className="flex-1 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-3 py-1.5 text-xs text-[var(--text-primary)] outline-none focus:border-emerald-500/70"
                 />
                 <button
@@ -986,7 +987,7 @@ function RuleEditorView({
                   onClick={() => addAllowFromInput(newAllowInput)}
                   className="rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-1.5 text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--surface-hover)] cursor-pointer"
                 >
-                  Ajouter
+                  {tx("Ajouter")}
                 </button>
               </div>
             </div>
@@ -1031,7 +1032,7 @@ function RuleEditorView({
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label className="text-xs font-medium text-[var(--text-muted)]">
-                  Mots autorisés
+                  {tx("Mots autorisés")}
                 </label>
                 <span className="font-mono text-xs text-[var(--text-muted)]">
                   {d.allowList.length} / 1000
@@ -1065,7 +1066,7 @@ function RuleEditorView({
                       addAllowFromInput(newAllowInput);
                     }
                   }}
-                  placeholder="Mot autorisé (Entrée pour valider)..."
+                  placeholder={tx("Mot autorisé (Entrée pour valider)...")}
                   className="flex-1 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-3 py-1.5 text-xs text-[var(--text-primary)] outline-none focus:border-emerald-500/70"
                 />
                 <button
@@ -1073,7 +1074,7 @@ function RuleEditorView({
                   onClick={() => addAllowFromInput(newAllowInput)}
                   className="rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-1.5 text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--surface-hover)] cursor-pointer"
                 >
-                  Ajouter
+                  {tx("Ajouter")}
                 </button>
               </div>
             </div>
@@ -1085,10 +1086,10 @@ function RuleEditorView({
             <div className="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] p-3">
               <div>
                 <p className="text-xs font-semibold text-[var(--text-primary)]">
-                  Mentions dans un message
+                  {tx("Mentions dans un message")}
                 </p>
                 <p className="text-[11px] text-[var(--text-muted)] mt-0.5">
-                  Déclenche l&apos;action si un message contient plus de {d.mentionTotalLimit} mentions.
+                  {tx("Déclenche l'action si un message contient plus de")}{" "} {d.mentionTotalLimit} {" "}{tx("mentions.")}
                 </p>
               </div>
               <div className="flex items-center gap-2">
@@ -1125,16 +1126,16 @@ function RuleEditorView({
             <div className="flex items-center justify-between gap-4 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] p-3">
               <div>
                 <p className="text-xs font-semibold text-[var(--text-primary)]">
-                  Détection des raids
+                  {tx("Détection des raids")}
                 </p>
                 <p className="text-[11px] text-[var(--text-muted)] mt-0.5">
-                  Reconnaît les vagues de mentions venant de multiples comptes coordonnés.
+                  {tx("Reconnaît les vagues de mentions venant de multiples comptes coordonnés.")}
                 </p>
               </div>
               <Switch
                 checked={d.mentionRaidProtection}
                 onChange={(v) => setD((prev) => ({ ...prev, mentionRaidProtection: v }))}
-                label="Détection des raids"
+                label={tx("Détection des raids")}
               />
             </div>
           </div>
@@ -1143,10 +1144,10 @@ function RuleEditorView({
         {d.triggerType === "spam" && (
           <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-4 text-xs text-emerald-200">
             <p className="font-semibold text-emerald-300">
-              Détection du spam Discord
+              {tx("Détection du spam Discord")}
             </p>
             <p className="mt-1 leading-relaxed opacity-90">
-              Discord décide seul de ce qui est du spam. Choisis simplement l&apos;action.
+              {tx("Discord décide seul de ce qui est du spam. Choisis simplement l'action.")}
             </p>
           </div>
         )}
@@ -1155,19 +1156,19 @@ function RuleEditorView({
       <section className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-5 space-y-4">
         <div className="flex items-center gap-2">
           <h2 className="text-sm font-bold text-[var(--text-primary)]">
-            Tester
+            {tx("Tester")}
           </h2>
           <Info className="h-3.5 w-3.5 text-[var(--text-muted)]" />
         </div>
         <p className="text-xs text-[var(--text-muted)]">
-          Écris un message pour le tester en direct.
+          {tx("Écris un message pour le tester en direct.")}
         </p>
 
         <textarea
           value={testMessage}
           onChange={(e) => setTestMessage(e.target.value)}
           rows={2}
-          placeholder="Écris un message pour le tester..."
+          placeholder={tx("Écris un message pour le tester...")}
           className="w-full rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] p-3 text-xs text-[var(--text-primary)] outline-none focus:border-emerald-500/70"
         />
 
@@ -1184,14 +1185,14 @@ function RuleEditorView({
               <>
                 <ShieldAlert className="h-4 w-4 shrink-0 text-red-400" />
                 <span>
-                  <strong>Déclenché :</strong> Le message sera bloqué ! ({testResult.reason})
+                  <strong>{tx("Déclenché :")}</strong> {" "}{tx("Le message sera bloqué ! (")}{testResult.reason})
                 </span>
               </>
             ) : (
               <>
                 <Check className="h-4 w-4 shrink-0 text-emerald-400" />
                 <span>
-                  <strong>Non déclenché :</strong> Le message passerait sans encombre.
+                  <strong>{tx("Non déclenché :")}</strong> {" "}{tx("Le message passerait sans encombre.")}
                 </span>
               </>
             )}
@@ -1201,7 +1202,7 @@ function RuleEditorView({
 
       <section className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-5 space-y-4">
         <h2 className="text-sm font-bold text-[var(--text-primary)]">
-          Actions
+          {tx("Actions")}
         </h2>
 
         <div className="space-y-3">
@@ -1209,23 +1210,23 @@ function RuleEditorView({
             <div className="flex items-center justify-between gap-4">
               <div>
                 <p className="text-xs font-semibold text-[var(--text-primary)]">
-                  Bloquer le message
+                  {tx("Bloquer le message")}
                 </p>
                 <p className="text-[11px] text-[var(--text-muted)]">
-                  Le message n&apos;est jamais publié dans le salon.
+                  {tx("Le message n'est jamais publié dans le salon.")}
                 </p>
               </div>
               <Switch
                 checked={!!blockAction}
                 onChange={(v) => updateAction("block_message", v)}
-                label="Bloquer le message"
+                label={tx("Bloquer le message")}
               />
             </div>
 
             {blockAction && (
               <div className="mt-3 border-t border-[var(--panel-border)] pt-3">
                 <label className="block text-[11px] font-medium text-[var(--text-muted)] mb-1">
-                  Message de blocage personnalisé (facultatif, max 150 caractères)
+                  {tx("Message de blocage personnalisé (facultatif, max 150 caractères)")}
                 </label>
                 <input
                   type="text"
@@ -1236,7 +1237,7 @@ function RuleEditorView({
                       customMessage: e.target.value || undefined,
                     })
                   }
-                  placeholder="Ce message a été bloqué par ETHONE AutoMod."
+                  placeholder={tx("Ce message a été bloqué par ETHONE AutoMod.")}
                   className="w-full rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-1.5 text-xs text-[var(--text-primary)] outline-none focus:border-emerald-500/70"
                 />
               </div>
@@ -1247,29 +1248,29 @@ function RuleEditorView({
             <div className="flex items-center justify-between gap-4">
               <div>
                 <p className="text-xs font-semibold text-[var(--text-primary)]">
-                  Alerte dans un salon
+                  {tx("Alerte dans un salon")}
                 </p>
                 <p className="text-[11px] text-[var(--text-muted)]">
-                  Envoie une alerte dans un salon du staff.
+                  {tx("Envoie une alerte dans un salon du staff.")}
                 </p>
               </div>
               <Switch
                 checked={!!alertAction}
                 onChange={(v) => updateAction("send_alert", v)}
-                label="Alerte dans un salon"
+                label={tx("Alerte dans un salon")}
               />
             </div>
 
             {alertAction && (
               <div className="mt-3 border-t border-[var(--panel-border)] pt-3">
                 <label className="block text-[11px] font-medium text-[var(--text-muted)] mb-1">
-                  Salon de destination
+                  {tx("Salon de destination")}
                 </label>
                 <ChannelPicker
                   guildId={guildId}
                   value={alertAction.channelId ?? ""}
                   filterTypes={[0]}
-                  placeholder="Sélectionne un salon"
+                  placeholder={tx("Sélectionne un salon")}
                   onChange={(id) => updateAction("send_alert", true, { channelId: id })}
                 />
               </div>
@@ -1280,23 +1281,23 @@ function RuleEditorView({
             <div className="flex items-center justify-between gap-4">
               <div>
                 <p className="text-xs font-semibold text-[var(--text-primary)]">
-                  Timeout de l&apos;auteur
+                  {tx("Timeout de l'auteur")}
                 </p>
                 <p className="text-[11px] text-[var(--text-muted)]">
-                  Exclut temporairement l&apos;auteur du message.
+                  {tx("Exclut temporairement l'auteur du message.")}
                 </p>
               </div>
               <Switch
                 checked={!!timeoutAction}
                 onChange={(v) => updateAction("timeout", v, { durationSeconds: 600 })}
-                label="Timeout de l'auteur"
+                label={tx("Timeout de l'auteur")}
               />
             </div>
 
             {timeoutAction && (
               <div className="mt-3 border-t border-[var(--panel-border)] pt-3">
                 <label className="block text-[11px] font-medium text-[var(--text-muted)] mb-1.5">
-                  Durée de l&apos;exclusion
+                  {tx("Durée de l'exclusion")}
                 </label>
                 <div className="flex flex-wrap gap-1.5">
                   {TIMEOUT_DURATIONS.map(([sec, label]) => {
@@ -1328,13 +1329,13 @@ function RuleEditorView({
 
       <section className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-5 space-y-4">
         <h2 className="text-sm font-bold text-[var(--text-primary)]">
-          Exceptions
+          {tx("Exceptions")}
         </h2>
 
         <div className="space-y-4">
           <div>
             <label className="block text-xs font-medium text-[var(--text-muted)] mb-1.5">
-              Rôles exemptés
+              {tx("Rôles exemptés")}
             </label>
             <RoleChips
               guildId={guildId}
@@ -1346,7 +1347,7 @@ function RuleEditorView({
 
           <div>
             <label className="block text-xs font-medium text-[var(--text-muted)] mb-1.5">
-              Salons exemptés
+              {tx("Salons exemptés")}
             </label>
             <div className="flex flex-wrap items-center gap-1.5">
               {d.exemptChannels.map((id) => (
@@ -1379,7 +1380,7 @@ function RuleEditorView({
       <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))]/90 backdrop-blur-md px-6 py-3.5 shadow-xl">
         <div className="mx-auto flex max-w-4xl items-center justify-between gap-4">
           <p className="text-xs text-[var(--text-muted)]">
-            Prête à être enregistrée.
+            {tx("Prête à être enregistrée.")}
           </p>
 
           <div className="flex items-center gap-3">
@@ -1390,7 +1391,7 @@ function RuleEditorView({
                 className="flex items-center gap-1.5 rounded-lg border border-red-500/30 px-3 py-1.5 text-xs font-semibold text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer"
               >
                 <Trash2 className="h-3.5 w-3.5" />
-                <span>Supprimer</span>
+                <span>{tx("Supprimer")}</span>
               </button>
             )}
 
@@ -1401,7 +1402,7 @@ function RuleEditorView({
               className="flex items-center gap-1.5 rounded-lg bg-emerald-600 px-5 py-2 text-xs font-bold text-white shadow-md hover:bg-emerald-500 disabled:opacity-50 transition-all cursor-pointer"
             >
               <Check className="h-4 w-4" />
-              <span>{saving ? "Enregistrement..." : "Enregistrer"}</span>
+              <span>{saving ? tx("Enregistrement...") : tx("Enregistrer")}</span>
             </button>
           </div>
         </div>

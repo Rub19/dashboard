@@ -12,6 +12,7 @@ import { pageStagger } from "@/lib/motion-variants";
 import { cn } from "@/lib/utils";
 import { ConsolePage, EmptyLine, GhostButton, MemberPicker, Panel, RoleChips, Row, Segmented, StatTile, Stepper, Switch, useGuildApi, type MemberHit } from "../kit";
 import { MemberRecord, ReportsPanel } from "./ModerationRecords";
+import { tx } from "@/lib/tx";
 
 type Action = "WARN" | "TIMEOUT" | "KICK" | "BAN" | "UNBAN" | "SOFTBAN" | "QUARANTINE";
 type Case = { caseNumber: number; userId: string; userTag: string; moderatorTag: string; action: Action; reason: string; createdAt: string; status: "ACTIVE" | "EXPIRED" | "REVOKED"; source: string; durationSeconds: number | null };
@@ -85,7 +86,7 @@ export default function ConsoleModeration({ guildId }: { guildId: string }) {
   const sanction = async () => {
     if (!target || busy) return;
     const label = ACTION_LABEL[action].toLowerCase();
-    if (action !== "WARN" && !(await confirmDialog(`${ACTION_LABEL[action]} de ${target.displayName}${action === "TIMEOUT" ? ` pendant ${durationLabel(minutes * 60)}` : ""} ?`, { title: "Sanctionner", confirmLabel: "Confirmer" }))) return;
+    if (action !== "WARN" && !(await confirmDialog(tx("{v0} de {displayName}{v2} ?", { v0: ACTION_LABEL[action], displayName: target.displayName, v2: action === "TIMEOUT" ? ` pendant ${durationLabel(minutes * 60)}` : "" }), { title: tx("Sanctionner"), confirmLabel: tx("Confirmer") }))) return;
     setBusy("sanction");
     const r = await api<{ case: Case }>("/moderation/cases", {
       method: "POST",
@@ -93,7 +94,7 @@ export default function ConsoleModeration({ guildId }: { guildId: string }) {
     });
     setBusy(null);
     if (r) {
-      success("Sanction appliquée", `${target.displayName} : ${label} (case #${r.case.caseNumber}).`);
+      success(tx("Sanction appliquée"), tx("{displayName} : {label} (case #{caseNumber}).", { displayName: target.displayName, label, caseNumber: r.case.caseNumber }));
       setTarget(null);
       setReason("");
       void loadCases();
@@ -102,7 +103,7 @@ export default function ConsoleModeration({ guildId }: { guildId: string }) {
   };
 
   const revert = async (c: Case) => {
-    if (!(await confirmDialog(`Révoquer la case #${c.caseNumber} (${ACTION_LABEL[c.action].toLowerCase()} de ${c.userTag}) ?${c.action === "BAN" || c.action === "TIMEOUT" ? " La sanction est levée sur Discord." : ""}`, { title: "Révoquer", confirmLabel: "Révoquer" }))) return;
+    if (!(await confirmDialog(tx("Révoquer la case #{caseNumber} ({v1} de {userTag}) ?{v3}", { caseNumber: c.caseNumber, v1: ACTION_LABEL[c.action].toLowerCase(), userTag: c.userTag, v3: c.action === "BAN" || c.action === "TIMEOUT" ? " La sanction est levée sur Discord." : "" }), { title: tx("Révoquer"), confirmLabel: tx("Révoquer") }))) return;
     setBusy(`case:${c.caseNumber}`);
     const r = await api(`/moderation/cases/${c.caseNumber}/revert`, { method: "POST", json: {} });
     setBusy(null);
@@ -113,7 +114,7 @@ export default function ConsoleModeration({ guildId }: { guildId: string }) {
   };
 
   const unban = async (b: Ban) => {
-    if (!(await confirmDialog(`Débannir ${b.userTag} ?`, { title: "Débannir", confirmLabel: "Débannir" }))) return;
+    if (!(await confirmDialog(tx("Débannir {userTag} ?", { userTag: b.userTag }), { title: tx("Débannir"), confirmLabel: tx("Débannir") }))) return;
     setBusy(`ban:${b.userId}`);
     const r = await api("/moderation/unban", { method: "POST", json: { userId: b.userId } });
     setBusy(null);
@@ -126,33 +127,33 @@ export default function ConsoleModeration({ guildId }: { guildId: string }) {
   const logChannel = modLog ?? settings?.logChannelId ?? "";
 
   return (
-    <ConsolePage title="Modération">
+    <ConsolePage title={tx("Modération")}>
       <motion.div variants={pageStagger} className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatTile label="Sanctions aujourd'hui" value={stats?.casesToday ?? "—"} />
-        <StatTile label="Sanctions actives" value={stats?.activeSanctionsCount ?? "—"} />
-        <StatTile label="Total" value={stats?.totalCases ?? "—"} />
-        <StatTile label="Signalements en attente" value={stats?.pendingReports ?? "—"} />
+        <StatTile label={tx("Sanctions aujourd'hui")} value={stats?.casesToday ?? "—"} />
+        <StatTile label={tx("Sanctions actives")} value={stats?.activeSanctionsCount ?? "—"} />
+        <StatTile label={tx("Total")} value={stats?.totalCases ?? "—"} />
+        <StatTile label={tx("Signalements en attente")} value={stats?.pendingReports ?? "—"} />
       </motion.div>
 
-      <Panel title="Sanctionner un membre" actions={<GhostButton onClick={sanction} disabled={!target || busy === "sanction"}>{busy === "sanction" ? "Application…" : "Appliquer"}</GhostButton>}>
-        <Row label="Membre">
+      <Panel title={tx("Sanctionner un membre")} actions={<GhostButton onClick={sanction} disabled={!target || busy === "sanction"}>{busy === "sanction" ? tx("Application…") : tx("Appliquer")}</GhostButton>}>
+        <Row label={tx("Membre")}>
           {target ? (
             <span className="inline-flex items-center gap-2 rounded-lg border border-[var(--panel-border)] py-1 pl-1 pr-2 text-sm text-[var(--text-primary)]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={target.avatarUrl} alt="" className="h-6 w-6 rounded-full" />
               {target.displayName}
               <span className="text-xs text-[var(--text-muted)]">@{target.username}</span>
-              <button type="button" onClick={() => setTarget(null)} aria-label="Changer de membre" className="text-[var(--text-muted)] hover:text-[var(--text-primary)]">
+              <button type="button" onClick={() => setTarget(null)} aria-label={tx("Changer de membre")} className="text-[var(--text-muted)] hover:text-[var(--text-primary)]">
                 <X className="h-3.5 w-3.5" />
               </button>
             </span>
           ) : (
-            <MemberPicker guildId={guildId} label="Choisir" onPick={setTarget} />
+            <MemberPicker guildId={guildId} label={tx("Choisir")} onPick={setTarget} />
           )}
         </Row>
-        <Row label="Sanction">
+        <Row label={tx("Sanction")}>
           <Segmented
-            label="Sanction"
+            label={tx("Sanction")}
             value={action}
             options={[
               ["WARN", "Avertir"],
@@ -166,22 +167,22 @@ export default function ConsoleModeration({ guildId }: { guildId: string }) {
         <AnimatePresence initial={false}>
           {action === "TIMEOUT" && (
             <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-              <Row label="Durée" hint="28 jours au plus (limite Discord).">
+              <Row label={tx("Durée")} hint={tx("28 jours au plus (limite Discord).")}>
                 <Stepper value={minutes} min={1} max={40320} unit="min" onCommit={setMinutes} />
               </Row>
             </motion.div>
           )}
         </AnimatePresence>
-        <Row label="Motif" hint="Visible dans la case et le salon des sanctions.">
-          <input value={reason} maxLength={500} onChange={(e) => setReason(e.target.value)} placeholder="Aucun motif" className={input} />
+        <Row label={tx("Motif")} hint={tx("Visible dans la case et le salon des sanctions.")}>
+          <input value={reason} maxLength={500} onChange={(e) => setReason(e.target.value)} placeholder={tx("Aucun motif")} className={input} />
         </Row>
       </Panel>
 
-      <Panel title="Sanctions récentes">
+      <Panel title={tx("Sanctions récentes")}>
         {!cases ? (
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         ) : cases.length === 0 ? (
-          <EmptyLine>Aucune sanction pour l&apos;instant.</EmptyLine>
+          <EmptyLine>{tx("Aucune sanction pour l'instant.")}</EmptyLine>
         ) : (
           <ul>
             {cases.map((c) => (
@@ -193,14 +194,14 @@ export default function ConsoleModeration({ guildId }: { guildId: string }) {
                     {c.durationSeconds ? ` · ${durationLabel(c.durationSeconds)}` : ""} <span className="font-normal text-[var(--text-muted)]">· {c.userTag}</span>
                   </p>
                   <p className="truncate text-[11px] text-[var(--text-muted)]">
-                    {c.reason} · par {c.moderatorTag}
+                    {c.reason} {" "}{tx("· par")}{" "} {c.moderatorTag}
                     {SOURCE_LABEL[c.source] ? ` (${SOURCE_LABEL[c.source]})` : ""} · {sinceLabel(c.createdAt)}
-                    {c.status === "REVOKED" ? " · révoquée" : c.status === "EXPIRED" ? " · terminée" : ""}
+                    {c.status === "REVOKED" ? tx(" · révoquée") : c.status === "EXPIRED" ? tx(" · terminée") : ""}
                   </p>
                 </div>
                 {c.status === "ACTIVE" && c.action !== "UNBAN" && (
                   <GhostButton onClick={() => revert(c)} disabled={busy !== null}>
-                    Révoquer
+                    {tx("Révoquer")}
                   </GhostButton>
                 )}
               </li>
@@ -212,11 +213,11 @@ export default function ConsoleModeration({ guildId }: { guildId: string }) {
       <ReportsPanel guildId={guildId} />
       <MemberRecord guildId={guildId} />
 
-      <Panel title="Bannis" subtitle={bans && bans.length >= 100 ? "Les 100 derniers." : undefined}>
+      <Panel title={tx("Bannis")} subtitle={bans && bans.length >= 100 ? tx("Les 100 derniers.") : undefined}>
         {!bans ? (
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         ) : bans.length === 0 ? (
-          <EmptyLine>Personne n&apos;est banni.</EmptyLine>
+          <EmptyLine>{tx("Personne n'est banni.")}</EmptyLine>
         ) : (
           <ul>
             <AnimatePresence initial={false}>
@@ -227,7 +228,7 @@ export default function ConsoleModeration({ guildId }: { guildId: string }) {
                     <p className="truncate text-[11px] text-[var(--text-muted)]">{b.reason}</p>
                   </div>
                   <GhostButton onClick={() => unban(b)} disabled={busy !== null}>
-                    Débannir
+                    {tx("Débannir")}
                   </GhostButton>
                 </motion.li>
               ))}
@@ -236,32 +237,32 @@ export default function ConsoleModeration({ guildId }: { guildId: string }) {
         )}
       </Panel>
 
-      <Panel title="Réglages">
+      <Panel title={tx("Réglages")}>
         {!settings ? (
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         ) : (
           <>
-            <Row label="Salon des sanctions" hint="Chaque sanction y est annoncée, ainsi que les alertes d'abus du staff.">
-              <ChannelPicker guildId={guildId} value={logChannel} filterTypes={[0, 5]} allowClear={false} placeholder="Choisir un salon" onChange={setLogChannel} />
+            <Row label={tx("Salon des sanctions")} hint={tx("Chaque sanction y est annoncée, ainsi que les alertes d'abus du staff.")}>
+              <ChannelPicker guildId={guildId} value={logChannel} filterTypes={[0, 5]} allowClear={false} placeholder={tx("Choisir un salon")} onChange={setLogChannel} />
             </Row>
-            <Row label="Rôle de quarantaine" hint="Donné par la sanction Quarantaine, retiré à son expiration.">
+            <Row label={tx("Rôle de quarantaine")} hint={tx("Donné par la sanction Quarantaine, retiré à son expiration.")}>
               <RoleChips guildId={guildId} ids={settings.quarantineRoleId ? [settings.quarantineRoleId] : []} max={1} onChange={(ids) => saveSettings({ quarantineRoleId: ids[0] ?? null })} />
             </Row>
           </>
         )}
       </Panel>
 
-      <Panel title="Avertissements" subtitle="Sanction automatique quand un membre cumule des avertissements actifs (/warn)." actions={esc && <Switch checked={esc.enabled} onChange={(v) => saveEsc({ enabled: v })} label="Sanction automatique" />}>
+      <Panel title={tx("Avertissements")} subtitle={tx("Sanction automatique quand un membre cumule des avertissements actifs (/warn).")} actions={esc && <Switch checked={esc.enabled} onChange={(v) => saveEsc({ enabled: v })} label={tx("Sanction automatique")} />}>
         {!esc ? (
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         ) : (
           <div className={cn("transition-opacity", !esc.enabled && "pointer-events-none opacity-50")}>
-            <Row label="Au bout de">
+            <Row label={tx("Au bout de")}>
               <Stepper value={esc.threshold} min={1} max={20} unit="avertissements" onCommit={(n) => saveEsc({ threshold: n })} />
             </Row>
-            <Row label="Sanction">
+            <Row label={tx("Sanction")}>
               <Segmented
-                label="Sanction automatique"
+                label={tx("Sanction automatique")}
                 value={esc.action}
                 options={[
                   ["timeout", "Exclure"],
@@ -272,7 +273,7 @@ export default function ConsoleModeration({ guildId }: { guildId: string }) {
               />
             </Row>
             {esc.action === "timeout" && (
-              <Row label="Durée de l'exclusion">
+              <Row label={tx("Durée de l'exclusion")}>
                 <Stepper value={Math.round(esc.durationSeconds / 60)} min={1} max={40320} unit="min" onCommit={(n) => saveEsc({ durationSeconds: n * 60 })} />
               </Row>
             )}
@@ -280,9 +281,9 @@ export default function ConsoleModeration({ guildId }: { guildId: string }) {
         )}
       </Panel>
 
-      <Panel title="Abus du staff" subtitle="Alerte dans le salon des sanctions quand un modérateur dépasse ces seuils en une minute.">
+      <Panel title={tx("Abus du staff")} subtitle={tx("Alerte dans le salon des sanctions quand un modérateur dépasse ces seuils en une minute.")}>
         {!settings ? (
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         ) : (
           (
             [
@@ -292,7 +293,7 @@ export default function ConsoleModeration({ guildId }: { guildId: string }) {
             ] as const
           ).map(([k, label]) => (
             <Row key={k} label={label}>
-              <Stepper value={settings.staffAbuseLimits[k]} min={1} max={100} unit="par minute" onCommit={(n) => saveSettings({ staffAbuseLimits: { ...settings.staffAbuseLimits, [k]: n } })} />
+              <Stepper value={settings.staffAbuseLimits[k]} min={1} max={100} unit={tx("par minute")} onCommit={(n) => saveSettings({ staffAbuseLimits: { ...settings.staffAbuseLimits, [k]: n } })} />
             </Row>
           ))
         )}

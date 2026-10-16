@@ -44,6 +44,7 @@ import Card from "@/components/ui/Card";
 import type { BotTab } from "@/app/discord/bot/BotControlClient";
 import { SPRING_PILL } from "@/lib/ease";
 import { pageStagger, staggerItem } from "@/lib/motion-variants";
+import { tx } from "@/lib/tx";
 
 interface OverviewGroupProps {
   activeTab: BotTab;
@@ -211,13 +212,13 @@ export default function OverviewGroup({
                       <div className="flex items-center justify-between pb-3 border-b border-[var(--panel-border)]">
                         <h3 className="text-xs font-bold text-[var(--text-primary)] uppercase tracking-wider flex items-center gap-2">
                           <Sparkles className="w-4 h-4 text-[var(--accent-primary)]" />
-                          Présence en Direct
+                          {tx("Présence en Direct")}
                         </h3>
                         <Link
                           href="/discord/bot/presence"
                           className="text-xs text-[var(--accent-primary)] hover:underline font-semibold flex items-center gap-1 transition-all"
                         >
-                          <span>Gérer</span>
+                          <span>{tx("Gérer")}</span>
                           <ArrowRight className="w-3.5 h-3.5" />
                         </Link>
                       </div>
@@ -227,7 +228,7 @@ export default function OverviewGroup({
                           <div className="relative shrink-0">
                             <img
                               src={botCore?.avatarUrl || "https://cdn.discordapp.com/embed/avatars/0.png"}
-                              alt={botCore?.name || "Etho"}
+                              alt={botCore?.name || tx("Etho")}
                               className="w-12 h-12 rounded-2xl border border-[var(--panel-border)] object-cover bg-[var(--surface-raised)]"
                               onError={(e) => {
                                 (e.target as any).src = "https://cdn.discordapp.com/embed/avatars/0.png";
@@ -243,31 +244,31 @@ export default function OverviewGroup({
 
                           <div className="min-w-0">
                             <span className="text-sm font-bold text-[var(--text-primary)] block truncate">
-                              {botCore?.name || "Etho"}
+                              {botCore?.name || tx("Etho")}
                             </span>
                             <span className="text-xs text-[var(--text-muted)] font-mono block">
-                              {currentCfg.label} • Shard 0
+                              {currentCfg.label} {" "}{tx("• Shard 0")}
                             </span>
                           </div>
                         </div>
 
                         <div className="p-3 rounded-xl bg-[var(--surface-raised)]/60 border border-[var(--panel-border)] text-xs space-y-1">
                           <div className="flex items-center justify-between text-[11px] text-[var(--text-muted)]">
-                            <span>Activité en cours</span>
+                            <span>{tx("Activité en cours")}</span>
                             <span className="px-1.5 py-0.2 rounded bg-sky-500/10 text-sky-400 font-mono text-[10px]">
-                              WebSocket
+                              {tx("WebSocket")}
                             </span>
                           </div>
                           {botCore?.activity ? (
                             <div className="text-xs font-medium text-[var(--text-primary)] truncate">
                               <span className="text-[var(--accent-primary)] font-semibold uppercase text-[10px] mr-1.5">
-                                {botCore.activity.type || "Playing"}
+                                {botCore.activity.type || tx("Playing")}
                               </span>
-                              {botCore.activity.name || "Actif"}
+                              {botCore.activity.name || tx("Actif")}
                             </div>
                           ) : (
                             <span className="text-xs text-[var(--text-muted)] italic">
-                              Aucune activité définie
+                              {tx("Aucune activité définie")}
                             </span>
                           )}
                         </div>
@@ -275,12 +276,12 @@ export default function OverviewGroup({
                     </div>
 
                     <div className="pt-3 border-t border-[var(--panel-border)] flex items-center justify-between text-[11px] text-[var(--text-muted)]">
-                      <span>Portée : Globale sur Gateway</span>
+                      <span>{tx("Portée : Globale sur Gateway")}</span>
                       <Link
                         href="/discord/bot/presence"
                         className="text-[var(--accent-primary)] hover:underline font-medium"
                       >
-                        Mode Streamer 🟣
+                        {tx("Mode Streamer 🟣")}
                       </Link>
                     </div>
                   </Card>
@@ -296,14 +297,14 @@ export default function OverviewGroup({
                       <div className="flex items-center justify-between pb-3 border-b border-[var(--panel-border)]">
                         <h3 className="text-xs font-bold text-[var(--text-primary)] uppercase tracking-wider flex items-center gap-2">
                           <Cpu className="w-4 h-4 text-[var(--accent-primary)]" />
-                          Sous-Systèmes
+                          {tx("Sous-Systèmes")}
                         </h3>
                         <button
                           type="button"
                           onClick={() => handleTabChange("health")}
                           className="text-xs text-[var(--accent-primary)] hover:underline font-semibold flex items-center gap-1 transition-all cursor-pointer"
                         >
-                          <span>Détails</span>
+                          <span>{tx("Détails")}</span>
                           <ArrowRight className="w-3.5 h-3.5" />
                         </button>
                       </div>
@@ -328,13 +329,13 @@ export default function OverviewGroup({
                     </div>
 
                     <div className="pt-3 border-t border-[var(--panel-border)] flex items-center justify-between text-[11px] text-[var(--text-muted)]">
-                      <span>Latence : {botCore?.pingMs !== undefined && botCore?.pingMs !== null ? `${botCore.pingMs}ms` : "—"}</span>
+                      <span>{tx("Latence :")}{" "} {botCore?.pingMs !== undefined && botCore?.pingMs !== null ? tx("{pingMs}ms", { pingMs: botCore.pingMs }) : "—"}</span>
                       <button
                         type="button"
                         onClick={() => handleTabChange("diagnostics")}
                         className="text-[var(--accent-primary)] hover:underline font-medium cursor-pointer"
                       >
-                        Diagnostics 1-Clic
+                        {tx("Diagnostics 1-Clic")}
                       </button>
                     </div>
                   </Card>
@@ -350,14 +351,14 @@ export default function OverviewGroup({
                       <div className="flex items-center justify-between pb-3 border-b border-[var(--panel-border)]">
                         <h3 className="text-xs font-bold text-[var(--text-primary)] uppercase tracking-wider flex items-center gap-2">
                           <Server className="w-4 h-4 text-[var(--accent-primary)]" />
-                          Serveurs Actifs
+                          {tx("Serveurs Actifs")}
                         </h3>
                         <button
                           type="button"
                           onClick={() => handleTabChange("servers")}
                           className="text-xs text-[var(--accent-primary)] hover:underline font-semibold flex items-center gap-1 transition-all cursor-pointer"
                         >
-                          <span>Explorer ({servers.length})</span>
+                          <span>{tx("Explorer (")}{servers.length})</span>
                           <ArrowRight className="w-3.5 h-3.5" />
                         </button>
                       </div>
@@ -381,7 +382,7 @@ export default function OverviewGroup({
                               </span>
                             </div>
                             <span className="text-[var(--text-muted)] font-mono text-[11px] shrink-0">
-                              {g.memberCount} membres
+                              {g.memberCount} {" "}{tx("membres")}
                             </span>
                           </div>
                         ))}
@@ -389,8 +390,8 @@ export default function OverviewGroup({
                     </div>
 
                     <div className="pt-3 border-t border-[var(--panel-border)] flex items-center justify-between text-[11px] text-[var(--text-muted)]">
-                      <span>Total : {botCore?.userCount !== undefined && botCore?.userCount !== null ? Number(botCore.userCount).toLocaleString("fr-FR") : "—"} membres</span>
-                      <span className="text-[var(--text-muted)] font-medium">{servers.length} serveur{servers.length > 1 ? "s" : ""}</span>
+                      <span>{tx("Total :")}{" "} {botCore?.userCount !== undefined && botCore?.userCount !== null ? Number(botCore.userCount).toLocaleString("fr-FR") : "—"} {" "}{tx("membres")}</span>
+                      <span className="text-[var(--text-muted)] font-medium">{servers.length} {" "}{tx("serveur")}{servers.length > 1 ? "s" : ""}</span>
                     </div>
                   </Card>
                 </motion.div>
@@ -407,10 +408,10 @@ export default function OverviewGroup({
                     </div>
                     <div>
                       <h4 className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent-primary)] transition-colors">
-                        Catalogue des Commandes
+                        {tx("Catalogue des Commandes")}
                       </h4>
                       <p className="text-[11px] text-[var(--text-muted)]">
-                        40 commandes Slash & simulateur Keeper
+                        {tx("40 commandes Slash & simulateur Keeper")}
                       </p>
                     </div>
                   </div>
@@ -427,10 +428,10 @@ export default function OverviewGroup({
                     </div>
                     <div>
                       <h4 className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent-primary)] transition-colors">
-                        Tâches Planifiées & Cron
+                        {tx("Tâches Planifiées & Cron")}
                       </h4>
                       <p className="text-[11px] text-[var(--text-muted)]">
-                        15 jobs récurrents, files & déclencheur
+                        {tx("15 jobs récurrents, files & déclencheur")}
                       </p>
                     </div>
                   </div>
@@ -447,10 +448,10 @@ export default function OverviewGroup({
                     </div>
                     <div>
                       <h4 className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent-primary)] transition-colors">
-                        Présence & Mode Streamer
+                        {tx("Présence & Mode Streamer")}
                       </h4>
                       <p className="text-[11px] text-[var(--text-muted)]">
-                        Bascule 1-clic Streamer Twitch, DND, Invi
+                        {tx("Bascule 1-clic Streamer Twitch, DND, Invi")}
                       </p>
                     </div>
                   </div>
@@ -470,15 +471,15 @@ export default function OverviewGroup({
                 <div className="flex flex-wrap items-center gap-2.5">
                   <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
                     <Layers className="w-4 h-4 text-[var(--accent-primary)]" />
-                    Modules du Bot Discord ({modules.length})
+                    {tx("Modules du Bot Discord (")}{modules.length})
                   </h3>
                   <span className="px-2 py-0.5 rounded-full text-[11px] font-mono font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/25">
-                    {enabledCount} / {modules.length} actifs
+                    {enabledCount} / {modules.length} {" "}{tx("actifs")}
                   </span>
                 </div>
                 <p className="text-xs text-[var(--text-muted)] mt-1">
-                  Activation et désactivation en temps réel par serveur, synchronisées avec la commande{" "}
-                  <code className="text-[var(--text-primary)] font-mono">/module</code>
+                  {tx("Activation et désactivation en temps réel par serveur, synchronisées avec la commande")}{" "}
+                  <code className="text-[var(--text-primary)] font-mono">{tx("/module")}</code>
                 </p>
               </div>
 
@@ -487,10 +488,10 @@ export default function OverviewGroup({
                   value={settingsGuildId}
                   onChange={(e) => setSettingsGuildId(e.target.value)}
                   disabled={servers.length === 0}
-                  aria-label="Sélectionner un serveur Discord"
+                  aria-label={tx("Sélectionner un serveur Discord")}
                   className="px-3 py-1.5 rounded-xl bg-[var(--surface-raised)] border border-[var(--panel-border)] text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)] disabled:opacity-50 cursor-pointer"
                 >
-                  {servers.length === 0 && <option value="">Aucun serveur détecté</option>}
+                  {servers.length === 0 && <option value="">{tx("Aucun serveur détecté")}</option>}
                   {servers.map((s) => (
                     <option key={s.id} value={s.id}>
                       {s.name}
@@ -502,7 +503,7 @@ export default function OverviewGroup({
                   <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-[var(--text-muted)]" />
                   <input
                     type="text"
-                    placeholder="Filtrer un module... (Appuyez sur '/')"
+                    placeholder={tx("Filtrer un module... (Appuyez sur '/')")}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="pl-8 pr-3 py-1.5 rounded-xl bg-[var(--surface-raised)] border border-[var(--panel-border)] text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--accent-primary)] w-52 sm:w-60"
@@ -537,7 +538,7 @@ export default function OverviewGroup({
                     className="absolute inset-0 rounded-lg bg-[var(--accent-primary)] -z-0"
                   />
                 )}
-                <span className="relative z-10">Tous ({modules.length})</span>
+                <span className="relative z-10">{tx("Tous (")}{modules.length})</span>
               </button>
 
               <button
@@ -557,7 +558,7 @@ export default function OverviewGroup({
                     className="absolute inset-0 rounded-lg bg-[var(--accent-primary)] -z-0"
                   />
                 )}
-                <span className="relative z-10">Sécurité & Anti-Raid</span>
+                <span className="relative z-10">{tx("Sécurité & Anti-Raid")}</span>
               </button>
 
               <button
@@ -577,7 +578,7 @@ export default function OverviewGroup({
                     className="absolute inset-0 rounded-lg bg-[var(--accent-primary)] -z-0"
                   />
                 )}
-                <span className="relative z-10">Modération</span>
+                <span className="relative z-10">{tx("Modération")}</span>
               </button>
 
               <button
@@ -597,7 +598,7 @@ export default function OverviewGroup({
                     className="absolute inset-0 rounded-lg bg-[var(--accent-primary)] -z-0"
                   />
                 )}
-                <span className="relative z-10">Engagement & Fun</span>
+                <span className="relative z-10">{tx("Engagement & Fun")}</span>
               </button>
 
               <button
@@ -617,7 +618,7 @@ export default function OverviewGroup({
                     className="absolute inset-0 rounded-lg bg-[var(--accent-primary)] -z-0"
                   />
                 )}
-                <span className="relative z-10">Audio & Musique</span>
+                <span className="relative z-10">{tx("Audio & Musique")}</span>
               </button>
 
               <button
@@ -637,13 +638,13 @@ export default function OverviewGroup({
                     className="absolute inset-0 rounded-lg bg-[var(--accent-primary)] -z-0"
                   />
                 )}
-                <span className="relative z-10">Outils & Stats</span>
+                <span className="relative z-10">{tx("Outils & Stats")}</span>
               </button>
             </div>
 
             {!settingsGuildId ? (
               <p className="text-xs text-[var(--text-muted)] italic pt-2">
-                Sélectionne un serveur pour voir ses modules.
+                {tx("Sélectionne un serveur pour voir ses modules.")}
               </p>
             ) : modulesLoading && modules.length === 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 pt-2">
@@ -661,12 +662,12 @@ export default function OverviewGroup({
                   onClick={() => loadModules()}
                   className="rounded-lg border border-red-500/30 px-2.5 py-1 font-semibold transition-all hover:bg-red-500/15 cursor-pointer active:scale-[0.97]"
                 >
-                  Réessayer
+                  {tx("Réessayer")}
                 </button>
               </div>
             ) : displayedModules.length === 0 ? (
               <div className="p-8 text-center rounded-2xl bg-[var(--surface-raised)]/30 border border-[var(--panel-border)] text-xs text-[var(--text-muted)] space-y-2">
-                <p>Aucun module ne correspond aux critères de filtre sélectionnés.</p>
+                <p>{tx("Aucun module ne correspond aux critères de filtre sélectionnés.")}</p>
                 <button
                   type="button"
                   onClick={() => {
@@ -675,7 +676,7 @@ export default function OverviewGroup({
                   }}
                   className="text-[var(--accent-primary)] hover:underline font-semibold cursor-pointer"
                 >
-                  Réinitialiser les filtres
+                  {tx("Réinitialiser les filtres")}
                 </button>
               </div>
             ) : (
@@ -716,14 +717,14 @@ export default function OverviewGroup({
 
                           {m.available === false ? (
                             <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-[var(--surface-base)] text-[var(--text-muted)] border border-[var(--panel-border)] shrink-0">
-                              Bientôt disponible
+                              {tx("Bientôt disponible")}
                             </span>
                           ) : (
                             <button
                               type="button"
                               onClick={() => handleToggleModule(m.id, !m.enabled)}
                               disabled={disabled}
-                              title={m.enabled ? "Désactiver ce module" : "Activer ce module"}
+                              title={m.enabled ? tx("Désactiver ce module") : tx("Activer ce module")}
                               className={cn(
                                 "w-10 h-5.5 rounded-full transition-colors relative p-0.5 shrink-0 disabled:opacity-50 cursor-pointer shadow-inner",
                                 m.enabled ? "bg-emerald-500 shadow-emerald-500/20" : "bg-[var(--surface-raised)] border border-[var(--panel-border)]"
@@ -751,7 +752,7 @@ export default function OverviewGroup({
                         {m.enabled && (
                           <span className="text-emerald-400 font-semibold flex items-center gap-1">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                            Actif
+                            {tx("Actif")}
                           </span>
                         )}
                       </div>
@@ -770,16 +771,16 @@ export default function OverviewGroup({
             <Sparkles className="w-6 h-6" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-[var(--text-primary)]">Centre de Présence Dédié</h3>
+            <h3 className="text-lg font-bold text-[var(--text-primary)]">{tx("Centre de Présence Dédié")}</h3>
             <p className="text-xs text-[var(--text-muted)] max-w-md mx-auto mt-1">
-              Gère la présence globale, le mode streamer Twitch en 1 clic, le mode Ne Pas Déranger, le mode invisible et la rotation des activités.
+              {tx("Gère la présence globale, le mode streamer Twitch en 1 clic, le mode Ne Pas Déranger, le mode invisible et la rotation des activités.")}
             </p>
           </div>
           <Link
             href="/discord/bot/presence"
             className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[var(--accent-primary)] text-[var(--accent-contrast)] font-semibold text-xs transition-all shadow-md active:scale-[0.97]"
           >
-            <span>Ouvrir la Console de Présence</span>
+            <span>{tx("Ouvrir la Console de Présence")}</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
         </Card>

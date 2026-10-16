@@ -10,6 +10,7 @@ import { pageStagger } from "@/lib/motion-variants";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/components/ToastProvider";
 import { ConsolePage, EmptyLine, GhostButton, Panel, Row, Segmented, StatTile, Switch, useGuildApi } from "../kit";
+import { tx } from "@/lib/tx";
 
 type Status = "pending" | "under_review" | "planned" | "accepted" | "in_progress" | "completed" | "rejected" | "duplicate" | "on_hold";
 type Suggestion = { id: string; numericId: number; title: string; description: string; authorTag: string; category: string; status: Status; upvotesCount: number; downvotesCount: number; score: number; comments: unknown[]; staffResponse: string | null; createdAt: string };
@@ -105,7 +106,7 @@ export default function ConsoleSuggestions({ guildId }: { guildId: string }) {
     }
   };
   const remove = async (s: Suggestion) => {
-    if (!(await confirmDialog(`Supprimer la suggestion #${s.numericId} « ${s.title} » ?`, { title: "Supprimer", confirmLabel: "Supprimer" }))) return;
+    if (!(await confirmDialog(tx("Supprimer la suggestion #{numericId} « {title} » ?", { numericId: s.numericId, title: s.title }), { title: tx("Supprimer"), confirmLabel: tx("Supprimer") }))) return;
     const r = await api(`/suggestions/${s.id}`, { method: "DELETE" });
     if (r) setList((l) => l?.filter((x) => x.id !== s.id) ?? null);
   };
@@ -113,38 +114,38 @@ export default function ConsoleSuggestions({ guildId }: { guildId: string }) {
   const shown = (list ?? []).filter((s) => FILTERS[filter](s.status)).sort((a, b) => b.score - a.score || b.createdAt.localeCompare(a.createdAt));
 
   return (
-    <ConsolePage title="Suggestions">
+    <ConsolePage title={tx("Suggestions")}>
       <motion.div variants={pageStagger} className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatTile label="À traiter" value={ov ? ov.pendingCount + ov.underReviewCount : "—"} />
-        <StatTile label="Acceptées" value={ov ? ov.acceptedCount + ov.completedCount : "—"} />
-        <StatTile label="Refusées" value={ov?.rejectedCount ?? "—"} />
-        <StatTile label="Votes" value={ov?.totalVotes ?? "—"} />
+        <StatTile label={tx("À traiter")} value={ov ? ov.pendingCount + ov.underReviewCount : "—"} />
+        <StatTile label={tx("Acceptées")} value={ov ? ov.acceptedCount + ov.completedCount : "—"} />
+        <StatTile label={tx("Refusées")} value={ov?.rejectedCount ?? "—"} />
+        <StatTile label={tx("Votes")} value={ov?.totalVotes ?? "—"} />
       </motion.div>
 
-      <Panel title="Réglages">
+      <Panel title={tx("Réglages")}>
         {!cfg ? (
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         ) : (
           <>
-            <Row label="Salon des suggestions" hint="Où /suggest publie les idées, avec les boutons de vote.">
-              <ChannelPicker guildId={guildId} value={cfg.channelId ?? ""} filterTypes={[0, 5, 15]} allowClear={false} placeholder="Choisir un salon" onChange={(id) => saveCfg({ channelId: id })} />
+            <Row label={tx("Salon des suggestions")} hint={tx("Où /suggest publie les idées, avec les boutons de vote.")}>
+              <ChannelPicker guildId={guildId} value={cfg.channelId ?? ""} filterTypes={[0, 5, 15]} allowClear={false} placeholder={tx("Choisir un salon")} onChange={(id) => saveCfg({ channelId: id })} />
             </Row>
-            <Row label="Fil de discussion" hint="Un fil s'ouvre sous chaque suggestion.">
-              <Switch checked={cfg.autoThread} onChange={(v) => saveCfg({ autoThread: v })} label="Fil de discussion" />
+            <Row label={tx("Fil de discussion")} hint={tx("Un fil s'ouvre sous chaque suggestion.")}>
+              <Switch checked={cfg.autoThread} onChange={(v) => saveCfg({ autoThread: v })} label={tx("Fil de discussion")} />
             </Row>
-            <Row label="Prévenir l'auteur" hint="Message privé quand le statut change.">
-              <Switch checked={cfg.dmNotifications} onChange={(v) => saveCfg({ dmNotifications: v })} label="Prévenir l'auteur" />
+            <Row label={tx("Prévenir l'auteur")} hint={tx("Message privé quand le statut change.")}>
+              <Switch checked={cfg.dmNotifications} onChange={(v) => saveCfg({ dmNotifications: v })} label={tx("Prévenir l'auteur")} />
             </Row>
           </>
         )}
       </Panel>
 
       <Panel
-        title="Idées"
+        title={tx("Idées")}
         actions={
           <div className="flex flex-wrap items-center gap-2">
             <Segmented
-              label="Filtre"
+              label={tx("Filtre")}
               value={filter}
               options={[
                 ["todo", "À traiter"],
@@ -155,7 +156,7 @@ export default function ConsoleSuggestions({ guildId }: { guildId: string }) {
               onChange={setFilter}
             />
             <GhostButton onClick={() => setShowCreate((v) => !v)}>
-              {showCreate ? "Fermer" : "Nouvelle idée"}
+              {showCreate ? tx("Fermer") : tx("Nouvelle idée")}
             </GhostButton>
           </div>
         }
@@ -170,13 +171,13 @@ export default function ConsoleSuggestions({ guildId }: { guildId: string }) {
               className="overflow-hidden border-b border-[var(--panel-border)] bg-[var(--surface-hover)]/40 p-4"
             >
               <div className="space-y-3">
-                <p className="text-xs font-semibold text-[var(--text-primary)]">Déposer une idée ou proposition officielle</p>
+                <p className="text-xs font-semibold text-[var(--text-primary)]">{tx("Déposer une idée ou proposition officielle")}</p>
                 <div className="grid gap-2 sm:grid-cols-3">
                   <input
                     type="text"
                     value={newTitle}
                     onChange={(e) => setNewTitle(e.target.value)}
-                    placeholder="Titre de l'idée"
+                    placeholder={tx("Titre de l'idée")}
                     maxLength={100}
                     className="h-8 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/70 sm:col-span-2"
                   />
@@ -184,7 +185,7 @@ export default function ConsoleSuggestions({ guildId }: { guildId: string }) {
                     type="text"
                     value={newCategory}
                     onChange={(e) => setNewCategory(e.target.value)}
-                    placeholder="Catégorie (ex: Général)"
+                    placeholder={tx("Catégorie (ex: Général)")}
                     maxLength={32}
                     className="h-8 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/70"
                   />
@@ -192,20 +193,20 @@ export default function ConsoleSuggestions({ guildId }: { guildId: string }) {
                 <textarea
                   value={newDesc}
                   onChange={(e) => setNewDesc(e.target.value)}
-                  placeholder="Décris le projet ou la suggestion en détail…"
+                  placeholder={tx("Décris le projet ou la suggestion en détail…")}
                   maxLength={1000}
                   rows={3}
                   className="w-full rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-3 py-2 text-xs text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/70"
                 />
                 <div className="flex justify-end gap-2 pt-1">
-                  <GhostButton onClick={() => setShowCreate(false)}>Annuler</GhostButton>
+                  <GhostButton onClick={() => setShowCreate(false)}>{tx("Annuler")}</GhostButton>
                   <button
                     type="button"
                     disabled={createBusy || !newTitle.trim() || !newDesc.trim()}
                     onClick={submitSuggestion}
                     className="rounded-lg bg-[var(--accent-primary)] px-3 py-1.5 text-xs font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-40"
                   >
-                    {createBusy ? "Publication…" : "Publier sur Discord"}
+                    {createBusy ? tx("Publication…") : tx("Publier sur Discord")}
                   </button>
                 </div>
               </div>
@@ -213,9 +214,9 @@ export default function ConsoleSuggestions({ guildId }: { guildId: string }) {
           )}
         </AnimatePresence>
         {!list ? (
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         ) : shown.length === 0 ? (
-          <EmptyLine>{list.length === 0 ? "Aucune suggestion pour l'instant." : "Rien dans cette liste."}</EmptyLine>
+          <EmptyLine>{list.length === 0 ? tx("Aucune suggestion pour l'instant.") : tx("Rien dans cette liste.")}</EmptyLine>
         ) : (
           <ul>
             {shown.map((s) => (
@@ -243,7 +244,7 @@ export default function ConsoleSuggestions({ guildId }: { guildId: string }) {
                           maxLength={1000}
                           rows={2}
                           onChange={(e) => setReply(e.target.value)}
-                          placeholder="Réponse officielle (facultatif), affichée sous la suggestion"
+                          placeholder={tx("Réponse officielle (facultatif), affichée sous la suggestion")}
                           className="w-full rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/70"
                         />
                         <div className="flex flex-wrap items-center gap-1.5">
@@ -262,7 +263,7 @@ export default function ConsoleSuggestions({ guildId }: { guildId: string }) {
                             </button>
                           ))}
                           <span className="flex-1" />
-                          <GhostButton onClick={() => remove(s)}>Supprimer</GhostButton>
+                          <GhostButton onClick={() => remove(s)}>{tx("Supprimer")}</GhostButton>
                         </div>
                       </div>
                     </motion.div>

@@ -11,6 +11,7 @@ import { SPRING_LAYOUT } from "@/lib/ease";
 import { pageStagger } from "@/lib/motion-variants";
 import { cn } from "@/lib/utils";
 import { BOT_API_URL, ConsolePage, EmptyLine, GhostButton, Panel, RoleChips, Row, Segmented, StatTile, Stepper, TextField, useGuildApi } from "../kit";
+import { tx } from "@/lib/tx";
 
 type Priority = "LOW" | "NORMAL" | "HIGH" | "URGENT";
 type Category = {
@@ -108,7 +109,7 @@ export default function ConsoleTickets({ guildId }: { guildId: string }) {
     setBusy(null);
     if (r) {
       setConfig(r.config);
-      success("Tags de statut", r.created.length ? `${r.created.length} tag${r.created.length > 1 ? "s" : ""} ajouté${r.created.length > 1 ? "s" : ""} au forum.` : "Le forum les avait déjà.");
+      success(tx("Tags de statut"), r.created.length ? tx("{length} tag{v1} ajouté{v2} au forum.", { length: r.created.length, v1: r.created.length > 1 ? "s" : "", v2: r.created.length > 1 ? "s" : "" }) : tx("Le forum les avait déjà."));
     }
   };
 
@@ -122,7 +123,7 @@ export default function ConsoleTickets({ guildId }: { guildId: string }) {
     if (await saveCat({ id, name: "Nouvelle catégorie" } as Category)) setOpenCat(id);
   };
   const deleteCat = async (c: Category) => {
-    if (!(await confirmDialog(`Supprimer la catégorie « ${c.name} » ? Les tickets déjà ouverts restent ouverts.`, { title: "Supprimer la catégorie", confirmLabel: "Supprimer" }))) return;
+    if (!(await confirmDialog(tx("Supprimer la catégorie « {name} » ? Les tickets déjà ouverts restent ouverts.", { name: c.name }), { title: tx("Supprimer la catégorie"), confirmLabel: tx("Supprimer") }))) return;
     const r = await api(`/tickets/categories/${c.id}`, { method: "DELETE" });
     if (r) setCats((list) => list?.filter((x) => x.id !== c.id) ?? null);
   };
@@ -137,7 +138,7 @@ export default function ConsoleTickets({ guildId }: { guildId: string }) {
     if (await savePanel({ id } as TicketPanel)) setOpenPanel(id);
   };
   const deletePanel = async (p: TicketPanel) => {
-    if (!(await confirmDialog(`Supprimer le panneau « ${p.title} » du tableau de bord ? Le message déjà publié sur Discord reste en place.`, { title: "Supprimer le panneau", confirmLabel: "Supprimer" }))) return;
+    if (!(await confirmDialog(tx("Supprimer le panneau « {title} » du tableau de bord ? Le message déjà publié sur Discord reste en place.", { title: p.title }), { title: tx("Supprimer le panneau"), confirmLabel: tx("Supprimer") }))) return;
     const r = await api(`/tickets/panels/${p.id}`, { method: "DELETE" });
     if (r) setPanels((list) => list?.filter((x) => x.id !== p.id) ?? null);
   };
@@ -146,7 +147,7 @@ export default function ConsoleTickets({ guildId }: { guildId: string }) {
     const r = await api<{ messageId: string; channelName: string }>(`/tickets/panels/${p.id}/publish`, { method: "POST", json: { channelId } });
     setBusy(null);
     if (r) {
-      success("Panneau publié", `Envoyé dans #${r.channelName}.`);
+      success(tx("Panneau publié"), tx("Envoyé dans #{channelName}.", { channelName: r.channelName }));
       setPanels((list) => list?.map((x) => (x.id === p.id ? { ...x, channelId, messageId: r.messageId } : x)) ?? null);
     }
   };
@@ -158,7 +159,7 @@ export default function ConsoleTickets({ guildId }: { guildId: string }) {
     if (r) setTickets((list) => list?.map((x) => (x.id === t.id ? { ...x, claimedBy: r.ticket.claimedBy } : x)) ?? null);
   };
   const close = async (t: Ticket) => {
-    if (!(await confirmDialog(`Fermer le ticket ${t.id} de ${t.userTag} ? Le transcript est enregistré puis le salon est fermé.`, { title: "Fermer le ticket", confirmLabel: "Fermer" }))) return;
+    if (!(await confirmDialog(tx("Fermer le ticket {id} de {userTag} ? Le transcript est enregistré puis le salon est fermé.", { id: t.id, userTag: t.userTag }), { title: tx("Fermer le ticket"), confirmLabel: tx("Fermer") }))) return;
     setBusy(`t:${t.id}`);
     const r = await api(`/tickets/tickets/${encodeURIComponent(t.id)}/close`, { method: "POST", json: { reason: "Fermé depuis le tableau de bord" } });
     setBusy(null);
@@ -170,22 +171,22 @@ export default function ConsoleTickets({ guildId }: { guildId: string }) {
   const tagsReady = !!config?.forumTagIds && Object.values(config.forumTagIds).filter(Boolean).length >= 4;
 
   return (
-    <ConsolePage title="Tickets">
+    <ConsolePage title={tx("Tickets")}>
       <motion.div variants={pageStagger} className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatTile label="Ouverts" value={ov?.open ?? "—"} />
-        <StatTile label="En attente" value={ov?.pending ?? "—"} />
-        <StatTile label="Fermés aujourd'hui" value={ov?.closedToday ?? "—"} />
-        <StatTile label="Total" value={ov?.totalTickets ?? "—"} />
+        <StatTile label={tx("Ouverts")} value={ov?.open ?? "—"} />
+        <StatTile label={tx("En attente")} value={ov?.pending ?? "—"} />
+        <StatTile label={tx("Fermés aujourd'hui")} value={ov?.closedToday ?? "—"} />
+        <StatTile label={tx("Total")} value={ov?.totalTickets ?? "—"} />
       </motion.div>
 
-      <Panel title="Réglages">
+      <Panel title={tx("Réglages")}>
         {!config ? (
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         ) : (
           <>
-            <Row label="Les tickets s'ouvrent" hint={mode === "forum" ? "Un post par ticket dans un forum, avec un tag de statut." : "Un salon privé par ticket."}>
+            <Row label={tx("Les tickets s'ouvrent")} hint={mode === "forum" ? tx("Un post par ticket dans un forum, avec un tag de statut.") : tx("Un salon privé par ticket.")}>
               <Segmented
-                label="Mode des tickets"
+                label={tx("Mode des tickets")}
                 value={mode}
                 options={[
                   ["channel", "En salon"],
@@ -200,27 +201,27 @@ export default function ConsoleTickets({ guildId }: { guildId: string }) {
             </Row>
             {mode === "forum" && (
               <>
-                <Row label="Forum" hint={forumDraft ? "Choisis le forum pour activer ce mode." : undefined}>
+                <Row label={tx("Forum")} hint={forumDraft ? tx("Choisis le forum pour activer ce mode.") : undefined}>
                   <ChannelPicker
                     guildId={guildId}
                     value={config.forumChannelId ?? ""}
                     filterTypes={[15]}
                     allowClear={false}
-                    placeholder="Choisir un forum"
+                    placeholder={tx("Choisir un forum")}
                     onChange={async (id) => {
                       if (await saveConfig({ mode: "forum", forumChannelId: id })) setForumDraft(false);
                     }}
                   />
                 </Row>
                 {config.forumChannelId && (
-                  <Row label="Tags de statut" hint="Ouvert, En cours, Résolu, Fermé.">
-                    {tagsReady ? <span className="text-xs text-[var(--text-muted)]">Prêts sur le forum.</span> : <GhostButton onClick={createForumTags} disabled={busy === "tags"}>{busy === "tags" ? "Création…" : "Créer les tags"}</GhostButton>}
+                  <Row label={tx("Tags de statut")} hint={tx("Ouvert, En cours, Résolu, Fermé.")}>
+                    {tagsReady ? <span className="text-xs text-[var(--text-muted)]">{tx("Prêts sur le forum.")}</span> : <GhostButton onClick={createForumTags} disabled={busy === "tags"}>{busy === "tags" ? tx("Création…") : tx("Créer les tags")}</GhostButton>}
                   </Row>
                 )}
               </>
             )}
             {mode === "channel" && (
-              <Row label="Nom des salons" hint="{username} : pseudo du membre, {id} : numéro du ticket.">
+              <Row label={tx("Nom des salons")} hint={tx("{username} : pseudo du membre, {id} : numéro du ticket.")}>
                 <TextField value={config.namingFormat} maxLength={60} mono onCommit={(v) => saveConfig({ namingFormat: v })} />
               </Row>
             )}
@@ -228,11 +229,11 @@ export default function ConsoleTickets({ guildId }: { guildId: string }) {
         )}
       </Panel>
 
-      <Panel title="Catégories" subtitle="Chaque catégorie devient un bouton sur le panneau." actions={<GhostButton onClick={addCat}>Ajouter</GhostButton>}>
+      <Panel title={tx("Catégories")} subtitle={tx("Chaque catégorie devient un bouton sur le panneau.")} actions={<GhostButton onClick={addCat}>{tx("Ajouter")}</GhostButton>}>
         {!cats ? (
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         ) : cats.length === 0 ? (
-          <EmptyLine>Aucune catégorie : les membres ne peuvent pas ouvrir de ticket.</EmptyLine>
+          <EmptyLine>{tx("Aucune catégorie : les membres ne peuvent pas ouvrir de ticket.")}</EmptyLine>
         ) : (
           <ul>
             <AnimatePresence initial={false}>
@@ -243,10 +244,10 @@ export default function ConsoleTickets({ guildId }: { guildId: string }) {
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-[13px] font-semibold text-[var(--text-primary)]">{c.name}</p>
                       <p className="truncate text-[11px] text-[var(--text-muted)]">
-                        {c.supportRoleIds.length ? `${c.supportRoleIds.length} rôle${c.supportRoleIds.length > 1 ? "s" : ""} support` : "Aucun rôle support"} · fermeture {c.autoCloseInactivityHours > 0 ? `après ${c.autoCloseInactivityHours} h` : "manuelle"}
+                        {c.supportRoleIds.length ? tx("{length} rôle{v1} support", { length: c.supportRoleIds.length, v1: c.supportRoleIds.length > 1 ? "s" : "" }) : tx("Aucun rôle support")} {" "}{tx("· fermeture")}{" "} {c.autoCloseInactivityHours > 0 ? tx("après {autoCloseInactivityHours} h", { autoCloseInactivityHours: c.autoCloseInactivityHours }) : "manuelle"}
                       </p>
                     </div>
-                    <span className="text-xs text-[var(--text-muted)]">{openCat === c.id ? "Fermer" : "Modifier"}</span>
+                    <span className="text-xs text-[var(--text-muted)]">{openCat === c.id ? tx("Fermer") : tx("Modifier")}</span>
                   </button>
                   <AnimatePresence initial={false}>
                     {openCat === c.id && (
@@ -262,11 +263,11 @@ export default function ConsoleTickets({ guildId }: { guildId: string }) {
         )}
       </Panel>
 
-      <Panel title="Panneaux" subtitle="Le message avec les boutons pour ouvrir un ticket." actions={<GhostButton onClick={addPanel}>Nouveau panneau</GhostButton>}>
+      <Panel title={tx("Panneaux")} subtitle={tx("Le message avec les boutons pour ouvrir un ticket.")} actions={<GhostButton onClick={addPanel}>{tx("Nouveau panneau")}</GhostButton>}>
         {!panels ? (
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         ) : panels.length === 0 ? (
-          <EmptyLine>Aucun panneau. Crée-en un puis publie-le dans un salon.</EmptyLine>
+          <EmptyLine>{tx("Aucun panneau. Crée-en un puis publie-le dans un salon.")}</EmptyLine>
         ) : (
           <ul>
             {panels.map((p) => (
@@ -276,10 +277,10 @@ export default function ConsoleTickets({ guildId }: { guildId: string }) {
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-[13px] font-semibold text-[var(--text-primary)]">{p.title}</p>
                     <p className="truncate text-[11px] text-[var(--text-muted)]">
-                      {p.messageId && channelName(p.channelId) ? `Publié dans #${channelName(p.channelId)}` : "Pas encore publié"} · {p.categoryIds.length ? `${p.categoryIds.length} catégorie${p.categoryIds.length > 1 ? "s" : ""}` : "toutes les catégories"}
+                      {p.messageId && channelName(p.channelId) ? tx("Publié dans #{v0}", { v0: channelName(p.channelId) }) : tx("Pas encore publié")} · {p.categoryIds.length ? tx("{length} catégorie{v1}", { length: p.categoryIds.length, v1: p.categoryIds.length > 1 ? "s" : "" }) : tx("toutes les catégories")}
                     </p>
                   </div>
-                  <span className="text-xs text-[var(--text-muted)]">{openPanel === p.id ? "Fermer" : "Modifier"}</span>
+                  <span className="text-xs text-[var(--text-muted)]">{openPanel === p.id ? tx("Fermer") : tx("Modifier")}</span>
                 </button>
                 <AnimatePresence initial={false}>
                   {openPanel === p.id && (
@@ -295,11 +296,11 @@ export default function ConsoleTickets({ guildId }: { guildId: string }) {
       </Panel>
 
       <Panel
-        title="Tickets"
-        subtitle={ticketView === "open" ? "Tickets actuellement ouverts." : "Historique des tickets fermés et archivés."}
+        title={tx("Tickets")}
+        subtitle={ticketView === "open" ? tx("Tickets actuellement ouverts.") : tx("Historique des tickets fermés et archivés.")}
         actions={
           <Segmented
-            label="Filtre tickets"
+            label={tx("Filtre tickets")}
             value={ticketView}
             options={[
               ["open", `En cours (${tickets?.length ?? 0})`],
@@ -311,9 +312,9 @@ export default function ConsoleTickets({ guildId }: { guildId: string }) {
       >
         {ticketView === "open" ? (
           !tickets ? (
-            <EmptyLine>Chargement…</EmptyLine>
+            <EmptyLine>{tx("Chargement…")}</EmptyLine>
           ) : tickets.length === 0 ? (
-            <EmptyLine>Aucun ticket ouvert.</EmptyLine>
+            <EmptyLine>{tx("Aucun ticket ouvert.")}</EmptyLine>
           ) : (
             <ul>
               <AnimatePresence initial={false}>
@@ -324,21 +325,21 @@ export default function ConsoleTickets({ guildId }: { guildId: string }) {
                         {t.userTag} <span className="font-normal text-[var(--text-muted)]">· {t.categoryName}</span>
                       </p>
                       <p className="truncate text-[11px] text-[var(--text-muted)]">
-                        <span style={{ color: PRIORITY_COLOR[t.priority] }}>{PRIORITIES.find(([k]) => k === t.priority)?.[1]}</span> · {STATUS[t.status] ?? t.status} · {t.claimedBy ? `pris par ${t.claimedBy.tag}` : "personne dessus"} · {sinceLabel(t.lastActivityAt || t.createdAt)}
+                        <span style={{ color: PRIORITY_COLOR[t.priority] }}>{PRIORITIES.find(([k]) => k === t.priority)?.[1]}</span> · {STATUS[t.status] ?? t.status} · {t.claimedBy ? tx("pris par {tag}", { tag: t.claimedBy.tag }) : tx("personne dessus")} · {sinceLabel(t.lastActivityAt || t.createdAt)}
                       </p>
                     </div>
                     <div className="flex flex-wrap gap-1.5">
                       <a href={["https:", "", "discord.com", "channels", guildId, t.channelId].join("/")} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 rounded-lg border border-[var(--panel-border)] px-2.5 py-1.5 text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--surface-hover)]">
                         <ExternalLink className="h-3.5 w-3.5" />
-                        Discord
+                        {tx("Discord")}
                       </a>
                       {!t.claimedBy && (
                         <GhostButton onClick={() => claim(t)} disabled={busy !== null}>
-                          Prendre en charge
+                          {tx("Prendre en charge")}
                         </GhostButton>
                       )}
                       <GhostButton onClick={() => close(t)} disabled={busy !== null}>
-                        Fermer
+                        {tx("Fermer")}
                       </GhostButton>
                     </div>
                   </motion.li>
@@ -348,9 +349,9 @@ export default function ConsoleTickets({ guildId }: { guildId: string }) {
           )
         ) : (
           !closedTickets ? (
-            <EmptyLine>Chargement…</EmptyLine>
+            <EmptyLine>{tx("Chargement…")}</EmptyLine>
           ) : closedTickets.length === 0 ? (
-            <EmptyLine>Aucun ticket résolu pour l&apos;instant.</EmptyLine>
+            <EmptyLine>{tx("Aucun ticket résolu pour l'instant.")}</EmptyLine>
           ) : (
             <ul>
               <AnimatePresence initial={false}>
@@ -361,20 +362,20 @@ export default function ConsoleTickets({ guildId }: { guildId: string }) {
                         {t.userTag} <span className="font-normal text-[var(--text-muted)]">· {t.categoryName}</span>
                       </p>
                       <p className="truncate text-[11px] text-[var(--text-muted)]">
-                        <span className="text-[var(--success)]">Résolu</span> · {sinceLabel(t.closedAt || t.lastActivityAt || t.createdAt)}
-                        {t.closedBy?.tag ? ` · par ${t.closedBy.tag}` : ""}
+                        <span className="text-[var(--success)]">{tx("Résolu")}</span> · {sinceLabel(t.closedAt || t.lastActivityAt || t.createdAt)}
+                        {t.closedBy?.tag ? tx(" · par {tag}", { tag: t.closedBy.tag }) : ""}
                         {t.closeReason ? ` · « ${t.closeReason} »` : ""}
                       </p>
                     </div>
                     <div className="flex flex-wrap gap-1.5">
                       <GhostButton onClick={() => setActiveTranscript(t)}>
-                        Voir le transcript
+                        {tx("Voir le transcript")}
                       </GhostButton>
                       <a
                         href={`${BOT_API_URL}/api/guilds/${guildId}/tickets/transcripts/${t.id}/download`}
                         className="rounded-lg border border-[var(--panel-border)] px-2.5 py-1.5 text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--surface-hover)]"
                       >
-                        Télécharger
+                        {tx("Télécharger")}
                       </a>
                     </div>
                   </motion.li>
@@ -398,11 +399,11 @@ export default function ConsoleTickets({ guildId }: { guildId: string }) {
               <div className="mb-3 flex items-center justify-between gap-3">
                 <div className="min-w-0">
                   <h3 className="truncate text-sm font-bold text-[var(--text-primary)]">
-                    Transcript · {activeTranscript.userTag} ({activeTranscript.categoryName})
+                    {tx("Transcript ·")}{" "} {activeTranscript.userTag} ({activeTranscript.categoryName})
                   </h3>
                   <p className="text-xs text-[var(--text-muted)]">
-                    Fermé {activeTranscript.closedAt ? sinceLabel(activeTranscript.closedAt) : "récemment"}
-                    {activeTranscript.closedBy ? ` par ${activeTranscript.closedBy.tag}` : ""}
+                    {tx("Fermé")}{" "} {activeTranscript.closedAt ? sinceLabel(activeTranscript.closedAt) : tx("récemment")}
+                    {activeTranscript.closedBy ? tx(" par {tag}", { tag: activeTranscript.closedBy.tag }) : ""}
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -412,17 +413,17 @@ export default function ConsoleTickets({ guildId }: { guildId: string }) {
                     rel="noreferrer"
                     className="rounded-lg border border-[var(--panel-border)] px-3 py-1.5 text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--surface-hover)]"
                   >
-                    Télécharger
+                    {tx("Télécharger")}
                   </a>
                   <GhostButton onClick={() => setActiveTranscript(null)}>
-                    Fermer
+                    {tx("Fermer")}
                   </GhostButton>
                 </div>
               </div>
               <iframe
                 src={`${BOT_API_URL}/api/guilds/${guildId}/tickets/transcripts/${activeTranscript.id}/download`}
                 sandbox="allow-same-origin allow-scripts"
-                title={`Transcript ${activeTranscript.id}`}
+                title={tx("Transcript {id}", { id: activeTranscript.id })}
                 className="h-full w-full rounded-xl border border-[var(--panel-border)] bg-[#1e1f22]"
               />
             </motion.div>
@@ -439,31 +440,31 @@ function CategoryEditor({ guildId, cat, onSave, onDelete }: { guildId: string; c
   const save = (patch: Partial<Category>) => void onSave({ ...cat, ...patch });
   return (
     <div className="border-t border-[var(--panel-border)]">
-      <Row label="Nom">
+      <Row label={tx("Nom")}>
         <div className="flex gap-2">
           <TextField value={cat.emoji} maxLength={8} width="w-16" onCommit={(v) => save({ emoji: v })} />
           <TextField value={cat.name} maxLength={32} onCommit={(v) => save({ name: v })} />
         </div>
       </Row>
-      <Row label="Description" hint="Affichée sur le panneau.">
+      <Row label={tx("Description")} hint={tx("Affichée sur le panneau.")}>
         <TextField value={cat.description} maxLength={100} width="w-full" onCommit={(v) => save({ description: v })} />
       </Row>
-      <Row label="Rôles support" hint="Voient et gèrent les tickets de cette catégorie.">
+      <Row label={tx("Rôles support")} hint={tx("Voient et gèrent les tickets de cette catégorie.")}>
         <RoleChips guildId={guildId} ids={cat.supportRoleIds} onChange={(ids) => save({ supportRoleIds: ids })} />
       </Row>
-      <Row label="Catégorie Discord" hint="Où créer les salons. Vide : en haut du serveur.">
-        <ChannelPicker guildId={guildId} value={cat.discordCategoryId ?? ""} filterTypes={[4]} placeholder="Aucune" onChange={(id) => save({ discordCategoryId: id || null })} />
+      <Row label={tx("Catégorie Discord")} hint={tx("Où créer les salons. Vide : en haut du serveur.")}>
+        <ChannelPicker guildId={guildId} value={cat.discordCategoryId ?? ""} filterTypes={[4]} placeholder={tx("Aucune")} onChange={(id) => save({ discordCategoryId: id || null })} />
       </Row>
-      <Row label="Priorité par défaut">
-        <Segmented label="Priorité" value={cat.defaultPriority} options={PRIORITIES} onChange={(v) => save({ defaultPriority: v })} />
+      <Row label={tx("Priorité par défaut")}>
+        <Segmented label={tx("Priorité")} value={cat.defaultPriority} options={PRIORITIES} onChange={(v) => save({ defaultPriority: v })} />
       </Row>
-      <Row label="Tickets ouverts par membre">
+      <Row label={tx("Tickets ouverts par membre")}>
         <Stepper value={cat.maxTicketsPerUser} min={1} max={10} onCommit={(n) => save({ maxTicketsPerUser: n })} />
       </Row>
-      <Row label="Fermeture si inactif" hint="0 : jamais fermé automatiquement.">
+      <Row label={tx("Fermeture si inactif")} hint={tx("0 : jamais fermé automatiquement.")}>
         <Stepper value={cat.autoCloseInactivityHours} min={0} max={720} unit="h" onCommit={(n) => save({ autoCloseInactivityHours: n })} />
       </Row>
-      <Row label="Message d'accueil" hint="{user}, {username}, {ticketId}, {category}, {server}.">
+      <Row label={tx("Message d'accueil")} hint={tx("{user}, {username}, {ticketId}, {category}, {server}.")}>
         <textarea
           value={welcome}
           maxLength={1500}
@@ -474,7 +475,7 @@ function CategoryEditor({ guildId, cat, onSave, onDelete }: { guildId: string; c
         />
       </Row>
       <div className="flex justify-end border-t border-[var(--panel-border)] px-5 py-3">
-        <GhostButton onClick={onDelete}>Supprimer la catégorie</GhostButton>
+        <GhostButton onClick={onDelete}>{tx("Supprimer la catégorie")}</GhostButton>
       </div>
     </div>
   );
@@ -504,19 +505,19 @@ function PanelEditor({
   const toggleCat = (id: string) => save({ categoryIds: panel.categoryIds.includes(id) ? panel.categoryIds.filter((x) => x !== id) : [...panel.categoryIds, id] });
   return (
     <div className="border-t border-[var(--panel-border)]">
-      <Row label="Titre">
+      <Row label={tx("Titre")}>
         <TextField value={panel.title} maxLength={256} width="w-full" onCommit={(v) => save({ title: v })} />
       </Row>
-      <Row label="Texte">
+      <Row label={tx("Texte")}>
         <textarea value={desc} maxLength={2000} rows={3} onChange={(e) => setDesc(e.target.value)} onBlur={() => desc.trim() && desc !== panel.description && save({ description: desc })} className={cn(input, "h-auto py-2")} />
       </Row>
-      <Row label="Couleur">
-        <input type="color" value={/^#[0-9a-f]{6}$/i.test(panel.color) ? panel.color : "#5865f2"} onChange={(e) => save({ color: e.target.value })} aria-label="Couleur du panneau" className="h-9 w-14 cursor-pointer rounded-lg border border-[var(--panel-border)] bg-transparent" />
+      <Row label={tx("Couleur")}>
+        <input type="color" value={/^#[0-9a-f]{6}$/i.test(panel.color) ? panel.color : "#5865f2"} onChange={(e) => save({ color: e.target.value })} aria-label={tx("Couleur du panneau")} className="h-9 w-14 cursor-pointer rounded-lg border border-[var(--panel-border)] bg-transparent" />
       </Row>
-      <Row label="Bouton" hint="Utilisé quand le panneau n'a qu'une catégorie.">
+      <Row label={tx("Bouton")} hint={tx("Utilisé quand le panneau n'a qu'une catégorie.")}>
         <TextField value={panel.buttonLabel} maxLength={80} onCommit={(v) => save({ buttonLabel: v })} />
       </Row>
-      <Row label="Catégories" hint="Aucune cochée : toutes (5 boutons max).">
+      <Row label={tx("Catégories")} hint={tx("Aucune cochée : toutes (5 boutons max).")}>
         <div className="flex flex-wrap gap-1.5">
           {cats.map((c) => {
             const on = panel.categoryIds.includes(c.id);
@@ -534,18 +535,18 @@ function PanelEditor({
           })}
         </div>
       </Row>
-      <Row label="Publier dans">
+      <Row label={tx("Publier dans")}>
         <div className="flex flex-wrap items-center gap-2">
           <div className="min-w-[12rem] flex-1">
-            <ChannelPicker guildId={guildId} value={target} filterTypes={[0]} allowClear={false} placeholder="Choisir un salon" onChange={setTarget} />
+            <ChannelPicker guildId={guildId} value={target} filterTypes={[0]} allowClear={false} placeholder={tx("Choisir un salon")} onChange={setTarget} />
           </div>
           <GhostButton onClick={() => onPublish(target)} disabled={!target || publishing}>
-            {publishing ? "Publication…" : panel.messageId ? "Republier" : "Publier"}
+            {publishing ? tx("Publication…") : panel.messageId ? tx("Republier") : tx("Publier")}
           </GhostButton>
         </div>
       </Row>
       <div className="flex justify-end border-t border-[var(--panel-border)] px-5 py-3">
-        <GhostButton onClick={onDelete}>Supprimer le panneau</GhostButton>
+        <GhostButton onClick={onDelete}>{tx("Supprimer le panneau")}</GhostButton>
       </div>
     </div>
   );

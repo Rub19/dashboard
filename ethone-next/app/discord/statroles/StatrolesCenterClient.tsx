@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 import Select from "@/components/ui/Select";
 import { formatApiError, errorReason } from "@/lib/format-error";
 import ModuleSkeleton from "@/components/discord/ModuleSkeleton";
+import { tx } from "@/lib/tx";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -117,7 +118,7 @@ function AddMenu({ onAdd, canGroup }: { onAdd: (kind: string) => void; canGroup:
   }, [open]);
   return (
     <div ref={ref} className="relative">
-      <button type="button" aria-label="Ajouter une condition" onClick={() => setOpen((v) => !v)} className="grid h-7 w-7 cursor-pointer place-items-center rounded-xl border border-[var(--panel-border)] text-[var(--text-muted)] transition hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)]">
+      <button type="button" aria-label={tx("Ajouter une condition")} onClick={() => setOpen((v) => !v)} className="grid h-7 w-7 cursor-pointer place-items-center rounded-xl border border-[var(--panel-border)] text-[var(--text-muted)] transition hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)]">
         <Plus className="h-3.5 w-3.5" />
       </button>
       {open && (
@@ -150,7 +151,7 @@ function OpSelect({ value, onChange }: { value: Op; onChange: (o: Op) => void })
       onChange={(v) => onChange(v as Op)}
       size="sm"
       className="w-auto"
-      aria-label="Comparaison"
+      aria-label={tx("Comparaison")}
       options={OPS.map((o) => ({ id: o, label: OP_LABEL[o] }))}
     />
   );
@@ -167,8 +168,8 @@ function PeriodSelect({ value, onChange }: { value: number; onChange: (n: number
       onChange={(v) => onChange(Number(v))}
       size="sm"
       className="w-auto"
-      aria-label="Période"
-      options={(PERIODS.includes(value) ? PERIODS : [...PERIODS, value].sort((a, b) => a - b)).map((p) => ({ id: String(p), label: `sur ${p} j` }))}
+      aria-label={tx("Période")}
+      options={(PERIODS.includes(value) ? PERIODS : [...PERIODS, value].sort((a, b) => a - b)).map((p) => ({ id: String(p), label: tx("sur {p} j", { p }) }))}
     />
   );
 }
@@ -183,7 +184,7 @@ function LeafEditor({ leaf, roles, onChange, onDelete }: { leaf: Leaf; roles: Ro
         <>
           <OpSelect value={leaf.op} onChange={(op) => onChange({ ...leaf, op })} />
           <NumberInput value={leaf.value} onChange={(value) => onChange({ ...leaf, value })} width="w-24" />
-          <span className="text-[var(--text-muted)]">messages</span>
+          <span className="text-[var(--text-muted)]">{tx("messages")}</span>
           <PeriodSelect value={leaf.days} onChange={(days) => onChange({ ...leaf, days })} />
         </>
       );
@@ -194,7 +195,7 @@ function LeafEditor({ leaf, roles, onChange, onDelete }: { leaf: Leaf; roles: Ro
         <>
           <OpSelect value={leaf.op} onChange={(op) => onChange({ ...leaf, op })} />
           <NumberInput value={leaf.hours} step={0.5} onChange={(hours) => onChange({ ...leaf, hours })} />
-          <span className="text-[var(--text-muted)]">heures</span>
+          <span className="text-[var(--text-muted)]">{tx("heures")}</span>
           <PeriodSelect value={leaf.days} onChange={(days) => onChange({ ...leaf, days })} />
         </>
       );
@@ -205,7 +206,7 @@ function LeafEditor({ leaf, roles, onChange, onDelete }: { leaf: Leaf; roles: Ro
         <>
           <OpSelect value={leaf.op} onChange={(op) => onChange({ ...leaf, op })} />
           <NumberInput value={leaf.days} onChange={(days) => onChange({ ...leaf, days })} />
-          <span className="text-[var(--text-muted)]">jours</span>
+          <span className="text-[var(--text-muted)]">{tx("jours")}</span>
         </>
       );
       break;
@@ -215,7 +216,7 @@ function LeafEditor({ leaf, roles, onChange, onDelete }: { leaf: Leaf; roles: Ro
         <>
           <OpSelect value={leaf.op} onChange={(op) => onChange({ ...leaf, op })} />
           <NumberInput value={leaf.days} onChange={(days) => onChange({ ...leaf, days })} />
-          <span className="text-[var(--text-muted)]">jours</span>
+          <span className="text-[var(--text-muted)]">{tx("jours")}</span>
         </>
       );
       break;
@@ -228,10 +229,10 @@ function LeafEditor({ leaf, roles, onChange, onDelete }: { leaf: Leaf; roles: Ro
             onChange={(v) => onChange({ ...leaf, not: v === "not" })}
             size="sm"
             className="w-auto"
-            aria-label="Possède ou non"
+            aria-label={tx("Possède ou non")}
             options={[
-              { id: "has", label: "possède" },
-              { id: "not", label: "ne possède pas" },
+              { id: "has", label: tx("possède") },
+              { id: "not", label: tx("ne possède pas") },
             ]}
           />
           <Select
@@ -239,9 +240,9 @@ function LeafEditor({ leaf, roles, onChange, onDelete }: { leaf: Leaf; roles: Ro
             onChange={(v) => onChange({ ...leaf, roleId: v })}
             size="sm"
             className="min-w-40"
-            aria-label="Rôle"
+            aria-label={tx("Rôle")}
             options={[
-              { id: "", label: "— choisir un rôle —" },
+              { id: "", label: tx("— choisir un rôle —") },
               ...roles.map((r) => ({ id: r.id, label: r.name })),
             ]}
           />
@@ -252,7 +253,7 @@ function LeafEditor({ leaf, roles, onChange, onDelete }: { leaf: Leaf; roles: Ro
     <div className="flex flex-wrap items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 py-2 text-xs">
       <span className="w-40 shrink-0 font-semibold text-[var(--text-primary)]">{title}</span>
       {body}
-      <button type="button" aria-label="Supprimer la condition" onClick={onDelete} className="ml-auto cursor-pointer rounded-md p-1 text-[var(--text-muted)] transition hover:bg-rose-500/10 hover:text-rose-300">
+      <button type="button" aria-label={tx("Supprimer la condition")} onClick={onDelete} className="ml-auto cursor-pointer rounded-md p-1 text-[var(--text-muted)] transition hover:bg-rose-500/10 hover:text-rose-300">
         <Trash2 className="h-3.5 w-3.5" />
       </button>
     </div>
@@ -265,28 +266,28 @@ export function GroupEditor({ group, roles, depth, onChange, onDelete }: { group
   return (
     <div className={cn("space-y-2 rounded-2xl border p-3", depth === 0 ? "border-[var(--panel-border)] bg-[var(--surface-raised)]/40" : "border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/[0.03]")}>
       <div className="flex items-center gap-2 text-xs">
-        <span className="font-semibold text-[var(--text-muted)]">Correspond si</span>
+        <span className="font-semibold text-[var(--text-muted)]">{tx("Correspond si")}</span>
         <Select
           value={group.match}
           onChange={(v) => onChange({ ...group, match: v as "ALL" | "ANY" })}
           size="sm"
           className="w-auto font-semibold"
-          aria-label="Type de groupe"
+          aria-label={tx("Type de groupe")}
           options={[
-            { id: "ALL", label: "TOUT est vrai (ET)" },
-            { id: "ANY", label: "AU MOINS UN est vrai (OU)" },
+            { id: "ALL", label: tx("TOUT est vrai (ET)") },
+            { id: "ANY", label: tx("AU MOINS UN est vrai (OU)") },
           ]}
         />
         <span className="ml-auto flex items-center gap-1.5">
           <AddMenu canGroup={depth < 3} onAdd={(kind) => onChange({ ...group, children: [...group.children, newLeaf(kind)] })} />
           {onDelete && (
-            <button type="button" aria-label="Supprimer le groupe" onClick={onDelete} className="cursor-pointer rounded-md p-1.5 text-[var(--text-muted)] transition hover:bg-rose-500/10 hover:text-rose-300">
+            <button type="button" aria-label={tx("Supprimer le groupe")} onClick={onDelete} className="cursor-pointer rounded-md p-1.5 text-[var(--text-muted)] transition hover:bg-rose-500/10 hover:text-rose-300">
               <Trash2 className="h-3.5 w-3.5" />
             </button>
           )}
         </span>
       </div>
-      {group.children.length === 0 && <p className="rounded-xl border border-dashed border-[var(--panel-border)] px-3 py-2 text-xs text-[var(--text-muted)]">Groupe vide : il ne correspond à personne. Ajoute une condition avec le bouton +.</p>}
+      {group.children.length === 0 && <p className="rounded-xl border border-dashed border-[var(--panel-border)] px-3 py-2 text-xs text-[var(--text-muted)]">{tx("Groupe vide : il ne correspond à personne. Ajoute une condition avec le bouton +.")}</p>}
       <div className="stagger-children space-y-2 pl-3">
         {group.children.map((child, i) =>
           child.kind === "group" ? (
@@ -363,7 +364,7 @@ export default function StatrolesCenterClient() {
       if (okTitle) success(okTitle, okText ?? "");
       return data;
     } catch (err) {
-      showError("Action impossible", errorReason(err, "Le bot n'a pas répondu."));
+      showError(tx("Action impossible"), errorReason(err, "Le bot n'a pas répondu."));
       return null;
     } finally {
       setBusy(false);
@@ -379,7 +380,7 @@ export default function StatrolesCenterClient() {
     const d = await request(() => fetch(`${base}/run`, { method: "POST", credentials: "include" }));
     if (d?.summary) {
       const s = d.summary as { added: number; removed: number; errors: number; issues: string[] };
-      success("Règles appliquées", `+${s.added} / −${s.removed}${s.errors ? ` · ${s.errors} erreur(s)` : ""}${s.issues.length ? ` · ${s.issues.join(" ; ")}` : ""}`);
+      success(tx("Règles appliquées"), `+${s.added} / −${s.removed}${s.errors ? ` · ${s.errors} erreur(s)` : ""}${s.issues.length ? ` · ${s.issues.join(" ; ")}` : ""}`);
       await load();
     }
   };
@@ -396,7 +397,7 @@ export default function StatrolesCenterClient() {
   };
 
   const remove = async (rule: Rule) => {
-    if (!(await confirmDialog(`Supprimer la règle « ${rule.name} » ? Les membres qui ont déjà le rôle le gardent, mais il ne sera plus géré automatiquement.`, { title: "Supprimer la règle", confirmLabel: "Supprimer", tone: "danger" }))) return;
+    if (!(await confirmDialog(tx("Supprimer la règle « {name} » ? Les membres qui ont déjà le rôle le gardent, mais il ne sera plus géré automatiquement.", { name: rule.name }), { title: tx("Supprimer la règle"), confirmLabel: tx("Supprimer"), tone: "danger" }))) return;
     const d = await request(() => fetch(`${base}/rules/${encodeURIComponent(rule.id)}`, { method: "DELETE", credentials: "include" }), "Règle supprimée", "");
     if (d) await load();
   };
@@ -418,18 +419,18 @@ export default function StatrolesCenterClient() {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <Link href={`/discord${guildId ? `?guildId=${guildId}` : ""}`} className="inline-flex items-center gap-2 text-xs font-medium text-[var(--text-muted)] transition hover:text-[var(--text-primary)]">
             <ArrowLeft className="h-4 w-4" />
-            Retour au hub Discord
+            {tx("Retour au hub Discord")}
           </Link>
           <button type="button" onClick={() => void load()} className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-[var(--panel-border)] px-3 py-1.5 text-xs font-semibold text-[var(--text-muted)] transition hover:bg-[var(--surface-raised)]/70">
             <RefreshCw className="h-3.5 w-3.5" />
-            Actualiser
+            {tx("Actualiser")}
           </button>
         </div>
 
-        <PageHeader hideBack guildId={guildId} icon="mod-roles" tint="amber" title="Statroles" subtitle="Des rôles donnés, et retirés, automatiquement selon l'activité des membres dans la durée." />
+        <PageHeader hideBack guildId={guildId} icon="mod-roles" tint="amber" title={tx("Statroles")} subtitle={tx("Des rôles donnés, et retirés, automatiquement selon l'activité des membres dans la durée.")} />
 
-        {state === "loading" && <ModuleSkeleton compact className="px-0 sm:px-0" label="Chargement…" />}
-        {state === "offline" && <div className="rounded-2xl border border-dashed border-[var(--panel-border)] p-8 text-center text-sm text-[var(--text-muted)]">Le bot n&apos;a pas répondu pour ce serveur. Vérifie qu&apos;il est présent, puis actualise.</div>}
+        {state === "loading" && <ModuleSkeleton compact className="px-0 sm:px-0" label={tx("Chargement…")} />}
+        {state === "offline" && <div className="rounded-2xl border border-dashed border-[var(--panel-border)] p-8 text-center text-sm text-[var(--text-muted)]">{tx("Le bot n'a pas répondu pour ce serveur. Vérifie qu'il est présent, puis actualise.")}</div>}
 
         {state === "ok" && overview && cfg && (
           <>
@@ -437,33 +438,33 @@ export default function StatrolesCenterClient() {
               <div className="text-xs leading-relaxed text-[var(--text-primary)]">
                 {cfg.enabled ? (
                   <>
-                    Module <strong>actif</strong> : les règles sont appliquées toutes les 10 minutes.
-                    {cfg.lastRunAt && cfg.lastRun ? <> Dernier passage : +{cfg.lastRun.added} / −{cfg.lastRun.removed}{cfg.lastRun.errors ? ` · ${cfg.lastRun.errors} erreur(s)` : ""}.</> : null}
+                    {tx("Module")}{" "} <strong>{tx("actif")}</strong> {" "}{tx(": les règles sont appliquées toutes les 10 minutes.")}
+                    {cfg.lastRunAt && cfg.lastRun ? <> {" "}{tx("Dernier passage : +")}{cfg.lastRun.added} / −{cfg.lastRun.removed}{cfg.lastRun.errors ? tx(" · {errors} erreur(s)", { errors: cfg.lastRun.errors }) : ""}.</> : null}
                   </>
                 ) : (
-                  <>Module <strong>désactivé</strong> (réglage par défaut) : aucun rôle n&apos;est attribué ni retiré.</>
+                  <>{tx("Module")}{" "} <strong>{tx("désactivé")}</strong> {" "}{tx("(réglage par défaut) : aucun rôle n'est attribué ni retiré.")}</>
                 )}
                 {!overview.statsEnabled && (
                   <p className="mt-1 text-amber-300">
-                    Le module <Link href={`/discord/stats?guildId=${guildId}`} className="underline">Statistiques</Link> est désactivé : les conditions de messages et de vocal comptent 0 tant qu&apos;il ne collecte pas de données.
+                    {tx("Le module")}{" "} <Link href={`/discord/stats?guildId=${guildId}`} className="underline">{tx("Statistiques")}</Link> {" "}{tx("est désactivé : les conditions de messages et de vocal comptent 0 tant qu'il ne collecte pas de données.")}
                   </p>
                 )}
               </div>
               <div className="flex shrink-0 gap-2">
                 {cfg.enabled && (
                   <button type="button" disabled={busy} onClick={() => void runNow()} className="cursor-pointer rounded-xl border border-[var(--panel-border)] px-3 py-2 text-xs font-semibold text-[var(--text-primary)] transition hover:bg-[var(--surface-raised)]/70 disabled:opacity-50">
-                    Appliquer maintenant
+                    {tx("Appliquer maintenant")}
                   </button>
                 )}
                 <button type="button" disabled={busy} onClick={() => void setEnabled(!cfg.enabled)} className="cursor-pointer rounded-xl bg-[var(--accent-primary)] px-4 py-2 text-sm font-semibold text-[var(--accent-contrast)] hover:brightness-110 disabled:opacity-50 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50">
-                  {cfg.enabled ? "Désactiver" : "Activer"}
+                  {cfg.enabled ? tx("Désactiver") : tx("Activer")}
                 </button>
               </div>
             </div>
 
             <section className="space-y-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
               <div className="flex items-center justify-between">
-                <h2 className="text-sm font-semibold">Règles ({cfg.rules.length}/25)</h2>
+                <h2 className="text-sm font-semibold">{tx("Règles (")}{cfg.rules.length}/25)</h2>
                 <button
                   type="button"
                   onClick={() => {
@@ -473,11 +474,11 @@ export default function StatrolesCenterClient() {
                   className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-[var(--text-primary)]/10 px-3 py-1.5 text-xs font-semibold text-[var(--text-primary)] transition hover:bg-[var(--text-primary)]/15"
                 >
                   <Plus className="h-3.5 w-3.5" />
-                  Nouvelle règle
+                  {tx("Nouvelle règle")}
                 </button>
               </div>
               {cfg.rules.length === 0 ? (
-                <p className="rounded-xl border border-dashed border-[var(--panel-border)] p-6 text-center text-xs text-[var(--text-muted)]">Aucune règle. Exemple : rôle « Actif » pour ceux qui ont écrit au moins 100 messages sur 30 jours ET sont là depuis 30 jours.</p>
+                <p className="rounded-xl border border-dashed border-[var(--panel-border)] p-6 text-center text-xs text-[var(--text-muted)]">{tx("Aucune règle. Exemple : rôle « Actif » pour ceux qui ont écrit au moins 100 messages sur 30 jours ET sont là depuis 30 jours.")}</p>
               ) : (
                 <ul className="stagger-children space-y-2">
                   {cfg.rules.map((r) => {
@@ -488,11 +489,11 @@ export default function StatrolesCenterClient() {
                         <div className="min-w-0 flex-1">
                           <p className="truncate font-semibold text-[var(--text-primary)]">{r.name}</p>
                           <p className="truncate text-xs text-[var(--text-muted)]">
-                            Rôle{" "}
+                            {tx("Rôle")}{" "}
                             <span className="rounded px-1 font-semibold" style={{ color: role?.color && role.color !== "#000000" ? role.color : undefined }}>
-                              {role ? `@${role.name}` : "(rôle supprimé)"}
+                              {role ? `@${role.name}` : tx("(rôle supprimé)")}
                             </span>{" "}
-                            · {countLeaves(r.root)} condition(s) · {r.removeWhenNotMatching ? "retiré si plus rempli" : "conservé une fois obtenu"}
+                            · {countLeaves(r.root)} {" "}{tx("condition(s) ·")}{" "} {r.removeWhenNotMatching ? tx("retiré si plus rempli") : tx("conservé une fois obtenu")}
                           </p>
                         </div>
                         <button
@@ -503,9 +504,9 @@ export default function StatrolesCenterClient() {
                           }}
                           className="cursor-pointer rounded-xl border border-[var(--panel-border)] px-2.5 py-1 font-semibold text-[var(--text-muted)] transition hover:bg-[var(--surface-raised)]/70"
                         >
-                          Modifier
+                          {tx("Modifier")}
                         </button>
-                        <button type="button" aria-label="Supprimer la règle" disabled={busy} onClick={() => void remove(r)} className="cursor-pointer rounded-xl p-1.5 text-[var(--text-muted)] transition hover:bg-rose-500/10 hover:text-rose-300">
+                        <button type="button" aria-label={tx("Supprimer la règle")} disabled={busy} onClick={() => void remove(r)} className="cursor-pointer rounded-xl p-1.5 text-[var(--text-muted)] transition hover:bg-rose-500/10 hover:text-rose-300">
                           <Trash2 className="h-4 w-4" />
                         </button>
                       </li>
@@ -519,29 +520,29 @@ export default function StatrolesCenterClient() {
       </div>
 
       {editing && overview && (
-        <div className="fixed inset-0 z-[var(--z-modal)] flex items-start justify-center overflow-y-auto bg-black/60 p-4 sm:items-center" onClick={() => setEditing(null)} role="dialog" aria-modal="true" aria-label="Éditeur de règle">
+        <div className="fixed inset-0 z-[var(--z-modal)] flex items-start justify-center overflow-y-auto bg-black/60 p-4 sm:items-center" onClick={() => setEditing(null)} role="dialog" aria-modal="true" aria-label={tx("Éditeur de règle")}>
           <div className="w-full max-w-3xl rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)] p-5 sm:p-6" onClick={(e) => e.stopPropagation()}>
             <div className="mb-4 flex items-center justify-between gap-3">
-              <h3 className="text-base font-bold">{cfg?.rules.some((r) => r.id === editing.id) ? "Modifier la règle" : "Nouvelle règle"}</h3>
-              <button type="button" aria-label="Fermer" onClick={() => setEditing(null)} className="cursor-pointer rounded-xl p-1.5 text-[var(--text-muted)] transition hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)]">
+              <h3 className="text-base font-bold">{cfg?.rules.some((r) => r.id === editing.id) ? tx("Modifier la règle") : tx("Nouvelle règle")}</h3>
+              <button type="button" aria-label={tx("Fermer")} onClick={() => setEditing(null)} className="cursor-pointer rounded-xl p-1.5 text-[var(--text-muted)] transition hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)]">
                 <X className="h-4 w-4" />
               </button>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2">
               <label className="text-xs text-[var(--text-muted)]">
-                Nom
+                {tx("Nom")}
                 <input value={editing.name} maxLength={60} onChange={(e) => setEditing({ ...editing, name: e.target.value })} className={cn(inputCls, "mt-1 h-10 w-full text-sm")} />
               </label>
               <label className="text-xs text-[var(--text-muted)]">
-                Rôle à attribuer
+                {tx("Rôle à attribuer")}
                 <Select
                   value={editing.roleId}
                   onChange={(v) => setEditing({ ...editing, roleId: v })}
                   className="mt-1 w-full"
-                  aria-label="Rôle à attribuer"
+                  aria-label={tx("Rôle à attribuer")}
                   options={[
-                    { id: "", label: "— choisir un rôle —" },
+                    { id: "", label: tx("— choisir un rôle —") },
                     ...overview.roles.map((r) => ({
                       id: r.id,
                       label: r.name + (!r.assignable ? " (non attribuable par le bot)" : ""),
@@ -571,18 +572,18 @@ export default function StatrolesCenterClient() {
             </div>
 
             <div className="mt-4">
-              <p className="mb-2 text-xs font-semibold text-[var(--text-muted)]">Conditions</p>
+              <p className="mb-2 text-xs font-semibold text-[var(--text-muted)]">{tx("Conditions")}</p>
               <GroupEditor group={editing.root} roles={overview.roles} depth={0} onChange={(root) => setEditing({ ...editing, root })} />
             </div>
 
             <div className="mt-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <p className="text-xs font-semibold text-[var(--text-muted)]">Aperçu</p>
+                <p className="text-xs font-semibold text-[var(--text-muted)]">{tx("Aperçu")}</p>
                 <button type="button" disabled={previewing || !editing.roleId} onClick={() => void runPreview()} className="cursor-pointer rounded-xl border border-[var(--panel-border)] px-3 py-1.5 text-xs font-semibold text-[var(--text-primary)] transition hover:bg-[var(--surface-raised)]/70 disabled:cursor-not-allowed disabled:opacity-50">
-                  {previewing ? "Calcul…" : "Calculer l'aperçu"}
+                  {previewing ? tx("Calcul…") : tx("Calculer l'aperçu")}
                 </button>
               </div>
-              {!editing.roleId && <p className="mt-2 text-xs text-[var(--text-muted)]">Choisis d&apos;abord le rôle à attribuer.</p>}
+              {!editing.roleId && <p className="mt-2 text-xs text-[var(--text-muted)]">{tx("Choisis d'abord le rôle à attribuer.")}</p>}
               {preview && (
                 <div className="mt-3 space-y-2 text-xs">
                   <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -598,7 +599,7 @@ export default function StatrolesCenterClient() {
                       </div>
                     ))}
                   </div>
-                  {preview.sample.length > 0 && <p className="text-xs text-[var(--text-muted)]">Exemples : {preview.sample.map((s) => s.name).join(", ")}{preview.matching > preview.sample.length ? "…" : ""}</p>}
+                  {preview.sample.length > 0 && <p className="text-xs text-[var(--text-muted)]">{tx("Exemples :")}{" "} {preview.sample.map((s) => s.name).join(", ")}{preview.matching > preview.sample.length ? "…" : ""}</p>}
                   {preview.warnings.map((w, i) => (
                     <p key={i} className="text-xs text-amber-300">⚠ {w}</p>
                   ))}
@@ -608,10 +609,10 @@ export default function StatrolesCenterClient() {
 
             <div className="mt-5 flex flex-wrap justify-end gap-2">
               <button type="button" onClick={() => setEditing(null)} className="cursor-pointer rounded-xl border border-[var(--panel-border)] px-4 py-2 text-xs font-semibold text-[var(--text-muted)] transition hover:bg-[var(--surface-raised)]/70">
-                Annuler
+                {tx("Annuler")}
               </button>
               <button type="button" disabled={busy || !editing.roleId || !editing.name.trim()} onClick={() => void save()} className="cursor-pointer rounded-xl bg-[var(--accent-primary)] px-5 py-2 text-sm font-semibold text-[var(--accent-contrast)] hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50">
-                Enregistrer la règle
+                {tx("Enregistrer la règle")}
               </button>
             </div>
           </div>

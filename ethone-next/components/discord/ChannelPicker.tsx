@@ -8,6 +8,7 @@ import {
 } from "@/components/icons/ph";
 import { cn } from "@/lib/utils";
 import { subscribeGuildLive } from "@/lib/guildLive";
+import { tx } from "@/lib/tx";
 
 export interface ChannelOption {
   id: string;
@@ -473,9 +474,9 @@ export default function ChannelPicker({
                   <span className="truncate">{matchedChannel.name}</span>
                 </>
               ) : currentId ? (
-                <span className="truncate"># Salon sélectionné ({currentId})</span>
+                <span className="truncate">{tx("# Salon sélectionné (")}{currentId})</span>
               ) : (
-                <span className="truncate text-[var(--text-muted)]">{placeholder && placeholder !== DEFAULT_ID_PLACEHOLDER ? placeholder : "Choisir un salon"}</span>
+                <span className="truncate text-[var(--text-muted)]">{placeholder && placeholder !== DEFAULT_ID_PLACEHOLDER ? placeholder : tx("Choisir un salon")}</span>
               )}
             </button>
 
@@ -505,8 +506,8 @@ export default function ChannelPicker({
                         setActiveKey(null);
                       }}
                       onKeyDown={handleSearchKey}
-                      placeholder="Rechercher un salon ou coller un ID"
-                      aria-label="Rechercher un salon ou coller un ID"
+                      placeholder={tx("Rechercher un salon ou coller un ID")}
+                      aria-label={tx("Rechercher un salon ou coller un ID")}
                       className="w-full bg-transparent text-sm text-[var(--text-primary)] outline-none placeholder:text-[var(--text-muted)]"
                     />
                   </div>
@@ -524,7 +525,7 @@ export default function ChannelPicker({
                         className="mx-1.5 flex cursor-pointer items-center gap-2.5 rounded-lg bg-[var(--text-primary)]/[0.07] px-3 py-2 text-[13px] text-[var(--text-primary)]"
                       >
                         <Hash className="h-3.5 w-3.5 shrink-0 text-[var(--text-muted)]" />
-                        <span className="truncate">Utiliser l&apos;identifiant <span className="font-mono">{query.trim()}</span></span>
+                        <span className="truncate">{tx("Utiliser l'identifiant")}{" "} <span className="font-mono">{query.trim()}</span></span>
                       </div>
                     )}
                     {rows.map((row) => {
@@ -575,7 +576,7 @@ export default function ChannelPicker({
                           {row.childCount ? (
                             <button
                               type="button"
-                              aria-label={collapsed.has(c.id) ? "Déplier" : "Replier"}
+                              aria-label={collapsed.has(c.id) ? tx("Déplier") : tx("Replier")}
                               onClick={(e) => {
                                 e.stopPropagation();
                                 toggleCollapsed(c.id);
@@ -603,7 +604,7 @@ export default function ChannelPicker({
                     })}
                     {rows.every((r) => r.kind === "clear") && (
                       <div className="px-3 py-3 text-center text-xs text-[var(--text-muted)]">
-                        {query.trim() ? (/^\d{15,22}$/.test(query.trim()) ? "" : "Aucun salon trouvé") : "Aucun salon disponible"}
+                        {query.trim() ? (/^\d{15,22}$/.test(query.trim()) ? "" : tx("Aucun salon trouvé")) : tx("Aucun salon disponible")}
                       </div>
                     )}
                   </div>

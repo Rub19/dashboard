@@ -23,6 +23,7 @@ import { useDiscordSync } from "@/lib/useDiscordSync";
 import { cn } from "@/lib/utils";
 import { GuildSelector } from "@/components/GuildSelector";
 import { formatApiError } from "@/lib/format-error";
+import { tx } from "@/lib/tx";
 
 type AntiNukeAction = "alert" | "strip_roles" | "ban";
 
@@ -190,10 +191,10 @@ export default function AntiNukePage() {
       });
       const data = await res.json().catch(() => null);
       if (!res.ok) throw new Error(formatApiError(data?.error, ""));
-      success("Anti-Nuke mis à jour", "Configuration synchronisée avec le bot.");
+      success(tx("Anti-Nuke mis à jour"), tx("Configuration synchronisée avec le bot."));
     } catch (err: any) {
       setConfig(config);
-      showError("Erreur", formatApiError(err, "Impossible de synchroniser avec le bot."));
+      showError(tx("Erreur"), formatApiError(err, "Impossible de synchroniser avec le bot."));
     } finally {
       setIsSaving(false);
     }
@@ -210,9 +211,9 @@ export default function AntiNukePage() {
       if (!res.ok) throw new Error(formatApiError(data?.error, ""));
       setIncidents((prev) => prev.map((i) => (i.id === incidentId ? { ...i, status: "resolved" } : i)));
       setOpenCount((c) => Math.max(0, c - 1));
-      success("Incident résolu");
+      success(tx("Incident résolu"));
     } catch (err: any) {
-      showError("Erreur", formatApiError(err, "Impossible de résoudre cet incident."));
+      showError(tx("Erreur"), formatApiError(err, "Impossible de résoudre cet incident."));
     }
   };
 
@@ -224,7 +225,7 @@ export default function AntiNukePage() {
             <Link
               href={selectedGuild ? `/discord/security?guildId=${selectedGuild.id}` : "/discord/security"}
               className="flex h-8 w-8 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--text-primary)]/10 transition-all active:scale-95"
-              title="Retour au hub Sécurité"
+              title={tx("Retour au hub Sécurité")}
             >
               <ArrowLeft className="h-4 w-4" />
             </Link>
@@ -233,8 +234,8 @@ export default function AntiNukePage() {
                 <Bomb className="h-5 w-5" />
               </div>
               <div>
-                <h1 className="text-base font-semibold tracking-tight text-[var(--text-primary)]">Anti-Nuke</h1>
-                <p className="text-xs text-[var(--text-muted)]">Bannissements massifs, suppressions de salons et de rôles.</p>
+                <h1 className="text-base font-semibold tracking-tight text-[var(--text-primary)]">{tx("Anti-Nuke")}</h1>
+                <p className="text-xs text-[var(--text-muted)]">{tx("Bannissements massifs, suppressions de salons et de rôles.")}</p>
               </div>
             </div>
           </div>
@@ -256,7 +257,7 @@ export default function AntiNukePage() {
               className="flex h-8 items-center gap-1.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-2.5 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--text-primary)]/10 transition-all active:scale-95 disabled:opacity-50"
             >
               <RefreshCw className={cn("h-3.5 w-3.5", isLoading && "animate-spin text-red-400")} />
-              <span className="hidden sm:inline">Actualiser</span>
+              <span className="hidden sm:inline">{tx("Actualiser")}</span>
             </button>
             <button
               onClick={() => saveConfig({ enabled: !config.enabled })}
@@ -269,7 +270,7 @@ export default function AntiNukePage() {
               )}
             >
               <div className={cn("h-2 w-2 rounded-full", config.enabled ? "bg-[var(--success)]" : "bg-red-500")} />
-              <span>{config.enabled ? "Actif" : "En pause"}</span>
+              <span>{config.enabled ? tx("Actif") : tx("En pause")}</span>
             </button>
           </div>
         </div>
@@ -284,9 +285,9 @@ export default function AntiNukePage() {
                   <Bot className="h-5 w-5" />
                 </div>
                 <div>
-                  <p className="font-semibold text-[var(--text-primary)] text-sm">Le bot ETHONE n&apos;est pas installé sur ce serveur</p>
+                  <p className="font-semibold text-[var(--text-primary)] text-sm">{tx("Le bot ETHONE n'est pas installé sur ce serveur")}</p>
                   <p className="mt-0.5 text-[var(--text-muted)]">
-                    Invite le bot sur « {selectedGuild.name} » pour activer la surveillance Anti-Nuke.
+                    {tx("Invite le bot sur «")}{" "} {selectedGuild.name} {" "}{tx("» pour activer la surveillance Anti-Nuke.")}
                   </p>
                 </div>
               </div>
@@ -296,45 +297,45 @@ export default function AntiNukePage() {
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[var(--accent-primary)] px-4 py-2 text-sm font-semibold text-[var(--accent-contrast)] hover:brightness-110 shrink-0 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
               >
-                Inviter le bot
+                {tx("Inviter le bot")}
               </a>
             </div>
           )}
           {/* Stat tiles */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 ">
-              <span className="text-xs text-[var(--text-muted)] font-medium">Protection</span>
+              <span className="text-xs text-[var(--text-muted)] font-medium">{tx("Protection")}</span>
               <div className="mt-2 flex items-center gap-2">
                 {config.enabled ? (
                   <ShieldCheck className="h-5 w-5 text-[var(--accent-primary)]" />
                 ) : (
                   <AlertTriangle className="h-5 w-5 text-red-400" />
                 )}
-                <span className="text-lg font-bold text-[var(--text-primary)]">{config.enabled ? "Active" : "Désactivée"}</span>
+                <span className="text-lg font-bold text-[var(--text-primary)]">{config.enabled ? tx("Active") : tx("Désactivée")}</span>
               </div>
             </div>
             <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 ">
-              <span className="text-xs text-[var(--text-muted)] font-medium">Sanction configurée</span>
+              <span className="text-xs text-[var(--text-muted)] font-medium">{tx("Sanction configurée")}</span>
               <div className="mt-2 text-sm font-bold text-[var(--text-primary)]">
                 {ACTION_LABELS[config.action].icon} {ACTION_LABELS[config.action].label}
               </div>
             </div>
             <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 ">
-              <span className="text-xs text-[var(--text-muted)] font-medium">Incidents ouverts</span>
+              <span className="text-xs text-[var(--text-muted)] font-medium">{tx("Incidents ouverts")}</span>
               <div className="mt-2 text-2xl font-bold text-[var(--text-primary)]">{openCount}</div>
             </div>
             <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 ">
-              <span className="text-xs text-[var(--text-muted)] font-medium">Fenêtre de détection</span>
+              <span className="text-xs text-[var(--text-muted)] font-medium">{tx("Fenêtre de détection")}</span>
               <div className="mt-2 text-2xl font-bold text-[var(--text-primary)]">{config.timeWindowSeconds}s</div>
             </div>
           </div>
 
           {/* Config panel */}
           <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-5">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">Configuration</h2>
+            <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">{tx("Configuration")}</h2>
 
             <div className="space-y-1.5">
-              <label className="text-xs text-[var(--text-muted)]">Sanction appliquée à l'auteur détecté</label>
+              <label className="text-xs text-[var(--text-muted)]">{tx("Sanction appliquée à l'auteur détecté")}</label>
               <Select
                 value={config.action}
                 onChange={(v) => saveConfig({ action: v as AntiNukeAction })}
@@ -346,7 +347,7 @@ export default function AntiNukePage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs text-[var(--text-muted)]">Bannissements max</label>
+                <label className="text-xs text-[var(--text-muted)]">{tx("Bannissements max")}</label>
                 <input
                   type="number"
                   min={2}
@@ -358,7 +359,7 @@ export default function AntiNukePage() {
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs text-[var(--text-muted)]">Suppressions de salons max</label>
+                <label className="text-xs text-[var(--text-muted)]">{tx("Suppressions de salons max")}</label>
                 <input
                   type="number"
                   min={2}
@@ -370,7 +371,7 @@ export default function AntiNukePage() {
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs text-[var(--text-muted)]">Suppressions de rôles max</label>
+                <label className="text-xs text-[var(--text-muted)]">{tx("Suppressions de rôles max")}</label>
                 <input
                   type="number"
                   min={2}
@@ -383,17 +384,17 @@ export default function AntiNukePage() {
               </div>
             </div>
             <p className="text-xs text-[var(--text-muted)]">
-              Ces seuils s'appliquent sur la fenêtre de {config.timeWindowSeconds}s. Le propriétaire du bot et les rôles/membres de confiance (configurés séparément) sont toujours exemptés.
+              {tx("Ces seuils s'appliquent sur la fenêtre de")}{" "} {config.timeWindowSeconds}{tx("s. Le propriétaire du bot et les rôles/membres de confiance (configurés séparément) sont toujours exemptés.")}
             </p>
           </div>
 
           {/* Incidents */}
           <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">Incidents récents ({incidents.length})</h2>
+            <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">{tx("Incidents récents (")}{incidents.length})</h2>
             {incidents.length === 0 ? (
               <div className="pop-in text-center py-10 text-[var(--text-muted)]">
                 <CheckCircle2 className="h-7 w-7 text-[var(--success)]/40 mx-auto mb-2" />
-                <p className="text-xs font-medium text-[var(--text-muted)]">Aucun incident détecté</p>
+                <p className="text-xs font-medium text-[var(--text-muted)]">{tx("Aucun incident détecté")}</p>
               </div>
             ) : (
               <div className="stagger-children divide-y divide-[var(--panel-border)]">
@@ -407,7 +408,7 @@ export default function AntiNukePage() {
                           <p className="text-xs font-bold text-[var(--text-primary)]">{inc.title}</p>
                           <p className="text-xs text-[var(--text-muted)] mt-0.5">{inc.description}</p>
                           <p className="text-xs text-[var(--text-muted)] mt-1">
-                            {inc.perpetratorTag || "Inconnu"} · {inc.actionTaken} · {new Date(inc.createdAt).toLocaleString()}
+                            {inc.perpetratorTag || tx("Inconnu")} · {inc.actionTaken} · {new Date(inc.createdAt).toLocaleString()}
                           </p>
                         </div>
                       </div>
@@ -416,11 +417,11 @@ export default function AntiNukePage() {
                           onClick={() => resolveIncident(inc.id)}
                           className="shrink-0 flex h-7 items-center gap-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-2 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--text-primary)]/10 transition-all active:scale-95"
                         >
-                          Résoudre
+                          {tx("Résoudre")}
                         </button>
                       ) : (
                         <span className="shrink-0 text-xs font-bold px-2 py-0.5 rounded bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/30">
-                          Résolu
+                          {tx("Résolu")}
                         </span>
                       )}
                     </div>

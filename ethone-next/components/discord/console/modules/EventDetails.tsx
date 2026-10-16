@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { confirmDialog } from "@/lib/confirmDialog";
 import { cn } from "@/lib/utils";
 import { EmptyLine, GhostButton, Row, Segmented, Stepper, TextField, useGuildApi } from "../kit";
+import { tx } from "@/lib/tx";
 
 type Rsvp = "GOING" | "MAYBE" | "NOT_GOING" | "WAITLIST";
 type Attendance = "REGISTERED" | "ATTENDED" | "LATE" | "NO_SHOW" | "CANCELLED";
@@ -45,7 +46,7 @@ export default function EventDetails({ guildId, event, onChanged }: { guildId: s
     if (!(await api(`/events/${event.id}/participants/${p.userId}/checkin`, { method: "POST", json: { attendance } }))) void load();
   };
   const remove = async (p: Participant) => {
-    if (!(await confirmDialog(`Retirer ${p.displayName || p.username} de l'événement ?`, { title: "Retirer", confirmLabel: "Retirer" }))) return;
+    if (!(await confirmDialog(tx("Retirer {v0} de l'événement ?", { v0: p.displayName || p.username }), { title: tx("Retirer"), confirmLabel: tx("Retirer") }))) return;
     if (await api(`/events/${event.id}/participants/${p.userId}`, { method: "DELETE" })) {
       void load();
       onChanged();
@@ -57,21 +58,21 @@ export default function EventDetails({ guildId, event, onChanged }: { guildId: s
 
   return (
     <div className="rounded-lg border border-[var(--panel-border)]">
-      <Row label="Titre">
+      <Row label={tx("Titre")}>
         <TextField value={event.title} maxLength={100} width="w-72" onCommit={(v) => save({ title: v })} />
       </Row>
-      <Row label="Description">
+      <Row label={tx("Description")}>
         <textarea
           value={desc}
           maxLength={1000}
           rows={2}
           onChange={(e) => setDesc(e.target.value)}
           onBlur={() => desc !== event.description && save({ description: desc })}
-          aria-label="Description"
+          aria-label={tx("Description")}
           className="w-full rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/70"
         />
       </Row>
-      <Row label="Places" hint="0 = sans limite. Au-delà, les membres passent en liste d'attente.">
+      <Row label={tx("Places")} hint={tx("0 = sans limite. Au-delà, les membres passent en liste d'attente.")}>
         <Stepper
           value={event.capacity.unlimited ? 0 : event.capacity.maxParticipants}
           min={0}
@@ -81,11 +82,11 @@ export default function EventDetails({ guildId, event, onChanged }: { guildId: s
         />
       </Row>
       <div className="border-t border-[var(--panel-border)] px-5 py-3">
-        <p className="mb-2 text-[13px] font-semibold text-[var(--text-primary)]">Participants</p>
+        <p className="mb-2 text-[13px] font-semibold text-[var(--text-primary)]">{tx("Participants")}</p>
         {!people ? (
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         ) : sorted.length === 0 ? (
-          <p className="text-xs text-[var(--text-muted)]">Personne ne s&apos;est encore inscrit (bouton sous l&apos;annonce Discord).</p>
+          <p className="text-xs text-[var(--text-muted)]">{tx("Personne ne s'est encore inscrit (bouton sous l'annonce Discord).")}</p>
         ) : (
           <ul className="max-h-80 overflow-y-auto">
             {sorted.map((p) => (
@@ -99,8 +100,8 @@ export default function EventDetails({ guildId, event, onChanged }: { guildId: s
                     {p.rsvp === "WAITLIST" && p.waitlistPosition ? ` · n°${p.waitlistPosition}` : ""}
                   </p>
                 </div>
-                {p.rsvp === "GOING" && <Segmented label={`Présence de ${p.displayName}`} value={ATTENDANCE.some(([a]) => a === p.attendance) ? p.attendance : "REGISTERED"} options={ATTENDANCE} onChange={(v) => mark(p, v)} />}
-                <GhostButton onClick={() => remove(p)}>Retirer</GhostButton>
+                {p.rsvp === "GOING" && <Segmented label={tx("Présence de {displayName}", { displayName: p.displayName })} value={ATTENDANCE.some(([a]) => a === p.attendance) ? p.attendance : "REGISTERED"} options={ATTENDANCE} onChange={(v) => mark(p, v)} />}
+                <GhostButton onClick={() => remove(p)}>{tx("Retirer")}</GhostButton>
               </li>
             ))}
           </ul>

@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import { Shield, Edit3, ListFilter, X, Check, Loader2 } from "@/components/icons/ph";
 import { cn } from "@/lib/utils";
 import { subscribeGuildLive } from "@/lib/guildLive";
+import { tx } from "@/lib/tx";
 
 export interface RoleOption {
   id: string;
@@ -245,7 +246,7 @@ export default function RolePicker({
               {/* Si un ID est défini mais n'est pas dans la liste */}
               {currentId && !matchedRole && (
                 <option value={currentId}>
-                  @Rôle sélectionné ({currentId})
+                  {tx("@Rôle sélectionné (")}{currentId})
                 </option>
               )}
 
@@ -256,7 +257,7 @@ export default function RolePicker({
               ))}
 
               <option disabled>──────────</option>
-              <option value="__MANUAL_ID__">✏️ Saisir un ID manuellement...</option>
+              <option value="__MANUAL_ID__">{tx("✏️ Saisir un ID manuellement...")}</option>
             </select>
 
             {/* Indicateur de chargement ou icône bouclier */}
@@ -296,7 +297,7 @@ export default function RolePicker({
                 onClick={() => onChange("")}
                 disabled={disabled}
                 className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
-                title="Effacer"
+                title={tx("Effacer")}
               >
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -311,8 +312,8 @@ export default function RolePicker({
           disabled={disabled}
           title={
             mode === "select"
-              ? "Saisir un ID manuellement (mode expert)"
-              : "Choisir dans la liste des rôles"
+              ? tx("Saisir un ID manuellement (mode expert)")
+              : tx("Choisir dans la liste des rôles")
           }
           className={cn(
             "shrink-0 flex items-center justify-center gap-1 rounded-xl border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.05] font-semibold transition-all cursor-pointer active:scale-[0.97] hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:opacity-50",
@@ -325,12 +326,12 @@ export default function RolePicker({
           {mode === "select" ? (
             <>
               <Edit3 className="w-3 h-3" />
-              <span className="hidden sm:inline">ID</span>
+              <span className="hidden sm:inline">{tx("ID")}</span>
             </>
           ) : (
             <>
               <ListFilter className="w-3 h-3" />
-              <span className="hidden sm:inline">Liste</span>
+              <span className="hidden sm:inline">{tx("Liste")}</span>
             </>
           )}
         </button>
@@ -341,7 +342,7 @@ export default function RolePicker({
         <div className="flex items-center gap-1.5 px-1 text-[11px] text-[var(--text-muted)]">
           <Check className="w-3 h-3 text-[var(--success)]" />
           <span className="truncate">
-            Rôle :{" "}
+            {tx("Rôle :")}{" "}
             <span
               className="font-semibold"
               style={{ color: formatColor(matchedRole.color) || "#818cf8" }}

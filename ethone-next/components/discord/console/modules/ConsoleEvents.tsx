@@ -9,6 +9,7 @@ import { pageStagger } from "@/lib/motion-variants";
 import { cn } from "@/lib/utils";
 import EventDetails from "./EventDetails";
 import { ConsolePage, EmptyLine, GhostButton, Panel, Row, Segmented, Select, StatTile, Stepper, Switch, useGuildApi } from "../kit";
+import { tx } from "@/lib/tx";
 
 type Category = "GAMING" | "TOURNAMENT" | "COMMUNITY" | "STAFF" | "WATCH_PARTY" | "GIVEAWAY" | "MEETING" | "VOICE" | "OTHER";
 type Status = "DRAFT" | "SCHEDULED" | "LIVE" | "COMPLETED" | "CANCELLED";
@@ -126,7 +127,7 @@ export default function ConsoleEvents({ guildId, initialView = "list" }: { guild
     if (await api(`/events/${e.id}/reschedule`, { method: "POST", json: { newStartDate: s.toISOString(), newEndDate: en.toISOString() } })) void load();
   };
   const cancel = async (e: Event) => {
-    if (!(await confirmDialog(`Annuler « ${e.title} » ? Les inscrits ne pourront plus s'y rendre.`, { title: "Annuler l'événement", confirmLabel: "Annuler l'événement" }))) return;
+    if (!(await confirmDialog(tx("Annuler « {title} » ? Les inscrits ne pourront plus s'y rendre.", { title: e.title }), { title: tx("Annuler l'événement"), confirmLabel: tx("Annuler l'événement") }))) return;
     if (await api(`/events/${e.id}`, { method: "DELETE" })) void load();
   };
 
@@ -135,10 +136,10 @@ export default function ConsoleEvents({ guildId, initialView = "list" }: { guild
 
   return (
     <ConsolePage
-      title="Événements"
+      title={tx("Événements")}
       actions={
         <Segmented
-          label="Affichage"
+          label={tx("Affichage")}
           value={view}
           options={[
             ["list", "Liste"],
@@ -149,46 +150,46 @@ export default function ConsoleEvents({ guildId, initialView = "list" }: { guild
       }
     >
       <motion.div variants={pageStagger} className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatTile label="À venir" value={stats?.upcomingCount ?? "—"} />
-        <StatTile label="En cours" value={stats?.activeCount ?? "—"} />
-        <StatTile label="Ce mois-ci" value={stats?.eventsThisMonth ?? "—"} />
-        <StatTile label="Inscriptions" value={stats?.totalParticipants ?? "—"} />
+        <StatTile label={tx("À venir")} value={stats?.upcomingCount ?? "—"} />
+        <StatTile label={tx("En cours")} value={stats?.activeCount ?? "—"} />
+        <StatTile label={tx("Ce mois-ci")} value={stats?.eventsThisMonth ?? "—"} />
+        <StatTile label={tx("Inscriptions")} value={stats?.totalParticipants ?? "—"} />
       </motion.div>
 
-      <Panel title="Nouvel événement">
-        <Row label="Titre">
-          <input value={title} maxLength={100} onChange={(e) => setTitle(e.target.value)} placeholder="Soirée jeux" aria-label="Titre" className={`${field} h-9 py-0`} />
+      <Panel title={tx("Nouvel événement")}>
+        <Row label={tx("Titre")}>
+          <input value={title} maxLength={100} onChange={(e) => setTitle(e.target.value)} placeholder={tx("Soirée jeux")} aria-label={tx("Titre")} className={`${field} h-9 py-0`} />
         </Row>
-        <Row label="Description">
-          <textarea value={description} maxLength={1000} rows={2} onChange={(e) => setDescription(e.target.value)} aria-label="Description" className={field} />
+        <Row label={tx("Description")}>
+          <textarea value={description} maxLength={1000} rows={2} onChange={(e) => setDescription(e.target.value)} aria-label={tx("Description")} className={field} />
         </Row>
-        <Row label="Catégorie">
+        <Row label={tx("Catégorie")}>
           <Select
             value={category}
             options={Object.entries(CATEGORY) as [Category, string][]}
             onChange={(v) => setCategory(v as Category)}
-            aria-label="Catégorie"
+            aria-label={tx("Catégorie")}
             width="w-48"
           />
         </Row>
-        <Row label="Début" hint="Heure de ton navigateur.">
-          <input type="datetime-local" value={start} onChange={(e) => setStart(e.target.value)} aria-label="Début" className={`${field} h-9 w-56 py-0`} />
+        <Row label={tx("Début")} hint={tx("Heure de ton navigateur.")}>
+          <input type="datetime-local" value={start} onChange={(e) => setStart(e.target.value)} aria-label={tx("Début")} className={`${field} h-9 w-56 py-0`} />
         </Row>
-        <Row label="Durée">
+        <Row label={tx("Durée")}>
           <Stepper value={duration} min={15} max={1440} step={15} unit="minutes" onCommit={setDuration} />
         </Row>
-        <Row label="Salon vocal" hint="Facultatif.">
-          <ChannelPicker guildId={guildId} value={voiceId} filterTypes={[2, 13]} placeholder="Aucun salon" onChange={(id) => setVoiceId(id)} />
+        <Row label={tx("Salon vocal")} hint={tx("Facultatif.")}>
+          <ChannelPicker guildId={guildId} value={voiceId} filterTypes={[2, 13]} placeholder={tx("Aucun salon")} onChange={(id) => setVoiceId(id)} />
         </Row>
-        <Row label="Places" hint="0 = sans limite (liste d'attente au-delà).">
+        <Row label={tx("Places")} hint={tx("0 = sans limite (liste d'attente au-delà).")}>
           <Stepper value={capacity} min={0} max={10000} unit="places" onCommit={setCapacity} />
         </Row>
-        <Row label="Événement Discord" hint="Crée aussi l'événement dans l'onglet Événements du serveur Discord.">
-          <Switch checked={sync} onChange={setSync} label="Événement Discord" />
+        <Row label={tx("Événement Discord")} hint={tx("Crée aussi l'événement dans l'onglet Événements du serveur Discord.")}>
+          <Switch checked={sync} onChange={setSync} label={tx("Événement Discord")} />
         </Row>
         <div className="flex justify-end border-t border-[var(--panel-border)] px-5 py-3">
           <button type="button" disabled={!canCreate} onClick={create} className="rounded-lg bg-[var(--accent-primary)] px-4 py-2 text-xs font-bold text-white hover:opacity-90 disabled:opacity-40">
-            Créer l&apos;événement
+            {tx("Créer l'événement")}
           </button>
         </div>
       </Panel>
@@ -205,7 +206,7 @@ export default function ConsoleEvents({ guildId, initialView = "list" }: { guild
                   setMonth(new Date(d.getFullYear(), d.getMonth(), 1));
                 }}
               >
-                Aujourd&apos;hui
+                {tx("Aujourd'hui")}
               </GhostButton>
               <GhostButton onClick={() => setMonth((m) => new Date(m.getFullYear(), m.getMonth() + 1, 1))}>→</GhostButton>
             </div>
@@ -221,10 +222,10 @@ export default function ConsoleEvents({ guildId, initialView = "list" }: { guild
 
       {view === "list" && (
       <Panel
-        title="Événements du serveur"
+        title={tx("Événements du serveur")}
         actions={
           <Segmented
-            label="Filtre"
+            label={tx("Filtre")}
             value={filter}
             options={[
               ["next", "À venir"],
@@ -236,9 +237,9 @@ export default function ConsoleEvents({ guildId, initialView = "list" }: { guild
         }
       >
         {!events ? (
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         ) : list.length === 0 ? (
-          <EmptyLine>{events.length === 0 ? "Aucun événement pour l'instant." : "Rien dans cette liste."}</EmptyLine>
+          <EmptyLine>{events.length === 0 ? tx("Aucun événement pour l'instant.") : tx("Rien dans cette liste.")}</EmptyLine>
         ) : (
           <ul>
             {list.map((e) => (
@@ -246,7 +247,7 @@ export default function ConsoleEvents({ guildId, initialView = "list" }: { guild
                 <button type="button" onClick={() => setOpen(open === e.id ? null : e.id)} aria-expanded={open === e.id} className="flex w-full items-center gap-3 px-5 py-3 text-left hover:bg-[var(--surface-hover)]">
                   <span className="w-14 shrink-0 text-center text-sm font-bold tabular-nums text-[var(--text-primary)]">
                     {e.stats.goingCount}
-                    <span className="block text-[10px] font-normal text-[var(--text-muted)]">inscrit{e.stats.goingCount > 1 ? "s" : ""}</span>
+                    <span className="block text-[10px] font-normal text-[var(--text-muted)]">{tx("inscrit")}{e.stats.goingCount > 1 ? "s" : ""}</span>
                   </span>
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-[13px] font-semibold text-[var(--text-primary)]">{e.title}</p>
@@ -262,22 +263,22 @@ export default function ConsoleEvents({ guildId, initialView = "list" }: { guild
                       <div className="space-y-3 border-t border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))]/40 px-5 py-4">
                         {e.description && <p className="whitespace-pre-wrap text-sm text-[var(--text-primary)]">{e.description}</p>}
                         <p className="text-[11px] text-[var(--text-muted)]">
-                          {e.stats.goingCount} inscrit{e.stats.goingCount > 1 ? "s" : ""} · {e.stats.maybeCount} peut-être
-                          {e.status === "COMPLETED" ? ` · ${e.stats.attendedCount} présent${e.stats.attendedCount > 1 ? "s" : ""}` : ""} · {e.capacity.unlimited ? "places illimitées" : `${e.capacity.maxParticipants} places`} · organisé par{" "}
+                          {e.stats.goingCount} {" "}{tx("inscrit")}{e.stats.goingCount > 1 ? "s" : ""} · {e.stats.maybeCount} {" "}{tx("peut-être")}
+                          {e.status === "COMPLETED" ? tx(" · {attendedCount} présent{v1}", { attendedCount: e.stats.attendedCount, v1: e.stats.attendedCount > 1 ? "s" : "" }) : ""} · {e.capacity.unlimited ? tx("places illimitées") : tx("{maxParticipants} places", { maxParticipants: e.capacity.maxParticipants })} {" "}{tx("· organisé par")}{" "}
                           {e.organizer.username}
-                          {e.discordScheduledEventId ? " · synchronisé avec Discord" : ""}
+                          {e.discordScheduledEventId ? tx(" · synchronisé avec Discord") : ""}
                         </p>
                         <div className="flex flex-wrap items-center gap-1.5">
                           {(e.status === "SCHEDULED" || e.status === "DRAFT") && (
                             <>
-                              <GhostButton onClick={() => postpone(e, 1)}>Reporter d&apos;1 h</GhostButton>
-                              <GhostButton onClick={() => postpone(e, 24)}>Reporter d&apos;1 jour</GhostButton>
+                              <GhostButton onClick={() => postpone(e, 1)}>{tx("Reporter d'1 h")}</GhostButton>
+                              <GhostButton onClick={() => postpone(e, 24)}>{tx("Reporter d'1 jour")}</GhostButton>
                             </>
                           )}
-                          <GhostButton onClick={() => duplicate(e)}>Dupliquer</GhostButton>
-                          <GhostButton onClick={() => setDetails(details === e.id ? null : e.id)}>{details === e.id ? "Masquer les participants" : "Participants et réglages"}</GhostButton>
+                          <GhostButton onClick={() => duplicate(e)}>{tx("Dupliquer")}</GhostButton>
+                          <GhostButton onClick={() => setDetails(details === e.id ? null : e.id)}>{details === e.id ? tx("Masquer les participants") : tx("Participants et réglages")}</GhostButton>
                           <span className="flex-1" />
-                          {e.status !== "CANCELLED" && e.status !== "COMPLETED" && <GhostButton onClick={() => cancel(e)}>Annuler</GhostButton>}
+                          {e.status !== "CANCELLED" && e.status !== "COMPLETED" && <GhostButton onClick={() => cancel(e)}>{tx("Annuler")}</GhostButton>}
                         </div>
                         {details === e.id && <EventDetails guildId={guildId} event={e} onChanged={load} />}
                       </div>
@@ -334,7 +335,7 @@ function MonthGrid({ month, events, onPickDay, onOpen }: { month: Date; events: 
               tabIndex={0}
               onClick={() => onPickDay(d)}
               onKeyDown={(ev) => ev.key === "Enter" && onPickDay(d)}
-              title="Préremplir un événement ce jour-là"
+              title={tx("Préremplir un événement ce jour-là")}
               className={cn(
                 "min-h-16 cursor-pointer rounded-lg border p-1 text-left transition-colors hover:bg-[var(--surface-hover)]",
                 d.toDateString() === today ? "border-[var(--accent-primary)]" : "border-[var(--panel-border)]"

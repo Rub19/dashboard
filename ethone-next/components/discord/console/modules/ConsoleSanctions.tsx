@@ -10,6 +10,7 @@ import { pageStagger, staggerItem } from "@/lib/motion-variants";
 import { cn } from "@/lib/utils";
 import { BOT_API_URL, ConsolePage, EmptyLine, GhostButton, Panel, Segmented, Select, useGuildApi, type MemberHit } from "../kit";
 import { ACTION_LABEL, ACTION_TONE, DURATIONS, Drawer, INPUT, MemberSearch, PageTitle, Pills, PrimaryButton, SEVERITIES, Section, when, type Action, type Severity } from "../sanctions/shared";
+import { tx } from "@/lib/tx";
 
 type CaseRow = {
   caseNumber: number;
@@ -86,7 +87,7 @@ export default function ConsoleSanctions({ guildId }: { guildId: string }) {
 
   const exportAs = async (format: "csv" | "json") => {
     const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/sanctions/cases?${query}&format=${format}`, { credentials: "include" }).catch(() => null);
-    if (!res?.ok) return error("Export", "Le bot n'a pas répondu.");
+    if (!res?.ok) return error(tx("Export"), tx("Le bot n'a pas répondu."));
     const url = URL.createObjectURL(await res.blob());
     const a = document.createElement("a");
     a.href = url;
@@ -99,10 +100,10 @@ export default function ConsoleSanctions({ guildId }: { guildId: string }) {
     if (r) setDetail(r);
   };
   const revoke = async (c: CaseRow) => {
-    if (!(await confirmDialog(`Lever le dossier n°${c.caseNumber} (${c.label}) ? ${c.action === "BAN" || c.action === "TEMPBAN" ? "Le membre sera débanni." : c.action === "TIMEOUT" ? "Le mute sera retiré." : "Il ne comptera plus pour les paliers."}`, { title: "Lever la sanction", confirmLabel: "Lever" }))) return;
+    if (!(await confirmDialog(tx("Lever le dossier n°{caseNumber} ({label}) ? {v2}", { caseNumber: c.caseNumber, label: c.label, v2: c.action === "BAN" || c.action === "TEMPBAN" ? "Le membre sera débanni." : c.action === "TIMEOUT" ? "Le mute sera retiré." : "Il ne comptera plus pour les paliers." }), { title: tx("Lever la sanction"), confirmLabel: tx("Lever") }))) return;
     const r = await api(`/sanctions/cases/${c.caseNumber}/revoke`, { method: "POST", json: {} });
     if (r) {
-      success("Sanction levée", `Dossier n°${c.caseNumber}.`);
+      success(tx("Sanction levée"), tx("Dossier n°{caseNumber}.", { caseNumber: c.caseNumber }));
       setDetail(null);
       void load();
     }
@@ -110,18 +111,18 @@ export default function ConsoleSanctions({ guildId }: { guildId: string }) {
 
   return (
     <ConsolePage
-      title={<PageTitle title="Sanctions" text="Chaque sanction a son dossier numéroté : commandes, protection Etho, AutoMod et actions faites dans Discord." />}
+      title={<PageTitle title={tx("Sanctions")} text={tx("Chaque sanction a son dossier numéroté : commandes, protection Etho, AutoMod et actions faites dans Discord.")} />}
       actions={
         <PrimaryButton onClick={() => setCreating(true)} className="self-start">
           <Plus className="h-4 w-4" />
-          Nouvelle sanction
+          {tx("Nouvelle sanction")}
         </PrimaryButton>
       }
     >
       <Panel>
         <div className="flex flex-wrap items-center gap-2 border-b border-[var(--panel-border)] px-4 py-3">
           <Segmented
-            label="État"
+            label={tx("État")}
             value={status}
             options={[
               ["", "Toutes"],
@@ -130,18 +131,18 @@ export default function ConsoleSanctions({ guildId }: { guildId: string }) {
             ]}
             onChange={setStatus}
           />
-          <Select value={type} options={TYPES} onChange={setType} aria-label="Type" />
-          <Select value={origin} options={ORIGINS} onChange={setOrigin} aria-label="Origine" />
-          <Select value={since} options={PERIODS} onChange={setSince} aria-label="Période" />
+          <Select value={type} options={TYPES} onChange={setType} aria-label={tx("Type")} />
+          <Select value={origin} options={ORIGINS} onChange={setOrigin} aria-label={tx("Origine")} />
+          <Select value={since} options={PERIODS} onChange={setSince} aria-label={tx("Période")} />
           <div className="relative ml-auto w-full sm:w-64">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[var(--text-muted)]" />
-            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="#numéro, raison, ID du membre" className={cn(INPUT, "h-9 pl-8 text-xs")} />
+            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={tx("#numéro, raison, ID du membre")} className={cn(INPUT, "h-9 pl-8 text-xs")} />
           </div>
         </div>
         {!data ? (
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         ) : data.cases.length === 0 ? (
-          <EmptyLine>Aucune sanction ne correspond.</EmptyLine>
+          <EmptyLine>{tx("Aucune sanction ne correspond.")}</EmptyLine>
         ) : (
           <motion.ul key={`${query}-${page}`} variants={pageStagger} initial="initial" animate="animate">
             {data.cases.map((c) => (
@@ -162,26 +163,26 @@ export default function ConsoleSanctions({ guildId }: { guildId: string }) {
         )}
         <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--panel-border)] px-4 py-3">
           <span className="text-xs text-[var(--text-muted)]">
-            {data?.total ?? 0} dossier{(data?.total ?? 0) > 1 ? "s" : ""}
+            {data?.total ?? 0} {" "}{tx("dossier")}{(data?.total ?? 0) > 1 ? "s" : ""}
           </span>
           <div className="flex items-center gap-2">
             <GhostButton onClick={() => exportAs("csv")} disabled={!data?.total}>
               <Download className="h-3.5 w-3.5" />
-              CSV
+              {tx("CSV")}
             </GhostButton>
             <GhostButton onClick={() => exportAs("json")} disabled={!data?.total}>
               <Download className="h-3.5 w-3.5" />
-              JSON
+              {tx("JSON")}
             </GhostButton>
             <span className="mx-1 h-5 w-px bg-[var(--panel-border)]" />
             <GhostButton onClick={() => setPage((p) => p - 1)} disabled={page <= 1}>
-              Précédent
+              {tx("Précédent")}
             </GhostButton>
             <span className="font-mono text-xs text-[var(--text-muted)]">
               {page} / {data?.pages ?? 1}
             </span>
             <GhostButton onClick={() => setPage((p) => p + 1)} disabled={page >= (data?.pages ?? 1)}>
-              Suivant
+              {tx("Suivant")}
             </GhostButton>
           </div>
         </div>
@@ -189,19 +190,19 @@ export default function ConsoleSanctions({ guildId }: { guildId: string }) {
 
       <NewSanction guildId={guildId} open={creating} onClose={() => setCreating(false)} onDone={() => (setCreating(false), void load())} />
 
-      <Drawer open={!!detail} onClose={() => setDetail(null)} title={detail ? `Dossier n°${detail.case.caseNumber}` : ""} subtitle={detail ? `${detail.case.label} · ${ORIGIN_LABEL[detail.case.origin]}` : undefined}
-        footer={detail && detail.case.open && ["WARN", "TIMEOUT", "BAN", "TEMPBAN"].includes(detail.case.action) ? <motion.button type="button" whileTap={{ scale: 0.97 }} onClick={() => revoke(detail.case)} className="w-full rounded-lg bg-[var(--danger)] px-4 py-2 text-sm font-semibold text-white transition-[filter] hover:brightness-110">Lever la sanction</motion.button> : undefined}
+      <Drawer open={!!detail} onClose={() => setDetail(null)} title={detail ? tx("Dossier n°{caseNumber}", { caseNumber: detail.case.caseNumber }) : ""} subtitle={detail ? `${detail.case.label} · ${ORIGIN_LABEL[detail.case.origin]}` : undefined}
+        footer={detail && detail.case.open && ["WARN", "TIMEOUT", "BAN", "TEMPBAN"].includes(detail.case.action) ? <motion.button type="button" whileTap={{ scale: 0.97 }} onClick={() => revoke(detail.case)} className="w-full rounded-lg bg-[var(--danger)] px-4 py-2 text-sm font-semibold text-white transition-[filter] hover:brightness-110">{tx("Lever la sanction")}</motion.button> : undefined}
       >
         {detail && (
           <>
-            <Section label="Membre">
+            <Section label={tx("Membre")}>
               <p className="text-sm font-semibold text-[var(--text-primary)]">
                 {detail.case.userTag} <span className="font-mono text-xs font-normal text-[var(--text-muted)]">{detail.case.userId}</span>
               </p>
             </Section>
-            <Section label="Raison">
+            <Section label={tx("Raison")}>
               <p className="text-sm text-[var(--text-primary)]">{detail.case.reason}</p>
-              {detail.case.context && <p className="rounded-lg border border-[var(--panel-border)] px-3 py-2 text-xs text-[var(--text-muted)]">Contexte : {detail.case.context}</p>}
+              {detail.case.context && <p className="rounded-lg border border-[var(--panel-border)] px-3 py-2 text-xs text-[var(--text-muted)]">{tx("Contexte :")}{" "} {detail.case.context}</p>}
             </Section>
             <div className="grid grid-cols-2 gap-3 text-xs">
               {[
@@ -220,9 +221,9 @@ export default function ConsoleSanctions({ guildId }: { guildId: string }) {
                   </div>
                 ))}
             </div>
-            <Section label={`Historique du membre · ${detail.history.length}`}>
+            <Section label={tx("Historique du membre · {length}", { length: detail.history.length })}>
               {detail.history.length === 0 && detail.events.length === 0 ? (
-                <p className="text-xs text-[var(--text-muted)]">Aucun autre dossier.</p>
+                <p className="text-xs text-[var(--text-muted)]">{tx("Aucun autre dossier.")}</p>
               ) : (
                 <ul className="space-y-1.5">
                   {detail.history.map((h) => (
@@ -237,7 +238,7 @@ export default function ConsoleSanctions({ guildId }: { guildId: string }) {
                   {detail.events.map((e, i) => (
                     <li key={i} className="flex items-center gap-2 px-3 py-1 text-xs text-[var(--text-muted)]">
                       <span className="font-semibold text-[var(--text-primary)]">{EVENT_LABEL[e.type] ?? e.type}</span>
-                      {e.value !== undefined && <span className="truncate">{e.value ?? "pseudo retiré"}</span>}
+                      {e.value !== undefined && <span className="truncate">{e.value ?? tx("pseudo retiré")}</span>}
                       <span className="ml-auto text-[10px]">{when(e.at)}</span>
                     </li>
                   ))}
@@ -298,7 +299,7 @@ function NewSanction({ guildId, open, onClose, onDone }: { guildId: string; open
     });
     setBusy(false);
     if (r) {
-      success("Sanction appliquée", `Dossier n°${r.case.caseNumber} pour ${member.displayName}.`);
+      success(tx("Sanction appliquée"), tx("Dossier n°{caseNumber} pour {displayName}.", { caseNumber: r.case.caseNumber, displayName: member.displayName }));
       onDone();
     }
   };
@@ -307,40 +308,40 @@ function NewSanction({ guildId, open, onClose, onDone }: { guildId: string; open
     <Drawer
       open={open}
       onClose={onClose}
-      title="Nouvelle sanction"
-      subtitle="Etho l'applique sur Discord en quelques secondes, comme une commande."
+      title={tx("Nouvelle sanction")}
+      subtitle={tx("Etho l'applique sur Discord en quelques secondes, comme une commande.")}
       footer={
         <PrimaryButton className="w-full" onClick={submit} disabled={!member || busy}>
-          {busy ? "Application…" : "Sanctionner"}
+          {busy ? tx("Application…") : tx("Sanctionner")}
         </PrimaryButton>
       }
     >
-      <Section label="Membre">
+      <Section label={tx("Membre")}>
         <MemberSearch guildId={guildId} value={member} onChange={setMember} />
       </Section>
       {presets.length > 0 && (
-        <Section label="Raison prédéfinie">
-          <Select value={presetId} width="w-full" aria-label="Raison prédéfinie" options={[["", "Aucune"], ...presets.map((p) => [p.id, `${p.name}${p.category ? ` · ${p.category}` : ""}`] as const)]} onChange={pickPreset} />
+        <Section label={tx("Raison prédéfinie")}>
+          <Select value={presetId} width="w-full" aria-label={tx("Raison prédéfinie")} options={[["", "Aucune"], ...presets.map((p) => [p.id, `${p.name}${p.category ? ` · ${p.category}` : ""}`] as const)]} onChange={pickPreset} />
         </Section>
       )}
-      <Section label="Sanction">
-        <Pills label="Sanction" options={NEW_TYPES} value={[action]} onChange={([a]) => setAction(a)} />
+      <Section label={tx("Sanction")}>
+        <Pills label={tx("Sanction")} options={NEW_TYPES} value={[action]} onChange={([a]) => setAction(a)} />
         <AnimatePresence mode="wait" initial={false}>
           {action === "WARN" && (
             <motion.div key="sev" initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={SPRING_LAYOUT}>
-              <Segmented label="Gravité" value={severity} options={SEVERITIES} onChange={setSeverity} />
+              <Segmented label={tx("Gravité")} value={severity} options={SEVERITIES} onChange={setSeverity} />
             </motion.div>
           )}
           {(action === "TIMEOUT" || action === "TEMPBAN") && (
             <motion.div key="dur" initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={SPRING_LAYOUT}>
-              <Select value={duration} options={action === "TIMEOUT" ? DURATIONS : [...DURATIONS.slice(4), [2592000, "30 jours"], [7776000, "90 jours"]]} onChange={setDuration} aria-label="Durée" />
+              <Select value={duration} options={action === "TIMEOUT" ? DURATIONS : [...DURATIONS.slice(4), [2592000, "30 jours"], [7776000, "90 jours"]]} onChange={setDuration} aria-label={tx("Durée")} />
             </motion.div>
           )}
         </AnimatePresence>
       </Section>
-      <Section label="Raison">
-        <textarea value={reason} onChange={(e) => setReason(e.target.value)} maxLength={500} rows={3} placeholder="Vue par le membre" className={cn(INPUT, "py-2")} />
-        <textarea value={context} onChange={(e) => setContext(e.target.value)} maxLength={1000} rows={3} placeholder="Contexte, pour les modérateurs seulement (optionnel)" className={cn(INPUT, "py-2")} />
+      <Section label={tx("Raison")}>
+        <textarea value={reason} onChange={(e) => setReason(e.target.value)} maxLength={500} rows={3} placeholder={tx("Vue par le membre")} className={cn(INPUT, "py-2")} />
+        <textarea value={context} onChange={(e) => setContext(e.target.value)} maxLength={1000} rows={3} placeholder={tx("Contexte, pour les modérateurs seulement (optionnel)")} className={cn(INPUT, "py-2")} />
       </Section>
     </Drawer>
   );

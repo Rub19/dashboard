@@ -30,6 +30,7 @@ import {
 import { cn } from "@/lib/utils";
 import { SPRING_PILL, SPRING_PRESS } from "@/lib/ease";
 import { pageStagger, staggerItem } from "@/lib/motion-variants";
+import { tx } from "@/lib/tx";
 
 export interface CommandParameter {
   name: string;
@@ -810,25 +811,25 @@ export default function BotCommandsClient() {
               className="inline-flex h-8 items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-3 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-hover)] transition-all cursor-pointer active:scale-[0.97]"
             >
               <ArrowLeft className="h-3.5 w-3.5" />
-              <span>Centre de Contrôle</span>
+              <span>{tx("Centre de Contrôle")}</span>
             </Link>
             <span className="text-[var(--text-muted)]/50">•</span>
             <Link
               href="/discord"
               className="text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors truncate"
             >
-              Hub Discord
+              {tx("Hub Discord")}
             </Link>
           </div>
 
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--surface-raised)]/60 border border-[var(--panel-border)] text-xs font-mono text-[var(--text-muted)]">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>40 Commandes Actives</span>
+              <span>{tx("40 Commandes Actives")}</span>
             </div>
             <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/25 text-xs font-semibold text-[var(--accent-primary)]">
               <Zap className="w-3 h-3" />
-              <span>Format Keeper</span>
+              <span>{tx("Format Keeper")}</span>
             </div>
           </div>
         </div>
@@ -844,13 +845,13 @@ export default function BotCommandsClient() {
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-lg bg-[var(--surface-raised)] border border-[var(--panel-border)] text-[11px] font-mono font-semibold text-[var(--accent-primary)]">
               <Terminal className="w-3.5 h-3.5" />
-              <span>ETHO COMMAND EXPLORER</span>
+              <span>{tx("ETHO COMMAND EXPLORER")}</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--text-primary)]">
-              Catalogue des Commandes
+              {tx("Catalogue des Commandes")}
             </h1>
             <p className="text-xs sm:text-sm text-[var(--text-muted)] max-w-2xl leading-relaxed">
-              Explorez l&apos;ensemble des commandes Slash (/) et préfixes d&apos;Etho. Consulte la syntaxe exacte, les permissions requises et simulez les réponses en direct.
+              {tx("Explorez l'ensemble des commandes Slash (/) et préfixes d'Etho. Consulte la syntaxe exacte, les permissions requises et simulez les réponses en direct.")}
             </p>
           </div>
 
@@ -866,7 +867,7 @@ export default function BotCommandsClient() {
               )}
             >
               <LayoutGrid className="w-3.5 h-3.5" />
-              <span>Grille</span>
+              <span>{tx("Grille")}</span>
             </button>
             <button
               type="button"
@@ -879,7 +880,7 @@ export default function BotCommandsClient() {
               )}
             >
               <Layout className="w-3.5 h-3.5" />
-              <span>Format Keeper</span>
+              <span>{tx("Format Keeper")}</span>
             </button>
             <button
               type="button"
@@ -892,7 +893,7 @@ export default function BotCommandsClient() {
               )}
             >
               <LayoutList className="w-3.5 h-3.5" />
-              <span>Tableau</span>
+              <span>{tx("Tableau")}</span>
             </button>
           </div>
         </motion.div>
@@ -906,7 +907,7 @@ export default function BotCommandsClient() {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Rechercher une commande, syntaxe, mot-clé... (appuyez sur /)"
+                placeholder={tx("Rechercher une commande, syntaxe, mot-clé... (appuyez sur /)")}
                 className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-[var(--surface-raised)]/70 border border-[var(--panel-border)] text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--accent-primary)] focus:ring-2 focus:ring-[var(--accent-primary)]/20 transition-all"
               />
               {searchQuery && (
@@ -922,7 +923,7 @@ export default function BotCommandsClient() {
 
             <div className="flex flex-wrap items-center gap-2 text-xs">
               <span className="text-[var(--text-muted)] flex items-center gap-1">
-                <Filter className="w-3 h-3" /> Accès :
+                <Filter className="w-3 h-3" /> {" "}{tx("Accès :")}
               </span>
               {(
                 [
@@ -1003,9 +1004,9 @@ export default function BotCommandsClient() {
         {filteredCommands.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/30 p-8">
             <Terminal className="w-10 h-10 text-[var(--text-muted)] mb-3" />
-            <p className="text-base font-bold text-[var(--text-primary)]">Aucune commande trouvée</p>
+            <p className="text-base font-bold text-[var(--text-primary)]">{tx("Aucune commande trouvée")}</p>
             <p className="text-xs text-[var(--text-muted)] mt-1 max-w-sm">
-              Aucune commande ne correspond aux filtres actuels ou à votre recherche &ldquo;{searchQuery}&rdquo;.
+              {tx("Aucune commande ne correspond aux filtres actuels ou à votre recherche “")}{searchQuery}{tx("”.")}
             </p>
             <button
               type="button"
@@ -1016,7 +1017,7 @@ export default function BotCommandsClient() {
               }}
               className="mt-4 px-4 py-2 rounded-xl bg-[var(--accent-primary)] text-[var(--accent-contrast)] text-xs font-semibold cursor-pointer active:scale-[0.97]"
             >
-              Réinitialiser les filtres
+              {tx("Réinitialiser les filtres")}
             </button>
           </div>
         ) : viewMode === "GRID" ? (
@@ -1065,7 +1066,7 @@ export default function BotCommandsClient() {
                             e.stopPropagation();
                             handleCopy(`/${cmd.name}`, cmd.name);
                           }}
-                          title="Copier la commande"
+                          title={tx("Copier la commande")}
                           className="p-1 rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)] transition-colors"
                         >
                           {isCopied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
@@ -1086,10 +1087,10 @@ export default function BotCommandsClient() {
                     <span className="font-semibold text-[var(--text-muted)]">{cmd.category}</span>
                     {telemetry && telemetry.executions24h > 0 ? (
                       <span className="font-mono text-[var(--accent-primary)] font-semibold">
-                        {telemetry.executions24h}× / 24h · {telemetry.avgLatencyMs}ms
+                        {telemetry.executions24h}× / 24h · {telemetry.avgLatencyMs}{tx("ms")}
                       </span>
                     ) : (
-                      <span className="font-mono text-[var(--text-muted)]/70">Cooldown : {cmd.cooldown}</span>
+                      <span className="font-mono text-[var(--text-muted)]/70">{tx("Cooldown :")}{" "} {cmd.cooldown}</span>
                     )}
                   </div>
                 </motion.div>
@@ -1152,19 +1153,19 @@ export default function BotCommandsClient() {
                       className="px-3 py-1.5 rounded-xl bg-[var(--accent-primary)] text-[var(--accent-contrast)] text-xs font-semibold flex items-center gap-1.5 cursor-pointer active:scale-[0.97]"
                     >
                       {copiedName === selectedCommand.name ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-                      <span>{copiedName === selectedCommand.name ? "Copié !" : "Copier"}</span>
+                      <span>{copiedName === selectedCommand.name ? tx("Copié !") : tx("Copier")}</span>
                     </button>
                   </div>
 
                   <div className="space-y-2">
-                    <span className="text-xs font-bold text-[var(--text-primary)] uppercase tracking-wider">Syntaxe Complète</span>
+                    <span className="text-xs font-bold text-[var(--text-primary)] uppercase tracking-wider">{tx("Syntaxe Complète")}</span>
                     <div className="p-3.5 rounded-xl bg-[var(--bg-main)] border border-[var(--panel-border)] font-mono text-xs text-emerald-400 flex items-center justify-between gap-3">
                       <span className="truncate">{selectedCommand.syntax}</span>
                       <button
                         type="button"
                         onClick={() => handleCopy(selectedCommand.syntax, "syntax")}
                         className="text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-                        title="Copier la syntaxe"
+                        title={tx("Copier la syntaxe")}
                       >
                         <Copy className="w-3.5 h-3.5" />
                       </button>
@@ -1172,10 +1173,10 @@ export default function BotCommandsClient() {
                   </div>
 
                   <div className="space-y-2">
-                    <span className="text-xs font-bold text-[var(--text-primary)] uppercase tracking-wider">Paramètres & Arguments</span>
+                    <span className="text-xs font-bold text-[var(--text-primary)] uppercase tracking-wider">{tx("Paramètres & Arguments")}</span>
                     {selectedCommand.parameters.length === 0 ? (
                       <p className="text-xs text-[var(--text-muted)] italic p-3 rounded-xl bg-[var(--bg-main)]/40 border border-[var(--panel-border)]/50">
-                        Aucun argument requis. Exécution directe sans paramètre.
+                        {tx("Aucun argument requis. Exécution directe sans paramètre.")}
                       </p>
                     ) : (
                       <div className="divide-y divide-[var(--panel-border)] rounded-xl border border-[var(--panel-border)] overflow-hidden bg-[var(--bg-main)]/40 text-xs">
@@ -1196,7 +1197,7 @@ export default function BotCommandsClient() {
                                 p.required ? "bg-rose-500/15 text-rose-400" : "bg-emerald-500/15 text-emerald-400"
                               )}
                             >
-                              {p.required ? "Requis" : "Optionnel"}
+                              {p.required ? tx("Requis") : tx("Optionnel")}
                             </span>
                           </div>
                         ))}
@@ -1205,7 +1206,7 @@ export default function BotCommandsClient() {
                   </div>
 
                   <div className="space-y-2">
-                    <span className="text-xs font-bold text-[var(--text-primary)] uppercase tracking-wider">Simulateur Réponse Discord</span>
+                    <span className="text-xs font-bold text-[var(--text-primary)] uppercase tracking-wider">{tx("Simulateur Réponse Discord")}</span>
                     <div className="p-4 rounded-xl bg-[#2b2d31] border border-[#1e1f22] text-[#dbdee1] space-y-3 font-sans shadow-md">
                       <div className="flex items-center gap-2.5">
                         <div className="w-8 h-8 rounded-full bg-[var(--accent-primary)] flex items-center justify-center text-[var(--accent-contrast)] font-bold text-xs">
@@ -1213,12 +1214,12 @@ export default function BotCommandsClient() {
                         </div>
                         <div>
                           <div className="flex items-center gap-1.5">
-                            <span className="font-bold text-sm text-white">Etho</span>
+                            <span className="font-bold text-sm text-white">{tx("Etho")}</span>
                             <span className="px-1 py-0.2 rounded bg-[#5865f2] text-[10px] font-bold text-white uppercase tracking-wider">
-                              BOT
+                              {tx("BOT")}
                             </span>
                           </div>
-                          <span className="text-[10px] text-[#949ba4]">Aujourd&apos;hui à {new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}</span>
+                          <span className="text-[10px] text-[#949ba4]">{tx("Aujourd'hui à")}{" "} {new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}</span>
                         </div>
                       </div>
 
@@ -1248,11 +1249,11 @@ export default function BotCommandsClient() {
               <table className="w-full text-left text-xs">
                 <thead className="border-b border-[var(--panel-border)] bg-[var(--surface-raised)]/70 text-[var(--text-muted)] font-semibold uppercase tracking-wider text-[10px]">
                   <tr>
-                    <th className="py-3 px-4">Commande</th>
-                    <th className="py-3 px-4">Syntaxe Complète</th>
-                    <th className="py-3 px-4">Catégorie</th>
-                    <th className="py-3 px-4">Permissions</th>
-                    <th className="py-3 px-4 text-right">Actions</th>
+                    <th className="py-3 px-4">{tx("Commande")}</th>
+                    <th className="py-3 px-4">{tx("Syntaxe Complète")}</th>
+                    <th className="py-3 px-4">{tx("Catégorie")}</th>
+                    <th className="py-3 px-4">{tx("Permissions")}</th>
+                    <th className="py-3 px-4 text-right">{tx("Actions")}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[var(--panel-border)]">
@@ -1297,7 +1298,7 @@ export default function BotCommandsClient() {
                             className="px-2.5 py-1 rounded-lg bg-[var(--surface-raised)] hover:bg-[var(--surface-hover)] border border-[var(--panel-border)] text-xs font-semibold inline-flex items-center gap-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all cursor-pointer"
                           >
                             {isCopied ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
-                            <span>{isCopied ? "Copié" : "Copier"}</span>
+                            <span>{isCopied ? tx("Copié") : tx("Copier")}</span>
                           </button>
                         </td>
                       </tr>
@@ -1351,14 +1352,14 @@ export default function BotCommandsClient() {
               </div>
 
               <div className="space-y-2">
-                <span className="text-xs font-bold text-[var(--text-primary)] uppercase tracking-wider">Syntaxe d&apos;Exécution</span>
+                <span className="text-xs font-bold text-[var(--text-primary)] uppercase tracking-wider">{tx("Syntaxe d'Exécution")}</span>
                 <div className="p-3.5 rounded-xl bg-[var(--surface-raised)] border border-[var(--panel-border)] font-mono text-xs text-emerald-400 flex items-center justify-between gap-3">
                   <span className="truncate">{selectedCommand.syntax}</span>
                   <button
                     type="button"
                     onClick={() => handleCopy(selectedCommand.syntax, "modal-syntax")}
                     className="p-1.5 rounded-lg bg-[var(--surface-hover)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
-                    title="Copier la commande"
+                    title={tx("Copier la commande")}
                   >
                     {copiedName === "modal-syntax" ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
                   </button>
@@ -1366,10 +1367,10 @@ export default function BotCommandsClient() {
               </div>
 
               <div className="space-y-2">
-                <span className="text-xs font-bold text-[var(--text-primary)] uppercase tracking-wider">Paramètres & Arguments</span>
+                <span className="text-xs font-bold text-[var(--text-primary)] uppercase tracking-wider">{tx("Paramètres & Arguments")}</span>
                 {selectedCommand.parameters.length === 0 ? (
                   <p className="text-xs text-[var(--text-muted)] italic p-3 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]/50">
-                    Aucun argument requis. Exécution directe sans paramètre.
+                    {tx("Aucun argument requis. Exécution directe sans paramètre.")}
                   </p>
                 ) : (
                   <div className="divide-y divide-[var(--panel-border)] rounded-xl border border-[var(--panel-border)] overflow-hidden bg-[var(--surface-raised)]/40 text-xs">
@@ -1390,7 +1391,7 @@ export default function BotCommandsClient() {
                             p.required ? "bg-rose-500/15 text-rose-400" : "bg-emerald-500/15 text-emerald-400"
                           )}
                         >
-                          {p.required ? "Requis" : "Optionnel"}
+                          {p.required ? tx("Requis") : tx("Optionnel")}
                         </span>
                       </div>
                     ))}
@@ -1399,7 +1400,7 @@ export default function BotCommandsClient() {
               </div>
 
               <div className="space-y-2">
-                <span className="text-xs font-bold text-[var(--text-primary)] uppercase tracking-wider">Aperçu Réponse Discord</span>
+                <span className="text-xs font-bold text-[var(--text-primary)] uppercase tracking-wider">{tx("Aperçu Réponse Discord")}</span>
                 <div className="p-4 rounded-xl bg-[#2b2d31] border border-[#1e1f22] text-[#dbdee1] space-y-3 font-sans shadow-md">
                   <div className="flex items-center gap-2.5">
                     <div className="w-8 h-8 rounded-full bg-[var(--accent-primary)] flex items-center justify-center text-[var(--accent-contrast)] font-bold text-xs">
@@ -1407,12 +1408,12 @@ export default function BotCommandsClient() {
                     </div>
                     <div>
                       <div className="flex items-center gap-1.5">
-                        <span className="font-bold text-sm text-white">Etho</span>
+                        <span className="font-bold text-sm text-white">{tx("Etho")}</span>
                         <span className="px-1 py-0.2 rounded bg-[#5865f2] text-[10px] font-bold text-white uppercase tracking-wider">
-                          BOT
+                          {tx("BOT")}
                         </span>
                       </div>
-                      <span className="text-[10px] text-[#949ba4]">Aperçu simulation</span>
+                      <span className="text-[10px] text-[#949ba4]">{tx("Aperçu simulation")}</span>
                     </div>
                   </div>
 
@@ -1434,13 +1435,13 @@ export default function BotCommandsClient() {
               </div>
 
               <div className="pt-2 flex items-center justify-between text-xs text-[var(--text-muted)] border-t border-[var(--panel-border)]">
-                <span>Raccourci : <kbd className="px-1.5 py-0.5 rounded bg-[var(--surface-raised)] border border-[var(--panel-border)] font-mono text-[10px]">Échap</kbd> pour fermer</span>
+                <span>{tx("Raccourci :")}{" "} <kbd className="px-1.5 py-0.5 rounded bg-[var(--surface-raised)] border border-[var(--panel-border)] font-mono text-[10px]">{tx("Échap")}</kbd> {" "}{tx("pour fermer")}</span>
                 <button
                   type="button"
                   onClick={() => setInspectorOpen(false)}
                   className="px-4 py-2 rounded-xl bg-[var(--surface-raised)] hover:bg-[var(--surface-hover)] border border-[var(--panel-border)] font-semibold text-[var(--text-primary)] cursor-pointer"
                 >
-                  Fermer
+                  {tx("Fermer")}
                 </button>
               </div>
             </motion.div>

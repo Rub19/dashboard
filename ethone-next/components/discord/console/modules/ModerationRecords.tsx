@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { sinceLabel } from "@/lib/discord/security-scan";
 import { cn } from "@/lib/utils";
 import { EmptyLine, GhostButton, MemberPicker, Panel, Segmented, StatTile, useGuildApi, type MemberHit } from "../kit";
+import { tx } from "@/lib/tx";
 
 type Profile = {
   userTag: string;
@@ -45,22 +46,22 @@ export function MemberRecord({ guildId }: { guildId: string }) {
   }, [api, member]);
 
   return (
-    <Panel title="Fiche d'un membre" subtitle="Historique complet : sanctions, notes du staff et signalements." actions={<MemberPicker guildId={guildId} label={member ? member.displayName || member.username : "Choisir"} onPick={setMember} />}>
+    <Panel title={tx("Fiche d'un membre")} subtitle={tx("Historique complet : sanctions, notes du staff et signalements.")} actions={<MemberPicker guildId={guildId} label={member ? member.displayName || member.username : tx("Choisir")} onPick={setMember} />}>
       {!member ? (
-        <EmptyLine>Choisis un membre pour voir son historique.</EmptyLine>
+        <EmptyLine>{tx("Choisis un membre pour voir son historique.")}</EmptyLine>
       ) : !profile || !timeline ? (
-        <EmptyLine>Chargement…</EmptyLine>
+        <EmptyLine>{tx("Chargement…")}</EmptyLine>
       ) : (
         <div className="space-y-3 px-5 py-4">
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
-            <StatTile label="Avertissements" value={profile.stats.warnings} />
-            <StatTile label="Exclusions temp." value={profile.stats.timeouts} />
-            <StatTile label="Expulsions" value={profile.stats.kicks} />
-            <StatTile label="Bannissements" value={profile.stats.bans} />
-            <StatTile label="Profil" value={TRUST[profile.trustLevel][0]} accent={TRUST[profile.trustLevel][1]} hint={profile.reportsCount ? `${profile.reportsCount} signalement(s)` : undefined} />
+            <StatTile label={tx("Avertissements")} value={profile.stats.warnings} />
+            <StatTile label={tx("Exclusions temp.")} value={profile.stats.timeouts} />
+            <StatTile label={tx("Expulsions")} value={profile.stats.kicks} />
+            <StatTile label={tx("Bannissements")} value={profile.stats.bans} />
+            <StatTile label={tx("Profil")} value={TRUST[profile.trustLevel][0]} accent={TRUST[profile.trustLevel][1]} hint={profile.reportsCount ? tx("{reportsCount} signalement(s)", { reportsCount: profile.reportsCount }) : undefined} />
           </div>
           {timeline.length === 0 ? (
-            <p className="text-xs text-[var(--text-muted)]">Aucun antécédent sur ce serveur.</p>
+            <p className="text-xs text-[var(--text-muted)]">{tx("Aucun antécédent sur ce serveur.")}</p>
           ) : (
             <ul className="max-h-80 overflow-y-auto rounded-lg border border-[var(--panel-border)]">
               {timeline.map((t) => (
@@ -69,7 +70,7 @@ export function MemberRecord({ guildId }: { guildId: string }) {
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-[13px] font-semibold text-[var(--text-primary)]">{t.title}</p>
                     <p className="truncate text-[11px] text-[var(--text-muted)]">
-                      {t.description} · par {t.author.tag}
+                      {t.description} {" "}{tx("· par")}{" "} {t.author.tag}
                     </p>
                   </div>
                   <span className="shrink-0 text-[11px] text-[var(--text-muted)]">{sinceLabel(t.timestamp)}</span>
@@ -107,11 +108,11 @@ export function ReportsPanel({ guildId }: { guildId: string }) {
 
   return (
     <Panel
-      title="Signalements"
-      subtitle="Envoyés par les membres depuis Discord."
+      title={tx("Signalements")}
+      subtitle={tx("Envoyés par les membres depuis Discord.")}
       actions={
         <Segmented
-          label="Filtre"
+          label={tx("Filtre")}
           value={filter}
           options={[
             ["open", `À traiter${reports ? ` (${reports.filter(open).length})` : ""}`],
@@ -122,9 +123,9 @@ export function ReportsPanel({ guildId }: { guildId: string }) {
       }
     >
       {!reports ? (
-        <EmptyLine>Chargement…</EmptyLine>
+        <EmptyLine>{tx("Chargement…")}</EmptyLine>
       ) : shown.length === 0 ? (
-        <EmptyLine>{filter === "open" ? "Aucun signalement en attente." : "Aucun signalement traité."}</EmptyLine>
+        <EmptyLine>{filter === "open" ? tx("Aucun signalement en attente.") : tx("Aucun signalement traité.")}</EmptyLine>
       ) : (
         <ul>
           {shown.map((r) => (
@@ -132,18 +133,18 @@ export function ReportsPanel({ guildId }: { guildId: string }) {
               <div className="min-w-0 flex-1">
                 <p className="truncate text-[13px] font-semibold text-[var(--text-primary)]">
                   {r.reportedUserTag}
-                  <span className="font-normal text-[var(--text-muted)]"> · signalé par {r.reporterUserTag}</span>
+                  <span className="font-normal text-[var(--text-muted)]"> {" "}{tx("· signalé par")}{" "} {r.reporterUserTag}</span>
                 </p>
                 <p className="text-[12px] text-[var(--text-primary)]">{r.reason}</p>
                 {r.messageContent && <p className="mt-1 truncate rounded bg-[var(--surface-hover)] px-2 py-1 text-[11px] text-[var(--text-muted)]">« {r.messageContent} »</p>}
                 <p className={cn("mt-1 text-[11px]", r.status === "ACTIONED" ? "text-[var(--success)]" : "text-[var(--text-muted)]")}>
-                  {r.status === "ACTIONED" ? "Traité" : r.status === "DISMISSED" ? "Classé" : r.status === "ESCALATED" ? "Escaladé" : "Nouveau"} · {sinceLabel(r.createdAt)}
+                  {r.status === "ACTIONED" ? tx("Traité") : r.status === "DISMISSED" ? tx("Classé") : r.status === "ESCALATED" ? tx("Escaladé") : tx("Nouveau")} · {sinceLabel(r.createdAt)}
                 </p>
               </div>
               {open(r) && (
                 <div className="flex shrink-0 gap-1.5">
-                  <GhostButton onClick={() => setStatus(r, "ACTIONED")}>Traité</GhostButton>
-                  <GhostButton onClick={() => setStatus(r, "DISMISSED")}>Classer</GhostButton>
+                  <GhostButton onClick={() => setStatus(r, "ACTIONED")}>{tx("Traité")}</GhostButton>
+                  <GhostButton onClick={() => setStatus(r, "DISMISSED")}>{tx("Classer")}</GhostButton>
                 </div>
               )}
             </li>
@@ -151,9 +152,9 @@ export function ReportsPanel({ guildId }: { guildId: string }) {
         </ul>
       )}
       <p className="border-t border-[var(--panel-border)] px-5 py-2.5 text-[11px] text-[var(--text-muted)]">
-        Bouton « Signaler » et salon des signalements :{" "}
+        {tx("Bouton « Signaler » et salon des signalements :")}{" "}
         <a href={`/discord/moderation/reports/?guildId=${guildId}`} className="font-semibold text-[var(--text-primary)] hover:underline">
-          installer ou régler
+          {tx("installer ou régler")}
         </a>
       </p>
     </Panel>

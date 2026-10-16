@@ -8,6 +8,7 @@ import { SPRING_PILL } from "@/lib/ease";
 import { pageStagger } from "@/lib/motion-variants";
 import { cn } from "@/lib/utils";
 import { ChannelAdder, Chip, ConsolePage, EmptyLine, Panel, RoleChips, Row, Segmented, Select, Switch, useGuildApi } from "./kit";
+import { tx } from "@/lib/tx";
 
 type Rule = {
   enabled: boolean;
@@ -128,21 +129,21 @@ export default function ConsoleCommands({ guildId }: { guildId: string }) {
 
 
   return (
-    <ConsolePage title="Commandes">
+    <ConsolePage title={tx("Commandes")}>
       {!commands ? (
         <Panel>
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         </Panel>
       ) : (
         <div className="grid items-start gap-4 md:grid-cols-[15rem_1fr]">
-          <nav aria-label="Commandes" className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] md:sticky md:top-4">
+          <nav aria-label={tx("Commandes")} className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] md:sticky md:top-4">
             <div className="flex items-center gap-2 border-b border-[var(--panel-border)] px-3 py-2.5">
               <Search className="h-3.5 w-3.5 shrink-0 text-[var(--text-muted)]" />
               <input
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
-                placeholder={`Rechercher (${commands.length})`}
-                aria-label="Rechercher une commande"
+                placeholder={tx("Rechercher ({length})", { length: commands.length })}
+                aria-label={tx("Rechercher une commande")}
                 className="w-full bg-transparent text-xs text-[var(--text-primary)] outline-none placeholder:text-[var(--text-muted)]"
               />
             </div>
@@ -166,10 +167,10 @@ export default function ConsoleCommands({ guildId }: { guildId: string }) {
               ref={listRef}
               tabIndex={0}
               onKeyDown={onListKey}
-              aria-label="Liste des commandes (flèches haut et bas pour naviguer)"
+              aria-label={tx("Liste des commandes (flèches haut et bas pour naviguer)")}
               className="max-h-72 overflow-y-auto p-1.5 outline-none md:max-h-[calc(100vh-15rem)]"
             >
-              {groups.length === 0 && <p className="px-2 py-4 text-center text-xs text-[var(--text-muted)]">Aucune commande.</p>}
+              {groups.length === 0 && <p className="px-2 py-4 text-center text-xs text-[var(--text-muted)]">{tx("Aucune commande.")}</p>}
               {groups.map(([category, list]) => {
                 const open = isOpen(category);
                 return (
@@ -207,7 +208,7 @@ export default function ConsoleCommands({ guildId }: { guildId: string }) {
                               )}
                             />
                             <span className="min-w-0 flex-1 truncate font-mono text-[12px] font-semibold">/{c.name}</span>
-                            {(!c.rule.enabled || c.customized) && <span className="shrink-0 text-[10px] text-[var(--text-muted)]">{c.rule.enabled ? "modifiée" : "coupée"}</span>}
+                            {(!c.rule.enabled || c.customized) && <span className="shrink-0 text-[10px] text-[var(--text-muted)]">{c.rule.enabled ? tx("modifiée") : tx("coupée")}</span>}
                           </span>
                         </button>
                       ))}
@@ -229,21 +230,21 @@ export default function ConsoleCommands({ guildId }: { guildId: string }) {
                       <p className="mt-0.5 text-xs text-[var(--text-muted)]">{cmd.description}</p>
                       {cmd.module && !cmd.module.enabled && (
                         <p className="mt-2 text-[11px] text-[var(--warning)]">
-                          Le module {cmd.module.label} est coupé : la commande ne répond pas tant qu&apos;il n&apos;est pas réactivé.
+                          {tx("Le module")}{" "} {cmd.module.label} {" "}{tx("est coupé : la commande ne répond pas tant qu'il n'est pas réactivé.")}
                         </p>
                       )}
                     </div>
                     <label className="flex shrink-0 items-center gap-2 text-xs font-semibold text-[var(--text-muted)]">
-                      {cmd.rule.enabled ? "Activée" : "Désactivée"}
+                      {cmd.rule.enabled ? tx("Activée") : tx("Désactivée")}
                       <Switch checked={cmd.rule.enabled} onChange={(v) => save({ enabled: v })} label={`${cmd.rule.enabled ? "Désactiver" : "Activer"} /${cmd.name}`} />
                     </label>
                   </div>
                 </Panel>
 
-                <Panel title="Qui peut l'utiliser">
-                  <Row label="Accès" hint="« Rôles choisis » réserve la commande à certains rôles, en plus des droits d'origine.">
+                <Panel title={tx("Qui peut l'utiliser")}>
+                  <Row label={tx("Accès")} hint={tx("« Rôles choisis » réserve la commande à certains rôles, en plus des droits d'origine.")}>
                     <Segmented
-                      label="Accès"
+                      label={tx("Accès")}
                       value={cmd.rule.access}
                       options={[
                         ["origin", "Comme d'origine"],
@@ -253,14 +254,14 @@ export default function ConsoleCommands({ guildId }: { guildId: string }) {
                     />
                   </Row>
                   {cmd.rule.access === "roles" && (
-                    <Row label="Rôles autorisés" hint={cmd.rule.allowedRoles.length ? undefined : "Aucun rôle : seuls les owners peuvent l'utiliser."}>
+                    <Row label={tx("Rôles autorisés")} hint={cmd.rule.allowedRoles.length ? undefined : tx("Aucun rôle : seuls les owners peuvent l'utiliser.")}>
                       <RoleChips guildId={guildId} addLabel="Ajouter un rôle" ids={cmd.rule.allowedRoles} onChange={(ids) => save({ allowedRoles: ids })} />
                     </Row>
                   )}
-                  <Row label="Rôles interdits" hint="Les membres qui ont un de ces rôles ne peuvent pas l'utiliser.">
+                  <Row label={tx("Rôles interdits")} hint={tx("Les membres qui ont un de ces rôles ne peuvent pas l'utiliser.")}>
                     <RoleChips guildId={guildId} addLabel="Ajouter un rôle" ids={cmd.rule.deniedRoles} onChange={(ids) => save({ deniedRoles: ids })} />
                   </Row>
-                  <Row label="Salons autorisés" hint="Vide : partout. Les fils suivent leur salon.">
+                  <Row label={tx("Salons autorisés")} hint={tx("Vide : partout. Les fils suivent leur salon.")}>
                     <div className="flex flex-wrap items-center gap-1.5">
                       {cmd.rule.allowedChannels.map((id) => (
                         <Chip key={id} label={channelName(id)} onRemove={() => save({ allowedChannels: cmd.rule.allowedChannels.filter((x) => x !== id) })}>
@@ -269,29 +270,29 @@ export default function ConsoleCommands({ guildId }: { guildId: string }) {
                       ))}
                       <ChannelAdder
                         guildId={guildId}
-                        label="Ajouter un salon"
+                        label={tx("Ajouter un salon")}
                         excludeIds={cmd.rule.allowedChannels}
                         onPick={(c) => save({ allowedChannels: [...cmd.rule.allowedChannels, c.id] })}
                       />
                     </div>
                   </Row>
-                  <Row label="Owners Etho" hint="Le propriétaire et les owners Etho ignorent ces règles.">
-                    <Switch checked={cmd.rule.ownersBypass} onChange={(v) => save({ ownersBypass: v })} label="Les owners ignorent ces règles" />
+                  <Row label={tx("Owners Etho")} hint={tx("Le propriétaire et les owners Etho ignorent ces règles.")}>
+                    <Switch checked={cmd.rule.ownersBypass} onChange={(v) => save({ ownersBypass: v })} label={tx("Les owners ignorent ces règles")} />
                   </Row>
                 </Panel>
 
-                <Panel title="Limites par membre">
-                  <Row label="Délai entre deux utilisations">
+                <Panel title={tx("Limites par membre")}>
+                  <Row label={tx("Délai entre deux utilisations")}>
                     <div className="flex items-center gap-3">
-                      <Switch checked={cmd.rule.cooldownSeconds > 0} onChange={(v) => save({ cooldownSeconds: v ? 30 : 0 })} label="Délai entre deux utilisations" />
+                      <Switch checked={cmd.rule.cooldownSeconds > 0} onChange={(v) => save({ cooldownSeconds: v ? 30 : 0 })} label={tx("Délai entre deux utilisations")} />
                       {cmd.rule.cooldownSeconds > 0 && (
                         <NumberField key={`cd-${cmd.name}`} value={cmd.rule.cooldownSeconds} min={1} max={86400} suffix="secondes" onCommit={(n) => save({ cooldownSeconds: n })} />
                       )}
                     </div>
                   </Row>
-                  <Row label="Nombre d'utilisations">
+                  <Row label={tx("Nombre d'utilisations")}>
                     <div className="flex flex-wrap items-center gap-3">
-                      <Switch checked={cmd.rule.maxUses > 0} onChange={(v) => save({ maxUses: v ? 5 : 0 })} label="Limiter le nombre d'utilisations" />
+                      <Switch checked={cmd.rule.maxUses > 0} onChange={(v) => save({ maxUses: v ? 5 : 0 })} label={tx("Limiter le nombre d'utilisations")} />
                       {cmd.rule.maxUses > 0 && (
                         <>
                           <NumberField key={`mu-${cmd.name}`} value={cmd.rule.maxUses} min={1} max={1000} onCommit={(n) => save({ maxUses: n })} />
@@ -304,14 +305,14 @@ export default function ConsoleCommands({ guildId }: { guildId: string }) {
                               ...WINDOWS.map((w) => [w.minutes, w.label] as const),
                             ]}
                             onChange={(v) => save({ maxUsesWindowMinutes: v })}
-                            aria-label="Période"
+                            aria-label={tx("Période")}
                           />
                         </>
                       )}
                     </div>
                   </Row>
                   <p className="border-t border-[var(--panel-border)] px-5 py-3 text-[11px] text-[var(--text-muted)]">
-                    Les contrôles d&apos;origine (permissions Discord, rôles admin et modo, hiérarchie des rôles) restent toujours vérifiés.
+                    {tx("Les contrôles d'origine (permissions Discord, rôles admin et modo, hiérarchie des rôles) restent toujours vérifiés.")}
                   </p>
                 </Panel>
               </motion.div>

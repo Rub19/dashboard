@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { pageStagger } from "@/lib/motion-variants";
 import { cn } from "@/lib/utils";
 import { BOT_API_URL, ConsolePage, EmptyLine, Panel, Segmented, StatTile, useGuildApi } from "../kit";
+import { tx } from "@/lib/tx";
 
 type Period = "24h" | "7d" | "30d" | "90d";
 type Kpi = { label: string; current: number; previous: number; percentageChange: number; trend: "up" | "down" | "neutral"; unit?: string };
@@ -49,10 +50,10 @@ export default function ConsoleAnalytics({ guildId }: { guildId: string }) {
 
   return (
     <ConsolePage
-      title="Analytics"
+      title={tx("Analytics")}
       actions={
         <Segmented
-          label="Période"
+          label={tx("Période")}
           value={period}
           options={[
             ["24h", "24 h"],
@@ -75,7 +76,7 @@ export default function ConsoleAnalytics({ guildId }: { guildId: string }) {
               hint={
                 k ? (
                   <span className={cn(k.trend === "up" && "text-[var(--success)]", k.trend === "down" && "text-[var(--danger)]")}>
-                    {k.trend === "neutral" ? "stable" : `${k.percentageChange > 0 ? "+" : ""}${k.percentageChange} %`} vs période précédente
+                    {k.trend === "neutral" ? "stable" : `${k.percentageChange > 0 ? "+" : ""}${k.percentageChange} %`} {" "}{tx("vs période précédente")}
                   </span>
                 ) : undefined
               }
@@ -85,7 +86,7 @@ export default function ConsoleAnalytics({ guildId }: { guildId: string }) {
       </motion.div>
 
       {ov && ov.insights.length > 0 && (
-        <Panel title="À retenir">
+        <Panel title={tx("À retenir")}>
           <ul>
             {ov.insights.map((i) => (
               <li key={i.id} className="flex items-start gap-3 border-t border-[var(--panel-border)] px-5 py-2.5 first:border-t-0">
@@ -102,11 +103,11 @@ export default function ConsoleAnalytics({ guildId }: { guildId: string }) {
         </Panel>
       )}
 
-      <Panel title="Heures d'activité" subtitle={ov?.retentionRate != null ? `${ov.retentionRate} % des membres actifs de la période précédente le sont encore.` : undefined}>
+      <Panel title={tx("Heures d'activité")} subtitle={ov?.retentionRate != null ? tx("{retentionRate} % des membres actifs de la période précédente le sont encore.", { retentionRate: ov.retentionRate }) : undefined}>
         {!ov ? (
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         ) : ov.peakHeatmap.every((c) => !c.value) ? (
-          <EmptyLine>Pas encore assez d&apos;activité enregistrée.</EmptyLine>
+          <EmptyLine>{tx("Pas encore assez d'activité enregistrée.")}</EmptyLine>
         ) : (
           <div className="overflow-x-auto px-5 py-4">
             <div className="grid min-w-[36rem] grid-cols-[2.5rem_repeat(24,1fr)] gap-0.5 text-[9px] text-[var(--text-muted)]">
@@ -124,7 +125,7 @@ export default function ConsoleAnalytics({ guildId }: { guildId: string }) {
                     return (
                       <span
                         key={h}
-                        title={`${DAYS[d]} ${h} h : ${fmt(v)} messages`}
+                        title={tx("{v0} {h} h : {v2} messages", { v0: DAYS[d], h, v2: fmt(v) })}
                         className="h-4 rounded-sm"
                         style={{ background: v ? `color-mix(in srgb, var(--accent-primary) ${Math.round(15 + (v / heatMax) * 85)}%, transparent)` : "var(--panel-border)" }}
                       />
@@ -138,11 +139,11 @@ export default function ConsoleAnalytics({ guildId }: { guildId: string }) {
       </Panel>
 
       <div className="grid gap-4 md:grid-cols-2">
-        <Panel title="Commandes les plus utilisées">
+        <Panel title={tx("Commandes les plus utilisées")}>
           {!ov ? (
-            <EmptyLine>Chargement…</EmptyLine>
+            <EmptyLine>{tx("Chargement…")}</EmptyLine>
           ) : ov.topCommands.length === 0 ? (
-            <EmptyLine>Aucune commande sur cette période.</EmptyLine>
+            <EmptyLine>{tx("Aucune commande sur cette période.")}</EmptyLine>
           ) : (
             <ul className="space-y-2 px-5 py-4">
               {ov.topCommands.slice(0, 8).map((c) => (
@@ -159,11 +160,11 @@ export default function ConsoleAnalytics({ guildId }: { guildId: string }) {
             </ul>
           )}
         </Panel>
-        <Panel title="Sanctions par type">
+        <Panel title={tx("Sanctions par type")}>
           {!ov ? (
-            <EmptyLine>Chargement…</EmptyLine>
+            <EmptyLine>{tx("Chargement…")}</EmptyLine>
           ) : mod.length === 0 ? (
-            <EmptyLine>Aucune sanction sur cette période.</EmptyLine>
+            <EmptyLine>{tx("Aucune sanction sur cette période.")}</EmptyLine>
           ) : (
             <ul>
               {mod.map(([type, n]) => (
@@ -177,9 +178,9 @@ export default function ConsoleAnalytics({ guildId }: { guildId: string }) {
         </Panel>
       </div>
 
-      <Panel title="Exporter">
+      <Panel title={tx("Exporter")}>
         <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-3.5">
-          <p className="text-[11px] text-[var(--text-muted)]">Données de la période choisie, jour par jour.</p>
+          <p className="text-[11px] text-[var(--text-muted)]">{tx("Données de la période choisie, jour par jour.")}</p>
           <div className="flex gap-2">
             {(["csv", "json"] as const).map((f) => (
               <a key={f} href={exportUrl(f)} className="rounded-lg border border-[var(--panel-border)] px-2.5 py-1.5 text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--surface-hover)]">

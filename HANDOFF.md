@@ -26,7 +26,7 @@
 
 ---
 
-## Nouveautés majeures & Réalisations récentes (v1.75.83 → v1.75.125)
+## Nouveautés majeures & Réalisations récentes (v1.75.83 → v1.75.126)
 
 ### Sanctions façon Keeper (v1.75.115)
 - Circuit unique `modules/moderation/services/sanctionPipeline.ts` (`applySanction` : dossier → MP avec appel → action Discord ; `onCaseCreated` : paliers + garde-fou ; `recordDiscordSanction` via audit log ; `remindEnd`). Les commandes /warn /timeout /kick /ban(/durée) /unban /untimeout passent par `commands/sanctionRunner.ts` ; nouvelle commande `/mod` (raisons prédéfinies). L'ancien `sanctions.json` n'est plus écrit, seulement lu dans l'historique.

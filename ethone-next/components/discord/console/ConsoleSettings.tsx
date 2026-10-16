@@ -5,6 +5,7 @@ import { Radio } from "@/components/icons/ph";
 import ChannelPicker from "../ChannelPicker";
 import { useRaidMode } from "@/lib/hooks/useRaidMode";
 import { Chip, ConsolePage, EmptyLine, GhostButton, MemberPicker, Panel, RoleChips, Row, Segmented, Select, Switch, useGuildApi, useMemberNames } from "./kit";
+import { tx } from "@/lib/tx";
 
 type Settings = { prefix: string; systemChannelId: string | null; ownerDmAlerts: boolean; weeklyReport?: boolean; antiRaidEnabled?: boolean };
 type Mode = "admins" | "owner" | "custom";
@@ -133,13 +134,13 @@ export default function ConsoleSettings({ guildId, onExport, onImport, onCopyId,
   const prefix = settings?.prefix ?? "";
 
   return (
-    <ConsolePage title="Réglages">
-      <Panel title="Général">
+    <ConsolePage title={tx("Réglages")}>
+      <Panel title={tx("Général")}>
         {!settings ? (
-          <p className="px-5 py-6 text-xs text-[var(--text-muted)]">Chargement…</p>
+          <p className="px-5 py-6 text-xs text-[var(--text-muted)]">{tx("Chargement…")}</p>
         ) : (
           <>
-            <Row label="Préfixe" hint="Pour les commandes texte, en plus des commandes / de Discord.">
+            <Row label={tx("Préfixe")} hint={tx("Pour les commandes texte, en plus des commandes / de Discord.")}>
               <div className="flex flex-wrap items-center gap-2">
                 <input
                   value={prefixDraft}
@@ -147,7 +148,7 @@ export default function ConsoleSettings({ guildId, onExport, onImport, onCopyId,
                   onChange={(e) => setPrefixDraft(e.target.value.replace(/\s/g, ""))}
                   onBlur={() => prefixDraft && prefixDraft !== prefix && save({ prefix: prefixDraft })}
                   onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()}
-                  aria-label="Préfixe"
+                  aria-label={tx("Préfixe")}
                   className="h-9 w-24 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-3 font-mono text-sm text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/70"
                 />
                 {["help", "setup", "language"].map((c) => (
@@ -158,29 +159,29 @@ export default function ConsoleSettings({ guildId, onExport, onImport, onCopyId,
                 ))}
               </div>
             </Row>
-            <Row label="Salon système" hint="Où Etho prévient en cas de souci de permissions ou d'alerte importante.">
+            <Row label={tx("Salon système")} hint={tx("Où Etho prévient en cas de souci de permissions ou d'alerte importante.")}>
               <ChannelPicker
                 guildId={guildId}
                 value={settings.systemChannelId}
                 onChange={(id) => save({ systemChannelId: id || null })}
                 filterTypes={[0, 5]}
                 allowClear
-                emptyLabel="Aucun salon système"
-                placeholder="Choisir un salon"
+                emptyLabel={tx("Aucun salon système")}
+                placeholder={tx("Choisir un salon")}
               />
             </Row>
-            <Row label="Prévenir le propriétaire en MP" hint="Lors d'un raid ou d'un nuke, au plus un message toutes les 10 minutes.">
-              <Switch checked={settings.ownerDmAlerts} onChange={(v) => save({ ownerDmAlerts: v })} label="Prévenir le propriétaire en MP" />
+            <Row label={tx("Prévenir le propriétaire en MP")} hint={tx("Lors d'un raid ou d'un nuke, au plus un message toutes les 10 minutes.")}>
+              <Switch checked={settings.ownerDmAlerts} onChange={(v) => save({ ownerDmAlerts: v })} label={tx("Prévenir le propriétaire en MP")} />
             </Row>
-            <Row label="Rapport de sécurité hebdomadaire" hint="Chaque lundi, le propriétaire reçoit en MP : incidents de la semaine, protections actives, rôles au-dessus d'Etho et permissions manquantes.">
-              <Switch checked={Boolean(settings.weeklyReport)} onChange={(v) => save({ weeklyReport: v })} label="Rapport de sécurité hebdomadaire" />
+            <Row label={tx("Rapport de sécurité hebdomadaire")} hint={tx("Chaque lundi, le propriétaire reçoit en MP : incidents de la semaine, protections actives, rôles au-dessus d'Etho et permissions manquantes.")}>
+              <Switch checked={Boolean(settings.weeklyReport)} onChange={(v) => save({ weeklyReport: v })} label={tx("Rapport de sécurité hebdomadaire")} />
             </Row>
           </>
         )}
       </Panel>
 
       {issues && issues.length > 0 && (
-        <Panel title="Problèmes détectés" subtitle="Etho prévient tes contacts d'urgence tant qu'ils ne sont pas réglés.">
+        <Panel title={tx("Problèmes détectés")} subtitle={tx("Etho prévient tes contacts d'urgence tant qu'ils ne sont pas réglés.")}>
           <ul>
             {issues.map((i) => (
               <li key={i.id} className="border-t border-[var(--panel-border)] px-5 py-3 first:border-t-0">
@@ -192,44 +193,44 @@ export default function ConsoleSettings({ guildId, onExport, onImport, onCopyId,
         </Panel>
       )}
 
-      <Panel title="Langue et commandes">
+      <Panel title={tx("Langue et commandes")}>
         {!cfg ? (
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         ) : (
           <>
-            <Row label="Langue du bot">
-              <Segmented label="Langue du bot" value={cfg.language} options={LANGUAGES} onChange={(v) => saveCfg({ language: v })} />
+            <Row label={tx("Langue du bot")}>
+              <Segmented label={tx("Langue du bot")} value={cfg.language} options={LANGUAGES} onChange={(v) => saveCfg({ language: v })} />
             </Row>
-            <Row label="Fuseau horaire" hint="Utilisé pour les rappels, événements et anniversaires.">
+            <Row label={tx("Fuseau horaire")} hint={tx("Utilisé pour les rappels, événements et anniversaires.")}>
               <Select
                 value={cfg.timezone}
                 options={zones.map((z) => [z, `(${offsetLabel(z)}) ${z.replace(/_/g, " ")}`] as const)}
                 onChange={(v) => saveCfg({ timezone: v })}
-                aria-label="Fuseau horaire"
+                aria-label={tx("Fuseau horaire")}
                 width="w-full max-w-sm"
               />
             </Row>
-            <Row label="Commandes /">
-              <Switch checked={cfg.slashCommandsEnabled} onChange={(v) => saveCfg({ slashCommandsEnabled: v })} label="Commandes /" />
+            <Row label={tx("Commandes /")}>
+              <Switch checked={cfg.slashCommandsEnabled} onChange={(v) => saveCfg({ slashCommandsEnabled: v })} label={tx("Commandes /")} />
             </Row>
-            <Row label="Commandes à préfixe" hint={`Commandes écrites avec « ${prefix} ».`}>
-              <Switch checked={cfg.prefixCommandsEnabled} onChange={(v) => saveCfg({ prefixCommandsEnabled: v })} label="Commandes à préfixe" />
+            <Row label={tx("Commandes à préfixe")} hint={tx("Commandes écrites avec « {prefix} ».", { prefix })}>
+              <Switch checked={cfg.prefixCommandsEnabled} onChange={(v) => saveCfg({ prefixCommandsEnabled: v })} label={tx("Commandes à préfixe")} />
             </Row>
           </>
         )}
       </Panel>
 
-      <Panel title="Contacts d'urgence" subtitle="Mentionnés quand un problème sérieux est détecté (permission manquante, salon supprimé, rôle disparu…).">
+      <Panel title={tx("Contacts d'urgence")} subtitle={tx("Mentionnés quand un problème sérieux est détecté (permission manquante, salon supprimé, rôle disparu…).")}>
         {!cfg ? (
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         ) : (
           <>
-            <Row label="Qui prévenir">
-              <Segmented label="Qui prévenir" value={cfg.emergencyContacts.mode} options={MODES} onChange={(v) => setContacts({ mode: v })} />
+            <Row label={tx("Qui prévenir")}>
+              <Segmented label={tx("Qui prévenir")} value={cfg.emergencyContacts.mode} options={MODES} onChange={(v) => setContacts({ mode: v })} />
             </Row>
             {cfg.emergencyContacts.mode === "custom" && (
               <>
-                <Row label="Membres" hint="10 au maximum.">
+                <Row label={tx("Membres")} hint={tx("10 au maximum.")}>
                   <div className="flex flex-wrap items-center gap-1.5">
                     {cfg.emergencyContacts.userIds.map((id) => (
                       <Chip key={id} label={contactNames[id]?.displayName ?? id} onRemove={() => setContacts({ userIds: cfg.emergencyContacts.userIds.filter((x) => x !== id) })} />
@@ -239,26 +240,26 @@ export default function ConsoleSettings({ guildId, onExport, onImport, onCopyId,
                     )}
                   </div>
                 </Row>
-                <Row label="Rôles" hint="10 au maximum.">
+                <Row label={tx("Rôles")} hint={tx("10 au maximum.")}>
                   <RoleChips guildId={guildId} ids={cfg.emergencyContacts.roleIds} max={10} onChange={(ids) => setContacts({ roleIds: ids })} />
                 </Row>
               </>
             )}
-            <Row label="Tester" hint="Montre ce qui est réellement livré : salon d'alerte et messages privés.">
+            <Row label={tx("Tester")} hint={tx("Montre ce qui est réellement livré : salon d'alerte et messages privés.")}>
               <GhostButton disabled={busy === "test"} onClick={sendTest}>
-                {busy === "test" ? "Envoi…" : "Envoyer un message de test"}
+                {busy === "test" ? tx("Envoi…") : tx("Envoyer un message de test")}
               </GhostButton>
             </Row>
           </>
         )}
       </Panel>
 
-      <Panel title="Aperçu des messages" subtitle="Reçois en message privé un exemplaire des messages d'Etho, avec des données d'exemple. Rien ne change sur le serveur.">
-        <Row label="Messages">
+      <Panel title={tx("Aperçu des messages")} subtitle={tx("Reçois en message privé un exemplaire des messages d'Etho, avec des données d'exemple. Rien ne change sur le serveur.")}>
+        <Row label={tx("Messages")}>
           <div className="flex flex-wrap items-center gap-2">
-            <Select value={previewCategory} options={PREVIEW_CATEGORIES} onChange={(v) => setPreviewCategory(v)} aria-label="Messages à recevoir" />
+            <Select value={previewCategory} options={PREVIEW_CATEGORIES} onChange={(v) => setPreviewCategory(v)} aria-label={tx("Messages à recevoir")} />
             <GhostButton disabled={busy === "preview"} onClick={sendPreview}>
-              {busy === "preview" ? "Envoi…" : "M'envoyer"}
+              {busy === "preview" ? tx("Envoi…") : tx("M'envoyer")}
             </GhostButton>
           </div>
         </Row>
@@ -268,54 +269,54 @@ export default function ConsoleSettings({ guildId, onExport, onImport, onCopyId,
         <Panel>
           <div className="flex items-center justify-between gap-3 px-5 py-3">
             <p className="text-xs text-[var(--text-primary)]">{note}</p>
-            <GhostButton onClick={() => setNote(null)}>OK</GhostButton>
+            <GhostButton onClick={() => setNote(null)}>{tx("OK")}</GhostButton>
           </div>
         </Panel>
       )}
 
-      <Panel title="Urgence">
+      <Panel title={tx("Urgence")}>
         <div className="flex items-center gap-4 px-5 py-4">
           <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--surface-hover)] text-[var(--text-muted)]">
             <Radio className="h-4 w-4" />
           </span>
           <div className="min-w-0 flex-1">
-            <p className="text-[13px] font-semibold text-[var(--text-primary)]">Mode raid</p>
+            <p className="text-[13px] font-semibold text-[var(--text-primary)]">{tx("Mode raid")}</p>
             <p className="text-xs text-[var(--text-muted)]">
               {raid.active === null
-                ? "État inconnu : bot injoignable."
+                ? tx("État inconnu : bot injoignable.")
                 : raid.active
-                  ? "Actif. Le serveur bloque temporairement les arrivées suspectes."
+                  ? tx("Actif. Le serveur bloque temporairement les arrivées suspectes.")
                   : settings?.antiRaidEnabled === false
-                    ? "Inactif. Le module Anti-raid est désactivé : Etho ne l'active pas tout seul."
-                    : "Inactif. Etho l'active tout seul s'il détecte une attaque."}
+                    ? tx("Inactif. Le module Anti-raid est désactivé : Etho ne l'active pas tout seul.")
+                    : tx("Inactif. Etho l'active tout seul s'il détecte une attaque.")}
             </p>
           </div>
-          <Switch checked={raid.active === true} onChange={() => raid.toggle()} disabled={raid.busy || raid.active === null} label="Mode raid" />
+          <Switch checked={raid.active === true} onChange={() => raid.toggle()} disabled={raid.busy || raid.active === null} label={tx("Mode raid")} />
         </div>
       </Panel>
 
       {(onExport || onImport || onCopyId || onOpenTour) && (
-        <Panel title="Configuration">
+        <Panel title={tx("Configuration")}>
           {(onExport || onImport) && (
-            <Row label="Sauvegarde des réglages" hint="Un fichier .json avec la configuration d'Etho sur ce serveur, à réimporter ici ou sur un autre serveur.">
+            <Row label={tx("Sauvegarde des réglages")} hint={tx("Un fichier .json avec la configuration d'Etho sur ce serveur, à réimporter ici ou sur un autre serveur.")}>
               <div className="flex flex-wrap justify-end gap-2">
-                {onExport && <GhostButton onClick={onExport}>Exporter</GhostButton>}
-                {onImport && <GhostButton onClick={onImport}>Importer</GhostButton>}
+                {onExport && <GhostButton onClick={onExport}>{tx("Exporter")}</GhostButton>}
+                {onImport && <GhostButton onClick={onImport}>{tx("Importer")}</GhostButton>}
               </div>
             </Row>
           )}
           {onCopyId && (
-            <Row label="Identifiant du serveur">
+            <Row label={tx("Identifiant du serveur")}>
               <div className="flex items-center justify-end gap-2">
                 <code className="font-mono text-xs text-[var(--text-muted)]">{guildId}</code>
-                <GhostButton onClick={onCopyId}>{copiedId ? "Copié" : "Copier"}</GhostButton>
+                <GhostButton onClick={onCopyId}>{copiedId ? tx("Copié") : tx("Copier")}</GhostButton>
               </div>
             </Row>
           )}
           {onOpenTour && (
-            <Row label="Visite guidée" hint="Revoir la présentation d'Etho et de la console.">
+            <Row label={tx("Visite guidée")} hint={tx("Revoir la présentation d'Etho et de la console.")}>
               <div className="flex justify-end">
-                <GhostButton onClick={onOpenTour}>Lancer</GhostButton>
+                <GhostButton onClick={onOpenTour}>{tx("Lancer")}</GhostButton>
               </div>
             </Row>
           )}

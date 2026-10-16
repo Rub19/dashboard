@@ -26,6 +26,7 @@ import { cn } from "@/lib/utils";
 import Card from "@/components/ui/Card";
 import type { BotTab } from "@/app/discord/bot/BotControlClient";
 import ChannelPicker from "@/components/discord/ChannelPicker";
+import { tx } from "@/lib/tx";
 
 interface ConfigurationGroupProps {
   activeTab: BotTab;
@@ -117,11 +118,11 @@ export default function ConfigurationGroup({
             <div>
               <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
                 <Layers className="w-4 h-4 text-[var(--accent-primary)]" />
-                Modules du Serveur ({modules.length})
+                {tx("Modules du Serveur (")}{modules.length})
               </h3>
               <p className="text-xs text-[var(--text-muted)]">
-                Active/désactivez les modules pour un serveur — identique à la commande Discord{" "}
-                <code className="text-[var(--text-primary)]/85">/module</code>
+                {tx("Active/désactivez les modules pour un serveur — identique à la commande Discord")}{" "}
+                <code className="text-[var(--text-primary)]/85">{tx("/module")}</code>
               </p>
             </div>
             <select
@@ -130,7 +131,7 @@ export default function ConfigurationGroup({
               disabled={servers.length === 0}
               className="px-3 py-1.5 rounded-lg bg-[var(--bg-card)] border border-[var(--panel-border)] text-xs text-[var(--text-primary)]/85 focus:outline-none focus:border-[var(--accent-primary)] disabled:opacity-50"
             >
-              {servers.length === 0 && <option value="">Aucun serveur détecté</option>}
+              {servers.length === 0 && <option value="">{tx("Aucun serveur détecté")}</option>}
               {servers.map((s) => (
                 <option key={s.id} value={s.id}>
                   {s.name}
@@ -140,9 +141,9 @@ export default function ConfigurationGroup({
           </div>
 
           {!settingsGuildId ? (
-            <p className="text-xs text-[var(--text-muted)] italic">Sélectionne un serveur pour voir ses modules.</p>
+            <p className="text-xs text-[var(--text-muted)] italic">{tx("Sélectionne un serveur pour voir ses modules.")}</p>
           ) : modulesLoading && modules.length === 0 ? (
-            <p className="text-xs text-[var(--text-muted)] italic">Chargement des modules…</p>
+            <p className="text-xs text-[var(--text-muted)] italic">{tx("Chargement des modules…")}</p>
           ) : modulesError ? (
             <div className="flex flex-col items-start gap-2 rounded-xl border border-red-500/25 bg-red-500/10 p-4 text-xs text-red-300">
               <span className="flex items-center gap-2 font-medium">
@@ -153,11 +154,11 @@ export default function ConfigurationGroup({
                 onClick={() => loadModules()}
                 className="rounded-lg border border-red-500/30 px-2.5 py-1 font-semibold transition-[color,background-color,border-color,transform] hover:bg-red-500/15 cursor-pointer active:scale-[0.97]"
               >
-                Réessayer
+                {tx("Réessayer")}
               </button>
             </div>
           ) : modules.length === 0 ? (
-            <p className="text-xs text-[var(--text-muted)] italic">Aucun module disponible pour ce serveur.</p>
+            <p className="text-xs text-[var(--text-muted)] italic">{tx("Aucun module disponible pour ce serveur.")}</p>
           ) : (
             <div className="stagger-children grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               {modules.map((m) => {
@@ -172,13 +173,13 @@ export default function ConfigurationGroup({
                       </span>
                       {m.available === false ? (
                         <span className="px-1.5 py-0.2 rounded text-[10px] bg-[var(--text-primary)]/6 text-[var(--text-muted)] border border-[var(--text-primary)]/6 shrink-0">
-                          Bientôt disponible
+                          {tx("Bientôt disponible")}
                         </span>
                       ) : (
                         <button
                           onClick={() => handleToggleModule(m.id, !m.enabled)}
                           disabled={disabled}
-                          title={m.enabled ? "Désactiver ce module" : "Activer ce module"}
+                          title={m.enabled ? tx("Désactiver ce module") : tx("Activer ce module")}
                           className={cn(
                             "w-9 h-5 rounded-full transition-colors relative p-0.5 shrink-0 disabled:opacity-50",
                             m.enabled ? "bg-[var(--accent-primary)]" : "bg-[var(--text-primary)]/15"
@@ -209,10 +210,10 @@ export default function ConfigurationGroup({
               <div>
                 <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
                   <Settings className="w-5 h-5 text-[var(--accent-primary)]" />
-                  Configuration Opérationnelle & Confidentialité
+                  {tx("Configuration Opérationnelle & Confidentialité")}
                 </h3>
                 <p className="text-xs text-[var(--text-muted)]">
-                  Définis le comportement global, la visibilité des réponses et le style d'interaction du bot
+                  {tx("Définis le comportement global, la visibilité des réponses et le style d'interaction du bot")}
                 </p>
               </div>
               <button
@@ -221,7 +222,7 @@ export default function ConfigurationGroup({
                 className="px-5 py-2.5 rounded-xl bg-[var(--accent-primary)] hover:bg-[var(--accent-primary)] text-[var(--accent-contrast)] text-xs font-semibold flex items-center gap-2 transition-all shadow-sm disabled:opacity-50 active:scale-[0.97]"
               >
                 <Check className={cn("w-4 h-4", savingSettings && "animate-spin")} />
-                <span>{savingSettings ? "Enregistrement..." : "Enregistrer les modifications"}</span>
+                <span>{savingSettings ? tx("Enregistrement...") : tx("Enregistrer les modifications")}</span>
               </button>
             </div>
 
@@ -230,7 +231,7 @@ export default function ConfigurationGroup({
             <div className="p-4 rounded-xl bg-[var(--bg-card)]/60 border border-[var(--panel-border)]/80 flex flex-col sm:flex-row sm:items-center gap-3">
               <div className="flex items-center gap-1.5 text-xs font-bold text-[var(--text-primary)] shrink-0">
                 <Server className="w-3.5 h-3.5 text-[var(--accent-primary)]" />
-                Serveur concerné
+                {tx("Serveur concerné")}
               </div>
               <select
                 value={settingsGuildId}
@@ -238,7 +239,7 @@ export default function ConfigurationGroup({
                 disabled={servers.length === 0}
                 className="flex-1 bg-[var(--surface-raised)]/60 border border-[var(--panel-border)] rounded-lg px-3 py-2 text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)] disabled:opacity-50"
               >
-                {servers.length === 0 && <option value="">Aucun serveur détecté</option>}
+                {servers.length === 0 && <option value="">{tx("Aucun serveur détecté")}</option>}
                 {servers.map((s) => (
                   <option key={s.id} value={s.id}>
                     {s.name}
@@ -246,7 +247,7 @@ export default function ConfigurationGroup({
                 ))}
               </select>
               {loadingGuildSettings && (
-                <span className="text-[10px] text-[var(--text-muted)] shrink-0">Chargement…</span>
+                <span className="text-[10px] text-[var(--text-muted)] shrink-0">{tx("Chargement…")}</span>
               )}
             </div>
 
@@ -256,10 +257,10 @@ export default function ConfigurationGroup({
                 <div>
                   <div className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-1.5">
                     <Lock className="w-3.5 h-3.5 text-amber-400" />
-                    Mode Maintenance Global
+                    {tx("Mode Maintenance Global")}
                   </div>
                   <p className="text-[11px] text-[var(--text-muted)] mt-0.5">
-                    Suspend les commandes pour les membres ordinaires pendant les mises à jour
+                    {tx("Suspend les commandes pour les membres ordinaires pendant les mises à jour")}
                   </p>
                 </div>
                 <button
@@ -292,10 +293,10 @@ export default function ConfigurationGroup({
                 <div>
                   <div className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-1.5">
                     <Zap className="w-3.5 h-3.5 text-[var(--accent-primary)]" />
-                    Auto-Reconnexion Gateway
+                    {tx("Auto-Reconnexion Gateway")}
                   </div>
                   <p className="text-[11px] text-[var(--text-muted)] mt-0.5">
-                    Rétablit instantanément les shards en cas de micro-coupure réseau
+                    {tx("Rétablit instantanément les shards en cas de micro-coupure réseau")}
                   </p>
                 </div>
                 <button
@@ -331,10 +332,10 @@ export default function ConfigurationGroup({
                 <div>
                   <h4 className="text-xs font-bold text-[var(--text-primary)] uppercase tracking-wider flex items-center gap-2">
                     <Shield className="w-4 h-4 text-[var(--accent-primary)]" />
-                    Visibilité & Confidentialité des Réponses
+                    {tx("Visibilité & Confidentialité des Réponses")}
                   </h4>
                   <p className="text-[11px] text-[var(--text-muted)] mt-0.5">
-                    Choisis si les réponses aux commandes (/ask, /bot, /music, etc.) sont visibles publiquement ou privées
+                    {tx("Choisis si les réponses aux commandes (/ask, /bot, /music, etc.) sont visibles publiquement ou privées")}
                   </p>
                 </div>
                 <span
@@ -345,7 +346,7 @@ export default function ConfigurationGroup({
                       : "bg-[var(--accent-primary)]/20 text-[var(--accent-primary)] border border-[var(--accent-primary)]/30"
                   )}
                 >
-                  {botSettings.responseVisibility === "EPHEMERAL" ? "🔒 Mode Privé (Éphémère)" : "👁️ Mode Public"}
+                  {botSettings.responseVisibility === "EPHEMERAL" ? tx("🔒 Mode Privé (Éphémère)") : tx("👁️ Mode Public")}
                 </span>
               </div>
 
@@ -360,13 +361,13 @@ export default function ConfigurationGroup({
                   )}
                 >
                   <div className="flex items-center gap-2 font-bold text-xs">
-                    <span>👁️ Réponses Publiques</span>
+                    <span>{tx("👁️ Réponses Publiques")}</span>
                     {botSettings.responseVisibility === "PUBLIC" && (
                       <CheckCircle2 className="w-4 h-4 text-[var(--accent-primary)] ml-auto" />
                     )}
                   </div>
                   <p className="text-[11px]">
-                    Les embeds et messages de réponse apparaissent dans le salon textuel pour tous les membres présents.
+                    {tx("Les embeds et messages de réponse apparaissent dans le salon textuel pour tous les membres présents.")}
                   </p>
                 </div>
 
@@ -380,13 +381,13 @@ export default function ConfigurationGroup({
                   )}
                 >
                   <div className="flex items-center gap-2 font-bold text-xs">
-                    <span>🔒 Réponses Privées (Éphémères)</span>
+                    <span>{tx("🔒 Réponses Privées (Éphémères)")}</span>
                     {botSettings.responseVisibility === "EPHEMERAL" && (
                       <CheckCircle2 className="w-4 h-4 text-[var(--accent-primary)] ml-auto" />
                     )}
                   </div>
                   <p className="text-[11px]">
-                    Les réponses ne sont visibles <strong>que par l'utilisateur</strong> ayant invoqué la commande. Aucun spam dans le salon.
+                    {tx("Les réponses ne sont visibles")}{" "} <strong>{tx("que par l'utilisateur")}</strong> {" "}{tx("ayant invoqué la commande. Aucun spam dans le salon.")}
                   </p>
                 </div>
               </div>
@@ -397,20 +398,20 @@ export default function ConfigurationGroup({
               <div>
                 <h4 className="text-xs font-bold text-[var(--text-primary)] uppercase tracking-wider flex items-center gap-2">
                   <Sparkles className="w-4 h-4 text-[var(--accent-primary)]" />
-                  Style & Personnalité du Bot (Moteur IA)
+                  {tx("Style & Personnalité du Bot (Moteur IA)")}
                 </h4>
                 <p className="text-[11px] text-[var(--text-muted)] mt-0.5">
-                  Définit le ton de communication adopté lors des réponses (/ask, messages d'accueil, etc.)
+                  {tx("Définit le ton de communication adopté lors des réponses (/ask, messages d'accueil, etc.)")}
                 </p>
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 pt-1">
                 {[
-                  { id: "FRIENDLY", label: "Amical", emoji: "🤝", desc: "Chaleureux, bienveillant et positif" },
-                  { id: "PROFESSIONAL", label: "Professionnel", emoji: "👔", desc: "Sobre, rigoureux et courtois" },
-                  { id: "HUMOROUS", label: "Humoristique", emoji: "😄", desc: "Détendu avec touches d'humour" },
-                  { id: "CONCISE", label: "Concis", emoji: "⚡", desc: "Direct, bref et sans bavardage" },
-                  { id: "CYBER", label: "Cyberpunk", emoji: "👾", desc: "Style néon futuriste et geek" },
+                  { id: "FRIENDLY", label: tx("Amical"), emoji: "🤝", desc: tx("Chaleureux, bienveillant et positif") },
+                  { id: "PROFESSIONAL", label: tx("Professionnel"), emoji: "👔", desc: tx("Sobre, rigoureux et courtois") },
+                  { id: "HUMOROUS", label: tx("Humoristique"), emoji: "😄", desc: tx("Détendu avec touches d'humour") },
+                  { id: "CONCISE", label: tx("Concis"), emoji: "⚡", desc: tx("Direct, bref et sans bavardage") },
+                  { id: "CYBER", label: tx("Cyberpunk"), emoji: "👾", desc: tx("Style néon futuriste et geek") },
                 ].map((p) => {
                   const isSelected = botSettings.botPersonality === p.id;
                   return (
@@ -436,19 +437,19 @@ export default function ConfigurationGroup({
             {/* Bot Identity & Prefix */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="p-4 rounded-xl bg-[var(--bg-card)]/60 border border-[var(--panel-border)]/80 space-y-2">
-                <label className="text-xs font-bold text-[var(--text-primary)] block">Nom affiché du Bot</label>
+                <label className="text-xs font-bold text-[var(--text-primary)] block">{tx("Nom affiché du Bot")}</label>
                 <input
                   type="text"
                   value={botSettings.customBotName}
                   onChange={(e) => setBotSettings((s: any) => ({ ...s, customBotName: e.target.value }))}
                   className="w-full px-3 py-2 rounded-lg bg-[var(--surface-raised)]/60 border border-[var(--panel-border)] text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--accent-primary)]"
-                  placeholder="Nom du bot..."
+                  placeholder={tx("Nom du bot...")}
                 />
-                <span className="text-[10px] text-[var(--text-muted)] block">Apparaît dans les titres et pieds de page des embeds Discord</span>
+                <span className="text-[10px] text-[var(--text-muted)] block">{tx("Apparaît dans les titres et pieds de page des embeds Discord")}</span>
               </div>
 
               <div className="p-4 rounded-xl bg-[var(--bg-card)]/60 border border-[var(--panel-border)]/80 space-y-2">
-                <label className="text-xs font-bold text-[var(--text-primary)] block">Préfixe Textuel par Défaut</label>
+                <label className="text-xs font-bold text-[var(--text-primary)] block">{tx("Préfixe Textuel par Défaut")}</label>
                 <div className="stagger-children flex items-center gap-2">
                   {["!", "?", "$", "/", ">>"].map((pref) => (
                     <button
@@ -472,7 +473,7 @@ export default function ConfigurationGroup({
                     className="w-20 px-3 py-1.5 rounded-lg bg-[var(--surface-raised)]/60 border border-[var(--panel-border)] text-xs text-[var(--text-primary)] text-center font-mono font-bold focus:outline-none focus:border-[var(--accent-primary)]"
                   />
                 </div>
-                <span className="text-[10px] text-[var(--text-muted)] block">Utilisable en complément des commandes Slash (ex: {botSettings.defaultPrefix}help)</span>
+                <span className="text-[10px] text-[var(--text-muted)] block">{tx("Utilisable en complément des commandes Slash (ex:")}{" "} {botSettings.defaultPrefix}{tx("help)")}</span>
               </div>
             </div>
 
@@ -482,10 +483,10 @@ export default function ConfigurationGroup({
                 <div>
                   <h4 className="text-xs font-bold text-[var(--text-primary)] uppercase tracking-wider flex items-center gap-2">
                     <Globe className="w-4 h-4 text-cyan-400" />
-                    Langue Officielle & Internationalisation (i18n)
+                    {tx("Langue Officielle & Internationalisation (i18n)")}
                   </h4>
                   <p className="text-[11px] text-[var(--text-muted)] mt-0.5">
-                    Définit la langue utilisée par le bot pour les embeds, messages d'aide, réglages et réponses IA
+                    {tx("Définit la langue utilisée par le bot pour les embeds, messages d'aide, réglages et réponses IA")}
                   </p>
                 </div>
                 <span className="px-2.5 py-1 rounded-full text-xs font-mono font-semibold bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">
@@ -495,10 +496,10 @@ export default function ConfigurationGroup({
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
                 {[
-                  { id: "fr", label: "Français", flag: "🇫🇷", desc: "Configuration française native" },
-                  { id: "en", label: "English", flag: "🇬🇧", desc: "International English support" },
-                  { id: "es", label: "Español", flag: "🇪🇸", desc: "Soporte completo en español" },
-                  { id: "de", label: "Deutsch", flag: "🇩🇪", desc: "Deutsche Lokalisierung" },
+                  { id: "fr", label: tx("Français"), flag: "🇫🇷", desc: tx("Configuration française native") },
+                  { id: "en", label: tx("English"), flag: "🇬🇧", desc: tx("International English support") },
+                  { id: "es", label: tx("Español"), flag: "🇪🇸", desc: tx("Soporte completo en español") },
+                  { id: "de", label: tx("Deutsch"), flag: "🇩🇪", desc: tx("Deutsche Lokalisierung") },
                 ].map((lang) => {
                   const isSelected = botSettings.language === lang.id;
                   return (
@@ -529,10 +530,10 @@ export default function ConfigurationGroup({
               <div>
                 <h4 className="text-xs font-bold text-[var(--text-primary)] uppercase tracking-wider flex items-center gap-2">
                   <Palette className="w-4 h-4 text-pink-400" />
-                  Thèmes Graphiques & Palettes de Couleurs
+                  {tx("Thèmes Graphiques & Palettes de Couleurs")}
                 </h4>
                 <p className="text-[11px] text-[var(--text-muted)] mt-0.5">
-                  Harmonise automatiquement la couleur principale et secondaire de tous les embeds Discord
+                  {tx("Harmonise automatiquement la couleur principale et secondaire de tous les embeds Discord")}
                 </p>
               </div>
 
@@ -576,7 +577,7 @@ export default function ConfigurationGroup({
                 <div className="flex items-center justify-between">
                   <label className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-2">
                     <Volume2 className="w-4 h-4 text-[var(--accent-primary)]" />
-                    Volume Musique par Défaut
+                    {tx("Volume Musique par Défaut")}
                   </label>
                   <span className="font-mono text-xs font-bold text-[var(--accent-primary)] px-2 py-0.5 rounded bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/20">
                     {botSettings.musicDefaultVolume}%
@@ -592,7 +593,7 @@ export default function ConfigurationGroup({
                   className="w-full accent-[var(--accent-primary)] cursor-pointer"
                 />
                 <p className="text-[10px] text-[var(--text-muted)]">
-                  Volume initial appliqué à chaque nouvelle piste audio jouée avec /music play
+                  {tx("Volume initial appliqué à chaque nouvelle piste audio jouée avec /music play")}
                 </p>
               </div>
 
@@ -600,7 +601,7 @@ export default function ConfigurationGroup({
                 <div className="flex items-center justify-between">
                   <label className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-2">
                     <Timer className="w-4 h-4 text-amber-400" />
-                    Cooldown Anti-Spam Commandes
+                    {tx("Cooldown Anti-Spam Commandes")}
                   </label>
                   <span className="font-mono text-xs font-bold text-amber-400 px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20">
                     {botSettings.commandCooldown}s
@@ -616,7 +617,7 @@ export default function ConfigurationGroup({
                   className="w-full accent-amber-500 cursor-pointer"
                 />
                 <p className="text-[10px] text-[var(--text-muted)]">
-                  Délai d'attente imposé aux utilisateurs entre 2 commandes consécutives (0 = désactivé)
+                  {tx("Délai d'attente imposé aux utilisateurs entre 2 commandes consécutives (0 = désactivé)")}
                 </p>
               </div>
             </div>
@@ -626,10 +627,10 @@ export default function ConfigurationGroup({
               <div>
                 <div className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-1.5">
                   <Trash2 className="w-3.5 h-3.5 text-rose-400" />
-                  Suppression Automatique des Invocations
+                  {tx("Suppression Automatique des Invocations")}
                 </div>
                 <p className="text-[11px] text-[var(--text-muted)] mt-0.5">
-                  Supprime automatiquement le message texte de l'utilisateur après l'exécution de la commande (mode préfixe) pour garder les salons propres
+                  {tx("Supprime automatiquement le message texte de l'utilisateur après l'exécution de la commande (mode préfixe) pour garder les salons propres")}
                 </p>
               </div>
               <button
@@ -664,40 +665,40 @@ export default function ConfigurationGroup({
                 <div>
                   <h4 className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-2">
                     <ShieldCheck className="w-4 h-4 text-[var(--accent-primary)]" />
-                    Rôles du Serveur & Permissions d'Administration
+                    {tx("Rôles du Serveur & Permissions d'Administration")}
                   </h4>
                   <p className="text-[11px] text-[var(--text-muted)]">
-                    Détection multilingue automatique (FR, EN, ES, DE) et attribution des privilèges avec présets 1-clic
+                    {tx("Détection multilingue automatique (FR, EN, ES, DE) et attribution des privilèges avec présets 1-clic")}
                   </p>
                 </div>
                 <span className="px-2.5 py-1 rounded-full text-[10px] font-mono font-semibold bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/20">
-                  Préset actif : {activeRolePreset === "PRESET_STRICT" ? "Strict & Sécurisé" : activeRolePreset === "PRESET_BALANCED" ? "Équilibré (Recommandé)" : "Communautaire"}
+                  {tx("Préset actif :")}{" "} {activeRolePreset === "PRESET_STRICT" ? tx("Strict & Sécurisé") : activeRolePreset === "PRESET_BALANCED" ? tx("Équilibré (Recommandé)") : tx("Communautaire")}
                 </span>
               </div>
 
               {/* 1-Click Preset Selection */}
               <div className="space-y-2">
                 <span className="text-[11px] font-semibold text-[var(--text-primary)]/85 block">
-                  Appliquer un Préset Rapide en 1-Clic :
+                  {tx("Appliquer un Préset Rapide en 1-Clic :")}
                 </span>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                   {[
                     {
                       id: "PRESET_STRICT",
                       name: "🛡️ Strict & Sécurisé",
-                      desc: "Seuls Owner & Admins accèdent à la modération et aux réglages critiques",
+                      desc: tx("Seuls Owner & Admins accèdent à la modération et aux réglages critiques"),
                       badge: "Haute Sécurité",
                     },
                     {
                       id: "PRESET_BALANCED",
                       name: "⚖️ Équilibré (Recommandé)",
-                      desc: "Admins = contrôle total. Modérateurs = sanctions et gestion des messages",
+                      desc: tx("Admins = contrôle total. Modérateurs = sanctions et gestion des messages"),
                       badge: "Standard",
                     },
                     {
                       id: "PRESET_COMMUNITY",
                       name: "🌐 Communautaire",
-                      desc: "Modération collaborative, accès souple pour VIPs et animateurs",
+                      desc: tx("Modération collaborative, accès souple pour VIPs et animateurs"),
                       badge: "Flexible",
                     },
                   ].map((preset) => (
@@ -727,7 +728,7 @@ export default function ConfigurationGroup({
               {/* Detected Roles List with AI recommendations */}
               <div className="space-y-2 pt-2">
                 <span className="text-[11px] font-semibold text-[var(--text-primary)]/85 block">
-                  Rôles Détectés & Recommandations Intelligentes :
+                  {tx("Rôles Détectés & Recommandations Intelligentes :")}
                 </span>
                 <div className="stagger-children divide-y divide-[var(--panel-border)]/60 border border-[var(--panel-border)]/80 rounded-xl overflow-hidden bg-[var(--surface-raised)]/40">
                   {detectedRolesList.map((role) => (
@@ -748,10 +749,10 @@ export default function ConfigurationGroup({
                       </div>
                       <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
                         <span className="text-[10px] text-[var(--text-muted)] font-mono">
-                          {role.members} membre{role.members > 1 ? "s" : ""}
+                          {role.members} {" "}{tx("membre")}{role.members > 1 ? "s" : ""}
                         </span>
                         <span className="text-[10px] px-2 py-0.5 rounded bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/20 font-semibold">
-                          Synchronisé
+                          {tx("Synchronisé")}
                         </span>
                       </div>
                     </div>
@@ -763,7 +764,7 @@ export default function ConfigurationGroup({
               <div className="p-3 rounded-xl bg-[var(--accent-primary)]/20 border border-[var(--accent-primary)]/30 flex items-start gap-2.5">
                 <Lock className="w-3.5 h-3.5 text-[var(--accent-primary)] mt-0.5 shrink-0" />
                 <p className="text-[10px] text-[var(--text-muted)] leading-relaxed">
-                  <strong className="text-[var(--text-primary)]">Verrouillage de Sécurité :</strong> Les commandes de modération (<code className="text-[var(--accent-primary)]">/ban</code>, <code className="text-[var(--accent-primary)]">/kick</code>, <code className="text-[var(--accent-primary)]">/clear</code>, <code className="text-[var(--accent-primary)]">/timeout</code>, etc.) sont hermétiquement bloquées pour tous les membres sans les permissions requises. Le créateur du bot et le propriétaire du serveur disposent d'un bypass automatique.
+                  <strong className="text-[var(--text-primary)]">{tx("Verrouillage de Sécurité :")}</strong> {" "}{tx("Les commandes de modération (")}<code className="text-[var(--accent-primary)]">{tx("/ban")}</code>, <code className="text-[var(--accent-primary)]">{tx("/kick")}</code>, <code className="text-[var(--accent-primary)]">{tx("/clear")}</code>, <code className="text-[var(--accent-primary)]">{tx("/timeout")}</code>{tx(", etc.) sont hermétiquement bloquées pour tous les membres sans les permissions requises. Le créateur du bot et le propriétaire du serveur disposent d'un bypass automatique.")}
                 </p>
               </div>
             </div>
@@ -778,15 +779,15 @@ export default function ConfigurationGroup({
               <div>
                 <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
                   <Bot className="w-5 h-5 text-[var(--accent-primary)]" />
-                  Assistant IA & Télémétrie des Tokens
+                  {tx("Assistant IA & Télémétrie des Tokens")}
                 </h3>
                 <p className="text-xs text-[var(--text-muted)]">
-                  Moteur de raisonnement contextuel avec RAG Knowledge Base et Safety Guardrail
+                  {tx("Moteur de raisonnement contextuel avec RAG Knowledge Base et Safety Guardrail")}
                 </p>
               </div>
               <div className="flex items-center gap-2">
                 <span className="px-2.5 py-1 rounded-full text-xs font-mono font-semibold bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/20">
-                  Modèle : {aiTelemetry.activeModel}
+                  {tx("Modèle :")}{" "} {aiTelemetry.activeModel}
                 </span>
               </div>
             </div>
@@ -794,37 +795,37 @@ export default function ConfigurationGroup({
             {/* KPI Cards */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div className="p-4 rounded-xl bg-[var(--bg-card)]/60 border border-[var(--panel-border)]/80">
-                <span className="text-[10px] text-[var(--text-muted)] block">Requêtes IA (24h)</span>
+                <span className="text-[10px] text-[var(--text-muted)] block">{tx("Requêtes IA (24h)")}</span>
                 <span className="text-lg font-bold font-mono text-[var(--text-primary)] mt-1 block">{aiTelemetry.dailyRequests}</span>
                 <span className="text-[10px] text-[var(--accent-primary)] mt-0.5 block font-medium">
-                  {aiTelemetry.dailyRequests > 0 ? `${aiTelemetry.successRate}% de succès` : "Aucune requête sur 24 h"}
+                  {aiTelemetry.dailyRequests > 0 ? tx("{successRate}% de succès", { successRate: aiTelemetry.successRate }) : tx("Aucune requête sur 24 h")}
                 </span>
               </div>
               <div className="p-4 rounded-xl bg-[var(--bg-card)]/60 border border-[var(--panel-border)]/80">
-                <span className="text-[10px] text-[var(--text-muted)] block">Tokens Consommés</span>
+                <span className="text-[10px] text-[var(--text-muted)] block">{tx("Tokens Consommés")}</span>
                 <span className="text-lg font-bold font-mono text-[var(--accent-primary)] mt-1 block">{aiTelemetry.dailyTokens.toLocaleString()}</span>
-                <span className="text-[10px] text-[var(--text-muted)] mt-0.5 block font-mono">sur 24 h glissantes</span>
+                <span className="text-[10px] text-[var(--text-muted)] mt-0.5 block font-mono">{tx("sur 24 h glissantes")}</span>
               </div>
               <div className="p-4 rounded-xl bg-[var(--bg-card)]/60 border border-[var(--panel-border)]/80">
-                <span className="text-[10px] text-[var(--text-muted)] block">Latence Moyenne</span>
-                <span className="text-lg font-bold font-mono text-[var(--accent-primary)] mt-1 block">{aiTelemetry.dailyRequests > 0 ? `${aiTelemetry.avgLatencyMs}ms` : "—"}</span>
-                <span className="text-[10px] text-[var(--text-muted)] mt-0.5 block">Temps d'inférence</span>
+                <span className="text-[10px] text-[var(--text-muted)] block">{tx("Latence Moyenne")}</span>
+                <span className="text-lg font-bold font-mono text-[var(--accent-primary)] mt-1 block">{aiTelemetry.dailyRequests > 0 ? tx("{avgLatencyMs}ms", { avgLatencyMs: aiTelemetry.avgLatencyMs }) : "—"}</span>
+                <span className="text-[10px] text-[var(--text-muted)] mt-0.5 block">{tx("Temps d'inférence")}</span>
               </div>
               <div className="p-4 rounded-xl bg-[var(--bg-card)]/60 border border-[var(--panel-border)]/80">
-                <span className="text-[10px] text-[var(--text-muted)] block">Coût estimé (24 h)</span>
+                <span className="text-[10px] text-[var(--text-muted)] block">{tx("Coût estimé (24 h)")}</span>
                 <span className="text-lg font-bold font-mono text-[var(--accent-primary)] mt-1 block">
                   {aiTelemetry.dailyTokens > 0 ? `≈ ${aiTelemetry.estimatedCostUsd.toFixed(3)} $` : "—"}
                 </span>
-                <span className="text-[10px] text-[var(--text-muted)] mt-0.5 block">Estimation, pas une facture</span>
+                <span className="text-[10px] text-[var(--text-muted)] mt-0.5 block">{tx("Estimation, pas une facture")}</span>
               </div>
             </div>
 
             {/* Daily Token Gauge */}
             <div className="p-5 rounded-xl bg-[var(--bg-card)]/60 border border-[var(--panel-border)]/80 space-y-2">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-bold text-[var(--text-primary)]">Budget estimé (24 h glissantes)</span>
+                <span className="font-bold text-[var(--text-primary)]">{tx("Budget estimé (24 h glissantes)")}</span>
                 <span className="font-mono text-[var(--accent-primary)] font-semibold">
-                  {aiTelemetry.budgetUsedPercent}% de {aiTelemetry.dailyBudgetUsd.toFixed(2)} $
+                  {aiTelemetry.budgetUsedPercent}{tx("% de")}{" "} {aiTelemetry.dailyBudgetUsd.toFixed(2)} $
                 </span>
               </div>
               <div className="w-full h-3 rounded-full bg-[var(--surface-raised)]/60 overflow-hidden p-0.5">
@@ -834,7 +835,7 @@ export default function ConfigurationGroup({
                 />
               </div>
               <span className="text-[10px] text-[var(--text-muted)] block pt-1">
-                Le coût est estimé à partir des jetons (répartition 50/50 entre question et réponse, tarifs supposés) sur une fenêtre glissante de 24 h : rien n'est facturé par ETHONE.
+                {tx("Le coût est estimé à partir des jetons (répartition 50/50 entre question et réponse, tarifs supposés) sur une fenêtre glissante de 24 h : rien n'est facturé par ETHONE.")}
               </span>
             </div>
 
@@ -844,14 +845,14 @@ export default function ConfigurationGroup({
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-1.5">
                     <ShieldCheck className="w-4 h-4 text-[var(--accent-primary)]" />
-                    Bouclier Anti-Jailbreak & Injection
+                    {tx("Bouclier Anti-Jailbreak & Injection")}
                   </span>
                   <span className="px-1.5 py-0.5 rounded text-[10px] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/20 font-semibold">
-                    Actif
+                    {tx("Actif")}
                   </span>
                 </div>
                 <p className="text-[11px] text-[var(--text-muted)]">
-                  Filtre par motifs qui analyse chaque requête pour bloquer les tentatives de fuite du prompt système et d'injection, et nettoie les réponses (secrets, mots interdits).
+                  {tx("Filtre par motifs qui analyse chaque requête pour bloquer les tentatives de fuite du prompt système et d'injection, et nettoie les réponses (secrets, mots interdits).")}
                 </p>
               </div>
 
@@ -859,14 +860,14 @@ export default function ConfigurationGroup({
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-1.5">
                     <Database className="w-4 h-4 text-[var(--accent-primary)]" />
-                    Base de Connaissances RAG
+                    {tx("Base de Connaissances RAG")}
                   </span>
                   <span className="px-1.5 py-0.5 rounded text-[10px] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/20 font-semibold">
-                    Par serveur
+                    {tx("Par serveur")}
                   </span>
                 </div>
                 <p className="text-[11px] text-[var(--text-muted)]">
-                  Index contextuel propre à chaque serveur (page Assistant IA) que l'assistant consulte pour répondre. Il réduit les erreurs mais ne les supprime pas.
+                  {tx("Index contextuel propre à chaque serveur (page Assistant IA) que l'assistant consulte pour répondre. Il réduit les erreurs mais ne les supprime pas.")}
                 </p>
               </div>
             </div>
@@ -877,15 +878,15 @@ export default function ConfigurationGroup({
                 <div>
                   <h4 className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-2">
                     <Terminal className="w-4 h-4 text-[var(--accent-primary)]" />
-                    Salon Public Dédié pour l'IA
+                    {tx("Salon Public Dédié pour l'IA")}
                   </h4>
                   <p className="text-[11px] text-[var(--text-muted)]">
-                    Permet à tous les membres d'échanger naturellement avec le bot sans préfixe ni mention
+                    {tx("Permet à tous les membres d'échanger naturellement avec le bot sans préfixe ni mention")}
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="text-[11px] text-[var(--text-muted)] font-mono">
-                    {dedicatedAiChannelEnabled ? "🟢 Salon Actif" : "⚪ Désactivé"}
+                    {dedicatedAiChannelEnabled ? tx("🟢 Salon Actif") : tx("⚪ Désactivé")}
                   </span>
                   <button
                     role="switch"
@@ -920,7 +921,7 @@ export default function ConfigurationGroup({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
                 <div>
                   <label className="text-[11px] font-semibold text-[var(--text-primary)]/85 block mb-1.5">
-                    Canal Textuel Dédié
+                    {tx("Canal Textuel Dédié")}
                   </label>
                   <ChannelPicker
                     value={dedicatedAiChannel}
@@ -931,18 +932,18 @@ export default function ConfigurationGroup({
                       }
                     }}
                     channels={aiTextChannels}
-                    placeholder="Sélectionner ou saisir l'ID..."
+                    placeholder={tx("Sélectionner ou saisir l'ID...")}
                   />
                   <span className="text-[10px] text-[var(--text-muted)] mt-1 block">
-                    Les membres peuvent converser librement et demander des images directement ici.
+                    {tx("Les membres peuvent converser librement et demander des images directement ici.")}
                   </span>
                 </div>
 
                 <div className="flex items-center justify-between p-3 rounded-xl bg-[var(--surface-raised)]/60 border border-[var(--panel-border)]/80">
                   <div>
-                    <span className="text-xs font-bold text-[var(--text-primary)] block">Génération d'images (/imagine)</span>
+                    <span className="text-xs font-bold text-[var(--text-primary)] block">{tx("Génération d'images (/imagine)")}</span>
                     <span className="text-[10px] text-[var(--text-muted)]">
-                      Modèle Flux haute fidélité avec protection ToS
+                      {tx("Modèle Flux haute fidélité avec protection ToS")}
                     </span>
                   </div>
                   <button
@@ -979,26 +980,26 @@ export default function ConfigurationGroup({
               <div>
                 <h4 className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-2">
                   <Sparkles className="w-4 h-4 text-amber-400" />
-                  Humeur & Tempérament du Thon
+                  {tx("Humeur & Tempérament du Thon")}
                 </h4>
                 <p className="text-[11px] text-[var(--text-muted)]">
-                  Choisis la personnalité qui régit les réponses de l'IA sur le serveur
+                  {tx("Choisis la personnalité qui régit les réponses de l'IA sur le serveur")}
                 </p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 {[
-                  { id: "SAGE", name: "🐟 Sage & Bienveillant", desc: "Calme, poli, ultra-pédagogue et posé", color: "from-[var(--accent-primary)]/20 to-[var(--accent-primary)]/20 border-[var(--accent-primary)]/30" },
-                  { id: "GAMER_SARCASTIQUE", name: "🦈 Gamer Sarcastique", desc: "Humour piquant, pop-culture et esprit vif", color: "from-[var(--accent-primary)]/20 to-pink-500/20 border-[var(--accent-primary)]/30" },
-                  { id: "PROTECTEUR", name: "🛡️ Protecteur & Sérieux", desc: "Vigilant, axé sécurité et respect des règles", color: "from-[var(--accent-primary)]/20 to-teal-500/20 border-[var(--accent-primary)]/30" },
-                  { id: "CYBERPUNK", name: "⚡ Cyberpunk Futuriste", desc: "High-tech, style néon 2077 et réponses punchy", color: "from-amber-500/20 to-rose-500/20 border-amber-500/30" },
+                  { id: "SAGE", name: "🐟 Sage & Bienveillant", desc: tx("Calme, poli, ultra-pédagogue et posé"), color: "from-[var(--accent-primary)]/20 to-[var(--accent-primary)]/20 border-[var(--accent-primary)]/30" },
+                  { id: "GAMER_SARCASTIQUE", name: "🦈 Gamer Sarcastique", desc: tx("Humour piquant, pop-culture et esprit vif"), color: "from-[var(--accent-primary)]/20 to-pink-500/20 border-[var(--accent-primary)]/30" },
+                  { id: "PROTECTEUR", name: "🛡️ Protecteur & Sérieux", desc: tx("Vigilant, axé sécurité et respect des règles"), color: "from-[var(--accent-primary)]/20 to-teal-500/20 border-[var(--accent-primary)]/30" },
+                  { id: "CYBERPUNK", name: "⚡ Cyberpunk Futuriste", desc: tx("High-tech, style néon 2077 et réponses punchy"), color: "from-amber-500/20 to-rose-500/20 border-amber-500/30" },
                 ].map((moodItem) => (
                   <button
                     key={moodItem.id}
                     onClick={() => {
                       setThonMood(moodItem.id as any);
                       saveAiBehaviorSettings({ thonMood: moodItem.id });
-                      toast?.success?.(`Humeur du Thon définie sur : ${moodItem.name}`);
+                      toast?.success?.(tx("Humeur du Thon définie sur : {name}", { name: moodItem.name }));
                     }}
                     className={cn(
                       "p-3 rounded-xl text-left border transition-all relative overflow-hidden",
@@ -1023,15 +1024,15 @@ export default function ConfigurationGroup({
                 <div>
                   <h4 className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-2">
                     <ShieldAlert className="w-4 h-4 text-rose-400" />
-                    Mots Bannis Personnalisés & Bouclier DLP
+                    {tx("Mots Bannis Personnalisés & Bouclier DLP")}
                   </h4>
                   <p className="text-[11px] text-[var(--text-muted)]">
-                    Filtrage en temps réel des prompts et des réponses par l'AutoMod et protection des secrets (Discord ToS)
+                    {tx("Filtrage en temps réel des prompts et des réponses par l'AutoMod et protection des secrets (Discord ToS)")}
                   </p>
                 </div>
                 <span className="px-2.5 py-1 rounded-full text-[10px] font-mono font-semibold bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/20 flex items-center gap-1.5">
                   <Lock className="w-3 h-3" />
-                  DLP Anti-Leak Actif
+                  {tx("DLP Anti-Leak Actif")}
                 </span>
               </div>
 
@@ -1042,14 +1043,14 @@ export default function ConfigurationGroup({
                   value={newBannedWordInput}
                   onChange={(e) => setNewBannedWordInput(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleAddBannedWord()}
-                  placeholder="Ajouter un mot ou expression bannie..."
+                  placeholder={tx("Ajouter un mot ou expression bannie...")}
                   className="flex-1 px-3 py-2 rounded-xl bg-[var(--surface-raised)]/60 border border-[var(--panel-border)] text-[var(--text-primary)] text-xs focus:outline-none focus:border-rose-500"
                 />
                 <button
                   onClick={handleAddBannedWord}
                   className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold transition-all active:scale-[0.97]"
                 >
-                  Bannir le mot
+                  {tx("Bannir le mot")}
                 </button>
               </div>
 
@@ -1070,7 +1071,7 @@ export default function ConfigurationGroup({
                   </span>
                 ))}
                 {bannedWordsList.length === 0 && (
-                  <span className="text-[11px] text-[var(--text-muted)] italic">Aucun mot banni configuré</span>
+                  <span className="text-[11px] text-[var(--text-muted)] italic">{tx("Aucun mot banni configuré")}</span>
                 )}
               </div>
             </div>

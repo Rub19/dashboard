@@ -11,6 +11,7 @@ import { fetchGuildRoles, type RoleOption } from "../RolePicker";
 import { fetchGuildChannels, type ChannelOption } from "../ChannelPicker";
 import MobileTabs from "@/components/ui/MobileTabs";
 import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
+import { tx, txNode } from "@/lib/tx";
 
 /** Boîte à outils des pages de la console au format Keeper : page, blocs, lignes de réglage, interrupteur, sélecteurs. */
 
@@ -285,9 +286,9 @@ export function MemberPicker({
   const shown = (hits ?? []).filter((m) => !excludeIds.includes(m.id));
 
   return (
-    <SearchPopover label={label} disabled={disabled} placeholder="Rechercher un membre ou coller un ID" loading={open && hits === null} q={q} setQ={setQ} open={open} setOpen={setOpen}>
+    <SearchPopover label={label} disabled={disabled} placeholder={tx("Rechercher un membre ou coller un ID")} loading={open && hits === null} q={q} setQ={setQ} open={open} setOpen={setOpen}>
       {hits === null ? null : shown.length === 0 ? (
-        <PickNote>Aucun membre trouvé.</PickNote>
+        <PickNote>{tx("Aucun membre trouvé.")}</PickNote>
       ) : (
         shown.map((m) => {
           const blocked = humansOnly && m.bot;
@@ -296,7 +297,7 @@ export function MemberPicker({
               <button
                 type="button"
                 disabled={blocked}
-                title={blocked ? "Un bot ne peut pas être ajouté ici." : undefined}
+                title={blocked ? tx("Un bot ne peut pas être ajouté ici.") : undefined}
                 onClick={() => {
                   onPick(m);
                   setOpen(false);
@@ -310,7 +311,7 @@ export function MemberPicker({
                   <span className="block truncate text-[13px] font-semibold text-[var(--text-primary)]">{m.displayName}</span>
                   <span className="block truncate text-[11px] text-[var(--text-muted)]">@{m.username}</span>
                 </span>
-                {m.bot && <span className="shrink-0 rounded bg-[var(--surface-hover)] px-1.5 py-0.5 text-[10px] font-semibold text-[var(--text-muted)]">Bot</span>}
+                {m.bot && <span className="shrink-0 rounded bg-[var(--surface-hover)] px-1.5 py-0.5 text-[10px] font-semibold text-[var(--text-muted)]">{tx("Bot")}</span>}
               </button>
             </li>
           );
@@ -353,9 +354,9 @@ export function RoleAdder({
   const shown = (roles ?? []).filter((r) => !excludeIds.includes(r.id) && (!query || r.name.toLowerCase().includes(query) || r.id === query));
 
   return (
-    <SearchPopover label={label} disabled={disabled} placeholder="Rechercher un rôle ou coller un ID" loading={open && !roles} q={q} setQ={setQ} open={open} setOpen={setOpen}>
+    <SearchPopover label={label} disabled={disabled} placeholder={tx("Rechercher un rôle ou coller un ID")} loading={open && !roles} q={q} setQ={setQ} open={open} setOpen={setOpen}>
       {!roles ? null : shown.length === 0 ? (
-        <PickNote>Aucun rôle trouvé.</PickNote>
+        <PickNote>{tx("Aucun rôle trouvé.")}</PickNote>
       ) : (
         shown.map((r) => (
           <li key={r.id}>
@@ -411,9 +412,9 @@ export function ChannelAdder({
   const shown = (channels ?? []).filter((c) => !excludeIds.includes(c.id) && (!query || c.name.toLowerCase().includes(query) || c.id === query));
 
   return (
-    <SearchPopover label={label} disabled={disabled} placeholder="Rechercher un salon ou coller un ID" loading={open && !channels} q={q} setQ={setQ} open={open} setOpen={setOpen}>
+    <SearchPopover label={label} disabled={disabled} placeholder={tx("Rechercher un salon ou coller un ID")} loading={open && !channels} q={q} setQ={setQ} open={open} setOpen={setOpen}>
       {!channels ? null : shown.length === 0 ? (
-        <PickNote>Aucun salon trouvé.</PickNote>
+        <PickNote>{tx("Aucun salon trouvé.")}</PickNote>
       ) : (
         shown.map((c) => (
           <li key={c.id}>
@@ -471,7 +472,7 @@ export function Segmented<T extends string | number>({
           )}
         >
           {value === v && <motion.span layoutId={`seg-${id}`} transition={SPRING_PILL} className="absolute inset-0 rounded-md bg-[var(--surface-hover)]" />}
-          <span className="relative">{text}</span>
+          <span className="relative">{txNode(text)}</span>
         </button>
       ))}
     </div>
@@ -528,16 +529,16 @@ export function Select<T extends string | number = string>({
     if (Array.isArray(opt)) {
       return {
         value: opt[0] as T,
-        label: opt[1] as ReactNode,
-        hint: opt[2] as ReactNode | undefined,
+        label: txNode(opt[1] as ReactNode),
+        hint: txNode(opt[2] as ReactNode | undefined),
         disabled: false,
       };
     }
     const o = opt as { value: T; label: ReactNode; hint?: ReactNode; disabled?: boolean };
     return {
       value: o.value,
-      label: o.label,
-      hint: o.hint,
+      label: txNode(o.label),
+      hint: txNode(o.hint),
       disabled: Boolean(o.disabled),
     };
   });
@@ -645,7 +646,7 @@ export function Chip({ label, onRemove, children }: { label: string; onRemove: (
     <span className="flex items-center gap-1.5 rounded-lg border border-[var(--panel-border)] py-1 pl-2 pr-1 text-xs text-[var(--text-primary)]">
       {children}
       <span className="max-w-40 truncate">{label}</span>
-      <button type="button" onClick={onRemove} aria-label={`Retirer ${label}`} className="rounded p-0.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover)] hover:text-[var(--danger)]">
+      <button type="button" onClick={onRemove} aria-label={tx("Retirer {label}", { label })} className="rounded p-0.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover)] hover:text-[var(--danger)]">
         <X className="h-3 w-3" />
       </button>
     </span>
@@ -736,7 +737,7 @@ export function Stepper({
   return (
     <span className="inline-flex items-center gap-2 text-xs text-[var(--text-muted)]">
       <span className="inline-flex items-center rounded-lg border border-[var(--panel-border)]">
-        <button type="button" className={btn} onClick={() => bump(-1)} disabled={disabled || n <= min} aria-label="Moins">
+        <button type="button" className={btn} onClick={() => bump(-1)} disabled={disabled || n <= min} aria-label={tx("Moins")}>
           <Minus className="h-3.5 w-3.5" />
         </button>
         <input
@@ -749,11 +750,11 @@ export function Stepper({
           }}
           onBlur={() => commitSoon(Number(draft.replace(",", ".")), 0)}
           onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()}
-          aria-label={typeof unit === "string" ? unit : "Valeur"}
+          aria-label={typeof unit === "string" ? unit : tx("Valeur")}
           style={{ width: `${Math.max(3, String(max).length + (decimals ? decimals + 1 : 0)) + 1.5}ch` }}
           className="h-8 border-x border-[var(--panel-border)] bg-transparent text-center font-mono text-sm text-[var(--text-primary)] outline-none disabled:opacity-50"
         />
-        <button type="button" className={btn} onClick={() => bump(1)} disabled={disabled || n >= max} aria-label="Plus">
+        <button type="button" className={btn} onClick={() => bump(1)} disabled={disabled || n >= max} aria-label={tx("Plus")}>
           <Plus className="h-3.5 w-3.5" />
         </button>
       </span>

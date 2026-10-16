@@ -6,6 +6,7 @@ import ChannelPicker, { fetchGuildChannels, type ChannelOption } from "../../Cha
 import { confirmDialog } from "@/lib/confirmDialog";
 import { pageStagger } from "@/lib/motion-variants";
 import { Chip, ConsolePage, EmptyLine, GhostButton, Panel, Row, Segmented, StatTile, Stepper, Switch, TextField, useGuildApi } from "../kit";
+import { tx } from "@/lib/tx";
 
 type Mode = "AUTOMATIC" | "MENTION_ONLY" | "COMMAND_ONLY" | "REPLY" | "HYBRID" | "DISABLED";
 type Behavior = {
@@ -116,7 +117,7 @@ export default function ConsoleAi({ guildId }: { guildId: string }) {
     }
   };
   const removeSource = async (s: Source) => {
-    if (!(await confirmDialog(`Supprimer « ${s.title} » des connaissances d'Etho ?`, { title: "Supprimer", confirmLabel: "Supprimer" }))) return;
+    if (!(await confirmDialog(tx("Supprimer « {title} » des connaissances d'Etho ?", { title: s.title }), { title: tx("Supprimer"), confirmLabel: tx("Supprimer") }))) return;
     if (await api(`/ai/knowledge/${s.id}`, { method: "DELETE" })) setSources((l) => l?.filter((x) => x.id !== s.id) ?? null);
   };
   const test = async () => {
@@ -128,47 +129,47 @@ export default function ConsoleAi({ guildId }: { guildId: string }) {
 
   if (!b || !p) {
     return (
-      <ConsolePage title="Assistant IA">
+      <ConsolePage title={tx("Assistant IA")}>
         <Panel>
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         </Panel>
       </ConsolePage>
     );
   }
 
   return (
-    <ConsolePage title="Assistant IA">
+    <ConsolePage title={tx("Assistant IA")}>
       {!b.enabled && (
         <Panel>
-          <p className="px-5 py-3 text-xs text-[var(--warning)]">Module désactivé : Etho ne répond pas. Active-le avec l&apos;interrupteur en haut de la page.</p>
+          <p className="px-5 py-3 text-xs text-[var(--warning)]">{tx("Module désactivé : Etho ne répond pas. Active-le avec l'interrupteur en haut de la page.")}</p>
         </Panel>
       )}
 
       <motion.div variants={pageStagger} className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatTile label="Questions aujourd'hui" value={stats?.requestsToday ?? "—"} />
-        <StatTile label="Conversations en cours" value={stats?.activeConversations ?? "—"} />
-        <StatTile label="Réponses utiles" value={stats ? `${stats.helpfulCount} / ${stats.helpfulCount + stats.unhelpfulCount}` : "—"} hint="votes 👍 sur les réponses" />
-        <StatTile label="Temps de réponse" value={stats?.avgResponseTimeMs ? `${(stats.avgResponseTimeMs / 1000).toFixed(1)} s` : "—"} />
+        <StatTile label={tx("Questions aujourd'hui")} value={stats?.requestsToday ?? "—"} />
+        <StatTile label={tx("Conversations en cours")} value={stats?.activeConversations ?? "—"} />
+        <StatTile label={tx("Réponses utiles")} value={stats ? `${stats.helpfulCount} / ${stats.helpfulCount + stats.unhelpfulCount}` : "—"} hint={tx("votes 👍 sur les réponses")} />
+        <StatTile label={tx("Temps de réponse")} value={stats?.avgResponseTimeMs ? `${(stats.avgResponseTimeMs / 1000).toFixed(1)} s` : "—"} />
       </motion.div>
 
-      <Panel title="Quand répondre">
-        <Row label="Mode général">
-          <Segmented label="Mode général" value={MODES.some(([m]) => m === b.defaultMode) ? b.defaultMode : "MENTION_ONLY"} options={MODES} onChange={(v) => saveB({ defaultMode: v })} />
+      <Panel title={tx("Quand répondre")}>
+        <Row label={tx("Mode général")}>
+          <Segmented label={tx("Mode général")} value={MODES.some(([m]) => m === b.defaultMode) ? b.defaultMode : "MENTION_ONLY"} options={MODES} onChange={(v) => saveB({ defaultMode: v })} />
         </Row>
-        <Row label="Salon IA dédié" hint="Etho répond à tous les messages de ce salon, quel que soit le mode.">
-          <ChannelPicker guildId={guildId} value={b.dedicatedChannelId ?? ""} filterTypes={[0]} placeholder="Aucun" onChange={(id) => saveB({ dedicatedChannelId: id || null })} />
+        <Row label={tx("Salon IA dédié")} hint={tx("Etho répond à tous les messages de ce salon, quel que soit le mode.")}>
+          <ChannelPicker guildId={guildId} value={b.dedicatedChannelId ?? ""} filterTypes={[0]} placeholder={tx("Aucun")} onChange={(id) => saveB({ dedicatedChannelId: id || null })} />
         </Row>
-        <Row label="Salons particuliers" hint="Un mode différent pour certains salons ou catégories.">
+        <Row label={tx("Salons particuliers")} hint={tx("Un mode différent pour certains salons ou catégories.")}>
           <div className="space-y-2">
             {rules.map((r) => (
               <div key={r.channelId} className="flex flex-wrap items-center gap-2">
                 <span className="w-40 truncate text-xs text-[var(--text-primary)]">#{channelName(r.channelId)}</span>
-                <Segmented label={`Mode de ${r.channelName}`} value={MODES.some(([m]) => m === r.mode) ? r.mode : "MENTION_ONLY"} options={MODES} onChange={(v) => setRule(r.channelId, v)} />
-                <GhostButton onClick={() => setRule(r.channelId, "INHERIT")}>Retirer</GhostButton>
+                <Segmented label={tx("Mode de {channelName}", { channelName: r.channelName })} value={MODES.some(([m]) => m === r.mode) ? r.mode : "MENTION_ONLY"} options={MODES} onChange={(v) => setRule(r.channelId, v)} />
+                <GhostButton onClick={() => setRule(r.channelId, "INHERIT")}>{tx("Retirer")}</GhostButton>
               </div>
             ))}
             <div className="flex flex-wrap items-center gap-2">
-              <ChannelPicker guildId={guildId} value={newRuleChannel} filterTypes={[0, 4]} placeholder="Ajouter un salon" onChange={(id) => setNewRuleChannel(id)} />
+              <ChannelPicker guildId={guildId} value={newRuleChannel} filterTypes={[0, 4]} placeholder={tx("Ajouter un salon")} onChange={(id) => setNewRuleChannel(id)} />
               <GhostButton
                 disabled={!newRuleChannel || rules.some((r) => r.channelId === newRuleChannel)}
                 onClick={() => {
@@ -176,22 +177,22 @@ export default function ConsoleAi({ guildId }: { guildId: string }) {
                   setNewRuleChannel("");
                 }}
               >
-                Ajouter
+                {tx("Ajouter")}
               </GhostButton>
             </div>
           </div>
         </Row>
       </Panel>
 
-      <Panel title="Personnalité">
-        <Row label="Nom">
+      <Panel title={tx("Personnalité")}>
+        <Row label={tx("Nom")}>
           <TextField value={p.name} maxLength={80} onCommit={(v) => saveP({ name: v })} />
         </Row>
-        <Row label="Humeur">
-          <Segmented label="Humeur" value={b.thonMood} options={MOODS} onChange={(v) => saveB({ thonMood: v })} />
+        <Row label={tx("Humeur")}>
+          <Segmented label={tx("Humeur")} value={b.thonMood} options={MOODS} onChange={(v) => saveB({ thonMood: v })} />
         </Row>
-        <Row label="Consignes" hint={b.thonMood === "CUSTOM" ? "Utilisées comme humeur." : "Ajoutées à chaque réponse."}>
-          <textarea value={instructions} maxLength={4000} rows={3} onChange={(e) => setInstructions(e.target.value)} onBlur={() => instructions !== p.systemInstructions && saveP({ systemInstructions: instructions })} aria-label="Consignes" className={field} />
+        <Row label={tx("Consignes")} hint={b.thonMood === "CUSTOM" ? tx("Utilisées comme humeur.") : tx("Ajoutées à chaque réponse.")}>
+          <textarea value={instructions} maxLength={4000} rows={3} onChange={(e) => setInstructions(e.target.value)} onBlur={() => instructions !== p.systemInstructions && saveP({ systemInstructions: instructions })} aria-label={tx("Consignes")} className={field} />
         </Row>
         {SLIDERS.map(([key, label, low, high]) => (
           <Row key={key} label={label}>
@@ -212,15 +213,15 @@ export default function ConsoleAi({ guildId }: { guildId: string }) {
             </div>
           </Row>
         ))}
-        <Row label="Langue de l'utilisateur" hint="Répond dans la langue de la question.">
-          <Switch checked={p.replyInUserLanguage} onChange={(v) => saveP({ replyInUserLanguage: v })} label="Langue de l'utilisateur" />
+        <Row label={tx("Langue de l'utilisateur")} hint={tx("Répond dans la langue de la question.")}>
+          <Switch checked={p.replyInUserLanguage} onChange={(v) => saveP({ replyInUserLanguage: v })} label={tx("Langue de l'utilisateur")} />
         </Row>
       </Panel>
 
-      <Panel title="Sécurité des réponses">
-        <Row label="Précision" hint="Strict : refuse plutôt que d'inventer quand les connaissances ne suffisent pas.">
+      <Panel title={tx("Sécurité des réponses")}>
+        <Row label={tx("Précision")} hint={tx("Strict : refuse plutôt que d'inventer quand les connaissances ne suffisent pas.")}>
           <Segmented
-            label="Précision"
+            label={tx("Précision")}
             value={b.hallucinationMode}
             options={[
               ["STRICT", "Stricte"],
@@ -230,10 +231,10 @@ export default function ConsoleAi({ guildId }: { guildId: string }) {
             onChange={(v) => saveB({ hallucinationMode: v })}
           />
         </Row>
-        <Row label="Images (/imagine)">
-          <Switch checked={b.allowImageGeneration} onChange={(v) => saveB({ allowImageGeneration: v })} label="Génération d'images" />
+        <Row label={tx("Images (/imagine)")}>
+          <Switch checked={b.allowImageGeneration} onChange={(v) => saveB({ allowImageGeneration: v })} label={tx("Génération d'images")} />
         </Row>
-        <Row label="Mots interdits" hint="Etho ne répond pas aux messages qui les contiennent.">
+        <Row label={tx("Mots interdits")} hint={tx("Etho ne répond pas aux messages qui les contiennent.")}>
           <div className="flex flex-wrap items-center gap-1.5">
             {b.bannedWords.map((w) => (
               <Chip key={w} label={w} onRemove={() => saveB({ bannedWords: b.bannedWords.filter((x) => x !== w) })} />
@@ -248,26 +249,26 @@ export default function ConsoleAi({ guildId }: { guildId: string }) {
                   setWord("");
                 }
               }}
-              placeholder="Ajouter (Entrée)"
-              aria-label="Ajouter un mot interdit"
+              placeholder={tx("Ajouter (Entrée)")}
+              aria-label={tx("Ajouter un mot interdit")}
               className="h-8 w-40 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/70"
             />
           </div>
         </Row>
         {b.paidProvider && (
-          <Row label="Budget quotidien" hint={`Au-delà, Etho répond avec son moteur intégré gratuit jusqu'à minuit (UTC). Utilisé aujourd'hui : ${b.budgetUsedToday.toLocaleString("fr-FR")} tokens.`}>
+          <Row label={tx("Budget quotidien")} hint={tx("Au-delà, Etho répond avec son moteur intégré gratuit jusqu'à minuit (UTC). Utilisé aujourd'hui : {v0} tokens.", { v0: b.budgetUsedToday.toLocaleString("fr-FR") })}>
             <Stepper value={b.dailyBudgetTokens} min={0} max={1000000} step={10000} unit="tokens" onCommit={(n) => saveB({ dailyBudgetTokens: n })} />
           </Row>
         )}
-        <Row label="Mémoire de conversation" hint="Etho se souvient des derniers messages échangés.">
+        <Row label={tx("Mémoire de conversation")} hint={tx("Etho se souvient des derniers messages échangés.")}>
           <div className="flex flex-wrap items-center gap-3">
-            <Switch checked={b.memory.enabled} onChange={(v) => saveB({ memory: { ...b.memory, enabled: v } })} label="Mémoire de conversation" />
+            <Switch checked={b.memory.enabled} onChange={(v) => saveB({ memory: { ...b.memory, enabled: v } })} label={tx("Mémoire de conversation")} />
             {b.memory.enabled && <Stepper value={b.memory.contextLength} min={2} max={50} unit="messages" onCommit={(n) => saveB({ memory: { ...b.memory, contextLength: n } })} />}
           </div>
         </Row>
       </Panel>
 
-      <Panel title="Connaissances" subtitle="Textes que l'IA consulte pour répondre (règles, FAQ, infos du serveur).">
+      <Panel title={tx("Connaissances")} subtitle={tx("Textes que l'IA consulte pour répondre (règles, FAQ, infos du serveur).")}>
         {sources && sources.length > 0 && (
           <ul>
             {sources.map((s) => (
@@ -276,41 +277,41 @@ export default function ConsoleAi({ guildId }: { guildId: string }) {
                   <p className="truncate text-[13px] font-semibold text-[var(--text-primary)]">{s.title}</p>
                   <p className="truncate text-[11px] text-[var(--text-muted)]">{s.content.slice(0, 140)}</p>
                 </div>
-                <GhostButton onClick={() => removeSource(s)}>Supprimer</GhostButton>
+                <GhostButton onClick={() => removeSource(s)}>{tx("Supprimer")}</GhostButton>
               </li>
             ))}
           </ul>
         )}
         <div className="space-y-2 px-5 py-3">
-          <input value={kTitle} maxLength={200} onChange={(e) => setKTitle(e.target.value)} placeholder="Titre (ex. Règlement)" aria-label="Titre" className={`${field} h-9 py-0`} />
-          <textarea value={kContent} maxLength={50000} rows={3} onChange={(e) => setKContent(e.target.value)} placeholder="Contenu" aria-label="Contenu" className={field} />
+          <input value={kTitle} maxLength={200} onChange={(e) => setKTitle(e.target.value)} placeholder={tx("Titre (ex. Règlement)")} aria-label={tx("Titre")} className={`${field} h-9 py-0`} />
+          <textarea value={kContent} maxLength={50000} rows={3} onChange={(e) => setKContent(e.target.value)} placeholder={tx("Contenu")} aria-label={tx("Contenu")} className={field} />
           <div className="flex justify-end">
             <GhostButton disabled={!kTitle.trim() || !kContent.trim() || busy === "k"} onClick={addSource}>
-              Ajouter aux connaissances
+              {tx("Ajouter aux connaissances")}
             </GhostButton>
           </div>
         </div>
       </Panel>
 
-      <Panel title="Essayer" subtitle="Pose une question comme un membre, avec les réglages actuels.">
+      <Panel title={tx("Essayer")} subtitle={tx("Pose une question comme un membre, avec les réglages actuels.")}>
         <div className="flex flex-wrap items-center gap-2 px-5 py-3">
           <input
             value={query}
             maxLength={500}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && query.trim() && test()}
-            placeholder="Quelles sont les règles du serveur ?"
-            aria-label="Question"
+            placeholder={tx("Quelles sont les règles du serveur ?")}
+            aria-label={tx("Question")}
             className={`${field} h-9 min-w-0 flex-1 py-0`}
           />
           <GhostButton disabled={!query.trim() || busy === "test"} onClick={test}>
-            {busy === "test" ? "Réflexion…" : "Demander"}
+            {busy === "test" ? tx("Réflexion…") : tx("Demander")}
           </GhostButton>
         </div>
         {answer && (
           <div className="border-t border-[var(--panel-border)] px-5 py-3">
             <p className="whitespace-pre-wrap text-sm text-[var(--text-primary)]">{answer.answer}</p>
-            {answer.sourcesUsed.length > 0 && <p className="mt-1.5 text-[11px] text-[var(--text-muted)]">Sources : {answer.sourcesUsed.join(", ")}</p>}
+            {answer.sourcesUsed.length > 0 && <p className="mt-1.5 text-[11px] text-[var(--text-muted)]">{tx("Sources :")}{" "} {answer.sourcesUsed.join(", ")}</p>}
           </div>
         )}
       </Panel>

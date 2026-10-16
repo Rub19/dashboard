@@ -57886,6 +57886,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_125_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_125_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_125_de);
 
+const v1_75_126_fr: ChangelogEntry = {
+  version: "v1.75.126",
+  date: "2026-10-16",
+  title: "Dashboard Discord traduit et commandes slash localisées",
+  items: [
+    "Tout le dashboard Discord (console du serveur, modules, sécurité, centre de contrôle du bot, assistant d'installation) s'affiche dans la langue choisie sur le site : français, anglais, espagnol ou allemand.",
+    "Les descriptions des commandes slash dans le sélecteur de Discord suivent la langue de chaque membre.",
+    "Le rapport de sécurité hebdomadaire et le statut /antiraid suivent la langue du serveur.",
+  ],
+};
+
+const v1_75_126_en: ChangelogEntry = {
+  version: "v1.75.126",
+  date: "2026-10-16",
+  title: "Discord dashboard translated and slash commands localized",
+  items: [
+    "The whole Discord dashboard (server console, modules, security, bot control center, setup assistant) now shows in the language chosen on the site: French, English, Spanish or German.",
+    "Slash command descriptions in Discord's picker follow each member's language.",
+    "The weekly security report and the /antiraid status follow the server's language.",
+  ],
+};
+
+const v1_75_126_es: ChangelogEntry = {
+  version: "v1.75.126",
+  date: "2026-10-16",
+  title: "Panel de Discord traducido y comandos slash localizados",
+  items: [
+    "Todo el panel de Discord (consola del servidor, módulos, seguridad, centro de control del bot, asistente de instalación) se muestra en el idioma elegido en el sitio: francés, inglés, español o alemán.",
+    "Las descripciones de los comandos slash en el selector de Discord siguen el idioma de cada miembro.",
+    "El informe de seguridad semanal y el estado de /antiraid siguen el idioma del servidor.",
+  ],
+};
+
+const v1_75_126_de: ChangelogEntry = {
+  version: "v1.75.126",
+  date: "2026-10-16",
+  title: "Discord-Dashboard übersetzt und Slash-Befehle lokalisiert",
+  items: [
+    "Das gesamte Discord-Dashboard (Server-Konsole, Module, Sicherheit, Bot-Kontrollzentrum, Einrichtungsassistent) erscheint in der auf der Website gewählten Sprache: Französisch, Englisch, Spanisch oder Deutsch.",
+    "Die Beschreibungen der Slash-Befehle in der Discord-Auswahl folgen der Sprache jedes Mitglieds.",
+    "Der wöchentliche Sicherheitsbericht und der /antiraid-Status folgen der Sprache des Servers.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_126_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_126_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_126_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_126_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

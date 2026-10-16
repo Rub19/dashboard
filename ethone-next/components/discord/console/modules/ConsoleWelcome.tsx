@@ -14,6 +14,7 @@ import MessageEditor, { VarField } from "../welcome/MessageEditor";
 import DiscordPreview, { type Viewer } from "../welcome/DiscordPreview";
 import ImageEditor from "../welcome/ImageEditor";
 import { DELETE_AFTER, formatOf, type CardImage, type ChannelMessage, type Config, type Format, type MessageCommon, type Meta } from "../welcome/types";
+import { tx } from "@/lib/tx";
 
 type Tab = "arrival" | "dm" | "leave" | "ghost" | "options";
 
@@ -85,7 +86,7 @@ function TabBar({ tab, onChange, dots }: { tab: Tab; onChange: (t: Tab) => void;
     ["options", "Options"],
   ];
   return (
-    <div role="tablist" aria-label="Sections" className="inline-flex max-w-full overflow-x-auto rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-1 [scrollbar-width:none]">
+    <div role="tablist" aria-label={tx("Sections")} className="inline-flex max-w-full overflow-x-auto rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-1 [scrollbar-width:none]">
       {tabs.map(([id, label]) => (
         <button
           key={id}
@@ -113,13 +114,13 @@ function TabBar({ tab, onChange, dots }: { tab: Tab; onChange: (t: Tab) => void;
 function PreviewPanel({ children, onReset, onTest, testing, testLabel = "Tester", hint }: { children: ReactNode; onReset: () => void; onTest: () => void; testing: boolean; testLabel?: string; hint: string }) {
   return (
     <Panel
-      title="Aperçu"
+      title={tx("Aperçu")}
       className="lg:sticky lg:top-4"
       actions={
         <div className="flex items-center gap-2">
           <button type="button" onClick={onReset} className="flex items-center gap-1 rounded-lg px-2 py-1.5 text-xs font-semibold text-[var(--danger)] transition-colors hover:bg-[var(--danger)]/10">
             <RotateCcw className="h-3.5 w-3.5" />
-            Réinitialiser
+            {tx("Réinitialiser")}
           </button>
           <button
             type="button"
@@ -128,7 +129,7 @@ function PreviewPanel({ children, onReset, onTest, testing, testLabel = "Tester"
             className="flex items-center gap-1.5 rounded-lg bg-[var(--success)] px-3 py-1.5 text-xs font-semibold text-black transition-[filter,transform] hover:brightness-110 active:scale-[0.97] disabled:opacity-60"
           >
             <Send className="h-3.5 w-3.5" />
-            {testing ? "Envoi…" : testLabel}
+            {testing ? tx("Envoi…") : testLabel}
           </button>
         </div>
       }
@@ -206,10 +207,10 @@ export default function ConsoleWelcome({ guildId }: { guildId: string }) {
     setTesting(`${type}:${target}`);
     const r = await api<{ channelName?: string; note?: string }>("/welcome/test", { method: "POST", json: { type, target } });
     setTesting(null);
-    if (r) success("Test envoyé", target === "dm" ? "Regarde tes messages privés." : r.channelName ? `Dans #${r.channelName}.` : r.note ?? "Sur Discord.");
+    if (r) success(tx("Test envoyé"), target === "dm" ? tx("Regarde tes messages privés.") : r.channelName ? tx("Dans #{channelName}.", { channelName: r.channelName }) : r.note ?? tx("Sur Discord."));
   };
   const reset = async (kind: "arrival" | "dm" | "leave") => {
-    if (!(await confirmDialog("Remettre le contenu par défaut ? Le texte, l'embed, les champs et les boutons de ce message seront remplacés.", { title: "Réinitialiser", confirmLabel: "Réinitialiser" }))) return;
+    if (!(await confirmDialog(tx("Remettre le contenu par défaut ? Le texte, l'embed, les champs et les boutons de ce message seront remplacés."), { title: tx("Réinitialiser"), confirmLabel: tx("Réinitialiser") }))) return;
     const d = DEFAULT_CONTENT[kind];
     if (kind === "arrival") w(d as Partial<Config["welcome"]>);
     else if (kind === "dm") dm(d);
@@ -218,9 +219,9 @@ export default function ConsoleWelcome({ guildId }: { guildId: string }) {
 
   if (!cfg || !meta)
     return (
-      <ConsolePage title="Bienvenue et départs">
+      <ConsolePage title={tx("Bienvenue et départs")}>
         <Panel>
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         </Panel>
       </ConsolePage>
     );
@@ -232,18 +233,18 @@ export default function ConsoleWelcome({ guildId }: { guildId: string }) {
   const channelSettings = (m: ChannelMessage, set: (p: Partial<ChannelMessage>) => void, label: string) => (
     <Panel title={label} actions={<Switch checked={m.enabled} onChange={(v) => set({ enabled: v })} label={label} />}>
       <div>
-        <Row label="Salon">
-          <ChannelPicker guildId={guildId} value={m.channelId ?? ""} filterTypes={[0, 5]} allowClear={false} placeholder="Choisir un salon" onChange={(id) => set({ channelId: id })} />
+        <Row label={tx("Salon")}>
+          <ChannelPicker guildId={guildId} value={m.channelId ?? ""} filterTypes={[0, 5]} allowClear={false} placeholder={tx("Choisir un salon")} onChange={(id) => set({ channelId: id })} />
         </Row>
-        <Row label="Format" hint="Le container (Components V2) affiche le message en carte moderne.">
-          <Segmented label="Format" value={formatOf(m)} options={FORMATS} onChange={(v) => set({ format: v, embed: { ...m.embed, enabled: v !== "text" } })} />
+        <Row label={tx("Format")} hint={tx("Le container (Components V2) affiche le message en carte moderne.")}>
+          <Segmented label={tx("Format")} value={formatOf(m)} options={FORMATS} onChange={(v) => set({ format: v, embed: { ...m.embed, enabled: v !== "text" } })} />
         </Row>
-        <Row label="Image personnalisée" hint="Une image générée avec l'avatar du membre.">
-          <Switch checked={m.image.enabled} onChange={(v) => set({ image: { ...m.image, enabled: v } })} label="Image personnalisée" />
+        <Row label={tx("Image personnalisée")} hint={tx("Une image générée avec l'avatar du membre.")}>
+          <Switch checked={m.image.enabled} onChange={(v) => set({ image: { ...m.image, enabled: v } })} label={tx("Image personnalisée")} />
         </Row>
-        <Row label="Auteur du message" hint={meta.canWebhook ? "Au nom du serveur : publié avec le nom et l'icône du serveur." : "Etho a besoin de la permission « Gérer les webhooks » pour publier au nom du serveur."}>
+        <Row label={tx("Auteur du message")} hint={meta.canWebhook ? tx("Au nom du serveur : publié avec le nom et l'icône du serveur.") : tx("Etho a besoin de la permission « Gérer les webhooks » pour publier au nom du serveur.")}>
           <Segmented
-            label="Auteur du message"
+            label={tx("Auteur du message")}
             value={m.asServer ? "server" : "etho"}
             disabled={!meta.canWebhook && !m.asServer}
             options={[
@@ -253,14 +254,14 @@ export default function ConsoleWelcome({ guildId }: { guildId: string }) {
             onChange={(v) => set({ asServer: v === "server" })}
           />
         </Row>
-        <Row label="Mentionner le membre" hint="Le membre reçoit une notification.">
-          <Switch checked={m.mentionUser} onChange={(v) => set({ mentionUser: v })} label="Mentionner le membre" />
+        <Row label={tx("Mentionner le membre")} hint={tx("Le membre reçoit une notification.")}>
+          <Switch checked={m.mentionUser} onChange={(v) => set({ mentionUser: v })} label={tx("Mentionner le membre")} />
         </Row>
-        <Row label="Notifier les rôles mentionnés" hint="Sinon, les rôles cités dans le texte ne reçoivent pas de notification.">
-          <Switch checked={m.notifyRoles} onChange={(v) => set({ notifyRoles: v })} label="Notifier les rôles mentionnés" />
+        <Row label={tx("Notifier les rôles mentionnés")} hint={tx("Sinon, les rôles cités dans le texte ne reçoivent pas de notification.")}>
+          <Switch checked={m.notifyRoles} onChange={(v) => set({ notifyRoles: v })} label={tx("Notifier les rôles mentionnés")} />
         </Row>
-        <Row label="Suppression automatique">
-          <Select value={m.deleteAfterSeconds} options={DELETE_AFTER} onChange={(v) => set({ deleteAfterSeconds: v })} aria-label="Suppression automatique" />
+        <Row label={tx("Suppression automatique")}>
+          <Select value={m.deleteAfterSeconds} options={DELETE_AFTER} onChange={(v) => set({ deleteAfterSeconds: v })} aria-label={tx("Suppression automatique")} />
         </Row>
       </div>
     </Panel>
@@ -278,7 +279,7 @@ export default function ConsoleWelcome({ guildId }: { guildId: string }) {
     hint: string
   ) => (
     <div className="grid items-start gap-3 sm:gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)]">
-      <Panel title="Contenu">
+      <Panel title={tx("Contenu")}>
         <MessageEditor guildId={guildId} message={message} onChange={set} dm={kind === "dm"} imageOn={imageOn} onImageToggle={onImage} previews={previews} />
       </Panel>
       <PreviewPanel onReset={() => reset(kind)} onTest={onTest} testing={testing === testKey} hint={hint}>
@@ -293,11 +294,11 @@ export default function ConsoleWelcome({ guildId }: { guildId: string }) {
     <ConsolePage
       title={
         <span className="block">
-          Bienvenue et départs
-          <span className="mt-1 block max-w-xl text-sm font-normal tracking-normal text-[var(--text-muted)]">Accueille les nouveaux membres et annonce les départs, avec une image à l&apos;image du serveur.</span>
+          {tx("Bienvenue et départs")}
+          <span className="mt-1 block max-w-xl text-sm font-normal tracking-normal text-[var(--text-muted)]">{tx("Accueille les nouveaux membres et annonce les départs, avec une image à l'image du serveur.")}</span>
         </span>
       }
-      actions={<span className="self-start text-xs text-[var(--text-muted)]">{saving === "pending" ? "Enregistrement…" : saving === "saved" ? "Enregistré" : ""}</span>}
+      actions={<span className="self-start text-xs text-[var(--text-muted)]">{saving === "pending" ? tx("Enregistrement…") : saving === "saved" ? tx("Enregistré") : ""}</span>}
     >
       <div className="space-y-3 sm:space-y-5">
         <TabBar tab={tab} onChange={setTab} dots={{ arrival: welcome.enabled, dm: welcome.dm.enabled, leave: goodbye.enabled, ghost: ghostPing.enabled }} />
@@ -310,7 +311,7 @@ export default function ConsoleWelcome({ guildId }: { guildId: string }) {
                 <AnimatePresence initial={false}>
                   {welcome.image.enabled && (
                     <motion.div key="img" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 12 }} transition={SPRING_LAYOUT}>
-                      <Panel title="Image personnalisée">
+                      <Panel title={tx("Image personnalisée")}>
                         <ImageEditor guildId={guildId} image={welcome.image} onChange={welcomeImg} viewer={viewer} meta={meta} />
                       </Panel>
                     </motion.div>
@@ -321,13 +322,13 @@ export default function ConsoleWelcome({ guildId }: { guildId: string }) {
 
             {tab === "dm" && (
               <>
-                <Panel title="Message privé" actions={<Switch checked={welcome.dm.enabled} onChange={(v) => dm({ enabled: v })} label="Message privé" />}>
+                <Panel title={tx("Message privé")} actions={<Switch checked={welcome.dm.enabled} onChange={(v) => dm({ enabled: v })} label={tx("Message privé")} />}>
                   <div>
-                    <Row label="Format">
-                      <Segmented label="Format" value={formatOf(welcome.dm)} options={FORMATS} onChange={(v) => dm({ format: v, embed: { ...welcome.dm.embed, enabled: v !== "text" } })} />
+                    <Row label={tx("Format")}>
+                      <Segmented label={tx("Format")} value={formatOf(welcome.dm)} options={FORMATS} onChange={(v) => dm({ format: v, embed: { ...welcome.dm.embed, enabled: v !== "text" } })} />
                     </Row>
-                    <Row label="Image personnalisée" hint="Joint l'image de l'onglet Arrivée.">
-                      <Switch checked={welcome.dm.attachCard} onChange={(v) => dm({ attachCard: v })} label="Image personnalisée" />
+                    <Row label={tx("Image personnalisée")} hint={tx("Joint l'image de l'onglet Arrivée.")}>
+                      <Switch checked={welcome.dm.attachCard} onChange={(v) => dm({ attachCard: v })} label={tx("Image personnalisée")} />
                     </Row>
                   </div>
                 </Panel>
@@ -342,7 +343,7 @@ export default function ConsoleWelcome({ guildId }: { guildId: string }) {
                 <AnimatePresence initial={false}>
                   {goodbye.image.enabled && (
                     <motion.div key="img" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 12 }} transition={SPRING_LAYOUT}>
-                      <Panel title="Image personnalisée">
+                      <Panel title={tx("Image personnalisée")}>
                         <ImageEditor guildId={guildId} image={goodbye.image} onChange={goodbyeImg} viewer={viewer} meta={meta} goodbye />
                       </Panel>
                     </motion.div>
@@ -352,9 +353,9 @@ export default function ConsoleWelcome({ guildId }: { guildId: string }) {
             )}
 
             {tab === "ghost" && (
-              <Panel title="Ghost ping" actions={<Switch checked={ghostPing.enabled} onChange={(v) => gp({ enabled: v })} label="Ghost ping" />}>
+              <Panel title={tx("Ghost ping")} actions={<Switch checked={ghostPing.enabled} onChange={(v) => gp({ enabled: v })} label={tx("Ghost ping")} />}>
                 <div>
-                  <Row label="Salons" hint="Le nouveau membre y est mentionné, puis le message disparaît : il voit une notification qui l'amène au bon endroit.">
+                  <Row label={tx("Salons")} hint={tx("Le nouveau membre y est mentionné, puis le message disparaît : il voit une notification qui l'amène au bon endroit.")}>
                     <div className="flex flex-wrap items-center gap-1.5">
                       <AnimatePresence initial={false}>
                         {ghostPing.channelIds.map((id) => (
@@ -365,16 +366,16 @@ export default function ConsoleWelcome({ guildId }: { guildId: string }) {
                           </motion.span>
                         ))}
                       </AnimatePresence>
-                      {ghostPing.channelIds.length < 10 && <ChannelAdder guildId={guildId} label="Ajouter un salon" excludeIds={ghostPing.channelIds} onPick={(c) => gp({ channelIds: [...ghostPing.channelIds, c.id] })} />}
+                      {ghostPing.channelIds.length < 10 && <ChannelAdder guildId={guildId} label={tx("Ajouter un salon")} excludeIds={ghostPing.channelIds} onPick={(c) => gp({ channelIds: [...ghostPing.channelIds, c.id] })} />}
                     </div>
                   </Row>
-                  <Row label="Texte">
-                    <VarField label="Texte du ghost ping" value={ghostPing.text} max={500} onChange={(v) => gp({ text: v || "{user}" })} />
+                  <Row label={tx("Texte")}>
+                    <VarField label={tx("Texte du ghost ping")} value={ghostPing.text} max={500} onChange={(v) => gp({ text: v || tx("{user}") })} />
                   </Row>
-                  <Row label="Suppression">
+                  <Row label={tx("Suppression")}>
                     <Select
                       value={ghostPing.deleteAfterSeconds}
-                      aria-label="Suppression du ghost ping"
+                      aria-label={tx("Suppression du ghost ping")}
                       options={[
                         [0, "Immédiate"],
                         [1, "Après 1 seconde"],
@@ -388,7 +389,7 @@ export default function ConsoleWelcome({ guildId }: { guildId: string }) {
                     />
                   </Row>
                   <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--panel-border)] px-5 py-3.5">
-                    <p className="text-xs text-[var(--text-muted)]">Suit l&apos;option « Attendre la vérification ». Le ghost ping ne vise jamais {meta.botName}.</p>
+                    <p className="text-xs text-[var(--text-muted)]">{tx("Suit l'option « Attendre la vérification ». Le ghost ping ne vise jamais")}{" "} {meta.botName}.</p>
                     <button
                       type="button"
                       onClick={() => test("ghostping")}
@@ -396,7 +397,7 @@ export default function ConsoleWelcome({ guildId }: { guildId: string }) {
                       className="flex items-center gap-1.5 rounded-lg bg-[var(--success)] px-3 py-1.5 text-xs font-semibold text-black transition-[filter,transform] hover:brightness-110 active:scale-[0.97] disabled:opacity-50"
                     >
                       <Send className="h-3.5 w-3.5" />
-                      {testing === "ghostping:channel" ? "Envoi…" : "Tester"}
+                      {testing === "ghostping:channel" ? tx("Envoi…") : tx("Tester")}
                     </button>
                   </div>
                 </div>
@@ -404,17 +405,17 @@ export default function ConsoleWelcome({ guildId }: { guildId: string }) {
             )}
 
             {tab === "options" && (
-              <Panel title="Options">
-                <Row label="Attendre la vérification" hint="L'accueil part quand le membre a accepté les règles du serveur, pas avant.">
-                  <Switch checked={options.waitVerification} onChange={(v) => opt({ waitVerification: v })} label="Attendre la vérification" />
+              <Panel title={tx("Options")}>
+                <Row label={tx("Attendre la vérification")} hint={tx("L'accueil part quand le membre a accepté les règles du serveur, pas avant.")}>
+                  <Switch checked={options.waitVerification} onChange={(v) => opt({ waitVerification: v })} label={tx("Attendre la vérification")} />
                 </Row>
-                <Row label="Ignorer les bots" hint="Aucun accueil ni départ pour les bots ajoutés ou retirés.">
-                  <Switch checked={options.ignoreBots} onChange={(v) => opt({ ignoreBots: v })} label="Ignorer les bots" />
+                <Row label={tx("Ignorer les bots")} hint={tx("Aucun accueil ni départ pour les bots ajoutés ou retirés.")}>
+                  <Switch checked={options.ignoreBots} onChange={(v) => opt({ ignoreBots: v })} label={tx("Ignorer les bots")} />
                 </Row>
-                <Row label="Départ rapide" hint="Quand un membre repart dans les 10 minutes qui suivent son arrivée.">
+                <Row label={tx("Départ rapide")} hint={tx("Quand un membre repart dans les 10 minutes qui suivent son arrivée.")}>
                   <Select
                     value={options.quickLeave}
-                    aria-label="Départ rapide"
+                    aria-label={tx("Départ rapide")}
                     options={[
                       ["keep", "Bienvenue gardée"],
                       ["delete", "Bienvenue supprimée"],
@@ -423,7 +424,7 @@ export default function ConsoleWelcome({ guildId }: { guildId: string }) {
                     onChange={(v) => opt({ quickLeave: v })}
                   />
                 </Row>
-                <Row label="Ignorer les comptes récents" hint="Pas d'accueil pour un compte Discord plus jeune. 0 : désactivé.">
+                <Row label={tx("Ignorer les comptes récents")} hint={tx("Pas d'accueil pour un compte Discord plus jeune. 0 : désactivé.")}>
                   <Stepper
                     value={welcome.conditions.enabled ? welcome.conditions.minAccountAgeDays : 0}
                     min={0}
@@ -434,7 +435,7 @@ export default function ConsoleWelcome({ guildId }: { guildId: string }) {
                 </Row>
                 <p className="flex items-start gap-2 border-t border-[var(--panel-border)] px-5 py-3.5 text-xs text-[var(--text-muted)]">
                   <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[var(--success)]" />
-                  {meta.botName} n&apos;accueille jamais un compte que la protection retire (blacklist, anti-alt, raidmode) et limite à 10 messages d&apos;accueil par minute pendant une vague d&apos;arrivées.
+                  {meta.botName} {" "}{tx("n'accueille jamais un compte que la protection retire (blacklist, anti-alt, raidmode) et limite à 10 messages d'accueil par minute pendant une vague d'arrivées.")}
                 </p>
               </Panel>
             )}

@@ -3,6 +3,7 @@
 import React, { Component, type ReactNode } from "react";
 import Link from "next/link";
 import { AlertTriangle, ArrowLeft, RotateCcw } from "@/components/icons/ph";
+import { tx } from "@/lib/tx";
 
 interface Props {
   children: ReactNode;
@@ -24,7 +25,7 @@ export default class BotControlErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error("Bot Control Center Error:", error, errorInfo);
+    console.error(tx("Bot Control Center Error:"), error, errorInfo);
   }
 
   handleRetry = () => {
@@ -42,14 +43,14 @@ export default class BotControlErrorBoundary extends Component<Props, State> {
 
             <div className="space-y-2">
               <span className="text-xs font-bold uppercase tracking-wider text-rose-400">
-                Bot Control Center
+                {tx("Bot Control Center")}
               </span>
               <h2 className="text-lg font-bold text-[var(--text-primary)]">
-                Un problème est survenu lors du chargement
+                {tx("Un problème est survenu lors du chargement")}
               </h2>
               <p className="text-xs text-[var(--text-muted)] leading-relaxed">
                 {this.state.error?.message ||
-                  "Une erreur inattendue est survenue dans la console de contrôle du bot."}
+                  tx("Une erreur inattendue est survenue dans la console de contrôle du bot.")}
               </p>
             </div>
 
@@ -59,7 +60,7 @@ export default class BotControlErrorBoundary extends Component<Props, State> {
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--surface-raised)]/70 hover:text-[var(--text-primary)] transition-all"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
-                <span>Retour Discord</span>
+                <span>{tx("Retour Discord")}</span>
               </Link>
 
               <button
@@ -68,7 +69,7 @@ export default class BotControlErrorBoundary extends Component<Props, State> {
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--accent-primary)] text-xs font-semibold text-[var(--accent-contrast)] hover:brightness-110 cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
-                <span>Réessayer</span>
+                <span>{tx("Réessayer")}</span>
               </button>
             </div>
           </div>

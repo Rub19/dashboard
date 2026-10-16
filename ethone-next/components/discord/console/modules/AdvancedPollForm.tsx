@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Plus, Trash2 } from "@/components/icons/ph";
 import ChannelPicker from "../../ChannelPicker";
 import { GhostButton, Panel, RoleAdder, RoleChips, Row, Segmented, Stepper, Switch, roleColor, useGuildApi } from "../kit";
+import { tx } from "@/lib/tx";
 
 type Weight = { roleId: string; roleName: string; weightMultiplier: number; color?: string };
 const field =
@@ -67,7 +68,7 @@ export default function AdvancedPollForm({ guildId, onCreated }: { guildId: stri
     await api(`/polls/${created.poll.id}/publish`, { method: "POST" });
     const deployed = await api(`/polls/${created.poll.id}/panel/deploy`, { method: "POST", json: { channelId } });
     setBusy(false);
-    if (!deployed) setError("Le sondage est créé mais son panneau n'a pas pu être publié : vérifie le salon et les permissions d'Etho.");
+    if (!deployed) setError(tx("Le sondage est créé mais son panneau n'a pas pu être publié : vérifie le salon et les permissions d'Etho."));
     setQuestion("");
     setOptions([
       { label: "", emoji: "" },
@@ -77,18 +78,18 @@ export default function AdvancedPollForm({ guildId, onCreated }: { guildId: stri
   };
 
   return (
-    <Panel title="Nouveau sondage avancé" subtitle="Votes par boutons sous le message d'Etho, avec règles de vote.">
-      <Row label="Question">
-        <input value={question} maxLength={300} onChange={(e) => setQuestion(e.target.value)} placeholder="Faut-il ouvrir un salon Minecraft ?" aria-label="Question" className={field} />
+    <Panel title={tx("Nouveau sondage avancé")} subtitle={tx("Votes par boutons sous le message d'Etho, avec règles de vote.")}>
+      <Row label={tx("Question")}>
+        <input value={question} maxLength={300} onChange={(e) => setQuestion(e.target.value)} placeholder={tx("Faut-il ouvrir un salon Minecraft ?")} aria-label={tx("Question")} className={field} />
       </Row>
-      <Row label="Choix" hint={`De 2 à ${MAX_OPTIONS} choix, emoji facultatif.`}>
+      <Row label={tx("Choix")} hint={tx("De 2 à {MAX_OPTIONS} choix, emoji facultatif.", { MAX_OPTIONS })}>
         <div className="space-y-1.5">
           {options.map((o, i) => (
             <div key={i} className="flex items-center gap-1.5">
-              <input value={o.emoji} maxLength={8} onChange={(e) => setOptions((l) => l.map((x, j) => (j === i ? { ...x, emoji: e.target.value } : x)))} placeholder="🙂" aria-label={`Emoji du choix ${i + 1}`} className={`${field} w-14 px-1 text-center`} />
-              <input value={o.label} maxLength={80} onChange={(e) => setOptions((l) => l.map((x, j) => (j === i ? { ...x, label: e.target.value } : x)))} placeholder={`Choix ${i + 1}`} aria-label={`Choix ${i + 1}`} className={field} />
+              <input value={o.emoji} maxLength={8} onChange={(e) => setOptions((l) => l.map((x, j) => (j === i ? { ...x, emoji: e.target.value } : x)))} placeholder="🙂" aria-label={tx("Emoji du choix {v0}", { v0: i + 1 })} className={`${field} w-14 px-1 text-center`} />
+              <input value={o.label} maxLength={80} onChange={(e) => setOptions((l) => l.map((x, j) => (j === i ? { ...x, label: e.target.value } : x)))} placeholder={tx("Choix {v0}", { v0: i + 1 })} aria-label={tx("Choix {v0}", { v0: i + 1 })} className={field} />
               {options.length > 2 && (
-                <button type="button" onClick={() => setOptions((l) => l.filter((_, j) => j !== i))} aria-label={`Retirer le choix ${i + 1}`} className="rounded-lg p-2 text-[var(--text-muted)] hover:bg-[var(--surface-hover)] hover:text-[var(--danger)]">
+                <button type="button" onClick={() => setOptions((l) => l.filter((_, j) => j !== i))} aria-label={tx("Retirer le choix {v0}", { v0: i + 1 })} className="rounded-lg p-2 text-[var(--text-muted)] hover:bg-[var(--surface-hover)] hover:text-[var(--danger)]">
                   <Trash2 className="h-3.5 w-3.5" />
                 </button>
               )}
@@ -96,40 +97,40 @@ export default function AdvancedPollForm({ guildId, onCreated }: { guildId: stri
           ))}
           {options.length < MAX_OPTIONS && (
             <GhostButton onClick={() => setOptions((l) => [...l, { label: "", emoji: "" }])}>
-              <Plus className="h-3.5 w-3.5" /> Choix
+              <Plus className="h-3.5 w-3.5" /> {" "}{tx("Choix")}
             </GhostButton>
           )}
         </div>
       </Row>
-      <Row label="Salon">
-        <ChannelPicker guildId={guildId} value={channelId} filterTypes={[0, 5, 15]} placeholder="Choisir un salon" onChange={(id) => setChannelId(id)} />
+      <Row label={tx("Salon")}>
+        <ChannelPicker guildId={guildId} value={channelId} filterTypes={[0, 5, 15]} placeholder={tx("Choisir un salon")} onChange={(id) => setChannelId(id)} />
       </Row>
-      <Row label="Fin du sondage">
+      <Row label={tx("Fin du sondage")}>
         <div className="flex flex-wrap items-center gap-3">
           <label className="flex items-center gap-1.5 text-xs text-[var(--text-muted)]">
-            <Switch checked={!noEnd} onChange={(v) => setNoEnd(!v)} label="Date de fin" />
-            Se termine dans
+            <Switch checked={!noEnd} onChange={(v) => setNoEnd(!v)} label={tx("Date de fin")} />
+            {tx("Se termine dans")}
           </label>
           {!noEnd && <Stepper value={hours} min={1} max={2160} unit="heures" onCommit={setHours} />}
         </div>
       </Row>
 
-      <Row label="Vote anonyme" hint="Les noms des votants ne sont pas affichés.">
-        <Switch checked={anonymous} onChange={setAnonymous} label="Vote anonyme" />
+      <Row label={tx("Vote anonyme")} hint={tx("Les noms des votants ne sont pas affichés.")}>
+        <Switch checked={anonymous} onChange={setAnonymous} label={tx("Vote anonyme")} />
       </Row>
-      <Row label="Changer de vote">
-        <Switch checked={allowChange} onChange={setAllowChange} label="Changer de vote" />
+      <Row label={tx("Changer de vote")}>
+        <Switch checked={allowChange} onChange={setAllowChange} label={tx("Changer de vote")} />
       </Row>
-      <Row label="Retirer son vote">
-        <Switch checked={allowRetract} onChange={setAllowRetract} label="Retirer son vote" />
+      <Row label={tx("Retirer son vote")}>
+        <Switch checked={allowRetract} onChange={setAllowRetract} label={tx("Retirer son vote")} />
       </Row>
 
-      <Row label="Qui peut voter" hint="Vide : tout le monde.">
+      <Row label={tx("Qui peut voter")} hint={tx("Vide : tout le monde.")}>
         <div className="space-y-1.5">
           <RoleChips guildId={guildId} ids={allowedRoles} onChange={setAllowedRoles} />
           {allowedRoles.length > 1 && (
             <Segmented
-              label="Rôles requis"
+              label={tx("Rôles requis")}
               value={logic}
               options={[
                 ["ANY", "Un de ces rôles"],
@@ -140,38 +141,38 @@ export default function AdvancedPollForm({ guildId, onCreated }: { guildId: stri
           )}
         </div>
       </Row>
-      <Row label="Rôles exclus">
+      <Row label={tx("Rôles exclus")}>
         <RoleChips guildId={guildId} ids={forbiddenRoles} onChange={setForbiddenRoles} />
       </Row>
-      <Row label="Compte Discord créé depuis">
+      <Row label={tx("Compte Discord créé depuis")}>
         <Stepper value={minAccount} min={0} max={365} unit="jours" onCommit={setMinAccount} />
       </Row>
-      <Row label="Sur le serveur depuis">
+      <Row label={tx("Sur le serveur depuis")}>
         <Stepper value={minMember} min={0} max={365} unit="jours" onCommit={setMinMember} />
       </Row>
-      <Row label="Poids des votes" hint="Un rôle peut compter plusieurs voix (le plus fort l'emporte).">
+      <Row label={tx("Poids des votes")} hint={tx("Un rôle peut compter plusieurs voix (le plus fort l'emporte).")}>
         <div className="space-y-1.5">
           {weights.map((w, i) => (
             <div key={w.roleId} className="flex items-center gap-2">
               <span className="h-2 w-2 rounded-full" style={{ background: roleColor(w.color) }} />
               <span className="w-36 truncate text-xs text-[var(--text-primary)]">{w.roleName}</span>
               <Stepper value={w.weightMultiplier} min={1} max={10} unit="voix" onCommit={(n) => setWeights((l) => l.map((x, j) => (j === i ? { ...x, weightMultiplier: n } : x)))} />
-              <button type="button" onClick={() => setWeights((l) => l.filter((_, j) => j !== i))} aria-label={`Retirer ${w.roleName}`} className="rounded p-1 text-[var(--text-muted)] hover:text-[var(--danger)]">
+              <button type="button" onClick={() => setWeights((l) => l.filter((_, j) => j !== i))} aria-label={tx("Retirer {roleName}", { roleName: w.roleName })} className="rounded p-1 text-[var(--text-muted)] hover:text-[var(--danger)]">
                 <Trash2 className="h-3.5 w-3.5" />
               </button>
             </div>
           ))}
-          <RoleAdder guildId={guildId} label="Rôle" excludeIds={weights.map((w) => w.roleId)} onPick={(r) => setWeights((l) => [...l, { roleId: r.id, roleName: r.name, weightMultiplier: 2, color: String(r.color ?? "") }])} />
+          <RoleAdder guildId={guildId} label={tx("Rôle")} excludeIds={weights.map((w) => w.roleId)} onPick={(r) => setWeights((l) => [...l, { roleId: r.id, roleName: r.name, weightMultiplier: 2, color: String(r.color ?? "") }])} />
         </div>
       </Row>
-      <Row label="Quorum" hint="Le résultat n'est validé que si assez de membres ont voté.">
+      <Row label={tx("Quorum")} hint={tx("Le résultat n'est validé que si assez de membres ont voté.")}>
         <div className="flex flex-wrap items-center gap-3">
-          <Switch checked={quorum} onChange={setQuorum} label="Quorum" />
+          <Switch checked={quorum} onChange={setQuorum} label={tx("Quorum")} />
           {quorum && (
             <>
-              <Stepper value={minParticipants} min={1} max={10000} unit="votants minimum" onCommit={setMinParticipants} />
+              <Stepper value={minParticipants} min={1} max={10000} unit={tx("votants minimum")} onCommit={setMinParticipants} />
               <Segmented
-                label="Majorité"
+                label={tx("Majorité")}
                 value={threshold}
                 options={[
                   [50, "Simple (50 %)"],
@@ -187,7 +188,7 @@ export default function AdvancedPollForm({ guildId, onCreated }: { guildId: stri
       {error && <p className="border-t border-[var(--panel-border)] px-5 py-2 text-xs text-[var(--warning)]">{error}</p>}
       <div className="flex justify-end border-t border-[var(--panel-border)] px-5 py-3">
         <button type="button" disabled={!canCreate} onClick={create} className="rounded-lg bg-[var(--accent-primary)] px-4 py-2 text-xs font-bold text-white hover:opacity-90 disabled:opacity-40">
-          {busy ? "Publication…" : "Publier le sondage"}
+          {busy ? tx("Publication…") : tx("Publier le sondage")}
         </button>
       </div>
     </Panel>

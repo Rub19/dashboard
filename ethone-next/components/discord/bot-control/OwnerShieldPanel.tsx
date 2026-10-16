@@ -27,6 +27,7 @@ import { cn } from "@/lib/utils";
 import { formatApiError, errorReason } from "@/lib/format-error";
 import { hapticLightImpact, hapticMediumImpact } from "@/lib/haptics";
 import ClientImage from "@/components/ClientImage";
+import { tx } from "@/lib/tx";
 
 export interface OwnerShieldConfig {
   enabled: boolean;
@@ -319,10 +320,10 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
           }
           setGuilds(json.data.guilds || []);
           setHistory(json.data.history || []);
-          if (notify) success("Statut du Bouclier actualisé !");
+          if (notify) success(tx("Statut du Bouclier actualisé !"));
         }
       } catch (err: any) {
-        if (notify) showError("Erreur de synchronisation", errorReason(err, "Le bot n'a pas répondu."));
+        if (notify) showError(tx("Erreur de synchronisation"), errorReason(err, "Le bot n'a pas répondu."));
       } finally {
         setLoading(false);
         setRefreshing(false);
@@ -357,12 +358,12 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
       const json = await res.json();
       if (res.ok && json.success) {
         setConfig(json.config);
-        success("Configuration mise à jour !");
+        success(tx("Configuration mise à jour !"));
       } else {
         throw new Error(formatApiError(json?.error, "Erreur de configuration"));
       }
     } catch (err: any) {
-      showError("Échec de mise à jour", errorReason(err, "Le bot n'a pas répondu."));
+      showError(tx("Échec de mise à jour"), errorReason(err, "Le bot n'a pas répondu."));
     } finally {
       setUpdatingConfig(false);
     }
@@ -404,9 +405,9 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
           }),
         ]);
       }
-      success("Bouclier désactivé", "Toutes les protections automatiques sont en pause.");
+      success(tx("Bouclier désactivé"), tx("Toutes les protections automatiques sont en pause."));
     } catch (err: any) {
-      showError("Erreur désactivation", errorReason(err, "Le bot n'a pas répondu."));
+      showError(tx("Erreur désactivation"), errorReason(err, "Le bot n'a pas répondu."));
     } finally {
       setUpdatingConfig(false);
     }
@@ -447,9 +448,9 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
           }),
         ]);
       }
-      success("Bouclier activé", "Toutes les protections automatiques sont actives.");
+      success(tx("Bouclier activé"), tx("Toutes les protections automatiques sont actives."));
     } catch (err: any) {
-      showError("Erreur réactivation", errorReason(err, "Le bot n'a pas répondu."));
+      showError(tx("Erreur réactivation"), errorReason(err, "Le bot n'a pas répondu."));
     } finally {
       setUpdatingConfig(false);
     }
@@ -495,7 +496,7 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
         throw new Error(formatApiError(json?.error, "Le bot a refusé l'action."));
       }
     } catch (err: any) {
-      showError("Erreur modification serveur", errorReason(err, "Le bot n'a pas répondu."));
+      showError(tx("Erreur modification serveur"), errorReason(err, "Le bot n'a pas répondu."));
     }
   };
 
@@ -513,17 +514,17 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
 
       const json = await res.json();
       if (res.ok && json.success) {
-        success("⚡ Sauvetage exécuté !", json.message || "Opération terminée avec succès.");
+        success(tx("⚡ Sauvetage exécuté !"), json.message || tx("Opération terminée avec succès."));
         if (json.inviteUrl) {
           navigator.clipboard.writeText(json.inviteUrl).catch(() => null);
-          success("Lien d'invitation copié dans le presse-papier !");
+          success(tx("Lien d'invitation copié dans le presse-papier !"));
         }
         await fetchStatus(false);
       } else {
         throw new Error(formatApiError(json?.error, "Échec"));
       }
     } catch (err: any) {
-      showError("Erreur lors du sauvetage", errorReason(err, "Le bot n'a pas répondu."));
+      showError(tx("Erreur lors du sauvetage"), errorReason(err, "Le bot n'a pas répondu."));
     } finally {
       setActingGuildId(null);
     }
@@ -544,13 +545,13 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
 
       const json = await res.json();
       if (res.ok && json.success) {
-        success("⚡ Sauvetage global terminé !", json.message);
+        success(tx("⚡ Sauvetage global terminé !"), json.message);
         await fetchStatus(false);
       } else {
         throw new Error(formatApiError(json?.error, "Échec"));
       }
     } catch (err: any) {
-      showError("Erreur sauvetage global", errorReason(err, "Le bot n'a pas répondu."));
+      showError(tx("Erreur sauvetage global"), errorReason(err, "Le bot n'a pas répondu."));
     } finally {
       setGlobalRescuing(false);
     }
@@ -569,15 +570,15 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
       const json = await res.json();
       if (res.ok && json.success) {
         success(
-          "🧪 Simulation d'attaque réussie !",
-          json.details || "Alerte de test envoyée en MP avec les boutons d'action."
+          tx("🧪 Simulation d'attaque réussie !"),
+          json.details || tx("Alerte de test envoyée en MP avec les boutons d'action.")
         );
         await fetchStatus(false);
       } else {
         throw new Error(formatApiError(json?.error, "Échec"));
       }
     } catch (err: any) {
-      showError("Erreur simulation", errorReason(err, "Le bot n'a pas répondu."));
+      showError(tx("Erreur simulation"), errorReason(err, "Le bot n'a pas répondu."));
     } finally {
       setSimulating(false);
     }
@@ -620,8 +621,8 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
     return (
       <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-12 text-center">
         <ShieldOff className="mx-auto h-12 w-12 text-[var(--text-muted)]" />
-        <h3 className="mt-4 text-base font-bold text-[var(--text-primary)]">Accès Réservé</h3>
-        <p className="mt-1 text-xs text-[var(--text-muted)]">Cette console est strictement réservée au propriétaire du bot.</p>
+        <h3 className="mt-4 text-base font-bold text-[var(--text-primary)]">{tx("Accès Réservé")}</h3>
+        <p className="mt-1 text-xs text-[var(--text-muted)]">{tx("Cette console est strictement réservée au propriétaire du bot.")}</p>
       </div>
     );
   }
@@ -637,14 +638,14 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
         <div>
           <div className="flex items-center gap-2">
             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold tracking-wider uppercase bg-[var(--surface-raised)] border border-[var(--panel-border)] text-[var(--text-muted)]">
-              Protection Propriétaire
+              {tx("Protection Propriétaire")}
             </span>
           </div>
           <h1 className="mt-1 text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--text-primary)]">
-            Bouclier de l&apos;Owner
+            {tx("Bouclier de l'Owner")}
           </h1>
           <p className="mt-0.5 text-xs sm:text-sm text-[var(--text-muted)]">
-            Annulation automatique des sanctions et restauration de tes permissions sur tous les serveurs Discord surveillés.
+            {tx("Annulation automatique des sanctions et restauration de tes permissions sur tous les serveurs Discord surveillés.")}
           </p>
         </div>
 
@@ -655,7 +656,7 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
           className="inline-flex items-center gap-2 self-start sm:self-auto rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3.5 py-2 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-raised)]/90 transition-all cursor-pointer shadow-xs"
         >
           <RefreshCw className={cn("h-3.5 w-3.5", refreshing && "animate-spin text-[var(--accent-primary)]")} />
-          <span>Actualiser</span>
+          <span>{tx("Actualiser")}</span>
         </button>
       </div>
 
@@ -694,7 +695,7 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
             <div className="min-w-0 space-y-1">
               <div className="flex flex-wrap items-center gap-2">
                 <h2 className="text-lg sm:text-xl font-bold tracking-tight text-[var(--text-primary)]">
-                  {isMasterActive ? "Bouclier actif" : "Bouclier coupé"}
+                  {isMasterActive ? tx("Bouclier actif") : tx("Bouclier coupé")}
                 </h2>
                 <span
                   className={cn(
@@ -710,13 +711,13 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
                       isMasterActive ? "bg-emerald-400 animate-pulse" : "bg-zinc-500"
                     )}
                   />
-                  {isMasterActive ? "Protection active" : "Protections coupées"}
+                  {isMasterActive ? tx("Protection active") : tx("Protections coupées")}
                 </span>
               </div>
               <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed max-w-2xl">
                 {isMasterActive
-                  ? `Etho surveille et annule en temps réel les sanctions (ban, timeout, mute, retrait de rôles). ${covered}/${guilds.length} serveurs surveillés.`
-                  : "Le bouclier est éteint. Toutes les réactions automatiques sont en pause sur l'ensemble de tes serveurs."}
+                  ? tx("Etho surveille et annule en temps réel les sanctions (ban, timeout, mute, retrait de rôles). {covered}/{length} serveurs surveillés.", { covered, length: guilds.length })
+                  : tx("Le bouclier est éteint. Toutes les réactions automatiques sont en pause sur l'ensemble de tes serveurs.")}
               </p>
             </div>
           </div>
@@ -724,10 +725,10 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
           <div className="flex items-center gap-4 shrink-0 bg-[var(--surface-2)]/40 border border-[var(--panel-border)] p-3 rounded-xl">
             <div className="text-right hidden sm:block">
               <p className="text-xs font-bold text-[var(--text-primary)]">
-                {isMasterActive ? "Bouclier activé" : "Bouclier désactivé"}
+                {isMasterActive ? tx("Bouclier activé") : tx("Bouclier désactivé")}
               </p>
               <p className="text-[11px] text-[var(--text-muted)]">
-                {isMasterActive ? "Cliquer pour désactiver" : "Cliquer pour activer"}
+                {isMasterActive ? tx("Cliquer pour désactiver") : tx("Cliquer pour activer")}
               </p>
             </div>
             <ToggleSwitch
@@ -735,34 +736,34 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
               checked={isMasterActive}
               disabled={updatingConfig || loading}
               onChange={(next) => (next ? handleEnableAll() : handleDisableAll())}
-              label={isMasterActive ? "Couper le bouclier" : "Activer le bouclier"}
+              label={isMasterActive ? tx("Couper le bouclier") : tx("Activer le bouclier")}
             />
           </div>
         </div>
 
         <div className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-4 border-t border-[var(--panel-border)]">
           <div className="rounded-xl border border-[var(--panel-border)]/60 bg-[var(--surface-2)]/30 p-2.5">
-            <span className="text-[11px] text-[var(--text-muted)] font-medium">Serveurs couverts</span>
+            <span className="text-[11px] text-[var(--text-muted)] font-medium">{tx("Serveurs couverts")}</span>
             <p className="text-sm sm:text-base font-bold text-[var(--text-primary)] mt-0.5">
               {covered} <span className="text-xs text-[var(--text-muted)] font-normal">/ {guilds.length}</span>
             </p>
           </div>
           <div className="rounded-xl border border-[var(--panel-border)]/60 bg-[var(--surface-2)]/30 p-2.5">
-            <span className="text-[11px] text-[var(--text-muted)] font-medium">Sanctions actives</span>
+            <span className="text-[11px] text-[var(--text-muted)] font-medium">{tx("Sanctions actives")}</span>
             <p className={cn("text-sm sm:text-base font-bold mt-0.5", sanctioned > 0 ? "text-rose-400" : "text-emerald-400")}>
               {sanctioned}
             </p>
           </div>
           <div className="rounded-xl border border-[var(--panel-border)]/60 bg-[var(--surface-2)]/30 p-2.5">
-            <span className="text-[11px] text-[var(--text-muted)] font-medium">Interventions</span>
+            <span className="text-[11px] text-[var(--text-muted)] font-medium">{tx("Interventions")}</span>
             <p className="text-sm sm:text-base font-bold text-[var(--text-primary)] mt-0.5">
               {history.length}
             </p>
           </div>
           <div className="rounded-xl border border-[var(--panel-border)]/60 bg-[var(--surface-2)]/30 p-2.5">
-            <span className="text-[11px] text-[var(--text-muted)] font-medium">Statut global</span>
+            <span className="text-[11px] text-[var(--text-muted)] font-medium">{tx("Statut global")}</span>
             <p className={cn("text-sm sm:text-base font-bold mt-0.5", isMasterActive ? "text-emerald-400" : "text-zinc-400")}>
-              {isMasterActive ? "Protégé" : "Inactif"}
+              {isMasterActive ? tx("Protégé") : tx("Inactif")}
             </p>
           </div>
         </div>
@@ -775,7 +776,7 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
             className="inline-flex items-center gap-2 rounded-xl bg-[var(--accent-primary)] px-4 py-2 text-xs font-bold text-[var(--accent-contrast)] hover:opacity-90 active:scale-95 transition-all cursor-pointer shadow-sm disabled:opacity-50"
           >
             <Zap className={cn("h-3.5 w-3.5", globalRescuing && "animate-bounce")} />
-            <span>{globalRescuing ? "Rétablissement en cours…" : "Tout rétablir maintenant"}</span>
+            <span>{globalRescuing ? tx("Rétablissement en cours…") : tx("Tout rétablir maintenant")}</span>
           </button>
 
           <button
@@ -785,7 +786,7 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
             className="inline-flex items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-2)]/60 px-3.5 py-2 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-2)] active:scale-95 transition-all cursor-pointer disabled:opacity-50"
           >
             <FlaskConical className={cn("h-3.5 w-3.5", simulating && "animate-spin text-[var(--accent-primary)]")} />
-            <span>{simulating ? "Simulation en cours…" : "Tester l'alerte en MP"}</span>
+            <span>{simulating ? tx("Simulation en cours…") : tx("Tester l'alerte en MP")}</span>
           </button>
         </div>
       </motion.div>
@@ -793,17 +794,17 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
       <div className="space-y-3">
         <div className="flex items-center justify-between px-1">
           <div>
-            <h3 className="text-base font-bold text-[var(--text-primary)]">Réactions automatiques</h3>
+            <h3 className="text-base font-bold text-[var(--text-primary)]">{tx("Réactions automatiques")}</h3>
             <p className="text-xs text-[var(--text-muted)]">
               {isMasterActive
-                ? "Actions déclenchées automatiquement dès qu'un modérateur te sanctionne."
-                : "Toutes les réactions sont coupées. Réactive le bouclier pour relancer la protection."}
+                ? tx("Actions déclenchées automatiquement dès qu'un modérateur te sanctionne.")
+                : tx("Toutes les réactions sont coupées. Réactive le bouclier pour relancer la protection.")}
             </p>
           </div>
           {!isMasterActive && (
             <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-rose-500/10 border border-rose-500/20 text-rose-400">
               <AlertTriangle className="h-3 w-3" />
-              Désactivées
+              {tx("Désactivées")}
             </span>
           )}
         </div>
@@ -881,9 +882,9 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
       <div className="space-y-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 px-1">
           <div>
-            <h3 className="text-base font-bold text-[var(--text-primary)]">Serveurs surveillés</h3>
+            <h3 className="text-base font-bold text-[var(--text-primary)]">{tx("Serveurs surveillés")}</h3>
             <p className="text-xs text-[var(--text-muted)]">
-              Position d&apos;Etho dans la hiérarchie et état de ton compte par serveur.
+              {tx("Position d'Etho dans la hiérarchie et état de ton compte par serveur.")}
             </p>
           </div>
 
@@ -898,7 +899,7 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
                   : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
               )}
             >
-              Tous ({guilds.length})
+              {tx("Tous (")}{guilds.length})
             </button>
             <button
               type="button"
@@ -910,7 +911,7 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
                   : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
               )}
             >
-              Sanctions ({sanctioned})
+              {tx("Sanctions (")}{sanctioned})
             </button>
             <button
               type="button"
@@ -922,18 +923,18 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
                   : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
               )}
             >
-              {isMasterActive ? `Exclus (${guilds.length - covered})` : `Inactifs (${guilds.length})`}
+              {isMasterActive ? tx("Exclus ({v0})", { v0: guilds.length - covered }) : tx("Inactifs ({length})", { length: guilds.length })}
             </button>
           </div>
         </div>
 
         {loading ? (
           <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-10 text-center text-xs text-[var(--text-muted)]">
-            Chargement des serveurs Discord…
+            {tx("Chargement des serveurs Discord…")}
           </div>
         ) : filteredGuilds.length === 0 ? (
           <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-10 text-center text-xs text-[var(--text-muted)]">
-            Aucun serveur ne correspond au filtre sélectionné.
+            {tx("Aucun serveur ne correspond au filtre sélectionné.")}
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
@@ -992,10 +993,10 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
                           onChange={() => handleToggleGuild(g.guildId)}
                           label={
                             !isMasterActive
-                              ? `Bouclier inactif sur ${g.guildName}`
+                              ? tx("Bouclier inactif sur {guildName}", { guildName: g.guildName })
                               : g.isIgnored
-                              ? `Protéger ${g.guildName}`
-                              : `Exclure ${g.guildName}`
+                              ? tx("Protéger {guildName}", { guildName: g.guildName })
+                              : tx("Exclure {guildName}", { guildName: g.guildName })
                           }
                         />
                       </div>
@@ -1003,7 +1004,7 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
 
                     <div className="rounded-xl bg-[var(--surface-2)]/40 p-2 text-[11px] text-[var(--text-muted)] space-y-1">
                       <div className="flex items-center justify-between">
-                        <span>Statut :</span>
+                        <span>{tx("Statut :")}</span>
                         <span
                           className={cn(
                             "font-semibold",
@@ -1017,12 +1018,12 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
                           )}
                         >
                           {!isMasterActive
-                            ? "Bouclier coupé"
+                            ? tx("Bouclier coupé")
                             : !g.ownerStatus.isPresent && !g.ownerStatus.isBanned
-                            ? "Absent du serveur"
+                            ? tx("Absent du serveur")
                             : issues.length > 0
                             ? issues.join(", ")
-                            : "Aucune sanction"}
+                            : tx("Aucune sanction")}
                         </span>
                       </div>
                     </div>
@@ -1036,7 +1037,7 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
                         disabled={busy}
                         className="rounded-lg bg-rose-500/15 border border-rose-500/30 px-2 py-1 text-[11px] font-semibold text-rose-300 hover:bg-rose-500/25 transition-all cursor-pointer"
                       >
-                        Débannir
+                        {tx("Débannir")}
                       </button>
                     )}
                     {g.ownerStatus.isTimedOut && (
@@ -1046,7 +1047,7 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
                         disabled={busy}
                         className="rounded-lg bg-amber-500/15 border border-amber-500/30 px-2 py-1 text-[11px] font-semibold text-amber-300 hover:bg-amber-500/25 transition-all cursor-pointer"
                       >
-                        Lever timeout
+                        {tx("Lever timeout")}
                       </button>
                     )}
                     {(g.ownerStatus.isVoiceMuted || g.ownerStatus.hasMuteRole) && (
@@ -1056,7 +1057,7 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
                         disabled={busy}
                         className="rounded-lg bg-amber-500/15 border border-amber-500/30 px-2 py-1 text-[11px] font-semibold text-amber-300 hover:bg-amber-500/25 transition-all cursor-pointer"
                       >
-                        Rendre parole
+                        {tx("Rendre parole")}
                       </button>
                     )}
                     <button
@@ -1065,7 +1066,7 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
                       disabled={busy}
                       className="rounded-lg border border-[var(--panel-border)] bg-[var(--surface-2)]/60 px-2 py-1 text-[11px] font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all cursor-pointer"
                     >
-                      Rétablir rôles
+                      {tx("Rétablir rôles")}
                     </button>
                     <button
                       type="button"
@@ -1073,7 +1074,7 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
                       disabled={busy}
                       className="rounded-lg border border-[var(--panel-border)] bg-[var(--surface-2)]/60 px-2 py-1 text-[11px] font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all cursor-pointer"
                     >
-                      Invitation
+                      {tx("Invitation")}
                     </button>
                     <button
                       type="button"
@@ -1082,7 +1083,7 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
                       className="inline-flex items-center gap-1 rounded-lg bg-[var(--accent-primary)]/15 border border-[var(--accent-primary)]/30 px-2 py-1 text-[11px] font-bold text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/25 transition-all cursor-pointer ml-auto"
                     >
                       <Zap className="h-3 w-3" />
-                      <span>Rétablir</span>
+                      <span>{tx("Rétablir")}</span>
                     </button>
                   </div>
                 </div>
@@ -1095,17 +1096,17 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
       <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/70 p-5 space-y-3.5 shadow-xs">
         <div className="flex items-center justify-between border-b border-[var(--panel-border)]/60 pb-3">
           <div>
-            <h3 className="text-base font-bold text-[var(--text-primary)]">Historique des interventions</h3>
-            <p className="text-xs text-[var(--text-muted)]">Journal des sanctions neutralisées par Etho en temps réel.</p>
+            <h3 className="text-base font-bold text-[var(--text-primary)]">{tx("Historique des interventions")}</h3>
+            <p className="text-xs text-[var(--text-muted)]">{tx("Journal des sanctions neutralisées par Etho en temps réel.")}</p>
           </div>
           <span className="text-xs font-semibold text-[var(--text-muted)]">
-            {history.length} événement{history.length > 1 ? "s" : ""}
+            {history.length} {" "}{tx("événement")}{history.length > 1 ? "s" : ""}
           </span>
         </div>
 
         {history.length === 0 ? (
           <div className="py-8 text-center text-xs text-[var(--text-muted)]">
-            Aucune tentative de sanction n&apos;a été détectée pour le moment.
+            {tx("Aucune tentative de sanction n'a été détectée pour le moment.")}
           </div>
         ) : (
           <div className="space-y-2">
@@ -1127,14 +1128,14 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
                       <span className="font-normal text-[var(--text-muted)]"> · {cleanLogText(ev.details)}</span>
                       {ev.type === "SIMULATED_ATTACK" && (
                         <span className="ml-1 text-[10px] uppercase font-bold text-amber-400 bg-amber-400/10 border border-amber-400/20 px-1.5 py-0.2 rounded">
-                          Test
+                          {tx("Test")}
                         </span>
                       )}
                     </p>
                     {(ev.moderatorTag || ev.reason) && (
                       <p className="mt-0.5 text-[11px] text-[var(--text-muted)]">
-                        {ev.moderatorTag ? `Auteur : ${ev.moderatorTag}` : ""}
-                        {ev.moderatorTag && ev.reason ? " · Motif : " : ""}
+                        {ev.moderatorTag ? tx("Auteur : {moderatorTag}", { moderatorTag: ev.moderatorTag }) : ""}
+                        {ev.moderatorTag && ev.reason ? tx(" · Motif : ") : ""}
                         {ev.reason ?? ""}
                       </p>
                     )}

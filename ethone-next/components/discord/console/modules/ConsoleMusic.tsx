@@ -8,6 +8,7 @@ import { SPRING_LAYOUT } from "@/lib/ease";
 import { pageStagger } from "@/lib/motion-variants";
 import { ConsolePage, EmptyLine, GhostButton, Panel, RoleChips, Row, Segmented, StatTile, Stepper, Switch, useGuildApi } from "../kit";
 import { cn } from "@/lib/utils";
+import { tx } from "@/lib/tx";
 
 type Track = { id: string; title: string; artist: string; duration: number; thumbnail: string; url: string; requestedBy?: { tag: string } };
 type State = {
@@ -100,13 +101,13 @@ export default function ConsoleMusic({ guildId }: { guildId: string }) {
   const btn = "flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--panel-border)] text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-hover)] disabled:opacity-40";
 
   return (
-    <ConsolePage title="Musique">
-      <Panel title="Lecteur" subtitle={state?.voiceChannel ? `Connecté à ${state.voiceChannel.name}` : "Etho n'est dans aucun salon vocal."}>
+    <ConsolePage title={tx("Musique")}>
+      <Panel title={tx("Lecteur")} subtitle={state?.voiceChannel ? tx("Connecté à {name}", { name: state.voiceChannel.name }) : tx("Etho n'est dans aucun salon vocal.")}>
         <div className="flex flex-wrap items-center gap-4 px-5 py-4">
           {t?.thumbnail && !thumbError ? (
             <img
               src={t.thumbnail}
-              alt={t.title || "Pochette"}
+              alt={t.title || tx("Pochette")}
               width={64}
               height={64}
               onError={() => setThumbError(true)}
@@ -118,7 +119,7 @@ export default function ConsoleMusic({ guildId }: { guildId: string }) {
               tabIndex={t ? undefined : 0}
               onClick={t ? undefined : () => searchInputRef.current?.focus()}
               onKeyDown={t ? undefined : (e) => e.key === "Enter" && searchInputRef.current?.focus()}
-              title={t ? undefined : "Cliquer pour chercher un titre"}
+              title={t ? undefined : tx("Cliquer pour chercher un titre")}
               className={cn(
                 "relative flex h-16 w-16 shrink-0 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] shadow-inner overflow-hidden transition-all",
                 !t && "cursor-pointer hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-hover)] active:scale-95"
@@ -138,15 +139,15 @@ export default function ConsoleMusic({ guildId }: { guildId: string }) {
             </div>
           )}
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold text-[var(--text-primary)]">{t ? t.title : "Rien en cours"}</p>
-            <p className="truncate text-xs text-[var(--text-muted)]">{t ? `${t.artist}${t.requestedBy?.tag ? ` · demandé par ${t.requestedBy.tag}` : ""}` : "Lance un titre ci-dessous ou sur Discord."}</p>
+            <p className="truncate text-sm font-semibold text-[var(--text-primary)]">{t ? t.title : tx("Rien en cours")}</p>
+            <p className="truncate text-xs text-[var(--text-muted)]">{t ? `${t.artist}${t.requestedBy?.tag ? ` · demandé par ${t.requestedBy.tag}` : ""}` : tx("Lance un titre ci-dessous ou sur Discord.")}</p>
             {t && (
               <div className="mt-2 flex items-center gap-2 text-[11px] tabular-nums text-[var(--text-muted)]">
                 <span>{time(state?.position ?? 0)}</span>
                 <div
                   role="slider"
                   tabIndex={0}
-                  aria-label="Position de lecture"
+                  aria-label={tx("Position de lecture")}
                   aria-valuemin={0}
                   aria-valuemax={state?.duration ?? 0}
                   aria-valuenow={state?.position ?? 0}
@@ -180,28 +181,28 @@ export default function ConsoleMusic({ guildId }: { guildId: string }) {
             )}
           </div>
           <div className="flex items-center gap-1.5">
-            <button type="button" className={btn} onClick={() => control("previous")} disabled={!t} aria-label="Titre précédent">
+            <button type="button" className={btn} onClick={() => control("previous")} disabled={!t} aria-label={tx("Titre précédent")}>
               <SkipBack className="h-4 w-4" />
             </button>
-            <button type="button" className={btn} onClick={() => control(playing ? "pause" : "resume")} disabled={!t} aria-label={playing ? "Pause" : "Lecture"}>
+            <button type="button" className={btn} onClick={() => control(playing ? "pause" : "resume")} disabled={!t} aria-label={playing ? tx("Pause") : tx("Lecture")}>
               {playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
             </button>
-            <button type="button" className={btn} onClick={() => control("skip")} disabled={!t} aria-label="Titre suivant">
+            <button type="button" className={btn} onClick={() => control("skip")} disabled={!t} aria-label={tx("Titre suivant")}>
               <SkipForward className="h-4 w-4" />
             </button>
-            <button type="button" className={btn} onClick={() => control("stop")} disabled={!t && !state?.voiceChannel} aria-label="Arrêter et quitter le vocal">
+            <button type="button" className={btn} onClick={() => control("stop")} disabled={!t && !state?.voiceChannel} aria-label={tx("Arrêter et quitter le vocal")}>
               <Square className="h-4 w-4" />
             </button>
           </div>
         </div>
         {state && (
           <>
-            <Row label="Volume">
+            <Row label={tx("Volume")}>
               <Stepper value={state.volume} min={0} max={100} step={5} unit="%" onCommit={(n) => control("volume", { volume: n })} />
             </Row>
-            <Row label="Répétition">
+            <Row label={tx("Répétition")}>
               <Segmented
-                label="Répétition"
+                label={tx("Répétition")}
                 value={state.repeatMode}
                 options={[
                   ["OFF", "Aucune"],
@@ -211,57 +212,57 @@ export default function ConsoleMusic({ guildId }: { guildId: string }) {
                 onChange={(v) => control("repeat", { mode: v })}
               />
             </Row>
-            <Row label="Aléatoire">
-              <Switch checked={state.shuffle} onChange={() => control("shuffle")} label="Lecture aléatoire" />
+            <Row label={tx("Aléatoire")}>
+              <Switch checked={state.shuffle} onChange={() => control("shuffle")} label={tx("Lecture aléatoire")} />
             </Row>
           </>
         )}
       </Panel>
 
-      <Panel title="Lancer un titre" subtitle="Recherche, ou lien YouTube, Spotify ou SoundCloud.">
+      <Panel title={tx("Lancer un titre")} subtitle={tx("Recherche, ou lien YouTube, Spotify ou SoundCloud.")}>
         <div className="flex flex-wrap items-center gap-2 px-5 py-4">
           <label className="flex h-9 min-w-0 flex-1 items-center gap-2 rounded-lg border border-[var(--panel-border)] px-3 focus-within:border-[var(--accent-primary)]/70">
             <Search className="h-4 w-4 shrink-0 text-[var(--text-muted)]" />
-            <input ref={searchInputRef} value={query} onChange={(e) => setQuery(e.target.value)} onKeyDown={(e) => e.key === "Enter" && search()} placeholder="Titre, artiste ou lien" aria-label="Titre à lancer" className="w-full bg-transparent text-sm text-[var(--text-primary)] outline-none" />
+            <input ref={searchInputRef} value={query} onChange={(e) => setQuery(e.target.value)} onKeyDown={(e) => e.key === "Enter" && search()} placeholder={tx("Titre, artiste ou lien")} aria-label={tx("Titre à lancer")} className="w-full bg-transparent text-sm text-[var(--text-primary)] outline-none" />
           </label>
           <GhostButton onClick={search} disabled={!query.trim() || searching}>
-            {searching ? "Recherche…" : "Chercher"}
+            {searching ? tx("Recherche…") : tx("Chercher")}
           </GhostButton>
         </div>
         <div className="flex flex-wrap items-center gap-2 border-t border-[var(--panel-border)] px-5 py-3">
-          <span className="text-xs font-semibold text-[var(--text-muted)]">Flux d&apos;ambiance :</span>
+          <span className="text-xs font-semibold text-[var(--text-muted)]">{tx("Flux d'ambiance :")}</span>
           <button
             type="button"
             onClick={() => play("Lofi Girl lofi hip hop radio")}
             className="rounded-lg border border-[var(--panel-border)] px-2.5 py-1 text-xs font-medium text-[var(--text-primary)] transition-colors hover:border-[var(--accent-primary)]/50 hover:bg-[var(--surface-hover)]"
           >
-            ☕ Lofi Girl
+            {tx("☕ Lofi Girl")}
           </button>
           <button
             type="button"
             onClick={() => play("synthwave radio chill beats")}
             className="rounded-lg border border-[var(--panel-border)] px-2.5 py-1 text-xs font-medium text-[var(--text-primary)] transition-colors hover:border-[var(--accent-primary)]/50 hover:bg-[var(--surface-hover)]"
           >
-            🌆 Synthwave
+            {tx("🌆 Synthwave")}
           </button>
           <button
             type="button"
             onClick={() => play("deep focus study music binaural")}
             className="rounded-lg border border-[var(--panel-border)] px-2.5 py-1 text-xs font-medium text-[var(--text-primary)] transition-colors hover:border-[var(--accent-primary)]/50 hover:bg-[var(--surface-hover)]"
           >
-            🧠 Deep Focus
+            {tx("🧠 Deep Focus")}
           </button>
         </div>
         {!state?.voiceChannel && (
-          <Row label="Salon vocal" hint="Où Etho doit se connecter.">
-            <ChannelPicker guildId={guildId} value={voiceId} filterTypes={[2, 13]} placeholder="Choisir un salon vocal" onChange={(id) => setVoiceId(id || null)} />
+          <Row label={tx("Salon vocal")} hint={tx("Où Etho doit se connecter.")}>
+            <ChannelPicker guildId={guildId} value={voiceId} filterTypes={[2, 13]} placeholder={tx("Choisir un salon vocal")} onChange={(id) => setVoiceId(id || null)} />
           </Row>
         )}
         <AnimatePresence initial={false}>
           {results && (
             <motion.ul initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} transition={SPRING_LAYOUT} className="overflow-hidden border-t border-[var(--panel-border)]">
               {results.length === 0 ? (
-                <EmptyLine>Aucun résultat.</EmptyLine>
+                <EmptyLine>{tx("Aucun résultat.")}</EmptyLine>
               ) : (
                 results.map((r) => (
                   <li key={r.id} className="flex items-center gap-3 border-t border-[var(--panel-border)] px-5 py-2 first:border-t-0">
@@ -278,8 +279,8 @@ export default function ConsoleMusic({ guildId }: { guildId: string }) {
                         {r.artist} · {time(r.duration)}
                       </span>
                     </span>
-                    <GhostButton onClick={() => play(r.url)}>Lire</GhostButton>
-                    <GhostButton onClick={() => play(r.url, true)}>À la suite</GhostButton>
+                    <GhostButton onClick={() => play(r.url)}>{tx("Lire")}</GhostButton>
+                    <GhostButton onClick={() => play(r.url, true)}>{tx("À la suite")}</GhostButton>
                   </li>
                 ))
               )}
@@ -288,11 +289,11 @@ export default function ConsoleMusic({ guildId }: { guildId: string }) {
         </AnimatePresence>
       </Panel>
 
-      <Panel title={`File d'attente${state?.queue.length ? ` · ${state.queue.length}` : ""}`} actions={state?.queue.length ? <GhostButton onClick={() => control("queue/clear")}>Vider</GhostButton> : undefined}>
+      <Panel title={tx("File d'attente{v0}", { v0: state?.queue.length ? ` · ${state.queue.length}` : "" })} actions={state?.queue.length ? <GhostButton onClick={() => control("queue/clear")}>{tx("Vider")}</GhostButton> : undefined}>
         {!state ? (
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         ) : state.queue.length === 0 ? (
-          <EmptyLine>La file est vide.</EmptyLine>
+          <EmptyLine>{tx("La file est vide.")}</EmptyLine>
         ) : (
           <ol>
             <AnimatePresence initial={false}>
@@ -311,7 +312,7 @@ export default function ConsoleMusic({ guildId }: { guildId: string }) {
                       await api(`/music/queue/${i}`, { method: "DELETE" });
                       void refresh();
                     }}
-                    aria-label={`Retirer ${q.title}`}
+                    aria-label={tx("Retirer {title}", { title: q.title })}
                     className="rounded-lg p-1.5 text-[var(--text-muted)] hover:bg-[var(--danger)]/10 hover:text-[var(--danger)]"
                   >
                     <Trash2 className="h-4 w-4" />
@@ -324,41 +325,41 @@ export default function ConsoleMusic({ guildId }: { guildId: string }) {
       </Panel>
 
       {settings && (
-        <Panel title="Réglages">
-          <Row label="Volume par défaut">
+        <Panel title={tx("Réglages")}>
+          <Row label={tx("Volume par défaut")}>
             <Stepper value={settings.defaultVolume} min={0} max={100} step={5} unit="%" onCommit={(n) => saveSettings({ defaultVolume: n })} />
           </Row>
-          <Row label="Taille max de la file">
+          <Row label={tx("Taille max de la file")}>
             <Stepper value={settings.maxQueueSize} min={5} max={1000} step={5} unit="titres" onCommit={(n) => saveSettings({ maxQueueSize: n })} />
           </Row>
-          <Row label="Doublons dans la file">
-            <Switch checked={settings.allowDuplicates} onChange={(v) => saveSettings({ allowDuplicates: v })} label="Autoriser les doublons" />
+          <Row label={tx("Doublons dans la file")}>
+            <Switch checked={settings.allowDuplicates} onChange={(v) => saveSettings({ allowDuplicates: v })} label={tx("Autoriser les doublons")} />
           </Row>
-          <Row label="Lecture automatique" hint="Enchaîne des titres proches quand la file est vide.">
-            <Switch checked={settings.autoplay} onChange={(v) => saveSettings({ autoplay: v })} label="Lecture automatique" />
+          <Row label={tx("Lecture automatique")} hint={tx("Enchaîne des titres proches quand la file est vide.")}>
+            <Switch checked={settings.autoplay} onChange={(v) => saveSettings({ autoplay: v })} label={tx("Lecture automatique")} />
           </Row>
-          <Row label="Quitter le vocal après" hint="Quand plus rien ne joue ; 0 = jamais.">
+          <Row label={tx("Quitter le vocal après")} hint={tx("Quand plus rien ne joue ; 0 = jamais.")}>
             <Stepper value={Math.round(settings.autoDisconnectSeconds / 60)} min={0} max={60} unit="min" onCommit={(n) => saveSettings({ autoDisconnectSeconds: n * 60 })} />
           </Row>
-          <Row label="Salon 24 h/24" hint="Etho y reste connecté en permanence.">
-            <ChannelPicker guildId={guildId} value={settings.stayChannelId} filterTypes={[2, 13]} placeholder="Aucun" emptyLabel="Aucun" onChange={(id) => saveSettings({ stayChannelId: id || null })} />
+          <Row label={tx("Salon 24 h/24")} hint={tx("Etho y reste connecté en permanence.")}>
+            <ChannelPicker guildId={guildId} value={settings.stayChannelId} filterTypes={[2, 13]} placeholder={tx("Aucun")} emptyLabel={tx("Aucun")} onChange={(id) => saveSettings({ stayChannelId: id || null })} />
           </Row>
-          <Row label="Mode DJ" hint="Seul le rôle DJ (et les admins) contrôle la musique.">
-            <Switch checked={settings.djMode} onChange={(v) => saveSettings({ djMode: v })} label="Mode DJ" />
+          <Row label={tx("Mode DJ")} hint={tx("Seul le rôle DJ (et les admins) contrôle la musique.")}>
+            <Switch checked={settings.djMode} onChange={(v) => saveSettings({ djMode: v })} label={tx("Mode DJ")} />
           </Row>
           {settings.djMode && (
-            <Row label="Rôle DJ">
+            <Row label={tx("Rôle DJ")}>
               <RoleChips guildId={guildId} ids={settings.djRoleId ? [settings.djRoleId] : []} max={1} onChange={(ids) => saveSettings({ djRoleId: ids[0] ?? null })} />
             </Row>
           )}
-          <Row label="Les membres peuvent passer un titre">
-            <Switch checked={settings.allowUserSkip} onChange={(v) => saveSettings({ allowUserSkip: v })} label="Passer un titre" />
+          <Row label={tx("Les membres peuvent passer un titre")}>
+            <Switch checked={settings.allowUserSkip} onChange={(v) => saveSettings({ allowUserSkip: v })} label={tx("Passer un titre")} />
           </Row>
-          <Row label="Les membres peuvent changer le volume">
-            <Switch checked={settings.allowUserChangeVolume} onChange={(v) => saveSettings({ allowUserChangeVolume: v })} label="Changer le volume" />
+          <Row label={tx("Les membres peuvent changer le volume")}>
+            <Switch checked={settings.allowUserChangeVolume} onChange={(v) => saveSettings({ allowUserChangeVolume: v })} label={tx("Changer le volume")} />
           </Row>
-          <Row label="Les membres peuvent retirer leurs titres">
-            <Switch checked={settings.allowUserRemoveOwn} onChange={(v) => saveSettings({ allowUserRemoveOwn: v })} label="Retirer ses titres" />
+          <Row label={tx("Les membres peuvent retirer leurs titres")}>
+            <Switch checked={settings.allowUserRemoveOwn} onChange={(v) => saveSettings({ allowUserRemoveOwn: v })} label={tx("Retirer ses titres")} />
           </Row>
         </Panel>
       )}
@@ -366,13 +367,13 @@ export default function ConsoleMusic({ guildId }: { guildId: string }) {
       {stats && (
         <>
           <motion.div variants={pageStagger} className="grid grid-cols-2 gap-3">
-            <StatTile label="Titres joués" value={stats.totalTracksPlayed.toLocaleString("fr-FR")} />
-            <StatTile label="Temps d'écoute" value={`${Math.round(stats.totalListeningSeconds / 3600)} h`} />
+            <StatTile label={tx("Titres joués")} value={stats.totalTracksPlayed.toLocaleString("fr-FR")} />
+            <StatTile label={tx("Temps d'écoute")} value={`${Math.round(stats.totalListeningSeconds / 3600)} h`} />
           </motion.div>
           <div className="grid gap-5 lg:grid-cols-2">
-            <Panel title="Titres les plus joués">
+            <Panel title={tx("Titres les plus joués")}>
               {stats.topTracks.length === 0 ? (
-                <EmptyLine>Rien encore.</EmptyLine>
+                <EmptyLine>{tx("Rien encore.")}</EmptyLine>
               ) : (
                 <ol>
                   {stats.topTracks.slice(0, 5).map((x, i) => (
@@ -386,15 +387,15 @@ export default function ConsoleMusic({ guildId }: { guildId: string }) {
                 </ol>
               )}
             </Panel>
-            <Panel title="Qui en lance le plus">
+            <Panel title={tx("Qui en lance le plus")}>
               {stats.topRequesters.length === 0 ? (
-                <EmptyLine>Rien encore.</EmptyLine>
+                <EmptyLine>{tx("Rien encore.")}</EmptyLine>
               ) : (
                 <ol>
                   {stats.topRequesters.slice(0, 5).map((x) => (
                     <li key={x.userId} className="flex items-center gap-3 border-t border-[var(--panel-border)] px-5 py-2 text-[13px] first:border-t-0">
                       <span className="min-w-0 flex-1 truncate text-[var(--text-primary)]">{x.userTag}</span>
-                      <span className="shrink-0 font-mono text-xs text-[var(--text-muted)]">{x.count} titres</span>
+                      <span className="shrink-0 font-mono text-xs text-[var(--text-muted)]">{x.count} {" "}{tx("titres")}</span>
                     </li>
                   ))}
                 </ol>

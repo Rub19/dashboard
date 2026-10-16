@@ -8,6 +8,7 @@ import { Field, NumberField, Switch, ToggleField, inputCls } from "@/components/
 import { cn } from "@/lib/utils";
 import Select from "@/components/ui/Select";
 import { formatApiError, errorReason } from "@/lib/format-error";
+import { tx } from "@/lib/tx";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -89,59 +90,59 @@ function SpecificFields({ k, draft, set }: { k: DetKey; draft: Det; set: (patch:
     case "keywords":
       return (
         <>
-          <Field label="Mots interdits" hint="Entrée ou virgule pour ajouter. Un mot peut être écrit avec * (ex. « bad* »).">
-            <TagInput value={draft.blacklist ?? []} onChange={(v) => set({ blacklist: v })} placeholder="Ajouter un mot…" />
+          <Field label={tx("Mots interdits")} hint={tx("Entrée ou virgule pour ajouter. Un mot peut être écrit avec * (ex. « bad* »).")}>
+            <TagInput value={draft.blacklist ?? []} onChange={(v) => set({ blacklist: v })} placeholder={tx("Ajouter un mot…")} />
           </Field>
-          <Field label="Mots autorisés (exceptions)">
-            <TagInput value={draft.whitelist ?? []} onChange={(v) => set({ whitelist: v })} placeholder="Ajouter une exception…" />
+          <Field label={tx("Mots autorisés (exceptions)")}>
+            <TagInput value={draft.whitelist ?? []} onChange={(v) => set({ whitelist: v })} placeholder={tx("Ajouter une exception…")} />
           </Field>
-          <ToggleField label="Jokers" text="Accepter * dans les mots interdits" checked={draft.wildcardsEnabled !== false} onChange={(v) => set({ wildcardsEnabled: v })} />
+          <ToggleField label={tx("Jokers")} text={tx("Accepter * dans les mots interdits")} checked={draft.wildcardsEnabled !== false} onChange={(v) => set({ wildcardsEnabled: v })} />
         </>
       );
     case "invites":
-      return <ToggleField label="Invitations de ce serveur" text="Bloquer aussi les invitations vers ce serveur" checked={draft.blockAllInvites === true} onChange={(v) => set({ blockAllInvites: v })} />;
+      return <ToggleField label={tx("Invitations de ce serveur")} text={tx("Bloquer aussi les invitations vers ce serveur")} checked={draft.blockAllInvites === true} onChange={(v) => set({ blockAllInvites: v })} />;
     case "links":
       return (
         <>
-          <ToggleField label="Tous les liens" text="Bloquer tous les liens (sauf les domaines autorisés)" checked={draft.blockAllLinks === true} onChange={(v) => set({ blockAllLinks: v })} />
-          <ToggleField label="Liens raccourcis" text="Bloquer bit.ly, tinyurl…" checked={draft.blockShortenedLinks !== false} onChange={(v) => set({ blockShortenedLinks: v })} />
-          <Field label="Domaines autorisés">
-            <TagInput value={draft.whitelistedDomains ?? []} onChange={(v) => set({ whitelistedDomains: v })} placeholder="ex. youtube.com" />
+          <ToggleField label={tx("Tous les liens")} text={tx("Bloquer tous les liens (sauf les domaines autorisés)")} checked={draft.blockAllLinks === true} onChange={(v) => set({ blockAllLinks: v })} />
+          <ToggleField label={tx("Liens raccourcis")} text={tx("Bloquer bit.ly, tinyurl…")} checked={draft.blockShortenedLinks !== false} onChange={(v) => set({ blockShortenedLinks: v })} />
+          <Field label={tx("Domaines autorisés")}>
+            <TagInput value={draft.whitelistedDomains ?? []} onChange={(v) => set({ whitelistedDomains: v })} placeholder={tx("ex. youtube.com")} />
           </Field>
-          <Field label="Domaines interdits">
-            <TagInput value={draft.blacklistedDomains ?? []} onChange={(v) => set({ blacklistedDomains: v })} placeholder="ex. exemple.ru" />
+          <Field label={tx("Domaines interdits")}>
+            <TagInput value={draft.blacklistedDomains ?? []} onChange={(v) => set({ blacklistedDomains: v })} placeholder={tx("ex. exemple.ru")} />
           </Field>
         </>
       );
     case "caps":
       return (
         <>
-          <NumberField label="Pourcentage maximum de majuscules" value={draft.maxCapsPercentage ?? 70} min={40} max={100} onChange={(n) => set({ maxCapsPercentage: n })} />
-          <NumberField label="Longueur minimale du message" value={draft.minMessageLength ?? 10} min={5} max={50} hint="Les messages plus courts sont ignorés." onChange={(n) => set({ minMessageLength: n })} />
+          <NumberField label={tx("Pourcentage maximum de majuscules")} value={draft.maxCapsPercentage ?? 70} min={40} max={100} onChange={(n) => set({ maxCapsPercentage: n })} />
+          <NumberField label={tx("Longueur minimale du message")} value={draft.minMessageLength ?? 10} min={5} max={50} hint={tx("Les messages plus courts sont ignorés.")} onChange={(n) => set({ minMessageLength: n })} />
         </>
       );
     case "emojis":
-      return <NumberField label="Nombre maximum d'émojis par message" value={draft.maxEmojis ?? 10} min={2} max={100} onChange={(n) => set({ maxEmojis: n })} />;
+      return <NumberField label={tx("Nombre maximum d'émojis par message")} value={draft.maxEmojis ?? 10} min={2} max={100} onChange={(n) => set({ maxEmojis: n })} />;
     case "mentions":
       return (
         <>
-          <NumberField label="Mentions de membres maximum" value={draft.maxUserMentions ?? 5} min={2} max={50} onChange={(n) => set({ maxUserMentions: n })} />
-          <NumberField label="Mentions de rôles maximum" value={draft.maxRoleMentions ?? 3} min={1} max={20} onChange={(n) => set({ maxRoleMentions: n })} />
-          <NumberField label="Mentions au total maximum" value={draft.maxTotalMentions ?? 6} min={2} max={50} onChange={(n) => set({ maxTotalMentions: n })} />
-          <ToggleField label="@everyone et @here" text="Interdire ces mentions" checked={draft.blockEveryoneHere !== false} onChange={(v) => set({ blockEveryoneHere: v })} />
+          <NumberField label={tx("Mentions de membres maximum")} value={draft.maxUserMentions ?? 5} min={2} max={50} onChange={(n) => set({ maxUserMentions: n })} />
+          <NumberField label={tx("Mentions de rôles maximum")} value={draft.maxRoleMentions ?? 3} min={1} max={20} onChange={(n) => set({ maxRoleMentions: n })} />
+          <NumberField label={tx("Mentions au total maximum")} value={draft.maxTotalMentions ?? 6} min={2} max={50} onChange={(n) => set({ maxTotalMentions: n })} />
+          <ToggleField label={tx("@everyone et @here")} text={tx("Interdire ces mentions")} checked={draft.blockEveryoneHere !== false} onChange={(v) => set({ blockEveryoneHere: v })} />
         </>
       );
     case "spam":
       return (
         <>
-          <NumberField label="Messages maximum" value={draft.maxMessages ?? 5} min={3} max={30} onChange={(n) => set({ maxMessages: n })} />
-          <NumberField label="Sur combien de secondes" value={draft.timeWindowSeconds ?? 5} min={2} max={60} onChange={(n) => set({ timeWindowSeconds: n })} />
+          <NumberField label={tx("Messages maximum")} value={draft.maxMessages ?? 5} min={3} max={30} onChange={(n) => set({ maxMessages: n })} />
+          <NumberField label={tx("Sur combien de secondes")} value={draft.timeWindowSeconds ?? 5} min={2} max={60} onChange={(n) => set({ timeWindowSeconds: n })} />
         </>
       );
     case "markdown":
       return (
         <>
-          <Field label="Types interdits">
+          <Field label={tx("Types interdits")}>
             <div className="stagger-children grid grid-cols-1 gap-1.5 sm:grid-cols-2">
               {MARKDOWN_LABELS.map(([id, label]) => {
                 const on = (draft.types ?? []).includes(id);
@@ -154,7 +155,7 @@ function SpecificFields({ k, draft, set }: { k: DetKey; draft: Det; set: (patch:
               })}
             </div>
           </Field>
-          <ToggleField label="Retrait de la mise en forme" text="Renvoyer le message sans mise en forme ?" checked={draft.removeMarkdown !== false} onChange={(v) => set({ removeMarkdown: v })} />
+          <ToggleField label={tx("Retrait de la mise en forme")} text={tx("Renvoyer le message sans mise en forme ?")} checked={draft.removeMarkdown !== false} onChange={(v) => set({ removeMarkdown: v })} />
         </>
       );
     case "pings":
@@ -199,7 +200,7 @@ export default function InfractionsPanel({ guildId, config, onConfigChange }: Pr
 
   const save = async (patch: Record<string, unknown>, okTitle: string, okText = "") => {
     if (!BOT_API_URL) {
-      showError("Bot injoignable", "Rien n'a été enregistré.");
+      showError(tx("Bot injoignable"), tx("Rien n'a été enregistré."));
       return false;
     }
     setBusy(true);
@@ -211,7 +212,7 @@ export default function InfractionsPanel({ guildId, config, onConfigChange }: Pr
       success(okTitle, okText);
       return true;
     } catch (err) {
-      showError("Enregistrement impossible", errorReason(err, "Le bot n'a pas répondu."));
+      showError(tx("Enregistrement impossible"), errorReason(err, "Le bot n'a pas répondu."));
       return false;
     } finally {
       setBusy(false);
@@ -235,7 +236,7 @@ export default function InfractionsPanel({ guildId, config, onConfigChange }: Pr
   const saveSettings = async () => {
     if (!editing) return;
     if (editing === "pings" && (draft.userIds ?? []).length === 0 && (draft.roleIds ?? []).length === 0 && draft.enabled) {
-      showError("Aucune cible", "Ajoute au moins un rôle ou un membre à protéger, ou désactivez la détection.");
+      showError(tx("Aucune cible"), tx("Ajoute au moins un rôle ou un membre à protéger, ou désactivez la détection."));
       return;
     }
     if (await save({ [editing]: draft }, "Réglages enregistrés")) setEditing(null);
@@ -244,7 +245,7 @@ export default function InfractionsPanel({ guildId, config, onConfigChange }: Pr
   const addSanction = async () => {
     if (!sanction) return;
     if (steps.some((s) => s.strikeCount === sanction.strikeCount)) {
-      showError("Palier déjà utilisé", `Une sanction est déjà prévue à ${sanction.strikeCount} infraction(s).`);
+      showError(tx("Palier déjà utilisé"), tx("Une sanction est déjà prévue à {strikeCount} infraction(s).", { strikeCount: sanction.strikeCount }));
       return;
     }
     const next = [...strikes.progressiveSteps, { ...sanction, reason: sanction.reason.trim() || `${sanction.strikeCount} infraction(s)` }];
@@ -252,7 +253,7 @@ export default function InfractionsPanel({ guildId, config, onConfigChange }: Pr
   };
 
   const removeSanction = async (s: Step) => {
-    if (!(await confirmDialog(`Supprimer la sanction automatique à ${s.strikeCount} infraction(s) ?`, { title: "Supprimer", confirmLabel: "Supprimer", tone: "danger" }))) return;
+    if (!(await confirmDialog(tx("Supprimer la sanction automatique à {strikeCount} infraction(s) ?", { strikeCount: s.strikeCount }), { title: tx("Supprimer"), confirmLabel: tx("Supprimer"), tone: "danger" }))) return;
     await save({ strikes: { ...strikes, progressiveSteps: strikes.progressiveSteps.filter((x) => x.strikeCount !== s.strikeCount) } }, "Sanction supprimée");
   };
 
@@ -263,12 +264,12 @@ export default function InfractionsPanel({ guildId, config, onConfigChange }: Pr
   return (
     <div className="space-y-8">
       <section>
-        <h2 className="text-lg font-bold text-[var(--text-primary)]">Détection des infractions</h2>
+        <h2 className="text-lg font-bold text-[var(--text-primary)]">{tx("Détection des infractions")}</h2>
         <p className="mt-1 text-sm text-[var(--text-muted)]">
-          Configure les détections automatiques. Tout est désactivé par défaut : rien n&apos;agit tant que tu n&apos;as pas activé une détection.{" "}
-          <span className={cn("font-semibold", activeCount > 0 ? "text-[var(--accent-primary)]" : "text-[var(--text-muted)]")}>{activeCount} active{activeCount > 1 ? "s" : ""}.</span>
+          {tx("Configure les détections automatiques. Tout est désactivé par défaut : rien n'agit tant que tu n'as pas activé une détection.")}{" "}
+          <span className={cn("font-semibold", activeCount > 0 ? "text-[var(--accent-primary)]" : "text-[var(--text-muted)]")}>{activeCount} {" "}{tx("active")}{activeCount > 1 ? "s" : ""}.</span>
         </p>
-        {outdated && <p className="mt-3 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-amber-200">Le bot n&apos;est pas encore à jour : les détections « Émojis excessifs », « Mentions interdites » et « Mise en forme interdite » ne sont pas disponibles tant qu&apos;il n&apos;est pas redéployé.</p>}
+        {outdated && <p className="mt-3 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-amber-200">{tx("Le bot n'est pas encore à jour : les détections « Émojis excessifs », « Mentions interdites » et « Mise en forme interdite » ne sont pas disponibles tant qu'il n'est pas redéployé.")}</p>}
         <div className="mt-5 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
           {CARDS.map((c) => {
             const unavailable = NEW_KEYS.includes(c.key) && config[c.key] === undefined;
@@ -280,13 +281,13 @@ export default function InfractionsPanel({ guildId, config, onConfigChange }: Pr
                   <p className="mt-0.5 text-xs text-[var(--text-muted)]">{c.text}</p>
                 </div>
                 <div className="flex shrink-0 items-center gap-2.5">
-                  <button type="button" disabled={busy || unavailable} onClick={() => openSettings(c.key)} aria-label={`Réglages : ${c.title}`} className="cursor-pointer rounded-xl p-1.5 text-[var(--text-muted)] transition hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:cursor-not-allowed">
+                  <button type="button" disabled={busy || unavailable} onClick={() => openSettings(c.key)} aria-label={tx("Réglages : {title}", { title: c.title })} className="cursor-pointer rounded-xl p-1.5 text-[var(--text-muted)] transition hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:cursor-not-allowed">
                     <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                       <circle cx="12" cy="12" r="3" />
                       <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3h0a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5h0a1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9v0a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" />
                     </svg>
                   </button>
-                  <Switch checked={on} disabled={busy || unavailable} onChange={(v) => toggle(c.key, v)} label={`Activer : ${c.title}`} />
+                  <Switch checked={on} disabled={busy || unavailable} onChange={(v) => toggle(c.key, v)} label={tx("Activer : {title}", { title: c.title })} />
                 </div>
               </div>
             );
@@ -297,27 +298,27 @@ export default function InfractionsPanel({ guildId, config, onConfigChange }: Pr
       <section className="border-t border-[var(--panel-border)] pt-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h2 className="text-lg font-bold text-[var(--text-primary)]">Sanctions automatiques</h2>
-            <p className="mt-1 max-w-2xl text-sm text-[var(--text-muted)]">Quand un membre cumule des infractions (détections avec « Compter comme infraction »), le bot le sanctionne tout seul. Les infractions expirent après {strikes.expirationDays} jour(s).</p>
+            <h2 className="text-lg font-bold text-[var(--text-primary)]">{tx("Sanctions automatiques")}</h2>
+            <p className="mt-1 max-w-2xl text-sm text-[var(--text-muted)]">{tx("Quand un membre cumule des infractions (détections avec « Compter comme infraction »), le bot le sanctionne tout seul. Les infractions expirent après")}{" "} {strikes.expirationDays} {" "}{tx("jour(s).")}</p>
           </div>
           <button type="button" disabled={busy} onClick={() => setSanction({ strikeCount: (steps.at(-1)?.strikeCount ?? 0) + 1, action: "TIMEOUT", durationSeconds: 3600, reason: "" })} className="cursor-pointer rounded-xl bg-[#c96a52] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#d97a62] disabled:opacity-50">
-            Créer une sanction automatique
+            {tx("Créer une sanction automatique")}
           </button>
         </div>
         {steps.length === 0 ? (
-          <div className="mt-5 rounded-xl border border-dashed border-[var(--panel-border)] p-4 text-center text-sm text-[var(--text-muted)]">Tu n&apos;as créé aucune sanction automatique.</div>
+          <div className="mt-5 rounded-xl border border-dashed border-[var(--panel-border)] p-4 text-center text-sm text-[var(--text-muted)]">{tx("Tu n'as créé aucune sanction automatique.")}</div>
         ) : (
           <ul className="mt-5 divide-y divide-[var(--panel-border)] rounded-xl border border-[var(--panel-border)]">
             {steps.map((s) => (
               <li key={s.strikeCount} className="flex flex-wrap items-center justify-between gap-3 p-3.5">
                 <div>
                   <p className="text-sm font-semibold text-[var(--text-primary)]">
-                    À {s.strikeCount} infraction{s.strikeCount > 1 ? "s" : ""} : {sanctionText(s)}
+                    À {s.strikeCount} {" "}{tx("infraction")}{s.strikeCount > 1 ? "s" : ""} : {sanctionText(s)}
                   </p>
                   <p className="text-xs text-[var(--text-muted)]">{s.reason}</p>
                 </div>
                 <button type="button" disabled={busy} onClick={() => void removeSanction(s)} className="cursor-pointer rounded-xl border border-rose-500/30 px-3 py-1.5 text-xs font-semibold text-rose-300 transition hover:bg-rose-500/10 disabled:opacity-50">
-                  Supprimer
+                  {tx("Supprimer")}
                 </button>
               </li>
             ))}
@@ -325,11 +326,11 @@ export default function InfractionsPanel({ guildId, config, onConfigChange }: Pr
         )}
         <div className="mt-4 max-w-xs">
           <Select
-            label="Durée de vie d'une infraction"
+            label={tx("Durée de vie d'une infraction")}
             value={String(strikes.expirationDays)}
             disabled={busy}
             onChange={(v) => void save({ strikes: { ...strikes, expirationDays: Number(v) } }, "Durée enregistrée")}
-            options={[1, 3, 7, 14, 30, 60, 90].map((d) => ({ id: String(d), label: `${d} jour${d > 1 ? "s" : ""}` }))}
+            options={[1, 3, 7, 14, 30, 60, 90].map((d) => ({ id: String(d), label: tx("{d} jour{v1}", { d, v1: d > 1 ? "s" : "" }) }))}
           />
         </div>
       </section>
@@ -341,26 +342,26 @@ export default function InfractionsPanel({ guildId, config, onConfigChange }: Pr
           footer={
             <>
               <button type="button" onClick={() => setEditing(null)} className="cursor-pointer rounded-xl border border-[var(--panel-border)] px-5 py-2 text-sm font-semibold text-[var(--text-primary)] transition hover:bg-[var(--text-primary)]/10">
-                Fermer
+                {tx("Fermer")}
               </button>
               <button type="button" disabled={busy} onClick={() => void saveSettings()} className="cursor-pointer rounded-xl bg-[var(--accent-primary)] px-5 py-2 text-sm font-semibold text-[var(--accent-contrast)] hover:brightness-110 disabled:opacity-50 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50">
-                Enregistrer
+                {tx("Enregistrer")}
               </button>
             </>
           }
         >
           {editing === "pings" && (
             <>
-              <Field label="Membres protégés" hint="Personne ne peut les mentionner (sauf eux-mêmes).">
+              <Field label={tx("Membres protégés")} hint={tx("Personne ne peut les mentionner (sauf eux-mêmes).")}>
                 <MemberIdsInput value={draft.userIds ?? []} onChange={(v) => setD({ userIds: v })} />
               </Field>
-              <Field label="Rôles protégés">
+              <Field label={tx("Rôles protégés")}>
                 <MultiRolePicker guildId={guildId} value={draft.roleIds ?? []} onChange={(v) => setD({ roleIds: v })} />
               </Field>
             </>
           )}
           <SpecificFields k={editing} draft={draft} set={setD} guildId={guildId} />
-          <Field label="Actions">
+          <Field label={tx("Actions")}>
             <div className="stagger-children space-y-2">
               {ACTION_LABELS.map(([id, label, text]) => (
                 <label key={id} className="flex cursor-pointer items-start gap-2 text-sm text-[var(--text-muted)]">
@@ -373,37 +374,37 @@ export default function InfractionsPanel({ guildId, config, onConfigChange }: Pr
               ))}
             </div>
           </Field>
-          <Field label="Rôles ignorés">
+          <Field label={tx("Rôles ignorés")}>
             <MultiRolePicker guildId={guildId} value={draft.ignoredRoleIds ?? []} onChange={(v) => setD({ ignoredRoleIds: v })} />
           </Field>
-          <Field label="Salons ignorés">
+          <Field label={tx("Salons ignorés")}>
             <MultiChannelPicker guildId={guildId} value={draft.ignoredChannelIds ?? []} onChange={(v) => setD({ ignoredChannelIds: v })} />
           </Field>
-          <ToggleField label="Mode silencieux" text="Le bot ne répond pas publiquement au message fautif (le message privé d'avertissement reste envoyé)." checked={draft.silent === true} onChange={(v) => setD({ silent: v })} />
+          <ToggleField label={tx("Mode silencieux")} text={tx("Le bot ne répond pas publiquement au message fautif (le message privé d'avertissement reste envoyé).")} checked={draft.silent === true} onChange={(v) => setD({ silent: v })} />
         </Modal>
       )}
 
       {sanction && (
         <Modal
-          title="Créer une sanction automatique"
+          title={tx("Créer une sanction automatique")}
           onClose={() => setSanction(null)}
           footer={
             <>
               <button type="button" onClick={() => setSanction(null)} className="cursor-pointer rounded-xl border border-[var(--panel-border)] px-5 py-2 text-sm font-semibold text-[var(--text-primary)] transition hover:bg-[var(--text-primary)]/10">
-                Annuler
+                {tx("Annuler")}
               </button>
               <button type="button" disabled={busy} onClick={() => void addSanction()} className="cursor-pointer rounded-xl bg-[var(--accent-primary)] px-5 py-2 text-sm font-semibold text-[var(--accent-contrast)] hover:brightness-110 disabled:opacity-50 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50">
-                Créer
+                {tx("Créer")}
               </button>
             </>
           }
         >
-          <NumberField label="À partir de combien d'infractions" value={sanction.strikeCount} min={1} max={20} onChange={(n) => setSanction({ ...sanction, strikeCount: n })} />
-          <Field label="Sanction">
+          <NumberField label={tx("À partir de combien d'infractions")} value={sanction.strikeCount} min={1} max={20} onChange={(n) => setSanction({ ...sanction, strikeCount: n })} />
+          <Field label={tx("Sanction")}>
             <Select value={sanction.action} onChange={(v) => setSanction({ ...sanction, action: v })} options={SANCTIONS.map(([k, l]) => ({ id: k, label: l }))} />
           </Field>
           {sanction.action === "TIMEOUT" && (
-            <Field label="Durée de l'exclusion">
+            <Field label={tx("Durée de l'exclusion")}>
               <Select
                 value={String(sanction.durationSeconds)}
                 onChange={(v) => setSanction({ ...sanction, durationSeconds: Number(v) })}
@@ -411,8 +412,8 @@ export default function InfractionsPanel({ guildId, config, onConfigChange }: Pr
               />
             </Field>
           )}
-          <Field label="Motif (visible dans les logs)">
-            <input value={sanction.reason} maxLength={100} onChange={(e) => setSanction({ ...sanction, reason: e.target.value })} placeholder={`${sanction.strikeCount} infractions`} className={inputCls} />
+          <Field label={tx("Motif (visible dans les logs)")}>
+            <input value={sanction.reason} maxLength={100} onChange={(e) => setSanction({ ...sanction, reason: e.target.value })} placeholder={tx("{strikeCount} infractions", { strikeCount: sanction.strikeCount })} className={inputCls} />
           </Field>
         </Modal>
       )}

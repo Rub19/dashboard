@@ -9,6 +9,7 @@ import Input from "@/components/ui/Input";
 import AnimatedFilterTabs, { type AnimatedFilterTab } from "@/components/ui/AnimatedFilterTabs";
 import { EASE_OUT, EASE_SNAP, SPRING_PILL } from "@/lib/ease";
 import { useMotionPref } from "@/lib/hooks/useMotionPref";
+import { tx } from "@/lib/tx";
 
 export interface NavigatorModule {
   id: string;
@@ -114,12 +115,12 @@ export default function ModuleNavigator({
   const searchMatched = useMemo(() => modules.filter(matchesSearch), [modules, matchesSearch]);
   const filterTabs: AnimatedFilterTab[] = useMemo(() => {
     const tabs: AnimatedFilterTab[] = [
-      { id: "all", label: "Tous", count: searchMatched.length },
-      { id: "enabled", label: "Activés", count: searchMatched.filter((m) => status[m.id] === true).length },
-      { id: "disabled", label: "Désactivés", count: searchMatched.filter((m) => status[m.id] === false).length },
+      { id: "all", label: tx("Tous"), count: searchMatched.length },
+      { id: "enabled", label: tx("Activés"), count: searchMatched.filter((m) => status[m.id] === true).length },
+      { id: "disabled", label: tx("Désactivés"), count: searchMatched.filter((m) => status[m.id] === false).length },
     ];
     if (recommendedSet.size > 0) {
-      tabs.push({ id: "recommended", label: "Recommandés", count: searchMatched.filter((m) => recommendedSet.has(m.id)).length });
+      tabs.push({ id: "recommended", label: tx("Recommandés"), count: searchMatched.filter((m) => recommendedSet.has(m.id)).length });
     }
     return tabs;
   }, [searchMatched, status, recommendedSet]);
@@ -174,9 +175,9 @@ export default function ModuleNavigator({
           <button
             type="button"
             onClick={() => toggleFavorite(m.id)}
-            aria-label={fav ? `Retirer ${m.title} des favoris` : `Ajouter ${m.title} aux favoris`}
+            aria-label={fav ? tx("Retirer {title} des favoris", { title: m.title }) : tx("Ajouter {title} aux favoris", { title: m.title })}
             aria-pressed={fav}
-            title={fav ? "Retirer des favoris" : "Épingler en haut"}
+            title={fav ? tx("Retirer des favoris") : tx("Épingler en haut")}
             className={cn(
               "flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-md outline-none transition-[color,opacity,transform] duration-200 active:scale-75 focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50",
               fav ? "text-amber-300" : "text-[var(--text-muted)] opacity-0 hover:text-amber-300 group-hover:opacity-100 focus:opacity-100"
@@ -193,7 +194,7 @@ export default function ModuleNavigator({
               aria-checked={isOn}
               disabled={isPending}
               aria-label={`${isOn ? "Désactiver" : "Activer"} ${m.title}`}
-              title={isPending ? "Envoi en cours…" : isOn ? "Désactiver ce module sur ce serveur" : "Activer ce module sur ce serveur"}
+              title={isPending ? tx("Envoi en cours…") : isOn ? tx("Désactiver ce module sur ce serveur") : tx("Activer ce module sur ce serveur")}
               onClick={() => onToggle(m.id, !isOn)}
               className={cn(
                 "relative h-5 w-9 shrink-0 rounded-full outline-none transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50",
@@ -222,12 +223,12 @@ export default function ModuleNavigator({
             )}
           >
             <Settings className="h-3.5 w-3.5 transition-transform duration-500 group-hover:rotate-90" />
-            Paramètres
+            {tx("Paramètres")}
           </button>
           <Link
             href={m.href}
-            aria-label={`Ouvrir la page ${m.title}`}
-            title="Ouvrir la page complète"
+            aria-label={tx("Ouvrir la page {title}", { title: m.title })}
+            title={tx("Ouvrir la page complète")}
             className="ml-auto flex h-8 w-8 items-center justify-center rounded-[var(--inset-radius)] text-[var(--text-muted)] outline-none transition-[background-color,color] duration-200 hover:bg-[var(--text-primary)]/[0.07] hover:text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
           >
             <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
@@ -269,8 +270,8 @@ export default function ModuleNavigator({
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Rechercher un module (musique, anti-raid, tickets…)"
-            aria-label="Rechercher un module"
+            placeholder={tx("Rechercher un module (musique, anti-raid, tickets…)")}
+            aria-label={tx("Rechercher un module")}
             icon="search"
             clearable
             inputSize="compact"
@@ -287,8 +288,8 @@ export default function ModuleNavigator({
             exit={{ opacity: 0 }}
             className="rounded-[var(--panel-radius)] border border-dashed border-[var(--panel-border)] p-10 text-center text-sm text-[var(--text-muted)]"
           >
-            Aucun module ne correspond{query ? ` à « ${query} »` : ""}
-            {filter !== "all" ? " pour ce filtre" : ""}.
+            {tx("Aucun module ne correspond")}{query ? ` à « ${query} »` : ""}
+            {filter !== "all" ? tx(" pour ce filtre") : ""}.
           </motion.div>
         )}
       </AnimatePresence>

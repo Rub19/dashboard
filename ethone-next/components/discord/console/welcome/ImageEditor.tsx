@@ -9,6 +9,7 @@ import { Segmented, Select, Switch } from "../kit";
 import { ColorField, INPUT, UploadButton, VarField } from "./MessageEditor";
 import { fillVars, type Viewer } from "./DiscordPreview";
 import { SIZE_OPTIONS, SIZE_PX, TEMPLATES, uid, type Background, type CardImage, type CardSize, type Layer, type Meta } from "./types";
+import { tx } from "@/lib/tx";
 
 const FONT_CSS: Record<string, string> = {
   poppins: "Poppins, 'Segoe UI', system-ui, sans-serif",
@@ -176,27 +177,27 @@ export default function ImageEditor({ guildId, image, onChange, viewer, meta, go
         <div className="flex flex-wrap items-center gap-1">
           <button type="button" onClick={() => setShowTemplates((v) => !v)} className={cn(tool, showTemplates && "bg-[var(--surface-hover)] text-[var(--text-primary)]")}>
             <LayoutTemplate className="h-3.5 w-3.5" />
-            Modèles
+            {tx("Modèles")}
           </button>
-          <button type="button" className={tool} onClick={() => add({ id: uid(), type: "text", visible: true, x: Math.round(W / 2), y: Math.round(H / 2), text: "Nouveau texte", size: Math.round(H * 0.08), color: "#FFFFFF", font: "poppins", weight: "700", align: "center", maxWidth: W - 80, uppercase: false, opacity: 1 })}>
+          <button type="button" className={tool} onClick={() => add({ id: uid(), type: "text", visible: true, x: Math.round(W / 2), y: Math.round(H / 2), text: tx("Nouveau texte"), size: Math.round(H * 0.08), color: "#FFFFFF", font: "poppins", weight: "700", align: "center", maxWidth: W - 80, uppercase: false, opacity: 1 })}>
             <Type className="h-3.5 w-3.5" />
-            Texte
+            {tx("Texte")}
           </button>
           <button type="button" className={tool} onClick={() => add({ id: uid(), type: "avatar", visible: true, x: Math.round(W / 2 - H * 0.15), y: Math.round(H * 0.1), size: Math.round(H * 0.3), shape: "circle", borderWidth: 6, borderColor: "#FFFFFF" })}>
             <UserRound className="h-3.5 w-3.5" />
-            Avatar
+            {tx("Avatar")}
           </button>
           <button type="button" className={tool} onClick={() => add({ id: uid(), type: "image", visible: true, x: 40, y: 40, url: "", w: Math.round(H * 0.4), h: Math.round(H * 0.4), radius: 12, opacity: 1 })}>
             <ImageIcon className="h-3.5 w-3.5" />
-            Image
+            {tx("Image")}
           </button>
           <button type="button" className={tool} onClick={() => add({ id: uid(), type: "shape", visible: true, x: Math.round(W / 2 - 150), y: Math.round(H * 0.8), shape: "rect", w: 300, h: 8, radius: 4, color: "#FFFFFF", opacity: 0.5 })}>
             <Square className="h-3.5 w-3.5" />
-            Forme
+            {tx("Forme")}
           </button>
           <button type="button" onClick={undo} disabled={!history.current.length} className={cn(tool, "ml-auto disabled:opacity-40")}>
             <Undo2 className="h-3.5 w-3.5" />
-            Annuler
+            {tx("Annuler")}
           </button>
         </div>
 
@@ -306,10 +307,10 @@ export default function ImageEditor({ guildId, image, onChange, viewer, meta, go
           {guides.x && <div className="pointer-events-none absolute inset-y-0 left-1/2 w-px bg-[var(--accent-primary)]" />}
           {guides.y && <div className="pointer-events-none absolute inset-x-0 top-1/2 h-px bg-[var(--accent-primary)]" />}
         </div>
-        <p className="text-[11px] text-[var(--text-muted)]">Glisse les éléments, poignée en bas à droite pour la taille. Flèches pour ajuster, Alt pour ne pas aimanter au centre.</p>
+        <p className="text-[11px] text-[var(--text-muted)]">{tx("Glisse les éléments, poignée en bas à droite pour la taille. Flèches pour ajuster, Alt pour ne pas aimanter au centre.")}</p>
 
         <div className="overflow-hidden rounded-xl border border-[var(--panel-border)]">
-          <p className="border-b border-[var(--panel-border)] px-3 py-2 text-[11px] font-semibold text-[var(--text-muted)]">Calques · {layers.length}/20</p>
+          <p className="border-b border-[var(--panel-border)] px-3 py-2 text-[11px] font-semibold text-[var(--text-muted)]">{tx("Calques ·")}{" "} {layers.length}/20</p>
           <ul>
             <AnimatePresence initial={false}>
               {[...layers].reverse().map((l) => (
@@ -327,13 +328,13 @@ export default function ImageEditor({ guildId, image, onChange, viewer, meta, go
                     {l.type === "text" ? <Type className="h-3.5 w-3.5" /> : l.type === "avatar" ? <UserRound className="h-3.5 w-3.5" /> : l.type === "image" ? <ImageIcon className="h-3.5 w-3.5" /> : l.shape === "circle" ? <Circle className="h-3.5 w-3.5" /> : <Square className="h-3.5 w-3.5" />}
                   </span>
                   <span className={cn("min-w-0 flex-1 truncate text-xs", l.visible ? "text-[var(--text-primary)]" : "text-[var(--text-muted)] line-through")}>{layerName(l)}</span>
-                  <button type="button" aria-label={l.visible ? "Masquer" : "Afficher"} onClick={(e) => (e.stopPropagation(), patchLayer(l.id, { visible: !l.visible }))} className="rounded p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)]">
+                  <button type="button" aria-label={l.visible ? tx("Masquer") : tx("Afficher")} onClick={(e) => (e.stopPropagation(), patchLayer(l.id, { visible: !l.visible }))} className="rounded p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)]">
                     {l.visible ? <Eye className="h-3.5 w-3.5" /> : <EyeOff className="h-3.5 w-3.5" />}
                   </button>
-                  <button type="button" aria-label="Monter" onClick={(e) => (e.stopPropagation(), move(l.id, 1))} className="rounded p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)]">
+                  <button type="button" aria-label={tx("Monter")} onClick={(e) => (e.stopPropagation(), move(l.id, 1))} className="rounded p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)]">
                     <ArrowUp className="h-3.5 w-3.5" />
                   </button>
-                  <button type="button" aria-label="Descendre" onClick={(e) => (e.stopPropagation(), move(l.id, -1))} className="rounded p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)]">
+                  <button type="button" aria-label={tx("Descendre")} onClick={(e) => (e.stopPropagation(), move(l.id, -1))} className="rounded p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)]">
                     <ArrowDown className="h-3.5 w-3.5" />
                   </button>
                 </motion.li>
@@ -349,47 +350,47 @@ export default function ImageEditor({ guildId, image, onChange, viewer, meta, go
             <motion.div key={sel.id} initial={{ opacity: 0, x: 8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 8 }} transition={SPRING_PILL} className="space-y-3 rounded-xl border border-[var(--panel-border)] p-3">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-[var(--text-primary)]">{layerName(sel).slice(0, 24)}</span>
-                <button type="button" aria-label="Supprimer le calque" onClick={() => (setLayers(layers.filter((l) => l.id !== sel.id)), setSelected(null))} className="rounded-md p-1 text-[var(--text-muted)] hover:bg-[var(--surface-hover)] hover:text-[var(--danger)]">
+                <button type="button" aria-label={tx("Supprimer le calque")} onClick={() => (setLayers(layers.filter((l) => l.id !== sel.id)), setSelected(null))} className="rounded-md p-1 text-[var(--text-muted)] hover:bg-[var(--surface-hover)] hover:text-[var(--danger)]">
                   <Trash2 className="h-3.5 w-3.5" />
                 </button>
               </div>
               {sel.type === "text" && (
                 <>
                   <VarField value={sel.text} max={200} onChange={(v) => patchLayer(sel.id, { text: v })} />
-                  <Num label="Taille" value={sel.size} min={8} max={240} onChange={(n) => patchLayer(sel.id, { size: n })} />
-                  <ColorField label="Couleur du texte" value={sel.color} onChange={(v) => patchLayer(sel.id, { color: v })} />
-                  <Select value={sel.font} width="w-full" aria-label="Police" options={[["poppins", "Poppins"], ["bebas", "Bebas"], ["serif", "Serif"], ["mono", "Mono"]]} onChange={(v) => patchLayer(sel.id, { font: v })} />
-                  <Segmented label="Graisse" value={sel.weight} options={[["400", "Normal"], ["600", "Semi"], ["700", "Gras"], ["800", "Noir"]]} onChange={(v) => patchLayer(sel.id, { weight: v })} />
-                  <Segmented label="Alignement" value={sel.align} options={[["left", "Gauche"], ["center", "Centre"], ["right", "Droite"]]} onChange={(v) => patchLayer(sel.id, { align: v })} />
-                  <Num label="Largeur max" value={sel.maxWidth} min={40} max={W} onChange={(n) => patchLayer(sel.id, { maxWidth: n })} />
-                  <Num label="Opacité" value={sel.opacity} min={0} max={1} step={0.05} onChange={(n) => patchLayer(sel.id, { opacity: n })} />
+                  <Num label={tx("Taille")} value={sel.size} min={8} max={240} onChange={(n) => patchLayer(sel.id, { size: n })} />
+                  <ColorField label={tx("Couleur du texte")} value={sel.color} onChange={(v) => patchLayer(sel.id, { color: v })} />
+                  <Select value={sel.font} width="w-full" aria-label={tx("Police")} options={[["poppins", "Poppins"], ["bebas", "Bebas"], ["serif", "Serif"], ["mono", "Mono"]]} onChange={(v) => patchLayer(sel.id, { font: v })} />
+                  <Segmented label={tx("Graisse")} value={sel.weight} options={[["400", "Normal"], ["600", "Semi"], ["700", "Gras"], ["800", "Noir"]]} onChange={(v) => patchLayer(sel.id, { weight: v })} />
+                  <Segmented label={tx("Alignement")} value={sel.align} options={[["left", "Gauche"], ["center", "Centre"], ["right", "Droite"]]} onChange={(v) => patchLayer(sel.id, { align: v })} />
+                  <Num label={tx("Largeur max")} value={sel.maxWidth} min={40} max={W} onChange={(n) => patchLayer(sel.id, { maxWidth: n })} />
+                  <Num label={tx("Opacité")} value={sel.opacity} min={0} max={1} step={0.05} onChange={(n) => patchLayer(sel.id, { opacity: n })} />
                   <label className="flex items-center justify-between text-[11px] text-[var(--text-muted)]">
-                    Majuscules
-                    <Switch checked={sel.uppercase} onChange={(v) => patchLayer(sel.id, { uppercase: v })} label="Majuscules" />
+                    {tx("Majuscules")}
+                    <Switch checked={sel.uppercase} onChange={(v) => patchLayer(sel.id, { uppercase: v })} label={tx("Majuscules")} />
                   </label>
                 </>
               )}
               {sel.type === "avatar" && (
                 <>
-                  <Num label="Taille" value={sel.size} min={16} max={Math.min(W, H)} onChange={(n) => patchLayer(sel.id, { size: n })} />
-                  <Segmented label="Forme" value={sel.shape} options={[["circle", "Rond"], ["rounded", "Arrondi"], ["square", "Carré"]]} onChange={(v) => patchLayer(sel.id, { shape: v })} />
-                  <Num label="Bordure" value={sel.borderWidth} min={0} max={40} onChange={(n) => patchLayer(sel.id, { borderWidth: n })} />
-                  <ColorField label="Couleur de bordure" value={sel.borderColor} onChange={(v) => patchLayer(sel.id, { borderColor: v })} />
+                  <Num label={tx("Taille")} value={sel.size} min={16} max={Math.min(W, H)} onChange={(n) => patchLayer(sel.id, { size: n })} />
+                  <Segmented label={tx("Forme")} value={sel.shape} options={[["circle", "Rond"], ["rounded", "Arrondi"], ["square", "Carré"]]} onChange={(v) => patchLayer(sel.id, { shape: v })} />
+                  <Num label={tx("Bordure")} value={sel.borderWidth} min={0} max={40} onChange={(n) => patchLayer(sel.id, { borderWidth: n })} />
+                  <ColorField label={tx("Couleur de bordure")} value={sel.borderColor} onChange={(v) => patchLayer(sel.id, { borderColor: v })} />
                 </>
               )}
               {sel.type === "image" && (
                 <>
-                  <UploadButton guildId={guildId} label={sel.url ? "Remplacer l'image" : "Envoyer une image"} onUploaded={(u) => patchLayer(sel.id, { url: u })} />
-                  <Num label="Arrondi" value={sel.radius} min={0} max={Math.round(Math.min(sel.w, sel.h) / 2)} onChange={(n) => patchLayer(sel.id, { radius: n })} />
-                  <Num label="Opacité" value={sel.opacity} min={0} max={1} step={0.05} onChange={(n) => patchLayer(sel.id, { opacity: n })} />
+                  <UploadButton guildId={guildId} label={sel.url ? tx("Remplacer l'image") : tx("Envoyer une image")} onUploaded={(u) => patchLayer(sel.id, { url: u })} />
+                  <Num label={tx("Arrondi")} value={sel.radius} min={0} max={Math.round(Math.min(sel.w, sel.h) / 2)} onChange={(n) => patchLayer(sel.id, { radius: n })} />
+                  <Num label={tx("Opacité")} value={sel.opacity} min={0} max={1} step={0.05} onChange={(n) => patchLayer(sel.id, { opacity: n })} />
                 </>
               )}
               {sel.type === "shape" && (
                 <>
-                  <Segmented label="Forme" value={sel.shape} options={[["rect", "Rectangle"], ["circle", "Cercle"]]} onChange={(v) => patchLayer(sel.id, { shape: v })} />
-                  <ColorField label="Couleur de la forme" value={sel.color} onChange={(v) => patchLayer(sel.id, { color: v })} />
-                  <Num label="Opacité" value={sel.opacity} min={0} max={1} step={0.05} onChange={(n) => patchLayer(sel.id, { opacity: n })} />
-                  {sel.shape === "rect" && <Num label="Arrondi" value={sel.radius} min={0} max={Math.round(Math.min(sel.w, sel.h) / 2)} onChange={(n) => patchLayer(sel.id, { radius: n })} />}
+                  <Segmented label={tx("Forme")} value={sel.shape} options={[["rect", "Rectangle"], ["circle", "Cercle"]]} onChange={(v) => patchLayer(sel.id, { shape: v })} />
+                  <ColorField label={tx("Couleur de la forme")} value={sel.color} onChange={(v) => patchLayer(sel.id, { color: v })} />
+                  <Num label={tx("Opacité")} value={sel.opacity} min={0} max={1} step={0.05} onChange={(n) => patchLayer(sel.id, { opacity: n })} />
+                  {sel.shape === "rect" && <Num label={tx("Arrondi")} value={sel.radius} min={0} max={Math.round(Math.min(sel.w, sel.h) / 2)} onChange={(n) => patchLayer(sel.id, { radius: n })} />}
                 </>
               )}
             </motion.div>
@@ -397,39 +398,39 @@ export default function ImageEditor({ guildId, image, onChange, viewer, meta, go
         </AnimatePresence>
 
         <div className="space-y-3 rounded-xl border border-[var(--panel-border)] p-3">
-          <span className="text-xs font-bold text-[var(--text-primary)]">Fond et taille</span>
+          <span className="text-xs font-bold text-[var(--text-primary)]">{tx("Fond et taille")}</span>
           <div className="space-y-1">
-            <span className="text-[11px] text-[var(--text-muted)]">Taille</span>
-            <Select value={size} width="w-full" aria-label="Taille de l'image" options={SIZE_OPTIONS} onChange={resize} />
+            <span className="text-[11px] text-[var(--text-muted)]">{tx("Taille")}</span>
+            <Select value={size} width="w-full" aria-label={tx("Taille de l'image")} options={SIZE_OPTIONS} onChange={resize} />
           </div>
           {bg.type !== "image" && (
             <label className="flex items-center justify-between gap-3 text-[11px] text-[var(--text-muted)]">
               <span>
-                <span className="block text-xs font-semibold text-[var(--text-primary)]">Carte animée</span>
-                GIF : lueurs, particules et halo
+                <span className="block text-xs font-semibold text-[var(--text-primary)]">{tx("Carte animée")}</span>
+                {tx("GIF : lueurs, particules et halo")}
               </span>
-              <Switch checked={image.animated !== false} onChange={(v) => commit({ animated: v })} label="Carte animée" />
+              <Switch checked={image.animated !== false} onChange={(v) => commit({ animated: v })} label={tx("Carte animée")} />
             </label>
           )}
-          <Segmented label="Fond" value={bg.type} options={[["color", "Couleur"], ["gradient", "Dégradé"], ["image", "Image"]]} onChange={(v) => setBg({ type: v })} />
+          <Segmented label={tx("Fond")} value={bg.type} options={[["color", "Couleur"], ["gradient", "Dégradé"], ["image", "Image"]]} onChange={(v) => setBg({ type: v })} />
           <div className="space-y-1">
-            <span className="text-[11px] text-[var(--text-muted)]">{bg.type === "gradient" ? "Première couleur" : "Couleur"}</span>
-            <ColorField label="Couleur du fond" value={bg.color} onChange={(v) => setBg({ color: v })} />
+            <span className="text-[11px] text-[var(--text-muted)]">{bg.type === "gradient" ? tx("Première couleur") : tx("Couleur")}</span>
+            <ColorField label={tx("Couleur du fond")} value={bg.color} onChange={(v) => setBg({ color: v })} />
           </div>
           {bg.type === "gradient" && (
             <>
               <div className="space-y-1">
-                <span className="text-[11px] text-[var(--text-muted)]">Seconde couleur</span>
-                <ColorField label="Seconde couleur" value={bg.color2} onChange={(v) => setBg({ color2: v })} />
+                <span className="text-[11px] text-[var(--text-muted)]">{tx("Seconde couleur")}</span>
+                <ColorField label={tx("Seconde couleur")} value={bg.color2} onChange={(v) => setBg({ color2: v })} />
               </div>
-              <Num label="Angle" value={bg.angle} min={0} max={360} onChange={(n) => setBg({ angle: n })} />
+              <Num label={tx("Angle")} value={bg.angle} min={0} max={360} onChange={(n) => setBg({ angle: n })} />
             </>
           )}
           {bg.type === "image" && (
             <>
-              <UploadButton guildId={guildId} label={bg.url ? "Remplacer le fond" : "Envoyer un fond"} onUploaded={(u) => setBg({ url: u })} />
-              <input value={bg.url} placeholder="https://…" onChange={(e) => setBg({ url: e.target.value.trim() })} aria-label="Lien de l'image de fond" className={cn(INPUT, "h-8 font-mono text-xs")} />
-              <Num label="Voile" value={bg.overlay} min={0} max={90} onChange={(n) => setBg({ overlay: n })} />
+              <UploadButton guildId={guildId} label={bg.url ? tx("Remplacer le fond") : tx("Envoyer un fond")} onUploaded={(u) => setBg({ url: u })} />
+              <input value={bg.url} placeholder="https://…" onChange={(e) => setBg({ url: e.target.value.trim() })} aria-label={tx("Lien de l'image de fond")} className={cn(INPUT, "h-8 font-mono text-xs")} />
+              <Num label={tx("Voile")} value={bg.overlay} min={0} max={90} onChange={(n) => setBg({ overlay: n })} />
             </>
           )}
         </div>

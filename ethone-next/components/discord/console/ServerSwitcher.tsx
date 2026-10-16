@@ -8,6 +8,7 @@ import ClientImage from "@/components/ClientImage";
 import type { DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
 import { useMotionPref } from "@/lib/hooks/useMotionPref";
 import { cn } from "@/lib/utils";
+import { tx } from "@/lib/tx";
 
 /**
  * Serveur courant en haut de la barre latérale ; un clic ouvre le sélecteur comme sur Keeper : recherche, serveurs
@@ -137,14 +138,14 @@ export default function ServerSwitcher({
                   autoFocus
                   value={q}
                   onChange={(e) => setQ(e.target.value)}
-                  placeholder="Changer de serveur"
-                  aria-label="Changer de serveur"
+                  placeholder={tx("Changer de serveur")}
+                  aria-label={tx("Changer de serveur")}
                   className="w-full border-b border-[var(--panel-border)] bg-transparent px-3 py-2.5 text-[13px] text-[var(--text-primary)] outline-none placeholder:text-[var(--text-muted)]"
                 />
                 <div className="max-h-80 overflow-y-auto p-1.5">
                   {withBot.length > 0 && (
                     <p className="px-2 pb-1 pt-1.5 text-[11px] text-[var(--text-muted)]">
-                      Protégés par Etho
+                      {tx("Protégés par Etho")}
                     </p>
                   )}
                   {withBot.map((g) => (
@@ -177,7 +178,7 @@ export default function ServerSwitcher({
                   ))}
                   {without.length > 0 && (
                     <p className="px-2 pb-1 pt-2.5 text-[11px] text-[var(--text-muted)]">
-                      Sans Etho
+                      {tx("Sans Etho")}
                     </p>
                   )}
                   {without.map((g) => (
@@ -191,7 +192,7 @@ export default function ServerSwitcher({
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={close}
-                      title={`Ajouter Etho à ${g.name}`}
+                      title={tx("Ajouter Etho à {name}", { name: g.name })}
                       className={cn(row, "group")}
                     >
                       <GuildIcon name={g.name} url={g.iconUrl} size={22} />
@@ -206,7 +207,7 @@ export default function ServerSwitcher({
                   ))}
                   {withBot.length + without.length === 0 && (
                     <p className="px-2 py-4 text-center text-xs text-[var(--text-muted)]">
-                      Aucun serveur.
+                      {tx("Aucun serveur.")}
                     </p>
                   )}
                 </div>
@@ -223,7 +224,7 @@ export default function ServerSwitcher({
                       className="h-4 w-4 text-[var(--text-muted)]"
                       strokeWidth={1.75}
                     />
-                    Tous mes serveurs
+                    {tx("Tous mes serveurs")}
                   </button>
                 )}
               </motion.div>

@@ -5,6 +5,7 @@ import { Shield, Zap, ArrowRight, Music, Users } from "@/components/icons/ph";
 import DiscordIcon from "@/components/DiscordIcon";
 import { motion } from "framer-motion";
 import { SPRING_PRESS } from "@/lib/ease";
+import { tx } from "@/lib/tx";
 
 interface Screen0WelcomeProps {
   onNext: () => void;
@@ -19,7 +20,7 @@ export default function Screen0Welcome({ onNext, onSkip }: Screen0WelcomeProps) 
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
           <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
         </span>
-        <span>BIENVENUE SUR ETHO</span>
+        <span>{tx("BIENVENUE SUR ETHO")}</span>
       </div>
 
       <div className="relative mb-5">
@@ -29,10 +30,10 @@ export default function Screen0Welcome({ onNext, onSkip }: Screen0WelcomeProps) 
       </div>
 
       <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-white mb-2">
-        ETHO <span className="bg-gradient-to-r from-[#92C8D2] to-emerald-400 bg-clip-text text-transparent">CONSOLE</span>
+        {tx("ETHO")}{" "} <span className="bg-gradient-to-r from-[#92C8D2] to-emerald-400 bg-clip-text text-transparent">{tx("CONSOLE")}</span>
       </h2>
       <p className="text-xs sm:text-sm text-zinc-400 font-medium max-w-lg leading-relaxed mb-6">
-        Sécurité chirurgicale, lecteur musique haute fidélité, pont vocal Spotify et gestion communautaire pour ton serveur Discord, réunis dans un dashboard fluide et sans superflu.
+        {tx("Sécurité chirurgicale, lecteur musique haute fidélité, pont vocal Spotify et gestion communautaire pour ton serveur Discord, réunis dans un dashboard fluide et sans superflu.")}
       </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 w-full max-w-lg mb-8 text-left">
@@ -41,8 +42,8 @@ export default function Screen0Welcome({ onNext, onSkip }: Screen0WelcomeProps) 
             <Shield className="w-4 h-4" />
           </div>
           <div className="min-w-0">
-            <p className="text-xs font-bold text-white">Anti-Raid</p>
-            <p className="text-[11px] text-zinc-400 truncate">Sanction immédiate & bouclier</p>
+            <p className="text-xs font-bold text-white">{tx("Anti-Raid")}</p>
+            <p className="text-[11px] text-zinc-400 truncate">{tx("Sanction immédiate & bouclier")}</p>
           </div>
         </div>
 
@@ -51,8 +52,8 @@ export default function Screen0Welcome({ onNext, onSkip }: Screen0WelcomeProps) 
             <Music className="w-4 h-4" />
           </div>
           <div className="min-w-0">
-            <p className="text-xs font-bold text-white">Pont vocal Spotify</p>
-            <p className="text-[11px] text-zinc-400 truncate">Diffusion directe en salon vocal</p>
+            <p className="text-xs font-bold text-white">{tx("Pont vocal Spotify")}</p>
+            <p className="text-[11px] text-zinc-400 truncate">{tx("Diffusion directe en salon vocal")}</p>
           </div>
         </div>
 
@@ -61,8 +62,8 @@ export default function Screen0Welcome({ onNext, onSkip }: Screen0WelcomeProps) 
             <Users className="w-4 h-4" />
           </div>
           <div className="min-w-0">
-            <p className="text-xs font-bold text-white">Salons Compteurs</p>
-            <p className="text-[11px] text-zinc-400 truncate">Server Stats dynamiques en direct</p>
+            <p className="text-xs font-bold text-white">{tx("Salons Compteurs")}</p>
+            <p className="text-[11px] text-zinc-400 truncate">{tx("Server Stats dynamiques en direct")}</p>
           </div>
         </div>
 
@@ -71,8 +72,8 @@ export default function Screen0Welcome({ onNext, onSkip }: Screen0WelcomeProps) 
             <Zap className="w-4 h-4" />
           </div>
           <div className="min-w-0">
-            <p className="text-xs font-bold text-white">Toujours en ligne</p>
-            <p className="text-[11px] text-zinc-400 truncate">Hébergé en continu sur serveur dédié</p>
+            <p className="text-xs font-bold text-white">{tx("Toujours en ligne")}</p>
+            <p className="text-[11px] text-zinc-400 truncate">{tx("Hébergé en continu sur serveur dédié")}</p>
           </div>
         </div>
       </div>
@@ -83,7 +84,7 @@ export default function Screen0Welcome({ onNext, onSkip }: Screen0WelcomeProps) 
           onClick={onNext}
           className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-white text-black font-bold text-xs shadow-lg shadow-white/10 hover:bg-zinc-100 transition-all cursor-pointer"
         >
-          <span>Découvrir les fonctionnalités</span>
+          <span>{tx("Découvrir les fonctionnalités")}</span>
           <ArrowRight className="w-3.5 h-3.5" />
         </motion.button>
         <motion.button
@@ -91,7 +92,7 @@ export default function Screen0Welcome({ onNext, onSkip }: Screen0WelcomeProps) 
           onClick={onSkip}
           className="w-full sm:w-auto px-5 py-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-zinc-400 hover:text-white text-xs font-semibold border border-white/10 transition-all cursor-pointer"
         >
-          Passer l&apos;introduction
+          {tx("Passer l'introduction")}
         </motion.button>
       </div>
     </div>

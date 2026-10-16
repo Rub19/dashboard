@@ -23,6 +23,7 @@ import {
   type ScanCategory,
   type ScanResult,
 } from "@/lib/discord/security-scan";
+import { tx } from "@/lib/tx";
 
 interface GuildSecurityScanProps {
   guild: DiscordGuild;
@@ -115,10 +116,10 @@ export default function GuildSecurityScan({ guild, onOpenProtections }: GuildSec
             {scanning || loading ? <RefreshCw className="h-6 w-6 animate-spin" /> : <ScanFace className="h-6 w-6" strokeWidth={1.75} />}
           </div>
           <h2 className="text-base font-bold text-[var(--text-primary)] sm:text-lg">
-            {scanning ? i18n("dScanning", "Scan en cours...") : loading ? "Chargement du dernier scan…" : i18n("dNoScanYet", "Aucun scan pour l'instant")}
+            {scanning ? i18n("dScanning", "Scan en cours...") : loading ? tx("Chargement du dernier scan…") : i18n("dNoScanYet", "Aucun scan pour l'instant")}
           </h2>
           <p className="mt-1.5 max-w-sm text-xs leading-relaxed text-[var(--text-muted)]">
-            Etho vérifie ses permissions, les rôles, les salons, les réglages de sécurité Discord, les autres bots et tes protections.
+            {tx("Etho vérifie ses permissions, les rôles, les salons, les réglages de sécurité Discord, les autres bots et tes protections.")}
           </p>
         </motion.div>
       )}
@@ -136,10 +137,10 @@ export default function GuildSecurityScan({ guild, onOpenProtections }: GuildSec
                 <ScoreRing key={result.scannedAt} score={result.score} />
                 <div>
                   <h3 className="text-sm font-bold text-[var(--text-primary)]">
-                    {issueCount === 0 ? i18n("dServerWellProtected", "Ton serveur est très bien protégé.") : `${issueCount} point${issueCount > 1 ? "s" : ""} à régler`}
+                    {issueCount === 0 ? i18n("dServerWellProtected", "Ton serveur est très bien protégé.") : tx("{issueCount} point{v1} à régler", { issueCount, v1: issueCount > 1 ? "s" : "" })}
                   </h3>
                   <p className="mt-0.5 text-[11px] text-[var(--text-muted)]">
-                    {sinceLabel(result.scannedAt)} · {result.memberCount} membres
+                    {sinceLabel(result.scannedAt)} · {result.memberCount} {" "}{tx("membres")}
                   </p>
                 </div>
               </div>
@@ -182,7 +183,7 @@ export default function GuildSecurityScan({ guild, onOpenProtections }: GuildSec
           </div>
 
           <div className="space-y-4 lg:col-span-7">
-            <div role="radiogroup" aria-label="Catégorie" className="flex flex-wrap gap-1.5">
+            <div role="radiogroup" aria-label={tx("Catégorie")} className="flex flex-wrap gap-1.5">
               {(["all", ...CATEGORIES.map((c) => c.id)] as const).map((id) => {
                 const active = filter === id;
                 const cat = CATEGORIES.find((c) => c.id === id);
@@ -210,7 +211,7 @@ export default function GuildSecurityScan({ guild, onOpenProtections }: GuildSec
             {issues.length === 0 ? (
               <div className="flex items-center gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-4 text-xs text-[var(--text-primary)]">
                 <Check className="h-4 w-4 text-[var(--success)]" />
-                Rien à régler ici.
+                {tx("Rien à régler ici.")}
               </div>
             ) : (
               <ul className="space-y-2.5">
@@ -237,7 +238,7 @@ export default function GuildSecurityScan({ guild, onOpenProtections }: GuildSec
                             ))}
                             {c.items.length > 10 && (
                               <span className="px-1.5 py-0.5 text-[10px] text-[var(--text-muted)]" title={c.items.slice(10).join(", ")}>
-                                +{c.items.length - 10} autres
+                                +{c.items.length - 10} {" "}{tx("autres")}
                               </span>
                             )}
                           </div>
@@ -257,7 +258,7 @@ export default function GuildSecurityScan({ guild, onOpenProtections }: GuildSec
                   aria-expanded={showSolid}
                   className="flex w-full items-center justify-between px-4 py-3 text-xs font-semibold text-[var(--text-primary)]"
                 >
-                  <span>{solid.length} points solides</span>
+                  <span>{solid.length} {" "}{tx("points solides")}</span>
                   <span className="text-[var(--text-muted)]">{showSolid ? "−" : "+"}</span>
                 </button>
                 <AnimatePresence initial={false}>
@@ -323,7 +324,7 @@ function AutoScanCard({ guildId }: { guildId: string }) {
       const data = await res.json().catch(() => null);
       if (!res.ok) throw new Error(data?.error || `Erreur ${res.status}`);
       setAuto(data.auto);
-      if (patch.enabled === true || (patch.channelId && next.enabled)) success("Scan automatique activé", "Le premier rapport arrive dans le salon d'ici 15 minutes.");
+      if (patch.enabled === true || (patch.channelId && next.enabled)) success(tx("Scan automatique activé"), tx("Le premier rapport arrive dans le salon d'ici 15 minutes."));
     } catch (err) {
       setAuto(previous);
       toastError("Scan automatique", err instanceof Error ? err.message : "Bot injoignable");
@@ -338,17 +339,17 @@ function AutoScanCard({ guildId }: { guildId: string }) {
     <div className="space-y-4 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-5">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h3 className="text-sm font-bold text-[var(--text-primary)]">Scan automatique</h3>
+          <h3 className="text-sm font-bold text-[var(--text-primary)]">{tx("Scan automatique")}</h3>
           <p className="mt-0.5 text-[11px] leading-relaxed text-[var(--text-muted)]">
-            Un rapport posté dans un salon, avec ce qui a changé depuis le précédent.
-            {auto.lastRunAt ? ` Dernier rapport ${sinceLabel(auto.lastRunAt)}.` : ""}
+            {tx("Un rapport posté dans un salon, avec ce qui a changé depuis le précédent.")}
+            {auto.lastRunAt ? tx(" Dernier rapport {v0}.", { v0: sinceLabel(auto.lastRunAt) }) : ""}
           </p>
         </div>
         <button
           type="button"
           role="switch"
           aria-checked={auto.enabled}
-          aria-label="Activer le scan automatique"
+          aria-label={tx("Activer le scan automatique")}
           disabled={saving}
           onClick={() => save({ enabled: !auto.enabled })}
           className={cn(
@@ -361,18 +362,18 @@ function AutoScanCard({ guildId }: { guildId: string }) {
       </div>
 
       <div className="space-y-1.5">
-        <span className="text-[11px] font-semibold text-[var(--text-muted)]">Salon du rapport</span>
+        <span className="text-[11px] font-semibold text-[var(--text-muted)]">{tx("Salon du rapport")}</span>
         <ChannelPicker
           guildId={guildId}
           value={auto.channelId}
           onChange={(id) => save({ channelId: id || null })}
           filterTypes={[0, 5]}
           disabled={saving}
-          placeholder="Choisir un salon"
+          placeholder={tx("Choisir un salon")}
         />
       </div>
 
-      <div role="radiogroup" aria-label="Fréquence" className="flex gap-1.5">
+      <div role="radiogroup" aria-label={tx("Fréquence")} className="flex gap-1.5">
         {(["day", "week"] as const).map((f) => (
           <button
             key={f}
@@ -389,7 +390,7 @@ function AutoScanCard({ guildId }: { guildId: string }) {
             {auto.frequency === f && (
               <motion.span layoutId={`autoscan-freq-${guildId}`} transition={SPRING_PILL} className="absolute inset-0 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-hover)]" />
             )}
-            <span className="relative">{f === "day" ? "Chaque jour" : "Chaque semaine"}</span>
+            <span className="relative">{f === "day" ? tx("Chaque jour") : tx("Chaque semaine")}</span>
           </button>
         ))}
       </div>

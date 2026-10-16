@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { BOT_API_URL, ConsolePage, EmptyLine, GhostButton, Panel, Row, Segmented, StatTile, Stepper, Switch, useGuildApi } from "../kit";
 import AdvancedPollForm from "./AdvancedPollForm";
 import PollInsights from "./PollInsights";
+import { tx } from "@/lib/tx";
 
 type Status = "DRAFT" | "SCHEDULED" | "ACTIVE" | "PAUSED" | "ENDED" | "ARCHIVED";
 type Option = { id: string; label: string; emoji?: string; votesCount: number };
@@ -64,7 +65,7 @@ export default function ConsolePolls({ guildId }: { guildId: string }) {
     else if (r) void load();
   };
   const remove = async (p: Poll) => {
-    if (!(await confirmDialog(`Supprimer le sondage « ${p.title} » et ses votes ?`, { title: "Supprimer", confirmLabel: "Supprimer" }))) return;
+    if (!(await confirmDialog(tx("Supprimer le sondage « {title} » et ses votes ?", { title: p.title }), { title: tx("Supprimer"), confirmLabel: tx("Supprimer") }))) return;
     if (await api(`/polls/${p.id}`, { method: "DELETE" })) setPolls((l) => l?.filter((x) => x.id !== p.id) ?? null);
   };
 
@@ -92,10 +93,10 @@ export default function ConsolePolls({ guildId }: { guildId: string }) {
 
   return (
     <ConsolePage
-      title="Sondages"
+      title={tx("Sondages")}
       actions={
         <Segmented
-          label="Type de sondage"
+          label={tx("Type de sondage")}
           value={mode}
           options={[
             ["discord", "Sondage Discord"],
@@ -106,20 +107,20 @@ export default function ConsolePolls({ guildId }: { guildId: string }) {
       }
     >
       <motion.div variants={pageStagger} className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatTile label="En cours" value={polls ? live : "—"} />
-        <StatTile label="Terminés" value={polls ? all.filter((p) => p.status === "ENDED").length : "—"} />
-        <StatTile label="Votes" value={polls ? totalVotes : "—"} />
-        <StatTile label="Brouillons" value={polls ? all.filter((p) => p.status === "DRAFT").length : "—"} />
+        <StatTile label={tx("En cours")} value={polls ? live : "—"} />
+        <StatTile label={tx("Terminés")} value={polls ? all.filter((p) => p.status === "ENDED").length : "—"} />
+        <StatTile label={tx("Votes")} value={polls ? totalVotes : "—"} />
+        <StatTile label={tx("Brouillons")} value={polls ? all.filter((p) => p.status === "DRAFT").length : "—"} />
       </motion.div>
 
       {mode === "advanced" && <AdvancedPollForm guildId={guildId} onCreated={() => { setFilter("live"); void load(); }} />}
 
       {mode === "discord" && (
-      <Panel title="Nouveau sondage" subtitle="Sondage Discord natif : les membres votent directement dans le message.">
-        <Row label="Question">
-          <input value={question} maxLength={300} onChange={(e) => setQuestion(e.target.value)} placeholder="Quel jeu ce week-end ?" className={input} />
+      <Panel title={tx("Nouveau sondage")} subtitle={tx("Sondage Discord natif : les membres votent directement dans le message.")}>
+        <Row label={tx("Question")}>
+          <input value={question} maxLength={300} onChange={(e) => setQuestion(e.target.value)} placeholder={tx("Quel jeu ce week-end ?")} className={input} />
         </Row>
-        <Row label="Réponses" hint={`De 2 à ${MAX_ANSWERS} réponses, 55 caractères maximum.`}>
+        <Row label={tx("Réponses")} hint={tx("De 2 à {MAX_ANSWERS} réponses, 55 caractères maximum.", { MAX_ANSWERS })}>
           <div className="space-y-1.5">
             {answers.map((a, i) => (
               <div key={i} className="flex items-center gap-1.5">
@@ -127,12 +128,12 @@ export default function ConsolePolls({ guildId }: { guildId: string }) {
                   value={a}
                   maxLength={55}
                   onChange={(e) => setAnswers((l) => l.map((x, j) => (j === i ? e.target.value : x)))}
-                  placeholder={`Réponse ${i + 1}`}
-                  aria-label={`Réponse ${i + 1}`}
+                  placeholder={tx("Réponse {v0}", { v0: i + 1 })}
+                  aria-label={tx("Réponse {v0}", { v0: i + 1 })}
                   className={input}
                 />
                 {answers.length > 2 && (
-                  <button type="button" onClick={() => setAnswers((l) => l.filter((_, j) => j !== i))} aria-label={`Retirer la réponse ${i + 1}`} className="rounded-lg p-2 text-[var(--text-muted)] hover:bg-[var(--surface-hover)] hover:text-[var(--danger)]">
+                  <button type="button" onClick={() => setAnswers((l) => l.filter((_, j) => j !== i))} aria-label={tx("Retirer la réponse {v0}", { v0: i + 1 })} className="rounded-lg p-2 text-[var(--text-muted)] hover:bg-[var(--surface-hover)] hover:text-[var(--danger)]">
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
                 )}
@@ -140,22 +141,22 @@ export default function ConsolePolls({ guildId }: { guildId: string }) {
             ))}
             {answers.length < MAX_ANSWERS && (
               <GhostButton onClick={() => setAnswers((l) => [...l, ""])}>
-                <Plus className="h-3.5 w-3.5" /> Réponse
+                <Plus className="h-3.5 w-3.5" /> {" "}{tx("Réponse")}
               </GhostButton>
             )}
           </div>
         </Row>
-        <Row label="Durée" hint="Discord clôt le sondage automatiquement (32 jours maximum).">
+        <Row label={tx("Durée")} hint={tx("Discord clôt le sondage automatiquement (32 jours maximum).")}>
           <div className="flex flex-wrap items-center gap-2">
-            <Segmented label="Durée" value={[1, 24, 72, 168].includes(hours) ? hours : 0} options={[[1, "1 h"], [24, "1 j"], [72, "3 j"], [168, "7 j"]]} onChange={(v) => v && setHours(v)} />
+            <Segmented label={tx("Durée")} value={[1, 24, 72, 168].includes(hours) ? hours : 0} options={[[1, "1 h"], [24, "1 j"], [72, "3 j"], [168, "7 j"]]} onChange={(v) => v && setHours(v)} />
             <Stepper value={hours} min={1} max={768} unit="heures" onCommit={setHours} />
           </div>
         </Row>
-        <Row label="Plusieurs réponses" hint="Chaque membre peut cocher plusieurs réponses.">
-          <Switch checked={multi} onChange={setMulti} label="Plusieurs réponses" />
+        <Row label={tx("Plusieurs réponses")} hint={tx("Chaque membre peut cocher plusieurs réponses.")}>
+          <Switch checked={multi} onChange={setMulti} label={tx("Plusieurs réponses")} />
         </Row>
-        <Row label="Salon">
-          <ChannelPicker guildId={guildId} value={channelId} filterTypes={[0, 5, 15]} placeholder="Choisir un salon" onChange={(id) => setChannelId(id)} />
+        <Row label={tx("Salon")}>
+          <ChannelPicker guildId={guildId} value={channelId} filterTypes={[0, 5, 15]} placeholder={tx("Choisir un salon")} onChange={(id) => setChannelId(id)} />
         </Row>
         <div className="flex justify-end border-t border-[var(--panel-border)] px-5 py-3">
           <button
@@ -164,17 +165,17 @@ export default function ConsolePolls({ guildId }: { guildId: string }) {
             onClick={create}
             className="rounded-lg bg-[var(--accent-primary)] px-4 py-2 text-xs font-bold text-white transition-opacity hover:opacity-90 disabled:opacity-40"
           >
-            Publier le sondage ({durationLabel(hours)})
+            {tx("Publier le sondage (")}{durationLabel(hours)})
           </button>
         </div>
       </Panel>
       )}
 
       <Panel
-        title="Sondages du serveur"
+        title={tx("Sondages du serveur")}
         actions={
           <Segmented
-            label="Filtre"
+            label={tx("Filtre")}
             value={filter}
             options={[
               ["live", "En cours"],
@@ -187,9 +188,9 @@ export default function ConsolePolls({ guildId }: { guildId: string }) {
         }
       >
         {!polls ? (
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         ) : shown.length === 0 ? (
-          <EmptyLine>{all.length === 0 ? "Aucun sondage pour l'instant." : "Rien dans cette liste."}</EmptyLine>
+          <EmptyLine>{all.length === 0 ? tx("Aucun sondage pour l'instant.") : tx("Rien dans cette liste.")}</EmptyLine>
         ) : (
           <ul>
             {shown.map((p) => {
@@ -201,14 +202,14 @@ export default function ConsolePolls({ guildId }: { guildId: string }) {
                   <button type="button" onClick={() => setOpen(open === p.id ? null : p.id)} aria-expanded={open === p.id} className="flex w-full items-center gap-3 px-5 py-3 text-left hover:bg-[var(--surface-hover)]">
                     <span className="w-14 shrink-0 text-center text-sm font-bold tabular-nums text-[var(--text-primary)]">
                       {votes}
-                      <span className="block text-[10px] font-normal text-[var(--text-muted)]">vote{votes > 1 ? "s" : ""}</span>
+                      <span className="block text-[10px] font-normal text-[var(--text-muted)]">{tx("vote")}{votes > 1 ? "s" : ""}</span>
                     </span>
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-[13px] font-semibold text-[var(--text-primary)]">{p.questions[0]?.title || p.title}</p>
                       <p className="truncate text-[11px] text-[var(--text-muted)]">
                         <span className={cn(p.status === "ACTIVE" && "text-[var(--success)]")}>{STATUS[p.status]}</span>
-                        {p.native ? " · Discord" : ""}
-                        {p.status === "ACTIVE" && p.endsAt ? ` · se termine ${new Date(p.endsAt).toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" })}` : ` · ${sinceLabel(p.createdAt)}`}
+                        {p.native ? tx(" · Discord") : ""}
+                        {p.status === "ACTIVE" && p.endsAt ? tx(" · se termine {v0}", { v0: new Date(p.endsAt).toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" }) }) : ` · ${sinceLabel(p.createdAt)}`}
                         {p.creatorTag ? ` · ${p.creatorTag}` : ""}
                       </p>
                     </div>
@@ -247,17 +248,17 @@ export default function ConsolePolls({ guildId }: { guildId: string }) {
                           <div className="flex flex-wrap items-center gap-1.5">
                             {p.status === "DRAFT" && !p.native && (
                               <GhostButton disabled={busy} onClick={() => action(p, "publish")}>
-                                Lancer
+                                {tx("Lancer")}
                               </GhostButton>
                             )}
                             {!p.native && p.status === "ACTIVE" && (
                               <GhostButton disabled={busy} onClick={() => action(p, "pause")}>
-                                Mettre en pause
+                                {tx("Mettre en pause")}
                               </GhostButton>
                             )}
                             {!p.native && p.status === "PAUSED" && (
                               <GhostButton disabled={busy} onClick={() => action(p, "resume")}>
-                                Reprendre
+                                {tx("Reprendre")}
                               </GhostButton>
                             )}
                             {!p.native && (p.status === "ACTIVE" || p.status === "PAUSED") && (
@@ -267,22 +268,22 @@ export default function ConsolePolls({ guildId }: { guildId: string }) {
                             )}
                             {(p.status === "ACTIVE" || p.status === "PAUSED") && (
                               <GhostButton disabled={busy} onClick={() => action(p, "end")}>
-                                Terminer maintenant
+                                {tx("Terminer maintenant")}
                               </GhostButton>
                             )}
                             {!p.native && p.panelConfig?.channelId && (p.status === "ACTIVE" || p.status === "PAUSED") && (
                               <GhostButton disabled={busy} onClick={() => action(p, "panel/deploy", { channelId: p.panelConfig?.channelId })}>
-                                {p.panelConfig?.messageId ? "Republier le panneau" : "Publier le panneau"}
+                                {p.panelConfig?.messageId ? tx("Republier le panneau") : tx("Publier le panneau")}
                               </GhostButton>
                             )}
                             {!p.native && (
                               <a href={`${BOT_API_URL}/api/guilds/${guildId}/polls/${p.id}/export/csv`} className="rounded-lg border border-[var(--panel-border)] px-2.5 py-1.5 text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--surface-hover)]">
-                                Exporter les votes
+                                {tx("Exporter les votes")}
                               </a>
                             )}
                             <span className="flex-1" />
                             <GhostButton disabled={busy} onClick={() => remove(p)}>
-                              Supprimer
+                              {tx("Supprimer")}
                             </GhostButton>
                           </div>
                         </div>

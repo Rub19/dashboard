@@ -10,6 +10,7 @@ import { SPRING_LAYOUT } from "@/lib/ease";
 import { pageStagger } from "@/lib/motion-variants";
 import { cn } from "@/lib/utils";
 import { ConsolePage, EmptyLine, GhostButton, Panel, RoleAdder, Row, StatTile, Stepper, Switch, useGuildApi } from "../kit";
+import { tx } from "@/lib/tx";
 
 type Settings = { enabled: boolean; trackBots: boolean; rewardsEnabled: boolean; notificationChannel?: string; notificationEvents: { onValidJoin: boolean; onSuspiciousJoin: boolean; onReward: boolean; onLeave: boolean }; notificationMessageTemplate: string };
 type Kpis = { totalInvites: number; validInvites: number; fakeJoins: number; leftMembers: number; joinsThisWeek: number };
@@ -60,7 +61,7 @@ export default function ConsoleInvites({ guildId }: { guildId: string }) {
     if (r) setRewards((l) => [...(l ?? []), r.reward].sort((a, b) => a.requiredValidInvites - b.requiredValidInvites));
   };
   const removeReward = async (rw: Reward) => {
-    if (!(await confirmDialog(`Retirer le palier de ${rw.requiredValidInvites} invitations ? Les rôles déjà donnés restent.`, { title: "Retirer le palier", confirmLabel: "Retirer" }))) return;
+    if (!(await confirmDialog(tx("Retirer le palier de {requiredValidInvites} invitations ? Les rôles déjà donnés restent.", { requiredValidInvites: rw.requiredValidInvites }), { title: tx("Retirer le palier"), confirmLabel: tx("Retirer") }))) return;
     const r = await api(`/invites/rewards/${rw.id}`, { method: "DELETE" });
     if (r) setRewards((l) => l?.filter((x) => x.id !== rw.id) ?? null);
   };
@@ -69,38 +70,38 @@ export default function ConsoleInvites({ guildId }: { guildId: string }) {
     const r = await api("/invites/sync", { method: "POST", json: {} });
     setSyncing(false);
     if (r) {
-      success("Liens à jour", "Les compteurs Discord ont été relus.");
+      success(tx("Liens à jour"), tx("Les compteurs Discord ont été relus."));
       void loadLinks();
     }
   };
 
   return (
-    <ConsolePage title="Invitations">
+    <ConsolePage title={tx("Invitations")}>
       <motion.div variants={pageStagger} className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatTile label="Arrivées suivies" value={kpis?.totalInvites ?? "—"} hint={kpis ? `${kpis.joinsThisWeek} cette semaine` : undefined} />
-        <StatTile label="Valides" value={kpis?.validInvites ?? "—"} />
-        <StatTile label="Suspectes" value={kpis?.fakeJoins ?? "—"} />
-        <StatTile label="Repartis" value={kpis?.leftMembers ?? "—"} />
+        <StatTile label={tx("Arrivées suivies")} value={kpis?.totalInvites ?? "—"} hint={kpis ? tx("{joinsThisWeek} cette semaine", { joinsThisWeek: kpis.joinsThisWeek }) : undefined} />
+        <StatTile label={tx("Valides")} value={kpis?.validInvites ?? "—"} />
+        <StatTile label={tx("Suspectes")} value={kpis?.fakeJoins ?? "—"} />
+        <StatTile label={tx("Repartis")} value={kpis?.leftMembers ?? "—"} />
       </motion.div>
 
-      <Panel title="Suivi" actions={settings && <Switch checked={settings.enabled} onChange={(v) => save({ enabled: v })} label="Suivi des invitations" />}>
+      <Panel title={tx("Suivi")} actions={settings && <Switch checked={settings.enabled} onChange={(v) => save({ enabled: v })} label={tx("Suivi des invitations")} />}>
         {!settings ? (
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         ) : (
           <div className={cn("transition-opacity", !settings.enabled && "pointer-events-none opacity-50")}>
-            <Row label="Compter les bots">
-              <Switch checked={settings.trackBots} onChange={(v) => save({ trackBots: v })} label="Compter les bots" />
+            <Row label={tx("Compter les bots")}>
+              <Switch checked={settings.trackBots} onChange={(v) => save({ trackBots: v })} label={tx("Compter les bots")} />
             </Row>
-            <Row label="Salon des annonces" hint="Vide : aucune annonce.">
-              <ChannelPicker guildId={guildId} value={channels.find((c) => c.name === settings.notificationChannel)?.id ?? settings.notificationChannel ?? ""} filterTypes={[0]} placeholder="Aucun" onChange={(id) => save({ notificationChannel: id })} />
+            <Row label={tx("Salon des annonces")} hint={tx("Vide : aucune annonce.")}>
+              <ChannelPicker guildId={guildId} value={channels.find((c) => c.name === settings.notificationChannel)?.id ?? settings.notificationChannel ?? ""} filterTypes={[0]} placeholder={tx("Aucun")} onChange={(id) => save({ notificationChannel: id })} />
             </Row>
             {settings.notificationChannel && (
               <>
-                <Row label="Annoncer les arrivées">
-                  <Switch checked={settings.notificationEvents.onValidJoin} onChange={(v) => events({ onValidJoin: v })} label="Annoncer les arrivées" />
+                <Row label={tx("Annoncer les arrivées")}>
+                  <Switch checked={settings.notificationEvents.onValidJoin} onChange={(v) => events({ onValidJoin: v })} label={tx("Annoncer les arrivées")} />
                 </Row>
                 {settings.notificationEvents.onValidJoin && (
-                  <Row label="Message" hint="{user}, {inviter}, {inviteCount}, {server}.">
+                  <Row label={tx("Message")} hint={tx("{user}, {inviter}, {inviteCount}, {server}.")}>
                     <textarea
                       value={template}
                       maxLength={2000}
@@ -111,8 +112,8 @@ export default function ConsoleInvites({ guildId }: { guildId: string }) {
                     />
                   </Row>
                 )}
-                <Row label="Signaler les arrivées suspectes" hint="Comptes récents ou vagues d'arrivées par le même lien.">
-                  <Switch checked={settings.notificationEvents.onSuspiciousJoin} onChange={(v) => events({ onSuspiciousJoin: v })} label="Signaler les arrivées suspectes" />
+                <Row label={tx("Signaler les arrivées suspectes")} hint={tx("Comptes récents ou vagues d'arrivées par le même lien.")}>
+                  <Switch checked={settings.notificationEvents.onSuspiciousJoin} onChange={(v) => events({ onSuspiciousJoin: v })} label={tx("Signaler les arrivées suspectes")} />
                 </Row>
               </>
             )}
@@ -120,20 +121,20 @@ export default function ConsoleInvites({ guildId }: { guildId: string }) {
         )}
       </Panel>
 
-      <Panel title="Récompenses" subtitle="Un rôle donné quand un membre atteint un nombre d'invitations valides." actions={settings && <Switch checked={settings.rewardsEnabled} onChange={(v) => save({ rewardsEnabled: v })} label="Récompenses" />}>
+      <Panel title={tx("Récompenses")} subtitle={tx("Un rôle donné quand un membre atteint un nombre d'invitations valides.")} actions={settings && <Switch checked={settings.rewardsEnabled} onChange={(v) => save({ rewardsEnabled: v })} label={tx("Récompenses")} />}>
         {!rewards ? (
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         ) : (
           <div>
             <ul>
               <AnimatePresence initial={false}>
                 {rewards.map((rw) => (
                   <motion.li key={rw.id} layout initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, height: 0 }} transition={SPRING_LAYOUT} className="flex items-center gap-3 border-b border-[var(--panel-border)] px-5 py-3">
-                    <span className="w-24 shrink-0 text-[13px] font-semibold tabular-nums text-[var(--text-primary)]">{rw.requiredValidInvites} invit.</span>
+                    <span className="w-24 shrink-0 text-[13px] font-semibold tabular-nums text-[var(--text-primary)]">{rw.requiredValidInvites} {" "}{tx("invit.")}</span>
                     <span className="flex min-w-0 flex-1 items-center gap-2 text-sm text-[var(--text-primary)]">
-                      <span className="truncate">{rw.roleName ?? "Rôle"}</span>
+                      <span className="truncate">{rw.roleName ?? tx("Rôle")}</span>
                     </span>
-                    <button type="button" onClick={() => removeReward(rw)} aria-label={`Retirer le palier ${rw.requiredValidInvites}`} className="rounded-md p-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover)] hover:text-[var(--danger)]">
+                    <button type="button" onClick={() => removeReward(rw)} aria-label={tx("Retirer le palier {requiredValidInvites}", { requiredValidInvites: rw.requiredValidInvites })} className="rounded-md p-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover)] hover:text-[var(--danger)]">
                       <X className="h-3.5 w-3.5" />
                     </button>
                   </motion.li>
@@ -141,19 +142,19 @@ export default function ConsoleInvites({ guildId }: { guildId: string }) {
               </AnimatePresence>
             </ul>
             <div className="flex flex-wrap items-center gap-2 px-5 py-3">
-              <span className="text-xs text-[var(--text-muted)]">Nouveau palier :</span>
+              <span className="text-xs text-[var(--text-muted)]">{tx("Nouveau palier :")}</span>
               <Stepper value={tier} min={1} max={1000} unit="invitations" onCommit={setTier} />
-              <RoleAdder guildId={guildId} label="Rôle" excludeIds={rewards.filter((r) => r.requiredValidInvites === tier).map((r) => r.roleId ?? "")} onPick={addReward} />
+              <RoleAdder guildId={guildId} label={tx("Rôle")} excludeIds={rewards.filter((r) => r.requiredValidInvites === tier).map((r) => r.roleId ?? "")} onPick={addReward} />
             </div>
           </div>
         )}
       </Panel>
 
-      <Panel title="Meilleurs inviteurs">
+      <Panel title={tx("Meilleurs inviteurs")}>
         {!leaders ? (
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         ) : leaders.length === 0 ? (
-          <EmptyLine>Aucune arrivée suivie pour l&apos;instant.</EmptyLine>
+          <EmptyLine>{tx("Aucune arrivée suivie pour l'instant.")}</EmptyLine>
         ) : (
           <ul>
             {leaders.map((l) => (
@@ -161,7 +162,7 @@ export default function ConsoleInvites({ guildId }: { guildId: string }) {
                 <span className="w-6 shrink-0 text-xs tabular-nums text-[var(--text-muted)]">{l.rank}</span>
                 <span className="min-w-0 flex-1 truncate text-[13px] font-semibold text-[var(--text-primary)]">{l.userTag}</span>
                 <span className="text-xs tabular-nums text-[var(--text-muted)]">
-                  <span className="font-semibold text-[var(--text-primary)]">{l.validInvites}</span> valide{l.validInvites > 1 ? "s" : ""}
+                  <span className="font-semibold text-[var(--text-primary)]">{l.validInvites}</span> {" "}{tx("valide")}{l.validInvites > 1 ? "s" : ""}
                   {l.leftMembers > 0 && ` · ${l.leftMembers} parti${l.leftMembers > 1 ? "s" : ""}`}
                   {l.suspiciousInvites > 0 && ` · ${l.suspiciousInvites} suspect${l.suspiciousInvites > 1 ? "s" : ""}`}
                 </span>
@@ -171,11 +172,11 @@ export default function ConsoleInvites({ guildId }: { guildId: string }) {
         )}
       </Panel>
 
-      <Panel title="Liens d'invitation" actions={<GhostButton onClick={sync} disabled={syncing}>{syncing ? "Lecture…" : "Actualiser"}</GhostButton>}>
+      <Panel title={tx("Liens d'invitation")} actions={<GhostButton onClick={sync} disabled={syncing}>{syncing ? tx("Lecture…") : tx("Actualiser")}</GhostButton>}>
         {!links ? (
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         ) : links.length === 0 ? (
-          <EmptyLine>Aucun lien connu. Actualise pour relire ceux du serveur.</EmptyLine>
+          <EmptyLine>{tx("Aucun lien connu. Actualise pour relire ceux du serveur.")}</EmptyLine>
         ) : (
           <ul>
             {links.map((l) => (
@@ -186,7 +187,7 @@ export default function ConsoleInvites({ guildId }: { guildId: string }) {
                 <span className="min-w-0 flex-1 truncate text-xs text-[var(--text-muted)]">{l.creator}</span>
                 <span className="text-xs tabular-nums text-[var(--text-muted)]">
                   {l.uses}
-                  {typeof l.maxUses === "number" ? ` / ${l.maxUses}` : ""} utilisation{l.uses > 1 ? "s" : ""} · {l.expires === "Jamais" ? "sans expiration" : `expire le ${l.expires}`}
+                  {typeof l.maxUses === "number" ? ` / ${l.maxUses}` : ""} {" "}{tx("utilisation")}{l.uses > 1 ? "s" : ""} · {l.expires === "Jamais" ? tx("sans expiration") : tx("expire le {expires}", { expires: l.expires })}
                 </span>
               </li>
             ))}

@@ -9,6 +9,7 @@ import { sinceLabel } from "@/lib/discord/security-scan";
 import { SPRING_LAYOUT } from "@/lib/ease";
 import { pageStagger } from "@/lib/motion-variants";
 import { ConsolePage, EmptyLine, GhostButton, Panel, RoleChips, Row, Segmented, StatTile, Stepper, Switch, useGuildApi } from "../kit";
+import { tx } from "@/lib/tx";
 
 type Participant = { userId: string; username: string };
 type Giveaway = {
@@ -101,15 +102,15 @@ export default function ConsoleGiveaways({ guildId }: { guildId: string }) {
     });
     setCreating(false);
     if (r) {
-      success("Giveaway lancé", `${form.prize} est publié sur Discord.`);
+      success(tx("Giveaway lancé"), tx("{prize} est publié sur Discord.", { prize: form.prize }));
       setForm(EMPTY_FORM);
       void load();
     }
   };
 
   const act = async (g: Giveaway, action: "end" | "cancel" | "extend" | "reroll") => {
-    if (action === "cancel" && !(await confirmDialog(`Annuler « ${g.prize} » ? Aucun gagnant ne sera tiré.`, { title: "Annuler le giveaway", confirmLabel: "Annuler le giveaway" }))) return;
-    if (action === "end" && !(await confirmDialog(`Terminer « ${g.prize} » maintenant et tirer ${g.winnerCount} gagnant${g.winnerCount > 1 ? "s" : ""} ?`, { title: "Terminer", confirmLabel: "Tirer au sort" }))) return;
+    if (action === "cancel" && !(await confirmDialog(tx("Annuler « {prize} » ? Aucun gagnant ne sera tiré.", { prize: g.prize }), { title: tx("Annuler le giveaway"), confirmLabel: tx("Annuler le giveaway") }))) return;
+    if (action === "end" && !(await confirmDialog(tx("Terminer « {prize} » maintenant et tirer {winnerCount} gagnant{v2} ?", { prize: g.prize, winnerCount: g.winnerCount, v2: g.winnerCount > 1 ? "s" : "" }), { title: tx("Terminer"), confirmLabel: tx("Tirer au sort") }))) return;
     setBusy(`${g.id}:${action}`);
     const r = await api(`/giveaways/${g.id}/${action}`, { method: "POST", json: action === "extend" ? { minutes: 1440 } : action === "reroll" ? { count: 1 } : {} });
     setBusy(null);
@@ -117,12 +118,12 @@ export default function ConsoleGiveaways({ guildId }: { guildId: string }) {
   };
 
   const removeParticipant = async (g: Giveaway, p: Participant) => {
-    if (!(await confirmDialog(`Retirer ${p.username} de « ${g.prize} » ?`, { title: "Disqualifier", confirmLabel: "Disqualifier" }))) return;
+    if (!(await confirmDialog(tx("Retirer {username} de « {prize} » ?", { username: p.username, prize: g.prize }), { title: tx("Disqualifier"), confirmLabel: tx("Disqualifier") }))) return;
     setBusy(`disqualify:${p.userId}`);
     const r = await api(`/giveaways/${g.id}/participants/${p.userId}`, { method: "DELETE" });
     setBusy(null);
     if (r) {
-      success("Participant retiré", `${p.username} a été disqualifié du tirage.`);
+      success(tx("Participant retiré"), tx("{username} a été disqualifié du tirage.", { username: p.username }));
       void load();
     }
   };
@@ -134,42 +135,42 @@ export default function ConsoleGiveaways({ guildId }: { guildId: string }) {
   const input = "h-9 w-full rounded-lg border border-[var(--panel-border)] bg-[var(--surface-base,var(--bg-main))] px-3 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/70";
 
   return (
-    <ConsolePage title="Giveaways">
+    <ConsolePage title={tx("Giveaways")}>
       <motion.div variants={pageStagger} className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatTile label="En cours" value={ov?.activeCount ?? "—"} />
-        <StatTile label="Terminés" value={ov?.endedCount ?? "—"} />
-        <StatTile label="Participations" value={ov?.totalParticipants ?? "—"} />
-        <StatTile label="Gagnants" value={ov?.totalWinners ?? "—"} />
+        <StatTile label={tx("En cours")} value={ov?.activeCount ?? "—"} />
+        <StatTile label={tx("Terminés")} value={ov?.endedCount ?? "—"} />
+        <StatTile label={tx("Participations")} value={ov?.totalParticipants ?? "—"} />
+        <StatTile label={tx("Gagnants")} value={ov?.totalWinners ?? "—"} />
       </motion.div>
 
-      <Panel title="Nouveau giveaway" actions={<GhostButton onClick={create} disabled={creating || !form.prize.trim() || !form.channelId}>{creating ? "Publication…" : "Lancer"}</GhostButton>}>
-        <Row label="Lot">
-          <input value={form.prize} maxLength={120} onChange={(e) => set({ prize: e.target.value })} placeholder="Nitro 1 mois" className={input} />
+      <Panel title={tx("Nouveau giveaway")} actions={<GhostButton onClick={create} disabled={creating || !form.prize.trim() || !form.channelId}>{creating ? tx("Publication…") : tx("Lancer")}</GhostButton>}>
+        <Row label={tx("Lot")}>
+          <input value={form.prize} maxLength={120} onChange={(e) => set({ prize: e.target.value })} placeholder={tx("Nitro 1 mois")} className={input} />
         </Row>
-        <Row label="Description" hint="Facultatif.">
+        <Row label={tx("Description")} hint={tx("Facultatif.")}>
           <textarea value={form.description} maxLength={1000} rows={2} onChange={(e) => set({ description: e.target.value })} className={`${input} h-auto py-2`} />
         </Row>
-        <Row label="Salon">
-          <ChannelPicker guildId={guildId} value={form.channelId} filterTypes={[0, 5]} allowClear={false} placeholder="Choisir un salon" onChange={(id) => set({ channelId: id })} />
+        <Row label={tx("Salon")}>
+          <ChannelPicker guildId={guildId} value={form.channelId} filterTypes={[0, 5]} allowClear={false} placeholder={tx("Choisir un salon")} onChange={(id) => set({ channelId: id })} />
         </Row>
-        <Row label="Durée">
+        <Row label={tx("Durée")}>
           <div className="flex flex-wrap items-center gap-2">
             <Stepper value={form.duration} min={1} max={form.unit === "min" ? 600 : form.unit === "h" ? 336 : 60} onCommit={(n) => set({ duration: n })} />
-            <Segmented label="Unité" value={form.unit} options={UNITS.map(([id, label]) => [id, label] as const)} onChange={(v) => set({ unit: v })} />
+            <Segmented label={tx("Unité")} value={form.unit} options={UNITS.map(([id, label]) => [id, label] as const)} onChange={(v) => set({ unit: v })} />
           </div>
         </Row>
-        <Row label="Gagnants">
+        <Row label={tx("Gagnants")}>
           <Stepper value={form.winnerCount} min={1} max={50} onCommit={(n) => set({ winnerCount: n })} />
         </Row>
-        <Row label="Rôle donné aux gagnants" hint="Facultatif.">
+        <Row label={tx("Rôle donné aux gagnants")} hint={tx("Facultatif.")}>
           <RoleChips guildId={guildId} ids={form.rewardRoleId} max={1} onChange={(ids) => set({ rewardRoleId: ids })} />
         </Row>
-        <Row label="Rôles requis" hint="Vide : tout le monde peut participer.">
+        <Row label={tx("Rôles requis")} hint={tx("Vide : tout le monde peut participer.")}>
           <div className="flex flex-wrap items-center gap-2">
             <RoleChips guildId={guildId} ids={form.requiredRoleIds} onChange={(ids) => set({ requiredRoleIds: ids })} />
             {form.requiredRoleIds.length > 1 && (
               <Segmented
-                label="Rôles requis"
+                label={tx("Rôles requis")}
                 value={form.roleMode}
                 options={[
                   ["any", "Un des rôles"],
@@ -180,28 +181,28 @@ export default function ConsoleGiveaways({ guildId }: { guildId: string }) {
             )}
           </div>
         </Row>
-        <Row label="Rôles exclus">
+        <Row label={tx("Rôles exclus")}>
           <RoleChips guildId={guildId} ids={form.excludedRoleIds} onChange={(ids) => set({ excludedRoleIds: ids })} />
         </Row>
-        <Row label="Compte Discord d'au moins">
+        <Row label={tx("Compte Discord d'au moins")}>
           <Stepper value={form.minAccountAgeDays} min={0} max={365} unit="jours" onCommit={(n) => set({ minAccountAgeDays: n })} />
         </Row>
-        <Row label="Niveau minimum" hint="Module Niveaux ; 0 = aucun.">
+        <Row label={tx("Niveau minimum")} hint={tx("Module Niveaux ; 0 = aucun.")}>
           <Stepper value={form.minLevel} min={0} max={500} onCommit={(n) => set({ minLevel: n })} />
         </Row>
-        <Row label="Réclamation" hint="Le gagnant doit confirmer, sinon un autre est tiré.">
+        <Row label={tx("Réclamation")} hint={tx("Le gagnant doit confirmer, sinon un autre est tiré.")}>
           <div className="flex flex-wrap items-center gap-3">
-            <Switch checked={form.requireClaim} onChange={(v) => set({ requireClaim: v })} label="Réclamation obligatoire" />
-            {form.requireClaim && <Stepper value={form.claimTimeoutHours} min={1} max={72} unit="h pour réclamer" onCommit={(n) => set({ claimTimeoutHours: n })} />}
+            <Switch checked={form.requireClaim} onChange={(v) => set({ requireClaim: v })} label={tx("Réclamation obligatoire")} />
+            {form.requireClaim && <Stepper value={form.claimTimeoutHours} min={1} max={72} unit={tx("h pour réclamer")} onCommit={(n) => set({ claimTimeoutHours: n })} />}
           </div>
         </Row>
       </Panel>
 
-      <Panel title="En cours">
+      <Panel title={tx("En cours")}>
         {!list ? (
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         ) : running.length === 0 ? (
-          <EmptyLine>Aucun giveaway en cours.</EmptyLine>
+          <EmptyLine>{tx("Aucun giveaway en cours.")}</EmptyLine>
         ) : (
           <ul>
             <AnimatePresence initial={false}>
@@ -211,21 +212,21 @@ export default function ConsoleGiveaways({ guildId }: { guildId: string }) {
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-[13px] font-semibold text-[var(--text-primary)]">{g.prize}</p>
                       <p className="truncate text-[11px] text-[var(--text-muted)]">
-                        #{channelName(g.channelId)} · {g.participants.length} participant{g.participants.length > 1 ? "s" : ""} · {g.winnerCount} gagnant{g.winnerCount > 1 ? "s" : ""} · fin {untilLabel(g.endsAt)}
+                        #{channelName(g.channelId)} · {g.participants.length} {" "}{tx("participant")}{g.participants.length > 1 ? "s" : ""} · {g.winnerCount} {" "}{tx("gagnant")}{g.winnerCount > 1 ? "s" : ""} {" "}{tx("· fin")}{" "} {untilLabel(g.endsAt)}
                       </p>
                     </div>
                     <div className="flex flex-wrap gap-1.5">
                       <GhostButton onClick={() => setViewingParticipants((id) => (id === g.id ? null : g.id))}>
-                        Participants ({g.participants.length})
+                        {tx("Participants (")}{g.participants.length})
                       </GhostButton>
                       <GhostButton onClick={() => act(g, "extend")} disabled={busy !== null}>
-                        +1 jour
+                        {tx("+1 jour")}
                       </GhostButton>
                       <GhostButton onClick={() => act(g, "end")} disabled={busy !== null}>
-                        Tirer maintenant
+                        {tx("Tirer maintenant")}
                       </GhostButton>
                       <GhostButton onClick={() => act(g, "cancel")} disabled={busy !== null}>
-                        Annuler
+                        {tx("Annuler")}
                       </GhostButton>
                     </div>
                   </div>
@@ -233,11 +234,11 @@ export default function ConsoleGiveaways({ guildId }: { guildId: string }) {
                     {viewingParticipants === g.id && (
                       <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={SPRING_LAYOUT} className="mt-3 overflow-hidden rounded-xl border border-[var(--panel-border)] bg-[var(--surface-hover)] p-3">
                         <div className="mb-2 flex items-center justify-between text-xs font-semibold text-[var(--text-primary)]">
-                          <span>Participants enregistrés ({g.participants.length})</span>
-                          <span className="text-[11px] font-normal text-[var(--text-muted)]">Cliquer sur la croix pour disqualifier</span>
+                          <span>{tx("Participants enregistrés (")}{g.participants.length})</span>
+                          <span className="text-[11px] font-normal text-[var(--text-muted)]">{tx("Cliquer sur la croix pour disqualifier")}</span>
                         </div>
                         {g.participants.length === 0 ? (
-                          <p className="py-1 text-xs text-[var(--text-muted)]">Aucun participant pour le moment.</p>
+                          <p className="py-1 text-xs text-[var(--text-muted)]">{tx("Aucun participant pour le moment.")}</p>
                         ) : (
                           <div className="flex max-h-48 flex-wrap gap-1.5 overflow-y-auto">
                             {g.participants.map((p) => (
@@ -245,7 +246,7 @@ export default function ConsoleGiveaways({ guildId }: { guildId: string }) {
                                 <span>@{p.username}</span>
                                 <button
                                   type="button"
-                                  title={`Disqualifier @${p.username}`}
+                                  title={tx("Disqualifier @{username}", { username: p.username })}
                                   disabled={busy !== null}
                                   onClick={() => removeParticipant(g, p)}
                                   className="text-[var(--text-muted)] transition-colors hover:text-[var(--danger)]"
@@ -266,11 +267,11 @@ export default function ConsoleGiveaways({ guildId }: { guildId: string }) {
         )}
       </Panel>
 
-      <Panel title="Terminés">
+      <Panel title={tx("Terminés")}>
         {!list ? (
-          <EmptyLine>Chargement…</EmptyLine>
+          <EmptyLine>{tx("Chargement…")}</EmptyLine>
         ) : done.length === 0 ? (
-          <EmptyLine>Aucun giveaway terminé.</EmptyLine>
+          <EmptyLine>{tx("Aucun giveaway terminé.")}</EmptyLine>
         ) : (
           <ul>
             {done.map((g) => (
@@ -278,12 +279,12 @@ export default function ConsoleGiveaways({ guildId }: { guildId: string }) {
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-[13px] font-semibold text-[var(--text-primary)]">{g.prize}</p>
                   <p className="truncate text-[11px] text-[var(--text-muted)]">
-                    {g.status === "cancelled" ? "Annulé" : winners(g).length ? `Gagnant${winners(g).length > 1 ? "s" : ""} : ${winners(g).join(", ")}` : "Aucun participant"} · {sinceLabel(g.endsAt)}
+                    {g.status === "cancelled" ? tx("Annulé") : winners(g).length ? tx("Gagnant{v0} : {v1}", { v0: winners(g).length > 1 ? "s" : "", v1: winners(g).join(", ") }) : tx("Aucun participant")} · {sinceLabel(g.endsAt)}
                   </p>
                 </div>
                 {g.status === "ended" && g.participants.length > 0 && (
                   <GhostButton onClick={() => act(g, "reroll")} disabled={busy !== null}>
-                    Relancer le tirage
+                    {tx("Relancer le tirage")}
                   </GhostButton>
                 )}
               </li>

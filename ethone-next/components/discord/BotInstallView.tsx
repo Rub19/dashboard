@@ -43,6 +43,7 @@ import {
   consoleCard,
   consoleStepRow,
 } from "./consoleMotion";
+import { tx } from "@/lib/tx";
 
 interface BotInstallViewProps {
   guild: DiscordGuild;
@@ -166,8 +167,8 @@ export default function BotInstallView({
           detectedRef.current = true;
           setDetected(true);
           success(
-            "Bot détecté !",
-            `${botName} a rejoint "${guild.name}". Ouverture de la configuration...`
+            tx("Bot détecté !"),
+            tx("{botName} a rejoint \"{name}\". Ouverture de la configuration...", { botName, name: guild.name })
           );
           if (manual || reduced) {
             onBotDetected(guild);
@@ -177,15 +178,15 @@ export default function BotInstallView({
           return true;
         } else if (manual) {
           info(
-            "Bot non détecté",
-            `${botName} n'a pas encore rejoint "${guild.name}". Assure-toi de valider l'invitation Discord.`
+            tx("Bot non détecté"),
+            tx("{botName} n'a pas encore rejoint \"{name}\". Assure-toi de valider l'invitation Discord.", { botName, name: guild.name })
           );
         }
       } catch {
         if (manual) {
           showError(
-            "Erreur de détection",
-            "Impossible de joindre l'API Discord. Réessaie dans quelques instants."
+            tx("Erreur de détection"),
+            tx("Impossible de joindre l'API Discord. Réessaie dans quelques instants.")
           );
         }
       } finally {
@@ -279,7 +280,7 @@ export default function BotInstallView({
               <ShieldCheck className="h-4 w-4 text-[var(--accent-primary)]" />
             </motion.div>
             <span className="font-bold text-base tracking-tight text-[var(--text-primary)]">
-              Etho
+              {tx("Etho")}
             </span>
           </div>
 
@@ -306,7 +307,7 @@ export default function BotInstallView({
                   {guild.name}
                 </span>
                 <span className="block text-[10px] text-[var(--text-muted)]">
-                  Etho absent
+                  {tx("Etho absent")}
                 </span>
               </div>
             </div>
@@ -440,7 +441,7 @@ export default function BotInstallView({
               {guild.name}
             </button>
             <ChevronRight className="h-3 w-3 text-[var(--text-muted)]" />
-            <span className="text-[var(--text-primary)] font-medium">Installation</span>
+            <span className="text-[var(--text-primary)] font-medium">{tx("Installation")}</span>
           </div>
 
           <div className="flex items-center gap-2 text-xs text-[var(--text-muted)] select-none">

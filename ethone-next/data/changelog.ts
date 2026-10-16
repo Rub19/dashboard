@@ -58539,6 +58539,63 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_138_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_138_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_138_de);
 
+const v1_75_139_fr: ChangelogEntry = {
+  version: "v1.75.139",
+  date: "2026-10-17",
+  title: "App iOS : administration Discord refaite",
+  items: [
+    "Page d'un serveur Discord : outils regroupés en Modération, Communauté, Divertissement et Avancé, avec des icônes aux couleurs de Discord et le nom du serveur en grand titre.",
+    "Modération : dates relatives, messages quand il n'y a aucune sanction ou aucun banni, changement d'onglet animé.",
+    "Tickets : statut en point de couleur ; Musique : titre en cours mis en avant avec une onde animée.",
+    "Les écrans d'administration Discord retrouvent le grand titre ETHONE.",
+    "Fini les « élément(s) », « membre(s) »… : l'app accorde maintenant les mots au nombre.",
+  ],
+};
+
+const v1_75_139_en: ChangelogEntry = {
+  version: "v1.75.139",
+  date: "2026-10-17",
+  title: "iOS app: Discord admin redone",
+  items: [
+    "Discord server page: tools grouped into Moderation, Community, Entertainment and Advanced, with Discord-colored icons and the server name as a large title.",
+    "Moderation: relative dates, messages when there are no sanctions or bans, animated tab switch.",
+    "Tickets: status as a colored dot; Music: the playing track stands out with an animated waveform.",
+    "Discord admin screens get the large ETHONE title back.",
+    "No more \"item(s)\" or \"member(s)\": the app now uses the right singular or plural.",
+  ],
+};
+
+const v1_75_139_es: ChangelogEntry = {
+  version: "v1.75.139",
+  date: "2026-10-17",
+  title: "App iOS: administración de Discord rehecha",
+  items: [
+    "Página de un servidor de Discord: herramientas agrupadas en Moderación, Comunidad, Entretenimiento y Avanzado, con iconos del color de Discord y el nombre del servidor como título grande.",
+    "Moderación: fechas relativas, mensajes cuando no hay sanciones ni baneos, cambio de pestaña animado.",
+    "Tickets: estado como punto de color; Música: la canción en curso destaca con una onda animada.",
+    "Las pantallas de administración de Discord recuperan el título grande ETHONE.",
+    "Se acabaron los «elemento(s)» o «miembro(s)»: la app usa ahora el singular o el plural correcto.",
+  ],
+};
+
+const v1_75_139_de: ChangelogEntry = {
+  version: "v1.75.139",
+  date: "2026-10-17",
+  title: "iOS-App: Discord-Verwaltung neu gestaltet",
+  items: [
+    "Seite eines Discord-Servers: Werkzeuge gruppiert in Moderation, Community, Unterhaltung und Erweitert, mit Symbolen in Discord-Farbe und dem Servernamen als großem Titel.",
+    "Moderation: relative Daten, Hinweise, wenn es keine Sanktionen oder Banns gibt, animierter Tabwechsel.",
+    "Tickets: Status als farbiger Punkt; Musik: der laufende Titel wird mit einer animierten Welle hervorgehoben.",
+    "Die Discord-Verwaltungsbildschirme haben wieder den großen ETHONE-Titel.",
+    "Schluss mit „Element(e)“ oder „Mitglied(er)“: Die App verwendet jetzt korrekt Singular oder Plural.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_139_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_139_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_139_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_139_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

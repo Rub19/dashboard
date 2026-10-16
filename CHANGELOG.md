@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.139 — 2026-10-17
+
+**App iOS : administration Discord refaite**
+
+- Page d'un serveur Discord : outils regroupés en Modération, Communauté, Divertissement et Avancé, avec des icônes aux couleurs de Discord et le nom du serveur en grand titre.
+- Modération : dates relatives, messages quand il n'y a aucune sanction ou aucun banni, changement d'onglet animé.
+- Tickets : statut en point de couleur ; Musique : titre en cours mis en avant avec une onde animée.
+- Les écrans d'administration Discord retrouvent le grand titre ETHONE.
+- Fini les « élément(s) », « membre(s) »… : l'app accorde maintenant les mots au nombre.
+
 ## v1.75.138 — 2026-10-17
 
 **App iOS : suite de la refonte ETHONE**

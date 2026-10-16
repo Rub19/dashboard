@@ -15,6 +15,7 @@ export const reportCommand: Command = {
   aliases: ['signaler', 'signalement'],
   description: 'Signaler un membre à l’équipe de modération',
   category: 'Modération',
+  userPermissions: [],
   slashData: new SlashCommandBuilder()
     .setName('report')
     .setDescription('Signaler un membre à l’équipe de modération')

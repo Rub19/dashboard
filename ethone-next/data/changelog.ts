@@ -57714,6 +57714,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_121_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_121_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_121_de);
 
+const v1_75_122_fr: ChangelogEntry = {
+  version: "v1.75.122",
+  date: "2026-10-16",
+  title: "/report ouvert à tous les membres",
+  items: [
+    "/report user n'est plus refusé aux membres sans rôle de modération : tout le monde peut signaler, seuls setup et status restent réservés à l'équipe.",
+  ],
+};
+
+const v1_75_122_en: ChangelogEntry = {
+  version: "v1.75.122",
+  date: "2026-10-16",
+  title: "/report open to every member",
+  items: [
+    "/report user is no longer denied to members without a moderator role: anyone can report, only setup and status stay staff-only.",
+  ],
+};
+
+const v1_75_122_es: ChangelogEntry = {
+  version: "v1.75.122",
+  date: "2026-10-16",
+  title: "/report abierto a todos los miembros",
+  items: [
+    "/report user ya no se rechaza a los miembros sin rol de moderación: cualquiera puede reportar, solo setup y status siguen reservados al equipo.",
+  ],
+};
+
+const v1_75_122_de: ChangelogEntry = {
+  version: "v1.75.122",
+  date: "2026-10-16",
+  title: "/report für alle Mitglieder offen",
+  items: [
+    "/report user wird Mitgliedern ohne Moderationsrolle nicht mehr verweigert: Jeder kann melden, nur setup und status bleiben dem Team vorbehalten.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_122_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_122_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_122_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_122_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

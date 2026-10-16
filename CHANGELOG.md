@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.122 — 2026-10-16
+
+**/report ouvert à tous les membres**
+
+- /report user n'est plus refusé aux membres sans rôle de modération : tout le monde peut signaler, seuls setup et status restent réservés à l'équipe.
+
 ## v1.75.121 — 2026-10-16
 
 **Activer une fonction active aussi son module**

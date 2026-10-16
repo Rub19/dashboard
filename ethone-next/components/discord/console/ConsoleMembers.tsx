@@ -35,6 +35,7 @@ export default function ConsoleMembers({ guildId }: { guildId: string }) {
   const [roles, setRoles] = useState<Role[] | null>(null);
   const [aboveCount, setAboveCount] = useState(0);
   const [showAll, setShowAll] = useState(false);
+  const [openRole, setOpenRole] = useState<string | null>(null);
   const [inspected, setInspected] = useState<Inspect | null>(null);
   const inspectRef = useRef<HTMLDivElement>(null);
 
@@ -93,12 +94,12 @@ export default function ConsoleMembers({ guildId }: { guildId: string }) {
                         : tx("Son rôle le plus haut est au-dessus d'Etho : Etho ne peut pas le sanctionner.")}
                   </p>
                   <p className="text-[var(--text-muted)]">
-                    {tx("Whitelist :")}{" "} {inspected.whitelisted.antiRaid || inspected.whitelisted.antiNuke ? [inspected.whitelisted.antiRaid && "anti-raid", inspected.whitelisted.antiNuke && "protections"].filter(Boolean).join(", ") : "non"}
-                    {inspected.blacklisted && " · blacklisté"}
+                    {tx("Whitelist :")}{" "} {inspected.whitelisted.antiRaid || inspected.whitelisted.antiNuke ? [inspected.whitelisted.antiRaid && "anti-raid", inspected.whitelisted.antiNuke && tx("protections")].filter(Boolean).join(", ") : tx("non")}
+                    {inspected.blacklisted && ` · ${tx("blacklisté")}`}
                   </p>
                   <p className="text-[var(--text-muted)]">
-                    {tx("Compte créé")}{" "} {sinceLabel(inspected.createdAt)}
-                    {inspected.joinedAt && ` · arrivé ${sinceLabel(inspected.joinedAt)}`}
+                    {tx("Compte créé {since}", { since: sinceLabel(inspected.createdAt) })}
+                    {inspected.joinedAt && ` · ${tx("arrivé {since}", { since: sinceLabel(inspected.joinedAt) })}`}
                   </p>
                 </div>
                 <div className="space-y-1.5">
@@ -140,13 +141,18 @@ export default function ConsoleMembers({ guildId }: { guildId: string }) {
             {aboveCount > 0 && (
               <p className="flex items-center gap-2 border-b border-[var(--panel-border)] px-5 py-2.5 text-xs text-[var(--danger)]">
                 <AlertTriangle className="h-3.5 w-3.5" />
-                {aboveCount} {" "}{tx("rôle")}{aboveCount > 1 ? "s" : ""} {" "}{tx("sensible")}{aboveCount > 1 ? "s" : ""} {" "}{tx("au-dessus d'Etho : il ne peut pas agir sur leurs membres.")}
+                {tx(aboveCount > 1 ? "{n} rôles sensibles au-dessus d'Etho : il ne peut pas agir sur leurs membres." : "{n} rôle sensible au-dessus d'Etho : il ne peut pas agir sur ses membres.", { n: aboveCount })}
               </p>
             )}
             <ul>
               {shown.map((r) => (
                 <li key={r.id} className="border-t border-[var(--panel-border)] first:border-t-0">
-                <div className="grid w-full items-center gap-2 px-5 pt-2.5 sm:grid-cols-[11rem_1fr_auto_auto]">
+                <button
+                  type="button"
+                  onClick={() => setOpenRole((o) => (o === r.id ? null : r.id))}
+                  aria-expanded={openRole === r.id}
+                  className="grid w-full items-center gap-2 px-5 py-2.5 text-left transition-colors hover:bg-[var(--surface-hover)] sm:grid-cols-[11rem_1fr_auto_auto]"
+                >
                   <span className="flex min-w-0 items-center gap-2 text-[13px] font-medium text-[var(--text-primary)]">
                     <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: r.color ?? "var(--text-muted)" }} />
                     <span className="truncate">{r.name}</span>
@@ -163,25 +169,35 @@ export default function ConsoleMembers({ guildId }: { guildId: string }) {
                   ) : (
                     <span />
                   )}
-                  <span className="justify-self-end text-[11px] text-[var(--text-muted)]">
-                    {r.memberCount} {" "}{tx("membre")}{r.memberCount > 1 ? "s" : ""}
+                  <span className="flex items-center gap-1 justify-self-end text-[11px] text-[var(--text-muted)]">
+                    {tx(r.memberCount > 1 ? "{n} membres" : "{n} membre", { n: r.memberCount })}
+                    <ChevronDown className={`h-3.5 w-3.5 transition-transform ${openRole === r.id ? "rotate-180" : ""}`} />
                   </span>
-                </div>
-                <div className="flex flex-wrap gap-1.5 px-5 pb-2.5 pt-2 sm:pl-9">
-                  {r.members.length === 0 ? (
-                    <span className="text-xs text-[var(--text-muted)]">{tx("Personne n'a ce rôle.")}</span>
-                  ) : (
-                    r.members.map((m) => (
-                      <button key={m.id} type="button" onClick={() => inspect(m.id)} title={tx("Inspecter")} className="flex max-w-[14rem] items-center gap-1.5 rounded-full border border-[var(--panel-border)] py-0.5 pl-0.5 pr-2.5 text-[12px] text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-hover)]">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={m.avatarUrl} alt="" width={20} height={20} className="h-5 w-5 rounded-full" />
-                        <span className="truncate">{m.name}</span>
-                        {m.bot && <span className="rounded bg-[var(--surface-hover)] px-1 text-[9px] text-[var(--text-muted)]">{tx("Bot")}</span>}
-                      </button>
-                    ))
+                </button>
+                <AnimatePresence initial={false}>
+                  {openRole === r.id && (
+                    <motion.ul initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={SPRING_LAYOUT} className="overflow-hidden bg-[var(--surface-base,var(--bg-main))]/40">
+                      {r.members.length === 0 ? (
+                        <li className="px-9 py-2.5 text-xs text-[var(--text-muted)]">{tx("Personne n'a ce rôle.")}</li>
+                      ) : (
+                        r.members.map((m) => (
+                          <li key={m.id} className="flex items-center gap-2.5 px-9 py-2">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={m.avatarUrl} alt="" className="h-6 w-6 rounded-full" />
+                            <span className="min-w-0 flex-1 truncate text-[13px] text-[var(--text-primary)]">
+                              {m.name} <span className="text-[11px] text-[var(--text-muted)]">@{m.username}</span>
+                            </span>
+                            {m.bot && <span className="rounded bg-[var(--surface-hover)] px-1.5 py-0.5 text-[10px] text-[var(--text-muted)]">{tx("Bot")}</span>}
+                            <button type="button" onClick={() => inspect(m.id)} className="rounded-md border border-[var(--panel-border)] px-2 py-1 text-[11px] font-semibold text-[var(--text-primary)] hover:bg-[var(--surface-hover)]">
+                              {tx("Inspecter")}
+                            </button>
+                          </li>
+                        ))
+                      )}
+                      {r.memberCount > r.members.length && <li className="px-9 pb-2.5 text-[11px] text-[var(--text-muted)]">{tx("… et {n} autre(s).", { n: r.memberCount - r.members.length })}</li>}
+                    </motion.ul>
                   )}
-                  {r.memberCount > r.members.length && <span className="self-center text-[11px] text-[var(--text-muted)]">{tx("… et")}{" "} {r.memberCount - r.members.length} {" "}{tx("autre(s).")}</span>}
-                </div>
+                </AnimatePresence>
                 </li>
               ))}
             </ul>

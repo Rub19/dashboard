@@ -1,5 +1,14 @@
 [
   {
+    "version": "v1.75.129",
+    "date": "2026-10-16",
+    "title": "Rôles et membres : membres au clic, textes traduits",
+    "items": [
+      "Rôles et membres : les membres d'un rôle s'affichent à nouveau en cliquant sur le rôle.",
+      "Nombre de membres, rôles au-dessus d'Etho, dates « il y a … » et whitelist sont traduits dans la langue du dashboard."
+    ]
+  },
+  {
     "version": "v1.75.128",
     "date": "2026-10-16",
     "title": "Traduction des réponses du bot, rôles et membres, messages de sanction",
@@ -603,16 +612,6 @@
       "Météo du dock : les blocs apparaissent en cascade, la température monte jusqu'à sa valeur et les barres de prévisions se remplissent ; couleurs du thème.",
       "Musique du dock : pochette floutée en fond, pochette qui rétrécit en pause, titre qui glisse au changement de morceau et bouton lecture/pause qui se transforme.",
       "Dynamic Island : rebond plus naturel, coins qui s'adaptent, halo quand une musique ou un minuteur tourne, contenu qui arrive après la coque, pochette floutée et anneau de progression pour le Pomodoro."
-    ]
-  },
-  {
-    "version": "v1.70.3",
-    "date": "2026-10-11",
-    "title": "Dock : Mission Control retiré, textes et Control Center",
-    "items": [
-      "Mission Control est supprimé (bouton du dock, raccourci F2 et écran).",
-      "Météo du dock : « Prévisions sur 5 jours » et « ressenti » s'affichent enfin en clair (au lieu des clés de traduction).",
-      "Control Center : aux couleurs du thème et indique si tes réglages sont bien enregistrés sur ton compte."
     ]
   }
 ]

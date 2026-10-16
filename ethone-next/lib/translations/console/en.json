@@ -4539,5 +4539,20 @@
  "🟢 Salon Actif": "🟢 Channel active",
  "🤖 Bot Raid": "🤖 Bot Raid",
  "🧠 Deep Focus": "🧠 Deep Focus",
- "🧪 Simulation d'attaque réussie !": "🧪 Attack simulation succeeded!"
+ "🧪 Simulation d'attaque réussie !": "🧪 Attack simulation succeeded!",
+ "Compte créé {since}": "Account created {since}",
+ "arrivé {since}": "joined {since}",
+ "blacklisté": "blacklisted",
+ "il y a {d} jours": "{d} days ago",
+ "il y a {h} heure": "{h} hour ago",
+ "il y a {h} heures": "{h} hours ago",
+ "il y a {m} min": "{m} min ago",
+ "non": "no",
+ "protections": "protections",
+ "{n} membre": "{n} member",
+ "{n} membres": "{n} members",
+ "{n} rôle sensible au-dessus d'Etho : il ne peut pas agir sur ses membres.": "{n} sensitive role above Etho: it can't act on its members.",
+ "{n} rôles sensibles au-dessus d'Etho : il ne peut pas agir sur leurs membres.": "{n} sensitive roles above Etho: it can't act on their members.",
+ "à l'instant": "just now",
+ "… et {n} autre(s).": "… and {n} more."
 }

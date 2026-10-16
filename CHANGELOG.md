@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.129 — 2026-10-16
+
+**Rôles et membres : membres au clic, textes traduits**
+
+- Rôles et membres : les membres d'un rôle s'affichent à nouveau en cliquant sur le rôle.
+- Nombre de membres, rôles au-dessus d'Etho, dates « il y a … » et whitelist sont traduits dans la langue du dashboard.
+
 ## v1.75.128 — 2026-10-16
 
 **Traduction des réponses du bot, rôles et membres, messages de sanction**

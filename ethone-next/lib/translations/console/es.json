@@ -4539,5 +4539,20 @@
  "🟢 Salon Actif": "🟢 Canal activo",
  "🤖 Bot Raid": "🤖 Raid de bots",
  "🧠 Deep Focus": "🧠 Concentración profunda",
- "🧪 Simulation d'attaque réussie !": "🧪 ¡Simulación de ataque completada!"
+ "🧪 Simulation d'attaque réussie !": "🧪 ¡Simulación de ataque completada!",
+ "Compte créé {since}": "Cuenta creada {since}",
+ "arrivé {since}": "llegó {since}",
+ "blacklisté": "en la blacklist",
+ "il y a {d} jours": "hace {d} días",
+ "il y a {h} heure": "hace {h} hora",
+ "il y a {h} heures": "hace {h} horas",
+ "il y a {m} min": "hace {m} min",
+ "non": "no",
+ "protections": "protecciones",
+ "{n} membre": "{n} miembro",
+ "{n} membres": "{n} miembros",
+ "{n} rôle sensible au-dessus d'Etho : il ne peut pas agir sur ses membres.": "{n} rol sensible por encima de Etho: no puede actuar sobre sus miembros.",
+ "{n} rôles sensibles au-dessus d'Etho : il ne peut pas agir sur leurs membres.": "{n} roles sensibles por encima de Etho: no puede actuar sobre sus miembros.",
+ "à l'instant": "justo ahora",
+ "… et {n} autre(s).": "… y {n} más."
 }

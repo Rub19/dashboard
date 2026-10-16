@@ -58037,6 +58037,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_128_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_128_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_128_de);
 
+const v1_75_129_fr: ChangelogEntry = {
+  version: "v1.75.129",
+  date: "2026-10-16",
+  title: "Rôles et membres : membres au clic, textes traduits",
+  items: [
+    "Rôles et membres : les membres d'un rôle s'affichent à nouveau en cliquant sur le rôle.",
+    "Nombre de membres, rôles au-dessus d'Etho, dates « il y a … » et whitelist sont traduits dans la langue du dashboard.",
+  ],
+};
+
+const v1_75_129_en: ChangelogEntry = {
+  version: "v1.75.129",
+  date: "2026-10-16",
+  title: "Roles and members: members on click, translated text",
+  items: [
+    "Roles and members: a role's members show again when you click the role.",
+    "Member counts, roles above Etho, \"… ago\" dates and whitelist are translated into the dashboard language.",
+  ],
+};
+
+const v1_75_129_es: ChangelogEntry = {
+  version: "v1.75.129",
+  date: "2026-10-16",
+  title: "Roles y miembros: miembros al hacer clic, textos traducidos",
+  items: [
+    "Roles y miembros: los miembros de un rol vuelven a mostrarse al hacer clic en el rol.",
+    "El número de miembros, los roles por encima de Etho, las fechas «hace …» y la whitelist se traducen al idioma del panel.",
+  ],
+};
+
+const v1_75_129_de: ChangelogEntry = {
+  version: "v1.75.129",
+  date: "2026-10-16",
+  title: "Rollen und Mitglieder: Mitglieder per Klick, übersetzte Texte",
+  items: [
+    "Rollen und Mitglieder: Die Mitglieder einer Rolle erscheinen wieder per Klick auf die Rolle.",
+    "Mitgliederzahl, Rollen über Etho, „vor …“-Angaben und Whitelist werden in die Dashboard-Sprache übersetzt.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_129_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_129_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_129_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_129_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

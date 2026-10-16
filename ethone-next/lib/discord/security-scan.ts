@@ -1,3 +1,4 @@
+import { tx } from "@/lib/tx";
 /** Types et appels du scan de sécurité du bot (partagés par l'écran Scan et la vue d'ensemble). */
 
 export const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
@@ -49,13 +50,13 @@ export function failingChecks(result: ScanResult | null): ScanCheck[] {
 /** « il y a 3 heures » à partir d'une date ISO. */
 export function sinceLabel(iso: string): string {
   const s = Math.max(0, Math.round((Date.now() - Date.parse(iso)) / 1000));
-  if (s < 60) return "à l'instant";
+  if (s < 60) return tx("à l'instant");
   const m = Math.round(s / 60);
-  if (m < 60) return `il y a ${m} min`;
+  if (m < 60) return tx("il y a {m} min", { m });
   const h = Math.round(m / 60);
-  if (h < 48) return `il y a ${h} heure${h > 1 ? "s" : ""}`;
+  if (h < 48) return tx(h > 1 ? "il y a {h} heures" : "il y a {h} heure", { h });
   const d = Math.round(h / 24);
-  return `il y a ${d} jours`;
+  return tx("il y a {d} jours", { d });
 }
 
 export async function fetchLastScan(guildId: string): Promise<ScanResult | null> {

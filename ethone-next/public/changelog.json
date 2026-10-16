@@ -1,5 +1,14 @@
 [
   {
+    "version": "v1.75.142",
+    "date": "2026-10-17",
+    "title": "Bot : clôture des signalements plus fiable",
+    "items": [
+      "Si le message privé au membre qui a signalé ne peut pas être envoyé, la clôture du signalement se termine quand même (classement dans le fil compris).",
+      "Les tests automatiques du bot passent de nouveau."
+    ]
+  },
+  {
     "version": "v1.75.141",
     "date": "2026-10-17",
     "title": "App iOS : modules Discord",
@@ -599,18 +608,6 @@
       "Alignement parfait des colonnes inter-équipes : application du mode table-fixed avec colgroup proportionnel strict garantissant que chaque colonne (Joueur, Rang/Build, TRS, ACS, KDA, Dégâts, CS, Or) a exactement la même largeur au pixel près pour les deux équipes.",
       "Conteneur de défilement unifié : regroupement des deux équipes dans une largeur minimale synchronisée (min-w 820px sur LoL, min-w 880px sur Valorant) éliminant tout décalage visuel horizontal lors du scroll.",
       "Centrage rigoureux des données : alignement vertical cohérent des badges de rang, jauges de dégâts et statistiques de combat sans rupture de flux."
-    ]
-  },
-  {
-    "version": "v1.75.21",
-    "date": "2026-10-13",
-    "title": "Documentation & Wiki Etho Protect : Guides Pas à Pas, Cas Concrets & Référence Complète des Modules",
-    "items": [
-      "Nouvelle page de documentation interactive (/docs et /documentation) : structure wiki complète inspirée des standards de référence avec barre latérale fixe, catégories et navigation fluide.",
-      "Guides pas à pas complets : installation en 2 minutes, hiérarchie des rôles, configuration du mode strict, sas d'arrivée (Gatekeeper) et pilotage depuis le dashboard web.",
-      "Guides de crise & scénarios d'urgence : fiches d'action immédiate pour neutraliser un raid en cours, gérer un compte modérateur compromis, bloquer le phishing/faux Nitro et restaurer le serveur.",
-      "Référence exhaustive des modules par catégorie : catalogue complet des protections (Sanctions, Salons, Rôles, Bots, Vocal, Serveur, Messages, Membres, Sauvegardes, Mode Ultra) avec seuils recommandés et temps de réaction (< 250ms).",
-      "Motion design & interactivité avancée : moteur de recherche temps réel avec raccourci Ctrl+K, modales interactives de détails pour chaque module et guide avec copie en un clic des commandes /slash."
     ]
   }
 ]

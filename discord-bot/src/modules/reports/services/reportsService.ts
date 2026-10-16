@@ -182,8 +182,9 @@ class ReportsService {
     if (conf.notifyReporter) {
       for (const reporterId of new Set(reports.map((r) => r.reporterUserId))) {
         const user = await guild.client.users.fetch(reporterId).catch(() => null);
+        if (typeof user?.send !== 'function') continue;
         await user
-          ?.send({
+          .send({
             embeds: [
               noticeEmbed(
                 outcome === 'DISMISSED' ? 'info' : 'success',

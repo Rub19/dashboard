@@ -58694,6 +58694,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_141_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_141_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_141_de);
 
+const v1_75_142_fr: ChangelogEntry = {
+  version: "v1.75.142",
+  date: "2026-10-17",
+  title: "Bot : clôture des signalements plus fiable",
+  items: [
+    "Si le message privé au membre qui a signalé ne peut pas être envoyé, la clôture du signalement se termine quand même (classement dans le fil compris).",
+    "Les tests automatiques du bot passent de nouveau.",
+  ],
+};
+
+const v1_75_142_en: ChangelogEntry = {
+  version: "v1.75.142",
+  date: "2026-10-17",
+  title: "Bot: more reliable report closing",
+  items: [
+    "If the direct message to the reporting member cannot be sent, the report is still closed (including filing it in the thread).",
+    "The bot's automated tests pass again.",
+  ],
+};
+
+const v1_75_142_es: ChangelogEntry = {
+  version: "v1.75.142",
+  date: "2026-10-17",
+  title: "Bot: cierre de reportes más fiable",
+  items: [
+    "Si no se puede enviar el mensaje privado al miembro que reportó, el reporte se cierra igualmente (incluido su archivo en el hilo).",
+    "Las pruebas automáticas del bot vuelven a pasar.",
+  ],
+};
+
+const v1_75_142_de: ChangelogEntry = {
+  version: "v1.75.142",
+  date: "2026-10-17",
+  title: "Bot: zuverlässigeres Schließen von Meldungen",
+  items: [
+    "Kann die Direktnachricht an das meldende Mitglied nicht gesendet werden, wird die Meldung trotzdem geschlossen (einschließlich Ablage im Thread).",
+    "Die automatischen Tests des Bots laufen wieder durch.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_142_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_142_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_142_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_142_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

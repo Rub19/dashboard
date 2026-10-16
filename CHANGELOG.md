@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.142 — 2026-10-17
+
+**Bot : clôture des signalements plus fiable**
+
+- Si le message privé au membre qui a signalé ne peut pas être envoyé, la clôture du signalement se termine quand même (classement dans le fil compris).
+- Les tests automatiques du bot passent de nouveau.
+
 ## v1.75.141 — 2026-10-17
 
 **App iOS : modules Discord**

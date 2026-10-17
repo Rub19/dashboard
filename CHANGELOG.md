@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.147 — 2026-10-17
+
+**Avatars par plateforme**
+
+- Nouveau sélecteur d'avatars : Crunchyroll, Netflix, HBO, Prime Video et Disney+, une rangée par série.
+- 1 200 avatars répartis en 119 séries, avec recherche par série ou par personnage.
+- L'ancienne bibliothèque d'avatars est remplacée.
+
 ## v1.75.146 — 2026-10-17
 
 **Avatars, Interactions synchronisées, mails et Valorant**

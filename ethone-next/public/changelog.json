@@ -1,5 +1,15 @@
 [
   {
+    "version": "v1.75.147",
+    "date": "2026-10-17",
+    "title": "Avatars par plateforme",
+    "items": [
+      "Nouveau sélecteur d'avatars : Crunchyroll, Netflix, HBO, Prime Video et Disney+, une rangée par série.",
+      "1 200 avatars répartis en 119 séries, avec recherche par série ou par personnage.",
+      "L'ancienne bibliothèque d'avatars est remplacée."
+    ]
+  },
+  {
     "version": "v1.75.146",
     "date": "2026-10-17",
     "title": "Avatars, Interactions synchronisées, mails et Valorant",
@@ -610,18 +620,6 @@
       "Plus de lien Twitch par défaut : le Mode Streamer exige le lien de ta propre chaîne",
       "Retrait des activités de rotation inventées",
       "Vitrine du bot : retrait des chiffres non vérifiés (0.2s, « des centaines de communautés »)"
-    ]
-  },
-  {
-    "version": "v1.75.45",
-    "date": "2026-10-13",
-    "title": "Boutons rectangulaires, logo Riot horizontal et motion design des trackers",
-    "items": [
-      "Boutons d'en-tête en haut à droite redessinés en format rectangulaire épuré (rounded-lg).",
-      "Alignement horizontal côte à côte du logo officiel Riot Games et des icônes à côté du texte sur tous les boutons.",
-      "Correction structurelle du composant Button assurant un flux inline-flex horizontal pour toutes les icônes enfants.",
-      "Motion design complet sur l'Inventaire & Boutique Valorant : logo Riot flottant, halo ambiant réactif et pulsation du compte à rebours.",
-      "Motion design sur le Tracker Valorant et le Tracker League of Legends : cartes de KPI animées à l'entrée et survol interactif des parties."
     ]
   }
 ]

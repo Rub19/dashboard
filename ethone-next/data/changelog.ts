@@ -59007,6 +59007,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_146_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_146_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_146_de);
 
+const v1_75_147_fr: ChangelogEntry = {
+  version: "v1.75.147",
+  date: "2026-10-17",
+  title: "Avatars par plateforme",
+  items: [
+    "Nouveau sélecteur d'avatars : Crunchyroll, Netflix, HBO, Prime Video et Disney+, une rangée par série.",
+    "1 200 avatars répartis en 119 séries, avec recherche par série ou par personnage.",
+    "L'ancienne bibliothèque d'avatars est remplacée.",
+  ],
+};
+
+const v1_75_147_en: ChangelogEntry = {
+  version: "v1.75.147",
+  date: "2026-10-17",
+  title: "Avatars by platform",
+  items: [
+    "New avatar picker: Crunchyroll, Netflix, HBO, Prime Video and Disney+, one row per series.",
+    "1,200 avatars across 119 series, with search by series or character.",
+    "The previous avatar library has been replaced.",
+  ],
+};
+
+const v1_75_147_es: ChangelogEntry = {
+  version: "v1.75.147",
+  date: "2026-10-17",
+  title: "Avatares por plataforma",
+  items: [
+    "Nuevo selector de avatares: Crunchyroll, Netflix, HBO, Prime Video y Disney+, una fila por serie.",
+    "1200 avatares en 119 series, con búsqueda por serie o personaje.",
+    "La biblioteca de avatares anterior ha sido reemplazada.",
+  ],
+};
+
+const v1_75_147_de: ChangelogEntry = {
+  version: "v1.75.147",
+  date: "2026-10-17",
+  title: "Avatare nach Plattform",
+  items: [
+    "Neue Avatar-Auswahl: Crunchyroll, Netflix, HBO, Prime Video und Disney+, eine Reihe pro Serie.",
+    "1.200 Avatare in 119 Serien, mit Suche nach Serie oder Figur.",
+    "Die bisherige Avatar-Bibliothek wurde ersetzt.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_147_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_147_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_147_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_147_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

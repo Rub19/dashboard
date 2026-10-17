@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import { Check, Heart, Loader2, Search, Shuffle, Upload, X } from "@/components/icons/ph";
+import { Check, ChevronLeft, ChevronRight, ImageOff, Loader2, Search, Upload, X } from "@/components/icons/ph";
 import ProfileAvatar from "@/components/profile/ProfileAvatar";
 import AvatarCropperModal from "@/components/profile/AvatarCropperModal";
 import { useToast } from "@/components/ToastProvider";
@@ -11,17 +11,16 @@ import { useFocusTrap } from "@/lib/hooks/useFocusTrap";
 import { useUserState } from "@/lib/hooks/useUserState";
 import { useUserIdentity } from "@/lib/hooks/useUserIdentity";
 import { describeProfileError, saveAccountProfile, uploadAvatarImage, useAccountProfile } from "@/lib/profile/account-profile";
-import { ALL_AVATARS, AVATAR_COLLECTIONS, AVATAR_COUNT, avatarById, avatarByUrl, searchAvatars, seriesOf, type LibraryAvatar } from "@/lib/identity/avatar-library";
+import { AVATAR_COLLECTIONS, avatarByUrl, matchesQuery, searchAvatars, seriesOf, type LibraryAvatar } from "@/lib/identity/avatar-library";
 import { EASE_SNAP, SPRING_PANEL, SPRING_PILL } from "@/lib/ease";
 import { cn } from "@/lib/utils";
+import { tx } from "@/lib/tx";
 
 type Choice = { url: string; name: string; series: string; id: string };
-type Tab = "all" | "favorites" | "recent" | string;
-
-const MAX_RECENT = 18;
 
 /**
- * Bibliothèque d'avatars : choisir une image de la bibliothèque ETHONE ou importer sa propre photo.
+ * Sélecteur d'avatars façon plateformes de streaming : une plateforme à la fois (boutons du haut), puis une section par
+ * série avec sa rangée d'avatars ronds. Les séries viennent des sous-dossiers importés (scripts/build-avatar-library.mjs).
  * Sans `onSelect`, le choix est enregistré directement dans le profil du compte (synchronisé sur tous les appareils).
  */
 export default function AvatarLibrary({ isOpen, onClose, onSelect }: { isOpen: boolean; onClose: () => void; onSelect?: (url: string) => void }) {
@@ -31,26 +30,33 @@ export default function AvatarLibrary({ isOpen, onClose, onSelect }: { isOpen: b
   return createPortal(<AnimatePresence>{isOpen && <LibraryPanel onClose={onClose} onSelect={onSelect} />}</AnimatePresence>, document.body);
 }
 
+/** Libellés courts des boutons de plateforme sur téléphone. */
+const SHORT_LABEL: Record<string, string> = { "prime-video": "Prime" };
+
+const platformOf = (url: string) => AVATAR_COLLECTIONS.find((c) => c.items.some((a) => a.url === url))?.id;
+
 function LibraryPanel({ onClose, onSelect }: { onClose: () => void; onSelect?: (url: string) => void }) {
   const { profile } = useAccountProfile();
   const identity = useUserIdentity();
   const { success, error: toastError } = useToast();
   const trapRef = useFocusTrap<HTMLDivElement>(true);
-  const [favorites, setFavorites] = useUserState<string[]>("avatarFavorites", []);
-  const [recent, setRecent] = useUserState<string[]>("avatarRecent", []);
+  const [lastPlatform, setLastPlatform] = useUserState<string>("avatarPlatform", "");
 
   const current = identity.avatarUrl || "";
   const [choice, setChoice] = useState<Choice | null>(() => {
     const a = avatarByUrl(current);
-    return a ? { ...a } : current ? { url: current, name: "Photo actuelle", series: "", id: "" } : null;
+    return a ? { ...a } : current ? { url: current, name: tx("Photo actuelle"), series: "", id: "" } : null;
   });
-  const [tab, setTab] = useState<Tab>("all");
-  const [series, setSeries] = useState<string>("");
+  // Plateforme ouverte : celle de l'avatar actuel, sinon la dernière consultée, sinon la première.
+  const [platform, setPlatform] = useState<string>(
+    () => platformOf(current) || (AVATAR_COLLECTIONS.some((c) => c.id === lastPlatform) ? lastPlatform : AVATAR_COLLECTIONS[0]?.id || ""),
+  );
   const [query, setQuery] = useState("");
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [cropSrc, setCropSrc] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
   const isMobile = typeof window !== "undefined" && window.matchMedia("(max-width: 639px)").matches;
 
   useEffect(() => {
@@ -64,22 +70,31 @@ function LibraryPanel({ onClose, onSelect }: { onClose: () => void; onSelect?: (
     };
   }, [onClose, cropSrc]);
 
-  const collection = AVATAR_COLLECTIONS.find((c) => c.id === tab);
-  const seriesList = collection ? seriesOf(collection) : [];
+  const collection = AVATAR_COLLECTIONS.find((c) => c.id === platform);
+  const q = query.trim();
 
-  const pool: LibraryAvatar[] = useMemo(() => {
-    if (tab === "favorites") return favorites.map(avatarById).filter((a): a is LibraryAvatar => Boolean(a));
-    if (tab === "recent") return recent.map(avatarById).filter((a): a is LibraryAvatar => Boolean(a));
-    if (collection) return series ? collection.items.filter((a) => a.series === series) : collection.items;
-    return ALL_AVATARS;
-  }, [tab, series, collection, favorites, recent]);
-  const results = useMemo(() => searchAvatars(query, pool), [query, pool]);
-  const grouped = tab === "all" && !query.trim();
+  // Séries de la plateforme ; avec une recherche, la série entière si son nom correspond, sinon ses avatars trouvés.
+  const sections = useMemo(() => {
+    if (!collection) return [];
+    return seriesOf(collection)
+      .map((name) => {
+        const items = collection.items.filter((a) => a.series === name);
+        if (!q) return { name, items };
+        return { name, items: matchesQuery(name, q) ? items : searchAvatars(q, items) };
+      })
+      .filter((s) => s.items.length > 0);
+  }, [collection, q]);
 
-  const toggleFavorite = (id: string) => setFavorites((f) => (f.includes(id) ? f.filter((x) => x !== id) : [id, ...f]));
-  const pickRandom = () => {
-    const list = grouped ? ALL_AVATARS : results;
-    if (list.length) setChoice({ ...list[Math.floor(Math.random() * list.length)] });
+  // Résultats ailleurs, pour proposer de changer de plateforme quand la recherche ne trouve rien ici.
+  const elsewhere = useMemo(
+    () => (q ? AVATAR_COLLECTIONS.filter((c) => c.id !== platform).map((c) => ({ c, n: searchAvatars(q, c.items).length })).filter((x) => x.n > 0) : []),
+    [q, platform],
+  );
+
+  const choosePlatform = (id: string) => {
+    setPlatform(id);
+    setLastPlatform(id);
+    scrollRef.current?.scrollTo({ top: 0 });
   };
 
   const confirm = async () => {
@@ -88,8 +103,7 @@ function LibraryPanel({ onClose, onSelect }: { onClose: () => void; onSelect?: (
     try {
       if (onSelect) onSelect(choice.url);
       else await saveAccountProfile({ avatarUrl: choice.url, avatarId: choice.id });
-      if (choice.id) setRecent((r) => [choice.id, ...r.filter((x) => x !== choice.id)].slice(0, MAX_RECENT));
-      success("Avatar mis à jour sur tous vos appareils.");
+      success(tx("Avatar mis à jour sur tous vos appareils."));
       onClose();
     } catch (e) {
       toastError(describeProfileError(e));
@@ -100,8 +114,8 @@ function LibraryPanel({ onClose, onSelect }: { onClose: () => void; onSelect?: (
 
   const onFile = (file?: File) => {
     if (!file) return;
-    if (!/^image\/(png|jpe?g|webp|gif)$/.test(file.type)) return toastError("Formats acceptés : PNG, JPG, WebP ou GIF.");
-    if (file.size > 8 * 1024 * 1024) return toastError("Image trop lourde (8 Mo maximum).");
+    if (!/^image\/(png|jpe?g|webp|gif)$/.test(file.type)) return toastError(tx("Formats acceptés : PNG, JPG, WebP ou GIF."));
+    if (file.size > 8 * 1024 * 1024) return toastError(tx("Image trop lourde (8 Mo maximum)."));
     const reader = new FileReader();
     reader.onload = () => setCropSrc(String(reader.result));
     reader.readAsDataURL(file);
@@ -112,27 +126,20 @@ function LibraryPanel({ onClose, onSelect }: { onClose: () => void; onSelect?: (
     setUploading(true);
     try {
       const url = await uploadAvatarImage(dataUrl);
-      setChoice({ url, name: "Photo importée", series: "Votre image", id: "" });
+      setChoice({ url, name: tx("Photo importée"), series: tx("Votre image"), id: "" });
     } catch (e) {
-      toastError(e instanceof Error && e.message ? e.message : "Import impossible pour le moment.");
+      toastError(e instanceof Error && e.message ? e.message : tx("Import impossible pour le moment."));
     } finally {
       setUploading(false);
     }
   };
-
-  const tabs: Array<{ id: Tab; label: string; count?: number }> = [
-    { id: "all", label: "Tout" },
-    { id: "favorites", label: "Favoris", count: favorites.length },
-    { id: "recent", label: "Récents", count: recent.length },
-    ...AVATAR_COLLECTIONS.map((c) => ({ id: c.id, label: c.label, count: c.items.length })),
-  ];
 
   const changed = Boolean(choice && choice.url !== current);
 
   return (
     <>
       <motion.div
-        className="fixed inset-0 z-[var(--z-modal)] bg-black/55 backdrop-blur-[6px]"
+        className="fixed inset-0 z-[var(--z-modal)] bg-black/70 backdrop-blur-[6px]"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -144,191 +151,134 @@ function LibraryPanel({ onClose, onSelect }: { onClose: () => void; onSelect?: (
           ref={trapRef}
           role="dialog"
           aria-modal="true"
-          aria-label="Bibliothèque d'avatars"
-          className="pointer-events-auto flex h-[92dvh] w-full flex-col overflow-hidden rounded-t-[28px] border border-[var(--panel-border)] bg-[var(--bg-surface)] shadow-[0_30px_80px_-20px_rgba(0,0,0,0.6)] sm:h-[min(88vh,840px)] sm:max-w-5xl sm:rounded-[var(--panel-radius)]"
-          initial={isMobile ? { y: "100%" } : { opacity: 0, scale: 0.96, y: 14, filter: "blur(8px)" }}
-          animate={isMobile ? { y: 0 } : { opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
-          exit={isMobile ? { y: "100%" } : { opacity: 0, scale: 0.97, y: 10, filter: "blur(6px)", transition: { duration: 0.16 } }}
+          aria-label={tx("Choisir un avatar")}
+          className="pointer-events-auto flex h-[94dvh] w-full flex-col overflow-hidden rounded-t-[26px] border border-white/[0.07] bg-[#0b0b0f] text-white shadow-[0_40px_100px_-30px_rgba(0,0,0,0.85)] sm:h-[min(86vh,820px)] sm:max-w-4xl sm:rounded-[22px]"
+          initial={isMobile ? { y: "100%" } : { opacity: 0, scale: 0.96, y: 14 }}
+          animate={isMobile ? { y: 0 } : { opacity: 1, scale: 1, y: 0 }}
+          exit={isMobile ? { y: "100%" } : { opacity: 0, scale: 0.97, y: 10, transition: { duration: 0.16 } }}
           transition={SPRING_PANEL}
         >
-          {/* En-tête : aperçu du choix */}
-          <div className="relative flex items-center gap-4 overflow-hidden border-b border-[var(--panel-border)] px-5 py-5 sm:px-6">
-            {choice?.url && (
-              <motion.div
-                key={`bg-${choice.url}`}
-                aria-hidden
-                className="pointer-events-none absolute inset-0 scale-125 bg-cover bg-center blur-2xl saturate-150"
-                style={{ backgroundImage: `url("${choice.url}")` }}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 0.4 }}
-                transition={{ duration: 0.35 }}
-              />
-            )}
-            <div aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[var(--bg-surface)]/30 via-[var(--bg-surface)]/60 to-[var(--bg-surface)]" />
-            <motion.div className="relative" key={choice?.url || "none"} initial={{ scale: 0.86, opacity: 0.4 }} animate={{ scale: 1, opacity: 1 }} transition={SPRING_PILL}>
-              <ProfileAvatar src={choice?.url} initials={identity.initials} frameId={profile.frameId} size={76} />
+          {/* En-tête : titre, avatar choisi, validation, fermeture */}
+          <div className="flex items-center gap-3 px-4 pb-3 pt-4 sm:gap-4 sm:px-6 sm:pt-5">
+            <motion.div key={choice?.url || "none"} initial={{ scale: 0.85, opacity: 0.4 }} animate={{ scale: 1, opacity: 1 }} transition={SPRING_PILL} className="shrink-0">
+              <ProfileAvatar src={choice?.url} initials={identity.initials} frameId={profile.frameId} size={isMobile ? 48 : 56} />
             </motion.div>
-            <div className="relative min-w-0 flex-1">
-              <p className="truncate text-base font-semibold tracking-tight text-[var(--text-primary)]">{choice?.name || "Aucun avatar"}</p>
-              <p className="truncate text-xs text-[var(--text-muted)]">{choice?.series || (changed ? "" : "Avatar actuel")}</p>
+            <div className="min-w-0 flex-1">
+              <h2 className="truncate text-base font-semibold tracking-tight sm:text-lg">{tx("Choisir un avatar")}</h2>
+              <p className="truncate text-xs text-white/55">{choice ? [choice.name, choice.series].filter(Boolean).join(" · ") : tx("Aucun avatar")}</p>
             </div>
-            <button
-              type="button"
-              onClick={pickRandom}
-              className="relative hidden h-10 items-center gap-2 rounded-xl border border-[var(--panel-border)] px-3.5 text-sm font-medium text-[var(--text-primary)] transition-[background-color,transform] duration-150 hover:bg-[var(--surface-raised)] active:scale-[0.97] sm:inline-flex"
-            >
-              <Shuffle className="h-4 w-4" /> Au hasard
-            </button>
             <button
               type="button"
               disabled={!changed || saving}
               onClick={() => void confirm()}
-              className="relative inline-flex h-10 shrink-0 items-center gap-2 rounded-xl bg-[var(--accent-primary)] px-4 text-sm font-semibold text-[var(--accent-contrast)] shadow-sm transition-[filter,transform,opacity] duration-150 hover:brightness-110 active:scale-[0.97] disabled:opacity-40"
+              className="inline-flex h-10 shrink-0 items-center gap-2 rounded-full bg-white px-4 text-sm font-semibold text-black transition-[transform,opacity] duration-150 hover:bg-white/90 active:scale-[0.97] disabled:opacity-35"
             >
               {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
-              Utiliser
+              {tx("Utiliser")}
             </button>
             <button
               type="button"
               onClick={onClose}
-              aria-label="Fermer"
-              className="relative grid h-10 w-10 place-items-center rounded-xl text-[var(--text-muted)] transition-[background-color,color,transform] duration-150 hover:bg-[var(--surface-raised)] hover:text-[var(--text-primary)] active:scale-[0.94]"
+              aria-label={tx("Fermer")}
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-white/60 transition-[background-color,color,transform] duration-150 hover:bg-white/10 hover:text-white active:scale-[0.94]"
             >
               <X className="h-5 w-5" />
             </button>
           </div>
 
-          {/* Recherche, import, collections */}
-          <div className="space-y-3 border-b border-[var(--panel-border)] px-5 py-3 sm:px-6">
-            <div className="flex gap-2">
-              <label className="flex h-11 flex-1 items-center gap-2.5 rounded-xl border border-[var(--panel-border)] bg-[var(--input-bg)] px-3.5 focus-within:border-[var(--accent-primary)]/60">
-                <Search className="h-4 w-4 shrink-0 text-[var(--text-muted)]" />
-                <input
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Rechercher un personnage ou une série (Gojo, Jinx, Stranger Things…)"
-                  className="h-full w-full bg-transparent text-sm text-[var(--text-primary)] outline-none placeholder:text-[var(--text-muted)]"
-                />
-                {query && (
-                  <button type="button" onClick={() => setQuery("")} aria-label="Effacer la recherche" className="text-[var(--text-muted)] hover:text-[var(--text-primary)]">
-                    <X className="h-4 w-4" />
-                  </button>
-                )}
-              </label>
-              <input ref={fileRef} type="file" accept="image/png,image/jpeg,image/webp,image/gif" className="hidden" onChange={(e) => onFile(e.target.files?.[0] ?? undefined)} />
-              <button
-                type="button"
-                onClick={() => fileRef.current?.click()}
-                disabled={uploading}
-                className="inline-flex h-11 items-center gap-2 rounded-xl border border-[var(--panel-border)] px-3.5 text-sm font-medium text-[var(--text-primary)] transition-[background-color,transform] duration-150 hover:bg-[var(--surface-raised)] active:scale-[0.97] disabled:opacity-60"
-              >
-                {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
-                <span className="hidden sm:inline">Importer une photo</span>
-              </button>
-            </div>
-            <div className="-mx-1 flex gap-1 overflow-x-auto px-1 pb-0.5 no-scrollbar" role="tablist" aria-label="Collections">
-              {tabs.map((t) => {
-                const active = tab === t.id;
+          {/* Plateformes */}
+          <div className="px-4 sm:px-6" role="tablist" aria-label={tx("Plateformes")}>
+            <div className="grid grid-cols-5 gap-1 sm:gap-2">
+              {AVATAR_COLLECTIONS.map((c) => {
+                const active = c.id === platform;
                 return (
                   <button
-                    key={t.id}
+                    key={c.id}
                     type="button"
                     role="tab"
                     aria-selected={active}
-                    onClick={() => {
-                      setTab(t.id);
-                      setSeries("");
-                    }}
+                    onClick={() => choosePlatform(c.id)}
                     className={cn(
-                      "relative shrink-0 rounded-full px-3.5 py-1.5 text-[13px] font-medium transition-colors duration-150",
-                      active ? "text-[var(--accent-contrast)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]",
+                      "relative h-9 min-w-0 rounded-full px-0.5 text-[11px] font-semibold transition-colors duration-150 sm:h-10 sm:px-2 sm:text-[13px]",
+                      active ? "text-black" : "bg-white/[0.06] text-white/70 hover:bg-white/[0.1] hover:text-white",
                     )}
                   >
-                    {active && <motion.span layoutId="avatar-tab-pill" transition={SPRING_PILL} className="absolute inset-0 rounded-full bg-[var(--accent-primary)]" />}
-                    <span className="relative">
-                      {t.label}
-                      {t.count ? <span className={cn("ml-1.5 tabular-nums", active ? "opacity-80" : "opacity-60")}>{t.count}</span> : null}
+                    {active && <motion.span layoutId="avatar-platform-pill" transition={SPRING_PILL} className="absolute inset-0 rounded-full bg-white" />}
+                    <span className="relative block truncate tracking-tight sm:tracking-normal">
+                      <span className="sm:hidden">{SHORT_LABEL[c.id] ?? c.label}</span>
+                      <span className="hidden sm:inline">{c.label}</span>
                     </span>
                   </button>
                 );
               })}
             </div>
-            {seriesList.length > 1 && (
-              <div className="-mx-1 flex gap-1.5 overflow-x-auto px-1 no-scrollbar">
-                {["", ...seriesList].map((s) => (
-                  <button
-                    key={s || "all"}
-                    type="button"
-                    onClick={() => setSeries(s)}
-                    className={cn(
-                      "shrink-0 rounded-lg border px-2.5 py-1 text-xs transition-colors duration-150",
-                      series === s
-                        ? "border-[var(--accent-primary)]/60 bg-[var(--accent-primary)]/12 text-[var(--text-primary)]"
-                        : "border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--text-primary)]",
-                    )}
-                  >
-                    {s || "Toutes les séries"}
-                  </button>
-                ))}
-              </div>
-            )}
           </div>
 
-          {/* Grille */}
-          <div className="min-h-0 flex-1 overflow-y-auto os-scroll px-5 py-4 [overscroll-behavior:contain] sm:px-6">
+          {/* Recherche et import */}
+          <div className="flex gap-2 px-4 pb-3 pt-2.5 sm:px-6">
+            <label className="flex h-10 flex-1 items-center gap-2.5 rounded-full bg-white/[0.06] px-4 focus-within:bg-white/[0.09] focus-within:ring-1 focus-within:ring-white/25">
+              <Search className="h-4 w-4 shrink-0 text-white/45" />
+              <input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder={tx("Rechercher une série ou un personnage")}
+                aria-label={tx("Rechercher une série ou un personnage")}
+                className="h-full w-full bg-transparent text-sm text-white outline-none placeholder:text-white/40"
+              />
+              {query && (
+                <button type="button" onClick={() => setQuery("")} aria-label={tx("Effacer la recherche")} className="text-white/45 hover:text-white">
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </label>
+            <input ref={fileRef} type="file" accept="image/png,image/jpeg,image/webp,image/gif" className="hidden" onChange={(e) => onFile(e.target.files?.[0] ?? undefined)} />
+            <button
+              type="button"
+              onClick={() => fileRef.current?.click()}
+              disabled={uploading}
+              aria-label={tx("Importer une photo")}
+              className="inline-flex h-10 shrink-0 items-center gap-2 rounded-full bg-white/[0.06] px-3.5 text-sm font-medium text-white/80 transition-[background-color,transform] duration-150 hover:bg-white/[0.1] hover:text-white active:scale-[0.97] disabled:opacity-60"
+            >
+              {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+              <span className="hidden sm:inline">{tx("Ma photo")}</span>
+            </button>
+          </div>
+
+          {/* Séries de la plateforme */}
+          <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto border-t border-white/[0.06] px-4 pb-6 pt-4 [overscroll-behavior:contain] sm:px-6">
             <AnimatePresence mode="wait" initial={false}>
               <motion.div
-                key={`${tab}|${series}|${query.trim() ? "search" : ""}`}
+                key={`${platform}|${q ? "q" : ""}`}
                 initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -4 }}
                 transition={{ duration: 0.18, ease: EASE_SNAP }}
+                className="space-y-6"
               >
-                {grouped ? (
-                  <div className="space-y-8">
-                    {AVATAR_COLLECTIONS.map((c) => {
-                      const names = seriesOf(c);
-                      return (
-                        <section key={c.id} className="space-y-4">
-                          <div className="flex items-baseline justify-between gap-3">
-                            <h3 className="text-base font-semibold tracking-tight text-[var(--text-primary)]">
-                              {c.label} <span className="ml-1 text-xs font-normal tabular-nums text-[var(--text-muted)]">{c.items.length}</span>
-                            </h3>
-                            <button type="button" onClick={() => setTab(c.id)} className="text-xs font-medium text-[var(--accent-primary)] hover:underline">
-                              Tout voir
-                            </button>
-                          </div>
-                          {names.map((name) => (
-                            <SeriesRow
-                              key={name}
-                              title={names.length > 1 ? name : ""}
-                              items={c.items.filter((a) => a.series === name)}
-                              choice={choice}
-                              onPick={(a) => setChoice({ ...a })}
-                            />
-                          ))}
-                        </section>
-                      );
-                    })}
-                  </div>
-                ) : results.length ? (
-                  <Grid items={results} choice={choice} favorites={favorites} onPick={(a) => setChoice({ ...a })} onFavorite={toggleFavorite} />
+                {!collection || collection.items.length === 0 ? (
+                  <EmptyState text={tx("Aucun avatar pour cette plateforme pour l'instant.")} />
+                ) : sections.length === 0 ? (
+                  <EmptyState text={tx("Aucune série ni aucun personnage ne correspond à « {q} ».", { q })}>
+                    {elsewhere.length > 0 && (
+                      <div className="mt-4 flex flex-wrap justify-center gap-2">
+                        {elsewhere.map(({ c, n }) => (
+                          <button key={c.id} type="button" onClick={() => choosePlatform(c.id)} className="rounded-full bg-white/[0.08] px-3.5 py-1.5 text-xs font-medium text-white/85 hover:bg-white/[0.14]">
+                            {tx("{n} sur {platform}", { n, platform: c.label })}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </EmptyState>
                 ) : (
-                  <p className="py-16 text-center text-sm text-[var(--text-muted)]">
-                    {tab === "favorites" && !query
-                      ? "Aucun favori pour l'instant : touchez le cœur d'un avatar pour le retrouver ici."
-                      : tab === "recent" && !query
-                        ? "Les avatars que vous utilisez apparaîtront ici."
-                        : "Aucun avatar ne correspond à cette recherche."}
-                  </p>
+                  sections.map((s) => <SeriesRow key={s.name} title={s.name} items={s.items} choice={choice} onPick={(a) => setChoice({ ...a })} />)
                 )}
               </motion.div>
             </AnimatePresence>
           </div>
 
-          <div className="flex items-center justify-between gap-3 border-t border-[var(--panel-border)] px-5 py-2.5 text-[11px] text-[var(--text-muted)] sm:px-6">
-            <span className="tabular-nums">{AVATAR_COUNT} avatars</span>
-            <span className="truncate">Personnages et logos © leurs ayants droit respectifs</span>
+          <div className="flex items-center justify-between gap-3 border-t border-white/[0.06] px-4 py-2.5 text-[11px] text-white/40 sm:px-6">
+            <span className="tabular-nums">{collection ? tx("{series} séries · {n} avatars", { series: seriesOf(collection).length, n: collection.items.length }) : ""}</span>
+            <span className="hidden truncate sm:block">{tx("Personnages et logos © leurs ayants droit respectifs")}</span>
           </div>
         </motion.div>
       </div>
@@ -338,108 +288,120 @@ function LibraryPanel({ onClose, onSelect }: { onClose: () => void; onSelect?: (
   );
 }
 
-function Grid({
-  items,
-  choice,
-  favorites,
-  onPick,
-  onFavorite,
-}: {
-  items: LibraryAvatar[];
-  choice: Choice | null;
-  favorites: string[];
-  onPick: (a: LibraryAvatar) => void;
-  onFavorite: (id: string) => void;
-}) {
+function EmptyState({ text, children }: { text: string; children?: React.ReactNode }) {
   return (
-    <div className="grid grid-cols-[repeat(auto-fill,minmax(84px,1fr))] gap-x-3 gap-y-4">
-      {items.map((a, i) => {
-        const selected = choice?.url === a.url;
-        const fav = favorites.includes(a.id);
-        return (
-          <div key={a.id} className="avatar-tile-in group relative" style={{ animationDelay: `${Math.min(i, 24) * 14}ms` }}>
-            <button
-              type="button"
-              onClick={() => onPick(a)}
-              aria-pressed={selected}
-              aria-label={`${a.name} — ${a.series}`}
-              className="relative block w-full rounded-full outline-none transition-transform duration-150 hover:scale-[1.04] active:scale-[0.96] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]"
-            >
-              <span className="block aspect-square overflow-hidden rounded-full bg-[var(--surface-raised)] ring-1 ring-[var(--panel-border)]">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={a.url} alt="" loading="lazy" decoding="async" draggable={false} className="h-full w-full select-none object-cover" />
-              </span>
-              {selected && (
-                <motion.span
-                  layoutId="avatar-selected-ring"
-                  transition={SPRING_PILL}
-                  className="pointer-events-none absolute -inset-[3px] rounded-full ring-[2.5px] ring-[var(--accent-primary)]"
-                >
-                  <span className="absolute -right-1 -top-1 grid h-5 w-5 place-items-center rounded-full bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow">
-                    <Check className="h-3 w-3" />
-                  </span>
-                </motion.span>
-              )}
-            </button>
-            <button
-              type="button"
-              onClick={() => onFavorite(a.id)}
-              aria-label={fav ? `Retirer ${a.name} des favoris` : `Ajouter ${a.name} aux favoris`}
-              aria-pressed={fav}
-              className={cn(
-                "absolute left-1.5 top-1.5 grid h-6 w-6 place-items-center rounded-full bg-black/45 text-white backdrop-blur-sm transition-[opacity,transform] duration-150 active:scale-90",
-                fav ? "opacity-100" : "opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
-              )}
-            >
-              <Heart className={cn("h-3.5 w-3.5", fav && "fill-current text-rose-400")} />
-            </button>
-            <p className="mt-1.5 truncate text-center text-[11px] leading-tight text-[var(--text-primary)]/85" title={a.name}>
-              {a.name}
-            </p>
-          </div>
-        );
-      })}
+    <div className="py-16 text-center">
+      <p className="text-sm text-white/55">{text}</p>
+      {children}
     </div>
   );
 }
 
-/** Rangée d'une série, défilement horizontal façon Crunchyroll. */
+/** Une série : son nom, puis ses avatars ronds sur une rangée (défilement horizontal, flèches quand ça déborde). */
 function SeriesRow({ title, items, choice, onPick }: { title: string; items: LibraryAvatar[]; choice: Choice | null; onPick: (a: LibraryAvatar) => void }) {
+  const rowRef = useRef<HTMLDivElement>(null);
+  const [edges, setEdges] = useState({ left: false, right: false });
+
+  useEffect(() => {
+    const el = rowRef.current;
+    if (!el) return;
+    const update = () => setEdges({ left: el.scrollLeft > 4, right: el.scrollLeft + el.clientWidth < el.scrollWidth - 4 });
+    update();
+    el.addEventListener("scroll", update, { passive: true });
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => {
+      el.removeEventListener("scroll", update);
+      ro.disconnect();
+    };
+  }, [items]);
+
+  const page = (dir: 1 | -1) => rowRef.current?.scrollBy({ left: dir * rowRef.current.clientWidth * 0.8, behavior: "smooth" });
+
   return (
-    <div style={{ contentVisibility: "auto", containIntrinsicSize: "0 150px" }}>
-      {title && <p className="mb-2 text-sm font-semibold text-[var(--text-primary)]/90">{title}</p>}
-      <div className="-mx-5 flex snap-x gap-3 overflow-x-auto px-5 pb-2 pt-1 no-scrollbar sm:-mx-6 sm:px-6">
-        {items.map((a) => {
-          const selected = choice?.url === a.url;
-          return (
-            <button
-              key={a.id}
-              type="button"
-              onClick={() => onPick(a)}
-              aria-pressed={selected}
-              aria-label={`${a.name} — ${a.series}`}
-              title={a.name}
-              className="group relative w-[84px] shrink-0 snap-start outline-none sm:w-[96px]"
-            >
-              <span
-                className={cn(
-                  "block aspect-square overflow-hidden rounded-full bg-[var(--surface-raised)] ring-1 ring-[var(--panel-border)] transition-[transform,box-shadow] duration-150 group-hover:scale-[1.04] group-active:scale-[0.96] group-focus-visible:ring-2 group-focus-visible:ring-[var(--accent-primary)]",
-                  selected && "ring-[3px] ring-[var(--accent-primary)]",
-                )}
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={a.url} alt="" loading="lazy" decoding="async" draggable={false} className="h-full w-full select-none object-cover" />
-              </span>
-              {selected && (
-                <span className="absolute bottom-5 right-0.5 grid h-6 w-6 place-items-center rounded-full bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow ring-2 ring-[var(--bg-surface)]">
-                  <Check className="h-3.5 w-3.5" />
-                </span>
-              )}
-              <span className="mt-1.5 block truncate text-center text-[11px] leading-tight text-[var(--text-muted)]">{a.name}</span>
-            </button>
-          );
-        })}
+    <section style={{ contentVisibility: "auto", containIntrinsicSize: "0 150px" }}>
+      <div className="mb-2.5 flex items-center justify-between gap-3">
+        <h3 className="truncate text-[15px] font-semibold tracking-tight text-white">
+          {title} <span className="ml-1 text-xs font-normal tabular-nums text-white/40">{items.length}</span>
+        </h3>
+        {(edges.left || edges.right) && (
+          <div className="hidden shrink-0 gap-1 sm:flex">
+            <ArrowButton label={tx("Avatars précédents")} disabled={!edges.left} onClick={() => page(-1)}>
+              <ChevronLeft className="h-4 w-4" />
+            </ArrowButton>
+            <ArrowButton label={tx("Avatars suivants")} disabled={!edges.right} onClick={() => page(1)}>
+              <ChevronRight className="h-4 w-4" />
+            </ArrowButton>
+          </div>
+        )}
       </div>
-    </div>
+      <div ref={rowRef} className="-mx-4 flex snap-x scroll-px-4 gap-3 overflow-x-auto scroll-smooth px-4 pb-1 pt-1 no-scrollbar sm:-mx-6 sm:scroll-px-6 sm:gap-4 sm:px-6">
+        {items.map((a) => (
+          <AvatarButton key={a.id} avatar={a} selected={choice?.url === a.url} onPick={() => onPick(a)} />
+        ))}
+      </div>
+    </section>
   );
 }
+
+function ArrowButton({ label, disabled, onClick, children }: { label: string; disabled: boolean; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      disabled={disabled}
+      onClick={onClick}
+      className="grid h-7 w-7 place-items-center rounded-full bg-white/[0.07] text-white/75 transition-[background-color,opacity] duration-150 hover:bg-white/[0.14] hover:text-white disabled:opacity-25"
+    >
+      {children}
+    </button>
+  );
+}
+
+/** Avatar rond : recadré sans déformation, fond animé pendant le chargement, icône si l'image manque. */
+function AvatarButton({ avatar, selected, onPick }: { avatar: LibraryAvatar; selected: boolean; onPick: () => void }) {
+  const [state, setState] = useState<"loading" | "ready" | "missing">("loading");
+  return (
+    <button
+      type="button"
+      onClick={onPick}
+      aria-pressed={selected}
+      aria-label={`${avatar.name} — ${avatar.series}`}
+      title={avatar.name}
+      className="group relative w-[76px] shrink-0 snap-start outline-none sm:w-[92px]"
+    >
+      <span
+        className={cn(
+          "relative block aspect-square overflow-hidden rounded-full bg-white/[0.06] transition-[transform,box-shadow] duration-150 group-hover:scale-[1.05] group-active:scale-[0.96] group-focus-visible:ring-2 group-focus-visible:ring-white/70",
+          state === "loading" && "animate-pulse",
+          selected ? "ring-[2.5px] ring-white ring-offset-2 ring-offset-[#0b0b0f]" : "ring-1 ring-white/[0.08]",
+        )}
+      >
+        {state === "missing" ? (
+          <span className="grid h-full w-full place-items-center text-white/35">
+            <ImageOff className="h-6 w-6" />
+          </span>
+        ) : (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={avatar.url}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            draggable={false}
+            onLoad={() => setState("ready")}
+            onError={() => setState("missing")}
+            className={cn("h-full w-full select-none object-cover transition-opacity duration-200", state === "ready" ? "opacity-100" : "opacity-0")}
+          />
+        )}
+      </span>
+      {selected && (
+        <span className="absolute right-0 top-0 grid h-5 w-5 place-items-center rounded-full bg-white text-black shadow ring-2 ring-[#0b0b0f] sm:h-6 sm:w-6">
+          <Check className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+        </span>
+      )}
+      <span className={cn("mt-1.5 block truncate text-center text-[11px] leading-tight", selected ? "text-white" : "text-white/55")}>{avatar.name}</span>
+    </button>
+  );
+}
+

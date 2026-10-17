@@ -1,7 +1,8 @@
 import library from "./avatar-library.json";
 
-/** Bibliothèque d'avatars hébergée sur le site (générée par scripts/build-avatar-library.mjs). */
-export type LibraryAvatar = { id: string; name: string; series: string; url: string };
+/** Bibliothèque d'avatars hébergée sur le site (générée par scripts/build-avatar-library.mjs depuis C:\ETHONE-Avatars). */
+/** `origin` : chemin de l'image dans le dossier source (plateforme/série/fichier). */
+export type LibraryAvatar = { id: string; name: string; series: string; url: string; origin?: string };
 export type AvatarCollection = { id: string; label: string; source: string; items: LibraryAvatar[] };
 
 export const AVATAR_COLLECTIONS = library.collections as AvatarCollection[];
@@ -21,26 +22,13 @@ export function seriesOf(collection: AvatarCollection): string[] {
 
 const fold = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 
-export function searchAvatars(query: string, pool: LibraryAvatar[] = ALL_AVATARS): LibraryAvatar[] {
-  const words = fold(query).split(/\s+/).filter(Boolean);
-  if (!words.length) return pool;
-  return pool.filter((a) => {
-    const hay = fold(`${a.name} ${a.series}`);
-    return words.every((w) => hay.includes(w));
-  });
+/** Vrai si tous les mots de la recherche apparaissent dans le texte (sans accents ni majuscules). */
+export function matchesQuery(text: string, query: string): boolean {
+  const hay = fold(text);
+  return fold(query).split(/\s+/).filter(Boolean).every((w) => hay.includes(w));
 }
 
-/** Anciens chemins (bibliothèque précédente) → nouvel avatar équivalent, pour les profils qui les utilisent encore. */
-export function migrateLegacyAvatarUrl(url: string): string {
-  const riot = url.match(/^\/avatars\/riot-(lol|val)-([a-z]+)\.png$/);
-  if (riot) {
-    const found = avatarById(`${riot[1] === "val" ? "valorant" : "lol"}-${riot[2]}`);
-    if (found) return found.url;
-  }
-  const drive = url.match(/^\/avatars\/drive\/([a-z0-9-]+)\.png$/);
-  if (drive) {
-    const found = avatarById(`netflix-${drive[1]}`);
-    if (found) return found.url;
-  }
-  return url;
+export function searchAvatars(query: string, pool: LibraryAvatar[] = ALL_AVATARS): LibraryAvatar[] {
+  if (!query.trim()) return pool;
+  return pool.filter((a) => matchesQuery(`${a.name} ${a.series}`, query));
 }

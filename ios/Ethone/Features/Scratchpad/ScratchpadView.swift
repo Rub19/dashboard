@@ -1,4 +1,39 @@
+import PencilKit
 import SwiftUI
+
+/// Freeform-style canvas: finger or Apple Pencil, with Apple's tool palette.
+struct DrawingCanvas: UIViewRepresentable {
+    @Binding var drawing: PKDrawing
+    let canvas: PKCanvasView
+
+    func makeUIView(context: Context) -> PKCanvasView {
+        canvas.drawing = drawing
+        canvas.drawingPolicy = .anyInput
+        canvas.backgroundColor = .clear
+        canvas.isOpaque = false
+        canvas.alwaysBounceVertical = true
+        canvas.delegate = context.coordinator
+        canvas.tool = PKInkingTool(.pen, color: .label, width: 4)
+        let picker = context.coordinator.picker
+        picker.setVisible(true, forFirstResponder: canvas)
+        picker.addObserver(canvas)
+        DispatchQueue.main.async { canvas.becomeFirstResponder() }
+        return canvas
+    }
+
+    func updateUIView(_ view: PKCanvasView, context: Context) {
+        if view.drawing != drawing { view.drawing = drawing }
+    }
+
+    func makeCoordinator() -> Coordinator { Coordinator(drawing: $drawing) }
+
+    final class Coordinator: NSObject, PKCanvasViewDelegate {
+        var drawing: Binding<PKDrawing>
+        let picker = PKToolPicker()
+        init(drawing: Binding<PKDrawing>) { self.drawing = drawing }
+        func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) { drawing.wrappedValue = canvasView.drawing }
+    }
+}
 
 struct ScratchpadView: View {
     @Environment(AppModel.self) private var model
@@ -8,18 +43,48 @@ struct ScratchpadView: View {
     @State private var status = "Enregistré"
     @State private var errorMessage: String?
     @State private var exportMessage: String?
+    @AppStorage("ethone.scratchpad.mode") private var mode = "text"
+    @State private var drawing = PKDrawing()
+    @State private var canvas = PKCanvasView()
+
+    private static var drawingURL: URL {
+        FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("scratchpad.drawing")
+    }
+
+    private var drawingImage: Image {
+        let bounds = drawing.bounds.isEmpty ? CGRect(x: 0, y: 0, width: 400, height: 400) : drawing.bounds.insetBy(dx: -24, dy: -24)
+        return Image(uiImage: drawing.image(from: bounds, scale: 3))
+    }
 
     private var words: Int { text.split { $0.isWhitespace }.count }
 
     var body: some View {
         VStack(spacing: 0) {
-            TextEditor(text: $text)
-                .scrollContentBackground(.hidden)
-                .padding(12)
-                .glassEffect(.regular, in: .rect(cornerRadius: 22))
-                .padding(.horizontal, 16)
-                .padding(.top, 8)
-                .accessibilityLabel("Bloc-notes")
+            Picker("Mode", selection: $mode) {
+                Label("Texte", systemImage: "text.alignleft").tag("text")
+                Label("Dessin", systemImage: "pencil.tip.crop.circle").tag("draw")
+            }
+            .pickerStyle(.segmented)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
+
+            if mode == "draw" {
+                DrawingCanvas(drawing: $drawing, canvas: canvas)
+                    .background(.thinMaterial, in: .rect(cornerRadius: 22))
+                    .clipShape(.rect(cornerRadius: 22))
+                    .padding(.horizontal, 16)
+                    .accessibilityLabel("Zone de dessin")
+                    .onChange(of: drawing) { _, value in
+                        try? value.dataRepresentation().write(to: Self.drawingURL, options: .atomic)
+                    }
+            } else {
+                TextEditor(text: $text)
+                    .scrollContentBackground(.hidden)
+                    .padding(12)
+                    .glassEffect(.regular, in: .rect(cornerRadius: 22))
+                    .padding(.horizontal, 16)
+                    .accessibilityLabel("Bloc-notes")
+            }
 
             HStack {
                 Text("\(plural(words, "mot", "mots")), \(plural(text.count, "caractère", "caractères"))").font(.caption).foregroundStyle(.secondary)
@@ -48,7 +113,21 @@ struct ScratchpadView: View {
                 .disabled(text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && text.isEmpty)
             }
         }
+        .toolbar {
+            if mode == "draw" {
+                ToolbarItemGroup(placement: .primaryAction) {
+                    Button { canvas.undoManager?.undo() } label: { Image(systemName: "arrow.uturn.backward") }
+                        .accessibilityLabel("Annuler")
+                    ShareLink(item: drawingImage, preview: SharePreview("Dessin ETHONE", image: drawingImage)) { Image(systemName: "square.and.arrow.up") }
+                        .disabled(drawing.strokes.isEmpty)
+                    Button(role: .destructive) { drawing = PKDrawing() } label: { Image(systemName: "trash") }
+                        .accessibilityLabel("Effacer le dessin")
+                        .disabled(drawing.strokes.isEmpty)
+                }
+            }
+        }
         .task {
+            if let data = try? Data(contentsOf: Self.drawingURL), let saved = try? PKDrawing(data: data) { drawing = saved }
             guard !loaded else { return }
             do {
                 if let remote = try await UserStateClient(api: model.api).value("scratchpad")?.stringValue {

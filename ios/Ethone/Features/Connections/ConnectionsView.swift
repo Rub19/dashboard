@@ -28,6 +28,34 @@ struct ConnectionStatus: Identifiable, Decodable, Hashable {
         }
     }
 
+    /// Real brand logo (Simple Icons, CC0) and brand color, when the provider has one.
+    var brand: (asset: String, color: UInt32)? {
+        switch provider {
+        case "spotify": ("BrandSpotify", 0x1DB954)
+        case "youtube": ("BrandYouTube", 0xFF0000)
+        case "twitch": ("BrandTwitch", 0x9146FF)
+        case "discord": ("BrandDiscord", 0x5865F2)
+        case "reddit": ("BrandReddit", 0xFF4500)
+        case "google-calendar": ("BrandGoogleCalendar", 0x4285F4)
+        case "google-drive": ("BrandGoogleDrive", 0x1FA463)
+        case "notion": ("BrandNotion", 0x2F2F2F)
+        case "todoist": ("BrandTodoist", 0xE44332)
+        case "linear": ("BrandLinear", 0x5E6AD2)
+        case "clickup": ("BrandClickUp", 0x7B68EE)
+        case "jira": ("BrandJira", 0x0052CC)
+        case "github": ("BrandGitHub", 0x24292F)
+        case "gitlab": ("BrandGitLab", 0xFC6D26)
+        case "fitbit": ("BrandFitbit", 0x00B0B9)
+        case "plex": ("BrandPlex", 0xE5A00D)
+        case "jellyfin": ("BrandJellyfin", 0x00A4DC)
+        case "emby": ("BrandEmby", 0x52B54B)
+        case "bluesky": ("BrandBluesky", 0x0285FF)
+        case "obsidian": ("BrandObsidian", 0x7C3AED)
+        case "riot": ("BrandRiot", 0xEB0029)
+        default: nil
+        }
+    }
+
     var symbol: String {
         switch provider {
         case "spotify", "youtube", "twitch": return "play.rectangle.fill"
@@ -56,7 +84,21 @@ struct ConnectionsView: View {
             Section {
                 ForEach(items.sorted { ($0.connected ? 0 : 1, $0.name) < ($1.connected ? 0 : 1, $1.name) }) { item in
                     HStack(spacing: 14) {
-                        IconTile(systemImage: item.symbol, color: item.connected ? Theme.accent : Color(hex: 0x7A7F8C))
+                        if let brand = item.brand {
+                            Image(brand.asset)
+                                .resizable()
+                                .renderingMode(.template)
+                                .scaledToFit()
+                                .frame(width: 17, height: 17)
+                                .foregroundStyle(.white)
+                                .frame(width: 30, height: 30)
+                                .background(Color(hex: brand.color).gradient, in: .rect(cornerRadius: 8, style: .continuous))
+                                .saturation(item.connected ? 1 : 0.15)
+                                .opacity(item.connected ? 1 : 0.7)
+                                .accessibilityHidden(true)
+                        } else {
+                            IconTile(systemImage: item.symbol, color: item.connected ? Theme.accent : Color(hex: 0x7A7F8C))
+                        }
                         Text(item.name)
                         Spacer()
                         HStack(spacing: 6) {

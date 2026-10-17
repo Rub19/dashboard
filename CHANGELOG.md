@@ -2,6 +2,20 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.143 — 2026-10-17
+
+**App iOS : nouvelle connexion, accueil, onglets et Mail complet**
+
+- Habitudes ne fait plus planter l'app (pile de navigation en double).
+- Votre photo et votre nom ETHONE remplacent ceux de Discord dans l'app.
+- Thème par défaut : ETHONE Dark violet.
+- Onglets personnalisables : Accueil, Mail, Tâches et Calendrier par défaut, modifiables dans Plus, Onglets.
+- Plus en grille d'icônes, groupée par thème, pour moins défiler.
+- Nouvelle connexion centrée : fond animé, logo qui respire, vrais logos Discord, Google et GitHub, e-mail dépliable.
+- Accueil façon tableau de bord : résumé du jour, cartes Focus, Mail, Agenda, Habitudes et Météo, et blocs personnalisables.
+- Mail : archiver, corbeille, indésirable, bloquer, transférer, rechercher, et réglages (adresses ETHONE, signatures, transferts, expéditeurs bloqués).
+- Textes des mails lisibles et sans espaces vides ; entrées d'écran sans effet de flou.
+
 ## v1.75.142 — 2026-10-17
 
 **Bot : clôture des signalements plus fiable**

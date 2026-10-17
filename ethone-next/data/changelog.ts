@@ -58739,6 +58739,79 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_142_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_142_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_142_de);
 
+const v1_75_143_fr: ChangelogEntry = {
+  version: "v1.75.143",
+  date: "2026-10-17",
+  title: "App iOS : nouvelle connexion, accueil, onglets et Mail complet",
+  items: [
+    "Habitudes ne fait plus planter l'app (pile de navigation en double).",
+    "Votre photo et votre nom ETHONE remplacent ceux de Discord dans l'app.",
+    "Thème par défaut : ETHONE Dark violet.",
+    "Onglets personnalisables : Accueil, Mail, Tâches et Calendrier par défaut, modifiables dans Plus, Onglets.",
+    "Plus en grille d'icônes, groupée par thème, pour moins défiler.",
+    "Nouvelle connexion centrée : fond animé, logo qui respire, vrais logos Discord, Google et GitHub, e-mail dépliable.",
+    "Accueil façon tableau de bord : résumé du jour, cartes Focus, Mail, Agenda, Habitudes et Météo, et blocs personnalisables.",
+    "Mail : archiver, corbeille, indésirable, bloquer, transférer, rechercher, et réglages (adresses ETHONE, signatures, transferts, expéditeurs bloqués).",
+    "Textes des mails lisibles et sans espaces vides ; entrées d'écran sans effet de flou.",
+  ],
+};
+
+const v1_75_143_en: ChangelogEntry = {
+  version: "v1.75.143",
+  date: "2026-10-17",
+  title: "iOS app: new sign-in, home, tabs and full Mail",
+  items: [
+    "Habits no longer crashes the app (duplicate navigation stack).",
+    "Your ETHONE picture and name replace the Discord ones in the app.",
+    "Default theme: ETHONE Dark violet.",
+    "Customizable tabs: Home, Mail, Tasks and Calendar by default, editable in More, Tabs.",
+    "More is now an icon grid grouped by theme, for less scrolling.",
+    "New centered sign-in: animated background, breathing logo, real Discord, Google and GitHub logos, expandable e-mail.",
+    "Dashboard-style Home: today's summary, Focus, Mail, Agenda, Habits and Weather cards, and customizable blocks.",
+    "Mail: archive, trash, spam, block, forward, search, and settings (ETHONE addresses, signatures, forwards, blocked senders).",
+    "Readable mail rows without empty gaps; screen entrances without the blur effect.",
+  ],
+};
+
+const v1_75_143_es: ChangelogEntry = {
+  version: "v1.75.143",
+  date: "2026-10-17",
+  title: "App iOS: nuevo inicio de sesión, inicio, pestañas y Mail completo",
+  items: [
+    "Hábitos ya no cierra la app (pila de navegación duplicada).",
+    "Tu foto y tu nombre ETHONE sustituyen a los de Discord en la app.",
+    "Tema por defecto: ETHONE Dark violeta.",
+    "Pestañas personalizables: Inicio, Mail, Tareas y Calendario por defecto, editables en Más, Pestañas.",
+    "Más pasa a ser una cuadrícula de iconos agrupada por tema, para desplazarse menos.",
+    "Nuevo inicio de sesión centrado: fondo animado, logo que respira, logos reales de Discord, Google y GitHub, correo desplegable.",
+    "Inicio tipo panel: resumen del día, tarjetas Focus, Mail, Agenda, Hábitos y Tiempo, y bloques personalizables.",
+    "Mail: archivar, papelera, spam, bloquear, reenviar, buscar y ajustes (direcciones ETHONE, firmas, reenvíos, remitentes bloqueados).",
+    "Correos legibles y sin espacios vacíos; entradas de pantalla sin efecto de desenfoque.",
+  ],
+};
+
+const v1_75_143_de: ChangelogEntry = {
+  version: "v1.75.143",
+  date: "2026-10-17",
+  title: "iOS-App: neue Anmeldung, Start, Tabs und vollständiges Mail",
+  items: [
+    "Gewohnheiten bringt die App nicht mehr zum Absturz (doppelter Navigationsstapel).",
+    "Dein ETHONE-Bild und -Name ersetzen die von Discord in der App.",
+    "Standarddesign: ETHONE Dark Violett.",
+    "Anpassbare Tabs: standardmäßig Start, Mail, Aufgaben und Kalender, änderbar unter Mehr, Tabs.",
+    "Mehr ist jetzt ein nach Themen gruppiertes Symbolraster, für weniger Scrollen.",
+    "Neue zentrierte Anmeldung: animierter Hintergrund, atmendes Logo, echte Discord-, Google- und GitHub-Logos, ausklappbare E-Mail.",
+    "Start im Dashboard-Stil: Tagesübersicht, Karten für Fokus, Mail, Termine, Gewohnheiten und Wetter, anpassbare Blöcke.",
+    "Mail: Archivieren, Papierkorb, Spam, Blockieren, Weiterleiten, Suche und Einstellungen (ETHONE-Adressen, Signaturen, Weiterleitungen, blockierte Absender).",
+    "Lesbare Mails ohne Leerräume; Bildschirmübergänge ohne Unschärfe.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_143_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_143_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_143_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_143_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

@@ -8,7 +8,7 @@ enum Motion {
     static let stagger = 0.07
 }
 
-/// Staged entrance: rises out of a soft blur into focus, `order` steps after the first element.
+/// Staged entrance: fades in and rises slightly, `order` steps after the first element.
 private struct RevealModifier: ViewModifier {
     let order: Int
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -17,8 +17,7 @@ private struct RevealModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .opacity(shown ? 1 : 0)
-            .offset(y: shown || reduceMotion ? 0 : 14)
-            .blur(radius: shown || reduceMotion ? 0 : 8)
+            .offset(y: shown || reduceMotion ? 0 : 12)
             .onAppear {
                 withAnimation(reduceMotion ? .easeOut(duration: 0.2) : Motion.reveal.delay(Double(order) * Motion.stagger)) {
                     shown = true

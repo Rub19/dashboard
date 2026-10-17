@@ -135,7 +135,7 @@ struct AvatarLibrarySheet: View {
                                 .foregroundStyle(isSelected ? .white : .secondary)
                             Text("\(collection.items.count)")
                                 .font(.caption2.monospacedDigit())
-                                .foregroundStyle(isSelected ? .white.opacity(0.8) : .tertiary)
+                                .foregroundStyle(isSelected ? Color.white.opacity(0.8) : Color.secondary)
                                 .padding(.horizontal, 5)
                                 .padding(.vertical, 1.5)
                                 .background(isSelected ? Color.white.opacity(0.18) : Color.white.opacity(0.06), in: .capsule)

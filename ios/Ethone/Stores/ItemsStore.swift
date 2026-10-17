@@ -99,6 +99,7 @@ final class ItemsStore {
             }
             items.insert(created, at: 0)
             persist()
+            ActivityLog.record(api, ["note": "v8.notes.new", "task": "v8.tasks.create", "event": "v8.calendar.create"][kind.rawValue] ?? "ios.\(kind.rawValue).create", title: title)
             errorMessage = nil
             return created
         } catch {
@@ -128,6 +129,7 @@ final class ItemsStore {
 
     func setDone(_ item: Item, _ done: Bool) async {
         await apply(item, fields: [isTask ? "is_completed" : "done": .bool(done)]) { $0.done = done }
+        if done && isTask { ActivityLog.record(api, "v8.tasks.complete", title: item.title) }
     }
 
     func delete(_ item: Item) async {

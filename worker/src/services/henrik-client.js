@@ -41,6 +41,13 @@ function resolveAgentImage(value, character, catalogue) {
   return catalogue?.get(safeText(character).toLowerCase()) || "";
 }
 
+function resolveCardWideUrl(card) {
+  if (!card) return "";
+  if (typeof card === "object" && card.wide) return safePublicUrl(card.wide, ["henrikdev.xyz", "valorant-api.com"]);
+  if (typeof card === "string") return safePublicUrl(`https://media.valorant-api.com/playercards/${card}/wideart.png`, ["valorant-api.com"]);
+  return "";
+}
+
 function resolveCardSmallUrl(card) {
   if (!card) return "";
   if (typeof card === "object" && card.small) return safePublicUrl(card.small, ["henrikdev.xyz", "valorant-api.com"]);
@@ -97,6 +104,7 @@ export async function getValorantProfile(env, riotId, apiKeyOverride) {
     identifier: riotId,
     handle: riotId,
     avatarUrl: resolveCardSmallUrl(account.card),
+    bannerUrl: resolveCardWideUrl(account.card),
     segments: Object.freeze([{
       type: "overview",
       name: "Ranked",
@@ -104,7 +112,8 @@ export async function getValorantProfile(env, riotId, apiKeyOverride) {
         rank: { value: currentData.currenttier || 0, displayValue: currentData.currenttierpatched || "Unranked" },
         rr: { value: currentData.ranking_in_tier || 0, displayValue: `${currentData.ranking_in_tier || 0} RR` },
         elo: { value: currentData.elo || 0, displayValue: String(currentData.elo || 0) },
-        level: { value: account.account_level || 0, displayValue: String(account.account_level || 0) }
+        level: { value: account.account_level || 0, displayValue: String(account.account_level || 0) },
+        peakRank: { value: mmr.highest_rank?.tier || 0, displayValue: mmr.highest_rank?.patched_tier || "" }
       })
     }])
   });

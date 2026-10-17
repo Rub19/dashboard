@@ -121,6 +121,7 @@ final class HabitsStore {
                 ])
                 completions.append(created)
                 errorMessage = nil
+                ActivityLog.record(api, "ios.habit.complete", title: habit.name)
             } catch {
                 errorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
             }

@@ -2,6 +2,19 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.146 — 2026-10-17
+
+**Avatars, Interactions synchronisées, mails et Valorant**
+
+- Choix de l'avatar refait façon plateforme de streaming : grand aperçu, une rangée par série, sur le site comme sur l'iPhone, avec les 530 avatars de la bibliothèque.
+- Avatars anime et League of Legends recadrés : visage et buste entiers au lieu d'un gros plan coupé.
+- Interactions : mêmes données sur le site et l'iPhone (enregistrées dans votre compte), jours et mois affichés, détail du jour, série, répartition et activité récente.
+- Mail sur iPhone : les messages s'affichent avec leur mise en forme d'origine (images, boutons, liens).
+- Sessions : l'iPhone apparaît sous son vrai modèle (ex. iPhone 17 Pro) au lieu de « Mobile ».
+- Valorant sur iPhone : carte de profil avec rang, RR et meilleur rang, et une carte par partie avec l'agent, la carte, victoire ou défaite, KDA et score.
+- Profil : la photo Discord n'est plus utilisée comme avatar ETHONE.
+- Correctif : enregistrer seulement l'avatar depuis l'app n'efface plus le nom affiché.
+
 ## v1.75.145 — 2026-10-17
 
 **App iOS : corrections Discord, Mail, Sécurité, Météo et dessin**

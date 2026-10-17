@@ -38,6 +38,22 @@ async function writeWebp(collection, id, input, opts = {}) {
   fs.mkdirSync(dir, { recursive: true });
   const file = path.join(dir, `${id}.webp`);
   let img = sharp(input).resize(SIZE, SIZE, { fit: "cover", position: opts.position || "centre" });
+  if (opts.portrait) {
+    // Portrait entier (tête et buste) posé sur un fond flouté de la même image, plutôt qu'un gros plan coupé.
+    const height = Math.round(SIZE * 1.12);
+    const fg = await sharp(input).resize({ height }).toBuffer({ resolveWithObject: true });
+    const width = Math.min(SIZE, fg.info.width);
+    const left = Math.max(0, Math.round((fg.info.width - width) / 2));
+    const offset = Math.round(SIZE * 0.06);
+    const face = await sharp(fg.data).extract({ left, top: 0, width, height: SIZE - offset }).toBuffer();
+    const bg = await sharp(input).resize(SIZE, SIZE, { fit: "cover" }).blur(18).modulate({ brightness: 0.62, saturation: 1.2 }).toBuffer();
+    img = sharp(bg).composite([{ input: face, left: Math.round((SIZE - width) / 2), top: offset }]);
+  }
+  if (opts.top !== undefined) {
+    const resized = await sharp(input).resize({ width: SIZE }).toBuffer({ resolveWithObject: true });
+    const top = Math.min(Math.max(0, resized.info.height - SIZE), Math.round(resized.info.height * opts.top));
+    img = sharp(resized.data).extract({ left: 0, top, width: SIZE, height: SIZE });
+  }
   if (opts.background) {
     const fg = await img.png().toBuffer();
     img = sharp(opts.background).resize(SIZE, SIZE).composite([{ input: fg }]);
@@ -141,8 +157,8 @@ async function buildAnime() {
       seenChar.add(c.id);
       const buf = await get(c.image.large);
       const id = slug(`${series}-${c.name.full}`).slice(0, 80);
-      // Portraits AniList (≈230×345) : visage en haut → carré recadré depuis le haut.
-      items.push({ id: `anime-${id}`, name: c.name.full, series, url: await writeWebp("anime", id, buf, { position: "top" }) });
+      // Portraits AniList (≈230×345) : affichés en entier sur un fond flouté, comme les avatars des plateformes de streaming.
+      items.push({ id: `anime-${id}`, name: c.name.full, series, url: await writeWebp("anime", id, buf, { portrait: true }) });
     }
     await sleep(2200); // AniList : ~30 requêtes/min en mode dégradé
   }
@@ -176,8 +192,9 @@ async function buildLol() {
     const c = champs[key];
     if (!c) { console.warn("  champion inconnu :", key); continue; }
     const id = slug(c.id);
-    const buf = await get(`https://ddragon.leagueoflegends.com/cdn/img/champion/tiles/${c.id}_0.jpg`);
-    items.push({ id: `lol-${id}`, name: c.name, series: "League of Legends", url: await writeWebp("lol", id, buf, { position: "top" }) });
+    // Illustration de chargement (308×560) : carré cadré sur la tête et le buste.
+    const buf = await get(`https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${c.id}_0.jpg`);
+    items.push({ id: `lol-${id}`, name: c.name, series: "League of Legends", url: await writeWebp("lol", id, buf, { top: 0.06 }) });
   }
   return { id: "lol", label: "League of Legends", source: "Riot Data Dragon", items };
 }
@@ -256,4 +273,6 @@ for (const [id, build] of Object.entries(BUILDERS)) {
   collections.push(col);
 }
 fs.writeFileSync(MANIFEST, JSON.stringify({ size: SIZE, collections }, null, 1) + "\n");
+// Copie publique du catalogue, lue par l'app iOS.
+fs.writeFileSync(path.join(OUT, "catalog.json"), JSON.stringify({ size: SIZE, collections }));
 console.log(`✔ ${collections.reduce((n, c) => n + c.items.length, 0)} avatars → ${path.relative(ROOT, MANIFEST)}`);

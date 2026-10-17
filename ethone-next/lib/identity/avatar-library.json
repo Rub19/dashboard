@@ -1587,16 +1587,16 @@
      "url": "/avatars/library/anime/demon-slayer-kimetsu-no-yaiba-tanjirou-kamado.webp"
     },
     {
-     "id": "anime-demon-slayer-kimetsu-no-yaiba-inosuke-hashibira",
-     "name": "Inosuke Hashibira",
-     "series": "Demon Slayer: Kimetsu no Yaiba",
-     "url": "/avatars/library/anime/demon-slayer-kimetsu-no-yaiba-inosuke-hashibira.webp"
-    },
-    {
      "id": "anime-demon-slayer-kimetsu-no-yaiba-nezuko-kamado",
      "name": "Nezuko Kamado",
      "series": "Demon Slayer: Kimetsu no Yaiba",
      "url": "/avatars/library/anime/demon-slayer-kimetsu-no-yaiba-nezuko-kamado.webp"
+    },
+    {
+     "id": "anime-demon-slayer-kimetsu-no-yaiba-inosuke-hashibira",
+     "name": "Inosuke Hashibira",
+     "series": "Demon Slayer: Kimetsu no Yaiba",
+     "url": "/avatars/library/anime/demon-slayer-kimetsu-no-yaiba-inosuke-hashibira.webp"
     },
     {
      "id": "anime-demon-slayer-kimetsu-no-yaiba-zenitsu-agatsuma",
@@ -2067,16 +2067,16 @@
      "url": "/avatars/library/anime/one-punch-man-tatsumaki.webp"
     },
     {
-     "id": "anime-one-punch-man-garou",
-     "name": "Garou",
-     "series": "One-Punch Man",
-     "url": "/avatars/library/anime/one-punch-man-garou.webp"
-    },
-    {
      "id": "anime-one-punch-man-genos",
      "name": "Genos",
      "series": "One-Punch Man",
      "url": "/avatars/library/anime/one-punch-man-genos.webp"
+    },
+    {
+     "id": "anime-one-punch-man-garou",
+     "name": "Garou",
+     "series": "One-Punch Man",
+     "url": "/avatars/library/anime/one-punch-man-garou.webp"
     },
     {
      "id": "anime-one-punch-man-fubuki",

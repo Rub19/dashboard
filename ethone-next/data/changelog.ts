@@ -58938,6 +58938,75 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_145_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_145_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_145_de);
 
+const v1_75_146_fr: ChangelogEntry = {
+  version: "v1.75.146",
+  date: "2026-10-17",
+  title: "Avatars, Interactions synchronisées, mails et Valorant",
+  items: [
+    "Choix de l'avatar refait façon plateforme de streaming : grand aperçu, une rangée par série, sur le site comme sur l'iPhone, avec les 530 avatars de la bibliothèque.",
+    "Avatars anime et League of Legends recadrés : visage et buste entiers au lieu d'un gros plan coupé.",
+    "Interactions : mêmes données sur le site et l'iPhone (enregistrées dans votre compte), jours et mois affichés, détail du jour, série, répartition et activité récente.",
+    "Mail sur iPhone : les messages s'affichent avec leur mise en forme d'origine (images, boutons, liens).",
+    "Sessions : l'iPhone apparaît sous son vrai modèle (ex. iPhone 17 Pro) au lieu de « Mobile ».",
+    "Valorant sur iPhone : carte de profil avec rang, RR et meilleur rang, et une carte par partie avec l'agent, la carte, victoire ou défaite, KDA et score.",
+    "Profil : la photo Discord n'est plus utilisée comme avatar ETHONE.",
+    "Correctif : enregistrer seulement l'avatar depuis l'app n'efface plus le nom affiché.",
+  ],
+};
+
+const v1_75_146_en: ChangelogEntry = {
+  version: "v1.75.146",
+  date: "2026-10-17",
+  title: "Avatars, synced Interactions, mail and Valorant",
+  items: [
+    "Avatar picker redesigned streaming-style: large preview, one row per series, on the website and iPhone, with all 530 library avatars.",
+    "Anime and League of Legends avatars reframed: full face and shoulders instead of a cropped close-up.",
+    "Interactions: same data on the website and iPhone (stored in your account), days and months shown, day details, streak, breakdown and recent activity.",
+    "Mail on iPhone: messages show with their original formatting (images, buttons, links).",
+    "Sessions: the iPhone shows its real model (e.g. iPhone 17 Pro) instead of \"Mobile\".",
+    "Valorant on iPhone: profile card with rank, RR and peak rank, and one card per match with agent, map, win or loss, KDA and score.",
+    "Profile: the Discord picture is no longer used as the ETHONE avatar.",
+    "Fix: saving only the avatar from the app no longer clears the display name.",
+  ],
+};
+
+const v1_75_146_es: ChangelogEntry = {
+  version: "v1.75.146",
+  date: "2026-10-17",
+  title: "Avatares, Interacciones sincronizadas, correo y Valorant",
+  items: [
+    "Selector de avatar rediseñado al estilo streaming: vista previa grande, una fila por serie, en el sitio y en el iPhone, con los 530 avatares de la biblioteca.",
+    "Avatares de anime y League of Legends reencuadrados: cara y busto completos en lugar de un primer plano cortado.",
+    "Interacciones: mismos datos en el sitio y el iPhone (guardados en tu cuenta), días y meses visibles, detalle del día, racha, reparto y actividad reciente.",
+    "Correo en iPhone: los mensajes se muestran con su formato original (imágenes, botones, enlaces).",
+    "Sesiones: el iPhone aparece con su modelo real (p. ej. iPhone 17 Pro) en lugar de «Mobile».",
+    "Valorant en iPhone: tarjeta de perfil con rango, RR y rango máximo, y una tarjeta por partida con agente, mapa, victoria o derrota, KDA y puntuación.",
+    "Perfil: la foto de Discord ya no se usa como avatar de ETHONE.",
+    "Corrección: guardar solo el avatar desde la app ya no borra el nombre visible.",
+  ],
+};
+
+const v1_75_146_de: ChangelogEntry = {
+  version: "v1.75.146",
+  date: "2026-10-17",
+  title: "Avatare, synchronisierte Interaktionen, Mail und Valorant",
+  items: [
+    "Avatar-Auswahl im Streaming-Stil neu gestaltet: große Vorschau, eine Reihe pro Serie, auf der Website und dem iPhone, mit allen 530 Avataren der Bibliothek.",
+    "Anime- und League-of-Legends-Avatare neu zugeschnitten: ganzes Gesicht und Schultern statt eines abgeschnittenen Ausschnitts.",
+    "Interaktionen: dieselben Daten auf Website und iPhone (in deinem Konto gespeichert), Tage und Monate angezeigt, Tagesdetails, Serie, Aufteilung und letzte Aktivität.",
+    "Mail auf dem iPhone: Nachrichten erscheinen mit ihrer ursprünglichen Formatierung (Bilder, Buttons, Links).",
+    "Sitzungen: Das iPhone erscheint mit seinem echten Modell (z. B. iPhone 17 Pro) statt „Mobile“.",
+    "Valorant auf dem iPhone: Profilkarte mit Rang, RR und höchstem Rang sowie eine Karte pro Spiel mit Agent, Karte, Sieg oder Niederlage, KDA und Punktzahl.",
+    "Profil: Das Discord-Bild wird nicht mehr als ETHONE-Avatar verwendet.",
+    "Korrektur: Nur das Avatar aus der App zu speichern löscht den Anzeigenamen nicht mehr.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_146_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_146_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_146_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_146_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

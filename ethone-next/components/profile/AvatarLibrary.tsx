@@ -18,20 +18,7 @@ import { cn } from "@/lib/utils";
 type Choice = { url: string; name: string; series: string; id: string };
 type Tab = "all" | "favorites" | "recent" | string;
 
-const PREVIEW_PER_SECTION = 14;
 const MAX_RECENT = 18;
-
-/** Aperçu varié d'une collection : une vignette par série à tour de rôle, plutôt que les premières d'une seule série. */
-function previewOf(items: LibraryAvatar[], n: number): LibraryAvatar[] {
-  const bySeries = new Map<string, LibraryAvatar[]>();
-  for (const a of items) bySeries.set(a.series, [...(bySeries.get(a.series) ?? []), a]);
-  const queues = [...bySeries.values()];
-  const out: LibraryAvatar[] = [];
-  for (let round = 0; out.length < n && queues.some((q) => q.length > round); round++) {
-    for (const q of queues) if (q[round] && out.length < n) out.push(q[round]);
-  }
-  return out;
-}
 
 /**
  * Bibliothèque d'avatars : choisir une image de la bibliothèque ETHONE ou importer sa propre photo.
@@ -165,18 +152,30 @@ function LibraryPanel({ onClose, onSelect }: { onClose: () => void; onSelect?: (
           transition={SPRING_PANEL}
         >
           {/* En-tête : aperçu du choix */}
-          <div className="flex items-center gap-4 border-b border-[var(--panel-border)] px-5 py-4 sm:px-6">
-            <motion.div key={choice?.url || "none"} initial={{ scale: 0.86, opacity: 0.4 }} animate={{ scale: 1, opacity: 1 }} transition={SPRING_PILL}>
-              <ProfileAvatar src={choice?.url} initials={identity.initials} frameId={profile.frameId} size={64} />
+          <div className="relative flex items-center gap-4 overflow-hidden border-b border-[var(--panel-border)] px-5 py-5 sm:px-6">
+            {choice?.url && (
+              <motion.div
+                key={`bg-${choice.url}`}
+                aria-hidden
+                className="pointer-events-none absolute inset-0 scale-125 bg-cover bg-center blur-2xl saturate-150"
+                style={{ backgroundImage: `url("${choice.url}")` }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 0.4 }}
+                transition={{ duration: 0.35 }}
+              />
+            )}
+            <div aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[var(--bg-surface)]/30 via-[var(--bg-surface)]/60 to-[var(--bg-surface)]" />
+            <motion.div className="relative" key={choice?.url || "none"} initial={{ scale: 0.86, opacity: 0.4 }} animate={{ scale: 1, opacity: 1 }} transition={SPRING_PILL}>
+              <ProfileAvatar src={choice?.url} initials={identity.initials} frameId={profile.frameId} size={76} />
             </motion.div>
-            <div className="min-w-0 flex-1">
+            <div className="relative min-w-0 flex-1">
               <p className="truncate text-base font-semibold tracking-tight text-[var(--text-primary)]">{choice?.name || "Aucun avatar"}</p>
               <p className="truncate text-xs text-[var(--text-muted)]">{choice?.series || (changed ? "" : "Avatar actuel")}</p>
             </div>
             <button
               type="button"
               onClick={pickRandom}
-              className="hidden h-10 items-center gap-2 rounded-xl border border-[var(--panel-border)] px-3.5 text-sm font-medium text-[var(--text-primary)] transition-[background-color,transform] duration-150 hover:bg-[var(--surface-raised)] active:scale-[0.97] sm:inline-flex"
+              className="relative hidden h-10 items-center gap-2 rounded-xl border border-[var(--panel-border)] px-3.5 text-sm font-medium text-[var(--text-primary)] transition-[background-color,transform] duration-150 hover:bg-[var(--surface-raised)] active:scale-[0.97] sm:inline-flex"
             >
               <Shuffle className="h-4 w-4" /> Au hasard
             </button>
@@ -184,7 +183,7 @@ function LibraryPanel({ onClose, onSelect }: { onClose: () => void; onSelect?: (
               type="button"
               disabled={!changed || saving}
               onClick={() => void confirm()}
-              className="relative inline-flex h-10 items-center gap-2 rounded-xl bg-[var(--accent-primary)] px-4 text-sm font-semibold text-[var(--accent-contrast)] shadow-sm transition-[filter,transform,opacity] duration-150 hover:brightness-110 active:scale-[0.97] disabled:opacity-40"
+              className="relative inline-flex h-10 shrink-0 items-center gap-2 rounded-xl bg-[var(--accent-primary)] px-4 text-sm font-semibold text-[var(--accent-contrast)] shadow-sm transition-[filter,transform,opacity] duration-150 hover:brightness-110 active:scale-[0.97] disabled:opacity-40"
             >
               {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
               Utiliser
@@ -193,7 +192,7 @@ function LibraryPanel({ onClose, onSelect }: { onClose: () => void; onSelect?: (
               type="button"
               onClick={onClose}
               aria-label="Fermer"
-              className="grid h-10 w-10 place-items-center rounded-xl text-[var(--text-muted)] transition-[background-color,color,transform] duration-150 hover:bg-[var(--surface-raised)] hover:text-[var(--text-primary)] active:scale-[0.94]"
+              className="relative grid h-10 w-10 place-items-center rounded-xl text-[var(--text-muted)] transition-[background-color,color,transform] duration-150 hover:bg-[var(--surface-raised)] hover:text-[var(--text-primary)] active:scale-[0.94]"
             >
               <X className="h-5 w-5" />
             </button>
@@ -279,27 +278,38 @@ function LibraryPanel({ onClose, onSelect }: { onClose: () => void; onSelect?: (
           <div className="min-h-0 flex-1 overflow-y-auto os-scroll px-5 py-4 [overscroll-behavior:contain] sm:px-6">
             <AnimatePresence mode="wait" initial={false}>
               <motion.div
-                key={`${tab}|${series}|${grouped ? "" : query.trim()}`}
+                key={`${tab}|${series}|${query.trim() ? "search" : ""}`}
                 initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -4 }}
                 transition={{ duration: 0.18, ease: EASE_SNAP }}
               >
                 {grouped ? (
-                  <div className="space-y-7">
-                    {AVATAR_COLLECTIONS.map((c) => (
-                      <section key={c.id} style={{ contentVisibility: "auto", containIntrinsicSize: "0 260px" }}>
-                        <div className="mb-3 flex items-baseline justify-between gap-3">
-                          <h3 className="text-sm font-semibold tracking-tight text-[var(--text-primary)]">
-                            {c.label} <span className="ml-1 text-xs font-normal tabular-nums text-[var(--text-muted)]">{c.items.length}</span>
-                          </h3>
-                          <button type="button" onClick={() => setTab(c.id)} className="text-xs font-medium text-[var(--accent-primary)] hover:underline">
-                            Tout voir
-                          </button>
-                        </div>
-                        <Grid items={previewOf(c.items, PREVIEW_PER_SECTION)} choice={choice} favorites={favorites} onPick={(a) => setChoice({ ...a })} onFavorite={toggleFavorite} />
-                      </section>
-                    ))}
+                  <div className="space-y-8">
+                    {AVATAR_COLLECTIONS.map((c) => {
+                      const names = seriesOf(c);
+                      return (
+                        <section key={c.id} className="space-y-4">
+                          <div className="flex items-baseline justify-between gap-3">
+                            <h3 className="text-base font-semibold tracking-tight text-[var(--text-primary)]">
+                              {c.label} <span className="ml-1 text-xs font-normal tabular-nums text-[var(--text-muted)]">{c.items.length}</span>
+                            </h3>
+                            <button type="button" onClick={() => setTab(c.id)} className="text-xs font-medium text-[var(--accent-primary)] hover:underline">
+                              Tout voir
+                            </button>
+                          </div>
+                          {names.map((name) => (
+                            <SeriesRow
+                              key={name}
+                              title={names.length > 1 ? name : ""}
+                              items={c.items.filter((a) => a.series === name)}
+                              choice={choice}
+                              onPick={(a) => setChoice({ ...a })}
+                            />
+                          ))}
+                        </section>
+                      );
+                    })}
                   </div>
                 ) : results.length ? (
                   <Grid items={results} choice={choice} favorites={favorites} onPick={(a) => setChoice({ ...a })} onFavorite={toggleFavorite} />
@@ -353,9 +363,9 @@ function Grid({
               onClick={() => onPick(a)}
               aria-pressed={selected}
               aria-label={`${a.name} — ${a.series}`}
-              className="relative block w-full rounded-2xl outline-none transition-transform duration-150 hover:scale-[1.04] active:scale-[0.96] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]"
+              className="relative block w-full rounded-full outline-none transition-transform duration-150 hover:scale-[1.04] active:scale-[0.96] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]"
             >
-              <span className="block aspect-square overflow-hidden rounded-2xl bg-[var(--surface-raised)] ring-1 ring-[var(--panel-border)]">
+              <span className="block aspect-square overflow-hidden rounded-full bg-[var(--surface-raised)] ring-1 ring-[var(--panel-border)]">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={a.url} alt="" loading="lazy" decoding="async" draggable={false} className="h-full w-full select-none object-cover" />
               </span>
@@ -363,7 +373,7 @@ function Grid({
                 <motion.span
                   layoutId="avatar-selected-ring"
                   transition={SPRING_PILL}
-                  className="pointer-events-none absolute -inset-[3px] rounded-[18px] ring-[2.5px] ring-[var(--accent-primary)]"
+                  className="pointer-events-none absolute -inset-[3px] rounded-full ring-[2.5px] ring-[var(--accent-primary)]"
                 >
                   <span className="absolute -right-1 -top-1 grid h-5 w-5 place-items-center rounded-full bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow">
                     <Check className="h-3 w-3" />
@@ -389,6 +399,47 @@ function Grid({
           </div>
         );
       })}
+    </div>
+  );
+}
+
+/** Rangée d'une série, défilement horizontal façon Crunchyroll. */
+function SeriesRow({ title, items, choice, onPick }: { title: string; items: LibraryAvatar[]; choice: Choice | null; onPick: (a: LibraryAvatar) => void }) {
+  return (
+    <div style={{ contentVisibility: "auto", containIntrinsicSize: "0 150px" }}>
+      {title && <p className="mb-2 text-sm font-semibold text-[var(--text-primary)]/90">{title}</p>}
+      <div className="-mx-5 flex snap-x gap-3 overflow-x-auto px-5 pb-2 pt-1 no-scrollbar sm:-mx-6 sm:px-6">
+        {items.map((a) => {
+          const selected = choice?.url === a.url;
+          return (
+            <button
+              key={a.id}
+              type="button"
+              onClick={() => onPick(a)}
+              aria-pressed={selected}
+              aria-label={`${a.name} — ${a.series}`}
+              title={a.name}
+              className="group relative w-[84px] shrink-0 snap-start outline-none sm:w-[96px]"
+            >
+              <span
+                className={cn(
+                  "block aspect-square overflow-hidden rounded-full bg-[var(--surface-raised)] ring-1 ring-[var(--panel-border)] transition-[transform,box-shadow] duration-150 group-hover:scale-[1.04] group-active:scale-[0.96] group-focus-visible:ring-2 group-focus-visible:ring-[var(--accent-primary)]",
+                  selected && "ring-[3px] ring-[var(--accent-primary)]",
+                )}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={a.url} alt="" loading="lazy" decoding="async" draggable={false} className="h-full w-full select-none object-cover" />
+              </span>
+              {selected && (
+                <span className="absolute bottom-5 right-0.5 grid h-6 w-6 place-items-center rounded-full bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow ring-2 ring-[var(--bg-surface)]">
+                  <Check className="h-3.5 w-3.5" />
+                </span>
+              )}
+              <span className="mt-1.5 block truncate text-center text-[11px] leading-tight text-[var(--text-muted)]">{a.name}</span>
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }

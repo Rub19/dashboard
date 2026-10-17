@@ -16,7 +16,7 @@ function readJsonBody(request, maxFields = 2) {
 export async function cloudActivityListRoute({ url, env, auth }) {
   if (!auth?.userId) throw httpError("AUTH_REQUIRED", 401);
   assertAllowedQuery(url, ["limit", "since"]);
-  const limit = Math.max(1, Math.min(500, Number(url.searchParams.get("limit")) || 100));
+  const limit = Math.max(1, Math.min(2000, Number(url.searchParams.get("limit")) || 100));
   const since = String(url.searchParams.get("since") || "").trim();
   const events = await listActivity(env, auth.userId, { limit, since });
   return { data: { events } };

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import {
   Activity,
@@ -32,6 +32,7 @@ import { useActivityJournal } from "@/lib/hooks/useActivityJournal";
 import type { ActivityEntry } from "@/lib/activity-journal";
 import { InteractionsHeatmap } from "@/lib/interactions-heatmap";
 import Tooltip from "@/components/Tooltip";
+import { fetchWorker } from "@/lib/api";
 
 const INTERACTION_KINDS = [
   "like",
@@ -95,6 +96,26 @@ function journalToRecord(e: ActivityEntry): UserDataRecord {
     updated_at: e.timestamp,
   };
 }
+
+type CloudActivity = { id: string; fileId?: string; eventType: string; details?: Record<string, unknown>; createdAt: string };
+
+/** Événement du journal enregistré dans Supabase (site et app iOS) → enregistrement d'interaction. */
+function cloudToRecord(e: CloudActivity): UserDataRecord {
+  const original = typeof e.details?.originalEventType === "string" ? e.details.originalEventType : e.eventType;
+  const action = JOURNAL_ACTION[original] || (original.startsWith("route:") ? "space_switch" : "sync");
+  return {
+    id: `cloud-${e.id}`,
+    kind: "interaction",
+    slug: original,
+    label: typeof e.details?.title === "string" ? e.details.title : original,
+    data: { action },
+    count: 1,
+    created_at: e.createdAt,
+    updated_at: e.createdAt,
+  };
+}
+
+const sameEvent = (r: UserDataRecord) => new Date(r.created_at).getTime();
 
 function getKind(record: UserDataRecord): string {
   const data = record.data || {};
@@ -317,11 +338,26 @@ export default function InteractionsPage() {
   const { settings } = useSettings();
   const { items: storedReactions, loading, error } = useUserData("interaction");
   const { entries: journalEntries } = useActivityJournal();
+  const [cloud, setCloud] = useState<UserDataRecord[]>([]);
+  useEffect(() => {
+    let alive = true;
+    fetchWorker("/api/cloud/activity?limit=2000")
+      .then((res) => {
+        const events = ((res as { data?: { events?: CloudActivity[] } })?.data?.events ?? []).filter((e) => !e.fileId);
+        if (alive) setCloud(events.map(cloudToRecord));
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, []);
   const reactions = useMemo<UserDataRecord[]>(() => {
     const seen = new Set(storedReactions.map((r) => r.id));
     const fromJournal = journalEntries.map(journalToRecord).filter((r) => !seen.has(r.id));
-    return [...storedReactions, ...fromJournal];
-  }, [storedReactions, journalEntries]);
+    const local = [...storedReactions, ...fromJournal];
+    const known = new Set(local.map(sameEvent));
+    return [...local, ...cloud.filter((r) => !known.has(sameEvent(r)))];
+  }, [storedReactions, journalEntries, cloud]);
   const currentYear = new Date().getFullYear();
   const [selectedYear, setSelectedYear] = useState(currentYear);
 

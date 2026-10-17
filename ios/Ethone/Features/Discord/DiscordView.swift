@@ -209,7 +209,7 @@ struct GuildDetailView: View {
             } header: {
                 HStack(spacing: 6) {
                     Text("Modules")
-                    Text("\(modules.filter(\.enabled).count) actifs").foregroundStyle(.tertiary).monospacedDigit().contentTransition(.numericText())
+                    Text(plural(modules.filter(\.enabled).count, "actif", "actifs")).foregroundStyle(.tertiary).monospacedDigit().contentTransition(.numericText())
                 }
                 .sectionTitle()
                 .textCase(nil)

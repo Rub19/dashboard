@@ -261,7 +261,7 @@ struct MoreView: View {
     private var accountCard: some View {
         NavigationLink(value: MoreDestination.profile) {
             HStack(spacing: 14) {
-                AvatarView(urlString: model.ethoneAvatar ?? auth.user?.avatarURL?.absoluteString, name: model.ethoneName ?? auth.user?.displayName ?? "E", size: 54, status: .online)
+                AvatarView(urlString: model.ethoneAvatar, name: model.ethoneName ?? auth.user?.displayName ?? "E", size: 54, status: .online)
                 VStack(alignment: .leading, spacing: 3) {
                     Text(model.ethoneName ?? auth.user?.displayName ?? "Mon compte")
                         .font(.title3.weight(.semibold))

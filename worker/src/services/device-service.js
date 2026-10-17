@@ -11,9 +11,9 @@ function parseUserAgent(ua) {
   let type = "unknown";
 
   if (agent.includes("windows")) platform = "Windows";
-  else if (agent.includes("macintosh") || agent.includes("mac os")) platform = "macOS";
   else if (agent.includes("iphone")) platform = "iOS";
   else if (agent.includes("ipad")) platform = "iPadOS";
+  else if (agent.includes("macintosh") || agent.includes("mac os")) platform = "macOS";
   else if (agent.includes("android")) platform = "Android";
   else if (agent.includes("linux")) platform = "Linux";
 
@@ -49,12 +49,14 @@ export function buildDeviceName(info) {
 export async function getOrCreateDevice(env, userId, sessionId, userAgent, requestedName, mfaPending = false) {
   let device = sessionId ? await getDeviceBySession(env, userId, sessionId) : null;
 
+  const parsed = parseUserAgent(userAgent);
   if (device) {
-    await updateDevice(env, userId, device.id, { lastSeenAt: new Date().toISOString() });
-    return device;
+    const renamed = safeText(requestedName, 120);
+    const patch = { lastSeenAt: new Date().toISOString() };
+    if (renamed && renamed !== device.name) Object.assign(patch, { name: renamed, type: parsed.type, platform: parsed.platform, browser: parsed.browser });
+    return (await updateDevice(env, userId, device.id, patch)) || device;
   }
 
-  const parsed = parseUserAgent(userAgent);
   const name = safeText(requestedName, 120) || buildDeviceName(parsed);
   const metadata = { user_agent: userAgent?.slice(0, 200) || "" };
 

@@ -55,7 +55,7 @@ export async function profileRoute({ request, env, auth }) {
 
   if (method === "POST" || method === "PATCH") {
     const body = await request.json().catch(() => ({}));
-    const displayName = safeText(body.display_name, 80);
+    const displayName = body.display_name !== undefined ? safeText(body.display_name, 80) : undefined;
     let avatarUrl = "";
     if (typeof body.avatar_url === "string") {
       const trimmed = body.avatar_url.trim();
@@ -97,7 +97,7 @@ export async function profileRoute({ request, env, auth }) {
     const insertPayload = {
       user_id: auth.userId,
       username,
-      display_name: displayName,
+      display_name: displayName ?? "",
       avatar_url: avatarUrl
     };
     if (presenceStatus !== undefined) insertPayload.presence_status = presenceStatus;

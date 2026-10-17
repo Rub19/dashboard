@@ -62,8 +62,8 @@ export async function listActivity(env, userId, { limit = 100, since = "" } = {}
   params.set("user_id", `eq.${userId}`);
   if (since) params.set("created_at", `gte.${encodeURIComponent(safeText(since, 40))}`);
   params.set("order", "created_at.desc");
-  params.set("limit", String(Math.max(1, Math.min(500, Number(limit) || 100))));
-  const response = await supabaseRequest(env, `/rest/v1/ethone_file_activity?${params.toString()}`, { maxBytes: 1024 * 1024 });
+  params.set("limit", String(Math.max(1, Math.min(2000, Number(limit) || 100))));
+  const response = await supabaseRequest(env, `/rest/v1/ethone_file_activity?${params.toString()}`, { maxBytes: 4 * 1024 * 1024 });
   return Array.isArray(response.data) ? response.data.map(normalizeActivity) : [];
 }
 

@@ -1,5 +1,20 @@
 [
   {
+    "version": "v1.75.146",
+    "date": "2026-10-17",
+    "title": "Avatars, Interactions synchronisées, mails et Valorant",
+    "items": [
+      "Choix de l'avatar refait façon plateforme de streaming : grand aperçu, une rangée par série, sur le site comme sur l'iPhone, avec les 530 avatars de la bibliothèque.",
+      "Avatars anime et League of Legends recadrés : visage et buste entiers au lieu d'un gros plan coupé.",
+      "Interactions : mêmes données sur le site et l'iPhone (enregistrées dans votre compte), jours et mois affichés, détail du jour, série, répartition et activité récente.",
+      "Mail sur iPhone : les messages s'affichent avec leur mise en forme d'origine (images, boutons, liens).",
+      "Sessions : l'iPhone apparaît sous son vrai modèle (ex. iPhone 17 Pro) au lieu de « Mobile ».",
+      "Valorant sur iPhone : carte de profil avec rang, RR et meilleur rang, et une carte par partie avec l'agent, la carte, victoire ou défaite, KDA et score.",
+      "Profil : la photo Discord n'est plus utilisée comme avatar ETHONE.",
+      "Correctif : enregistrer seulement l'avatar depuis l'app n'efface plus le nom affiché."
+    ]
+  },
+  {
     "version": "v1.75.145",
     "date": "2026-10-17",
     "title": "App iOS : corrections Discord, Mail, Sécurité, Météo et dessin",
@@ -607,18 +622,6 @@
       "Correction structurelle du composant Button assurant un flux inline-flex horizontal pour toutes les icônes enfants.",
       "Motion design complet sur l'Inventaire & Boutique Valorant : logo Riot flottant, halo ambiant réactif et pulsation du compte à rebours.",
       "Motion design sur le Tracker Valorant et le Tracker League of Legends : cartes de KPI animées à l'entrée et survol interactif des parties."
-    ]
-  },
-  {
-    "version": "v1.75.44",
-    "date": "2026-10-13",
-    "title": "Transition fluide des auras et interpolation cosmique",
-    "items": [
-      "Interpolation fluide des couleurs et teintes nébuleuses dans le fond cosmique sans réinitialisation de la scène.",
-      "Suppression des sauts et téléportations aléatoires d'étoiles et d'orbites lors du changement d'aura.",
-      "Indicateur de sélection d'aura physique avec ressort Framer Motion (layoutId) et halo lumineux dynamique.",
-      "Réduction du temps de transition d'ambiance à 600ms pour une réactivité instantanée et élégante.",
-      "Suppression des coupures de dégradé brutales sur le fond d'écran."
     ]
   }
 ]

@@ -113,7 +113,7 @@ struct HomeView: View {
             }
             Spacer()
             Button { model.open(.profile) } label: {
-                AvatarView(urlString: model.ethoneAvatar ?? auth.user?.avatarURL?.absoluteString, name: model.ethoneName ?? auth.user?.displayName ?? "E", size: 44, status: .online)
+                AvatarView(urlString: model.ethoneAvatar, name: model.ethoneName ?? auth.user?.displayName ?? "E", size: 44, status: .online)
             }
             .buttonStyle(.plain)
             .accessibilityLabel("Profil")

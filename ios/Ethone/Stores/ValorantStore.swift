@@ -20,6 +20,23 @@ enum ScoringSystem {
     }
 }
 
+/// Riot account summary from the Worker (`/api/stats/valorant-profile`).
+struct ValorantProfile: Hashable {
+    let handle: String
+    let cardURL: URL?
+    let bannerURL: URL?
+    let tier: Int
+    let rank: String
+    let rr: Int
+    let level: Int
+    let peakTier: Int
+    let peakRank: String
+
+    static func tierIcon(_ tier: Int) -> URL? {
+        tier > 0 ? URL(string: "https://media.valorant-api.com/competitivetiers/03621f52-342b-cf4e-4f86-9350a49c6d04/\(tier)/largeicon.png") : nil
+    }
+}
+
 struct ValorantMatch: Identifiable, Hashable {
     let id: String
     let map: String
@@ -46,6 +63,7 @@ final class ValorantStore {
     private let api: APIClient
     private(set) var matches: [ValorantMatch] = []
     private(set) var isLoading = false
+    private(set) var profile: ValorantProfile?
     var errorMessage: String?
 
     private(set) var tag: String = ""
@@ -89,6 +107,7 @@ final class ValorantStore {
         guard isConfigured else { return }
         isLoading = true
         defer { isLoading = false }
+        await loadProfile()
         do {
             // Sans clé personnelle dans l'app, on passe par le Worker : il utilise la clé HenrikDev du compte ETHONE.
             if apiKey.isEmpty {
@@ -127,6 +146,26 @@ final class ValorantStore {
     }
 
     /// Match already shaped by the Worker (`/api/stats/valorant-matches`).
+    private func loadProfile() async {
+        guard let raw: JSONValue = try? await api.worker("api/stats/valorant-profile", query: [
+            URLQueryItem(name: "name", value: nameStorage), URLQueryItem(name: "tag", value: tag),
+        ]) else { return }
+        let stats = raw["segments"]?.arrayValue?.first?["stats"]
+        func number(_ key: String) -> Int { Int(stats?[key]?["value"]?.doubleValue ?? 0) }
+        func text(_ key: String) -> String { stats?[key]?["displayValue"]?.stringValue ?? "" }
+        profile = ValorantProfile(
+            handle: raw["handle"]?.stringValue ?? "\(nameStorage)#\(tag)",
+            cardURL: raw["avatarUrl"]?.stringValue.flatMap(URL.init(string:)),
+            bannerURL: raw["bannerUrl"]?.stringValue.flatMap(URL.init(string:)),
+            tier: number("rank"),
+            rank: text("rank"),
+            rr: number("rr"),
+            level: number("level"),
+            peakTier: number("peakRank"),
+            peakRank: text("peakRank")
+        )
+    }
+
     static func convertWorker(_ raw: JSONValue) -> ValorantMatch? {
         guard let meta = raw["metadata"] else { return nil }
         let stats = raw["segments"]?.arrayValue?.first?["stats"]

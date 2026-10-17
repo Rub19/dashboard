@@ -291,7 +291,7 @@ final class AuthStore {
     private func registerDevice() async {
         do {
             let token = try await validAccessToken()
-            let request = WorkerHTTP.request(path: "api/auth/device", method: "POST", body: Data("{}".utf8), token: token)
+            let request = WorkerHTTP.request(path: "api/auth/device", method: "POST", body: APIClient.json(["name": .string(DeviceName.current)]), token: token)
             let (data, http) = try await HTTP.send(request)
             if (200..<300).contains(http.statusCode) {
                 let envelope = try? JSONDecoder.api.decode(WorkerEnvelope<JSONValue>.self, from: data)

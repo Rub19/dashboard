@@ -300,6 +300,7 @@ struct MailDetailView: View {
     @State private var forwarding = false
     @State private var full: MailMessage?
     @State private var loadingBody = true
+    @State private var htmlHeight: CGFloat = 120
     let message: MailMessage
 
     private func act(_ work: @escaping () async -> Void) {
@@ -328,14 +329,21 @@ struct MailDetailView: View {
                             Label(summary, systemImage: "sparkles").font(.subheadline)
                         }
                     }
-                    GlassCard {
-                        let body = (full ?? message).readableBody
-                        if loadingBody && full == nil {
-                            HStack(spacing: 10) { ProgressView(); Text("Chargement du message…").foregroundStyle(.secondary) }
-                        } else if body.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                            Text("Ce message n'a pas de contenu texte.").foregroundStyle(.secondary)
-                        } else {
-                            Text(body).textSelection(.enabled)
+                    let shown = full ?? message
+                    if let html = shown.bodyHtml, !html.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                        MailHTMLView(html: html, height: $htmlHeight)
+                            .frame(height: htmlHeight)
+                            .clipShape(.rect(cornerRadius: 18, style: .continuous))
+                    } else {
+                        GlassCard {
+                            let body = shown.readableBody
+                            if loadingBody && full == nil {
+                                HStack(spacing: 10) { ProgressView(); Text("Chargement du message…").foregroundStyle(.secondary) }
+                            } else if body.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                                Text("Ce message n'a pas de contenu texte.").foregroundStyle(.secondary)
+                            } else {
+                                Text(body).textSelection(.enabled)
+                            }
                         }
                     }
                 }

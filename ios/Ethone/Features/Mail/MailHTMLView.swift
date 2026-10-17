@@ -15,7 +15,7 @@ struct MailHTMLView: UIViewRepresentable {
         let view = WKWebView(frame: .zero, configuration: configuration)
         view.navigationDelegate = context.coordinator
         view.isOpaque = false
-        view.backgroundColor = .white
+        view.backgroundColor = .clear
         view.scrollView.isScrollEnabled = false
         view.scrollView.bounces = false
         context.coordinator.observe(view)
@@ -32,14 +32,53 @@ struct MailHTMLView: UIViewRepresentable {
         """
         <!doctype html><html><head><meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <meta name="color-scheme" content="dark">
         <style>
-        html,body{margin:0;padding:0;background:#fff;color:#111;-webkit-text-size-adjust:100%}
-        body{padding:14px;font:-apple-system-body;word-wrap:break-word;overflow-wrap:anywhere}
-        img{max-width:100%!important;height:auto!important}
-        table{max-width:100%!important}
-        td,th{word-break:break-word}
-        pre{white-space:pre-wrap}
-        a{color:#6D28D9}
+        :root { color-scheme: dark; }
+        html, body {
+            margin: 0;
+            padding: 16px;
+            background: #0E1017 !important;
+            color: #F1F5F9 !important;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-text-size-adjust: 100%;
+            word-wrap: break-word;
+            overflow-wrap: anywhere;
+        }
+        p, span, div, td, th, table, b, strong, i, em, h1, h2, h3, h4, h5, h6 {
+            color: inherit;
+        }
+        /* Invert inline white/light backgrounds in rich emails */
+        [style*="background-color: rgb(255, 255, 255)"],
+        [style*="background-color: #fff"],
+        [style*="background-color: #ffffff"],
+        [style*="background-color: white"],
+        [style*="background: rgb(255, 255, 255)"],
+        [style*="background: #fff"],
+        [style*="background: #ffffff"],
+        [style*="background: white"],
+        [bgcolor="#ffffff"], [bgcolor="#fff"], [bgcolor="white"] {
+            background-color: #141722 !important;
+            background: #141722 !important;
+        }
+        /* Invert dark/black text from inline styles to bright text */
+        [style*="color: rgb(0, 0, 0)"],
+        [style*="color: #000"], [style*="color: #000000"],
+        [style*="color: #111"], [style*="color: #222"], [style*="color: #333"],
+        [style*="color: #444"], [style*="color: #555"] {
+            color: #F1F5F9 !important;
+        }
+        img { max-width: 100% !important; height: auto !important; border-radius: 8px; }
+        table { max-width: 100% !important; }
+        td, th { word-break: break-word; }
+        pre, code {
+            white-space: pre-wrap;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 8px 12px;
+            border-radius: 8px;
+            color: #F1F5F9;
+        }
+        a { color: #A78BFA !important; }
         </style></head><body>\(html)</body></html>
         """
     }

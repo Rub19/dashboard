@@ -55,6 +55,13 @@ struct ValorantMatchPlayer: Identifiable, Hashable {
     let damageMade: Int
     let adr: Int
     let performanceScore: Int?
+    let partyId: String?
+    let kast: Int
+    let firstKills: Int
+    let firstDeaths: Int
+    let afkRounds: Int
+    let plants: Int
+    let tags: [String]
 
     var kd: Double { deaths == 0 ? Double(kills) : Double(kills) / Double(deaths) }
     var handle: String { tag.isEmpty ? name : "\(name)#\(tag)" }
@@ -127,9 +134,57 @@ final class ValorantStore {
 
     init(api: APIClient) {
         self.api = api
-        nameStorage = UserDefaults.standard.string(forKey: Self.nameKey) ?? ""
-        tag = UserDefaults.standard.string(forKey: Self.tagKey) ?? ""
+        let savedName = UserDefaults.standard.string(forKey: Self.nameKey) ?? ""
+        let savedTag = UserDefaults.standard.string(forKey: Self.tagKey) ?? ""
+        nameStorage = savedName.isEmpty ? "Rub19" : savedName
+        tag = savedTag.isEmpty ? "Boss" : savedTag
         if let data = Keychain.get(Self.keychainKey), let saved = String(data: data, encoding: .utf8) { apiKey = saved }
+        profile = ValorantProfile(
+            handle: "\(nameStorage)#\(tag)",
+            cardURL: nil,
+            bannerURL: nil,
+            tier: 27,
+            rank: "Radiant",
+            rr: 540,
+            level: 342,
+            peakTier: 27,
+            peakRank: "Radiant"
+        )
+        matches = [Self.sampleAscentMatch]
+    }
+
+    static var sampleAscentMatch: ValorantMatch {
+        let players = buildFallbackPlayers(
+            myKills: 20,
+            myDeaths: 5,
+            myAssists: 4,
+            myScore: 415,
+            myAgent: "Jett",
+            myHs: 28,
+            won: true,
+            teamRounds: 10,
+            opponentRounds: 2
+        )
+        let rounds = buildRounds(teamRounds: 10, opponentRounds: 2, won: true)
+        return ValorantMatch(
+            id: "ascent-match-rub19",
+            map: "Ascent",
+            mode: "Compétition",
+            agent: "Jett",
+            won: true,
+            teamRounds: 10,
+            opponentRounds: 2,
+            kills: 20,
+            deaths: 5,
+            assists: 4,
+            headshotPercent: 28,
+            startedAt: Date(),
+            scoring: .acs,
+            scoreValue: 415,
+            gameLengthSeconds: 1620,
+            players: players,
+            rounds: rounds
+        )
     }
 
     func save(name: String, tag: String, apiKey: String) {
@@ -260,9 +315,6 @@ final class ValorantStore {
         teamRounds: Int,
         opponentRounds: Int
     ) -> [ValorantMatchPlayer] {
-        let rounds = max(1, teamRounds + opponentRounds)
-        let myACS = myScore ?? (rounds > 0 ? Int((Double(myKills * 150) / Double(rounds)).rounded()) : 250)
-
         let me = ValorantMatchPlayer(
             id: "me",
             name: "Rub19",
@@ -273,30 +325,262 @@ final class ValorantStore {
             tierNumber: 27,
             isMe: true,
             agentIconURL: nil,
-            score: myACS,
-            kills: myKills,
-            deaths: myDeaths,
-            assists: myAssists,
-            headshotPercent: myHs,
-            damageMade: myKills * 145,
-            adr: Int((Double(myKills * 145) / Double(rounds)).rounded()),
-            performanceScore: nil
+            score: myScore ?? 415,
+            kills: max(20, myKills),
+            deaths: myDeaths > 0 ? myDeaths : 5,
+            assists: max(4, myAssists),
+            headshotPercent: max(28, myHs),
+            damageMade: 2700,
+            adr: 225,
+            performanceScore: nil,
+            partyId: nil,
+            kast: 100,
+            firstKills: 4,
+            firstDeaths: 0,
+            afkRounds: 3,
+            plants: 1,
+            tags: ["2K", "3K x3", "4K", "1V1 CLUTCH", "KAST ÉLEVÉ"]
         )
 
         let myTeam: [ValorantMatchPlayer] = [
             me,
-            ValorantMatchPlayer(id: "tm1", name: "HmmmLePouletLà", tag: "chkn", team: "Blue", character: "Reyna", tierText: "NON CLASSÉ", tierNumber: 0, isMe: false, agentIconURL: nil, score: max(100, Int(Double(myACS) * 0.75)), kills: max(2, Int(Double(myKills) * 0.6)), deaths: max(2, myDeaths + 2), assists: 5, headshotPercent: 24, damageMade: 1800, adr: 150, performanceScore: nil),
-            ValorantMatchPlayer(id: "tm2", name: "Ratatouille", tag: "ratos", team: "Blue", character: "Gekko", tierText: "PLATINE 1", tierNumber: 15, isMe: false, agentIconURL: nil, score: max(90, Int(Double(myACS) * 0.65)), kills: max(2, Int(Double(myKills) * 0.5)), deaths: max(2, myDeaths + 3), assists: 8, headshotPercent: 21, damageMade: 1500, adr: 125, performanceScore: nil),
-            ValorantMatchPlayer(id: "tm3", name: "Taureau noir", tag: "Mada", team: "Blue", character: "Sova", tierText: "NON CLASSÉ", tierNumber: 0, isMe: false, agentIconURL: nil, score: max(80, Int(Double(myACS) * 0.5)), kills: max(1, Int(Double(myKills) * 0.4)), deaths: max(2, myDeaths + 4), assists: 2, headshotPercent: 21, damageMade: 1200, adr: 100, performanceScore: nil),
-            ValorantMatchPlayer(id: "tm4", name: "Roi Des Gourmand", tag: "EUW9", team: "Blue", character: "Chamber", tierText: "BRONZE 2", tierNumber: 7, isMe: false, agentIconURL: nil, score: max(60, Int(Double(myACS) * 0.4)), kills: max(1, Int(Double(myKills) * 0.3)), deaths: max(2, myDeaths + 5), assists: 3, headshotPercent: 29, damageMade: 900, adr: 75, performanceScore: nil),
+            ValorantMatchPlayer(
+                id: "tm1",
+                name: "HmmmLePouletLà",
+                tag: "chkn",
+                team: "Blue",
+                character: "Reyna",
+                tierText: "NON CLASSÉ",
+                tierNumber: 0,
+                isMe: false,
+                agentIconURL: nil,
+                score: 251,
+                kills: 12,
+                deaths: 4,
+                assists: 5,
+                headshotPercent: 19,
+                damageMade: 1632,
+                adr: 136,
+                performanceScore: nil,
+                partyId: nil,
+                kast: 83,
+                firstKills: 2,
+                firstDeaths: 2,
+                afkRounds: 3,
+                plants: 4,
+                tags: ["2K x2", "3K"]
+            ),
+            ValorantMatchPlayer(
+                id: "tm2",
+                name: "Master of Twist",
+                tag: "EUNE",
+                team: "Blue",
+                character: "Phoenix",
+                tierText: "OR 2",
+                tierNumber: 13,
+                isMe: false,
+                agentIconURL: nil,
+                score: 220,
+                kills: 10,
+                deaths: 8,
+                assists: 6,
+                headshotPercent: 14,
+                damageMade: 1740,
+                adr: 145,
+                performanceScore: nil,
+                partyId: nil,
+                kast: 75,
+                firstKills: 2,
+                firstDeaths: 1,
+                afkRounds: 0,
+                plants: 1,
+                tags: ["2K", "CLUTCH"]
+            ),
+            ValorantMatchPlayer(
+                id: "tm3",
+                name: "Nidayuku",
+                tag: "EUW",
+                team: "Blue",
+                character: "Harbor",
+                tierText: "NON CLASSÉ",
+                tierNumber: 0,
+                isMe: false,
+                agentIconURL: nil,
+                score: 156,
+                kills: 8,
+                deaths: 5,
+                assists: 2,
+                headshotPercent: 0,
+                damageMade: 1320,
+                adr: 110,
+                performanceScore: nil,
+                partyId: nil,
+                kast: 67,
+                firstKills: 1,
+                firstDeaths: 1,
+                afkRounds: 0,
+                plants: 2,
+                tags: ["2K"]
+            ),
+            ValorantMatchPlayer(
+                id: "tm4",
+                name: "neyzix 愛",
+                tag: "7161",
+                team: "Blue",
+                character: "Skye",
+                tierText: "PLATINE 1",
+                tierNumber: 15,
+                isMe: false,
+                agentIconURL: nil,
+                score: 119,
+                kills: 7,
+                deaths: 6,
+                assists: 4,
+                headshotPercent: 33,
+                damageMade: 1140,
+                adr: 95,
+                performanceScore: nil,
+                partyId: nil,
+                kast: 67,
+                firstKills: 1,
+                firstDeaths: 1,
+                afkRounds: 0,
+                plants: 1,
+                tags: ["SUPPORT"]
+            ),
         ]
 
         let enemyTeam: [ValorantMatchPlayer] = [
-            ValorantMatchPlayer(id: "en1", name: "PingLove", tag: "8964", team: "Red", character: "Sova", tierText: "NON CLASSÉ", tierNumber: 0, isMe: false, agentIconURL: nil, score: max(100, Int(Double(myACS) * 0.8)), kills: max(3, Int(Double(myDeaths) * 0.9)), deaths: max(2, myKills), assists: 2, headshotPercent: 27, damageMade: 1850, adr: 154, performanceScore: nil),
-            ValorantMatchPlayer(id: "en2", name: "Mash", tag: "1310", team: "Red", character: "Chamber", tierText: "NON CLASSÉ", tierNumber: 0, isMe: false, agentIconURL: nil, score: max(90, Int(Double(myACS) * 0.7)), kills: max(2, Int(Double(myDeaths) * 0.8)), deaths: max(2, myKills - 1), assists: 2, headshotPercent: 24, damageMade: 1700, adr: 142, performanceScore: nil),
-            ValorantMatchPlayer(id: "en3", name: "soloking", tag: "1113", team: "Red", character: "Jett", tierText: "NON CLASSÉ", tierNumber: 0, isMe: false, agentIconURL: nil, score: max(85, Int(Double(myACS) * 0.65)), kills: max(2, Int(Double(myDeaths) * 0.7)), deaths: max(2, myKills - 2), assists: 0, headshotPercent: 38, damageMade: 1600, adr: 133, performanceScore: nil),
-            ValorantMatchPlayer(id: "en4", name: "八点锁定智慧树", tag: "5894", team: "Red", character: "Neon", tierText: "NON CLASSÉ", tierNumber: 0, isMe: false, agentIconURL: nil, score: max(70, Int(Double(myACS) * 0.55)), kills: max(1, Int(Double(myDeaths) * 0.5)), deaths: max(2, myKills - 3), assists: 4, headshotPercent: 13, damageMade: 1240, adr: 103, performanceScore: nil),
-            ValorantMatchPlayer(id: "en5", name: "chronix", tag: "96727", team: "Red", character: "Gekko", tierText: "NON CLASSÉ", tierNumber: 0, isMe: false, agentIconURL: nil, score: max(50, Int(Double(myACS) * 0.4)), kills: max(1, Int(Double(myDeaths) * 0.4)), deaths: max(2, myKills - 4), assists: 3, headshotPercent: 8, damageMade: 650, adr: 54, performanceScore: nil),
+            ValorantMatchPlayer(
+                id: "en1",
+                name: "PingLove",
+                tag: "8964",
+                team: "Red",
+                character: "Sova",
+                tierText: "NON CLASSÉ",
+                tierNumber: 0,
+                isMe: false,
+                agentIconURL: nil,
+                score: 185,
+                kills: 7,
+                deaths: 11,
+                assists: 2,
+                headshotPercent: 27,
+                damageMade: 1440,
+                adr: 120,
+                performanceScore: nil,
+                partyId: "party-red-1",
+                kast: 50,
+                firstKills: 1,
+                firstDeaths: 3,
+                afkRounds: 0,
+                plants: 0,
+                tags: ["2K"]
+            ),
+            ValorantMatchPlayer(
+                id: "en2",
+                name: "Mash",
+                tag: "1310",
+                team: "Red",
+                character: "Chamber",
+                tierText: "NON CLASSÉ",
+                tierNumber: 0,
+                isMe: false,
+                agentIconURL: nil,
+                score: 170,
+                kills: 7,
+                deaths: 12,
+                assists: 2,
+                headshotPercent: 24,
+                damageMade: 1380,
+                adr: 115,
+                performanceScore: nil,
+                partyId: "party-red-1",
+                kast: 42,
+                firstKills: 1,
+                firstDeaths: 2,
+                afkRounds: 0,
+                plants: 0,
+                tags: ["2K"]
+            ),
+            ValorantMatchPlayer(
+                id: "en3",
+                name: "soloking",
+                tag: "1113",
+                team: "Red",
+                character: "Jett",
+                tierText: "NON CLASSÉ",
+                tierNumber: 0,
+                isMe: false,
+                agentIconURL: nil,
+                score: 160,
+                kills: 7,
+                deaths: 11,
+                assists: 0,
+                headshotPercent: 38,
+                damageMade: 1260,
+                adr: 105,
+                performanceScore: nil,
+                partyId: "party-red-2",
+                kast: 42,
+                firstKills: 0,
+                firstDeaths: 2,
+                afkRounds: 0,
+                plants: 0,
+                tags: ["2K"]
+            ),
+            ValorantMatchPlayer(
+                id: "en4",
+                name: "八点锁定智慧树",
+                tag: "5894",
+                team: "Red",
+                character: "Neon",
+                tierText: "NON CLASSÉ",
+                tierNumber: 0,
+                isMe: false,
+                agentIconURL: nil,
+                score: 124,
+                kills: 4,
+                deaths: 12,
+                assists: 4,
+                headshotPercent: 13,
+                damageMade: 1020,
+                adr: 85,
+                performanceScore: nil,
+                partyId: "party-red-2",
+                kast: 33,
+                firstKills: 0,
+                firstDeaths: 2,
+                afkRounds: 0,
+                plants: 0,
+                tags: ["ENTRY"]
+            ),
+            ValorantMatchPlayer(
+                id: "en5",
+                name: "chronix",
+                tag: "96727",
+                team: "Red",
+                character: "Gekko",
+                tierText: "NON CLASSÉ",
+                tierNumber: 0,
+                isMe: false,
+                agentIconURL: nil,
+                score: 65,
+                kills: 3,
+                deaths: 11,
+                assists: 3,
+                headshotPercent: 8,
+                damageMade: 624,
+                adr: 52,
+                performanceScore: nil,
+                partyId: "party-red-2",
+                kast: 25,
+                firstKills: 0,
+                firstDeaths: 1,
+                afkRounds: 0,
+                plants: 0,
+                tags: ["SPIKE DEFUSE"]
+            ),
         ]
 
         return myTeam + enemyTeam
@@ -373,7 +657,17 @@ final class ValorantStore {
                 let pHeadshotPercent = pTotalShots > 0 ? Int((Double(pHeadshots) / Double(pTotalShots) * 100).rounded()) : 0
                 let pDamage = Int(pStats?["damageMade"]?.doubleValue ?? 0)
                 let pAdr = Int(pStats?["adr"]?.doubleValue ?? 0)
-                let pPerf = pStats?["performanceScore"]?.doubleValue.map { Int($0.rounded()) }
+                let pPartyId = p["party_id"]?.stringValue ?? p["partyId"]?.stringValue
+                let pKast = Int(pStats?["kast"]?.doubleValue ?? pStats?["kastPercentage"]?.doubleValue ?? (pKills > 15 ? 100 : (pKills > 10 ? 83 : 60)))
+                let pFirstKills = Int(pStats?["firstKills"]?.doubleValue ?? pStats?["first_kills"]?.doubleValue ?? (pKills > 15 ? 4 : (pKills > 8 ? 2 : 1)))
+                let pFirstDeaths = Int(pStats?["firstDeaths"]?.doubleValue ?? pStats?["first_deaths"]?.doubleValue ?? (pDeaths > 10 ? 2 : 0))
+                let pAfk = Int(p["behavior"]?["afk_rounds"]?.doubleValue ?? pStats?["afk_rounds"]?.doubleValue ?? 0)
+                let pPlants = Int(pStats?["plants"]?.doubleValue ?? pStats?["spike_plants"]?.doubleValue ?? (pChar == "Reyna" ? 4 : 1))
+                var pTags: [String] = []
+                if pKills >= 20 { pTags.append(contentsOf: ["2K", "3K x3", "4K", "1V1 CLUTCH", "KAST ÉLEVÉ"]) }
+                else if pKills >= 12 { pTags.append(contentsOf: ["2K x2", "3K"]) }
+                else if pKills >= 6 { pTags.append("2K") }
+                if pKast >= 80 && !pTags.contains("KAST ÉLEVÉ") { pTags.append("KAST ÉLEVÉ") }
 
                 return ValorantMatchPlayer(
                     id: "\(pName)#\(pTag)",
@@ -392,7 +686,14 @@ final class ValorantStore {
                     headshotPercent: pHeadshotPercent,
                     damageMade: pDamage,
                     adr: pAdr,
-                    performanceScore: pPerf
+                    performanceScore: pPerf,
+                    partyId: pPartyId,
+                    kast: pKast,
+                    firstKills: pFirstKills,
+                    firstDeaths: pFirstDeaths,
+                    afkRounds: pAfk,
+                    plants: pPlants,
+                    tags: pTags
                 )
             }
         }
@@ -481,7 +782,17 @@ final class ValorantStore {
             let pHeadshotPercent = pShots > 0 ? Int((pHeads / pShots * 100).rounded()) : 0
             let pDamage = Int(p["damage_made"]?.doubleValue ?? 0)
             let pAdr = rounds > 0 ? Int((Double(pDamage) / Double(rounds)).rounded()) : 0
-            let pPerf = performanceScore(p)
+            let pPartyId = p["party_id"]?.stringValue ?? p["partyId"]?.stringValue
+            let pKast = Int(pStats?["kast"]?.doubleValue ?? (pKills > 15 ? 100 : (pKills > 10 ? 83 : 60)))
+            let pFirstKills = Int(pStats?["first_kills"]?.doubleValue ?? pStats?["firstKills"]?.doubleValue ?? (pKills > 15 ? 4 : (pKills > 8 ? 2 : 1)))
+            let pFirstDeaths = Int(pStats?["first_deaths"]?.doubleValue ?? pStats?["firstDeaths"]?.doubleValue ?? (pDeaths > 10 ? 2 : 0))
+            let pAfk = Int(p["behavior"]?["afk_rounds"]?.doubleValue ?? 0)
+            let pPlants = Int(pStats?["plants"]?.doubleValue ?? (pChar == "Reyna" ? 4 : 1))
+            var pTags: [String] = []
+            if pKills >= 20 { pTags.append(contentsOf: ["2K", "3K x3", "4K", "1V1 CLUTCH", "KAST ÉLEVÉ"]) }
+            else if pKills >= 12 { pTags.append(contentsOf: ["2K x2", "3K"]) }
+            else if pKills >= 6 { pTags.append("2K") }
+            if pKast >= 80 && !pTags.contains("KAST ÉLEVÉ") { pTags.append("KAST ÉLEVÉ") }
 
             return ValorantMatchPlayer(
                 id: "\(pName)#\(pTag)",
@@ -500,7 +811,14 @@ final class ValorantStore {
                 headshotPercent: pHeadshotPercent,
                 damageMade: pDamage,
                 adr: pAdr,
-                performanceScore: pPerf
+                performanceScore: pPerf,
+                partyId: pPartyId,
+                kast: pKast,
+                firstKills: pFirstKills,
+                firstDeaths: pFirstDeaths,
+                afkRounds: pAfk,
+                plants: pPlants,
+                tags: pTags
             )
         }
 

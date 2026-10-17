@@ -333,7 +333,12 @@ struct MailDetailView: View {
                     if let html = shown.bodyHtml, !html.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                         MailHTMLView(html: html, height: $htmlHeight)
                             .frame(height: htmlHeight)
+                            .background(Color(hex: 0x0E1017))
                             .clipShape(.rect(cornerRadius: 18, style: .continuous))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                                    .strokeBorder(Color.white.opacity(0.08), lineWidth: 1)
+                            )
                     } else {
                         GlassCard {
                             let body = shown.readableBody

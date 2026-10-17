@@ -28,6 +28,7 @@ struct ValorantMatchDetailView: View {
     @State private var selectedTab: MatchDetailTab = .scoreboard
     @State private var sortBy: PlayerSortCriteria = .acs
     @State private var targetedPlayerID: String?
+    @State private var expandedPlayerIDs: Set<String> = []
     @State private var showingShareSheet = false
 
     private let assets = ValorantAssets.shared
@@ -115,11 +116,11 @@ struct ValorantMatchDetailView: View {
 
                 HStack(spacing: 4) {
                     Text("\(match.teamRounds)")
-                        .foregroundStyle(match.won ? Theme.success : Theme.danger)
+                        .foregroundStyle(Color(hex: 0x2DD4BF))
                     Text("—")
                         .foregroundStyle(.secondary)
                     Text("\(match.opponentRounds)")
-                        .foregroundStyle(match.won ? Theme.danger : Theme.success)
+                        .foregroundStyle(Theme.danger)
                 }
                 .font(.headline.weight(.heavy).monospacedDigit())
             }
@@ -152,14 +153,14 @@ struct ValorantMatchDetailView: View {
                     } label: {
                         Text(tab.rawValue)
                             .font(.subheadline.weight(isSelected ? .bold : .medium))
-                            .foregroundStyle(isSelected ? .white : .secondary)
+                            .foregroundStyle(isSelected ? Theme.danger : .secondary)
                             .padding(.horizontal, 16)
                             .padding(.vertical, 8)
                             .background {
                                 if isSelected {
                                     Capsule()
-                                        .fill(Theme.danger.opacity(0.85))
-                                        .overlay(Capsule().strokeBorder(Color.white.opacity(0.2), lineWidth: 1))
+                                        .fill(Theme.danger.opacity(0.22))
+                                        .overlay(Capsule().strokeBorder(Theme.danger.opacity(0.45), lineWidth: 1))
                                 } else {
                                     Capsule()
                                         .fill(Color.white.opacity(0.04))
@@ -214,137 +215,240 @@ struct ValorantMatchDetailView: View {
     // MARK: - Player Card Component
     private func playerCard(player: ValorantMatchPlayer, isFriendlyTeam: Bool) -> some View {
         let isTargeted = targetedPlayerID == player.id
+        let isExpanded = expandedPlayerIDs.contains(player.id)
         let accentStripeColor = isFriendlyTeam ? Color(hex: 0x2DD4BF) : Theme.danger
+        let partyColor = partyColor(for: player)
 
-        return Button {
-            withAnimation(Motion.snap) {
-                targetedPlayerID = player.id
-            }
-        } label: {
-            HStack(spacing: 0) {
-                // Vertical accent stripe on the left edge
-                Rectangle()
-                    .fill(accentStripeColor)
-                    .frame(width: 4)
+        return HStack(spacing: 0) {
+            // Left vertical accent stripe
+            Rectangle()
+                .fill(accentStripeColor)
+                .frame(width: 4)
 
-                VStack(spacing: 10) {
-                    // Top identity row
-                    HStack(spacing: 10) {
-                        // Agent circular portrait
-                        agentAvatarView(for: player)
-                            .frame(width: 38, height: 38)
-                            .clipShape(Circle())
-                            .overlay(Circle().strokeBorder(accentStripeColor.opacity(0.4), lineWidth: 1.2))
+            VStack(spacing: 12) {
+                // Top identity row
+                HStack(spacing: 10) {
+                    // Agent rounded square portrait (matching screenshot DA)
+                    agentAvatarView(for: player)
+                        .frame(width: 40, height: 40)
+                        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                        .overlay(RoundedRectangle(cornerRadius: 10, style: .continuous).strokeBorder(accentStripeColor.opacity(0.4), lineWidth: 1.2))
 
-                        VStack(alignment: .leading, spacing: 2) {
-                            HStack(spacing: 6) {
-                                Text(player.name)
-                                    .font(.subheadline.weight(player.isMe ? .heavy : .bold))
-                                    .foregroundStyle(player.isMe ? Theme.accent : .white)
-                                    .lineLimit(1)
+                    VStack(alignment: .leading, spacing: 2) {
+                        HStack(spacing: 6) {
+                            Text(player.name)
+                                .font(.subheadline.weight(player.isMe ? .heavy : .bold))
+                                .foregroundStyle(player.isMe ? Theme.accent : .white)
+                                .lineLimit(1)
 
-                                if !player.tag.isEmpty {
-                                    Text("#\(player.tag)")
-                                        .font(.caption2)
-                                        .foregroundStyle(.secondary)
-                                        .lineLimit(1)
-                                }
-                            }
-
-                            // Rank badge
-                            HStack(spacing: 4) {
-                                if let rankIcon = player.rankIconURL {
-                                    AsyncImage(url: rankIcon) { img in
-                                        img.resizable().scaledToFit()
-                                    } placeholder: {
-                                        Image(systemName: "shield.fill")
-                                            .font(.system(size: 9))
-                                            .foregroundStyle(.tertiary)
-                                    }
-                                    .frame(width: 13, height: 13)
-                                }
-
-                                Text(player.tierText.uppercased())
-                                    .font(.system(size: 10, weight: .bold))
-                                    .foregroundStyle(player.tierNumber == 27 ? Color(hex: 0xF5D78E) : .secondary)
+                            if !player.tag.isEmpty {
+                                Text("#\(player.tag)")
+                                    .font(.caption2)
+                                    .foregroundStyle(.secondary)
                                     .lineLimit(1)
                             }
                         }
 
-                        Spacer()
-
-                        // Action / Person status icon + dropdown indicator
+                        // Rank badge
                         HStack(spacing: 4) {
-                            Image(systemName: "person.fill")
-                                .font(.system(size: 10, weight: .bold))
-                                .foregroundStyle(.white)
-                                .frame(width: 22, height: 22)
-                                .background(Theme.danger.opacity(0.85), in: .circle)
+                            if let rankIcon = player.rankIconURL {
+                                AsyncImage(url: rankIcon) { img in
+                                    img.resizable().scaledToFit()
+                                } placeholder: {
+                                    Image(systemName: "shield.fill")
+                                        .font(.system(size: 9))
+                                        .foregroundStyle(.secondary)
+                                }
+                                .frame(width: 13, height: 13)
+                            } else if player.tierNumber == 0 {
+                                Image(systemName: "questionmark.circle.fill")
+                                    .font(.system(size: 10))
+                                    .foregroundStyle(.secondary)
+                            }
 
-                            Image(systemName: "chevron.down")
+                            Text(player.tierText.uppercased())
                                 .font(.system(size: 10, weight: .bold))
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(player.tierNumber == 27 ? Color(hex: 0xF5D78E) : .secondary)
+                                .lineLimit(1)
                         }
                     }
 
-                    // Bottom 4-column stats row
-                    HStack(spacing: 0) {
-                        // K/D
-                        VStack(spacing: 2) {
-                            Text(String(format: "%.2f", player.kd))
-                                .font(.subheadline.weight(.bold).monospacedDigit())
-                                .foregroundStyle(player.kd >= 1.0 ? Theme.success : Theme.danger)
-                            Text("K/D")
-                                .font(.system(size: 10, weight: .medium))
-                                .foregroundStyle(.secondary)
-                        }
-                        .frame(maxWidth: .infinity)
+                    Spacer()
 
-                        // K/D/A
-                        VStack(spacing: 2) {
-                            Text("\(player.kills) / \(player.deaths) / \(player.assists)")
-                                .font(.subheadline.weight(.semibold).monospacedDigit())
-                                .foregroundStyle(.white)
-                            Text("K/D/A")
-                                .font(.system(size: 10, weight: .medium))
-                                .foregroundStyle(.secondary)
+                    // Action / Party pastille + Person status + Expand chevron
+                    HStack(spacing: 6) {
+                        if let partyColor {
+                            Circle()
+                                .fill(partyColor)
+                                .frame(width: 7, height: 7)
                         }
-                        .frame(maxWidth: .infinity)
 
-                        // HS%
-                        VStack(spacing: 2) {
-                            Text("\(player.headshotPercent)%")
-                                .font(.subheadline.weight(.semibold).monospacedDigit())
-                                .foregroundStyle(.white)
-                            Text("HS%")
-                                .font(.system(size: 10, weight: .medium))
-                                .foregroundStyle(.secondary)
-                        }
-                        .frame(maxWidth: .infinity)
+                        Image(systemName: "person.fill")
+                            .font(.system(size: 10, weight: .bold))
+                            .foregroundStyle(.white)
+                            .frame(width: 22, height: 22)
+                            .background(Theme.danger.opacity(0.85), in: .circle)
 
-                        // ACS
-                        VStack(spacing: 2) {
-                            Text("\(player.score)")
-                                .font(.subheadline.weight(.bold).monospacedDigit())
-                                .foregroundStyle(.white)
-                            Text(match.scoreLabel)
-                                .font(.system(size: 10, weight: .medium))
+                        Button {
+                            withAnimation(Motion.snap) {
+                                if expandedPlayerIDs.contains(player.id) {
+                                    expandedPlayerIDs.remove(player.id)
+                                } else {
+                                    expandedPlayerIDs.insert(player.id)
+                                }
+                            }
+                        } label: {
+                            Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
+                                .font(.system(size: 11, weight: .bold))
                                 .foregroundStyle(.secondary)
+                                .frame(width: 26, height: 26)
+                                .contentShape(Rectangle())
                         }
-                        .frame(maxWidth: .infinity)
+                        .buttonStyle(PressScaleStyle())
                     }
                 }
-                .padding(.horizontal, 14)
-                .padding(.vertical, 12)
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    withAnimation(Motion.snap) {
+                        targetedPlayerID = player.id
+                    }
+                }
+
+                // 4-column key figures row
+                HStack(spacing: 0) {
+                    // K/D
+                    VStack(spacing: 2) {
+                        Text(String(format: "%.2f", player.kd))
+                            .font(.subheadline.weight(.bold).monospacedDigit())
+                            .foregroundStyle(player.kd >= 1.0 ? Color(hex: 0x2DD4BF) : Theme.danger)
+                        Text("K/D")
+                            .font(.system(size: 10, weight: .medium))
+                            .foregroundStyle(.secondary)
+                    }
+                    .frame(maxWidth: .infinity)
+
+                    // K/D/A
+                    VStack(spacing: 2) {
+                        Text("\(player.kills) / \(player.deaths) / \(player.assists)")
+                            .font(.subheadline.weight(.semibold).monospacedDigit())
+                            .foregroundStyle(.white)
+                        Text("K/D/A")
+                            .font(.system(size: 10, weight: .medium))
+                            .foregroundStyle(.secondary)
+                    }
+                    .frame(maxWidth: .infinity)
+
+                    // HS%
+                    VStack(spacing: 2) {
+                        Text("\(player.headshotPercent)%")
+                            .font(.subheadline.weight(.semibold).monospacedDigit())
+                            .foregroundStyle(.white)
+                        Text("HS%")
+                            .font(.system(size: 10, weight: .medium))
+                            .foregroundStyle(.secondary)
+                    }
+                    .frame(maxWidth: .infinity)
+
+                    // ACS
+                    VStack(spacing: 2) {
+                        Text("\(player.score)")
+                            .font(.subheadline.weight(.bold).monospacedDigit())
+                            .foregroundStyle(.white)
+                        Text(match.scoreLabel)
+                            .font(.system(size: 10, weight: .medium))
+                            .foregroundStyle(.secondary)
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    withAnimation(Motion.snap) {
+                        targetedPlayerID = player.id
+                    }
+                }
+
+                // Expanded stats section (matching screenshot 4)
+                if isExpanded {
+                    VStack(alignment: .leading, spacing: 10) {
+                        Rectangle()
+                            .fill(Color.white.opacity(0.08))
+                            .frame(height: 1)
+                            .padding(.top, 2)
+
+                        VStack(spacing: 8) {
+                            statLine(title: "ADR", value: "\(player.adr)")
+                            statLine(title: "HS %", value: "\(player.headshotPercent)%")
+                            statLine(title: "KAST", value: "\(player.kast)%")
+                            statLine(title: "Premiers éliminations", value: "\(player.firstKills)")
+                            statLine(title: "Premières morts", value: "\(player.firstDeaths)")
+                            statLine(title: "Manches AFK", value: "\(player.afkRounds)")
+                            statLine(title: "Poses", value: "\(player.plants)")
+                        }
+
+                        if !player.tags.isEmpty {
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: 6) {
+                                    ForEach(player.tags, id: \.self) { tag in
+                                        Text(tag)
+                                            .font(.system(size: 11, weight: .bold))
+                                            .foregroundStyle(.white.opacity(0.95))
+                                            .padding(.horizontal, 10)
+                                            .padding(.vertical, 5)
+                                            .background(Color.white.opacity(0.12), in: .capsule)
+                                    }
+                                }
+                            }
+                            .padding(.top, 4)
+                        }
+                    }
+                    .transition(.opacity.combined(with: .move(edge: .top)))
+                }
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 12)
+
+            // Right vertical party indicator stripe (matching screenshot 3)
+            if let partyColor {
+                Rectangle()
+                    .fill(partyColor)
+                    .frame(width: 4)
             }
         }
-        .buttonStyle(PressScaleStyle())
         .glassEffect(isTargeted ? Glass.regular.tint(accentStripeColor.opacity(0.2)) : Glass.regular, in: .rect(cornerRadius: Theme.cardRadius))
         .overlay(
             RoundedRectangle(cornerRadius: Theme.cardRadius)
                 .strokeBorder(isTargeted ? accentStripeColor.opacity(0.8) : Color.white.opacity(0.08), lineWidth: isTargeted ? 1.5 : 0.8)
         )
         .clipShape(.rect(cornerRadius: Theme.cardRadius))
+    }
+
+    private func statLine(title: String, value: String) -> some View {
+        HStack {
+            Text(title)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+            Spacer()
+            Text(value)
+                .font(.subheadline.weight(.bold).monospacedDigit())
+                .foregroundStyle(.white)
+        }
+    }
+
+    private func partyColor(for player: ValorantMatchPlayer) -> Color? {
+        guard let partyId = player.partyId, !partyId.isEmpty else { return nil }
+        let teamList = player.team.lowercased() == "red" ? match.enemyTeamPlayers : match.myTeamPlayers
+        let partyMembers = teamList.filter { $0.partyId == partyId }
+        guard partyMembers.count > 1 else { return nil }
+
+        let palette: [Color] = [
+            Color(hex: 0xFF764A), // Orange / Coral (screenshot 3 PingLove & Mash)
+            Color(hex: 0xF5C443), // Yellow / Amber (screenshot 3 soloking, 八点, chronix)
+            Color(hex: 0x00CEC9), // Teal
+            Color(hex: 0xA29BFE), // Lavender
+        ]
+        let distinctParties = Array(Set(teamList.compactMap(\.partyId))).sorted()
+        guard let idx = distinctParties.firstIndex(of: partyId) else { return palette[0] }
+        return palette[idx % palette.count]
     }
 
     @ViewBuilder

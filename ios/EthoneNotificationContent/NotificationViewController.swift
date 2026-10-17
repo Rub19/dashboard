@@ -51,7 +51,7 @@ private struct NotificationCard: View {
                 .font(.title2)
                 .foregroundStyle(Color(red: 0.88, green: 0.11, blue: 0.35))
                 .frame(width: 48, height: 48)
-                .glassEffect(.regular, in: .circle)
+                .background(.ultraThinMaterial, in: Circle())
             VStack(alignment: .leading, spacing: 4) {
                 Text(title).font(.headline).lineLimit(2)
                 if !message.isEmpty { Text(message).font(.subheadline).foregroundStyle(.secondary).lineLimit(3) }

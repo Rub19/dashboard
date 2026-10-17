@@ -196,17 +196,23 @@ struct EvalProfileView: View {
     private var store: ValorantStore { model.valorant }
     private var profile: ValorantProfile? { store.profile }
 
-    // Dynamic Career Calculations
+    // Dynamic Career Calculations strictly scoped to logged-in identity
     private var totalMatchesCount: Int {
-        max(store.matches.count, 25)
+        if store.matches.isEmpty {
+            return store.isCurrentUserRub19 ? 25 : 0
+        }
+        return store.matches.count
     }
 
     private var totalWinsCount: Int {
-        let actualWins = store.matches.filter(\.won).count
-        return actualWins > 0 ? actualWins : 19
+        if store.matches.isEmpty {
+            return store.isCurrentUserRub19 ? 19 : 0
+        }
+        return store.matches.filter(\.won).count
     }
 
     private var winRateText: String {
+        guard totalMatchesCount > 0 else { return "0,0 %" }
         let wr = (Double(totalWinsCount) / Double(totalMatchesCount)) * 100.0
         return String(format: "%.1f %%", wr).replacingOccurrences(of: ".", with: ",")
     }
@@ -217,30 +223,40 @@ struct EvalProfileView: View {
     }
 
     private var sessionKdText: String {
+        if recentSessionMatches.isEmpty {
+            return store.isCurrentUserRub19 ? "22,4" : "0,0"
+        }
         let kills = recentSessionMatches.reduce(0) { $0 + $1.kills }
         let deaths = max(1, recentSessionMatches.reduce(0) { $0 + $1.deaths })
         let kd = Double(kills) / Double(deaths)
-        return String(format: "%.1f", max(kd, 22.4)).replacingOccurrences(of: ".", with: ",")
+        return String(format: "%.1f", kd).replacingOccurrences(of: ".", with: ",")
     }
 
     private var sessionDeltaText: String {
+        if recentSessionMatches.isEmpty {
+            return store.isCurrentUserRub19 ? "+84 SC" : "+0 SC"
+        }
         let wins = recentSessionMatches.filter(\.won).count
         let losses = recentSessionMatches.filter { !$0.won }.count
         let delta = (wins * 24) - (losses * 16)
-        let finalDelta = delta != 0 ? delta : 84
-        return "\(finalDelta >= 0 ? "+" : "")\(finalDelta) SC"
+        return "\(delta >= 0 ? "+" : "")\(delta) SC"
     }
 
     // Dynamic Trends
     private var avgHsPercent: Int {
-        if recentSessionMatches.isEmpty { return 28 }
+        if recentSessionMatches.isEmpty {
+            return store.isCurrentUserRub19 ? 28 : 0
+        }
         return recentSessionMatches.reduce(0) { $0 + $1.headshotPercent } / recentSessionMatches.count
     }
 
     private var avgAdrValue: Int {
+        if recentSessionMatches.isEmpty {
+            return store.isCurrentUserRub19 ? 185 : 0
+        }
         let totalDamage = recentSessionMatches.reduce(0) { $0 + ($1.myPlayer?.damageMade ?? ($1.kills * 135)) }
         let totalRounds = max(1, recentSessionMatches.reduce(0) { $0 + $1.teamRounds + $1.opponentRounds })
-        return max(totalDamage / totalRounds, 185)
+        return totalDamage / totalRounds
     }
 
     var body: some View {
@@ -1422,7 +1438,9 @@ struct EvalGameView: View {
                                 .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
 
                                 // Bottom Wallet Bar
-                                EvalWalletBar(wallet: store.wallet)
+                                if store.wallet.vp > 0 || store.wallet.rp > 0 || store.wallet.kc > 0 {
+                                    EvalWalletBar(wallet: store.wallet)
+                                }
                             }
                         }
                     }
@@ -1604,7 +1622,8 @@ struct EvalHubView: View {
                         NavigationLink {
                             EvalFriendsView()
                         } label: {
-                            hubRowView(icon: "person.2.fill", title: "Amis", badge: "\(store.friends.count + 1)")
+                            let friendsBadge = store.isConfigured ? "\(store.friends.count + 1)" : nil
+                            hubRowView(icon: "person.2.fill", title: "Amis", badge: friendsBadge)
                         }
                         .buttonStyle(.plain)
 
@@ -1628,7 +1647,8 @@ struct EvalHubView: View {
                         Button {
                             showingStore = true
                         } label: {
-                            hubRowView(icon: "bag.fill", title: "Boutique du jour", badge: "Skins")
+                            let storeBadge = store.storeOffers.isEmpty ? nil : "Skins"
+                            hubRowView(icon: "bag.fill", title: "Boutique du jour", badge: storeBadge)
                         }
                         .buttonStyle(.plain)
                     }
@@ -1727,6 +1747,19 @@ struct EvalFriendsView: View {
         }
     }
 
+    private var onlineFriends: [ValorantFriend] {
+        filteredFriends.filter { $0.isOnline || $0.isInGame }
+    }
+
+    private var offlineFriends: [ValorantFriend] {
+        let list = filteredFriends.filter { !$0.isOnline && !$0.isInGame }
+        if store.sortOfflineByLastSeen {
+            return list.sorted { $0.lastOnlineSecondsAgo < $1.lastOnlineSecondsAgo }
+        } else {
+            return list.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+        }
+    }
+
     var body: some View {
         ZStack {
             ScrollView {
@@ -1760,8 +1793,11 @@ struct EvalFriendsView: View {
                     if !store.isConfigured {
                         // Disconnected state: instructions to connect, NO dummy placeholders
                         disconnectedConnectCard
+                    } else if onlineFriends.isEmpty && offlineFriends.isEmpty {
+                        // Empty friends state for accounts with no friends: NO dummy placeholders
+                        emptyFriendsCard
                     } else {
-                        // Connected state: Rub19#Boss group + Friends groups
+                        // Connected state: Rub19#Boss group + Online Friends groups + Offline Friends section
                         VStack(spacing: 18) {
                             // Section 1: Votre groupe — 1/5
                             VStack(alignment: .leading, spacing: 8) {
@@ -1773,8 +1809,8 @@ struct EvalFriendsView: View {
                                 myUserPartyCard
                             }
 
-                            // Section 2: Friends Groups
-                            ForEach(filteredFriends) { friend in
+                            // Section 2: Online Friends Groups
+                            ForEach(onlineFriends) { friend in
                                 VStack(alignment: .leading, spacing: 8) {
                                     Text("Groupe — \(friend.partyCurrent)/\(friend.partyMax)")
                                         .font(.subheadline.weight(.semibold))
@@ -1789,6 +1825,27 @@ struct EvalFriendsView: View {
                                     .buttonStyle(PressScaleStyle())
                                 }
                             }
+
+                            // Section 3: Hors ligne — X
+                            if !offlineFriends.isEmpty {
+                                VStack(alignment: .leading, spacing: 8) {
+                                    Text("Hors ligne — \(offlineFriends.count)")
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundStyle(.secondary)
+                                        .padding(.leading, 4)
+
+                                    VStack(spacing: 8) {
+                                        ForEach(offlineFriends) { friend in
+                                            Button {
+                                                selectedFriend = friend
+                                            } label: {
+                                                EvalOfflineFriendCard(friend: friend)
+                                            }
+                                            .buttonStyle(PressScaleStyle())
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -1796,6 +1853,15 @@ struct EvalFriendsView: View {
                 .padding(.bottom, 96)
             }
             .scrollIndicators(.hidden)
+            .refreshable {
+                await store.refreshFriends()
+            }
+            .task {
+                while !Task.isCancelled {
+                    try? await Task.sleep(nanoseconds: 12_000_000_000)
+                    store.tickLiveFriends()
+                }
+            }
             .navigationBarBackButtonHidden(true)
             .ethoneScreen()
 
@@ -2003,9 +2069,51 @@ struct EvalFriendsView: View {
         .clipShape(.rect(cornerRadius: Theme.cardRadius))
         .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
     }
+
+    // Empty state when account has 0 friends (zero fake placeholders)
+    private var emptyFriendsCard: some View {
+        VStack(spacing: 14) {
+            Image(systemName: "person.2.slash")
+                .font(.system(size: 40))
+                .foregroundStyle(.secondary)
+
+            Text("Aucun ami sur ce compte")
+                .font(.headline.weight(.bold))
+                .foregroundStyle(.white)
+
+            Text("Vos amis en jeu et hors ligne apparaîtront ici dès qu'ils feront partie de votre compte.")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 20)
+
+            Button {
+                withAnimation(Motion.snap) {
+                    showingAddFriendModal = true
+                }
+            } label: {
+                HStack(spacing: 6) {
+                    Image(systemName: "person.crop.circle.badge.plus")
+                    Text("Ajouter un ami")
+                }
+                .font(.subheadline.weight(.bold))
+                .foregroundStyle(Theme.danger)
+                .padding(.horizontal, 18)
+                .padding(.vertical, 8)
+                .background(Theme.danger.opacity(0.18), in: .capsule)
+            }
+            .buttonStyle(PressScaleStyle())
+            .padding(.top, 4)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 36)
+        .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
+        .clipShape(.rect(cornerRadius: Theme.cardRadius))
+        .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
+    }
 }
 
-// MARK: - Friend Card (Screenshot 1)
+// MARK: - Online Friend Card (Screenshot 1)
 struct EvalFriendCard: View {
     let friend: ValorantFriend
 
@@ -2055,9 +2163,9 @@ struct EvalFriendCard: View {
                             .foregroundStyle(.secondary)
 
                         if friend.isPartyLeader {
-                            Image(systemName: "crown")
-                                .font(.system(size: 13, weight: .bold))
-                                .foregroundStyle(Color.white.opacity(0.22))
+                            Image(systemName: "crown.fill")
+                                .font(.system(size: 11))
+                                .foregroundStyle(Color(hex: 0xF5D78E).opacity(0.85))
                                 .padding(.leading, 2)
                         }
                     }
@@ -2134,6 +2242,79 @@ struct EvalFriendCard: View {
         .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
         .clipShape(.rect(cornerRadius: Theme.cardRadius))
         .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
+    }
+}
+
+// MARK: - Offline Friend Card (Screenshot 3 & requirements)
+struct EvalOfflineFriendCard: View {
+    let friend: ValorantFriend
+
+    var body: some View {
+        HStack(spacing: 12) {
+            // Avatar (dimmed for offline, gray pastille)
+            ZStack(alignment: .bottomTrailing) {
+                AsyncImage(url: URL(string: friend.avatarURL ?? "")) { phase in
+                    switch phase {
+                    case .success(let image):
+                        image.resizable().scaledToFill().frame(width: 44, height: 44).clipShape(.rect(cornerRadius: 12))
+                    default:
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(Color(hex: 0x1A1C24))
+                            .frame(width: 44, height: 44)
+                            .overlay(Image(systemName: "person.fill").foregroundStyle(.secondary))
+                    }
+                }
+                .opacity(0.65)
+
+                Circle()
+                    .fill(Color(hex: 0x64748B))
+                    .frame(width: 11, height: 11)
+                    .overlay(Circle().strokeBorder(Color(hex: 0x0E1017), lineWidth: 2))
+                    .offset(x: 2, y: 2)
+            }
+
+            VStack(alignment: .leading, spacing: 3) {
+                HStack(spacing: 4) {
+                    Text(friend.name)
+                        .font(.subheadline.weight(.heavy))
+                        .foregroundStyle(Color.white.opacity(0.85))
+
+                    Text("#\(friend.tag)")
+                        .font(.caption.weight(.medium))
+                        .foregroundStyle(.secondary)
+                }
+
+                Text(friend.lastOnlineText ?? "Hors ligne")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer()
+
+            // Rank emblem + Chevron
+            HStack(spacing: 8) {
+                if friend.tierNumber > 0 {
+                    AsyncImage(url: friend.rankIconURL) { phase in
+                        switch phase {
+                        case .success(let image):
+                            image.resizable().scaledToFit().frame(width: 28, height: 28).opacity(0.8)
+                        default:
+                            Image(systemName: "shield.fill")
+                                .font(.system(size: 18))
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                }
+
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .padding(14)
+        .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
+        .clipShape(.rect(cornerRadius: Theme.cardRadius))
+        .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(Color.white.opacity(0.06), lineWidth: 1))
     }
 }
 
@@ -2403,8 +2584,11 @@ struct EvalFriendHistoryView: View {
 
 // MARK: - Friend Detail Sheet
 struct EvalFriendDetailSheet: View {
+    @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss
     let friend: ValorantFriend
+
+    private var store: ValorantStore { model.valorant }
 
     var body: some View {
         VStack(spacing: 16) {
@@ -2431,9 +2615,9 @@ struct EvalFriendDetailSheet: View {
                             .font(.caption)
                             .foregroundStyle(Theme.danger)
                     } else {
-                        Text(friend.isOnline ? "En ligne" : "Hors ligne")
+                        Text(friend.isOnline ? "En ligne" : (friend.lastOnlineText ?? "Hors ligne"))
                             .font(.caption)
-                            .foregroundStyle(Color(hex: 0x22C55E))
+                            .foregroundStyle(friend.isOnline ? Color(hex: 0x22C55E) : .secondary)
                     }
                 }
 
@@ -2446,6 +2630,27 @@ struct EvalFriendDetailSheet: View {
                 actionRow(icon: "message.fill", title: "Envoyer un message")
                 actionRow(icon: "person.crop.circle.badge.plus", title: "Inviter dans le groupe")
                 actionRow(icon: "arrow.right.circle.fill", title: "Rejoindre le groupe")
+
+                Button(role: .destructive) {
+                    store.removeFriend(id: friend.id)
+                    dismiss()
+                } label: {
+                    HStack(spacing: 12) {
+                        Image(systemName: "person.fill.xmark")
+                            .font(.system(size: 15))
+                            .foregroundStyle(Theme.danger)
+                            .frame(width: 22)
+
+                        Text("Retirer de la liste d'amis")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(Theme.danger)
+
+                        Spacer()
+                    }
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 12)
+                }
+                .buttonStyle(PressScaleStyle())
             }
             .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
             .clipShape(.rect(cornerRadius: Theme.cardRadius))
@@ -2523,8 +2728,52 @@ struct EvalSettingsView: View {
                     }
                     .padding(.top, 4)
 
-                    // 1. Ajouter un compte
-                    VStack(alignment: .leading, spacing: 6) {
+                    // 1. Comptes Riot
+                    VStack(alignment: .leading, spacing: 8) {
+                        if store.isConfigured {
+                            HStack(spacing: 12) {
+                                ZStack(alignment: .bottomTrailing) {
+                                    Circle()
+                                        .fill(Color(hex: 0x1A1C24))
+                                        .frame(width: 40, height: 40)
+                                        .overlay(Image(systemName: "person.fill").foregroundStyle(.secondary))
+
+                                    Circle()
+                                        .fill(Color(hex: 0x22C55E))
+                                        .frame(width: 10, height: 10)
+                                        .overlay(Circle().strokeBorder(Color(hex: 0x0E1017), lineWidth: 1.5))
+                                }
+
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("\(store.playerName)#\(store.tag)")
+                                        .font(.subheadline.weight(.heavy))
+                                        .foregroundStyle(.white)
+
+                                    Text(store.isCurrentUserRub19 ? "Compte principal (Rub19)" : "Compte connecté")
+                                        .font(.caption2)
+                                        .foregroundStyle(.secondary)
+                                }
+
+                                Spacer()
+
+                                Button {
+                                    store.disconnect()
+                                } label: {
+                                    Text("Déconnecter")
+                                        .font(.caption.weight(.bold))
+                                        .foregroundStyle(Theme.danger)
+                                        .padding(.horizontal, 10)
+                                        .padding(.vertical, 6)
+                                        .background(Theme.danger.opacity(0.15), in: .capsule)
+                                }
+                                .buttonStyle(PressScaleStyle())
+                            }
+                            .padding(14)
+                            .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
+                            .clipShape(.rect(cornerRadius: Theme.cardRadius))
+                            .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
+                        }
+
                         Button {
                             showingAccountSheet = true
                         } label: {
@@ -2532,7 +2781,7 @@ struct EvalSettingsView: View {
                                 Image(systemName: "plus")
                                     .font(.system(size: 14, weight: .bold))
                                     .foregroundStyle(Theme.danger)
-                                Text("Ajouter un compte")
+                                Text(store.isConfigured ? "Changer de compte" : "Ajouter un compte")
                                     .font(.subheadline.weight(.semibold))
                                     .foregroundStyle(.white)
                                 Spacer()

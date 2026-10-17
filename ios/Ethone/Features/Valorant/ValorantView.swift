@@ -254,6 +254,22 @@ struct ValorantSettingsSheet: View {
                 } footer: {
                     Text("Sans clé, l'API est limitée. La clé reste dans le trousseau de cet appareil.")
                 }
+
+                if model.valorant.isConfigured {
+                    Section {
+                        Button(role: .destructive) {
+                            model.valorant.disconnect()
+                            dismiss()
+                        } label: {
+                            HStack {
+                                Spacer()
+                                Text("Se déconnecter de ce compte")
+                                    .foregroundStyle(Theme.danger)
+                                Spacer()
+                            }
+                        }
+                    }
+                }
             }
             .scrollContentBackground(.hidden)
             .navigationTitle("Valorant")

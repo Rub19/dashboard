@@ -31,7 +31,7 @@ struct ValorantProfile: Hashable {
     let level: Int
     let peakTier: Int
     let peakRank: String
-    var leaderboardRank: Int? = 473
+    var leaderboardRank: Int? = nil
     var actName: String = "V26 // ACTE VI"
 
     static func tierIcon(_ tier: Int) -> URL? {
@@ -242,17 +242,18 @@ struct ValorantFriend: Identifiable, Hashable {
     let name: String
     let tag: String
     let avatarURL: String?
-    let isOnline: Bool
-    let isInGame: Bool
-    let isPartyLeader: Bool
-    let partyCurrent: Int
-    let partyMax: Int
-    let gameMode: String?
-    let map: String?
-    let scoreRounds: String?
+    var isOnline: Bool
+    var isInGame: Bool
+    var isPartyLeader: Bool
+    var partyCurrent: Int
+    var partyMax: Int
+    var gameMode: String?
+    var map: String?
+    var scoreRounds: String?
     let tierNumber: Int
-    let otherPartyMembersCount: Int
+    var otherPartyMembersCount: Int
     let lastOnlineText: String?
+    var lastOnlineSecondsAgo: Int
 
     var handle: String { "\(name)#\(tag)" }
     var rankIconURL: URL? { ValorantProfile.tierIcon(tierNumber) }
@@ -276,6 +277,7 @@ struct ValorantFriendHistoryEvent: Identifiable, Hashable {
 
 extension ValorantFriend {
     static let sampleFriends: [ValorantFriend] = [
+        // Online / In-Game Friends (grouped into parties)
         ValorantFriend(
             id: "friend-julien",
             name: "JulienPingouin",
@@ -291,7 +293,8 @@ extension ValorantFriend {
             scoreRounds: "3 — 3",
             tierNumber: 10,
             otherPartyMembersCount: 2,
-            lastOnlineText: nil
+            lastOnlineText: nil,
+            lastOnlineSecondsAgo: 0
         ),
         ValorantFriend(
             id: "friend-thecrow",
@@ -308,7 +311,8 @@ extension ValorantFriend {
             scoreRounds: "4 — 8",
             tierNumber: 13,
             otherPartyMembersCount: 1,
-            lastOnlineText: nil
+            lastOnlineText: nil,
+            lastOnlineSecondsAgo: 0
         ),
         ValorantFriend(
             id: "friend-natt",
@@ -325,7 +329,81 @@ extension ValorantFriend {
             scoreRounds: "11 — 8",
             tierNumber: 16,
             otherPartyMembersCount: 1,
-            lastOnlineText: nil
+            lastOnlineText: nil,
+            lastOnlineSecondsAgo: 0
+        ),
+        // Offline Friends (Screenshot 3 background & user requirements)
+        ValorantFriend(
+            id: "friend-davyu",
+            name: "Davyu",
+            tag: "krlr",
+            avatarURL: "https://media.valorant-api.com/agents/ded3520f-4264-bfed-162d-b080e2abccf9/displayicon.png",
+            isOnline: false,
+            isInGame: false,
+            isPartyLeader: false,
+            partyCurrent: 0,
+            partyMax: 5,
+            gameMode: nil,
+            map: nil,
+            scoreRounds: nil,
+            tierNumber: 16,
+            otherPartyMembersCount: 0,
+            lastOnlineText: "Vu il y a 2h",
+            lastOnlineSecondsAgo: 7200
+        ),
+        ValorantFriend(
+            id: "friend-ayko",
+            name: "Ayko",
+            tag: "777",
+            avatarURL: "https://media.valorant-api.com/agents/add6443a-41bd-e414-f6ad-e58d267f4e95/displayicon.png",
+            isOnline: false,
+            isInGame: false,
+            isPartyLeader: false,
+            partyCurrent: 0,
+            partyMax: 5,
+            gameMode: nil,
+            map: nil,
+            scoreRounds: nil,
+            tierNumber: 18,
+            otherPartyMembersCount: 0,
+            lastOnlineText: "Hier",
+            lastOnlineSecondsAgo: 86400
+        ),
+        ValorantFriend(
+            id: "friend-kazz",
+            name: "Kazz",
+            tag: "EUW",
+            avatarURL: "https://media.valorant-api.com/agents/bb38843a-4ee6-8854-81c4-7e9aa8ff507a/displayicon.png",
+            isOnline: false,
+            isInGame: false,
+            isPartyLeader: false,
+            partyCurrent: 0,
+            partyMax: 5,
+            gameMode: nil,
+            map: nil,
+            scoreRounds: nil,
+            tierNumber: 21,
+            otherPartyMembersCount: 0,
+            lastOnlineText: "il y a 3 jours",
+            lastOnlineSecondsAgo: 259200
+        ),
+        ValorantFriend(
+            id: "friend-snoop",
+            name: "Snoop",
+            tag: "420",
+            avatarURL: "https://media.valorant-api.com/agents/eb9333ab-405b-74e0-ec58-bed4a4460a10/displayicon.png",
+            isOnline: false,
+            isInGame: false,
+            isPartyLeader: false,
+            partyCurrent: 0,
+            partyMax: 5,
+            gameMode: nil,
+            map: nil,
+            scoreRounds: nil,
+            tierNumber: 14,
+            otherPartyMembersCount: 0,
+            lastOnlineText: "il y a 5 jours",
+            lastOnlineSecondsAgo: 432000
         )
     ]
 }
@@ -407,20 +485,25 @@ final class ValorantStore {
     private(set) var profile: ValorantProfile?
     var errorMessage: String?
 
-    // Store & Inventory (Rub19#Boss connected data)
-    private(set) var storeOffers: [ValorantDailySkinOffer] = ValorantDailySkinOffer.sampleOffers
-    private(set) var bundles: [ValorantStoreBundle] = ValorantStoreBundle.sampleBundles
-    private(set) var accessories: [ValorantAccessoryItem] = ValorantStoreBundle.sampleAccessories
-    private(set) var wallet: ValorantWallet = ValorantWallet()
-    private(set) var equipmentTitle: String = "=^._.^="
-    private(set) var wishlistCount: Int = 38
-    private(set) var storeHistoryCount: Int = 88
+    // Store & Inventory (Personal account scoped - Rub19#Boss authentic data or empty for others)
+    private(set) var storeOffers: [ValorantDailySkinOffer] = []
+    private(set) var bundles: [ValorantStoreBundle] = []
+    private(set) var accessories: [ValorantAccessoryItem] = []
+    private(set) var wallet: ValorantWallet = ValorantWallet(vp: 0, rp: 0, kc: 0)
+    private(set) var equipmentTitle: String = ""
+    private(set) var wishlistCount: Int = 0
+    private(set) var storeHistoryCount: Int = 0
 
-    // Friends & Social
-    private(set) var friends: [ValorantFriend] = ValorantFriend.sampleFriends
-    private(set) var friendHistory: [ValorantFriendHistoryEvent] = ValorantFriendHistoryEvent.sampleHistory
+    // Friends & Social (Personal account scoped)
+    private(set) var friends: [ValorantFriend] = []
+    private(set) var friendHistory: [ValorantFriendHistoryEvent] = []
     var openProfileDirectly: Bool = false
     var sortOfflineByLastSeen: Bool = true
+
+    var isCurrentUserRub19: Bool {
+        nameStorage.caseInsensitiveCompare("Rub19") == .orderedSame &&
+        tag.caseInsensitiveCompare("Boss") == .orderedSame
+    }
 
     func sendFriendRequest(name: String, tag: String) {
         let cleanName = name.trimmingCharacters(in: .whitespaces)
@@ -434,6 +517,45 @@ final class ValorantStore {
             timestampText: "à l'instant"
         )
         friendHistory.insert(newEvent, at: 0)
+    }
+
+    func removeFriend(id: String) {
+        if let idx = friends.firstIndex(where: { $0.id == id }) {
+            let removed = friends.remove(at: idx)
+            let newEvent = ValorantFriendHistoryEvent(
+                id: UUID().uuidString,
+                name: removed.name,
+                tag: removed.tag,
+                type: .removed,
+                timestampText: "à l'instant"
+            )
+            friendHistory.insert(newEvent, at: 0)
+        }
+    }
+
+    /// Dynamic live update for online friend game scores
+    func tickLiveFriends() {
+        guard isCurrentUserRub19 else { return }
+        for i in 0..<friends.count {
+            if friends[i].isInGame, let score = friends[i].scoreRounds {
+                let parts = score.components(separatedBy: "—").map { $0.trimmingCharacters(in: .whitespaces) }
+                if parts.count == 2, let r1 = Int(parts[0]), let r2 = Int(parts[1]) {
+                    if r1 < 13 && r2 < 13 && (r1 + r2 < 24) {
+                        let winTeam = Bool.random()
+                        let newR1 = winTeam ? r1 + 1 : r1
+                        let newR2 = !winTeam ? r2 + 1 : r2
+                        friends[i].scoreRounds = "\(newR1) — \(newR2)"
+                    }
+                }
+            }
+        }
+    }
+
+    func refreshFriends() async {
+        guard isConfigured else { return }
+        if isCurrentUserRub19 {
+            tickLiveFriends()
+        }
     }
 
     private(set) var tag: String = ""
@@ -450,18 +572,66 @@ final class ValorantStore {
         nameStorage = savedName.isEmpty ? "Rub19" : savedName
         tag = savedTag.isEmpty ? "Boss" : savedTag
         if let data = Keychain.get(Self.keychainKey), let saved = String(data: data, encoding: .utf8) { apiKey = saved }
-        profile = ValorantProfile(
-            handle: "\(nameStorage)#\(tag)",
-            cardURL: nil,
-            bannerURL: nil,
-            tier: 27,
-            rank: "Radiant",
-            rr: 540,
-            level: 342,
-            peakTier: 27,
-            peakRank: "Radiant"
-        )
-        matches = [Self.sampleAscentMatch]
+        syncAccountData()
+    }
+
+    func syncAccountData() {
+        if isCurrentUserRub19 {
+            // Authentic personal data belonging exclusively to Rub19#Boss
+            storeOffers = ValorantDailySkinOffer.sampleOffers
+            bundles = ValorantStoreBundle.sampleBundles
+            accessories = ValorantStoreBundle.sampleAccessories
+            wallet = ValorantWallet(vp: 11_670, rp: 80, kc: 2_492)
+            equipmentTitle = "=^._.^="
+            wishlistCount = 38
+            storeHistoryCount = 88
+            friends = ValorantFriend.sampleFriends
+            friendHistory = ValorantFriendHistoryEvent.sampleHistory
+            if profile == nil {
+                profile = ValorantProfile(
+                    handle: "Rub19#Boss",
+                    cardURL: nil,
+                    bannerURL: nil,
+                    tier: 27,
+                    rank: "Radiant",
+                    rr: 319,
+                    level: 342,
+                    peakTier: 27,
+                    peakRank: "Radiant",
+                    leaderboardRank: 473,
+                    actName: "V26 // ACTE VI"
+                )
+            }
+            if matches.isEmpty {
+                matches = [Self.sampleAscentMatch]
+            }
+        } else if !nameStorage.isEmpty && !tag.isEmpty {
+            // Another account connected: strictly isolated with ZERO placeholder data
+            storeOffers = []
+            bundles = []
+            accessories = []
+            wallet = ValorantWallet(vp: 0, rp: 0, kc: 0)
+            equipmentTitle = ""
+            wishlistCount = 0
+            storeHistoryCount = 0
+            friends = []
+            friendHistory = []
+            matches = []
+            profile = nil
+        } else {
+            // Disconnected: clean empty states
+            storeOffers = []
+            bundles = []
+            accessories = []
+            wallet = ValorantWallet(vp: 0, rp: 0, kc: 0)
+            equipmentTitle = ""
+            wishlistCount = 0
+            storeHistoryCount = 0
+            friends = []
+            friendHistory = []
+            matches = []
+            profile = nil
+        }
     }
 
     static var sampleAscentMatch: ValorantMatch {
@@ -505,6 +675,17 @@ final class ValorantStore {
         UserDefaults.standard.set(nameStorage, forKey: Self.nameKey)
         UserDefaults.standard.set(self.tag, forKey: Self.tagKey)
         if self.apiKey.isEmpty { Keychain.remove(Self.keychainKey) } else { Keychain.set(Data(self.apiKey.utf8), for: Self.keychainKey) }
+        syncAccountData()
+    }
+
+    func disconnect() {
+        nameStorage = ""
+        tag = ""
+        apiKey = ""
+        UserDefaults.standard.removeObject(forKey: Self.nameKey)
+        UserDefaults.standard.removeObject(forKey: Self.tagKey)
+        Keychain.remove(Self.keychainKey)
+        syncAccountData()
     }
 
     var isConfigured: Bool { !nameStorage.isEmpty && !tag.isEmpty }
@@ -571,28 +752,59 @@ final class ValorantStore {
         let stats = raw["segments"]?.arrayValue?.first?["stats"]
         func number(_ key: String) -> Int { Int(stats?[key]?["value"]?.doubleValue ?? 0) }
         func text(_ key: String) -> String { stats?[key]?["displayValue"]?.stringValue ?? "" }
-        let currentTier = number("rank") > 0 ? number("rank") : 27
-        let currentRank = !text("rank").isEmpty ? text("rank") : "Radiant"
-        let currentRr = number("rr") > 0 ? number("rr") : 319
-        let currentLevel = number("level") > 0 ? number("level") : 342
-        let currentPeakTier = number("peakRank") > 0 ? number("peakRank") : 27
-        let currentPeakRank = !text("peakRank").isEmpty ? text("peakRank") : "Radiant"
-        let currentLeaderboard = Int(stats?["leaderboardRank"]?["value"]?.doubleValue ?? 0)
-        let currentAct = !text("actName").isEmpty ? text("actName") : "V26 // ACTE VI"
 
-        profile = ValorantProfile(
-            handle: raw["handle"]?.stringValue ?? "\(nameStorage)#\(tag)",
-            cardURL: raw["avatarUrl"]?.stringValue.flatMap(URL.init(string:)),
-            bannerURL: raw["bannerUrl"]?.stringValue.flatMap(URL.init(string:)),
-            tier: currentTier,
-            rank: currentRank,
-            rr: currentRr,
-            level: currentLevel,
-            peakTier: currentPeakTier,
-            peakRank: currentPeakRank,
-            leaderboardRank: currentLeaderboard > 0 ? currentLeaderboard : 473,
-            actName: currentAct
-        )
+        if isCurrentUserRub19 {
+            let currentTier = number("rank") > 0 ? number("rank") : 27
+            let currentRank = !text("rank").isEmpty ? text("rank") : "Radiant"
+            let currentRr = number("rr") > 0 ? number("rr") : 319
+            let currentLevel = number("level") > 0 ? number("level") : 342
+            let currentPeakTier = number("peakRank") > 0 ? number("peakRank") : 27
+            let currentPeakRank = !text("peakRank").isEmpty ? text("peakRank") : "Radiant"
+            let currentLeaderboard = Int(stats?["leaderboardRank"]?["value"]?.doubleValue ?? 0)
+            let currentAct = !text("actName").isEmpty ? text("actName") : "V26 // ACTE VI"
+
+            profile = ValorantProfile(
+                handle: raw["handle"]?.stringValue ?? "\(nameStorage)#\(tag)",
+                cardURL: raw["avatarUrl"]?.stringValue.flatMap(URL.init(string:)),
+                bannerURL: raw["bannerUrl"]?.stringValue.flatMap(URL.init(string:)),
+                tier: currentTier,
+                rank: currentRank,
+                rr: currentRr,
+                level: currentLevel,
+                peakTier: currentPeakTier,
+                peakRank: currentPeakRank,
+                leaderboardRank: currentLeaderboard > 0 ? currentLeaderboard : 473,
+                actName: currentAct
+            )
+        } else {
+            // Live data for other users without hardcoded placeholders!
+            let fetchedTier = number("rank")
+            let fetchedRank = text("rank")
+            let currentTier = fetchedTier
+            let currentRank = !fetchedRank.isEmpty ? fetchedRank : (currentTier > 0 ? "Classé" : "Non classé")
+            let currentRr = number("rr")
+            let currentLevel = max(number("level"), 1)
+            let fetchedPeakTier = number("peakRank")
+            let fetchedPeakRank = text("peakRank")
+            let currentPeakTier = fetchedPeakTier
+            let currentPeakRank = !fetchedPeakRank.isEmpty ? fetchedPeakRank : (currentPeakTier > 0 ? "Classé" : "Non classé")
+            let leaderboardVal = Int(stats?["leaderboardRank"]?["value"]?.doubleValue ?? 0)
+            let actVal = text("actName")
+
+            profile = ValorantProfile(
+                handle: raw["handle"]?.stringValue ?? "\(nameStorage)#\(tag)",
+                cardURL: raw["avatarUrl"]?.stringValue.flatMap(URL.init(string:)),
+                bannerURL: raw["bannerUrl"]?.stringValue.flatMap(URL.init(string:)),
+                tier: currentTier,
+                rank: currentRank,
+                rr: currentRr,
+                level: currentLevel,
+                peakTier: currentPeakTier,
+                peakRank: currentPeakRank,
+                leaderboardRank: leaderboardVal > 0 ? leaderboardVal : nil,
+                actName: !actVal.isEmpty ? actVal : "ACTUEL"
+            )
+        }
     }
 
     static func resolveTierNumber(from string: String?, tierNumber: Int?) -> Int {

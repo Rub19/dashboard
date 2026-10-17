@@ -66,9 +66,6 @@ struct PluginsView: View {
                     }
                     .padding(.horizontal)
                 }
-                .mask {
-                    LinearGradient(stops: [.init(color: .clear, location: 0), .init(color: .black, location: 0.04), .init(color: .black, location: 0.9), .init(color: .clear, location: 1)], startPoint: .leading, endPoint: .trailing)
-                }
                 .sensoryFeedback(.selection, trigger: selectedType)
 
                 if filteredPlugins.isEmpty {

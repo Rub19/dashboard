@@ -15,6 +15,7 @@ struct MailMessage: Identifiable, Decodable, Hashable {
     let receivedAt: Date?
     let sentAt: Date?
     let brainSummary: String?
+    let snippet: String?
 
     enum CodingKeys: String, CodingKey {
         case id, direction, subject
@@ -29,6 +30,7 @@ struct MailMessage: Identifiable, Decodable, Hashable {
         case receivedAt = "received_at"
         case sentAt = "sent_at"
         case brainSummary = "brain_summary"
+        case snippet
     }
 
     var isRead: Bool {
@@ -42,7 +44,8 @@ struct MailMessage: Identifiable, Decodable, Hashable {
 
     var readableBody: String {
         if let text = bodyText, !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { return text }
-        return HTMLText.plain(from: bodyHtml ?? "")
+        let html = HTMLText.plain(from: bodyHtml ?? "")
+        return html.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? (snippet ?? "") : html
     }
 }
 
@@ -149,6 +152,17 @@ final class MailStore {
         } catch {
             errorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
         }
+    }
+
+    /// The inbox list only carries a snippet: fetch the full message (body) from its thread.
+    func fullMessage(_ message: MailMessage) async -> MailMessage? {
+        if let thread = message.threadId, !thread.isEmpty,
+           let rows: [MailMessage] = try? await api.worker("api/mail/thread", query: [URLQueryItem(name: "thread_id", value: thread)]),
+           let match = rows.first(where: { $0.id == message.id }) {
+            return match
+        }
+        let rows: [MailMessage]? = try? await api.list("ethone_mail_messages", query: [URLQueryItem(name: "id", value: "eq.\(message.id)")])
+        return rows?.first
     }
 
     func search(_ text: String) async {
@@ -284,6 +298,8 @@ struct MailDetailView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var replying = false
     @State private var forwarding = false
+    @State private var full: MailMessage?
+    @State private var loadingBody = true
     let message: MailMessage
 
     private func act(_ work: @escaping () async -> Void) {
@@ -312,7 +328,16 @@ struct MailDetailView: View {
                             Label(summary, systemImage: "sparkles").font(.subheadline)
                         }
                     }
-                    GlassCard { Text(message.readableBody).textSelection(.enabled) }
+                    GlassCard {
+                        let body = (full ?? message).readableBody
+                        if loadingBody && full == nil {
+                            HStack(spacing: 10) { ProgressView(); Text("Chargement du message…").foregroundStyle(.secondary) }
+                        } else if body.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                            Text("Ce message n'a pas de contenu texte.").foregroundStyle(.secondary)
+                        } else {
+                            Text(body).textSelection(.enabled)
+                        }
+                    }
                 }
                 .padding(16)
             }
@@ -348,7 +373,7 @@ struct MailDetailView: View {
                 MailComposeView(draft: ComposeDraft(
                     to: "",
                     subject: message.title.lowercased().hasPrefix("tr:") ? message.title : "Tr : \(message.title)",
-                    body: "\n\n---------- Message transféré ----------\nDe : \(message.sender)\nObjet : \(message.title)\n\n\(message.readableBody)"
+                    body: "\n\n---------- Message transféré ----------\nDe : \(message.sender)\nObjet : \(message.title)\n\n\((full ?? message).readableBody)"
                 ))
             }
             .sheet(isPresented: $replying) {
@@ -358,7 +383,11 @@ struct MailDetailView: View {
                     body: ""
                 ))
             }
-            .task { if !message.isRead { await model.mail.markRead(message, read: true) } }
+            .task {
+                full = await model.mail.fullMessage(message)
+                loadingBody = false
+                if !message.isRead { await model.mail.markRead(message, read: true) }
+            }
         }
         .presentationDetents([.large])
         .presentationBackground(.clear)

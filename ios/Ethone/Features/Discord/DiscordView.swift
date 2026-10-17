@@ -2,6 +2,22 @@ import SwiftUI
 
 struct DiscordView: View {
     @Environment(AppModel.self) private var model
+    @Environment(\.openURL) private var openURL
+
+    static func inviteURL(for guild: DiscordGuild) -> URL {
+        URL(string: "https://discord.com/oauth2/authorize?client_id=1545139931154878464&permissions=1436565368055&scope=bot%20applications.commands&guild_id=\(guild.id)&disable_guild_select=true")!
+    }
+
+    private func guildRow(_ guild: DiscordGuild) -> some View {
+        HStack(spacing: 12) {
+            AvatarView(url: guild.iconURL, name: guild.name, size: 44)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(guild.name).font(.headline).lineLimit(1)
+                Text(guild.botPresent ? plural(guild.memberCount ?? 0, "membre", "membres") : "Bot absent").font(.caption).foregroundStyle(.secondary)
+            }
+            Spacer()
+        }
+    }
 
     private var discord: DiscordStore { model.discord }
 
@@ -76,19 +92,24 @@ struct DiscordView: View {
             }
             Section {
                 ForEach(discord.guilds) { guild in
-                    NavigationLink(value: guild) {
-                        HStack(spacing: 12) {
-                            AvatarView(url: guild.iconURL, name: guild.name, size: 44)
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(guild.name).font(.headline).lineLimit(1)
-                                Text(guild.botPresent ? "\(guild.memberCount ?? 0) membres" : "Bot absent").font(.caption).foregroundStyle(.secondary)
+                    if guild.botPresent {
+                        NavigationLink(value: guild) { guildRow(guild) }
+                            .listRowBackground(GlassRowBackground())
+                    } else {
+                        Button { openURL(Self.inviteURL(for: guild)) } label: {
+                            HStack {
+                                guildRow(guild)
+                                Label("Inviter", systemImage: "plus")
+                                    .font(.footnote.weight(.semibold))
+                                    .padding(.horizontal, 12)
+                                    .padding(.vertical, 7)
+                                    .background(Color(hex: 0x5865F2), in: .capsule)
+                                    .foregroundStyle(.white)
                             }
-                            Spacer()
-                            if !guild.botPresent { GlassPill(text: "Inviter", systemImage: "plus") }
                         }
+                        .tint(.primary)
+                        .listRowBackground(GlassRowBackground())
                     }
-                    .disabled(!guild.botPresent)
-                    .listRowBackground(GlassRowBackground())
                 }
             } header: { Text("Vos serveurs").sectionTitle() }
         }

@@ -151,9 +151,6 @@ struct HomeView: View {
         .scrollIndicators(.hidden)
         .contentMargins(.horizontal, 16, for: .scrollContent)
         .padding(.horizontal, -16)
-        .mask {
-            LinearGradient(stops: [.init(color: .clear, location: 0), .init(color: .black, location: 0.04), .init(color: .black, location: 0.9), .init(color: .clear, location: 1)], startPoint: .leading, endPoint: .trailing)
-        }
     }
 
     private var todayStrip: some View {

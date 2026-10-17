@@ -69,7 +69,6 @@ struct MainTabs: View {
             }
             Tab("Plus", systemImage: "square.grid.2x2.fill", value: AppTab.more.rawValue) { MoreView() }
         }
-        .tabViewStyle(.sidebarAdaptable)
         .tabBarMinimizeBehavior(.onScrollDown)
         .focusAccessory(model: model, selection: selection)
         .task {

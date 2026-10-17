@@ -63,12 +63,12 @@ struct ActivityView: View {
             let label = session.goal?.isEmpty == false ? session.goal! : (FocusPreset(rawValue: session.preset)?.label ?? session.preset)
             list.append(Entry(id: "f-\(session.id)", date: session.completedAt, title: label, detail: "Focus · \(session.duration / 60) min", symbol: "timer", tint: Color(hex: 0xF59E0B), category: .focus))
         }
-        for habit in model.habits.activeHabits {
-            let streak = model.habits.streak(habit)
-            let isDoneToday = model.habits.isDone(habit)
-            if isDoneToday || streak > 0 {
-                list.append(Entry(id: "h-\(habit.id)", date: habit.createdAt, title: "\(habit.emoji ?? "🎯") \(habit.name)", detail: isDoneToday ? "Habitude validée aujourd'hui (série \(streak) j)" : "Série active de \(streak) j", symbol: "flame.fill", tint: Color(hex: 0xEF4444), category: .habits))
-            }
+        let habitsById = Dictionary(uniqueKeysWithValues: model.habits.activeHabits.map { ($0.id, $0) })
+        for completion in model.habits.completions {
+            guard let date = DayKey.date(completion.completedOn) else { continue }
+            let habit = habitsById[completion.habitId]
+            let title = habit.map { "\($0.emoji ?? "🎯") \($0.name)" } ?? "Habitude"
+            list.append(Entry(id: "h-\(completion.id)", date: date, title: title, detail: "Habitude validée", symbol: "flame.fill", tint: Color(hex: 0xEF4444), category: .habits))
         }
         return list.sorted { $0.date > $1.date }
     }

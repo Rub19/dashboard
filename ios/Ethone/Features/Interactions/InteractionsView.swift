@@ -4,6 +4,7 @@ struct InteractionsView: View {
     @Environment(AppModel.self) private var model
 
     private let weeks = 26
+    @State private var selectedDay: Date?
 
     private var counts: [String: Int] {
         var result: [String: Int] = [:]
@@ -56,6 +57,19 @@ struct InteractionsView: View {
                                 }
                             }
                         }
+                        .defaultScrollAnchor(.trailing)
+                        Group {
+                            if let day = selectedDay {
+                                let count = data[DayKey.string(day)] ?? 0
+                                Text("\(day.formatted(.dateTime.weekday(.wide).day().month(.wide))) : \(plural(count, "interaction", "interactions"))")
+                            } else {
+                                Text("Touchez une case pour voir le détail du jour.")
+                            }
+                        }
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .contentTransition(.opacity)
+                        .animation(Motion.swap, value: selectedDay)
                         HStack(spacing: 6) {
                             Text("Moins").font(.caption2).foregroundStyle(.secondary)
                             ForEach(0..<5, id: \.self) { level in
@@ -76,9 +90,14 @@ struct InteractionsView: View {
 
     private func cell(_ day: Date?, _ data: [String: Int]) -> some View {
         let count = day.map { data[DayKey.string($0)] ?? 0 } ?? 0
+        let selected = day != nil && selectedDay.map { Calendar.current.isDate($0, inSameDayAs: day!) } == true
         return RoundedRectangle(cornerRadius: 3)
             .fill(day == nil ? Color.clear : color(level(count)))
+            .overlay(RoundedRectangle(cornerRadius: 3).strokeBorder(selected ? Color.primary : .clear, lineWidth: 1.5))
             .frame(width: 14, height: 14)
+            .contentShape(.rect)
+            .onTapGesture { if let day { selectedDay = day } }
+            .sensoryFeedback(.selection, trigger: selected)
     }
 
     private func level(_ count: Int) -> Int {
@@ -92,7 +111,7 @@ struct InteractionsView: View {
     }
 
     private func color(_ level: Int) -> Color {
-        level == 0 ? Color.primary.opacity(0.08) : Theme.accent.opacity(0.25 + 0.18 * Double(level))
+        level == 0 ? Color.primary.opacity(0.08) : Theme.accent.opacity(0.45 + 0.14 * Double(level))
     }
 
 }

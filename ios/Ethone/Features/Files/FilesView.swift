@@ -285,9 +285,6 @@ struct FilesView: View {
             .padding(.vertical, 2)
         }
         .sensoryFeedback(.selection, trigger: category)
-        .mask {
-            LinearGradient(stops: [.init(color: .black, location: 0), .init(color: .black, location: 0.9), .init(color: .clear, location: 1)], startPoint: .leading, endPoint: .trailing)
-        }
     }
 
     private var listView: some View {

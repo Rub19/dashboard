@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 import UIKit
 import UserNotifications
 
@@ -172,13 +173,13 @@ enum NotificationManager {
             switch kind {
             case "task": model.requestedTab = .tasks
             case "habit":
-                model.morePath = [.habits]
+                model.morePath = NavigationPath([MoreDestination.habits])
                 model.requestedTab = .more
             case "event":
-                model.morePath = [.calendar]
+                model.morePath = NavigationPath([MoreDestination.calendar])
                 model.requestedTab = .more
             case "bill":
-                model.morePath = [.bills]
+                model.morePath = NavigationPath([MoreDestination.bills])
                 model.requestedTab = .more
             default: model.requestedTab = .home
             }

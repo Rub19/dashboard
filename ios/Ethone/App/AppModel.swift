@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 import Observation
 import WidgetKit
 
@@ -60,14 +61,14 @@ final class AppModel {
         if pinnedTabs.contains(destination) {
             requestedSelection = destination.rawValue
         } else {
-            morePath = [destination]
+            morePath = NavigationPath([destination])
             requestedSelection = AppTab.more.rawValue
         }
     }
     /// Photo et nom du profil ETHONE (ethone_public_profiles), prioritaires sur ceux du fournisseur de connexion (Discord, Google…).
     private(set) var ethoneAvatar: String?
     private(set) var ethoneName: String?
-    var morePath: [MoreDestination] = []
+    var morePath = NavigationPath()
 
     private(set) var themePreset: ThemePreset = Theme.preset
     private(set) var chosenAccentHex: UInt32? = Theme.chosenAccentHex

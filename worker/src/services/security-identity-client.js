@@ -45,7 +45,8 @@ function firstRow(response) {
 }
 
 export async function listDevices(env, userId) {
-  const response = await supabaseRequest(env, `/rest/v1/ethone_devices?user_id=eq.${encodeURIComponent(userId)}&order=created_at.desc&select=*`);
+  // 8 Ko par défaut ne suffisent pas dès quelques dizaines d'appareils : la liste entière était rejetée.
+  const response = await supabaseRequest(env, `/rest/v1/ethone_devices?user_id=eq.${encodeURIComponent(userId)}&order=created_at.desc&limit=200&select=*`, { maxBytes: 512 * 1024 });
   return Array.isArray(response.data) ? response.data : [];
 }
 

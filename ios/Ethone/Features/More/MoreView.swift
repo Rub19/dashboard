@@ -58,8 +58,7 @@ var moreGroups: [MoreGroup] {
             MoreItem(destination: .leaderboard, title: "Classement", icon: "trophy.fill"),
         ]),
         MoreGroup(title: "Jeux", color: Color(hex: 0x2FB57C), items: [
-            MoreItem(destination: .valorant, title: "Valorant", icon: "scope", asset: "BrandValorant"),
-            MoreItem(destination: .valorantStore, title: "Boutique", icon: "bag.fill", asset: "BrandRiot"),
+            MoreItem(destination: .valorant, title: "E:Val", icon: "scope"),
             MoreItem(destination: .lolTracker, title: "LoL", icon: "shield.fill", asset: "BrandLeague"),
             MoreItem(destination: .lolRotation, title: "Rotation", icon: "arrow.triangle.2.circlepath", asset: "BrandLeague"),
             MoreItem(destination: .tftTracker, title: "TFT", icon: "hexagon.fill", asset: "BrandRiot"),
@@ -105,8 +104,8 @@ func destinationView(_ destination: MoreDestination) -> some View {
     case .settings: AppearanceView()
     case .team: TeamView()
     case .bills: BillsView()
-    case .valorant: ValorantView()
-    case .valorantStore: ValorantStoreView()
+    case .valorant: EvalAppView()
+    case .valorantStore: EvalAppView()
     case .lolTracker: LolTrackerView()
     case .tftTracker: TftTrackerView()
     case .otherGames: OtherGamesTrackerView()
@@ -154,18 +153,22 @@ private struct GridTile: View {
 
     var body: some View {
         VStack(spacing: 7) {
-            Group {
-                if let asset = item.asset {
-                    Image(asset).resizable().renderingMode(.template).scaledToFit().frame(width: 26, height: 26)
-                } else {
-                    Image(systemName: item.icon).font(.system(size: 22, weight: .semibold))
+            if item.destination == .valorant {
+                EvalLogoView(size: 58)
+            } else {
+                Group {
+                    if let asset = item.asset {
+                        Image(asset).resizable().renderingMode(.template).scaledToFit().frame(width: 26, height: 26)
+                    } else {
+                        Image(systemName: item.icon).font(.system(size: 22, weight: .semibold))
+                    }
                 }
-            }
                 .foregroundStyle(.white)
                 .frame(width: 58, height: 58)
                 .background(color.gradient, in: .rect(cornerRadius: 16, style: .continuous))
                 .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).strokeBorder(.white.opacity(0.14)))
                 .shadow(color: color.opacity(0.35), radius: 8, y: 4)
+            }
             Text(LocalizedStringKey(item.title))
                 .font(.caption.weight(.medium))
                 .foregroundStyle(.primary)
@@ -296,7 +299,11 @@ struct TabBarSettingsView: View {
                 ForEach(model.pinnedTabs, id: \.self) { destination in
                     if let item = destination.item {
                         HStack(spacing: 14) {
-                            IconTile(systemImage: item.icon, color: destination.color)
+                            if destination == .valorant {
+                                EvalLogoView(size: 32)
+                            } else {
+                                IconTile(systemImage: item.icon, color: destination.color)
+                            }
                             Text(LocalizedStringKey(item.title))
                         }
                         .listRowBackground(GlassRowBackground())
@@ -319,7 +326,11 @@ struct TabBarSettingsView: View {
                         withAnimation(Motion.snap) { model.pinnedTabs.append(item.destination) }
                     } label: {
                         HStack(spacing: 14) {
-                            IconTile(systemImage: item.icon, color: item.destination.color)
+                            if item.destination == .valorant {
+                                EvalLogoView(size: 32)
+                            } else {
+                                IconTile(systemImage: item.icon, color: item.destination.color)
+                            }
                             Text(LocalizedStringKey(item.title)).foregroundStyle(.primary)
                             Spacer()
                             Image(systemName: "plus.circle.fill").foregroundStyle(model.pinnedTabs.count < 3 ? Theme.accent : Color.secondary)

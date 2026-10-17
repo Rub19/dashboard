@@ -58812,6 +58812,59 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_143_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_143_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_143_de);
 
+const v1_75_144_fr: ChangelogEntry = {
+  version: "v1.75.144",
+  date: "2026-10-17",
+  title: "App iOS : langues et vrais logos",
+  items: [
+    "Choix de la langue dans Plus, Apparence : français, anglais, espagnol, allemand ou langue du système (relancer l'app pour appliquer).",
+    "647 textes de l'app traduits en anglais, espagnol et allemand, dont la grille Plus, les onglets, l'accueil et la connexion.",
+    "Vrais logos Valorant, League of Legends, Riot et Discord dans l'app (Simple Icons, licence CC0).",
+    "Site : les jeux Valorant, League of Legends et Teamfight Tactics affichent leurs vrais logos.",
+  ],
+};
+
+const v1_75_144_en: ChangelogEntry = {
+  version: "v1.75.144",
+  date: "2026-10-17",
+  title: "iOS app: languages and real logos",
+  items: [
+    "Language choice in More, Appearance: French, English, Spanish, German or system language (restart the app to apply).",
+    "647 app texts translated into English, Spanish and German, including the More grid, tabs, home and sign-in.",
+    "Real Valorant, League of Legends, Riot and Discord logos in the app (Simple Icons, CC0 license).",
+    "Website: Valorant, League of Legends and Teamfight Tactics show their real logos.",
+  ],
+};
+
+const v1_75_144_es: ChangelogEntry = {
+  version: "v1.75.144",
+  date: "2026-10-17",
+  title: "App iOS: idiomas y logos reales",
+  items: [
+    "Elección del idioma en Más, Apariencia: francés, inglés, español, alemán o idioma del sistema (reinicia la app para aplicarlo).",
+    "647 textos de la app traducidos al inglés, español y alemán, incluidos la cuadrícula Más, las pestañas, el inicio y la conexión.",
+    "Logos reales de Valorant, League of Legends, Riot y Discord en la app (Simple Icons, licencia CC0).",
+    "Sitio: Valorant, League of Legends y Teamfight Tactics muestran sus logos reales.",
+  ],
+};
+
+const v1_75_144_de: ChangelogEntry = {
+  version: "v1.75.144",
+  date: "2026-10-17",
+  title: "iOS-App: Sprachen und echte Logos",
+  items: [
+    "Sprachauswahl unter Mehr, Darstellung: Französisch, Englisch, Spanisch, Deutsch oder Systemsprache (App neu starten, um sie anzuwenden).",
+    "647 Texte der App auf Englisch, Spanisch und Deutsch übersetzt, darunter das Mehr-Raster, die Tabs, der Start und die Anmeldung.",
+    "Echte Logos von Valorant, League of Legends, Riot und Discord in der App (Simple Icons, CC0-Lizenz).",
+    "Website: Valorant, League of Legends und Teamfight Tactics zeigen ihre echten Logos.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_144_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_144_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_144_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_144_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

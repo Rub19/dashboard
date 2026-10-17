@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.144 — 2026-10-17
+
+**App iOS : langues et vrais logos**
+
+- Choix de la langue dans Plus, Apparence : français, anglais, espagnol, allemand ou langue du système (relancer l'app pour appliquer).
+- 647 textes de l'app traduits en anglais, espagnol et allemand, dont la grille Plus, les onglets, l'accueil et la connexion.
+- Vrais logos Valorant, League of Legends, Riot et Discord dans l'app (Simple Icons, licence CC0).
+- Site : les jeux Valorant, League of Legends et Teamfight Tactics affichent leurs vrais logos.
+
 ## v1.75.143 — 2026-10-17
 
 **App iOS : nouvelle connexion, accueil, onglets et Mail complet**

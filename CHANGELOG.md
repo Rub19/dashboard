@@ -2,6 +2,20 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.145 — 2026-10-17
+
+**App iOS : corrections Discord, Mail, Sécurité, Météo et dessin**
+
+- Bot Discord : les serveurs s'ouvrent de nouveau et « Inviter » ouvre l'invitation du bot sur le bon serveur.
+- Mail : le contenu des messages s'affiche (il n'était pas chargé).
+- Sécurité : les sessions s'affichent de nouveau, sur l'app comme sur le site (la liste des appareils dépassait une limite de taille).
+- Météo : ville synchronisée avec le compte et le site, bouton pour la changer et option « Ma position ».
+- Accueil et autres écrans : plus de flou sur les côtés des rangées qui défilent.
+- Interactions : la grille se cale sur les semaines récentes et chaque case montre le détail du jour ; Activité affiche chaque habitude validée.
+- Connexions : vrais logos des services (Spotify, Google, Notion, Linear, GitLab, Bluesky…).
+- Scratchpad : mode Dessin au doigt ou à l'Apple Pencil avec les outils d'Apple, annuler, effacer et partager en image.
+- Valorant : les parties passent par ETHONE avec la clé de votre compte, plus besoin de clé dans l'app.
+
 ## v1.75.144 — 2026-10-17
 
 **App iOS : langues et vrais logos**

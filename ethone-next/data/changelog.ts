@@ -58865,6 +58865,79 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_144_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_144_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_144_de);
 
+const v1_75_145_fr: ChangelogEntry = {
+  version: "v1.75.145",
+  date: "2026-10-17",
+  title: "App iOS : corrections Discord, Mail, Sécurité, Météo et dessin",
+  items: [
+    "Bot Discord : les serveurs s'ouvrent de nouveau et « Inviter » ouvre l'invitation du bot sur le bon serveur.",
+    "Mail : le contenu des messages s'affiche (il n'était pas chargé).",
+    "Sécurité : les sessions s'affichent de nouveau, sur l'app comme sur le site (la liste des appareils dépassait une limite de taille).",
+    "Météo : ville synchronisée avec le compte et le site, bouton pour la changer et option « Ma position ».",
+    "Accueil et autres écrans : plus de flou sur les côtés des rangées qui défilent.",
+    "Interactions : la grille se cale sur les semaines récentes et chaque case montre le détail du jour ; Activité affiche chaque habitude validée.",
+    "Connexions : vrais logos des services (Spotify, Google, Notion, Linear, GitLab, Bluesky…).",
+    "Scratchpad : mode Dessin au doigt ou à l'Apple Pencil avec les outils d'Apple, annuler, effacer et partager en image.",
+    "Valorant : les parties passent par ETHONE avec la clé de votre compte, plus besoin de clé dans l'app.",
+  ],
+};
+
+const v1_75_145_en: ChangelogEntry = {
+  version: "v1.75.145",
+  date: "2026-10-17",
+  title: "iOS app: Discord, Mail, Security, Weather and drawing fixes",
+  items: [
+    "Discord bot: servers open again and \"Invite\" opens the bot invitation on the right server.",
+    "Mail: message content now shows (it wasn't loaded).",
+    "Security: sessions show again, in the app and on the website (the device list exceeded a size limit).",
+    "Weather: city synced with your account and the website, a button to change it and a \"My location\" option.",
+    "Home and other screens: no more blur on the sides of scrolling rows.",
+    "Interactions: the grid snaps to recent weeks and each square shows the day's detail; Activity lists every completed habit.",
+    "Connections: real service logos (Spotify, Google, Notion, Linear, GitLab, Bluesky…).",
+    "Scratchpad: Drawing mode with finger or Apple Pencil using Apple's tools, undo, clear and share as an image.",
+    "Valorant: matches go through ETHONE with your account's key, no key needed in the app.",
+  ],
+};
+
+const v1_75_145_es: ChangelogEntry = {
+  version: "v1.75.145",
+  date: "2026-10-17",
+  title: "App iOS: correcciones de Discord, Mail, Seguridad, Tiempo y dibujo",
+  items: [
+    "Bot de Discord: los servidores vuelven a abrirse e «Invitar» abre la invitación del bot en el servidor correcto.",
+    "Mail: el contenido de los mensajes se muestra (no se cargaba).",
+    "Seguridad: las sesiones vuelven a mostrarse, en la app y en el sitio (la lista de dispositivos superaba un límite de tamaño).",
+    "Tiempo: ciudad sincronizada con la cuenta y el sitio, botón para cambiarla y opción «Mi ubicación».",
+    "Inicio y otras pantallas: sin desenfoque en los lados de las filas que se desplazan.",
+    "Interacciones: la cuadrícula se ajusta a las semanas recientes y cada casilla muestra el detalle del día; Actividad muestra cada hábito validado.",
+    "Conexiones: logos reales de los servicios (Spotify, Google, Notion, Linear, GitLab, Bluesky…).",
+    "Scratchpad: modo Dibujo con el dedo o el Apple Pencil con las herramientas de Apple, deshacer, borrar y compartir como imagen.",
+    "Valorant: las partidas pasan por ETHONE con la clave de tu cuenta, sin clave en la app.",
+  ],
+};
+
+const v1_75_145_de: ChangelogEntry = {
+  version: "v1.75.145",
+  date: "2026-10-17",
+  title: "iOS-App: Korrekturen für Discord, Mail, Sicherheit, Wetter und Zeichnen",
+  items: [
+    "Discord-Bot: Server öffnen sich wieder und „Einladen“ öffnet die Bot-Einladung für den richtigen Server.",
+    "Mail: Der Nachrichteninhalt wird angezeigt (er wurde nicht geladen).",
+    "Sicherheit: Sitzungen werden wieder angezeigt, in der App und auf der Website (die Geräteliste überschritt eine Größengrenze).",
+    "Wetter: Stadt mit Konto und Website synchronisiert, Button zum Ändern und Option „Mein Standort“.",
+    "Start und andere Bildschirme: keine Unschärfe mehr an den Rändern scrollender Reihen.",
+    "Interaktionen: Das Raster springt zu den letzten Wochen und jedes Feld zeigt die Tagesdetails; Aktivität zeigt jede erledigte Gewohnheit.",
+    "Verbindungen: echte Logos der Dienste (Spotify, Google, Notion, Linear, GitLab, Bluesky…).",
+    "Scratchpad: Zeichenmodus mit Finger oder Apple Pencil und Apples Werkzeugen, Rückgängig, Löschen und Teilen als Bild.",
+    "Valorant: Spiele laufen über ETHONE mit dem Schlüssel deines Kontos, kein Schlüssel in der App nötig.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_145_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_145_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_145_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_145_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

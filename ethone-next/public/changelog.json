@@ -1,5 +1,21 @@
 [
   {
+    "version": "v1.75.145",
+    "date": "2026-10-17",
+    "title": "App iOS : corrections Discord, Mail, Sécurité, Météo et dessin",
+    "items": [
+      "Bot Discord : les serveurs s'ouvrent de nouveau et « Inviter » ouvre l'invitation du bot sur le bon serveur.",
+      "Mail : le contenu des messages s'affiche (il n'était pas chargé).",
+      "Sécurité : les sessions s'affichent de nouveau, sur l'app comme sur le site (la liste des appareils dépassait une limite de taille).",
+      "Météo : ville synchronisée avec le compte et le site, bouton pour la changer et option « Ma position ».",
+      "Accueil et autres écrans : plus de flou sur les côtés des rangées qui défilent.",
+      "Interactions : la grille se cale sur les semaines récentes et chaque case montre le détail du jour ; Activité affiche chaque habitude validée.",
+      "Connexions : vrais logos des services (Spotify, Google, Notion, Linear, GitLab, Bluesky…).",
+      "Scratchpad : mode Dessin au doigt ou à l'Apple Pencil avec les outils d'Apple, annuler, effacer et partager en image.",
+      "Valorant : les parties passent par ETHONE avec la clé de votre compte, plus besoin de clé dans l'app."
+    ]
+  },
+  {
     "version": "v1.75.144",
     "date": "2026-10-17",
     "title": "App iOS : langues et vrais logos",
@@ -603,17 +619,6 @@
       "Indicateur de sélection d'aura physique avec ressort Framer Motion (layoutId) et halo lumineux dynamique.",
       "Réduction du temps de transition d'ambiance à 600ms pour une réactivité instantanée et élégante.",
       "Suppression des coupures de dégradé brutales sur le fond d'écran."
-    ]
-  },
-  {
-    "version": "v1.75.30",
-    "date": "2026-10-13",
-    "title": "Documentation Etho : Sidebar Transparente Style Keeper, Catalogue Intégral des Commandes et Retrait des Tiers Payants",
-    "items": [
-      "Alignement de marque : élimination définitive de 'Etho Protect' au profit de 'Etho' dans l'en-tête, le hero et les guides.",
-      "Sidebar transparente style Keeper : suppression du fond encadré de la barre latérale pour un rendu épuré sans conteneur, arborescence continue sur fond obsidian avec champ de recherche en tête.",
-      "Catalogue exhaustif de 50 commandes : intégration d'une section dédiée listant toutes les commandes (Sécurité, Modération, Configuration, Musique, Spotify, Utilitaires, Fun) avec syntaxes, sous-commandes et copie en 1 clic.",
-      "Suppression des placeholders et tiers payants : retrait de tous les badges et mentions Ultra, Premium, Essentiel et Recommandé ; toutes les fonctionnalités sont 100% gratuites et incluses pour tous."
     ]
   }
 ]

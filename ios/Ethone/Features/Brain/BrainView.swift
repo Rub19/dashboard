@@ -115,7 +115,7 @@ struct BrainView: View {
     private func bubble(_ message: ChatMessage) -> some View {
         HStack {
             if message.role == .user { Spacer(minLength: 48) }
-            Text(message.text)
+            Text(LocalizedStringKey(message.text))
                 .textSelection(.enabled)
                 .padding(14)
                 .glassEffect(

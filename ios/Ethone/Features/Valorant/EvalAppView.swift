@@ -138,6 +138,7 @@ struct EvalAppView: View {
                 .padding(.bottom, 12)
         }
         .navigationBarBackButtonHidden(true)
+        .toolbar(.hidden, for: .navigationBar)
         .ethoneScreen()
         .navigationDestination(item: $selectedMatch) { match in
             ValorantMatchDetailView(match: match)
@@ -260,40 +261,37 @@ struct EvalProfileView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(spacing: 16) {
-                    topNavHeader
+        ScrollView {
+            VStack(spacing: 16) {
+                topNavHeader
 
-                    if !store.isConfigured || profile == nil {
-                        // Disconnected state: no placeholder fake stats!
-                        disconnectedProfileCard
-                    } else if let profile {
-                        // Connected state: real fetched profile & stats
-                        mainProfileCard(profile: profile)
-                        careerSummaryCard(profile: profile)
-                        sessionRecapRow
-                        matchesListSection
-                    }
-                }
-                .padding(.horizontal, 16)
-                .padding(.bottom, 96) // Space for floating bottom bar
-            }
-            .scrollIndicators(.hidden)
-            .ethoneScreen()
-            .refreshable {
-                if store.isConfigured {
-                    await store.refresh()
+                if !store.isConfigured || profile == nil {
+                    // Disconnected state: no placeholder fake stats!
+                    disconnectedProfileCard
+                } else if let profile {
+                    // Connected state: real fetched profile & stats
+                    mainProfileCard(profile: profile)
+                    careerSummaryCard(profile: profile)
+                    sessionRecapRow
+                    matchesListSection
                 }
             }
-            .task {
-                if store.isConfigured {
-                    await store.refresh()
-                }
+            .padding(.horizontal, 16)
+            .padding(.bottom, 96) // Space for floating bottom bar
+        }
+        .scrollIndicators(.hidden)
+        .refreshable {
+            if store.isConfigured {
+                await store.refresh()
             }
-            .sheet(isPresented: $showingAccountSheet) {
-                ValorantSettingsSheet()
+        }
+        .task {
+            if store.isConfigured {
+                await store.refresh()
             }
+        }
+        .sheet(isPresented: $showingAccountSheet) {
+            ValorantSettingsSheet()
         }
     }
 
@@ -1166,6 +1164,7 @@ struct EvalWalletBar: View {
 // MARK: - 2. JEU TAB (Screenshots 1-4)
 struct EvalGameView: View {
     @Environment(AppModel.self) private var model
+    @Environment(\.dismiss) private var dismiss
     @State private var groupExpanded = true
     @State private var contractsExpanded = true
     @State private var equipmentExpanded = true
@@ -1175,16 +1174,29 @@ struct EvalGameView: View {
     private var store: ValorantStore { model.valorant }
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(spacing: 18) {
-                    HStack {
-                        Text("Jeu")
-                            .font(.title2.weight(.bold))
-                            .foregroundStyle(.white)
-                        Spacer()
+        ScrollView {
+            VStack(spacing: 18) {
+                HStack(spacing: 12) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Circle()
+                            .fill(Color.white.opacity(0.08))
+                            .frame(width: 38, height: 38)
+                            .overlay(
+                                Image(systemName: "chevron.left")
+                                    .font(.system(size: 14, weight: .bold))
+                                    .foregroundStyle(.white)
+                            )
                     }
-                    .padding(.top, 4)
+                    .buttonStyle(PressScaleStyle())
+
+                    Text("Jeu")
+                        .font(.title2.weight(.bold))
+                        .foregroundStyle(.white)
+                    Spacer()
+                }
+                .padding(.top, 4)
 
                     // 1. Groupe Section (Collapsible)
                     collapsibleSection(
@@ -1449,7 +1461,6 @@ struct EvalGameView: View {
                 .padding(.bottom, 96)
             }
             .scrollIndicators(.hidden)
-            .ethoneScreen()
         }
     }
 
@@ -1601,21 +1612,35 @@ struct EvalGameView: View {
 // MARK: - 3. HUB TAB (Screenshot 5)
 struct EvalHubView: View {
     @Environment(AppModel.self) private var model
+    @Environment(\.dismiss) private var dismiss
     @State private var showingStore = false
 
     private var store: ValorantStore { model.valorant }
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    HStack {
-                        Text("Hub")
-                            .font(.title2.weight(.bold))
-                            .foregroundStyle(.white)
-                        Spacer()
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                HStack(spacing: 12) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Circle()
+                            .fill(Color.white.opacity(0.08))
+                            .frame(width: 38, height: 38)
+                            .overlay(
+                                Image(systemName: "chevron.left")
+                                    .font(.system(size: 14, weight: .bold))
+                                    .foregroundStyle(.white)
+                            )
                     }
-                    .padding(.top, 4)
+                    .buttonStyle(PressScaleStyle())
+
+                    Text("Hub")
+                        .font(.title2.weight(.bold))
+                        .foregroundStyle(.white)
+                    Spacer()
+                }
+                .padding(.top, 4)
 
                     // 1. Réseaux sociaux
                     hubGroupSection(title: "Réseaux sociaux") {
@@ -1657,7 +1682,6 @@ struct EvalHubView: View {
                 .padding(.bottom, 96)
             }
             .scrollIndicators(.hidden)
-            .ethoneScreen()
             .sheet(isPresented: $showingStore) {
                 NavigationStack {
                     ValorantStoreView()
@@ -2710,6 +2734,7 @@ struct HubDetailPlaceholderView: View {
 // MARK: - 4. PARAMÈTRES TAB (Screenshot 3 - Paywalls Removed)
 struct EvalSettingsView: View {
     @Environment(AppModel.self) private var model
+    @Environment(\.dismiss) private var dismiss
     @State private var showingAccountSheet = false
     @State private var selectedTheme = "Système"
     @State private var selectedPlatform = "PC"
@@ -2717,16 +2742,29 @@ struct EvalSettingsView: View {
     private var store: ValorantStore { model.valorant }
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 18) {
-                    HStack {
-                        Text("Paramètres")
-                            .font(.title2.weight(.bold))
-                            .foregroundStyle(.white)
-                        Spacer()
+        ScrollView {
+            VStack(alignment: .leading, spacing: 18) {
+                HStack(spacing: 12) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Circle()
+                            .fill(Color.white.opacity(0.08))
+                            .frame(width: 38, height: 38)
+                            .overlay(
+                                Image(systemName: "chevron.left")
+                                    .font(.system(size: 14, weight: .bold))
+                                    .foregroundStyle(.white)
+                            )
                     }
-                    .padding(.top, 4)
+                    .buttonStyle(PressScaleStyle())
+
+                    Text("Paramètres")
+                        .font(.title2.weight(.bold))
+                        .foregroundStyle(.white)
+                    Spacer()
+                }
+                .padding(.top, 4)
 
                     // 1. Comptes Riot
                     VStack(alignment: .leading, spacing: 8) {
@@ -2928,7 +2966,6 @@ struct EvalSettingsView: View {
                 .padding(.bottom, 96)
             }
             .scrollIndicators(.hidden)
-            .ethoneScreen()
             .sheet(isPresented: $showingAccountSheet) {
                 ValorantSettingsSheet()
             }

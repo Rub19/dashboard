@@ -74,7 +74,12 @@ struct ValorantView: View {
                 if !store.matches.isEmpty {
                     Text("Parties").sectionTitle().frame(maxWidth: .infinity, alignment: .leading).padding(.top, 4)
                 }
-                ForEach(store.matches) { matchCard($0) }
+                ForEach(store.matches) { match in
+                    NavigationLink(value: match) {
+                        matchCard(match)
+                    }
+                    .buttonStyle(PressScaleStyle())
+                }
                 if !store.matches.isEmpty {
                     Text("Depuis le patch 13.06, le score de performance (0-500) remplace l'ACS. « — » signifie que l'API ne le fournit pas pour cette partie.")
                         .font(.caption2).foregroundStyle(.secondary)
@@ -82,6 +87,9 @@ struct ValorantView: View {
             }
             .padding(.horizontal, 16)
             .padding(.bottom, 24)
+        }
+        .navigationDestination(for: ValorantMatch.self) { match in
+            ValorantMatchDetailView(match: match)
         }
         .overlay {
             if store.isConfigured && store.matches.isEmpty && !store.isLoading && store.errorMessage == nil {
@@ -164,12 +172,15 @@ struct ValorantView: View {
             HStack(spacing: 10) {
                 Image(systemName: "desktopcomputer").font(.footnote).foregroundStyle(.secondary)
                 VStack(alignment: .leading, spacing: 1) {
-                    Text(match.mode).font(.subheadline.weight(.semibold))
+                    Text(match.mode).font(.subheadline.weight(.semibold)).foregroundStyle(.white)
                     if let date = match.startedAt {
                         Text(date, format: .relative(presentation: .named)).font(.caption).foregroundStyle(.secondary)
                     }
                 }
                 Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.caption2.weight(.bold))
+                    .foregroundStyle(.tertiary)
             }
             .padding(.horizontal, 14)
             .padding(.vertical, 10)
@@ -213,6 +224,7 @@ struct ValorantView: View {
                 Label("\(match.teamRounds) — \(match.opponentRounds)", systemImage: "flag.checkered")
             }
             .font(.subheadline.monospacedDigit())
+            .foregroundStyle(.white)
             .padding(.horizontal, 14)
             .padding(.vertical, 12)
         }

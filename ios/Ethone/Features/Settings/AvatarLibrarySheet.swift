@@ -18,6 +18,7 @@ struct AvatarLibrarySheet: View {
     let displayName: String
 
     @State private var catalog: AvatarLibraryCatalog?
+    @State private var selectedPlatformID = "crunchyroll"
     @State private var selection = ""
     @State private var query = ""
     @State private var customURL = ""
@@ -32,13 +33,16 @@ struct AvatarLibrarySheet: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 26) {
+                VStack(alignment: .leading, spacing: 22) {
                     hero
                     if let saveError { Text(saveError).font(.footnote).foregroundStyle(Theme.danger).padding(.horizontal, 16) }
                     if let catalog {
                         let trimmed = query.trimmingCharacters(in: .whitespaces)
                         if trimmed.isEmpty {
-                            ForEach(catalog.collections) { collection in collectionSection(collection) }
+                            platformCategoriesBar(catalog)
+                            if let collection = catalog.collections.first(where: { $0.id == selectedPlatformID }) ?? catalog.collections.first {
+                                collectionSection(collection)
+                            }
                         } else {
                             searchResults(catalog, trimmed)
                         }
@@ -67,6 +71,9 @@ struct AvatarLibrarySheet: View {
             .task {
                 selection = currentAvatar.isEmpty ? (model.ethoneAvatar ?? "") : currentAvatar
                 await load()
+                if let matched = catalog?.collections.first(where: { col in col.items.contains(where: { $0.url == selection }) }) {
+                    selectedPlatformID = matched.id
+                }
             }
         }
     }
@@ -95,6 +102,58 @@ struct AvatarLibrarySheet: View {
             .animation(Motion.snap, value: selection)
         }
         .frame(height: 230)
+    }
+
+    private func platformBrandColor(_ id: String) -> Color {
+        switch id {
+        case "crunchyroll": Color(hex: 0xF47521)
+        case "netflix": Color(hex: 0xE50914)
+        case "hbo": Color(hex: 0x9933FF)
+        case "disney": Color(hex: 0x113CCF)
+        case "prime-video": Color(hex: 0x00A8E1)
+        default: Theme.accent
+        }
+    }
+
+    private func platformCategoriesBar(_ catalog: AvatarLibraryCatalog) -> some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                ForEach(catalog.collections) { collection in
+                    let isSelected = selectedPlatformID == collection.id
+                    let brandColor = platformBrandColor(collection.id)
+                    Button {
+                        withAnimation(Motion.snap) {
+                            selectedPlatformID = collection.id
+                        }
+                    } label: {
+                        HStack(spacing: 6) {
+                            Circle()
+                                .fill(brandColor)
+                                .frame(width: 8, height: 8)
+                            Text(collection.label)
+                                .font(.subheadline.weight(isSelected ? .bold : .medium))
+                                .foregroundStyle(isSelected ? .white : .secondary)
+                            Text("\(collection.items.count)")
+                                .font(.caption2.monospacedDigit())
+                                .foregroundStyle(isSelected ? .white.opacity(0.8) : .tertiary)
+                                .padding(.horizontal, 5)
+                                .padding(.vertical, 1.5)
+                                .background(isSelected ? Color.white.opacity(0.18) : Color.white.opacity(0.06), in: .capsule)
+                        }
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 9)
+                        .glassEffect(isSelected ? Glass.regular.tint(brandColor.opacity(0.45)) : Glass.regular, in: .capsule)
+                        .overlay(
+                            Capsule().strokeBorder(isSelected ? brandColor.opacity(0.8) : Color.white.opacity(0.08), lineWidth: isSelected ? 1.5 : 0.8)
+                        )
+                    }
+                    .buttonStyle(PressScaleStyle())
+                    .sensoryFeedback(.selection, trigger: selectedPlatformID)
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 2)
+        }
     }
 
     private func collectionSection(_ collection: AvatarLibraryCatalog.Collection) -> some View {

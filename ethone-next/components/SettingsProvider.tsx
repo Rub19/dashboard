@@ -112,6 +112,10 @@ export default function SettingsProvider({
   useEffect(() => {
     settingsRef.current = settings;
   }, [settings]);
+  // Dernier changement fait sur cet appareil et enregistrements en cours : un écho temps réel ou une lecture du compte
+  // plus ancien ne doit jamais écraser ce que l'utilisateur vient de régler (le thème « revenait en arrière »).
+  const lastLocalChangeRef = useRef(0);
+  const inFlightRef = useRef(0);
 
   // Track authenticated user ID for multi-account isolation
   useEffect(() => {
@@ -179,8 +183,14 @@ export default function SettingsProvider({
 
     setSettings(local);
     useSyncStore.getState().setStatus("user_settings", "syncing");
+    const fetchStartedAt = Date.now();
     loadSettingsAsync(currentUserId)
       .then(({ settings: remote, updatedAt }) => {
+        // Un réglage changé pendant la lecture gagne : il sera enregistré sur le compte juste après.
+        if (lastLocalChangeRef.current >= fetchStartedAt) {
+          useSyncStore.getState().setStatus("user_settings", "idle");
+          return;
+        }
         setSettings((prev) => {
           const remoteTs = updatedAt ? new Date(updatedAt).getTime() : 0;
           const hasRemote = remote && Object.keys(remote).length > 0;
@@ -225,7 +235,12 @@ export default function SettingsProvider({
             },
             (payload) => {
               if (payload.new && typeof payload.new === "object") {
-                const partial = (payload.new as Record<string, unknown>).settings as Partial<Settings>;
+                const row = payload.new as Record<string, unknown>;
+                // Écho de nos propres enregistrements, ou version plus ancienne que le dernier changement local : ignoré.
+                if (saveTimeoutRef.current || inFlightRef.current > 0) return;
+                const rowTs = typeof row.updated_at === "string" ? Date.parse(row.updated_at) : 0;
+                if (rowTs && rowTs <= lastLocalChangeRef.current) return;
+                const partial = row.settings as Partial<Settings>;
                 if (partial) {
                   setSettings((prev) => {
                     const next = { ...DEFAULTS, ...prev, ...migrateSettings(partial) };
@@ -421,6 +436,7 @@ export default function SettingsProvider({
 
       // Snapshot the previous state so we can roll back if persistence fails.
       settingsRef.current = next;
+      lastLocalChangeRef.current = Date.now();
       setSettings(next);
 
       // Journal : uniquement les changements faits par l'utilisateur. L'ancien suivi par effet notait aussi le
@@ -451,10 +467,18 @@ export default function SettingsProvider({
         clearTimeout(saveTimeoutRef.current);
       }
       saveTimeoutRef.current = window.setTimeout(() => {
+        saveTimeoutRef.current = null;
+        inFlightRef.current += 1;
         saveSettingsAsync(settingsRef.current, active || undefined, currentUserId)
           .then(() => useSyncStore.getState().setStatus("user_settings", "idle"))
           .catch(() => {
             useSyncStore.getState().setStatus("user_settings", "error");
+          })
+          .finally(() => {
+            // Laisse le temps à l'écho temps réel de notre propre enregistrement d'arriver avant de réécouter.
+            window.setTimeout(() => {
+              inFlightRef.current = Math.max(0, inFlightRef.current - 1);
+            }, 1500);
           });
       }, 400);
     },

@@ -59056,6 +59056,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_147_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_147_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_147_de);
 
+const v1_75_148_fr: ChangelogEntry = {
+  version: "v1.75.148",
+  date: "2026-10-17",
+  title: "Réglages enregistrés correctement",
+  items: [
+    "Le thème, Spotlight et les autres réglages ne reviennent plus en arrière juste après un changement.",
+    "Un réglage modifié pendant le chargement du compte n'est plus écrasé.",
+  ],
+};
+
+const v1_75_148_en: ChangelogEntry = {
+  version: "v1.75.148",
+  date: "2026-10-17",
+  title: "Settings saved correctly",
+  items: [
+    "Theme, Spotlight and other settings no longer snap back right after a change.",
+    "A setting changed while the account loads is no longer overwritten.",
+  ],
+};
+
+const v1_75_148_es: ChangelogEntry = {
+  version: "v1.75.148",
+  date: "2026-10-17",
+  title: "Ajustes guardados correctamente",
+  items: [
+    "El tema, Spotlight y los demás ajustes ya no vuelven atrás justo después de un cambio.",
+    "Un ajuste modificado mientras carga la cuenta ya no se sobrescribe.",
+  ],
+};
+
+const v1_75_148_de: ChangelogEntry = {
+  version: "v1.75.148",
+  date: "2026-10-17",
+  title: "Einstellungen werden richtig gespeichert",
+  items: [
+    "Design, Spotlight und andere Einstellungen springen nach einer Änderung nicht mehr zurück.",
+    "Eine während des Ladens geänderte Einstellung wird nicht mehr überschrieben.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_148_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_148_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_148_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_148_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

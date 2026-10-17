@@ -1,5 +1,14 @@
 [
   {
+    "version": "v1.75.148",
+    "date": "2026-10-17",
+    "title": "Réglages enregistrés correctement",
+    "items": [
+      "Le thème, Spotlight et les autres réglages ne reviennent plus en arrière juste après un changement.",
+      "Un réglage modifié pendant le chargement du compte n'est plus écrasé."
+    ]
+  },
+  {
     "version": "v1.75.147",
     "date": "2026-10-17",
     "title": "Avatars par plateforme",
@@ -610,16 +619,6 @@
       "Clé API Riot : vérification réelle du format au lieu d'une fausse latence, enregistrée là où le tracker la lit",
       "Historique LoL : champion et icône corrects",
       "Correctifs de sécurité des dépendances (sharp, postcss-selector-parser, source-map-js)"
-    ]
-  },
-  {
-    "version": "v1.75.88",
-    "date": "2026-10-15",
-    "title": "Présence du bot sans chaîne imposée",
-    "items": [
-      "Plus de lien Twitch par défaut : le Mode Streamer exige le lien de ta propre chaîne",
-      "Retrait des activités de rotation inventées",
-      "Vitrine du bot : retrait des chiffres non vérifiés (0.2s, « des centaines de communautés »)"
     ]
   }
 ]

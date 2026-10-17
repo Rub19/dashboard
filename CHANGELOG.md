@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.148 — 2026-10-17
+
+**Réglages enregistrés correctement**
+
+- Le thème, Spotlight et les autres réglages ne reviennent plus en arrière juste après un changement.
+- Un réglage modifié pendant le chargement du compte n'est plus écrasé.
+
 ## v1.75.147 — 2026-10-17
 
 **Avatars par plateforme**

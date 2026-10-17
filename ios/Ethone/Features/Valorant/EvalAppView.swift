@@ -1462,7 +1462,6 @@ struct EvalGameView: View {
             }
             .scrollIndicators(.hidden)
         }
-    }
 
     private var equipPrivacyRow: some View {
         HStack(spacing: 12) {
@@ -1688,7 +1687,6 @@ struct EvalHubView: View {
                 }
             }
         }
-    }
 
     private func hubGroupSection<Content: View>(title: String, @ViewBuilder content: () -> Content) -> some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -2970,7 +2968,6 @@ struct EvalSettingsView: View {
                 ValorantSettingsSheet()
             }
         }
-    }
 
     private func settingsNavRow(icon: String, title: String, detail: String? = nil) -> some View {
         HStack(spacing: 14) {

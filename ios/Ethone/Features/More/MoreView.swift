@@ -166,7 +166,7 @@ private struct GridTile: View {
                 .background(color.gradient, in: .rect(cornerRadius: 16, style: .continuous))
                 .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).strokeBorder(.white.opacity(0.14)))
                 .shadow(color: color.opacity(0.35), radius: 8, y: 4)
-            Text(item.title)
+            Text(LocalizedStringKey(item.title))
                 .font(.caption.weight(.medium))
                 .foregroundStyle(.primary)
                 .lineLimit(1)
@@ -205,7 +205,7 @@ struct MoreView: View {
 
                     ForEach(Array(filteredGroups.enumerated()), id: \.element.id) { index, group in
                         VStack(alignment: .leading, spacing: 14) {
-                            Text(group.title).sectionTitle().padding(.leading, 4)
+                            Text(LocalizedStringKey(group.title)).sectionTitle().padding(.leading, 4)
                             LazyVGrid(columns: columns, spacing: 18) {
                                 ForEach(group.items) { item in
                                     NavigationLink(value: item.destination) {
@@ -297,7 +297,7 @@ struct TabBarSettingsView: View {
                     if let item = destination.item {
                         HStack(spacing: 14) {
                             IconTile(systemImage: item.icon, color: destination.color)
-                            Text(item.title)
+                            Text(LocalizedStringKey(item.title))
                         }
                         .listRowBackground(GlassRowBackground())
                     }
@@ -320,7 +320,7 @@ struct TabBarSettingsView: View {
                     } label: {
                         HStack(spacing: 14) {
                             IconTile(systemImage: item.icon, color: item.destination.color)
-                            Text(item.title).foregroundStyle(.primary)
+                            Text(LocalizedStringKey(item.title)).foregroundStyle(.primary)
                             Spacer()
                             Image(systemName: "plus.circle.fill").foregroundStyle(model.pinnedTabs.count < 3 ? Theme.accent : Color.secondary)
                         }

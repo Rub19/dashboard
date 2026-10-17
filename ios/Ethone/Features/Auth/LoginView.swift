@@ -28,9 +28,9 @@ private struct AuthField: View {
                 .accessibilityHidden(true)
             Group {
                 if secure && !revealed {
-                    SecureField(placeholder, text: $text)
+                    SecureField(LocalizedStringKey(placeholder), text: $text)
                 } else {
-                    TextField(placeholder, text: $text)
+                    TextField(LocalizedStringKey(placeholder), text: $text)
                         .keyboardType(keyboard)
                 }
             }
@@ -172,7 +172,7 @@ struct LoginView: View {
                         selectedTab = tab
                         infoMessage = nil
                     } label: {
-                        Text(tab.rawValue)
+                        Text(LocalizedStringKey(tab.rawValue))
                             .font(.subheadline.weight(selectedTab == tab ? .semibold : .medium))
                             .foregroundStyle(selectedTab == tab ? .primary : .secondary)
                             .lineLimit(1)
@@ -298,7 +298,7 @@ struct LoginView: View {
                     .renderingMode(provider == "google" ? .original : .template)
                     .scaledToFit()
                     .frame(width: 20, height: 20)
-                Text("Continuer avec \(title)")
+                Text(LocalizedStringKey("Continuer avec " + title))
                     .font(.body.weight(.semibold))
             }
             .foregroundStyle(foreground)

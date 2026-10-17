@@ -58,11 +58,11 @@ struct MainTabs: View {
             }
             ForEach(model.pinnedTabs, id: \.self) { destination in
                 if let asset = destination.item?.asset {
-                    Tab(destination.item?.title ?? "", image: asset, value: destination.rawValue) {
+                    Tab(LocalizedStringKey(destination.item?.title ?? ""), image: asset, value: destination.rawValue) {
                         NavigationStack { destinationView(destination) }
                     }
                 } else {
-                    Tab(destination.item?.title ?? "", systemImage: destination.item?.icon ?? "square", value: destination.rawValue) {
+                    Tab(LocalizedStringKey(destination.item?.title ?? ""), systemImage: destination.item?.icon ?? "square", value: destination.rawValue) {
                         NavigationStack { destinationView(destination) }
                     }
                 }

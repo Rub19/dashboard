@@ -2,6 +2,12 @@ import SwiftUI
 
 struct AppearanceView: View {
     @Environment(AppModel.self) private var model
+    @AppStorage("ethone.appLanguage") private var appLanguage = ""
+    @State private var languageChanged = false
+
+    private let languages: [(code: String, name: String)] = [
+        ("", "Langue du système"), ("fr", "Français"), ("en", "English"), ("es", "Español"), ("de", "Deutsch"),
+    ]
 
     private let palette: [(name: String, hex: UInt32)] = [
         ("Rose", 0xE11D5A), ("Violet", 0x8B5CF6), ("Indigo", 0x6366F1), ("Bleu", 0x3B82F6),
@@ -11,6 +17,36 @@ struct AppearanceView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
+                GlassCard {
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Langue").sectionTitle()
+                        Picker("Langue", selection: $appLanguage) {
+                            ForEach(languages, id: \.code) { language in
+                                Text(LocalizedStringKey(language.name)).tag(language.code)
+                            }
+                        }
+                        .pickerStyle(.menu)
+                        .onChange(of: appLanguage) { _, code in
+                            if code.isEmpty {
+                                UserDefaults.standard.removeObject(forKey: "AppleLanguages")
+                            } else {
+                                UserDefaults.standard.set([code], forKey: "AppleLanguages")
+                            }
+                            languageChanged = true
+                        }
+                        if languageChanged {
+                            Label("Relancez l'app pour appliquer la langue.", systemImage: "arrow.clockwise")
+                                .font(.footnote)
+                                .foregroundStyle(Theme.accent)
+                                .transition(.opacity)
+                        }
+                        Button("Ouvrir les Réglages iOS") {
+                            if let url = URL(string: UIApplication.openSettingsURLString) { UIApplication.shared.open(url) }
+                        }
+                        .font(.footnote.weight(.medium))
+                    }
+                    .animation(Motion.snap, value: languageChanged)
+                }
                 GlassCard {
                     VStack(alignment: .leading, spacing: 14) {
                         Text("Thème").sectionTitle()

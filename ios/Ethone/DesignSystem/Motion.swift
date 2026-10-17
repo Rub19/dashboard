@@ -56,9 +56,9 @@ struct EthoneHeadline: View {
 
     var body: some View {
         VStack(alignment: alignment, spacing: 0) {
-            Text(first)
+            Text(LocalizedStringKey(first))
                 .foregroundStyle(.primary)
-            Text(second)
+            Text(LocalizedStringKey(second))
                 .foregroundStyle(LinearGradient(colors: [.primary, Theme.accent], startPoint: .leading, endPoint: .trailing))
         }
         .font(.system(size, weight: .semibold))

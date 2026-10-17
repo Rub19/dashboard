@@ -105,7 +105,7 @@ struct HomeView: View {
                 Text(Date.now.formatted(.dateTime.weekday(.wide).day().month(.wide)).capitalized)
                     .font(.subheadline.weight(.medium))
                     .foregroundStyle(.secondary)
-                Text("\(salutation), \(model.ethoneName ?? auth.user?.displayName ?? "")")
+                Text(String(localized: String.LocalizationValue(salutation)) + ", " + (model.ethoneName ?? auth.user?.displayName ?? ""))
                     .font(.title.weight(.semibold))
                     .tracking(-0.8)
                     .lineLimit(1)
@@ -136,7 +136,7 @@ struct HomeView: View {
                         Button { model.open(destination) } label: {
                             HStack(spacing: 8) {
                                 Image(systemName: item.icon).font(.footnote.weight(.semibold)).foregroundStyle(destination.color)
-                                Text(item.title).font(.subheadline.weight(.medium)).foregroundStyle(.primary)
+                                Text(LocalizedStringKey(item.title)).font(.subheadline.weight(.medium)).foregroundStyle(.primary)
                             }
                             .padding(.horizontal, 14)
                             .padding(.vertical, 10)
@@ -357,7 +357,7 @@ private struct HomeCustomizeSheet: View {
             List {
                 Section {
                     ForEach(shown) { block in
-                        Label(block.title, systemImage: block.icon)
+                        Label(LocalizedStringKey(block.title), systemImage: block.icon)
                     }
                     .onMove { from, to in
                         var list = shown
@@ -381,7 +381,7 @@ private struct HomeCustomizeSheet: View {
                                 save(shown + [block])
                             } label: {
                                 HStack {
-                                    Label(block.title, systemImage: block.icon).foregroundStyle(.primary)
+                                    Label(LocalizedStringKey(block.title), systemImage: block.icon).foregroundStyle(.primary)
                                     Spacer()
                                     Image(systemName: "plus.circle.fill").foregroundStyle(Theme.accent)
                                 }

@@ -183,7 +183,7 @@ struct StatStrip: View {
                         .contentTransition(.numericText())
                         .lineLimit(1)
                         .minimumScaleFactor(0.7)
-                    Text(item.label).font(.caption).foregroundStyle(.secondary).lineLimit(1)
+                    Text(LocalizedStringKey(item.label)).font(.caption).foregroundStyle(.secondary).lineLimit(1)
                 }
                 .frame(maxWidth: .infinity)
                 .accessibilityElement(children: .combine)

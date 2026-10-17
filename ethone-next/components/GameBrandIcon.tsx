@@ -2,7 +2,7 @@
 
 import { memo } from "react";
 import { Icon as IconifyIcon } from "@iconify/react";
-import { Gamepad2, Target, Swords, Dice5 } from "@/components/icons/ph";
+import { Gamepad2 } from "@/components/icons/ph";
 import { cn } from "@/lib/utils";
 
 type GameBrandIconProps = {
@@ -12,6 +12,10 @@ type GameBrandIconProps = {
 };
 
 const BRANDS: { match: string; icon: string; color: string }[] = [
+  { match: "valorant", icon: "simple-icons:valorant", color: "#FF4655" },
+  { match: "league of legends", icon: "simple-icons:leagueoflegends", color: "#C89B3C" },
+  { match: "teamfight tactics", icon: "simple-icons:riotgames", color: "#A855F7" },
+  { match: "riot", icon: "simple-icons:riotgames", color: "#EB0029" },
   { match: "apex legends", icon: "arcticons:apex-legends", color: "#DA0000" },
   { match: "the finals", icon: "simple-icons:thefinals", color: "#FFDE00" },
   { match: "rainbow six siege", icon: "arcticons:guide-for-rainbow-six-siege", color: "#E8A33D" },
@@ -54,37 +58,7 @@ export const GameBrandIcon = memo(function GameBrandIcon({
 
   const clean = name.toLowerCase().trim();
 
-  if (clean.includes("valorant")) {
-    return (
-      <Target
-        className={cn("shrink-0 text-rose-500", className)}
-        style={{ color: "#FF4655" }}
-        aria-hidden="true"
-      />
-    );
-  }
-
-  if (clean.includes("league of legends") || clean === "lol") {
-    return (
-      <Swords
-        className={cn("shrink-0 text-amber-400", className)}
-        style={{ color: "#C89B3C" }}
-        aria-hidden="true"
-      />
-    );
-  }
-
-  if (clean.includes("teamfight tactics") || clean === "tft") {
-    return (
-      <Dice5
-        className={cn("shrink-0 text-purple-400", className)}
-        style={{ color: "#A855F7" }}
-        aria-hidden="true"
-      />
-    );
-  }
-
-  const brand = BRANDS.find((b) => clean.includes(b.match));
+  const brand = clean === "lol" ? BRANDS[1] : clean === "tft" ? BRANDS[2] : BRANDS.find((b) => clean.includes(b.match));
   if (brand) {
     return (
       <IconifyIcon

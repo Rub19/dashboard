@@ -235,6 +235,167 @@ extension ValorantStoreBundle {
     ]
 }
 
+struct ValorantFriend: Identifiable, Hashable {
+    let id: String
+    let name: String
+    let tag: String
+    let avatarURL: String?
+    let isOnline: Bool
+    let isInGame: Bool
+    let isPartyLeader: Bool
+    let partyCurrent: Int
+    let partyMax: Int
+    let gameMode: String?
+    let map: String?
+    let scoreRounds: String?
+    let tierNumber: Int
+    let otherPartyMembersCount: Int
+    let lastOnlineText: String?
+
+    var handle: String { "\(name)#\(tag)" }
+    var rankIconURL: URL? { ValorantProfile.tierIcon(tierNumber) }
+}
+
+enum ValorantFriendHistoryType: String, Hashable {
+    case removed = "N'est plus sur votre liste d'amis"
+    case requestCanceled = "La demande d'ami n'est plus en attente"
+    case requestAccepted = "A accepté votre demande d'ami"
+}
+
+struct ValorantFriendHistoryEvent: Identifiable, Hashable {
+    let id: String
+    let name: String
+    let tag: String
+    let type: ValorantFriendHistoryType
+    let timestampText: String
+
+    var handle: String { "\(name)#\(tag)" }
+}
+
+extension ValorantFriend {
+    static let sampleFriends: [ValorantFriend] = [
+        ValorantFriend(
+            id: "friend-julien",
+            name: "JulienPingouin",
+            tag: "moule",
+            avatarURL: "https://media.valorant-api.com/agents/e39a0c7b-4467-f584-635a-4bbf5287f3b6/displayicon.png",
+            isOnline: true,
+            isInGame: true,
+            isPartyLeader: false,
+            partyCurrent: 3,
+            partyMax: 5,
+            gameMode: "Non classé",
+            map: "Bind",
+            scoreRounds: "3 — 3",
+            tierNumber: 10,
+            otherPartyMembersCount: 2,
+            lastOnlineText: nil
+        ),
+        ValorantFriend(
+            id: "friend-thecrow",
+            name: "TheCrow",
+            tag: "6550",
+            avatarURL: "https://media.valorant-api.com/agents/8e252d04-4643-3281-97b4-c8340ec111a6/displayicon.png",
+            isOnline: true,
+            isInGame: true,
+            isPartyLeader: true,
+            partyCurrent: 2,
+            partyMax: 5,
+            gameMode: "Compétition",
+            map: "Corrode",
+            scoreRounds: "4 — 8",
+            tierNumber: 13,
+            otherPartyMembersCount: 1,
+            lastOnlineText: nil
+        ),
+        ValorantFriend(
+            id: "friend-natt",
+            name: "natt",
+            tag: "0605",
+            avatarURL: "https://media.valorant-api.com/agents/7f5997a3-4a70-ac02-0e83-798487f5d625/displayicon.png",
+            isOnline: true,
+            isInGame: true,
+            isPartyLeader: true,
+            partyCurrent: 2,
+            partyMax: 5,
+            gameMode: "Compétition",
+            map: "Lotus",
+            scoreRounds: "11 — 8",
+            tierNumber: 16,
+            otherPartyMembersCount: 1,
+            lastOnlineText: nil
+        )
+    ]
+}
+
+extension ValorantFriendHistoryEvent {
+    static let sampleHistory: [ValorantFriendHistoryEvent] = [
+        ValorantFriendHistoryEvent(
+            id: "h1",
+            name: "Ma3lys5",
+            tag: "5326",
+            type: .removed,
+            timestampText: "avant-hier"
+        ),
+        ValorantFriendHistoryEvent(
+            id: "h2",
+            name: "Jyson Dafuq",
+            tag: "AIYD",
+            type: .requestCanceled,
+            timestampText: "il y a 3 jours"
+        ),
+        ValorantFriendHistoryEvent(
+            id: "h3",
+            name: "MISA Riser",
+            tag: "KAYA",
+            type: .removed,
+            timestampText: "il y a 3 jours"
+        ),
+        ValorantFriendHistoryEvent(
+            id: "h4",
+            name: "Swonzix",
+            tag: "1903",
+            type: .requestCanceled,
+            timestampText: "il y a 3 jours"
+        ),
+        ValorantFriendHistoryEvent(
+            id: "h5",
+            name: "Looking for her",
+            tag: "freal",
+            type: .removed,
+            timestampText: "la semaine dernière"
+        ),
+        ValorantFriendHistoryEvent(
+            id: "h6",
+            name: "flavinho do pneu",
+            tag: "2323",
+            type: .removed,
+            timestampText: "il y a 2 semaines"
+        ),
+        ValorantFriendHistoryEvent(
+            id: "h7",
+            name: "DefinityPara",
+            tag: "8205",
+            type: .removed,
+            timestampText: "le mois dernier"
+        ),
+        ValorantFriendHistoryEvent(
+            id: "h8",
+            name: "NeykoVlr 愛",
+            tag: "12345",
+            type: .requestAccepted,
+            timestampText: "le mois dernier"
+        ),
+        ValorantFriendHistoryEvent(
+            id: "h9",
+            name: "Nidayuku",
+            tag: "EUW",
+            type: .requestAccepted,
+            timestampText: "le mois dernier"
+        )
+    ]
+}
+
 @MainActor
 @Observable
 final class ValorantStore {
@@ -252,6 +413,26 @@ final class ValorantStore {
     private(set) var equipmentTitle: String = "=^._.^="
     private(set) var wishlistCount: Int = 38
     private(set) var storeHistoryCount: Int = 88
+
+    // Friends & Social
+    private(set) var friends: [ValorantFriend] = ValorantFriend.sampleFriends
+    private(set) var friendHistory: [ValorantFriendHistoryEvent] = ValorantFriendHistoryEvent.sampleHistory
+    var openProfileDirectly: Bool = false
+    var sortOfflineByLastSeen: Bool = true
+
+    func sendFriendRequest(name: String, tag: String) {
+        let cleanName = name.trimmingCharacters(in: .whitespaces)
+        let cleanTag = tag.trimmingCharacters(in: .whitespaces).replacingOccurrences(of: "#", with: "")
+        guard !cleanName.isEmpty else { return }
+        let newEvent = ValorantFriendHistoryEvent(
+            id: UUID().uuidString,
+            name: cleanName,
+            tag: cleanTag.isEmpty ? "EUW" : cleanTag,
+            type: .requestCanceled,
+            timestampText: "à l'instant"
+        )
+        friendHistory.insert(newEvent, at: 0)
+    }
 
     private(set) var tag: String = ""
     private(set) var apiKey: String = ""

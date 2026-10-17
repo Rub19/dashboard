@@ -1418,7 +1418,10 @@ struct EvalGameView: View {
 
 // MARK: - 3. HUB TAB (Screenshot 5)
 struct EvalHubView: View {
+    @Environment(AppModel.self) private var model
     @State private var showingStore = false
+
+    private var store: ValorantStore { model.valorant }
 
     var body: some View {
         NavigationStack {
@@ -1434,7 +1437,13 @@ struct EvalHubView: View {
 
                     // 1. Réseaux sociaux
                     hubGroupSection(title: "Réseaux sociaux") {
-                        hubNavRow(icon: "person.2.fill", title: "Amis", badge: "19")
+                        NavigationLink {
+                            EvalFriendsView()
+                        } label: {
+                            hubRowView(icon: "person.2.fill", title: "Amis", badge: "\(store.friends.count + 1)")
+                        }
+                        .buttonStyle(.plain)
+
                         hubNavRow(icon: "bookmark.fill", title: "Signets", badge: "2")
                         hubNavRow(icon: "person.text.rectangle.fill", title: "Historique des pseudos")
                         hubNavRow(icon: "trophy.fill", title: "Classement")
@@ -1526,6 +1535,787 @@ struct EvalHubView: View {
         .overlay(alignment: .bottom) {
             Rectangle().fill(Color.white.opacity(0.05)).frame(height: 1).padding(.leading, 52)
         }
+    }
+}
+
+// MARK: - Friends Screen (Screenshots 1-4)
+struct EvalFriendsView: View {
+    @Environment(AppModel.self) private var model
+    @Environment(\.dismiss) private var dismiss
+
+    @State private var searchQuery: String = ""
+    @State private var showingAddFriendModal: Bool = false
+    @State private var showingSettingsSheet: Bool = false
+    @State private var showingAccountSheet: Bool = false
+    @State private var selectedFriend: ValorantFriend?
+
+    private var store: ValorantStore { model.valorant }
+
+    private var filteredFriends: [ValorantFriend] {
+        if searchQuery.trimmingCharacters(in: .whitespaces).isEmpty {
+            return store.friends
+        }
+        return store.friends.filter {
+            $0.name.localizedCaseInsensitiveContains(searchQuery) ||
+            $0.tag.localizedCaseInsensitiveContains(searchQuery) ||
+            ($0.gameMode?.localizedCaseInsensitiveContains(searchQuery) ?? false) ||
+            ($0.map?.localizedCaseInsensitiveContains(searchQuery) ?? false)
+        }
+    }
+
+    var body: some View {
+        ZStack {
+            ScrollView {
+                VStack(spacing: 16) {
+                    // Top Custom Navigation Bar (matching Screenshot 1)
+                    friendsTopBar
+
+                    // Search bar
+                    HStack(spacing: 10) {
+                        Image(systemName: "magnifyingglass")
+                            .font(.system(size: 15))
+                            .foregroundStyle(.secondary)
+
+                        TextField("Rechercher des amis", text: $searchQuery)
+                            .font(.subheadline)
+                            .foregroundStyle(.white)
+
+                        if !searchQuery.isEmpty {
+                            Button {
+                                searchQuery = ""
+                            } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                    }
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 10)
+                    .background(Color.white.opacity(0.06), in: .rect(cornerRadius: 14))
+
+                    if !store.isConfigured {
+                        // Disconnected state: instructions to connect, NO dummy placeholders
+                        disconnectedConnectCard
+                    } else {
+                        // Connected state: Rub19#Boss group + Friends groups
+                        VStack(spacing: 18) {
+                            // Section 1: Votre groupe — 1/5
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Votre groupe — 1/5")
+                                    .font(.subheadline.weight(.semibold))
+                                    .foregroundStyle(.secondary)
+                                    .padding(.leading, 4)
+
+                                myUserPartyCard
+                            }
+
+                            // Section 2: Friends Groups
+                            ForEach(filteredFriends) { friend in
+                                VStack(alignment: .leading, spacing: 8) {
+                                    Text("Groupe — \(friend.partyCurrent)/\(friend.partyMax)")
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundStyle(.secondary)
+                                        .padding(.leading, 4)
+
+                                    Button {
+                                        selectedFriend = friend
+                                    } label: {
+                                        EvalFriendCard(friend: friend)
+                                    }
+                                    .buttonStyle(PressScaleStyle())
+                                }
+                            }
+                        }
+                    }
+                }
+                .padding(.horizontal, 16)
+                .padding(.bottom, 96)
+            }
+            .scrollIndicators(.hidden)
+            .navigationBarBackButtonHidden(true)
+            .ethoneScreen()
+
+            // Modal "Ajouter un ami" (Screenshot 2)
+            if showingAddFriendModal {
+                Color.black.opacity(0.65)
+                    .ignoresSafeArea()
+                    .transition(.opacity)
+
+                EvalAddFriendModal(
+                    isPresented: $showingAddFriendModal,
+                    onSend: { name, tag in
+                        store.sendFriendRequest(name: name, tag: tag)
+                    }
+                )
+                .transition(.scale(scale: 0.9).combined(with: .opacity))
+                .zIndex(10)
+            }
+        }
+        .sheet(isPresented: $showingSettingsSheet) {
+            EvalFriendSettingsSheet(
+                openProfileDirectly: Binding(
+                    get: { store.openProfileDirectly },
+                    set: { store.openProfileDirectly = $0 }
+                ),
+                sortOfflineByLastSeen: Binding(
+                    get: { store.sortOfflineByLastSeen },
+                    set: { store.sortOfflineByLastSeen = $0 }
+                )
+            )
+            .presentationDetents([.fraction(0.48), .medium])
+            .presentationDragIndicator(.visible)
+        }
+        .sheet(item: $selectedFriend) { friend in
+            EvalFriendDetailSheet(friend: friend)
+                .presentationDetents([.fraction(0.48), .medium])
+                .presentationDragIndicator(.visible)
+        }
+        .sheet(isPresented: $showingAccountSheet) {
+            ValorantSettingsSheet()
+        }
+    }
+
+    // Top Navigation Bar matching Screenshot 1
+    private var friendsTopBar: some View {
+        HStack {
+            // Left: Back button + History button
+            HStack(spacing: 8) {
+                Button {
+                    dismiss()
+                } label: {
+                    Circle()
+                        .fill(Color.white.opacity(0.08))
+                        .frame(width: 38, height: 38)
+                        .overlay(
+                            Image(systemName: "chevron.left")
+                                .font(.system(size: 14, weight: .bold))
+                                .foregroundStyle(.white)
+                        )
+                }
+                .buttonStyle(PressScaleStyle())
+
+                NavigationLink {
+                    EvalFriendHistoryView()
+                } label: {
+                    Circle()
+                        .fill(Color.white.opacity(0.08))
+                        .frame(width: 38, height: 38)
+                        .overlay(
+                            Image(systemName: "person.crop.circle.badge.clock")
+                                .font(.system(size: 15))
+                                .foregroundStyle(Theme.danger)
+                        )
+                }
+                .buttonStyle(PressScaleStyle())
+            }
+
+            Spacer()
+
+            Text("Amis")
+                .font(.headline.weight(.bold))
+                .foregroundStyle(.white)
+
+            Spacer()
+
+            // Right: Settings (...) + Add Friend (+)
+            HStack(spacing: 8) {
+                Button {
+                    showingSettingsSheet = true
+                } label: {
+                    Circle()
+                        .fill(Color.white.opacity(0.08))
+                        .frame(width: 38, height: 38)
+                        .overlay(
+                            Image(systemName: "ellipsis")
+                                .font(.system(size: 15, weight: .bold))
+                                .foregroundStyle(Theme.danger)
+                        )
+                }
+                .buttonStyle(PressScaleStyle())
+
+                Button {
+                    withAnimation(Motion.snap) {
+                        showingAddFriendModal = true
+                    }
+                } label: {
+                    Circle()
+                        .fill(Color.white.opacity(0.08))
+                        .frame(width: 38, height: 38)
+                        .overlay(
+                            Image(systemName: "person.crop.circle.badge.plus")
+                                .font(.system(size: 15))
+                                .foregroundStyle(Theme.danger)
+                        )
+                }
+                .buttonStyle(PressScaleStyle())
+            }
+        }
+        .padding(.top, 4)
+    }
+
+    // Card for current user in "Votre groupe — 1/5"
+    private var myUserPartyCard: some View {
+        HStack(spacing: 12) {
+            // Avatar with green online pastille
+            ZStack(alignment: .bottomTrailing) {
+                AsyncImage(url: URL(string: "https://media.valorant-api.com/playercards/d30271ae-4ce1-5ed2-c55f-f08a6247c274/smallart.png")) { phase in
+                    switch phase {
+                    case .success(let image):
+                        image.resizable().scaledToFill().frame(width: 44, height: 44).clipShape(.rect(cornerRadius: 12))
+                    default:
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(Color(hex: 0x1A1C24))
+                            .frame(width: 44, height: 44)
+                            .overlay(Image(systemName: "person.fill").foregroundStyle(.secondary))
+                    }
+                }
+
+                // Green online circle
+                Circle()
+                    .fill(Color(hex: 0x22C55E))
+                    .frame(width: 13, height: 13)
+                    .overlay(Circle().strokeBorder(Color(hex: 0x0E1017), lineWidth: 2))
+                    .offset(x: 2, y: 2)
+            }
+
+            VStack(alignment: .leading, spacing: 3) {
+                HStack(spacing: 4) {
+                    Text(store.playerName.isEmpty ? "Rub19" : store.playerName)
+                        .font(.subheadline.weight(.heavy))
+                        .foregroundStyle(.white)
+
+                    Text("#\(store.tag.isEmpty ? "Boss" : store.tag)")
+                        .font(.caption.weight(.medium))
+                        .foregroundStyle(.secondary)
+                }
+
+                Text("En ligne")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer()
+        }
+        .padding(14)
+        .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
+        .clipShape(.rect(cornerRadius: Theme.cardRadius))
+        .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
+    }
+
+    // Prompt to connect if disconnected
+    private var disconnectedConnectCard: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "person.2.badge.gearshape.fill")
+                .font(.system(size: 40))
+                .foregroundStyle(Theme.danger)
+
+            VStack(spacing: 6) {
+                Text("Connexion Riot requise")
+                    .font(.headline.weight(.bold))
+                    .foregroundStyle(.white)
+
+                Text("Connectez votre compte Riot Games pour voir vos amis en direct, leur mode de jeu, score et rang.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 16)
+            }
+
+            Button {
+                showingAccountSheet = true
+            } label: {
+                Text("Se connecter")
+                    .font(.subheadline.weight(.bold))
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 24)
+                    .padding(.vertical, 10)
+                    .background(Theme.danger, in: .capsule)
+            }
+            .buttonStyle(PressScaleStyle())
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 36)
+        .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
+        .clipShape(.rect(cornerRadius: Theme.cardRadius))
+        .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
+    }
+}
+
+// MARK: - Friend Card (Screenshot 1)
+struct EvalFriendCard: View {
+    let friend: ValorantFriend
+
+    var body: some View {
+        VStack(spacing: 0) {
+            HStack(spacing: 12) {
+                // Avatar with pastille
+                ZStack(alignment: .bottomTrailing) {
+                    AsyncImage(url: URL(string: friend.avatarURL ?? "")) { phase in
+                        switch phase {
+                        case .success(let image):
+                            image.resizable().scaledToFill().frame(width: 44, height: 44).clipShape(.rect(cornerRadius: 12))
+                        default:
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color(hex: 0x1A1C24))
+                                .frame(width: 44, height: 44)
+                                .overlay(Image(systemName: "person.fill").foregroundStyle(.secondary))
+                        }
+                    }
+
+                    if friend.isInGame {
+                        // Red In-Game pastille (minus/dash icon)
+                        Circle()
+                            .fill(Theme.danger)
+                            .frame(width: 13, height: 13)
+                            .overlay(Rectangle().fill(Color.white).frame(width: 6, height: 1.8))
+                            .overlay(Circle().strokeBorder(Color(hex: 0x0E1017), lineWidth: 2))
+                            .offset(x: 2, y: 2)
+                    } else if friend.isOnline {
+                        Circle()
+                            .fill(Color(hex: 0x22C55E))
+                            .frame(width: 13, height: 13)
+                            .overlay(Circle().strokeBorder(Color(hex: 0x0E1017), lineWidth: 2))
+                            .offset(x: 2, y: 2)
+                    }
+                }
+
+                // Middle Info
+                VStack(alignment: .leading, spacing: 3) {
+                    HStack(spacing: 4) {
+                        Text(friend.name)
+                            .font(.subheadline.weight(.heavy))
+                            .foregroundStyle(.white)
+
+                        Text("#\(friend.tag)")
+                            .font(.caption.weight(.medium))
+                            .foregroundStyle(.secondary)
+
+                        if friend.isPartyLeader {
+                            Image(systemName: "crown")
+                                .font(.system(size: 13, weight: .bold))
+                                .foregroundStyle(Color.white.opacity(0.22))
+                                .padding(.leading, 2)
+                        }
+                    }
+
+                    if friend.isInGame {
+                        HStack(spacing: 5) {
+                            Text("En Jeu")
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(.secondary)
+
+                            if let score = friend.scoreRounds {
+                                Text("|")
+                                    .font(.caption2)
+                                    .foregroundStyle(.secondary.opacity(0.6))
+                                Text(score)
+                                    .font(.caption.weight(.heavy).monospacedDigit())
+                                    .foregroundStyle(.white)
+                            }
+                        }
+
+                        if let mode = friend.gameMode, let map = friend.map {
+                            Text("\(mode) · \(map)")
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                        }
+                    } else {
+                        Text(friend.isOnline ? "En ligne" : (friend.lastOnlineText ?? "Hors ligne"))
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+
+                Spacer()
+
+                // Right: Rank emblem + Chevron
+                HStack(spacing: 8) {
+                    if friend.tierNumber > 0 {
+                        AsyncImage(url: friend.rankIconURL) { phase in
+                            switch phase {
+                            case .success(let image):
+                                image.resizable().scaledToFit().frame(width: 28, height: 28)
+                            default:
+                                Image(systemName: "shield.fill")
+                                    .font(.system(size: 18))
+                                    .foregroundStyle(Color(hex: 0xF5D78E))
+                            }
+                        }
+                    }
+
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .padding(14)
+
+            // Sub-party indicator
+            if friend.otherPartyMembersCount > 0 {
+                Rectangle()
+                    .fill(Color.white.opacity(0.05))
+                    .frame(height: 1)
+                    .padding(.horizontal, 14)
+
+                HStack {
+                    Text("+ \(friend.otherPartyMembersCount) autres")
+                        .font(.caption.weight(.medium))
+                        .foregroundStyle(.secondary)
+                    Spacer()
+                }
+                .padding(.horizontal, 14)
+                .padding(.vertical, 8)
+            }
+        }
+        .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
+        .clipShape(.rect(cornerRadius: Theme.cardRadius))
+        .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
+    }
+}
+
+// MARK: - Add Friend Modal (Screenshot 2)
+struct EvalAddFriendModal: View {
+    @Binding var isPresented: Bool
+    var onSend: (String, String) -> Void
+
+    @State private var name: String = ""
+    @State private var tag: String = ""
+
+    var body: some View {
+        VStack(spacing: 16) {
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Ajouter un ami")
+                    .font(.headline.weight(.bold))
+                    .foregroundStyle(.white)
+
+                Text("Entre le Riot ID du joueur que tu veux ajouter.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+
+            VStack(spacing: 0) {
+                TextField("Nom", text: $name)
+                    .font(.subheadline)
+                    .foregroundStyle(.white)
+                    .padding(12)
+
+                Rectangle()
+                    .fill(Color.white.opacity(0.08))
+                    .frame(height: 1)
+
+                TextField("Identifiant", text: $tag)
+                    .font(.subheadline)
+                    .foregroundStyle(.white)
+                    .padding(12)
+            }
+            .background(Color.white.opacity(0.06), in: .rect(cornerRadius: 12))
+
+            VStack(spacing: 10) {
+                Button {
+                    onSend(name, tag)
+                    withAnimation(Motion.snap) {
+                        isPresented = false
+                    }
+                } label: {
+                    Text("Envoyer une demande")
+                        .font(.subheadline.weight(.bold))
+                        .foregroundStyle(Theme.danger)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 13)
+                        .background(Color.white.opacity(0.08), in: .rect(cornerRadius: 14))
+                }
+                .buttonStyle(PressScaleStyle())
+                .disabled(name.trimmingCharacters(in: .whitespaces).isEmpty)
+
+                Button {
+                    withAnimation(Motion.snap) {
+                        isPresented = false
+                    }
+                } label: {
+                    Text("Annuler")
+                        .font(.subheadline.weight(.bold))
+                        .foregroundStyle(Theme.danger)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 13)
+                        .background(Color.white.opacity(0.08), in: .rect(cornerRadius: 14))
+                }
+                .buttonStyle(PressScaleStyle())
+            }
+        }
+        .padding(22)
+        .frame(maxWidth: 320)
+        .glassEffect(.regular, in: .rect(cornerRadius: 24))
+        .clipShape(.rect(cornerRadius: 24))
+        .overlay(RoundedRectangle(cornerRadius: 24).strokeBorder(Color.white.opacity(0.12), lineWidth: 1))
+        .shadow(color: Color.black.opacity(0.5), radius: 24)
+    }
+}
+
+// MARK: - Friend Settings Sheet (Screenshot 3)
+struct EvalFriendSettingsSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    @Binding var openProfileDirectly: Bool
+    @Binding var sortOfflineByLastSeen: Bool
+
+    var body: some View {
+        VStack(spacing: 20) {
+            // Header with Close X button
+            HStack {
+                Spacer()
+                Text("Paramètres des amis")
+                    .font(.headline.weight(.bold))
+                    .foregroundStyle(.white)
+                Spacer()
+                Button {
+                    dismiss()
+                } label: {
+                    Circle()
+                        .fill(Color.white.opacity(0.08))
+                        .frame(width: 32, height: 32)
+                        .overlay(Image(systemName: "xmark").font(.system(size: 13, weight: .bold)).foregroundStyle(.secondary))
+                }
+            }
+            .padding(.top, 14)
+
+            // Settings Rows
+            VStack(spacing: 16) {
+                // Setting 1: Ouvrir le profil directement
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack(spacing: 12) {
+                        Image(systemName: "person.circle.fill")
+                            .font(.system(size: 20))
+                            .foregroundStyle(Theme.danger)
+
+                        Text("Ouvrir le profil directement")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.white)
+
+                        Spacer()
+
+                        Toggle("", isOn: $openProfileDirectly)
+                            .labelsHidden()
+                            .tint(Theme.danger)
+                    }
+
+                    Text("Lorsque cette option est activée, toucher un ami ouvre son profil au lieu de la discussion. Ignoré pour les amis ayant des messages non lus.")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                        .lineSpacing(2)
+                }
+                .padding(14)
+                .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
+                .clipShape(.rect(cornerRadius: Theme.cardRadius))
+
+                // Setting 2: Trier les joueurs hors ligne par dernière connexion
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack(spacing: 12) {
+                        Image(systemName: "clock.arrow.circlepath")
+                            .font(.system(size: 20))
+                            .foregroundStyle(Theme.danger)
+
+                        Text("Trier les joueurs hors ligne par dernière connexion")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.white)
+
+                        Spacer()
+
+                        Toggle("", isOn: $sortOfflineByLastSeen)
+                            .labelsHidden()
+                            .tint(Theme.danger)
+                    }
+
+                    Text("Trier les amis hors ligne selon leur dernière connexion, les plus récents en haut. Lorsque cette option est désactivée, les amis hors ligne sont triés par ordre alphabétique.")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                        .lineSpacing(2)
+                }
+                .padding(14)
+                .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
+                .clipShape(.rect(cornerRadius: Theme.cardRadius))
+            }
+
+            Spacer()
+        }
+        .padding(.horizontal, 16)
+        .ethoneScreen()
+    }
+}
+
+// MARK: - Friend Changes History View (Screenshot 4)
+struct EvalFriendHistoryView: View {
+    @Environment(AppModel.self) private var model
+    @Environment(\.dismiss) private var dismiss
+
+    private var store: ValorantStore { model.valorant }
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                // Header
+                HStack(spacing: 12) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Circle()
+                            .fill(Color.white.opacity(0.08))
+                            .frame(width: 38, height: 38)
+                            .overlay(Image(systemName: "chevron.left").font(.system(size: 14, weight: .bold)).foregroundStyle(.white))
+                    }
+                    .buttonStyle(PressScaleStyle())
+
+                    Text("Changements de la liste d'amis")
+                        .font(.headline.weight(.bold))
+                        .foregroundStyle(.white)
+
+                    Spacer()
+                }
+                .padding(.top, 4)
+
+                // List of Events
+                VStack(spacing: 0) {
+                    ForEach(Array(store.friendHistory.enumerated()), id: \.element.id) { index, event in
+                        HStack(spacing: 14) {
+                            // Event Icon
+                            Group {
+                                switch event.type {
+                                case .requestAccepted:
+                                    Image(systemName: "person.crop.circle.badge.checkmark")
+                                        .foregroundStyle(Color(hex: 0x22C55E))
+                                case .removed:
+                                    Image(systemName: "person.crop.circle.badge.minus")
+                                        .foregroundStyle(.secondary)
+                                case .requestCanceled:
+                                    Image(systemName: "person.crop.circle.badge.xmark")
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                            .font(.system(size: 20))
+                            .frame(width: 24)
+
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(event.handle)
+                                    .font(.subheadline.weight(.bold))
+                                    .foregroundStyle(.white)
+
+                                Text(event.type.rawValue)
+                                    .font(.footnote)
+                                    .foregroundStyle(.secondary)
+
+                                Text(event.timestampText)
+                                    .font(.caption2)
+                                    .foregroundStyle(.secondary.opacity(0.7))
+                            }
+
+                            Spacer()
+
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 11, weight: .semibold))
+                                .foregroundStyle(.secondary)
+                        }
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 14)
+
+                        if index < store.friendHistory.count - 1 {
+                            Rectangle()
+                                .fill(Color.white.opacity(0.05))
+                                .frame(height: 1)
+                                .padding(.leading, 52)
+                        }
+                    }
+                }
+                .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
+                .clipShape(.rect(cornerRadius: Theme.cardRadius))
+                .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
+            }
+            .padding(.horizontal, 16)
+            .padding(.bottom, 96)
+        }
+        .scrollIndicators(.hidden)
+        .navigationBarBackButtonHidden(true)
+        .ethoneScreen()
+    }
+}
+
+// MARK: - Friend Detail Sheet
+struct EvalFriendDetailSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    let friend: ValorantFriend
+
+    var body: some View {
+        VStack(spacing: 16) {
+            HStack(spacing: 14) {
+                AsyncImage(url: URL(string: friend.avatarURL ?? "")) { phase in
+                    switch phase {
+                    case .success(let image):
+                        image.resizable().scaledToFill().frame(width: 54, height: 54).clipShape(.rect(cornerRadius: 14))
+                    default:
+                        RoundedRectangle(cornerRadius: 14)
+                            .fill(Color(hex: 0x1A1C24))
+                            .frame(width: 54, height: 54)
+                            .overlay(Image(systemName: "person.fill").foregroundStyle(.secondary))
+                    }
+                }
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(friend.handle)
+                        .font(.title3.weight(.bold))
+                        .foregroundStyle(.white)
+
+                    if friend.isInGame, let mode = friend.gameMode, let map = friend.map {
+                        Text("\(mode) · \(map) (Score: \(friend.scoreRounds ?? "-"))")
+                            .font(.caption)
+                            .foregroundStyle(Theme.danger)
+                    } else {
+                        Text(friend.isOnline ? "En ligne" : "Hors ligne")
+                            .font(.caption)
+                            .foregroundStyle(Color(hex: 0x22C55E))
+                    }
+                }
+
+                Spacer()
+            }
+            .padding(14)
+            .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
+
+            VStack(spacing: 8) {
+                actionRow(icon: "message.fill", title: "Envoyer un message")
+                actionRow(icon: "person.crop.circle.badge.plus", title: "Inviter dans le groupe")
+                actionRow(icon: "arrow.right.circle.fill", title: "Rejoindre le groupe")
+            }
+            .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
+            .clipShape(.rect(cornerRadius: Theme.cardRadius))
+
+            Spacer()
+        }
+        .padding(16)
+        .ethoneScreen()
+    }
+
+    private func actionRow(icon: String, title: String) -> some View {
+        Button {
+            dismiss()
+        } label: {
+            HStack(spacing: 12) {
+                Image(systemName: icon)
+                    .font(.system(size: 15))
+                    .foregroundStyle(Theme.danger)
+                    .frame(width: 22)
+
+                Text(title)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.white)
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                    .font(.caption2.weight(.bold))
+                    .foregroundStyle(.secondary)
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 12)
+        }
+        .buttonStyle(.plain)
     }
 }
 

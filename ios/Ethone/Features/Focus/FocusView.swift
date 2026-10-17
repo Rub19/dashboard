@@ -8,44 +8,43 @@ struct FocusView: View {
     private var focus: FocusManager { model.focus }
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(spacing: 20) {
-                    timerRing.reveal(0)
+        ScrollView {
+            VStack(spacing: 20) {
+                timerRing.reveal(0)
 
-                    if !focus.isActive {
-                        GlassCard {
-                            VStack(alignment: .leading, spacing: 10) {
-                                Text("Objectif").sectionTitle()
-                                TextField("Sur quoi allez-vous vous concentrer ?", text: $goal)
-                                    .submitLabel(.done)
-                            }
+                if !focus.isActive {
+                    GlassCard {
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text("Objectif").sectionTitle()
+                            TextField("Sur quoi allez-vous vous concentrer ?", text: $goal)
+                                .submitLabel(.done)
                         }
-                        presetPicker
-                    } else if !focus.goal.isEmpty {
-                        GlassPill(text: focus.goal, systemImage: "target")
                     }
-
-                    controls
-
-                    if let message = focus.errorMessage {
-                        Text(message).font(.footnote).foregroundStyle(Theme.danger)
-                    }
-
-                    todayCard
-                    historyCard
+                    presetPicker
+                } else if !focus.goal.isEmpty {
+                    GlassPill(text: focus.goal, systemImage: "target")
                 }
-                .padding(.horizontal, 16)
-                .padding(.bottom, 24)
+
+                controls
+
+                if let message = focus.errorMessage {
+                    Text(message).font(.footnote).foregroundStyle(Theme.danger)
+                }
+
+                todayCard
+                historyCard
             }
-            .refreshable { await focus.refreshSessions() }
-            .navigationTitle("Focus")
-            .ethoneScreen()
-            .task { await focus.refreshSessions() }
-            .onChange(of: focus.completedPomodoros) { _, _ in
-                Task { await focus.refreshSessions() }
-            }
+            .padding(.horizontal, 16)
+            .padding(.bottom, 24)
         }
+        .refreshable { await focus.refreshSessions() }
+        .navigationTitle("Focus")
+        .ethoneScreen()
+        .task { await focus.refreshSessions() }
+        .onChange(of: focus.completedPomodoros) { _, _ in
+            Task { await focus.refreshSessions() }
+        }
+    
     }
 
     private var timerRing: some View {

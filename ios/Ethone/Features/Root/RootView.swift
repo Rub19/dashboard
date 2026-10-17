@@ -49,19 +49,23 @@ struct RootView: View {
 struct MainTabs: View {
     @Environment(AppModel.self) private var model
     @Environment(\.scenePhase) private var scenePhase
-    @State private var selection: AppTab = .home
+    @State private var selection: String = AppTab.home.rawValue
 
     var body: some View {
         TabView(selection: $selection) {
-            Tab("Accueil", systemImage: "house.fill", value: AppTab.home) { HomeView() }
-            Tab("Notes", systemImage: "note.text", value: AppTab.notes) { NotesView() }
-            Tab("Tâches", systemImage: "checklist", value: AppTab.tasks) { TasksView() }
-            Tab("Focus", systemImage: "timer", value: AppTab.focus) { FocusView() }
-            Tab("Plus", systemImage: "ellipsis.circle.fill", value: AppTab.more) { MoreView() }
+            Tab("Accueil", systemImage: "house.fill", value: AppTab.home.rawValue) {
+                NavigationStack { HomeView() }
+            }
+            ForEach(model.pinnedTabs, id: \.self) { destination in
+                Tab(destination.item?.title ?? "", systemImage: destination.item?.icon ?? "square", value: destination.rawValue) {
+                    NavigationStack { destinationView(destination) }
+                }
+            }
+            Tab("Plus", systemImage: "square.grid.2x2.fill", value: AppTab.more.rawValue) { MoreView() }
         }
         .tabViewStyle(.sidebarAdaptable)
         .tabBarMinimizeBehavior(.onScrollDown)
-        .focusAccessory(model: model, selection: $selection)
+        .focusAccessory(model: model, selection: selection)
         .task {
             await model.focus.restore()
             await model.refreshAll()
@@ -69,10 +73,15 @@ struct MainTabs: View {
         .onChange(of: scenePhase) { _, phase in
             if phase == .active { Task { await model.refreshAll() } }
         }
-        .onChange(of: model.requestedTab) { _, tab in
+        .onChange(of: model.requestedSelection) { _, tab in
             if let tab {
                 selection = tab
-                model.requestedTab = nil
+                model.requestedSelection = nil
+            }
+        }
+        .onChange(of: model.pinnedTabs) { _, pinned in
+            if ![AppTab.home.rawValue, AppTab.more.rawValue].contains(selection), !pinned.map(\.rawValue).contains(selection) {
+                selection = AppTab.more.rawValue
             }
         }
     }
@@ -80,9 +89,9 @@ struct MainTabs: View {
 
 private extension View {
     @ViewBuilder
-    func focusAccessory(model: AppModel, selection: Binding<AppTab>) -> some View {
+    func focusAccessory(model: AppModel, selection: String) -> some View {
         if #available(iOS 26.1, *) {
-            self.tabViewBottomAccessory(isEnabled: model.focus.isActive && selection.wrappedValue != .focus) {
+            self.tabViewBottomAccessory(isEnabled: model.focus.isActive && selection != MoreDestination.focus.rawValue) {
                 FocusMiniBar()
             }
         } else {

@@ -23,80 +23,73 @@ struct HomeView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 18) {
-                    header.reveal(0)
+        ScrollView {
+            VStack(alignment: .leading, spacing: 18) {
+                header.reveal(0)
 
-                    quickActionsRow.reveal(1)
+                quickActionsRow.reveal(1)
 
-                    if model.soundscape.isPlaying {
-                        soundscapeCard
-                    }
-
-                    statsPanel.reveal(2)
-
-                    focusCard.reveal(3)
-
-                    if !todayEvents.isEmpty {
-                        agendaCard
-                    }
-
-                    if !model.habits.activeHabits.isEmpty {
-                        habitsCard
-                    }
-
-                    quickTaskCard
-
-                    if !openTasks.isEmpty {
-                        tasksCard
-                    }
-
-                    if !recentNotes.isEmpty {
-                        recentNotesCard
-                    }
-
-                    if let error = model.tasks.errorMessage ?? model.notes.errorMessage {
-                        Text(error).font(.footnote).foregroundStyle(Theme.danger)
-                    }
+                if model.soundscape.isPlaying {
+                    soundscapeCard
                 }
-                .padding(.horizontal, 16)
-                .padding(.bottom, 24)
+
+                statsPanel.reveal(2)
+
+                focusCard.reveal(3)
+
+                if !todayEvents.isEmpty {
+                    agendaCard
+                }
+
+                if !model.habits.activeHabits.isEmpty {
+                    habitsCard
+                }
+
+                quickTaskCard
+
+                if !openTasks.isEmpty {
+                    tasksCard
+                }
+
+                if !recentNotes.isEmpty {
+                    recentNotesCard
+                }
+
+                if let error = model.tasks.errorMessage ?? model.notes.errorMessage {
+                    Text(error).font(.footnote).foregroundStyle(Theme.danger)
+                }
             }
-            .refreshable { await model.refreshAll() }
-            .scrollDismissesKeyboard(.interactively)
-            .navigationTitle("Accueil")
-            .toolbarVisibility(.hidden, for: .navigationBar)
-            .ethoneScreen()
+            .padding(.horizontal, 16)
+            .padding(.bottom, 24)
         }
+        .refreshable { await model.refreshAll() }
+        .scrollDismissesKeyboard(.interactively)
+        .navigationTitle("Accueil")
+        .toolbarVisibility(.hidden, for: .navigationBar)
+        .ethoneScreen()
+    
     }
 
     private var quickActionsRow: some View {
         ScrollView(.horizontal) {
             HStack(spacing: 10) {
                 quickChip(title: "Brain", systemImage: "sparkles", tint: Theme.accent) {
-                    model.morePath = [.brain]
-                    model.requestedTab = .more
+                    model.open(.brain)
                 }
                 quickChip(title: "Soundscape", systemImage: "waveform.circle.fill", tint: Theme.accent) {
-                    model.morePath = [.soundscape]
-                    model.requestedTab = .more
+                    model.open(.soundscape)
                 }
                 quickChip(title: "Clip", systemImage: "paperclip", tint: Theme.accent) {
-                    model.morePath = [.clip]
-                    model.requestedTab = .more
+                    model.open(.clip)
                 }
                 quickChip(title: "Discord", systemImage: "bubble.left.and.bubble.right.fill", tint: Color(hex: 0x5865F2)) {
-                    model.morePath = [.discord]
-                    model.requestedTab = .more
+                    model.open(.discord)
                 }
                 quickChip(title: "Agenda", systemImage: "calendar", tint: Theme.accent) {
-                    model.morePath = [.calendar]
-                    model.requestedTab = .more
+                    model.open(.calendar)
                 }
                 quickChip(title: "Espaces", systemImage: "person.2.fill", tint: Theme.accent) {
-                    model.morePath = [.spaces]
-                    model.requestedTab = .more
+                    model.open(.spaces)
                 }
             }
             .padding(.vertical, 2)
@@ -146,8 +139,7 @@ struct HomeView: View {
                 }
                 .buttonStyle(.glass)
                 Button {
-                    model.morePath = [.soundscape]
-                    model.requestedTab = .more
+                    model.open(.soundscape)
                 } label: {
                     Text("Mixeur")
                 }
@@ -163,8 +155,7 @@ struct HomeView: View {
                     Text("Agenda du jour").sectionTitle()
                     Spacer()
                     Button {
-                        model.morePath = [.calendar]
-                        model.requestedTab = .more
+                        model.open(.calendar)
                     } label: {
                         Text("Voir tout").font(.caption.weight(.medium)).foregroundStyle(Theme.accent)
                     }
@@ -329,8 +320,7 @@ struct HomeView: View {
                     .foregroundStyle(.secondary)
                 Spacer()
                 Button {
-                    model.morePath = [.profile]
-                    model.requestedTab = .more
+                    model.open(.profile)
                 } label: {
                     AvatarView(urlString: model.ethoneAvatar ?? auth.user?.avatarURL?.absoluteString, name: model.ethoneName ?? auth.user?.displayName ?? "E", size: 40, status: .online)
                 }
@@ -356,13 +346,11 @@ struct HomeView: View {
             stat(value: "\(model.notes.items.count)", label: "Notes") { model.requestedTab = .notes }
             Divider().frame(height: 40)
             stat(value: "\(doneToday)/\(model.habits.activeHabits.count)", label: "Habitudes") {
-                model.morePath = [.habits]
-                model.requestedTab = .more
+                model.open(.habits)
             }
             Divider().frame(height: 40)
             stat(value: "\(bestStreak) j", label: "Série") {
-                model.morePath = [.habits]
-                model.requestedTab = .more
+                model.open(.habits)
             }
         }
         .padding(.vertical, 16)

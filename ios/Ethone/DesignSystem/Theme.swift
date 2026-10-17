@@ -123,7 +123,7 @@ enum ThemePreset: String, CaseIterable, Identifiable {
 enum Theme {
     static let accentKey = "ethone.accent"
     static let themeKey = "ethone.theme"
-    static let defaultTheme = ThemePreset.dynoRose
+    static let defaultTheme = ThemePreset.obsidian
 
     static var preset: ThemePreset {
         ThemePreset(rawValue: UserDefaults.standard.string(forKey: themeKey) ?? "") ?? defaultTheme

@@ -13,71 +13,70 @@ struct NotesView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            List {
-                if let message = model.notes.errorMessage {
-                    Text(message).font(.footnote).foregroundStyle(Theme.danger).listRowBackground(Color.clear)
-                }
-                ForEach(filtered) { note in
-                    Button {
-                        editing = NoteDraft(item: note)
-                    } label: {
-                        VStack(alignment: .leading, spacing: 5) {
-                            Text(note.title.isEmpty ? "Sans titre" : note.title)
-                                .font(.headline)
-                                .tracking(-0.2)
-                                .foregroundStyle(.primary)
-                                .lineLimit(1)
-                            if !note.plainBody.isEmpty {
-                                Text(note.plainBody.replacingOccurrences(of: "\n", with: " "))
-                                    .font(.subheadline)
-                                    .foregroundStyle(.secondary)
-                                    .lineLimit(2)
-                            }
-                            Text(note.updatedAt, format: .relative(presentation: .named))
-                                .font(.caption)
-                                .foregroundStyle(.tertiary)
+        List {
+            if let message = model.notes.errorMessage {
+                Text(message).font(.footnote).foregroundStyle(Theme.danger).listRowBackground(Color.clear)
+            }
+            ForEach(filtered) { note in
+                Button {
+                    editing = NoteDraft(item: note)
+                } label: {
+                    VStack(alignment: .leading, spacing: 5) {
+                        Text(note.title.isEmpty ? "Sans titre" : note.title)
+                            .font(.headline)
+                            .tracking(-0.2)
+                            .foregroundStyle(.primary)
+                            .lineLimit(1)
+                        if !note.plainBody.isEmpty {
+                            Text(note.plainBody.replacingOccurrences(of: "\n", with: " "))
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                                .lineLimit(2)
                         }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.vertical, 6)
-                        .contentShape(.rect)
+                        Text(note.updatedAt, format: .relative(presentation: .named))
+                            .font(.caption)
+                            .foregroundStyle(.tertiary)
                     }
-                    .buttonStyle(.plain)
-                    .matchedTransitionSource(id: note.id, in: zoom)
-                    .listRowBackground(Rectangle().fill(.thinMaterial))
-                    .swipeActions(edge: .trailing) {
-                        Button(role: .destructive) {
-                            Task { await model.notes.delete(note) }
-                        } label: { Label("Supprimer", systemImage: "trash") }
-                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.vertical, 6)
+                    .contentShape(.rect)
                 }
-            }
-            .listStyle(.insetGrouped)
-            .scrollContentBackground(.hidden)
-            .animation(Motion.snap, value: filtered.map(\.id))
-            .overlay {
-                if model.notes.items.isEmpty && model.notes.hasLoaded {
-                    ContentUnavailableView("Aucune note", systemImage: "note.text", description: Text("Touchez le crayon pour écrire votre première note. Elle apparaîtra aussitôt sur votre ordinateur."))
-                } else if !query.isEmpty && filtered.isEmpty {
-                    ContentUnavailableView.search(text: query)
+                .buttonStyle(.plain)
+                .matchedTransitionSource(id: note.id, in: zoom)
+                .listRowBackground(Rectangle().fill(.thinMaterial))
+                .swipeActions(edge: .trailing) {
+                    Button(role: .destructive) {
+                        Task { await model.notes.delete(note) }
+                    } label: { Label("Supprimer", systemImage: "trash") }
                 }
-            }
-            .refreshable { await model.notes.refresh() }
-            .searchable(text: $query, prompt: "Rechercher une note")
-            .navigationTitle("Notes")
-            .ethoneScreen()
-            .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    Button { editing = NoteDraft(item: nil) } label: { Image(systemName: "square.and.pencil") }
-                        .accessibilityLabel("Nouvelle note")
-                        .matchedTransitionSource(id: "new-note", in: zoom)
-                }
-            }
-            .sheet(item: $editing) { draft in
-                NoteEditorView(draft: draft)
-                    .navigationTransition(.zoom(sourceID: draft.item?.id ?? "new-note", in: zoom))
             }
         }
+        .listStyle(.insetGrouped)
+        .scrollContentBackground(.hidden)
+        .animation(Motion.snap, value: filtered.map(\.id))
+        .overlay {
+            if model.notes.items.isEmpty && model.notes.hasLoaded {
+                ContentUnavailableView("Aucune note", systemImage: "note.text", description: Text("Touchez le crayon pour écrire votre première note. Elle apparaîtra aussitôt sur votre ordinateur."))
+            } else if !query.isEmpty && filtered.isEmpty {
+                ContentUnavailableView.search(text: query)
+            }
+        }
+        .refreshable { await model.notes.refresh() }
+        .searchable(text: $query, prompt: "Rechercher une note")
+        .navigationTitle("Notes")
+        .ethoneScreen()
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Button { editing = NoteDraft(item: nil) } label: { Image(systemName: "square.and.pencil") }
+                    .accessibilityLabel("Nouvelle note")
+                    .matchedTransitionSource(id: "new-note", in: zoom)
+            }
+        }
+        .sheet(item: $editing) { draft in
+            NoteEditorView(draft: draft)
+                .navigationTransition(.zoom(sourceID: draft.item?.id ?? "new-note", in: zoom))
+        }
+    
     }
 }
 

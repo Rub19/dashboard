@@ -27,7 +27,43 @@ final class AppModel {
     @ObservationIgnored private var pendingTables: Set<String> = []
     @ObservationIgnored private var flushTask: Task<Void, Never>?
 
-    var requestedTab: AppTab?
+    /// Demande d'ouverture d'un onglet (Spotlight, liens, raccourcis) : traduite vers l'onglet épinglé ou l'écran Plus.
+    var requestedTab: AppTab? {
+        didSet {
+            guard let tab = requestedTab else { return }
+            requestedTab = nil
+            switch tab {
+            case .home: requestedSelection = AppTab.home.rawValue
+            case .more: requestedSelection = AppTab.more.rawValue
+            case .notes: open(.notes)
+            case .tasks: open(.tasks)
+            case .focus: open(.focus)
+            }
+        }
+    }
+    /// Onglet à sélectionner dans la barre (valeur brute d'un onglet ou d'une destination épinglée).
+    var requestedSelection: String?
+    /// Les trois onglets choisis par l'utilisateur entre Accueil et Plus.
+    var pinnedTabs: [MoreDestination] = AppModel.loadPinnedTabs() {
+        didSet { UserDefaults.standard.set(pinnedTabs.map(\.rawValue), forKey: Self.pinnedTabsKey) }
+    }
+    static let pinnedTabsKey = "ethone.pinnedTabs"
+    static let defaultPinnedTabs: [MoreDestination] = [.mail, .tasks, .calendar]
+
+    private static func loadPinnedTabs() -> [MoreDestination] {
+        let saved = (UserDefaults.standard.stringArray(forKey: pinnedTabsKey) ?? []).compactMap(MoreDestination.init(rawValue:))
+        return saved.isEmpty ? defaultPinnedTabs : Array(saved.prefix(3))
+    }
+
+    /// Ouvre une section : dans son onglet si elle est épinglée, sinon dans Plus.
+    func open(_ destination: MoreDestination) {
+        if pinnedTabs.contains(destination) {
+            requestedSelection = destination.rawValue
+        } else {
+            morePath = [destination]
+            requestedSelection = AppTab.more.rawValue
+        }
+    }
     /// Photo et nom du profil ETHONE (ethone_public_profiles), prioritaires sur ceux du fournisseur de connexion (Discord, Google…).
     private(set) var ethoneAvatar: String?
     private(set) var ethoneName: String?
@@ -227,8 +263,7 @@ final class AppModel {
         let clean = path.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
         let key = clean.split(separator: "/").first.map(String.init) ?? ""
         if clean == "owner/shield" || clean == "discord/owner-shield" || clean == "owner-shield" {
-            morePath = [.ownerShield]
-            requestedTab = .more
+            open(.ownerShield)
             return true
         }
         let tabs: [String: AppTab] = ["": .home, "notes": .notes, "tasks": .tasks, "focus": .focus]
@@ -247,8 +282,7 @@ final class AppModel {
             return true
         }
         if let destination = more[key] {
-            morePath = [destination]
-            requestedTab = .more
+            open(destination)
             return true
         }
         return false
@@ -259,8 +293,7 @@ final class AppModel {
         if let tab = AppTab(rawValue: host) {
             requestedTab = tab
         } else if let destination = MoreDestination(rawValue: host) {
-            morePath = [destination]
-            requestedTab = .more
+            open(destination)
         }
     }
 }
@@ -271,6 +304,7 @@ enum AppTab: String, CaseIterable, Identifiable {
 }
 
 enum MoreDestination: String, Hashable, CaseIterable, Identifiable {
+    case notes, tasks, focus, tabBar
     case settings, notifications, team, bills, scratchpad, macros, personas, rss, valorant, valorantStore, lolTracker, lolRotation, tftTracker, otherGames, sharedLinks, profile, workspaces, leaderboard, boost, browser, system, admin, games, interactions, brain, mail, discord, spaces, flows, files, connections, analytics, activity, habits, calendar, weather, security, soundscape, plugins, clip, changelog, ownerShield
     var id: String { rawValue }
 }

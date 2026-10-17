@@ -12,76 +12,75 @@ struct TasksView: View {
     private var done: [Item] { model.tasks.items.filter { $0.isDone }.sorted { $0.updatedAt > $1.updatedAt } }
 
     var body: some View {
-        NavigationStack {
-            List {
+        List {
+            Section {
+                VStack(spacing: 12) {
+                    HStack {
+                        TextField("Ajouter une tâche…", text: $newTitle)
+                            .focused($focused)
+                            .submitLabel(.done)
+                            .onSubmit(add)
+                        Button(action: add) { Image(systemName: "plus").fontWeight(.bold) }
+                            .buttonStyle(.glassProminent)
+                            .buttonBorderShape(.circle)
+                            .disabled(newTitle.trimmingCharacters(in: .whitespaces).isEmpty)
+                    }
+                    Picker("Priorité", selection: $priority) {
+                        Text("Basse").tag("low")
+                        Text("Moyenne").tag("medium")
+                        Text("Haute").tag("high")
+                    }
+                    .pickerStyle(.segmented)
+                    Toggle("Échéance et rappel", isOn: $withReminder.animation()).font(.subheadline)
+                    if withReminder {
+                        DatePicker("Quand", selection: $reminderDate, in: Date()...).font(.subheadline)
+                    }
+                }
+                .padding(.vertical, 4)
+                .listRowBackground(Rectangle().fill(.thinMaterial))
+            } header: {
+                VStack(alignment: .leading, spacing: 12) {
+                    AccentRule()
+                    EthoneHeadline(first: "Tâches", second: open.isEmpty ? "Tout est fait." : "\(open.count) à faire.", size: .title)
+                }
+                .textCase(nil)
+                .foregroundStyle(.primary)
+                .padding(.bottom, 8)
+                .padding(.leading, -4)
+            }
+
+            if let message = model.tasks.errorMessage {
+                Text(message).font(.footnote).foregroundStyle(Theme.danger).listRowBackground(Color.clear)
+            }
+
+            if !open.isEmpty {
                 Section {
-                    VStack(spacing: 12) {
-                        HStack {
-                            TextField("Ajouter une tâche…", text: $newTitle)
-                                .focused($focused)
-                                .submitLabel(.done)
-                                .onSubmit(add)
-                            Button(action: add) { Image(systemName: "plus").fontWeight(.bold) }
-                                .buttonStyle(.glassProminent)
-                                .buttonBorderShape(.circle)
-                                .disabled(newTitle.trimmingCharacters(in: .whitespaces).isEmpty)
-                        }
-                        Picker("Priorité", selection: $priority) {
-                            Text("Basse").tag("low")
-                            Text("Moyenne").tag("medium")
-                            Text("Haute").tag("high")
-                        }
-                        .pickerStyle(.segmented)
-                        Toggle("Échéance et rappel", isOn: $withReminder.animation()).font(.subheadline)
-                        if withReminder {
-                            DatePicker("Quand", selection: $reminderDate, in: Date()...).font(.subheadline)
-                        }
-                    }
-                    .padding(.vertical, 4)
-                    .listRowBackground(Rectangle().fill(.thinMaterial))
-                } header: {
-                    VStack(alignment: .leading, spacing: 12) {
-                        AccentRule()
-                        EthoneHeadline(first: "Tâches", second: open.isEmpty ? "Tout est fait." : "\(open.count) à faire.", size: .title)
-                    }
-                    .textCase(nil)
-                    .foregroundStyle(.primary)
-                    .padding(.bottom, 8)
-                    .padding(.leading, -4)
-                }
-
-                if let message = model.tasks.errorMessage {
-                    Text(message).font(.footnote).foregroundStyle(Theme.danger).listRowBackground(Color.clear)
-                }
-
-                if !open.isEmpty {
-                    Section {
-                        ForEach(open) { row($0) }
-                    } header: { sectionHeader("À faire", count: open.count) }
-                }
-
-                if !done.isEmpty {
-                    Section {
-                        ForEach(done) { row($0) }
-                    } header: { sectionHeader("Terminées", count: done.count) }
-                }
+                    ForEach(open) { row($0) }
+                } header: { sectionHeader("À faire", count: open.count) }
             }
-            .listStyle(.insetGrouped)
-            .scrollContentBackground(.hidden)
-            .animation(Motion.snap, value: model.tasks.items.map(\.id))
-            .animation(Motion.snap, value: model.tasks.items.map(\.isDone))
-            .overlay {
-                if model.tasks.items.isEmpty && model.tasks.hasLoaded {
-                    ContentUnavailableView("Aucune tâche", systemImage: "checklist", description: Text("Écrivez votre première tâche dans le champ ci-dessus."))
-                        .padding(.top, 160)
-                }
+
+            if !done.isEmpty {
+                Section {
+                    ForEach(done) { row($0) }
+                } header: { sectionHeader("Terminées", count: done.count) }
             }
-            .refreshable { await model.tasks.refresh() }
-            .navigationTitle("Tâches")
-            .toolbarVisibility(.hidden, for: .navigationBar)
-            .ethoneScreen()
-            .scrollDismissesKeyboard(.interactively)
         }
+        .listStyle(.insetGrouped)
+        .scrollContentBackground(.hidden)
+        .animation(Motion.snap, value: model.tasks.items.map(\.id))
+        .animation(Motion.snap, value: model.tasks.items.map(\.isDone))
+        .overlay {
+            if model.tasks.items.isEmpty && model.tasks.hasLoaded {
+                ContentUnavailableView("Aucune tâche", systemImage: "checklist", description: Text("Écrivez votre première tâche dans le champ ci-dessus."))
+                    .padding(.top, 160)
+            }
+        }
+        .refreshable { await model.tasks.refresh() }
+        .navigationTitle("Tâches")
+        .toolbarVisibility(.hidden, for: .navigationBar)
+        .ethoneScreen()
+        .scrollDismissesKeyboard(.interactively)
+    
     }
 
     private func row(_ task: Item) -> some View {

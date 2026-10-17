@@ -24,7 +24,7 @@ struct SummaryProvider: TimelineProvider {
 
 extension SharedSnapshot {
     var accent: Color {
-        let hex = accentHex ?? 0xC1234F
+        let hex = accentHex ?? 0x8B5CF6
         return Color(.sRGB, red: Double((hex >> 16) & 0xFF) / 255, green: Double((hex >> 8) & 0xFF) / 255, blue: Double(hex & 0xFF) / 255)
     }
 }

@@ -128,6 +128,42 @@ final class MailStore {
         }
     }
 
+    func move(_ message: MailMessage, to folder: MailFolder) async {
+        guard let index = messages.firstIndex(where: { $0.id == message.id }) else { return }
+        let removed = messages.remove(at: index)
+        do {
+            try await api.workerVoid("api/mail/move", body: APIClient.json(["ids": .array([.string(message.id)]), "folder": .string(folder.rawValue)]))
+            unread = messages.filter { !$0.isRead }.count
+            errorMessage = nil
+        } catch {
+            messages.insert(removed, at: min(index, messages.count))
+            errorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+        }
+    }
+
+    func block(_ message: MailMessage) async {
+        guard let address = message.fromAddress, address.contains("@") else { return }
+        do {
+            try await api.workerVoid("api/mail/blocked", body: APIClient.json(["email": .string(address)]))
+            errorMessage = nil
+        } catch {
+            errorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+        }
+    }
+
+    func search(_ text: String) async {
+        let q = text.trimmingCharacters(in: .whitespaces)
+        guard !q.isEmpty else { return }
+        isLoading = true
+        defer { isLoading = false }
+        do {
+            messages = try await api.worker("api/mail/search", query: [URLQueryItem(name: "q", value: q), URLQueryItem(name: "limit", value: "50")])
+            errorMessage = nil
+        } catch {
+            errorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+        }
+    }
+
     func setStarred(_ message: MailMessage, _ starred: Bool) async {
         guard let index = messages.firstIndex(where: { $0.id == message.id }) else { return }
         let before = messages[index]
@@ -146,6 +182,7 @@ struct MailView: View {
     @State private var folder: MailFolder = .inbox
     @State private var selected: MailMessage?
     @State private var composing: ComposeDraft?
+    @State private var query = ""
 
     var body: some View {
         List {
@@ -163,6 +200,15 @@ struct MailView: View {
                         .tint(Theme.accent)
                     }
                     .swipeActions(edge: .trailing) {
+                        Button(role: .destructive) {
+                            Task { await model.mail.move(message, to: .trash) }
+                        } label: { Label("Corbeille", systemImage: "trash") }
+                        if folder != .archive {
+                            Button {
+                                Task { await model.mail.move(message, to: .archive) }
+                            } label: { Label("Archiver", systemImage: "archivebox") }
+                            .tint(Color(hex: 0x3E8BFF))
+                        }
                         Button {
                             Task { await model.mail.setStarred(message, !(message.isStarred ?? false)) }
                         } label: { Label("Suivre", systemImage: "star") }
@@ -186,6 +232,11 @@ struct MailView: View {
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button { composing = ComposeDraft(to: "", subject: "", body: "") } label: { Image(systemName: "square.and.pencil") }
+                    .accessibilityLabel("Nouveau message")
+            }
+            ToolbarItem(placement: .topBarLeading) {
+                NavigationLink { MailSettingsView() } label: { Image(systemName: "gearshape") }
+                    .accessibilityLabel("Réglages Mail")
             }
             ToolbarItem(placement: .primaryAction) {
                 Menu {
@@ -194,6 +245,11 @@ struct MailView: View {
                     }
                 } label: { Image(systemName: folder.symbol) }
             }
+        }
+        .searchable(text: $query, prompt: "Rechercher dans les mails")
+        .onSubmit(of: .search) { Task { await model.mail.search(query) } }
+        .onChange(of: query) { _, text in
+            if text.isEmpty { Task { await model.mail.load(folder: folder) } }
         }
         .refreshable { await model.mail.load(folder: folder) }
         .task(id: folder) { await model.mail.load(folder: folder) }
@@ -212,7 +268,10 @@ struct MailView: View {
                     if let date = message.date { Text(date, format: .relative(presentation: .numeric, unitsStyle: .narrow)).font(.caption).foregroundStyle(.secondary) }
                 }
                 Text(message.title).font(.subheadline.weight(message.isRead ? .regular : .medium)).foregroundStyle(.primary).lineLimit(1)
-                Text(message.readableBody).font(.footnote).foregroundStyle(.secondary).lineLimit(2)
+                let preview = message.readableBody.split(whereSeparator: \.isWhitespace).joined(separator: " ")
+                if !preview.isEmpty {
+                    Text(preview).font(.footnote).foregroundStyle(.secondary).lineLimit(2)
+                }
             }
             if message.isStarred == true { Image(systemName: "star.fill").foregroundStyle(Theme.warning) }
         }
@@ -224,7 +283,15 @@ struct MailDetailView: View {
     @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss
     @State private var replying = false
+    @State private var forwarding = false
     let message: MailMessage
+
+    private func act(_ work: @escaping () async -> Void) {
+        Task {
+            await work()
+            dismiss()
+        }
+    }
 
     var body: some View {
         NavigationStack {
@@ -256,7 +323,33 @@ struct MailDetailView: View {
                 ToolbarItem(placement: .cancellationAction) { Button("Fermer") { dismiss() } }
                 ToolbarItem(placement: .primaryAction) {
                     Button { replying = true } label: { Image(systemName: "arrowshape.turn.up.left") }
+                        .accessibilityLabel("Répondre")
                 }
+                ToolbarItem(placement: .primaryAction) {
+                    Menu {
+                        Button("Transférer", systemImage: "arrowshape.turn.up.right") { forwarding = true }
+                        Button("Archiver", systemImage: "archivebox") { act { await model.mail.move(message, to: .archive) } }
+                        Button("Marquer comme non lu", systemImage: "envelope.badge") { act { await model.mail.markRead(message, read: false) } }
+                        Button("Indésirable", systemImage: "xmark.bin") { act { await model.mail.move(message, to: .spam) } }
+                        if message.fromAddress != nil {
+                            Button("Bloquer l'expéditeur", systemImage: "hand.raised") {
+                                act {
+                                    await model.mail.block(message)
+                                    await model.mail.move(message, to: .spam)
+                                }
+                            }
+                        }
+                        Divider()
+                        Button("Mettre à la corbeille", systemImage: "trash", role: .destructive) { act { await model.mail.move(message, to: .trash) } }
+                    } label: { Image(systemName: "ellipsis.circle") }
+                }
+            }
+            .sheet(isPresented: $forwarding) {
+                MailComposeView(draft: ComposeDraft(
+                    to: "",
+                    subject: message.title.lowercased().hasPrefix("tr:") ? message.title : "Tr : \(message.title)",
+                    body: "\n\n---------- Message transféré ----------\nDe : \(message.sender)\nObjet : \(message.title)\n\n\(message.readableBody)"
+                ))
             }
             .sheet(isPresented: $replying) {
                 MailComposeView(draft: ComposeDraft(

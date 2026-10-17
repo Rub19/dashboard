@@ -53,15 +53,17 @@ struct EthoneHeadline: View {
     let first: String
     let second: String
     var size: Font.TextStyle = .largeTitle
+    var alignment: HorizontalAlignment = .leading
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
+        VStack(alignment: alignment, spacing: 0) {
             Text(first)
                 .foregroundStyle(.primary)
             Text(second)
                 .foregroundStyle(LinearGradient(colors: [.primary, Theme.accent], startPoint: .leading, endPoint: .trailing))
         }
         .font(.system(size, weight: .semibold))
+        .multilineTextAlignment(alignment == .center ? .center : .leading)
         .tracking(-0.9)
         .lineSpacing(-2)
         .accessibilityElement(children: .combine)

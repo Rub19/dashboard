@@ -8,21 +8,6 @@ enum AuthTab: String, CaseIterable, Identifiable {
     var id: String { rawValue }
 }
 
-private struct LoginModule: Identifiable {
-    let title: String
-    let icon: String
-    var id: String { title }
-}
-
-private let loginModules = [
-    LoginModule(title: "Notes", icon: "note.text"),
-    LoginModule(title: "Tâches", icon: "checklist"),
-    LoginModule(title: "Calendrier", icon: "calendar"),
-    LoginModule(title: "Finances", icon: "eurosign"),
-    LoginModule(title: "Musique", icon: "music.note"),
-    LoginModule(title: "IA locale", icon: "sparkles"),
-]
-
 /// Text or secure field in an ETHONE glass well, with an optional reveal toggle.
 private struct AuthField: View {
     let placeholder: String
@@ -82,79 +67,69 @@ struct LoginView: View {
     @State private var otpCode = ""
     @State private var otpSent = false
     @State private var infoMessage: String?
+    @State private var showEmail = false
     @FocusState private var focus: Field?
 
     private enum Field { case email, password, confirmPassword, otpCode }
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 28) {
-                hero
-                authCard.reveal(4)
-                providers.reveal(5)
+        ZStack {
+            LoginBackdrop()
+            ScrollView {
+                VStack(spacing: 30) {
+                    header
+                    providers.reveal(3)
+                    emailSection.reveal(4)
+                }
+                .padding(.horizontal, 24)
+                .padding(.top, 56)
+                .padding(.bottom, 40)
+                .frame(maxWidth: 480)
+                .frame(maxWidth: .infinity)
             }
-            .padding(.horizontal, 22)
-            .padding(.top, 28)
-            .padding(.bottom, 40)
-            .frame(maxWidth: 520)
-            .frame(maxWidth: .infinity)
+            .scrollDismissesKeyboard(.interactively)
         }
-        .scrollDismissesKeyboard(.interactively)
         .sensoryFeedback(.selection, trigger: selectedTab)
+        .sensoryFeedback(.impact(weight: .light), trigger: showEmail)
         .sensoryFeedback(.error, trigger: auth.errorMessage) { _, new in new != nil }
         .animation(Motion.snap, value: selectedTab)
         .animation(Motion.snap, value: otpSent)
         .animation(Motion.swap, value: auth.errorMessage)
     }
 
-    private var hero: some View {
-        VStack(alignment: .leading, spacing: 18) {
-            HStack(spacing: 10) {
-                BrandMarkView(size: 34)
-                Text("ETHONE")
-                    .font(.headline.weight(.semibold))
-                    .tracking(0.6)
-            }
-            .reveal(0)
-
-            VStack(alignment: .leading, spacing: 14) {
-                AccentRule()
-                EthoneHeadline(first: "Votre espace,", second: "réinventé pour vous.")
+    private var header: some View {
+        VStack(spacing: 22) {
+            BreathingMark()
+                .reveal(0)
+            VStack(spacing: 14) {
+                EthoneHeadline(first: "Votre espace,", second: "réinventé pour vous.", alignment: .center)
             }
             .reveal(1)
-
-            Text("Notes, tâches, calendrier, finances, musique et IA locale réunis, synchronisés en direct avec votre ordinateur.")
+            Text("Notes, tâches, mails, calendrier et IA, synchronisés en direct avec votre ordinateur.")
                 .font(.body)
                 .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
                 .reveal(2)
+        }
+    }
 
-            LazyVGrid(columns: [GridItem(.flexible(), alignment: .leading), GridItem(.flexible(), alignment: .leading), GridItem(.flexible(), alignment: .leading)], alignment: .leading, spacing: 12) {
-                ForEach(loginModules) { module in
-                    HStack(spacing: 8) {
-                        Image(systemName: module.icon)
-                            .font(.footnote.weight(.semibold))
-                            .foregroundStyle(.secondary)
-                            .frame(width: 28, height: 28)
-                            .background(.primary.opacity(0.05), in: .rect(cornerRadius: 8, style: .continuous))
-                            .overlay(RoundedRectangle(cornerRadius: 8, style: .continuous).strokeBorder(.primary.opacity(0.08)))
-                        Text(module.title)
-                            .font(.subheadline.weight(.medium))
-                            .foregroundStyle(.primary.opacity(0.82))
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.85)
-                    }
-                    .accessibilityElement(children: .combine)
-                }
+    @ViewBuilder
+    private var emailSection: some View {
+        if showEmail {
+            authCard
+                .transition(.asymmetric(insertion: .scale(scale: 0.94, anchor: .top).combined(with: .opacity), removal: .opacity))
+        } else {
+            Button {
+                withAnimation(Motion.snap) { showEmail = true }
+                focus = .email
+            } label: {
+                Label("Continuer avec un e-mail", systemImage: "envelope.fill")
+                    .font(.body.weight(.semibold))
+                    .frame(maxWidth: .infinity, minHeight: 36)
             }
-            .padding(.top, 4)
-            .overlay(alignment: .top) {
-                Rectangle()
-                    .fill(LinearGradient(colors: [.primary.opacity(0.1), .clear], startPoint: .leading, endPoint: .trailing))
-                    .frame(height: 1)
-                    .offset(y: -12)
-            }
-            .reveal(3)
+            .buttonStyle(.glass)
+            .transition(.opacity)
         }
     }
 
@@ -306,34 +281,33 @@ struct LoginView: View {
     }
 
     private var providers: some View {
-        VStack(spacing: 14) {
-            HStack(spacing: 12) {
-                Rectangle().fill(.primary.opacity(0.1)).frame(height: 1)
-                Text("ou continuer avec")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                    .fixedSize()
-                Rectangle().fill(.primary.opacity(0.1)).frame(height: 1)
-            }
-            GlassEffectContainer(spacing: 10) {
-                HStack(spacing: 10) {
-                    providerButton("Google", provider: "google")
-                    providerButton("GitHub", provider: "github")
-                    providerButton("Discord", provider: "discord")
-                }
-            }
+        VStack(spacing: 12) {
+            providerButton("Discord", logo: "BrandDiscord", provider: "discord", background: Color(hex: 0x5865F2), foreground: .white)
+            providerButton("Google", logo: "BrandGoogle", provider: "google", background: .white, foreground: Color(hex: 0x1F1F1F))
+            providerButton("GitHub", logo: "BrandGitHub", provider: "github", background: Color(hex: 0x24292F), foreground: .white)
         }
     }
 
-    private func providerButton(_ title: String, provider: String) -> some View {
+    private func providerButton(_ title: String, logo: String, provider: String, background: Color, foreground: Color) -> some View {
         Button {
             Task { await auth.signInWithOAuth(provider: provider) }
         } label: {
-            Text(title)
-                .font(.subheadline.weight(.semibold))
-                .frame(maxWidth: .infinity, minHeight: 30)
+            HStack(spacing: 12) {
+                Image(logo)
+                    .resizable()
+                    .renderingMode(provider == "google" ? .original : .template)
+                    .scaledToFit()
+                    .frame(width: 20, height: 20)
+                Text("Continuer avec \(title)")
+                    .font(.body.weight(.semibold))
+            }
+            .foregroundStyle(foreground)
+            .frame(maxWidth: .infinity, minHeight: 52)
+            .background(background, in: .capsule)
+            .overlay(Capsule().strokeBorder(.white.opacity(0.12)))
+            .contentShape(.capsule)
         }
-        .buttonStyle(.glass)
+        .buttonStyle(PressScaleStyle())
         .disabled(auth.isBusy)
         .accessibilityLabel("Continuer avec \(title)")
     }
@@ -364,6 +338,83 @@ struct LoginView: View {
         guard !email.isEmpty, password.count >= 8, password == confirmPassword else { return }
         focus = nil
         Task { await auth.signUp(email: email.trimmingCharacters(in: .whitespaces), password: password) }
+    }
+}
+
+/// Press feedback: a quick spring shrink while the finger is down.
+private struct PressScaleStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.97 : 1)
+            .opacity(configuration.isPressed ? 0.9 : 1)
+            .animation(.spring(response: 0.25, dampingFraction: 0.7), value: configuration.isPressed)
+    }
+}
+
+/// The ETHONE mark over a slowly breathing accent halo.
+private struct BreathingMark: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var breathe = false
+
+    var body: some View {
+        ZStack {
+            Circle()
+                .fill(RadialGradient(colors: [Theme.accent.opacity(0.55), .clear], center: .center, startRadius: 4, endRadius: 80))
+                .frame(width: 170, height: 170)
+                .scaleEffect(breathe ? 1.08 : 0.92)
+                .opacity(breathe ? 1 : 0.7)
+            BrandMarkView(size: 76)
+                .shadow(color: Theme.accent.opacity(0.45), radius: 18, y: 6)
+        }
+        .frame(height: 130)
+        .onAppear {
+            guard !reduceMotion else { return }
+            withAnimation(.easeInOut(duration: 3.2).repeatForever(autoreverses: true)) { breathe = true }
+        }
+        .accessibilityHidden(true)
+    }
+}
+
+/// Auth backdrop mirroring the website: diffuse pools of accent light that drift slowly, and a few rising specks.
+private struct LoginBackdrop: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    private static let specks: [(x: Double, y: Double, size: Double, speed: Double)] = [
+        (0.12, 0.7, 2, 0.011), (0.24, 0.3, 1.5, 0.008), (0.37, 0.85, 1.5, 0.013), (0.55, 0.2, 2, 0.009),
+        (0.66, 0.6, 1.5, 0.012), (0.78, 0.3, 1.5, 0.010), (0.88, 0.75, 2, 0.014), (0.46, 0.5, 1.5, 0.007),
+        (0.06, 0.25, 1.5, 0.010), (0.31, 0.95, 2, 0.012), (0.72, 0.12, 1.5, 0.009), (0.94, 0.46, 1.5, 0.011),
+    ]
+
+    var body: some View {
+        TimelineView(.animation(minimumInterval: 1.0 / 30.0, paused: reduceMotion)) { context in
+            let t = reduceMotion ? 0 : context.date.timeIntervalSinceReferenceDate
+            Canvas { canvas, size in
+                let accent = Theme.accent
+                let pools: [(x: Double, y: Double, r: Double, color: Color, phase: Double)] = [
+                    (0.5, 0.12, 0.75, accent.opacity(0.32), 0),
+                    (0.82, 0.45, 0.55, accent.opacity(0.2), 2.1),
+                    (0.18, 0.7, 0.6, Color(hex: 0x38BDF8).opacity(0.12), 4.2),
+                ]
+                for pool in pools {
+                    let cx = size.width * (pool.x + 0.06 * sin(t / 7 + pool.phase))
+                    let cy = size.height * (pool.y + 0.04 * cos(t / 9 + pool.phase))
+                    let r = size.width * pool.r
+                    canvas.fill(
+                        Path(ellipseIn: CGRect(x: cx - r, y: cy - r, width: r * 2, height: r * 2)),
+                        with: .radialGradient(Gradient(colors: [pool.color, .clear]), center: CGPoint(x: cx, y: cy), startRadius: 0, endRadius: r)
+                    )
+                }
+                for speck in Self.specks {
+                    let progress = (speck.y - t * speck.speed).truncatingRemainder(dividingBy: 1)
+                    let y = (progress < 0 ? progress + 1 : progress) * size.height
+                    let x = size.width * speck.x + 6 * sin(t / 3 + speck.x * 10)
+                    canvas.fill(Path(ellipseIn: CGRect(x: x, y: y, width: speck.size, height: speck.size)), with: .color(.white.opacity(0.22)))
+                }
+            }
+        }
+        .ignoresSafeArea()
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
     }
 }
 

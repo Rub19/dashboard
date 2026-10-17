@@ -57,8 +57,14 @@ struct MainTabs: View {
                 NavigationStack { HomeView() }
             }
             ForEach(model.pinnedTabs, id: \.self) { destination in
-                Tab(destination.item?.title ?? "", systemImage: destination.item?.icon ?? "square", value: destination.rawValue) {
-                    NavigationStack { destinationView(destination) }
+                if let asset = destination.item?.asset {
+                    Tab(destination.item?.title ?? "", image: asset, value: destination.rawValue) {
+                        NavigationStack { destinationView(destination) }
+                    }
+                } else {
+                    Tab(destination.item?.title ?? "", systemImage: destination.item?.icon ?? "square", value: destination.rawValue) {
+                        NavigationStack { destinationView(destination) }
+                    }
                 }
             }
             Tab("Plus", systemImage: "square.grid.2x2.fill", value: AppTab.more.rawValue) { MoreView() }

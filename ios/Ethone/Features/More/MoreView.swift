@@ -5,7 +5,11 @@ struct MoreItem: Identifiable {
     let destination: MoreDestination
     let title: String
     let icon: String
+    /// Brand logo from the asset catalog, used instead of the SF Symbol when set.
+    var asset: String? = nil
     var id: MoreDestination { destination }
+
+    var glyph: Image { asset.map { Image($0) } ?? Image(systemName: icon) }
 }
 
 struct MoreGroup: Identifiable {
@@ -49,16 +53,16 @@ var moreGroups: [MoreGroup] {
             MoreItem(destination: .sharedLinks, title: "Liens", icon: "link.badge.plus"),
         ]),
         MoreGroup(title: "Discord", color: Color(hex: 0x5865F2), items: [
-            MoreItem(destination: .discord, title: "Bot Discord", icon: "bubble.left.and.bubble.right.fill"),
+            MoreItem(destination: .discord, title: "Bot Discord", icon: "bubble.left.and.bubble.right.fill", asset: "BrandDiscord"),
             MoreItem(destination: .ownerShield, title: "Owner Shield", icon: "shield.lefthalf.filled.badge.checkmark"),
             MoreItem(destination: .leaderboard, title: "Classement", icon: "trophy.fill"),
         ]),
         MoreGroup(title: "Jeux", color: Color(hex: 0x2FB57C), items: [
-            MoreItem(destination: .valorant, title: "Valorant", icon: "scope"),
-            MoreItem(destination: .valorantStore, title: "Boutique", icon: "bag.fill"),
-            MoreItem(destination: .lolTracker, title: "LoL", icon: "shield.fill"),
-            MoreItem(destination: .lolRotation, title: "Rotation", icon: "arrow.triangle.2.circlepath"),
-            MoreItem(destination: .tftTracker, title: "TFT", icon: "hexagon.fill"),
+            MoreItem(destination: .valorant, title: "Valorant", icon: "scope", asset: "BrandValorant"),
+            MoreItem(destination: .valorantStore, title: "Boutique", icon: "bag.fill", asset: "BrandRiot"),
+            MoreItem(destination: .lolTracker, title: "LoL", icon: "shield.fill", asset: "BrandLeague"),
+            MoreItem(destination: .lolRotation, title: "Rotation", icon: "arrow.triangle.2.circlepath", asset: "BrandLeague"),
+            MoreItem(destination: .tftTracker, title: "TFT", icon: "hexagon.fill", asset: "BrandRiot"),
             MoreItem(destination: .otherGames, title: "Autres jeux", icon: "gamecontroller"),
             MoreItem(destination: .games, title: "Mini-jeux", icon: "gamecontroller.fill"),
         ]),
@@ -150,8 +154,13 @@ private struct GridTile: View {
 
     var body: some View {
         VStack(spacing: 7) {
-            Image(systemName: item.icon)
-                .font(.system(size: 22, weight: .semibold))
+            Group {
+                if let asset = item.asset {
+                    Image(asset).resizable().renderingMode(.template).scaledToFit().frame(width: 26, height: 26)
+                } else {
+                    Image(systemName: item.icon).font(.system(size: 22, weight: .semibold))
+                }
+            }
                 .foregroundStyle(.white)
                 .frame(width: 58, height: 58)
                 .background(color.gradient, in: .rect(cornerRadius: 16, style: .continuous))

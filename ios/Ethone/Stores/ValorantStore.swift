@@ -1191,6 +1191,7 @@ final class ValorantStore {
                 let pHeadshotPercent = pTotalShots > 0 ? Int((Double(pHeadshots) / Double(pTotalShots) * 100).rounded()) : 0
                 let pDamage = Int(pStats?["damageMade"]?.doubleValue ?? 0)
                 let pAdr = Int(pStats?["adr"]?.doubleValue ?? 0)
+                let pPerf = performanceScore(p)
                 let pPartyId = p["party_id"]?.stringValue ?? p["partyId"]?.stringValue
                 let pKast = Int(pStats?["kast"]?.doubleValue ?? pStats?["kastPercentage"]?.doubleValue ?? (pKills > 15 ? 100 : (pKills > 10 ? 83 : 60)))
                 let pFirstKills = Int(pStats?["firstKills"]?.doubleValue ?? pStats?["first_kills"]?.doubleValue ?? (pKills > 15 ? 4 : (pKills > 8 ? 2 : 1)))
@@ -1316,6 +1317,7 @@ final class ValorantStore {
             let pHeadshotPercent = pShots > 0 ? Int((pHeads / pShots * 100).rounded()) : 0
             let pDamage = Int(p["damage_made"]?.doubleValue ?? 0)
             let pAdr = rounds > 0 ? Int((Double(pDamage) / Double(rounds)).rounded()) : 0
+            let pPerf = performanceScore(p)
             let pPartyId = p["party_id"]?.stringValue ?? p["partyId"]?.stringValue
             let pKast = Int(pStats?["kast"]?.doubleValue ?? (pKills > 15 ? 100 : (pKills > 10 ? 83 : 60)))
             let pFirstKills = Int(pStats?["first_kills"]?.doubleValue ?? pStats?["firstKills"]?.doubleValue ?? (pKills > 15 ? 4 : (pKills > 8 ? 2 : 1)))

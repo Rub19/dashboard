@@ -20,44 +20,28 @@ concurrency:
   group: ios-build-${{ github.ref }}
   cancel-in-progress: true
 
-# Un seul IPA (« ETHONE-iOS-IPA ») : compilé avec macOS 15 (Xcode 16 / SDK iOS le plus récent) pour inclure
-# les fonctions SwiftUI natives avec détection dynamique. Si macOS 15 échoue, le même IPA est produit sur macOS 14 en repli.
+# Un seul IPA (« ETHONE-iOS-IPA ») : compilé avec Xcode 27 pour inclure les fonctions iOS 27 (elles ne s'exécutent que sur iOS 27,
+# l'app reste installable dès iOS 26). Si la préversion d'Xcode 27 échoue, le même IPA est produit avec Xcode 26 (sans les extras iOS 27).
 jobs:
   build-xcode27:
-    name: IPA — macOS 15 (Xcode / SDK iOS natif)
-    runs-on: macos-15
+    name: IPA — Xcode 27 (iOS 26 + iOS 27)
+    runs-on: xcode-27
     steps:
-      - uses: actions/checkout@v4
-
+      - uses: actions/checkout@v7
       - name: Xcode et SDK
         run: |
           xcodebuild -version
           xcrun --sdk iphoneos --show-sdk-version
-
       - name: XcodeGen
         run: brew list xcodegen >/dev/null 2>&1 || brew install xcodegen
-
-      - name: Détecter et adapter les cibles de SDK
-        run: |
-          SDK_VERSION=$(xcrun --sdk iphoneos --show-sdk-version 2>/dev/null || echo "18.0")
-          WATCH_SDK_VERSION=$(xcrun --sdk watchos --show-sdk-version 2>/dev/null || echo "11.0")
-          echo "SDK iOS détecté : $SDK_VERSION, SDK watchOS : $WATCH_SDK_VERSION"
-          if [ "$(printf '%s\n' "$SDK_VERSION" "26.0" | sort -V | head -n1)" != "26.0" ]; then
-            sed -i '' "s/IPHONEOS_DEPLOYMENT_TARGET: \".*\"/IPHONEOS_DEPLOYMENT_TARGET: \"$SDK_VERSION\"/" ios/project.yml
-            sed -i '' "s/iOS: \"26.0\"/iOS: \"$SDK_VERSION\"/" ios/project.yml
-            sed -i '' "s/deploymentTarget: \"26.0\"/deploymentTarget: \"$WATCH_SDK_VERSION\"/" ios/project.yml
-          fi
-
       - name: Version (identique à celle du site)
         run: |
           VERSION=$(/usr/bin/python3 -c "import json;print(json.load(open('ethone-next/package.json'))['version'])")
           sed -i '' "s/MARKETING_VERSION: \".*\"/MARKETING_VERSION: \"$VERSION\"/; s/CURRENT_PROJECT_VERSION: \".*\"/CURRENT_PROJECT_VERSION: \"$GITHUB_RUN_NUMBER\"/" ios/project.yml
           echo "Version de l'app : $VERSION (build $GITHUB_RUN_NUMBER)"
-
       - name: Générer le projet
         working-directory: ios
         run: xcodegen generate
-
       - name: Archiver (sans signature)
         working-directory: ios
         run: |
@@ -66,8 +50,7 @@ jobs:
           xcodebuild archive \
             -project Ethone.xcodeproj -scheme Ethone -configuration Release \
             -destination 'generic/platform=iOS' -archivePath build/Ethone.xcarchive \
-            CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO AD_HOC_CODE_SIGNING_ALLOWED=YES ONLY_ACTIVE_ARCH=NO COMPILER_INDEX_STORE_ENABLE=NO 2>&1 | tee build/build.log
-
+            CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ONLY_ACTIVE_ARCH=NO 2>&1 | tee build/build.log
       - name: Empaqueter l'IPA
         working-directory: ios/build
         run: |
@@ -75,24 +58,21 @@ jobs:
           cp -R Ethone.xcarchive/Products/Applications/*.app Payload/
           zip -qry ETHONE.ipa Payload
           ls -lh ETHONE.ipa
-          echo "--- Extensions ---"; ls Payload/*.app/PlugIns 2>/dev/null || true
-
+          echo "--- Extensions ---"; ls Payload/*.app/PlugIns
       - name: Erreurs de compilation
         if: failure()
         working-directory: ios/build
         run: |
-          { echo "### Erreurs (macOS 15)"; echo '```'; grep -E "error:" build.log | sort -u | head -60 || true; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
-
+          { echo "### Erreurs (Xcode 27)"; echo '```'; grep -E "error:" build.log | sort -u | head -60 || true; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
       - name: Journal
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
-          name: build-log-macos15
+          name: build-log-xcode27
           path: ios/build/build.log
           if-no-files-found: ignore
-
       - name: IPA
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ETHONE-iOS-IPA
           path: ios/build/ETHONE.ipa
@@ -100,42 +80,22 @@ jobs:
           if-no-files-found: error
 
   build-xcode26-fallback:
-    name: IPA de repli — macOS 14 (si macOS 15 échoue)
+    name: IPA de repli — Xcode 26 (si Xcode 27 échoue)
     needs: build-xcode27
     if: ${{ failure() }}
-    runs-on: macos-14
+    runs-on: macos-26
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Xcode et SDK
-        run: |
-          xcodebuild -version
-          xcrun --sdk iphoneos --show-sdk-version
-
+      - uses: actions/checkout@v7
       - name: XcodeGen
         run: brew list xcodegen >/dev/null 2>&1 || brew install xcodegen
-
-      - name: Détecter et adapter les cibles de SDK
-        run: |
-          SDK_VERSION=$(xcrun --sdk iphoneos --show-sdk-version 2>/dev/null || echo "17.0")
-          WATCH_SDK_VERSION=$(xcrun --sdk watchos --show-sdk-version 2>/dev/null || echo "10.0")
-          echo "SDK iOS détecté : $SDK_VERSION, SDK watchOS : $WATCH_SDK_VERSION"
-          if [ "$(printf '%s\n' "$SDK_VERSION" "26.0" | sort -V | head -n1)" != "26.0" ]; then
-            sed -i '' "s/IPHONEOS_DEPLOYMENT_TARGET: \".*\"/IPHONEOS_DEPLOYMENT_TARGET: \"$SDK_VERSION\"/" ios/project.yml
-            sed -i '' "s/iOS: \"26.0\"/iOS: \"$SDK_VERSION\"/" ios/project.yml
-            sed -i '' "s/deploymentTarget: \"26.0\"/deploymentTarget: \"$WATCH_SDK_VERSION\"/" ios/project.yml
-          fi
-
       - name: Version (identique à celle du site)
         run: |
           VERSION=$(/usr/bin/python3 -c "import json;print(json.load(open('ethone-next/package.json'))['version'])")
           sed -i '' "s/MARKETING_VERSION: \".*\"/MARKETING_VERSION: \"$VERSION\"/; s/CURRENT_PROJECT_VERSION: \".*\"/CURRENT_PROJECT_VERSION: \"$GITHUB_RUN_NUMBER\"/" ios/project.yml
           echo "Version de l'app : $VERSION (build $GITHUB_RUN_NUMBER)"
-
       - name: Générer le projet
         working-directory: ios
         run: xcodegen generate
-
       - name: Archiver (sans signature)
         working-directory: ios
         run: |
@@ -144,17 +104,15 @@ jobs:
           xcodebuild archive \
             -project Ethone.xcodeproj -scheme Ethone -configuration Release \
             -destination 'generic/platform=iOS' -archivePath build/Ethone.xcarchive \
-            CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO AD_HOC_CODE_SIGNING_ALLOWED=YES ONLY_ACTIVE_ARCH=NO COMPILER_INDEX_STORE_ENABLE=NO 2>&1 | tee build/build.log
-
+            CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ONLY_ACTIVE_ARCH=NO 2>&1 | tee build/build.log
       - name: Empaqueter l'IPA
         working-directory: ios/build
         run: |
           rm -rf Payload && mkdir -p Payload
           cp -R Ethone.xcarchive/Products/Applications/*.app Payload/
           zip -qry ETHONE.ipa Payload
-
       - name: IPA
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ETHONE-iOS-IPA
           path: ios/build/ETHONE.ipa

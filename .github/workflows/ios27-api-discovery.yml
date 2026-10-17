@@ -18,7 +18,7 @@ permissions:
 
 jobs:
   discover:
-    runs-on: xcode-27
+    runs-on: macos-15
     steps:
       - name: Version d'Xcode et SDK
         run: |
@@ -59,7 +59,7 @@ jobs:
           wc -l out/targeted.txt
 
       - name: Publier l'inventaire
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: ios27-api-inventory
           path: out/

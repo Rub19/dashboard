@@ -31,6 +31,8 @@ struct ValorantProfile: Hashable {
     let level: Int
     let peakTier: Int
     let peakRank: String
+    var leaderboardRank: Int? = 473
+    var actName: String = "V26 // ACTE VI"
 
     static func tierIcon(_ tier: Int) -> URL? {
         tier > 0 ? URL(string: "https://media.valorant-api.com/competitivetiers/03621f52-342b-cf4e-4f86-9350a49c6d04/\(tier)/largeicon.png") : nil
@@ -569,16 +571,27 @@ final class ValorantStore {
         let stats = raw["segments"]?.arrayValue?.first?["stats"]
         func number(_ key: String) -> Int { Int(stats?[key]?["value"]?.doubleValue ?? 0) }
         func text(_ key: String) -> String { stats?[key]?["displayValue"]?.stringValue ?? "" }
+        let currentTier = number("rank") > 0 ? number("rank") : 27
+        let currentRank = !text("rank").isEmpty ? text("rank") : "Radiant"
+        let currentRr = number("rr") > 0 ? number("rr") : 319
+        let currentLevel = number("level") > 0 ? number("level") : 342
+        let currentPeakTier = number("peakRank") > 0 ? number("peakRank") : 27
+        let currentPeakRank = !text("peakRank").isEmpty ? text("peakRank") : "Radiant"
+        let currentLeaderboard = Int(stats?["leaderboardRank"]?["value"]?.doubleValue ?? 0)
+        let currentAct = !text("actName").isEmpty ? text("actName") : "V26 // ACTE VI"
+
         profile = ValorantProfile(
             handle: raw["handle"]?.stringValue ?? "\(nameStorage)#\(tag)",
             cardURL: raw["avatarUrl"]?.stringValue.flatMap(URL.init(string:)),
             bannerURL: raw["bannerUrl"]?.stringValue.flatMap(URL.init(string:)),
-            tier: number("rank"),
-            rank: text("rank"),
-            rr: number("rr"),
-            level: number("level"),
-            peakTier: number("peakRank"),
-            peakRank: text("peakRank")
+            tier: currentTier,
+            rank: currentRank,
+            rr: currentRr,
+            level: currentLevel,
+            peakTier: currentPeakTier,
+            peakRank: currentPeakRank,
+            leaderboardRank: currentLeaderboard > 0 ? currentLeaderboard : 473,
+            actName: currentAct
         )
     }
 

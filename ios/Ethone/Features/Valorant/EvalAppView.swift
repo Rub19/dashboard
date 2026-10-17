@@ -590,12 +590,409 @@ struct EvalProfileView: View {
     }
 }
 
-// MARK: - 2. JEU TAB (Screenshot 4)
+// MARK: - Currency & Tier View Helpers
+struct VPIconView: View {
+    var size: CGFloat = 14
+    var body: some View {
+        ZStack {
+            Circle()
+                .strokeBorder(Color.white.opacity(0.75), lineWidth: 1.2)
+                .frame(width: size, height: size)
+            Text("V")
+                .font(.system(size: size * 0.58, weight: .black, design: .rounded))
+                .foregroundStyle(.white)
+        }
+    }
+}
+
+struct RPIconView: View {
+    var size: CGFloat = 14
+    var body: some View {
+        ZStack {
+            Circle()
+                .strokeBorder(Color.white.opacity(0.75), lineWidth: 1.2)
+                .frame(width: size, height: size)
+            Text("R")
+                .font(.system(size: size * 0.58, weight: .black, design: .rounded))
+                .foregroundStyle(.white)
+        }
+    }
+}
+
+struct KCIconView: View {
+    var size: CGFloat = 14
+    var body: some View {
+        Image(systemName: "diamond.fill")
+            .font(.system(size: size * 0.72, weight: .bold))
+            .foregroundStyle(Color(hex: 0x2DD4BF))
+    }
+}
+
+struct SkinTierIconView: View {
+    let name: String
+    let color: Color
+    var size: CGFloat = 14
+
+    var body: some View {
+        Group {
+            switch name {
+            case "pentagon.fill":
+                Image(systemName: "pentagon.fill")
+            case "triangle.fill":
+                Image(systemName: "triangle.fill")
+                    .rotationEffect(.degrees(180))
+            case "rhombus.fill":
+                Image(systemName: "diamond.fill")
+            default:
+                Image(systemName: "circle.fill")
+            }
+        }
+        .font(.system(size: size, weight: .bold))
+        .foregroundStyle(color)
+    }
+}
+
+// MARK: - Daily Offer Card
+struct EvalDailyOfferCard: View {
+    let offer: ValorantDailySkinOffer
+
+    var body: some View {
+        VStack(spacing: 0) {
+            ZStack(alignment: .topLeading) {
+                // Tier icon top leading
+                SkinTierIconView(name: offer.tierIconName, color: Color(hex: offer.colorHex), size: 14)
+                    .padding(12)
+
+                // Chevron top trailing
+                HStack {
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.caption2.weight(.bold))
+                        .foregroundStyle(Color(hex: offer.colorHex))
+                        .padding(12)
+                }
+
+                // Centered weapon render
+                AsyncImage(url: URL(string: offer.imageURL)) { phase in
+                    switch phase {
+                    case .success(let image):
+                        image
+                            .resizable()
+                            .scaledToFit()
+                            .frame(maxWidth: .infinity, maxHeight: 86)
+                            .padding(.horizontal, 28)
+                            .padding(.vertical, 8)
+                    default:
+                        Color.clear.frame(height: 86)
+                    }
+                }
+            }
+
+            // Name on left, price on right
+            HStack {
+                Text(offer.name)
+                    .font(.subheadline.weight(.bold))
+                    .foregroundStyle(Color(hex: offer.colorHex))
+
+                Spacer()
+
+                HStack(spacing: 5) {
+                    Text("\(offer.price)")
+                        .font(.subheadline.weight(.heavy).monospacedDigit())
+                        .foregroundStyle(.white)
+
+                    VPIconView(size: 14)
+                }
+            }
+            .padding(.horizontal, 14)
+            .padding(.bottom, 14)
+        }
+        .background(
+            LinearGradient(
+                colors: [Color(hex: offer.colorHex).opacity(0.12), Color(hex: 0x111319)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        )
+        .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
+        .clipShape(.rect(cornerRadius: Theme.cardRadius))
+        .overlay(
+            RoundedRectangle(cornerRadius: Theme.cardRadius)
+                .strokeBorder(Color(hex: offer.colorHex).opacity(0.28), lineWidth: 1)
+        )
+    }
+}
+
+// MARK: - Featured Bundle Card
+struct EvalFeaturedBundleCard: View {
+    let bundle: ValorantStoreBundle
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            ZStack(alignment: .center) {
+                AsyncImage(url: URL(string: bundle.imageURL)) { phase in
+                    switch phase {
+                    case .success(let image):
+                        image
+                            .resizable()
+                            .scaledToFill()
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 180)
+                            .clipped()
+                    default:
+                        Color(hex: 0x161820).frame(height: 180)
+                    }
+                }
+
+                if bundle.isOwned {
+                    Circle()
+                        .fill(Color.white.opacity(0.85))
+                        .frame(width: 34, height: 34)
+                        .overlay(Image(systemName: "checkmark").font(.system(size: 16, weight: .bold)).foregroundStyle(Color.black))
+                }
+            }
+            .clipShape(.rect(cornerRadius: Theme.cardRadius))
+
+            if let description = bundle.description {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(bundle.name)
+                        .font(.title3.weight(.heavy))
+                        .foregroundStyle(.white)
+
+                    Text(description)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .lineSpacing(3)
+
+                    HStack {
+                        if let price = bundle.price {
+                            HStack(spacing: 5) {
+                                VPIconView(size: 14)
+                                Text("\(price.formatted())")
+                                    .font(.subheadline.weight(.heavy).monospacedDigit())
+                                    .foregroundStyle(.white)
+                            }
+                        }
+
+                        Spacer()
+
+                        if let expires = bundle.expiresText {
+                            HStack(spacing: 4) {
+                                Text(expires)
+                                    .font(.caption.monospacedDigit())
+                                    .foregroundStyle(.secondary)
+                                Image(systemName: "clock")
+                                    .font(.caption2)
+                                    .foregroundStyle(.secondary)
+                                Image(systemName: "chevron.right")
+                                    .font(.caption2.weight(.bold))
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                    }
+                    .padding(.top, 4)
+                }
+                .padding(.horizontal, 4)
+            } else {
+                Text(bundle.name)
+                    .font(.subheadline.weight(.bold))
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding(.bottom, 4)
+            }
+        }
+        .padding(bundle.description != nil ? 12 : 0)
+        .background(bundle.description != nil ? Color.white.opacity(0.03) : Color.clear)
+        .clipShape(.rect(cornerRadius: Theme.cardRadius))
+        .overlay(
+            RoundedRectangle(cornerRadius: Theme.cardRadius)
+                .strokeBorder(Color.white.opacity(bundle.description != nil ? 0.08 : 0), lineWidth: 1)
+        )
+    }
+}
+
+// MARK: - Accessories Card
+struct EvalAccessoryBundleCard: View {
+    let accessories: [ValorantAccessoryItem]
+    let timerText: String
+
+    var body: some View {
+        VStack(spacing: 12) {
+            HStack(spacing: 12) {
+                ForEach(accessories) { item in
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            .fill(Color.white.opacity(0.06))
+                            .overlay(RoundedRectangle(cornerRadius: 10, style: .continuous).strokeBorder(Color.white.opacity(0.12)))
+
+                        AsyncImage(url: URL(string: item.imageURL)) { phase in
+                            switch phase {
+                            case .success(let image):
+                                image.resizable().scaledToFit().frame(width: 40, height: 40)
+                            default:
+                                Color.clear
+                            }
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 58)
+                }
+            }
+
+            HStack {
+                Text("Accessoires")
+                    .font(.subheadline.weight(.bold))
+                    .foregroundStyle(.white)
+
+                Spacer()
+
+                HStack(spacing: 4) {
+                    Text(timerText)
+                        .font(.caption.monospacedDigit())
+                        .foregroundStyle(.secondary)
+                    Image(systemName: "clock")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                    Image(systemName: "chevron.right")
+                        .font(.caption2.weight(.bold))
+                        .foregroundStyle(.secondary)
+                }
+            }
+        }
+        .padding(14)
+        .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
+        .clipShape(.rect(cornerRadius: Theme.cardRadius))
+        .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
+    }
+}
+
+// MARK: - Spray Wheel View (Screenshot 2)
+struct SprayWheelView: View {
+    let topSprayURL: String
+    let leftSprayURL: String
+    let rightSprayURL: String
+    let bottomSprayURL: String
+
+    var body: some View {
+        ZStack {
+            // Dark circular wheel background
+            Circle()
+                .fill(Color(hex: 0x13151C))
+                .overlay(Circle().strokeBorder(Color.white.opacity(0.18), lineWidth: 2))
+                .shadow(color: Color.black.opacity(0.4), radius: 10)
+
+            // Inner circle ring
+            Circle()
+                .strokeBorder(Color.white.opacity(0.08), lineWidth: 1.5)
+                .padding(26)
+
+            // Dividing diagonal quadrant lines
+            GeometryReader { geo in
+                let w = geo.size.width
+                let h = geo.size.height
+                Path { path in
+                    path.move(to: CGPoint(x: w * 0.14, y: h * 0.14))
+                    path.addLine(to: CGPoint(x: w * 0.86, y: h * 0.86))
+
+                    path.move(to: CGPoint(x: w * 0.86, y: h * 0.14))
+                    path.addLine(to: CGPoint(x: w * 0.14, y: h * 0.86))
+                }
+                .stroke(Color.white.opacity(0.22), lineWidth: 1.5)
+            }
+
+            // Center targeting crosshair ring
+            ZStack {
+                Circle()
+                    .fill(Color(hex: 0x13151C))
+                    .frame(width: 52, height: 52)
+                Circle()
+                    .strokeBorder(Color.white.opacity(0.35), lineWidth: 2)
+                    .frame(width: 48, height: 48)
+            }
+
+            // 4 Sprays in their quadrants
+            sprayItem(url: topSprayURL, size: 56)
+                .offset(y: -64)
+
+            sprayItem(url: leftSprayURL, size: 56)
+                .offset(x: -64)
+
+            sprayItem(url: rightSprayURL, size: 56)
+                .offset(x: 64)
+
+            sprayItem(url: bottomSprayURL, size: 56)
+                .offset(y: 64)
+        }
+        .frame(width: 250, height: 250)
+        .padding(.vertical, 14)
+        .frame(maxWidth: .infinity)
+    }
+
+    private func sprayItem(url: String, size: CGFloat) -> some View {
+        AsyncImage(url: URL(string: url)) { phase in
+            switch phase {
+            case .success(let image):
+                image.resizable().scaledToFit().frame(width: size, height: size)
+            default:
+                Image(systemName: "paintpalette.fill")
+                    .font(.system(size: size * 0.45))
+                    .foregroundStyle(.secondary)
+            }
+        }
+    }
+}
+
+// MARK: - Bottom Wallet Bar (Screenshot 4)
+struct EvalWalletBar: View {
+    let wallet: ValorantWallet
+
+    var body: some View {
+        HStack(spacing: 20) {
+            Image(systemName: "briefcase.fill")
+                .font(.system(size: 14))
+                .foregroundStyle(.secondary)
+
+            Spacer()
+
+            HStack(spacing: 6) {
+                Text("\(wallet.vp.formatted())")
+                    .font(.subheadline.weight(.heavy).monospacedDigit())
+                    .foregroundStyle(.white)
+                VPIconView(size: 14)
+            }
+
+            HStack(spacing: 6) {
+                Text("\(wallet.rp.formatted())")
+                    .font(.subheadline.weight(.heavy).monospacedDigit())
+                    .foregroundStyle(.white)
+                RPIconView(size: 14)
+            }
+
+            HStack(spacing: 6) {
+                Text("\(wallet.kc.formatted())")
+                    .font(.subheadline.weight(.heavy).monospacedDigit())
+                    .foregroundStyle(.white)
+                KCIconView(size: 14)
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
+        .clipShape(.rect(cornerRadius: Theme.cardRadius))
+        .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
+    }
+}
+
+// MARK: - 2. JEU TAB (Screenshots 1-4)
 struct EvalGameView: View {
+    @Environment(AppModel.self) private var model
     @State private var groupExpanded = true
     @State private var contractsExpanded = true
     @State private var equipmentExpanded = true
+    @State private var storeExpanded = true
     @State private var contractsSubtab = 0
+
+    private var store: ValorantStore { model.valorant }
 
     var body: some View {
         NavigationStack {
@@ -735,7 +1132,7 @@ struct EvalGameView: View {
                         }
                     }
 
-                    // 3. Équipement Section (Collapsible)
+                    // 3. Équipement Section (Collapsible - Screenshots 1 & 2)
                     collapsibleSection(
                         title: "Équipement",
                         isExpanded: $equipmentExpanded,
@@ -745,31 +1142,123 @@ struct EvalGameView: View {
                                 .foregroundStyle(Theme.danger)
                         }
                     ) {
-                        VStack(spacing: 12) {
-                            HStack {
-                                Image(systemName: "pencil")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                                Text("Changer de titre")
-                                    .font(.subheadline)
-                                    .foregroundStyle(.white)
-                                Spacer()
-                                Text("=^._.^=")
-                                    .font(.caption.monospaced())
-                                    .foregroundStyle(.secondary)
-                                Image(systemName: "chevron.right")
-                                    .font(.caption2.weight(.bold))
-                                    .foregroundStyle(.secondary)
+                        VStack(spacing: 14) {
+                            // Widescreen Player Card Banner (Frag or Die: Focus Card) with Edit button
+                            ZStack(alignment: .bottomTrailing) {
+                                AsyncImage(url: URL(string: "https://media.valorant-api.com/playercards/d30271ae-4ce1-5ed2-c55f-f08a6247c274/wideart.png")) { phase in
+                                    switch phase {
+                                    case .success(let image):
+                                        image
+                                            .resizable()
+                                            .scaledToFill()
+                                            .frame(maxWidth: .infinity)
+                                            .frame(height: 104)
+                                            .clipped()
+                                    default:
+                                        Color(hex: 0x1A1C24).frame(height: 104)
+                                    }
+                                }
+                                .clipShape(.rect(cornerRadius: 16))
+
+                                Circle()
+                                    .fill(Color.white.opacity(0.92))
+                                    .frame(width: 28, height: 28)
+                                    .overlay(
+                                        Image(systemName: "pencil")
+                                            .font(.system(size: 12, weight: .bold))
+                                            .foregroundStyle(Color.black)
+                                    )
+                                    .padding(10)
                             }
-                            .padding(14)
+
+                            // Menu list rows
+                            VStack(spacing: 0) {
+                                equipNavRow(icon: "pencil", title: "Changer de titre", value: store.equipmentTitle)
+                                equipNavRow(icon: "scope", title: "Équipement d'arme")
+                                equipPrivacyRow
+                                equipNavRow(icon: "shippingbox.fill", title: "Profils d'apparences", value: "3")
+                                equipNavRow(icon: "folder.badge.star", title: "Préréglages des Favoris", value: "0")
+                                equipNavRow(icon: "die.face.5.fill", title: "Aléatoire")
+                                equipNavRow(icon: "square.and.arrow.up", title: "Partager")
+                            }
                             .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
                             .clipShape(.rect(cornerRadius: Theme.cardRadius))
+                            .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
 
-                            // Weapons loadout cards
-                            HStack(spacing: 10) {
-                                weaponLoadoutCard(name: "Vandal", skin: "Kuronami")
-                                weaponLoadoutCard(name: "Phantom", skin: "Radiant Entertainment")
-                                weaponLoadoutCard(name: "Mêlée", skin: "Kuronami no Yaiba")
+                            // Interactive 4-Quadrant Spray Wheel
+                            SprayWheelView(
+                                topSprayURL: "https://media.valorant-api.com/sprays/e27b7950-4a86-404f-7ec5-b7918c386659/fulltransparenticon.png",
+                                leftSprayURL: "https://media.valorant-api.com/sprays/627c2ea9-46d1-3eeb-4751-ae9747d48e3c/fulltransparenticon.png",
+                                rightSprayURL: "https://media.valorant-api.com/sprays/a4cd53a1-42f2-4a6e-f7b0-cdb359e8b8da/fulltransparenticon.png",
+                                bottomSprayURL: "https://media.valorant-api.com/sprays/13f23a75-4af3-3d30-fae5-e1a08498056c/fulltransparenticon.png"
+                            )
+                        }
+                    }
+
+                    // 4. Boutique Section (Collapsible - Screenshots 2, 3 & 4)
+                    collapsibleSection(
+                        title: "Boutique",
+                        isExpanded: $storeExpanded,
+                        rightContent: {
+                            Image(systemName: "arrow.clockwise")
+                                .font(.caption.weight(.bold))
+                                .foregroundStyle(Theme.danger)
+                        }
+                    ) {
+                        if store.storeOffers.isEmpty {
+                            // "si y'a pas tu met la categorie sans rien sans skins sans offre car bah on à aucune infos sur ça et aucun placeholder"
+                            Text("Aucune offre disponible actuellement")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 24)
+                                .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
+                                .clipShape(.rect(cornerRadius: Theme.cardRadius))
+                        } else {
+                            VStack(spacing: 16) {
+                                // Featured Bundles
+                                ForEach(store.bundles) { bundle in
+                                    EvalFeaturedBundleCard(bundle: bundle)
+                                }
+
+                                // Accessories Bundle
+                                EvalAccessoryBundleCard(accessories: store.accessories, timerText: "3j 2:02:11")
+
+                                // Daily Offers Header & Cards
+                                VStack(alignment: .leading, spacing: 10) {
+                                    HStack {
+                                        Text("Offres quotidiennes")
+                                            .font(.headline.weight(.bold))
+                                            .foregroundStyle(.white)
+
+                                        Spacer()
+
+                                        HStack(spacing: 4) {
+                                            Text("2:02:12")
+                                                .font(.caption.monospacedDigit())
+                                                .foregroundStyle(.secondary)
+                                            Image(systemName: "clock")
+                                                .font(.caption2)
+                                                .foregroundStyle(.secondary)
+                                        }
+                                    }
+
+                                    ForEach(store.storeOffers) { offer in
+                                        EvalDailyOfferCard(offer: offer)
+                                    }
+                                }
+
+                                // Wishlist & Store History
+                                VStack(spacing: 0) {
+                                    storeNavRow(icon: "heart.fill", title: "Liste de souhaits", badge: "\(store.wishlistCount)")
+                                    storeNavRow(icon: "clock.arrow.circlepath", title: "Historique de la boutique", badge: "\(store.storeHistoryCount)")
+                                }
+                                .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
+                                .clipShape(.rect(cornerRadius: Theme.cardRadius))
+                                .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
+
+                                // Bottom Wallet Bar
+                                EvalWalletBar(wallet: store.wallet)
                             }
                         }
                     }
@@ -782,20 +1271,96 @@ struct EvalGameView: View {
         }
     }
 
-    private func weaponLoadoutCard(name: String, skin: String) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(name)
-                .font(.system(size: 10, weight: .bold))
-                .foregroundStyle(.secondary)
-            Text(skin)
-                .font(.system(size: 11, weight: .heavy))
+    private var equipPrivacyRow: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "hand.raised.fill")
+                .font(.system(size: 14))
+                .foregroundStyle(Theme.danger)
+                .frame(width: 20)
+
+            Text("Paramètres de confidentialité")
+                .font(.subheadline.weight(.medium))
                 .foregroundStyle(.white)
-                .lineLimit(1)
+
+            Spacer()
+
+            HStack(spacing: 6) {
+                Image(systemName: "eye.slash.fill")
+                    .font(.caption2)
+                Image(systemName: "123.rectangle.fill")
+                    .font(.caption2)
+                Image(systemName: "hourglass.badge.slash")
+                    .font(.caption2)
+            }
+            .foregroundStyle(.secondary)
+
+            Image(systemName: "chevron.right")
+                .font(.caption2.weight(.bold))
+                .foregroundStyle(.secondary)
         }
-        .padding(12)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .glassEffect(.regular, in: .rect(cornerRadius: 12))
-        .clipShape(.rect(cornerRadius: 12))
+        .padding(.horizontal, 14)
+        .padding(.vertical, 13)
+        .overlay(alignment: .bottom) {
+            Rectangle().fill(Color.white.opacity(0.05)).frame(height: 1).padding(.leading, 46)
+        }
+    }
+
+    private func equipNavRow(icon: String, title: String, value: String? = nil) -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: icon)
+                .font(.system(size: 14))
+                .foregroundStyle(Theme.danger)
+                .frame(width: 20)
+
+            Text(title)
+                .font(.subheadline.weight(.medium))
+                .foregroundStyle(.white)
+
+            Spacer()
+
+            if let value {
+                Text(value)
+                    .font(.caption.monospaced())
+                    .foregroundStyle(.secondary)
+            }
+
+            Image(systemName: "chevron.right")
+                .font(.caption2.weight(.bold))
+                .foregroundStyle(.secondary)
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 13)
+        .overlay(alignment: .bottom) {
+            Rectangle().fill(Color.white.opacity(0.05)).frame(height: 1).padding(.leading, 46)
+        }
+    }
+
+    private func storeNavRow(icon: String, title: String, badge: String) -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: icon)
+                .font(.system(size: 14))
+                .foregroundStyle(Theme.danger)
+                .frame(width: 20)
+
+            Text(title)
+                .font(.subheadline.weight(.medium))
+                .foregroundStyle(.white)
+
+            Spacer()
+
+            Text(badge)
+                .font(.caption.weight(.semibold).monospacedDigit())
+                .foregroundStyle(.secondary)
+
+            Image(systemName: "chevron.right")
+                .font(.caption2.weight(.bold))
+                .foregroundStyle(.secondary)
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 13)
+        .overlay(alignment: .bottom) {
+            Rectangle().fill(Color.white.opacity(0.05)).frame(height: 1).padding(.leading, 46)
+        }
     }
 
     private func subtabPill(title: String, index: Int) -> some View {

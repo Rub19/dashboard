@@ -116,6 +116,125 @@ struct ValorantMatch: Identifiable, Hashable {
     }
 }
 
+struct ValorantDailySkinOffer: Identifiable, Hashable {
+    let id: String
+    let name: String
+    let imageURL: String
+    let price: Int
+    let colorHex: UInt32
+    let tierIconName: String
+    let tierLabel: String
+}
+
+struct ValorantStoreBundle: Identifiable, Hashable {
+    let id: String
+    let name: String
+    let imageURL: String
+    let description: String?
+    let price: Int?
+    let expiresText: String?
+    let isOwned: Bool
+}
+
+struct ValorantAccessoryItem: Identifiable, Hashable {
+    let id: String
+    let name: String
+    let imageURL: String
+}
+
+struct ValorantWallet: Hashable {
+    var vp: Int = 11_670
+    var rp: Int = 80
+    var kc: Int = 2_492
+}
+
+extension ValorantDailySkinOffer {
+    static let sampleOffers: [ValorantDailySkinOffer] = [
+        ValorantDailySkinOffer(
+            id: "phantom-zircocarbone",
+            name: "Phantom (Zircocarbone)",
+            imageURL: "https://media.valorant-api.com/weaponskins/13f553a1-4124-7c29-05e9-e7932fdeabb6/displayicon.png",
+            price: 1775,
+            colorHex: 0xE85D75,
+            tierIconName: "triangle.fill",
+            tierLabel: "Deluxe"
+        ),
+        ValorantDailySkinOffer(
+            id: "operator-araxys",
+            name: "Operator (Araxys)",
+            imageURL: "https://media.valorant-api.com/weaponskins/6db556e4-4255-6c2c-6a80-8a9dfac96aa9/displayicon.png",
+            price: 2175,
+            colorHex: 0xD99446,
+            tierIconName: "pentagon.fill",
+            tierLabel: "Exclusive"
+        ),
+        ValorantDailySkinOffer(
+            id: "karambit-rgx",
+            name: "Karambit (RGX 11z Pro)",
+            imageURL: "https://media.valorant-api.com/weaponskins/91130713-44e6-8436-d34c-e3badaf241b7/displayicon.png",
+            price: 4350,
+            colorHex: 0xD99446,
+            tierIconName: "pentagon.fill",
+            tierLabel: "Exclusive"
+        ),
+        ValorantDailySkinOffer(
+            id: "classic-chute-de-neige",
+            name: "Classic (Chute de neige)",
+            imageURL: "https://media.valorant-api.com/weaponskinlevels/f2a7150b-4894-0dc8-53b3-bf9a30fa4ea4/displayicon.png",
+            price: 1275,
+            colorHex: 0x2DD4BF,
+            tierIconName: "rhombus.fill",
+            tierLabel: "Select"
+        )
+    ]
+}
+
+extension ValorantStoreBundle {
+    static let sampleBundles: [ValorantStoreBundle] = [
+        ValorantStoreBundle(
+            id: "popmonz",
+            name: "Popmonz",
+            imageURL: "https://media.valorant-api.com/bundles/f67ab55a-4480-f305-9891-9bac1b17459f/displayicon.png",
+            description: nil,
+            price: nil,
+            expiresText: nil,
+            isOwned: false
+        ),
+        ValorantStoreBundle(
+            id: "champions-2026",
+            name: "Champions 2026",
+            imageURL: "https://media.valorant-api.com/bundles/82a19267-4739-d2d0-2a6a-5db2e69e3d89/displayicon.png",
+            description: "Célébrez les Champions 2026 et soutenez votre équipe favorite avec ce pack en édition limitée. Du 22 septembre au 20 octobre, une partie des bénéfices de la collection Champions 2026 reviendra aux équipes partenaires du VCT.",
+            price: 6640,
+            expiresText: "3j 7:02:11",
+            isOwned: true
+        )
+    ]
+
+    static let sampleAccessories: [ValorantAccessoryItem] = [
+        ValorantAccessoryItem(
+            id: "acc-bot",
+            name: "Training Bot",
+            imageURL: "https://media.valorant-api.com/sprays/4c893010-4967-131a-a9a5-789483dbd7a0/fulltransparenticon.png"
+        ),
+        ValorantAccessoryItem(
+            id: "acc-reyna",
+            name: "With Love Reyna",
+            imageURL: "https://media.valorant-api.com/sprays/0cabc8f7-44df-dc8d-fca8-16bc8669ba0b/fulltransparenticon.png"
+        ),
+        ValorantAccessoryItem(
+            id: "acc-chamber",
+            name: "Unamused Chamber",
+            imageURL: "https://media.valorant-api.com/sprays/a56ccd58-4eda-21b3-ec0c-1ea9fa873fbe/fulltransparenticon.png"
+        ),
+        ValorantAccessoryItem(
+            id: "acc-camera",
+            name: "Caught on Camera",
+            imageURL: "https://media.valorant-api.com/sprays/3d2bcfc5-442b-812e-3c08-9180d6b36077/fulltransparenticon.png"
+        )
+    ]
+}
+
 @MainActor
 @Observable
 final class ValorantStore {
@@ -124,6 +243,15 @@ final class ValorantStore {
     private(set) var isLoading = false
     private(set) var profile: ValorantProfile?
     var errorMessage: String?
+
+    // Store & Inventory (Rub19#Boss connected data)
+    private(set) var storeOffers: [ValorantDailySkinOffer] = ValorantDailySkinOffer.sampleOffers
+    private(set) var bundles: [ValorantStoreBundle] = ValorantStoreBundle.sampleBundles
+    private(set) var accessories: [ValorantAccessoryItem] = ValorantStoreBundle.sampleAccessories
+    private(set) var wallet: ValorantWallet = ValorantWallet()
+    private(set) var equipmentTitle: String = "=^._.^="
+    private(set) var wishlistCount: Int = 38
+    private(set) var storeHistoryCount: Int = 88
 
     private(set) var tag: String = ""
     private(set) var apiKey: String = ""

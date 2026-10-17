@@ -90,6 +90,15 @@ final class ValorantStore {
         isLoading = true
         defer { isLoading = false }
         do {
+            // Sans clé personnelle dans l'app, on passe par le Worker : il utilise la clé HenrikDev du compte ETHONE.
+            if apiKey.isEmpty {
+                let rows: [JSONValue] = try await api.worker("api/stats/valorant-matches", query: [
+                    URLQueryItem(name: "name", value: nameStorage), URLQueryItem(name: "tag", value: tag),
+                ])
+                matches = rows.compactMap(Self.convertWorker)
+                errorMessage = nil
+                return
+            }
             var components = URLComponents(string: "https://api.henrikdev.xyz/valorant/v3/matches/eu/\(nameStorage.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? nameStorage)/\(tag)")!
             components.queryItems = [URLQueryItem(name: "size", value: "25")]
             var request = URLRequest(url: components.url!)
@@ -115,6 +124,38 @@ final class ValorantStore {
             if let number, number >= 0, number <= Double(ScoringSystem.performanceMax) { return Int(number.rounded()) }
         }
         return nil
+    }
+
+    /// Match already shaped by the Worker (`/api/stats/valorant-matches`).
+    static func convertWorker(_ raw: JSONValue) -> ValorantMatch? {
+        guard let meta = raw["metadata"] else { return nil }
+        let stats = raw["segments"]?.arrayValue?.first?["stats"]
+        func value(_ key: String) -> Double? { stats?[key]?["value"]?.doubleValue }
+        let started = meta["timestamp"]?.stringValue.flatMap(ISODate.parse)
+        let scoring = ScoringSystem.detect(gameVersion: meta["gameVersion"]?.stringValue, startedAt: started)
+        let team = Int(meta["score"]?["team"]?.doubleValue ?? 0)
+        let opponent = Int(meta["score"]?["opponent"]?.doubleValue ?? 0)
+        let score: Int?
+        switch scoring {
+        case .performance: score = value("performanceScore").map { Int($0.rounded()) }
+        case .acs: score = value("scorePerRound").map { Int($0.rounded()) }
+        }
+        return ValorantMatch(
+            id: raw["id"]?.stringValue ?? UUID().uuidString,
+            map: meta["mapName"]?.stringValue ?? "—",
+            mode: meta["modeName"]?.stringValue ?? "—",
+            agent: meta["agentName"]?.stringValue ?? "—",
+            won: meta["result"]?.stringValue == "Victory",
+            teamRounds: team,
+            opponentRounds: opponent,
+            kills: Int(value("kills") ?? 0),
+            deaths: Int(value("deaths") ?? 0),
+            assists: Int(value("assists") ?? 0),
+            headshotPercent: Int((value("headshotsPercentage") ?? 0).rounded()),
+            startedAt: started,
+            scoring: scoring,
+            scoreValue: score
+        )
     }
 
     static func convert(_ raw: JSONValue, name: String, tag: String) -> ValorantMatch? {

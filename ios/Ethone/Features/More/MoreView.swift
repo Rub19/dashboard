@@ -233,6 +233,9 @@ struct MoreView: View {
                                 Text("Se déconnecter").frame(maxWidth: .infinity, minHeight: 30)
                             }
                             .buttonStyle(.glass)
+                            .confirmationDialog("Se déconnecter d'ETHONE ?", isPresented: $confirmSignOut, titleVisibility: .visible) {
+                                Button("Se déconnecter", role: .destructive) { Task { await auth.signOut() } }
+                            }
 
                             Text("ETHONE \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "")")
                                 .font(.caption)
@@ -252,9 +255,6 @@ struct MoreView: View {
             .navigationTitle("Plus")
             .ethoneScreen()
             .navigationDestination(for: MoreDestination.self) { destinationView($0) }
-            .confirmationDialog("Se déconnecter d'ETHONE ?", isPresented: $confirmSignOut, titleVisibility: .visible) {
-                Button("Se déconnecter", role: .destructive) { Task { await auth.signOut() } }
-            }
         }
     }
 

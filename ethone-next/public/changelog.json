@@ -1,5 +1,15 @@
 [
   {
+    "version": "v1.75.158",
+    "date": "2026-10-18",
+    "title": "Cache hybride Valorant étendu",
+    "items": [
+      "Le cache distant périmé est affiché immédiatement puis rafraîchi depuis HenrikDev sans remplacer une copie locale plus récente.",
+      "Le profil, le classement, la boutique, les missions, le battlepass et les réglages personnels utilisent maintenant un cache local et Supabase.",
+      "Les catalogues publics des cartes, agents et armes restent servis par valorant-api.com avec cache local uniquement."
+    ]
+  },
+  {
     "version": "v1.75.157",
     "date": "2026-10-18",
     "title": "Cache Valorant isolé par utilisateur",
@@ -510,16 +520,6 @@
     "title": "Musique : secours YouTube réparé",
     "items": [
       "Le service de secours qui récupère le son YouTube quand Lavalink est refusé remarche (il imposait des clients YouTube devenus inutilisables)"
-    ]
-  },
-  {
-    "version": "v1.75.108",
-    "date": "2026-10-15",
-    "title": "Nouvelle page Protections",
-    "items": [
-      "Page Protections refaite : catégories à gauche avec compteurs, recherche, barre de progression, filtres et cartes par catégorie avec « Tout activer »",
-      "50 protections, toutes gratuites : ajout d'anti-déban, anti-événement, anti-suppression de message, anti-suppression de réaction et anti-renommage de membre",
-      "Les protections de renommage, d'emojis et d'invitations sont rangées dans leur vraie catégorie (Salons, Rôles, Serveur), « Arrivées » devient « Membres »"
     ]
   }
 ]

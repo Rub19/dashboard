@@ -59547,4 +59547,53 @@ CHANGELOG_BY_LANG.en.unshift(v12935_en);
 CHANGELOG_BY_LANG.es.unshift(v12935_es);
 CHANGELOG_BY_LANG.de.unshift(v12935_de);
 
+const v12936_fr: ChangelogEntry = {
+  version: "v1.75.158",
+  date: "2026-10-18",
+  title: "Cache hybride Valorant étendu",
+  items: [
+    "Le cache distant périmé est affiché immédiatement puis rafraîchi depuis HenrikDev sans remplacer une copie locale plus récente.",
+    "Le profil, le classement, la boutique, les missions, le battlepass et les réglages personnels utilisent maintenant un cache local et Supabase.",
+    "Les catalogues publics des cartes, agents et armes restent servis par valorant-api.com avec cache local uniquement.",
+  ],
+};
+
+const v12936_en: ChangelogEntry = {
+  version: "v1.75.158",
+  date: "2026-10-18",
+  title: "Cache hybride Valorant étendu",
+  items: [
+    "Le cache distant périmé est affiché immédiatement puis rafraîchi depuis HenrikDev sans remplacer une copie locale plus récente.",
+    "Le profil, le classement, la boutique, les missions, le battlepass et les réglages personnels utilisent maintenant un cache local et Supabase.",
+    "Les catalogues publics des cartes, agents et armes restent servis par valorant-api.com avec cache local uniquement.",
+  ],
+};
+
+const v12936_es: ChangelogEntry = {
+  version: "v1.75.158",
+  date: "2026-10-18",
+  title: "Cache hybride Valorant étendu",
+  items: [
+    "Le cache distant périmé est affiché immédiatement puis rafraîchi depuis HenrikDev sans remplacer une copie locale plus récente.",
+    "Le profil, le classement, la boutique, les missions, le battlepass et les réglages personnels utilisent maintenant un cache local et Supabase.",
+    "Les catalogues publics des cartes, agents et armes restent servis par valorant-api.com avec cache local uniquement.",
+  ],
+};
+
+const v12936_de: ChangelogEntry = {
+  version: "v1.75.158",
+  date: "2026-10-18",
+  title: "Cache hybride Valorant étendu",
+  items: [
+    "Le cache distant périmé est affiché immédiatement puis rafraîchi depuis HenrikDev sans remplacer une copie locale plus récente.",
+    "Le profil, le classement, la boutique, les missions, le battlepass et les réglages personnels utilisent maintenant un cache local et Supabase.",
+    "Les catalogues publics des cartes, agents et armes restent servis par valorant-api.com avec cache local uniquement.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12936_fr);
+CHANGELOG_BY_LANG.en.unshift(v12936_en);
+CHANGELOG_BY_LANG.es.unshift(v12936_es);
+CHANGELOG_BY_LANG.de.unshift(v12936_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

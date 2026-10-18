@@ -8,7 +8,7 @@ struct ValorantStoreView: View {
     @State private var loaded = false
     @State private var selectedBundle: FeaturedBundle?
 
-    struct StoreItem: Decodable, Hashable {
+    struct StoreItem: Codable, Hashable {
         let name: String
         let type: String
         let image: String
@@ -17,7 +17,7 @@ struct ValorantStoreView: View {
         let discountPercent: Int
     }
 
-    struct FeaturedBundle: Decodable, Identifiable, Hashable {
+    struct FeaturedBundle: Codable, Identifiable, Hashable {
         let uuid: String
         let name: String
         let image: String
@@ -28,7 +28,8 @@ struct ValorantStoreView: View {
         var id: String { uuid.isEmpty ? name : uuid }
     }
 
-    private struct Payload: Decodable { let bundles: [FeaturedBundle] }
+    private struct Payload: Codable { let bundles: [FeaturedBundle] }
+    private static let cacheTTL: TimeInterval = 24 * 60 * 60
 
     var body: some View {
         ScrollView {
@@ -188,14 +189,30 @@ struct ValorantStoreView: View {
     private func load() async {
         isLoading = true
         defer { isLoading = false; loaded = true }
+        let cache = model.valorant.isConfigured ? ValorantPersonalCache(
+            api: model.api,
+            accountName: model.valorant.playerName,
+            accountTag: model.valorant.tag
+        ) : nil
+        if let cache,
+           let cached = await cache.read("store", ttl: Self.cacheTTL),
+           let payload = ValorantPersonalCache.decode(Payload.self, from: cached.payload) {
+            bundles = payload.bundles
+            if !cached.isStale { errorMessage = nil; return }
+        }
         var headers: [String: String] = [:]
         if !model.valorant.apiKey.isEmpty { headers["x-henrik-api-key"] = model.valorant.apiKey }
         do {
             let payload: Payload = try await model.api.worker("api/stats/valorant-store", headers: headers)
             bundles = payload.bundles
+            if let cache, let json = ValorantPersonalCache.encode(payload) {
+                await cache.save(json, key: "store")
+            }
             errorMessage = nil
         } catch {
-            errorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+            if bundles.isEmpty {
+                errorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+            }
         }
     }
 

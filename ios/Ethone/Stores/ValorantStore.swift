@@ -14,6 +14,7 @@ enum ScoringSystem: Codable {
                 if parts[0] != 13 { return parts[0] > 13 ? .performance : .acs }
                 return parts[1] >= 6 ? .performance : .acs
             }
+
         }
         if let startedAt { return startedAt >= patchDate ? .performance : .acs }
         return .acs
@@ -21,7 +22,7 @@ enum ScoringSystem: Codable {
 }
 
 /// Riot account summary from the Worker (`/api/stats/valorant-profile`).
-struct ValorantProfile: Hashable {
+struct ValorantProfile: Hashable, Codable {
     let handle: String
     let cardURL: URL?
     let bannerURL: URL?
@@ -40,7 +41,7 @@ struct ValorantProfile: Hashable {
 
 }
 
-struct ValorantLeaderboardEntry: Identifiable, Hashable {
+struct ValorantLeaderboardEntry: Identifiable, Hashable, Codable {
     let id: String
     let name: String
     let tag: String
@@ -232,6 +233,11 @@ struct ValorantParty: Hashable {
 @Observable
 final class ValorantStore {
     private static let matchCacheTTL: TimeInterval = 15 * 60
+    private static let profileCacheTTL: TimeInterval = 10 * 60
+    private static let leaderboardCacheTTL: TimeInterval = 10 * 60
+    private static let missionsCacheTTL: TimeInterval = 6 * 60 * 60
+    private static let battlepassCacheTTL: TimeInterval = 24 * 60 * 60
+    private static let settingsCacheTTL: TimeInterval = 30 * 24 * 60 * 60
     private static let matchCacheKeyPrefix = "valorant-match-cache."
     private let api: APIClient
     private(set) var matches: [ValorantMatch] = []
@@ -374,42 +380,73 @@ final class ValorantStore {
     // Real user customizations (stored in UserDefaults per account, 0 by default so no placeholders)
     var userBookmarksCount: Int {
         guard isConfigured else { return 0 }
-        return UserDefaults.standard.integer(forKey: "ethone.valorant.\(nameStorage).bookmarksCount")
+        return UserDefaults.standard.integer(forKey: accountSettingKey("bookmarksCount"))
     }
 
     var playerSettingsCount: Int {
         guard isConfigured else { return 0 }
-        return UserDefaults.standard.integer(forKey: "ethone.valorant.\(nameStorage).playerSettingsCount")
+        return UserDefaults.standard.integer(forKey: accountSettingKey("playerSettingsCount"))
     }
 
     var appearanceProfilesCount: Int {
         guard isConfigured else { return 0 }
-        return UserDefaults.standard.integer(forKey: "ethone.valorant.\(nameStorage).appearanceProfilesCount")
+        return UserDefaults.standard.integer(forKey: accountSettingKey("appearanceProfilesCount"))
     }
 
     var favoritePresetsCount: Int {
         guard isConfigured else { return 0 }
-        return UserDefaults.standard.integer(forKey: "ethone.valorant.\(nameStorage).favoritePresetsCount")
+        return UserDefaults.standard.integer(forKey: accountSettingKey("favoritePresetsCount"))
     }
 
     func setBookmarksCount(_ count: Int) {
         guard isConfigured else { return }
-        UserDefaults.standard.set(count, forKey: "ethone.valorant.\(nameStorage).bookmarksCount")
+        UserDefaults.standard.set(count, forKey: accountSettingKey("bookmarksCount"))
+        Task { await persistPersonalSettings() }
     }
 
     func setPlayerSettingsCount(_ count: Int) {
         guard isConfigured else { return }
-        UserDefaults.standard.set(count, forKey: "ethone.valorant.\(nameStorage).playerSettingsCount")
+        UserDefaults.standard.set(count, forKey: accountSettingKey("playerSettingsCount"))
+        Task { await persistPersonalSettings() }
     }
 
     func setAppearanceProfilesCount(_ count: Int) {
         guard isConfigured else { return }
-        UserDefaults.standard.set(count, forKey: "ethone.valorant.\(nameStorage).appearanceProfilesCount")
+        UserDefaults.standard.set(count, forKey: accountSettingKey("appearanceProfilesCount"))
+        Task { await persistPersonalSettings() }
     }
 
     func setFavoritePresetsCount(_ count: Int) {
         guard isConfigured else { return }
-        UserDefaults.standard.set(count, forKey: "ethone.valorant.\(nameStorage).favoritePresetsCount")
+        UserDefaults.standard.set(count, forKey: accountSettingKey("favoritePresetsCount"))
+        Task { await persistPersonalSettings() }
+    }
+
+    private func accountSettingKey(_ name: String) -> String {
+        let userID = api.auth.user?.id ?? "anonymous"
+        return "ethone.valorant.\(userID).\(nameStorage)#\(tag).\(name)"
+    }
+
+    private func loadPersonalSettings() async {
+        guard let cache = personalCache,
+              let result = await cache.read("settings", ttl: Self.settingsCacheTTL),
+              let values = result.payload.objectValue else { return }
+        for key in ["bookmarksCount", "playerSettingsCount", "appearanceProfilesCount", "favoritePresetsCount"] {
+            if let value = values[key]?.intValue {
+                UserDefaults.standard.set(value, forKey: accountSettingKey(key))
+            }
+        }
+    }
+
+    private func persistPersonalSettings() async {
+        guard let cache = personalCache else { return }
+        let payload: JSONValue = .object([
+            "bookmarksCount": .number(Double(userBookmarksCount)),
+            "playerSettingsCount": .number(Double(playerSettingsCount)),
+            "appearanceProfilesCount": .number(Double(appearanceProfilesCount)),
+            "favoritePresetsCount": .number(Double(favoritePresetsCount))
+        ])
+        await cache.save(payload, key: "settings")
     }
 
     func sendFriendRequest(name: String, tag: String) {
@@ -438,6 +475,11 @@ final class ValorantStore {
     private static let nameKey = "ethone.valorant.name"
     private static let tagKey = "ethone.valorant.tag"
     private static let keychainKey = "henrik-api-key"
+
+    private var personalCache: ValorantPersonalCache? {
+        guard isConfigured else { return nil }
+        return ValorantPersonalCache(api: api, accountName: nameStorage, accountTag: tag)
+    }
 
     init(api: APIClient) {
         self.api = api
@@ -519,13 +561,25 @@ final class ValorantStore {
     /// Fetch upcoming weekly missions from valorant-api.com
     func loadUpcomingMissions() async {
         guard isConfigured else { return }
+        let cache = personalCache
+        let cached = await cache?.read("missions", ttl: Self.missionsCacheTTL)
+        if let payload = cached?.payload, applyMissions(payload), cached?.isStale == false { return }
         do {
             var req = URLRequest(url: URL(string: "https://valorant-api.com/v1/missions?language=fr-FR")!)
             req.timeoutInterval = 10
             let (data, http) = try await HTTP.send(req)
             guard (200..<300).contains(http.statusCode) else { return }
             let root = try JSONDecoder().decode(JSONValue.self, from: data)
-            let raw = root["data"]?.arrayValue ?? []
+            _ = applyMissions(root)
+            if let cache, let payload = root["data"] { await cache.save(payload, key: "missions") }
+        } catch {
+            if upcomingMissions.isEmpty { upcomingMissions = [] }
+        }
+    }
+
+    @discardableResult
+    private func applyMissions(_ payload: JSONValue) -> Bool {
+        let raw = payload.arrayValue ?? payload["data"]?.arrayValue ?? []
             let parsed = raw.compactMap { m -> ValorantMissionItem? in
                 guard let id = m["uuid"]?.stringValue,
                       let title = m["title"]?.stringValue, !title.isEmpty,
@@ -536,24 +590,33 @@ final class ValorantStore {
                 return ValorantMissionItem(id: id, title: title, type: "Hebdomadaire", xpGrant: xp, progressToComplete: target)
             }
             upcomingMissions = Array(parsed.prefix(30))
-        } catch {
-            upcomingMissions = []
-        }
+        return !upcomingMissions.isEmpty
     }
 
     /// Fetch Battlepass information from valorant-api.com
     func loadBattlepass() async {
         guard isConfigured else { return }
+        let cache = personalCache
+        let cached = await cache?.read("battlepass", ttl: Self.battlepassCacheTTL)
+        if let payload = cached?.payload, applyBattlepass(payload), cached?.isStale == false { return }
         do {
             var req = URLRequest(url: URL(string: "https://valorant-api.com/v1/contracts/d18b7d8f-4971-2f89-5613-248257830e11?language=fr-FR")!)
             req.timeoutInterval = 10
             let (data, http) = try await HTTP.send(req)
             guard (200..<300).contains(http.statusCode) else { return }
             let root = try JSONDecoder().decode(JSONValue.self, from: data)
-            battlepassTitle = root["data"]?["displayName"]?.stringValue ?? ""
+            _ = applyBattlepass(root)
+            if let cache, let payload = root["data"] { await cache.save(payload, key: "battlepass") }
         } catch {
-            battlepassTitle = ""
+            if battlepassTitle.isEmpty { battlepassTitle = "" }
         }
+    }
+
+    @discardableResult
+    private func applyBattlepass(_ payload: JSONValue) -> Bool {
+        let value = payload["data"] ?? payload
+        battlepassTitle = value["displayName"]?.stringValue ?? ""
+        return !battlepassTitle.isEmpty
     }
 
     func setPlayerOnline(_ online: Bool) {
@@ -581,6 +644,7 @@ final class ValorantStore {
         guard isConfigured else { return }
         isLoading = true
         defer { isLoading = false }
+        await loadPersonalSettings()
         await loadCachedMatches()
         await loadProfile()
         await loadLeaderboard()
@@ -630,11 +694,15 @@ final class ValorantStore {
             ])
             guard let row = rows.first,
                   let json = row.matches,
-                  let remoteMatches = Self.decodeMatches(json) else {
+                  let remoteMatches = Self.decodeMatches(json),
+                  let fetchedAt = row.fetched_at.flatMap(ISODate.parse) else {
                 if let local { matches = local.matches }
                 return
             }
-            let fetchedAt = row.fetched_at.flatMap(ISODate.parse) ?? Date.distantPast
+            if let local, fetchedAt <= local.fetchedAt {
+                matches = local.matches
+                return
+            }
             let cache = MatchCache(fetchedAt: fetchedAt, matches: remoteMatches)
             matches = remoteMatches
             Self.saveLocalMatchCache(cache, key: matchCacheKey)
@@ -721,6 +789,12 @@ final class ValorantStore {
 
     private func loadLeaderboard() async {
         guard isConfigured else { return }
+        let cache = personalCache
+        let cached = await cache?.read("leaderboard", ttl: Self.leaderboardCacheTTL)
+        if let payload = cached?.payload {
+            applyLeaderboard(payload)
+            if cached?.isStale == false { return }
+        }
         do {
             let payload: JSONValue = try await api.worker("api/stats/valorant-leaderboard", query: [
                 URLQueryItem(name: "region", value: "eu"),
@@ -728,9 +802,8 @@ final class ValorantStore {
                 URLQueryItem(name: "startIndex", value: "1"),
                 URLQueryItem(name: "size", value: "50")
             ])
-            let rows = payload["players"]?.arrayValue ?? []
-            leaderboard = rows.compactMap(Self.convertLeaderboardEntry)
-            leaderboardTotal = payload["total"]?.intValue ?? leaderboard.count
+            applyLeaderboard(payload)
+            if let cache { await cache.save(payload, key: "leaderboard") }
             let ownPayload: JSONValue = try await api.worker("api/stats/valorant-leaderboard", query: [
                 URLQueryItem(name: "region", value: "eu"),
                 URLQueryItem(name: "platform", value: "pc"),
@@ -743,9 +816,14 @@ final class ValorantStore {
                 profile?.leaderboardRank = ownEntry.leaderboardRank
             }
         } catch {
-            leaderboard = []
-            leaderboardTotal = 0
+            if leaderboard.isEmpty { leaderboardTotal = 0 }
         }
+    }
+
+    private func applyLeaderboard(_ payload: JSONValue) {
+        let rows = payload["players"]?.arrayValue ?? []
+        leaderboard = rows.compactMap(Self.convertLeaderboardEntry)
+        leaderboardTotal = payload["total"]?.intValue ?? leaderboard.count
     }
 
     private static func convertLeaderboardEntry(_ raw: JSONValue) -> ValorantLeaderboardEntry? {
@@ -777,9 +855,21 @@ final class ValorantStore {
 
     /// Match already shaped by the Worker (`/api/stats/valorant-matches`).
     private func loadProfile() async {
+        guard isConfigured else { return }
+        let cache = personalCache
+        let cached = await cache?.read("profile", ttl: Self.profileCacheTTL)
+        if let payload = cached?.payload {
+            applyProfile(payload)
+            if cached?.isStale == false { return }
+        }
         guard let raw: JSONValue = try? await api.worker("api/stats/valorant-profile", query: [
             URLQueryItem(name: "name", value: nameStorage), URLQueryItem(name: "tag", value: tag),
         ]) else { return }
+        applyProfile(raw)
+        if let cache { await cache.save(raw, key: "profile") }
+    }
+
+    private func applyProfile(_ raw: JSONValue) {
         let stats = raw["segments"]?.arrayValue?.first?["stats"]
         func number(_ key: String) -> Int { Int(stats?[key]?["value"]?.doubleValue ?? 0) }
         func text(_ key: String) -> String { stats?[key]?["displayValue"]?.stringValue ?? "" }

@@ -138,6 +138,7 @@ enum Theme {
 
     static var accent: Color { Color(hex: currentAccentHex) }
     static var base: Color { Color(hex: preset.base) }
+    static var bg: Color { base }
     static var accentSoft: Color { accent.mix(with: .white, by: 0.25) }
     static let indigo = Color(hex: 0x2A2F6B)
     static let violet = Color(hex: 0x5B2A86)

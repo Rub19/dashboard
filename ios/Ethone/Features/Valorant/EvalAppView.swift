@@ -1800,7 +1800,7 @@ struct EvalGameView: View {
         } else {
             VStack(spacing: 12) {
                 // Card 1: Checkpoints journaliers (dynamically computed or 0 if no matches)
-                let todayMatches = store.matches.filter { Calendar.current.isDateInToday($0.startedAt) }
+                let todayMatches = store.matches.filter { Calendar.current.isDateInToday($0.startedAt ?? .distantPast) }
                 let roundsWonToday = todayMatches.reduce(0) { $0 + $1.teamRounds }
                 let checkpointsCount = store.isCurrentUserRub19 ? 1 : min(4, roundsWonToday / 4)
 

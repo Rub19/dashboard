@@ -49,6 +49,11 @@ enum JSONValue: Codable, Hashable {
         return nil
     }
 
+    var intValue: Int? {
+        if case .number(let value) = self { return Int(value) }
+        return nil
+    }
+
     var arrayValue: [JSONValue]? {
         if case .array(let value) = self { return value }
         return nil

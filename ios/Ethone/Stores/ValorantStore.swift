@@ -98,6 +98,7 @@ struct ValorantMatch: Identifiable, Hashable {
 
     var kd: Double { deaths == 0 ? Double(kills) : Double(kills) / Double(deaths) }
     var scoreLabel: String { scoring == .performance ? "PERF" : "ACS" }
+    var agentName: String { agent }
 
     var myTeamPlayers: [ValorantMatchPlayer] {
         let me = players.first(where: \.isMe)
@@ -578,7 +579,7 @@ final class ValorantStore {
     var avgXPPerMatch: Int {
         guard !matches.isEmpty else { return 199 }
         let count = min(20, matches.count)
-        let totalScore = matches.prefix(count).reduce(0) { $0 + $1.scoreValue }
+        let totalScore = matches.prefix(count).reduce(0) { $0 + ($1.scoreValue ?? 200) }
         return max(150, totalScore / max(1, count))
     }
 
@@ -940,8 +941,8 @@ final class ValorantStore {
         isPlayerOnline = true
 
         // Check if player has an active game session or recent match
-        let recentActive = matches.first.map { match in
-            Date().timeIntervalSince(match.startedAt) < 2700 // 45 min
+        let recentActive = matches.first?.startedAt.map { started in
+            Date().timeIntervalSince(started) < 2700 // 45 min
         } ?? false
 
         let userCardURL = profile?.cardURL?.absoluteString ?? (equipmentBannerURL.isEmpty ? "https://media.valorant-api.com/playercards/d30271ae-4ce1-5ed2-c55f-f08a6247c274/largeart.png" : equipmentBannerURL)

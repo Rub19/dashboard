@@ -1561,6 +1561,7 @@ struct EvalGameView: View {
             }
         }
         .task {
+            await store.refreshGroup()
             while !Task.isCancelled {
                 try? await Task.sleep(nanoseconds: 100_000_000) // 100ms
                 guard !Task.isCancelled else { break }

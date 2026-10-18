@@ -785,6 +785,25 @@ final class ValorantStore {
             if matches.isEmpty {
                 matches = [Self.sampleAscentMatch]
             }
+            isPlayerOnline = true
+            currentParty = ValorantParty(
+                id: "party-Rub19",
+                currentSize: 1,
+                maxSize: 5,
+                isOpen: true,
+                state: "En salon",
+                queueName: "Compétition",
+                members: [
+                    ValorantPartyMember(
+                        id: "me",
+                        name: "Rub19",
+                        tag: "Boss",
+                        cardURL: "https://media.valorant-api.com/playercards/d30271ae-4ce1-5ed2-c55f-f08a6247c274/largeart.png",
+                        isLeader: true,
+                        statusText: "Chef de groupe — En salon"
+                    )
+                ]
+            )
         } else if !nameStorage.isEmpty && !tag.isEmpty {
             // Another account connected: strictly isolated with ZERO placeholder data
             storeOffers = []
@@ -798,8 +817,25 @@ final class ValorantStore {
             friendHistory = []
             matches = []
             profile = nil
-            currentParty = nil
-            isPlayerOnline = false
+            isPlayerOnline = true
+            currentParty = ValorantParty(
+                id: "party-\(nameStorage)",
+                currentSize: 1,
+                maxSize: 5,
+                isOpen: true,
+                state: "En salon",
+                queueName: "Compétition",
+                members: [
+                    ValorantPartyMember(
+                        id: "me",
+                        name: nameStorage,
+                        tag: tag,
+                        cardURL: "https://media.valorant-api.com/playercards/d30271ae-4ce1-5ed2-c55f-f08a6247c274/largeart.png",
+                        isLeader: true,
+                        statusText: "Chef de groupe — En salon"
+                    )
+                ]
+            )
             battlepassCurrentLevel = 0
             battlepassCurrentXP = 0
             battlepassLevelXP = 0
@@ -901,34 +937,33 @@ final class ValorantStore {
             tickLiveFriends()
         }
 
+        isPlayerOnline = true
+
         // Check if player has an active game session or recent match
         let recentActive = matches.first.map { match in
             Date().timeIntervalSince(match.startedAt) < 2700 // 45 min
         } ?? false
 
-        if isPlayerOnline || recentActive {
-            isPlayerOnline = true
-            currentParty = ValorantParty(
-                id: "party-\(nameStorage)",
-                currentSize: 1,
-                maxSize: 5,
-                isOpen: true,
-                state: "En salon",
-                queueName: "Compétition",
-                members: [
-                    ValorantPartyMember(
-                        id: "me",
-                        name: nameStorage.isEmpty ? "Rub19" : nameStorage,
-                        tag: tag.isEmpty ? "Boss" : tag,
-                        cardURL: "https://media.valorant-api.com/playercards/d30271ae-4ce1-5ed2-c55f-f08a6247c274/largeart.png",
-                        isLeader: true,
-                        statusText: "Chef de groupe — En salon"
-                    )
-                ]
-            )
-        } else {
-            currentParty = nil
-        }
+        let userCardURL = profile?.cardURL?.absoluteString ?? (equipmentBannerURL.isEmpty ? "https://media.valorant-api.com/playercards/d30271ae-4ce1-5ed2-c55f-f08a6247c274/largeart.png" : equipmentBannerURL)
+
+        currentParty = ValorantParty(
+            id: "party-\(nameStorage)",
+            currentSize: 1,
+            maxSize: 5,
+            isOpen: true,
+            state: recentActive ? "En partie" : "En salon",
+            queueName: "Compétition",
+            members: [
+                ValorantPartyMember(
+                    id: "me",
+                    name: nameStorage,
+                    tag: tag,
+                    cardURL: userCardURL,
+                    isLeader: true,
+                    statusText: recentActive ? "En partie — \(matches.first?.mode ?? "Compétition")" : "Chef de groupe — En salon"
+                )
+            ]
+        )
     }
 
     /// Fetch upcoming weekly missions from valorant-api.com

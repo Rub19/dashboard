@@ -275,6 +275,25 @@ struct ValorantFriendHistoryEvent: Identifiable, Hashable {
     var handle: String { "\(name)#\(tag)" }
 }
 
+struct ValorantPartyMember: Identifiable, Hashable {
+    let id: String
+    let name: String
+    let tag: String
+    let cardURL: String?
+    let isLeader: Bool
+    let statusText: String
+}
+
+struct ValorantParty: Hashable {
+    var id: String
+    var currentSize: Int
+    var maxSize: Int
+    var isOpen: Bool
+    var state: String
+    var queueName: String?
+    var members: [ValorantPartyMember]
+}
+
 extension ValorantFriend {
     static let sampleFriends: [ValorantFriend] = [
         // Online / In-Game Friends (grouped into parties)
@@ -500,6 +519,51 @@ final class ValorantStore {
     var openProfileDirectly: Bool = false
     var sortOfflineByLastSeen: Bool = true
 
+    // Live Party & Presence
+    private(set) var currentParty: ValorantParty?
+    private(set) var isPlayerOnline: Bool = false
+
+    // Real user customizations (stored in UserDefaults per account, 0 by default so no placeholders)
+    var userBookmarksCount: Int {
+        guard isConfigured else { return 0 }
+        return UserDefaults.standard.integer(forKey: "ethone.valorant.\(nameStorage).bookmarksCount")
+    }
+
+    var playerSettingsCount: Int {
+        guard isConfigured else { return 0 }
+        return UserDefaults.standard.integer(forKey: "ethone.valorant.\(nameStorage).playerSettingsCount")
+    }
+
+    var appearanceProfilesCount: Int {
+        guard isConfigured else { return 0 }
+        return UserDefaults.standard.integer(forKey: "ethone.valorant.\(nameStorage).appearanceProfilesCount")
+    }
+
+    var favoritePresetsCount: Int {
+        guard isConfigured else { return 0 }
+        return UserDefaults.standard.integer(forKey: "ethone.valorant.\(nameStorage).favoritePresetsCount")
+    }
+
+    func setBookmarksCount(_ count: Int) {
+        guard isConfigured else { return }
+        UserDefaults.standard.set(count, forKey: "ethone.valorant.\(nameStorage).bookmarksCount")
+    }
+
+    func setPlayerSettingsCount(_ count: Int) {
+        guard isConfigured else { return }
+        UserDefaults.standard.set(count, forKey: "ethone.valorant.\(nameStorage).playerSettingsCount")
+    }
+
+    func setAppearanceProfilesCount(_ count: Int) {
+        guard isConfigured else { return }
+        UserDefaults.standard.set(count, forKey: "ethone.valorant.\(nameStorage).appearanceProfilesCount")
+    }
+
+    func setFavoritePresetsCount(_ count: Int) {
+        guard isConfigured else { return }
+        UserDefaults.standard.set(count, forKey: "ethone.valorant.\(nameStorage).favoritePresetsCount")
+    }
+
     var isCurrentUserRub19: Bool {
         nameStorage.caseInsensitiveCompare("Rub19") == .orderedSame &&
         tag.caseInsensitiveCompare("Boss") == .orderedSame
@@ -618,6 +682,8 @@ final class ValorantStore {
             friendHistory = []
             matches = []
             profile = nil
+            currentParty = nil
+            isPlayerOnline = false
         } else {
             // Disconnected: clean empty states
             storeOffers = []
@@ -631,6 +697,8 @@ final class ValorantStore {
             friendHistory = []
             matches = []
             profile = nil
+            currentParty = nil
+            isPlayerOnline = false
         }
     }
 
@@ -685,7 +753,58 @@ final class ValorantStore {
         UserDefaults.standard.removeObject(forKey: Self.nameKey)
         UserDefaults.standard.removeObject(forKey: Self.tagKey)
         Keychain.remove(Self.keychainKey)
+        currentParty = nil
+        isPlayerOnline = false
         syncAccountData()
+    }
+
+    /// Refresh party & detect if player is currently in game
+    func refreshGroup() async {
+        guard isConfigured else {
+            currentParty = nil
+            isPlayerOnline = false
+            return
+        }
+
+        if isCurrentUserRub19 {
+            tickLiveFriends()
+        }
+
+        // Check if player has an active game session or recent match
+        let recentActive = matches.first.map { match in
+            Date().timeIntervalSince(match.startedAt) < 2700 // 45 min
+        } ?? false
+
+        if isPlayerOnline || recentActive {
+            isPlayerOnline = true
+            currentParty = ValorantParty(
+                id: "party-\(nameStorage)",
+                currentSize: 1,
+                maxSize: 5,
+                isOpen: true,
+                state: "En salon",
+                queueName: "Compétition",
+                members: [
+                    ValorantPartyMember(
+                        id: "me",
+                        name: nameStorage.isEmpty ? "Rub19" : nameStorage,
+                        tag: tag.isEmpty ? "Boss" : tag,
+                        cardURL: "https://media.valorant-api.com/playercards/d30271ae-4ce1-5ed2-c55f-f08a6247c274/smallart.png",
+                        isLeader: true,
+                        statusText: "Chef de groupe — En salon"
+                    )
+                ]
+            )
+        } else {
+            currentParty = nil
+        }
+    }
+
+    func setPlayerOnline(_ online: Bool) {
+        isPlayerOnline = online
+        Task {
+            await refreshGroup()
+        }
     }
 
     var isConfigured: Bool { !nameStorage.isEmpty && !tag.isEmpty }

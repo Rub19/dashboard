@@ -1161,6 +1161,31 @@ struct EvalWalletBar: View {
     }
 }
 
+// MARK: - Circular 15s Group Refresh Progress Wheel (Matches Screenshots 2 & 3)
+struct EvalGroupRefreshWheel: View {
+    var progress: Double
+    var size: CGFloat = 18
+
+    var body: some View {
+        ZStack {
+            // Background subtle track circle (as seen in screenshots 2 & 3)
+            Circle()
+                .stroke(Color.white.opacity(0.12), lineWidth: 2.2)
+
+            // Red/coral active filling progress arc (starts at 12 o'clock, fills clockwise)
+            Circle()
+                .trim(from: 0, to: max(0.02, min(progress, 1.0)))
+                .stroke(
+                    Theme.danger,
+                    style: StrokeStyle(lineWidth: 2.2, lineCap: .round)
+                )
+                .rotationEffect(.degrees(-90))
+        }
+        .frame(width: size, height: size)
+        .animation(.linear(duration: 0.1), value: progress)
+    }
+}
+
 // MARK: - 2. JEU TAB (Screenshots 1-4)
 struct EvalGameView: View {
     @Environment(AppModel.self) private var model
@@ -1170,6 +1195,7 @@ struct EvalGameView: View {
     @State private var equipmentExpanded = true
     @State private var storeExpanded = true
     @State private var contractsSubtab = 0
+    @State private var groupRefreshProgress: Double = 0.0
 
     private var store: ValorantStore { model.valorant }
 
@@ -1198,23 +1224,119 @@ struct EvalGameView: View {
                 }
                 .padding(.top, 4)
 
-                    // 1. Groupe Section (Collapsible)
+                    // 1. Groupe Section (Collapsible - Auto 15s Refresh & Party Detection)
                     collapsibleSection(
                         title: "Groupe",
                         isExpanded: $groupExpanded,
                         rightContent: {
-                            Circle()
-                                .stroke(Theme.danger, lineWidth: 2)
-                                .frame(width: 14, height: 14)
+                            Button {
+                                var transaction = Transaction()
+                                transaction.disablesAnimations = true
+                                withTransaction(transaction) {
+                                    groupRefreshProgress = 0.0
+                                }
+                                Task {
+                                    await store.refreshGroup()
+                                }
+                            } label: {
+                                EvalGroupRefreshWheel(progress: groupRefreshProgress)
+                            }
+                            .buttonStyle(.plain)
                         }
                     ) {
-                        Text("Il n'y a actuellement aucun groupe!")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 24)
+                        if let party = store.currentParty {
+                            VStack(spacing: 12) {
+                                HStack {
+                                    HStack(spacing: 6) {
+                                        Circle()
+                                            .fill(Color(hex: 0x22C55E))
+                                            .frame(width: 8, height: 8)
+                                        Text(party.state)
+                                            .font(.caption.weight(.bold))
+                                            .foregroundStyle(Color(hex: 0x22C55E))
+
+                                        if let q = party.queueName {
+                                            Text("•")
+                                                .foregroundStyle(.secondary)
+                                            Text(q)
+                                                .font(.caption.weight(.medium))
+                                                .foregroundStyle(.secondary)
+                                        }
+                                    }
+
+                                    Spacer()
+
+                                    Text("\(party.currentSize)/\(party.maxSize)")
+                                        .font(.caption.weight(.bold).monospacedDigit())
+                                        .foregroundStyle(.secondary)
+                                        .padding(.horizontal, 8)
+                                        .padding(.vertical, 3)
+                                        .background(Color.white.opacity(0.06), in: .capsule)
+                                }
+
+                                VStack(spacing: 8) {
+                                    ForEach(party.members) { member in
+                                        HStack(spacing: 12) {
+                                            ZStack(alignment: .bottomTrailing) {
+                                                AsyncImage(url: URL(string: member.cardURL ?? "")) { phase in
+                                                    if let image = phase.image {
+                                                        image.resizable().scaledToFill().frame(width: 38, height: 38).clipShape(.rect(cornerRadius: 10))
+                                                    } else {
+                                                        RoundedRectangle(cornerRadius: 10)
+                                                            .fill(Color(hex: 0x1A1C24))
+                                                            .frame(width: 38, height: 38)
+                                                            .overlay(Image(systemName: "person.fill").font(.system(size: 14)).foregroundStyle(.secondary))
+                                                    }
+                                                }
+
+                                                Circle()
+                                                    .fill(Color(hex: 0x22C55E))
+                                                    .frame(width: 10, height: 10)
+                                                    .overlay(Circle().strokeBorder(Color(hex: 0x0E1017), lineWidth: 1.5))
+                                            }
+
+                                            VStack(alignment: .leading, spacing: 2) {
+                                                HStack(spacing: 4) {
+                                                    Text(member.name)
+                                                        .font(.subheadline.weight(.heavy))
+                                                        .foregroundStyle(.white)
+
+                                                    Text("#\(member.tag)")
+                                                        .font(.caption.weight(.medium))
+                                                        .foregroundStyle(.secondary)
+
+                                                    if member.isLeader {
+                                                        Image(systemName: "crown.fill")
+                                                            .font(.system(size: 11))
+                                                            .foregroundStyle(Color(hex: 0xF59E0B))
+                                                    }
+                                                }
+
+                                                Text(member.statusText)
+                                                    .font(.caption)
+                                                    .foregroundStyle(.secondary)
+                                            }
+
+                                            Spacer()
+                                        }
+                                        .padding(10)
+                                        .background(Color.white.opacity(0.04), in: .rect(cornerRadius: 12))
+                                    }
+                                }
+                            }
+                            .padding(14)
                             .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
                             .clipShape(.rect(cornerRadius: Theme.cardRadius))
+                            .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
+                        } else {
+                            Text("Il n'y a actuellement aucun groupe!")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 24)
+                                .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
+                                .clipShape(.rect(cornerRadius: Theme.cardRadius))
+                        }
                     }
 
                     // 2. Contrats Section (Collapsible)
@@ -1222,9 +1344,16 @@ struct EvalGameView: View {
                         title: "Contrats",
                         isExpanded: $contractsExpanded,
                         rightContent: {
-                            Image(systemName: "arrow.clockwise")
-                                .font(.caption.weight(.bold))
-                                .foregroundStyle(Theme.danger)
+                            Button {
+                                Task {
+                                    await store.refresh()
+                                }
+                            } label: {
+                                Image(systemName: "arrow.clockwise")
+                                    .font(.caption.weight(.bold))
+                                    .foregroundStyle(Theme.danger)
+                            }
+                            .buttonStyle(PressScaleStyle())
                         }
                     ) {
                         VStack(spacing: 12) {
@@ -1329,9 +1458,16 @@ struct EvalGameView: View {
                         title: "Équipement",
                         isExpanded: $equipmentExpanded,
                         rightContent: {
-                            Image(systemName: "arrow.clockwise")
-                                .font(.caption.weight(.bold))
-                                .foregroundStyle(Theme.danger)
+                            Button {
+                                Task {
+                                    await store.refresh()
+                                }
+                            } label: {
+                                Image(systemName: "arrow.clockwise")
+                                    .font(.caption.weight(.bold))
+                                    .foregroundStyle(Theme.danger)
+                            }
+                            .buttonStyle(PressScaleStyle())
                         }
                     ) {
                         VStack(spacing: 14) {
@@ -1363,13 +1499,15 @@ struct EvalGameView: View {
                                     .padding(10)
                             }
 
-                            // Menu list rows
+                            // Menu list rows (No placeholder numbers: only show if user actually configured them)
                             VStack(spacing: 0) {
-                                equipNavRow(icon: "pencil", title: "Changer de titre", value: store.equipmentTitle)
+                                equipNavRow(icon: "pencil", title: "Changer de titre", value: store.equipmentTitle.isEmpty ? nil : store.equipmentTitle)
                                 equipNavRow(icon: "scope", title: "Équipement d'arme")
                                 equipPrivacyRow
-                                equipNavRow(icon: "shippingbox.fill", title: "Profils d'apparences", value: "3")
-                                equipNavRow(icon: "folder.badge.star", title: "Préréglages des Favoris", value: "0")
+                                let appearanceVal: String? = (store.isConfigured && store.appearanceProfilesCount > 0) ? "\(store.appearanceProfilesCount)" : nil
+                                equipNavRow(icon: "shippingbox.fill", title: "Profils d'apparences", value: appearanceVal)
+                                let favoritesVal: String? = (store.isConfigured && store.favoritePresetsCount > 0) ? "\(store.favoritePresetsCount)" : nil
+                                equipNavRow(icon: "folder.badge.star", title: "Préréglages des Favoris", value: favoritesVal)
                                 equipNavRow(icon: "die.face.5.fill", title: "Aléatoire")
                                 equipNavRow(icon: "square.and.arrow.up", title: "Partager")
                             }
@@ -1392,9 +1530,16 @@ struct EvalGameView: View {
                         title: "Boutique",
                         isExpanded: $storeExpanded,
                         rightContent: {
-                            Image(systemName: "arrow.clockwise")
-                                .font(.caption.weight(.bold))
-                                .foregroundStyle(Theme.danger)
+                            Button {
+                                Task {
+                                    await store.refresh()
+                                }
+                            } label: {
+                                Image(systemName: "arrow.clockwise")
+                                    .font(.caption.weight(.bold))
+                                    .foregroundStyle(Theme.danger)
+                            }
+                            .buttonStyle(PressScaleStyle())
                         }
                     ) {
                         if store.storeOffers.isEmpty {
@@ -1461,6 +1606,25 @@ struct EvalGameView: View {
                 .padding(.bottom, 96)
             }
             .scrollIndicators(.hidden)
+        }
+        .task {
+            while !Task.isCancelled {
+                try? await Task.sleep(nanoseconds: 100_000_000) // 100ms
+                guard !Task.isCancelled else { break }
+                await MainActor.run {
+                    groupRefreshProgress += (0.1 / 15.0)
+                    if groupRefreshProgress >= 1.0 {
+                        var transaction = Transaction()
+                        transaction.disablesAnimations = true
+                        withTransaction(transaction) {
+                            groupRefreshProgress = 0.0
+                        }
+                        Task {
+                            await store.refreshGroup()
+                        }
+                    }
+                }
+            }
         }
 
     private var equipPrivacyRow: some View {
@@ -1579,32 +1743,41 @@ struct EvalGameView: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
                 Button {
-                    withAnimation(Motion.snap) {
+                    withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
                         isExpanded.wrappedValue.toggle()
                     }
                 } label: {
-                    HStack(spacing: 6) {
-                        Image(systemName: isExpanded.wrappedValue ? "chevron.down" : "chevron.right")
-                            .font(.system(size: 12, weight: .bold))
+                    HStack(spacing: 8) {
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 11, weight: .bold))
                             .foregroundStyle(Theme.danger)
+                            .rotationEffect(.degrees(isExpanded.wrappedValue ? 90 : 0))
 
                         Text(title)
                             .font(.headline.weight(.bold))
                             .foregroundStyle(.white)
+
+                        Spacer()
                     }
+                    .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
-
-                Spacer()
 
                 rightContent()
             }
 
             if isExpanded.wrappedValue {
                 content()
-                    .transition(.opacity.combined(with: .move(edge: .top)))
+                    .clipped()
+                    .transition(
+                        .asymmetric(
+                            insertion: .opacity.combined(with: .scale(scale: 0.98, anchor: .top)),
+                            removal: .opacity
+                        )
+                    )
             }
         }
+        .clipped()
     }
 }
 
@@ -1641,21 +1814,23 @@ struct EvalHubView: View {
                 }
                 .padding(.top, 4)
 
-                    // 1. Réseaux sociaux
+                    // 1. Réseaux sociaux (No placeholder numbers: only show if user actually configured them)
                     hubGroupSection(title: "Réseaux sociaux") {
                         NavigationLink {
                             EvalFriendsView()
                         } label: {
-                            let friendsBadge = store.isConfigured ? "\(store.friends.count + 1)" : nil
-                            hubRowView(icon: "person.2.fill", title: "Amis", badge: friendsBadge)
+                            hubRowView(icon: "person.2.fill", title: "Amis", badge: nil)
                         }
                         .buttonStyle(.plain)
 
-                        hubNavRow(icon: "bookmark.fill", title: "Signets", badge: "2")
+                        let signetsBadge: String? = (store.isConfigured && store.userBookmarksCount > 0) ? "\(store.userBookmarksCount)" : nil
+                        hubNavRow(icon: "bookmark.fill", title: "Signets", badge: signetsBadge)
                         hubNavRow(icon: "person.text.rectangle.fill", title: "Historique des pseudos")
                         hubNavRow(icon: "trophy.fill", title: "Classement")
                         hubNavRow(icon: "creditcard.fill", title: "Historique des achats")
-                        hubNavRow(icon: "slider.horizontal.3", title: "Paramètres du joueur", badge: "1")
+
+                        let settingsBadge: String? = (store.isConfigured && store.playerSettingsCount > 0) ? "\(store.playerSettingsCount)" : nil
+                        hubNavRow(icon: "slider.horizontal.3", title: "Paramètres du joueur", badge: settingsBadge)
                     }
 
                     // 2. Progression
@@ -1671,8 +1846,7 @@ struct EvalHubView: View {
                         Button {
                             showingStore = true
                         } label: {
-                            let storeBadge = store.storeOffers.isEmpty ? nil : "Skins"
-                            hubRowView(icon: "bag.fill", title: "Boutique du jour", badge: storeBadge)
+                            hubRowView(icon: "bag.fill", title: "Boutique du jour", badge: nil)
                         }
                         .buttonStyle(.plain)
                     }

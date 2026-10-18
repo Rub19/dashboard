@@ -59126,6 +59126,50 @@ const v1_75_150_fr: ChangelogEntry = {
   ],
 };
 
+const v1_75_151_fr: ChangelogEntry = {
+  version: "v1.75.151",
+  date: "2026-10-18",
+  title: "Hub social sans données personnelles intégrées",
+  items: [
+    "Le style des écrans Amis, Historique et détails de match sert uniquement de référence d’interface.",
+    "Les noms, avatars, groupes et historiques présents dans les captures ne sont pas intégrés dans l’application.",
+    "Les données de démonstration et les mises à jour aléatoires de présence ont été supprimées.",
+  ],
+};
+
+const v1_75_151_en: ChangelogEntry = {
+  version: "v1.75.151",
+  date: "2026-10-18",
+  title: "Social Hub without embedded personal data",
+  items: [
+    "The Friends, History and match detail screens use the captures only as UI references.",
+    "Names, avatars, groups and histories from the captures are not embedded in the app.",
+    "Demo data and random presence updates were removed.",
+  ],
+};
+
+const v1_75_151_es: ChangelogEntry = {
+  version: "v1.75.151",
+  date: "2026-10-18",
+  title: "Hub social sin datos personales integrados",
+  items: [
+    "Las pantallas Amigos, Historial y detalles de partida usan las capturas solo como referencia visual.",
+    "Los nombres, avatares, grupos e historiales de las capturas no están integrados en la aplicación.",
+    "Se eliminaron los datos de demostración y las actualizaciones aleatorias de presencia.",
+  ],
+};
+
+const v1_75_151_de: ChangelogEntry = {
+  version: "v1.75.151",
+  date: "2026-10-18",
+  title: "Social Hub ohne eingebettete persönliche Daten",
+  items: [
+    "Die Ansichten Freunde, Verlauf und Spieldetails verwenden die Bilder nur als UI-Referenz.",
+    "Namen, Avatare, Gruppen und Verläufe aus den Bildern sind nicht in der App eingebettet.",
+    "Demodaten und zufällige Präsenzaktualisierungen wurden entfernt.",
+  ],
+};
+
 const v1_75_150_en: ChangelogEntry = {
   version: "v1.75.150",
   date: "2026-10-18",
@@ -59201,7 +59245,10 @@ const v1_75_149_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v1_75_150_fr, v1_75_149_fr);
+CHANGELOG_BY_LANG.fr.unshift(v1_75_151_fr, v1_75_150_fr, v1_75_149_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_151_en, v1_75_150_en, v1_75_149_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_151_es, v1_75_150_es, v1_75_149_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_151_de, v1_75_150_de, v1_75_149_de);
 CHANGELOG_BY_LANG.en.unshift(v1_75_150_en, v1_75_149_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_150_es, v1_75_149_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_150_de, v1_75_149_de);

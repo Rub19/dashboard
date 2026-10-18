@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.151 — 2026-10-18
+
+**Hub social sans données personnelles intégrées**
+
+- Le style visuel des écrans Amis, Historique et détails de match sert uniquement de référence d’interface.
+- Les noms, avatars, groupes et historiques présents dans les captures ne sont pas intégrés dans l’application.
+- Suppression des données de démonstration et des mises à jour aléatoires de présence.
+
 ## v1.75.150 — 2026-10-18
 
 **Refonte E:Val fidèle aux captures**

@@ -2964,7 +2964,7 @@ struct EvalFriendsView: View {
             .task {
                 while !Task.isCancelled {
                     try? await Task.sleep(nanoseconds: 12_000_000_000)
-                    store.tickLiveFriends()
+                    await store.refreshFriends()
                 }
             }
             .navigationBarBackButtonHidden(true)
@@ -3127,11 +3127,11 @@ struct EvalFriendsView: View {
 
             VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 4) {
-                    Text(store.playerName.isEmpty ? "Rub19" : store.playerName)
+                    Text(store.playerName)
                         .font(.subheadline.weight(.heavy))
                         .foregroundStyle(.white)
 
-                    Text("#\(store.tag.isEmpty ? "Boss" : store.tag)")
+                    Text("#\(store.tag)")
                         .font(.caption.weight(.medium))
                         .foregroundStyle(.secondary)
                 }

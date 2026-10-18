@@ -1,5 +1,15 @@
 [
   {
+    "version": "v1.75.151",
+    "date": "2026-10-18",
+    "title": "Hub social sans données personnelles intégrées",
+    "items": [
+      "Le style des écrans Amis, Historique et détails de match sert uniquement de référence d’interface.",
+      "Les noms, avatars, groupes et historiques présents dans les captures ne sont pas intégrés dans l’application.",
+      "Les données de démonstration et les mises à jour aléatoires de présence ont été supprimées."
+    ]
+  },
+  {
     "version": "v1.75.150",
     "date": "2026-10-18",
     "title": "Refonte E:Val fidèle aux captures",

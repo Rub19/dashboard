@@ -2055,7 +2055,7 @@ struct EvalGameView: View {
                             .font(.subheadline.weight(.semibold))
                             .foregroundStyle(.white)
                         Spacer()
-                        Text("\(Int(store.battlepassCompletionPercent * 100))% achevé")
+                        Text("\(store.battlepassCompletionPercent)% achevé")
                             .font(.caption.weight(.bold).monospacedDigit())
                             .foregroundStyle(.secondary)
                     }
@@ -2257,13 +2257,13 @@ struct EvalBattlepassDetailSheet: View {
 
             if store.isConfigured {
                 Circle()
-                    .trim(from: 0, to: store.battlepassCompletionPercent)
+                    .trim(from: 0, to: CGFloat(store.battlepassCompletionPercent) / 100.0)
                     .stroke(Theme.danger, style: StrokeStyle(lineWidth: 4, lineCap: .round))
                     .rotationEffect(.degrees(-90))
                     .frame(width: 52, height: 52)
             }
 
-            Text(store.isConfigured ? "\(Int(store.battlepassCompletionPercent * 100))%" : "55")
+            Text(store.isConfigured ? "\(store.battlepassCompletionPercent)%" : "55")
                 .font(.system(size: 12, weight: .bold))
                 .foregroundStyle(.white)
         }

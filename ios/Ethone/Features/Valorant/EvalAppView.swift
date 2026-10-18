@@ -1559,22 +1559,22 @@ struct EvalGameView: View {
             .sheet(isPresented: $showingAccountSheet) {
                 ValorantSettingsSheet()
             }
-        }
-        .task {
-            await store.refreshGroup()
-            while !Task.isCancelled {
-                try? await Task.sleep(nanoseconds: 100_000_000) // 100ms
-                guard !Task.isCancelled else { break }
-                await MainActor.run {
-                    groupRefreshProgress += (0.1 / 15.0)
-                    if groupRefreshProgress >= 1.0 {
-                        var transaction = Transaction()
-                        transaction.disablesAnimations = true
-                        withTransaction(transaction) {
-                            groupRefreshProgress = 0.0
-                        }
-                        Task {
-                            await store.refreshGroup()
+            .task {
+                await store.refreshGroup()
+                while !Task.isCancelled {
+                    try? await Task.sleep(nanoseconds: 100_000_000) // 100ms
+                    guard !Task.isCancelled else { break }
+                    await MainActor.run {
+                        groupRefreshProgress += (0.1 / 15.0)
+                        if groupRefreshProgress >= 1.0 {
+                            var transaction = Transaction()
+                            transaction.disablesAnimations = true
+                            withTransaction(transaction) {
+                                groupRefreshProgress = 0.0
+                            }
+                            Task {
+                                await store.refreshGroup()
+                            }
                         }
                     }
                 }

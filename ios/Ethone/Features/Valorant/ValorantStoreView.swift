@@ -232,7 +232,11 @@ struct ValorantStoreView: View {
                             .foregroundStyle(Theme.danger)
 
                         if let expiry = bundle.expiresAt.flatMap(ISODate.parse) {
-                            Label(expiry, systemImage: "clock")
+                            Label {
+                                Text(expiry, style: .date)
+                            } icon: {
+                                Image(systemName: "clock")
+                            }
                                 .font(.subheadline)
                                 .foregroundStyle(.secondary)
                         }

@@ -1,11 +1,6 @@
 import SwiftUI
 
 extension JSONValue {
-    var objectValue: [String: JSONValue]? {
-        if case .object(let value) = self { return value }
-        return nil
-    }
-
     var isScalar: Bool {
         switch self {
         case .object, .array: false

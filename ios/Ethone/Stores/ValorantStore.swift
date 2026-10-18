@@ -787,7 +787,7 @@ final class ValorantStore {
         return try? JSONDecoder.api.decode([ValorantMatch].self, from: data)
     }
 
-    private func loadLeaderboard() async {
+    func loadLeaderboard() async {
         guard isConfigured else { return }
         let cache = personalCache
         let cached = await cache?.read("leaderboard", ttl: Self.leaderboardCacheTTL)

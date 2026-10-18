@@ -59498,4 +59498,53 @@ CHANGELOG_BY_LANG.en.unshift(v12934_en);
 CHANGELOG_BY_LANG.es.unshift(v12934_es);
 CHANGELOG_BY_LANG.de.unshift(v12934_de);
 
+const v12935_fr: ChangelogEntry = {
+  version: "v1.75.157",
+  date: "2026-10-18",
+  title: "Cache Valorant isolé par utilisateur",
+  items: [
+    "Le cache local des matchs est maintenant isolé par utilisateur connecté et par compte Riot.",
+    "Le modèle de cache Swift est pleinement Codable pour la compilation iOS.",
+    "Les données en cache restent disponibles hors ligne sans mélanger les comptes.",
+  ],
+};
+
+const v12935_en: ChangelogEntry = {
+  version: "v1.75.157",
+  date: "2026-10-18",
+  title: "Cache Valorant isolé par utilisateur",
+  items: [
+    "Le cache local des matchs est maintenant isolé par utilisateur connecté et par compte Riot.",
+    "Le modèle de cache Swift est pleinement Codable pour la compilation iOS.",
+    "Les données en cache restent disponibles hors ligne sans mélanger les comptes.",
+  ],
+};
+
+const v12935_es: ChangelogEntry = {
+  version: "v1.75.157",
+  date: "2026-10-18",
+  title: "Cache Valorant isolé par utilisateur",
+  items: [
+    "Le cache local des matchs est maintenant isolé par utilisateur connecté et par compte Riot.",
+    "Le modèle de cache Swift est pleinement Codable pour la compilation iOS.",
+    "Les données en cache restent disponibles hors ligne sans mélanger les comptes.",
+  ],
+};
+
+const v12935_de: ChangelogEntry = {
+  version: "v1.75.157",
+  date: "2026-10-18",
+  title: "Cache Valorant isolé par utilisateur",
+  items: [
+    "Le cache local des matchs est maintenant isolé par utilisateur connecté et par compte Riot.",
+    "Le modèle de cache Swift est pleinement Codable pour la compilation iOS.",
+    "Les données en cache restent disponibles hors ligne sans mélanger les comptes.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12935_fr);
+CHANGELOG_BY_LANG.en.unshift(v12935_en);
+CHANGELOG_BY_LANG.es.unshift(v12935_es);
+CHANGELOG_BY_LANG.de.unshift(v12935_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

@@ -1,7 +1,7 @@
 import Foundation
 import Observation
 
-enum ScoringSystem {
+enum ScoringSystem: Codable {
     case acs, performance
 
     static let performanceMax = 500
@@ -595,7 +595,8 @@ final class ValorantStore {
     }
 
     private var matchCacheKey: String {
-        let account = "\(nameStorage)#\(tag)".lowercased()
+        let userID = api.auth.user?.id ?? "anonymous"
+        let account = "\(userID)|\(nameStorage)#\(tag)".lowercased()
         let encoded = Data(account.utf8).base64EncodedString()
             .replacingOccurrences(of: "/", with: "_")
             .replacingOccurrences(of: "+", with: "-")

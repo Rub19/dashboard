@@ -1412,11 +1412,8 @@ final class ValorantStore {
             }
         }
 
-        let finalPlayers = parsedPlayers.isEmpty
-            ? buildFallbackPlayers(myKills: myKills, myDeaths: myDeaths, myAssists: myAssists, myScore: score, myAgent: myAgent, myHs: myHs, won: won, teamRounds: team, opponentRounds: opponent)
-            : parsedPlayers
-
-        let finalRounds = buildRounds(teamRounds: team, opponentRounds: opponent, won: won)
+        let finalPlayers = parsedPlayers
+        let finalRounds: [ValorantRoundSummary] = []
 
         return ValorantMatch(
             id: raw["id"]?.stringValue ?? UUID().uuidString,
@@ -1543,7 +1540,7 @@ final class ValorantStore {
             ? buildFallbackPlayers(myKills: kills, myDeaths: deaths, myAssists: assists, myScore: value, myAgent: myAgent, myHs: myHs, won: won, teamRounds: myRounds, opponentRounds: theirRounds)
             : parsedPlayers
 
-        let finalRounds = buildRounds(teamRounds: myRounds, opponentRounds: theirRounds, won: won)
+        let finalRounds: [ValorantRoundSummary] = []
 
         return ValorantMatch(
             id: meta["matchid"]?.stringValue ?? UUID().uuidString,

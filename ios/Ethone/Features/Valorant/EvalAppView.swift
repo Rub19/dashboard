@@ -19,6 +19,46 @@ enum EvalTab: String, CaseIterable, Identifiable {
     }
 }
 
+struct EvalLockedView: View {
+    let title: String
+    let message: String
+    let onAddAccount: () -> Void
+
+    var body: some View {
+        VStack(spacing: 18) {
+            Spacer()
+
+            Image(systemName: "lock.fill")
+                .font(.system(size: 40, weight: .medium))
+                .foregroundStyle(.gray)
+
+            Text(title)
+                .font(.system(size: 24, weight: .bold))
+                .foregroundStyle(.white)
+
+            Text(message)
+                .font(.system(size: 19, weight: .regular))
+                .foregroundStyle(.gray)
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: 340)
+
+            Button(action: onAddAccount) {
+                Label("Ajouter un compte", systemImage: "plus")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 18)
+                    .padding(.vertical, 10)
+                    .background(Theme.danger, in: .capsule)
+            }
+            .buttonStyle(.plain)
+
+            Spacer()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.black)
+    }
+}
+
 // MARK: - Custom E:Val Futuristic Cyber Logo
 struct EvalLogoView: View {
     var size: CGFloat = 40
@@ -258,6 +298,23 @@ struct EvalProfileView: View {
     }
 
     var body: some View {
+        Group {
+            if store.isConfigured {
+                profileContent
+            } else {
+                EvalLockedView(
+                    title: "Non connecté",
+                    message: "Vous devez vous connecter pour accéder à cela.",
+                    onAddAccount: { showingAccountSheet = true }
+                )
+            }
+        }
+        .sheet(isPresented: $showingAccountSheet) {
+            ValorantSettingsSheet()
+        }
+    }
+
+    private var profileContent: some View {
         ScrollView {
             VStack(spacing: 16) {
                 topNavHeader
@@ -282,10 +339,7 @@ struct EvalProfileView: View {
                 }
                 .buttonStyle(.plain)
 
-                if !store.isConfigured || profile == nil {
-                    // Disconnected state: no placeholder fake stats!
-                    disconnectedProfileCard
-                } else if let profile {
+                if let profile {
                     // Connected state: real fetched profile & stats
                     mainProfileCard(profile: profile)
                     if !store.matches.isEmpty {
@@ -295,6 +349,14 @@ struct EvalProfileView: View {
                     } else if !store.isLoading {
                         emptyMatchesCard
                     }
+                } else if !store.isLoading {
+                    ContentUnavailableView(
+                        "Profil indisponible",
+                        systemImage: "person.crop.circle.badge.exclamationmark",
+                        description: Text(store.errorMessage ?? "L’API n’a fourni aucune donnée pour ce compte.")
+                    )
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 32)
                 }
             }
             .padding(.horizontal, 16)
@@ -310,9 +372,6 @@ struct EvalProfileView: View {
             if store.isConfigured {
                 await store.refresh()
             }
-        }
-        .sheet(isPresented: $showingAccountSheet) {
-            ValorantSettingsSheet()
         }
     }
 
@@ -1248,6 +1307,29 @@ struct EvalGameView: View {
     private var store: ValorantStore { model.valorant }
 
     var body: some View {
+        Group {
+            if store.isConfigured {
+                gameContent
+            } else {
+                EvalLockedView(
+                    title: "Non connecté",
+                    message: "Vous devez vous connecter pour accéder à cela.",
+                    onAddAccount: { showingAccountSheet = true }
+                )
+            }
+        }
+        .sheet(isPresented: $showingBattlepassSheet) {
+            EvalBattlepassDetailSheet()
+        }
+        .sheet(isPresented: $showingMissionsSheet) {
+            EvalUpcomingMissionsSheet()
+        }
+        .sheet(isPresented: $showingAccountSheet) {
+            ValorantSettingsSheet()
+        }
+    }
+
+    private var gameContent: some View {
         ScrollView {
             VStack(spacing: 18) {
                 HStack(spacing: 12) {
@@ -1271,6 +1353,25 @@ struct EvalGameView: View {
                     Spacer()
                 }
                 .padding(.top, 4)
+
+                    NavigationLink {
+                        ValorantStoreView()
+                    } label: {
+                        HStack(spacing: 12) {
+                            Image(systemName: "bag.fill")
+                                .foregroundStyle(Theme.danger)
+                            Text("Boutique du jour")
+                                .font(.headline.weight(.semibold))
+                                .foregroundStyle(.white)
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .foregroundStyle(.secondary)
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 15)
+                        .background(Color.white.opacity(0.08), in: .rect(cornerRadius: Theme.cardRadius))
+                    }
+                    .buttonStyle(.plain)
 
                     // 1. Groupe Section (Collapsible - Auto 15s Refresh & Party Detection)
                     collapsibleSection(
@@ -1504,15 +1605,6 @@ struct EvalGameView: View {
                 .padding(.bottom, 96)
             }
             .scrollIndicators(.hidden)
-            .sheet(isPresented: $showingBattlepassSheet) {
-                EvalBattlepassDetailSheet()
-            }
-            .sheet(isPresented: $showingMissionsSheet) {
-                EvalUpcomingMissionsSheet()
-            }
-            .sheet(isPresented: $showingAccountSheet) {
-                ValorantSettingsSheet()
-            }
             .task {
                 await store.refreshGroup()
                 while !Task.isCancelled {
@@ -1737,9 +1829,11 @@ struct EvalGameView: View {
                             .foregroundStyle(.white)
                         Spacer()
                         HStack(spacing: 4) {
-                            Text("+\(store.missionsReserveXP.formatted()) XP")
-                                .font(.caption.weight(.bold))
-                                .foregroundStyle(.secondary)
+                            if store.missionsReserveXP > 0 {
+                                Text("+\(store.missionsReserveXP.formatted()) XP")
+                                    .font(.caption.weight(.bold))
+                                    .foregroundStyle(.secondary)
+                            }
                             Image(systemName: "chevron.right")
                                 .font(.caption2.weight(.bold))
                                 .foregroundStyle(.secondary)
@@ -1824,9 +1918,11 @@ struct EvalGameView: View {
                                     .foregroundStyle(.white)
                                 Spacer()
                                 HStack(spacing: 6) {
-                                    Text("+\(store.missionsReserveXP.formatted()) XP")
-                                        .font(.caption.weight(.bold))
-                                        .foregroundStyle(.secondary)
+                                    if store.missionsReserveXP > 0 {
+                                        Text("+\(store.missionsReserveXP.formatted()) XP")
+                                            .font(.caption.weight(.bold))
+                                            .foregroundStyle(.secondary)
+                                    }
                                     Image(systemName: "chevron.down")
                                         .font(.caption2.weight(.bold))
                                         .foregroundStyle(.secondary)
@@ -2065,9 +2161,11 @@ struct EvalGameView: View {
                             .font(.caption2)
                             .foregroundStyle(.secondary)
                         Spacer()
-                        Text("+\(store.missionsReserveXP.formatted()) XP")
-                            .font(.caption2.weight(.bold).monospacedDigit())
-                            .foregroundStyle(Color(hex: 0x22C55E))
+                        if store.missionsReserveXP > 0 {
+                            Text("+\(store.missionsReserveXP.formatted()) XP")
+                                .font(.caption2.weight(.bold).monospacedDigit())
+                                .foregroundStyle(Color(hex: 0x22C55E))
+                        }
                     }
                     .padding(.top, 2)
                 }
@@ -2480,12 +2578,14 @@ struct EvalUpcomingMissionsSheet: View {
 
                                 Spacer()
 
-                                Text("+\(store.missionsReserveXP.formatted()) XP")
-                                    .font(.subheadline.weight(.heavy))
-                                    .foregroundStyle(Theme.danger)
-                                    .padding(.horizontal, 10)
-                                    .padding(.vertical, 6)
-                                    .background(Theme.danger.opacity(0.18), in: .capsule)
+                                if store.missionsReserveXP > 0 {
+                                    Text("+\(store.missionsReserveXP.formatted()) XP")
+                                        .font(.subheadline.weight(.heavy))
+                                        .foregroundStyle(Theme.danger)
+                                        .padding(.horizontal, 10)
+                                        .padding(.vertical, 6)
+                                        .background(Theme.danger.opacity(0.18), in: .capsule)
+                                }
                             }
                         }
                         .padding(16)

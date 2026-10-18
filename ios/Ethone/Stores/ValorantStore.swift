@@ -863,6 +863,7 @@ final class ValorantStore {
         let bodies = stats?["bodyshots"]?.doubleValue ?? 0
         let legs = stats?["legshots"]?.doubleValue ?? 0
         let shots = heads + bodies + legs
+        let myHs = shots > 0 ? Int((heads / shots * 100).rounded()) : 0
         let started = meta["game_start"]?.doubleValue.map { Date(timeIntervalSince1970: $0) }
         let scoring = ScoringSystem.detect(gameVersion: meta["game_version"]?.stringValue, startedAt: started)
 

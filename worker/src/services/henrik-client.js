@@ -148,6 +148,50 @@ export async function getValorantPlayerMmr(env, region = "eu", name, tag, apiKey
   }
 }
 
+export async function getValorantLeaderboard(env, region = "eu", platform = "pc", options = {}, apiKeyOverride) {
+  const apiKey = apiKeyOverride || requireSecret(env, "HENRIK_API_KEY");
+  const cleanRegion = safeText(region || "eu").toLowerCase();
+  const cleanPlatform = safeText(platform || "pc").toLowerCase();
+  const url = new URL(`/valorant/v3/leaderboard/${encodeURIComponent(cleanRegion)}/${encodeURIComponent(cleanPlatform)}`, ORIGIN);
+  const startIndex = Math.max(1, Number(options.startIndex) || 1);
+  const size = Math.min(100, Math.max(1, Number(options.size) || 50));
+  url.searchParams.set("start_index", String(startIndex));
+  url.searchParams.set("size", String(size));
+  if (options.name) url.searchParams.set("name", safeText(options.name));
+  if (options.tag) url.searchParams.set("tag", safeText(options.tag).replace(/^#/, ""));
+  if (options.puuid) url.searchParams.set("puuid", safeText(options.puuid));
+
+  const headers = {};
+  if (apiKey) headers["Authorization"] = apiKey;
+  const response = await requestExternal(url, {
+    env,
+    expectedOrigin: ORIGIN,
+    service: "tracker",
+    dedupeKey: `henrik:leaderboard:${cleanRegion}:${cleanPlatform}:${startIndex}:${size}:${safeText(options.name).toLowerCase()}:${safeText(options.tag).toLowerCase()}`,
+    headers,
+    retries: 1,
+    maxBytes: 8388608
+  });
+  const payload = response.data?.data || {};
+  const players = Array.isArray(payload.players) ? payload.players : [];
+  return Object.freeze({
+    updatedAt: safeText(payload.updated_at),
+    total: Number(response.data?.results?.total) || players.length,
+    players: Object.freeze(players.map((player) => Object.freeze({
+      name: safeText(player.name),
+      tag: safeText(player.tag),
+      cardId: safeText(player.card),
+      titleId: safeText(player.title),
+      leaderboardRank: Number(player.leaderboard_rank) || 0,
+      tier: Number(player.tier) || 0,
+      rr: Number(player.rr) || 0,
+      wins: Number(player.wins) || 0,
+      isAnonymized: Boolean(player.is_anonymized),
+      isBanned: Boolean(player.is_banned)
+    })))
+  });
+}
+
 export async function getValorantMatches(env, riotId, mode, apiKeyOverride, startIndex = 0) {
   const apiKey = apiKeyOverride || requireSecret(env, "HENRIK_API_KEY");
   const [name, tag] = riotId.split("#");

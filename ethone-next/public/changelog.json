@@ -1,5 +1,15 @@
 [
   {
+    "version": "v1.75.155",
+    "date": "2026-10-18",
+    "title": "Classement Valorant réel",
+    "items": [
+      "Branchement du classement compétitif sur HenrikDev avec joueurs, rangs, RR et victoires réels.",
+      "Ajout de la recherche du rang du compte connecté sans données fictives.",
+      "Correction de la route Worker et validation des tests."
+    ]
+  },
+  {
     "version": "v1.75.154",
     "date": "2026-10-18",
     "title": "E:Val : écrans secondaires sans données fictives",
@@ -507,17 +517,6 @@
     "items": [
       "Le bouton « Dashboard » de la page Etho ouvre une page de connexion dédiée (langue, thème clair/sombre, connexion Discord)",
       "Quand la session du bot manque, la console se reconnecte toute seule via Discord au lieu d'afficher « session expirée »"
-    ]
-  },
-  {
-    "version": "v1.75.105",
-    "date": "2026-10-15",
-    "title": "Nouveau panneau de présence d'Etho en MP",
-    "items": [
-      "Panneau du propriétaire refait en interface moderne : statut, activité, rotation et maintenance regroupés et lisibles",
-      "Nouveau bouton « Mode streamer » : tu colles le lien de ta chaîne et le titre, le bot passe en direct (violet)",
-      "Nouveau bouton « Activité perso » pour écrire ce que le bot affiche",
-      "Statut Invisible ajouté, et /status utilise le même panneau"
     ]
   }
 ]

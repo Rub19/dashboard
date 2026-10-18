@@ -59400,4 +59400,53 @@ CHANGELOG_BY_LANG.en.unshift(v12932_en);
 CHANGELOG_BY_LANG.es.unshift(v12932_es);
 CHANGELOG_BY_LANG.de.unshift(v12932_de);
 
+const v12933_fr: ChangelogEntry = {
+  version: "v1.75.155",
+  date: "2026-10-18",
+  title: "Classement Valorant réel",
+  items: [
+    "Branchement du classement compétitif sur HenrikDev avec joueurs, rangs, RR et victoires réels.",
+    "Ajout de la recherche du rang du compte connecté sans données fictives.",
+    "Correction de la route Worker et validation des tests.",
+  ],
+};
+
+const v12933_en: ChangelogEntry = {
+  version: "v1.75.155",
+  date: "2026-10-18",
+  title: "Classement Valorant réel",
+  items: [
+    "Branchement du classement compétitif sur HenrikDev avec joueurs, rangs, RR et victoires réels.",
+    "Ajout de la recherche du rang du compte connecté sans données fictives.",
+    "Correction de la route Worker et validation des tests.",
+  ],
+};
+
+const v12933_es: ChangelogEntry = {
+  version: "v1.75.155",
+  date: "2026-10-18",
+  title: "Classement Valorant réel",
+  items: [
+    "Branchement du classement compétitif sur HenrikDev avec joueurs, rangs, RR et victoires réels.",
+    "Ajout de la recherche du rang du compte connecté sans données fictives.",
+    "Correction de la route Worker et validation des tests.",
+  ],
+};
+
+const v12933_de: ChangelogEntry = {
+  version: "v1.75.155",
+  date: "2026-10-18",
+  title: "Classement Valorant réel",
+  items: [
+    "Branchement du classement compétitif sur HenrikDev avec joueurs, rangs, RR et victoires réels.",
+    "Ajout de la recherche du rang du compte connecté sans données fictives.",
+    "Correction de la route Worker et validation des tests.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12933_fr);
+CHANGELOG_BY_LANG.en.unshift(v12933_en);
+CHANGELOG_BY_LANG.es.unshift(v12933_es);
+CHANGELOG_BY_LANG.de.unshift(v12933_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

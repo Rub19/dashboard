@@ -312,6 +312,14 @@ struct EvalProfileView: View {
         .sheet(isPresented: $showingAccountSheet) {
             ValorantSettingsSheet()
         }
+        .alert("Action indisponible", isPresented: Binding(
+            get: { store.socialActionMessage != nil },
+            set: { if !$0 { store.socialActionMessage = nil } }
+        )) {
+            Button("OK", role: .cancel) { store.socialActionMessage = nil }
+        } message: {
+            Text(store.socialActionMessage ?? "")
+        }
     }
 
     private var profileContent: some View {
@@ -3163,7 +3171,7 @@ struct EvalFriendsView: View {
                         VStack(spacing: 18) {
                             // Section 1: Votre groupe — 1/5
                             VStack(alignment: .leading, spacing: 8) {
-                                Text("Votre groupe — 1/5")
+                                Text("Votre profil")
                                     .font(.subheadline.weight(.semibold))
                                     .foregroundStyle(.secondary)
                                     .padding(.leading, 4)
@@ -3393,9 +3401,9 @@ struct EvalFriendsView: View {
                         .foregroundStyle(.secondary)
                 }
 
-                Text("En ligne")
+                Text(store.isPlayerOnline ? "En ligne" : "Statut indisponible")
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(store.isPlayerOnline ? Color(hex: 0x22C55E) : .secondary)
             }
 
             Spacer()

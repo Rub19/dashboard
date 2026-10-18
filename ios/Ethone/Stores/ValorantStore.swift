@@ -37,6 +37,26 @@ struct ValorantProfile: Hashable {
     static func tierIcon(_ tier: Int) -> URL? {
         tier > 0 ? URL(string: "https://media.valorant-api.com/competitivetiers/03621f52-342b-cf4e-4f86-9350a49c6d04/\(tier)/largeicon.png") : nil
     }
+
+}
+
+struct ValorantLeaderboardEntry: Identifiable, Hashable {
+    let id: String
+    let name: String
+    let tag: String
+    let cardID: String
+    let leaderboardRank: Int
+    let tier: Int
+    let rr: Int
+    let wins: Int
+    let isAnonymized: Bool
+    let isBanned: Bool
+
+    var handle: String { tag.isEmpty ? name : "\(name)#\(tag)" }
+    var cardURL: URL? {
+        guard !cardID.isEmpty else { return nil }
+        return URL(string: "https://media.valorant-api.com/playercards/\(cardID)/smallart.png")
+    }
 }
 
 struct ValorantMatchPlayer: Identifiable, Hashable {
@@ -213,6 +233,8 @@ struct ValorantParty: Hashable {
 final class ValorantStore {
     private let api: APIClient
     private(set) var matches: [ValorantMatch] = []
+    private(set) var leaderboard: [ValorantLeaderboardEntry] = []
+    private(set) var leaderboardTotal: Int = 0
     private(set) var isLoading = false
     private(set) var profile: ValorantProfile?
     var errorMessage: String?
@@ -231,6 +253,7 @@ final class ValorantStore {
     private(set) var friendHistory: [ValorantFriendHistoryEvent] = []
     var openProfileDirectly: Bool = false
     var sortOfflineByLastSeen: Bool = true
+    var socialActionMessage: String?
 
     // Live Party & Presence
     private(set) var currentParty: ValorantParty?
@@ -390,29 +413,16 @@ final class ValorantStore {
     func sendFriendRequest(name: String, tag: String) {
         let cleanName = name.trimmingCharacters(in: .whitespaces)
         let cleanTag = tag.trimmingCharacters(in: .whitespaces).replacingOccurrences(of: "#", with: "")
-        guard !cleanName.isEmpty else { return }
-        let newEvent = ValorantFriendHistoryEvent(
-            id: UUID().uuidString,
-            name: cleanName,
-            tag: cleanTag.isEmpty ? "EUW" : cleanTag,
-            type: .requestCanceled,
-            timestampText: "à l'instant"
-        )
-        friendHistory.insert(newEvent, at: 0)
+        guard !cleanName.isEmpty, !cleanTag.isEmpty else {
+            socialActionMessage = "Saisissez un Riot ID complet au format Nom#Tag."
+            return
+        }
+        socialActionMessage = "L’API connectée ne permet pas encore d’envoyer une demande d’ami à \(cleanName)#\(cleanTag)."
     }
 
     func removeFriend(id: String) {
-        if let idx = friends.firstIndex(where: { $0.id == id }) {
-            let removed = friends.remove(at: idx)
-            let newEvent = ValorantFriendHistoryEvent(
-                id: UUID().uuidString,
-                name: removed.name,
-                tag: removed.tag,
-                type: .removed,
-                timestampText: "à l'instant"
-            )
-            friendHistory.insert(newEvent, at: 0)
-        }
+        guard let friend = friends.first(where: { $0.id == id }) else { return }
+        socialActionMessage = "L’API connectée ne permet pas encore de retirer \(friend.handle) de la liste d’amis."
     }
 
     func refreshFriends() async {
@@ -447,7 +457,10 @@ final class ValorantStore {
         storeHistoryCount = 0
         friends = []
         friendHistory = []
+        socialActionMessage = nil
         matches = []
+        leaderboard = []
+        leaderboardTotal = 0
         profile = nil
         currentParty = nil
         isPlayerOnline = false
@@ -497,8 +510,7 @@ final class ValorantStore {
             return
         }
 
-        isPlayerOnline = true
-
+        isPlayerOnline = false
         currentParty = nil
     }
 
@@ -568,6 +580,7 @@ final class ValorantStore {
         isLoading = true
         defer { isLoading = false }
         await loadProfile()
+        await loadLeaderboard()
         await loadUpcomingMissions()
         await loadBattlepass()
         do {
@@ -580,6 +593,7 @@ final class ValorantStore {
                 errorMessage = nil
                 return
             }
+
             var components = URLComponents(string: "https://api.henrikdev.xyz/valorant/v3/matches/eu/\(nameStorage.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? nameStorage)/\(tag)")!
             components.queryItems = [URLQueryItem(name: "size", value: "25")]
             var request = URLRequest(url: components.url!)
@@ -596,6 +610,53 @@ final class ValorantStore {
         } catch {
             errorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
         }
+    }
+
+    private func loadLeaderboard() async {
+        guard isConfigured else { return }
+        do {
+            let payload: JSONValue = try await api.worker("api/stats/valorant-leaderboard", query: [
+                URLQueryItem(name: "region", value: "eu"),
+                URLQueryItem(name: "platform", value: "pc"),
+                URLQueryItem(name: "startIndex", value: "1"),
+                URLQueryItem(name: "size", value: "50")
+            ])
+            let rows = payload["players"]?.arrayValue ?? []
+            leaderboard = rows.compactMap(Self.convertLeaderboardEntry)
+            leaderboardTotal = payload["total"]?.intValue ?? leaderboard.count
+            let ownPayload: JSONValue = try await api.worker("api/stats/valorant-leaderboard", query: [
+                URLQueryItem(name: "region", value: "eu"),
+                URLQueryItem(name: "platform", value: "pc"),
+                URLQueryItem(name: "size", value: "1"),
+                URLQueryItem(name: "name", value: nameStorage),
+                URLQueryItem(name: "tag", value: tag)
+            ])
+            if let ownEntry = (ownPayload["players"]?.arrayValue ?? []).compactMap(Self.convertLeaderboardEntry).first,
+               ownEntry.leaderboardRank > 0 {
+                profile?.leaderboardRank = ownEntry.leaderboardRank
+            }
+        } catch {
+            leaderboard = []
+            leaderboardTotal = 0
+        }
+    }
+
+    private static func convertLeaderboardEntry(_ raw: JSONValue) -> ValorantLeaderboardEntry? {
+        guard let name = raw["name"]?.stringValue, !name.isEmpty else { return nil }
+        let tag = raw["tag"]?.stringValue ?? ""
+        let id = "\(raw["leaderboardRank"]?.intValue ?? 0)-\(name)-\(tag)"
+        return ValorantLeaderboardEntry(
+            id: id,
+            name: name,
+            tag: tag,
+            cardID: raw["cardId"]?.stringValue ?? "",
+            leaderboardRank: raw["leaderboardRank"]?.intValue ?? 0,
+            tier: raw["tier"]?.intValue ?? 0,
+            rr: raw["rr"]?.intValue ?? 0,
+            wins: raw["wins"]?.intValue ?? 0,
+            isAnonymized: raw["isAnonymized"]?.boolValue ?? false,
+            isBanned: raw["isBanned"]?.boolValue ?? false
+        )
     }
 
     static func performanceScore(_ player: JSONValue) -> Int? {

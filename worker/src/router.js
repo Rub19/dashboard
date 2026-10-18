@@ -68,7 +68,7 @@ import { redditActivityRoute, redditOAuthDisconnectRoute, redditOAuthExchangeRou
 import { steamRoute } from "./routes/steam.js";
 import { supabaseRoute } from "./routes/supabase.js";
 import { todoistOAuthDisconnectRoute, todoistOAuthExchangeRoute, todoistTasksRoute } from "./routes/todoist-oauth.js";
-import { trackerLolRoute, trackerRoute, trackerValorantRoute, trackerValorantMatchesRoute, trackerValorantMmrRoute, trackerLolMatchesRoute, trackerValorantStoreRoute, trackerLolRotationRoute, trackerTftMatchesRoute, trackerApexMatchesRoute, trackerGameProfileRoute, trackerGameMatchesRoute } from "./routes/tracker.js";
+import { trackerLolRoute, trackerRoute, trackerValorantRoute, trackerValorantMatchesRoute, trackerValorantMmrRoute, trackerValorantLeaderboardRoute, trackerLolMatchesRoute, trackerValorantStoreRoute, trackerLolRotationRoute, trackerTftMatchesRoute, trackerApexMatchesRoute, trackerGameProfileRoute, trackerGameMatchesRoute } from "./routes/tracker.js";
 import { valorantAuthRoute, valorantStorefrontRoute, valorantInventoryRoute } from "./routes/valorant-player.js";
 import {
   friendGameDinoRoute,
@@ -182,6 +182,7 @@ export const ROUTES = Object.freeze([
   route("tracker.apex-matches", "/api/stats/apex-matches", trackerApexMatchesRoute, { public: true, service: "tracker", rateLimit: "edge" }),
   route("tracker.valorant-matches", "/api/stats/valorant-matches", trackerValorantMatchesRoute, { public: true, service: "tracker", rateLimit: "edge" }),
   route("tracker.valorant-mmr", "/api/stats/valorant-mmr", trackerValorantMmrRoute, { public: true, service: "tracker", rateLimit: "edge" }),
+  route("tracker.valorant-leaderboard", "/api/stats/valorant-leaderboard", trackerValorantLeaderboardRoute, { public: true, service: "tracker", rateLimit: "edge" }),
   route("tracker.lol-matches", "/api/stats/lol-matches", trackerLolMatchesRoute, { public: true, service: "tracker", rateLimit: "edge" }),
   route("tracker.valorant-store", "/api/stats/valorant-store", trackerValorantStoreRoute, { public: true, service: "tracker", rateLimit: "edge" }),
   route("tracker.valorant-auth", "/api/stats/valorant-auth", valorantAuthRoute, { method: "POST", public: true, service: "tracker", rateLimit: "strict" }),

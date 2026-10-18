@@ -5,7 +5,7 @@ import {
   getTrackerProfile,
   getTrackerMatches,
 } from "../services/tracker-client.js";
-import { getValorantProfile, getValorantMatches, getValorantHistory, getValorantPlayerMmr } from "../services/henrik-client.js";
+import { getValorantProfile, getValorantMatches, getValorantHistory, getValorantPlayerMmr, getValorantLeaderboard } from "../services/henrik-client.js";
 import { getLolProfile, getLolMatches, getTftMatches } from "../services/riot-client.js";
 import { getLolRotation, getValorantFeaturedStore } from "../services/game-store-client.js";
 import { getUserProviderCredential } from "../services/supabase-client.js";
@@ -142,6 +142,7 @@ export async function trackerValorantMmrRoute({ env, url, auth, request }) {
         } catch {
           ranks[key] = "Unrated";
         }
+
       })
     );
     return routeResult({ ranks }, { source: "henrikdev", cached: true });
@@ -151,6 +152,30 @@ export async function trackerValorantMmrRoute({ env, url, auth, request }) {
   const tag = queryText(url, "tag", { pattern: PATTERNS.playerTag, max: 10 }).replace(/^#/, "");
   const rank = await getValorantPlayerMmr(env, region, name, tag, apiKey);
   return routeResult({ rank: rank || "Unrated" }, { source: "henrikdev", cached: true });
+}
+
+export async function trackerValorantLeaderboardRoute({ env, url, auth, request }) {
+  assertAllowedQuery(url, ["region", "platform", "startIndex", "size", "name", "tag", "puuid", "_t", "t", "force"]);
+  const region = (queryText(url, "region", { max: 8, required: false }) || "eu").toLowerCase();
+  const platform = (queryText(url, "platform", { max: 8, required: false }) || "pc").toLowerCase();
+  const startIndex = queryInteger(url, "startIndex", { required: false, fallback: 1, min: 1, max: 15000 });
+  const size = queryInteger(url, "size", { required: false, fallback: 50, min: 1, max: 100 });
+  const name = queryText(url, "name", { pattern: PATTERNS.playerName, max: 32, required: false });
+  const tag = queryText(url, "tag", { pattern: PATTERNS.playerTag, max: 10, required: false })?.replace(/^#/, "");
+  const puuid = queryText(url, "puuid", { max: 64, required: false });
+  const loader = async () => getValorantLeaderboard(
+    env,
+    region,
+    platform,
+    { startIndex, size, name, tag, puuid },
+    await ownKeyHenrik(env, auth, request)
+  );
+  const result = await cachedLoad(
+    `tracker:valorant:leaderboard:${region}:${platform}:${startIndex}:${size}:${(name || "").toLowerCase()}:${(tag || "").toLowerCase()}:${puuid || ""}`,
+    120,
+    loader
+  );
+  return routeResult(result.data, { source: "henrikdev", cached: result.cached });
 }
 
 export async function trackerLolMatchesRoute({ env, url, auth, request }) {

@@ -1386,6 +1386,17 @@ struct EvalNameHistoryView: View {
 // Classement Radiant
 struct EvalLeaderboardView: View {
     @Environment(AppModel.self) private var model
+    @State private var searchQuery = ""
+
+    private var store: ValorantStore { model.valorant }
+    private var filteredPlayers: [ValorantLeaderboardEntry] {
+        let query = searchQuery.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !query.isEmpty else { return store.leaderboard }
+        return store.leaderboard.filter {
+            $0.name.localizedCaseInsensitiveContains(query) ||
+            $0.tag.localizedCaseInsensitiveContains(query)
+        }
+    }
 
     var body: some View {
         ZStack {
@@ -1393,24 +1404,99 @@ struct EvalLeaderboardView: View {
 
             ScrollView {
                 VStack(spacing: 12) {
-                    VStack(spacing: 12) {
-                        Image(systemName: "trophy.slash")
-                            .font(.system(size: 38))
+                    HStack(spacing: 10) {
+                        Image(systemName: "magnifyingglass")
                             .foregroundStyle(.secondary)
-                        Text("Classement public indisponible")
-                            .font(.headline.weight(.bold))
+                        TextField("Rechercher des joueurs...", text: $searchQuery)
                             .foregroundStyle(.white)
-                        Text("L’API utilisée par E:Val ne fournit pas de liste publique Radiant. Aucun joueur ou score fictif n’est affiché.")
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal, 20)
+                        if !searchQuery.isEmpty {
+                            Button { searchQuery = "" } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
                     }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 40)
-                    .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 11)
+                    .background(Color.white.opacity(0.06), in: .capsule)
 
-                    if let profile = model.valorant.profile, let rank = profile.leaderboardRank {
+                    if filteredPlayers.isEmpty {
+                        VStack(spacing: 12) {
+                            Image(systemName: store.isConfigured ? "trophy.slash" : "person.crop.circle.badge.exclamationmark")
+                                .font(.system(size: 38))
+                                .foregroundStyle(.secondary)
+                            Text(store.isConfigured ? "Classement indisponible" : "Compte non connecté")
+                                .font(.headline.weight(.bold))
+                                .foregroundStyle(.white)
+                            Text(store.isConfigured
+                                 ? "HenrikDev n’a renvoyé aucun joueur pour cette région ou ce filtre."
+                                 : "Connectez votre compte pour charger le classement.")
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                                .multilineTextAlignment(.center)
+                                .padding(.horizontal, 20)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 40)
+                        .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
+                    } else {
+                        VStack(alignment: .leading, spacing: 0) {
+                            Text("\(store.leaderboardTotal) joueurs classés")
+                                .font(.headline.weight(.bold))
+                                .foregroundStyle(.white)
+                                .padding(16)
+
+                            ForEach(filteredPlayers) { player in
+                                HStack(spacing: 12) {
+                                    Text(player.leaderboardRank > 0 ? "\(player.leaderboardRank)" : "—")
+                                        .font(.headline.monospacedDigit().weight(.heavy))
+                                        .foregroundStyle(player.leaderboardRank == 1 ? Color(hex: 0xF5D78E) : .secondary)
+                                        .frame(width: 38, alignment: .leading)
+
+                                    if let url = player.cardURL {
+                                        AsyncImage(url: url) { phase in
+                                            if let image = phase.image {
+                                                image.resizable().scaledToFill()
+                                            } else {
+                                                Color.white.opacity(0.08)
+                                            }
+                                        }
+                                        .frame(width: 44, height: 44)
+                                        .clipShape(.rect(cornerRadius: 12))
+                                    }
+
+                                    VStack(alignment: .leading, spacing: 3) {
+                                        Text(player.isAnonymized ? "Joueur anonymisé" : player.handle)
+                                            .font(.subheadline.weight(.bold))
+                                            .foregroundStyle(.white)
+                                        Text("\(player.rr) RR · \(player.wins) V")
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                    }
+
+                                    Spacer()
+
+                                    if let rankURL = ValorantProfile.tierIcon(player.tier) {
+                                        AsyncImage(url: rankURL) { phase in
+                                            if let image = phase.image {
+                                                image.resizable().scaledToFit()
+                                            }
+                                        }
+                                        .frame(width: 32, height: 32)
+                                    }
+                                }
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 12)
+
+                                if player.id != filteredPlayers.last?.id {
+                                    Divider().overlay(Color.white.opacity(0.08)).padding(.leading, 66)
+                                }
+                            }
+                        }
+                        .background(Color.white.opacity(0.07), in: .rect(cornerRadius: Theme.cardRadius))
+                    }
+
+                    if let profile = store.profile, let rank = profile.leaderboardRank {
                         HStack {
                             Label("Votre rang", systemImage: "person.crop.circle.badge.checkmark")
                                 .foregroundStyle(.white)
@@ -1424,6 +1510,14 @@ struct EvalLeaderboardView: View {
                     }
                 }
                 .padding(16)
+            }
+            .refreshable {
+                await store.loadLeaderboard()
+            }
+            .task {
+                if store.leaderboard.isEmpty {
+                    await store.loadLeaderboard()
+                }
             }
         }
         .navigationTitle("Classement")

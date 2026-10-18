@@ -381,15 +381,11 @@ struct EvalProfileView: View {
             Button {
                 dismiss()
             } label: {
-                HStack(spacing: 6) {
-                    Image(systemName: "chevron.left")
-                        .font(.system(size: 14, weight: .bold))
-                    Image(systemName: "desktopcomputer")
-                        .font(.system(size: 12))
-                }
-                .foregroundStyle(Theme.danger)
-                .frame(width: 44, height: 36)
-                .background(Theme.danger.opacity(0.18), in: .capsule)
+                Image(systemName: "desktopcomputer")
+                    .font(.system(size: 17, weight: .semibold))
+                    .foregroundStyle(Theme.danger)
+                    .frame(width: 56, height: 56)
+                    .glassEffect(.regular.interactive(), in: .circle)
             }
             .buttonStyle(PressScaleStyle())
 
@@ -401,25 +397,21 @@ struct EvalProfileView: View {
 
             Spacer()
 
-            HStack(spacing: 8) {
+            HStack(spacing: 16) {
                 Button {
                     showingAccountSheet = true
                 } label: {
-                    Image(systemName: "line.3.horizontal")
-                        .font(.system(size: 13, weight: .bold))
-                        .foregroundStyle(Theme.danger)
-                        .frame(width: 34, height: 34)
-                        .glassEffect(.regular, in: .circle)
-                }
-
-                Button {
-                    showingAccountSheet = true
-                } label: {
-                    Image(systemName: "ellipsis")
-                        .font(.system(size: 13, weight: .bold))
-                        .foregroundStyle(.white)
-                        .frame(width: 34, height: 34)
-                        .glassEffect(.regular, in: .circle)
+                    HStack(spacing: 14) {
+                        Image(systemName: "line.3.horizontal")
+                            .font(.system(size: 15, weight: .bold))
+                            .foregroundStyle(Theme.danger)
+                        Image(systemName: "ellipsis")
+                            .font(.system(size: 15, weight: .bold))
+                            .foregroundStyle(.white)
+                    }
+                    .padding(.horizontal, 22)
+                    .frame(height: 56)
+                    .glassEffect(.regular.interactive(), in: .capsule)
                 }
             }
         }
@@ -515,10 +507,12 @@ struct EvalProfileView: View {
             HStack(alignment: .top, spacing: 16) {
                 // Column 1: Current Rank
                 VStack(spacing: 6) {
-                    Text(profile.actName)
-                        .font(.system(size: 9, weight: .bold))
-                        .foregroundStyle(.secondary)
-                        .tracking(0.6)
+                    if !profile.actName.isEmpty {
+                        Text(profile.actName)
+                            .font(.system(size: 9, weight: .bold))
+                            .foregroundStyle(.secondary)
+                            .tracking(0.6)
+                    }
 
                     ZStack {
                         Circle()
@@ -538,37 +532,21 @@ struct EvalProfileView: View {
                                 case .success(let image):
                                     image.resizable().scaledToFit().frame(width: 44, height: 44)
                                 default:
-                                    Image(systemName: "sun.max.fill")
-                                        .font(.system(size: 34))
-                                        .foregroundStyle(
-                                            LinearGradient(
-                                                colors: [Color(hex: 0xFFF1C5), Color(hex: 0xF5D78E)],
-                                                startPoint: .top,
-                                                endPoint: .bottom
-                                            )
-                                        )
+                                    ProgressView().tint(.secondary)
                                 }
                             }
-                        } else {
-                            Image(systemName: "sun.max.fill")
-                                .font(.system(size: 34))
-                                .foregroundStyle(
-                                    LinearGradient(
-                                        colors: [Color(hex: 0xFFF1C5), Color(hex: 0xF5D78E)],
-                                        startPoint: .top,
-                                        endPoint: .bottom
-                                    )
-                                )
                         }
                     }
 
-                    Text(profile.rank.uppercased())
+                    Text(profile.rank.isEmpty ? "RANG INDISPONIBLE" : profile.rank.uppercased())
                         .font(.subheadline.weight(.heavy))
                         .foregroundStyle(.white)
 
-                    Text("\(profile.rr) SC")
-                        .font(.caption.weight(.medium))
-                        .foregroundStyle(.secondary)
+                    if profile.rr > 0 {
+                        Text("\(profile.rr) SC")
+                            .font(.caption.weight(.medium))
+                            .foregroundStyle(.secondary)
+                    }
 
                     if let leaderboardRank = profile.leaderboardRank {
                         Text("Rang \(leaderboardRank)")
@@ -583,10 +561,12 @@ struct EvalProfileView: View {
 
                 // Column 2: Peak Rank
                 VStack(spacing: 6) {
-                    Text(profile.actName)
-                        .font(.system(size: 9, weight: .bold))
-                        .foregroundStyle(.secondary)
-                        .tracking(0.6)
+                    if !profile.actName.isEmpty {
+                        Text(profile.actName)
+                            .font(.system(size: 9, weight: .bold))
+                            .foregroundStyle(.secondary)
+                            .tracking(0.6)
+                    }
 
                     ZStack {
                         if let peakIconURL = ValorantProfile.tierIcon(profile.peakTier) {
@@ -595,32 +575,14 @@ struct EvalProfileView: View {
                                 case .success(let image):
                                     image.resizable().scaledToFit().frame(width: 44, height: 44)
                                 default:
-                                    Image(systemName: "triangle.fill")
-                                        .font(.system(size: 36))
-                                        .foregroundStyle(
-                                            LinearGradient(
-                                                colors: [Color.white, Color(hex: 0xD1D5DB)],
-                                                startPoint: .top,
-                                                endPoint: .bottom
-                                            )
-                                        )
+                                    ProgressView().tint(.secondary)
                                 }
                             }
-                        } else {
-                            Image(systemName: "triangle.fill")
-                                .font(.system(size: 36))
-                                .foregroundStyle(
-                                    LinearGradient(
-                                        colors: [Color.white, Color(hex: 0xD1D5DB)],
-                                        startPoint: .top,
-                                        endPoint: .bottom
-                                    )
-                                )
                         }
                     }
                     .frame(height: 76)
 
-                    Text(profile.peakRank.uppercased())
+                    Text(profile.peakRank.isEmpty ? "RANG INDISPONIBLE" : profile.peakRank.uppercased())
                         .font(.subheadline.weight(.heavy))
                         .foregroundStyle(.white)
 
@@ -651,16 +613,6 @@ struct EvalProfileView: View {
                 .foregroundStyle(Color(hex: 0xF5D78E).opacity(0.12))
                 .offset(x: 180, y: -10)
 
-            VStack(alignment: .leading, spacing: 4) {
-                Text("CHAMPIONS TOUR 2026")
-                    .font(.system(size: 9, weight: .heavy))
-                    .tracking(1.5)
-                    .foregroundStyle(Color(hex: 0xF5D78E))
-                Text("生 而 无 暇")
-                    .font(.system(size: 20, weight: .heavy))
-                    .foregroundStyle(Color(hex: 0xF5D78E).opacity(0.9))
-            }
-            .padding(14)
         }
     }
 
@@ -672,19 +624,23 @@ struct EvalProfileView: View {
                     .font(.headline.weight(.bold))
                     .foregroundStyle(.white)
                 Spacer()
-                HStack(spacing: 4) {
-                    Text("20 Actes")
-                        .font(.caption.weight(.semibold))
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: 9, weight: .bold))
+                if !profile.actName.isEmpty {
+                    HStack(spacing: 4) {
+                        Text("Acte actuel")
+                            .font(.caption.weight(.semibold))
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 9, weight: .bold))
+                    }
+                    .foregroundStyle(.secondary)
                 }
-                .foregroundStyle(.secondary)
             }
 
-            Text(profile.actName)
-                .font(.system(size: 9, weight: .heavy))
-                .foregroundStyle(.secondary)
-                .tracking(0.8)
+            if !profile.actName.isEmpty {
+                Text(profile.actName)
+                    .font(.system(size: 9, weight: .heavy))
+                    .foregroundStyle(.secondary)
+                    .tracking(0.8)
+            }
 
             HStack(spacing: 0) {
                 VStack(alignment: .leading, spacing: 2) {
@@ -714,10 +670,12 @@ struct EvalProfileView: View {
             }
 
             // Act badges row
+            if !profile.actName.isEmpty {
             HStack(spacing: 12) {
-                actBadge(name: profile.actName, icon: "sun.max.fill", color: Color(hex: 0xF5D78E))
+                actBadge(name: profile.actName, icon: "circle.fill", color: Color(hex: 0xF5D78E))
             }
             .padding(.top, 4)
+            }
         }
         .padding(16)
         .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
@@ -816,44 +774,91 @@ struct EvalProfileView: View {
     }
 
     private func matchRowCard(match: ValorantMatch) -> some View {
-        HStack(spacing: 12) {
-            Rectangle()
-                .fill(match.won ? Color(hex: 0x2DD4BF) : Theme.danger)
-                .frame(width: 4)
+        VStack(spacing: 0) {
+            HStack(spacing: 12) {
+                Image(systemName: match.mode.lowercased().contains("class") ? "shield.fill" : "display")
+                    .font(.title3.weight(.semibold))
+                    .foregroundStyle(.secondary)
 
-            VStack(alignment: .leading, spacing: 4) {
-                HStack {
-                    Text(match.map)
-                        .font(.subheadline.weight(.bold))
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(match.mode.isEmpty || match.mode == "—" ? "Partie" : match.mode)
+                        .font(.headline.weight(.bold))
                         .foregroundStyle(.white)
-                    Spacer()
-                    Text(match.won ? "VICTOIRE" : "DÉFAITE")
-                        .font(.system(size: 9, weight: .heavy))
-                        .foregroundStyle(match.won ? Color(hex: 0x2DD4BF) : Theme.danger)
+                    if let startedAt = match.startedAt {
+                        Text(startedAt.formatted(.dateTime.day().month(.twoDigits).year(.twoDigits).hour().minute()))
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
                 }
 
-                HStack(spacing: 12) {
-                    Text("\(match.teamRounds) — \(match.opponentRounds)")
-                        .font(.headline.weight(.heavy).monospacedDigit())
-                        .foregroundStyle(.white)
+                Spacer()
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 14)
 
-                    Text("\(match.kills)/\(match.deaths)/\(match.assists)")
-                        .font(.caption.monospacedDigit())
-                        .foregroundStyle(.secondary)
+            ZStack(alignment: .leading) {
+                LinearGradient(
+                    colors: [Color(hex: 0x252735), Color(hex: 0x111218)],
+                    startPoint: .leading,
+                    endPoint: .trailing
+                )
+
+                HStack(spacing: 16) {
+                    if let agentURL = match.myPlayer?.agentIconURL {
+                        AsyncImage(url: agentURL) { phase in
+                            if let image = phase.image {
+                                image
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: 112, height: 92)
+                                    .clipped()
+                            }
+                        }
+                    }
+
+                    VStack(alignment: .leading, spacing: 5) {
+                        Text(match.agent.isEmpty || match.agent == "—" ? "Agent indisponible" : match.agent)
+                            .font(.title3.weight(.bold))
+                            .foregroundStyle(.white)
+                        Text(match.map.isEmpty || match.map == "—" ? "Carte indisponible" : match.map)
+                            .font(.subheadline.weight(.medium))
+                            .foregroundStyle(.white.opacity(0.68))
+                    }
 
                     Spacer()
 
-                    Text("\(match.scoreValue.map(String.init) ?? "—") \(match.scoreLabel)")
-                        .font(.caption.weight(.bold).monospacedDigit())
-                        .foregroundStyle(Color(hex: 0xF5D78E))
+                    Text(match.won ? "VICTOIRE" : "DÉFAITE")
+                        .font(.subheadline.weight(.heavy))
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 13)
+                        .padding(.vertical, 8)
+                        .background(match.won ? Color(hex: 0x35B86B) : Theme.danger, in: .capsule)
+                        .padding(.trailing, 14)
                 }
             }
-            .padding(.vertical, 12)
-            .padding(.trailing, 14)
+            .frame(height: 92)
+            .clipped()
+
+            HStack(spacing: 0) {
+                Label("\(match.kills) / \(match.deaths) / \(match.assists)", systemImage: "scope")
+                Spacer()
+                if let score = match.scoreValue {
+                    Label("\(score)", systemImage: "chart.bar.fill")
+                }
+                Spacer()
+                Label("\(match.teamRounds) — \(match.opponentRounds)", systemImage: "flag.checkered")
+                Image(systemName: "chevron.right")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(.secondary)
+                    .padding(.leading, 8)
+            }
+            .font(.subheadline.monospacedDigit())
+            .foregroundStyle(.white)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 14)
         }
-        .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
+        .background(Color.white.opacity(0.07), in: .rect(cornerRadius: Theme.cardRadius))
         .clipShape(.rect(cornerRadius: Theme.cardRadius))
-        .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
     }
 }
 
@@ -1294,8 +1299,8 @@ struct EvalGroupRefreshWheel: View {
 struct EvalGameView: View {
     @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss
-    @State private var groupExpanded = true
-    @State private var contractsExpanded = true
+    @State private var groupExpanded = false
+    @State private var contractsExpanded = false
     @State private var equipmentExpanded = true
     @State private var contractsSubtab = 0
     @State private var futureMissionsExpanded = false

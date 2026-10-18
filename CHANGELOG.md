@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.150 — 2026-10-18
+
+**Refonte E:Val fidèle aux captures**
+
+- Profil rapproché du layout des captures avec en-tête compact, carte de rang et résumé de carrière sans valeurs inventées.
+- Matchs récents présentés sous forme de cartes visuelles avec agent, mode, carte, résultat et statistiques issues de l'API.
+- Écran Jeu recentré sur l'équipement au chargement, avec sections Groupe et Contrats repliées par défaut.
+- Les rangs, actes et icônes absents de l'API ne sont plus remplacés par des données ou symboles fictifs.
+
 ## v1.75.149 — 2026-10-17
 
 **Refonte E:Val iOS**

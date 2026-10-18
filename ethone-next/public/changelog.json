@@ -1,5 +1,16 @@
 [
   {
+    "version": "v1.75.150",
+    "date": "2026-10-18",
+    "title": "Refonte E:Val fidèle aux captures",
+    "items": [
+      "Profil rapproché du layout des captures avec carte de rang, résumé de carrière et en-tête compact.",
+      "Matchs récents présentés sous forme de cartes visuelles avec les données réellement disponibles dans l’API.",
+      "Écran Jeu recentré sur l’équipement avec Groupe et Contrats repliés au chargement.",
+      "Les informations absentes de l’API ne sont plus remplacées par des valeurs fictives."
+    ]
+  },
+  {
     "version": "v1.75.149",
     "date": "2026-10-17",
     "title": "Refonte E:Val iOS",

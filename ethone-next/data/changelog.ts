@@ -59114,6 +59114,54 @@ const v1_75_149_fr: ChangelogEntry = {
   ],
 };
 
+const v1_75_150_fr: ChangelogEntry = {
+  version: "v1.75.150",
+  date: "2026-10-18",
+  title: "Refonte E:Val fidèle aux captures",
+  items: [
+    "Profil rapproché du layout des captures avec carte de rang, résumé de carrière et en-tête compact.",
+    "Matchs récents présentés sous forme de cartes visuelles avec les données réellement disponibles dans l’API.",
+    "Écran Jeu recentré sur l’équipement avec Groupe et Contrats repliés au chargement.",
+    "Les informations absentes de l’API ne sont plus remplacées par des valeurs fictives.",
+  ],
+};
+
+const v1_75_150_en: ChangelogEntry = {
+  version: "v1.75.150",
+  date: "2026-10-18",
+  title: "E:Val redesign closer to the reference screens",
+  items: [
+    "The profile now follows the reference layout with a compact header, rank card and career summary.",
+    "Recent matches use visual cards with the data actually available from the API.",
+    "The Game screen opens on Equipment, with Party and Contracts collapsed by default.",
+    "Missing API information is no longer replaced with fabricated values.",
+  ],
+};
+
+const v1_75_150_es: ChangelogEntry = {
+  version: "v1.75.150",
+  date: "2026-10-18",
+  title: "Rediseño de E:Val más fiel a las pantallas de referencia",
+  items: [
+    "El perfil sigue ahora el diseño de referencia con encabezado compacto, tarjeta de rango y resumen de carrera.",
+    "Las partidas recientes usan tarjetas visuales con los datos realmente disponibles en la API.",
+    "La pantalla Juego abre en Equipamiento y Grupo y Contratos aparecen plegados por defecto.",
+    "La información ausente de la API ya no se sustituye por valores inventados.",
+  ],
+};
+
+const v1_75_150_de: ChangelogEntry = {
+  version: "v1.75.150",
+  date: "2026-10-18",
+  title: "E:Val näher an den Referenzbildern",
+  items: [
+    "Das Profil folgt jetzt dem Referenzlayout mit kompakter Kopfzeile, Rangkarte und Karriereübersicht.",
+    "Letzte Spiele werden als visuelle Karten mit den tatsächlich verfügbaren API-Daten angezeigt.",
+    "Der Spielbildschirm öffnet die Ausrüstung; Gruppe und Verträge sind standardmäßig eingeklappt.",
+    "Fehlende API-Daten werden nicht mehr durch erfundene Werte ersetzt.",
+  ],
+};
+
 const v1_75_149_en: ChangelogEntry = {
   version: "v1.75.149",
   date: "2026-10-17",
@@ -59153,11 +59201,9 @@ const v1_75_149_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v1_75_149_fr);
-CHANGELOG_BY_LANG.en.unshift(v1_75_149_en);
-CHANGELOG_BY_LANG.es.unshift(v1_75_149_es);
-CHANGELOG_BY_LANG.de.unshift(v1_75_149_de);
+CHANGELOG_BY_LANG.fr.unshift(v1_75_150_fr, v1_75_149_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_150_en, v1_75_149_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_150_es, v1_75_149_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_150_de, v1_75_149_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
-
-

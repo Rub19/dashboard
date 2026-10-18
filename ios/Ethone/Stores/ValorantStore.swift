@@ -32,7 +32,7 @@ struct ValorantProfile: Hashable {
     let peakTier: Int
     let peakRank: String
     var leaderboardRank: Int? = nil
-    var actName: String = "V26 // ACTE VI"
+    var actName: String = ""
 
     static func tierIcon(_ tier: Int) -> URL? {
         tier > 0 ? URL(string: "https://media.valorant-api.com/competitivetiers/03621f52-342b-cf4e-4f86-9350a49c6d04/\(tier)/largeicon.png") : nil

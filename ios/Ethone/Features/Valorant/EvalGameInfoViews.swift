@@ -1,5 +1,89 @@
 import SwiftUI
 
+enum EvalGameInfoTab: String, CaseIterable, Identifiable {
+    case maps = "Cartes"
+    case agents = "Agents"
+    case weapons = "Armes"
+
+    var id: String { rawValue }
+
+    var icon: String {
+        switch self {
+        case .maps: return "map.fill"
+        case .agents: return "person.crop.circle.fill"
+        case .weapons: return "scope"
+        }
+    }
+}
+
+struct EvalGameInfoView: View {
+    @State private var selectedTab: EvalGameInfoTab
+
+    init(initialTab: EvalGameInfoTab = .maps) {
+        _selectedTab = State(initialValue: initialTab)
+    }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            gameInfoPicker
+                .padding(.horizontal, 16)
+                .padding(.top, 8)
+                .padding(.bottom, 4)
+
+            Group {
+                switch selectedTab {
+                case .maps:
+                    EvalMapsView()
+                case .agents:
+                    EvalAgentsView()
+                case .weapons:
+                    EvalWeaponsView()
+                }
+            }
+            .id(selectedTab)
+            .transition(.asymmetric(insertion: .opacity.combined(with: .move(edge: .trailing)),
+                                    removal: .opacity.combined(with: .move(edge: .leading))))
+        }
+        .animation(.snappy(duration: 0.28), value: selectedTab)
+        .navigationTitle("Infos sur le jeu")
+        .navigationBarTitleDisplayMode(.inline)
+        .ethoneScreen()
+    }
+
+    private var gameInfoPicker: some View {
+        GlassEffectContainer(spacing: 8) {
+            HStack(spacing: 6) {
+                ForEach(EvalGameInfoTab.allCases) { tab in
+                    Button {
+                        withAnimation(.snappy(duration: 0.28)) {
+                            selectedTab = tab
+                        }
+                    } label: {
+                        Label(tab.rawValue, systemImage: tab.icon)
+                            .font(.caption.weight(selectedTab == tab ? .bold : .medium))
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.78)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 9)
+                            .foregroundStyle(selectedTab == tab ? Theme.danger : .secondary)
+                            .background {
+                                if selectedTab == tab {
+                                    Capsule()
+                                        .fill(Theme.danger.opacity(0.16))
+                                        .glassEffect(.regular.interactive(), in: .capsule)
+                                }
+                            }
+                    }
+                    .buttonStyle(.plain)
+                    .sensoryFeedback(.selection, trigger: selectedTab)
+                }
+            }
+            .padding(5)
+            .glassEffect(.regular.interactive(), in: .capsule)
+        }
+    }
+}
+
 // MARK: - 1. CARTES (MAPS)
 struct ValorantMapItem: Identifiable, Decodable {
     var id: String { uuid }
@@ -12,14 +96,43 @@ struct ValorantMapItem: Identifiable, Decodable {
     let listViewIcon: String?
     let splash: String?
     let callouts: [MapCallout]?
+    var competitiveStatus: CompetitiveMapStatus = .unknown
 
     struct MapCallout: Decodable, Hashable {
         let regionName: String
         let superRegionName: String?
     }
 
-    var isCompetitive: Bool {
-        tacticalDescription != nil && splash != nil
+    enum CompetitiveMapStatus: String {
+        case active
+        case upcoming
+        case unknown
+    }
+
+    var isCompetitive: Bool { competitiveStatus != .unknown }
+
+    private enum CodingKeys: String, CodingKey {
+        case uuid, displayName, narrativeDescription, tacticalDescription, coordinates
+        case displayIcon, listViewIcon, splash, callouts
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        uuid = try container.decode(String.self, forKey: .uuid)
+        displayName = try container.decode(String.self, forKey: .displayName)
+        narrativeDescription = try container.decodeIfPresent(String.self, forKey: .narrativeDescription)
+        tacticalDescription = try container.decodeIfPresent(String.self, forKey: .tacticalDescription)
+        coordinates = try container.decodeIfPresent(String.self, forKey: .coordinates)
+        displayIcon = try container.decodeIfPresent(String.self, forKey: .displayIcon)
+        listViewIcon = try container.decodeIfPresent(String.self, forKey: .listViewIcon)
+        splash = try container.decodeIfPresent(String.self, forKey: .splash)
+        callouts = try container.decodeIfPresent([MapCallout].self, forKey: .callouts)
+    }
+
+    func withCompetitiveStatus(_ status: CompetitiveMapStatus) -> Self {
+        var copy = self
+        copy.competitiveStatus = status
+        return copy
     }
 }
 
@@ -30,20 +143,45 @@ final class ValorantMapsStore {
     var isLoading = false
     var errorMessage: String?
 
-    func fetchMaps() async {
+    func fetchMaps(apiKey: String = "") async {
         guard maps.isEmpty else { return }
         isLoading = true
         defer { isLoading = false }
 
-        guard let url = URL(string: "https://valorant-api.com/v1/maps") else { return }
         do {
-            let (data, _) = try await URLSession.shared.data(from: url)
+            guard let mapsURL = URL(string: "https://valorant-api.com/v1/maps"),
+                  let rotationURL = URL(string: "https://api.henrikdev.xyz/valorant/v1/map/rotation") else {
+                throw URLError(.badURL)
+            }
             struct MapsResponse: Decodable {
                 let data: [ValorantMapItem]
             }
-            let res = try JSONDecoder().decode(MapsResponse.self, from: data)
-            // Sort competitive first, then alphabetical
-            maps = res.data.sorted {
+            struct RotationResponse: Decodable {
+                struct Rotation: Decodable {
+                    let maps: [String]
+                }
+                let current: Rotation?
+                let upcoming: Rotation?
+                let next: Rotation?
+            }
+            async let mapsRequest = URLSession.shared.data(from: mapsURL)
+            var rotationURLRequest = URLRequest(url: rotationURL)
+            if !apiKey.isEmpty {
+                rotationURLRequest.setValue(apiKey, forHTTPHeaderField: "Authorization")
+            }
+            async let rotationRequest = URLSession.shared.data(for: rotationURLRequest)
+            let (mapsData, _) = try await mapsRequest
+            let response = try JSONDecoder().decode(MapsResponse.self, from: mapsData)
+            let rotationPayload = try? await rotationRequest
+            let rotation = rotationPayload.flatMap { try? JSONDecoder().decode(RotationResponse.self, from: $0.0) }
+            let active = Set(rotation?.current?.maps.map { $0.lowercased() } ?? [])
+            let upcoming = Set((rotation?.upcoming?.maps ?? rotation?.next?.maps ?? []).map { $0.lowercased() })
+            maps = response.data.map { map in
+                let key = map.displayName.lowercased()
+                if active.contains(key) { return map.withCompetitiveStatus(.active) }
+                if upcoming.contains(key) { return map.withCompetitiveStatus(.upcoming) }
+                return map
+            }.sorted {
                 if $0.isCompetitive != $1.isCompetitive {
                     return $0.isCompetitive && !$1.isCompetitive
                 }
@@ -56,6 +194,7 @@ final class ValorantMapsStore {
 }
 
 struct EvalMapsView: View {
+    @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss
     @State private var store = ValorantMapsStore()
     @State private var filterCompetitiveOnly = true
@@ -130,14 +269,30 @@ struct EvalMapsView: View {
                         ProgressView()
                             .tint(Theme.danger)
                             .padding(.top, 40)
+                    } else if let errorMessage = store.errorMessage, store.maps.isEmpty {
+                        ContentUnavailableView(
+                            "Impossible de charger les cartes",
+                            systemImage: "wifi.exclamationmark",
+                            description: Text(errorMessage)
+                        )
+                        .padding(.top, 36)
                     } else {
-                        LazyVStack(spacing: 14) {
-                            ForEach(filteredMaps) { map in
-                                mapCard(map: map)
+                        if filteredMaps.isEmpty {
+                            ContentUnavailableView(
+                                searchQuery.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Aucune carte disponible" : "Aucune carte trouvée",
+                                systemImage: searchQuery.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "map" : "magnifyingglass",
+                                description: Text(searchQuery.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "La rotation compétitive n’est pas disponible pour le moment." : "Essayez un autre nom de carte.")
+                            )
+                            .padding(.top, 36)
+                        } else {
+                            LazyVStack(spacing: 14) {
+                                ForEach(filteredMaps) { map in
+                                    mapCard(map: map)
+                                }
                             }
+                            .padding(.horizontal, 16)
+                            .padding(.bottom, 32)
                         }
-                        .padding(.horizontal, 16)
-                        .padding(.bottom, 32)
                     }
                 }
             }
@@ -146,7 +301,7 @@ struct EvalMapsView: View {
         .navigationTitle("Cartes")
         .navigationBarTitleDisplayMode(.inline)
         .task {
-            await store.fetchMaps()
+            await store.fetchMaps(apiKey: model.valorant.apiKey)
         }
         .sheet(item: $selectedMap) { map in
             mapDetailSheet(map: map)
@@ -200,8 +355,8 @@ struct EvalMapsView: View {
                 // Map Information
                 HStack(alignment: .bottom) {
                     VStack(alignment: .leading, spacing: 4) {
-                        if let tactical = map.tacticalDescription {
-                            Text(tactical.uppercased())
+                        if map.isCompetitive {
+                            Text(map.competitiveStatus == .active ? "COMPÉTITIVE" : "PROCHAINE ROTATION")
                                 .font(.system(size: 10, weight: .black))
                                 .foregroundStyle(Theme.danger)
                                 .padding(.horizontal, 7)

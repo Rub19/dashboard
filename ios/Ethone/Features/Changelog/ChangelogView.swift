@@ -59,6 +59,17 @@ final class ChangelogStore {
 
     static let bundledEntries: [NativeChangelogEntry] = [
         NativeChangelogEntry(
+            version: "v1.55.36",
+            date: "2026-10-17",
+            title: "E:Val refondu : données réelles et navigation plus fluide",
+            items: [
+                "Cartes, agents et armes réunis dans un sélecteur fiable, avec recherche, filtres et transitions fluides.",
+                "Rotation compétitive des cartes alimentée par l'API, sans cartes ni statistiques fictives.",
+                "Missions et boutique affichent uniquement les données disponibles ; la boutique est maintenant accessible depuis le profil.",
+                "Écrans Jeu et E:Val harmonisés avec un layout sombre, des sections repliables et un Liquid Glass plus naturel."
+            ]
+        ),
+        NativeChangelogEntry(
             version: "v1.55.35",
             date: "2026-10-06",
             title: "Parité iOS Native : Journal des Modifications & Code Épuré",

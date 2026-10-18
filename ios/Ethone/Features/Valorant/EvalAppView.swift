@@ -134,8 +134,8 @@ struct EvalAppView: View {
 
             // Floating Liquid Glass Bottom Bar (matches screenshots)
             evalTabBar
-                .padding(.horizontal, 24)
-                .padding(.bottom, 12)
+                .padding(.horizontal, 18)
+                .padding(.bottom, 10)
         }
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
@@ -147,42 +147,46 @@ struct EvalAppView: View {
 
     // Floating Glass Tab Bar
     private var evalTabBar: some View {
-        HStack(spacing: 0) {
-            ForEach(EvalTab.allCases) { tab in
-                let isSelected = selectedTab == tab
-                Button {
-                    withAnimation(Motion.snap) {
-                        selectedTab = tab
-                    }
-                } label: {
-                    VStack(spacing: 4) {
-                        Image(systemName: tab.icon)
-                            .font(.system(size: 18, weight: isSelected ? .bold : .medium))
-                            .foregroundStyle(isSelected ? Theme.danger : Color.white.opacity(0.85))
+        GlassEffectContainer(spacing: 8) {
+            HStack(spacing: 0) {
+                ForEach(EvalTab.allCases) { tab in
+                    let isSelected = selectedTab == tab
+                    Button {
+                        withAnimation(Motion.snap) {
+                            selectedTab = tab
+                        }
+                    } label: {
+                        VStack(spacing: 4) {
+                            Image(systemName: tab.icon)
+                                .font(.system(size: 18, weight: isSelected ? .bold : .medium))
+                                .foregroundStyle(isSelected ? Theme.danger : Color.white.opacity(0.85))
 
-                        Text(tab.rawValue)
-                            .font(.system(size: 10, weight: isSelected ? .bold : .medium))
-                            .foregroundStyle(isSelected ? Theme.danger : Color.white.opacity(0.75))
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 8)
-                    .background {
-                        if isSelected {
-                            Capsule()
-                                .fill(Theme.danger.opacity(0.2))
-                                .padding(.horizontal, 6)
+                            Text(tab.rawValue)
+                                .font(.system(size: 10, weight: isSelected ? .bold : .medium))
+                                .foregroundStyle(isSelected ? Theme.danger : Color.white.opacity(0.75))
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 9)
+                        .background {
+                            if isSelected {
+                                Capsule()
+                                    .fill(Theme.danger.opacity(0.2))
+                                    .glassEffect(.regular.interactive(), in: .capsule)
+                                    .padding(.horizontal, 5)
+                            }
                         }
                     }
+                    .buttonStyle(.plain)
+                    .contentShape(Rectangle())
+                    .sensoryFeedback(.selection, trigger: selectedTab)
                 }
-                .buttonStyle(PressScaleStyle())
-                .sensoryFeedback(.selection, trigger: selectedTab)
             }
+            .padding(.horizontal, 8)
+            .padding(.vertical, 6)
+            .glassEffect(.regular.interactive(), in: .capsule)
+            .overlay(Capsule().strokeBorder(Color.white.opacity(0.16), lineWidth: 1))
         }
-        .padding(.horizontal, 8)
-        .padding(.vertical, 6)
-        .glassEffect(.regular, in: .capsule)
-        .overlay(Capsule().strokeBorder(Color.white.opacity(0.12), lineWidth: 1))
-        .shadow(color: .black.opacity(0.45), radius: 14, y: 8)
+        .shadow(color: .black.opacity(0.35), radius: 18, y: 8)
     }
 }
 
@@ -199,21 +203,15 @@ struct EvalProfileView: View {
 
     // Dynamic Career Calculations strictly scoped to logged-in identity
     private var totalMatchesCount: Int {
-        if store.matches.isEmpty {
-            return store.isCurrentUserRub19 ? 25 : 0
-        }
         return store.matches.count
     }
 
     private var totalWinsCount: Int {
-        if store.matches.isEmpty {
-            return store.isCurrentUserRub19 ? 19 : 0
-        }
         return store.matches.filter(\.won).count
     }
 
     private var winRateText: String {
-        guard totalMatchesCount > 0 else { return "0,0 %" }
+        guard totalMatchesCount > 0 else { return "—" }
         let wr = (Double(totalWinsCount) / Double(totalMatchesCount)) * 100.0
         return String(format: "%.1f %%", wr).replacingOccurrences(of: ".", with: ",")
     }
@@ -224,9 +222,7 @@ struct EvalProfileView: View {
     }
 
     private var sessionKdText: String {
-        if recentSessionMatches.isEmpty {
-            return store.isCurrentUserRub19 ? "22,4" : "0,0"
-        }
+        guard !recentSessionMatches.isEmpty else { return "—" }
         let kills = recentSessionMatches.reduce(0) { $0 + $1.kills }
         let deaths = max(1, recentSessionMatches.reduce(0) { $0 + $1.deaths })
         let kd = Double(kills) / Double(deaths)
@@ -234,9 +230,7 @@ struct EvalProfileView: View {
     }
 
     private var sessionDeltaText: String {
-        if recentSessionMatches.isEmpty {
-            return store.isCurrentUserRub19 ? "+84 SC" : "+0 SC"
-        }
+        guard !recentSessionMatches.isEmpty else { return "—" }
         let wins = recentSessionMatches.filter(\.won).count
         let losses = recentSessionMatches.filter { !$0.won }.count
         let delta = (wins * 24) - (losses * 16)
@@ -245,19 +239,22 @@ struct EvalProfileView: View {
 
     // Dynamic Trends
     private var avgHsPercent: Int {
-        if recentSessionMatches.isEmpty {
-            return store.isCurrentUserRub19 ? 28 : 0
-        }
+        guard !recentSessionMatches.isEmpty else { return 0 }
         return recentSessionMatches.reduce(0) { $0 + $1.headshotPercent } / recentSessionMatches.count
     }
 
     private var avgAdrValue: Int {
-        if recentSessionMatches.isEmpty {
-            return store.isCurrentUserRub19 ? 185 : 0
+        guard !recentSessionMatches.isEmpty else { return 0 }
+        let damageAndRounds = recentSessionMatches.compactMap { match -> (Int, Int)? in
+            guard let damage = match.myPlayer?.damageMade else { return nil }
+            let rounds = match.teamRounds + match.opponentRounds
+            guard rounds > 0 else { return nil }
+            return (damage, rounds)
         }
-        let totalDamage = recentSessionMatches.reduce(0) { $0 + ($1.myPlayer?.damageMade ?? ($1.kills * 135)) }
-        let totalRounds = max(1, recentSessionMatches.reduce(0) { $0 + $1.teamRounds + $1.opponentRounds })
-        return totalDamage / totalRounds
+        guard !damageAndRounds.isEmpty else { return 0 }
+        let totalDamage = damageAndRounds.reduce(0) { $0 + $1.0 }
+        let totalRounds = damageAndRounds.reduce(0) { $0 + $1.1 }
+        return totalDamage / max(1, totalRounds)
     }
 
     var body: some View {
@@ -265,15 +262,39 @@ struct EvalProfileView: View {
             VStack(spacing: 16) {
                 topNavHeader
 
+                NavigationLink {
+                    ValorantStoreView()
+                } label: {
+                    HStack(spacing: 12) {
+                        Image(systemName: "bag.fill")
+                            .foregroundStyle(Theme.danger)
+                        Text("Boutique du jour")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.white)
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.caption.weight(.bold))
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 13)
+                    .glassEffect(.regular.interactive(), in: .rect(cornerRadius: Theme.cardRadius))
+                }
+                .buttonStyle(.plain)
+
                 if !store.isConfigured || profile == nil {
                     // Disconnected state: no placeholder fake stats!
                     disconnectedProfileCard
                 } else if let profile {
                     // Connected state: real fetched profile & stats
                     mainProfileCard(profile: profile)
-                    careerSummaryCard(profile: profile)
-                    sessionRecapRow
-                    matchesListSection
+                    if !store.matches.isEmpty {
+                        careerSummaryCard(profile: profile)
+                        sessionRecapRow
+                        matchesListSection
+                    } else if !store.isLoading {
+                        emptyMatchesCard
+                    }
                 }
             }
             .padding(.horizontal, 16)
@@ -363,6 +384,17 @@ struct EvalProfileView: View {
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 16)
+            }
+
+            private var emptyMatchesCard: some View {
+                ContentUnavailableView(
+                    "Aucune partie synchronisée",
+                    systemImage: "clock.arrow.circlepath",
+                    description: Text("L’historique de ce compte n’est pas encore disponible dans l’API.")
+                )
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 24)
+                .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
             }
 
             Button {
@@ -625,8 +657,6 @@ struct EvalProfileView: View {
             // Act badges row
             HStack(spacing: 12) {
                 actBadge(name: profile.actName, icon: "sun.max.fill", color: Color(hex: 0xF5D78E))
-                actBadge(name: "V26 // ACTE V", icon: "sparkles", color: Theme.danger)
-                actBadge(name: "V26 // ACTE IV", icon: "shield.fill", color: Color(hex: 0x10B981))
             }
             .padding(.top, 4)
         }
@@ -664,7 +694,7 @@ struct EvalProfileView: View {
                     Text("Récap de session")
                         .font(.subheadline.weight(.bold))
                         .foregroundStyle(.white)
-                    Text("\(max(1, recentSessionMatches.count)) parties · \(sessionDeltaText) · \(sessionKdText) K/D")
+                    Text("\(recentSessionMatches.count) parties · \(sessionDeltaText) · \(sessionKdText) K/D")
                         .font(.caption2)
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
@@ -754,7 +784,7 @@ struct EvalProfileView: View {
 
                     Spacer()
 
-                    Text("\(match.scoreValue ?? 415) \(match.scoreLabel)")
+                    Text("\(match.scoreValue.map(String.init) ?? "—") \(match.scoreLabel)")
                         .font(.caption.weight(.bold).monospacedDigit())
                         .foregroundStyle(Color(hex: 0xF5D78E))
                 }
@@ -994,7 +1024,7 @@ struct EvalFeaturedBundleCard: View {
 // MARK: - Accessories Card
 struct EvalAccessoryBundleCard: View {
     let accessories: [ValorantAccessoryItem]
-    let timerText: String
+    let timerText: String?
 
     var body: some View {
         VStack(spacing: 12) {
@@ -1026,17 +1056,19 @@ struct EvalAccessoryBundleCard: View {
 
                 Spacer()
 
-                HStack(spacing: 4) {
-                    Text(timerText)
-                        .font(.caption.monospacedDigit())
-                        .foregroundStyle(.secondary)
-                    Image(systemName: "clock")
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                    Image(systemName: "chevron.right")
-                        .font(.caption2.weight(.bold))
-                        .foregroundStyle(.secondary)
+                if let timerText, !timerText.isEmpty {
+                    HStack(spacing: 4) {
+                        Text(timerText)
+                            .font(.caption.monospacedDigit())
+                            .foregroundStyle(.secondary)
+                        Image(systemName: "clock")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
                 }
+                Image(systemName: "chevron.right")
+                    .font(.caption2.weight(.bold))
+                    .foregroundStyle(.secondary)
             }
         }
         .padding(14)
@@ -1206,8 +1238,8 @@ struct EvalGameView: View {
     @State private var groupExpanded = true
     @State private var contractsExpanded = true
     @State private var equipmentExpanded = true
-    @State private var storeExpanded = true
     @State private var contractsSubtab = 0
+    @State private var futureMissionsExpanded = false
     @State private var groupRefreshProgress: Double = 0.0
     @State private var showingBattlepassSheet = false
     @State private var showingMissionsSheet = false
@@ -1467,84 +1499,6 @@ struct EvalGameView: View {
                         }
                     }
 
-                    // 4. Boutique Section (Collapsible - Screenshots 2, 3 & 4)
-                    collapsibleSection(
-                        title: "Boutique",
-                        isExpanded: $storeExpanded,
-                        rightContent: {
-                            Button {
-                                Task {
-                                    await store.refresh()
-                                }
-                            } label: {
-                                Image(systemName: "arrow.clockwise")
-                                    .font(.caption.weight(.bold))
-                                    .foregroundStyle(Theme.danger)
-                            }
-                            .buttonStyle(PressScaleStyle())
-                        }
-                    ) {
-                        if store.storeOffers.isEmpty {
-                            // "si y'a pas tu met la categorie sans rien sans skins sans offre car bah on à aucune infos sur ça et aucun placeholder"
-                            Text("Aucune offre disponible actuellement")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 24)
-                                .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-                                .clipShape(.rect(cornerRadius: Theme.cardRadius))
-                        } else {
-                            VStack(spacing: 16) {
-                                // Featured Bundles
-                                ForEach(store.bundles) { bundle in
-                                    EvalFeaturedBundleCard(bundle: bundle)
-                                }
-
-                                // Accessories Bundle
-                                EvalAccessoryBundleCard(accessories: store.accessories, timerText: "3j 2:02:11")
-
-                                // Daily Offers Header & Cards
-                                VStack(alignment: .leading, spacing: 10) {
-                                    HStack {
-                                        Text("Offres quotidiennes")
-                                            .font(.headline.weight(.bold))
-                                            .foregroundStyle(.white)
-
-                                        Spacer()
-
-                                        HStack(spacing: 4) {
-                                            Text("2:02:12")
-                                                .font(.caption.monospacedDigit())
-                                                .foregroundStyle(.secondary)
-                                            Image(systemName: "clock")
-                                                .font(.caption2)
-                                                .foregroundStyle(.secondary)
-                                        }
-                                    }
-
-                                    ForEach(store.storeOffers) { offer in
-                                        EvalDailyOfferCard(offer: offer)
-                                    }
-                                }
-
-                                // Wishlist & Store History (No placeholder badges when disconnected or empty)
-                                VStack(spacing: 0) {
-                                    let wishlistBadge: String? = (store.isConfigured && store.wishlistCount > 0) ? "\(store.wishlistCount)" : nil
-                                    let storeHistoryBadge: String? = (store.isConfigured && store.storeHistoryCount > 0) ? "\(store.storeHistoryCount)" : nil
-                                    storeNavRow(icon: "heart.fill", title: "Liste de souhaits", badge: wishlistBadge)
-                                    storeNavRow(icon: "clock.arrow.circlepath", title: "Historique de la boutique", badge: storeHistoryBadge)
-                                }
-                                .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-                                .clipShape(.rect(cornerRadius: Theme.cardRadius))
-                                .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
-
-                                // Bottom Wallet Bar
-                                if store.wallet.vp > 0 || store.wallet.rp > 0 || store.wallet.kc > 0 {
-                                    EvalWalletBar(wallet: store.wallet)
-                                }
-                            }
-                        }
-                    }
                 }
                 .padding(.horizontal, 16)
                 .padding(.bottom, 96)
@@ -1699,7 +1653,7 @@ struct EvalGameView: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
                 Button {
-                    withAnimation(.easeInOut(duration: 0.22)) {
+                    withAnimation(.snappy(duration: 0.28, extraBounce: 0.02)) {
                         isExpanded.wrappedValue.toggle()
                     }
                 } label: {
@@ -1801,22 +1755,15 @@ struct EvalGameView: View {
             VStack(spacing: 12) {
                 // Card 1: Checkpoints journaliers (dynamically computed or 0 if no matches)
                 let todayMatches = store.matches.filter { Calendar.current.isDateInToday($0.startedAt ?? .distantPast) }
-                let roundsWonToday = todayMatches.reduce(0) { $0 + $1.teamRounds }
-                let checkpointsCount = store.isCurrentUserRub19 ? 1 : min(4, roundsWonToday / 4)
-
-                VStack(alignment: .leading, spacing: 10) {
+                if !todayMatches.isEmpty {
+                    let roundsWonToday = todayMatches.reduce(0) { $0 + $1.teamRounds }
+                    let checkpointsCount = min(4, roundsWonToday / 4)
+                    VStack(alignment: .leading, spacing: 10) {
                     HStack {
                         Text("Checkpoints journaliers")
                             .font(.subheadline.weight(.semibold))
                             .foregroundStyle(.white)
                         Spacer()
-                        HStack(spacing: 4) {
-                            Text("4:05:46")
-                                .font(.caption.monospacedDigit())
-                            Image(systemName: "clock")
-                                .font(.caption2)
-                        }
-                        .foregroundStyle(.secondary)
                     }
 
                     // 4 Checkpoints Track
@@ -1836,74 +1783,89 @@ struct EvalGameView: View {
                         }
                     }
                     .padding(.top, 4)
-                }
-                .padding(14)
-                .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-                .clipShape(.rect(cornerRadius: Theme.cardRadius))
-
-                // Card 2: Missions hebdomadaires
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack {
-                        Text("Missions hebdomadaires")
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(.white)
-                        Spacer()
-                        HStack(spacing: 4) {
-                            Text("2j 5:20:46")
-                                .font(.caption.monospacedDigit())
-                            Image(systemName: "clock")
-                                .font(.caption2)
-                        }
-                        .foregroundStyle(.secondary)
-                    }
-
-                    if store.isCurrentUserRub19 {
-                        HStack(spacing: 8) {
-                            Image(systemName: "checkmark.circle")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                            Text("Vous avez terminé toutes les missions disponibles.")
-                                .font(.footnote)
-                                .foregroundStyle(.secondary)
-                        }
-                    } else {
-                        HStack(spacing: 8) {
-                            Image(systemName: "info.circle")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                            Text("Synchronisation des missions en cours via vos parties récentes.")
-                                .font(.footnote)
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                }
-                .padding(14)
-                .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-                .clipShape(.rect(cornerRadius: Theme.cardRadius))
-
-                // Card 3: Missions futures (opens sheet with real API missions)
-                Button {
-                    showingMissionsSheet = true
-                } label: {
-                    HStack {
-                        Text("\(store.upcomingMissions.count) missions hebdomadaires futures")
-                            .font(.subheadline.weight(.medium))
-                            .foregroundStyle(.white)
-                        Spacer()
-                        HStack(spacing: 4) {
-                            Text("+\(store.missionsReserveXP.formatted()) XP")
-                                .font(.caption.weight(.bold))
-                                .foregroundStyle(.secondary)
-                            Image(systemName: "chevron.right")
-                                .font(.caption2.weight(.bold))
-                                .foregroundStyle(.secondary)
-                        }
                     }
                     .padding(14)
                     .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
                     .clipShape(.rect(cornerRadius: Theme.cardRadius))
                 }
-                .buttonStyle(PressScaleStyle())
+
+                // Card 2: Missions hebdomadaires
+                if !store.upcomingMissions.isEmpty {
+                    VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Text("Missions hebdomadaires")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.white)
+                        Spacer()
+                    }
+
+                    Text("Missions récupérées depuis l’API Valorant.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                    }
+                    .padding(14)
+                    .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
+                    .clipShape(.rect(cornerRadius: Theme.cardRadius))
+                }
+
+                // Card 3: Missions futures (real API data, expanded in place)
+                if !store.upcomingMissions.isEmpty {
+                    VStack(spacing: 0) {
+                        Button {
+                            withAnimation(.snappy(duration: 0.32, extraBounce: 0.02)) {
+                                futureMissionsExpanded.toggle()
+                            }
+                        } label: {
+                            HStack {
+                                Image(systemName: "calendar.badge.clock")
+                                    .foregroundStyle(Theme.danger)
+                                Text("\(store.upcomingMissions.count) missions hebdomadaires futures")
+                                    .font(.subheadline.weight(.medium))
+                                    .foregroundStyle(.white)
+                                Spacer()
+                                HStack(spacing: 6) {
+                                    Text("+\(store.missionsReserveXP.formatted()) XP")
+                                        .font(.caption.weight(.bold))
+                                        .foregroundStyle(.secondary)
+                                    Image(systemName: "chevron.down")
+                                        .font(.caption2.weight(.bold))
+                                        .foregroundStyle(.secondary)
+                                        .rotationEffect(.degrees(futureMissionsExpanded ? 180 : 0))
+                                }
+                            }
+                            .padding(14)
+                        }
+                        .buttonStyle(.plain)
+
+                        if futureMissionsExpanded {
+                            VStack(spacing: 8) {
+                                ForEach(store.upcomingMissions) { mission in
+                                    HStack(alignment: .top, spacing: 10) {
+                                        Image(systemName: "circle.dotted")
+                                            .font(.caption)
+                                            .foregroundStyle(Theme.danger)
+                                            .padding(.top, 2)
+                                        VStack(alignment: .leading, spacing: 3) {
+                                            Text(mission.title)
+                                                .font(.caption.weight(.semibold))
+                                                .foregroundStyle(.white)
+                                            Text("Objectif : \(mission.progressToComplete.formatted()) ? +\(mission.xpGrant.formatted()) XP")
+                                                .font(.caption2)
+                                                .foregroundStyle(.secondary)
+                                        }
+                                        Spacer(minLength: 0)
+                                    }
+                                    .padding(.horizontal, 14)
+                                    .padding(.vertical, 7)
+                                }
+                            }
+                            .padding(.bottom, 10)
+                            .transition(.opacity.combined(with: .move(edge: .top)))
+                        }
+                    }
+                    .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
+                    .clipShape(.rect(cornerRadius: Theme.cardRadius))
+                }
             }
         }
     }
@@ -2171,56 +2133,17 @@ struct EvalGameView: View {
         } else {
             VStack(alignment: .leading, spacing: 10) {
                 HStack {
-                    Text("Contrat d'agent actif")
+                    Text("Contrat d'agent")
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(.white)
                     Spacer()
-                    Text("Chapitre 2")
-                        .font(.caption.weight(.bold))
-                        .foregroundStyle(Theme.danger)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 3)
-                        .background(Theme.danger.opacity(0.18), in: .capsule)
                 }
 
-                if store.isCurrentUserRub19 {
-                    HStack(spacing: 12) {
-                        RoundedRectangle(cornerRadius: 10)
-                            .fill(Color(hex: 0x1A1C24))
-                            .frame(width: 44, height: 44)
-                            .overlay(Image(systemName: "person.text.rectangle.fill").foregroundStyle(Theme.danger))
-
-                        VStack(alignment: .leading, spacing: 3) {
-                            Text("Fade")
-                                .font(.subheadline.weight(.bold))
-                                .foregroundStyle(.white)
-
-                            Text("Niveau 8 / 10 • 72 000 / 150 000 XP")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-                    }
+                Text("Aucun contrat d'agent synchronisé par l'API pour ce compte.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.top, 4)
-                } else {
-                    let favAgent = store.matches.first?.agentName ?? "Agent"
-                    HStack(spacing: 12) {
-                        RoundedRectangle(cornerRadius: 10)
-                            .fill(Color(hex: 0x1A1C24))
-                            .frame(width: 44, height: 44)
-                            .overlay(Image(systemName: "person.text.rectangle.fill").foregroundStyle(Theme.danger))
-
-                        VStack(alignment: .leading, spacing: 3) {
-                            Text(favAgent)
-                                .font(.subheadline.weight(.bold))
-                                .foregroundStyle(.white)
-
-                            Text("Synchronisation du contrat d'agent en cours...")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                    .padding(.top, 4)
-                }
             }
             .padding(14)
             .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
@@ -2263,7 +2186,7 @@ struct EvalBattlepassDetailSheet: View {
                     .frame(width: 52, height: 52)
             }
 
-            Text(store.isConfigured ? "\(store.battlepassCompletionPercent)%" : "55")
+            Text(store.battlepassLevels.isEmpty ? "—" : "\(store.battlepassCompletionPercent)%")
                 .font(.system(size: 12, weight: .bold))
                 .foregroundStyle(.white)
         }
@@ -2272,7 +2195,7 @@ struct EvalBattlepassDetailSheet: View {
     private var progressBar: some View {
         VStack(spacing: 6) {
             HStack {
-                Text(store.isConfigured ? "Niveau actuel : \(store.battlepassCurrentLevel) / 55" : "Catalogue officiel • 55 paliers")
+                Text(store.battlepassLevels.isEmpty ? "Données indisponibles" : "Niveau actuel : \(store.battlepassCurrentLevel) / 55")
                     .font(.caption.weight(.bold))
                     .foregroundStyle(.white)
                 Spacer()
@@ -2316,9 +2239,11 @@ struct EvalBattlepassDetailSheet: View {
                         .font(.title3.weight(.heavy))
                         .foregroundStyle(.white)
 
-                    Text("Prend fin dans \(store.daysRemainingInAct) jours • \(store.battlepassEndDate)")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                    if let endDate = store.battlepassEndDate {
+                        Text("Prend fin dans \(store.daysRemainingInAct) jours • \(endDate.formatted(date: .abbreviated, time: .omitted))")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
                 }
 
                 Spacer()
@@ -2343,10 +2268,19 @@ struct EvalBattlepassDetailSheet: View {
                     VStack(spacing: 20) {
                         heroSummaryCard
 
-                        // Chapters and Levels
-                        LazyVStack(spacing: 16) {
-                            ForEach(chapters, id: \.chapter) { chap in
-                                chapterSection(chapter: chap.chapter, levels: chap.levels)
+                        if chapters.isEmpty {
+                            ContentUnavailableView(
+                                "Passe de combat indisponible",
+                                systemImage: "sparkles",
+                                description: Text("L’API n’a pas fourni les niveaux du passe pour ce compte.")
+                            )
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 32)
+                        } else {
+                            LazyVStack(spacing: 16) {
+                                ForEach(chapters, id: \.chapter) { chap in
+                                    chapterSection(chapter: chap.chapter, levels: chap.levels)
+                                }
                             }
                         }
                     }
@@ -2632,7 +2566,6 @@ struct EvalUpcomingMissionsSheet: View {
 struct EvalHubView: View {
     @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss
-    @State private var showingStore = false
 
     private var store: ValorantStore { model.valorant }
 
@@ -2714,43 +2647,32 @@ struct EvalHubView: View {
                     // 3. Infos sur le jeu
                     hubGroupSection(title: "Infos sur le jeu") {
                         NavigationLink {
-                            EvalMapsView()
+                            EvalGameInfoView(initialTab: .maps)
                         } label: {
                             hubRowView(icon: "map.fill", title: "Cartes")
                         }
                         .buttonStyle(.plain)
 
                         NavigationLink {
-                            EvalAgentsView()
+                            EvalGameInfoView(initialTab: .agents)
                         } label: {
                             hubRowView(icon: "person.crop.circle.fill", title: "Agents")
                         }
                         .buttonStyle(.plain)
 
                         NavigationLink {
-                            EvalWeaponsView()
+                            EvalGameInfoView(initialTab: .weapons)
                         } label: {
                             hubRowView(icon: "scope", title: "Armes")
                         }
                         .buttonStyle(.plain)
 
-                        Button {
-                            showingStore = true
-                        } label: {
-                            hubRowView(icon: "bag.fill", title: "Boutique du jour", badge: nil)
-                        }
-                        .buttonStyle(.plain)
                     }
                 }
                 .padding(.horizontal, 16)
                 .padding(.bottom, 96)
             }
             .scrollIndicators(.hidden)
-            .sheet(isPresented: $showingStore) {
-                NavigationStack {
-                    ValorantStoreView()
-                }
-            }
         }
 
     private func hubGroupSection<Content: View>(title: String, @ViewBuilder content: () -> Content) -> some View {
@@ -2875,7 +2797,7 @@ struct EvalFriendsView: View {
                         // Empty friends state for accounts with no friends: NO dummy placeholders
                         emptyFriendsCard
                     } else {
-                        // Connected state: Rub19#Boss group + Online Friends groups + Offline Friends section
+                        // Connected state: current group plus online and offline friends
                         VStack(spacing: 18) {
                             // Section 1: Votre groupe — 1/5
                             VStack(alignment: .leading, spacing: 8) {
@@ -3066,8 +2988,7 @@ struct EvalFriendsView: View {
         HStack(spacing: 12) {
             // Avatar with green online pastille
             ZStack(alignment: .bottomTrailing) {
-                let ppURL = store.isCurrentUserRub19 ? "https://media.valorant-api.com/playercards/d30271ae-4ce1-5ed2-c55f-f08a6247c274/displayicon.png" : ""
-                if !ppURL.isEmpty, let url = URL(string: ppURL) {
+                if let url = store.profile?.cardURL {
                     AsyncImage(url: url) { phase in
                         switch phase {
                         case .success(let image):
@@ -3835,7 +3756,7 @@ struct EvalSettingsView: View {
                                         .font(.subheadline.weight(.heavy))
                                         .foregroundStyle(.white)
 
-                                    Text(store.isCurrentUserRub19 ? "Compte principal (Rub19)" : "Compte connecté")
+                                    Text("Compte principal")
                                         .font(.caption2)
                                         .foregroundStyle(.secondary)
                                 }
@@ -3915,8 +3836,18 @@ struct EvalSettingsView: View {
 
                     // 3. Stockage et Données
                     VStack(spacing: 0) {
-                        settingsNavRow(icon: "arrow.up.arrow.down", title: "Stockage et données")
-                        settingsNavRow(icon: "slider.horizontal.2.square", title: "Paramètres avancés")
+                        NavigationLink {
+                            SystemView()
+                        } label: {
+                            settingsNavRow(icon: "arrow.up.arrow.down", title: "Stockage et données")
+                        }
+                        .buttonStyle(.plain)
+                        NavigationLink {
+                            SystemView()
+                        } label: {
+                            settingsNavRow(icon: "slider.horizontal.2.square", title: "Paramètres avancés")
+                        }
+                        .buttonStyle(.plain)
                     }
                     .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
                     .clipShape(.rect(cornerRadius: Theme.cardRadius))
@@ -3947,9 +3878,17 @@ struct EvalSettingsView: View {
                             Rectangle().fill(Color.white.opacity(0.05)).frame(height: 1).padding(.leading, 52)
                         }
 
-                        settingsNavRow(icon: "app.dashed", title: "Icône de l'app", detail: "E:Val (Par défaut)")
+                        NavigationLink {
+                            AppearanceView()
+                        } label: {
+                            settingsNavRow(icon: "app.dashed", title: "Icône de l'app", detail: "E:Val (Par défaut)")
+                        }
+                        .buttonStyle(.plain)
 
-                        HStack {
+                        NavigationLink {
+                            AppearanceView()
+                        } label: {
+                            HStack {
                             Image(systemName: "square.and.pencil")
                                 .font(.system(size: 15))
                                 .foregroundStyle(Theme.danger)
@@ -3962,7 +3901,9 @@ struct EvalSettingsView: View {
                                 .strokeBorder(Theme.danger, lineWidth: 3)
                                 .background(Circle().fill(Color(hex: 0x1A0A10)))
                                 .frame(width: 20, height: 20)
+                            }
                         }
+                        .buttonStyle(.plain)
                         .padding(.horizontal, 14)
                         .padding(.vertical, 12)
                     }

@@ -525,13 +525,13 @@ final class ValorantStore {
     private(set) var isPlayerOnline: Bool = false
 
     // Battlepass & Missions
-    private(set) var battlepassTitle: String = "Saison 2026 // Acte VI"
-    private(set) var battlepassEndDate: Date = Calendar.current.date(byAdding: .day, value: 80, to: Date()) ?? Date()
-    private(set) var battlepassCurrentLevel: Int = 24
-    private(set) var battlepassCurrentXP: Int = 11012
-    private(set) var battlepassLevelXP: Int = 19250
-    private(set) var battlepassLevels: [ValorantBattlepassLevel] = ValorantBattlepassLevel.sampleLevels
-    private(set) var upcomingMissions: [ValorantMissionItem] = ValorantMissionItem.sampleMissions
+    private(set) var battlepassTitle: String = ""
+    private(set) var battlepassEndDate: Date?
+    private(set) var battlepassCurrentLevel: Int = 0
+    private(set) var battlepassCurrentXP: Int = 0
+    private(set) var battlepassLevelXP: Int = 0
+    private(set) var battlepassLevels: [ValorantBattlepassLevel] = []
+    private(set) var upcomingMissions: [ValorantMissionItem] = []
     private(set) var equipmentBannerURL: String = ""
     private(set) var equippedSprays: [String?] = [nil, nil, nil, nil]
 
@@ -555,13 +555,13 @@ final class ValorantStore {
     }
 
     var remainingBattlepassXP: Int {
-        915_738
+        max(0, totalBattlepassXP - earnedBattlepassXP)
     }
 
     var battlepassCompletionPercent: Int {
-        guard totalBattlepassXP > 0 else { return 21 }
+        guard totalBattlepassXP > 0 else { return 0 }
         let pct = Int((Double(earnedBattlepassXP) / Double(totalBattlepassXP)) * 100)
-        return max(1, min(100, pct))
+        return max(0, min(100, pct))
     }
 
     var weeklyMissionsXP: Int {
@@ -569,36 +569,39 @@ final class ValorantStore {
     }
 
     var missionsReserveXP: Int {
-        weeklyMissionsXP + 4000
+        weeklyMissionsXP
     }
 
     var dailyPaliersMaxXP: Int {
-        320_000
+        0
     }
 
     var avgXPPerMatch: Int {
-        guard !matches.isEmpty else { return 199 }
+        guard !matches.isEmpty else { return 0 }
         let count = min(20, matches.count)
-        let totalScore = matches.prefix(count).reduce(0) { $0 + ($1.scoreValue ?? 200) }
-        return max(150, totalScore / max(1, count))
+        let scores = matches.prefix(count).compactMap(\.scoreValue)
+        guard !scores.isEmpty else { return 0 }
+        return scores.reduce(0, +) / scores.count
     }
 
     var matchesPerDay: Double {
-        guard matches.count >= 2 else { return 6.7 }
+        guard matches.count >= 2 else { return 0 }
         let recent = Array(matches.prefix(20))
-        guard let first = recent.last?.startedAt, let last = recent.first?.startedAt else { return 6.7 }
+        guard let first = recent.last?.startedAt, let last = recent.first?.startedAt else { return 0 }
         let days = max(1.0, last.timeIntervalSince(first) / 86400.0)
         return Double(round(10 * (Double(recent.count) / days)) / 10)
     }
 
     var remainingMatchesNeeded: Int {
         let netXP = max(0, remainingBattlepassXP - missionsReserveXP)
-        let netMatches = Int(ceil(Double(netXP) / Double(max(100, avgXPPerMatch * 4))))
+        guard avgXPPerMatch > 0 else { return 0 }
+        let netMatches = Int(ceil(Double(netXP) / Double(avgXPPerMatch * 4)))
         return max(0, netMatches)
     }
 
     var daysRemainingInAct: Int {
-        max(1, Int(ceil(battlepassEndDate.timeIntervalSince(Date()) / 86400.0)))
+        guard let battlepassEndDate else { return 0 }
+        return max(0, Int(ceil(battlepassEndDate.timeIntervalSince(Date()) / 86400.0)))
     }
 
     var requiredMatchesPerDay: Double {
@@ -612,7 +615,8 @@ final class ValorantStore {
     }
 
     var estimatedCompletionDateFormatted: String {
-        let days = matchesPerDay > 0 ? Int(ceil(Double(remainingMatchesNeeded) / matchesPerDay)) : 60
+        guard remainingMatchesNeeded > 0, matchesPerDay > 0 else { return "" }
+        let days = Int(ceil(Double(remainingMatchesNeeded) / matchesPerDay))
         let date = Calendar.current.date(byAdding: .day, value: days, to: Date()) ?? Date()
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "fr_FR")
@@ -621,6 +625,7 @@ final class ValorantStore {
     }
 
     var battlepassTimeRemainingFormatted: String {
+        guard let battlepassEndDate else { return "" }
         let diff = max(0, Int(battlepassEndDate.timeIntervalSince(Date())))
         let days = diff / 86400
         let hours = (diff % 86400) / 3600
@@ -723,9 +728,7 @@ final class ValorantStore {
 
     func refreshFriends() async {
         guard isConfigured else { return }
-        if isCurrentUserRub19 {
-            tickLiveFriends()
-        }
+        friends = []
     }
 
     private(set) var tag: String = ""
@@ -746,123 +749,28 @@ final class ValorantStore {
     }
 
     func syncAccountData() {
-        if isCurrentUserRub19 {
-            // Authentic personal data belonging exclusively to Rub19#Boss
-            storeOffers = ValorantDailySkinOffer.sampleOffers
-            bundles = ValorantStoreBundle.sampleBundles
-            accessories = ValorantStoreBundle.sampleAccessories
-            wallet = ValorantWallet(vp: 11_670, rp: 80, kc: 2_492)
-            equipmentTitle = "=^._.^="
-            wishlistCount = 38
-            storeHistoryCount = 88
-            friends = ValorantFriend.sampleFriends
-            friendHistory = ValorantFriendHistoryEvent.sampleHistory
-            battlepassTitle = "Saison 2026 // Acte VI"
-            battlepassCurrentLevel = 24
-            battlepassCurrentXP = 11012
-            battlepassLevelXP = 19250
-            equipmentBannerURL = "https://media.valorant-api.com/playercards/d30271ae-4ce1-5ed2-c55f-f08a6247c274/wideart.png"
-            equippedSprays = [
-                "https://media.valorant-api.com/sprays/e27b7950-4a86-404f-7ec5-b7918c386659/fulltransparenticon.png",
-                "https://media.valorant-api.com/sprays/627c2ea9-46d1-3eeb-4751-ae9747d48e3c/fulltransparenticon.png",
-                "https://media.valorant-api.com/sprays/a4cd53a1-42f2-4a6e-f7b0-cdb359e8b8da/fulltransparenticon.png",
-                "https://media.valorant-api.com/sprays/13f23a75-4af3-3d30-fae5-e1a08498056c/fulltransparenticon.png"
-            ]
-            if profile == nil {
-                profile = ValorantProfile(
-                    handle: "Rub19#Boss",
-                    cardURL: nil,
-                    bannerURL: nil,
-                    tier: 27,
-                    rank: "Radiant",
-                    rr: 319,
-                    level: 342,
-                    peakTier: 27,
-                    peakRank: "Radiant",
-                    leaderboardRank: 473,
-                    actName: "V26 // ACTE VI"
-                )
-            }
-            if matches.isEmpty {
-                matches = [Self.sampleAscentMatch]
-            }
-            isPlayerOnline = true
-            currentParty = ValorantParty(
-                id: "party-Rub19",
-                currentSize: 1,
-                maxSize: 5,
-                isOpen: true,
-                state: "En salon",
-                queueName: "Compétition",
-                members: [
-                    ValorantPartyMember(
-                        id: "me",
-                        name: "Rub19",
-                        tag: "Boss",
-                        cardURL: "https://media.valorant-api.com/playercards/d30271ae-4ce1-5ed2-c55f-f08a6247c274/largeart.png",
-                        isLeader: true,
-                        statusText: "Chef de groupe — En salon"
-                    )
-                ]
-            )
-        } else if !nameStorage.isEmpty && !tag.isEmpty {
-            // Another account connected: strictly isolated with ZERO placeholder data
-            storeOffers = []
-            bundles = []
-            accessories = []
-            wallet = ValorantWallet(vp: 0, rp: 0, kc: 0)
-            equipmentTitle = ""
-            wishlistCount = 0
-            storeHistoryCount = 0
-            friends = []
-            friendHistory = []
-            matches = []
-            profile = nil
-            isPlayerOnline = true
-            currentParty = ValorantParty(
-                id: "party-\(nameStorage)",
-                currentSize: 1,
-                maxSize: 5,
-                isOpen: true,
-                state: "En salon",
-                queueName: "Compétition",
-                members: [
-                    ValorantPartyMember(
-                        id: "me",
-                        name: nameStorage,
-                        tag: tag,
-                        cardURL: "https://media.valorant-api.com/playercards/d30271ae-4ce1-5ed2-c55f-f08a6247c274/largeart.png",
-                        isLeader: true,
-                        statusText: "Chef de groupe — En salon"
-                    )
-                ]
-            )
-            battlepassCurrentLevel = 0
-            battlepassCurrentXP = 0
-            battlepassLevelXP = 0
-            equipmentBannerURL = ""
-            equippedSprays = [nil, nil, nil, nil]
-        } else {
-            // Disconnected: clean empty states
-            storeOffers = []
-            bundles = []
-            accessories = []
-            wallet = ValorantWallet(vp: 0, rp: 0, kc: 0)
-            equipmentTitle = ""
-            wishlistCount = 0
-            storeHistoryCount = 0
-            friends = []
-            friendHistory = []
-            matches = []
-            profile = nil
-            currentParty = nil
-            isPlayerOnline = false
-            battlepassCurrentLevel = 0
-            battlepassCurrentXP = 0
-            battlepassLevelXP = 0
-            equipmentBannerURL = ""
-            equippedSprays = [nil, nil, nil, nil]
-        }
+        storeOffers = []
+        bundles = []
+        accessories = []
+        wallet = ValorantWallet(vp: 0, rp: 0, kc: 0)
+        equipmentTitle = ""
+        wishlistCount = 0
+        storeHistoryCount = 0
+        friends = []
+        friendHistory = []
+        matches = []
+        profile = nil
+        currentParty = nil
+        isPlayerOnline = false
+        battlepassTitle = ""
+        battlepassEndDate = nil
+        battlepassCurrentLevel = 0
+        battlepassCurrentXP = 0
+        battlepassLevelXP = 0
+        battlepassLevels = []
+        upcomingMissions = []
+        equipmentBannerURL = ""
+        equippedSprays = [nil, nil, nil, nil]
     }
 
     static var sampleAscentMatch: ValorantMatch {
@@ -940,31 +848,7 @@ final class ValorantStore {
 
         isPlayerOnline = true
 
-        // Check if player has an active game session or recent match
-        let recentActive = matches.first?.startedAt.map { started in
-            Date().timeIntervalSince(started) < 2700 // 45 min
-        } ?? false
-
-        let userCardURL = profile?.cardURL?.absoluteString ?? (equipmentBannerURL.isEmpty ? "https://media.valorant-api.com/playercards/d30271ae-4ce1-5ed2-c55f-f08a6247c274/largeart.png" : equipmentBannerURL)
-
-        currentParty = ValorantParty(
-            id: "party-\(nameStorage)",
-            currentSize: 1,
-            maxSize: 5,
-            isOpen: true,
-            state: recentActive ? "En partie" : "En salon",
-            queueName: "Compétition",
-            members: [
-                ValorantPartyMember(
-                    id: "me",
-                    name: nameStorage,
-                    tag: tag,
-                    cardURL: userCardURL,
-                    isLeader: true,
-                    statusText: recentActive ? "En partie — \(matches.first?.mode ?? "Compétition")" : "Chef de groupe — En salon"
-                )
-            ]
-        )
+        currentParty = nil
     }
 
     /// Fetch upcoming weekly missions from valorant-api.com
@@ -979,18 +863,16 @@ final class ValorantStore {
             let raw = root["data"]?.arrayValue ?? []
             let parsed = raw.compactMap { m -> ValorantMissionItem? in
                 guard let id = m["uuid"]?.stringValue,
-                      let title = m["title"]?.stringValue, !title.isEmpty else { return nil }
-                let xp = m["xpGrant"]?.intValue ?? 23800
-                let target = m["progressToComplete"]?.intValue ?? 100
-                let type = m["type"]?.stringValue ?? "Weekly"
+                      let title = m["title"]?.stringValue, !title.isEmpty,
+                      let xp = m["xpGrant"]?.intValue,
+                      let target = m["progressToComplete"]?.intValue,
+                      let type = m["type"]?.stringValue else { return nil }
                 guard type.contains("Weekly") || xp >= 10000 else { return nil }
                 return ValorantMissionItem(id: id, title: title, type: "Hebdomadaire", xpGrant: xp, progressToComplete: target)
             }
-            if !parsed.isEmpty {
-                upcomingMissions = Array(parsed.prefix(30))
-            }
+            upcomingMissions = Array(parsed.prefix(30))
         } catch {
-            // Keep pre-cached sampleMissions
+            upcomingMissions = []
         }
     }
 
@@ -1003,11 +885,9 @@ final class ValorantStore {
             let (data, http) = try await HTTP.send(req)
             guard (200..<300).contains(http.statusCode) else { return }
             let root = try JSONDecoder().decode(JSONValue.self, from: data)
-            if let displayName = root["data"]?["displayName"]?.stringValue, !displayName.isEmpty {
-                battlepassTitle = displayName
-            }
+            battlepassTitle = root["data"]?["displayName"]?.stringValue ?? ""
         } catch {
-            // Keep default title
+            battlepassTitle = ""
         }
     }
 
@@ -1085,58 +965,25 @@ final class ValorantStore {
         func number(_ key: String) -> Int { Int(stats?[key]?["value"]?.doubleValue ?? 0) }
         func text(_ key: String) -> String { stats?[key]?["displayValue"]?.stringValue ?? "" }
 
-        if isCurrentUserRub19 {
-            let currentTier = number("rank") > 0 ? number("rank") : 27
-            let currentRank = !text("rank").isEmpty ? text("rank") : "Radiant"
-            let currentRr = number("rr") > 0 ? number("rr") : 319
-            let currentLevel = number("level") > 0 ? number("level") : 342
-            let currentPeakTier = number("peakRank") > 0 ? number("peakRank") : 27
-            let currentPeakRank = !text("peakRank").isEmpty ? text("peakRank") : "Radiant"
-            let currentLeaderboard = Int(stats?["leaderboardRank"]?["value"]?.doubleValue ?? 0)
-            let currentAct = !text("actName").isEmpty ? text("actName") : "V26 // ACTE VI"
-
-            profile = ValorantProfile(
-                handle: raw["handle"]?.stringValue ?? "\(nameStorage)#\(tag)",
-                cardURL: raw["avatarUrl"]?.stringValue.flatMap(URL.init(string:)),
-                bannerURL: raw["bannerUrl"]?.stringValue.flatMap(URL.init(string:)),
-                tier: currentTier,
-                rank: currentRank,
-                rr: currentRr,
-                level: currentLevel,
-                peakTier: currentPeakTier,
-                peakRank: currentPeakRank,
-                leaderboardRank: currentLeaderboard > 0 ? currentLeaderboard : 473,
-                actName: currentAct
-            )
-        } else {
-            // Live data for other users without hardcoded placeholders!
-            let fetchedTier = number("rank")
-            let fetchedRank = text("rank")
-            let currentTier = fetchedTier
-            let currentRank = !fetchedRank.isEmpty ? fetchedRank : (currentTier > 0 ? "Classé" : "Non classé")
-            let currentRr = number("rr")
-            let currentLevel = max(number("level"), 1)
-            let fetchedPeakTier = number("peakRank")
-            let fetchedPeakRank = text("peakRank")
-            let currentPeakTier = fetchedPeakTier
-            let currentPeakRank = !fetchedPeakRank.isEmpty ? fetchedPeakRank : (currentPeakTier > 0 ? "Classé" : "Non classé")
-            let leaderboardVal = Int(stats?["leaderboardRank"]?["value"]?.doubleValue ?? 0)
-            let actVal = text("actName")
-
-            profile = ValorantProfile(
-                handle: raw["handle"]?.stringValue ?? "\(nameStorage)#\(tag)",
-                cardURL: raw["avatarUrl"]?.stringValue.flatMap(URL.init(string:)),
-                bannerURL: raw["bannerUrl"]?.stringValue.flatMap(URL.init(string:)),
-                tier: currentTier,
-                rank: currentRank,
-                rr: currentRr,
-                level: currentLevel,
-                peakTier: currentPeakTier,
-                peakRank: currentPeakRank,
-                leaderboardRank: leaderboardVal > 0 ? leaderboardVal : nil,
-                actName: !actVal.isEmpty ? actVal : "ACTUEL"
-            )
-        }
+        let fetchedTier = number("rank")
+        let fetchedRank = text("rank")
+        let fetchedPeakTier = number("peakRank")
+        let fetchedPeakRank = text("peakRank")
+        let leaderboardVal = Int(stats?["leaderboardRank"]?["value"]?.doubleValue ?? 0)
+        let actVal = text("actName")
+        profile = ValorantProfile(
+            handle: raw["handle"]?.stringValue ?? "\(nameStorage)#\(tag)",
+            cardURL: raw["avatarUrl"]?.stringValue.flatMap(URL.init(string:)),
+            bannerURL: raw["bannerUrl"]?.stringValue.flatMap(URL.init(string:)),
+            tier: fetchedTier,
+            rank: fetchedRank,
+            rr: number("rr"),
+            level: number("level"),
+            peakTier: fetchedPeakTier,
+            peakRank: fetchedPeakRank,
+            leaderboardRank: leaderboardVal > 0 ? leaderboardVal : nil,
+            actName: actVal
+        )
     }
 
     static func resolveTierNumber(from string: String?, tierNumber: Int?) -> Int {
@@ -1719,4 +1566,3 @@ final class ValorantStore {
         )
     }
 }
-

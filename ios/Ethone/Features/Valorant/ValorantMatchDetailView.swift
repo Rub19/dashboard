@@ -488,7 +488,7 @@ struct ValorantMatchDetailView: View {
                         .font(.system(size: 9, weight: .heavy))
                         .foregroundStyle(.secondary)
                         .tracking(0.6)
-                    Text(targetedPlayer?.handle ?? "Rub19#Boss")
+                    Text(targetedPlayer?.handle ?? "Joueur non identifié")
                         .font(.footnote.weight(.bold))
                         .foregroundStyle(.white)
                         .lineLimit(1)

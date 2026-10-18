@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.75.149 — 2026-10-17
+
+**Refonte E:Val iOS**
+
+- Cartes, agents et armes réunis dans un sélecteur unique, avec navigation et transitions plus fiables.
+- Cartes compétitives alimentées par la rotation API, avec filtres et états vides explicites.
+- Missions hebdomadaires et futures affichées depuis les données API, avec dépliage animé.
+- Boutique déplacée du Hub vers le Profil et suppression des données de démonstration Valorant.
+- Layout sombre harmonisé et barre Liquid Glass E:Val améliorée.
+
 ## v1.75.148 — 2026-10-17
 
 **Réglages enregistrés correctement**

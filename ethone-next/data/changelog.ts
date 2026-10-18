@@ -59101,7 +59101,63 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_148_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_148_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_148_de);
 
-export const CHANGELOG = CHANGELOG_BY_LANG.fr;
+const v1_75_149_fr: ChangelogEntry = {
+  version: "v1.75.149",
+  date: "2026-10-17",
+  title: "Refonte E:Val iOS",
+  items: [
+    "Cartes, agents et armes réunis dans un sélecteur unique, avec navigation et transitions plus fiables.",
+    "Cartes compétitives alimentées par la rotation API, avec filtres et états vides explicites.",
+    "Missions hebdomadaires et futures affichées depuis les données API, avec dépliage animé.",
+    "Boutique déplacée du Hub vers le Profil et suppression des données de démonstration Valorant.",
+    "Layout sombre harmonisé et barre Liquid Glass E:Val améliorée.",
+  ],
+};
 
+const v1_75_149_en: ChangelogEntry = {
+  version: "v1.75.149",
+  date: "2026-10-17",
+  title: "E:Val iOS redesign",
+  items: [
+    "Maps, agents and weapons now share one reliable selector with smoother navigation and transitions.",
+    "Competitive maps use the API rotation, with working filters and explicit empty states.",
+    "Weekly and upcoming missions use API data and expand with a smooth animation.",
+    "The store moved from the Hub to Profile and Valorant demo data was removed.",
+    "The dark layout and E:Val Liquid Glass bar were refined.",
+  ],
+};
+
+const v1_75_149_es: ChangelogEntry = {
+  version: "v1.75.149",
+  date: "2026-10-17",
+  title: "Rediseño de E:Val para iOS",
+  items: [
+    "Mapas, agentes y armas comparten ahora un selector fiable con navegación y transiciones más fluidas.",
+    "Los mapas competitivos usan la rotación de la API, con filtros funcionales y estados vacíos claros.",
+    "Las misiones semanales y futuras usan datos de la API y se despliegan con una animación fluida.",
+    "La tienda se movió del Hub al Perfil y se eliminaron los datos de demostración de Valorant.",
+    "Se refinó el diseño oscuro y la barra Liquid Glass de E:Val.",
+  ],
+};
+
+const v1_75_149_de: ChangelogEntry = {
+  version: "v1.75.149",
+  date: "2026-10-17",
+  title: "E:Val iOS überarbeitet",
+  items: [
+    "Karten, Agenten und Waffen teilen sich jetzt einen zuverlässigen Auswahlbereich mit flüssiger Navigation.",
+    "Wettbewerbskarten nutzen die API-Rotation mit funktionierenden Filtern und klaren leeren Zuständen.",
+    "Wöchentliche und kommende Missionen verwenden API-Daten und lassen sich flüssig aufklappen.",
+    "Der Shop wurde vom Hub ins Profil verschoben und Valorant-Demodaten wurden entfernt.",
+    "Das dunkle Layout und die E:Val-Liquid-Glass-Leiste wurden verfeinert.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_149_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_149_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_149_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_149_de);
+
+export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

@@ -1,5 +1,15 @@
 [
   {
+    "version": "v1.75.152",
+    "date": "2026-10-18",
+    "title": "E:Val : résumé de carrière et analyses de match",
+    "items": [
+      "Le peak rank ouvre maintenant un résumé de carrière avec filtres par file et statistiques calculées à partir des parties chargées.",
+      "Le détail de match reprend les onglets Duels, Performance et Économie sans inventer de données absentes de l’API.",
+      "La boutique utilise désormais des cartes Liquid Glass cohérentes avec le reste de l’interface."
+    ]
+  },
+  {
     "version": "v1.75.151",
     "date": "2026-10-18",
     "title": "Hub social sans données personnelles intégrées",
@@ -513,145 +523,6 @@
       "Console plus large sur grand écran",
       "Invitation du bot sans la permission Administrateur, seulement les permissions utiles",
       "Page /bot : le contenu est livré directement dans le HTML (plus de copie cachée)"
-    ]
-  },
-  {
-    "version": "v1.75.102",
-    "date": "2026-10-15",
-    "title": "Lecteurs Spotify et fiabilité du bot",
-    "items": [
-      "Île dynamique : boutons ±15 s, copier le lien du titre, ouvrir dans Spotify, raccourcis clavier (Espace, ←/→, ↑/↓)",
-      "Dock : la durée n'apparaît plus en double",
-      "Bot : un échec de synchronisation des commandes slash apparaît comme incident critique dans le centre de contrôle",
-      "Bot : doublons /economy retirés et commandes musique secondaires en préfixe (marge sous la limite de 100)",
-      "Bot : la version affichée suit enfin la version réelle"
-    ]
-  },
-  {
-    "version": "v1.75.101",
-    "date": "2026-10-15",
-    "title": "IA du dashboard sur des modèles Groq actuels",
-    "items": [
-      "Le Brain et le Worker utilisent openai/gpt-oss-120b au lieu d'un modèle retiré par Groq : plus de tentative ratée avant chaque réponse",
-      "Liste des modèles Groq mise à jour (gpt-oss-120b, gpt-oss-20b, qwen3.8-27b)"
-    ]
-  },
-  {
-    "version": "v1.75.100",
-    "date": "2026-10-15",
-    "title": "Assistant IA : modèle Groq à jour",
-    "items": [
-      "Le modèle utilisé jusqu'ici n'existe plus chez Groq : le bot passe sur openai/gpt-oss-120b"
-    ]
-  },
-  {
-    "version": "v1.75.99",
-    "date": "2026-10-15",
-    "title": "Assistant IA branché sur Groq",
-    "items": [
-      "Quand une clé Groq est configurée sur le serveur du bot, /ask l'utilise automatiquement au lieu du moteur intégré",
-      "/summarize résume maintenant la conversation avec l'IA (repli sur l'ancien résumé si l'IA est indisponible)"
-    ]
-  },
-  {
-    "version": "v1.75.98",
-    "date": "2026-10-15",
-    "title": "Commandes slash de nouveau synchronisées",
-    "items": [
-      "Discord refusait toutes les mises à jour depuis le 12/10 (plus de 100 commandes) : les nouvelles commandes n'apparaissaient pas",
-      "Les raccourcis en double (/spotifyplay…, /lyrics, /movie, /fm…) passent en préfixe uniquement : utilise /spotify, /fun et /lastfm"
-    ]
-  },
-  {
-    "version": "v1.75.97",
-    "date": "2026-10-15",
-    "title": "Commande en double retirée",
-    "items": [
-      "/economy balance est retiré : /balance fait la même chose et reste disponible"
-    ]
-  },
-  {
-    "version": "v1.75.96",
-    "date": "2026-10-15",
-    "title": "Console Discord : liens directs et titres en français",
-    "items": [
-      "Les anciens liens « Serveur › Salons, Rôles, Emojis, Webhooks, Paramètres » ouvrent le bon onglet ; Membres, Permissions et Journal ouvrent la bonne section",
-      "L'aperçu du message de niveau affiche le gras comme sur Discord",
-      "Titres de modules traduits (Centre de tickets, Assistant IA, Anniversaires, Rappels, Gestion du serveur…)"
-    ]
-  },
-  {
-    "version": "v1.75.95",
-    "date": "2026-10-15",
-    "title": "Vraie pièce Etho dans Discord",
-    "items": [
-      "La pièce officielle Etho est maintenant un émoji du bot, utilisable dans tous les serveurs sans prendre de place",
-      "Elle remplace 🪙 par défaut dans l'économie et le casino ; une monnaie personnalisée par un admin reste prioritaire"
-    ]
-  },
-  {
-    "version": "v1.75.94",
-    "date": "2026-10-15",
-    "title": "Console Discord plus rapide et bandeau de mise à jour corrigé",
-    "items": [
-      "Le bandeau « Nouvelle mise à jour disponible » ne réapparaît plus quand tu es déjà sur la dernière version",
-      "Les modules de la console ne rechargent plus leurs données deux fois",
-      "Bot : la vérification de tes droits Discord répond immédiatement depuis le cache au lieu d'attendre ~4 s"
-    ]
-  },
-  {
-    "version": "v1.75.93",
-    "date": "2026-10-15",
-    "title": "Plateformes du bot décrites fidèlement",
-    "items": [
-      "Instagram, X et TikTok : recherche de profils et aperçu de posts (pas d'alertes automatiques)",
-      "SoundCloud et YouTube : recherche et lecture en vocal",
-      "Twitch : alertes de live Twitch, YouTube et Kick",
-      "Last.fm : titre en cours, tops et comparaison de goûts (sans classement inventé)",
-      "Pinterest : recherche d'épingles avec lien Google Lens"
-    ]
-  },
-  {
-    "version": "v1.75.92",
-    "date": "2026-10-15",
-    "title": "Vitrine du bot corrigée sur mobile",
-    "items": [
-      "Le titre et les textes ne sont plus coupés à droite sur téléphone",
-      "Le bouton menu n'est plus hors écran sur les petits téléphones",
-      "Aperçu de partage (Discord, X) réparé : l'image pointait vers localhost",
-      "Carte musique « Filtres 8D » remplacée par Paroles & Playlists (fonctions réelles)",
-      "FAQ : retrait de la mention de stockage chiffré, non vérifiée"
-    ]
-  },
-  {
-    "version": "v1.75.91",
-    "date": "2026-10-15",
-    "title": "Onboarding de la console sans chiffres inventés",
-    "items": [
-      "Retrait de « sub-15ms » et « Latence 12ms »",
-      "Apple Music retiré des sources musicales (non supporté)"
-    ]
-  },
-  {
-    "version": "v1.75.90",
-    "date": "2026-10-15",
-    "title": "Vitrine du bot alignée sur les vraies fonctions",
-    "items": [
-      "Fonctions inexistantes retirées (TTS, Snipe, Blacktea, traduction, rappels de bump)",
-      "Remplacées par les vraies : assistant IA, tickets, casino, tags, rappels, starboard, images IA, anniversaires",
-      "Chiffres corrigés : plus de 100 commandes, 20 commandes de sécurité, 60+ commandes musique"
-    ]
-  },
-  {
-    "version": "v1.75.89",
-    "date": "2026-10-15",
-    "title": "Tracker Riot fiabilisé et dépendances corrigées",
-    "items": [
-      "Coach tactique : réinitialiser et copier ne plantent plus",
-      "Coach tactique : les résumés de parties affichent la vraie carte et le vrai résultat",
-      "Clé API Riot : vérification réelle du format au lieu d'une fausse latence, enregistrée là où le tracker la lit",
-      "Historique LoL : champion et icône corrects",
-      "Correctifs de sécurité des dépendances (sharp, postcss-selector-parser, source-map-js)"
     ]
   }
 ]

@@ -59253,4 +59253,53 @@ CHANGELOG_BY_LANG.en.unshift(v1_75_150_en, v1_75_149_en);
 CHANGELOG_BY_LANG.es.unshift(v1_75_150_es, v1_75_149_es);
 CHANGELOG_BY_LANG.de.unshift(v1_75_150_de, v1_75_149_de);
 
+const v12930_fr: ChangelogEntry = {
+  version: "v1.75.152",
+  date: "2026-10-18",
+  title: "E:Val : résumé de carrière et analyses de match",
+  items: [
+    "Le peak rank ouvre maintenant un résumé de carrière avec filtres par file et statistiques calculées à partir des parties chargées.",
+    "Le détail de match reprend les onglets Duels, Performance et Économie sans inventer de données absentes de l’API.",
+    "La boutique utilise désormais des cartes Liquid Glass cohérentes avec le reste de l’interface.",
+  ],
+};
+
+const v12930_en: ChangelogEntry = {
+  version: "v1.75.152",
+  date: "2026-10-18",
+  title: "E:Val: career summary and match analytics",
+  items: [
+    "Peak rank now opens a career summary with queue filters and statistics calculated from loaded matches.",
+    "Match details include Duels, Performance and Economy tabs without inventing data missing from the API.",
+    "The store now uses Liquid Glass cards consistent with the rest of the interface.",
+  ],
+};
+
+const v12930_es: ChangelogEntry = {
+  version: "v1.75.152",
+  date: "2026-10-18",
+  title: "E:Val: resumen de carrera y análisis de partidas",
+  items: [
+    "El rango máximo abre ahora un resumen de carrera con filtros por cola y estadísticas calculadas a partir de las partidas cargadas.",
+    "El detalle de partida incluye las pestañas Duels, Performance y Economía sin inventar datos ausentes de la API.",
+    "La tienda usa ahora tarjetas Liquid Glass coherentes con el resto de la interfaz.",
+  ],
+};
+
+const v12930_de: ChangelogEntry = {
+  version: "v1.75.152",
+  date: "2026-10-18",
+  title: "E:Val: Karrierezusammenfassung und Spielanalyse",
+  items: [
+    "Der höchste Rang öffnet jetzt eine Karrierezusammenfassung mit Warteschlangenfiltern und Statistiken aus den geladenen Spielen.",
+    "Spieldetails enthalten die Tabs Duelle, Leistung und Wirtschaft, ohne fehlende API-Daten zu erfinden.",
+    "Der Shop verwendet jetzt Liquid-Glass-Karten passend zum restlichen Interface.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12930_fr);
+CHANGELOG_BY_LANG.en.unshift(v12930_en);
+CHANGELOG_BY_LANG.es.unshift(v12930_es);
+CHANGELOG_BY_LANG.de.unshift(v12930_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

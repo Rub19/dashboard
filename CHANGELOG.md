@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.75.152 - 2026-10-18
+
+**E:Val : resume de carriere et analyses de match**
+
+- Le peak rank ouvre maintenant un resume de carriere avec filtres par file et statistiques calculees a partir des parties chargees.
+- Le detail de match reprend les onglets Duels, Performance et Economie sans inventer de donnees absentes de l API.
+- La boutique utilise des cartes Liquid Glass coherentes avec le reste de l interface.
+
+
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
 ## v1.75.151 — 2026-10-18

@@ -4,7 +4,9 @@ enum MatchDetailTab: String, CaseIterable, Identifiable {
     case summary = "Résumé"
     case scoreboard = "Tableau des scores"
     case rounds = "Manches"
-    case details = "Détails"
+    case duels = "Duels"
+    case performance = "Performance"
+    case economy = "Économie"
 
     var id: String { rawValue }
 }
@@ -66,8 +68,8 @@ struct ValorantMatchDetailView: View {
                         summaryTabContent
                     case .rounds:
                         roundsTabContent
-                    case .details:
-                        detailsTabContent
+                    case .duels, .performance, .economy:
+                        analyticsTabContent
                     }
                 }
                 .padding(.bottom, 90) // Safe padding for docked bottom bar
@@ -630,7 +632,15 @@ struct ValorantMatchDetailView: View {
     // MARK: - Rounds Tab
     private var roundsTabContent: some View {
         VStack(alignment: .leading, spacing: 14) {
+            if match.rounds.isEmpty {
+                unavailableCard(
+                    title: "Manches indisponibles",
+                    message: "L’API n’a pas fourni la chronologie des manches pour cette partie."
+                )
+            }
+
             Text("HISTORIQUE DES MANCHES")
+                .opacity(match.rounds.isEmpty ? 0 : 1)
                 .font(.caption.weight(.heavy))
                 .foregroundStyle(.secondary)
                 .tracking(0.8)
@@ -671,10 +681,10 @@ struct ValorantMatchDetailView: View {
         }
     }
 
-    // MARK: - Details & Economy Tab
-    private var detailsTabContent: some View {
+    // MARK: - Advanced analytics
+    private var analyticsTabContent: some View {
         VStack(spacing: 14) {
-            if let player = targetedPlayer {
+            if selectedTab == .performance, let player = targetedPlayer {
                 GlassCard {
                     VStack(alignment: .leading, spacing: 10) {
                         Text("Efficacité au combat — \(player.handle)").font(.headline)
@@ -700,17 +710,60 @@ struct ValorantMatchDetailView: View {
                 .padding(.horizontal, 16)
             }
 
-            GlassCard {
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("Système de notation").font(.subheadline.weight(.semibold))
-                    Text(match.scoring == .performance
-                        ? "Score de performance actif (0-500) : note officielle introduite au patch 13.06 calculée à partir de l'impact réel et des trades."
-                        : "Score de combat moyen (ACS) traditionnel : points par manche calculés sur l'ensemble des manches jouées.")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+            if selectedTab == .performance, let player = targetedPlayer {
+                GlassCard {
+                    HStack(spacing: 0) {
+                        detailMetric(value: "\(player.firstKills)", label: "Premiers sangs")
+                        Divider().frame(height: 48).overlay(Color.white.opacity(0.12))
+                        detailMetric(value: "\(player.damageMade)", label: "Dégâts")
+                        Divider().frame(height: 48).overlay(Color.white.opacity(0.12))
+                        detailMetric(value: "\(player.kast)%", label: "KAST")
+                    }
                 }
+                .padding(.horizontal, 16)
+            } else if selectedTab == .duels {
+                unavailableCard(
+                    title: "Duels indisponibles",
+                    message: "Les données de duels ne sont pas présentes dans la réponse API de cette partie."
+                )
+            } else if selectedTab == .economy {
+                unavailableCard(
+                    title: "Économie indisponible",
+                    message: "Les achats et l’équipement par manche ne sont pas présents dans la réponse API de cette partie."
+                )
             }
-            .padding(.horizontal, 16)
         }
+    }
+
+    private func unavailableCard(title: String, message: String) -> some View {
+        VStack(spacing: 10) {
+            Image(systemName: "chart.bar.xaxis")
+                .font(.system(size: 30))
+                .foregroundStyle(.secondary)
+            Text(title)
+                .font(.headline)
+                .foregroundStyle(.white)
+            Text(message)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.horizontal, 24)
+        .padding(.vertical, 36)
+        .background(Color.white.opacity(0.08), in: .rect(cornerRadius: 26))
+        .padding(.horizontal, 16)
+    }
+
+    private func detailMetric(value: String, label: String) -> some View {
+        VStack(spacing: 4) {
+            Text(value)
+                .font(.title3.weight(.bold).monospacedDigit())
+                .foregroundStyle(.white)
+            Text(label)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity)
     }
 }

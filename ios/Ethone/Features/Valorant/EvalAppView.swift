@@ -506,7 +506,10 @@ struct EvalProfileView: View {
             // 2 Columns: Current Radiant Rank (319 SC) & Peak Rank
             HStack(alignment: .top, spacing: 16) {
                 // Column 1: Current Rank
-                VStack(spacing: 6) {
+                NavigationLink {
+                    EvalCareerSummaryView(profile: profile, matches: store.matches)
+                } label: {
+                    VStack(spacing: 6) {
                     if !profile.actName.isEmpty {
                         Text(profile.actName)
                             .font(.system(size: 9, weight: .bold))
@@ -590,7 +593,9 @@ struct EvalProfileView: View {
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
+                    }
                 }
+                .contentShape(Rectangle())
                 .frame(maxWidth: .infinity)
             }
             .padding(16)
@@ -859,6 +864,258 @@ struct EvalProfileView: View {
         }
         .background(Color.white.opacity(0.07), in: .rect(cornerRadius: Theme.cardRadius))
         .clipShape(.rect(cornerRadius: Theme.cardRadius))
+    }
+}
+
+struct EvalCareerSummaryView: View {
+    @Environment(\.dismiss) private var dismiss
+
+    let profile: ValorantProfile
+    let matches: [ValorantMatch]
+
+    @State private var selectedQueue = "Compétition"
+
+    private var queueMatches: [ValorantMatch] {
+        let normalized = selectedQueue.folding(options: .diacriticInsensitive, locale: .current).lowercased()
+        if normalized.contains("gauntlet") {
+            return matches.filter { $0.mode.folding(options: .diacriticInsensitive, locale: .current).lowercased().contains("gauntlet") }
+        }
+        if normalized.contains("mort") {
+            return matches.filter {
+                let mode = $0.mode.folding(options: .diacriticInsensitive, locale: .current).lowercased()
+                return mode.contains("deathmatch") || mode.contains("combat")
+            }
+        }
+        return matches.filter {
+            let mode = $0.mode.folding(options: .diacriticInsensitive, locale: .current).lowercased()
+            return mode.contains("competitive") || mode.contains("compet") || mode.contains("ranked")
+        }
+    }
+
+    private var wins: Int { queueMatches.filter(\.won).count }
+    private var winRate: String {
+        guard !queueMatches.isEmpty else { return "—" }
+        return String(format: "%.1f%%", Double(wins) / Double(queueMatches.count) * 100)
+            .replacingOccurrences(of: ".", with: ",")
+    }
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 18) {
+                header
+                queueSelector
+
+                if !profile.actName.isEmpty {
+                    actHeader
+                }
+
+                if selectedQueue == "Compétition", !profile.peakRank.isEmpty {
+                    rankCard
+                }
+
+                if queueMatches.isEmpty {
+                    noMatchesCard
+                } else {
+                    performanceCard
+                }
+
+                allTimeCard
+            }
+            .padding(.horizontal, 16)
+            .padding(.bottom, 96)
+        }
+        .scrollIndicators(.hidden)
+        .navigationBarBackButtonHidden(true)
+        .ethoneScreen()
+    }
+
+    private var header: some View {
+        HStack {
+            Button { dismiss() } label: {
+                Image(systemName: "chevron.left")
+                    .font(.system(size: 18, weight: .bold))
+                    .foregroundStyle(.white)
+                    .frame(width: 56, height: 56)
+                    .glassEffect(.regular.interactive(), in: .circle)
+            }
+            .buttonStyle(PressScaleStyle())
+
+            Spacer()
+
+            Text("Résumé de carrière")
+                .font(.title2.weight(.bold))
+                .foregroundStyle(.white)
+
+            Spacer()
+        }
+        .padding(.top, 4)
+    }
+
+    private var queueSelector: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 10) {
+                ForEach(["Gauntlet: Glitched", "Compétition", "Combat à mort"], id: \.self) { queue in
+                    Button {
+                        withAnimation(Motion.snap) {
+                            selectedQueue = queue
+                        }
+                    } label: {
+                        Text(queue)
+                            .font(.headline.weight(selectedQueue == queue ? .semibold : .regular))
+                            .foregroundStyle(selectedQueue == queue ? Theme.danger : .secondary)
+                            .padding(.horizontal, 18)
+                            .padding(.vertical, 10)
+                            .background {
+                                if selectedQueue == queue {
+                                    Capsule()
+                                        .fill(Color.white.opacity(0.14))
+                                        .overlay(Capsule().strokeBorder(Color.white.opacity(0.18), lineWidth: 1))
+                                }
+                            }
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
+    }
+
+    private var actHeader: some View {
+        HStack {
+            Text(profile.actName)
+                .font(.headline.weight(.bold))
+                .foregroundStyle(.white)
+            Spacer()
+            Text("Actuel")
+                .font(.headline)
+                .foregroundStyle(.secondary)
+        }
+        .padding(.horizontal, 18)
+        .padding(.vertical, 22)
+        .background(Color.white.opacity(0.08), in: .rect(cornerRadius: 28))
+    }
+
+    private var noMatchesCard: some View {
+        VStack(spacing: 14) {
+            Image(systemName: "display")
+                .font(.system(size: 42))
+                .foregroundStyle(.secondary)
+            Text("Aucune partie jouée")
+                .font(.title3.weight(.bold))
+                .foregroundStyle(.white)
+            Text("L’API n’a fourni aucune partie pour cette file et cet acte.")
+                .font(.body)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 42)
+        .padding(.horizontal, 24)
+        .background(Color.white.opacity(0.08), in: .rect(cornerRadius: 28))
+    }
+
+    private var performanceCard: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("Performance")
+                .font(.title3.weight(.bold))
+                .foregroundStyle(.secondary)
+
+            HStack(spacing: 0) {
+                careerMetric(value: winRate, label: "Taux de victoire")
+                Divider().frame(height: 56).overlay(Color.white.opacity(0.12))
+                careerMetric(value: "\(wins) / \(queueMatches.count)", label: "Victoires / Parties")
+            }
+            .padding(18)
+            .background(Color.white.opacity(0.08), in: .rect(cornerRadius: 22))
+        }
+        .padding(16)
+        .background(Color.white.opacity(0.08), in: .rect(cornerRadius: 28))
+    }
+
+    private var rankCard: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Text("Rang")
+                .font(.title3.weight(.bold))
+                .foregroundStyle(.secondary)
+
+            HStack(spacing: 0) {
+                VStack(spacing: 8) {
+                    if let icon = ValorantProfile.tierIcon(profile.peakTier) {
+                        AsyncImage(url: icon) { phase in
+                            switch phase {
+                            case .success(let image):
+                                image.resizable().scaledToFit()
+                            default:
+                                Image(systemName: "shield.fill").font(.largeTitle).foregroundStyle(.secondary)
+                            }
+                        }
+                        .frame(width: 72, height: 72)
+                    }
+                    Text(profile.peakRank.uppercased())
+                        .font(.headline.weight(.bold))
+                        .foregroundStyle(Theme.danger)
+                    if let leaderboardRank = profile.leaderboardRank {
+                        Text("Rang \(leaderboardRank)")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.white)
+                    }
+                }
+                .frame(maxWidth: .infinity)
+
+                Divider().frame(height: 110).overlay(Color.white.opacity(0.12))
+
+                VStack(spacing: 8) {
+                    Image(systemName: "chart.bar.xaxis")
+                        .font(.system(size: 34))
+                        .foregroundStyle(.secondary)
+                    Text("Meilleur rang atteint")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                }
+                .frame(maxWidth: .infinity)
+            }
+            .padding(18)
+            .background(Color.white.opacity(0.08), in: .rect(cornerRadius: 22))
+        }
+        .padding(16)
+        .background(Color.white.opacity(0.08), in: .rect(cornerRadius: 28))
+    }
+
+    private var allTimeCard: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack {
+                Text("Statistiques de tous les temps")
+                    .font(.title3.weight(.bold))
+                    .foregroundStyle(.secondary)
+                Spacer()
+                Text(queueMatches.isEmpty ? "—" : "\(queueMatches.count) parties chargées")
+                    .font(.headline)
+                    .foregroundStyle(.secondary)
+            }
+
+            HStack(spacing: 0) {
+                careerMetric(value: winRate, label: "Taux de victoire")
+                Divider().frame(height: 56).overlay(Color.white.opacity(0.12))
+                careerMetric(value: "\(wins) / \(queueMatches.count)", label: "Victoires / Parties")
+            }
+            .padding(18)
+            .background(Color.white.opacity(0.08), in: .rect(cornerRadius: 22))
+        }
+        .padding(16)
+        .background(Color.white.opacity(0.08), in: .rect(cornerRadius: 28))
+    }
+
+    private func careerMetric(value: String, label: String) -> some View {
+        VStack(spacing: 5) {
+            Text(value)
+                .font(.title.weight(.bold).monospacedDigit())
+                .foregroundStyle(.green)
+            Text(label)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity)
     }
 }
 

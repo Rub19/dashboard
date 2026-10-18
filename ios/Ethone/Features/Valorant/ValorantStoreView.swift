@@ -30,63 +30,123 @@ struct ValorantStoreView: View {
     private struct Payload: Decodable { let bundles: [FeaturedBundle] }
 
     var body: some View {
-        List {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                HStack {
+                    Text("Boutique du jour")
+                        .font(.title2.weight(.bold))
+                        .foregroundStyle(.white)
+                    Spacer()
+                    Button {
+                        Task { await load() }
+                    } label: {
+                        Image(systemName: "arrow.clockwise")
+                            .font(.headline.weight(.semibold))
+                            .foregroundStyle(Theme.danger)
+                            .frame(width: 44, height: 44)
+                            .glassEffect(.regular.interactive(), in: .circle)
+                    }
+                    .buttonStyle(.plain)
+                }
+                .padding(.top, 4)
+
             if let errorMessage {
-                Text(errorMessage).font(.footnote).foregroundStyle(Theme.danger).listRowBackground(Color.clear)
+                    Text(errorMessage)
+                        .font(.footnote)
+                        .foregroundStyle(Theme.danger)
+                        .padding(14)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(Theme.danger.opacity(0.12), in: .rect(cornerRadius: 18))
             }
 
             ForEach(bundles) { bundle in
-                Section {
+                VStack(alignment: .leading, spacing: 0) {
                     HStack(spacing: 14) {
-                        remoteImage(bundle.image, size: 72)
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(bundle.name).font(.headline)
+                        remoteImage(bundle.image, size: 86)
+                        VStack(alignment: .leading, spacing: 5) {
+                            Text(bundle.name)
+                                .font(.headline.weight(.bold))
+                                .foregroundStyle(.white)
                             Text("\(bundle.price.formatted()) VP" + (bundle.wholesaleOnly ? " · achat groupé uniquement" : ""))
-                                .font(.subheadline).foregroundStyle(.secondary)
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
                             if let expiry = bundle.expiresAt.flatMap(ISODate.parse) {
-                                Text(expiry, style: .relative).font(.caption.weight(.semibold)).foregroundStyle(.orange)
-                                    + Text(" restant").font(.caption).foregroundStyle(.orange)
+                                Text(expiry, style: .relative)
+                                    .font(.caption.weight(.semibold))
+                                    .foregroundStyle(.orange)
                             }
                         }
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .foregroundStyle(.secondary)
                     }
-                    .listRowBackground(GlassRowBackground())
+                    .padding(16)
 
-                    ForEach(Array(bundle.items.enumerated()), id: \.offset) { _, item in
+                    ForEach(Array(bundle.items.enumerated()), id: \.offset) { index, item in
                         HStack(spacing: 12) {
                             remoteImage(item.image, size: 44)
                             VStack(alignment: .leading, spacing: 2) {
-                                Text(item.name).font(.subheadline.weight(.semibold))
-                                Text(Self.typeLabel(item.type)).font(.caption2).foregroundStyle(.secondary)
+                                Text(item.name)
+                                    .font(.subheadline.weight(.semibold))
+                                    .foregroundStyle(.white)
+                                Text(Self.typeLabel(item.type))
+                                    .font(.caption2)
+                                    .foregroundStyle(.secondary)
                             }
                             Spacer()
                             VStack(alignment: .trailing, spacing: 2) {
-                                Text("\(item.price.formatted()) VP").font(.footnote.monospacedDigit().weight(.bold))
+                                Text("\(item.price.formatted()) VP")
+                                    .font(.footnote.monospacedDigit().weight(.bold))
+                                    .foregroundStyle(.white)
                                 if item.discountPercent > 0 {
                                     HStack(spacing: 4) {
-                                        Text("\(item.basePrice.formatted())").strikethrough().foregroundStyle(.secondary)
-                                        Text("-\(item.discountPercent) %").foregroundStyle(.green).bold()
+                                        Text("\(item.basePrice.formatted())")
+                                            .strikethrough()
+                                            .foregroundStyle(.secondary)
+                                        Text("-\(item.discountPercent) %")
+                                            .foregroundStyle(.green)
+                                            .bold()
                                     }
                                     .font(.caption2.monospacedDigit())
                                 }
                             }
                         }
-                        .listRowBackground(GlassRowBackground())
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 10)
+                        if index < bundle.items.count - 1 {
+                            Divider().overlay(Color.white.opacity(0.08)).padding(.leading, 72)
+                        }
                     }
                 }
+                .background(Color.white.opacity(0.08), in: .rect(cornerRadius: 26))
             }
 
             if loaded && bundles.isEmpty && errorMessage == nil {
-                Text("Aucun bundle à la une.").foregroundStyle(.secondary).listRowBackground(Color.clear)
+                    VStack(spacing: 10) {
+                        Image(systemName: "bag")
+                            .font(.system(size: 32))
+                            .foregroundStyle(.secondary)
+                        Text("Aucune offre disponible")
+                            .font(.headline)
+                            .foregroundStyle(.white)
+                        Text("La boutique n’a renvoyé aucune offre pour le moment.")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 40)
             }
 
-            Section {
-                EmptyView()
-            } footer: {
-                Text("La boutique quotidienne personnelle (4 skins du jour, Marché nocturne) n'est pas affichée : Riot ne propose pas d'API publique pour elle et elle nécessiterait vos jetons de connexion Riot, qu'ETHONE ne demande ni ne stocke.")
+                Text("Les offres affichées proviennent uniquement de l’API disponible. Les skins quotidiens personnels ne sont pas inventés lorsqu’ils ne sont pas exposés.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal, 4)
             }
+            .padding(.horizontal, 16)
+            .padding(.bottom, 96)
         }
-        .scrollContentBackground(.hidden)
-        .navigationTitle("Boutique Valorant")
+        .scrollIndicators(.hidden)
         .ethoneScreen()
         .overlay { if isLoading && bundles.isEmpty { ProgressView() } }
         .refreshable { await load() }
@@ -130,4 +190,3 @@ struct ValorantStoreView: View {
         }
     }
 }
-

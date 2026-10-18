@@ -2243,6 +2243,97 @@ struct EvalBattlepassDetailSheet: View {
         }
     }
 
+    private var progressRatio: CGFloat {
+        guard store.battlepassLevelXP > 0 else { return 0 }
+        let ratio = CGFloat(store.battlepassCurrentXP) / CGFloat(store.battlepassLevelXP)
+        return max(0, min(1, ratio))
+    }
+
+    private var progressRing: some View {
+        ZStack {
+            Circle()
+                .strokeBorder(Color.white.opacity(0.12), lineWidth: 4)
+                .frame(width: 52, height: 52)
+
+            if store.isConfigured {
+                Circle()
+                    .trim(from: 0, to: store.battlepassCompletionPercent)
+                    .stroke(Theme.danger, style: StrokeStyle(lineWidth: 4, lineCap: .round))
+                    .rotationEffect(.degrees(-90))
+                    .frame(width: 52, height: 52)
+            }
+
+            Text(store.isConfigured ? "\(Int(store.battlepassCompletionPercent * 100))%" : "55")
+                .font(.system(size: 12, weight: .bold))
+                .foregroundStyle(.white)
+        }
+    }
+
+    private var progressBar: some View {
+        VStack(spacing: 6) {
+            HStack {
+                Text(store.isConfigured ? "Niveau actuel : \(store.battlepassCurrentLevel) / 55" : "Catalogue officiel • 55 paliers")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(.white)
+                Spacer()
+                if store.isConfigured {
+                    Text("\(store.battlepassCurrentXP.formatted()) / \(store.battlepassLevelXP.formatted()) XP")
+                        .font(.caption.monospacedDigit())
+                        .foregroundStyle(.secondary)
+                } else {
+                    Text("Connexion requise")
+                        .font(.caption.weight(.medium))
+                        .foregroundStyle(.secondary)
+                }
+            }
+
+            GeometryReader { geo in
+                ZStack(alignment: .leading) {
+                    Capsule()
+                        .fill(Color.white.opacity(0.08))
+                        .frame(height: 6)
+
+                    Capsule()
+                        .fill(
+                            LinearGradient(
+                                colors: [Theme.danger, Color(hex: 0xF59E0B)],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .frame(width: geo.size.width * progressRatio, height: 6)
+                }
+            }
+            .frame(height: 6)
+        }
+    }
+
+    private var heroSummaryCard: some View {
+        VStack(spacing: 14) {
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(store.battlepassTitle)
+                        .font(.title3.weight(.heavy))
+                        .foregroundStyle(.white)
+
+                    Text("Prend fin dans \(store.daysRemainingInAct) jours • \(store.battlepassEndDate)")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer()
+
+                progressRing
+            }
+
+            progressBar
+        }
+        .padding(16)
+        .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
+        .clipShape(.rect(cornerRadius: Theme.cardRadius))
+        .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
+    }
+
     var body: some View {
         NavigationStack {
             ZStack {
@@ -2250,82 +2341,7 @@ struct EvalBattlepassDetailSheet: View {
 
                 ScrollView {
                     VStack(spacing: 20) {
-                        // Hero Summary Card
-                        VStack(spacing: 14) {
-                            HStack {
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text(store.battlepassTitle)
-                                        .font(.title3.weight(.heavy))
-                                        .foregroundStyle(.white)
-
-                                    Text("Prend fin dans \(store.daysRemainingInAct) jours • \(store.battlepassEndDate)")
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
-                                }
-
-                                Spacer()
-
-                                ZStack {
-                                    Circle()
-                                        .strokeBorder(Color.white.opacity(0.12), lineWidth: 4)
-                                        .frame(width: 52, height: 52)
-
-                                    if store.isConfigured {
-                                        Circle()
-                                            .trim(from: 0, to: store.battlepassCompletionPercent)
-                                            .stroke(Theme.danger, style: StrokeStyle(lineWidth: 4, lineCap: .round))
-                                            .rotationEffect(.degrees(-90))
-                                            .frame(width: 52, height: 52)
-                                    }
-
-                                    Text(store.isConfigured ? "\(Int(store.battlepassCompletionPercent * 100))%" : "55")
-                                        .font(.system(size: 12, weight: .bold))
-                                        .foregroundStyle(.white)
-                                }
-                            }
-
-                            // Progress Bar
-                            VStack(spacing: 6) {
-                                HStack {
-                                    Text(store.isConfigured ? "Niveau actuel : \(store.battlepassCurrentLevel) / 55" : "Catalogue officiel • 55 paliers")
-                                        .font(.caption.weight(.bold))
-                                        .foregroundStyle(.white)
-                                    Spacer()
-                                    if store.isConfigured {
-                                        Text("\(store.battlepassCurrentXP.formatted()) / \(store.battlepassLevelXP.formatted()) XP")
-                                            .font(.caption.monospacedDigit())
-                                            .foregroundStyle(.secondary)
-                                    } else {
-                                        Text("Connexion requise")
-                                            .font(.caption.weight(.medium))
-                                            .foregroundStyle(.secondary)
-                                    }
-                                }
-
-                                GeometryReader { geo in
-                                    ZStack(alignment: .leading) {
-                                        Capsule()
-                                            .fill(Color.white.opacity(0.08))
-                                            .frame(height: 6)
-
-                                        Capsule()
-                                            .fill(
-                                                LinearGradient(
-                                                    colors: [Theme.danger, Color(hex: 0xF59E0B)],
-                                                    startPoint: .leading,
-                                                    endPoint: .trailing
-                                                )
-                                            )
-                                            .frame(width: max(0, min(geo.size.width, geo.size.width * (store.battlepassLevelXP > 0 ? CGFloat(store.battlepassCurrentXP) / CGFloat(store.battlepassLevelXP) : 0))), height: 6)
-                                    }
-                                }
-                                .frame(height: 6)
-                            }
-                        }
-                        .padding(16)
-                        .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-                        .clipShape(.rect(cornerRadius: Theme.cardRadius))
-                        .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
+                        heroSummaryCard
 
                         // Chapters and Levels
                         LazyVStack(spacing: 16) {

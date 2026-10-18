@@ -2182,23 +2182,44 @@ struct EvalGameView: View {
                         .background(Theme.danger.opacity(0.18), in: .capsule)
                 }
 
-                HStack(spacing: 12) {
-                    RoundedRectangle(cornerRadius: 10)
-                        .fill(Color(hex: 0x1A1C24))
-                        .frame(width: 44, height: 44)
-                        .overlay(Image(systemName: "person.text.rectangle.fill").foregroundStyle(Theme.danger))
+                if store.isCurrentUserRub19 {
+                    HStack(spacing: 12) {
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(Color(hex: 0x1A1C24))
+                            .frame(width: 44, height: 44)
+                            .overlay(Image(systemName: "person.text.rectangle.fill").foregroundStyle(Theme.danger))
 
-                    VStack(alignment: .leading, spacing: 3) {
-                        Text("Fade")
-                            .font(.subheadline.weight(.bold))
-                            .foregroundStyle(.white)
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text("Fade")
+                                .font(.subheadline.weight(.bold))
+                                .foregroundStyle(.white)
 
-                        Text("Niveau 8 / 10 • 72 000 / 150 000 XP")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                            Text("Niveau 8 / 10 • 72 000 / 150 000 XP")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
                     }
+                    .padding(.top, 4)
+                } else {
+                    let favAgent = store.matches.first?.agentName ?? "Agent"
+                    HStack(spacing: 12) {
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(Color(hex: 0x1A1C24))
+                            .frame(width: 44, height: 44)
+                            .overlay(Image(systemName: "person.text.rectangle.fill").foregroundStyle(Theme.danger))
+
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text(favAgent)
+                                .font(.subheadline.weight(.bold))
+                                .foregroundStyle(.white)
+
+                            Text("Synchronisation du contrat d'agent en cours...")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .padding(.top, 4)
                 }
-                .padding(.top, 4)
             }
             .padding(14)
             .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))

@@ -738,8 +738,8 @@ final class ValorantStore {
         self.api = api
         let savedName = UserDefaults.standard.string(forKey: Self.nameKey) ?? ""
         let savedTag = UserDefaults.standard.string(forKey: Self.tagKey) ?? ""
-        nameStorage = savedName.isEmpty ? "Rub19" : savedName
-        tag = savedTag.isEmpty ? "Boss" : savedTag
+        nameStorage = savedName
+        tag = savedTag
         if let data = Keychain.get(Self.keychainKey), let saved = String(data: data, encoding: .utf8) { apiKey = saved }
         syncAccountData()
     }

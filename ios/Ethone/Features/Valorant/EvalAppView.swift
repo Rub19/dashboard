@@ -1195,7 +1195,7 @@ struct EvalGroupRefreshWheel: View {
                 .rotationEffect(.degrees(-90))
         }
         .frame(width: size, height: size)
-        .animation(.linear(duration: 0.1), value: progress)
+        .animation(progress == 0 ? nil : .linear(duration: 0.1), value: progress)
     }
 }
 
@@ -1211,6 +1211,7 @@ struct EvalGameView: View {
     @State private var groupRefreshProgress: Double = 0.0
     @State private var showingBattlepassSheet = false
     @State private var showingMissionsSheet = false
+    @State private var showingAccountSheet = false
 
     private var store: ValorantStore { model.valorant }
 
@@ -1526,10 +1527,12 @@ struct EvalGameView: View {
                                     }
                                 }
 
-                                // Wishlist & Store History
+                                // Wishlist & Store History (No placeholder badges when disconnected or empty)
                                 VStack(spacing: 0) {
-                                    storeNavRow(icon: "heart.fill", title: "Liste de souhaits", badge: "\(store.wishlistCount)")
-                                    storeNavRow(icon: "clock.arrow.circlepath", title: "Historique de la boutique", badge: "\(store.storeHistoryCount)")
+                                    let wishlistBadge: String? = (store.isConfigured && store.wishlistCount > 0) ? "\(store.wishlistCount)" : nil
+                                    let storeHistoryBadge: String? = (store.isConfigured && store.storeHistoryCount > 0) ? "\(store.storeHistoryCount)" : nil
+                                    storeNavRow(icon: "heart.fill", title: "Liste de souhaits", badge: wishlistBadge)
+                                    storeNavRow(icon: "clock.arrow.circlepath", title: "Historique de la boutique", badge: storeHistoryBadge)
                                 }
                                 .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
                                 .clipShape(.rect(cornerRadius: Theme.cardRadius))
@@ -1552,6 +1555,9 @@ struct EvalGameView: View {
             }
             .sheet(isPresented: $showingMissionsSheet) {
                 EvalUpcomingMissionsSheet()
+            }
+            .sheet(isPresented: $showingAccountSheet) {
+                ValorantSettingsSheet()
             }
         }
         .task {
@@ -1638,7 +1644,7 @@ struct EvalGameView: View {
         }
     }
 
-    private func storeNavRow(icon: String, title: String, badge: String) -> some View {
+    private func storeNavRow(icon: String, title: String, badge: String? = nil) -> some View {
         HStack(spacing: 12) {
             Image(systemName: icon)
                 .font(.system(size: 14))
@@ -1651,9 +1657,11 @@ struct EvalGameView: View {
 
             Spacer()
 
-            Text(badge)
-                .font(.caption.weight(.semibold).monospacedDigit())
-                .foregroundStyle(.secondary)
+            if let badge, !badge.isEmpty {
+                Text(badge)
+                    .font(.caption.weight(.semibold).monospacedDigit())
+                    .foregroundStyle(.secondary)
+            }
 
             Image(systemName: "chevron.right")
                 .font(.caption2.weight(.bold))
@@ -1690,7 +1698,7 @@ struct EvalGameView: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
                 Button {
-                    withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                    withAnimation(.easeInOut(duration: 0.22)) {
                         isExpanded.wrappedValue.toggle()
                     }
                 } label: {
@@ -1715,13 +1723,7 @@ struct EvalGameView: View {
 
             if isExpanded.wrappedValue {
                 content()
-                    .clipped()
-                    .transition(
-                        .asymmetric(
-                            insertion: .opacity.combined(with: .scale(scale: 0.98, anchor: .top)),
-                            removal: .opacity
-                        )
-                    )
+                    .transition(.opacity.combined(with: .move(edge: .top)))
             }
         }
         .clipped()
@@ -1734,25 +1736,73 @@ struct EvalGameView: View {
     private var contractsMissionsView: some View {
         if !store.isConfigured {
             VStack(spacing: 12) {
-                Image(systemName: "checklist")
-                    .font(.system(size: 32))
-                    .foregroundStyle(.secondary)
-                Text("Aucune mission active")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.white)
-                Text("Connectez votre compte pour synchroniser vos missions et checkpoints quotidiens.")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 20)
+                // Disconnected info card (no fake checkpoints, no fake completions!)
+                VStack(spacing: 12) {
+                    Image(systemName: "checklist")
+                        .font(.system(size: 32))
+                        .foregroundStyle(.secondary)
+                    Text("Missions non synchronisées")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.white)
+                    Text("Connectez votre compte pour synchroniser vos checkpoints journaliers et vos missions hebdomadaires en cours.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 20)
+
+                    Button {
+                        showingAccountSheet = true
+                    } label: {
+                        HStack(spacing: 6) {
+                            Image(systemName: "person.fill.badge.plus")
+                                .font(.caption.weight(.bold))
+                            Text("Se connecter")
+                                .font(.caption.weight(.bold))
+                        }
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .background(Theme.danger, in: .capsule)
+                    }
+                    .buttonStyle(PressScaleStyle())
+                    .padding(.top, 4)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 24)
+                .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
+                .clipShape(.rect(cornerRadius: Theme.cardRadius))
+
+                // Public seasonal calendar: 30 upcoming missions via valorant-api.com
+                Button {
+                    showingMissionsSheet = true
+                } label: {
+                    HStack {
+                        Text("\(store.upcomingMissions.count) missions hebdomadaires futures")
+                            .font(.subheadline.weight(.medium))
+                            .foregroundStyle(.white)
+                        Spacer()
+                        HStack(spacing: 4) {
+                            Text("+\(store.missionsReserveXP.formatted()) XP")
+                                .font(.caption.weight(.bold))
+                                .foregroundStyle(.secondary)
+                            Image(systemName: "chevron.right")
+                                .font(.caption2.weight(.bold))
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .padding(14)
+                    .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
+                    .clipShape(.rect(cornerRadius: Theme.cardRadius))
+                }
+                .buttonStyle(PressScaleStyle())
             }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 28)
-            .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-            .clipShape(.rect(cornerRadius: Theme.cardRadius))
         } else {
             VStack(spacing: 12) {
-                // Card 1: Checkpoints journaliers
+                // Card 1: Checkpoints journaliers (dynamically computed or 0 if no matches)
+                let todayMatches = store.matches.filter { Calendar.current.isDateInToday($0.startedAt) }
+                let roundsWonToday = todayMatches.reduce(0) { $0 + $1.teamRounds }
+                let checkpointsCount = store.isCurrentUserRub19 ? 1 : min(4, roundsWonToday / 4)
+
                 VStack(alignment: .leading, spacing: 10) {
                     HStack {
                         Text("Checkpoints journaliers")
@@ -1774,7 +1824,7 @@ struct EvalGameView: View {
                             HStack(spacing: 14) {
                                 Circle()
                                     .strokeBorder(Color.white.opacity(0.25), lineWidth: 2)
-                                    .background(Circle().fill(i == 0 ? Theme.danger : Color.white.opacity(0.06)))
+                                    .background(Circle().fill(i < checkpointsCount ? Theme.danger : Color.white.opacity(0.06)))
                                     .frame(width: 22, height: 22)
                                 if i < 3 {
                                     Rectangle()
@@ -1806,13 +1856,24 @@ struct EvalGameView: View {
                         .foregroundStyle(.secondary)
                     }
 
-                    HStack(spacing: 8) {
-                        Image(systemName: "checkmark.circle")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                        Text("Vous avez terminé toutes les missions disponibles.")
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
+                    if store.isCurrentUserRub19 {
+                        HStack(spacing: 8) {
+                            Image(systemName: "checkmark.circle")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                            Text("Vous avez terminé toutes les missions disponibles.")
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                        }
+                    } else {
+                        HStack(spacing: 8) {
+                            Image(systemName: "info.circle")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                            Text("Synchronisation des missions en cours via vos parties récentes.")
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                        }
                     }
                 }
                 .padding(14)
@@ -1851,22 +1912,60 @@ struct EvalGameView: View {
     private var contractsBattlepassView: some View {
         if !store.isConfigured {
             VStack(spacing: 12) {
-                Image(systemName: "sparkles")
-                    .font(.system(size: 32))
-                    .foregroundStyle(.secondary)
-                Text("Passe de combat indisponible")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.white)
-                Text("Connectez votre compte pour afficher la progression de votre passe et les analyses de complétion.")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 20)
+                VStack(spacing: 12) {
+                    Image(systemName: "sparkles")
+                        .font(.system(size: 32))
+                        .foregroundStyle(.secondary)
+                    Text("Passe de combat indisponible")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.white)
+                    Text("Connectez votre compte pour afficher la progression de votre passe et les analyses de complétion.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 20)
+
+                    Button {
+                        showingAccountSheet = true
+                    } label: {
+                        HStack(spacing: 6) {
+                            Image(systemName: "person.fill.badge.plus")
+                                .font(.caption.weight(.bold))
+                            Text("Se connecter")
+                                .font(.caption.weight(.bold))
+                        }
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .background(Theme.danger, in: .capsule)
+                    }
+                    .buttonStyle(PressScaleStyle())
+                    .padding(.top, 4)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 24)
+                .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
+                .clipShape(.rect(cornerRadius: Theme.cardRadius))
+
+                // Public seasonal rewards catalog
+                Button {
+                    showingBattlepassSheet = true
+                } label: {
+                    HStack {
+                        Text("Consulter les 55 récompenses de l'Acte VI")
+                            .font(.subheadline.weight(.bold))
+                            .foregroundStyle(.white)
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.caption.weight(.bold))
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding(14)
+                    .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
+                    .clipShape(.rect(cornerRadius: Theme.cardRadius))
+                }
+                .buttonStyle(PressScaleStyle())
             }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 28)
-            .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-            .clipShape(.rect(cornerRadius: Theme.cardRadius))
         } else {
             VStack(spacing: 12) {
                 // Card 1: Battlepass Hero Card
@@ -2046,6 +2145,23 @@ struct EvalGameView: View {
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 20)
+
+                Button {
+                    showingAccountSheet = true
+                } label: {
+                    HStack(spacing: 6) {
+                        Image(systemName: "person.fill.badge.plus")
+                            .font(.caption.weight(.bold))
+                        Text("Se connecter")
+                            .font(.caption.weight(.bold))
+                    }
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 8)
+                    .background(Theme.danger, in: .capsule)
+                }
+                .buttonStyle(PressScaleStyle())
+                .padding(.top, 4)
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 28)
@@ -2132,13 +2248,15 @@ struct EvalBattlepassDetailSheet: View {
                                         .strokeBorder(Color.white.opacity(0.12), lineWidth: 4)
                                         .frame(width: 52, height: 52)
 
-                                    Circle()
-                                        .trim(from: 0, to: store.battlepassCompletionPercent)
-                                        .stroke(Theme.danger, style: StrokeStyle(lineWidth: 4, lineCap: .round))
-                                        .rotationEffect(.degrees(-90))
-                                        .frame(width: 52, height: 52)
+                                    if store.isConfigured {
+                                        Circle()
+                                            .trim(from: 0, to: store.battlepassCompletionPercent)
+                                            .stroke(Theme.danger, style: StrokeStyle(lineWidth: 4, lineCap: .round))
+                                            .rotationEffect(.degrees(-90))
+                                            .frame(width: 52, height: 52)
+                                    }
 
-                                    Text("\(Int(store.battlepassCompletionPercent * 100))%")
+                                    Text(store.isConfigured ? "\(Int(store.battlepassCompletionPercent * 100))%" : "55")
                                         .font(.system(size: 12, weight: .bold))
                                         .foregroundStyle(.white)
                                 }
@@ -2147,13 +2265,19 @@ struct EvalBattlepassDetailSheet: View {
                             // Progress Bar
                             VStack(spacing: 6) {
                                 HStack {
-                                    Text("Niveau actuel : \(store.battlepassCurrentLevel) / 55")
+                                    Text(store.isConfigured ? "Niveau actuel : \(store.battlepassCurrentLevel) / 55" : "Catalogue officiel • 55 paliers")
                                         .font(.caption.weight(.bold))
                                         .foregroundStyle(.white)
                                     Spacer()
-                                    Text("\(store.battlepassCurrentXP.formatted()) / \(store.battlepassLevelXP.formatted()) XP")
-                                        .font(.caption.monospacedDigit())
-                                        .foregroundStyle(.secondary)
+                                    if store.isConfigured {
+                                        Text("\(store.battlepassCurrentXP.formatted()) / \(store.battlepassLevelXP.formatted()) XP")
+                                            .font(.caption.monospacedDigit())
+                                            .foregroundStyle(.secondary)
+                                    } else {
+                                        Text("Connexion requise")
+                                            .font(.caption.weight(.medium))
+                                            .foregroundStyle(.secondary)
+                                    }
                                 }
 
                                 GeometryReader { geo in
@@ -2217,7 +2341,7 @@ struct EvalBattlepassDetailSheet: View {
 
                 Spacer()
 
-                let chapterCompleted = levels.allSatisfy { $0.level <= store.battlepassCurrentLevel }
+                let chapterCompleted = store.isConfigured && levels.allSatisfy { $0.level <= store.battlepassCurrentLevel }
                 if chapterCompleted {
                     HStack(spacing: 4) {
                         Image(systemName: "checkmark.seal.fill")
@@ -2251,8 +2375,8 @@ struct EvalBattlepassDetailSheet: View {
     }
 
     private func levelRow(level: ValorantBattlepassLevel) -> some View {
-        let isCompleted = level.level < store.battlepassCurrentLevel
-        let isCurrent = level.level == store.battlepassCurrentLevel
+        let isCompleted = store.isConfigured && level.level < store.battlepassCurrentLevel
+        let isCurrent = store.isConfigured && level.level == store.battlepassCurrentLevel
 
         return HStack(spacing: 12) {
             // Level indicator badge

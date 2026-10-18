@@ -2654,25 +2654,69 @@ struct EvalHubView: View {
                         .buttonStyle(.plain)
 
                         let signetsBadge: String? = (store.isConfigured && store.userBookmarksCount > 0) ? "\(store.userBookmarksCount)" : nil
-                        hubNavRow(icon: "bookmark.fill", title: "Signets", badge: signetsBadge)
-                        hubNavRow(icon: "person.text.rectangle.fill", title: "Historique des pseudos")
-                        hubNavRow(icon: "trophy.fill", title: "Classement")
-                        hubNavRow(icon: "creditcard.fill", title: "Historique des achats")
+                        NavigationLink {
+                            EvalBookmarksView()
+                        } label: {
+                            hubRowView(icon: "bookmark.fill", title: "Signets", badge: signetsBadge)
+                        }
+                        .buttonStyle(.plain)
+
+                        NavigationLink {
+                            EvalNameHistoryView()
+                        } label: {
+                            hubRowView(icon: "person.text.rectangle.fill", title: "Historique des pseudos")
+                        }
+                        .buttonStyle(.plain)
+
+                        NavigationLink {
+                            EvalLeaderboardView()
+                        } label: {
+                            hubRowView(icon: "trophy.fill", title: "Classement")
+                        }
+                        .buttonStyle(.plain)
 
                         let settingsBadge: String? = (store.isConfigured && store.playerSettingsCount > 0) ? "\(store.playerSettingsCount)" : nil
-                        hubNavRow(icon: "slider.horizontal.3", title: "Paramètres du joueur", badge: settingsBadge)
+                        NavigationLink {
+                            EvalPlayerSettingsView()
+                        } label: {
+                            hubRowView(icon: "slider.horizontal.3", title: "Paramètres du joueur", badge: settingsBadge)
+                        }
+                        .buttonStyle(.plain)
                     }
 
                     // 2. Progression
                     hubGroupSection(title: "Progression") {
-                        hubNavRow(icon: "target", title: "Objectifs de la saison")
+                        NavigationLink {
+                            EvalSeasonGoalsView()
+                        } label: {
+                            hubRowView(icon: "target", title: "Objectifs de la saison")
+                        }
+                        .buttonStyle(.plain)
                     }
 
                     // 3. Infos sur le jeu
                     hubGroupSection(title: "Infos sur le jeu") {
-                        hubNavRow(icon: "map.fill", title: "Cartes")
-                        hubNavRow(icon: "person.crop.circle.fill", title: "Agents")
-                        hubNavRow(icon: "scope", title: "Armes")
+                        NavigationLink {
+                            EvalMapsView()
+                        } label: {
+                            hubRowView(icon: "map.fill", title: "Cartes")
+                        }
+                        .buttonStyle(.plain)
+
+                        NavigationLink {
+                            EvalAgentsView()
+                        } label: {
+                            hubRowView(icon: "person.crop.circle.fill", title: "Agents")
+                        }
+                        .buttonStyle(.plain)
+
+                        NavigationLink {
+                            EvalWeaponsView()
+                        } label: {
+                            hubRowView(icon: "scope", title: "Armes")
+                        }
+                        .buttonStyle(.plain)
+
                         Button {
                             showingStore = true
                         } label: {
@@ -2706,15 +2750,6 @@ struct EvalHubView: View {
             .clipShape(.rect(cornerRadius: Theme.cardRadius))
             .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
         }
-    }
-
-    private func hubNavRow(icon: String, title: String, badge: String? = nil) -> some View {
-        NavigationLink {
-            HubDetailPlaceholderView(title: title)
-        } label: {
-            hubRowView(icon: icon, title: title, badge: badge)
-        }
-        .buttonStyle(.plain)
     }
 
     private func hubRowView(icon: String, title: String, badge: String? = nil) -> some View {
@@ -3724,25 +3759,6 @@ struct EvalFriendDetailSheet: View {
             .padding(.vertical, 12)
         }
         .buttonStyle(.plain)
-    }
-}
-
-// Sub-screen for Hub entries
-struct HubDetailPlaceholderView: View {
-    let title: String
-
-    var body: some View {
-        VStack(spacing: 16) {
-            Text(title)
-                .font(.title3.weight(.bold))
-                .foregroundStyle(.white)
-            Text("Données synchronisées avec votre profil Riot.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .ethoneScreen()
-        .navigationTitle(title)
     }
 }
 

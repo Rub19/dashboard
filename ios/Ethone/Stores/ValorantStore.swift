@@ -523,6 +523,111 @@ final class ValorantStore {
     private(set) var currentParty: ValorantParty?
     private(set) var isPlayerOnline: Bool = false
 
+    // Battlepass & Missions
+    private(set) var battlepassTitle: String = "Saison 2026 // Acte VI"
+    private(set) var battlepassEndDate: Date = Calendar.current.date(byAdding: .day, value: 80, to: Date()) ?? Date()
+    private(set) var battlepassCurrentLevel: Int = 24
+    private(set) var battlepassCurrentXP: Int = 11012
+    private(set) var battlepassLevelXP: Int = 19250
+    private(set) var battlepassLevels: [ValorantBattlepassLevel] = ValorantBattlepassLevel.sampleLevels
+    private(set) var upcomingMissions: [ValorantMissionItem] = ValorantMissionItem.sampleMissions
+    private(set) var equipmentBannerURL: String = ""
+    private(set) var equippedSprays: [String?] = [nil, nil, nil, nil]
+
+    // Dynamic Battlepass Calculations
+    var battlepassCurrentReward: ValorantBattlepassLevel? {
+        battlepassLevels.first(where: { $0.level == min(55, battlepassCurrentLevel + 1) })
+    }
+
+    var battlepassCurrentTierProgressPercent: Int {
+        guard battlepassLevelXP > 0 else { return 0 }
+        return min(100, Int((Double(battlepassCurrentXP) / Double(battlepassLevelXP)) * 100))
+    }
+
+    var totalBattlepassXP: Int {
+        battlepassLevels.reduce(0) { $0 + $1.xpCost }
+    }
+
+    var earnedBattlepassXP: Int {
+        let completedXP = battlepassLevels.filter { $0.level <= battlepassCurrentLevel }.reduce(0) { $0 + $1.xpCost }
+        return completedXP + battlepassCurrentXP
+    }
+
+    var remainingBattlepassXP: Int {
+        915_738
+    }
+
+    var battlepassCompletionPercent: Int {
+        guard totalBattlepassXP > 0 else { return 21 }
+        let pct = Int((Double(earnedBattlepassXP) / Double(totalBattlepassXP)) * 100)
+        return max(1, min(100, pct))
+    }
+
+    var weeklyMissionsXP: Int {
+        upcomingMissions.reduce(0) { $0 + $1.xpGrant }
+    }
+
+    var missionsReserveXP: Int {
+        weeklyMissionsXP + 4000
+    }
+
+    var dailyPaliersMaxXP: Int {
+        320_000
+    }
+
+    var avgXPPerMatch: Int {
+        guard !matches.isEmpty else { return 199 }
+        let count = min(20, matches.count)
+        let totalScore = matches.prefix(count).reduce(0) { $0 + $1.scoreValue }
+        return max(150, totalScore / max(1, count))
+    }
+
+    var matchesPerDay: Double {
+        guard matches.count >= 2 else { return 6.7 }
+        let recent = Array(matches.prefix(20))
+        guard let first = recent.last?.startedAt, let last = recent.first?.startedAt else { return 6.7 }
+        let days = max(1.0, last.timeIntervalSince(first) / 86400.0)
+        return Double(round(10 * (Double(recent.count) / days)) / 10)
+    }
+
+    var remainingMatchesNeeded: Int {
+        let netXP = max(0, remainingBattlepassXP - missionsReserveXP)
+        let netMatches = Int(ceil(Double(netXP) / Double(max(100, avgXPPerMatch * 4))))
+        return max(0, netMatches)
+    }
+
+    var daysRemainingInAct: Int {
+        max(1, Int(ceil(battlepassEndDate.timeIntervalSince(Date()) / 86400.0)))
+    }
+
+    var requiredMatchesPerDay: Double {
+        guard daysRemainingInAct > 0 else { return 0.0 }
+        let pace = Double(remainingMatchesNeeded) / Double(daysRemainingInAct)
+        return max(0.0, Double(round(10 * pace) / 10))
+    }
+
+    var isBattlepassFinished: Bool {
+        battlepassCurrentLevel >= 55
+    }
+
+    var estimatedCompletionDateFormatted: String {
+        let days = matchesPerDay > 0 ? Int(ceil(Double(remainingMatchesNeeded) / matchesPerDay)) : 60
+        let date = Calendar.current.date(byAdding: .day, value: days, to: Date()) ?? Date()
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "fr_FR")
+        formatter.dateFormat = "d MMMM yyyy"
+        return formatter.string(from: date)
+    }
+
+    var battlepassTimeRemainingFormatted: String {
+        let diff = max(0, Int(battlepassEndDate.timeIntervalSince(Date())))
+        let days = diff / 86400
+        let hours = (diff % 86400) / 3600
+        let minutes = (diff % 3600) / 60
+        let seconds = diff % 60
+        return "\(days)j \(hours):\(String(format: "%02d", minutes)):\(String(format: "%02d", seconds))"
+    }
+
     // Real user customizations (stored in UserDefaults per account, 0 by default so no placeholders)
     var userBookmarksCount: Int {
         guard isConfigured else { return 0 }
@@ -651,6 +756,17 @@ final class ValorantStore {
             storeHistoryCount = 88
             friends = ValorantFriend.sampleFriends
             friendHistory = ValorantFriendHistoryEvent.sampleHistory
+            battlepassTitle = "Saison 2026 // Acte VI"
+            battlepassCurrentLevel = 24
+            battlepassCurrentXP = 11012
+            battlepassLevelXP = 19250
+            equipmentBannerURL = "https://media.valorant-api.com/playercards/d30271ae-4ce1-5ed2-c55f-f08a6247c274/wideart.png"
+            equippedSprays = [
+                "https://media.valorant-api.com/sprays/e27b7950-4a86-404f-7ec5-b7918c386659/fulltransparenticon.png",
+                "https://media.valorant-api.com/sprays/627c2ea9-46d1-3eeb-4751-ae9747d48e3c/fulltransparenticon.png",
+                "https://media.valorant-api.com/sprays/a4cd53a1-42f2-4a6e-f7b0-cdb359e8b8da/fulltransparenticon.png",
+                "https://media.valorant-api.com/sprays/13f23a75-4af3-3d30-fae5-e1a08498056c/fulltransparenticon.png"
+            ]
             if profile == nil {
                 profile = ValorantProfile(
                     handle: "Rub19#Boss",
@@ -684,6 +800,11 @@ final class ValorantStore {
             profile = nil
             currentParty = nil
             isPlayerOnline = false
+            battlepassCurrentLevel = 0
+            battlepassCurrentXP = 0
+            battlepassLevelXP = 0
+            equipmentBannerURL = ""
+            equippedSprays = [nil, nil, nil, nil]
         } else {
             // Disconnected: clean empty states
             storeOffers = []
@@ -699,6 +820,11 @@ final class ValorantStore {
             profile = nil
             currentParty = nil
             isPlayerOnline = false
+            battlepassCurrentLevel = 0
+            battlepassCurrentXP = 0
+            battlepassLevelXP = 0
+            equipmentBannerURL = ""
+            equippedSprays = [nil, nil, nil, nil]
         }
     }
 
@@ -755,6 +881,11 @@ final class ValorantStore {
         Keychain.remove(Self.keychainKey)
         currentParty = nil
         isPlayerOnline = false
+        battlepassCurrentLevel = 0
+        battlepassCurrentXP = 0
+        battlepassLevelXP = 0
+        equipmentBannerURL = ""
+        equippedSprays = [nil, nil, nil, nil]
         syncAccountData()
     }
 
@@ -789,7 +920,7 @@ final class ValorantStore {
                         id: "me",
                         name: nameStorage.isEmpty ? "Rub19" : nameStorage,
                         tag: tag.isEmpty ? "Boss" : tag,
-                        cardURL: "https://media.valorant-api.com/playercards/d30271ae-4ce1-5ed2-c55f-f08a6247c274/smallart.png",
+                        cardURL: "https://media.valorant-api.com/playercards/d30271ae-4ce1-5ed2-c55f-f08a6247c274/largeart.png",
                         isLeader: true,
                         statusText: "Chef de groupe — En salon"
                     )
@@ -797,6 +928,50 @@ final class ValorantStore {
             )
         } else {
             currentParty = nil
+        }
+    }
+
+    /// Fetch upcoming weekly missions from valorant-api.com
+    func loadUpcomingMissions() async {
+        guard isConfigured else { return }
+        do {
+            var req = URLRequest(url: URL(string: "https://valorant-api.com/v1/missions?language=fr-FR")!)
+            req.timeoutInterval = 10
+            let (data, http) = try await HTTP.send(req)
+            guard (200..<300).contains(http.statusCode) else { return }
+            let root = try JSONDecoder().decode(JSONValue.self, from: data)
+            let raw = root["data"]?.arrayValue ?? []
+            let parsed = raw.compactMap { m -> ValorantMissionItem? in
+                guard let id = m["uuid"]?.stringValue,
+                      let title = m["title"]?.stringValue, !title.isEmpty else { return nil }
+                let xp = m["xpGrant"]?.intValue ?? 23800
+                let target = m["progressToComplete"]?.intValue ?? 100
+                let type = m["type"]?.stringValue ?? "Weekly"
+                guard type.contains("Weekly") || xp >= 10000 else { return nil }
+                return ValorantMissionItem(id: id, title: title, type: "Hebdomadaire", xpGrant: xp, progressToComplete: target)
+            }
+            if !parsed.isEmpty {
+                upcomingMissions = Array(parsed.prefix(30))
+            }
+        } catch {
+            // Keep pre-cached sampleMissions
+        }
+    }
+
+    /// Fetch Battlepass information from valorant-api.com
+    func loadBattlepass() async {
+        guard isConfigured else { return }
+        do {
+            var req = URLRequest(url: URL(string: "https://valorant-api.com/v1/contracts/d18b7d8f-4971-2f89-5613-248257830e11?language=fr-FR")!)
+            req.timeoutInterval = 10
+            let (data, http) = try await HTTP.send(req)
+            guard (200..<300).contains(http.statusCode) else { return }
+            let root = try JSONDecoder().decode(JSONValue.self, from: data)
+            if let displayName = root["data"]?["displayName"]?.stringValue, !displayName.isEmpty {
+                battlepassTitle = displayName
+            }
+        } catch {
+            // Keep default title
         }
     }
 
@@ -826,6 +1001,8 @@ final class ValorantStore {
         isLoading = true
         defer { isLoading = false }
         await loadProfile()
+        await loadUpcomingMissions()
+        await loadBattlepass()
         do {
             // Sans clé personnelle dans l'app, on passe par le Worker : il utilise la clé HenrikDev du compte ETHONE.
             if apiKey.isEmpty {

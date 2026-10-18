@@ -856,6 +856,7 @@ struct EvalDailyOfferCard: View {
                     case .success(let image):
                         image
                             .resizable()
+                            .interpolation(.high)
                             .scaledToFit()
                             .frame(maxWidth: .infinity, maxHeight: 86)
                             .padding(.horizontal, 28)
@@ -913,6 +914,7 @@ struct EvalFeaturedBundleCard: View {
                     case .success(let image):
                         image
                             .resizable()
+                            .interpolation(.high)
                             .scaledToFill()
                             .frame(maxWidth: .infinity)
                             .frame(height: 180)
@@ -1006,7 +1008,7 @@ struct EvalAccessoryBundleCard: View {
                         AsyncImage(url: URL(string: item.imageURL)) { phase in
                             switch phase {
                             case .success(let image):
-                                image.resizable().scaledToFit().frame(width: 40, height: 40)
+                                image.resizable().interpolation(.high).scaledToFit().frame(width: 40, height: 40)
                             default:
                                 Color.clear
                             }
@@ -1046,10 +1048,10 @@ struct EvalAccessoryBundleCard: View {
 
 // MARK: - Spray Wheel View (Screenshot 2)
 struct SprayWheelView: View {
-    let topSprayURL: String
-    let leftSprayURL: String
-    let rightSprayURL: String
-    let bottomSprayURL: String
+    let topSprayURL: String?
+    let leftSprayURL: String?
+    let rightSprayURL: String?
+    let bottomSprayURL: String?
 
     var body: some View {
         ZStack {
@@ -1106,15 +1108,26 @@ struct SprayWheelView: View {
         .frame(maxWidth: .infinity)
     }
 
-    private func sprayItem(url: String, size: CGFloat) -> some View {
-        AsyncImage(url: URL(string: url)) { phase in
-            switch phase {
-            case .success(let image):
-                image.resizable().scaledToFit().frame(width: size, height: size)
-            default:
-                Image(systemName: "paintpalette.fill")
-                    .font(.system(size: size * 0.45))
-                    .foregroundStyle(.secondary)
+    private func sprayItem(url: String?, size: CGFloat) -> some View {
+        Group {
+            if let url = url, !url.isEmpty, let imageURL = URL(string: url) {
+                AsyncImage(url: imageURL) { phase in
+                    switch phase {
+                    case .success(let image):
+                        image
+                            .resizable()
+                            .interpolation(.high)
+                            .scaledToFit()
+                            .frame(width: size, height: size)
+                    default:
+                        Color.clear.frame(width: size, height: size)
+                    }
+                }
+            } else {
+                Image(systemName: "plus")
+                    .font(.system(size: 15, weight: .light))
+                    .foregroundStyle(Color.white.opacity(0.18))
+                    .frame(width: size, height: size)
             }
         }
     }
@@ -1196,6 +1209,8 @@ struct EvalGameView: View {
     @State private var storeExpanded = true
     @State private var contractsSubtab = 0
     @State private var groupRefreshProgress: Double = 0.0
+    @State private var showingBattlepassSheet = false
+    @State private var showingMissionsSheet = false
 
     private var store: ValorantStore { model.valorant }
 
@@ -1365,91 +1380,14 @@ struct EvalGameView: View {
                                 Spacer()
                             }
 
-                            // Card 1: Checkpoints journaliers
-                            VStack(alignment: .leading, spacing: 10) {
-                                HStack {
-                                    Text("Checkpoints journaliers")
-                                        .font(.subheadline.weight(.semibold))
-                                        .foregroundStyle(.white)
-                                    Spacer()
-                                    HStack(spacing: 4) {
-                                        Text("4:05:46")
-                                            .font(.caption.monospacedDigit())
-                                        Image(systemName: "clock")
-                                            .font(.caption2)
-                                    }
-                                    .foregroundStyle(.secondary)
-                                }
-
-                                // 4 Checkpoints Track
-                                HStack(spacing: 14) {
-                                    ForEach(0..<4) { i in
-                                        HStack(spacing: 14) {
-                                            Circle()
-                                                .strokeBorder(Color.white.opacity(0.25), lineWidth: 2)
-                                                .background(Circle().fill(i == 0 ? Theme.danger : Color.white.opacity(0.06)))
-                                                .frame(width: 22, height: 22)
-                                            if i < 3 {
-                                                Rectangle()
-                                                    .fill(Color.white.opacity(0.12))
-                                                    .frame(height: 2)
-                                            }
-                                        }
-                                    }
-                                }
-                                .padding(.top, 4)
+                            switch contractsSubtab {
+                            case 0:
+                                contractsMissionsView
+                            case 1:
+                                contractsBattlepassView
+                            default:
+                                contractsAccountView
                             }
-                            .padding(14)
-                            .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-                            .clipShape(.rect(cornerRadius: Theme.cardRadius))
-
-                            // Card 2: Missions hebdomadaires
-                            VStack(alignment: .leading, spacing: 8) {
-                                HStack {
-                                    Text("Missions hebdomadaires")
-                                        .font(.subheadline.weight(.semibold))
-                                        .foregroundStyle(.white)
-                                    Spacer()
-                                    HStack(spacing: 4) {
-                                        Text("2j 5:20:46")
-                                            .font(.caption.monospacedDigit())
-                                        Image(systemName: "clock")
-                                            .font(.caption2)
-                                    }
-                                    .foregroundStyle(.secondary)
-                                }
-
-                                HStack(spacing: 8) {
-                                    Image(systemName: "checkmark.circle")
-                                        .font(.subheadline)
-                                        .foregroundStyle(.secondary)
-                                    Text("Vous avez terminé toutes les missions disponibles.")
-                                        .font(.footnote)
-                                        .foregroundStyle(.secondary)
-                                }
-                            }
-                            .padding(14)
-                            .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-                            .clipShape(.rect(cornerRadius: Theme.cardRadius))
-
-                            // Card 3: Missions futures
-                            HStack {
-                                Text("30 missions hebdomadaires futures")
-                                    .font(.subheadline.weight(.medium))
-                                    .foregroundStyle(.white)
-                                Spacer()
-                                HStack(spacing: 4) {
-                                    Text("+689 100 XP")
-                                        .font(.caption.weight(.bold))
-                                        .foregroundStyle(.secondary)
-                                    Image(systemName: "chevron.right")
-                                        .font(.caption2.weight(.bold))
-                                        .foregroundStyle(.secondary)
-                                }
-                            }
-                            .padding(14)
-                            .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-                            .clipShape(.rect(cornerRadius: Theme.cardRadius))
                         }
                     }
 
@@ -1471,32 +1409,35 @@ struct EvalGameView: View {
                         }
                     ) {
                         VStack(spacing: 14) {
-                            // Widescreen Player Card Banner (Frag or Die: Focus Card) with Edit button
-                            ZStack(alignment: .bottomTrailing) {
-                                AsyncImage(url: URL(string: "https://media.valorant-api.com/playercards/d30271ae-4ce1-5ed2-c55f-f08a6247c274/wideart.png")) { phase in
-                                    switch phase {
-                                    case .success(let image):
-                                        image
-                                            .resizable()
-                                            .scaledToFill()
-                                            .frame(maxWidth: .infinity)
-                                            .frame(height: 104)
-                                            .clipped()
-                                    default:
-                                        Color(hex: 0x1A1C24).frame(height: 104)
+                            // Widescreen Player Card Banner (Only visible when connected with a valid banner)
+                            if store.isConfigured && !store.equipmentBannerURL.isEmpty {
+                                ZStack(alignment: .bottomTrailing) {
+                                    AsyncImage(url: URL(string: store.equipmentBannerURL)) { phase in
+                                        switch phase {
+                                        case .success(let image):
+                                            image
+                                                .resizable()
+                                                .interpolation(.high)
+                                                .scaledToFill()
+                                                .frame(maxWidth: .infinity)
+                                                .frame(height: 104)
+                                                .clipped()
+                                        default:
+                                            Color(hex: 0x1A1C24).frame(height: 104)
+                                        }
                                     }
-                                }
-                                .clipShape(.rect(cornerRadius: 16))
+                                    .clipShape(.rect(cornerRadius: 16))
 
-                                Circle()
-                                    .fill(Color.white.opacity(0.92))
-                                    .frame(width: 28, height: 28)
-                                    .overlay(
-                                        Image(systemName: "pencil")
-                                            .font(.system(size: 12, weight: .bold))
-                                            .foregroundStyle(Color.black)
-                                    )
-                                    .padding(10)
+                                    Circle()
+                                        .fill(Color.white.opacity(0.92))
+                                        .frame(width: 28, height: 28)
+                                        .overlay(
+                                            Image(systemName: "pencil")
+                                                .font(.system(size: 12, weight: .bold))
+                                                .foregroundStyle(Color.black)
+                                        )
+                                        .padding(10)
+                                }
                             }
 
                             // Menu list rows (No placeholder numbers: only show if user actually configured them)
@@ -1515,12 +1456,12 @@ struct EvalGameView: View {
                             .clipShape(.rect(cornerRadius: Theme.cardRadius))
                             .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
 
-                            // Interactive 4-Quadrant Spray Wheel
+                            // Interactive 4-Quadrant Spray Wheel (Empty crosshairs when disconnected)
                             SprayWheelView(
-                                topSprayURL: "https://media.valorant-api.com/sprays/e27b7950-4a86-404f-7ec5-b7918c386659/fulltransparenticon.png",
-                                leftSprayURL: "https://media.valorant-api.com/sprays/627c2ea9-46d1-3eeb-4751-ae9747d48e3c/fulltransparenticon.png",
-                                rightSprayURL: "https://media.valorant-api.com/sprays/a4cd53a1-42f2-4a6e-f7b0-cdb359e8b8da/fulltransparenticon.png",
-                                bottomSprayURL: "https://media.valorant-api.com/sprays/13f23a75-4af3-3d30-fae5-e1a08498056c/fulltransparenticon.png"
+                                topSprayURL: store.isConfigured ? store.equippedSprays[0] : nil,
+                                leftSprayURL: store.isConfigured ? store.equippedSprays[1] : nil,
+                                rightSprayURL: store.isConfigured ? store.equippedSprays[2] : nil,
+                                bottomSprayURL: store.isConfigured ? store.equippedSprays[3] : nil
                             )
                         }
                     }
@@ -1606,6 +1547,12 @@ struct EvalGameView: View {
                 .padding(.bottom, 96)
             }
             .scrollIndicators(.hidden)
+            .sheet(isPresented: $showingBattlepassSheet) {
+                EvalBattlepassDetailSheet()
+            }
+            .sheet(isPresented: $showingMissionsSheet) {
+                EvalUpcomingMissionsSheet()
+            }
         }
         .task {
             while !Task.isCancelled {
@@ -1778,6 +1725,744 @@ struct EvalGameView: View {
             }
         }
         .clipped()
+    }
+
+    // MARK: - Contrats Subtabs
+
+    // 1. Missions Subtab
+    @ViewBuilder
+    private var contractsMissionsView: some View {
+        if !store.isConfigured {
+            VStack(spacing: 12) {
+                Image(systemName: "checklist")
+                    .font(.system(size: 32))
+                    .foregroundStyle(.secondary)
+                Text("Aucune mission active")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.white)
+                Text("Connectez votre compte pour synchroniser vos missions et checkpoints quotidiens.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 20)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 28)
+            .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
+            .clipShape(.rect(cornerRadius: Theme.cardRadius))
+        } else {
+            VStack(spacing: 12) {
+                // Card 1: Checkpoints journaliers
+                VStack(alignment: .leading, spacing: 10) {
+                    HStack {
+                        Text("Checkpoints journaliers")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.white)
+                        Spacer()
+                        HStack(spacing: 4) {
+                            Text("4:05:46")
+                                .font(.caption.monospacedDigit())
+                            Image(systemName: "clock")
+                                .font(.caption2)
+                        }
+                        .foregroundStyle(.secondary)
+                    }
+
+                    // 4 Checkpoints Track
+                    HStack(spacing: 14) {
+                        ForEach(0..<4) { i in
+                            HStack(spacing: 14) {
+                                Circle()
+                                    .strokeBorder(Color.white.opacity(0.25), lineWidth: 2)
+                                    .background(Circle().fill(i == 0 ? Theme.danger : Color.white.opacity(0.06)))
+                                    .frame(width: 22, height: 22)
+                                if i < 3 {
+                                    Rectangle()
+                                        .fill(Color.white.opacity(0.12))
+                                        .frame(height: 2)
+                                }
+                            }
+                        }
+                    }
+                    .padding(.top, 4)
+                }
+                .padding(14)
+                .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
+                .clipShape(.rect(cornerRadius: Theme.cardRadius))
+
+                // Card 2: Missions hebdomadaires
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Text("Missions hebdomadaires")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.white)
+                        Spacer()
+                        HStack(spacing: 4) {
+                            Text("2j 5:20:46")
+                                .font(.caption.monospacedDigit())
+                            Image(systemName: "clock")
+                                .font(.caption2)
+                        }
+                        .foregroundStyle(.secondary)
+                    }
+
+                    HStack(spacing: 8) {
+                        Image(systemName: "checkmark.circle")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                        Text("Vous avez terminé toutes les missions disponibles.")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .padding(14)
+                .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
+                .clipShape(.rect(cornerRadius: Theme.cardRadius))
+
+                // Card 3: Missions futures (opens sheet with real API missions)
+                Button {
+                    showingMissionsSheet = true
+                } label: {
+                    HStack {
+                        Text("\(store.upcomingMissions.count) missions hebdomadaires futures")
+                            .font(.subheadline.weight(.medium))
+                            .foregroundStyle(.white)
+                        Spacer()
+                        HStack(spacing: 4) {
+                            Text("+\(store.missionsReserveXP.formatted()) XP")
+                                .font(.caption.weight(.bold))
+                                .foregroundStyle(.secondary)
+                            Image(systemName: "chevron.right")
+                                .font(.caption2.weight(.bold))
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .padding(14)
+                    .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
+                    .clipShape(.rect(cornerRadius: Theme.cardRadius))
+                }
+                .buttonStyle(PressScaleStyle())
+            }
+        }
+    }
+
+    // 2. Battlepass Subtab
+    @ViewBuilder
+    private var contractsBattlepassView: some View {
+        if !store.isConfigured {
+            VStack(spacing: 12) {
+                Image(systemName: "sparkles")
+                    .font(.system(size: 32))
+                    .foregroundStyle(.secondary)
+                Text("Passe de combat indisponible")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.white)
+                Text("Connectez votre compte pour afficher la progression de votre passe et les analyses de complétion.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 20)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 28)
+            .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
+            .clipShape(.rect(cornerRadius: Theme.cardRadius))
+        } else {
+            VStack(spacing: 12) {
+                // Card 1: Battlepass Hero Card
+                VStack(spacing: 12) {
+                    HStack {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(store.battlepassTitle)
+                                .font(.headline.weight(.heavy))
+                                .foregroundStyle(.white)
+
+                            Text("Fin de saison : \(store.daysRemainingInAct) jours restants")
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                        }
+
+                        Spacer()
+
+                        Text("Niveau \(store.battlepassCurrentLevel)")
+                            .font(.caption.weight(.heavy))
+                            .foregroundStyle(Theme.danger)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(Theme.danger.opacity(0.18), in: .capsule)
+                    }
+
+                    // Progress bar
+                    VStack(spacing: 4) {
+                        HStack {
+                            Text("Progression du palier")
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                            Spacer()
+                            Text("\(store.battlepassCurrentXP.formatted()) / \(store.battlepassLevelXP.formatted()) XP")
+                                .font(.caption2.weight(.bold).monospacedDigit())
+                                .foregroundStyle(.white)
+                        }
+
+                        GeometryReader { geo in
+                            ZStack(alignment: .leading) {
+                                Capsule()
+                                    .fill(Color.white.opacity(0.08))
+                                    .frame(height: 6)
+
+                                let ratio = store.battlepassLevelXP > 0 ? CGFloat(store.battlepassCurrentXP) / CGFloat(store.battlepassLevelXP) : 0
+                                Capsule()
+                                    .fill(
+                                        LinearGradient(
+                                            colors: [Theme.danger, Color(hex: 0xF59E0B)],
+                                            startPoint: .leading,
+                                            endPoint: .trailing
+                                        )
+                                    )
+                                    .frame(width: max(0, min(geo.size.width, geo.size.width * ratio)), height: 6)
+                            }
+                        }
+                        .frame(height: 6)
+                    }
+
+                    // Button to open full 55-tier Battlepass Sheet
+                    Button {
+                        showingBattlepassSheet = true
+                    } label: {
+                        HStack {
+                            Text("Voir \(store.battlepassTitle)")
+                                .font(.subheadline.weight(.bold))
+                                .foregroundStyle(.white)
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.caption.weight(.bold))
+                                .foregroundStyle(.secondary)
+                        }
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 10)
+                        .background(Color.white.opacity(0.06), in: .rect(cornerRadius: 12))
+                    }
+                    .buttonStyle(PressScaleStyle())
+                }
+                .padding(14)
+                .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
+                .clipShape(.rect(cornerRadius: Theme.cardRadius))
+
+                // Card 2: Analytics & Completion Predictor (Dynamic calculations, no hardcoding)
+                VStack(alignment: .leading, spacing: 10) {
+                    HStack {
+                        Text("Estimation & Analyses")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.white)
+                        Spacer()
+                        Text("\(Int(store.battlepassCompletionPercent * 100))% achevé")
+                            .font(.caption.weight(.bold).monospacedDigit())
+                            .foregroundStyle(.secondary)
+                    }
+
+                    // Completion Predictor Banner
+                    let onTrack = store.requiredMatchesPerDay <= store.matchesPerDay
+                    HStack(spacing: 10) {
+                        Image(systemName: onTrack ? "checkmark.seal.fill" : "clock.badge.exclamationmark.fill")
+                            .font(.system(size: 20))
+                            .foregroundStyle(onTrack ? Color(hex: 0x22C55E) : Color(hex: 0xF59E0B))
+
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(onTrack ? "Sur la bonne voie pour finir !" : "Rythme à intensifier")
+                                .font(.subheadline.weight(.bold))
+                                .foregroundStyle(.white)
+
+                            Text("Fin estimée le \(store.estimatedCompletionDateFormatted)")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+
+                        Spacer()
+                    }
+                    .padding(10)
+                    .background(
+                        (onTrack ? Color(hex: 0x22C55E) : Color(hex: 0xF59E0B)).opacity(0.12),
+                        in: .rect(cornerRadius: 10)
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10)
+                            .strokeBorder((onTrack ? Color(hex: 0x22C55E) : Color(hex: 0xF59E0B)).opacity(0.25), lineWidth: 1)
+                    )
+
+                    // 4-Stat Dynamic Grid
+                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
+                        statPill(title: "XP moyen / partie", value: "\(store.avgXPPerMatch.formatted()) XP")
+                        statPill(title: "Parties restantes", value: "\(store.remainingMatchesNeeded)")
+                        statPill(title: "Votre cadence", value: "\(String(format: "%.1f", store.matchesPerDay)) / jour")
+                        statPill(title: "Cadence requise", value: "\(String(format: "%.1f", store.requiredMatchesPerDay)) / jour")
+                    }
+
+                    // Reserve Missions XP footer
+                    HStack {
+                        Text("Réserve missions futures")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                        Spacer()
+                        Text("+\(store.missionsReserveXP.formatted()) XP")
+                            .font(.caption2.weight(.bold).monospacedDigit())
+                            .foregroundStyle(Color(hex: 0x22C55E))
+                    }
+                    .padding(.top, 2)
+                }
+                .padding(14)
+                .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
+                .clipShape(.rect(cornerRadius: Theme.cardRadius))
+            }
+        }
+    }
+
+    private func statPill(title: String, value: String) -> some View {
+        VStack(alignment: .leading, spacing: 3) {
+            Text(title)
+                .font(.system(size: 10, weight: .medium))
+                .foregroundStyle(.secondary)
+            Text(value)
+                .font(.system(size: 13, weight: .heavy))
+                .foregroundStyle(.white)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(10)
+        .background(Color.white.opacity(0.04), in: .rect(cornerRadius: 10))
+    }
+
+    // 3. Compte Subtab
+    @ViewBuilder
+    private var contractsAccountView: some View {
+        if !store.isConfigured {
+            VStack(spacing: 12) {
+                Image(systemName: "person.crop.rectangle.badge.plus")
+                    .font(.system(size: 32))
+                    .foregroundStyle(.secondary)
+                Text("Compte non connecté")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.white)
+                Text("Connectez votre compte pour afficher le contrat de votre agent favori et votre progression de compte.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 20)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 28)
+            .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
+            .clipShape(.rect(cornerRadius: Theme.cardRadius))
+        } else {
+            VStack(alignment: .leading, spacing: 10) {
+                HStack {
+                    Text("Contrat d'agent actif")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.white)
+                    Spacer()
+                    Text("Chapitre 2")
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(Theme.danger)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 3)
+                        .background(Theme.danger.opacity(0.18), in: .capsule)
+                }
+
+                HStack(spacing: 12) {
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(Color(hex: 0x1A1C24))
+                        .frame(width: 44, height: 44)
+                        .overlay(Image(systemName: "person.text.rectangle.fill").foregroundStyle(Theme.danger))
+
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text("Fade")
+                            .font(.subheadline.weight(.bold))
+                            .foregroundStyle(.white)
+
+                        Text("Niveau 8 / 10 • 72 000 / 150 000 XP")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .padding(.top, 4)
+            }
+            .padding(14)
+            .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
+            .clipShape(.rect(cornerRadius: Theme.cardRadius))
+        }
+    }
+}
+
+// MARK: - Battlepass Detail Sheet (Screenshots 1, 2, 3, 4)
+struct EvalBattlepassDetailSheet: View {
+    @Environment(AppModel.self) private var model
+    @Environment(\.dismiss) private var dismiss
+
+    private var store: ValorantStore { model.valorant }
+
+    private var chapters: [(chapter: Int, levels: [ValorantBattlepassLevel])] {
+        let grouped = Dictionary(grouping: store.battlepassLevels, by: { $0.chapter })
+        return grouped.keys.sorted().map { chap in
+            (chapter: chap, levels: grouped[chap]?.sorted(by: { $0.level < $1.level }) ?? [])
+        }
+    }
+
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                Theme.bg.ignoresSafeArea()
+
+                ScrollView {
+                    VStack(spacing: 20) {
+                        // Hero Summary Card
+                        VStack(spacing: 14) {
+                            HStack {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(store.battlepassTitle)
+                                        .font(.title3.weight(.heavy))
+                                        .foregroundStyle(.white)
+
+                                    Text("Prend fin dans \(store.daysRemainingInAct) jours • \(store.battlepassEndDate)")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+
+                                Spacer()
+
+                                ZStack {
+                                    Circle()
+                                        .strokeBorder(Color.white.opacity(0.12), lineWidth: 4)
+                                        .frame(width: 52, height: 52)
+
+                                    Circle()
+                                        .trim(from: 0, to: store.battlepassCompletionPercent)
+                                        .stroke(Theme.danger, style: StrokeStyle(lineWidth: 4, lineCap: .round))
+                                        .rotationEffect(.degrees(-90))
+                                        .frame(width: 52, height: 52)
+
+                                    Text("\(Int(store.battlepassCompletionPercent * 100))%")
+                                        .font(.system(size: 12, weight: .bold))
+                                        .foregroundStyle(.white)
+                                }
+                            }
+
+                            // Progress Bar
+                            VStack(spacing: 6) {
+                                HStack {
+                                    Text("Niveau actuel : \(store.battlepassCurrentLevel) / 55")
+                                        .font(.caption.weight(.bold))
+                                        .foregroundStyle(.white)
+                                    Spacer()
+                                    Text("\(store.battlepassCurrentXP.formatted()) / \(store.battlepassLevelXP.formatted()) XP")
+                                        .font(.caption.monospacedDigit())
+                                        .foregroundStyle(.secondary)
+                                }
+
+                                GeometryReader { geo in
+                                    ZStack(alignment: .leading) {
+                                        Capsule()
+                                            .fill(Color.white.opacity(0.08))
+                                            .frame(height: 6)
+
+                                        Capsule()
+                                            .fill(
+                                                LinearGradient(
+                                                    colors: [Theme.danger, Color(hex: 0xF59E0B)],
+                                                    startPoint: .leading,
+                                                    endPoint: .trailing
+                                                )
+                                            )
+                                            .frame(width: max(0, min(geo.size.width, geo.size.width * (store.battlepassLevelXP > 0 ? CGFloat(store.battlepassCurrentXP) / CGFloat(store.battlepassLevelXP) : 0))), height: 6)
+                                    }
+                                }
+                                .frame(height: 6)
+                            }
+                        }
+                        .padding(16)
+                        .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
+                        .clipShape(.rect(cornerRadius: Theme.cardRadius))
+                        .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
+
+                        // Chapters and Levels
+                        LazyVStack(spacing: 16) {
+                            ForEach(chapters, id: \.chapter) { chap in
+                                chapterSection(chapter: chap.chapter, levels: chap.levels)
+                            }
+                        }
+                    }
+                    .padding(16)
+                    .padding(.bottom, 32)
+                }
+            }
+            .navigationTitle("Passe de combat")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.system(size: 20))
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
+        }
+    }
+
+    private func chapterSection(chapter: Int, levels: [ValorantBattlepassLevel]) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Text(chapter == 11 ? "Épilogue" : "Chapitre \(chapter)")
+                    .font(.subheadline.weight(.heavy))
+                    .foregroundStyle(.white)
+
+                Spacer()
+
+                let chapterCompleted = levels.allSatisfy { $0.level <= store.battlepassCurrentLevel }
+                if chapterCompleted {
+                    HStack(spacing: 4) {
+                        Image(systemName: "checkmark.seal.fill")
+                            .font(.caption2)
+                        Text("Terminé")
+                            .font(.caption2.weight(.bold))
+                    }
+                    .foregroundStyle(Color(hex: 0x22C55E))
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 3)
+                    .background(Color(hex: 0x22C55E).opacity(0.15), in: .capsule)
+                }
+            }
+            .padding(.leading, 4)
+
+            VStack(spacing: 0) {
+                ForEach(Array(levels.enumerated()), id: \.element.id) { index, level in
+                    levelRow(level: level)
+                    if index < levels.count - 1 {
+                        Rectangle()
+                            .fill(Color.white.opacity(0.05))
+                            .frame(height: 1)
+                            .padding(.leading, 56)
+                    }
+                }
+            }
+            .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
+            .clipShape(.rect(cornerRadius: Theme.cardRadius))
+            .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
+        }
+    }
+
+    private func levelRow(level: ValorantBattlepassLevel) -> some View {
+        let isCompleted = level.level < store.battlepassCurrentLevel
+        let isCurrent = level.level == store.battlepassCurrentLevel
+
+        return HStack(spacing: 12) {
+            // Level indicator badge
+            ZStack {
+                if isCompleted {
+                    Circle()
+                        .fill(Theme.danger.opacity(0.2))
+                        .frame(width: 32, height: 32)
+                    Image(systemName: "checkmark")
+                        .font(.system(size: 13, weight: .bold))
+                        .foregroundStyle(Theme.danger)
+                } else if isCurrent {
+                    Circle()
+                        .strokeBorder(Theme.danger, lineWidth: 2)
+                        .frame(width: 32, height: 32)
+                    Text("\(level.level)")
+                        .font(.system(size: 12, weight: .heavy))
+                        .foregroundStyle(.white)
+                } else {
+                    Circle()
+                        .fill(Color.white.opacity(0.06))
+                        .frame(width: 32, height: 32)
+                    Text("\(level.level)")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundStyle(.secondary)
+                }
+            }
+
+            // High-res Reward Image
+            if !level.iconURL.isEmpty, let url = URL(string: level.iconURL) {
+                AsyncImage(url: url) { phase in
+                    switch phase {
+                    case .success(let image):
+                        image
+                            .resizable()
+                            .interpolation(.high)
+                            .scaledToFit()
+                            .frame(width: 44, height: 44)
+                    default:
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(Color.white.opacity(0.04))
+                            .frame(width: 44, height: 44)
+                            .overlay(Image(systemName: "gift.fill").font(.system(size: 16)).foregroundStyle(.secondary))
+                    }
+                }
+                .frame(width: 44, height: 44)
+            } else {
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(Color.white.opacity(0.04))
+                    .frame(width: 44, height: 44)
+                    .overlay(Image(systemName: "gift.fill").font(.system(size: 16)).foregroundStyle(.secondary))
+            }
+
+            // Reward details
+            VStack(alignment: .leading, spacing: 3) {
+                HStack(spacing: 6) {
+                    Text(level.name)
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(isCurrent ? .white : (isCompleted ? .white.opacity(0.9) : .secondary))
+                        .lineLimit(1)
+
+                    if level.isFree {
+                        Text("GRATUIT")
+                            .font(.system(size: 9, weight: .black))
+                            .foregroundStyle(Color(hex: 0xF59E0B))
+                            .padding(.horizontal, 5)
+                            .padding(.vertical, 2)
+                            .background(Color(hex: 0xF59E0B).opacity(0.18), in: .capsule)
+                    }
+                }
+
+                HStack(spacing: 6) {
+                    Text(level.rewardType)
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+
+                    Text("•")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+
+                    Text("\(level.xpCost.formatted()) XP")
+                        .font(.caption2.monospacedDigit())
+                        .foregroundStyle(.secondary)
+                }
+            }
+
+            Spacer()
+
+            if isCurrent {
+                Text("En cours")
+                    .font(.caption2.weight(.bold))
+                    .foregroundStyle(Theme.danger)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(Theme.danger.opacity(0.18), in: .capsule)
+            }
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+    }
+}
+
+// MARK: - Upcoming Missions Sheet
+struct EvalUpcomingMissionsSheet: View {
+    @Environment(AppModel.self) private var model
+    @Environment(\.dismiss) private var dismiss
+
+    private var store: ValorantStore { model.valorant }
+
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                Theme.bg.ignoresSafeArea()
+
+                ScrollView {
+                    VStack(spacing: 16) {
+                        // Header info card
+                        VStack(spacing: 8) {
+                            HStack {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text("Réserve de missions futures")
+                                        .font(.headline.weight(.heavy))
+                                        .foregroundStyle(.white)
+
+                                    Text("\(store.upcomingMissions.count) missions hebdomadaires programmées")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+
+                                Spacer()
+
+                                Text("+\(store.missionsReserveXP.formatted()) XP")
+                                    .font(.subheadline.weight(.heavy))
+                                    .foregroundStyle(Theme.danger)
+                                    .padding(.horizontal, 10)
+                                    .padding(.vertical, 6)
+                                    .background(Theme.danger.opacity(0.18), in: .capsule)
+                            }
+                        }
+                        .padding(16)
+                        .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
+                        .clipShape(.rect(cornerRadius: Theme.cardRadius))
+                        .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
+
+                        // List of upcoming missions
+                        VStack(spacing: 0) {
+                            ForEach(Array(store.upcomingMissions.enumerated()), id: \.element.id) { index, mission in
+                                HStack(spacing: 12) {
+                                    ZStack {
+                                        Circle()
+                                            .fill(Color.white.opacity(0.06))
+                                            .frame(width: 34, height: 34)
+
+                                        Image(systemName: "calendar.badge.clock")
+                                            .font(.system(size: 14))
+                                            .foregroundStyle(Theme.danger)
+                                    }
+
+                                    VStack(alignment: .leading, spacing: 3) {
+                                        Text(mission.title)
+                                            .font(.subheadline.weight(.medium))
+                                            .foregroundStyle(.white)
+
+                                        Text("Objectif : \(mission.progressToComplete.formatted())")
+                                            .font(.caption2)
+                                            .foregroundStyle(.secondary)
+                                    }
+
+                                    Spacer()
+
+                                    Text("+\(mission.xpGrant.formatted()) XP")
+                                        .font(.caption.weight(.bold).monospacedDigit())
+                                        .foregroundStyle(Color(hex: 0x22C55E))
+                                        .padding(.horizontal, 8)
+                                        .padding(.vertical, 4)
+                                        .background(Color(hex: 0x22C55E).opacity(0.12), in: .capsule)
+                                }
+                                .padding(.horizontal, 14)
+                                .padding(.vertical, 12)
+
+                                if index < store.upcomingMissions.count - 1 {
+                                    Rectangle()
+                                        .fill(Color.white.opacity(0.05))
+                                        .frame(height: 1)
+                                        .padding(.leading, 56)
+                                }
+                            }
+                        }
+                        .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
+                        .clipShape(.rect(cornerRadius: Theme.cardRadius))
+                        .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
+                    }
+                    .padding(16)
+                    .padding(.bottom, 32)
+                }
+            }
+            .navigationTitle("Missions hebdomadaires")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.system(size: 20))
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -2184,16 +2869,29 @@ struct EvalFriendsView: View {
         HStack(spacing: 12) {
             // Avatar with green online pastille
             ZStack(alignment: .bottomTrailing) {
-                AsyncImage(url: URL(string: "https://media.valorant-api.com/playercards/d30271ae-4ce1-5ed2-c55f-f08a6247c274/smallart.png")) { phase in
-                    switch phase {
-                    case .success(let image):
-                        image.resizable().scaledToFill().frame(width: 44, height: 44).clipShape(.rect(cornerRadius: 12))
-                    default:
-                        RoundedRectangle(cornerRadius: 12)
-                            .fill(Color(hex: 0x1A1C24))
-                            .frame(width: 44, height: 44)
-                            .overlay(Image(systemName: "person.fill").foregroundStyle(.secondary))
+                let ppURL = store.isCurrentUserRub19 ? "https://media.valorant-api.com/playercards/d30271ae-4ce1-5ed2-c55f-f08a6247c274/displayicon.png" : ""
+                if !ppURL.isEmpty, let url = URL(string: ppURL) {
+                    AsyncImage(url: url) { phase in
+                        switch phase {
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .interpolation(.high)
+                                .scaledToFill()
+                                .frame(width: 44, height: 44)
+                                .clipShape(.rect(cornerRadius: 12))
+                        default:
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color(hex: 0x1A1C24))
+                                .frame(width: 44, height: 44)
+                                .overlay(Image(systemName: "person.fill").foregroundStyle(.secondary))
+                        }
                     }
+                } else {
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color(hex: 0x1A1C24))
+                        .frame(width: 44, height: 44)
+                        .overlay(Image(systemName: "person.fill").foregroundStyle(.secondary))
                 }
 
                 // Green online circle

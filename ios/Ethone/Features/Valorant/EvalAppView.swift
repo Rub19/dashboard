@@ -386,17 +386,6 @@ struct EvalProfileView: View {
                     .padding(.horizontal, 16)
             }
 
-            private var emptyMatchesCard: some View {
-                ContentUnavailableView(
-                    "Aucune partie synchronisée",
-                    systemImage: "clock.arrow.circlepath",
-                    description: Text("L’historique de ce compte n’est pas encore disponible dans l’API.")
-                )
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 24)
-                .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-            }
-
             Button {
                 showingAccountSheet = true
             } label: {
@@ -414,6 +403,17 @@ struct EvalProfileView: View {
         .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
         .clipShape(.rect(cornerRadius: Theme.cardRadius))
         .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
+    }
+
+    private var emptyMatchesCard: some View {
+        ContentUnavailableView(
+            "Aucune partie synchronisée",
+            systemImage: "clock.arrow.circlepath",
+            description: Text("L’historique de ce compte n’est pas encore disponible dans l’API.")
+        )
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 24)
+        .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
     }
 
     // Main Profile Card (Widescreen Artwork + Radiant Tier Badges)

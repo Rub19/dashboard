@@ -2273,7 +2273,7 @@ struct EvalGameView: View {
                     showingBattlepassSheet = true
                 } label: {
                     HStack {
-                        Text("Consulter les 55 récompenses de l'Acte VI")
+                        Text("Consulter les récompenses\(store.battlepassTitle.isEmpty ? "" : " de \(store.battlepassTitle)")")
                             .font(.subheadline.weight(.bold))
                             .foregroundStyle(.white)
                         Spacer()
@@ -3961,6 +3961,7 @@ struct EvalFriendDetailSheet: View {
     @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss
     let friend: ValorantFriend
+    @State private var unavailableAction: String?
 
     private var store: ValorantStore { model.valorant }
 
@@ -4001,9 +4002,9 @@ struct EvalFriendDetailSheet: View {
             .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
 
             VStack(spacing: 8) {
-                actionRow(icon: "message.fill", title: "Envoyer un message")
-                actionRow(icon: "person.crop.circle.badge.plus", title: "Inviter dans le groupe")
-                actionRow(icon: "arrow.right.circle.fill", title: "Rejoindre le groupe")
+                actionRow(icon: "message.fill", title: "Envoyer un message", action: "La messagerie Riot n’est pas exposée par l’API connectée.")
+                actionRow(icon: "person.crop.circle.badge.plus", title: "Inviter dans le groupe", action: "Les invitations de groupe ne sont pas exposées par l’API connectée.")
+                actionRow(icon: "arrow.right.circle.fill", title: "Rejoindre le groupe", action: "La gestion des groupes n’est pas exposée par l’API connectée.")
 
                 Button(role: .destructive) {
                     store.removeFriend(id: friend.id)
@@ -4033,11 +4034,19 @@ struct EvalFriendDetailSheet: View {
         }
         .padding(16)
         .ethoneScreen()
+        .alert("Action indisponible", isPresented: Binding(
+            get: { unavailableAction != nil },
+            set: { if !$0 { unavailableAction = nil } }
+        )) {
+            Button("OK", role: .cancel) { unavailableAction = nil }
+        } message: {
+            Text(unavailableAction ?? "")
+        }
     }
 
-    private func actionRow(icon: String, title: String) -> some View {
+    private func actionRow(icon: String, title: String, action: String) -> some View {
         Button {
-            dismiss()
+            unavailableAction = action
         } label: {
             HStack(spacing: 12) {
                 Image(systemName: icon)

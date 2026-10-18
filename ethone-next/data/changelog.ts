@@ -59351,4 +59351,53 @@ CHANGELOG_BY_LANG.en.unshift(v12931_en);
 CHANGELOG_BY_LANG.es.unshift(v12931_es);
 CHANGELOG_BY_LANG.de.unshift(v12931_de);
 
+const v12932_fr: ChangelogEntry = {
+  version: "v1.75.154",
+  date: "2026-10-18",
+  title: "E:Val : écrans secondaires sans données fictives",
+  items: [
+    "Les écrans du Hub utilisent maintenant uniquement les données du compte actif ou un état indisponible explicite.",
+    "Le classement, l’historique des pseudos et les signets ne présentent plus de joueurs, scores ou historiques inventés.",
+    "La boutique ouvre une fiche détaillée par offre et les actions non exposées par l’API expliquent clairement leur limite.",
+  ],
+};
+
+const v12932_en: ChangelogEntry = {
+  version: "v1.75.154",
+  date: "2026-10-18",
+  title: "E:Val: secondary screens without fake data",
+  items: [
+    "Hub screens now use only active-account data or an explicit unavailable state.",
+    "Leaderboard, name history and bookmarks no longer show invented players, scores or history.",
+    "The store opens a detail sheet for each offer and unsupported actions explain the API limitation.",
+  ],
+};
+
+const v12932_es: ChangelogEntry = {
+  version: "v1.75.154",
+  date: "2026-10-18",
+  title: "E:Val: pantallas secundarias sin datos falsos",
+  items: [
+    "Las pantallas del Hub ahora usan solo datos de la cuenta activa o un estado no disponible explícito.",
+    "La clasificación, el historial de nombres y los marcadores ya no muestran jugadores, puntuaciones ni historiales inventados.",
+    "La tienda abre el detalle de cada oferta y las acciones no expuestas por la API explican su límite.",
+  ],
+};
+
+const v12932_de: ChangelogEntry = {
+  version: "v1.75.154",
+  date: "2026-10-18",
+  title: "E:Val: sekundäre Ansichten ohne Fake-Daten",
+  items: [
+    "Hub-Ansichten verwenden jetzt nur Daten des aktiven Kontos oder einen eindeutigen Nicht-verfügbar-Zustand.",
+    "Rangliste, Namensverlauf und Lesezeichen zeigen keine erfundenen Spieler, Ergebnisse oder Verläufe mehr.",
+    "Der Shop öffnet Details zu jedem Angebot und nicht von der API unterstützte Aktionen erklären ihre Einschränkung.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12932_fr);
+CHANGELOG_BY_LANG.en.unshift(v12932_en);
+CHANGELOG_BY_LANG.es.unshift(v12932_es);
+CHANGELOG_BY_LANG.de.unshift(v12932_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

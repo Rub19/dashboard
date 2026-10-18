@@ -6,6 +6,7 @@ struct ValorantStoreView: View {
     @State private var isLoading = false
     @State private var errorMessage: String?
     @State private var loaded = false
+    @State private var selectedBundle: FeaturedBundle?
 
     struct StoreItem: Decodable, Hashable {
         let name: String
@@ -60,7 +61,10 @@ struct ValorantStoreView: View {
             }
 
             ForEach(bundles) { bundle in
-                VStack(alignment: .leading, spacing: 0) {
+                Button {
+                    selectedBundle = bundle
+                } label: {
+                    VStack(alignment: .leading, spacing: 0) {
                     HStack(spacing: 14) {
                         remoteImage(bundle.image, size: 86)
                         VStack(alignment: .leading, spacing: 5) {
@@ -117,8 +121,10 @@ struct ValorantStoreView: View {
                             Divider().overlay(Color.white.opacity(0.08)).padding(.leading, 72)
                         }
                     }
+                    }
+                    .background(Color.white.opacity(0.08), in: .rect(cornerRadius: 26))
                 }
-                .background(Color.white.opacity(0.08), in: .rect(cornerRadius: 26))
+                .buttonStyle(.plain)
             }
 
             if loaded && bundles.isEmpty && errorMessage == nil {
@@ -151,6 +157,9 @@ struct ValorantStoreView: View {
         .overlay { if isLoading && bundles.isEmpty { ProgressView() } }
         .refreshable { await load() }
         .task { if !loaded { await load() } }
+        .sheet(item: $selectedBundle) { bundle in
+            bundleDetail(bundle)
+        }
     }
 
     private func remoteImage(_ urlString: String, size: CGFloat) -> some View {
@@ -189,4 +198,64 @@ struct ValorantStoreView: View {
             errorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
         }
     }
+
+    private func bundleDetail(_ bundle: FeaturedBundle) -> some View {
+            NavigationStack {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 16) {
+                        remoteImage(bundle.image, size: 180)
+                            .frame(maxWidth: .infinity)
+
+                        Text(bundle.name)
+                            .font(.title2.weight(.bold))
+                            .foregroundStyle(.white)
+
+                        Text("\(bundle.price.formatted()) VP" + (bundle.wholesaleOnly ? " · achat groupé uniquement" : ""))
+                            .font(.headline.monospacedDigit())
+                            .foregroundStyle(Theme.danger)
+
+                        if let expiry = bundle.expiresAt.flatMap(ISODate.parse) {
+                            Label(expiry, systemImage: "clock")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
+
+                        VStack(alignment: .leading, spacing: 0) {
+                            Text("Contenu")
+                                .font(.headline.weight(.bold))
+                                .foregroundStyle(.white)
+                                .padding(.bottom, 8)
+
+                            ForEach(Array(bundle.items.enumerated()), id: \.offset) { index, item in
+                                HStack(spacing: 12) {
+                                    remoteImage(item.image, size: 48)
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(item.name)
+                                            .font(.subheadline.weight(.semibold))
+                                            .foregroundStyle(.white)
+                                        Text(Self.typeLabel(item.type))
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                    }
+                                    Spacer()
+                                    Text("\(item.price.formatted()) VP")
+                                        .font(.caption.monospacedDigit().weight(.bold))
+                                        .foregroundStyle(.white)
+                                }
+                                .padding(.vertical, 10)
+                                if index < bundle.items.count - 1 {
+                                    Divider().overlay(Color.white.opacity(0.08))
+                                }
+                            }
+                        }
+                        .padding(16)
+                        .background(Color.white.opacity(0.07), in: .rect(cornerRadius: 22))
+                    }
+                    .padding(16)
+                }
+                .navigationTitle("Détail de l’offre")
+                .navigationBarTitleDisplayMode(.inline)
+                .ethoneScreen()
+            }
+        }
 }

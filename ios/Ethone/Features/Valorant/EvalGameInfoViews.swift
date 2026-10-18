@@ -13,6 +13,21 @@ enum EvalGameInfoTab: String, CaseIterable, Identifiable {
         case .agents: return "person.crop.circle.fill"
         case .weapons: return "scope"
         }
+
+        private enum CodingKeys: String, CodingKey {
+            case uuid, displayName, category, displayIcon, shopData, weaponStats, skins
+        }
+
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            uuid = try container.decode(String.self, forKey: .uuid)
+            displayName = try container.decode(String.self, forKey: .displayName)
+            category = try container.decode(String.self, forKey: .category)
+            displayIcon = try container.decodeIfPresent(String.self, forKey: .displayIcon)
+            shopData = try container.decodeIfPresent(ShopData.self, forKey: .shopData)
+            weaponStats = try container.decodeIfPresent(WeaponStats.self, forKey: .weaponStats)
+            skins = try container.decodeIfPresent([WeaponSkin].self, forKey: .skins) ?? []
+        }
     }
 }
 
@@ -659,6 +674,20 @@ struct EvalAgentsView: View {
                         ProgressView()
                             .tint(Theme.danger)
                             .padding(.top, 40)
+                    } else if let errorMessage = store.errorMessage, store.agents.isEmpty {
+                        ContentUnavailableView(
+                            "Impossible de charger les agents",
+                            systemImage: "wifi.exclamationmark",
+                            description: Text(errorMessage)
+                        )
+                        .padding(.top, 36)
+                    } else if filteredAgents.isEmpty {
+                        ContentUnavailableView(
+                            "Aucun agent trouvé",
+                            systemImage: "person.crop.circle",
+                            description: Text("Essayez un autre rôle ou un autre nom.")
+                        )
+                        .padding(.top, 36)
                     } else {
                         LazyVStack(alignment: .leading, spacing: 18) {
                             ForEach(roles.dropFirst().filter { role in
@@ -1069,6 +1098,20 @@ struct EvalWeaponsView: View {
                         ProgressView()
                             .tint(Theme.danger)
                             .padding(.top, 40)
+                    } else if let errorMessage = store.errorMessage, store.weapons.isEmpty {
+                        ContentUnavailableView(
+                            "Impossible de charger les armes",
+                            systemImage: "wifi.exclamationmark",
+                            description: Text(errorMessage)
+                        )
+                        .padding(.top, 36)
+                    } else if filteredWeapons.isEmpty {
+                        ContentUnavailableView(
+                            "Aucune arme trouvée",
+                            systemImage: "scope",
+                            description: Text("Essayez une autre catégorie ou un autre nom.")
+                        )
+                        .padding(.top, 36)
                     } else {
                         LazyVStack(spacing: 0) {
                             ForEach(filteredWeapons) { weapon in
@@ -1228,7 +1271,8 @@ struct EvalBookmarksView: View {
         ZStack {
             Theme.bg.ignoresSafeArea()
 
-            VStack(spacing: 16) {
+            ScrollView {
+                VStack(spacing: 16) {
                 if store.userBookmarksCount == 0 {
                     VStack(spacing: 14) {
                         Image(systemName: "bookmark.slash")
@@ -1248,12 +1292,24 @@ struct EvalBookmarksView: View {
                     .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
                     .padding(16)
                 } else {
-                    List {
-                        Text("Signets actifs : \(store.userBookmarksCount)")
+                    VStack(alignment: .leading, spacing: 10) {
+                        Label("Signets actifs", systemImage: "bookmark.fill")
+                            .font(.headline.weight(.bold))
                             .foregroundStyle(.white)
+                        Text("\(store.userBookmarksCount) signet(s) sont enregistrés pour ce compte.")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                        Text("Les éléments détaillés seront affichés ici dès qu’un profil ou une configuration sera ajouté depuis une fiche.")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(16)
+                    .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
                 }
                 Spacer()
+                }
+                .padding(16)
             }
         }
         .navigationTitle("Signets")
@@ -1290,27 +1346,22 @@ struct EvalNameHistoryView: View {
                     .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
                     .padding(16)
                 } else {
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Riot ID Actuel")
-                            .font(.caption.weight(.bold))
+                    VStack(spacing: 12) {
+                        Image(systemName: "clock.badge.exclamationmark")
+                            .font(.system(size: 36))
                             .foregroundStyle(.secondary)
-
-                        HStack {
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text("\(store.playerName)#\(store.tag)")
-                                    .font(.title3.weight(.heavy))
-                                    .foregroundStyle(.white)
-                                Text("Actif actuellement")
-                                    .font(.caption)
-                                    .foregroundStyle(Color(hex: 0x22C55E))
-                            }
-                            Spacer()
-                            Image(systemName: "checkmark.seal.fill")
-                                .foregroundStyle(Color(hex: 0x22C55E))
-                        }
-                        .padding(14)
-                        .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
+                        Text("Historique indisponible")
+                            .font(.headline.weight(.bold))
+                            .foregroundStyle(.white)
+                        Text("HenrikDev ne fournit pas d’historique de Riot ID pour ce compte. Le Riot ID actuel reste disponible depuis la fiche de profil.")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 20)
                     }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 36)
+                    .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
                     .padding(16)
                 }
                 Spacer()
@@ -1318,81 +1369,59 @@ struct EvalNameHistoryView: View {
         }
         .navigationTitle("Historique des pseudos")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    Task { await store.refresh() }
+                } label: {
+                    Image(systemName: "arrow.clockwise")
+                        .foregroundStyle(Theme.danger)
+                }
+                .buttonStyle(.plain)
+            }
+        }
     }
 }
 
 // Classement Radiant
 struct EvalLeaderboardView: View {
+    @Environment(AppModel.self) private var model
+
     var body: some View {
         ZStack {
             Theme.bg.ignoresSafeArea()
 
             ScrollView {
                 VStack(spacing: 12) {
-                    HStack {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Top Radiant // Épisode 9")
-                                .font(.headline.weight(.heavy))
+                    VStack(spacing: 12) {
+                        Image(systemName: "trophy.slash")
+                            .font(.system(size: 38))
+                            .foregroundStyle(.secondary)
+                        Text("Classement public indisponible")
+                            .font(.headline.weight(.bold))
+                            .foregroundStyle(.white)
+                        Text("L’API utilisée par E:Val ne fournit pas de liste publique Radiant. Aucun joueur ou score fictif n’est affiché.")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 20)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 40)
+                    .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
+
+                    if let profile = model.valorant.profile, let rank = profile.leaderboardRank {
+                        HStack {
+                            Label("Votre rang", systemImage: "person.crop.circle.badge.checkmark")
                                 .foregroundStyle(.white)
-                            Text("Région Europe (EU)")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
+                            Spacer()
+                            Text("#\(rank)")
+                                .font(.headline.monospacedDigit().weight(.bold))
+                                .foregroundStyle(Theme.danger)
                         }
-                        Spacer()
-                        Text("Acte VI")
-                            .font(.caption.weight(.bold))
-                            .foregroundStyle(Theme.danger)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 4)
-                            .background(Theme.danger.opacity(0.18), in: .capsule)
+                        .padding(16)
+                        .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
                     }
-                    .padding(14)
-                    .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-
-                    // Top 5 Mock Leaderboard Table
-                    let topPlayers = [
-                        ("1", "Chronicle", "FNC", "1,048 RR", "142 V"),
-                        ("2", "Derke", "TH", "987 RR", "131 V"),
-                        ("3", "Aspas", "LEV", "964 RR", "125 V"),
-                        ("4", "TenZ", "SEN", "932 RR", "118 V"),
-                        ("5", "Boaster", "FNC", "910 RR", "112 V")
-                    ]
-
-                    VStack(spacing: 0) {
-                        ForEach(topPlayers, id: \.0) { rank, name, tag, rr, wins in
-                            HStack(spacing: 12) {
-                                Text(rank)
-                                    .font(.subheadline.weight(.heavy).monospacedDigit())
-                                    .foregroundStyle(rank == "1" ? Color(hex: 0xF59E0B) : .white)
-                                    .frame(width: 24)
-
-                                Image(systemName: "sparkles")
-                                    .foregroundStyle(Theme.danger)
-
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text("\(name)#\(tag)")
-                                        .font(.subheadline.weight(.bold))
-                                        .foregroundStyle(.white)
-                                    Text(wins)
-                                        .font(.caption2)
-                                        .foregroundStyle(.secondary)
-                                }
-
-                                Spacer()
-
-                                Text(rr)
-                                    .font(.caption.weight(.heavy).monospacedDigit())
-                                    .foregroundStyle(Theme.danger)
-                            }
-                            .padding(.horizontal, 14)
-                            .padding(.vertical, 12)
-
-                            if rank != "5" {
-                                Rectangle().fill(Color.white.opacity(0.05)).frame(height: 1).padding(.leading, 48)
-                            }
-                        }
-                    }
-                    .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
                 }
                 .padding(16)
             }
@@ -1407,9 +1436,14 @@ struct EvalPlayerSettingsView: View {
     @Environment(AppModel.self) private var model
     private var store: ValorantStore { model.valorant }
 
-    @State private var dpi = "800"
-    @State private var sens = "0.35"
-    @State private var crosshairCode = "0;P;c;5;o;1;d;1;z;3;f;0;0t;6;0l;1;0a;1;0f;0;1b;0"
+    @State private var dpi = ""
+    @State private var sens = ""
+    @State private var crosshairCode = ""
+    @State private var didSave = false
+
+    private var snapshotKey: String {
+        "ethone.valorant.\(store.playerName)#\(store.tag).playerSnapshot"
+    }
 
     var body: some View {
         ZStack {
@@ -1427,7 +1461,8 @@ struct EvalPlayerSettingsView: View {
                                 Text("DPI")
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
-                                TextField("800", text: $dpi)
+                                TextField("DPI", text: $dpi)
+                                    .keyboardType(.numberPad)
                                     .font(.headline.weight(.bold))
                                     .foregroundStyle(.white)
                             }
@@ -1438,7 +1473,8 @@ struct EvalPlayerSettingsView: View {
                                 Text("Sensibilité en jeu")
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
-                                TextField("0.35", text: $sens)
+                                TextField("Sensibilité", text: $sens)
+                                    .keyboardType(.decimalPad)
                                     .font(.headline.weight(.bold))
                                     .foregroundStyle(.white)
                                     .multilineTextAlignment(.trailing)
@@ -1453,36 +1489,63 @@ struct EvalPlayerSettingsView: View {
                             .font(.subheadline.weight(.bold))
                             .foregroundStyle(.white)
 
-                        Text(crosshairCode)
+                        TextField("Collez votre code de réticule", text: $crosshairCode, axis: .vertical)
                             .font(.caption.monospaced())
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(.white)
                             .padding(10)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .background(Color.white.opacity(0.04), in: .rect(cornerRadius: 10))
 
-                        Button {
-                            UIPasteboard.general.string = crosshairCode
-                        } label: {
-                            HStack {
-                                Image(systemName: "doc.on.doc.fill")
-                                Text("Copier le code de réticule")
+                        if !crosshairCode.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                            Button {
+                                UIPasteboard.general.string = crosshairCode
+                            } label: {
+                                HStack {
+                                    Image(systemName: "doc.on.doc.fill")
+                                    Text("Copier le code de réticule")
+                                }
+                                .font(.caption.weight(.bold))
+                                .foregroundStyle(.white)
+                                .padding(.vertical, 8)
+                                .frame(maxWidth: .infinity)
+                                .background(Theme.danger, in: .capsule)
                             }
-                            .font(.caption.weight(.bold))
-                            .foregroundStyle(.white)
-                            .padding(.vertical, 8)
-                            .frame(maxWidth: .infinity)
-                            .background(Theme.danger, in: .capsule)
+                            .buttonStyle(PressScaleStyle())
                         }
-                        .buttonStyle(PressScaleStyle())
                     }
                     .padding(14)
                     .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
+
+                    Button {
+                        let snapshot: [String: String] = [
+                            "dpi": dpi,
+                            "sens": sens,
+                            "crosshair": crosshairCode
+                        ]
+                        UserDefaults.standard.set(snapshot, forKey: snapshotKey)
+                        didSave = true
+                    } label: {
+                        Label(didSave ? "Snapshot enregistré" : "Enregistrer le snapshot", systemImage: didSave ? "checkmark.circle.fill" : "square.and.arrow.down")
+                            .font(.subheadline.weight(.bold))
+                            .foregroundStyle(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
+                            .background(Theme.danger, in: .capsule)
+                    }
+                    .buttonStyle(PressScaleStyle())
                 }
                 .padding(16)
             }
         }
         .navigationTitle("Paramètres du joueur")
         .navigationBarTitleDisplayMode(.inline)
+        .task {
+            guard let snapshot = UserDefaults.standard.dictionary(forKey: snapshotKey) as? [String: String] else { return }
+            dpi = snapshot["dpi"] ?? ""
+            sens = snapshot["sens"] ?? ""
+            crosshairCode = snapshot["crosshair"] ?? ""
+            didSave = true
+        }
     }
 }
 
@@ -1500,7 +1563,7 @@ struct EvalSeasonGoalsView: View {
                     VStack(spacing: 8) {
                         HStack {
                             VStack(alignment: .leading, spacing: 4) {
-                                Text("Objectif de l'Acte VI")
+                                Text("Objectif de \(store.profile?.actName.isEmpty == false ? store.profile?.actName ?? "l’acte actuel" : "l’acte actuel")")
                                     .font(.headline.weight(.heavy))
                                     .foregroundStyle(.white)
                                 Text("Prend fin dans \(store.daysRemainingInAct) jours")
@@ -1520,9 +1583,9 @@ struct EvalSeasonGoalsView: View {
                     .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
 
                     VStack(alignment: .leading, spacing: 12) {
-                        goalRow(title: "Atteindre le palier 55 du passe", progress: store.isConfigured ? "\(store.battlepassCurrentLevel) / 55" : "0 / 55", isCompleted: store.battlepassCurrentLevel >= 55)
-                        goalRow(title: "Jouer 50 parties compétitives", progress: "\(min(50, store.matches.count)) / 50", isCompleted: store.matches.count >= 50)
-                        goalRow(title: "Maintenir un KD > 1.20", progress: "Actuel : \(store.matches.isEmpty ? "0.0" : String(format: "%.2f", Double(store.matches.reduce(0) { $0 + $1.kills }) / max(1, Double(store.matches.reduce(0) { $0 + $1.deaths }))))", isCompleted: false)
+                        goalRow(title: "Atteindre le palier 55 du passe", progress: store.isConfigured && !store.battlepassLevels.isEmpty ? "\(store.battlepassCurrentLevel) / 55" : "Données indisponibles", isCompleted: store.battlepassCurrentLevel >= 55)
+                        goalRow(title: "Jouer 50 parties compétitives", progress: store.isConfigured ? "\(min(50, store.matches.count)) / 50" : "Données indisponibles", isCompleted: store.isConfigured && store.matches.count >= 50)
+                        goalRow(title: "Maintenir un KD > 1.20", progress: store.isConfigured && !store.matches.isEmpty ? "Actuel : \(String(format: "%.2f", Double(store.matches.reduce(0) { $0 + $1.kills }) / max(1, Double(store.matches.reduce(0) { $0 + $1.deaths }))))" : "Données indisponibles", isCompleted: false)
                     }
                     .padding(14)
                     .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))

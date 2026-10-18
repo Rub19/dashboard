@@ -1,5 +1,15 @@
 [
   {
+    "version": "v1.75.154",
+    "date": "2026-10-18",
+    "title": "E:Val : écrans secondaires sans données fictives",
+    "items": [
+      "Les écrans du Hub utilisent maintenant uniquement les données du compte actif ou un état indisponible explicite.",
+      "Le classement, l’historique des pseudos et les signets ne présentent plus de joueurs, scores ou historiques inventés.",
+      "La boutique ouvre une fiche détaillée par offre et les actions non exposées par l’API expliquent clairement leur limite."
+    ]
+  },
+  {
     "version": "v1.75.153",
     "date": "2026-10-18",
     "title": "E:Val : catalogue Valorant API",
@@ -508,17 +518,6 @@
       "Nouveau bouton « Mode streamer » : tu colles le lien de ta chaîne et le titre, le bot passe en direct (violet)",
       "Nouveau bouton « Activité perso » pour écrire ce que le bot affiche",
       "Statut Invisible ajouté, et /status utilise le même panneau"
-    ]
-  },
-  {
-    "version": "v1.75.104",
-    "date": "2026-10-15",
-    "title": "Autocomplétion des commandes et correctifs trouvés en test réel",
-    "items": [
-      "/streamer remove, /giveaway end/reroll/cancel/extend, /reminder cancel, /poll et /economy buy proposent la liste des éléments existants : plus besoin de taper un nom ou un identifiant",
-      "/bienvenue test affiche le bon salon (au lieu de « <#null> »)",
-      "/streamer add affiche « Aucune mention » au lieu de « none »",
-      "Le site ne réutilise plus une ancienne version en cache lors de la navigation"
     ]
   }
 ]

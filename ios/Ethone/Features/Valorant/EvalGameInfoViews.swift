@@ -14,20 +14,6 @@ enum EvalGameInfoTab: String, CaseIterable, Identifiable {
         case .weapons: return "scope"
         }
 
-        private enum CodingKeys: String, CodingKey {
-            case uuid, displayName, category, displayIcon, shopData, weaponStats, skins
-        }
-
-        init(from decoder: Decoder) throws {
-            let container = try decoder.container(keyedBy: CodingKeys.self)
-            uuid = try container.decode(String.self, forKey: .uuid)
-            displayName = try container.decode(String.self, forKey: .displayName)
-            category = try container.decode(String.self, forKey: .category)
-            displayIcon = try container.decodeIfPresent(String.self, forKey: .displayIcon)
-            shopData = try container.decodeIfPresent(ShopData.self, forKey: .shopData)
-            weaponStats = try container.decodeIfPresent(WeaponStats.self, forKey: .weaponStats)
-            skins = try container.decodeIfPresent([WeaponSkin].self, forKey: .skins) ?? []
-        }
     }
 }
 
@@ -940,6 +926,21 @@ struct ValorantWeaponItem: Identifiable, Decodable {
     let shopData: ShopData?
     let weaponStats: WeaponStats?
     let skins: [WeaponSkin]
+
+    private enum CodingKeys: String, CodingKey {
+        case uuid, displayName, category, displayIcon, shopData, weaponStats, skins
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        uuid = try container.decode(String.self, forKey: .uuid)
+        displayName = try container.decode(String.self, forKey: .displayName)
+        category = try container.decode(String.self, forKey: .category)
+        displayIcon = try container.decodeIfPresent(String.self, forKey: .displayIcon)
+        shopData = try container.decodeIfPresent(ShopData.self, forKey: .shopData)
+        weaponStats = try container.decodeIfPresent(WeaponStats.self, forKey: .weaponStats)
+        skins = try container.decodeIfPresent([WeaponSkin].self, forKey: .skins) ?? []
+    }
 
     struct WeaponSkin: Decodable {
         let displayName: String

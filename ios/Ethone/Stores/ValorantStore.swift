@@ -59,7 +59,7 @@ struct ValorantLeaderboardEntry: Identifiable, Hashable {
     }
 }
 
-struct ValorantMatchPlayer: Identifiable, Hashable {
+struct ValorantMatchPlayer: Identifiable, Hashable, Codable {
     let id: String
     let name: String
     let tag: String
@@ -90,14 +90,14 @@ struct ValorantMatchPlayer: Identifiable, Hashable {
     var rankIconURL: URL? { ValorantProfile.tierIcon(tierNumber) }
 }
 
-struct ValorantRoundSummary: Identifiable, Hashable {
+struct ValorantRoundSummary: Identifiable, Hashable, Codable {
     let id: Int
     let winningTeam: String
     let winType: String
     let won: Bool
 }
 
-struct ValorantMatch: Identifiable, Hashable {
+struct ValorantMatch: Identifiable, Hashable, Codable {
     let id: String
     let map: String
     let mode: String
@@ -231,6 +231,8 @@ struct ValorantParty: Hashable {
 @MainActor
 @Observable
 final class ValorantStore {
+    private static let matchCacheTTL: TimeInterval = 15 * 60
+    private static let matchCacheKeyPrefix = "valorant-match-cache."
     private let api: APIClient
     private(set) var matches: [ValorantMatch] = []
     private(set) var leaderboard: [ValorantLeaderboardEntry] = []
@@ -579,10 +581,73 @@ final class ValorantStore {
         guard isConfigured else { return }
         isLoading = true
         defer { isLoading = false }
+        await loadCachedMatches()
         await loadProfile()
         await loadLeaderboard()
         await loadUpcomingMissions()
         await loadBattlepass()
+        await refreshMatchesIfNeeded()
+    }
+
+    private struct MatchCache: Codable {
+        let fetchedAt: Date
+        let matches: [ValorantMatch]
+    }
+
+    private var matchCacheKey: String {
+        let account = "\(nameStorage)#\(tag)".lowercased()
+        let encoded = Data(account.utf8).base64EncodedString()
+            .replacingOccurrences(of: "/", with: "_")
+            .replacingOccurrences(of: "+", with: "-")
+            .replacingOccurrences(of: "=", with: "")
+        return Self.matchCacheKeyPrefix + encoded
+    }
+
+    private func loadCachedMatches() async {
+        guard let cache = DiskCache.read(MatchCache.self, key: matchCacheKey) else {
+            await loadRemoteMatchCache()
+            return
+        }
+        matches = cache.matches
+        if Date().timeIntervalSince(cache.fetchedAt) <= Self.matchCacheTTL {
+            return
+        }
+        await loadRemoteMatchCache(preferred: cache)
+    }
+
+    private struct RemoteMatchCacheRow: Decodable {
+        let matches: JSONValue?
+        let fetched_at: String?
+    }
+
+    private func loadRemoteMatchCache(preferred local: MatchCache? = nil) async {
+        do {
+            let rows: [RemoteMatchCacheRow] = try await api.list("ethone_valorant_match_cache", query: [
+                URLQueryItem(name: "account_name", value: "eq.\(nameStorage)"),
+                URLQueryItem(name: "account_tag", value: "eq.\(tag)"),
+                URLQueryItem(name: "limit", value: "1")
+            ])
+            guard let row = rows.first,
+                  let json = row.matches,
+                  let remoteMatches = Self.decodeMatches(json) else {
+                if let local { matches = local.matches }
+                return
+            }
+            let fetchedAt = row.fetched_at.flatMap(ISODate.parse) ?? Date.distantPast
+            let cache = MatchCache(fetchedAt: fetchedAt, matches: remoteMatches)
+            matches = remoteMatches
+            Self.saveLocalMatchCache(cache, key: matchCacheKey)
+        } catch {
+            if let local { matches = local.matches }
+        }
+    }
+
+    private func refreshMatchesIfNeeded() async {
+        guard isConfigured else { return }
+        if let cache = DiskCache.read(MatchCache.self, key: matchCacheKey),
+           Date().timeIntervalSince(cache.fetchedAt) <= Self.matchCacheTTL {
+            return
+        }
         do {
             // Sans clé personnelle dans l'app, on passe par le Worker : il utilise la clé HenrikDev du compte ETHONE.
             if apiKey.isEmpty {
@@ -590,6 +655,7 @@ final class ValorantStore {
                     URLQueryItem(name: "name", value: nameStorage), URLQueryItem(name: "tag", value: tag),
                 ])
                 matches = rows.compactMap(Self.convertWorker)
+                await persistMatchCache()
                 errorMessage = nil
                 return
             }
@@ -606,10 +672,50 @@ final class ValorantStore {
             let root = try JSONDecoder().decode(JSONValue.self, from: data)
             let raw = root["data"]?.arrayValue ?? []
             matches = raw.compactMap { Self.convert($0, name: nameStorage, tag: tag) }
+            await persistMatchCache()
             errorMessage = nil
         } catch {
-            errorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+            if matches.isEmpty {
+                errorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+            }
         }
+    }
+
+    private func persistMatchCache() async {
+        guard isConfigured, !matches.isEmpty else { return }
+        let cache = MatchCache(fetchedAt: Date(), matches: matches)
+        Self.saveLocalMatchCache(cache, key: matchCacheKey)
+        guard let json = Self.encodeMatches(matches) else { return }
+        do {
+            _ = try await api.upsert(
+                "ethone_valorant_match_cache",
+                fields: [
+                    "account_name": .string(nameStorage),
+                    "account_tag": .string(tag),
+                    "matches": json,
+                    "fetched_at": .string(ISODate.string(cache.fetchedAt)),
+                    "updated_at": .string(ISODate.string(Date()))
+                ],
+                conflict: "user_id,account_name,account_tag",
+                as: RemoteMatchCacheRow.self
+            )
+        } catch {
+            // The local cache remains usable when Supabase is temporarily unavailable.
+        }
+    }
+
+    private static func saveLocalMatchCache(_ cache: MatchCache, key: String) {
+        DiskCache.write(cache, key: key)
+    }
+
+    private static func encodeMatches(_ matches: [ValorantMatch]) -> JSONValue? {
+        guard let data = try? JSONEncoder.api.encode(matches) else { return nil }
+        return try? JSONDecoder.api.decode(JSONValue.self, from: data)
+    }
+
+    private static func decodeMatches(_ json: JSONValue) -> [ValorantMatch]? {
+        guard let data = try? JSONEncoder.api.encode(json) else { return nil }
+        return try? JSONDecoder.api.decode([ValorantMatch].self, from: data)
     }
 
     private func loadLeaderboard() async {

@@ -1,5 +1,15 @@
 [
   {
+    "version": "v1.75.156",
+    "date": "2026-10-18",
+    "title": "Cache Valorant local et Supabase",
+    "items": [
+      "Les matchs Valorant sont maintenant affichés depuis le cache local dès l ouverture.",
+      "Les matchs sont synchronisés par compte dans Supabase pour être disponibles sur les autres appareils.",
+      "HenrikDev n est rappelé que lorsque le cache expire, sans perdre les matchs déjà chargés hors ligne."
+    ]
+  },
+  {
     "version": "v1.75.155",
     "date": "2026-10-18",
     "title": "Classement Valorant réel",
@@ -508,15 +518,6 @@
     "title": "Page Etho épurée",
     "items": [
       "Retrait de la pastille « Le bot Discord tout-en-un » au-dessus du titre"
-    ]
-  },
-  {
-    "version": "v1.75.106",
-    "date": "2026-10-15",
-    "title": "Page de connexion Etho et reconnexion automatique",
-    "items": [
-      "Le bouton « Dashboard » de la page Etho ouvre une page de connexion dédiée (langue, thème clair/sombre, connexion Discord)",
-      "Quand la session du bot manque, la console se reconnecte toute seule via Discord au lieu d'afficher « session expirée »"
     ]
   }
 ]

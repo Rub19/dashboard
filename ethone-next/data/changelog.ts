@@ -59449,4 +59449,53 @@ CHANGELOG_BY_LANG.en.unshift(v12933_en);
 CHANGELOG_BY_LANG.es.unshift(v12933_es);
 CHANGELOG_BY_LANG.de.unshift(v12933_de);
 
+const v12934_fr: ChangelogEntry = {
+  version: "v1.75.156",
+  date: "2026-10-18",
+  title: "Cache Valorant local et Supabase",
+  items: [
+    "Les matchs Valorant sont maintenant affichés depuis le cache local dès l ouverture.",
+    "Les matchs sont synchronisés par compte dans Supabase pour être disponibles sur les autres appareils.",
+    "HenrikDev n est rappelé que lorsque le cache expire, sans perdre les matchs déjà chargés hors ligne.",
+  ],
+};
+
+const v12934_en: ChangelogEntry = {
+  version: "v1.75.156",
+  date: "2026-10-18",
+  title: "Cache Valorant local et Supabase",
+  items: [
+    "Les matchs Valorant sont maintenant affichés depuis le cache local dès l ouverture.",
+    "Les matchs sont synchronisés par compte dans Supabase pour être disponibles sur les autres appareils.",
+    "HenrikDev n est rappelé que lorsque le cache expire, sans perdre les matchs déjà chargés hors ligne.",
+  ],
+};
+
+const v12934_es: ChangelogEntry = {
+  version: "v1.75.156",
+  date: "2026-10-18",
+  title: "Cache Valorant local et Supabase",
+  items: [
+    "Les matchs Valorant sont maintenant affichés depuis le cache local dès l ouverture.",
+    "Les matchs sont synchronisés par compte dans Supabase pour être disponibles sur les autres appareils.",
+    "HenrikDev n est rappelé que lorsque le cache expire, sans perdre les matchs déjà chargés hors ligne.",
+  ],
+};
+
+const v12934_de: ChangelogEntry = {
+  version: "v1.75.156",
+  date: "2026-10-18",
+  title: "Cache Valorant local et Supabase",
+  items: [
+    "Les matchs Valorant sont maintenant affichés depuis le cache local dès l ouverture.",
+    "Les matchs sont synchronisés par compte dans Supabase pour être disponibles sur les autres appareils.",
+    "HenrikDev n est rappelé que lorsque le cache expire, sans perdre les matchs déjà chargés hors ligne.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12934_fr);
+CHANGELOG_BY_LANG.en.unshift(v12934_en);
+CHANGELOG_BY_LANG.es.unshift(v12934_es);
+CHANGELOG_BY_LANG.de.unshift(v12934_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

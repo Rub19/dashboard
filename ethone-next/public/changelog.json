@@ -1,5 +1,15 @@
 [
   {
+    "version": "v1.75.153",
+    "date": "2026-10-18",
+    "title": "E:Val : catalogue Valorant API",
+    "items": [
+      "Les écrans Cartes, Agents et Armes reprennent maintenant le layout des captures avec listes arrondies, séparateurs et navigation par fiche.",
+      "Les assets, rôles, portraits, capacités, images de cartes, statistiques d’armes et skins sont chargés depuis valorant-api.com.",
+      "La rotation compétitive des cartes continue d’être enrichie par HenrikDev quand la clé configurée est disponible."
+    ]
+  },
+  {
     "version": "v1.75.152",
     "date": "2026-10-18",
     "title": "E:Val : résumé de carrière et analyses de match",
@@ -509,20 +519,6 @@
       "/bienvenue test affiche le bon salon (au lieu de « <#null> »)",
       "/streamer add affiche « Aucune mention » au lieu de « none »",
       "Le site ne réutilise plus une ancienne version en cache lors de la navigation"
-    ]
-  },
-  {
-    "version": "v1.75.103",
-    "date": "2026-10-15",
-    "title": "Fausses données retirées, tutoiement et page /bot pour Google",
-    "items": [
-      "Coach Valorant : plus de statistiques inventées quand les données manquent",
-      "Assistant IA sans clé : plus de règlement inventé, il cite la base du serveur ou le dit honnêtement",
-      "Tickets : un nouveau serveur démarre avec une seule catégorie « Support », sans équipes ni automatisations factices",
-      "Page /bot et console entièrement au « tu »",
-      "Console plus large sur grand écran",
-      "Invitation du bot sans la permission Administrateur, seulement les permissions utiles",
-      "Page /bot : le contenu est livré directement dans le HTML (plus de copie cachée)"
     ]
   }
 ]

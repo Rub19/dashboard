@@ -177,9 +177,10 @@ final class ValorantMapsStore {
             let active = Set(rotation?.current?.maps.map { $0.lowercased() } ?? [])
             let upcoming = Set((rotation?.upcoming?.maps ?? rotation?.next?.maps ?? []).map { $0.lowercased() })
             maps = response.data.map { map in
-                let key = map.displayName.lowercased()
-                if active.contains(key) { return map.withCompetitiveStatus(.active) }
-                if upcoming.contains(key) { return map.withCompetitiveStatus(.upcoming) }
+                let keys = [map.uuid, map.displayName, map.displayName.replacingOccurrences(of: " ", with: "-")]
+                    .map { $0.lowercased() }
+                if keys.contains(where: active.contains) { return map.withCompetitiveStatus(.active) }
+                if keys.contains(where: upcoming.contains) { return map.withCompetitiveStatus(.upcoming) }
                 return map
             }.sorted {
                 if $0.isCompetitive != $1.isCompetitive {
@@ -285,13 +286,15 @@ struct EvalMapsView: View {
                             )
                             .padding(.top, 36)
                         } else {
-                            LazyVStack(spacing: 14) {
+                            LazyVStack(spacing: 0) {
                                 ForEach(filteredMaps) { map in
-                                    mapCard(map: map)
+                                                    mapRow(map: map)
                                 }
                             }
-                            .padding(.horizontal, 16)
-                            .padding(.bottom, 32)
+                                            .padding(12)
+                                            .background(Color.white.opacity(0.07), in: .rect(cornerRadius: 28))
+                                            .padding(.horizontal, 16)
+                                            .padding(.bottom, 32)
                         }
                     }
                 }
@@ -320,82 +323,51 @@ struct EvalMapsView: View {
         .buttonStyle(PressScaleStyle())
     }
 
-    private func mapCard(map: ValorantMapItem) -> some View {
+    private func mapRow(map: ValorantMapItem) -> some View {
         Button {
             selectedMap = map
         } label: {
-            ZStack(alignment: .bottomLeading) {
-                // High-res splash background
-                if let splashURL = map.splash ?? map.listViewIcon, let url = URL(string: splashURL) {
-                    AsyncImage(url: url) { phase in
-                        switch phase {
-                        case .success(let image):
-                            image
-                                .resizable()
-                                .interpolation(.high)
-                                .scaledToFill()
-                                .frame(height: 140)
-                                .frame(maxWidth: .infinity)
-                                .clipped()
-                        default:
-                            Color(hex: 0x1A1C24).frame(height: 140)
-                        }
-                    }
-                } else {
-                    Color(hex: 0x1A1C24).frame(height: 140)
-                }
-
-                // Dark gradient overlay
-                LinearGradient(
-                    colors: [Color.black.opacity(0.85), Color.black.opacity(0.2), Color.clear],
-                    startPoint: .bottom,
-                    endPoint: .top
-                )
-
-                // Map Information
-                HStack(alignment: .bottom) {
-                    VStack(alignment: .leading, spacing: 4) {
-                        if map.isCompetitive {
-                            Text(map.competitiveStatus == .active ? "COMPÉTITIVE" : "PROCHAINE ROTATION")
-                                .font(.system(size: 10, weight: .black))
-                                .foregroundStyle(Theme.danger)
-                                .padding(.horizontal, 7)
-                                .padding(.vertical, 3)
-                                .background(Theme.danger.opacity(0.25), in: .capsule)
-                        }
-
-                        Text(map.displayName.uppercased())
-                            .font(.title3.weight(.black))
-                            .foregroundStyle(.white)
-
-                        if let coords = map.coordinates {
-                            Text(coords)
-                                .font(.system(size: 11, weight: .medium).monospaced())
-                                .foregroundStyle(.white.opacity(0.75))
-                        }
-                    }
-
-                    Spacer()
-
-                    // Overhead layout mini-preview
-                    if let iconURL = map.displayIcon, let url = URL(string: iconURL) {
-                        AsyncImage(url: url) { phase in
-                            if let img = phase.image {
-                                img.resizable().scaledToFit().frame(width: 44, height: 44)
-                                    .background(Circle().fill(Color.black.opacity(0.4)))
-                            }
-                        }
+            HStack(spacing: 14) {
+                AsyncImage(url: URL(string: map.listViewIcon ?? map.splash ?? "")) { phase in
+                    switch phase {
+                    case .success(let image):
+                        image.resizable().scaledToFill()
+                    default:
+                        Color.white.opacity(0.08)
                     }
                 }
-                .padding(14)
+                .frame(width: 112, height: 72)
+                .clipShape(.rect(cornerRadius: 16))
+
+                VStack(alignment: .leading, spacing: 5) {
+                    Text(map.displayName)
+                        .font(.title3.weight(.bold))
+                        .foregroundStyle(.white)
+                    if map.competitiveStatus != .unknown {
+                        Text(map.competitiveStatus == .active ? "Compétitive" : "Prochaine rotation")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(Theme.danger)
+                    } else {
+                        Text("Carte publique")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.headline.weight(.semibold))
+                    .foregroundStyle(.secondary)
             }
-            .clipShape(.rect(cornerRadius: Theme.cardRadius))
-            .overlay(
-                RoundedRectangle(cornerRadius: Theme.cardRadius)
-                    .strokeBorder(Color.white.opacity(0.12), lineWidth: 1)
-            )
+            .padding(.horizontal, 4)
+            .padding(.vertical, 12)
+            .overlay(alignment: .bottom) {
+                if map.id != filteredMaps.last?.id {
+                    Divider().overlay(Color.white.opacity(0.1)).padding(.leading, 126)
+                }
+            }
         }
-        .buttonStyle(PressScaleStyle())
+        .buttonStyle(.plain)
     }
 
     private func mapDetailSheet(map: ValorantMapItem) -> some View {
@@ -682,15 +654,31 @@ struct EvalAgentsView: View {
                     }
                     .scrollIndicators(.hidden)
 
-                    // Agents Grid
+                    // Agents grouped by the live Valorant API role metadata.
                     if store.isLoading && store.agents.isEmpty {
                         ProgressView()
                             .tint(Theme.danger)
                             .padding(.top, 40)
                     } else {
-                        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-                            ForEach(filteredAgents) { agent in
-                                agentGridCard(agent: agent)
+                        LazyVStack(alignment: .leading, spacing: 18) {
+                            ForEach(roles.dropFirst().filter { role in
+                                filteredAgents.contains { $0.role?.displayName == role }
+                            }, id: \.self) { role in
+                                let agents = filteredAgents.filter { $0.role?.displayName == role }
+                                if !agents.isEmpty {
+                                    Text(role == "Tous" ? "Tous les agents" : roleFrenchName(role))
+                                        .font(.title3.weight(.bold))
+                                        .foregroundStyle(.secondary)
+                                        .padding(.horizontal, 4)
+
+                                    VStack(spacing: 0) {
+                                        ForEach(agents) { agent in
+                                            agentRowCard(agent: agent)
+                                        }
+                                    }
+                                    .padding(12)
+                                    .background(Color.white.opacity(0.07), in: .rect(cornerRadius: 28))
+                                }
                             }
                         }
                         .padding(.horizontal, 16)
@@ -708,6 +696,40 @@ struct EvalAgentsView: View {
         .sheet(item: $selectedAgent) { agent in
             agentDetailSheet(agent: agent)
         }
+    }
+
+    private func agentRowCard(agent: ValorantAgentItem) -> some View {
+        Button {
+            selectedAgent = agent
+        } label: {
+            HStack(spacing: 14) {
+                AsyncImage(url: URL(string: agent.displayIcon ?? "")) { phase in
+                    switch phase {
+                    case .success(let image):
+                        image.resizable().scaledToFill()
+                    default:
+                        Color.white.opacity(0.08)
+                    }
+                }
+                .frame(width: 58, height: 58)
+                .clipShape(.rect(cornerRadius: 16))
+
+                Text(agent.displayName)
+                    .font(.title3.weight(.semibold))
+                    .foregroundStyle(.white)
+
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.headline.weight(.semibold))
+                    .foregroundStyle(.secondary)
+            }
+            .padding(.horizontal, 4)
+            .padding(.vertical, 13)
+            .overlay(alignment: .bottom) {
+                Divider().overlay(Color.white.opacity(0.1)).padding(.leading, 76)
+            }
+        }
+        .buttonStyle(.plain)
     }
 
     private func agentGridCard(agent: ValorantAgentItem) -> some View {
@@ -888,6 +910,12 @@ struct ValorantWeaponItem: Identifiable, Decodable {
     let displayIcon: String?
     let shopData: ShopData?
     let weaponStats: WeaponStats?
+    let skins: [WeaponSkin]
+
+    struct WeaponSkin: Decodable {
+        let displayName: String
+        let displayIcon: String?
+    }
 
     struct ShopData: Decodable {
         let cost: Int?
@@ -946,6 +974,7 @@ struct EvalWeaponsView: View {
     @State private var store = ValorantWeaponsStore()
     @State private var selectedCategory = "Toutes"
     @State private var searchQuery = ""
+    @State private var selectedWeapon: ValorantWeaponItem?
 
     private let categories = ["Toutes", "Sidearms", "SMGs", "Shotguns", "Rifles", "Sniper Rifles", "Heavy Weapons", "Melee"]
 
@@ -1041,11 +1070,13 @@ struct EvalWeaponsView: View {
                             .tint(Theme.danger)
                             .padding(.top, 40)
                     } else {
-                        LazyVStack(spacing: 12) {
+                        LazyVStack(spacing: 0) {
                             ForEach(filteredWeapons) { weapon in
-                                weaponCard(weapon: weapon)
+                                weaponRow(weapon: weapon)
                             }
                         }
+                        .padding(12)
+                        .background(Color.white.opacity(0.07), in: .rect(cornerRadius: 28))
                         .padding(.horizontal, 16)
                         .padding(.bottom, 32)
                     }
@@ -1058,76 +1089,118 @@ struct EvalWeaponsView: View {
         .task {
             await store.fetchWeapons()
         }
+        .sheet(item: $selectedWeapon) { weapon in
+            weaponDetailSheet(weapon: weapon)
+        }
     }
 
-    private func weaponCard(weapon: ValorantWeaponItem) -> some View {
-        VStack(spacing: 12) {
-            HStack {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(weapon.displayName)
-                        .font(.headline.weight(.heavy))
-                        .foregroundStyle(.white)
-                    Text(frenchCategory(weapon.cleanCategory))
-                        .font(.caption2.weight(.medium))
-                        .foregroundStyle(.secondary)
-                }
-
-                Spacer()
-
-                if let cost = weapon.shopData?.cost {
-                    Text(cost > 0 ? "\(cost.formatted()) Creds" : "Gratuit")
-                        .font(.caption.weight(.heavy).monospacedDigit())
-                        .foregroundStyle(Theme.danger)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(Theme.danger.opacity(0.18), in: .capsule)
-                }
-            }
-
-            // Weapon silhouette
-            if let iconURL = weapon.displayIcon, let url = URL(string: iconURL) {
-                AsyncImage(url: url) { phase in
+    private func weaponRow(weapon: ValorantWeaponItem) -> some View {
+        Button {
+            selectedWeapon = weapon
+        } label: {
+            HStack(spacing: 14) {
+                AsyncImage(url: URL(string: weapon.displayIcon ?? "")) { phase in
                     switch phase {
                     case .success(let image):
-                        image
-                            .resizable()
-                            .interpolation(.high)
-                            .scaledToFit()
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 70)
-                            .padding(.vertical, 6)
+                        image.resizable().scaledToFit()
                     default:
-                        Color.clear.frame(height: 70)
+                        Image(systemName: "scope").foregroundStyle(.secondary)
                     }
                 }
-            }
+                .frame(width: 118, height: 54)
 
-            // Quick stats strip
-            if let stats = weapon.weaponStats {
-                HStack(spacing: 12) {
-                    if let mag = stats.magazineSize {
-                        statLabel(title: "Chargeur", value: "\(mag)")
-                    }
-                    if let rate = stats.fireRate {
-                        statLabel(title: "Cadence", value: String(format: "%.1f/s", rate))
-                    }
-                    if let dmg = stats.damageRanges?.first {
-                        statLabel(title: "Tête / Corps", value: "\(Int(dmg.headDamage)) / \(Int(dmg.bodyDamage))")
-                    }
-                    if let reload = stats.reloadTimeSeconds {
-                        statLabel(title: "Rechargement", value: String(format: "%.1fs", reload))
-                    }
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(weapon.displayName)
+                        .font(.title3.weight(.semibold))
+                        .foregroundStyle(.white)
+                    Text(frenchCategory(weapon.cleanCategory))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
                 }
-                .padding(.top, 4)
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.headline.weight(.semibold))
+                    .foregroundStyle(.secondary)
+            }
+            .padding(.horizontal, 4)
+            .padding(.vertical, 15)
+            .overlay(alignment: .bottom) {
+                if weapon.id != filteredWeapons.last?.id {
+                    Divider().overlay(Color.white.opacity(0.1)).padding(.leading, 136)
+                }
             }
         }
-        .padding(14)
-        .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-        .clipShape(.rect(cornerRadius: Theme.cardRadius))
-        .overlay(
-            RoundedRectangle(cornerRadius: Theme.cardRadius)
-                .strokeBorder(Color.white.opacity(0.08), lineWidth: 1)
-        )
+        .buttonStyle(.plain)
+    }
+
+    private func weaponDetailSheet(weapon: ValorantWeaponItem) -> some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 18) {
+                    Text(weapon.displayName)
+                        .font(.title.weight(.bold))
+                        .frame(maxWidth: .infinity, alignment: .center)
+
+                    AsyncImage(url: URL(string: weapon.displayIcon ?? "")) { phase in
+                        switch phase {
+                        case .success(let image):
+                            image.resizable().scaledToFit()
+                        default:
+                            Image(systemName: "scope").font(.largeTitle).foregroundStyle(.secondary)
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 150)
+
+                    infoRow(title: "Catégorie", value: frenchCategory(weapon.cleanCategory))
+                    infoRow(title: "Prix", value: weapon.shopData?.cost.map { $0 == 0 ? "Gratuit" : "\($0.formatted()) crédits" } ?? "Non communiqué")
+
+                    Text("Statistiques des armes")
+                        .font(.title2.weight(.bold))
+                        .padding(.top, 8)
+
+                    if let stats = weapon.weaponStats {
+                        if let rate = stats.fireRate { infoRow(title: "Taux de tir", value: String(format: "%.2f balles/sec", rate)) }
+                        if let mag = stats.magazineSize { infoRow(title: "Taille du chargeur", value: "\(mag) balles") }
+                        if let range = stats.damageRanges?.first {
+                            infoRow(title: "Dégâts 0 – 30 m", value: "Tête \(formatDamage(range.headDamage)) · Corps \(formatDamage(range.bodyDamage)) · Jambes \(formatDamage(range.legDamage))")
+                        }
+                        if let range = stats.damageRanges?.dropFirst().first {
+                            infoRow(title: "Dégâts 30 – 50 m", value: "Tête \(formatDamage(range.headDamage)) · Corps \(formatDamage(range.bodyDamage)) · Jambes \(formatDamage(range.legDamage))")
+                        }
+                        if let reload = stats.reloadTimeSeconds { infoRow(title: "Temps de rechargement", value: String(format: "%.2fs", reload)) }
+                    } else {
+                        Text("Les statistiques détaillées ne sont pas fournies par l’API.")
+                            .foregroundStyle(.secondary)
+                    }
+
+                    infoRow(title: "Skins", value: "\(weapon.skins.count)")
+                }
+                .padding(16)
+            }
+            .navigationBarTitleDisplayMode(.inline)
+            .ethoneScreen()
+        }
+    }
+
+    private func infoRow(title: String, value: String) -> some View {
+        HStack(alignment: .firstTextBaseline, spacing: 12) {
+            Text(title)
+                .foregroundStyle(.secondary)
+            Spacer()
+            Text(value)
+                .foregroundStyle(.white)
+                .multilineTextAlignment(.trailing)
+        }
+        .font(.body)
+        .padding(.vertical, 14)
+        .overlay(alignment: .bottom) {
+            Divider().overlay(Color.white.opacity(0.1))
+        }
+    }
+
+    private func formatDamage(_ value: Double) -> String {
+        value.formatted(.number.precision(.fractionLength(0...2)))
     }
 
     private func statLabel(title: String, value: String) -> some View {

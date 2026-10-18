@@ -59302,4 +59302,53 @@ CHANGELOG_BY_LANG.en.unshift(v12930_en);
 CHANGELOG_BY_LANG.es.unshift(v12930_es);
 CHANGELOG_BY_LANG.de.unshift(v12930_de);
 
+const v12931_fr: ChangelogEntry = {
+  version: "v1.75.153",
+  date: "2026-10-18",
+  title: "E:Val : catalogue Valorant API",
+  items: [
+    "Les écrans Cartes, Agents et Armes reprennent maintenant le layout des captures avec listes arrondies, séparateurs et navigation par fiche.",
+    "Les assets, rôles, portraits, capacités, images de cartes, statistiques d’armes et skins sont chargés depuis valorant-api.com.",
+    "La rotation compétitive des cartes continue d’être enrichie par HenrikDev quand la clé configurée est disponible.",
+  ],
+};
+
+const v12931_en: ChangelogEntry = {
+  version: "v1.75.153",
+  date: "2026-10-18",
+  title: "E:Val: Valorant API catalogue",
+  items: [
+    "Maps, Agents and Weapons now use the reference layout with rounded lists, separators and detail navigation.",
+    "Assets, roles, portraits, abilities, map images, weapon stats and skins load from valorant-api.com.",
+    "Competitive map rotation continues to use HenrikDev when a configured key is available.",
+  ],
+};
+
+const v12931_es: ChangelogEntry = {
+  version: "v1.75.153",
+  date: "2026-10-18",
+  title: "E:Val: catálogo de la API de Valorant",
+  items: [
+    "Mapas, agentes y armas usan ahora el diseño de referencia con listas redondeadas, separadores y navegación al detalle.",
+    "Los recursos, roles, retratos, habilidades, imágenes de mapas, estadísticas de armas y skins se cargan desde valorant-api.com.",
+    "La rotación competitiva sigue usando HenrikDev cuando hay una clave configurada.",
+  ],
+};
+
+const v12931_de: ChangelogEntry = {
+  version: "v1.75.153",
+  date: "2026-10-18",
+  title: "E:Val: Valorant-API-Katalog",
+  items: [
+    "Karten, Agenten und Waffen verwenden jetzt das Referenzlayout mit abgerundeten Listen, Trennlinien und Detailnavigation.",
+    "Assets, Rollen, Porträts, Fähigkeiten, Kartenbilder, Waffenstatistiken und Skins werden von valorant-api.com geladen.",
+    "Die kompetitive Kartenrotation verwendet weiterhin HenrikDev, wenn ein Schlüssel konfiguriert ist.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12931_fr);
+CHANGELOG_BY_LANG.en.unshift(v12931_en);
+CHANGELOG_BY_LANG.es.unshift(v12931_es);
+CHANGELOG_BY_LANG.de.unshift(v12931_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

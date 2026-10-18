@@ -35,12 +35,20 @@ struct HomeView: View {
     @Environment(AppModel.self) private var model
     @Environment(AuthStore.self) private var auth
     @AppStorage(HomeBlock.storageKey) private var blocksRaw = HomeBlock.defaultOrder
+    @AppStorage(HomeView.pinnedShortcutsStorageKey) private var pinnedShortcutsRaw = HomeView.defaultPinnedShortcuts
     @AppStorage("weatherCity") private var weatherCity = ""
     @State private var weather = WeatherService()
     @State private var quickTask = ""
     @State private var customizing = false
+    @State private var customizingShortcuts = false
     @FocusState private var quickFocused: Bool
 
+    static let pinnedShortcutsStorageKey = "ethone.home.pinnedShortcuts"
+    static let defaultPinnedShortcuts = "brain,soundscape,clip,discord,spaces,files"
+
+    private var pinnedShortcuts: [MoreDestination] {
+        pinnedShortcutsRaw.split(separator: ",").compactMap { MoreDestination(rawValue: String($0)) }
+    }
     private var blocks: [HomeBlock] { blocksRaw.split(separator: ",").compactMap { HomeBlock(rawValue: String($0)) } }
     private var openTasks: [Item] { model.tasks.items.filter { !$0.isDone }.sorted { $0.createdAt > $1.createdAt } }
     private var habitsDone: Int { model.habits.activeHabits.filter { model.habits.isDone($0) }.count }
@@ -82,7 +90,8 @@ struct HomeView: View {
             await weather.load(city: weatherCity.isEmpty ? "Paris" : weatherCity)
             if !model.mail.loadedOnce { await model.mail.load(folder: .inbox) }
         }
-        .sheet(isPresented: $customizing) { HomeCustomizeSheet(blocksRaw: $blocksRaw) }
+        .sheet(isPresented: $customizing) { HomeCustomizeSheet(blocksRaw: $blocksRaw, pinnedShortcutsRaw: $pinnedShortcutsRaw) }
+        .sheet(isPresented: $customizingShortcuts) { HomeShortcutsCustomizeSheet(pinnedShortcutsRaw: $pinnedShortcutsRaw) }
     }
 
     @ViewBuilder
@@ -131,26 +140,85 @@ struct HomeView: View {
     private var shortcuts: some View {
         ScrollView(.horizontal) {
             HStack(spacing: 10) {
-                ForEach([MoreDestination.brain, .soundscape, .clip, .discord, .spaces, .files], id: \.self) { destination in
+                ForEach(pinnedShortcuts, id: \.self) { destination in
                     if let item = destination.item {
-                        Button { model.open(destination) } label: {
+                        Button {
+                            model.open(destination)
+                        } label: {
                             HStack(spacing: 8) {
-                                Image(systemName: item.icon).font(.footnote.weight(.semibold)).foregroundStyle(destination.color)
-                                Text(LocalizedStringKey(item.title)).font(.subheadline.weight(.medium)).foregroundStyle(.primary)
+                                shortcutGlyph(for: item, color: destination.color)
+                                Text(LocalizedStringKey(item.title))
+                                    .font(.subheadline.weight(.medium))
+                                    .foregroundStyle(.primary)
                             }
                             .padding(.horizontal, 14)
                             .padding(.vertical, 10)
                             .glassEffect(.regular.interactive(), in: .capsule)
                         }
                         .buttonStyle(.plain)
+                        .contextMenu {
+                            Button(role: .destructive) {
+                                withAnimation(Motion.snap) {
+                                    unpinShortcut(destination)
+                                }
+                            } label: {
+                                Label("Désépingler \(item.title)", systemImage: "pin.slash")
+                            }
+                            Button {
+                                customizingShortcuts = true
+                            } label: {
+                                Label("Personnaliser les raccourcis...", systemImage: "slider.horizontal.3")
+                            }
+                        }
                     }
                 }
+
+                Button {
+                    customizingShortcuts = true
+                } label: {
+                    HStack(spacing: 6) {
+                        Image(systemName: "plus")
+                            .font(.footnote.weight(.bold))
+                            .foregroundStyle(Theme.accent)
+                        Text(pinnedShortcuts.isEmpty ? "Épingler" : "Modifier")
+                            .font(.subheadline.weight(.medium))
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 10)
+                    .glassEffect(.regular.interactive(), in: .capsule)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Personnaliser les raccourcis épinglés")
             }
             .padding(.vertical, 2)
         }
         .scrollIndicators(.hidden)
         .contentMargins(.horizontal, 16, for: .scrollContent)
         .padding(.horizontal, -16)
+    }
+
+    @ViewBuilder
+    private func shortcutGlyph(for item: MoreItem, color: Color) -> some View {
+        if item.destination == .valorant {
+            EvalLogoView(size: 16)
+        } else if let asset = item.asset {
+            Image(asset)
+                .resizable()
+                .renderingMode(.template)
+                .scaledToFit()
+                .frame(width: 14, height: 14)
+                .foregroundStyle(color)
+        } else {
+            Image(systemName: item.icon)
+                .font(.footnote.weight(.semibold))
+                .foregroundStyle(color)
+        }
+    }
+
+    private func unpinShortcut(_ destination: MoreDestination) {
+        let updated = pinnedShortcuts.filter { $0 != destination }
+        pinnedShortcutsRaw = updated.map(\.rawValue).joined(separator: ",")
     }
 
     private var todayStrip: some View {
@@ -342,6 +410,8 @@ struct HomeView: View {
 /// Show, hide and reorder the home blocks.
 private struct HomeCustomizeSheet: View {
     @Binding var blocksRaw: String
+    @Binding var pinnedShortcutsRaw: String
+    @State private var showingShortcuts = false
     @Environment(\.dismiss) private var dismiss
 
     private var shown: [HomeBlock] { blocksRaw.split(separator: ",").compactMap { HomeBlock(rawValue: String($0)) } }
@@ -352,6 +422,28 @@ private struct HomeCustomizeSheet: View {
     var body: some View {
         NavigationStack {
             List {
+                Section {
+                    Button {
+                        showingShortcuts = true
+                    } label: {
+                        HStack {
+                            Label("Raccourcis épinglés", systemImage: "pin.fill")
+                                .foregroundStyle(.primary)
+                            Spacer()
+                            let count = pinnedShortcutsRaw.split(separator: ",").count
+                            Text("\(count) raccourci\(count > 1 ? "s" : "")")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                            Image(systemName: "chevron.right")
+                                .font(.footnote.weight(.semibold))
+                                .foregroundStyle(.tertiary)
+                        }
+                    }
+                    .buttonStyle(.plain)
+                } header: {
+                    Text("Raccourcis").sectionTitle()
+                }
+
                 Section {
                     ForEach(shown) { block in
                         Label(LocalizedStringKey(block.title), systemImage: block.icon)
@@ -396,8 +488,201 @@ private struct HomeCustomizeSheet: View {
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) { Button("OK") { dismiss() } }
             }
+            .sheet(isPresented: $showingShortcuts) {
+                HomeShortcutsCustomizeSheet(pinnedShortcutsRaw: $pinnedShortcutsRaw)
+            }
             .sensoryFeedback(.selection, trigger: blocksRaw)
         }
         .presentationDetents([.medium, .large])
+    }
+}
+
+/// Choose, reorder, search and customize pinned shortcuts on the home dashboard.
+struct HomeShortcutsCustomizeSheet: View {
+    @Binding var pinnedShortcutsRaw: String
+    @Environment(\.dismiss) private var dismiss
+    @State private var searchText = ""
+
+    private var pinned: [MoreDestination] {
+        pinnedShortcutsRaw.split(separator: ",").compactMap { MoreDestination(rawValue: String($0)) }
+    }
+
+    private func save(_ list: [MoreDestination]) {
+        pinnedShortcutsRaw = list.map(\.rawValue).joined(separator: ",")
+    }
+
+    private func isPinned(_ destination: MoreDestination) -> Bool {
+        pinned.contains(destination)
+    }
+
+    private func togglePin(_ destination: MoreDestination) {
+        if isPinned(destination) {
+            save(pinned.filter { $0 != destination })
+        } else {
+            save(pinned + [destination])
+        }
+    }
+
+    var body: some View {
+        NavigationStack {
+            List {
+                if searchText.isEmpty {
+                    Section {
+                        if pinned.isEmpty {
+                            Text("Aucun raccourci épinglé. Touchez une fonctionnalité ci-dessous pour l'ajouter à votre accueil.")
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                        } else {
+                            ForEach(pinned, id: \.self) { destination in
+                                if let item = destination.item {
+                                    HStack(spacing: 12) {
+                                        shortcutRowIcon(item: item, color: destination.color)
+                                        VStack(alignment: .leading, spacing: 2) {
+                                            Text(LocalizedStringKey(item.title))
+                                                .font(.body.weight(.medium))
+                                                .foregroundStyle(.primary)
+                                            if let groupName = groupName(for: destination) {
+                                                Text(groupName)
+                                                    .font(.caption2)
+                                                    .foregroundStyle(.secondary)
+                                            }
+                                        }
+                                        Spacer()
+                                        Button {
+                                            withAnimation(Motion.snap) {
+                                                save(pinned.filter { $0 != destination })
+                                            }
+                                        } label: {
+                                            Image(systemName: "minus.circle.fill")
+                                                .font(.title3)
+                                                .foregroundStyle(Theme.danger)
+                                        }
+                                        .buttonStyle(.plain)
+                                    }
+                                }
+                            }
+                            .onMove { from, to in
+                                var list = pinned
+                                list.move(fromOffsets: from, toOffset: to)
+                                save(list)
+                            }
+                            .onDelete { offsets in
+                                var list = pinned
+                                list.remove(atOffsets: offsets)
+                                save(list)
+                            }
+                        }
+                    } header: {
+                        Text("Épinglés sur l'accueil (\(pinned.count))").sectionTitle()
+                    } footer: {
+                        if !pinned.isEmpty {
+                            Text("Touchez le bouton rouge pour retirer un raccourci, ou utilisez le mode modification pour glisser-déplacer.")
+                        }
+                    }
+                }
+
+                ForEach(filteredGroups) { group in
+                    Section {
+                        ForEach(group.items) { item in
+                            let pinnedAlready = isPinned(item.destination)
+                            Button {
+                                withAnimation(Motion.snap) {
+                                    togglePin(item.destination)
+                                }
+                            } label: {
+                                HStack(spacing: 12) {
+                                    shortcutRowIcon(item: item, color: group.color)
+                                    Text(LocalizedStringKey(item.title))
+                                        .font(.body.weight(.medium))
+                                        .foregroundStyle(.primary)
+                                    Spacer()
+                                    if pinnedAlready {
+                                        Image(systemName: "checkmark.circle.fill")
+                                            .font(.title3)
+                                            .foregroundStyle(Theme.accent)
+                                    } else {
+                                        Image(systemName: "plus.circle")
+                                            .font(.title3)
+                                            .foregroundStyle(.secondary)
+                                    }
+                                }
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    } header: {
+                        HStack(spacing: 6) {
+                            Circle().fill(group.color).frame(width: 8, height: 8)
+                            Text(group.title).sectionTitle()
+                        }
+                    }
+                }
+
+                Section {
+                    Button(role: .destructive) {
+                        withAnimation(Motion.snap) {
+                            pinnedShortcutsRaw = HomeView.defaultPinnedShortcuts
+                        }
+                    } label: {
+                        Label("Rétablir les raccourcis par défaut", systemImage: "arrow.counterclockwise")
+                            .foregroundStyle(Theme.accent)
+                    }
+                }
+            }
+            .searchable(text: $searchText, prompt: "Rechercher une fonctionnalité...")
+            .navigationTitle("Raccourcis épinglés")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    if !pinned.isEmpty && searchText.isEmpty {
+                        EditButton()
+                    }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("OK") { dismiss() }
+                }
+            }
+            .sensoryFeedback(.selection, trigger: pinnedShortcutsRaw)
+        }
+        .presentationDetents([.medium, .large])
+    }
+
+    private var filteredGroups: [MoreGroup] {
+        let trimmed = searchText.trimmingCharacters(in: .whitespaces)
+        if trimmed.isEmpty {
+            return moreGroups
+        }
+        let query = trimmed.lowercased()
+        return moreGroups.compactMap { group in
+            let matching = group.items.filter {
+                $0.title.lowercased().contains(query) || group.title.lowercased().contains(query)
+            }
+            guard !matching.isEmpty else { return nil }
+            return MoreGroup(title: group.title, color: group.color, items: matching)
+        }
+    }
+
+    private func groupName(for destination: MoreDestination) -> String? {
+        moreGroups.first { $0.items.contains { $0.destination == destination } }?.title
+    }
+
+    @ViewBuilder
+    private func shortcutRowIcon(item: MoreItem, color: Color) -> some View {
+        if item.destination == .valorant {
+            EvalLogoView(size: 30)
+        } else if let asset = item.asset {
+            ZStack {
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .fill(color.gradient)
+                Image(asset)
+                    .resizable()
+                    .renderingMode(.template)
+                    .scaledToFit()
+                    .frame(width: 16, height: 16)
+                    .foregroundStyle(.white)
+            }
+            .frame(width: 30, height: 30)
+        } else {
+            IconTile(systemImage: item.icon, color: color)
+        }
     }
 }

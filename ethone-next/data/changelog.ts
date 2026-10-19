@@ -59844,4 +59844,60 @@ CHANGELOG_BY_LANG.en.unshift(v12940_en);
 CHANGELOG_BY_LANG.es.unshift(v12940_es);
 CHANGELOG_BY_LANG.de.unshift(v12940_de);
 
+const v12941_fr: ChangelogEntry = {
+  version: "v1.77.1",
+  date: "2026-10-20",
+  title: "E:VAL : passe de saison, contrats d'agents et missions à venir",
+  items: [
+    "Nouvelle page du passe de saison, chapitre par chapitre : récompense, XP, niveau en cours et niveaux terminés.",
+    "Chaque agent a sa page de contrat : récompenses par niveau, coût en crédits de royaume et progression.",
+    "Les missions hebdomadaires à venir se déplient et sont groupées par semaine, avec leur vraie date d'activation (valorant-api).",
+    "Les missions affichent l'objectif chiffré (« Infligez 18 000 pts de dégâts ») au lieu du titre générique.",
+    "Corrigé : la liste « missions futures » prenait les 30 premières missions de l'historique, sans tenir compte des dates.",
+  ],
+};
+
+const v12941_en: ChangelogEntry = {
+  version: "v1.77.1",
+  date: "2026-10-20",
+  title: "E:VAL: season pass, agent contracts and upcoming missions",
+  items: [
+    "New season pass page, chapter by chapter: reward, XP, current level and completed levels.",
+    "Each agent has its contract page: rewards per level, Kingdom Credit cost and progress.",
+    "Upcoming weekly missions expand and are grouped by week, with their real activation date (valorant-api).",
+    "Missions show the objective with its number (\"Deal 18,000 damage\") instead of the generic title.",
+    "Fixed: the \"upcoming missions\" list took the first 30 missions from history, ignoring dates.",
+  ],
+};
+
+const v12941_es: ChangelogEntry = {
+  version: "v1.77.1",
+  date: "2026-10-20",
+  title: "E:VAL: pase de temporada, contratos de agentes y misiones futuras",
+  items: [
+    "Nueva página del pase de temporada por capítulos: recompensa, XP, nivel actual y niveles completados.",
+    "Cada agente tiene su página de contrato: recompensas por nivel, coste en créditos de reino y progreso.",
+    "Las misiones semanales futuras se despliegan agrupadas por semana, con su fecha real de activación (valorant-api).",
+    "Las misiones muestran el objetivo con su cifra en lugar del título genérico.",
+    "Corregido: la lista de misiones futuras tomaba las 30 primeras del historial sin mirar las fechas.",
+  ],
+};
+
+const v12941_de: ChangelogEntry = {
+  version: "v1.77.1",
+  date: "2026-10-20",
+  title: "E:VAL: Saisonpass, Agentenverträge und kommende Missionen",
+  items: [
+    "Neue Saisonpass-Seite nach Kapiteln: Belohnung, XP, aktuelle und abgeschlossene Stufen.",
+    "Jeder Agent hat seine Vertragsseite: Belohnungen je Stufe, Kosten in Königreich-Credits und Fortschritt.",
+    "Kommende Wochenmissionen sind aufklappbar und nach Woche gruppiert, mit echtem Aktivierungsdatum (valorant-api).",
+    "Missionen zeigen das Ziel mit Zahl statt des allgemeinen Titels.",
+    "Behoben: Die Liste kommender Missionen nahm die ersten 30 Missionen aus dem Verlauf, ohne Datum zu beachten.",
+  ],
+};
+CHANGELOG_BY_LANG.fr.unshift(v12941_fr);
+CHANGELOG_BY_LANG.en.unshift(v12941_en);
+CHANGELOG_BY_LANG.es.unshift(v12941_es);
+CHANGELOG_BY_LANG.de.unshift(v12941_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

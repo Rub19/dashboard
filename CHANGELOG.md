@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.77.1 - 2026-10-20
+
+**E:VAL : passe de saison, contrats d'agents et missions à venir**
+
+- Nouvelle page du passe de saison, chapitre par chapitre : récompense, XP, niveau en cours et niveaux terminés.
+- Chaque agent a sa page de contrat : récompenses par niveau, coût en crédits de royaume et progression.
+- Les missions hebdomadaires à venir se déplient et sont groupées par semaine, avec leur vraie date d'activation (valorant-api).
+- Les missions affichent l'objectif chiffré (« Infligez 18 000 pts de dégâts ») au lieu du titre générique.
+- Corrigé : la liste « missions futures » prenait les 30 premières missions de l'historique, sans tenir compte des dates.
+
 ## v1.77.0 - 2026-10-20
 
 **E:VAL : groupe et contrats comme dans VALORANT**

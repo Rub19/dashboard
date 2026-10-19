@@ -350,6 +350,10 @@ final class ValorantStore {
     let riot = RiotSession()
     /// Collection possédée et équipement modifiable du compte Riot connecté.
     let loadout: RiotLoadoutModel
+    /// Groupe en cours (glz) : prêt, public/privé, file, serveurs, codes, invitations.
+    let party = RiotPartyModel()
+    /// XP du compte et contrats d'agents.
+    let contracts = RiotContractsModel()
     private(set) var offersEnd: Date?
     private(set) var accessoriesEnd: Date?
     private(set) var weeklyMissionsEnd: Date?
@@ -650,7 +654,8 @@ final class ValorantStore {
     // Groupe / présence : seul le client Riot les connaît, HenrikDev non.
     func refreshGroup() async {
         guard riot.isLinked else { currentParty = nil; isPlayerOnline = false; return }
-        await refreshRiot()
+        await party.load(riot)
+        await contracts.load(riot)
     }
 
     func setPlayerOnline(_ online: Bool) {
@@ -1297,17 +1302,27 @@ final class ValorantStore {
 
     func loadBattlepass() async {
         guard isConfigured else { return }
+        // Passe de l'acte en cours (l'identifiant change à chaque acte).
+        if acts.isEmpty { await loadActs() }
+        if let catalog = await RiotContractCatalog.load(), let current = catalog.battlepass(actID: currentAct?.id) {
+            RiotGameService.battlepassContract = current.id
+        }
+        let contractID = RiotGameService.battlepassContract
         let cache = personalCache
-        let cached = await cache?.read("battlepass", ttl: Self.battlepassCacheTTL)
-        if let payload = cached?.payload, applyBattlepass(payload), cached?.isStale == false { return }
+        let cached = await cache?.read("battlepass.\(contractID)", ttl: Self.battlepassCacheTTL)
+        if let payload = cached?.payload, applyBattlepass(payload), cached?.isStale == false {
+            battlepassLevels = await BattlepassRewardResolver.resolve(battlepassLevels)
+            return
+        }
         do {
-            var req = URLRequest(url: URL(string: "https://valorant-api.com/v1/contracts/d18b7d8f-4971-2f89-5613-248257830e11?language=fr-FR")!)
+            var req = URLRequest(url: URL(string: "https://valorant-api.com/v1/contracts/\(contractID)?language=fr-FR")!)
             req.timeoutInterval = 10
             let (data, http) = try await HTTP.send(req)
             guard (200..<300).contains(http.statusCode) else { return }
             let root = try JSONDecoder().decode(JSONValue.self, from: data)
             _ = applyBattlepass(root)
-            if let cache, let payload = root["data"] { await cache.save(payload, key: "battlepass") }
+            battlepassLevels = await BattlepassRewardResolver.resolve(battlepassLevels)
+            if let cache, let payload = root["data"] { await cache.save(payload, key: "battlepass.\(contractID)") }
         } catch {}
     }
 

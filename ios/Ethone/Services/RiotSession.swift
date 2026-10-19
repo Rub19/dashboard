@@ -202,6 +202,11 @@ final class RiotSession {
     static func json(_ value: some Encodable) -> Data? { try? JSONEncoder().encode(value) }
 
     private func send<T: Decodable>(_ url: String, method: String = "GET", body: Data? = nil, bearer: String, game: Credentials? = nil) async throws -> T {
+        let data = try await sendData(url, method: method, body: body, bearer: bearer, game: game)
+        return try JSONDecoder().decode(T.self, from: data)
+    }
+
+    private func sendData(_ url: String, method: String, body: Data?, bearer: String, game: Credentials?) async throws -> Data {
         var request = URLRequest(url: URL(string: url)!)
         request.httpMethod = method
         request.timeoutInterval = 15
@@ -216,7 +221,7 @@ final class RiotSession {
         let (data, response) = try await URLSession.shared.data(for: request)
         let status = (response as? HTTPURLResponse)?.statusCode ?? 0
         guard (200..<300).contains(status) else { throw RiotError.http(status) }
-        return try JSONDecoder().decode(T.self, from: data)
+        return data
     }
 
     enum RiotError: LocalizedError {
@@ -239,6 +244,19 @@ final class RiotSession {
         case .glz: base = "https://glz-\(creds.region)-1.\(creds.shard).a.pvp.net"
         }
         return try await send(base + path, method: method, body: body, bearer: creds.accessToken, game: creds)
+    }
+
+    /// Variante brute : réponses vides (204) ou au format non documenté.
+    @discardableResult
+    func gameData(_ path: String, host: GameHost = .pd, method: String = "GET", body: Data? = nil) async throws -> Data {
+        guard let creds = await validCredentials() else { throw RiotError.http(401) }
+        await loadClientVersion()
+        let base: String
+        switch host {
+        case .pd: base = "https://pd.\(creds.shard).a.pvp.net"
+        case .glz: base = "https://glz-\(creds.region)-1.\(creds.shard).a.pvp.net"
+        }
+        return try await sendData(base + path, method: method, body: body, bearer: creds.accessToken, game: creds)
     }
 
     enum GameHost { case pd, glz }
@@ -298,7 +316,8 @@ enum RiotGameService {
     private static let vp = "85ad13f7-3d1b-5128-9eb2-7cd8ee0b5741"
     private static let rp = "e59aa87c-4cbf-517a-5983-6e81511be9b7"
     private static let kc = "85ca954a-41f2-ce94-9b45-8ca3dd39a00d"
-    static let battlepassContract = "d18b7d8f-4971-2f89-5613-248257830e11"
+    /// Contrat du passe de l'acte en cours, résolu via valorant-api (voir RiotContractCatalog).
+    static var battlepassContract = "d18b7d8f-4971-2f89-5613-248257830e11"
 
     /// Chaque bloc est indépendant : une erreur sur la boutique n'empêche pas le portefeuille.
     static func load(_ session: RiotSession) async -> RiotGameSnapshot {

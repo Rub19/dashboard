@@ -1766,96 +1766,7 @@ struct EvalGameView: View {
                         .buttonStyle(.plain)
                     }
                 ) {
-                    if let party = store.currentParty {
-                        VStack(spacing: 12) {
-                            HStack {
-                                HStack(spacing: 6) {
-                                    Circle()
-                                        .fill(Color(hex: 0x22C55E))
-                                        .frame(width: 9, height: 9)
-                                    Text(party.state)
-                                        .font(.caption.weight(.bold))
-                                        .foregroundStyle(Color(hex: 0x22C55E))
-
-                                    if let q = party.queueName {
-                                        Text("•")
-                                            .foregroundStyle(.secondary)
-                                        Text(q)
-                                            .font(.caption.weight(.medium))
-                                            .foregroundStyle(.secondary)
-                                    }
-                                }
-
-                                Spacer()
-
-                                Text("\(party.currentSize)/\(party.maxSize)")
-                                    .font(.caption.weight(.bold).monospacedDigit())
-                                    .foregroundStyle(.secondary)
-                                    .padding(.horizontal, 8)
-                                    .padding(.vertical, 3)
-                                    .background(Color.white.opacity(0.06), in: .capsule)
-                            }
-
-                            VStack(spacing: 8) {
-                                ForEach(party.members) { member in
-                                    HStack(spacing: 12) {
-                                        ZStack(alignment: .bottomTrailing) {
-                                            AsyncImage(url: URL(string: member.cardURL ?? "")) { phase in
-                                                if let image = phase.image {
-                                                    image.resizable().scaledToFill().frame(width: 44, height: 44).clipShape(.rect(cornerRadius: 10))
-                                                } else {
-                                                    RoundedRectangle(cornerRadius: 10)
-                                                        .fill(Color(hex: 0x1A1C24))
-                                                        .frame(width: 44, height: 44)
-                                                        .overlay(Image(systemName: "person.fill").font(.system(size: 16)).foregroundStyle(.secondary))
-                                                }
-                                            }
-
-                                            Circle()
-                                                .fill(Color(hex: 0x22C55E))
-                                                .frame(width: 12, height: 12)
-                                                .overlay(Circle().strokeBorder(Color(hex: 0x0E1017), lineWidth: 1.5))
-                                        }
-
-                                        VStack(alignment: .leading, spacing: 2) {
-                                            HStack(spacing: 4) {
-                                                Text(member.name)
-                                                    .font(.subheadline.weight(.heavy))
-                                                    .foregroundStyle(.white)
-
-                                                Text("#\(member.tag)")
-                                                    .font(.caption.weight(.medium))
-                                                    .foregroundStyle(.secondary)
-
-                                                if member.isLeader {
-                                                    Image(systemName: "crown.fill")
-                                                        .font(.system(size: 13))
-                                                        .foregroundStyle(Color(hex: 0xF59E0B))
-                                                }
-                                            }
-
-                                            Text(member.statusText)
-                                                .font(.caption)
-                                                .foregroundStyle(.secondary)
-                                        }
-
-                                        Spacer()
-                                    }
-                                    .padding(10)
-                                    .background(Color.white.opacity(0.04), in: .rect(cornerRadius: 12))
-                                }
-                            }
-                        }
-                        .padding(14)
-                        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
-                    } else {
-                        Text("Il n'y a actuellement aucun groupe!")
-                            .font(.system(size: 17))
-                            .foregroundStyle(Color(hex: 0x8E8E93))
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 24)
-                            .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
-                    }
+                    EvalPartyCard()
                 }
 
                 collapsibleSection(
@@ -1875,20 +1786,25 @@ struct EvalGameView: View {
                     }
                 ) {
                     VStack(spacing: 12) {
-                        HStack(spacing: 8) {
-                            subtabPill(title: "Missions", index: 0)
-                            subtabPill(title: "Passe de combat", index: 1)
-                            subtabPill(title: "Compte", index: 2, hasChevron: true)
-                            Spacer()
+                        ScrollView(.horizontal) {
+                            HStack(spacing: 8) {
+                                subtabPill(title: "Missions", index: 0)
+                                subtabPill(title: "Passe de combat", index: 1)
+                                subtabPill(title: "Compte", index: 2)
+                                subtabPill(title: "Agents", index: 3)
+                            }
                         }
+                        .scrollIndicators(.hidden)
 
                         switch contractsSubtab {
                         case 0:
                             contractsMissionsView
                         case 1:
-                            contractsBattlepassView
+                            EvalBattlepassContractView()
+                        case 2:
+                            EvalAccountXPView()
                         default:
-                            contractsAccountView
+                            EvalAgentContractsSummary()
                         }
                     }
                 }
@@ -2296,19 +2212,18 @@ struct EvalGameView: View {
                 HStack(spacing: 0) {
                     ForEach(0..<4) { i in
                         let done = store.dailyMilestones.indices.contains(i) && store.dailyMilestones[i]
-                        Circle()
-                            .strokeBorder(done ? Color(hex: 0x22C55E) : Color.white.opacity(0.18), lineWidth: 2)
-                            .background(Circle().fill(done ? Color(hex: 0x22C55E).opacity(0.35) : Color.white.opacity(0.06)))
-                            .frame(width: 30, height: 30)
-                            .overlay(
-                                Circle()
-                                    .strokeBorder(Color.white.opacity(0.12), lineWidth: 1.5)
-                                    .frame(width: 16, height: 16)
-                            )
+                        ZStack {
+                            Circle().fill(done ? EvalAccent.color : Color.white.opacity(0.06))
+                            Image(systemName: done ? "checkmark" : "smallcircle.filled.circle")
+                                .font(.system(size: done ? 18 : 22, weight: done ? .bold : .regular))
+                                .foregroundStyle(done ? Color.white : Color.white.opacity(0.25))
+                        }
+                        .frame(width: 36, height: 36)
 
                         if i < 3 {
+                            let next = store.dailyMilestones.indices.contains(i + 1) && store.dailyMilestones[i + 1]
                             Rectangle()
-                                .fill(Color.white.opacity(0.12))
+                                .fill(done && next ? EvalAccent.color : Color.white.opacity(0.12))
                                 .frame(height: 2)
                                 .frame(maxWidth: .infinity)
                         }
@@ -2386,96 +2301,6 @@ struct EvalGameView: View {
                 .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
             }
             .buttonStyle(.plain)
-        }
-    }
-
-    @ViewBuilder
-    private var contractsBattlepassView: some View {
-        VStack(spacing: 12) {
-            VStack(alignment: .leading, spacing: 12) {
-                HStack {
-                    VStack(alignment: .leading, spacing: 3) {
-                        Text(store.battlepassTitle)
-                            .font(.system(size: 18, weight: .bold))
-                            .foregroundStyle(.white)
-
-                        Text("Niveau \(store.battlepassCurrentLevel)")
-                            .font(.system(size: 16))
-                            .foregroundStyle(Color(hex: 0x8E8E93))
-                    }
-
-                    Spacer()
-
-                    Button {
-                        showingBattlepassSheet = true
-                    } label: {
-                        HStack(spacing: 4) {
-                            Text("Détails")
-                                .font(.system(size: 16, weight: .semibold))
-                            Image(systemName: "chevron.right")
-                                .font(.system(size: 13, weight: .semibold))
-                        }
-                        .foregroundStyle(EvalAccent.color)
-                    }
-                    .buttonStyle(.plain)
-                }
-
-                GeometryReader { geo in
-                    ZStack(alignment: .leading) {
-                        Capsule().fill(Color.white.opacity(0.08)).frame(height: 6)
-                        Capsule()
-                            .fill(EvalAccent.color)
-                            .frame(width: geo.size.width * CGFloat(min(1.0, max(0.0, Double(store.battlepassCurrentXP) / Double(max(1, store.battlepassLevelXP))))), height: 6)
-                    }
-                }
-                .frame(height: 6)
-
-                HStack {
-                    Text("\(store.battlepassCurrentXP.formatted()) / \(store.battlepassLevelXP.formatted()) XP")
-                        .font(.system(size: 14).monospacedDigit())
-                        .foregroundStyle(Color(hex: 0x8E8E93))
-                    Spacer()
-                    Text("\(store.battlepassCompletionPercent)% terminé")
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundStyle(EvalAccent.color)
-                }
-            }
-            .padding(16)
-            .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
-        }
-    }
-
-    @ViewBuilder
-    private var contractsAccountView: some View {
-        VStack(spacing: 12) {
-            VStack(alignment: .leading, spacing: 10) {
-                Text("Niveau de compte")
-                    .font(.system(size: 18, weight: .bold))
-                    .foregroundStyle(.white)
-
-                HStack(spacing: 12) {
-                    ZStack {
-                        Circle()
-                            .fill(EvalAccent.color.opacity(0.18))
-                            .frame(width: 51, height: 51)
-                        Image(systemName: "shield.fill")
-                            .font(.system(size: 23))
-                            .foregroundStyle(EvalAccent.color)
-                    }
-
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Niveau \(store.profile?.level ?? 0)")
-                            .font(.system(size: 18, weight: .bold))
-                            .foregroundStyle(.white)
-                        Text("Points d'expérience cumulés")
-                            .font(.system(size: 15))
-                            .foregroundStyle(Color(hex: 0x8E8E93))
-                    }
-                    Spacer()
-                }
-            }
-            .padding(16)
-            .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
         }
     }
 }

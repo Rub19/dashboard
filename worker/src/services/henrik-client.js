@@ -160,6 +160,7 @@ export async function getValorantLeaderboard(env, region = "eu", platform = "pc"
   if (options.name) url.searchParams.set("name", safeText(options.name));
   if (options.tag) url.searchParams.set("tag", safeText(options.tag).replace(/^#/, ""));
   if (options.puuid) url.searchParams.set("puuid", safeText(options.puuid));
+  if (options.season) url.searchParams.set("season_id", safeText(options.season));
 
   const headers = {};
   if (apiKey) headers["Authorization"] = apiKey;
@@ -167,7 +168,7 @@ export async function getValorantLeaderboard(env, region = "eu", platform = "pc"
     env,
     expectedOrigin: ORIGIN,
     service: "tracker",
-    dedupeKey: `henrik:leaderboard:${cleanRegion}:${cleanPlatform}:${startIndex}:${size}:${safeText(options.name).toLowerCase()}:${safeText(options.tag).toLowerCase()}`,
+    dedupeKey: `henrik:leaderboard:${cleanRegion}:${cleanPlatform}:${startIndex}:${size}:${safeText(options.name).toLowerCase()}:${safeText(options.tag).toLowerCase()}:${safeText(options.season)}`,
     headers,
     retries: 1,
     maxBytes: 8388608

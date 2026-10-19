@@ -27,6 +27,21 @@ enum DiskCache {
         return files.reduce(0) { $0 + Int64((try? $1.resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 0) }
     }
 
+    /// Taille des entrées dont la clé commence par `prefix` (écran Stockage).
+    static func size(prefix: String) -> (bytes: Int64, files: Int) {
+        let safe = prefix.replacingOccurrences(of: "[^A-Za-z0-9_.-]", with: "_", options: .regularExpression)
+        let files = ((try? FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: [.fileSizeKey])) ?? [])
+            .filter { $0.lastPathComponent.hasPrefix(safe) }
+        let bytes = files.reduce(Int64(0)) { $0 + Int64((try? $1.resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 0) }
+        return (bytes, files.count)
+    }
+
+    static func remove(prefix: String) {
+        let safe = prefix.replacingOccurrences(of: "[^A-Za-z0-9_.-]", with: "_", options: .regularExpression)
+        let files = (try? FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: nil)) ?? []
+        for file in files where file.lastPathComponent.hasPrefix(safe) { try? FileManager.default.removeItem(at: file) }
+    }
+
     static func clearAll() {
         try? FileManager.default.removeItem(at: directory)
     }

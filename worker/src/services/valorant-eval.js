@@ -189,6 +189,19 @@ export function compactMmr(raw) {
   };
 }
 
+// v1 mmr-history -> évolution du rang partie par partie (courbe « notes de rang »).
+export function compactMmrHistory(raw) {
+  return (Array.isArray(raw) ? raw : []).slice(0, 40).map((h) => ({
+    tier: num(h.currenttier),
+    rr: num(h.ranking_in_tier),
+    change: num(h.mmr_change_to_last_game),
+    elo: num(h.elo),
+    at: num(h.date_raw) > 0 ? new Date(num(h.date_raw) * 1000).toISOString() : null,
+    map: safeText(h.map?.name, 40),
+    match: safeText(h.match_id, 64)
+  })).filter((h) => h.at);
+}
+
 function matchRow(compact) {
   return {
     match_id: compact.id,
@@ -268,6 +281,10 @@ export async function syncMatches(env, account, { force = false } = {}) {
     const rawMmr = await henrik(env, `/valorant/v3/by-puuid/mmr/${encodeURIComponent(account.region || "eu")}/pc/${encodeURIComponent(account.puuid)}`, `eval:mmr:${account.puuid}`, 262144);
     if (rawMmr) {
       const mmr = compactMmr(rawMmr);
+      try {
+        const rawHistory = await henrik(env, `/valorant/v1/by-puuid/mmr-history/${encodeURIComponent(account.region || "eu")}/${encodeURIComponent(account.puuid)}`, `eval:mmr-history:${account.puuid}`, 524288);
+        mmr.history = compactMmrHistory(rawHistory);
+      } catch {}
       await rest(env, `ethone_valorant_accounts?puuid=eq.${encodeURIComponent(account.puuid)}`, {
         method: "PATCH",
         body: { mmr, ...(mmr.tier > 0 ? { tier: mmr.tier } : {}) },

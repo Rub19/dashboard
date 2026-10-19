@@ -321,20 +321,30 @@ struct EvalMatchAnalysis {
     }
 
     /// Manches gagnées où le joueur ciblé est resté seul en vie contre N ennemis.
-    var clutches: [Int] {
+    var clutches: [Int] { clutchAttempts.filter(\.won).map(\.foes) }
+
+    /// Toutes les situations 1vX (X ≥ 1) du joueur ciblé, gagnées ou non.
+    var clutchAttempts: [(foes: Int, won: Bool)] {
         match.rounds.compactMap { round in
-            guard round.winner == target.team else { return nil }
             var alive = Set(match.players.map(\.puuid))
             for kill in killsByRound[round.n] ?? [] {
                 alive.remove(kill.v)
                 let mates = allies.filter { alive.contains($0.puuid) }
                 if mates.count == 1, mates.first?.puuid == target.puuid {
                     let foes = enemies.filter { alive.contains($0.puuid) }.count
-                    return foes >= 2 ? foes : nil
+                    return foes >= 1 ? (foes, round.winner == target.team) : nil
                 }
             }
             return nil
         }
+    }
+
+    /// Manches gagnées sans aucune mort dans l'équipe du joueur ciblé.
+    var flawlessRounds: Int {
+        let mates = Set(allies.map(\.puuid))
+        return match.rounds.filter { round in
+            round.winner == target.team && !(killsByRound[round.n] ?? []).contains { mates.contains($0.v) }
+        }.count
     }
 
     // MARK: Kills par manche (onglet Manches)
@@ -520,6 +530,19 @@ struct EvalMMR: Codable, Hashable {
     var peakTier = 0
     var peakSeason = ""
     var seasons: [Season] = []
+    var history: [HistoryPoint] = []
+
+    struct HistoryPoint: Codable, Hashable, Identifiable {
+        let tier: Int
+        let rr: Int
+        let change: Int
+        let elo: Int
+        let at: String
+        let map: String
+        let match: String
+        var id: String { match.isEmpty ? at : match }
+        var date: Date? { ISODate.parse(at) }
+    }
 
     init() {}
 
@@ -533,6 +556,7 @@ struct EvalMMR: Codable, Hashable {
         peakTier = try c.decodeIfPresent(Int.self, forKey: .peakTier) ?? 0
         peakSeason = try c.decodeIfPresent(String.self, forKey: .peakSeason) ?? ""
         seasons = try c.decodeIfPresent([Season].self, forKey: .seasons) ?? []
+        history = (try? c.decodeIfPresent([HistoryPoint].self, forKey: .history)) ?? []
     }
 }
 

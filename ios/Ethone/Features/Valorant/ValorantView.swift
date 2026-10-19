@@ -9,6 +9,8 @@ final class ValorantAssets {
     private(set) var maps: [String: URL] = [:]
     /// Grandes images de carte (bannières des matchs).
     private(set) var splashes: [String: URL] = [:]
+    /// Armes par UUID : nom français et silhouette (statistiques par arme).
+    private(set) var weapons: [String: (name: String, icon: URL?)] = [:]
     private var loaded = false
 
     func load() async {
@@ -25,6 +27,12 @@ final class ValorantAssets {
         if let (data, _) = try? await URLSession.shared.data(from: URL(string: "https://valorant-api.com/v1/maps")!),
            let page = try? decoder.decode(Page<GameMap>.self, from: data) {
             maps = Dictionary(page.data.compactMap { m in m.listViewIcon.flatMap(URL.init(string:)).map { (m.displayName.lowercased(), $0) } }, uniquingKeysWith: { a, _ in a })
+            if let (wdata, _) = try? await URLSession.shared.data(from: URL(string: "https://valorant-api.com/v1/weapons?language=fr-FR")!) {
+                struct Weapon: Decodable { let uuid: String; let displayName: String; let killStreamIcon: String? }
+                if let wpage = try? decoder.decode(Page<Weapon>.self, from: wdata) {
+                    weapons = Dictionary(wpage.data.map { ($0.uuid.lowercased(), ($0.displayName, $0.killStreamIcon.flatMap(URL.init(string:)))) }, uniquingKeysWith: { a, _ in a })
+                }
+            }
             splashes = Dictionary(page.data.compactMap { m in m.splash.flatMap(URL.init(string:)).map { (m.displayName.lowercased(), $0) } }, uniquingKeysWith: { a, _ in a })
         }
     }

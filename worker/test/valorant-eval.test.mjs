@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { compactMatch, compactMmr } from "../src/services/valorant-eval.js";
+import { compactMatch, compactMmr, compactMmrHistory } from "../src/services/valorant-eval.js";
 
 const AGENT = "add6443a-41bd-e414-f6ad-e58d267f4e95";
 const WEAPON = "9c82e19d-4575-0200-1a81-3eacf00cf872";
@@ -58,4 +58,10 @@ test("compactMmr garde rang, pic et actes joués", () => {
   assert.equal(mmr.leaderboardRank, 666);
   assert.equal(mmr.peakTier, 27);
   assert.deepEqual(mmr.seasons.map((s) => [s.season, s.wins, s.games]), [["s1", 19, 25]]);
+});
+
+test("compactMmrHistory garde rang, RR et variation par partie", () => {
+  const h = compactMmrHistory([{ currenttier: 26, ranking_in_tier: 319, mmr_change_to_last_game: 18, elo: 2419, date_raw: 1760000000, map: { name: "Ascent" }, match_id: "m1" }, { currenttier: 26 }]);
+  assert.equal(h.length, 1);
+  assert.deepEqual(h[0], { tier: 26, rr: 319, change: 18, elo: 2419, at: new Date(1760000000 * 1000).toISOString(), map: "Ascent", match: "m1" });
 });

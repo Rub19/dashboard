@@ -155,7 +155,7 @@ export async function trackerValorantMmrRoute({ env, url, auth, request }) {
 }
 
 export async function trackerValorantLeaderboardRoute({ env, url, auth, request }) {
-  assertAllowedQuery(url, ["region", "platform", "startIndex", "size", "name", "tag", "puuid", "_t", "t", "force"]);
+  assertAllowedQuery(url, ["region", "platform", "startIndex", "size", "name", "tag", "puuid", "season", "_t", "t", "force"]);
   const region = (queryText(url, "region", { max: 8, required: false }) || "eu").toLowerCase();
   const platform = (queryText(url, "platform", { max: 8, required: false }) || "pc").toLowerCase();
   const startIndex = queryInteger(url, "startIndex", { required: false, fallback: 1, min: 1, max: 15000 });
@@ -163,15 +163,16 @@ export async function trackerValorantLeaderboardRoute({ env, url, auth, request 
   const name = queryText(url, "name", { pattern: PATTERNS.playerName, max: 32, required: false });
   const tag = queryText(url, "tag", { pattern: PATTERNS.playerTag, max: 10, required: false })?.replace(/^#/, "");
   const puuid = queryText(url, "puuid", { max: 64, required: false });
+  const season = queryText(url, "season", { pattern: /^[0-9a-f-]{36}$/i, max: 36, required: false }) || "";
   const loader = async () => getValorantLeaderboard(
     env,
     region,
     platform,
-    { startIndex, size, name, tag, puuid },
+    { startIndex, size, name, tag, puuid, season },
     await ownKeyHenrik(env, auth, request)
   );
   const result = await cachedLoad(
-    `tracker:valorant:leaderboard:${region}:${platform}:${startIndex}:${size}:${(name || "").toLowerCase()}:${(tag || "").toLowerCase()}:${puuid || ""}`,
+    `tracker:valorant:leaderboard:${region}:${platform}:${startIndex}:${size}:${(name || "").toLowerCase()}:${(tag || "").toLowerCase()}:${puuid || ""}:${season}`,
     120,
     loader
   );

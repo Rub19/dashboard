@@ -1003,9 +1003,17 @@ struct ValorantWeaponItem: Identifiable, Decodable {
         self.skins = skins
     }
 
-    struct WeaponSkin: Decodable {
+    struct WeaponSkin: Decodable, Identifiable, Hashable {
+        struct Chroma: Decodable, Hashable { let uuid: String; let displayName: String?; let displayIcon: String?; let fullRender: String?; let swatch: String? }
+        struct Level: Decodable, Hashable { let uuid: String; let displayName: String?; let levelItem: String?; let streamedVideo: String? }
+        let uuid: String?
         let displayName: String
         let displayIcon: String?
+        let chromas: [Chroma]?
+        let levels: [Level]?
+        var id: String { uuid ?? displayName }
+        /// Icône utilisable : celle du skin, sinon le rendu du premier chroma.
+        var image: String? { displayIcon ?? chromas?.first?.fullRender ?? chromas?.first?.displayIcon }
     }
 
     struct ShopData: Decodable {
@@ -1375,6 +1383,7 @@ struct EvalWeaponDetailView: View {
 
                 Divider().overlay(Color.white.opacity(0.06))
 
+                NavigationLink { EvalWeaponSkinsView(weapon: weapon) } label: {
                 HStack {
                     Text("Skins")
                         .font(.system(size: 15))
@@ -1390,6 +1399,9 @@ struct EvalWeaponDetailView: View {
                     }
                 }
                 .padding(.vertical, 14)
+                .contentShape(.rect)
+                }
+                .buttonStyle(.plain)
             }
         }
         .padding(20)
@@ -2003,6 +2015,7 @@ struct EvalLeaderboardView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var searchQuery: String = ""
     @State private var selectedFilter: LeaderboardFilter = .all
+    @State private var showingFilters = false
 
     enum LeaderboardFilter: String, CaseIterable {
         case all = "Tous"
@@ -2176,13 +2189,7 @@ struct EvalLeaderboardView: View {
 
             Spacer()
 
-            Menu {
-                ForEach(LeaderboardFilter.allCases, id: \.self) { filter in
-                    Button(filter.rawValue) {
-                        selectedFilter = filter
-                    }
-                }
-            } label: {
+            Button { showingFilters = true } label: {
                 Circle()
                     .fill(Color.white.opacity(0.08))
                     .frame(width: 38, height: 38)
@@ -2193,6 +2200,7 @@ struct EvalLeaderboardView: View {
                     )
             }
             .buttonStyle(PressScaleStyle())
+            .sheet(isPresented: $showingFilters) { EvalLeaderboardFilterSheet() }
         }
         .padding(.horizontal, 16)
         .padding(.top, 4)
@@ -2543,71 +2551,7 @@ struct EvalPlayerSettingsView: View {
         }
     }
 }
-struct EvalSeasonGoalsView: View {
-    @Environment(AppModel.self) private var model
-    private var store: ValorantStore { model.valorant }
 
-    var body: some View {
-        ZStack {
-            Theme.bg.ignoresSafeArea()
-
-            ScrollView {
-                VStack(spacing: 16) {
-                    VStack(spacing: 8) {
-                        HStack {
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("Objectif de \(store.profile?.actName.isEmpty == false ? store.profile?.actName ?? "l’acte actuel" : "l’acte actuel")")
-                                    .font(.headline.weight(.heavy))
-                                    .foregroundStyle(.white)
-                                Text("Prend fin dans \(store.daysRemainingInAct) jours")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
-                            Spacer()
-                            Text("En cours")
-                                .font(.caption.weight(.bold))
-                                .foregroundStyle(Color(hex: 0x22C55E))
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
-                                .background(Color(hex: 0x22C55E).opacity(0.15), in: .capsule)
-                        }
-                    }
-                    .padding(14)
-                    .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-
-                    VStack(alignment: .leading, spacing: 12) {
-                        goalRow(title: "Atteindre le palier 55 du passe", progress: store.isConfigured && !store.battlepassLevels.isEmpty ? "\(store.battlepassCurrentLevel) / 55" : "Données indisponibles", isCompleted: store.battlepassCurrentLevel >= 55)
-                        goalRow(title: "Jouer 50 parties compétitives", progress: store.isConfigured ? "\(min(50, store.matches.count)) / 50" : "Données indisponibles", isCompleted: store.isConfigured && store.matches.count >= 50)
-                        goalRow(title: "Maintenir un KD > 1.20", progress: store.isConfigured && !store.matches.isEmpty ? "Actuel : \(String(format: "%.2f", Double(store.matches.reduce(0) { $0 + $1.kills }) / max(1, Double(store.matches.reduce(0) { $0 + $1.deaths }))))" : "Données indisponibles", isCompleted: false)
-                    }
-                    .padding(14)
-                    .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-                }
-                .padding(16)
-            }
-        }
-        .navigationTitle("Objectifs de la saison")
-        .navigationBarTitleDisplayMode(.inline)
-    }
-
-    private func goalRow(title: String, progress: String, isCompleted: Bool) -> some View {
-        HStack(spacing: 12) {
-            Image(systemName: isCompleted ? "checkmark.circle.fill" : "circle")
-                .foregroundStyle(isCompleted ? Color(hex: 0x22C55E) : .secondary)
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title)
-                    .font(.subheadline.weight(.medium))
-                    .foregroundStyle(.white)
-                Text(progress)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-            Spacer()
-        }
-        .padding(.vertical, 6)
-    }
-}
 
 struct EvalPurchaseHistoryView: View {
     @Environment(\.dismiss) private var dismiss

@@ -230,6 +230,8 @@ struct EvalProfileView: View {
     @Binding var selectedMatch: ValorantMatch?
 
     @State private var showingAccountSheet = false
+    @State private var showingSessionRecap = false
+    @AppStorage("eval.autoSyncMatches") private var autoSync = true
 
     private var store: ValorantStore { model.valorant }
     private var profile: ValorantProfile? { store.profile }
@@ -364,7 +366,7 @@ struct EvalProfileView: View {
         }
         .task {
             await ValorantAssets.shared.load()
-            if store.isConfigured {
+            if store.isConfigured && autoSync {
                 await store.refresh()
             }
         }
@@ -752,11 +754,15 @@ struct EvalProfileView: View {
             .padding(16)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+            .contentShape(.rect)
+            .onTapGesture { if !recentSessionMatches.isEmpty { showingSessionRecap = true } }
+            .sheet(isPresented: $showingSessionRecap) {
+                EvalSessionRecapSheet(matches: recentSessionMatches.compactMap { store.evalMatches[$0.id] }, puuid: store.puuid)
+                    .presentationDragIndicator(.visible)
+            }
 
             NavigationLink {
-                if let profile {
-                    EvalCareerSummaryView(profile: profile, matches: store.matches)
-                }
+                EvalStatisticsView()
             } label: {
                 VStack(alignment: .leading, spacing: 14) {
                     Image(systemName: "chart.line.uptrend.xyaxis")
@@ -4045,7 +4051,7 @@ struct EvalSettingsView: View {
 
                 VStack(spacing: 0) {
                     NavigationLink {
-                        SystemView()
+                        EvalStorageView()
                     } label: {
                         settingsNavRow(icon: "arrow.up.arrow.down", title: "Stockage et données")
                     }
@@ -4054,7 +4060,7 @@ struct EvalSettingsView: View {
                     Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 54)
 
                     NavigationLink {
-                        SystemView()
+                        EvalAdvancedSettingsView()
                     } label: {
                         settingsNavRow(icon: "slider.horizontal.2.square", title: "Paramètres avancés")
                     }

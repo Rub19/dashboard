@@ -296,6 +296,35 @@ final class ValorantStore {
     private(set) var recentSearches: [ValorantSavedPlayer] = []
     private(set) var nameChanges: [ValorantNameChange] = []
     var leaderboardRegion: String = "eu"
+    var leaderboardPlatform: String = "pc"
+    /// UUID de l'acte filtré dans le classement (vide = acte en cours).
+    var leaderboardSeason: String = ""
+    /// Objectif de rang de l'acte (tier visé + acte où il a été fixé).
+    private(set) var seasonGoal: SeasonGoal?
+
+    struct SeasonGoal: Codable, Hashable {
+        let tier: Int
+        let actID: String
+        let setAt: Date
+    }
+
+    /// Matchs complets du compte, du plus récent au plus ancien (statistiques, récap).
+    var evalMatchList: [EvalMatch] {
+        matches.compactMap { evalMatches[$0.id] }
+    }
+
+    func setSeasonGoal(tier: Int) {
+        guard let act = currentAct, let cache = personalCache else { return }
+        let goal = SeasonGoal(tier: tier, actID: act.id, setAt: Date())
+        seasonGoal = goal
+        if let payload = ValorantPersonalCache.encode(goal) { Task { await cache.save(payload, key: "season_goal") } }
+    }
+
+    func loadSeasonGoal() async {
+        guard let cache = personalCache,
+              let result = await cache.read("season_goal", ttl: .infinity) else { return }
+        seasonGoal = ValorantPersonalCache.decode(SeasonGoal.self, from: result.payload)
+    }
     var openProfileDirectly: Bool = false
     var sortOfflineByLastSeen: Bool = true
     var socialActionMessage: String?
@@ -546,6 +575,7 @@ final class ValorantStore {
         await loadPersonalSettings()
         await loadSocial()
         await loadActs()
+        await loadSeasonGoal()
         await syncAndLoadMatches()
         await loadLeaderboard()
         await loadUpcomingMissions()
@@ -929,19 +959,22 @@ final class ValorantStore {
         if let region, !region.isEmpty { leaderboardRegion = region }
         let activeRegion = leaderboardRegion
         let cache = personalCache
-        if let cached = await cache?.read("leaderboard_\(activeRegion)", ttl: Self.leaderboardCacheTTL) {
+        let boardKey = "leaderboard_\(activeRegion)_\(leaderboardPlatform)_\(leaderboardSeason)"
+        if let cached = await cache?.read(boardKey, ttl: Self.leaderboardCacheTTL) {
             applyLeaderboard(cached.payload)
             if !cached.isStale { return }
         }
         do {
-            let payload: JSONValue = try await api.worker("api/stats/valorant-leaderboard", query: [
+            var boardQuery = [
                 URLQueryItem(name: "region", value: activeRegion),
-                URLQueryItem(name: "platform", value: "pc"),
+                URLQueryItem(name: "platform", value: leaderboardPlatform),
                 URLQueryItem(name: "startIndex", value: "1"),
                 URLQueryItem(name: "size", value: "50")
-            ])
+            ]
+            if !leaderboardSeason.isEmpty { boardQuery.append(URLQueryItem(name: "season", value: leaderboardSeason)) }
+            let payload: JSONValue = try await api.worker("api/stats/valorant-leaderboard", query: boardQuery)
             applyLeaderboard(payload)
-            if let cache { await cache.save(payload, key: "leaderboard_\(activeRegion)") }
+            if let cache { await cache.save(payload, key: boardKey) }
             guard isConfigured else { return }
             let ownPayload: JSONValue = try await api.worker("api/stats/valorant-leaderboard", query: [
                 URLQueryItem(name: "region", value: activeRegion),

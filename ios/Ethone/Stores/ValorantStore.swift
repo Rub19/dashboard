@@ -222,7 +222,8 @@ struct ValorantFriend: Identifiable, Hashable {
 enum ValorantFriendHistoryType: String, Hashable {
     case removed = "N'est plus sur votre liste d'amis"
     case requestCanceled = "La demande d'ami n'est plus en attente"
-    case requestAccepted = "A accepté votre demande d'ami"
+        case requestAccepted = "A accepté votre demande d'ami"
+    case added = "Ajouté à votre liste d'amis"
 }
 
 struct ValorantFriendHistoryEvent: Identifiable, Hashable {
@@ -473,6 +474,7 @@ final class ValorantStore {
         profile = nil
         friends = []
         friendRecords = []
+        historyRecords = []
         friendHistory = []
         bookmarkedPlayers = []
         recentSearches = []
@@ -702,10 +704,32 @@ final class ValorantStore {
 
     // MARK: Joueurs (signets + recherches) et amis — stockés dans Supabase
 
+    private struct HistoryRecord: Codable, Hashable {
+        let puuid: String
+        let name: String
+        let tag: String
+        let removed: Bool
+        let at: Date
+    }
+
+    /// Ajouts / retraits faits dans l'app (la liste d'amis Riot n'est pas accessible).
+    private var historyRecords: [HistoryRecord] = []
+
     private struct SocialPayload: Codable {
         var bookmarks: [ValorantSavedPlayer] = []
         var recent: [ValorantSavedPlayer] = []
         var friends: [FriendRecord] = []
+        var history: [HistoryRecord]? = []
+    }
+
+    private func rebuildHistory() {
+        friendHistory = historyRecords.sorted { $0.at > $1.at }.map { r in
+            ValorantFriendHistoryEvent(
+                id: "\(r.puuid)|\(r.at.timeIntervalSince1970)", name: r.name, tag: r.tag,
+                type: r.removed ? .removed : .added,
+                timestampText: r.at.formatted(.relative(presentation: .named).locale(Locale(identifier: "fr_FR")))
+            )
+        }
     }
 
     private func loadSocial() async {
@@ -715,12 +739,14 @@ final class ValorantStore {
         bookmarkedPlayers = social.bookmarks
         recentSearches = social.recent
         friendRecords = social.friends
+        historyRecords = social.history ?? []
         rebuildFriends()
+        rebuildHistory()
     }
 
     private func saveSocial() {
         guard let cache = personalCache,
-              let payload = ValorantPersonalCache.encode(SocialPayload(bookmarks: bookmarkedPlayers, recent: recentSearches, friends: friendRecords)) else { return }
+              let payload = ValorantPersonalCache.encode(SocialPayload(bookmarks: bookmarkedPlayers, recent: recentSearches, friends: friendRecords, history: Array(historyRecords.suffix(200)))) else { return }
         Task { await cache.save(payload, key: "social") }
     }
 
@@ -797,7 +823,9 @@ final class ValorantStore {
                 }
                 friendRecords.insert(FriendRecord(puuid: account.puuid, name: account.name, tag: account.tag,
                                                   card: account.card ?? "", tier: account.tier ?? 0, addedAt: Date()), at: 0)
+                historyRecords.append(HistoryRecord(puuid: account.puuid, name: account.name, tag: account.tag, removed: false, at: Date()))
                 rebuildFriends()
+                rebuildHistory()
                 saveSocial()
                 socialActionMessage = "\(account.name)#\(account.tag) a été ajouté à vos amis."
                 await refreshNameChanges()
@@ -808,8 +836,12 @@ final class ValorantStore {
     }
 
     func removeFriend(id: String) {
+        if let record = friendRecords.first(where: { $0.puuid == id }) {
+            historyRecords.append(HistoryRecord(puuid: record.puuid, name: record.name, tag: record.tag, removed: true, at: Date()))
+        }
         friendRecords.removeAll(where: { $0.puuid == id })
         rebuildFriends()
+        rebuildHistory()
         saveSocial()
         nameChanges.removeAll(where: { $0.id.hasPrefix(id) })
     }

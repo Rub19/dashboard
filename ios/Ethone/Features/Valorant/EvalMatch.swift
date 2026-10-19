@@ -443,6 +443,20 @@ enum EvalRanks {
     ]
 
     static func name(_ tier: Int) -> String { names[tier] ?? "Non classé" }
+
+    static func color(_ tier: Int) -> UInt32 {
+        switch tier {
+        case 27: return 0xF3E9A6
+        case 24...26: return 0xFD5B68
+        case 21...23: return 0x2DD4A0
+        case 18...20: return 0xC084FC
+        case 15...17: return 0x3FC1C9
+        case 12...14: return 0xE8C15A
+        case 9...11: return 0xC7C7CF
+        case 6...8: return 0xC08457
+        default: return 0x8E8E93
+        }
+    }
 }
 
 enum EvalAssets {

@@ -513,7 +513,7 @@ struct EvalProfileView: View {
                             Circle()
                                 .fill(
                                     RadialGradient(
-                                        colors: [Color(hex: 0xFD5B68).opacity(0.25), .clear],
+                                        colors: [Color(hex: EvalRanks.color(profile.tier)).opacity(0.25), .clear],
                                         center: .center,
                                         startRadius: 0,
                                         endRadius: 40
@@ -535,7 +535,7 @@ struct EvalProfileView: View {
 
                         Text(profile.rank.isEmpty ? "RANG INDISPONIBLE" : profile.rank.uppercased())
                             .font(.system(size: 16, weight: .heavy))
-                            .foregroundStyle(Color(hex: 0xFD5B68))
+                            .foregroundStyle(Color(hex: EvalRanks.color(profile.tier)))
 
                         if profile.rr > 0 {
                             Text("\(profile.rr) SC")
@@ -549,7 +549,8 @@ struct EvalProfileView: View {
                                 .foregroundStyle(.white)
                                 .padding(.horizontal, 18)
                                 .padding(.vertical, 7)
-                                .background(Color(hex: 0xFD5B68), in: .capsule)
+                                .foregroundStyle(profile.tier == 27 ? Color.black.opacity(0.8) : .white)
+                                .background(Color(hex: EvalRanks.color(profile.tier)), in: .capsule)
                         }
                     }
                     .frame(maxWidth: .infinity)
@@ -584,7 +585,7 @@ struct EvalProfileView: View {
 
                             Text(profile.peakRank.isEmpty ? "RANG INDISPONIBLE" : profile.peakRank.uppercased())
                                 .font(.system(size: 16, weight: .heavy))
-                                .foregroundStyle(.white)
+                                .foregroundStyle(Color(hex: EvalRanks.color(profile.peakTier)))
 
                             Text("Plus haut rang atteint")
                                 .font(.system(size: 13))
@@ -1119,7 +1120,7 @@ struct EvalCareerSummaryView: View {
                     tierImage(mmr.tier, size: 96)
                     Text(EvalRanks.name(mmr.tier).uppercased())
                         .font(.system(size: 17, weight: .heavy))
-                        .foregroundStyle(Color(hex: 0xFD5B68))
+                        .foregroundStyle(Color(hex: EvalRanks.color(mmr.tier)))
                     Text("\(mmr.rr) SC").font(.system(size: 15, weight: .semibold)).foregroundStyle(.white)
                     if mmr.leaderboardRank > 0 {
                         Text("Rang \(mmr.leaderboardRank)")
@@ -1127,8 +1128,8 @@ struct EvalCareerSummaryView: View {
                             .foregroundStyle(.white)
                             .padding(.horizontal, 18)
                             .padding(.vertical, 7)
-                            .background(Color(hex: 0xC4313F), in: .capsule)
-                            .overlay(Capsule().strokeBorder(Color(hex: 0xFD5B68), lineWidth: 1.5))
+                            .background(Color(hex: EvalRanks.color(mmr.tier)).opacity(0.75), in: .capsule)
+                            .overlay(Capsule().strokeBorder(Color(hex: EvalRanks.color(mmr.tier)), lineWidth: 1.5))
                     }
                 }
                 .frame(maxWidth: .infinity)
@@ -2988,6 +2989,19 @@ struct EvalFriendsView: View {
                 VStack(spacing: 16) {
                     friendsTopBar
 
+                    if store.isConfigured && !store.friends.isEmpty {
+                        HStack(spacing: 10) {
+                            Image(systemName: "magnifyingglass").font(.system(size: 18, weight: .medium))
+                            TextField("Rechercher des amis", text: $searchQuery)
+                                .textInputAutocapitalization(.never)
+                                .autocorrectionDisabled()
+                        }
+                        .foregroundStyle(Color(hex: 0x8E8E93))
+                        .padding(.horizontal, 16)
+                        .frame(height: 50)
+                        .background(Color(hex: 0x1C1C1E), in: .capsule)
+                    }
+
                     if !store.isConfigured {
                         disconnectedConnectCard
                     } else if onlineFriends.isEmpty && offlineFriends.isEmpty {
@@ -3728,7 +3742,7 @@ struct EvalFriendHistoryView: View {
                         HStack(spacing: 14) {
                             Group {
                                 switch event.type {
-                                case .requestAccepted:
+                                case .requestAccepted, .added:
                                     Image(systemName: "person.crop.circle.badge.checkmark")
                                         .foregroundStyle(Color(hex: 0x22C55E))
                                 case .removed:

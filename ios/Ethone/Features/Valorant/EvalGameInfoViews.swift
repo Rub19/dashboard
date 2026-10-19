@@ -167,7 +167,7 @@ final class ValorantMapsStore {
 }
 
 struct EvalMapsView: View {
-    @Environment(.dismiss) private var dismiss
+    @Environment(\.dismiss) private var dismiss
     @State private var store = ValorantMapsStore()
     @State private var selectedMap: ValorantMapItem?
 

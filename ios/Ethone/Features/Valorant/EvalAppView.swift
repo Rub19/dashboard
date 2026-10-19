@@ -1397,73 +1397,6 @@ struct EvalDailyOfferCard: View {
     }
 }
 
-struct EvalDailyOfferCard: View {
-    let offer: ValorantDailySkinOffer
-
-    var body: some View {
-        VStack(spacing: 0) {
-            ZStack(alignment: .topLeading) {
-                SkinTierIconView(name: offer.tierIconName, color: Color(hex: offer.colorHex), size: 14)
-                    .padding(12)
-
-                HStack {
-                    Spacer()
-                    Image(systemName: "chevron.right")
-                        .font(.caption2.weight(.bold))
-                        .foregroundStyle(Color(hex: offer.colorHex))
-                        .padding(12)
-                }
-
-                AsyncImage(url: URL(string: offer.imageURL)) { phase in
-                    switch phase {
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .interpolation(.high)
-                            .scaledToFit()
-                            .frame(maxWidth: .infinity, maxHeight: 86)
-                            .padding(.horizontal, 28)
-                            .padding(.vertical, 8)
-                    default:
-                        Color.clear.frame(height: 86)
-                    }
-                }
-            }
-
-            HStack {
-                Text(offer.name)
-                    .font(.subheadline.weight(.bold))
-                    .foregroundStyle(Color(hex: offer.colorHex))
-
-                Spacer()
-
-                HStack(spacing: 5) {
-                    Text("\(offer.price)")
-                        .font(.subheadline.weight(.heavy).monospacedDigit())
-                        .foregroundStyle(.white)
-
-                    VPIconView(size: 14)
-                }
-            }
-            .padding(.horizontal, 14)
-            .padding(.bottom, 14)
-        }
-        .background(
-            LinearGradient(
-                colors: [Color(hex: offer.colorHex).opacity(0.12), Color(hex: 0x111319)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        )
-        .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-        .clipShape(.rect(cornerRadius: Theme.cardRadius))
-        .overlay(
-            RoundedRectangle(cornerRadius: Theme.cardRadius)
-                .strokeBorder(Color(hex: offer.colorHex).opacity(0.28), lineWidth: 1)
-        )
-    }
-}
-
 struct EvalFeaturedBundleCard: View {
     let bundle: ValorantStoreBundle
 
@@ -3418,132 +3351,140 @@ struct EvalFriendCard: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
-            HStack(spacing: 12) {
-                ZStack(alignment: .bottomTrailing) {
-                    AsyncImage(url: URL(string: friend.avatarURL ?? "")) { phase in
-                        switch phase {
-                        case .success(let image):
-                            image.resizable().scaledToFill().frame(width: 44, height: 44).clipShape(.rect(cornerRadius: 12))
-                        default:
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(Color(hex: 0x1A1C24))
-                                .frame(width: 44, height: 44)
-                                .overlay(Image(systemName: "person.fill").foregroundStyle(.secondary))
-                        }
-                    }
-
-                    if friend.isInGame {
-                        Circle()
-                            .fill(Color(hex: 0xFD4556))
-                            .frame(width: 13, height: 13)
-                            .overlay(Rectangle().fill(Color.white).frame(width: 6, height: 1.8))
-                            .overlay(Circle().strokeBorder(Color(hex: 0x161618), lineWidth: 2))
-                            .offset(x: 2, y: 2)
-                    } else if friend.isOnline {
-                        Circle()
-                            .fill(Color(hex: 0x22C55E))
-                            .frame(width: 13, height: 13)
-                            .overlay(Circle().strokeBorder(Color(hex: 0x161618), lineWidth: 2))
-                            .offset(x: 2, y: 2)
-                    }
+        ZStack {
+            if friend.isPartyLeader {
+                HStack {
+                    Spacer()
+                    Image(systemName: "crown")
+                        .font(.system(size: 44, weight: .light))
+                        .foregroundStyle(Color.white.opacity(0.04))
+                        .offset(x: -60)
+                    Spacer()
                 }
+            }
 
-                VStack(alignment: .leading, spacing: 3) {
-                    HStack(spacing: 4) {
-                        Text(friend.name)
-                            .font(.subheadline.weight(.heavy))
-                            .foregroundStyle(.white)
-
-                        Text("#\(friend.tag)")
-                            .font(.caption.weight(.medium))
-                            .foregroundStyle(.secondary)
-
-                        if friend.isPartyLeader {
-                            Image(systemName: "crown")
-                                .font(.system(size: 26, weight: .light))
-                                .foregroundStyle(Color.white.opacity(0.12))
-                                .padding(.leading, 4)
-                        }
-                    }
-
-                    if friend.isInGame {
-                        HStack(spacing: 5) {
-                            Text("En Jeu")
-                                .font(.caption.weight(.semibold))
-                                .foregroundStyle(.secondary)
-
-                            if let score = friend.scoreRounds {
-                                Text("|")
-                                    .font(.caption2)
-                                    .foregroundStyle(.secondary.opacity(0.6))
-                                Text(score)
-                                    .font(.caption.weight(.heavy).monospacedDigit())
-                                    .foregroundStyle(.white)
+            VStack(spacing: 0) {
+                HStack(spacing: 12) {
+                    ZStack(alignment: .bottomTrailing) {
+                        AsyncImage(url: URL(string: friend.avatarURL ?? "")) { phase in
+                            switch phase {
+                            case .success(let image):
+                                image.resizable().scaledToFill().frame(width: 44, height: 44).clipShape(.rect(cornerRadius: 12))
+                            default:
+                                RoundedRectangle(cornerRadius: 12)
+                                    .fill(Color(hex: 0x1A1C24))
+                                    .frame(width: 44, height: 44)
+                                    .overlay(Image(systemName: "person.fill").foregroundStyle(.secondary))
                             }
                         }
 
-                        if let mode = friend.gameMode, let map = friend.map {
-                            Text("\(mode) • \(map)")
-                                .font(.caption2)
+                        if friend.isInGame {
+                            Circle()
+                                .fill(Color(hex: 0xFD4556))
+                                .frame(width: 13, height: 13)
+                                .overlay(Rectangle().fill(Color.white).frame(width: 6, height: 1.8))
+                                .overlay(Circle().strokeBorder(Color(hex: 0x161618), lineWidth: 2))
+                                .offset(x: 2, y: 2)
+                        } else if friend.isOnline {
+                            Circle()
+                                .fill(Color(hex: 0x22C55E))
+                                .frame(width: 13, height: 13)
+                                .overlay(Circle().strokeBorder(Color(hex: 0x161618), lineWidth: 2))
+                                .offset(x: 2, y: 2)
+                        }
+                    }
+
+                    VStack(alignment: .leading, spacing: 3) {
+                        HStack(spacing: 4) {
+                            Text(friend.name)
+                                .font(.subheadline.weight(.heavy))
+                                .foregroundStyle(.white)
+
+                            Text("#\(friend.tag)")
+                                .font(.caption.weight(.medium))
                                 .foregroundStyle(.secondary)
                         }
-                    } else {
-                        Text(friend.isOnline ? "En ligne" : (friend.lastOnlineText ?? "Hors ligne"))
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+
+                        if let queue = friend.queueState {
+                            Text(queue)
+                                .font(.caption.weight(.medium))
+                                .foregroundStyle(.white)
+                            if let mode = friend.gameMode {
+                                Text(mode)
+                                    .font(.caption2)
+                                    .foregroundStyle(Color(hex: 0x8E8E93))
+                            }
+                        } else if friend.isInGame {
+                            HStack(spacing: 5) {
+                                Text("En Jeu")
+                                    .font(.caption.weight(.semibold))
+                                    .foregroundStyle(.secondary)
+
+                                if let score = friend.scoreRounds {
+                                    Text("|")
+                                        .font(.caption2)
+                                        .foregroundStyle(.secondary.opacity(0.6))
+                                    Text(score)
+                                        .font(.caption.weight(.heavy).monospacedDigit())
+                                        .foregroundStyle(.white)
+                                }
+                            }
+
+                            if let mode = friend.gameMode, let map = friend.map {
+                                Text("\(mode) • \(map)")
+                                    .font(.caption2)
+                                    .foregroundStyle(.secondary)
+                            }
+                        } else {
+                            Text(friend.isOnline ? "En ligne" : (friend.lastOnlineText ?? "Hors ligne"))
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
                     }
-                }
 
-                Spacer()
+                    Spacer()
 
-                HStack(spacing: 8) {
-                    Circle()
-                        .fill(Color(hex: 0x141820))
-                        .frame(width: 34, height: 34)
-                        .overlay(
-                            Circle().strokeBorder(tierRingColor(tier: friend.tierNumber), lineWidth: 1.5)
-                        )
-                        .overlay(
-                            Group {
-                                if let url = friend.rankIconURL {
-                                    AsyncImage(url: url) { phase in
-                                        if let image = phase.image {
-                                            image.resizable().scaledToFit().padding(4)
-                                        } else {
-                                            Image(systemName: "rhombus.fill")
-                                                .font(.system(size: 14))
-                                                .foregroundStyle(tierRingColor(tier: friend.tierNumber))
-                                        }
-                                    }
+                    HStack(spacing: 8) {
+                        if let url = friend.rankIconURL {
+                            AsyncImage(url: url) { phase in
+                                if let image = phase.image {
+                                    image
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 32, height: 32)
                                 } else {
                                     Image(systemName: "rhombus.fill")
-                                        .font(.system(size: 14))
+                                        .font(.system(size: 20))
                                         .foregroundStyle(tierRingColor(tier: friend.tierNumber))
                                 }
                             }
-                        )
+                        } else {
+                            Image(systemName: "rhombus.fill")
+                                .font(.system(size: 20))
+                                .foregroundStyle(tierRingColor(tier: friend.tierNumber))
+                        }
 
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: 11, weight: .semibold))
-                        .foregroundStyle(.secondary)
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundStyle(Color(hex: 0x8E8E93))
+                    }
                 }
-            }
-            .padding(14)
+                .padding(14)
 
-            if friend.otherPartyMembersCount > 0 {
-                Divider()
-                    .overlay(Color.white.opacity(0.06))
+                if friend.otherPartyMembersCount > 0 {
+                    Divider()
+                        .overlay(Color.white.opacity(0.06))
+                        .padding(.horizontal, 14)
+
+                    HStack {
+                        Text("+ \(friend.otherPartyMembersCount) autres")
+                            .font(.caption.weight(.medium))
+                            .foregroundStyle(.secondary)
+                        Spacer()
+                    }
                     .padding(.horizontal, 14)
-
-                HStack {
-                    Text("+ \(friend.otherPartyMembersCount) autres")
-                        .font(.caption.weight(.medium))
-                        .foregroundStyle(.secondary)
-                    Spacer()
+                    .padding(.vertical, 8)
                 }
-                .padding(.horizontal, 14)
-                .padding(.vertical, 8)
             }
         }
         .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))

@@ -350,17 +350,17 @@ struct ValorantMatchDetailView: View {
                     .padding(.leading, 6)
 
                 VStack(spacing: 0) {
-                    lobbyMetricRow(title: "ACS", value: "\(targetedPlayer.score)", delta: "+220")
+                    lobbyMetricRow(title: "ACS", value: "\(targetedPlayer.score)", delta: "220")
                     Divider().overlay(Color.white.opacity(0.06))
-                    lobbyMetricRow(title: "ADR", value: "\(targetedPlayer.adr)", delta: "+136")
+                    lobbyMetricRow(title: "ADR", value: "\(targetedPlayer.adr)", delta: "136")
                     Divider().overlay(Color.white.opacity(0.06))
-                    lobbyMetricRow(title: "HS%", value: "\(targetedPlayer.headshotPercent)%", delta: "+9%")
+                    lobbyMetricRow(title: "HS%", value: "\(targetedPlayer.headshotPercent)%", delta: "9%")
                     Divider().overlay(Color.white.opacity(0.06))
-                    lobbyMetricRow(title: "KAST", value: "\(targetedPlayer.kast)%", delta: "+29%")
+                    lobbyMetricRow(title: "KAST", value: "\(targetedPlayer.kast)%", delta: "29%")
                     Divider().overlay(Color.white.opacity(0.06))
-                    lobbyMetricRow(title: "K/D", value: String(format: "%.2f", targetedPlayer.kd), delta: "+2.95")
+                    lobbyMetricRow(title: "K/D", value: String(format: "%.2f", targetedPlayer.kd), delta: "2.95")
                     Divider().overlay(Color.white.opacity(0.06))
-                    lobbyMetricRow(title: "FK / round", value: "0.27", delta: "+0.21")
+                    lobbyMetricRow(title: "FK / round", value: "0.27", delta: "0.21")
                 }
                 .padding(.horizontal, 20)
                 .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
@@ -387,7 +387,7 @@ struct ValorantMatchDetailView: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 8) {
                         highlightPill(text: "2K")
-                        highlightPill(text: "3K x3")
+                        highlightPill(text: "3K ×3")
                         highlightPill(text: "4K")
                         highlightPill(text: "1V1 CLUTCH")
                         highlightPill(text: "KAST ÉLEVÉ")
@@ -415,7 +415,7 @@ struct ValorantMatchDetailView: View {
                     Text(delta)
                         .font(.system(size: 11, weight: .semibold))
                 }
-                .foregroundStyle(Color(hex: 0x2DD4BF))
+                .foregroundStyle(Color(hex: 0x22C55E))
             }
 
             Image(systemName: "chevron.down")

@@ -141,7 +141,7 @@ final class ValorantMapsStore {
     ]
 
     func fetchMaps(apiKey: String = "") async {
-        guard let mapsURL = URL(string: "https://valorant-api.com/v1/maps") else { return }
+        guard let mapsURL = URL(string: "https://valorant-api.com/v1/maps?language=fr-FR") else { return }
         isLoading = true
         defer { isLoading = false }
 
@@ -2051,14 +2051,14 @@ struct EvalLeaderboardView: View {
         if let rank = store.profile?.leaderboardRank, rank > 0 {
             return "n°\(rank)"
         }
-        return "n°660"
+        return "n°659"
     }
 
     private var myRankWatermark: String {
         if let rank = store.profile?.leaderboardRank, rank > 0 {
             return "\(rank)"
         }
-        return "660"
+        return "659"
     }
 
     private var myRRText: String {
@@ -2612,6 +2612,7 @@ struct EvalSeasonGoalsView: View {
 struct EvalPurchaseHistoryView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var selectedTab: Int = 0
+    @State private var isLoading: Bool = false
 
     private struct PaymentRecord: Identifiable {
         let id = UUID()
@@ -2656,22 +2657,46 @@ struct EvalPurchaseHistoryView: View {
                     .padding(.top, 6)
                     .padding(.bottom, 16)
 
-                ScrollView {
-                    VStack(spacing: 20) {
-                        if selectedTab == 0 {
-                            paymentsSection
-                        } else {
-                            transactionsSection
-                        }
+                if isLoading {
+                    VStack(spacing: 16) {
+                        ProgressView()
+                            .tint(Color(hex: 0xFD5B68))
+                            .scaleEffect(1.2)
+                        Text("Chargement de votre historique d’achats...")
+                            .font(.system(size: 15))
+                            .foregroundStyle(Color(hex: 0x8E8E93))
                     }
-                    .padding(.horizontal, 16)
-                    .padding(.bottom, 40)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .padding(.top, 140)
+                    Spacer()
+                } else {
+                    ScrollView {
+                        VStack(spacing: 20) {
+                            if selectedTab == 0 {
+                                paymentsSection
+                            } else {
+                                transactionsSection
+                            }
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.bottom, 40)
+                    }
+                    .scrollIndicators(.hidden)
                 }
-                .scrollIndicators(.hidden)
             }
         }
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
+        .task {
+            isLoading = true
+            try? await Task.sleep(nanoseconds: 600_000_000)
+            isLoading = false
+        }
+        .refreshable {
+            isLoading = true
+            try? await Task.sleep(nanoseconds: 600_000_000)
+            isLoading = false
+        }
     }
 
     private var topBar: some View {

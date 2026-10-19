@@ -3175,7 +3175,7 @@ struct EvalFriendsView: View {
                 }
 
                 Circle()
-                    .fill(Color(hex: 0x22C55E))
+                    .fill(Color(hex: 0x8E8E93))
                     .frame(width: 13, height: 13)
                     .overlay(Circle().strokeBorder(Color(hex: 0x161618), lineWidth: 2))
                     .offset(x: 2, y: 2)
@@ -3192,7 +3192,7 @@ struct EvalFriendsView: View {
                         .foregroundStyle(.secondary)
                 }
 
-                Text("En ligne")
+                Text("Statut en jeu indisponible")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }

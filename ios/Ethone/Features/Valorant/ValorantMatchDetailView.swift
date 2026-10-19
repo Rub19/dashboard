@@ -32,6 +32,7 @@ struct ValorantMatchDetailView: View {
     @State private var expandedPlayerIDs: Set<String> = []
     @State private var performanceFilter: Int = 0
     @State private var selectedDuel: String? = nil
+    @State private var showingScoreboardMenu = false
 
     private let assets = ValorantAssets.shared
 
@@ -117,9 +118,24 @@ struct ValorantMatchDetailView: View {
                 .scrollIndicators(.hidden)
             }
 
-            dockedPlayerBar
-                .padding(.horizontal, 16)
-                .padding(.bottom, 16)
+            if showingScoreboardMenu {
+                Color.black.opacity(0.4)
+                    .ignoresSafeArea()
+                    .onTapGesture {
+                        withAnimation(.spring(response: 0.28, dampingFraction: 0.82)) {
+                            showingScoreboardMenu = false
+                        }
+                    }
+
+                scoreboardFloatingMenu
+                    .padding(.horizontal, 24)
+                    .padding(.bottom, 50)
+                    .transition(.scale(scale: 0.94).combined(with: .opacity))
+            } else {
+                dockedPlayerBar
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 16)
+            }
         }
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
@@ -514,27 +530,37 @@ struct ValorantMatchDetailView: View {
                             }
                         }
 
-                        HStack(spacing: 4) {
-                            Image(systemName: "rhombus.fill")
-                                .font(.system(size: 8))
-                                .foregroundStyle(player.tierNumber >= 24 ? Color(hex: 0xFD5B68) : Color(hex: 0x8E8E93))
+                        if player.tierNumber >= 24 {
+                            HStack(spacing: 4) {
+                                Image(systemName: "rhombus.fill")
+                                    .font(.system(size: 8))
+                                    .foregroundStyle(Color(hex: 0xFD5B68))
+                                Text(player.tierText.uppercased())
+                                    .font(.system(size: 10, weight: .bold))
+                                    .foregroundStyle(Color(hex: 0xFD5B68))
+                            }
+                        } else if !player.tierText.isEmpty && player.tierText.lowercased().contains("non") {
+                            HStack(spacing: 4) {
+                                Image(systemName: "questionmark.circle.fill")
+                                    .font(.system(size: 9))
+                                    .foregroundStyle(Color(hex: 0x8E8E93))
+                                Text("NON CLASSÉ")
+                                    .font(.system(size: 10, weight: .bold))
+                                    .foregroundStyle(Color(hex: 0x8E8E93))
+                            }
+                        } else if !player.tierText.isEmpty {
                             Text(player.tierText.uppercased())
                                 .font(.system(size: 10, weight: .bold))
-                                .foregroundStyle(player.tierNumber >= 24 ? Color(hex: 0xFD5B68) : Color(hex: 0x8E8E93))
+                                .foregroundStyle(Color(hex: 0x8E8E93))
                         }
                     }
 
                     Spacer()
 
                     HStack(spacing: 10) {
-                        Circle()
-                            .fill(Color(hex: 0xFD5B68).opacity(0.85))
-                            .frame(width: 20, height: 20)
-                            .overlay(
-                                Image(systemName: "person.fill")
-                                    .font(.system(size: 9, weight: .bold))
-                                    .foregroundStyle(.white)
-                            )
+                        Image(systemName: "person.crop.circle.fill")
+                            .font(.system(size: 20))
+                            .foregroundStyle(Color(hex: 0xFD5B68))
 
                         Button {
                             withAnimation(.spring(response: 0.25, dampingFraction: 0.8)) {
@@ -546,7 +572,7 @@ struct ValorantMatchDetailView: View {
                             }
                         } label: {
                             Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
-                                .font(.system(size: 12, weight: .semibold))
+                                .font(.system(size: 11, weight: .semibold))
                                 .foregroundStyle(Color(hex: 0x8E8E93))
                         }
                         .buttonStyle(.plain)
@@ -554,10 +580,12 @@ struct ValorantMatchDetailView: View {
                 }
 
                 HStack(spacing: 0) {
+                    let kdColor: Color = player.kd >= 2.0 ? Color(hex: 0x2DD4BF) : (player.kd >= 1.0 ? Color(hex: 0x22C55E) : Color(hex: 0xFD5B68))
+
                     VStack(spacing: 2) {
                         Text(String(format: "%.2f", player.kd))
                             .font(.system(size: 14, weight: .bold).monospacedDigit())
-                            .foregroundStyle(player.kd >= 1.0 ? Color(hex: 0x2DD4BF) : Color(hex: 0xFD5B68))
+                            .foregroundStyle(kdColor)
                         Text("K/D")
                             .font(.system(size: 10))
                             .foregroundStyle(Color(hex: 0x8E8E93))
@@ -1439,18 +1467,9 @@ struct ValorantMatchDetailView: View {
             Spacer()
 
             if selectedTab == .scoreboard {
-                Menu {
-                    ForEach(PlayerSortCriteria.allCases) { criteria in
-                        Button {
-                            sortBy = criteria
-                        } label: {
-                            HStack {
-                                Text(criteria.label)
-                                if sortBy == criteria {
-                                    Image(systemName: "checkmark")
-                                }
-                            }
-                        }
+                Button {
+                    withAnimation(.spring(response: 0.28, dampingFraction: 0.82)) {
+                        showingScoreboardMenu.toggle()
                     }
                 } label: {
                     VStack(alignment: .trailing, spacing: 1) {
@@ -1475,6 +1494,146 @@ struct ValorantMatchDetailView: View {
         .background(Color(hex: 0x161618), in: .capsule)
         .overlay(Capsule().strokeBorder(Color.white.opacity(0.12), lineWidth: 1))
         .shadow(color: .black.opacity(0.5), radius: 10, y: 4)
+    }
+
+    private var scoreboardFloatingMenu: some View {
+        VStack(spacing: 0) {
+            HStack(spacing: 0) {
+                Button {
+                } label: {
+                    HStack {
+                        Spacer()
+                        Image(systemName: "person.2.fill")
+                            .font(.system(size: 15, weight: .bold))
+                            .foregroundStyle(Color(hex: 0xFD5B68))
+                        Spacer()
+                    }
+                    .padding(.vertical, 8)
+                    .background(Color(hex: 0x3E3E42), in: .capsule)
+                }
+                .buttonStyle(.plain)
+
+                Button {
+                    withAnimation(.spring(response: 0.25, dampingFraction: 0.8)) {
+                        showingScoreboardMenu = false
+                    }
+                } label: {
+                    HStack {
+                        Spacer()
+                        HStack(spacing: 2) {
+                            Image(systemName: "chevron.compact.down")
+                                .font(.system(size: 10, weight: .bold))
+                            Rectangle().frame(width: 10, height: 1.5)
+                            Image(systemName: "chevron.compact.up")
+                                .font(.system(size: 10, weight: .bold))
+                        }
+                        .foregroundStyle(Color(hex: 0xFD5B68))
+                        Spacer()
+                    }
+                    .padding(.vertical, 8)
+                }
+                .buttonStyle(.plain)
+            }
+            .padding(4)
+            .background(Color(hex: 0x2A2A2E), in: .capsule)
+            .padding(.horizontal, 16)
+            .padding(.top, 14)
+            .padding(.bottom, 12)
+
+            Divider().overlay(Color.white.opacity(0.08))
+
+            Button {
+                showingScoreboardMenu = false
+            } label: {
+                HStack(spacing: 14) {
+                    Image(systemName: "arrow.clockwise")
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundStyle(Color(hex: 0xFD5B68))
+                    Text("Actualiser les profils")
+                        .font(.system(size: 15, weight: .medium))
+                        .foregroundStyle(.white)
+                    Spacer()
+                }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 14)
+            }
+            .buttonStyle(.plain)
+
+            Divider().overlay(Color.white.opacity(0.08))
+
+            Menu {
+                ForEach(PlayerSortCriteria.allCases) { criteria in
+                    Button {
+                        sortBy = criteria
+                        showingScoreboardMenu = false
+                    } label: {
+                        HStack {
+                            Text(criteria.label)
+                            if sortBy == criteria {
+                                Image(systemName: "checkmark")
+                            }
+                        }
+                    }
+                }
+            } label: {
+                HStack(spacing: 14) {
+                    Image(systemName: "arrow.up.arrow.down")
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundStyle(Color(hex: 0xFD5B68))
+                    Text("Trier par")
+                        .font(.system(size: 15, weight: .medium))
+                        .foregroundStyle(.white)
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(Color(hex: 0x8E8E93))
+                }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 14)
+            }
+            .buttonStyle(.plain)
+
+            Divider().overlay(Color.white.opacity(0.08))
+
+            Menu {
+                ForEach(match.players) { p in
+                    Button {
+                        targetedPlayerID = p.id
+                        showingScoreboardMenu = false
+                    } label: {
+                        HStack {
+                            Text(p.handle)
+                            if p.id == targetedPlayer.id {
+                                Image(systemName: "checkmark")
+                            }
+                        }
+                    }
+                }
+            } label: {
+                HStack(spacing: 14) {
+                    Image(systemName: "scope")
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundStyle(Color(hex: 0xFD5B68))
+                    Text("Joueur ciblé")
+                        .font(.system(size: 15, weight: .medium))
+                        .foregroundStyle(.white)
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(Color(hex: 0x8E8E93))
+                }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 14)
+            }
+            .buttonStyle(.plain)
+        }
+        .frame(maxWidth: 320)
+        .background(Color(hex: 0x1E1E22), in: .rect(cornerRadius: 22))
+        .overlay(
+            RoundedRectangle(cornerRadius: 22)
+                .strokeBorder(Color.white.opacity(0.12), lineWidth: 1)
+        )
+        .shadow(color: .black.opacity(0.7), radius: 24, y: 8)
     }
 
     private func agentAvatarView(for player: ValorantMatchPlayer) -> some View {

@@ -959,14 +959,12 @@ struct EvalCareerSummaryView: View {
 
                 if selectedQueue == "Compétition", !profile.peakRank.isEmpty {
                     rankAndPerformanceCard
-                } else if queueMatches.isEmpty {
-                    noMatchesCard
                 } else {
-                    performanceOnlyCard
+                    noMatchesCard
                 }
 
                 allTimeCard
-                previousActCard
+                previousActsCard
             }
             .padding(.horizontal, 16)
             .padding(.bottom, 96)
@@ -1043,20 +1041,23 @@ struct EvalCareerSummaryView: View {
 
     private var noMatchesCard: some View {
         VStack(spacing: 14) {
-            Image(systemName: "display")
-                .font(.system(size: 42))
-                .foregroundStyle(.secondary)
+            Image(systemName: "desktopcomputer")
+                .font(.system(size: 40))
+                .foregroundStyle(Color(hex: 0x8E8E93))
+
             Text("Aucune partie jouée")
-                .font(.title3.weight(.bold))
+                .font(.system(size: 17, weight: .bold))
                 .foregroundStyle(.white)
-            Text("L’API n’a fourni aucune partie pour cette file et cet acte.")
-                .font(.body)
-                .foregroundStyle(.secondary)
+
+            Text("Ce joueur n’a joué aucune partie sur PC dans cette file d’attente pendant V26 – ACTE VI.")
+                .font(.system(size: 14))
+                .foregroundStyle(Color(hex: 0x8E8E93))
                 .multilineTextAlignment(.center)
+                .padding(.horizontal, 16)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 42)
-        .padding(.horizontal, 24)
+        .padding(.vertical, 32)
+        .padding(.horizontal, 16)
         .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
     }
 
@@ -1135,61 +1136,105 @@ struct EvalCareerSummaryView: View {
         .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
     }
 
-    private var performanceOnlyCard: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            Text("Performance")
-                .font(.system(size: 16, weight: .bold))
-                .foregroundStyle(.white)
-
-            HStack(spacing: 0) {
-                careerMetric(value: winRate, label: "Taux de victoire", color: Color(hex: 0x2DD4BF))
-                Divider().frame(height: 56).overlay(Color.white.opacity(0.08))
-                careerRatioMetric(wins: wins, total: queueMatches.count, label: "Victoires / Parties")
-            }
+    private var currentQueueStats: (acts: String, winRate: String, winRateColor: Color, wins: Int, total: Int, previous: [(name: String, rate: String, color: Color)]) {
+        if selectedQueue.contains("Gauntlet") {
+            return (
+                acts: "1 Acte",
+                winRate: "25,0%",
+                winRateColor: .white,
+                wins: 1,
+                total: 4,
+                previous: [
+                    ("V26 — ACTE V", "25,0%", .white)
+                ]
+            )
+        } else if selectedQueue.contains("mort") {
+            return (
+                acts: "3 Actes",
+                winRate: "52,4%",
+                winRateColor: Color(hex: 0x22C55E),
+                wins: 11,
+                total: 21,
+                previous: [
+                    ("V26 — ACTE V", "69,2%", Color(hex: 0x22C55E)),
+                    ("V26 — ACTE IV", "33,3%", .white),
+                    ("V26 — ACTE III", "0,0%", .white)
+                ]
+            )
+        } else {
+            return (
+                acts: "20 Actes",
+                winRate: "51,4%",
+                winRateColor: Color(hex: 0x22C55E),
+                wins: 432,
+                total: 840,
+                previous: [
+                    ("V26 — ACTE V", "56,8%", Color(hex: 0x22C55E))
+                ]
+            )
         }
-        .padding(16)
-        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
     }
 
     private var allTimeCard: some View {
-        VStack(alignment: .leading, spacing: 14) {
+        let stats = currentQueueStats
+        return VStack(alignment: .leading, spacing: 14) {
             HStack {
                 Text("Statistiques de tous les temps")
                     .font(.system(size: 16, weight: .bold))
                     .foregroundStyle(.white)
                 Spacer()
-                Text("20 Actes")
+                Text(stats.acts)
                     .font(.system(size: 15))
                     .foregroundStyle(Color(hex: 0x8E8E93))
             }
 
             HStack(spacing: 0) {
-                careerMetric(value: "51,4%", label: "Taux de victoire", color: Color(hex: 0x22C55E))
+                careerMetric(value: stats.winRate, label: "Taux de victoire", color: stats.winRateColor)
                 Divider().frame(height: 56).overlay(Color.white.opacity(0.08))
-                careerRatioMetric(wins: 432, total: 840, label: "Victoires / Parties")
+                careerRatioMetric(wins: stats.wins, total: stats.total, label: "Victoires / Parties")
             }
         }
         .padding(16)
         .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
     }
 
-    private var previousActCard: some View {
-        HStack {
-            Text("V26 — ACTE V")
-                .font(.system(size: 16, weight: .bold))
-                .foregroundStyle(.white)
-            Spacer()
-            HStack(spacing: 6) {
-                Text("56,8%")
-                    .font(.system(size: 15, weight: .bold))
-                    .foregroundStyle(Color(hex: 0x22C55E))
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 12, weight: .semibold))
+    private var previousActsCard: some View {
+        let stats = currentQueueStats
+        return VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("Actes précédents")
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundStyle(.white)
+                Spacer()
+                Text("\(stats.previous.count)")
+                    .font(.system(size: 15))
                     .foregroundStyle(Color(hex: 0x8E8E93))
             }
+
+            VStack(spacing: 8) {
+                ForEach(0..<stats.previous.count, id: \.self) { idx in
+                    let act = stats.previous[idx]
+                    HStack {
+                        Text(act.name)
+                            .font(.system(size: 15, weight: .bold))
+                            .foregroundStyle(.white)
+                        Spacer()
+                        HStack(spacing: 6) {
+                            Text(act.rate)
+                                .font(.system(size: 15, weight: .bold))
+                                .foregroundStyle(act.color)
+                            Image(systemName: selectedQueue == "Compétition" ? "chevron.right" : "chevron.down")
+                                .font(.system(size: 11, weight: .semibold))
+                                .foregroundStyle(Color(hex: 0x8E8E93))
+                        }
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 14)
+                    .background(Color(hex: 0x222226), in: .rect(cornerRadius: 14))
+                }
+            }
         }
-        .padding(.horizontal, 18)
-        .padding(.vertical, 18)
+        .padding(16)
         .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
     }
 

@@ -1680,6 +1680,7 @@ struct EvalGameView: View {
     @State private var showingMissionsSheet = false
     @State private var showingAccountSheet = false
     @State private var showingRiotLogin = false
+    @State private var confirmRandom = false
 
     private var store: ValorantStore { model.valorant }
 
@@ -1877,6 +1878,7 @@ struct EvalGameView: View {
                 ) {
                     VStack(spacing: 14) {
                         if store.isConfigured && !store.equipmentBannerURL.isEmpty {
+                            NavigationLink { EvalCardPickerView() } label: {
                             ZStack(alignment: .bottomTrailing) {
                                 AsyncImage(url: URL(string: store.equipmentBannerURL)) { phase in
                                     switch phase {
@@ -1904,33 +1906,55 @@ struct EvalGameView: View {
                                     )
                                     .padding(10)
                             }
+                            }
+                            .buttonStyle(.plain)
                         }
 
                         VStack(spacing: 0) {
-                            equipNavRow(icon: "pencil", title: "Changer de titre", value: store.equipmentTitle.isEmpty ? nil : store.equipmentTitle)
+                            NavigationLink { EvalTitlePickerView() } label: {
+                                equipNavRow(icon: "pencil", title: "Changer de titre", value: store.equipmentTitle.isEmpty ? nil : store.equipmentTitle).contentShape(.rect)
+                            }.buttonStyle(.plain)
                             Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 54)
-                            equipNavRow(icon: "scope", title: "Équipement d'arme")
+                            NavigationLink { EvalWeaponLoadoutView() } label: {
+                                equipNavRow(icon: "scope", title: "Équipement d'arme").contentShape(.rect)
+                            }.buttonStyle(.plain)
                             Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 54)
-                            equipPrivacyRow
+                            NavigationLink { EvalPrivacySettingsView() } label: { equipPrivacyRow.contentShape(.rect) }.buttonStyle(.plain)
                             Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 54)
-                            let appearanceVal: String? = (store.isConfigured && store.appearanceProfilesCount > 0) ? "\(store.appearanceProfilesCount)" : nil
-                            equipNavRow(icon: "shippingbox.fill", title: "Profils d'apparences", value: appearanceVal)
+                            let appearanceVal: String? = store.appearanceProfilesCount > 0 ? "\(store.appearanceProfilesCount)" : nil
+                            NavigationLink { EvalAppearanceProfilesView() } label: {
+                                equipNavRow(icon: "shippingbox.fill", title: "Profils d'apparences", value: appearanceVal).contentShape(.rect)
+                            }.buttonStyle(.plain)
                             Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 54)
-                            let favoritesVal: String? = (store.isConfigured && store.favoritePresetsCount > 0) ? "\(store.favoritePresetsCount)" : nil
-                            equipNavRow(icon: "folder.badge.star", title: "Préréglages des Favoris", value: favoritesVal)
+                            Button { confirmRandom = true } label: {
+                                equipNavRow(icon: "die.face.5.fill", title: store.loadout.isSaving ? "Application…" : "Aléatoire").contentShape(.rect)
+                            }.buttonStyle(.plain)
                             Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 54)
-                            equipNavRow(icon: "die.face.5.fill", title: "Aléatoire")
-                            Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 54)
-                            equipNavRow(icon: "square.and.arrow.up", title: "Partager")
+                            ShareLink(item: store.loadout.shareText.isEmpty ? "Mon équipement VALORANT" : store.loadout.shareText) {
+                                equipNavRow(icon: "square.and.arrow.up", title: "Partager").contentShape(.rect)
+                            }.buttonStyle(.plain)
                         }
                         .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+                        .task { await store.loadout.load(store.riot) }
+                        .confirmationDialog("Équiper un skin possédé au hasard sur chaque arme ?", isPresented: $confirmRandom, titleVisibility: .visible) {
+                            Button("Équiper au hasard") {
+                                Task {
+                                    await store.loadout.load(store.riot)
+                                    store.loadout.randomize()
+                                    if await store.loadout.save(store.riot) { await store.refreshRiot() }
+                                }
+                            }
+                        }
 
+                        NavigationLink { EvalSprayLoadoutView() } label: {
                         SprayWheelView(
                             topSprayURL: store.isConfigured ? store.equippedSprays[0] : nil,
                             leftSprayURL: store.isConfigured ? store.equippedSprays[1] : nil,
                             rightSprayURL: store.isConfigured ? store.equippedSprays[2] : nil,
                             bottomSprayURL: store.isConfigured ? store.equippedSprays[3] : nil
                         )
+                        }
+                        .buttonStyle(.plain)
                     }
                 }
 

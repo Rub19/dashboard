@@ -348,6 +348,8 @@ final class ValorantStore {
 
     /// Compte Riot connecté (page officielle Riot) : boutique, portefeuille, équipement, passe, groupe.
     let riot = RiotSession()
+    /// Collection possédée et équipement modifiable du compte Riot connecté.
+    let loadout: RiotLoadoutModel
     private(set) var offersEnd: Date?
     private(set) var accessoriesEnd: Date?
     private(set) var weeklyMissionsEnd: Date?
@@ -488,7 +490,7 @@ final class ValorantStore {
 
     var userBookmarksCount: Int { bookmarkedPlayers.count }
     var playerSettingsCount: Int { snapshots.count }
-    var appearanceProfilesCount: Int { setting("appearanceProfilesCount") }
+    var appearanceProfilesCount: Int { loadout.profiles.count }
     var favoritePresetsCount: Int { setting("favoritePresetsCount") }
 
     func setBookmarksCount(_ count: Int) { setSetting("bookmarksCount", count) }
@@ -547,6 +549,7 @@ final class ValorantStore {
 
     init(api: APIClient) {
         self.api = api
+        self.loadout = RiotLoadoutModel(api: api)
         nameStorage = UserDefaults.standard.string(forKey: Self.nameKey) ?? ""
         tag = UserDefaults.standard.string(forKey: Self.tagKey) ?? ""
         if !nameStorage.isEmpty, !tag.isEmpty, !savedAccounts.contains("\(nameStorage)#\(tag)") {

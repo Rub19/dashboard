@@ -3013,29 +3013,27 @@ struct EvalHubView: View {
                         .buttonStyle(.plain)
                     }
 
-                    // 3. Infos sur le jeu
                     hubGroupSection(title: "Infos sur le jeu") {
                         NavigationLink {
-                            EvalGameInfoView(initialTab: .maps)
+                            EvalMapsView()
                         } label: {
                             hubRowView(icon: "map.fill", title: "Cartes")
                         }
                         .buttonStyle(.plain)
 
                         NavigationLink {
-                            EvalGameInfoView(initialTab: .agents)
+                            EvalAgentsView()
                         } label: {
                             hubRowView(icon: "person.crop.circle.fill", title: "Agents")
                         }
                         .buttonStyle(.plain)
 
                         NavigationLink {
-                            EvalGameInfoView(initialTab: .weapons)
+                            EvalWeaponsView()
                         } label: {
                             hubRowView(icon: "scope", title: "Armes")
                         }
                         .buttonStyle(.plain)
-
                     }
                 }
                 .padding(.horizontal, 16)

@@ -18,74 +18,26 @@ enum EvalGameInfoTab: String, CaseIterable, Identifiable {
 }
 
 struct EvalGameInfoView: View {
-    @State private var selectedTab: EvalGameInfoTab
+    let initialTab: EvalGameInfoTab
 
     init(initialTab: EvalGameInfoTab = .maps) {
-        _selectedTab = State(initialValue: initialTab)
+        self.initialTab = initialTab
     }
 
     var body: some View {
-        VStack(spacing: 0) {
-            gameInfoPicker
-                .padding(.horizontal, 16)
-                .padding(.top, 8)
-                .padding(.bottom, 4)
-
-            Group {
-                switch selectedTab {
-                case .maps:
-                    EvalMapsView()
-                case .agents:
-                    EvalAgentsView()
-                case .weapons:
-                    EvalWeaponsView()
-                }
+        Group {
+            switch initialTab {
+            case .maps:
+                EvalMapsView()
+            case .agents:
+                EvalAgentsView()
+            case .weapons:
+                EvalWeaponsView()
             }
-            .id(selectedTab)
-            .transition(.asymmetric(insertion: .opacity.combined(with: .move(edge: .trailing)),
-                                    removal: .opacity.combined(with: .move(edge: .leading))))
-        }
-        .animation(.snappy(duration: 0.28), value: selectedTab)
-        .navigationTitle("Infos sur le jeu")
-        .navigationBarTitleDisplayMode(.inline)
-        .ethoneScreen()
-    }
-
-    private var gameInfoPicker: some View {
-        GlassEffectContainer(spacing: 8) {
-            HStack(spacing: 6) {
-                ForEach(EvalGameInfoTab.allCases) { tab in
-                    Button {
-                        withAnimation(.snappy(duration: 0.28)) {
-                            selectedTab = tab
-                        }
-                    } label: {
-                        Label(tab.rawValue, systemImage: tab.icon)
-                            .font(.caption.weight(selectedTab == tab ? .bold : .medium))
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.78)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 9)
-                            .foregroundStyle(selectedTab == tab ? Theme.danger : .secondary)
-                            .background {
-                                if selectedTab == tab {
-                                    Capsule()
-                                        .fill(Theme.danger.opacity(0.16))
-                                        .glassEffect(.regular.interactive(), in: .capsule)
-                                }
-                            }
-                    }
-                    .buttonStyle(.plain)
-                    .sensoryFeedback(.selection, trigger: selectedTab)
-                }
-            }
-            .padding(5)
-            .glassEffect(.regular.interactive(), in: .capsule)
         }
     }
 }
 
-// MARK: - 1. CARTES (MAPS)
 struct ValorantMapItem: Identifiable, Decodable {
     var id: String { uuid }
     let uuid: String
@@ -130,6 +82,30 @@ struct ValorantMapItem: Identifiable, Decodable {
         callouts = try container.decodeIfPresent([MapCallout].self, forKey: .callouts)
     }
 
+    init(
+        uuid: String,
+        displayName: String,
+        narrativeDescription: String? = nil,
+        tacticalDescription: String? = "A/B Sites",
+        coordinates: String? = nil,
+        displayIcon: String? = nil,
+        listViewIcon: String? = nil,
+        splash: String? = nil,
+        callouts: [MapCallout]? = nil,
+        competitiveStatus: CompetitiveMapStatus = .active
+    ) {
+        self.uuid = uuid
+        self.displayName = displayName
+        self.narrativeDescription = narrativeDescription
+        self.tacticalDescription = tacticalDescription
+        self.coordinates = coordinates
+        self.displayIcon = displayIcon ?? "https://media.valorant-api.com/maps/\(uuid)/displayicon.png"
+        self.listViewIcon = listViewIcon ?? "https://media.valorant-api.com/maps/\(uuid)/listviewicon.png"
+        self.splash = splash ?? "https://media.valorant-api.com/maps/\(uuid)/splash.png"
+        self.callouts = callouts
+        self.competitiveStatus = competitiveStatus
+    }
+
     func withCompetitiveStatus(_ status: CompetitiveMapStatus) -> Self {
         var copy = self
         copy.competitiveStatus = status
@@ -144,231 +120,169 @@ final class ValorantMapsStore {
     var isLoading = false
     var errorMessage: String?
 
+    init() {
+        maps = Self.defaultMaps
+    }
+
+    static let defaultMaps: [ValorantMapItem] = [
+        ValorantMapItem(uuid: "224b0a95-48b9-f703-1bd8-67aca101a61f", displayName: "Abyss"),
+        ValorantMapItem(uuid: "7eaecc1b-4337-bbf6-6ab9-04b8f06b3319", displayName: "Ascent"),
+        ValorantMapItem(uuid: "2c9d57ec-4431-9c5e-2939-8f9ef6dd5cba", displayName: "Bind"),
+        ValorantMapItem(uuid: "2fb9a4fd-47b8-4e7d-a969-74b4046ebd53", displayName: "Breeze"),
+        ValorantMapItem(uuid: "1c18ab1f-420d-0d8b-71d0-77ad3c439115", displayName: "Corrode"),
+        ValorantMapItem(uuid: "b529448b-4d60-346e-e89e-00a4c527a405", displayName: "Fracture"),
+        ValorantMapItem(uuid: "2bee0dc9-4ffe-519b-1cbd-7fbe763a6047", displayName: "Haven", tacticalDescription: "A/B/C Sites"),
+        ValorantMapItem(uuid: "e2ad5c54-4114-a870-9641-8ea21279579a", displayName: "Icebox"),
+        ValorantMapItem(uuid: "2fe4ed3a-450a-948b-6d6b-e89a78e680a9", displayName: "Lotus", tacticalDescription: "A/B/C Sites"),
+        ValorantMapItem(uuid: "fd267378-4d1d-484f-ff52-77821ed10dc2", displayName: "Pearl"),
+        ValorantMapItem(uuid: "d960549e-485c-e861-8d71-aa9d1aed12a2", displayName: "Split"),
+        ValorantMapItem(uuid: "756da597-416b-c0f2-f47b-afbdf28670bc", displayName: "Summit"),
+        ValorantMapItem(uuid: "92584fbe-486a-b1b2-9faa-39b0f486b498", displayName: "Sunset")
+    ]
+
     func fetchMaps(apiKey: String = "") async {
-        guard maps.isEmpty else { return }
+        guard let mapsURL = URL(string: "https://valorant-api.com/v1/maps") else { return }
         isLoading = true
         defer { isLoading = false }
 
         do {
-            guard let mapsURL = URL(string: "https://valorant-api.com/v1/maps"),
-                  let rotationURL = URL(string: "https://api.henrikdev.xyz/valorant/v1/map/rotation") else {
-                throw URLError(.badURL)
-            }
             struct MapsResponse: Decodable {
                 let data: [ValorantMapItem]
             }
-            struct RotationResponse: Decodable {
-                struct Rotation: Decodable {
-                    let maps: [String]
-                }
-                let current: Rotation?
-                let upcoming: Rotation?
-                let next: Rotation?
-            }
-            async let mapsRequest = URLSession.shared.data(from: mapsURL)
-            var rotationURLRequest = URLRequest(url: rotationURL)
-            if !apiKey.isEmpty {
-                rotationURLRequest.setValue(apiKey, forHTTPHeaderField: "Authorization")
-            }
-            async let rotationRequest = URLSession.shared.data(for: rotationURLRequest)
-            let (mapsData, _) = try await mapsRequest
+            let (mapsData, _) = try await URLSession.shared.data(from: mapsURL)
             let response = try JSONDecoder().decode(MapsResponse.self, from: mapsData)
-            let rotationPayload = try? await rotationRequest
-            let rotation = rotationPayload.flatMap { try? JSONDecoder().decode(RotationResponse.self, from: $0.0) }
-            let active = Set(rotation?.current?.maps.map { $0.lowercased() } ?? [])
-            let upcoming = Set((rotation?.upcoming?.maps ?? rotation?.next?.maps ?? []).map { $0.lowercased() })
-            maps = response.data.map { map in
-                let keys = [map.uuid, map.displayName, map.displayName.replacingOccurrences(of: " ", with: "-")]
-                    .map { $0.lowercased() }
-                if keys.contains(where: active.contains) { return map.withCompetitiveStatus(.active) }
-                if keys.contains(where: upcoming.contains) { return map.withCompetitiveStatus(.upcoming) }
-                return map
-            }.sorted {
-                if $0.isCompetitive != $1.isCompetitive {
-                    return $0.isCompetitive && !$1.isCompetitive
-                }
-                return $0.displayName < $1.displayName
+            let filtered = response.data
+                .filter { $0.tacticalDescription != nil && !($0.tacticalDescription?.isEmpty ?? true) }
+                .sorted { $0.displayName.localizedCaseInsensitiveCompare($1.displayName) == .orderedAscending }
+            if !filtered.isEmpty {
+                maps = filtered
             }
         } catch {
+            if maps.isEmpty {
+                maps = Self.defaultMaps
+            }
             errorMessage = error.localizedDescription
         }
     }
 }
 
 struct EvalMapsView: View {
-    @Environment(AppModel.self) private var model
-    @Environment(\.dismiss) private var dismiss
+    @Environment(.dismiss) private var dismiss
     @State private var store = ValorantMapsStore()
-    @State private var filterCompetitiveOnly = true
-    @State private var searchQuery = ""
     @State private var selectedMap: ValorantMapItem?
-
-    private var filteredMaps: [ValorantMapItem] {
-        var list = store.maps
-        if filterCompetitiveOnly {
-            list = list.filter(\.isCompetitive)
-        }
-        if !searchQuery.trimmingCharacters(in: .whitespaces).isEmpty {
-            list = list.filter { $0.displayName.localizedCaseInsensitiveContains(searchQuery) }
-        }
-        return list
-    }
 
     var body: some View {
         ZStack {
             Theme.bg.ignoresSafeArea()
 
-            ScrollView {
-                VStack(spacing: 16) {
-                    // Header
-                    HStack {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Cartes de Valorant")
-                                .font(.title2.weight(.heavy))
-                                .foregroundStyle(.white)
-                            Text("\(filteredMaps.count) cartes disponibles")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-                        Spacer()
+            VStack(spacing: 0) {
+                topBar
+
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 18) {
+                        mapsCard
                     }
                     .padding(.horizontal, 16)
-                    .padding(.top, 4)
-
-                    // Search bar
-                    HStack(spacing: 10) {
-                        Image(systemName: "magnifyingglass")
-                            .font(.system(size: 15))
-                            .foregroundStyle(.secondary)
-                        TextField("Rechercher une carte...", text: $searchQuery)
-                            .font(.subheadline)
-                            .foregroundStyle(.white)
-                        if !searchQuery.isEmpty {
-                            Button { searchQuery = "" } label: {
-                                Image(systemName: "xmark.circle.fill").foregroundStyle(.secondary)
-                            }
-                        }
-                    }
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 10)
-                    .background(Color.white.opacity(0.06), in: .rect(cornerRadius: 14))
-                    .padding(.horizontal, 16)
-
-                    // Filter tabs
-                    HStack(spacing: 8) {
-                        filterPill(title: "Compétitives", isSelected: filterCompetitiveOnly) {
-                            filterCompetitiveOnly = true
-                        }
-                        filterPill(title: "Toutes les cartes", isSelected: !filterCompetitiveOnly) {
-                            filterCompetitiveOnly = false
-                        }
-                        Spacer()
-                    }
-                    .padding(.horizontal, 16)
-
-                    // Maps Grid / List
-                    if store.isLoading && store.maps.isEmpty {
-                        ProgressView()
-                            .tint(Theme.danger)
-                            .padding(.top, 40)
-                    } else if let errorMessage = store.errorMessage, store.maps.isEmpty {
-                        ContentUnavailableView(
-                            "Impossible de charger les cartes",
-                            systemImage: "wifi.exclamationmark",
-                            description: Text(errorMessage)
-                        )
-                        .padding(.top, 36)
-                    } else {
-                        if filteredMaps.isEmpty {
-                            ContentUnavailableView(
-                                searchQuery.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Aucune carte disponible" : "Aucune carte trouvée",
-                                systemImage: searchQuery.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "map" : "magnifyingglass",
-                                description: Text(searchQuery.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "La rotation compétitive n’est pas disponible pour le moment." : "Essayez un autre nom de carte.")
-                            )
-                            .padding(.top, 36)
-                        } else {
-                            LazyVStack(spacing: 0) {
-                                ForEach(filteredMaps) { map in
-                                                    mapRow(map: map)
-                                }
-                            }
-                                            .padding(12)
-                                            .background(Color.white.opacity(0.07), in: .rect(cornerRadius: 28))
-                                            .padding(.horizontal, 16)
-                                            .padding(.bottom, 32)
-                        }
-                    }
+                    .padding(.top, 10)
+                    .padding(.bottom, 96)
                 }
+                .scrollIndicators(.hidden)
             }
-            .scrollIndicators(.hidden)
         }
-        .navigationTitle("Cartes")
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
+        .toolbar(.hidden, for: .navigationBar)
         .task {
-            await store.fetchMaps(apiKey: model.valorant.apiKey)
+            await store.fetchMaps()
+        }
+        .refreshable {
+            await store.fetchMaps()
         }
         .sheet(item: $selectedMap) { map in
             mapDetailSheet(map: map)
         }
     }
 
-    private func filterPill(title: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Text(title)
-                .font(.system(size: 12, weight: isSelected ? .bold : .medium))
-                .foregroundStyle(isSelected ? Theme.danger : .secondary)
-                .padding(.horizontal, 14)
-                .padding(.vertical, 7)
-                .background(isSelected ? Theme.danger.opacity(0.18) : Color.white.opacity(0.04), in: .capsule)
+    private var topBar: some View {
+        HStack {
+            Button {
+                dismiss()
+            } label: {
+                Circle()
+                    .fill(Color.white.opacity(0.08))
+                    .frame(width: 38, height: 38)
+                    .overlay(
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundStyle(.white)
+                    )
+            }
+            .buttonStyle(PressScaleStyle())
+
+            Spacer()
+
+            Text("Cartes")
+                .font(.headline.weight(.bold))
+                .foregroundStyle(.white)
+
+            Spacer()
+
+            Color.clear
+                .frame(width: 38, height: 38)
         }
-        .buttonStyle(PressScaleStyle())
+        .padding(.horizontal, 16)
+        .padding(.top, 4)
+    }
+
+    private var mapsCard: some View {
+        VStack(spacing: 0) {
+            ForEach(Array(store.maps.enumerated()), id: \.element.id) { index, map in
+                Button {
+                    selectedMap = map
+                } label: {
+                    mapRow(map: map)
+                }
+                .buttonStyle(.plain)
+
+                if index < store.maps.count - 1 {
+                    Divider()
+                        .overlay(Color.white.opacity(0.06))
+                        .padding(.leading, 106)
+                }
+            }
+        }
+        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+        .clipShape(.rect(cornerRadius: 20))
     }
 
     private func mapRow(map: ValorantMapItem) -> some View {
-        Button {
-            selectedMap = map
-        } label: {
-            HStack(spacing: 14) {
-                AsyncImage(url: URL(string: map.listViewIcon ?? map.splash ?? "")) { phase in
-                    switch phase {
-                    case .success(let image):
-                        image.resizable().scaledToFill()
-                    default:
-                        Color.white.opacity(0.08)
-                    }
-                }
-                .frame(width: 112, height: 72)
-                .clipShape(.rect(cornerRadius: 16))
-
-                VStack(alignment: .leading, spacing: 5) {
-                    Text(map.displayName)
-                        .font(.title3.weight(.bold))
-                        .foregroundStyle(.white)
-                    if map.competitiveStatus != .unknown {
-                        Text(map.competitiveStatus == .active ? "Compétitive" : "Prochaine rotation")
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(Theme.danger)
-                    } else {
-                        Text("Carte publique")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-
-                Spacer()
-                Image(systemName: "chevron.right")
-                    .font(.headline.weight(.semibold))
-                    .foregroundStyle(.secondary)
-            }
-            .padding(.horizontal, 4)
-            .padding(.vertical, 12)
-            .overlay(alignment: .bottom) {
-                if map.id != filteredMaps.last?.id {
-                    Divider().overlay(Color.white.opacity(0.1)).padding(.leading, 126)
+        HStack(spacing: 14) {
+            AsyncImage(url: URL(string: map.listViewIcon ?? map.splash ?? "")) { phase in
+                switch phase {
+                case .success(let image):
+                    image
+                        .resizable()
+                        .scaledToFill()
+                default:
+                    Color(hex: 0x1F222B)
+                        .overlay(Image(systemName: "map.fill").foregroundStyle(.secondary))
                 }
             }
+            .frame(width: 76, height: 44)
+            .clipShape(.rect(cornerRadius: 10))
+
+            Text(map.displayName)
+                .font(.subheadline.weight(.heavy))
+                .foregroundStyle(.white)
+
+            Spacer()
+
+            Image(systemName: "chevron.right")
+                .font(.system(size: 11, weight: .semibold))
+                .foregroundStyle(.secondary)
         }
-        .buttonStyle(.plain)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .contentShape(Rectangle())
     }
 
     private func mapDetailSheet(map: ValorantMapItem) -> some View {
@@ -378,7 +292,6 @@ struct EvalMapsView: View {
 
                 ScrollView {
                     VStack(spacing: 18) {
-                        // Wide splash
                         if let splash = map.splash, let url = URL(string: splash) {
                             AsyncImage(url: url) { phase in
                                 if let img = phase.image {
@@ -411,7 +324,6 @@ struct EvalMapsView: View {
                                 }
                             }
 
-                            // Minimap Overhead Plan
                             if let iconURL = map.displayIcon, let url = URL(string: iconURL) {
                                 VStack(alignment: .leading, spacing: 8) {
                                     Text("Plan du terrain (Callouts)")
@@ -430,7 +342,6 @@ struct EvalMapsView: View {
                                 }
                             }
 
-                            // Regions list
                             if let callouts = map.callouts, !callouts.isEmpty {
                                 VStack(alignment: .leading, spacing: 8) {
                                     Text("Zones principales")
@@ -468,7 +379,6 @@ struct EvalMapsView: View {
     }
 }
 
-// Simple FlowLayout helper for chips
 struct FlowLayout: Layout {
     var spacing: CGFloat = 8
 
@@ -511,13 +421,13 @@ struct FlowLayout: Layout {
     }
 }
 
-// MARK: - 2. AGENTS
 struct ValorantAgentItem: Identifiable, Decodable {
     var id: String { uuid }
     let uuid: String
     let displayName: String
     let description: String
     let displayIcon: String?
+    let displayIconSmall: String?
     let fullPortrait: String?
     let background: String?
     let role: AgentRole?
@@ -527,6 +437,12 @@ struct ValorantAgentItem: Identifiable, Decodable {
         let displayName: String
         let displayIcon: String?
         let description: String?
+
+        init(displayName: String, displayIcon: String? = nil, description: String? = nil) {
+            self.displayName = displayName
+            self.displayIcon = displayIcon
+            self.description = description
+        }
     }
 
     struct AgentAbility: Decodable, Identifiable {
@@ -535,6 +451,46 @@ struct ValorantAgentItem: Identifiable, Decodable {
         let displayName: String
         let description: String
         let displayIcon: String?
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case uuid, displayName, description, displayIcon, displayIconSmall
+        case fullPortrait, background, role, abilities
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        uuid = try container.decode(String.self, forKey: .uuid)
+        displayName = try container.decode(String.self, forKey: .displayName)
+        description = try container.decodeIfPresent(String.self, forKey: .description) ?? ""
+        displayIcon = try container.decodeIfPresent(String.self, forKey: .displayIcon)
+        displayIconSmall = try container.decodeIfPresent(String.self, forKey: .displayIconSmall)
+        fullPortrait = try container.decodeIfPresent(String.self, forKey: .fullPortrait)
+        background = try container.decodeIfPresent(String.self, forKey: .background)
+        role = try container.decodeIfPresent(AgentRole.self, forKey: .role)
+        abilities = try container.decodeIfPresent([AgentAbility].self, forKey: .abilities) ?? []
+    }
+
+    init(
+        uuid: String,
+        displayName: String,
+        description: String = "",
+        displayIcon: String? = nil,
+        displayIconSmall: String? = nil,
+        fullPortrait: String? = nil,
+        background: String? = nil,
+        role: AgentRole? = nil,
+        abilities: [AgentAbility] = []
+    ) {
+        self.uuid = uuid
+        self.displayName = displayName
+        self.description = description
+        self.displayIcon = displayIcon ?? "https://media.valorant-api.com/agents/\(uuid)/displayicon.png"
+        self.displayIconSmall = displayIconSmall ?? "https://media.valorant-api.com/agents/\(uuid)/displayiconsmall.png"
+        self.fullPortrait = fullPortrait ?? "https://media.valorant-api.com/agents/\(uuid)/fullportrait.png"
+        self.background = background
+        self.role = role
+        self.abilities = abilities
     }
 }
 
@@ -545,167 +501,132 @@ final class ValorantAgentsStore {
     var isLoading = false
     var errorMessage: String?
 
+    init() {
+        agents = Self.defaultAgents
+    }
+
+    static let defaultAgents: [ValorantAgentItem] = [
+        ValorantAgentItem(uuid: "41fb69c1-4189-7b37-f117-bcaf1e96f1bf", displayName: "Astra", role: ValorantAgentItem.AgentRole(displayName: "Controller", displayIcon: "https://media.valorant-api.com/agents/roles/4ee40330-ecdd-4f2f-98a8-eb1243428373/displayicon.png")),
+        ValorantAgentItem(uuid: "9f0d8ba9-4140-b941-57d3-a7ad57c6b417", displayName: "Brimstone", role: ValorantAgentItem.AgentRole(displayName: "Controller", displayIcon: "https://media.valorant-api.com/agents/roles/4ee40330-ecdd-4f2f-98a8-eb1243428373/displayicon.png")),
+        ValorantAgentItem(uuid: "1dbf2edd-4729-0984-3115-daa5eed44993", displayName: "Clove", role: ValorantAgentItem.AgentRole(displayName: "Controller", displayIcon: "https://media.valorant-api.com/agents/roles/4ee40330-ecdd-4f2f-98a8-eb1243428373/displayicon.png")),
+        ValorantAgentItem(uuid: "95b78ed7-4637-86d9-7e41-71ba8c293152", displayName: "Harbor", role: ValorantAgentItem.AgentRole(displayName: "Controller", displayIcon: "https://media.valorant-api.com/agents/roles/4ee40330-ecdd-4f2f-98a8-eb1243428373/displayicon.png")),
+        ValorantAgentItem(uuid: "7c8a4701-4de6-9355-b254-e09bc2a34b72", displayName: "Miks", role: ValorantAgentItem.AgentRole(displayName: "Controller", displayIcon: "https://media.valorant-api.com/agents/roles/4ee40330-ecdd-4f2f-98a8-eb1243428373/displayicon.png")),
+        ValorantAgentItem(uuid: "8e253930-4c05-31dd-1b6c-968525494517", displayName: "Omen", role: ValorantAgentItem.AgentRole(displayName: "Controller", displayIcon: "https://media.valorant-api.com/agents/roles/4ee40330-ecdd-4f2f-98a8-eb1243428373/displayicon.png")),
+        ValorantAgentItem(uuid: "707eab51-4836-f488-046a-cda6bf494859", displayName: "Viper", role: ValorantAgentItem.AgentRole(displayName: "Controller", displayIcon: "https://media.valorant-api.com/agents/roles/4ee40330-ecdd-4f2f-98a8-eb1243428373/displayicon.png")),
+        ValorantAgentItem(uuid: "0e38b510-41a8-5780-5e8f-568b2a4f2d6c", displayName: "Iso", role: ValorantAgentItem.AgentRole(displayName: "Duelist", displayIcon: "https://media.valorant-api.com/agents/roles/dbe8757e-9e92-4ed4-b39f-9dfc589691d4/displayicon.png")),
+        ValorantAgentItem(uuid: "add6443a-41bd-e414-f6ad-e58d267f4e95", displayName: "Jett", role: ValorantAgentItem.AgentRole(displayName: "Duelist", displayIcon: "https://media.valorant-api.com/agents/roles/dbe8757e-9e92-4ed4-b39f-9dfc589691d4/displayicon.png")),
+        ValorantAgentItem(uuid: "bb2a4828-46eb-8cd1-e765-15848195d751", displayName: "Neon", role: ValorantAgentItem.AgentRole(displayName: "Duelist", displayIcon: "https://media.valorant-api.com/agents/roles/dbe8757e-9e92-4ed4-b39f-9dfc589691d4/displayicon.png")),
+        ValorantAgentItem(uuid: "eb93336a-449b-9c1b-0a54-a891f7921d69", displayName: "Phoenix", role: ValorantAgentItem.AgentRole(displayName: "Duelist", displayIcon: "https://media.valorant-api.com/agents/roles/dbe8757e-9e92-4ed4-b39f-9dfc589691d4/displayicon.png")),
+        ValorantAgentItem(uuid: "f94c3b30-42be-e959-889c-5aa313dba261", displayName: "Raze", role: ValorantAgentItem.AgentRole(displayName: "Duelist", displayIcon: "https://media.valorant-api.com/agents/roles/dbe8757e-9e92-4ed4-b39f-9dfc589691d4/displayicon.png")),
+        ValorantAgentItem(uuid: "a3bfb853-43b2-7238-a4f1-ad90e9e46bcc", displayName: "Reyna", role: ValorantAgentItem.AgentRole(displayName: "Duelist", displayIcon: "https://media.valorant-api.com/agents/roles/dbe8757e-9e92-4ed4-b39f-9dfc589691d4/displayicon.png")),
+        ValorantAgentItem(uuid: "df1cb487-4902-002e-5c17-d28e83e78588", displayName: "Waylay", role: ValorantAgentItem.AgentRole(displayName: "Duelist", displayIcon: "https://media.valorant-api.com/agents/roles/dbe8757e-9e92-4ed4-b39f-9dfc589691d4/displayicon.png")),
+        ValorantAgentItem(uuid: "7f94d92c-4234-0a36-9646-3a87eb8b5c89", displayName: "Yoru", role: ValorantAgentItem.AgentRole(displayName: "Duelist", displayIcon: "https://media.valorant-api.com/agents/roles/dbe8757e-9e92-4ed4-b39f-9dfc589691d4/displayicon.png")),
+        ValorantAgentItem(uuid: "5f8d3a7f-467b-97f3-062c-13acf203c006", displayName: "Breach", role: ValorantAgentItem.AgentRole(displayName: "Initiator", displayIcon: "https://media.valorant-api.com/agents/roles/1b47567f-8f7b-444b-aae3-b0c634622d10/displayicon.png")),
+        ValorantAgentItem(uuid: "dade69b4-4f5a-8528-247b-219e5a1facd6", displayName: "Fade", role: ValorantAgentItem.AgentRole(displayName: "Initiator", displayIcon: "https://media.valorant-api.com/agents/roles/1b47567f-8f7b-444b-aae3-b0c634622d10/displayicon.png")),
+        ValorantAgentItem(uuid: "e370fa57-4757-3604-3648-499e1f642d3f", displayName: "Gekko", role: ValorantAgentItem.AgentRole(displayName: "Initiator", displayIcon: "https://media.valorant-api.com/agents/roles/1b47567f-8f7b-444b-aae3-b0c634622d10/displayicon.png")),
+        ValorantAgentItem(uuid: "601dbbe7-43ce-be57-2a40-4abd24953621", displayName: "KAY/O", role: ValorantAgentItem.AgentRole(displayName: "Initiator", displayIcon: "https://media.valorant-api.com/agents/roles/1b47567f-8f7b-444b-aae3-b0c634622d10/displayicon.png")),
+        ValorantAgentItem(uuid: "6f2a04ca-43e0-be17-7f36-b3908627744d", displayName: "Skye", role: ValorantAgentItem.AgentRole(displayName: "Initiator", displayIcon: "https://media.valorant-api.com/agents/roles/1b47567f-8f7b-444b-aae3-b0c634622d10/displayicon.png")),
+        ValorantAgentItem(uuid: "320b2a48-4d9b-a075-30f1-1f93a9b638fa", displayName: "Sova", role: ValorantAgentItem.AgentRole(displayName: "Initiator", displayIcon: "https://media.valorant-api.com/agents/roles/1b47567f-8f7b-444b-aae3-b0c634622d10/displayicon.png")),
+        ValorantAgentItem(uuid: "b444168c-4e35-8076-db47-ef9bf368f384", displayName: "Tejo", role: ValorantAgentItem.AgentRole(displayName: "Initiator", displayIcon: "https://media.valorant-api.com/agents/roles/1b47567f-8f7b-444b-aae3-b0c634622d10/displayicon.png")),
+        ValorantAgentItem(uuid: "22697a3d-45bf-8dd7-4fec-84a9e28c69d7", displayName: "Chamber", role: ValorantAgentItem.AgentRole(displayName: "Sentinel", displayIcon: "https://media.valorant-api.com/agents/roles/5fc02f99-4091-4486-a531-98459a3e95e9/displayicon.png")),
+        ValorantAgentItem(uuid: "117ed9e3-49f3-6512-3ccf-0cada7e3823b", displayName: "Cypher", role: ValorantAgentItem.AgentRole(displayName: "Sentinel", displayIcon: "https://media.valorant-api.com/agents/roles/5fc02f99-4091-4486-a531-98459a3e95e9/displayicon.png")),
+        ValorantAgentItem(uuid: "cc8b64c8-4b25-4ff9-6e7f-37b4da43d235", displayName: "Deadlock", role: ValorantAgentItem.AgentRole(displayName: "Sentinel", displayIcon: "https://media.valorant-api.com/agents/roles/5fc02f99-4091-4486-a531-98459a3e95e9/displayicon.png")),
+        ValorantAgentItem(uuid: "1e58de9c-4950-5125-93e9-a0aee9f98746", displayName: "Killjoy", role: ValorantAgentItem.AgentRole(displayName: "Sentinel", displayIcon: "https://media.valorant-api.com/agents/roles/5fc02f99-4091-4486-a531-98459a3e95e9/displayicon.png")),
+        ValorantAgentItem(uuid: "569fdd95-4d10-43ab-ca70-79becc718b46", displayName: "Sage", role: ValorantAgentItem.AgentRole(displayName: "Sentinel", displayIcon: "https://media.valorant-api.com/agents/roles/5fc02f99-4091-4486-a531-98459a3e95e9/displayicon.png")),
+        ValorantAgentItem(uuid: "efba5359-4016-a1e5-7626-b1ae76895940", displayName: "Vyse", role: ValorantAgentItem.AgentRole(displayName: "Sentinel", displayIcon: "https://media.valorant-api.com/agents/roles/5fc02f99-4091-4486-a531-98459a3e95e9/displayicon.png"))
+    ]
+
     func fetchAgents() async {
-        guard agents.isEmpty else { return }
+        guard let url = URL(string: "https://valorant-api.com/v1/agents?isPlayableCharacter=true") else { return }
         isLoading = true
         defer { isLoading = false }
 
-        guard let url = URL(string: "https://valorant-api.com/v1/agents?isPlayableCharacter=true") else { return }
         do {
             let (data, _) = try await URLSession.shared.data(from: url)
             struct AgentsResponse: Decodable {
                 let data: [ValorantAgentItem]
             }
             let res = try JSONDecoder().decode(AgentsResponse.self, from: data)
-            agents = res.data.sorted { $0.displayName < $1.displayName }
+            let sorted = res.data.sorted { $0.displayName.localizedCaseInsensitiveCompare($1.displayName) == .orderedAscending }
+            if !sorted.isEmpty {
+                agents = sorted
+            }
         } catch {
+            if agents.isEmpty {
+                agents = Self.defaultAgents
+            }
             errorMessage = error.localizedDescription
         }
     }
 }
 
 struct EvalAgentsView: View {
+    @Environment(\.dismiss) private var dismiss
     @State private var store = ValorantAgentsStore()
-    @State private var selectedRole = "Tous"
-    @State private var searchQuery = ""
     @State private var selectedAgent: ValorantAgentItem?
 
-    private let roles = ["Tous", "Duelist", "Initiator", "Controller", "Sentinel"]
+    private struct AgentRoleSection: Identifiable {
+        var id: String { roleKey }
+        let roleKey: String
+        let title: String
+        let iconURL: String?
+        let agents: [ValorantAgentItem]
+    }
 
-    private func roleFrenchName(_ role: String) -> String {
-        switch role {
-        case "Duelist": return "Duelliste"
-        case "Initiator": return "Initiateur"
-        case "Controller": return "Contrôleur"
-        case "Sentinel": return "Sentinelle"
-        default: return role
+    private var roleSections: [AgentRoleSection] {
+        let roleOrder = ["Controller", "Duelist", "Initiator", "Sentinel"]
+        return roleOrder.compactMap { roleKey in
+            let matching = store.agents.filter { ($0.role?.displayName ?? "").caseInsensitiveCompare(roleKey) == .orderedSame }
+            guard !matching.isEmpty else { return nil }
+            let icon = matching.first?.role?.displayIcon
+            return AgentRoleSection(
+                roleKey: roleKey,
+                title: roleFrenchName(roleKey),
+                iconURL: icon,
+                agents: matching.sorted { $0.displayName.localizedCaseInsensitiveCompare($1.displayName) == .orderedAscending }
+            )
         }
     }
 
-    private var filteredAgents: [ValorantAgentItem] {
-        var list = store.agents
-        if selectedRole != "Tous" {
-            list = list.filter { $0.role?.displayName.caseInsensitiveCompare(selectedRole) == .orderedSame }
+    private func roleFrenchName(_ role: String) -> String {
+        switch role.lowercased() {
+        case "controller": return "Contrôleur"
+        case "duelist": return "Duelliste"
+        case "initiator": return "Initiateur"
+        case "sentinel": return "Sentinelle"
+        default: return role
         }
-        if !searchQuery.trimmingCharacters(in: .whitespaces).isEmpty {
-            list = list.filter { $0.displayName.localizedCaseInsensitiveContains(searchQuery) }
-        }
-        return list
     }
 
     var body: some View {
         ZStack {
             Theme.bg.ignoresSafeArea()
 
-            ScrollView {
-                VStack(spacing: 16) {
-                    // Header
-                    HStack {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Agents de Valorant")
-                                .font(.title2.weight(.heavy))
-                                .foregroundStyle(.white)
-                            Text("\(filteredAgents.count) agents disponibles")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
+            VStack(spacing: 0) {
+                topBar
+
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 18) {
+                        ForEach(roleSections) { section in
+                            VStack(alignment: .leading, spacing: 8) {
+                                roleHeader(section: section)
+                                roleCard(section: section)
+                            }
                         }
-                        Spacer()
                     }
                     .padding(.horizontal, 16)
-                    .padding(.top, 4)
-
-                    // Search bar
-                    HStack(spacing: 10) {
-                        Image(systemName: "magnifyingglass")
-                            .font(.system(size: 15))
-                            .foregroundStyle(.secondary)
-                        TextField("Rechercher un agent...", text: $searchQuery)
-                            .font(.subheadline)
-                            .foregroundStyle(.white)
-                        if !searchQuery.isEmpty {
-                            Button { searchQuery = "" } label: {
-                                Image(systemName: "xmark.circle.fill").foregroundStyle(.secondary)
-                            }
-                        }
-                    }
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 10)
-                    .background(Color.white.opacity(0.06), in: .rect(cornerRadius: 14))
-                    .padding(.horizontal, 16)
-
-                    // Roles scroll
-                    ScrollView(.horizontal) {
-                        HStack(spacing: 8) {
-                            ForEach(roles, id: \.self) { role in
-                                let isSelected = selectedRole == role
-                                Button {
-                                    selectedRole = role
-                                } label: {
-                                    Text(role == "Tous" ? "Tous" : "\(roleFrenchName(role))s")
-                                        .font(.system(size: 12, weight: isSelected ? .bold : .medium))
-                                        .foregroundStyle(isSelected ? Theme.danger : .secondary)
-                                        .padding(.horizontal, 14)
-                                        .padding(.vertical, 7)
-                                        .background(isSelected ? Theme.danger.opacity(0.18) : Color.white.opacity(0.04), in: .capsule)
-                                }
-                                .buttonStyle(PressScaleStyle())
-                            }
-                        }
-                        .padding(.horizontal, 16)
-                    }
-                    .scrollIndicators(.hidden)
-
-                    // Agents grouped by the live Valorant API role metadata.
-                    if store.isLoading && store.agents.isEmpty {
-                        ProgressView()
-                            .tint(Theme.danger)
-                            .padding(.top, 40)
-                    } else if let errorMessage = store.errorMessage, store.agents.isEmpty {
-                        ContentUnavailableView(
-                            "Impossible de charger les agents",
-                            systemImage: "wifi.exclamationmark",
-                            description: Text(errorMessage)
-                        )
-                        .padding(.top, 36)
-                    } else if filteredAgents.isEmpty {
-                        ContentUnavailableView(
-                            "Aucun agent trouvé",
-                            systemImage: "person.crop.circle",
-                            description: Text("Essayez un autre rôle ou un autre nom.")
-                        )
-                        .padding(.top, 36)
-                    } else {
-                        LazyVStack(alignment: .leading, spacing: 18) {
-                            ForEach(roles.dropFirst().filter { role in
-                                filteredAgents.contains { $0.role?.displayName == role }
-                            }, id: \.self) { role in
-                                let agents = filteredAgents.filter { $0.role?.displayName == role }
-                                if !agents.isEmpty {
-                                    Text(role == "Tous" ? "Tous les agents" : roleFrenchName(role))
-                                        .font(.title3.weight(.bold))
-                                        .foregroundStyle(.secondary)
-                                        .padding(.horizontal, 4)
-
-                                    VStack(spacing: 0) {
-                                        ForEach(agents) { agent in
-                                            agentRowCard(agent: agent)
-                                        }
-                                    }
-                                    .padding(12)
-                                    .background(Color.white.opacity(0.07), in: .rect(cornerRadius: 28))
-                                }
-                            }
-                        }
-                        .padding(.horizontal, 16)
-                        .padding(.bottom, 32)
-                    }
+                    .padding(.top, 10)
+                    .padding(.bottom, 96)
                 }
+                .scrollIndicators(.hidden)
             }
-            .scrollIndicators(.hidden)
         }
-        .navigationTitle("Agents")
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
+        .toolbar(.hidden, for: .navigationBar)
         .task {
+            await store.fetchAgents()
+        }
+        .refreshable {
             await store.fetchAgents()
         }
         .sheet(item: $selectedAgent) { agent in
@@ -713,99 +634,112 @@ struct EvalAgentsView: View {
         }
     }
 
-    private func agentRowCard(agent: ValorantAgentItem) -> some View {
-        Button {
-            selectedAgent = agent
-        } label: {
-            HStack(spacing: 14) {
-                AsyncImage(url: URL(string: agent.displayIcon ?? "")) { phase in
-                    switch phase {
-                    case .success(let image):
-                        image.resizable().scaledToFill()
-                    default:
-                        Color.white.opacity(0.08)
-                    }
-                }
-                .frame(width: 58, height: 58)
-                .clipShape(.rect(cornerRadius: 16))
-
-                Text(agent.displayName)
-                    .font(.title3.weight(.semibold))
-                    .foregroundStyle(.white)
-
-                Spacer()
-                Image(systemName: "chevron.right")
-                    .font(.headline.weight(.semibold))
-                    .foregroundStyle(.secondary)
+    private var topBar: some View {
+        HStack {
+            Button {
+                dismiss()
+            } label: {
+                Circle()
+                    .fill(Color.white.opacity(0.08))
+                    .frame(width: 38, height: 38)
+                    .overlay(
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundStyle(.white)
+                    )
             }
-            .padding(.horizontal, 4)
-            .padding(.vertical, 13)
-            .overlay(alignment: .bottom) {
-                Divider().overlay(Color.white.opacity(0.1)).padding(.leading, 76)
-            }
+            .buttonStyle(PressScaleStyle())
+
+            Spacer()
+
+            Text("Agents")
+                .font(.headline.weight(.bold))
+                .foregroundStyle(.white)
+
+            Spacer()
+
+            Color.clear
+                .frame(width: 38, height: 38)
         }
-        .buttonStyle(.plain)
+        .padding(.horizontal, 16)
+        .padding(.top, 4)
     }
 
-    private func agentGridCard(agent: ValorantAgentItem) -> some View {
-        Button {
-            selectedAgent = agent
-        } label: {
-            VStack(alignment: .leading, spacing: 8) {
-                // Agent portrait frame
-                ZStack(alignment: .bottom) {
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(Color(hex: 0x1A1C24))
-                        .frame(height: 120)
-
-                    if let iconURL = agent.fullPortrait ?? agent.displayIcon, let url = URL(string: iconURL) {
-                        AsyncImage(url: url) { phase in
-                            switch phase {
-                            case .success(let image):
-                                image
-                                    .resizable()
-                                    .interpolation(.high)
-                                    .scaledToFit()
-                                    .frame(height: 120)
-                            default:
-                                Color.clear.frame(height: 120)
-                            }
-                        }
+    private func roleHeader(section: AgentRoleSection) -> some View {
+        HStack(spacing: 8) {
+            if let iconURL = section.iconURL, let url = URL(string: iconURL) {
+                AsyncImage(url: url) { phase in
+                    if let image = phase.image {
+                        image
+                            .resizable()
+                            .renderingMode(.template)
+                            .scaledToFit()
+                            .frame(width: 18, height: 18)
+                    } else {
+                        Image(systemName: "circle.grid.cross")
+                            .font(.system(size: 14))
                     }
                 }
-
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(agent.displayName)
-                        .font(.subheadline.weight(.heavy))
-                        .foregroundStyle(.white)
-
-                    if let role = agent.role {
-                        HStack(spacing: 4) {
-                            if let roleIcon = role.displayIcon, let url = URL(string: roleIcon) {
-                                AsyncImage(url: url) { phase in
-                                    if let img = phase.image {
-                                        img.resizable().scaledToFit().frame(width: 10, height: 10)
-                                    }
-                                }
-                            }
-                            Text(roleFrenchName(role.displayName))
-                                .font(.system(size: 11, weight: .semibold))
-                                .foregroundStyle(Theme.danger)
-                        }
-                    }
-                }
-                .padding(.horizontal, 4)
-                .padding(.bottom, 4)
+                .foregroundStyle(.secondary)
             }
-            .padding(8)
-            .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-            .clipShape(.rect(cornerRadius: Theme.cardRadius))
-            .overlay(
-                RoundedRectangle(cornerRadius: Theme.cardRadius)
-                    .strokeBorder(Color.white.opacity(0.08), lineWidth: 1)
-            )
+
+            Text(section.title)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.secondary)
         }
-        .buttonStyle(PressScaleStyle())
+        .padding(.leading, 4)
+    }
+
+    private func roleCard(section: AgentRoleSection) -> some View {
+        VStack(spacing: 0) {
+            ForEach(Array(section.agents.enumerated()), id: \.element.id) { index, agent in
+                Button {
+                    selectedAgent = agent
+                } label: {
+                    agentRow(agent: agent)
+                }
+                .buttonStyle(.plain)
+
+                if index < section.agents.count - 1 {
+                    Divider()
+                        .overlay(Color.white.opacity(0.06))
+                        .padding(.leading, 70)
+                }
+            }
+        }
+        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+        .clipShape(.rect(cornerRadius: 20))
+    }
+
+    private func agentRow(agent: ValorantAgentItem) -> some View {
+        HStack(spacing: 14) {
+            AsyncImage(url: URL(string: agent.displayIconSmall ?? agent.displayIcon ?? "")) { phase in
+                switch phase {
+                case .success(let image):
+                    image
+                        .resizable()
+                        .scaledToFill()
+                default:
+                    Color(hex: 0x1F222B)
+                        .overlay(Image(systemName: "person.fill").foregroundStyle(.secondary))
+                }
+            }
+            .frame(width: 44, height: 44)
+            .clipShape(.rect(cornerRadius: 12))
+
+            Text(agent.displayName)
+                .font(.subheadline.weight(.heavy))
+                .foregroundStyle(.white)
+
+            Spacer()
+
+            Image(systemName: "chevron.right")
+                .font(.system(size: 11, weight: .semibold))
+                .foregroundStyle(.secondary)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .contentShape(Rectangle())
     }
 
     private func agentDetailSheet(agent: ValorantAgentItem) -> some View {
@@ -815,7 +749,6 @@ struct EvalAgentsView: View {
 
                 ScrollView {
                     VStack(spacing: 16) {
-                        // Bust portrait banner
                         ZStack(alignment: .bottom) {
                             Color(hex: 0x1A1C24).frame(height: 220)
 
@@ -856,46 +789,46 @@ struct EvalAgentsView: View {
                                 .foregroundStyle(.secondary)
                                 .lineSpacing(3)
 
-                            // Abilities
                             VStack(alignment: .leading, spacing: 10) {
                                 Text("Compétences")
-                                    .font(.headline.weight(.heavy))
+                                    .font(.subheadline.weight(.heavy))
                                     .foregroundStyle(.white)
 
                                 ForEach(agent.abilities) { ability in
                                     HStack(alignment: .top, spacing: 12) {
-                                        ZStack {
-                                            RoundedRectangle(cornerRadius: 10)
-                                                .fill(Color.white.opacity(0.06))
-                                                .frame(width: 42, height: 42)
-
-                                            if let iconURL = ability.displayIcon, let url = URL(string: iconURL) {
-                                                AsyncImage(url: url) { phase in
-                                                    if let img = phase.image {
-                                                        img.resizable().scaledToFit().frame(width: 24, height: 24)
-                                                    }
+                                        if let icon = ability.displayIcon, let url = URL(string: icon) {
+                                            AsyncImage(url: url) { phase in
+                                                if let img = phase.image {
+                                                    img.resizable().renderingMode(.template).scaledToFit()
+                                                        .frame(width: 32, height: 32)
+                                                        .foregroundStyle(Theme.danger)
+                                                        .padding(6)
+                                                        .glassEffect(.regular, in: .rect(cornerRadius: 10))
                                                 }
                                             }
                                         }
 
-                                        VStack(alignment: .leading, spacing: 3) {
-                                            HStack {
+                                        VStack(alignment: .leading, spacing: 2) {
+                                            HStack(spacing: 6) {
                                                 Text(ability.displayName)
                                                     .font(.subheadline.weight(.bold))
                                                     .foregroundStyle(.white)
-                                                Spacer()
                                                 Text(ability.slot)
-                                                    .font(.system(size: 10, weight: .heavy))
-                                                    .foregroundStyle(Theme.danger)
+                                                    .font(.caption2.weight(.heavy))
+                                                    .foregroundStyle(.secondary)
+                                                    .padding(.horizontal, 6)
+                                                    .padding(.vertical, 2)
+                                                    .background(Color.white.opacity(0.06), in: .capsule)
                                             }
+
                                             Text(ability.description)
-                                                .font(.caption2)
+                                                .font(.caption)
                                                 .foregroundStyle(.secondary)
                                                 .lineSpacing(2)
                                         }
                                     }
-                                    .padding(12)
-                                    .background(Color.white.opacity(0.03), in: .rect(cornerRadius: 12))
+                                    .padding(10)
+                                    .glassEffect(.regular, in: .rect(cornerRadius: 12))
                                 }
                             }
                         }
@@ -1001,136 +934,76 @@ final class ValorantWeaponsStore {
 }
 
 struct EvalWeaponsView: View {
+    @Environment(\.dismiss) private var dismiss
     @State private var store = ValorantWeaponsStore()
-    @State private var selectedCategory = "Toutes"
-    @State private var searchQuery = ""
     @State private var selectedWeapon: ValorantWeaponItem?
 
-    private let categories = ["Toutes", "Sidearms", "SMGs", "Shotguns", "Rifles", "Sniper Rifles", "Heavy Weapons", "Melee"]
+    private struct WeaponCategorySection: Identifiable {
+        var id: String { categoryKey }
+        let categoryKey: String
+        let title: String
+        let weapons: [ValorantWeaponItem]
+    }
 
-    private func frenchCategory(_ cat: String) -> String {
-        switch cat {
-        case "Sidearms": return "Armes de poing"
-        case "SMGs": return "PM"
-        case "Shotguns": return "Pompes"
-        case "Rifles": return "Fusils"
-        case "Sniper Rifles": return "Snipers"
-        case "Heavy Weapons": return "Lourdes"
-        case "Melee": return "Mêlée"
-        default: return cat
+    private var categorySections: [WeaponCategorySection] {
+        let order = ["Rifles", "Sidearms", "SMGs", "Shotguns", "Sniper Rifles", "Heavy Weapons", "Melee"]
+        return order.compactMap { key in
+            let matching = store.weapons.filter { $0.cleanCategory.caseInsensitiveCompare(key) == .orderedSame }
+            guard !matching.isEmpty else { return nil }
+            return WeaponCategorySection(
+                categoryKey: key,
+                title: frenchCategory(key),
+                weapons: matching.sorted { ($0.shopData?.cost ?? 0) > ($1.shopData?.cost ?? 0) }
+            )
         }
     }
 
-    private var filteredWeapons: [ValorantWeaponItem] {
-        var list = store.weapons
-        if selectedCategory != "Toutes" {
-            list = list.filter { $0.cleanCategory.caseInsensitiveCompare(selectedCategory) == .orderedSame }
+    private func frenchCategory(_ cat: String) -> String {
+        switch cat.lowercased() {
+        case "rifles": return "Fusils"
+        case "sidearms": return "Armes de poing"
+        case "smgs": return "PM"
+        case "shotguns": return "Pompes"
+        case "sniper rifles": return "Snipers"
+        case "heavy weapons": return "Lourdes"
+        case "melee": return "Mêlée"
+        default: return cat
         }
-        if !searchQuery.trimmingCharacters(in: .whitespaces).isEmpty {
-            list = list.filter { $0.displayName.localizedCaseInsensitiveContains(searchQuery) }
-        }
-        return list
     }
 
     var body: some View {
         ZStack {
             Theme.bg.ignoresSafeArea()
 
-            ScrollView {
-                VStack(spacing: 16) {
-                    // Header
-                    HStack {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Arsenal de Valorant")
-                                .font(.title2.weight(.heavy))
-                                .foregroundStyle(.white)
-                            Text("\(filteredWeapons.count) armes répertoriées")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
+            VStack(spacing: 0) {
+                topBar
+
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 18) {
+                        ForEach(categorySections) { section in
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text(section.title)
+                                    .font(.subheadline.weight(.semibold))
+                                    .foregroundStyle(.secondary)
+                                    .padding(.leading, 4)
+
+                                categoryCard(section: section)
+                            }
                         }
-                        Spacer()
                     }
                     .padding(.horizontal, 16)
-                    .padding(.top, 4)
-
-                    // Search bar
-                    HStack(spacing: 10) {
-                        Image(systemName: "magnifyingglass")
-                            .font(.system(size: 15))
-                            .foregroundStyle(.secondary)
-                        TextField("Rechercher une arme...", text: $searchQuery)
-                            .font(.subheadline)
-                            .foregroundStyle(.white)
-                        if !searchQuery.isEmpty {
-                            Button { searchQuery = "" } label: {
-                                Image(systemName: "xmark.circle.fill").foregroundStyle(.secondary)
-                            }
-                        }
-                    }
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 10)
-                    .background(Color.white.opacity(0.06), in: .rect(cornerRadius: 14))
-                    .padding(.horizontal, 16)
-
-                    // Category filters
-                    ScrollView(.horizontal) {
-                        HStack(spacing: 8) {
-                            ForEach(categories, id: \.self) { cat in
-                                let isSelected = selectedCategory == cat
-                                Button {
-                                    selectedCategory = cat
-                                } label: {
-                                    Text(cat == "Toutes" ? "Toutes" : frenchCategory(cat))
-                                        .font(.system(size: 12, weight: isSelected ? .bold : .medium))
-                                        .foregroundStyle(isSelected ? Theme.danger : .secondary)
-                                        .padding(.horizontal, 14)
-                                        .padding(.vertical, 7)
-                                        .background(isSelected ? Theme.danger.opacity(0.18) : Color.white.opacity(0.04), in: .capsule)
-                                }
-                                .buttonStyle(PressScaleStyle())
-                            }
-                        }
-                        .padding(.horizontal, 16)
-                    }
-                    .scrollIndicators(.hidden)
-
-                    // Weapons list
-                    if store.isLoading && store.weapons.isEmpty {
-                        ProgressView()
-                            .tint(Theme.danger)
-                            .padding(.top, 40)
-                    } else if let errorMessage = store.errorMessage, store.weapons.isEmpty {
-                        ContentUnavailableView(
-                            "Impossible de charger les armes",
-                            systemImage: "wifi.exclamationmark",
-                            description: Text(errorMessage)
-                        )
-                        .padding(.top, 36)
-                    } else if filteredWeapons.isEmpty {
-                        ContentUnavailableView(
-                            "Aucune arme trouvée",
-                            systemImage: "scope",
-                            description: Text("Essayez une autre catégorie ou un autre nom.")
-                        )
-                        .padding(.top, 36)
-                    } else {
-                        LazyVStack(spacing: 0) {
-                            ForEach(filteredWeapons) { weapon in
-                                weaponRow(weapon: weapon)
-                            }
-                        }
-                        .padding(12)
-                        .background(Color.white.opacity(0.07), in: .rect(cornerRadius: 28))
-                        .padding(.horizontal, 16)
-                        .padding(.bottom, 32)
-                    }
+                    .padding(.top, 10)
+                    .padding(.bottom, 96)
                 }
+                .scrollIndicators(.hidden)
             }
-            .scrollIndicators(.hidden)
         }
-        .navigationTitle("Armes")
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
+        .toolbar(.hidden, for: .navigationBar)
         .task {
+            await store.fetchWeapons()
+        }
+        .refreshable {
             await store.fetchWeapons()
         }
         .sheet(item: $selectedWeapon) { weapon in
@@ -1138,46 +1011,97 @@ struct EvalWeaponsView: View {
         }
     }
 
-    private func weaponRow(weapon: ValorantWeaponItem) -> some View {
-        Button {
-            selectedWeapon = weapon
-        } label: {
-            HStack(spacing: 14) {
-                AsyncImage(url: URL(string: weapon.displayIcon ?? "")) { phase in
-                    switch phase {
-                    case .success(let image):
-                        image.resizable().scaledToFit()
-                    default:
-                        Image(systemName: "scope").foregroundStyle(.secondary)
-                    }
-                }
-                .frame(width: 118, height: 54)
-
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(weapon.displayName)
-                        .font(.title3.weight(.semibold))
-                        .foregroundStyle(.white)
-                    Text(frenchCategory(weapon.cleanCategory))
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-                Spacer()
-                Image(systemName: "chevron.right")
-                    .font(.headline.weight(.semibold))
-                    .foregroundStyle(.secondary)
+    private var topBar: some View {
+        HStack {
+            Button {
+                dismiss()
+            } label: {
+                Circle()
+                    .fill(Color.white.opacity(0.08))
+                    .frame(width: 38, height: 38)
+                    .overlay(
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundStyle(.white)
+                    )
             }
-            .padding(.horizontal, 4)
-            .padding(.vertical, 15)
-            .overlay(alignment: .bottom) {
-                if weapon.id != filteredWeapons.last?.id {
-                    Divider().overlay(Color.white.opacity(0.1)).padding(.leading, 136)
+            .buttonStyle(PressScaleStyle())
+
+            Spacer()
+
+            Text("Armes")
+                .font(.headline.weight(.bold))
+                .foregroundStyle(.white)
+
+            Spacer()
+
+            Color.clear
+                .frame(width: 38, height: 38)
+        }
+        .padding(.horizontal, 16)
+        .padding(.top, 4)
+    }
+
+    private func categoryCard(section: WeaponCategorySection) -> some View {
+        VStack(spacing: 0) {
+            ForEach(Array(section.weapons.enumerated()), id: \.element.id) { index, weapon in
+                Button {
+                    selectedWeapon = weapon
+                } label: {
+                    weaponRow(weapon: weapon)
+                }
+                .buttonStyle(.plain)
+
+                if index < section.weapons.count - 1 {
+                    Divider()
+                        .overlay(Color.white.opacity(0.06))
+                        .padding(.leading, 90)
                 }
             }
         }
-        .buttonStyle(.plain)
+        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+        .clipShape(.rect(cornerRadius: 20))
     }
 
-    private func weaponDetailSheet(weapon: ValorantWeaponItem) -> some View {
+    private func weaponRow(weapon: ValorantWeaponItem) -> some View {
+        HStack(spacing: 14) {
+            AsyncImage(url: URL(string: weapon.displayIcon ?? "")) { phase in
+                switch phase {
+                case .success(let image):
+                    image
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 64, height: 32)
+                default:
+                    Color(hex: 0x1F222B)
+                        .frame(width: 64, height: 32)
+                        .clipShape(.rect(cornerRadius: 8))
+                }
+            }
+
+            Text(weapon.displayName)
+                .font(.subheadline.weight(.heavy))
+                .foregroundStyle(.white)
+
+            Spacer()
+
+            if let cost = weapon.shopData?.cost, cost > 0 {
+                Text("\(cost)")
+                    .font(.caption.monospacedDigit().weight(.semibold))
+                    .foregroundStyle(.secondary)
+            }
+
+            Image(systemName: "chevron.right")
+                .font(.system(size: 11, weight: .semibold))
+                .foregroundStyle(.secondary)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .contentShape(Rectangle())
+    }
+
+
+        private func weaponDetailSheet(weapon: ValorantWeaponItem) -> some View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {

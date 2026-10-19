@@ -284,7 +284,7 @@ final class RiotLoadoutModel {
 private enum LUI {
     static let card = Color(hex: 0x1C1C1E)
     static let secondary = Color(hex: 0x8E8E93)
-    static let accent = Color(hex: 0xFD5B68)
+    static let accent = EvalAccent.color
 }
 
 private struct LoadoutScreen<Content: View>: View {

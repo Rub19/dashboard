@@ -185,7 +185,7 @@ struct EvalPurchaseHistoryView: View {
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 16)
-                        .background(Color(hex: 0xFD5B68), in: .capsule)
+                        .background(EvalAccent.color, in: .capsule)
                 }
                 .buttonStyle(.plain)
                 .padding(.horizontal, 16)
@@ -240,9 +240,9 @@ struct EvalPurchaseHistoryView: View {
             HStack(spacing: 12) {
                 Image(systemName: "creditcard.fill")
                     .font(.system(size: 18))
-                    .foregroundStyle(Color(hex: 0xFD5B68))
+                    .foregroundStyle(EvalAccent.color)
                     .frame(width: 46, height: 46)
-                    .background(Color(hex: 0xFD5B68).opacity(0.15), in: .circle)
+                    .background(EvalAccent.color.opacity(0.15), in: .circle)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(payment.methodName).font(.system(size: 18, weight: .semibold)).foregroundStyle(.white)
                     Text("\(payment.game) · \(payment.date?.formatted(date: .abbreviated, time: .shortened) ?? "—")")
@@ -281,7 +281,7 @@ struct EvalPurchaseHistoryView: View {
                 Spacer()
                 Text(row.amount >= 0 ? "+\(row.amount.formatted())" : row.amount.formatted())
                     .font(.system(size: 18, weight: .bold).monospacedDigit())
-                    .foregroundStyle(row.amount >= 0 ? Color(hex: 0x35C26B) : Color(hex: 0xFD5B68))
+                    .foregroundStyle(row.amount >= 0 ? Color(hex: 0x35C26B) : EvalAccent.color)
             }
             .padding(14)
             .background(Color(hex: 0x161618), in: .rect(cornerRadius: 18))

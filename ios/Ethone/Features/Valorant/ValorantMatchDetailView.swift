@@ -25,8 +25,8 @@ enum PlayerSortCriteria: String, CaseIterable, Identifiable {
 
 private enum EvalPalette {
     static let ally = Color(hex: 0x2DD4BF)
-    static let enemy = Color(hex: 0xFD5B68)
-    static let accent = Color(hex: 0xFD5B68)
+    static let enemy = EvalAccent.color
+    static let accent = EvalAccent.color
     static let card = Color(hex: 0x1C1C1E)
     static let chip = Color(hex: 0x2C2C2E)
     static let secondary = Color(hex: 0x8E8E93)
@@ -991,7 +991,7 @@ struct EvalRoundTimelineView: View {
                     }
                 } header: {
                     HStack {
-                        Text("Manche \(round.n)").foregroundStyle(round.winner == team ? Color(hex: 0x2DD4BF) : Color(hex: 0xFD5B68))
+                        Text("Manche \(round.n)").foregroundStyle(round.winner == team ? Color(hex: 0x2DD4BF) : EvalAccent.color)
                         Spacer()
                         Text(Self.endLabel(round.end))
                     }
@@ -1016,7 +1016,7 @@ struct EvalRoundTimelineView: View {
                 .frame(width: 34, alignment: .leading)
             icon(killer?.agentIconURL)
             Text(killer?.name ?? "?").font(.system(size: 16, weight: .semibold))
-                .foregroundStyle(allyKill ? Color(hex: 0x2DD4BF) : Color(hex: 0xFD5B68)).lineLimit(1)
+                .foregroundStyle(allyKill ? Color(hex: 0x2DD4BF) : EvalAccent.color).lineLimit(1)
             AsyncImage(url: EvalAssets.weaponIcon(kill.w)) { $0.image?.resizable().scaledToFit() }
                 .frame(width: 51, height: 16)
             icon(victim?.agentIconURL)

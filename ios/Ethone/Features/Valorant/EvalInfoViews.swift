@@ -68,7 +68,7 @@ struct EvalFAQView: View {
                     } label: {
                         Text(item.q).font(.system(size: 20, weight: .semibold)).foregroundStyle(.white).multilineTextAlignment(.leading)
                     }
-                    .tint(Color(hex: 0xFD5B68))
+                    .tint(EvalAccent.color)
                     .padding(18)
                     .background(Color(hex: 0x1C1C1E), in: .rect(cornerRadius: 20))
                 }
@@ -96,11 +96,11 @@ struct EvalWebLoginDataView: View {
                                  text: "Les cookies de la page de connexion Riot sont gardés pour vous reconnecter sans ressaisir votre mot de passe. Supprimez-les pour changer de compte ou résoudre un problème de connexion.")
                 Toggle(isOn: $clearOnOpen) {
                     HStack(spacing: 14) {
-                        Image(systemName: "arrow.3.trianglepath").font(.system(size: 23)).foregroundStyle(Color(hex: 0xFD5B68)).frame(width: 28)
+                        Image(systemName: "arrow.3.trianglepath").font(.system(size: 23)).foregroundStyle(EvalAccent.color).frame(width: 28)
                         Text("Effacer les données de connexion Web à l’ouverture").font(.system(size: 20)).foregroundStyle(.white)
                     }
                 }
-                .tint(Color(hex: 0xFD5B68))
+                .tint(EvalAccent.color)
                 .padding(18)
                 .background(Color(hex: 0x1C1C1E), in: .rect(cornerRadius: 22))
                 Text("Efface les cookies Riot à chaque ouverture de l’écran de connexion. Votre compte reste connecté jusqu’à l’expiration de la session.")
@@ -110,7 +110,7 @@ struct EvalWebLoginDataView: View {
                 } label: {
                     Label(cleared ? "Données effacées" : "Effacer les données de connexion Web immédiatement", systemImage: cleared ? "checkmark" : "trash")
                         .font(.system(size: 20))
-                        .foregroundStyle(Color(hex: 0xFD5B68))
+                        .foregroundStyle(EvalAccent.color)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(18)
                         .background(Color(hex: 0x1C1C1E), in: .rect(cornerRadius: 22))

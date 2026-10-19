@@ -389,8 +389,9 @@ final class ValorantStore {
     /// Après la connexion Riot : le compte connecté devient le compte suivi s'il n'y en a pas.
     func linkRiot(accessToken: String, idToken: String, expiresIn: Int) async {
         await riot.complete(accessToken: accessToken, idToken: idToken, expiresIn: expiresIn)
-        if let creds = riot.credentials, !isConfigured, !creds.gameName.isEmpty {
+        if let creds = riot.credentials, !creds.gameName.isEmpty {
             save(name: creds.gameName, tag: creds.tagLine, apiKey: apiKey)
+            await refresh()
         }
         await refreshRiot()
     }

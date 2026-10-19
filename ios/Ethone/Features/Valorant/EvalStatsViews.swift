@@ -10,7 +10,7 @@ private enum EvalUI {
     static let card = Color(hex: 0x1C1C1E)
     static let tile = Color(hex: 0x2A2A2E)
     static let secondary = Color(hex: 0x8E8E93)
-    static let accent = Color(hex: 0xFD5B68)
+    static let accent = EvalAccent.color
     static let win = Color(hex: 0x7DC0A7)
     static let loss = Color(hex: 0xE0665C)
     static let head = Color(hex: 0xEDEBB4)
@@ -805,7 +805,7 @@ struct EvalSessionRecapSheet: View {
     @State private var avatar: UIImage?
     @State private var rendered: UIImage?
 
-    private let accents: [Color] = [Color(hex: 0xEDEBB4), Color(hex: 0xFD5B68), Color(hex: 0xE8C15A), Color(hex: 0x5AA8F0)]
+    private let accents: [Color] = [Color(hex: 0xEDEBB4), EvalAccent.color, Color(hex: 0xE8C15A), Color(hex: 0x5AA8F0)]
     private var stats: EvalStatsEngine { EvalStatsEngine(matches: matches, puuid: puuid) }
 
     var body: some View {

@@ -920,7 +920,7 @@ struct EvalAgentDetailView: View {
 
                             if isSelected {
                                 Circle()
-                                    .stroke(Color(hex: 0xFD5B68), lineWidth: 2.5)
+                                    .stroke(EvalAccent.color, lineWidth: 2.5)
                                     .frame(width: 64, height: 64)
                             }
 
@@ -931,7 +931,7 @@ struct EvalAgentDetailView: View {
                                             .renderingMode(.template)
                                             .scaledToFit()
                                             .frame(width: 32, height: 32)
-                                            .foregroundStyle(isSelected ? Color(hex: 0xFD5B68) : Color.white.opacity(0.45))
+                                            .foregroundStyle(isSelected ? EvalAccent.color : Color.white.opacity(0.45))
                                     }
                                 }
                             }
@@ -1270,7 +1270,7 @@ struct EvalWeaponsView: View {
                             .renderingMode(.template)
                             .scaledToFit()
                             .frame(height: 22)
-                            .foregroundStyle(Color(hex: 0xFD5B68))
+                            .foregroundStyle(EvalAccent.color)
                     }
                 }
                 .frame(width: 80, height: 26, alignment: .trailing)
@@ -2471,8 +2471,8 @@ struct EvalPlayerSettingsView: View {
                     } label: {
                         Circle().fill(Color(hex: 0x1C1C1E)).frame(width: 51, height: 51)
                             .overlay(Group {
-                                if working { ProgressView().tint(Color(hex: 0xFD5B68)) } else {
-                                    Image(systemName: "plus").font(.system(size: 21, weight: .semibold)).foregroundStyle(Color(hex: 0xFD5B68))
+                                if working { ProgressView().tint(EvalAccent.color) } else {
+                                    Image(systemName: "plus").font(.system(size: 21, weight: .semibold)).foregroundStyle(EvalAccent.color)
                                 }
                             })
                     }
@@ -2482,13 +2482,13 @@ struct EvalPlayerSettingsView: View {
                 .padding(.top, 4)
 
                 VStack(alignment: .leading, spacing: 10) {
-                    Image(systemName: "slider.horizontal.below.square.and.square.filled").font(.system(size: 41)).foregroundStyle(Color(hex: 0xFD5B68))
+                    Image(systemName: "slider.horizontal.below.square.and.square.filled").font(.system(size: 41)).foregroundStyle(EvalAccent.color)
                     Text("Snapshot des paramètres du joueur").font(.system(size: 25, weight: .bold)).foregroundStyle(.white)
                     Text("Enregistrer les paramètres en jeu du compte Riot connecté sous forme d’instantané, puis les appliquer à n’importe quel compte ultérieurement.")
                         .font(.system(size: 18)).foregroundStyle(Color(hex: 0x8E8E93))
                     if !store.riot.isLinked {
                         Button("Connecter mon compte Riot") { showingLogin = true }
-                            .font(.system(size: 17, weight: .semibold)).foregroundStyle(Color(hex: 0xFD5B68))
+                            .font(.system(size: 17, weight: .semibold)).foregroundStyle(EvalAccent.color)
                     }
                 }
                 .padding(20)
@@ -2513,8 +2513,8 @@ struct EvalPlayerSettingsView: View {
                         }
                         Spacer()
                         Button { toApply = snap } label: {
-                            Circle().fill(Color(hex: 0xFD5B68).opacity(0.25)).frame(width: 41, height: 41)
-                                .overlay(Image(systemName: "arrow.up.right").font(.system(size: 17, weight: .bold)).foregroundStyle(Color(hex: 0xFD5B68)))
+                            Circle().fill(EvalAccent.color.opacity(0.25)).frame(width: 41, height: 41)
+                                .overlay(Image(systemName: "arrow.up.right").font(.system(size: 17, weight: .bold)).foregroundStyle(EvalAccent.color))
                         }
                         .buttonStyle(.plain)
                         .disabled(!store.riot.isLinked || working)

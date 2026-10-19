@@ -36,7 +36,7 @@ struct EvalPlayerProfileView: View {
                     careerCard(player)
                     NavigationLink { EvalStatisticsView(player: player) } label: {
                         HStack(spacing: 12) {
-                            Image(systemName: "chart.line.uptrend.xyaxis").foregroundStyle(Color(hex: 0xFD5B68))
+                            Image(systemName: "chart.line.uptrend.xyaxis").foregroundStyle(EvalAccent.color)
                             VStack(alignment: .leading, spacing: 2) {
                                 Text("Voir les statistiques").font(.system(size: 18, weight: .bold)).foregroundStyle(.white)
                                 Text("Taux de victoire, K/D et plus").font(.system(size: 15)).foregroundStyle(Color(hex: 0x8E8E93))
@@ -98,7 +98,7 @@ struct EvalPlayerProfileView: View {
                 }
             } label: {
                 Circle().fill(Color(hex: 0x1C1C1E)).frame(width: 51, height: 51)
-                    .overlay(Image(systemName: "ellipsis").font(.system(size: 20, weight: .bold)).foregroundStyle(Color(hex: 0xFD5B68)))
+                    .overlay(Image(systemName: "ellipsis").font(.system(size: 20, weight: .bold)).foregroundStyle(EvalAccent.color))
             }
         }
         .padding(.top, 4)
@@ -230,7 +230,7 @@ struct EvalCompactMatchRow: View {
             VStack(alignment: .trailing, spacing: 3) {
                 Text("\(match.teamRounds) — \(match.opponentRounds)")
                     .font(.system(size: 17, weight: .bold).monospacedDigit())
-                    .foregroundStyle(match.won ? Color(hex: 0x35C26B) : Color(hex: 0xFD5B68))
+                    .foregroundStyle(match.won ? Color(hex: 0x35C26B) : EvalAccent.color)
                 Text("\(match.kills) / \(match.deaths) / \(match.assists)").font(.system(size: 14).monospacedDigit()).foregroundStyle(Color(hex: 0x8E8E93))
             }
             Image(systemName: "chevron.right").font(.system(size: 14, weight: .semibold)).foregroundStyle(Color(hex: 0x8E8E93))
@@ -298,7 +298,7 @@ struct EvalWishlistView: View {
                         }
                         Spacer()
                         Button { store.toggleWish(id: item.id, name: item.name, icon: item.icon) } label: {
-                            Image(systemName: "heart.fill").foregroundStyle(Color(hex: 0xFD5B68))
+                            Image(systemName: "heart.fill").foregroundStyle(EvalAccent.color)
                         }
                         .buttonStyle(.plain)
                     }

@@ -26,6 +26,8 @@ enum RiotAuthURL {
 
 /// WebView de connexion Riot (cookies persistants : la reconnexion suivante est silencieuse).
 struct RiotLoginView: UIViewRepresentable {
+    /// Efface la session Riot du WebView avant d'ouvrir (ajout d'un autre compte).
+    var fresh = false
     var onTokens: (String, String, Int) -> Void
 
     func makeCoordinator() -> Coordinator { Coordinator(onTokens: onTokens) }
@@ -35,7 +37,7 @@ struct RiotLoginView: UIViewRepresentable {
         config.websiteDataStore = .default()
         let view = WKWebView(frame: .zero, configuration: config)
         view.navigationDelegate = context.coordinator
-        if UserDefaults.standard.bool(forKey: "eval.clearWebLoginOnOpen") {
+        if fresh || UserDefaults.standard.bool(forKey: "eval.clearWebLoginOnOpen") {
             Task { @MainActor in
                 await RiotWebData.clear()
                 view.load(URLRequest(url: RiotAuthURL.authorize))

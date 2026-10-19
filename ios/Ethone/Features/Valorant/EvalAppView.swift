@@ -146,6 +146,7 @@ struct EvalAppView: View {
 
     @State private var selectedTab: EvalTab = .profile
     @State private var selectedMatch: ValorantMatch?
+    @AppStorage(EvalAccent.key) private var accentHex = Int(EvalAccent.defaultHex)
 
     private var store: ValorantStore { model.valorant }
 
@@ -178,7 +179,8 @@ struct EvalAppView: View {
                 NavigationStack { EvalSettingsView().evalRoot() }
             }
         }
-        .tint(Color(hex: 0xFD5B68))
+        .tint(Color(hex: UInt32(truncatingIfNeeded: accentHex)))
+        .id(accentHex)
         .tabBarMinimizeBehavior(.onScrollDown)
         .sensoryFeedback(.selection, trigger: selectedTab)
         .dynamicTypeSize(.xLarge)
@@ -200,6 +202,7 @@ private struct EvalRootModifier: ViewModifier {
         content
             .toolbar(.hidden, for: .navigationBar)
             .background(Color.black.ignoresSafeArea())
+            .containerBackground(Color.black, for: .navigation)
             .overlay(alignment: .leading) {
                 Color.clear
                     .frame(width: 22)
@@ -245,6 +248,7 @@ struct EvalProfileView: View {
     @Environment(\.dismiss) private var dismiss
     @Binding var selectedMatch: ValorantMatch?
 
+    @State private var showingRiotLogin = false
     @State private var showingAccountSheet = false
     @State private var showingSessionRecap = false
     @AppStorage("eval.autoSyncMatches") private var autoSync = true
@@ -330,10 +334,11 @@ struct EvalProfileView: View {
                 EvalLockedView(
                     title: "Non connecté",
                     message: "Vous devez vous connecter pour accéder à cela.",
-                    onAddAccount: { showingAccountSheet = true }
+                    onAddAccount: { showingRiotLogin = true }
                 )
             }
         }
+        .sheet(isPresented: $showingRiotLogin) { EvalRiotLoginSheet() }
         .sheet(isPresented: $showingAccountSheet) {
             ValorantSettingsSheet()
         }
@@ -395,7 +400,7 @@ struct EvalProfileView: View {
             } label: {
                 Image(systemName: "desktopcomputer")
                     .font(.system(size: 18, weight: .semibold))
-                    .foregroundStyle(Color(hex: 0xFD5B68))
+                    .foregroundStyle(EvalAccent.color)
                     .frame(width: 51, height: 51)
                     .background(Color(hex: 0x161618), in: .circle)
             }
@@ -415,7 +420,7 @@ struct EvalProfileView: View {
                 HStack(spacing: 12) {
                     Image(systemName: "line.3.horizontal")
                         .font(.system(size: 17, weight: .bold))
-                        .foregroundStyle(Color(hex: 0xFD5B68))
+                        .foregroundStyle(EvalAccent.color)
                     Image(systemName: "ellipsis")
                         .font(.system(size: 17, weight: .bold))
                         .foregroundStyle(.white)
@@ -709,7 +714,7 @@ struct EvalProfileView: View {
                     ForEach(recentActs) { season in
                         actBadge(name: store.actName(season.season).isEmpty ? season.short.uppercased() : store.actName(season.season),
                                  icon: "circle.fill",
-                                 color: season.winRate >= 0.5 ? Color(hex: 0x22C55E) : Color(hex: 0xFD5B68),
+                                 color: season.winRate >= 0.5 ? Color(hex: 0x22C55E) : EvalAccent.color,
                                  tier: season.endTier)
                     }
                 }
@@ -755,7 +760,7 @@ struct EvalProfileView: View {
             VStack(alignment: .leading, spacing: 14) {
                 Image(systemName: "archivebox.fill")
                     .font(.system(size: 23))
-                    .foregroundStyle(Color(hex: 0xFD5B68))
+                    .foregroundStyle(EvalAccent.color)
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Récap de session")
@@ -783,7 +788,7 @@ struct EvalProfileView: View {
                 VStack(alignment: .leading, spacing: 14) {
                     Image(systemName: "chart.line.uptrend.xyaxis")
                         .font(.system(size: 23))
-                        .foregroundStyle(Color(hex: 0xFD5B68))
+                        .foregroundStyle(EvalAccent.color)
 
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Voir les statistiques")
@@ -906,7 +911,7 @@ struct EvalProfileView: View {
                         .foregroundStyle(.white)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 7)
-                        .background(match.won ? Color(hex: 0x35B86B) : Color(hex: 0xFD5B68), in: .capsule)
+                        .background(match.won ? Color(hex: 0x35B86B) : EvalAccent.color, in: .capsule)
                         .padding(.trailing, 14)
                 }
             }
@@ -924,7 +929,7 @@ struct EvalProfileView: View {
                     if let change = store.mmr.history.first(where: { $0.match.lowercased() == match.id.lowercased() })?.change {
                         Text(change >= 0 ? "+\(change)" : "\(change)")
                             .font(.system(size: 15, weight: .bold).monospacedDigit())
-                            .foregroundStyle(change >= 0 ? Color(hex: 0x35C26B) : Color(hex: 0xFD5B68))
+                            .foregroundStyle(change >= 0 ? Color(hex: 0x35C26B) : EvalAccent.color)
                     }
                     Label("\(match.teamRounds) — \(match.opponentRounds)", systemImage: "flag.checkered")
                         .font(.system(size: 16, weight: .medium).monospacedDigit())
@@ -1094,7 +1099,7 @@ struct EvalCareerSummaryView: View {
                     } label: {
                         Text(queue)
                             .font(.system(size: 17, weight: selected ? .bold : .medium))
-                            .foregroundStyle(selected ? Color(hex: 0xFD5B68) : Color(hex: 0x8E8E93))
+                            .foregroundStyle(selected ? EvalAccent.color : Color(hex: 0x8E8E93))
                             .padding(.horizontal, 18)
                             .padding(.vertical, 10)
                             .background(selected ? Color(hex: 0x2C2C2E) : .clear, in: .capsule)
@@ -1252,7 +1257,7 @@ struct EvalCareerSummaryView: View {
 
     private func ratioCard(wins: Int, total: Int) -> some View {
         let rate = total == 0 ? 0 : Double(wins) / Double(total)
-        let color = rate >= 0.5 ? Color(hex: 0x35C26B) : Color(hex: 0xFD5B68)
+        let color = rate >= 0.5 ? Color(hex: 0x35C26B) : EvalAccent.color
         return HStack(spacing: 0) {
             VStack(spacing: 4) {
                 Text(percent(rate)).font(.system(size: 30, weight: .heavy).monospacedDigit()).foregroundStyle(color)
@@ -1355,7 +1360,7 @@ struct EvalDailyOfferCard: View {
                     if wished {
                         Image(systemName: "heart.fill")
                             .font(.system(size: 15, weight: .semibold))
-                            .foregroundStyle(Color(hex: 0xFD5B68))
+                            .foregroundStyle(EvalAccent.color)
                     }
                     Image(systemName: "chevron.right")
                         .font(.system(size: 15, weight: .semibold))
@@ -1864,7 +1869,7 @@ struct EvalGameView: View {
                         } label: {
                             Image(systemName: "arrow.clockwise")
                                 .font(.system(size: 16, weight: .bold))
-                                .foregroundStyle(Color(hex: 0xFD5B68))
+                                .foregroundStyle(EvalAccent.color)
                         }
                         .buttonStyle(.plain)
                     }
@@ -1899,7 +1904,7 @@ struct EvalGameView: View {
                         } label: {
                             Image(systemName: "arrow.clockwise")
                                 .font(.system(size: 16, weight: .bold))
-                                .foregroundStyle(Color(hex: 0xFD5B68))
+                                .foregroundStyle(EvalAccent.color)
                         }
                         .buttonStyle(.plain)
                     }
@@ -2076,7 +2081,7 @@ struct EvalGameView: View {
                 if !wished.isEmpty {
                     Label("\(wished.map(\.name).joined(separator: ", ")) \(wished.count > 1 ? "sont" : "est") dans votre boutique !", systemImage: "heart.fill")
                         .font(.system(size: 16, weight: .semibold))
-                        .foregroundStyle(Color(hex: 0xFD5B68))
+                        .foregroundStyle(EvalAccent.color)
                         .padding(.horizontal, 4)
                 }
                 ForEach(store.storeOffers) { offer in
@@ -2093,7 +2098,7 @@ struct EvalGameView: View {
                 HStack {
                     Image(systemName: "heart")
                         .font(.system(size: 18))
-                        .foregroundStyle(Color(hex: 0xFD5B68))
+                        .foregroundStyle(EvalAccent.color)
                         .frame(width: 24)
                     Text("Liste de souhaits")
                         .font(.system(size: 18, weight: .medium))
@@ -2120,7 +2125,7 @@ struct EvalGameView: View {
                     HStack {
                         Image(systemName: "clock.arrow.circlepath")
                             .font(.system(size: 18))
-                            .foregroundStyle(Color(hex: 0xFD5B68))
+                            .foregroundStyle(EvalAccent.color)
                             .frame(width: 24)
                         Text("Historique de la boutique")
                             .font(.system(size: 18, weight: .medium))
@@ -2146,7 +2151,7 @@ struct EvalGameView: View {
         HStack(spacing: 12) {
             Image(systemName: "hand.raised.fill")
                 .font(.system(size: 18))
-                .foregroundStyle(Color(hex: 0xFD5B68))
+                .foregroundStyle(EvalAccent.color)
                 .frame(width: 24)
 
             Text("Paramètres de confidentialité")
@@ -2177,7 +2182,7 @@ struct EvalGameView: View {
         HStack(spacing: 12) {
             Image(systemName: icon)
                 .font(.system(size: 18))
-                .foregroundStyle(Color(hex: 0xFD5B68))
+                .foregroundStyle(EvalAccent.color)
                 .frame(width: 24)
 
             Text(title)
@@ -2208,22 +2213,22 @@ struct EvalGameView: View {
             HStack(spacing: 4) {
                 Text(title)
                     .font(.system(size: 16, weight: isSelected ? .bold : .medium))
-                    .foregroundStyle(isSelected ? Color(hex: 0xFD5B68) : Color(hex: 0x8E8E93))
+                    .foregroundStyle(isSelected ? EvalAccent.color : Color(hex: 0x8E8E93))
 
                 if hasChevron {
                     Image(systemName: "chevron.right")
                         .font(.system(size: 12, weight: .bold))
-                        .foregroundStyle(isSelected ? Color(hex: 0xFD5B68) : Color(hex: 0x8E8E93))
+                        .foregroundStyle(isSelected ? EvalAccent.color : Color(hex: 0x8E8E93))
                 }
             }
             .padding(.horizontal, 14)
             .padding(.vertical, 8)
             .background(
-                isSelected ? Color(hex: 0xFD5B68).opacity(0.16) : Color(hex: 0x161618),
+                isSelected ? EvalAccent.color.opacity(0.16) : Color(hex: 0x161618),
                 in: .capsule
             )
             .overlay(
-                Capsule().strokeBorder(isSelected ? Color(hex: 0xFD5B68).opacity(0.4) : Color.clear, lineWidth: 1)
+                Capsule().strokeBorder(isSelected ? EvalAccent.color.opacity(0.4) : Color.clear, lineWidth: 1)
             )
         }
         .buttonStyle(.plain)
@@ -2245,7 +2250,7 @@ struct EvalGameView: View {
                     HStack(spacing: 8) {
                         Image(systemName: "chevron.right")
                             .font(.system(size: 13, weight: .bold))
-                            .foregroundStyle(Color(hex: 0xFD5B68))
+                            .foregroundStyle(EvalAccent.color)
                             .rotationEffect(.degrees(isExpanded.wrappedValue ? 90 : 0))
 
                         Text(title)
@@ -2351,7 +2356,7 @@ struct EvalGameView: View {
                             Text("+\(mission.xp.formatted()) XP").font(.system(size: 15)).foregroundStyle(Color(hex: 0x8E8E93))
                         }
                         ProgressView(value: Double(min(mission.progress, mission.target)), total: Double(max(1, mission.target)))
-                            .tint(Color(hex: 0xFD5B68))
+                            .tint(EvalAccent.color)
                         Text("\(mission.progress.formatted()) / \(mission.target.formatted())").font(.system(size: 14)).foregroundStyle(Color(hex: 0x8E8E93))
                     }
                     .padding(.top, 4)
@@ -2410,7 +2415,7 @@ struct EvalGameView: View {
                             Image(systemName: "chevron.right")
                                 .font(.system(size: 13, weight: .semibold))
                         }
-                        .foregroundStyle(Color(hex: 0xFD5B68))
+                        .foregroundStyle(EvalAccent.color)
                     }
                     .buttonStyle(.plain)
                 }
@@ -2419,7 +2424,7 @@ struct EvalGameView: View {
                     ZStack(alignment: .leading) {
                         Capsule().fill(Color.white.opacity(0.08)).frame(height: 6)
                         Capsule()
-                            .fill(Color(hex: 0xFD5B68))
+                            .fill(EvalAccent.color)
                             .frame(width: geo.size.width * CGFloat(min(1.0, max(0.0, Double(store.battlepassCurrentXP) / Double(max(1, store.battlepassLevelXP))))), height: 6)
                     }
                 }
@@ -2432,7 +2437,7 @@ struct EvalGameView: View {
                     Spacer()
                     Text("\(store.battlepassCompletionPercent)% terminé")
                         .font(.system(size: 14, weight: .semibold))
-                        .foregroundStyle(Color(hex: 0xFD5B68))
+                        .foregroundStyle(EvalAccent.color)
                 }
             }
             .padding(16)
@@ -2451,11 +2456,11 @@ struct EvalGameView: View {
                 HStack(spacing: 12) {
                     ZStack {
                         Circle()
-                            .fill(Color(hex: 0xFD5B68).opacity(0.18))
+                            .fill(EvalAccent.color.opacity(0.18))
                             .frame(width: 51, height: 51)
                         Image(systemName: "shield.fill")
                             .font(.system(size: 23))
-                            .foregroundStyle(Color(hex: 0xFD5B68))
+                            .foregroundStyle(EvalAccent.color)
                     }
 
                     VStack(alignment: .leading, spacing: 2) {
@@ -3023,7 +3028,7 @@ struct EvalHubView: View {
         HStack(spacing: 18) {
             Image(systemName: icon)
                 .font(.system(size: 25))
-                .foregroundStyle(Color(hex: 0xFD5B68))
+                .foregroundStyle(EvalAccent.color)
                 .frame(width: 36)
 
             Text(title)
@@ -4021,7 +4026,9 @@ struct EvalFriendDetailSheet: View {
 struct EvalSettingsView: View {
     @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss
-    @State private var showingAccountSheet = false
+    @State private var showingRiotLogin = false
+    @State private var confirmRiotSignOut = false
+    @AppStorage(EvalAccent.key) private var accentHex = Int(EvalAccent.defaultHex)
     @State private var selectedTheme = "Système"
     @State private var selectedPlatform = "PC"
 
@@ -4033,10 +4040,10 @@ struct EvalSettingsView: View {
                 topBar
 
                 Button { model.evalPresented = false } label: {
-                    HStack(spacing: 14) {
+                    HStack(spacing: 18) {
                         Image(systemName: "arrow.uturn.backward.circle.fill")
                             .font(.system(size: 25))
-                            .foregroundStyle(Color(hex: 0xFD5B68))
+                            .foregroundStyle(EvalAccent.color)
                         Text("Retour à Ethone")
                             .font(.system(size: 20, weight: .semibold))
                             .foregroundStyle(.white)
@@ -4085,20 +4092,23 @@ struct EvalSettingsView: View {
                             }
                             .buttonStyle(.plain)
                             .contextMenu {
+                                if let creds = store.riot.credentials, "\(creds.gameName)#\(creds.tagLine)".lowercased() == handle.lowercased() {
+                                    Button("Déconnecter le compte Riot", systemImage: "gamecontroller") { confirmRiotSignOut = true }
+                                }
                                 Button("Retirer ce compte", systemImage: "trash", role: .destructive) { store.removeAccount(handle) }
                             }
                             Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 16)
                         }
 
                         Button {
-                            showingAccountSheet = true
+                            showingRiotLogin = true
                         } label: {
                             HStack(spacing: 10) {
                                 Image(systemName: "plus")
                                     .font(.system(size: 16, weight: .bold))
-                                    .foregroundStyle(Color(hex: 0xFD5B68))
+                                    .foregroundStyle(EvalAccent.color)
                                 Text("Ajouter un compte")
-                                    .font(.system(size: 18, weight: .medium))
+                                    .font(.system(size: 22, weight: .medium))
                                     .foregroundStyle(.white)
                                 Spacer()
                                 Image(systemName: "chevron.right")
@@ -4109,9 +4119,12 @@ struct EvalSettingsView: View {
                         }
                         .buttonStyle(.plain)
                     }
-                    .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+                    .background(Color(hex: 0x1C1C1E), in: .rect(cornerRadius: 28))
 
-                    Text("Touchez un compte pour l’afficher. Appuyez longuement pour le retirer.")
+                    if let error = store.riot.lastError {
+                        Text(error).font(.system(size: 15)).foregroundStyle(EvalAccent.color).padding(.horizontal, 6)
+                    }
+                    Text("Ajouter un compte ouvre la connexion Riot officielle. Touchez un compte pour l’afficher, appuyez longuement pour le retirer.")
                         .font(.system(size: 15))
                         .foregroundStyle(Color(hex: 0x8E8E93))
                         .padding(.horizontal, 6)
@@ -4121,7 +4134,7 @@ struct EvalSettingsView: View {
                     HStack(spacing: 12) {
                         Image(systemName: "desktopcomputer")
                             .font(.system(size: 21))
-                            .foregroundStyle(Color(hex: 0xFD5B68))
+                            .foregroundStyle(EvalAccent.color)
                         Text(selectedPlatform)
                             .font(.system(size: 18, weight: .bold))
                             .foregroundStyle(.white)
@@ -4131,18 +4144,16 @@ struct EvalSettingsView: View {
                             store.leaderboardPlatform = selectedPlatform == "PC" ? "pc" : "console"
                         }
                         .font(.system(size: 17, weight: .semibold))
-                        .foregroundStyle(Color(hex: 0xFD5B68))
+                        .foregroundStyle(EvalAccent.color)
                     }
                     .padding(16)
-                    .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+                    .background(Color(hex: 0x1C1C1E), in: .rect(cornerRadius: 28))
 
                     Text("Sélectionnez la plateforme sur laquelle vous jouez. Vous pouvez consulter les données des autres plateformes en utilisant le sélecteur de plateforme sur n'importe quel profil.")
                         .font(.system(size: 15))
                         .foregroundStyle(Color(hex: 0x8E8E93))
                         .padding(.horizontal, 6)
                 }
-
-                EvalRiotAccountRow()
 
                 VStack(spacing: 0) {
                     NavigationLink {
@@ -4152,7 +4163,7 @@ struct EvalSettingsView: View {
                     }
                     .buttonStyle(.plain)
 
-                    Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 54)
+                    Divider().overlay(Color.white.opacity(0.08)).padding(.leading, 72)
 
                     NavigationLink {
                         EvalAdvancedSettingsView()
@@ -4161,16 +4172,16 @@ struct EvalSettingsView: View {
                     }
                     .buttonStyle(.plain)
                 }
-                .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+                .background(Color(hex: 0x1C1C1E), in: .rect(cornerRadius: 28))
 
                 VStack(spacing: 0) {
                     HStack {
                         Image(systemName: "sun.max")
-                            .font(.system(size: 18))
-                            .foregroundStyle(Color(hex: 0xFD5B68))
-                            .frame(width: 24)
+                            .font(.system(size: 25))
+                            .foregroundStyle(EvalAccent.color)
+                            .frame(width: 36)
                         Text("Thème")
-                            .font(.system(size: 18, weight: .medium))
+                            .font(.system(size: 22, weight: .medium))
                             .foregroundStyle(.white)
                         Spacer()
                         Picker("Thème", selection: $selectedTheme) {
@@ -4182,9 +4193,9 @@ struct EvalSettingsView: View {
                         .tint(Color(hex: 0x8E8E93))
                     }
                     .padding(.horizontal, 16)
-                    .padding(.vertical, 12)
+                    .padding(.vertical, 16)
 
-                    Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 54)
+                    Divider().overlay(Color.white.opacity(0.08)).padding(.leading, 72)
 
                     NavigationLink {
                         AppearanceView()
@@ -4193,41 +4204,38 @@ struct EvalSettingsView: View {
                     }
                     .buttonStyle(.plain)
 
-                    Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 54)
+                    Divider().overlay(Color.white.opacity(0.08)).padding(.leading, 72)
 
-                    NavigationLink {
-                        AppearanceView()
-                    } label: {
-                        HStack {
-                            Image(systemName: "square.and.pencil")
-                                .font(.system(size: 18))
-                                .foregroundStyle(Color(hex: 0xFD5B68))
-                                .frame(width: 24)
-                            Text("Couleur d'accentuation")
-                                .font(.system(size: 18, weight: .medium))
-                                .foregroundStyle(.white)
-                            Spacer()
-                            Circle()
-                                .strokeBorder(Color(hex: 0xFD5B68), lineWidth: 3)
-                                .background(Circle().fill(Color(hex: 0xFD5B68).opacity(0.4)))
-                                .frame(width: 25, height: 25)
-                        }
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 14)
+                    HStack(spacing: 18) {
+                        Image(systemName: "square.and.pencil")
+                            .font(.system(size: 25))
+                            .foregroundStyle(EvalAccent.color)
+                            .frame(width: 36)
+                        Text("Couleur d'accentuation")
+                            .font(.system(size: 22, weight: .medium))
+                            .foregroundStyle(.white)
+                        Spacer()
+                        ColorPicker("Couleur d'accentuation", selection: Binding(
+                            get: { Color(hex: UInt32(truncatingIfNeeded: accentHex)) },
+                            set: { accentHex = Int(EvalAccent.hex(of: $0)) }
+                        ), supportsOpacity: false)
+                        .labelsHidden()
+                        .scaleEffect(1.25)
                     }
-                    .buttonStyle(.plain)
+                    .padding(.horizontal, 18)
+                    .frame(minHeight: 66)
                 }
-                .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+                .background(Color(hex: 0x1C1C1E), in: .rect(cornerRadius: 28))
 
                 VStack(spacing: 0) {
                     NavigationLink { EvalAboutView() } label: {
-                    HStack(spacing: 14) {
+                    HStack(spacing: 18) {
                         Image(systemName: "info.circle")
-                            .font(.system(size: 18))
-                            .foregroundStyle(Color(hex: 0xFD5B68))
-                            .frame(width: 24)
+                            .font(.system(size: 25))
+                            .foregroundStyle(EvalAccent.color)
+                            .frame(width: 36)
                         Text("À propos")
-                            .font(.system(size: 18, weight: .medium))
+                            .font(.system(size: 22, weight: .medium))
                             .foregroundStyle(.white)
                         Spacer()
                         Image(systemName: "chevron.right")
@@ -4235,21 +4243,21 @@ struct EvalSettingsView: View {
                             .foregroundStyle(Color(hex: 0x8E8E93))
                     }
                     .padding(.horizontal, 16)
-                    .padding(.vertical, 14)
+                    .padding(.vertical, 20)
                     .contentShape(.rect)
                     }
                     .buttonStyle(.plain)
 
-                    Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 54)
+                    Divider().overlay(Color.white.opacity(0.08)).padding(.leading, 72)
 
                     Link(destination: URL(string: "https://discord.gg/ethone")!) {
-                        HStack(spacing: 14) {
+                        HStack(spacing: 18) {
                             Image(systemName: "bubble.left.and.bubble.right.fill")
-                                .font(.system(size: 18))
-                                .foregroundStyle(Color(hex: 0xFD5B68))
-                                .frame(width: 24)
+                                .font(.system(size: 25))
+                                .foregroundStyle(EvalAccent.color)
+                                .frame(width: 36)
                             Text("Serveur Discord")
-                                .font(.system(size: 18, weight: .medium))
+                                .font(.system(size: 22, weight: .medium))
                                 .foregroundStyle(.white)
                             Spacer()
                             Image(systemName: "arrow.up.right")
@@ -4257,19 +4265,19 @@ struct EvalSettingsView: View {
                                 .foregroundStyle(Color(hex: 0x8E8E93))
                         }
                         .padding(.horizontal, 16)
-                        .padding(.vertical, 14)
+                        .padding(.vertical, 20)
                     }
 
-                    Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 54)
+                    Divider().overlay(Color.white.opacity(0.08)).padding(.leading, 72)
 
                     NavigationLink { EvalFAQView() } label: {
-                        HStack(spacing: 14) {
+                        HStack(spacing: 18) {
                             Image(systemName: "questionmark.circle")
-                                .font(.system(size: 18))
-                                .foregroundStyle(Color(hex: 0xFD5B68))
-                                .frame(width: 24)
+                                .font(.system(size: 25))
+                                .foregroundStyle(EvalAccent.color)
+                                .frame(width: 36)
                             Text("FAQ")
-                                .font(.system(size: 18, weight: .medium))
+                                .font(.system(size: 22, weight: .medium))
                                 .foregroundStyle(.white)
                             Spacer()
                             Image(systemName: "chevron.right")
@@ -4277,19 +4285,20 @@ struct EvalSettingsView: View {
                                 .foregroundStyle(Color(hex: 0x8E8E93))
                         }
                         .padding(.horizontal, 16)
-                        .padding(.vertical, 14)
+                        .padding(.vertical, 20)
                         .contentShape(.rect)
                     }
                     .buttonStyle(.plain)
                 }
-                .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+                .background(Color(hex: 0x1C1C1E), in: .rect(cornerRadius: 28))
             }
             .padding(.horizontal, 16)
             .padding(.bottom, 96)
         }
         .scrollIndicators(.hidden)
-        .sheet(isPresented: $showingAccountSheet) {
-            ValorantSettingsSheet()
+        .sheet(isPresented: $showingRiotLogin) { EvalRiotLoginSheet(fresh: store.riot.isLinked) }
+        .confirmationDialog("Déconnecter le compte Riot ?", isPresented: $confirmRiotSignOut, titleVisibility: .visible) {
+            Button("Déconnecter", role: .destructive) { Task { await store.unlinkRiot() } }
         }
     }
 
@@ -4306,14 +4315,14 @@ struct EvalSettingsView: View {
     }
 
     private func settingsNavRow(icon: String, title: String, detail: String? = nil) -> some View {
-        HStack(spacing: 14) {
+        HStack(spacing: 18) {
             Image(systemName: icon)
-                .font(.system(size: 18))
-                .foregroundStyle(Color(hex: 0xFD5B68))
-                .frame(width: 24)
+                .font(.system(size: 25))
+                .foregroundStyle(EvalAccent.color)
+                .frame(width: 36)
 
             Text(title)
-                .font(.system(size: 18, weight: .medium))
+                .font(.system(size: 22, weight: .medium))
                 .foregroundStyle(.white)
 
             Spacer()
@@ -4325,11 +4334,12 @@ struct EvalSettingsView: View {
             }
 
             Image(systemName: "chevron.right")
-                .font(.system(size: 14, weight: .semibold))
-                .foregroundStyle(Color(hex: 0x8E8E93))
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundStyle(Color(hex: 0x636366))
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 14)
+        .padding(.horizontal, 18)
+        .frame(minHeight: 66)
+        .contentShape(.rect)
     }
 }
 
@@ -4337,12 +4347,13 @@ struct EvalSettingsView: View {
 struct EvalRiotLoginSheet: View {
     @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss
+    var fresh = false
     @State private var working = false
 
     var body: some View {
         NavigationStack {
             ZStack {
-                RiotLoginView { access, id, expires in
+                RiotLoginView(fresh: fresh) { access, id, expires in
                     working = true
                     Task {
                         await model.valorant.linkRiot(accessToken: access, idToken: id, expiresIn: expires)
@@ -4379,7 +4390,7 @@ struct EvalRiotAccountRow: View {
                 if riot.isLinked { confirmSignOut = true } else { showingLogin = true }
             } label: {
                 HStack(spacing: 14) {
-                    Image(systemName: "gamecontroller.fill").font(.system(size: 21)).foregroundStyle(Color(hex: 0xFD5B68)).frame(width: 28)
+                    Image(systemName: "gamecontroller.fill").font(.system(size: 21)).foregroundStyle(EvalAccent.color).frame(width: 28)
                     VStack(alignment: .leading, spacing: 2) {
                         Text(riot.isLinked ? "Compte Riot connecté" : "Connecter mon compte Riot")
                             .font(.system(size: 18, weight: .medium)).foregroundStyle(.white)
@@ -4388,14 +4399,14 @@ struct EvalRiotAccountRow: View {
                         }
                     }
                     Spacer()
-                    Text(riot.isLinked ? "Déconnecter" : "Connexion").font(.system(size: 17)).foregroundStyle(Color(hex: 0xFD5B68))
+                    Text(riot.isLinked ? "Déconnecter" : "Connexion").font(.system(size: 17)).foregroundStyle(EvalAccent.color)
                 }
                 .padding(16)
                 .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
             }
             .buttonStyle(.plain)
             if let error = riot.lastError {
-                Text(error).font(.footnote).foregroundStyle(Color(hex: 0xFD5B68)).padding(.horizontal, 4)
+                Text(error).font(.footnote).foregroundStyle(EvalAccent.color).padding(.horizontal, 4)
             }
             Text("Boutique, portefeuille, équipement, passe de combat et groupe viennent du compte Riot connecté.")
                 .font(.footnote).foregroundStyle(Color(hex: 0x8E8E93)).padding(.horizontal, 4)

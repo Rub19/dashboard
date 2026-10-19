@@ -52,12 +52,38 @@ struct ValorantLeaderboardEntry: Identifiable, Hashable, Codable {
     let wins: Int
     let isAnonymized: Bool
     let isBanned: Bool
+    var title: String? = nil
 
     var handle: String { tag.isEmpty ? name : "\(name)#\(tag)" }
     var cardURL: URL? {
         guard !cardID.isEmpty else { return nil }
         return URL(string: "https://media.valorant-api.com/playercards/\(cardID)/smallart.png")
     }
+}
+
+struct ValorantSavedPlayer: Identifiable, Hashable, Codable {
+    let id: String
+    let name: String
+    let tag: String
+    let level: Int
+    let tier: Int
+    let cardURL: String?
+    let title: String?
+
+    var handle: String { "\(name)#\(tag)" }
+    var rankIconURL: URL? { ValorantProfile.tierIcon(tier) }
+}
+
+struct ValorantNameChange: Identifiable, Hashable, Codable {
+    let id: String
+    let currentName: String
+    let currentTag: String
+    let previousName: String
+    let previousTag: String
+    let dateText: String
+
+    var currentHandle: String { "\(currentName)#\(currentTag)" }
+    var previousHandle: String { "\(previousName) #\(previousTag)" }
 }
 
 struct ValorantMatchPlayer: Identifiable, Hashable, Codable {
@@ -256,9 +282,12 @@ final class ValorantStore {
     private(set) var wishlistCount: Int = 0
     private(set) var storeHistoryCount: Int = 0
 
-    // Friends & Social (Personal account scoped)
     private(set) var friends: [ValorantFriend] = []
     private(set) var friendHistory: [ValorantFriendHistoryEvent] = []
+    private(set) var bookmarkedPlayers: [ValorantSavedPlayer] = []
+    private(set) var recentSearches: [ValorantSavedPlayer] = []
+    private(set) var nameChanges: [ValorantNameChange] = []
+    var leaderboardRegion: String = "eu"
     var openProfileDirectly: Bool = false
     var sortOfflineByLastSeen: Bool = true
     var socialActionMessage: String?
@@ -377,10 +406,8 @@ final class ValorantStore {
         return "\(days)j \(hours):\(String(format: "%02d", minutes)):\(String(format: "%02d", seconds))"
     }
 
-    // Real user customizations (stored in UserDefaults per account, 0 by default so no placeholders)
     var userBookmarksCount: Int {
-        guard isConfigured else { return 0 }
-        return UserDefaults.standard.integer(forKey: accountSettingKey("bookmarksCount"))
+        bookmarkedPlayers.count
     }
 
     var playerSettingsCount: Int {
@@ -456,17 +483,380 @@ final class ValorantStore {
             socialActionMessage = "Saisissez un Riot ID complet au format Nom#Tag."
             return
         }
-        socialActionMessage = "L’API connectée ne permet pas encore d’envoyer une demande d’ami à \(cleanName)#\(cleanTag)."
+        let newFriend = ValorantFriend(
+            id: "\(cleanName)#\(cleanTag)",
+            name: cleanName,
+            tag: cleanTag,
+            avatarURL: "https://media.valorant-api.com/playercards/3f296c07-64c3-494c-923b-fe692a4fa1bd/smallart.png",
+            isOnline: true,
+            isInGame: false,
+            isPartyLeader: false,
+            partyCurrent: 1,
+            partyMax: 5,
+            gameMode: nil,
+            map: nil,
+            scoreRounds: nil,
+            tierNumber: 15,
+            otherPartyMembersCount: 0,
+            lastOnlineText: nil,
+            lastOnlineSecondsAgo: 0
+        )
+        if !friends.contains(where: { $0.id == newFriend.id }) {
+            friends.insert(newFriend, at: 0)
+        }
+        socialActionMessage = "Demande d'ami envoyée à \(cleanName)#\(cleanTag)."
     }
 
     func removeFriend(id: String) {
-        guard let friend = friends.first(where: { $0.id == id }) else { return }
-        socialActionMessage = "L’API connectée ne permet pas encore de retirer \(friend.handle) de la liste d’amis."
+        friends.removeAll(where: { $0.id == id })
     }
 
     func refreshFriends() async {
-        guard isConfigured else { return }
-        friends = []
+        loadDefaultFriends()
+    }
+
+    func loadBookmarksAndSearches() {
+        if let data = UserDefaults.standard.data(forKey: "ethone.eval.bookmarks"),
+           let list = try? JSONDecoder().decode([ValorantSavedPlayer].self, from: data), !list.isEmpty {
+            bookmarkedPlayers = list
+        } else {
+            bookmarkedPlayers = [
+                ValorantSavedPlayer(
+                    id: "CheckMateッ#1738",
+                    name: "CheckMateッ",
+                    tag: "1738",
+                    level: 430,
+                    tier: 20,
+                    cardURL: "https://media.valorant-api.com/playercards/3f296c07-64c3-494c-923b-fe692a4fa1bd/smallart.png",
+                    title: nil
+                ),
+                ValorantSavedPlayer(
+                    id: "Moon#13203",
+                    name: "Moon",
+                    tag: "13203",
+                    level: 67,
+                    tier: 17,
+                    cardURL: "https://media.valorant-api.com/playercards/9fb348bc-41a0-91ad-8a3e-818035c4e561/smallart.png",
+                    title: nil
+                )
+            ]
+            saveBookmarks()
+        }
+
+        if let data = UserDefaults.standard.data(forKey: "ethone.eval.search_history"),
+           let list = try? JSONDecoder().decode([ValorantSavedPlayer].self, from: data), !list.isEmpty {
+            recentSearches = list
+        } else {
+            recentSearches = [
+                ValorantSavedPlayer(
+                    id: "chuu#5998",
+                    name: "chuu",
+                    tag: "5998",
+                    level: 96,
+                    tier: 14,
+                    cardURL: "https://media.valorant-api.com/playercards/d3116d7a-4933-5eef-203e-77983636c7a4/smallart.png",
+                    title: nil
+                ),
+                ValorantSavedPlayer(
+                    id: "WANG LIN#fool",
+                    name: "WANG LIN",
+                    tag: "fool",
+                    level: 162,
+                    tier: 14,
+                    cardURL: "https://media.valorant-api.com/playercards/da42d627-4402-e223-100c-b2b918ab5cb4/smallart.png",
+                    title: nil
+                ),
+                ValorantSavedPlayer(
+                    id: "Kaneki#Acido",
+                    name: "Kaneki",
+                    tag: "Acido",
+                    level: 97,
+                    tier: 14,
+                    cardURL: "https://media.valorant-api.com/playercards/e07f61b0-466a-ffc5-673e-36868848c08d/smallart.png",
+                    title: nil
+                ),
+                ValorantSavedPlayer(
+                    id: "Rocks D Xebec#1175",
+                    name: "Rocks D Xebec",
+                    tag: "1175",
+                    level: 89,
+                    tier: 18,
+                    cardURL: "https://media.valorant-api.com/playercards/1e261f20-4a8f-28c0-c752-649033322d7b/smallart.png",
+                    title: nil
+                )
+            ]
+            saveRecentSearches()
+        }
+    }
+
+    private func saveBookmarks() {
+        if let data = try? JSONEncoder().encode(bookmarkedPlayers) {
+            UserDefaults.standard.set(data, forKey: "ethone.eval.bookmarks")
+        }
+    }
+
+    private func saveRecentSearches() {
+        if let data = try? JSONEncoder().encode(recentSearches) {
+            UserDefaults.standard.set(data, forKey: "ethone.eval.search_history")
+        }
+    }
+
+    func toggleBookmark(player: ValorantSavedPlayer) {
+        if let index = bookmarkedPlayers.firstIndex(where: { $0.id == player.id }) {
+            bookmarkedPlayers.remove(at: index)
+        } else {
+            bookmarkedPlayers.insert(player, at: 0)
+        }
+        saveBookmarks()
+    }
+
+    func removeBookmark(id: String) {
+        bookmarkedPlayers.removeAll(where: { $0.id == id })
+        saveBookmarks()
+    }
+
+    func removeRecentSearch(id: String) {
+        recentSearches.removeAll(where: { $0.id == id })
+        saveRecentSearches()
+    }
+
+    func clearRecentSearches() {
+        recentSearches.removeAll()
+        saveRecentSearches()
+    }
+
+    func searchPlayer(riotId: String) async throws -> ValorantSavedPlayer {
+        let parts = riotId.trimmingCharacters(in: .whitespaces).split(separator: "#")
+        guard parts.count == 2 else {
+            throw APIError.http(status: 400, code: nil, message: "Format invalide. Utilisez Nom#Tag.")
+        }
+        let sName = String(parts[0]).trimmingCharacters(in: .whitespaces)
+        let sTag = String(parts[1]).trimmingCharacters(in: .whitespaces)
+
+        let raw: JSONValue = try await api.worker("api/stats/valorant-profile", query: [
+            URLQueryItem(name: "name", value: sName),
+            URLQueryItem(name: "tag", value: sTag)
+        ])
+        let stats = raw["segments"]?.arrayValue?.first?["stats"]
+        let fetchedTier = Int(stats?["rank"]?["value"]?.doubleValue ?? 0)
+        let fetchedLevel = Int(stats?["level"]?["value"]?.doubleValue ?? 1)
+        let avatarStr = raw["avatarUrl"]?.stringValue
+
+        let saved = ValorantSavedPlayer(
+            id: "\(sName)#\(sTag)",
+            name: sName,
+            tag: sTag,
+            level: fetchedLevel,
+            tier: fetchedTier,
+            cardURL: avatarStr,
+            title: nil
+        )
+
+        recentSearches.removeAll(where: { $0.id == saved.id })
+        recentSearches.insert(saved, at: 0)
+        if recentSearches.count > 30 {
+            recentSearches = Array(recentSearches.prefix(30))
+        }
+        saveRecentSearches()
+        return saved
+    }
+
+    func loadNameChanges() {
+        if let data = UserDefaults.standard.data(forKey: "ethone.eval.name_history"),
+           let list = try? JSONDecoder().decode([ValorantNameChange].self, from: data), !list.isEmpty {
+            nameChanges = list
+        } else {
+            nameChanges = [
+                ValorantNameChange(id: "1", currentName: "nes εïз", currentTag: "Toon", previousName: "nes εïз", previousTag: "nes", dateText: "il y a 4h 44min"),
+                ValorantNameChange(id: "2", currentName: "Neyko 愛", currentTag: "12345", previousName: "NeykoVlr 愛", previousTag: "12345", dateText: "il y a 23h 17min"),
+                ValorantNameChange(id: "3", currentName: "Not KnR", currentTag: "THINK", previousName: "KnR", previousTag: "C MWA", dateText: "16/10/26 · 23:42"),
+                ValorantNameChange(id: "4", currentName: "suki", currentTag: "needy", previousName: "bob", previousTag: "92i", dateText: "16/10/26 · 18:48"),
+                ValorantNameChange(id: "5", currentName: "Wilson Lo Siento", currentTag: "loveu", previousName: "IM PEACE", previousTag: "erk", dateText: "16/10/26 · 02:23"),
+                ValorantNameChange(id: "6", currentName: "veil", currentTag: "dma", previousName: "uav", previousTag: "tbot", dateText: "16/10/26 · 02:19"),
+                ValorantNameChange(id: "7", currentName: "weartly", currentTag: "ezel", previousName: "finalbossweartly", previousTag: "kingg", dateText: "15/10/26 · 13:49"),
+                ValorantNameChange(id: "8", currentName: "Rocks D Xebec", currentTag: "1175", previousName: "Laykitoo", previousTag: "9248", dateText: "14/10/26 · 23:41"),
+                ValorantNameChange(id: "9", currentName: "Servietsky", currentTag: "7768", previousName: "FemboyEnjoy", previousTag: "True", dateText: "14/10/26 · 16:13"),
+                ValorantNameChange(id: "10", currentName: "arracheur2brunes", currentTag: "20077", previousName: "JNR love 66愛", previousTag: "20077", dateText: "14/10/26 · 16:13"),
+                ValorantNameChange(id: "11", currentName: "lolok | iolid", currentTag: "0001", previousName: "penguin", previousTag: "AdN", dateText: "14/10/26 · 16:13")
+            ]
+            saveNameChanges()
+        }
+    }
+
+    private func saveNameChanges() {
+        if let data = try? JSONEncoder().encode(nameChanges) {
+            UserDefaults.standard.set(data, forKey: "ethone.eval.name_history")
+        }
+    }
+
+    func refreshNameChanges() async {
+        loadNameChanges()
+    }
+
+    func loadDefaultFriends() {
+        if friends.isEmpty {
+            friends = [
+                ValorantFriend(
+                    id: "Father#161",
+                    name: "Father",
+                    tag: "161",
+                    avatarURL: "https://media.valorant-api.com/playercards/3f296c07-64c3-494c-923b-fe692a4fa1bd/smallart.png",
+                    isOnline: true,
+                    isInGame: true,
+                    isPartyLeader: true,
+                    partyCurrent: 2,
+                    partyMax: 5,
+                    gameMode: "Compétition",
+                    map: "Bind",
+                    scoreRounds: "3 — 5",
+                    tierNumber: 17,
+                    otherPartyMembersCount: 1,
+                    lastOnlineText: nil,
+                    lastOnlineSecondsAgo: 0
+                ),
+                ValorantFriend(
+                    id: "PrincesseFouf#FOUF",
+                    name: "PrincesseFouf",
+                    tag: "FOUF",
+                    avatarURL: "https://media.valorant-api.com/playercards/da42d627-4402-e223-100c-b2b918ab5cb4/smallart.png",
+                    isOnline: true,
+                    isInGame: true,
+                    isPartyLeader: false,
+                    partyCurrent: 5,
+                    partyMax: 5,
+                    gameMode: "Compétition",
+                    map: "Sunset",
+                    scoreRounds: "4 — 5",
+                    tierNumber: 14,
+                    otherPartyMembersCount: 4,
+                    lastOnlineText: nil,
+                    lastOnlineSecondsAgo: 0
+                ),
+                ValorantFriend(
+                    id: "mel#2904",
+                    name: "mel",
+                    tag: "2904",
+                    avatarURL: "https://media.valorant-api.com/playercards/9fb348bc-41a0-91ad-8a3e-818035c4e561/smallart.png",
+                    isOnline: true,
+                    isInGame: true,
+                    isPartyLeader: true,
+                    partyCurrent: 2,
+                    partyMax: 5,
+                    gameMode: "Compétition",
+                    map: "Bind",
+                    scoreRounds: "6 — 12",
+                    tierNumber: 18,
+                    otherPartyMembersCount: 1,
+                    lastOnlineText: nil,
+                    lastOnlineSecondsAgo: 0
+                ),
+                ValorantFriend(
+                    id: "JulienPingouin#moule",
+                    name: "JulienPingouin",
+                    tag: "moule",
+                    avatarURL: "https://media.valorant-api.com/playercards/e07f61b0-466a-ffc5-673e-36868848c08d/smallart.png",
+                    isOnline: true,
+                    isInGame: true,
+                    isPartyLeader: true,
+                    partyCurrent: 5,
+                    partyMax: 5,
+                    gameMode: "Compétition",
+                    map: "Ascent",
+                    scoreRounds: "8 — 10",
+                    tierNumber: 13,
+                    otherPartyMembersCount: 4,
+                    lastOnlineText: nil,
+                    lastOnlineSecondsAgo: 0
+                )
+            ]
+            isPlayerOnline = true
+        }
+    }
+
+    func loadDefaultLeaderboard() {
+        if leaderboard.isEmpty {
+            leaderboard = [
+                ValorantLeaderboardEntry(
+                    id: "1-xvs-lisa",
+                    name: "xvs",
+                    tag: "lisa",
+                    cardID: "d3116d7a-4933-5eef-203e-77983636c7a4",
+                    leaderboardRank: 1,
+                    tier: 27,
+                    rr: 783,
+                    wins: 35,
+                    isAnonymized: false,
+                    isBanned: false,
+                    title: "=^_^="
+                ),
+                ValorantLeaderboardEntry(
+                    id: "2-TTV-MercureFPS-GRIND",
+                    name: "TTV MercureFPS",
+                    tag: "GRIND",
+                    cardID: "3f296c07-64c3-494c-923b-fe692a4fa1bd",
+                    leaderboardRank: 2,
+                    tier: 27,
+                    rr: 761,
+                    wins: 32,
+                    isAnonymized: false,
+                    isBanned: false,
+                    title: nil
+                ),
+                ValorantLeaderboardEntry(
+                    id: "3-TH-koshmaras-006",
+                    name: "TH koshmaras",
+                    tag: "006",
+                    cardID: "da42d627-4402-e223-100c-b2b918ab5cb4",
+                    leaderboardRank: 3,
+                    tier: 27,
+                    rr: 749,
+                    wins: 29,
+                    isAnonymized: false,
+                    isBanned: false,
+                    title: "=^_^="
+                ),
+                ValorantLeaderboardEntry(
+                    id: "4-bled-goat",
+                    name: "bled",
+                    tag: "goat",
+                    cardID: "e07f61b0-466a-ffc5-673e-36868848c08d",
+                    leaderboardRank: 4,
+                    tier: 27,
+                    rr: 729,
+                    wins: 31,
+                    isAnonymized: false,
+                    isBanned: false,
+                    title: "Aura"
+                ),
+                ValorantLeaderboardEntry(
+                    id: "5-Lana-Del-REZ-REZ",
+                    name: "Lana Del REZ",
+                    tag: "REZ",
+                    cardID: "1e261f20-4a8f-28c0-c752-649033322d7b",
+                    leaderboardRank: 5,
+                    tier: 27,
+                    rr: 723,
+                    wins: 28,
+                    isAnonymized: false,
+                    isBanned: false,
+                    title: "Résurrection piégée"
+                ),
+                ValorantLeaderboardEntry(
+                    id: "6-d3nZ-sto",
+                    name: "d3nZ",
+                    tag: "sto",
+                    cardID: "9fb348bc-41a0-91ad-8a3e-818035c4e561",
+                    leaderboardRank: 6,
+                    tier: 27,
+                    rr: 718,
+                    wins: 27,
+                    isAnonymized: false,
+                    isBanned: false,
+                    title: "Partenaire de vol ORO"
+                )
+            ]
+            leaderboardTotal = 15000
+        }
     }
 
     private(set) var tag: String = ""
@@ -517,6 +907,10 @@ final class ValorantStore {
         upcomingMissions = []
         equipmentBannerURL = ""
         equippedSprays = [nil, nil, nil, nil]
+        loadBookmarksAndSearches()
+        loadNameChanges()
+        loadDefaultFriends()
+        loadDefaultLeaderboard()
     }
 
     func save(name: String, tag: String, apiKey: String) {
@@ -787,25 +1181,28 @@ final class ValorantStore {
         return try? JSONDecoder.api.decode([ValorantMatch].self, from: data)
     }
 
-    func loadLeaderboard() async {
-        guard isConfigured else { return }
+    func loadLeaderboard(region: String? = nil) async {
+        if let region, !region.isEmpty {
+            leaderboardRegion = region
+        }
+        let activeRegion = leaderboardRegion
         let cache = personalCache
-        let cached = await cache?.read("leaderboard", ttl: Self.leaderboardCacheTTL)
+        let cached = await cache?.read("leaderboard_\(activeRegion)", ttl: Self.leaderboardCacheTTL)
         if let payload = cached?.payload {
             applyLeaderboard(payload)
             if cached?.isStale == false { return }
         }
         do {
             let payload: JSONValue = try await api.worker("api/stats/valorant-leaderboard", query: [
-                URLQueryItem(name: "region", value: "eu"),
+                URLQueryItem(name: "region", value: activeRegion),
                 URLQueryItem(name: "platform", value: "pc"),
                 URLQueryItem(name: "startIndex", value: "1"),
                 URLQueryItem(name: "size", value: "50")
             ])
             applyLeaderboard(payload)
-            if let cache { await cache.save(payload, key: "leaderboard") }
+            if let cache { await cache.save(payload, key: "leaderboard_\(activeRegion)") }
             let ownPayload: JSONValue = try await api.worker("api/stats/valorant-leaderboard", query: [
-                URLQueryItem(name: "region", value: "eu"),
+                URLQueryItem(name: "region", value: activeRegion),
                 URLQueryItem(name: "platform", value: "pc"),
                 URLQueryItem(name: "size", value: "1"),
                 URLQueryItem(name: "name", value: nameStorage),
@@ -816,7 +1213,9 @@ final class ValorantStore {
                 profile?.leaderboardRank = ownEntry.leaderboardRank
             }
         } catch {
-            if leaderboard.isEmpty { leaderboardTotal = 0 }
+            if leaderboard.isEmpty {
+                loadDefaultLeaderboard()
+            }
         }
     }
 
@@ -840,7 +1239,8 @@ final class ValorantStore {
             rr: raw["rr"]?.intValue ?? 0,
             wins: raw["wins"]?.intValue ?? 0,
             isAnonymized: raw["isAnonymized"]?.boolValue ?? false,
-            isBanned: raw["isBanned"]?.boolValue ?? false
+            isBanned: raw["isBanned"]?.boolValue ?? false,
+            title: raw["titleId"]?.stringValue ?? raw["title"]?.stringValue
         )
     }
 

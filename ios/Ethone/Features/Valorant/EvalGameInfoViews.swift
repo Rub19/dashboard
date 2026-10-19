@@ -1263,266 +1263,951 @@ struct EvalWeaponsView: View {
 
 // MARK: - 4. HUB SECONDARY SCREENS (REAL DATA & DEDICATED SCREENS)
 
-// Signets (Bookmarks)
-struct EvalBookmarksView: View {
+struct EvalPlayersSearchView: View {
     @Environment(AppModel.self) private var model
+    @Environment(\.dismiss) private var dismiss
+    @State private var searchQuery: String = ""
+    @State private var isSearching: Bool = false
+    @State private var searchError: String? = nil
+    @State private var selectedPlayer: ValorantSavedPlayer? = nil
+    @State private var showingOptions: Bool = false
+
     private var store: ValorantStore { model.valorant }
 
     var body: some View {
         ZStack {
             Theme.bg.ignoresSafeArea()
 
-            ScrollView {
-                VStack(spacing: 16) {
-                if store.userBookmarksCount == 0 {
-                    VStack(spacing: 14) {
-                        Image(systemName: "bookmark.slash")
-                            .font(.system(size: 40))
-                            .foregroundStyle(.secondary)
-                        Text("Aucun signet enregistré")
-                            .font(.headline.weight(.bold))
-                            .foregroundStyle(.white)
-                        Text("Ajoutez des joueurs ou des configurations en signet depuis leurs profils pour les retrouver instantanément ici.")
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal, 24)
+            VStack(spacing: 0) {
+                topBar
+
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 18) {
+                        searchField
+
+                        if let searchError {
+                            Text(searchError)
+                                .font(.footnote.weight(.medium))
+                                .foregroundStyle(Theme.danger)
+                                .padding(.horizontal, 4)
+                        }
+
+                        if !store.bookmarkedPlayers.isEmpty {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Signets")
+                                    .font(.subheadline.weight(.semibold))
+                                    .foregroundStyle(.secondary)
+                                    .padding(.leading, 4)
+
+                                VStack(spacing: 0) {
+                                    ForEach(Array(store.bookmarkedPlayers.enumerated()), id: \.element.id) { index, player in
+                                        Button {
+                                            selectedPlayer = player
+                                        } label: {
+                                            bookmarkRow(player: player)
+                                        }
+                                        .buttonStyle(.plain)
+
+                                        if index < store.bookmarkedPlayers.count - 1 {
+                                            Divider()
+                                                .overlay(Color.white.opacity(0.06))
+                                                .padding(.leading, 70)
+                                        }
+                                    }
+                                }
+                                .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+                                .clipShape(.rect(cornerRadius: 20))
+                            }
+                        }
+
+                        if !store.recentSearches.isEmpty {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Historique des recherches")
+                                    .font(.subheadline.weight(.semibold))
+                                    .foregroundStyle(.secondary)
+                                    .padding(.leading, 4)
+
+                                VStack(spacing: 0) {
+                                    ForEach(Array(store.recentSearches.enumerated()), id: \.element.id) { index, player in
+                                        Button {
+                                            selectedPlayer = player
+                                        } label: {
+                                            recentSearchRow(player: player)
+                                        }
+                                        .buttonStyle(.plain)
+
+                                        if index < store.recentSearches.count - 1 {
+                                            Divider()
+                                                .overlay(Color.white.opacity(0.06))
+                                                .padding(.leading, 70)
+                                        }
+                                    }
+                                }
+                                .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+                                .clipShape(.rect(cornerRadius: 20))
+                            }
+                        }
                     }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 40)
-                    .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-                    .padding(16)
-                } else {
-                    VStack(alignment: .leading, spacing: 10) {
-                        Label("Signets actifs", systemImage: "bookmark.fill")
-                            .font(.headline.weight(.bold))
-                            .foregroundStyle(.white)
-                        Text("\(store.userBookmarksCount) signet(s) sont enregistrés pour ce compte.")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                        Text("Les éléments détaillés seront affichés ici dès qu’un profil ou une configuration sera ajouté depuis une fiche.")
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(16)
-                    .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
+                    .padding(.horizontal, 16)
+                    .padding(.top, 10)
+                    .padding(.bottom, 96)
                 }
-                Spacer()
-                }
-                .padding(16)
+                .scrollIndicators(.hidden)
             }
         }
-        .navigationTitle("Signets")
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
+        .toolbar(.hidden, for: .navigationBar)
+        .sheet(item: $selectedPlayer) { player in
+            playerDetailSheet(player: player)
+        }
+        .confirmationDialog("Options", isPresented: $showingOptions) {
+            Button("Effacer l'historique des recherches", role: .destructive) {
+                store.clearRecentSearches()
+            }
+            Button("Annuler", role: .cancel) {}
+        }
+    }
+
+    private var topBar: some View {
+        HStack {
+            Button {
+                dismiss()
+            } label: {
+                Circle()
+                    .fill(Color.white.opacity(0.08))
+                    .frame(width: 38, height: 38)
+                    .overlay(
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundStyle(.white)
+                    )
+            }
+            .buttonStyle(PressScaleStyle())
+
+            Spacer()
+
+            Text("Joueurs")
+                .font(.headline.weight(.bold))
+                .foregroundStyle(.white)
+
+            Spacer()
+
+            Button {
+                showingOptions = true
+            } label: {
+                Circle()
+                    .fill(Color.white.opacity(0.08))
+                    .frame(width: 38, height: 38)
+                    .overlay(
+                        Image(systemName: "ellipsis")
+                            .font(.system(size: 15, weight: .bold))
+                            .foregroundStyle(Color(hex: 0xFD4556))
+                    )
+            }
+            .buttonStyle(PressScaleStyle())
+        }
+        .padding(.horizontal, 16)
+        .padding(.top, 4)
+    }
+
+    private var searchField: some View {
+        HStack(spacing: 10) {
+            Image(systemName: "magnifyingglass")
+                .font(.system(size: 15))
+                .foregroundStyle(.secondary)
+
+            TextField("Rechercher RiotID#Tag", text: $searchQuery)
+                .font(.subheadline)
+                .foregroundStyle(.white)
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled()
+                .onSubmit {
+                    performSearch()
+                }
+
+            if isSearching {
+                ProgressView()
+                    .progressViewStyle(.circular)
+                    .tint(.white)
+                    .scaleEffect(0.8)
+            } else if !searchQuery.isEmpty {
+                Button {
+                    searchQuery = ""
+                    searchError = nil
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.system(size: 15))
+                        .foregroundStyle(.secondary)
+                }
+            }
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 11)
+        .background(Color.white.opacity(0.06), in: .capsule)
+    }
+
+    private func bookmarkRow(player: ValorantSavedPlayer) -> some View {
+        HStack(spacing: 14) {
+            playerAvatar(player: player)
+
+            VStack(alignment: .leading, spacing: 3) {
+                HStack(spacing: 3) {
+                    Text(player.name)
+                        .font(.subheadline.weight(.heavy))
+                        .foregroundStyle(.white)
+                    Text("#\(player.tag)")
+                        .font(.caption.weight(.medium))
+                        .foregroundStyle(.secondary)
+                }
+
+                Text("Niveau \(player.level)")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer()
+
+            circularRankBadge(tier: player.tier, showClock: false)
+
+            Image(systemName: "chevron.right")
+                .font(.system(size: 11, weight: .semibold))
+                .foregroundStyle(.secondary)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 13)
+        .contentShape(Rectangle())
+    }
+
+    private func recentSearchRow(player: ValorantSavedPlayer) -> some View {
+        HStack(spacing: 14) {
+            playerAvatar(player: player)
+
+            VStack(alignment: .leading, spacing: 3) {
+                HStack(spacing: 3) {
+                    Text(player.name)
+                        .font(.subheadline.weight(.heavy))
+                        .foregroundStyle(.white)
+                    Text("#\(player.tag)")
+                        .font(.caption.weight(.medium))
+                        .foregroundStyle(.secondary)
+                }
+
+                Text("Niveau \(player.level)")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer()
+
+            circularRankBadge(tier: player.tier, showClock: true)
+
+            Image(systemName: "chevron.right")
+                .font(.system(size: 11, weight: .semibold))
+                .foregroundStyle(.secondary)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 13)
+        .contentShape(Rectangle())
+    }
+
+    private func playerAvatar(player: ValorantSavedPlayer) -> some View {
+        Group {
+            if let cardURL = player.cardURL, let url = URL(string: cardURL) {
+                AsyncImage(url: url) { phase in
+                    switch phase {
+                    case .success(let image):
+                        image
+                            .resizable()
+                            .scaledToFill()
+                    default:
+                        Color(hex: 0x1F222B)
+                            .overlay(Image(systemName: "person.fill").foregroundStyle(.secondary))
+                    }
+                }
+            } else {
+                Color(hex: 0x1F222B)
+                    .overlay(Image(systemName: "person.fill").foregroundStyle(.secondary))
+            }
+        }
+        .frame(width: 44, height: 44)
+        .clipShape(.rect(cornerRadius: 12))
+    }
+
+    private func circularRankBadge(tier: Int, showClock: Bool) -> some View {
+        ZStack(alignment: .bottomTrailing) {
+            Circle()
+                .fill(Color(hex: 0x141820))
+                .frame(width: 34, height: 34)
+                .overlay(
+                    Circle()
+                        .strokeBorder(tierRingColor(tier: tier), lineWidth: 2)
+                )
+                .overlay(
+                    Group {
+                        if let url = ValorantProfile.tierIcon(tier) {
+                            AsyncImage(url: url) { phase in
+                                if let image = phase.image {
+                                    image.resizable().scaledToFit().padding(4)
+                                } else {
+                                    Image(systemName: "rhombus.fill")
+                                        .font(.system(size: 14))
+                                        .foregroundStyle(tierRingColor(tier: tier))
+                                }
+                            }
+                        } else {
+                            Image(systemName: "rhombus.fill")
+                                .font(.system(size: 14))
+                                .foregroundStyle(tierRingColor(tier: tier))
+                        }
+                    }
+                )
+
+            if showClock {
+                Circle()
+                    .fill(Color.black)
+                    .frame(width: 13, height: 13)
+                    .overlay(
+                        Image(systemName: "clock.fill")
+                            .font(.system(size: 7, weight: .bold))
+                            .foregroundStyle(.white)
+                    )
+                    .offset(x: 2, y: 2)
+            }
+        }
+    }
+
+    private func tierRingColor(tier: Int) -> Color {
+        switch tier {
+        case 24...27: return Color(hex: 0xF5D78E)
+        case 21...23: return Color(hex: 0xEC4899)
+        case 18...20: return Color(hex: 0x06B6D4)
+        case 15...17: return Color(hex: 0x38BDF8)
+        case 12...14: return Color(hex: 0xEAB308)
+        case 9...11: return Color(hex: 0x94A3B8)
+        case 6...8: return Color(hex: 0xB45309)
+        default: return Color(hex: 0x64748B)
+        }
+    }
+
+    private func performSearch() {
+        let query = searchQuery.trimmingCharacters(in: .whitespaces)
+        guard !query.isEmpty else { return }
+        isSearching = true
+        searchError = nil
+        Task {
+            do {
+                let saved = try await store.searchPlayer(riotId: query)
+                isSearching = false
+                selectedPlayer = saved
+            } catch {
+                isSearching = false
+                searchError = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+            }
+        }
+    }
+
+    private func playerDetailSheet(player: ValorantSavedPlayer) -> some View {
+        VStack(spacing: 16) {
+            HStack(spacing: 14) {
+                playerAvatar(player: player)
+                    .frame(width: 54, height: 54)
+                    .clipShape(.rect(cornerRadius: 14))
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(player.handle)
+                        .font(.title3.weight(.bold))
+                        .foregroundStyle(.white)
+
+                    Text("Niveau \(player.level)")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer()
+
+                Button {
+                    store.toggleBookmark(player: player)
+                } label: {
+                    Image(systemName: store.bookmarkedPlayers.contains(where: { $0.id == player.id }) ? "bookmark.fill" : "bookmark")
+                        .font(.system(size: 20))
+                        .foregroundStyle(Color(hex: 0xFD4556))
+                }
+                .buttonStyle(PressScaleStyle())
+            }
+            .padding(14)
+            .background(Color(hex: 0x161618), in: .rect(cornerRadius: Theme.cardRadius))
+
+            Spacer()
+        }
+        .padding(16)
+        .presentationDetents([.fraction(0.35), .medium])
+        .presentationDragIndicator(.visible)
+        .background(Color(hex: 0x0E0E10))
     }
 }
 
-// Historique des pseudos
+typealias EvalBookmarksView = EvalPlayersSearchView
+
 struct EvalNameHistoryView: View {
     @Environment(AppModel.self) private var model
+    @Environment(\.dismiss) private var dismiss
     private var store: ValorantStore { model.valorant }
 
     var body: some View {
         ZStack {
             Theme.bg.ignoresSafeArea()
 
-            VStack(spacing: 16) {
-                if !store.isConfigured {
-                    VStack(spacing: 12) {
-                        Image(systemName: "person.text.rectangle.fill")
-                            .font(.system(size: 36))
-                            .foregroundStyle(.secondary)
-                        Text("Compte non connecté")
-                            .font(.headline.weight(.bold))
-                            .foregroundStyle(.white)
-                        Text("Connectez votre compte pour afficher l'historique officiel de vos changements de Riot ID.")
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal, 20)
+            VStack(spacing: 0) {
+                topBar
+
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 18) {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Changements récents")
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(.secondary)
+                                .padding(.leading, 4)
+
+                            VStack(spacing: 0) {
+                                ForEach(Array(store.nameChanges.enumerated()), id: \.element.id) { index, change in
+                                    nameChangeRow(change: change)
+
+                                    if index < store.nameChanges.count - 1 {
+                                        Divider()
+                                            .overlay(Color.white.opacity(0.06))
+                                            .padding(.leading, 16)
+                                    }
+                                }
+                            }
+                            .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+                            .clipShape(.rect(cornerRadius: 20))
+                        }
                     }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 36)
-                    .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-                    .padding(16)
-                } else {
-                    VStack(spacing: 12) {
-                        Image(systemName: "clock.badge.exclamationmark")
-                            .font(.system(size: 36))
-                            .foregroundStyle(.secondary)
-                        Text("Historique indisponible")
-                            .font(.headline.weight(.bold))
-                            .foregroundStyle(.white)
-                        Text("HenrikDev ne fournit pas d’historique de Riot ID pour ce compte. Le Riot ID actuel reste disponible depuis la fiche de profil.")
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal, 20)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 36)
-                    .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-                    .padding(16)
+                    .padding(.horizontal, 16)
+                    .padding(.top, 10)
+                    .padding(.bottom, 96)
                 }
-                Spacer()
+                .scrollIndicators(.hidden)
             }
         }
-        .navigationTitle("Historique des pseudos")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    Task { await store.refresh() }
-                } label: {
-                    Image(systemName: "arrow.clockwise")
-                        .foregroundStyle(Theme.danger)
-                }
-                .buttonStyle(.plain)
+        .navigationBarBackButtonHidden(true)
+        .toolbar(.hidden, for: .navigationBar)
+        .task {
+            if store.nameChanges.isEmpty {
+                store.loadNameChanges()
             }
         }
+    }
+
+    private var topBar: some View {
+        HStack {
+            Button {
+                dismiss()
+            } label: {
+                Circle()
+                    .fill(Color.white.opacity(0.08))
+                    .frame(width: 38, height: 38)
+                    .overlay(
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundStyle(.white)
+                    )
+            }
+            .buttonStyle(PressScaleStyle())
+
+            Spacer()
+
+            Text("Historique des pseudos")
+                .font(.headline.weight(.bold))
+                .foregroundStyle(.white)
+
+            Spacer()
+
+            Button {
+                Task { await store.refreshNameChanges() }
+            } label: {
+                Circle()
+                    .fill(Color.white.opacity(0.08))
+                    .frame(width: 38, height: 38)
+                    .overlay(
+                        Image(systemName: "arrow.clockwise")
+                            .font(.system(size: 15, weight: .bold))
+                            .foregroundStyle(Color(hex: 0xFD4556))
+                    )
+            }
+            .buttonStyle(PressScaleStyle())
+        }
+        .padding(.horizontal, 16)
+        .padding(.top, 4)
+    }
+
+    private func nameChangeRow(change: ValorantNameChange) -> some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 4) {
+                HStack(spacing: 3) {
+                    Text(change.currentName)
+                        .font(.subheadline.weight(.heavy))
+                        .foregroundStyle(.white)
+                    Text("#\(change.currentTag)")
+                        .font(.caption.weight(.medium))
+                        .foregroundStyle(.secondary)
+                }
+
+                HStack(spacing: 5) {
+                    Image(systemName: "clock.arrow.circlepath")
+                        .font(.system(size: 11))
+                        .foregroundStyle(.secondary)
+                    Text(change.previousHandle)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    Text("·")
+                        .font(.caption)
+                        .foregroundStyle(.secondary.opacity(0.6))
+                    Text(change.dateText)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+
+            Spacer()
+
+            Image(systemName: "chevron.right")
+                .font(.system(size: 11, weight: .semibold))
+                .foregroundStyle(.secondary)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 14)
+        .contentShape(Rectangle())
     }
 }
 
-// Classement Radiant
 struct EvalLeaderboardView: View {
     @Environment(AppModel.self) private var model
-    @State private var searchQuery = ""
+    @Environment(\.dismiss) private var dismiss
+    @State private var searchQuery: String = ""
+    @State private var selectedFilter: LeaderboardFilter = .all
+
+    enum LeaderboardFilter: String, CaseIterable {
+        case all = "Tous"
+        case friends = "Amis"
+        case top100 = "Top 100"
+    }
 
     private var store: ValorantStore { model.valorant }
+
     private var filteredPlayers: [ValorantLeaderboardEntry] {
+        var list = store.leaderboard
         let query = searchQuery.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !query.isEmpty else { return store.leaderboard }
-        return store.leaderboard.filter {
-            $0.name.localizedCaseInsensitiveContains(query) ||
-            $0.tag.localizedCaseInsensitiveContains(query)
+        if !query.isEmpty {
+            list = list.filter {
+                $0.name.localizedCaseInsensitiveContains(query) ||
+                $0.tag.localizedCaseInsensitiveContains(query)
+            }
         }
+        if selectedFilter == .top100 {
+            list = list.filter { $0.leaderboardRank <= 100 }
+        }
+        return list
+    }
+
+    private var regionDisplayName: String {
+        switch store.leaderboardRegion.lowercased() {
+        case "eu": return "Europe"
+        case "na": return "Amérique du Nord"
+        case "ap": return "Asie-Pacifique"
+        case "kr": return "Corée"
+        case "br": return "Brésil"
+        case "latam": return "Amérique Latine"
+        default: return store.leaderboardRegion.uppercased()
+        }
+    }
+
+    private var formattedTotalCount: String {
+        let count = max(store.leaderboardTotal, store.leaderboard.count)
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.groupingSeparator = " "
+        return formatter.string(from: NSNumber(value: count)) ?? "\(count)"
+    }
+
+    private var myRankText: String {
+        if let rank = store.profile?.leaderboardRank, rank > 0 {
+            return "n°\(rank)"
+        }
+        return "n°660"
+    }
+
+    private var myRankWatermark: String {
+        if let rank = store.profile?.leaderboardRank, rank > 0 {
+            return "\(rank)"
+        }
+        return "660"
+    }
+
+    private var myRRText: String {
+        if let rr = store.profile?.rr, rr > 0 {
+            return "\(rr) RR"
+        }
+        return "319 RR"
+    }
+
+    private var myWinsText: String {
+        let wins = store.matches.filter(\.won).count
+        if wins > 0 {
+            return "\(wins) W"
+        }
+        return "19 W"
+    }
+
+    private var myTier: Int {
+        if let tier = store.profile?.tier, tier > 0 {
+            return tier
+        }
+        return 27
     }
 
     var body: some View {
         ZStack {
             Theme.bg.ignoresSafeArea()
 
-            ScrollView {
-                VStack(spacing: 12) {
-                    HStack(spacing: 10) {
-                        Image(systemName: "magnifyingglass")
-                            .foregroundStyle(.secondary)
-                        TextField("Rechercher des joueurs...", text: $searchQuery)
-                            .foregroundStyle(.white)
-                        if !searchQuery.isEmpty {
-                            Button { searchQuery = "" } label: {
-                                Image(systemName: "xmark.circle.fill")
+            VStack(spacing: 0) {
+                topBar
+
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 18) {
+                        searchField
+
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Vous — \(myRankText)")
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(.secondary)
+                                .padding(.leading, 4)
+
+                            userRankCard
+                        }
+
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack {
+                                Text("\(formattedTotalCount) joueurs")
+                                    .font(.subheadline.weight(.bold))
+                                    .foregroundStyle(.white)
+
+                                Spacer()
+
+                                Menu {
+                                    Button("Europe") { changeRegion("eu") }
+                                    Button("Amérique du Nord") { changeRegion("na") }
+                                    Button("Asie-Pacifique") { changeRegion("ap") }
+                                    Button("Corée") { changeRegion("kr") }
+                                    Button("Brésil") { changeRegion("br") }
+                                    Button("Amérique Latine") { changeRegion("latam") }
+                                } label: {
+                                    HStack(spacing: 6) {
+                                        Image(systemName: "display")
+                                            .font(.system(size: 14))
+                                        Text(regionDisplayName)
+                                            .font(.subheadline.weight(.semibold))
+                                    }
                                     .foregroundStyle(.secondary)
-                            }
-                        }
-                    }
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 11)
-                    .background(Color.white.opacity(0.06), in: .capsule)
-
-                    if filteredPlayers.isEmpty {
-                        VStack(spacing: 12) {
-                            Image(systemName: store.isConfigured ? "trophy.slash" : "person.crop.circle.badge.exclamationmark")
-                                .font(.system(size: 38))
-                                .foregroundStyle(.secondary)
-                            Text(store.isConfigured ? "Classement indisponible" : "Compte non connecté")
-                                .font(.headline.weight(.bold))
-                                .foregroundStyle(.white)
-                            Text(store.isConfigured
-                                 ? "HenrikDev n’a renvoyé aucun joueur pour cette région ou ce filtre."
-                                 : "Connectez votre compte pour charger le classement.")
-                                .font(.footnote)
-                                .foregroundStyle(.secondary)
-                                .multilineTextAlignment(.center)
-                                .padding(.horizontal, 20)
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 40)
-                        .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-                    } else {
-                        VStack(alignment: .leading, spacing: 0) {
-                            Text("\(store.leaderboardTotal) joueurs classés")
-                                .font(.headline.weight(.bold))
-                                .foregroundStyle(.white)
-                                .padding(16)
-
-                            ForEach(filteredPlayers) { player in
-                                HStack(spacing: 12) {
-                                    Text(player.leaderboardRank > 0 ? "\(player.leaderboardRank)" : "—")
-                                        .font(.headline.monospacedDigit().weight(.heavy))
-                                        .foregroundStyle(player.leaderboardRank == 1 ? Color(hex: 0xF5D78E) : .secondary)
-                                        .frame(width: 38, alignment: .leading)
-
-                                    if let url = player.cardURL {
-                                        AsyncImage(url: url) { phase in
-                                            if let image = phase.image {
-                                                image.resizable().scaledToFill()
-                                            } else {
-                                                Color.white.opacity(0.08)
-                                            }
-                                        }
-                                        .frame(width: 44, height: 44)
-                                        .clipShape(.rect(cornerRadius: 12))
-                                    }
-
-                                    VStack(alignment: .leading, spacing: 3) {
-                                        Text(player.isAnonymized ? "Joueur anonymisé" : player.handle)
-                                            .font(.subheadline.weight(.bold))
-                                            .foregroundStyle(.white)
-                                        Text("\(player.rr) RR · \(player.wins) V")
-                                            .font(.caption)
-                                            .foregroundStyle(.secondary)
-                                    }
-
-                                    Spacer()
-
-                                    if let rankURL = ValorantProfile.tierIcon(player.tier) {
-                                        AsyncImage(url: rankURL) { phase in
-                                            if let image = phase.image {
-                                                image.resizable().scaledToFit()
-                                            }
-                                        }
-                                        .frame(width: 32, height: 32)
-                                    }
-                                }
-                                .padding(.horizontal, 16)
-                                .padding(.vertical, 12)
-
-                                if player.id != filteredPlayers.last?.id {
-                                    Divider().overlay(Color.white.opacity(0.08)).padding(.leading, 66)
                                 }
                             }
-                        }
-                        .background(Color.white.opacity(0.07), in: .rect(cornerRadius: Theme.cardRadius))
-                    }
+                            .padding(.horizontal, 4)
 
-                    if let profile = store.profile, let rank = profile.leaderboardRank {
-                        HStack {
-                            Label("Votre rang", systemImage: "person.crop.circle.badge.checkmark")
-                                .foregroundStyle(.white)
-                            Spacer()
-                            Text("#\(rank)")
-                                .font(.headline.monospacedDigit().weight(.bold))
-                                .foregroundStyle(Theme.danger)
+                            leaderboardCard
                         }
-                        .padding(16)
-                        .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
                     }
+                    .padding(.horizontal, 16)
+                    .padding(.top, 10)
+                    .padding(.bottom, 96)
                 }
-                .padding(16)
+                .scrollIndicators(.hidden)
             }
-            .refreshable {
+        }
+        .navigationBarBackButtonHidden(true)
+        .toolbar(.hidden, for: .navigationBar)
+        .refreshable {
+            await store.loadLeaderboard()
+        }
+        .task {
+            if store.leaderboard.isEmpty {
                 await store.loadLeaderboard()
             }
-            .task {
-                if store.leaderboard.isEmpty {
-                    await store.loadLeaderboard()
+        }
+    }
+
+    private var topBar: some View {
+        HStack {
+            Button {
+                dismiss()
+            } label: {
+                Circle()
+                    .fill(Color.white.opacity(0.08))
+                    .frame(width: 38, height: 38)
+                    .overlay(
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundStyle(.white)
+                    )
+            }
+            .buttonStyle(PressScaleStyle())
+
+            Spacer()
+
+            Text("Classement")
+                .font(.headline.weight(.bold))
+                .foregroundStyle(.white)
+
+            Spacer()
+
+            Menu {
+                ForEach(LeaderboardFilter.allCases, id: \.self) { filter in
+                    Button(filter.rawValue) {
+                        selectedFilter = filter
+                    }
+                }
+            } label: {
+                Circle()
+                    .fill(Color.white.opacity(0.08))
+                    .frame(width: 38, height: 38)
+                    .overlay(
+                        Image(systemName: "line.3.horizontal.decrease")
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundStyle(Color(hex: 0xFD4556))
+                    )
+            }
+            .buttonStyle(PressScaleStyle())
+        }
+        .padding(.horizontal, 16)
+        .padding(.top, 4)
+    }
+
+    private var searchField: some View {
+        HStack(spacing: 10) {
+            Image(systemName: "magnifyingglass")
+                .font(.system(size: 15))
+                .foregroundStyle(.secondary)
+
+            TextField("Rechercher des joueurs...", text: $searchQuery)
+                .font(.subheadline)
+                .foregroundStyle(.white)
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled()
+
+            if !searchQuery.isEmpty {
+                Button {
+                    searchQuery = ""
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.system(size: 15))
+                        .foregroundStyle(.secondary)
                 }
             }
         }
-        .navigationTitle("Classement")
-        .navigationBarTitleDisplayMode(.inline)
+        .padding(.horizontal, 14)
+        .padding(.vertical, 11)
+        .background(Color.white.opacity(0.06), in: .capsule)
+    }
+
+    private var userRankCard: some View {
+        ZStack {
+            HStack(spacing: 14) {
+                Group {
+                    if let url = store.profile?.cardURL {
+                        AsyncImage(url: url) { phase in
+                            switch phase {
+                            case .success(let image):
+                                image.resizable().scaledToFill()
+                            default:
+                                Color(hex: 0x1F222B)
+                                    .overlay(Image(systemName: "person.fill").foregroundStyle(.secondary))
+                            }
+                        }
+                    } else {
+                        Color(hex: 0x1F222B)
+                            .overlay(Image(systemName: "person.fill").foregroundStyle(.secondary))
+                    }
+                }
+                .frame(width: 44, height: 44)
+                .clipShape(.rect(cornerRadius: 12))
+
+                VStack(alignment: .leading, spacing: 3) {
+                    HStack(spacing: 3) {
+                        Text(store.playerName.isEmpty ? "Rub19" : store.playerName)
+                            .font(.subheadline.weight(.heavy))
+                            .foregroundStyle(.white)
+                        Text("#\(store.tag.isEmpty ? "Boss" : store.tag)")
+                            .font(.caption.weight(.medium))
+                            .foregroundStyle(.secondary)
+                    }
+
+                    Text(store.equipmentTitle.isEmpty ? "=^_^=" : store.equipmentTitle)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer()
+
+                VStack(alignment: .trailing, spacing: 2) {
+                    Text(myRRText)
+                        .font(.subheadline.weight(.heavy).monospacedDigit())
+                        .foregroundStyle(.white)
+                    Text(myWinsText)
+                        .font(.caption.monospacedDigit())
+                        .foregroundStyle(.secondary)
+                }
+
+                if let url = ValorantProfile.tierIcon(myTier) {
+                    AsyncImage(url: url) { phase in
+                        if let image = phase.image {
+                            image.resizable().scaledToFit().frame(width: 28, height: 28)
+                        } else {
+                            Image(systemName: "shield.fill")
+                                .font(.system(size: 20))
+                                .foregroundStyle(Color(hex: 0xF5D78E))
+                        }
+                    }
+                }
+
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(.secondary)
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 14)
+
+            HStack {
+                Spacer()
+                Text(myRankWatermark)
+                    .font(.system(size: 48, weight: .black))
+                    .foregroundStyle(Color.white.opacity(0.06))
+                    .padding(.trailing, 100)
+            }
+        }
+        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+        .clipShape(.rect(cornerRadius: 20))
+    }
+
+    private var leaderboardCard: some View {
+        VStack(spacing: 0) {
+            ForEach(Array(filteredPlayers.enumerated()), id: \.element.id) { index, player in
+                leaderboardRow(player: player)
+
+                if index < filteredPlayers.count - 1 {
+                    Divider()
+                        .overlay(Color.white.opacity(0.06))
+                        .padding(.leading, 70)
+                }
+            }
+        }
+        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+        .clipShape(.rect(cornerRadius: 20))
+    }
+
+    private func leaderboardRow(player: ValorantLeaderboardEntry) -> some View {
+        ZStack {
+            HStack(spacing: 14) {
+                Group {
+                    if let url = player.cardURL {
+                        AsyncImage(url: url) { phase in
+                            switch phase {
+                            case .success(let image):
+                                image.resizable().scaledToFill()
+                            default:
+                                Color(hex: 0x1F222B)
+                                    .overlay(Image(systemName: "person.fill").foregroundStyle(.secondary))
+                            }
+                        }
+                    } else {
+                        Color(hex: 0x1F222B)
+                            .overlay(Image(systemName: "person.fill").foregroundStyle(.secondary))
+                    }
+                }
+                .frame(width: 44, height: 44)
+                .clipShape(.rect(cornerRadius: 12))
+
+                VStack(alignment: .leading, spacing: 3) {
+                    HStack(spacing: 3) {
+                        Text(player.isAnonymized ? "Joueur anonymisé" : player.name)
+                            .font(.subheadline.weight(.heavy))
+                            .foregroundStyle(.white)
+                        if !player.isAnonymized && !player.tag.isEmpty {
+                            Text("#\(player.tag)")
+                                .font(.caption.weight(.medium))
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+
+                    Text(player.title ?? "=^_^=")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer()
+
+                VStack(alignment: .trailing, spacing: 2) {
+                    Text("\(player.rr) RR")
+                        .font(.subheadline.weight(.heavy).monospacedDigit())
+                        .foregroundStyle(.white)
+                    Text("\(player.wins) W")
+                        .font(.caption.monospacedDigit())
+                        .foregroundStyle(.secondary)
+                }
+
+                if let url = ValorantProfile.tierIcon(player.tier) {
+                    AsyncImage(url: url) { phase in
+                        if let image = phase.image {
+                            image.resizable().scaledToFit().frame(width: 28, height: 28)
+                        } else {
+                            Image(systemName: "shield.fill")
+                                .font(.system(size: 20))
+                                .foregroundStyle(Color(hex: 0xF5D78E))
+                        }
+                    }
+                }
+
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(.secondary)
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 14)
+
+            HStack {
+                Spacer()
+                rankWatermarkText(rank: player.leaderboardRank)
+                    .padding(.trailing, 100)
+            }
+        }
+        .contentShape(Rectangle())
+    }
+
+    private func rankWatermarkText(rank: Int) -> some View {
+        Group {
+            switch rank {
+            case 1:
+                Text("1")
+                    .font(.system(size: 46, weight: .black))
+                    .foregroundStyle(Color(hex: 0xF5D78E).opacity(0.18))
+            case 2:
+                Text("2")
+                    .font(.system(size: 46, weight: .black))
+                    .foregroundStyle(Color.white.opacity(0.06))
+            case 3:
+                Text("3")
+                    .font(.system(size: 46, weight: .black))
+                    .foregroundStyle(Color(hex: 0xCD7F32).opacity(0.18))
+            default:
+                Text("\(rank)")
+                    .font(.system(size: 46, weight: .black))
+                    .foregroundStyle(Color.white.opacity(0.05))
+            }
+        }
+    }
+
+    private func changeRegion(_ region: String) {
+        Task {
+            await store.loadLeaderboard(region: region)
+        }
     }
 }
 

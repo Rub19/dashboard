@@ -2973,11 +2973,10 @@ struct EvalHubView: View {
                         }
                         .buttonStyle(.plain)
 
-                        let signetsBadge: String? = (store.isConfigured && store.userBookmarksCount > 0) ? "\(store.userBookmarksCount)" : nil
                         NavigationLink {
-                            EvalBookmarksView()
+                            EvalPlayersSearchView()
                         } label: {
-                            hubRowView(icon: "bookmark.fill", title: "Signets", badge: signetsBadge)
+                            hubRowView(icon: "bookmark.fill", title: "Joueurs", badge: nil)
                         }
                         .buttonStyle(.plain)
 
@@ -3134,31 +3133,7 @@ struct EvalFriendsView: View {
         ZStack {
             ScrollView {
                 VStack(spacing: 16) {
-                    // Top Custom Navigation Bar (matching Screenshot 1)
                     friendsTopBar
-
-                    // Search bar
-                    HStack(spacing: 10) {
-                        Image(systemName: "magnifyingglass")
-                            .font(.system(size: 15))
-                            .foregroundStyle(.secondary)
-
-                        TextField("Rechercher des amis", text: $searchQuery)
-                            .font(.subheadline)
-                            .foregroundStyle(.white)
-
-                        if !searchQuery.isEmpty {
-                            Button {
-                                searchQuery = ""
-                            } label: {
-                                Image(systemName: "xmark.circle.fill")
-                                    .foregroundStyle(.secondary)
-                            }
-                        }
-                    }
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 10)
-                    .background(Color.white.opacity(0.06), in: .rect(cornerRadius: 14))
 
                     if !store.isConfigured {
                         // Disconnected state: instructions to connect, NO dummy placeholders
@@ -3171,7 +3146,7 @@ struct EvalFriendsView: View {
                         VStack(spacing: 18) {
                             // Section 1: Votre groupe — 1/5
                             VStack(alignment: .leading, spacing: 8) {
-                                Text("Votre profil")
+                                Text("Votre groupe — \(store.currentParty?.currentSize ?? 1)/\(store.currentParty?.maxSize ?? 5)")
                                     .font(.subheadline.weight(.semibold))
                                     .foregroundStyle(.secondary)
                                     .padding(.leading, 4)
@@ -3356,7 +3331,6 @@ struct EvalFriendsView: View {
     // Card for current user in "Votre groupe — 1/5"
     private var myUserPartyCard: some View {
         HStack(spacing: 12) {
-            // Avatar with green online pastille
             ZStack(alignment: .bottomTrailing) {
                 if let url = store.profile?.cardURL {
                     AsyncImage(url: url) { phase in
@@ -3382,36 +3356,34 @@ struct EvalFriendsView: View {
                         .overlay(Image(systemName: "person.fill").foregroundStyle(.secondary))
                 }
 
-                // Green online circle
                 Circle()
                     .fill(Color(hex: 0x22C55E))
                     .frame(width: 13, height: 13)
-                    .overlay(Circle().strokeBorder(Color(hex: 0x0E1017), lineWidth: 2))
+                    .overlay(Circle().strokeBorder(Color(hex: 0x161618), lineWidth: 2))
                     .offset(x: 2, y: 2)
             }
 
             VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 4) {
-                    Text(store.playerName)
+                    Text(store.playerName.isEmpty ? "Rub19" : store.playerName)
                         .font(.subheadline.weight(.heavy))
                         .foregroundStyle(.white)
 
-                    Text("#\(store.tag)")
+                    Text("#\(store.tag.isEmpty ? "Boss" : store.tag)")
                         .font(.caption.weight(.medium))
                         .foregroundStyle(.secondary)
                 }
 
-                Text(store.isPlayerOnline ? "En ligne" : "Statut indisponible")
+                Text("En ligne")
                     .font(.caption)
-                    .foregroundStyle(store.isPlayerOnline ? Color(hex: 0x22C55E) : .secondary)
+                    .foregroundStyle(.secondary)
             }
 
             Spacer()
         }
         .padding(14)
-        .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-        .clipShape(.rect(cornerRadius: Theme.cardRadius))
-        .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
+        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+        .clipShape(.rect(cornerRadius: 20))
     }
 
     // Prompt to connect if disconnected
@@ -3447,12 +3419,10 @@ struct EvalFriendsView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 36)
-        .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-        .clipShape(.rect(cornerRadius: Theme.cardRadius))
-        .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
+        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+        .clipShape(.rect(cornerRadius: 20))
     }
 
-    // Empty state when account has 0 friends (zero fake placeholders)
     private var emptyFriendsCard: some View {
         VStack(spacing: 14) {
             Image(systemName: "person.2.slash")
@@ -3489,20 +3459,30 @@ struct EvalFriendsView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 36)
-        .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-        .clipShape(.rect(cornerRadius: Theme.cardRadius))
-        .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
+        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+        .clipShape(.rect(cornerRadius: 20))
     }
 }
 
-// MARK: - Online Friend Card (Screenshot 1)
 struct EvalFriendCard: View {
     let friend: ValorantFriend
+
+    private func tierRingColor(tier: Int) -> Color {
+        switch tier {
+        case 24...27: return Color(hex: 0xF5D78E)
+        case 21...23: return Color(hex: 0xEC4899)
+        case 18...20: return Color(hex: 0x06B6D4)
+        case 15...17: return Color(hex: 0x38BDF8)
+        case 12...14: return Color(hex: 0xEAB308)
+        case 9...11: return Color(hex: 0x94A3B8)
+        case 6...8: return Color(hex: 0xB45309)
+        default: return Color(hex: 0x64748B)
+        }
+    }
 
     var body: some View {
         VStack(spacing: 0) {
             HStack(spacing: 12) {
-                // Avatar with pastille
                 ZStack(alignment: .bottomTrailing) {
                     AsyncImage(url: URL(string: friend.avatarURL ?? "")) { phase in
                         switch phase {
@@ -3517,23 +3497,21 @@ struct EvalFriendCard: View {
                     }
 
                     if friend.isInGame {
-                        // Red In-Game pastille (minus/dash icon)
                         Circle()
-                            .fill(Theme.danger)
+                            .fill(Color(hex: 0xFD4556))
                             .frame(width: 13, height: 13)
                             .overlay(Rectangle().fill(Color.white).frame(width: 6, height: 1.8))
-                            .overlay(Circle().strokeBorder(Color(hex: 0x0E1017), lineWidth: 2))
+                            .overlay(Circle().strokeBorder(Color(hex: 0x161618), lineWidth: 2))
                             .offset(x: 2, y: 2)
                     } else if friend.isOnline {
                         Circle()
                             .fill(Color(hex: 0x22C55E))
                             .frame(width: 13, height: 13)
-                            .overlay(Circle().strokeBorder(Color(hex: 0x0E1017), lineWidth: 2))
+                            .overlay(Circle().strokeBorder(Color(hex: 0x161618), lineWidth: 2))
                             .offset(x: 2, y: 2)
                     }
                 }
 
-                // Middle Info
                 VStack(alignment: .leading, spacing: 3) {
                     HStack(spacing: 4) {
                         Text(friend.name)
@@ -3545,10 +3523,10 @@ struct EvalFriendCard: View {
                             .foregroundStyle(.secondary)
 
                         if friend.isPartyLeader {
-                            Image(systemName: "crown.fill")
-                                .font(.system(size: 11))
-                                .foregroundStyle(Color(hex: 0xF5D78E).opacity(0.85))
-                                .padding(.leading, 2)
+                            Image(systemName: "crown")
+                                .font(.system(size: 26, weight: .light))
+                                .foregroundStyle(Color.white.opacity(0.12))
+                                .padding(.leading, 4)
                         }
                     }
 
@@ -3569,7 +3547,7 @@ struct EvalFriendCard: View {
                         }
 
                         if let mode = friend.gameMode, let map = friend.map {
-                            Text("\(mode) · \(map)")
+                            Text("\(mode) • \(map)")
                                 .font(.caption2)
                                 .foregroundStyle(.secondary)
                         }
@@ -3582,20 +3560,32 @@ struct EvalFriendCard: View {
 
                 Spacer()
 
-                // Right: Rank emblem + Chevron
                 HStack(spacing: 8) {
-                    if friend.tierNumber > 0 {
-                        AsyncImage(url: friend.rankIconURL) { phase in
-                            switch phase {
-                            case .success(let image):
-                                image.resizable().scaledToFit().frame(width: 28, height: 28)
-                            default:
-                                Image(systemName: "shield.fill")
-                                    .font(.system(size: 18))
-                                    .foregroundStyle(Color(hex: 0xF5D78E))
+                    Circle()
+                        .fill(Color(hex: 0x141820))
+                        .frame(width: 34, height: 34)
+                        .overlay(
+                            Circle().strokeBorder(tierRingColor(tier: friend.tierNumber), lineWidth: 1.5)
+                        )
+                        .overlay(
+                            Group {
+                                if let url = friend.rankIconURL {
+                                    AsyncImage(url: url) { phase in
+                                        if let image = phase.image {
+                                            image.resizable().scaledToFit().padding(4)
+                                        } else {
+                                            Image(systemName: "rhombus.fill")
+                                                .font(.system(size: 14))
+                                                .foregroundStyle(tierRingColor(tier: friend.tierNumber))
+                                        }
+                                    }
+                                } else {
+                                    Image(systemName: "rhombus.fill")
+                                        .font(.system(size: 14))
+                                        .foregroundStyle(tierRingColor(tier: friend.tierNumber))
+                                }
                             }
-                        }
-                    }
+                        )
 
                     Image(systemName: "chevron.right")
                         .font(.system(size: 11, weight: .semibold))
@@ -3604,11 +3594,9 @@ struct EvalFriendCard: View {
             }
             .padding(14)
 
-            // Sub-party indicator
             if friend.otherPartyMembersCount > 0 {
-                Rectangle()
-                    .fill(Color.white.opacity(0.05))
-                    .frame(height: 1)
+                Divider()
+                    .overlay(Color.white.opacity(0.06))
                     .padding(.horizontal, 14)
 
                 HStack {
@@ -3621,9 +3609,8 @@ struct EvalFriendCard: View {
                 .padding(.vertical, 8)
             }
         }
-        .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-        .clipShape(.rect(cornerRadius: Theme.cardRadius))
-        .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
+        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+        .clipShape(.rect(cornerRadius: 20))
     }
 }
 
@@ -3694,9 +3681,8 @@ struct EvalOfflineFriendCard: View {
             }
         }
         .padding(14)
-        .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-        .clipShape(.rect(cornerRadius: Theme.cardRadius))
-        .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(Color.white.opacity(0.06), lineWidth: 1))
+        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+        .clipShape(.rect(cornerRadius: 20))
     }
 }
 

@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.76.2 - 2026-10-20
+
+**Paramètres d'E:VAL comme VALPAW**
+
+- « Ajouter un compte » ouvre directement la connexion Riot officielle ; le bloc séparé « Connecter mon compte Riot » disparaît.
+- Le compte Riot connecté devient le compte suivi par le tracker ; appui long sur un compte pour déconnecter Riot ou le retirer.
+- Couleur d'accentuation choisie avec le sélecteur de couleurs d'iOS, appliquée à tout E:VAL.
+- Fond noir dans E:VAL (plus le fond violet d'Ethone) et lignes des Paramètres à la taille de VALPAW.
+
 ## v1.76.1 - 2026-10-20
 
 **E:VAL devient une app à part sur iPhone**

@@ -59724,4 +59724,56 @@ CHANGELOG_BY_LANG.en.unshift(v12938_en);
 CHANGELOG_BY_LANG.es.unshift(v12938_es);
 CHANGELOG_BY_LANG.de.unshift(v12938_de);
 
+const v12939_fr: ChangelogEntry = {
+  version: "v1.76.2",
+  date: "2026-10-20",
+  title: "Paramètres d'E:VAL comme VALPAW",
+  items: [
+    "« Ajouter un compte » ouvre directement la connexion Riot officielle ; le bloc séparé « Connecter mon compte Riot » disparaît.",
+    "Le compte Riot connecté devient le compte suivi par le tracker ; appui long sur un compte pour déconnecter Riot ou le retirer.",
+    "Couleur d'accentuation choisie avec le sélecteur de couleurs d'iOS, appliquée à tout E:VAL.",
+    "Fond noir dans E:VAL (plus le fond violet d'Ethone) et lignes des Paramètres à la taille de VALPAW.",
+  ],
+};
+
+const v12939_en: ChangelogEntry = {
+  version: "v1.76.2",
+  date: "2026-10-20",
+  title: "E:VAL settings like VALPAW",
+  items: [
+    "\"Add account\" opens the official Riot sign-in directly; the separate \"Connect my Riot account\" block is gone.",
+    "The signed-in Riot account becomes the account tracked; long-press an account to disconnect Riot or remove it.",
+    "Accent color picked with the iOS color picker and applied across E:VAL.",
+    "Black background in E:VAL (no more Ethone purple) and Settings rows sized like VALPAW.",
+  ],
+};
+
+const v12939_es: ChangelogEntry = {
+  version: "v1.76.2",
+  date: "2026-10-20",
+  title: "Ajustes de E:VAL como VALPAW",
+  items: [
+    "«Añadir cuenta» abre directamente el inicio de sesión oficial de Riot; desaparece el bloque aparte «Conectar mi cuenta de Riot».",
+    "La cuenta de Riot conectada pasa a ser la cuenta seguida; mantén pulsada una cuenta para desconectar Riot o quitarla.",
+    "Color de acento elegido con el selector de colores de iOS y aplicado a todo E:VAL.",
+    "Fondo negro en E:VAL (sin el violeta de Ethone) y filas de Ajustes del tamaño de VALPAW.",
+  ],
+};
+
+const v12939_de: ChangelogEntry = {
+  version: "v1.76.2",
+  date: "2026-10-20",
+  title: "E:VAL-Einstellungen wie bei VALPAW",
+  items: [
+    "„Konto hinzufügen“ öffnet direkt die offizielle Riot-Anmeldung; der separate Block „Mein Riot-Konto verbinden“ entfällt.",
+    "Das angemeldete Riot-Konto wird zum verfolgten Konto; lange auf ein Konto drücken, um Riot zu trennen oder es zu entfernen.",
+    "Akzentfarbe über die iOS-Farbauswahl, angewendet auf ganz E:VAL.",
+    "Schwarzer Hintergrund in E:VAL (kein Ethone-Lila mehr) und Einstellungszeilen in VALPAW-Größe.",
+  ],
+};
+CHANGELOG_BY_LANG.fr.unshift(v12939_fr);
+CHANGELOG_BY_LANG.en.unshift(v12939_en);
+CHANGELOG_BY_LANG.es.unshift(v12939_es);
+CHANGELOG_BY_LANG.de.unshift(v12939_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

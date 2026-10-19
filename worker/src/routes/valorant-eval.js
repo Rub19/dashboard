@@ -1,6 +1,7 @@
-import { assertAllowedQuery, PATTERNS, queryText } from "../middleware/validation.js";
+import { assertAllowedQuery, PATTERNS, queryInteger, queryText } from "../middleware/validation.js";
 import { httpError } from "../middleware/errors.js";
-import { resolveAccount, syncMatches } from "../services/valorant-eval.js";
+import { resolveAccount, syncHistoryPage, syncMatches } from "../services/valorant-eval.js";
+import { cachedLoad } from "../utils/cache.js";
 import { routeResult } from "../utils/response.js";
 
 const PUUID = /^[A-Za-z0-9-]{20,80}$/;
@@ -38,4 +39,16 @@ export async function valorantEvalSyncRoute({ env, url }) {
     ? { synced: false, stored: 0 }
     : await syncMatches(env, account);
   return routeResult(publicAccount(account, result), { source: "henrikdev" });
+}
+
+/** GET /api/valorant/eval/history?puuid=&page= : stocke une page plus ancienne de l'historique. */
+export async function valorantEvalHistoryRoute({ env, url }) {
+  assertAllowedQuery(url, ["puuid", "page"]);
+  const puuid = queryText(url, "puuid", { pattern: PUUID, max: 80 });
+  const page = queryInteger(url, "page", { required: false, fallback: 1, min: 1, max: 200 });
+  const account = await resolveAccount(env, { puuid });
+  if (!account?.puuid) throw httpError("PROVIDER_NOT_FOUND", 404);
+  // Même page demandée plusieurs fois (plusieurs appareils) : un seul passage HenrikDev.
+  const result = await cachedLoad(`eval:history:${puuid}:${page}`, 600, () => syncHistoryPage(env, account, page));
+  return routeResult(result.data, { source: "henrikdev", cached: result.cached });
 }

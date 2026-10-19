@@ -42,6 +42,8 @@ struct ValorantMatchDetailView: View {
     @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss
     let match: ValorantMatch
+    /// Joueur ciblé au départ (profil d'un autre joueur) ; nil = compte suivi.
+    var initialTarget: String? = nil
 
     @State private var evalMatch: EvalMatch?
     @State private var loadFailed = false
@@ -96,7 +98,7 @@ struct ValorantMatchDetailView: View {
             guard evalMatch == nil else { return }
             let store = model.valorant
             if let loaded = await store.evalMatch(id: match.id) {
-                targetPUUID = targetPUUID.isEmpty ? (loaded.player(store.puuid)?.puuid ?? match.myPlayer?.id ?? "") : targetPUUID
+                targetPUUID = targetPUUID.isEmpty ? (initialTarget ?? loaded.player(store.puuid)?.puuid ?? match.myPlayer?.id ?? "") : targetPUUID
                 evalMatch = loaded
             } else {
                 loadFailed = true
@@ -473,9 +475,13 @@ struct ValorantMatchDetailView: View {
                         statLine("Premières morts", "\(s.firstDeaths)")
                         statLine("Poses", "\(s.plants)")
                         statLine("Désamorçages", "\(s.defuses)")
-                        Button("Cibler ce joueur") { targetPUUID = p.puuid }
-                            .font(.system(size: 14, weight: .semibold))
-                            .foregroundStyle(EvalPalette.accent)
+                        HStack {
+                            Button("Cibler ce joueur") { targetPUUID = p.puuid }
+                            Spacer()
+                            NavigationLink("Voir le profil") { EvalPlayerProfileView(name: p.name, tag: p.tag) }
+                        }
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(EvalPalette.accent)
                     }
                 }
             }

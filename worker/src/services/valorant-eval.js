@@ -324,3 +324,47 @@ export async function syncMatches(env, account, { force = false } = {}) {
   }
   return { synced: true, stored: compact.length };
 }
+
+/**
+ * Historique plus ancien : une page de stored-matches (10 parties), puis le détail complet
+ * uniquement des matchs absents de Supabase. Au plus 10 appels détail par page.
+ */
+export async function syncHistoryPage(env, account, page) {
+  const region = encodeURIComponent(account.region || "eu");
+  const response = await requestExternal(new URL(`/valorant/v1/by-puuid/stored-matches/${region}/${encodeURIComponent(account.puuid)}?page=${page}&size=10`, HENRIK), {
+    env,
+    expectedOrigin: HENRIK,
+    service: "tracker",
+    dedupeKey: `eval:history:${account.puuid}:${page}`,
+    headers: { Authorization: requireSecret(env, "HENRIK_API_KEY") },
+    retries: 1,
+    maxBytes: 1048576
+  });
+  const rows = Array.isArray(response.data?.data) ? response.data.data : [];
+  const total = num(response.data?.results?.total);
+  const ids = [...new Set(rows.map((r) => safeText(r.meta?.id, 64)).filter(Boolean))];
+  if (!ids.length) return { stored: 0, total };
+
+  const known = await rest(env, `ethone_valorant_matches?select=match_id&match_id=in.(${ids.map(encodeURIComponent).join(",")})`);
+  const have = new Set((Array.isArray(known) ? known : []).map((r) => r.match_id));
+  const compact = [];
+  for (const id of ids.filter((x) => !have.has(x))) {
+    try {
+      const match = await henrik(env, `/valorant/v2/match/${encodeURIComponent(id)}`, `eval:match:${id}`, 4194304);
+      const c = compactMatch(match);
+      if (c) compact.push(c);
+    } catch {
+      break; // quota HenrikDev atteint : on garde ce qui a déjà été récupéré.
+    }
+  }
+  if (compact.length) {
+    await rest(env, "ethone_valorant_matches?on_conflict=match_id", {
+      method: "POST",
+      body: compact.map(matchRow),
+      prefer: "resolution=ignore-duplicates,return=minimal",
+      maxBytes: 4096
+    });
+    await rememberNames(env, compact.flatMap((m) => m.players.map((p) => ({ puuid: p.puuid, name: p.name, tag: p.tag }))));
+  }
+  return { stored: compact.length, total, already: have.size };
+}

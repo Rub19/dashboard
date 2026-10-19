@@ -2030,6 +2030,7 @@ struct EvalGameView: View {
             }
 
             VStack(spacing: 0) {
+                NavigationLink { EvalWishlistView() } label: {
                 HStack {
                     Image(systemName: "heart")
                         .font(.system(size: 16))
@@ -2048,11 +2049,14 @@ struct EvalGameView: View {
                 }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 16)
+                .contentShape(.rect)
+                }
+                .buttonStyle(.plain)
 
                 Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 54)
 
                 NavigationLink {
-                    EvalPurchaseHistoryView()
+                    EvalShopHistoryView()
                 } label: {
                     HStack {
                         Image(systemName: "clock.arrow.circlepath")
@@ -3138,8 +3142,8 @@ struct EvalFriendsView: View {
             .presentationDetents([.fraction(0.48), .medium])
             .presentationDragIndicator(.visible)
         }
-        .sheet(item: $selectedFriend) { friend in
-            EvalFriendDetailSheet(friend: friend)
+        .navigationDestination(item: $selectedFriend) { friend in
+            EvalPlayerProfileView(name: friend.name, tag: friend.tag)
                 .presentationDetents([.fraction(0.48), .medium])
                 .presentationDragIndicator(.visible)
         }

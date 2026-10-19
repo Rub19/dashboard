@@ -70,7 +70,7 @@ import { supabaseRoute } from "./routes/supabase.js";
 import { todoistOAuthDisconnectRoute, todoistOAuthExchangeRoute, todoistTasksRoute } from "./routes/todoist-oauth.js";
 import { trackerLolRoute, trackerRoute, trackerValorantRoute, trackerValorantMatchesRoute, trackerValorantMmrRoute, trackerValorantLeaderboardRoute, trackerLolMatchesRoute, trackerValorantStoreRoute, trackerLolRotationRoute, trackerTftMatchesRoute, trackerApexMatchesRoute, trackerGameProfileRoute, trackerGameMatchesRoute } from "./routes/tracker.js";
 import { valorantAuthRoute, valorantStorefrontRoute, valorantInventoryRoute } from "./routes/valorant-player.js";
-import { valorantEvalSyncRoute } from "./routes/valorant-eval.js";
+import { valorantEvalHistoryRoute, valorantEvalSyncRoute } from "./routes/valorant-eval.js";
 import {
   friendGameDinoRoute,
   gameDinoOverrideSetRoute,
@@ -183,6 +183,7 @@ export const ROUTES = Object.freeze([
   route("tracker.apex-matches", "/api/stats/apex-matches", trackerApexMatchesRoute, { public: true, service: "tracker", rateLimit: "edge" }),
   route("tracker.valorant-matches", "/api/stats/valorant-matches", trackerValorantMatchesRoute, { public: true, service: "tracker", rateLimit: "edge" }),
   route("valorant.eval-sync", "/api/valorant/eval/sync", valorantEvalSyncRoute, { service: "tracker", rateLimit: "standard" }),
+  route("valorant.eval-history", "/api/valorant/eval/history", valorantEvalHistoryRoute, { service: "tracker", rateLimit: "strict" }),
   route("tracker.valorant-mmr", "/api/stats/valorant-mmr", trackerValorantMmrRoute, { public: true, service: "tracker", rateLimit: "edge" }),
   route("tracker.valorant-leaderboard", "/api/stats/valorant-leaderboard", trackerValorantLeaderboardRoute, { public: true, service: "tracker", rateLimit: "edge" }),
   route("tracker.lol-matches", "/api/stats/lol-matches", trackerLolMatchesRoute, { public: true, service: "tracker", rateLimit: "edge" }),

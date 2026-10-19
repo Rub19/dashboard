@@ -164,7 +164,7 @@ struct ValorantMatch: Identifiable, Hashable, Codable {
     }
 }
 
-struct ValorantDailySkinOffer: Identifiable, Hashable {
+struct ValorantDailySkinOffer: Identifiable, Hashable, Codable {
     let id: String
     let name: String
     let imageURL: String
@@ -266,7 +266,11 @@ final class ValorantStore {
     private static let missionsCacheTTL: TimeInterval = 6 * 60 * 60
     private static let battlepassCacheTTL: TimeInterval = 24 * 60 * 60
     private static let settingsCacheTTL: TimeInterval = 30 * 24 * 60 * 60
-    private static let matchLimit = 30
+    private static let matchLimitKey = "ethone.valorant.matchLimit"
+    private var matchLimit: Int = max(30, UserDefaults.standard.integer(forKey: "ethone.valorant.matchLimit"))
+    /// Total de parties connues de HenrikDev (« 20 / 1389 »), 0 si inconnu.
+    private(set) var totalMatches = 0
+    private(set) var isLoadingMore = false
 
     private let api: APIClient
     private(set) var matches: [ValorantMatch] = []
@@ -361,6 +365,7 @@ final class ValorantStore {
         let snap = await RiotGameService.load(riot)
         wallet = snap.wallet
         storeOffers = snap.offers
+        recordShop(snap.offers)
         offersEnd = snap.offersEnd
         bundles = snap.bundles
         accessories = snap.accessories
@@ -630,6 +635,7 @@ final class ValorantStore {
         await loadSocial()
         await loadActs()
         await loadSeasonGoal()
+        await loadShopData()
         await syncAndLoadMatches()
         await loadLeaderboard()
         await loadUpcomingMissions()
@@ -682,7 +688,7 @@ final class ValorantStore {
             var query = [
                 URLQueryItem(name: "puuids", value: "cs.{\(account.puuid)}"),
                 URLQueryItem(name: "order", value: "started_at.desc"),
-                URLQueryItem(name: "limit", value: String(Self.matchLimit))
+                URLQueryItem(name: "limit", value: String(matchLimit))
             ]
             if !known.isEmpty {
                 query.append(URLQueryItem(name: "match_id", value: "not.in.(\(known.sorted().joined(separator: ",")))"))
@@ -690,7 +696,7 @@ final class ValorantStore {
             let rows: [MatchRow] = try await api.list("ethone_valorant_matches", query: query)
             for row in rows { evalMatches[row.payload.id] = row.payload }
             rebuildMatchList()
-            let kept = matches.prefix(Self.matchLimit).compactMap { evalMatches[$0.id] }
+            let kept = matches.prefix(matchLimit).compactMap { evalMatches[$0.id] }
             evalMatches = Dictionary(kept.map { ($0.id, $0) }, uniquingKeysWith: { a, _ in a })
             DiskCache.write(AccountCache(account: account, syncedAt: Date(), matches: kept), key: accountCacheKey)
             errorMessage = nil
@@ -700,6 +706,112 @@ final class ValorantStore {
     }
 
     func forceRefreshMatches() async { await syncAndLoadMatches(force: true) }
+
+    private struct HistoryResult: Decodable { let stored: Int; let total: Int }
+
+    /// Récupère 10 parties plus anciennes (Worker -> HenrikDev stored-matches -> Supabase).
+    func loadMoreMatches() async {
+        guard !puuid.isEmpty, !isLoadingMore else { return }
+        isLoadingMore = true
+        defer { isLoadingMore = false }
+        let page = matchLimit / 10 + 1
+        do {
+            let result: HistoryResult = try await api.worker("api/valorant/eval/history", query: [
+                URLQueryItem(name: "puuid", value: puuid), URLQueryItem(name: "page", value: String(page))
+            ])
+            totalMatches = result.total
+            matchLimit += 10
+            UserDefaults.standard.set(matchLimit, forKey: Self.matchLimitKey)
+            await syncAndLoadMatches(force: true)
+        } catch {
+            errorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+        }
+    }
+
+    // MARK: Profil d'un autre joueur
+
+    struct PlayerSnapshot {
+        let puuid: String
+        let name: String
+        let tag: String
+        let level: Int
+        let card: String
+        let tier: Int
+        let mmr: EvalMMR
+        let matches: [EvalMatch]
+        var cardURL: URL? { card.isEmpty ? nil : URL(string: "https://media.valorant-api.com/playercards/\(card)/smallart.png") }
+        var bannerURL: URL? { card.isEmpty ? nil : URL(string: "https://media.valorant-api.com/playercards/\(card)/wideart.png") }
+    }
+
+    /// Profil d'un joueur quelconque : même chaîne bornée (Worker 10 min / compte, matchs dans Supabase).
+    func loadPlayer(name: String, tag: String) async throws -> PlayerSnapshot {
+        let account: Account = try await api.worker("api/valorant/eval/sync", query: [
+            URLQueryItem(name: "name", value: name), URLQueryItem(name: "tag", value: tag)
+        ])
+        let rows: [MatchRow] = try await api.list("ethone_valorant_matches", query: [
+            URLQueryItem(name: "puuids", value: "cs.{\(account.puuid)}"),
+            URLQueryItem(name: "order", value: "started_at.desc"),
+            URLQueryItem(name: "limit", value: "20")
+        ])
+        return PlayerSnapshot(puuid: account.puuid, name: account.name, tag: account.tag, level: account.level ?? 0,
+                              card: account.card ?? "", tier: account.mmr?.tier ?? account.tier ?? 0,
+                              mmr: account.mmr ?? EvalMMR(), matches: rows.map(\.payload))
+    }
+
+    func isFriend(puuid: String) -> Bool { friendRecords.contains { $0.puuid == puuid } }
+
+    // MARK: Historique de la boutique et liste de souhaits
+
+    struct ShopDay: Codable, Hashable, Identifiable {
+        let day: Date
+        let offers: [ValorantDailySkinOffer]
+        var id: Date { day }
+    }
+
+    struct WishItem: Codable, Hashable, Identifiable {
+        let id: String
+        let name: String
+        let icon: String
+    }
+
+    private(set) var shopHistory: [ShopDay] = []
+    private(set) var wishlist: [WishItem] = []
+
+    private func loadShopData() async {
+        guard let cache = personalCache else { return }
+        if let r = await cache.read("shop_history", ttl: .infinity) {
+            shopHistory = ValorantPersonalCache.decode([ShopDay].self, from: r.payload) ?? []
+        }
+        if let r = await cache.read("wishlist", ttl: .infinity) {
+            wishlist = ValorantPersonalCache.decode([WishItem].self, from: r.payload) ?? []
+        }
+        storeHistoryCount = Set(shopHistory.flatMap { $0.offers.map(\.id) }).count
+        wishlistCount = wishlist.count
+    }
+
+    /// Mémorise les offres du jour (une entrée par jour, 120 jours max).
+    private func recordShop(_ offers: [ValorantDailySkinOffer]) {
+        guard !offers.isEmpty, let cache = personalCache else { return }
+        let day = Calendar.current.startOfDay(for: Date())
+        guard !shopHistory.contains(where: { $0.day == day }) else { return }
+        shopHistory.insert(ShopDay(day: day, offers: offers), at: 0)
+        shopHistory = Array(shopHistory.prefix(120))
+        storeHistoryCount = Set(shopHistory.flatMap { $0.offers.map(\.id) }).count
+        if let payload = ValorantPersonalCache.encode(shopHistory) { Task { await cache.save(payload, key: "shop_history") } }
+    }
+
+    func isWished(_ id: String) -> Bool { wishlist.contains { $0.id.lowercased() == id.lowercased() } }
+
+    func toggleWish(id: String, name: String, icon: String) {
+        if let i = wishlist.firstIndex(where: { $0.id.lowercased() == id.lowercased() }) {
+            wishlist.remove(at: i)
+        } else {
+            wishlist.insert(WishItem(id: id.lowercased(), name: name, icon: icon), at: 0)
+        }
+        wishlistCount = wishlist.count
+        guard let cache = personalCache, let payload = ValorantPersonalCache.encode(wishlist) else { return }
+        Task { await cache.save(payload, key: "wishlist") }
+    }
 
     private func rebuildMatchList() {
         matches = evalMatches.values

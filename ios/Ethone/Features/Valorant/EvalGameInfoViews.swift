@@ -1586,8 +1586,8 @@ struct EvalPlayersSearchView: View {
         }
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
-        .sheet(item: $selectedPlayer) { player in
-            playerDetailSheet(player: player)
+        .navigationDestination(item: $selectedPlayer) { player in
+            EvalPlayerProfileView(name: player.name, tag: player.tag)
         }
         .confirmationDialog("Options", isPresented: $showingOptions) {
             Button("Effacer l'historique des recherches", role: .destructive) {
@@ -2315,7 +2315,12 @@ struct EvalLeaderboardView: View {
     private var leaderboardCard: some View {
         VStack(spacing: 0) {
             ForEach(Array(filteredPlayers.enumerated()), id: \.element.id) { index, player in
-                leaderboardRow(player: player)
+                if player.isAnonymized || player.tag.isEmpty {
+                    leaderboardRow(player: player)
+                } else {
+                    NavigationLink { EvalPlayerProfileView(name: player.name, tag: player.tag) } label: { leaderboardRow(player: player) }
+                        .buttonStyle(.plain)
+                }
 
                 if index < filteredPlayers.count - 1 {
                     Divider()

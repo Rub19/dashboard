@@ -145,8 +145,14 @@ struct EvalStatsEngine {
 struct EvalStatisticsView: View {
     @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss
+    /// Profil d'un autre joueur ; nil = compte suivi.
+    var player: ValorantStore.PlayerSnapshot? = nil
     private var store: ValorantStore { model.valorant }
-    private var stats: EvalStatsEngine { EvalStatsEngine(matches: store.evalMatchList, puuid: store.puuid) }
+    private var stats: EvalStatsEngine {
+        if let player { return EvalStatsEngine(matches: player.matches, puuid: player.puuid) }
+        return EvalStatsEngine(matches: store.evalMatchList, puuid: store.puuid)
+    }
+    private var history: [EvalMMR.HistoryPoint] { player?.mmr.history ?? store.mmr.history }
 
     var body: some View {
         let s = stats
@@ -157,7 +163,7 @@ struct EvalStatisticsView: View {
                 if s.count == 0 {
                     emptyCard
                 }
-                if !store.mmr.history.isEmpty { rankChart }
+                if !history.isEmpty { rankChart }
                 if s.count > 0 {
                     NavigationLink { EvalOverviewDetailView(title: "Aperçu", stats: s) } label: { overviewCard(s) }.buttonStyle(.plain)
                     NavigationLink { EvalPlayTimeDetailView(stats: s) } label: { playTimeCard(s) }.buttonStyle(.plain)
@@ -178,12 +184,30 @@ struct EvalStatisticsView: View {
     }
 
     private func matchesCard(_ s: EvalStatsEngine) -> some View {
-        HStack {
-            Text("Matchs").font(.system(size: 17)).foregroundStyle(.white)
-            Spacer()
-            Text("\(s.count) enregistrés").font(.system(size: 17)).foregroundStyle(EvalUI.secondary)
+        VStack(spacing: 0) {
+            HStack {
+                Text("Matchs").font(.system(size: 17)).foregroundStyle(.white)
+                Spacer()
+                Text(player == nil && store.totalMatches > 0 ? "\(s.count) / \(store.totalMatches)" : "\(s.count) enregistrés")
+                    .font(.system(size: 17)).foregroundStyle(EvalUI.secondary)
+            }
+            .padding(18)
+            if player == nil {
+                Divider().overlay(Color.white.opacity(0.08)).padding(.horizontal, 18)
+                Button { Task { await store.loadMoreMatches() } } label: {
+                    HStack(spacing: 10) {
+                        if store.isLoadingMore { ProgressView().tint(EvalUI.accent) } else { Image(systemName: "bolt.fill") }
+                        Text("Charger 10 matchs de plus")
+                        Spacer()
+                    }
+                    .font(.system(size: 17))
+                    .foregroundStyle(EvalUI.accent)
+                    .padding(18)
+                }
+                .buttonStyle(.plain)
+                .disabled(store.isLoadingMore)
+            }
         }
-        .padding(18)
         .background(EvalUI.card, in: .rect(cornerRadius: 22))
     }
 
@@ -200,8 +224,8 @@ struct EvalStatisticsView: View {
     }
 
     private var rankChart: some View {
-        let points = Array(store.mmr.history.reversed())
-        let tier = points.last?.tier ?? store.mmr.tier
+        let points = Array(history.reversed())
+        let tier = points.last?.tier ?? (player?.tier ?? store.mmr.tier)
         return VStack(alignment: .leading, spacing: 8) {
             Text("Changements des notes de rangs").font(.system(size: 17, weight: .semibold)).foregroundStyle(EvalUI.secondary).padding(.leading, 4)
             VStack(spacing: 0) {
@@ -1223,6 +1247,7 @@ struct EvalWeaponSkinsView: View {
 }
 
 struct EvalSkinDetailView: View {
+    @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss
     let skin: ValorantWeaponItem.WeaponSkin
     @State private var chroma = 0
@@ -1233,7 +1258,7 @@ struct EvalSkinDetailView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 18) {
-                EvalNavHeader(title: skin.displayName) { dismiss() }
+                EvalNavHeader(title: skin.displayName, trailing: wishButton) { dismiss() }
                 Text("Variantes de couleur").font(.system(size: 18, weight: .semibold)).foregroundStyle(EvalUI.secondary).padding(.leading, 4)
                 VStack(spacing: 14) {
                     let current = chromas.indices.contains(chroma) ? chromas[chroma] : nil
@@ -1289,6 +1314,18 @@ struct EvalSkinDetailView: View {
     }
 
     private struct IdentifiedURL: Identifiable { let url: URL; var id: String { url.absoluteString } }
+
+    /// La boutique Riot identifie un skin par l'UUID de son premier niveau.
+    private var wishButton: AnyView? {
+        guard let levelID = skin.levels?.first?.uuid else { return nil }
+        let store = model.valorant
+        let wished = store.isWished(levelID)
+        return AnyView(Button { store.toggleWish(id: levelID, name: skin.displayName, icon: skin.image ?? "") } label: {
+            Circle().fill(EvalUI.card).frame(width: 44, height: 44)
+                .overlay(Image(systemName: wished ? "heart.fill" : "heart").font(.system(size: 18, weight: .semibold)).foregroundStyle(EvalUI.accent))
+        }
+        .buttonStyle(.plain))
+    }
 
     static func levelLabel(_ item: String) -> String {
         switch item.components(separatedBy: "::").last ?? item {

@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.77.0 - 2026-10-20
+
+**E:VAL : groupe et contrats comme dans VALORANT**
+
+- Groupe : membres avec couronne du chef, interrupteur Prêt, groupe public ou privé, bouton Démarrer / Annuler la recherche.
+- Paramètres du groupe : choix de la file, code de groupe (générer, copier, désactiver, rejoindre), serveurs préférés avec ping, invitation par Nom#Tag.
+- Contrats en quatre onglets : Missions, Passe de combat, Compte et Agents.
+- Passe de combat : récompense en cours avec son image, projection réelle (XP moyenne par match, rythme, matchs restants, date de fin estimée).
+- Compte : niveau, XP vers le niveau suivant, première victoire du jour et détail de l'XP des 10 derniers matchs.
+- Agents : agents débloqués, contrats terminés, crédits de royaume dépensés et coût du prochain niveau pour chaque agent.
+- Le passe de combat suit maintenant l'acte en cours (l'identifiant était figé) et ses récompenses ont un nom et une image.
+- La projection n'utilise plus le score de combat comme XP : elle se base sur l'XP réellement gagnée d'après Riot.
+
 ## v1.76.2 - 2026-10-20
 
 **Paramètres d'E:VAL comme VALPAW**

@@ -59776,4 +59776,72 @@ CHANGELOG_BY_LANG.en.unshift(v12939_en);
 CHANGELOG_BY_LANG.es.unshift(v12939_es);
 CHANGELOG_BY_LANG.de.unshift(v12939_de);
 
+const v12940_fr: ChangelogEntry = {
+  version: "v1.77.0",
+  date: "2026-10-20",
+  title: "E:VAL : groupe et contrats comme dans VALORANT",
+  items: [
+    "Groupe : membres avec couronne du chef, interrupteur Prêt, groupe public ou privé, bouton Démarrer / Annuler la recherche.",
+    "Paramètres du groupe : choix de la file, code de groupe (générer, copier, désactiver, rejoindre), serveurs préférés avec ping, invitation par Nom#Tag.",
+    "Contrats en quatre onglets : Missions, Passe de combat, Compte et Agents.",
+    "Passe de combat : récompense en cours avec son image, projection réelle (XP moyenne par match, rythme, matchs restants, date de fin estimée).",
+    "Compte : niveau, XP vers le niveau suivant, première victoire du jour et détail de l'XP des 10 derniers matchs.",
+    "Agents : agents débloqués, contrats terminés, crédits de royaume dépensés et coût du prochain niveau pour chaque agent.",
+    "Le passe de combat suit maintenant l'acte en cours (l'identifiant était figé) et ses récompenses ont un nom et une image.",
+    "La projection n'utilise plus le score de combat comme XP : elle se base sur l'XP réellement gagnée d'après Riot.",
+  ],
+};
+
+const v12940_en: ChangelogEntry = {
+  version: "v1.77.0",
+  date: "2026-10-20",
+  title: "E:VAL: party and contracts like in VALORANT",
+  items: [
+    "Party: members with the leader's crown, Ready toggle, open or closed party, Start / Cancel matchmaking button.",
+    "Party settings: queue choice, party code (generate, copy, disable, join), preferred servers with ping, invite by Name#Tag.",
+    "Contracts in four tabs: Missions, Battle pass, Account and Agents.",
+    "Battle pass: current reward with its image, real projection (average XP per match, pace, matches left, estimated finish date).",
+    "Account: level, XP to next level, first win of the day and XP breakdown of the last 10 matches.",
+    "Agents: unlocked agents, completed contracts, Kingdom Credits spent and next level cost for each agent.",
+    "The battle pass now follows the current act (its ID was hard-coded) and rewards have a name and an image.",
+    "The projection no longer uses combat score as XP: it uses the XP actually earned according to Riot.",
+  ],
+};
+
+const v12940_es: ChangelogEntry = {
+  version: "v1.77.0",
+  date: "2026-10-20",
+  title: "E:VAL: grupo y contratos como en VALORANT",
+  items: [
+    "Grupo: miembros con la corona del líder, interruptor Listo, grupo público o privado, botón Empezar / Cancelar la búsqueda.",
+    "Ajustes del grupo: elección de cola, código de grupo (generar, copiar, desactivar, unirse), servidores preferidos con ping, invitación por Nombre#Tag.",
+    "Contratos en cuatro pestañas: Misiones, Pase de batalla, Cuenta y Agentes.",
+    "Pase de batalla: recompensa actual con su imagen, proyección real (XP media por partida, ritmo, partidas restantes, fecha estimada).",
+    "Cuenta: nivel, XP hasta el siguiente nivel, primera victoria del día y detalle de la XP de las 10 últimas partidas.",
+    "Agentes: agentes desbloqueados, contratos completados, créditos de reino gastados y coste del siguiente nivel de cada agente.",
+    "El pase de batalla sigue ahora el acto en curso (su ID estaba fijo) y las recompensas tienen nombre e imagen.",
+    "La proyección ya no usa la puntuación de combate como XP: usa la XP realmente ganada según Riot.",
+  ],
+};
+
+const v12940_de: ChangelogEntry = {
+  version: "v1.77.0",
+  date: "2026-10-20",
+  title: "E:VAL: Gruppe und Verträge wie in VALORANT",
+  items: [
+    "Gruppe: Mitglieder mit Krone des Anführers, Bereit-Schalter, offene oder geschlossene Gruppe, Starten / Suche abbrechen.",
+    "Gruppeneinstellungen: Warteschlange, Gruppencode (erstellen, kopieren, deaktivieren, beitreten), bevorzugte Server mit Ping, Einladung per Name#Tag.",
+    "Verträge in vier Tabs: Missionen, Battle Pass, Konto und Agenten.",
+    "Battle Pass: aktuelle Belohnung mit Bild, echte Prognose (durchschnittliche XP pro Match, Tempo, verbleibende Matches, geschätztes Enddatum).",
+    "Konto: Stufe, XP bis zur nächsten Stufe, erster Sieg des Tages und XP-Aufschlüsselung der letzten 10 Matches.",
+    "Agenten: freigeschaltete Agenten, abgeschlossene Verträge, ausgegebene Königreich-Credits und Kosten der nächsten Stufe je Agent.",
+    "Der Battle Pass folgt jetzt dem aktuellen Akt (die ID war fest codiert) und Belohnungen haben Namen und Bild.",
+    "Die Prognose nutzt nicht mehr den Kampfwert als XP, sondern die laut Riot tatsächlich verdiente XP.",
+  ],
+};
+CHANGELOG_BY_LANG.fr.unshift(v12940_fr);
+CHANGELOG_BY_LANG.en.unshift(v12940_en);
+CHANGELOG_BY_LANG.es.unshift(v12940_es);
+CHANGELOG_BY_LANG.de.unshift(v12940_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

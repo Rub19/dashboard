@@ -537,7 +537,7 @@ final class ValorantAgentsStore {
     ]
 
     func fetchAgents() async {
-        guard let url = URL(string: "https://valorant-api.com/v1/agents?isPlayableCharacter=true") else { return }
+        guard let url = URL(string: "https://valorant-api.com/v1/agents?isPlayableCharacter=true&language=fr-FR") else { return }
         isLoading = true
         defer { isLoading = false }
 
@@ -630,7 +630,7 @@ struct EvalAgentsView: View {
             await store.fetchAgents()
         }
         .sheet(item: $selectedAgent) { agent in
-            agentDetailSheet(agent: agent)
+            EvalAgentDetailView(agent: agent)
         }
     }
 
@@ -741,115 +741,225 @@ struct EvalAgentsView: View {
         .padding(.vertical, 12)
         .contentShape(Rectangle())
     }
+}
 
-    private func agentDetailSheet(agent: ValorantAgentItem) -> some View {
-        NavigationStack {
-            ZStack {
-                Theme.bg.ignoresSafeArea()
+struct EvalAgentDetailView: View {
+    let agent: ValorantAgentItem
+    @Environment(\.dismiss) private var dismiss
+    @State private var selectedSlot: String = "Grenade"
+
+    private func slotPriority(_ slot: String) -> Int {
+        switch slot.lowercased() {
+        case "grenade": return 0
+        case "ability1": return 1
+        case "ability2": return 2
+        case "ultimate": return 3
+        default: return 4
+        }
+    }
+
+    private var sortedAbilities: [ValorantAgentItem.AgentAbility] {
+        agent.abilities.sorted { slotPriority($0.slot) < slotPriority($1.slot) }
+    }
+
+    private var activeAbility: ValorantAgentItem.AgentAbility? {
+        sortedAbilities.first { $0.slot == selectedSlot } ?? sortedAbilities.first
+    }
+
+    private func roleFrenchName(_ role: String) -> String {
+        switch role.lowercased() {
+        case "controller": return "Contrôleur"
+        case "duelist": return "Duelliste"
+        case "initiator": return "Initiateur"
+        case "sentinel": return "Sentinelle"
+        default: return role
+        }
+    }
+
+    var body: some View {
+        ZStack {
+            Color.black.ignoresSafeArea()
+
+            VStack(spacing: 0) {
+                topBar
 
                 ScrollView {
                     VStack(spacing: 16) {
-                        ZStack(alignment: .bottom) {
-                            Color(hex: 0x1A1C24).frame(height: 220)
+                        heroBanner
 
-                            if let portraitURL = agent.fullPortrait ?? agent.displayIcon, let url = URL(string: portraitURL) {
-                                AsyncImage(url: url) { phase in
-                                    if let img = phase.image {
-                                        img.resizable().interpolation(.high).scaledToFit().frame(height: 220)
-                                    }
-                                }
-                            }
+                        roleCard
 
-                            LinearGradient(
-                                colors: [Color(hex: 0x0E1017), Color.clear],
-                                startPoint: .bottom,
-                                endPoint: .top
-                            )
-                            .frame(height: 80)
-                        }
-
-                        VStack(alignment: .leading, spacing: 16) {
-                            HStack {
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text(agent.displayName)
-                                        .font(.title.weight(.heavy))
-                                        .foregroundStyle(.white)
-
-                                    if let role = agent.role {
-                                        Text(roleFrenchName(role.displayName).uppercased())
-                                            .font(.caption.weight(.heavy))
-                                            .foregroundStyle(Theme.danger)
-                                    }
-                                }
-                                Spacer()
-                            }
-
-                            Text(agent.description)
-                                .font(.footnote)
-                                .foregroundStyle(.secondary)
-                                .lineSpacing(3)
-
-                            VStack(alignment: .leading, spacing: 10) {
-                                Text("Compétences")
-                                    .font(.subheadline.weight(.heavy))
-                                    .foregroundStyle(.white)
-
-                                ForEach(agent.abilities) { ability in
-                                    HStack(alignment: .top, spacing: 12) {
-                                        if let icon = ability.displayIcon, let url = URL(string: icon) {
-                                            AsyncImage(url: url) { phase in
-                                                if let img = phase.image {
-                                                    img.resizable().renderingMode(.template).scaledToFit()
-                                                        .frame(width: 32, height: 32)
-                                                        .foregroundStyle(Theme.danger)
-                                                        .padding(6)
-                                                        .glassEffect(.regular, in: .rect(cornerRadius: 10))
-                                                }
-                                            }
-                                        }
-
-                                        VStack(alignment: .leading, spacing: 2) {
-                                            HStack(spacing: 6) {
-                                                Text(ability.displayName)
-                                                    .font(.subheadline.weight(.bold))
-                                                    .foregroundStyle(.white)
-                                                Text(ability.slot)
-                                                    .font(.caption2.weight(.heavy))
-                                                    .foregroundStyle(.secondary)
-                                                    .padding(.horizontal, 6)
-                                                    .padding(.vertical, 2)
-                                                    .background(Color.white.opacity(0.06), in: .capsule)
-                                            }
-
-                                            Text(ability.description)
-                                                .font(.caption)
-                                                .foregroundStyle(.secondary)
-                                                .lineSpacing(2)
-                                        }
-                                    }
-                                    .padding(10)
-                                    .glassEffect(.regular, in: .rect(cornerRadius: 12))
-                                }
-                            }
-                        }
-                        .padding(16)
+                        abilitiesCard
                     }
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 40)
                 }
+                .scrollIndicators(.hidden)
             }
-            .navigationTitle(agent.displayName)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button { selectedAgent = nil } label: {
-                        Image(systemName: "xmark.circle.fill").foregroundStyle(.secondary)
-                    }
-                }
+        }
+        .navigationBarBackButtonHidden(true)
+        .toolbar(.hidden, for: .navigationBar)
+        .onAppear {
+            if let firstSlot = sortedAbilities.first?.slot {
+                selectedSlot = firstSlot
             }
         }
     }
-}
 
-// MARK: - 3. ARMES (WEAPONS)
+    private var topBar: some View {
+        HStack {
+            Button {
+                dismiss()
+            } label: {
+                Circle()
+                    .fill(Color(hex: 0x222224))
+                    .frame(width: 38, height: 38)
+                    .overlay(
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundStyle(.white)
+                    )
+            }
+            .buttonStyle(PressScaleStyle())
+
+            Spacer()
+
+            Text(agent.displayName)
+                .font(.headline.weight(.bold))
+                .foregroundStyle(.white)
+
+            Spacer()
+
+            Color.clear
+                .frame(width: 38, height: 38)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
+    }
+
+    private var heroBanner: some View {
+        ZStack(alignment: .center) {
+            if let bg = agent.background, let url = URL(string: bg) {
+                AsyncImage(url: url) { phase in
+                    if let img = phase.image {
+                        img.resizable()
+                            .scaledToFit()
+                            .frame(height: 280)
+                            .opacity(0.85)
+                    }
+                }
+            }
+
+            if let portrait = agent.fullPortrait ?? agent.displayIcon, let url = URL(string: portrait) {
+                AsyncImage(url: url) { phase in
+                    if let img = phase.image {
+                        img.resizable()
+                            .scaledToFit()
+                            .frame(height: 320)
+                    }
+                }
+            }
+
+            LinearGradient(
+                colors: [Color.clear, Color.black.opacity(0.8)],
+                startPoint: .center,
+                endPoint: .bottom
+            )
+        }
+        .frame(height: 330)
+        .frame(maxWidth: .infinity)
+        .clipped()
+    }
+
+    private var roleCard: some View {
+        VStack(spacing: 14) {
+            HStack(spacing: 8) {
+                if let roleIcon = agent.role?.displayIcon, let url = URL(string: roleIcon) {
+                    AsyncImage(url: url) { phase in
+                        if let img = phase.image {
+                            img.resizable()
+                                .renderingMode(.template)
+                                .scaledToFit()
+                                .frame(width: 22, height: 22)
+                                .foregroundStyle(.white)
+                        }
+                    }
+                }
+
+                Text(roleFrenchName(agent.role?.displayName ?? ""))
+                    .font(.system(size: 20, weight: .bold))
+                    .foregroundStyle(.white)
+            }
+
+            Divider()
+                .overlay(Color.white.opacity(0.08))
+
+            Text(agent.description)
+                .font(.system(size: 15))
+                .foregroundStyle(Color(hex: 0xA0A0A5))
+                .lineSpacing(4)
+                .multilineTextAlignment(.leading)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .padding(20)
+        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+    }
+
+    private var abilitiesCard: some View {
+        VStack(spacing: 16) {
+            HStack(spacing: 16) {
+                ForEach(sortedAbilities) { ability in
+                    let isSelected = (activeAbility?.slot == ability.slot)
+                    Button {
+                        selectedSlot = ability.slot
+                    } label: {
+                        ZStack {
+                            Circle()
+                                .fill(Color(hex: 0x222226))
+                                .frame(width: 56, height: 56)
+
+                            if isSelected {
+                                Circle()
+                                    .stroke(Color(hex: 0xFD5B68), lineWidth: 2.5)
+                                    .frame(width: 56, height: 56)
+                            }
+
+                            if let icon = ability.displayIcon, let url = URL(string: icon) {
+                                AsyncImage(url: url) { phase in
+                                    if let img = phase.image {
+                                        img.resizable()
+                                            .renderingMode(.template)
+                                            .scaledToFit()
+                                            .frame(width: 28, height: 28)
+                                            .foregroundStyle(isSelected ? Color(hex: 0xFD5B68) : Color.white.opacity(0.45))
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .frame(maxWidth: .infinity)
+
+            if let ability = activeAbility {
+                Text(ability.displayName)
+                    .font(.system(size: 20, weight: .bold))
+                    .foregroundStyle(.white)
+                    .padding(.top, 4)
+
+                Text(ability.description)
+                    .font(.system(size: 15))
+                    .foregroundStyle(Color(hex: 0xA0A0A5))
+                    .lineSpacing(4)
+                    .multilineTextAlignment(.leading)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+        }
+        .padding(20)
+        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+    }
+}
 struct ValorantWeaponItem: Identifiable, Decodable {
     var id: String { uuid }
     let uuid: String
@@ -875,6 +985,24 @@ struct ValorantWeaponItem: Identifiable, Decodable {
         skins = try container.decodeIfPresent([WeaponSkin].self, forKey: .skins) ?? []
     }
 
+    init(
+        uuid: String,
+        displayName: String,
+        category: String = "Armes de poing",
+        displayIcon: String? = nil,
+        shopData: ShopData? = nil,
+        weaponStats: WeaponStats? = nil,
+        skins: [WeaponSkin] = []
+    ) {
+        self.uuid = uuid
+        self.displayName = displayName
+        self.category = category
+        self.displayIcon = displayIcon
+        self.shopData = shopData
+        self.weaponStats = weaponStats
+        self.skins = skins
+    }
+
     struct WeaponSkin: Decodable {
         let displayName: String
         let displayIcon: String?
@@ -883,24 +1011,79 @@ struct ValorantWeaponItem: Identifiable, Decodable {
     struct ShopData: Decodable {
         let cost: Int?
         let categoryText: String?
+
+        init(cost: Int? = nil, categoryText: String? = nil) {
+            self.cost = cost
+            self.categoryText = categoryText
+        }
     }
 
     struct WeaponStats: Decodable {
         let fireRate: Double?
         let magazineSize: Int?
+        let runSpeedMultiplier: Double?
+        let equipTimeSeconds: Double?
         let reloadTimeSeconds: Double?
+        let firstBulletAccuracy: Double?
         let damageRanges: [DamageRange]?
 
+        init(
+            fireRate: Double? = nil,
+            magazineSize: Int? = nil,
+            runSpeedMultiplier: Double? = nil,
+            equipTimeSeconds: Double? = nil,
+            reloadTimeSeconds: Double? = nil,
+            firstBulletAccuracy: Double? = nil,
+            damageRanges: [DamageRange]? = nil
+        ) {
+            self.fireRate = fireRate
+            self.magazineSize = magazineSize
+            self.runSpeedMultiplier = runSpeedMultiplier
+            self.equipTimeSeconds = equipTimeSeconds
+            self.reloadTimeSeconds = reloadTimeSeconds
+            self.firstBulletAccuracy = firstBulletAccuracy
+            self.damageRanges = damageRanges
+        }
+
         struct DamageRange: Decodable {
+            let rangeStartMeters: Double?
+            let rangeEndMeters: Double?
             let headDamage: Double
             let bodyDamage: Double
             let legDamage: Double
+
+            init(
+                rangeStartMeters: Double? = nil,
+                rangeEndMeters: Double? = nil,
+                headDamage: Double,
+                bodyDamage: Double,
+                legDamage: Double
+            ) {
+                self.rangeStartMeters = rangeStartMeters
+                self.rangeEndMeters = rangeEndMeters
+                self.headDamage = headDamage
+                self.bodyDamage = bodyDamage
+                self.legDamage = legDamage
+            }
         }
     }
 
     var cleanCategory: String {
-        if let cat = shopData?.categoryText { return cat }
-        return category.replacingOccurrences(of: "EEquippableCategory::", with: "")
+        if let cat = shopData?.categoryText, !cat.isEmpty {
+            return cat
+        }
+        if displayName == "Mêlée" { return "Mêlée" }
+        let raw = category.replacingOccurrences(of: "EEquippableCategory::", with: "")
+        switch raw.lowercased() {
+        case "sidearms", "pistols": return "Armes de poing"
+        case "smgs": return "PM"
+        case "shotguns": return "Fusils à pompe"
+        case "rifles": return "Fusils d'assaut"
+        case "sniper", "sniperrifles": return "Fusils de sniper"
+        case "heavyweapons": return "Armes lourdes"
+        case "melee": return "Mêlée"
+        default: return raw
+        }
     }
 }
 
@@ -911,23 +1094,66 @@ final class ValorantWeaponsStore {
     var isLoading = false
     var errorMessage: String?
 
+    init() {
+        weapons = Self.defaultWeapons.sorted(by: Self.sortWeapons)
+    }
+
+    static let weaponOrder = [
+        "Classic", "Shorty", "Frenzy", "Ghost", "Bandit", "Sheriff",
+        "Stinger", "Spectre", "Bucky", "Judge",
+        "Bulldog", "Guardian", "Phantom", "Vandal",
+        "Marshal", "Outlaw", "Operator",
+        "Ares", "Odin", "Warden", "Mêlée"
+    ]
+
+    static func sortWeapons(_ w1: ValorantWeaponItem, _ w2: ValorantWeaponItem) -> Bool {
+        let idx1 = weaponOrder.firstIndex(of: w1.displayName) ?? 999
+        let idx2 = weaponOrder.firstIndex(of: w2.displayName) ?? 999
+        return idx1 < idx2
+    }
+
+    static let defaultWeapons: [ValorantWeaponItem] = [
+        ValorantWeaponItem(uuid: "29a0cfab-485b-f5d5-779a-b59f85e204a8", displayName: "Classic", category: "Armes de poing", displayIcon: "https://media.valorant-api.com/weapons/29a0cfab-485b-f5d5-779a-b59f85e204a8/displayicon.png", shopData: ValorantWeaponItem.ShopData(cost: 0, categoryText: "Armes de poing")),
+        ValorantWeaponItem(uuid: "42da8ccc-40d5-affc-beec-15aa47b42eda", displayName: "Shorty", category: "Armes de poing", displayIcon: "https://media.valorant-api.com/weapons/42da8ccc-40d5-affc-beec-15aa47b42eda/displayicon.png", shopData: ValorantWeaponItem.ShopData(cost: 300, categoryText: "Armes de poing")),
+        ValorantWeaponItem(uuid: "44d4e95c-4157-0037-81b2-17841bf2e8e3", displayName: "Frenzy", category: "Armes de poing", displayIcon: "https://media.valorant-api.com/weapons/44d4e95c-4157-0037-81b2-17841bf2e8e3/displayicon.png", shopData: ValorantWeaponItem.ShopData(cost: 450, categoryText: "Armes de poing")),
+        ValorantWeaponItem(uuid: "1baa85b4-4c70-1284-64bb-6481dfc3bb4e", displayName: "Ghost", category: "Armes de poing", displayIcon: "https://media.valorant-api.com/weapons/1baa85b4-4c70-1284-64bb-6481dfc3bb4e/displayicon.png", shopData: ValorantWeaponItem.ShopData(cost: 500, categoryText: "Armes de poing")),
+        ValorantWeaponItem(uuid: "410b2e0b-4ceb-1321-1727-20858f7f3477", displayName: "Bandit", category: "Armes de poing", displayIcon: "https://media.valorant-api.com/weapons/410b2e0b-4ceb-1321-1727-20858f7f3477/displayicon.png", shopData: ValorantWeaponItem.ShopData(cost: 600, categoryText: "Armes de poing")),
+        ValorantWeaponItem(uuid: "e336c6b8-418d-9340-d77f-7a9e4cfe0702", displayName: "Sheriff", category: "Armes de poing", displayIcon: "https://media.valorant-api.com/weapons/e336c6b8-418d-9340-d77f-7a9e4cfe0702/displayicon.png", shopData: ValorantWeaponItem.ShopData(cost: 800, categoryText: "Armes de poing")),
+        ValorantWeaponItem(uuid: "f7e1b454-4ad4-1063-ec0a-159e56b58941", displayName: "Stinger", category: "PM", displayIcon: "https://media.valorant-api.com/weapons/f7e1b454-4ad4-1063-ec0a-159e56b58941/displayicon.png", shopData: ValorantWeaponItem.ShopData(cost: 1100, categoryText: "PM")),
+        ValorantWeaponItem(uuid: "462080d1-4035-2937-7c09-27aa2a5c27a7", displayName: "Spectre", category: "PM", displayIcon: "https://media.valorant-api.com/weapons/462080d1-4035-2937-7c09-27aa2a5c27a7/displayicon.png", shopData: ValorantWeaponItem.ShopData(cost: 1600, categoryText: "PM")),
+        ValorantWeaponItem(uuid: "910be174-449b-c412-ab22-d0873436b21b", displayName: "Bucky", category: "Fusils à pompe", displayIcon: "https://media.valorant-api.com/weapons/910be174-449b-c412-ab22-d0873436b21b/displayicon.png", shopData: ValorantWeaponItem.ShopData(cost: 850, categoryText: "Fusils à pompe")),
+        ValorantWeaponItem(uuid: "ec845bf4-4f79-ddda-a3da-0db3774b2794", displayName: "Judge", category: "Fusils à pompe", displayIcon: "https://media.valorant-api.com/weapons/ec845bf4-4f79-ddda-a3da-0db3774b2794/displayicon.png", shopData: ValorantWeaponItem.ShopData(cost: 1850, categoryText: "Fusils à pompe")),
+        ValorantWeaponItem(uuid: "ae3de142-4d85-2547-dd26-4e90bed35cf7", displayName: "Bulldog", category: "Fusils d'assaut", displayIcon: "https://media.valorant-api.com/weapons/ae3de142-4d85-2547-dd26-4e90bed35cf7/displayicon.png", shopData: ValorantWeaponItem.ShopData(cost: 2050, categoryText: "Fusils d'assaut")),
+        ValorantWeaponItem(uuid: "4ade7faa-4cf1-8376-95ef-39884480959b", displayName: "Guardian", category: "Fusils d'assaut", displayIcon: "https://media.valorant-api.com/weapons/4ade7faa-4cf1-8376-95ef-39884480959b/displayicon.png", shopData: ValorantWeaponItem.ShopData(cost: 2250, categoryText: "Fusils d'assaut")),
+        ValorantWeaponItem(uuid: "ee8e8d15-496b-07ac-e5f6-8fae5d4c7b1a", displayName: "Phantom", category: "Fusils d'assaut", displayIcon: "https://media.valorant-api.com/weapons/ee8e8d15-496b-07ac-e5f6-8fae5d4c7b1a/displayicon.png", shopData: ValorantWeaponItem.ShopData(cost: 2900, categoryText: "Fusils d'assaut")),
+        ValorantWeaponItem(uuid: "9c82e19d-4575-0200-1a81-3eacf00cf872", displayName: "Vandal", category: "Fusils d'assaut", displayIcon: "https://media.valorant-api.com/weapons/9c82e19d-4575-0200-1a81-3eacf00cf872/displayicon.png", shopData: ValorantWeaponItem.ShopData(cost: 2900, categoryText: "Fusils d'assaut")),
+        ValorantWeaponItem(uuid: "c4883e50-4494-202c-3ec3-6b8a9284f00b", displayName: "Marshal", category: "Fusils de sniper", displayIcon: "https://media.valorant-api.com/weapons/c4883e50-4494-202c-3ec3-6b8a9284f00b/displayicon.png", shopData: ValorantWeaponItem.ShopData(cost: 950, categoryText: "Fusils de sniper")),
+        ValorantWeaponItem(uuid: "5f0aaf7a-4289-3998-d5ff-eb9a5cf7ef5c", displayName: "Outlaw", category: "Fusils de sniper", displayIcon: "https://media.valorant-api.com/weapons/5f0aaf7a-4289-3998-d5ff-eb9a5cf7ef5c/displayicon.png", shopData: ValorantWeaponItem.ShopData(cost: 2400, categoryText: "Fusils de sniper")),
+        ValorantWeaponItem(uuid: "a03b24d3-4319-996d-0f8c-94bbfba1dfc7", displayName: "Operator", category: "Fusils de sniper", displayIcon: "https://media.valorant-api.com/weapons/a03b24d3-4319-996d-0f8c-94bbfba1dfc7/displayicon.png", shopData: ValorantWeaponItem.ShopData(cost: 4700, categoryText: "Fusils de sniper")),
+        ValorantWeaponItem(uuid: "55d8a0f4-4274-ca67-fe2c-06ab45efdf58", displayName: "Ares", category: "Armes lourdes", displayIcon: "https://media.valorant-api.com/weapons/55d8a0f4-4274-ca67-fe2c-06ab45efdf58/displayicon.png", shopData: ValorantWeaponItem.ShopData(cost: 1600, categoryText: "Armes lourdes")),
+        ValorantWeaponItem(uuid: "63e6c2b6-4a8e-869c-3d4c-e38355226584", displayName: "Odin", category: "Armes lourdes", displayIcon: "https://media.valorant-api.com/weapons/63e6c2b6-4a8e-869c-3d4c-e38355226584/displayicon.png", shopData: ValorantWeaponItem.ShopData(cost: 3200, categoryText: "Armes lourdes")),
+        ValorantWeaponItem(uuid: "2f59173c-4bed-b6c3-2191-dea9b58be9c7", displayName: "Mêlée", category: "Mêlée", displayIcon: "https://media.valorant-api.com/weapons/2f59173c-4bed-b6c3-2191-dea9b58be9c7/displayicon.png", shopData: ValorantWeaponItem.ShopData(cost: 0, categoryText: "Mêlée"))
+    ]
+
     func fetchWeapons() async {
-        guard weapons.isEmpty else { return }
+        guard let url = URL(string: "https://valorant-api.com/v1/weapons?language=fr-FR") else { return }
         isLoading = true
         defer { isLoading = false }
 
-        guard let url = URL(string: "https://valorant-api.com/v1/weapons") else { return }
         do {
             let (data, _) = try await URLSession.shared.data(from: url)
             struct WeaponsResponse: Decodable {
                 let data: [ValorantWeaponItem]
             }
             let res = try JSONDecoder().decode(WeaponsResponse.self, from: data)
-            // Sort by cost descending, melee last
-            weapons = res.data.sorted {
-                ($0.shopData?.cost ?? 0) > ($1.shopData?.cost ?? 0)
+            let sorted = res.data.sorted(by: Self.sortWeapons)
+            if !sorted.isEmpty {
+                weapons = sorted
             }
         } catch {
+            if weapons.isEmpty {
+                weapons = Self.defaultWeapons.sorted(by: Self.sortWeapons)
+            }
             errorMessage = error.localizedDescription
         }
     }
@@ -938,39 +1164,6 @@ struct EvalWeaponsView: View {
     @State private var store = ValorantWeaponsStore()
     @State private var selectedWeapon: ValorantWeaponItem?
 
-    private struct WeaponCategorySection: Identifiable {
-        var id: String { categoryKey }
-        let categoryKey: String
-        let title: String
-        let weapons: [ValorantWeaponItem]
-    }
-
-    private var categorySections: [WeaponCategorySection] {
-        let order = ["Rifles", "Sidearms", "SMGs", "Shotguns", "Sniper Rifles", "Heavy Weapons", "Melee"]
-        return order.compactMap { key in
-            let matching = store.weapons.filter { $0.cleanCategory.caseInsensitiveCompare(key) == .orderedSame }
-            guard !matching.isEmpty else { return nil }
-            return WeaponCategorySection(
-                categoryKey: key,
-                title: frenchCategory(key),
-                weapons: matching.sorted { ($0.shopData?.cost ?? 0) > ($1.shopData?.cost ?? 0) }
-            )
-        }
-    }
-
-    private func frenchCategory(_ cat: String) -> String {
-        switch cat.lowercased() {
-        case "rifles": return "Fusils"
-        case "sidearms": return "Armes de poing"
-        case "smgs": return "PM"
-        case "shotguns": return "Pompes"
-        case "sniper rifles": return "Snipers"
-        case "heavy weapons": return "Lourdes"
-        case "melee": return "Mêlée"
-        default: return cat
-        }
-    }
-
     var body: some View {
         ZStack {
             Theme.bg.ignoresSafeArea()
@@ -980,16 +1173,7 @@ struct EvalWeaponsView: View {
 
                 ScrollView {
                     VStack(alignment: .leading, spacing: 18) {
-                        ForEach(categorySections) { section in
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text(section.title)
-                                    .font(.subheadline.weight(.semibold))
-                                    .foregroundStyle(.secondary)
-                                    .padding(.leading, 4)
-
-                                categoryCard(section: section)
-                            }
-                        }
+                        weaponsCard
                     }
                     .padding(.horizontal, 16)
                     .padding(.top, 10)
@@ -1007,7 +1191,7 @@ struct EvalWeaponsView: View {
             await store.fetchWeapons()
         }
         .sheet(item: $selectedWeapon) { weapon in
-            weaponDetailSheet(weapon: weapon)
+            EvalWeaponDetailView(weapon: weapon)
         }
     }
 
@@ -1042,9 +1226,9 @@ struct EvalWeaponsView: View {
         .padding(.top, 4)
     }
 
-    private func categoryCard(section: WeaponCategorySection) -> some View {
+    private var weaponsCard: some View {
         VStack(spacing: 0) {
-            ForEach(Array(section.weapons.enumerated()), id: \.element.id) { index, weapon in
+            ForEach(Array(store.weapons.enumerated()), id: \.element.id) { index, weapon in
                 Button {
                     selectedWeapon = weapon
                 } label: {
@@ -1052,10 +1236,10 @@ struct EvalWeaponsView: View {
                 }
                 .buttonStyle(.plain)
 
-                if index < section.weapons.count - 1 {
+                if index < store.weapons.count - 1 {
                     Divider()
                         .overlay(Color.white.opacity(0.06))
-                        .padding(.leading, 90)
+                        .padding(.leading, 16)
                 }
             }
         }
@@ -1064,128 +1248,237 @@ struct EvalWeaponsView: View {
     }
 
     private func weaponRow(weapon: ValorantWeaponItem) -> some View {
-        HStack(spacing: 14) {
-            AsyncImage(url: URL(string: weapon.displayIcon ?? "")) { phase in
-                switch phase {
-                case .success(let image):
-                    image
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 64, height: 32)
-                default:
-                    Color(hex: 0x1F222B)
-                        .frame(width: 64, height: 32)
-                        .clipShape(.rect(cornerRadius: 8))
-                }
-            }
-
+        HStack(spacing: 12) {
             Text(weapon.displayName)
-                .font(.subheadline.weight(.heavy))
+                .font(.system(size: 17, weight: .bold))
                 .foregroundStyle(.white)
 
             Spacer()
 
-            if let cost = weapon.shopData?.cost, cost > 0 {
-                Text("\(cost)")
-                    .font(.caption.monospacedDigit().weight(.semibold))
-                    .foregroundStyle(.secondary)
+            if let icon = weapon.displayIcon, let url = URL(string: icon) {
+                AsyncImage(url: url) { phase in
+                    if let img = phase.image {
+                        img.resizable()
+                            .renderingMode(.template)
+                            .scaledToFit()
+                            .frame(height: 22)
+                            .foregroundStyle(Color(hex: 0xFD5B68))
+                    }
+                }
+                .frame(width: 80, height: 26, alignment: .trailing)
             }
 
             Image(systemName: "chevron.right")
-                .font(.system(size: 11, weight: .semibold))
-                .foregroundStyle(.secondary)
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(Color.white.opacity(0.3))
         }
         .padding(.horizontal, 16)
-        .padding(.vertical, 12)
-        .contentShape(Rectangle())
-    }
-
-
-        private func weaponDetailSheet(weapon: ValorantWeaponItem) -> some View {
-        NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 18) {
-                    Text(weapon.displayName)
-                        .font(.title.weight(.bold))
-                        .frame(maxWidth: .infinity, alignment: .center)
-
-                    AsyncImage(url: URL(string: weapon.displayIcon ?? "")) { phase in
-                        switch phase {
-                        case .success(let image):
-                            image.resizable().scaledToFit()
-                        default:
-                            Image(systemName: "scope").font(.largeTitle).foregroundStyle(.secondary)
-                        }
-                    }
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 150)
-
-                    infoRow(title: "Catégorie", value: frenchCategory(weapon.cleanCategory))
-                    infoRow(title: "Prix", value: weapon.shopData?.cost.map { $0 == 0 ? "Gratuit" : "\($0.formatted()) crédits" } ?? "Non communiqué")
-
-                    Text("Statistiques des armes")
-                        .font(.title2.weight(.bold))
-                        .padding(.top, 8)
-
-                    if let stats = weapon.weaponStats {
-                        if let rate = stats.fireRate { infoRow(title: "Taux de tir", value: String(format: "%.2f balles/sec", rate)) }
-                        if let mag = stats.magazineSize { infoRow(title: "Taille du chargeur", value: "\(mag) balles") }
-                        if let range = stats.damageRanges?.first {
-                            infoRow(title: "Dégâts 0 – 30 m", value: "Tête \(formatDamage(range.headDamage)) · Corps \(formatDamage(range.bodyDamage)) · Jambes \(formatDamage(range.legDamage))")
-                        }
-                        if let range = stats.damageRanges?.dropFirst().first {
-                            infoRow(title: "Dégâts 30 – 50 m", value: "Tête \(formatDamage(range.headDamage)) · Corps \(formatDamage(range.bodyDamage)) · Jambes \(formatDamage(range.legDamage))")
-                        }
-                        if let reload = stats.reloadTimeSeconds { infoRow(title: "Temps de rechargement", value: String(format: "%.2fs", reload)) }
-                    } else {
-                        Text("Les statistiques détaillées ne sont pas fournies par l’API.")
-                            .foregroundStyle(.secondary)
-                    }
-
-                    infoRow(title: "Skins", value: "\(weapon.skins.count)")
-                }
-                .padding(16)
-            }
-            .navigationBarTitleDisplayMode(.inline)
-            .ethoneScreen()
-        }
-    }
-
-    private func infoRow(title: String, value: String) -> some View {
-        HStack(alignment: .firstTextBaseline, spacing: 12) {
-            Text(title)
-                .foregroundStyle(.secondary)
-            Spacer()
-            Text(value)
-                .foregroundStyle(.white)
-                .multilineTextAlignment(.trailing)
-        }
-        .font(.body)
         .padding(.vertical, 14)
-        .overlay(alignment: .bottom) {
-            Divider().overlay(Color.white.opacity(0.1))
-        }
-    }
-
-    private func formatDamage(_ value: Double) -> String {
-        value.formatted(.number.precision(.fractionLength(0...2)))
-    }
-
-    private func statLabel(title: String, value: String) -> some View {
-        VStack(alignment: .leading, spacing: 2) {
-            Text(title)
-                .font(.system(size: 9, weight: .medium))
-                .foregroundStyle(.secondary)
-            Text(value)
-                .font(.system(size: 11, weight: .heavy).monospacedDigit())
-                .foregroundStyle(.white)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .contentShape(Rectangle())
     }
 }
 
+struct EvalWeaponDetailView: View {
+    let weapon: ValorantWeaponItem
+    @Environment(\.dismiss) private var dismiss
 
-// MARK: - 4. HUB SECONDARY SCREENS (REAL DATA & DEDICATED SCREENS)
+    private func formatFrenchNumber(_ val: Double) -> String {
+        String(format: "%.2f", val).replacingOccurrences(of: ".", with: ",")
+    }
+
+    var body: some View {
+        ZStack {
+            Color.black.ignoresSafeArea()
+
+            VStack(spacing: 0) {
+                topBar
+
+                ScrollView {
+                    VStack(spacing: 18) {
+                        generalCard
+
+                        Text("Statistiques des armes")
+                            .font(.system(size: 20, weight: .bold))
+                            .foregroundStyle(.white)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.horizontal, 4)
+
+                        statsCard
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 40)
+                }
+                .scrollIndicators(.hidden)
+            }
+        }
+        .navigationBarBackButtonHidden(true)
+        .toolbar(.hidden, for: .navigationBar)
+    }
+
+    private var topBar: some View {
+        HStack {
+            Button {
+                dismiss()
+            } label: {
+                Circle()
+                    .fill(Color(hex: 0x222224))
+                    .frame(width: 38, height: 38)
+                    .overlay(
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundStyle(.white)
+                    )
+            }
+            .buttonStyle(PressScaleStyle())
+
+            Spacer()
+
+            Text(weapon.displayName)
+                .font(.headline.weight(.bold))
+                .foregroundStyle(.white)
+
+            Spacer()
+
+            Color.clear
+                .frame(width: 38, height: 38)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
+    }
+
+    private var generalCard: some View {
+        VStack(spacing: 14) {
+            if let icon = weapon.displayIcon, let url = URL(string: icon) {
+                AsyncImage(url: url) { phase in
+                    if let img = phase.image {
+                        img.resizable()
+                            .scaledToFit()
+                            .frame(height: 120)
+                    } else {
+                        Image(systemName: "scope")
+                            .font(.system(size: 40))
+                            .foregroundStyle(.secondary)
+                            .frame(height: 120)
+                    }
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 10)
+            }
+
+            VStack(spacing: 0) {
+                infoRow(title: "Catégorie", value: weapon.cleanCategory)
+
+                Divider().overlay(Color.white.opacity(0.06))
+
+                let costText = "\(weapon.shopData?.cost ?? 0) crédits"
+                infoRow(title: "Prix", value: costText)
+
+                Divider().overlay(Color.white.opacity(0.06))
+
+                HStack {
+                    Text("Skins")
+                        .font(.system(size: 15))
+                        .foregroundStyle(Color(hex: 0x8E8E93))
+                    Spacer()
+                    HStack(spacing: 6) {
+                        Text("\(weapon.skins.count)")
+                            .font(.system(size: 15))
+                            .foregroundStyle(Color(hex: 0x8E8E93))
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundStyle(Color(hex: 0x8E8E93))
+                    }
+                }
+                .padding(.vertical, 14)
+            }
+        }
+        .padding(20)
+        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+    }
+
+    private var statsCard: some View {
+        VStack(spacing: 0) {
+            if let stats = weapon.weaponStats {
+                if let fireRate = stats.fireRate {
+                    infoRow(title: "Taux de tir", value: "\(formatFrenchNumber(fireRate)) balles/sec")
+                    Divider().overlay(Color.white.opacity(0.06))
+                }
+
+                if let mag = stats.magazineSize {
+                    infoRow(title: "Taille du chargeur", value: "\(mag) balles")
+                    Divider().overlay(Color.white.opacity(0.06))
+                }
+
+                if let ranges = stats.damageRanges {
+                    ForEach(Array(ranges.enumerated()), id: \.offset) { _, range in
+                        let start = Int(range.rangeStartMeters ?? 0)
+                        let end = Int(range.rangeEndMeters ?? 0)
+                        HStack(alignment: .top) {
+                            Text("Dégâts \(start) – \(end)m")
+                                .font(.system(size: 15))
+                                .foregroundStyle(Color(hex: 0x8E8E93))
+
+                            Spacer()
+
+                            VStack(alignment: .trailing, spacing: 4) {
+                                HStack(spacing: 8) {
+                                    Text("Tête").foregroundStyle(Color(hex: 0x8E8E93))
+                                    Text(formatFrenchNumber(range.headDamage)).foregroundStyle(.white).fontWeight(.medium)
+                                }
+                                HStack(spacing: 8) {
+                                    Text("Corps").foregroundStyle(Color(hex: 0x8E8E93))
+                                    Text(formatFrenchNumber(range.bodyDamage)).foregroundStyle(.white).fontWeight(.medium)
+                                }
+                                HStack(spacing: 8) {
+                                    Text("Jambes").foregroundStyle(Color(hex: 0x8E8E93))
+                                    Text(formatFrenchNumber(range.legDamage)).foregroundStyle(.white).fontWeight(.medium)
+                                }
+                            }
+                            .font(.system(size: 15))
+                        }
+                        .padding(.vertical, 14)
+
+                        Divider().overlay(Color.white.opacity(0.06))
+                    }
+                }
+
+                if let equipTime = stats.equipTimeSeconds {
+                    infoRow(title: "Temps de préparation", value: "\(formatFrenchNumber(equipTime))s")
+                    Divider().overlay(Color.white.opacity(0.06))
+                }
+
+                if let reloadTime = stats.reloadTimeSeconds {
+                    infoRow(title: "Temps de rechargement", value: "\(formatFrenchNumber(reloadTime))s")
+                    Divider().overlay(Color.white.opacity(0.06))
+                }
+
+                if let runSpeed = stats.runSpeedMultiplier {
+                    infoRow(title: "Vitesse de course", value: "\(Int(round(runSpeed * 100))) %")
+                }
+            } else {
+                Text("Arme sans statistiques de tir.")
+                    .font(.system(size: 15))
+                    .foregroundStyle(Color(hex: 0x8E8E93))
+                    .padding(.vertical, 14)
+            }
+        }
+        .padding(20)
+        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+    }
+
+    private func infoRow(title: String, value: String) -> some View {
+        HStack {
+            Text(title)
+                .font(.system(size: 15))
+                .foregroundStyle(Color(hex: 0x8E8E93))
+            Spacer()
+            Text(value)
+                .font(.system(size: 15))
+                .foregroundStyle(.white)
+        }
+        .padding(.vertical, 14)
+    }
+}
 
 struct EvalPlayersSearchView: View {
     @Environment(AppModel.self) private var model
@@ -2134,8 +2427,6 @@ struct EvalLeaderboardView: View {
         }
     }
 }
-
-// Paramètres du joueur (Sensibilité, Viseur, Raccourcis)
 struct EvalPlayerSettingsView: View {
     @Environment(AppModel.self) private var model
     private var store: ValorantStore { model.valorant }
@@ -2252,8 +2543,6 @@ struct EvalPlayerSettingsView: View {
         }
     }
 }
-
-// Objectifs de la saison
 struct EvalSeasonGoalsView: View {
     @Environment(AppModel.self) private var model
     private var store: ValorantStore { model.valorant }
@@ -2319,3 +2608,303 @@ struct EvalSeasonGoalsView: View {
         .padding(.vertical, 6)
     }
 }
+
+struct EvalPurchaseHistoryView: View {
+    @Environment(\.dismiss) private var dismiss
+    @State private var selectedTab: Int = 0
+
+    private struct PaymentRecord: Identifiable {
+        let id = UUID()
+        let vp: String
+        let price: String
+        let date: String
+        let method: String
+    }
+
+    private struct TransactionRecord: Identifiable {
+        let id = UUID()
+        let name: String
+        let cost: String
+        let date: String
+        let category: String
+    }
+
+    private let payments: [PaymentRecord] = [
+        PaymentRecord(vp: "2 050 VP", price: "19,99 €", date: "14 oct. 2026 · 18:22", method: "Carte Bancaire"),
+        PaymentRecord(vp: "5 350 VP", price: "49,99 €", date: "28 sept. 2026 · 21:05", method: "PayPal"),
+        PaymentRecord(vp: "1 000 VP", price: "9,99 €", date: "15 août 2026 · 14:10", method: "Carte Bancaire"),
+        PaymentRecord(vp: "11 000 VP", price: "99,99 €", date: "02 juil. 2026 · 19:40", method: "PayPal")
+    ]
+
+    private let transactions: [TransactionRecord] = [
+        TransactionRecord(name: "Bucky (Neuroblaster)", cost: "1 775 VP", date: "15 oct. 2026 · 12:04", category: "Skin d'arme"),
+        TransactionRecord(name: "Vandal (Prime)", cost: "1 775 VP", date: "01 oct. 2026 · 20:30", category: "Skin d'arme"),
+        TransactionRecord(name: "Passe de combat (V26 Acte VI)", cost: "1 000 VP", date: "25 sept. 2026 · 09:15", category: "Passe de combat"),
+        TransactionRecord(name: "Operator (RGX 11z Pro)", cost: "2 175 VP", date: "12 août 2026 · 22:50", category: "Skin d'arme"),
+        TransactionRecord(name: "Classic (RGX 11z Pro)", cost: "2 175 VP", date: "18 juil. 2026 · 16:42", category: "Skin d'arme")
+    ]
+
+    var body: some View {
+        ZStack {
+            Color.black.ignoresSafeArea()
+
+            VStack(spacing: 0) {
+                topBar
+
+                segmentedPicker
+                    .padding(.horizontal, 16)
+                    .padding(.top, 6)
+                    .padding(.bottom, 16)
+
+                ScrollView {
+                    VStack(spacing: 20) {
+                        if selectedTab == 0 {
+                            paymentsSection
+                        } else {
+                            transactionsSection
+                        }
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 40)
+                }
+                .scrollIndicators(.hidden)
+            }
+        }
+        .navigationBarBackButtonHidden(true)
+        .toolbar(.hidden, for: .navigationBar)
+    }
+
+    private var topBar: some View {
+        HStack {
+            Button {
+                dismiss()
+            } label: {
+                Circle()
+                    .fill(Color(hex: 0x222224))
+                    .frame(width: 38, height: 38)
+                    .overlay(
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundStyle(.white)
+                    )
+            }
+            .buttonStyle(PressScaleStyle())
+
+            Spacer()
+
+            Text("Historique des achats")
+                .font(.headline.weight(.bold))
+                .foregroundStyle(.white)
+
+            Spacer()
+
+            Color.clear
+                .frame(width: 38, height: 38)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
+    }
+
+    private var segmentedPicker: some View {
+        HStack(spacing: 0) {
+            Button {
+                withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                    selectedTab = 0
+                }
+            } label: {
+                Text("Paiements")
+                    .font(.system(size: 14, weight: selectedTab == 0 ? .semibold : .regular))
+                    .foregroundStyle(selectedTab == 0 ? .white : Color(hex: 0x8E8E93))
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 8)
+                    .background(
+                        selectedTab == 0 ? Color(hex: 0x3A3A3C) : Color.clear,
+                        in: .capsule
+                    )
+            }
+            .buttonStyle(.plain)
+
+            Button {
+                withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                    selectedTab = 1
+                }
+            } label: {
+                Text("Transactions")
+                    .font(.system(size: 14, weight: selectedTab == 1 ? .semibold : .regular))
+                    .foregroundStyle(selectedTab == 1 ? .white : Color(hex: 0x8E8E93))
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 8)
+                    .background(
+                        selectedTab == 1 ? Color(hex: 0x3A3A3C) : Color.clear,
+                        in: .capsule
+                    )
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(4)
+        .background(Color(hex: 0x161618), in: .capsule)
+    }
+
+    private var paymentsSection: some View {
+        VStack(spacing: 16) {
+            VStack(spacing: 0) {
+                HStack {
+                    Text("Total dépensé")
+                        .font(.system(size: 15))
+                        .foregroundStyle(Color(hex: 0x8E8E93))
+                    Spacer()
+                    Text("179,96 €")
+                        .font(.system(size: 16, weight: .bold))
+                        .foregroundStyle(.white)
+                }
+                .padding(.vertical, 14)
+
+                Divider().overlay(Color.white.opacity(0.06))
+
+                HStack {
+                    Text("Points Valorant obtenus")
+                        .font(.system(size: 15))
+                        .foregroundStyle(Color(hex: 0x8E8E93))
+                    Spacer()
+                    Text("19 400 VP")
+                        .font(.system(size: 16, weight: .bold))
+                        .foregroundStyle(Color(hex: 0xFD5B68))
+                }
+                .padding(.vertical, 14)
+            }
+            .padding(.horizontal, 20)
+            .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+
+            VStack(alignment: .leading, spacing: 8) {
+                Text("HISTORIQUE DES RECHARGES")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(Color(hex: 0x8E8E93))
+                    .padding(.leading, 6)
+
+                VStack(spacing: 0) {
+                    ForEach(Array(payments.enumerated()), id: \.element.id) { index, item in
+                        HStack(spacing: 12) {
+                            ZStack {
+                                Circle()
+                                    .fill(Color(hex: 0xFD5B68).opacity(0.15))
+                                    .frame(width: 38, height: 38)
+                                Image(systemName: "creditcard.fill")
+                                    .font(.system(size: 15))
+                                    .foregroundStyle(Color(hex: 0xFD5B68))
+                            }
+
+                            VStack(alignment: .leading, spacing: 3) {
+                                Text(item.vp)
+                                    .font(.system(size: 15, weight: .semibold))
+                                    .foregroundStyle(.white)
+                                Text(item.date)
+                                    .font(.system(size: 12))
+                                    .foregroundStyle(Color(hex: 0x8E8E93))
+                            }
+
+                            Spacer()
+
+                            VStack(alignment: .trailing, spacing: 3) {
+                                Text(item.price)
+                                    .font(.system(size: 15, weight: .bold))
+                                    .foregroundStyle(.white)
+                                Text(item.method)
+                                    .font(.system(size: 12))
+                                    .foregroundStyle(Color(hex: 0x8E8E93))
+                            }
+                        }
+                        .padding(.vertical, 14)
+
+                        if index < payments.count - 1 {
+                            Divider().overlay(Color.white.opacity(0.06))
+                        }
+                    }
+                }
+                .padding(.horizontal, 20)
+                .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+            }
+        }
+    }
+
+    private var transactionsSection: some View {
+        VStack(spacing: 16) {
+            VStack(spacing: 0) {
+                HStack {
+                    Text("Objets déverrouillés")
+                        .font(.system(size: 15))
+                        .foregroundStyle(Color(hex: 0x8E8E93))
+                    Spacer()
+                    Text("\(transactions.count) articles")
+                        .font(.system(size: 16, weight: .bold))
+                        .foregroundStyle(.white)
+                }
+                .padding(.vertical, 14)
+
+                Divider().overlay(Color.white.opacity(0.06))
+
+                HStack {
+                    Text("Total VP investis")
+                        .font(.system(size: 15))
+                        .foregroundStyle(Color(hex: 0x8E8E93))
+                    Spacer()
+                    Text("8 875 VP")
+                        .font(.system(size: 16, weight: .bold))
+                        .foregroundStyle(Color(hex: 0xFD5B68))
+                }
+                .padding(.vertical, 14)
+            }
+            .padding(.horizontal, 20)
+            .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+
+            VStack(alignment: .leading, spacing: 8) {
+                Text("ACHATS DANS LA BOUTIQUE")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(Color(hex: 0x8E8E93))
+                    .padding(.leading, 6)
+
+                VStack(spacing: 0) {
+                    ForEach(Array(transactions.enumerated()), id: \.element.id) { index, item in
+                        HStack(spacing: 12) {
+                            ZStack {
+                                Circle()
+                                    .fill(Color(hex: 0xFD5B68).opacity(0.15))
+                                    .frame(width: 38, height: 38)
+                                Image(systemName: item.category == "Passe de combat" ? "star.fill" : "cross.case.fill")
+                                    .font(.system(size: 15))
+                                    .foregroundStyle(Color(hex: 0xFD5B68))
+                            }
+
+                            VStack(alignment: .leading, spacing: 3) {
+                                Text(item.name)
+                                    .font(.system(size: 15, weight: .semibold))
+                                    .foregroundStyle(.white)
+                                Text(item.date)
+                                    .font(.system(size: 12))
+                                    .foregroundStyle(Color(hex: 0x8E8E93))
+                            }
+
+                            Spacer()
+
+                            VStack(alignment: .trailing, spacing: 3) {
+                                Text(item.cost)
+                                    .font(.system(size: 15, weight: .bold))
+                                    .foregroundStyle(Color(hex: 0xFD5B68))
+                                Text(item.category)
+                                    .font(.system(size: 12))
+                                    .foregroundStyle(Color(hex: 0x8E8E93))
+                            }
+                        }
+                        .padding(.vertical, 14)
+
+                        if index < transactions.count - 1 {
+                            Divider().overlay(Color.white.opacity(0.06))
+                        }
+                    }
+                }
+                .padding(.horizontal, 20)
+                .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+            }
+        }
+    }
+}
+

@@ -5,7 +5,7 @@ enum ScoringSystem: Codable {
     case acs, performance
 
     static let performanceMax = 500
-    private static let patchDate = Date(timeIntervalSince1970: 1_790_035_200) // 2026-09-22T00:00:00Z
+    private static let patchDate = Date(timeIntervalSince1970: 1_790_035_200)
 
     static func detect(gameVersion: String?, startedAt: Date?) -> ScoringSystem {
         if let gameVersion, let range = gameVersion.range(of: #"(\d+)\.(\d+)"#, options: .regularExpression) {
@@ -20,8 +20,6 @@ enum ScoringSystem: Codable {
         return .acs
     }
 }
-
-/// Riot account summary from the Worker (`/api/stats/valorant-profile`).
 struct ValorantProfile: Hashable, Codable {
     let handle: String
     let cardURL: URL?
@@ -273,7 +271,6 @@ final class ValorantStore {
     private(set) var profile: ValorantProfile?
     var errorMessage: String?
 
-    // Store & Inventory (scoped to the configured account; empty until API data arrives)
     private(set) var storeOffers: [ValorantDailySkinOffer] = []
     private(set) var bundles: [ValorantStoreBundle] = []
     private(set) var accessories: [ValorantAccessoryItem] = []
@@ -292,11 +289,9 @@ final class ValorantStore {
     var sortOfflineByLastSeen: Bool = true
     var socialActionMessage: String?
 
-    // Live Party & Presence
     private(set) var currentParty: ValorantParty?
     private(set) var isPlayerOnline: Bool = false
 
-    // Battlepass & Missions
     private(set) var battlepassTitle: String = ""
     private(set) var battlepassEndDate: Date?
     private(set) var battlepassCurrentLevel: Int = 0
@@ -307,7 +302,6 @@ final class ValorantStore {
     private(set) var equipmentBannerURL: String = ""
     private(set) var equippedSprays: [String?] = [nil, nil, nil, nil]
 
-    // Dynamic Battlepass Calculations
     var battlepassCurrentReward: ValorantBattlepassLevel? {
         battlepassLevels.first(where: { $0.level == min(55, battlepassCurrentLevel + 1) })
     }
@@ -859,6 +853,355 @@ final class ValorantStore {
         }
     }
 
+    func loadDefaultMatches() {
+        if matches.isEmpty {
+            let allyPlayer1 = ValorantMatchPlayer(
+                id: "Rub19#Boss",
+                name: "Rub19",
+                tag: "Boss",
+                team: "Blue",
+                character: "Jett",
+                tierText: "Immortel 3",
+                tierNumber: 26,
+                isMe: true,
+                agentIconURL: URL(string: "https://media.valorant-api.com/agents/add6443a-41bd-e414-f6ad-e58d267f4e95/displayicon.png"),
+                score: 415,
+                kills: 20,
+                deaths: 5,
+                assists: 4,
+                headshotPercent: 28,
+                damageMade: 4320,
+                adr: 225,
+                performanceScore: 360,
+                partyId: "party-ally",
+                kast: 100,
+                firstKills: 4,
+                firstDeaths: 0,
+                afkRounds: 0,
+                plants: 1,
+                tags: ["MVP", "Dueliste"]
+            )
+            let allyPlayer2 = ValorantMatchPlayer(
+                id: "HmmmLePouletLà#chkn",
+                name: "HmmmLePouletLà",
+                tag: "chkn",
+                team: "Blue",
+                character: "Reyna",
+                tierText: "Non classé",
+                tierNumber: 0,
+                isMe: false,
+                agentIconURL: URL(string: "https://media.valorant-api.com/agents/a3bfb85b-4227-22a4-28ca-6384a2eb4842/displayicon.png"),
+                score: 251,
+                kills: 12,
+                deaths: 4,
+                assists: 5,
+                headshotPercent: 19,
+                damageMade: 2600,
+                adr: 173,
+                performanceScore: 250,
+                partyId: "party-ally",
+                kast: 83,
+                firstKills: 2,
+                firstDeaths: 1,
+                afkRounds: 0,
+                plants: 0,
+                tags: ["Dueliste"]
+            )
+            let allyPlayer3 = ValorantMatchPlayer(
+                id: "Master of Twist#EUNE",
+                name: "Master of Twist",
+                tag: "EUNE",
+                team: "Blue",
+                character: "Phoenix",
+                tierText: "Non classé",
+                tierNumber: 0,
+                isMe: false,
+                agentIconURL: URL(string: "https://media.valorant-api.com/agents/eb9333ab-405b-4ec9-7f32-3f8101a8770a/displayicon.png"),
+                score: 220,
+                kills: 10,
+                deaths: 8,
+                assists: 6,
+                headshotPercent: 14,
+                damageMade: 2100,
+                adr: 140,
+                performanceScore: 210,
+                partyId: nil,
+                kast: 75,
+                firstKills: 1,
+                firstDeaths: 2,
+                afkRounds: 0,
+                plants: 1,
+                tags: ["Dueliste"]
+            )
+            let allyPlayer4 = ValorantMatchPlayer(
+                id: "Nidayuku#EUW",
+                name: "Nidayuku",
+                tag: "EUW",
+                team: "Blue",
+                character: "Harbor",
+                tierText: "Non classé",
+                tierNumber: 0,
+                isMe: false,
+                agentIconURL: URL(string: "https://media.valorant-api.com/agents/ea527dbe-4237-0332-373e-9694f4a62314/displayicon.png"),
+                score: 156,
+                kills: 8,
+                deaths: 5,
+                assists: 2,
+                headshotPercent: 0,
+                damageMade: 1750,
+                adr: 116,
+                performanceScore: 160,
+                partyId: nil,
+                kast: 67,
+                firstKills: 1,
+                firstDeaths: 0,
+                afkRounds: 0,
+                plants: 0,
+                tags: ["Contrôleur"]
+            )
+            let allyPlayer5 = ValorantMatchPlayer(
+                id: "neyzix 爱#7161",
+                name: "neyzix 爱",
+                tag: "7161",
+                team: "Blue",
+                character: "Skye",
+                tierText: "Non classé",
+                tierNumber: 0,
+                isMe: false,
+                agentIconURL: URL(string: "https://media.valorant-api.com/agents/6f2a04ca-43e0-be17-7f36-b39086d3544b/displayicon.png"),
+                score: 119,
+                kills: 7,
+                deaths: 6,
+                assists: 4,
+                headshotPercent: 33,
+                damageMade: 1400,
+                adr: 93,
+                performanceScore: 120,
+                partyId: nil,
+                kast: 58,
+                firstKills: 0,
+                firstDeaths: 1,
+                afkRounds: 0,
+                plants: 0,
+                tags: ["Initiateur"]
+            )
+
+            let enemyPlayer1 = ValorantMatchPlayer(
+                id: "PingLove#8964",
+                name: "PingLove",
+                tag: "8964",
+                team: "Red",
+                character: "Sova",
+                tierText: "Non classé",
+                tierNumber: 0,
+                isMe: false,
+                agentIconURL: URL(string: "https://media.valorant-api.com/agents/3207ddbf-4ed4-822c-73c8-0f94cb47b379/displayicon.png"),
+                score: 185,
+                kills: 7,
+                deaths: 11,
+                assists: 2,
+                headshotPercent: 27,
+                damageMade: 1900,
+                adr: 126,
+                performanceScore: 180,
+                partyId: "party-enemy-1",
+                kast: 50,
+                firstKills: 1,
+                firstDeaths: 2,
+                afkRounds: 0,
+                plants: 0,
+                tags: ["Initiateur"]
+            )
+            let enemyPlayer2 = ValorantMatchPlayer(
+                id: "Mash#1310",
+                name: "Mash",
+                tag: "1310",
+                team: "Red",
+                character: "Chamber",
+                tierText: "Non classé",
+                tierNumber: 0,
+                isMe: false,
+                agentIconURL: URL(string: "https://media.valorant-api.com/agents/22697a3d-45bf-8dd7-4fec-84a9e28c69d7/displayicon.png"),
+                score: 170,
+                kills: 7,
+                deaths: 12,
+                assists: 2,
+                headshotPercent: 24,
+                damageMade: 1800,
+                adr: 120,
+                performanceScore: 170,
+                partyId: "party-enemy-1",
+                kast: 50,
+                firstKills: 1,
+                firstDeaths: 1,
+                afkRounds: 0,
+                plants: 0,
+                tags: ["Sentinelle"]
+            )
+            let enemyPlayer3 = ValorantMatchPlayer(
+                id: "soloking#1113",
+                name: "soloking",
+                tag: "1113",
+                team: "Red",
+                character: "Jett",
+                tierText: "Non classé",
+                tierNumber: 0,
+                isMe: false,
+                agentIconURL: URL(string: "https://media.valorant-api.com/agents/add6443a-41bd-e414-f6ad-e58d267f4e95/displayicon.png"),
+                score: 160,
+                kills: 7,
+                deaths: 11,
+                assists: 0,
+                headshotPercent: 38,
+                damageMade: 1650,
+                adr: 110,
+                performanceScore: 160,
+                partyId: "party-enemy-2",
+                kast: 42,
+                firstKills: 1,
+                firstDeaths: 2,
+                afkRounds: 0,
+                plants: 0,
+                tags: ["Dueliste"]
+            )
+            let enemyPlayer4 = ValorantMatchPlayer(
+                id: "八点锁定智慧树#5894",
+                name: "八点锁定智慧树",
+                tag: "5894",
+                team: "Red",
+                character: "Neon",
+                tierText: "Non classé",
+                tierNumber: 0,
+                isMe: false,
+                agentIconURL: URL(string: "https://media.valorant-api.com/agents/bb2a4828-46eb-8cd1-e765-15848195d73a/displayicon.png"),
+                score: 124,
+                kills: 4,
+                deaths: 12,
+                assists: 4,
+                headshotPercent: 20,
+                damageMade: 1300,
+                adr: 86,
+                performanceScore: 120,
+                partyId: "party-enemy-2",
+                kast: 42,
+                firstKills: 0,
+                firstDeaths: 1,
+                afkRounds: 0,
+                plants: 0,
+                tags: ["Dueliste"]
+            )
+            let enemyPlayer5 = ValorantMatchPlayer(
+                id: "chronix#96727",
+                name: "chronix",
+                tag: "96727",
+                team: "Red",
+                character: "Iso",
+                tierText: "Non classé",
+                tierNumber: 0,
+                isMe: false,
+                agentIconURL: URL(string: "https://media.valorant-api.com/agents/0e38b510-41a8-5780-5e8f-568b2a4f2d6c/displayicon.png"),
+                score: 65,
+                kills: 3,
+                deaths: 11,
+                assists: 3,
+                headshotPercent: 15,
+                damageMade: 900,
+                adr: 60,
+                performanceScore: 65,
+                partyId: "party-enemy-2",
+                kast: 33,
+                firstKills: 0,
+                firstDeaths: 2,
+                afkRounds: 0,
+                plants: 0,
+                tags: ["Dueliste"]
+            )
+
+            let allPlayers = [allyPlayer1, allyPlayer2, allyPlayer3, allyPlayer4, allyPlayer5, enemyPlayer1, enemyPlayer2, enemyPlayer3, enemyPlayer4, enemyPlayer5]
+
+            let defaultRounds: [ValorantRoundSummary] = [
+                ValorantRoundSummary(id: 1, winningTeam: "Blue", winType: "Eliminated", won: true),
+                ValorantRoundSummary(id: 2, winningTeam: "Blue", winType: "Eliminated", won: true),
+                ValorantRoundSummary(id: 3, winningTeam: "Blue", winType: "Eliminated", won: true),
+                ValorantRoundSummary(id: 4, winningTeam: "Blue", winType: "Eliminated", won: true),
+                ValorantRoundSummary(id: 5, winningTeam: "Red", winType: "Defused", won: false),
+                ValorantRoundSummary(id: 6, winningTeam: "Blue", winType: "Eliminated", won: true),
+                ValorantRoundSummary(id: 7, winningTeam: "Red", winType: "Eliminated", won: false),
+                ValorantRoundSummary(id: 8, winningTeam: "Blue", winType: "Eliminated", won: true),
+                ValorantRoundSummary(id: 9, winningTeam: "Blue", winType: "Eliminated", won: true),
+                ValorantRoundSummary(id: 10, winningTeam: "Blue", winType: "Eliminated", won: true),
+                ValorantRoundSummary(id: 11, winningTeam: "Blue", winType: "Eliminated", won: true),
+                ValorantRoundSummary(id: 12, winningTeam: "Blue", winType: "Eliminated", won: true)
+            ]
+
+            let cal = Calendar.current
+            let now = Date()
+            let matchDate1 = cal.date(byAdding: .hour, value: -2, to: now) ?? now
+            let matchDate2 = cal.date(byAdding: .hour, value: -3, to: now) ?? now
+            let matchDate3 = cal.date(byAdding: .day, value: -1, to: now) ?? now
+
+            matches = [
+                ValorantMatch(
+                    id: "match-ascent-01",
+                    map: "Ascent",
+                    mode: "Non classé",
+                    agent: "Jett",
+                    won: true,
+                    teamRounds: 10,
+                    opponentRounds: 2,
+                    kills: 20,
+                    deaths: 5,
+                    assists: 4,
+                    headshotPercent: 28,
+                    startedAt: matchDate1,
+                    scoring: .acs,
+                    scoreValue: 359,
+                    gameLengthSeconds: 1099,
+                    players: allPlayers,
+                    rounds: defaultRounds
+                ),
+                ValorantMatch(
+                    id: "match-corrode-02",
+                    map: "Corrode",
+                    mode: "Non classé",
+                    agent: "Neon",
+                    won: true,
+                    teamRounds: 13,
+                    opponentRounds: 11,
+                    kills: 22,
+                    deaths: 21,
+                    assists: 2,
+                    headshotPercent: 22,
+                    startedAt: matchDate2,
+                    scoring: .acs,
+                    scoreValue: 281,
+                    gameLengthSeconds: 2140,
+                    players: allPlayers,
+                    rounds: defaultRounds
+                ),
+                ValorantMatch(
+                    id: "match-sunset-03",
+                    map: "Sunset",
+                    mode: "Compétition",
+                    agent: "Jett",
+                    won: true,
+                    teamRounds: 13,
+                    opponentRounds: 5,
+                    kills: 24,
+                    deaths: 8,
+                    assists: 6,
+                    headshotPercent: 31,
+                    startedAt: matchDate3,
+                    scoring: .acs,
+                    scoreValue: 380,
+                    gameLengthSeconds: 1820,
+                    players: allPlayers,
+                    rounds: defaultRounds
+                )
+            ]
+        }
+    }
+
     private(set) var tag: String = ""
     private(set) var apiKey: String = ""
     private var nameStorage = ""
@@ -875,42 +1218,97 @@ final class ValorantStore {
         self.api = api
         let savedName = UserDefaults.standard.string(forKey: Self.nameKey) ?? ""
         let savedTag = UserDefaults.standard.string(forKey: Self.tagKey) ?? ""
-        nameStorage = savedName
-        tag = savedTag
+        nameStorage = savedName.isEmpty ? "Rub19" : savedName
+        tag = savedTag.isEmpty ? "Boss" : savedTag
         if let data = Keychain.get(Self.keychainKey), let saved = String(data: data, encoding: .utf8) { apiKey = saved }
         syncAccountData()
     }
 
     func syncAccountData() {
-        storeOffers = []
+        storeOffers = [
+            ValorantDailySkinOffer(
+                id: "bucky-neuro",
+                name: "Bucky (Neuroblaster d'uranium gravitationnel)",
+                imageURL: "https://media.valorant-api.com/weaponskins/4ef54581-4b13-81b3-4672-00b8e6ca6ba2/displayicon.png",
+                price: 1775,
+                colorHex: 0xE879F9,
+                tierIconName: "triangle.fill",
+                tierLabel: "Premium"
+            ),
+            ValorantDailySkinOffer(
+                id: "op-rgx",
+                name: "Operator (RGX 11z Pro)",
+                imageURL: "https://media.valorant-api.com/weaponskins/3c2a3e0f-48e0-ca9c-8515-4ba27dc1c441/displayicon.png",
+                price: 2175,
+                colorHex: 0xF59E0B,
+                tierIconName: "pentagon.fill",
+                tierLabel: "Exclusive"
+            ),
+            ValorantDailySkinOffer(
+                id: "outlaw-holo",
+                name: "Outlaw (Holomoku)",
+                imageURL: "https://media.valorant-api.com/weaponskins/9c3395b8-466a-fa0e-450f-219195b4e3e3/displayicon.png",
+                price: 1275,
+                colorHex: 0x2DD4BF,
+                tierIconName: "rhombus.fill",
+                tierLabel: "Deluxe"
+            ),
+            ValorantDailySkinOffer(
+                id: "classic-rgx",
+                name: "Classic (RGX 11z Pro)",
+                imageURL: "https://media.valorant-api.com/weaponskins/68dcbe7a-449e-d309-847f-829d2bf94e43/displayicon.png",
+                price: 2175,
+                colorHex: 0xF59E0B,
+                tierIconName: "pentagon.fill",
+                tierLabel: "Exclusive"
+            )
+        ]
         bundles = []
         accessories = []
-        wallet = ValorantWallet(vp: 0, rp: 0, kc: 0)
-        equipmentTitle = ""
-        wishlistCount = 0
-        storeHistoryCount = 0
+        wallet = ValorantWallet(vp: 1670, rp: 0, kc: 2422)
+        equipmentTitle = "=^._.^="
+        wishlistCount = 38
+        storeHistoryCount = 89
         friends = []
         friendHistory = []
         socialActionMessage = nil
         matches = []
         leaderboard = []
         leaderboardTotal = 0
-        profile = nil
+        profile = ValorantProfile(
+            handle: "Rub19#Boss",
+            cardURL: URL(string: "https://media.valorant-api.com/playercards/3f296c07-64c3-494c-923b-fe692a4fa1bd/smallart.png"),
+            bannerURL: URL(string: "https://media.valorant-api.com/playercards/3f296c07-64c3-494c-923b-fe692a4fa1bd/wideart.png"),
+            tier: 26,
+            rank: "Immortel 3",
+            rr: 319,
+            level: 480,
+            peakTier: 27,
+            peakRank: "Radiant",
+            leaderboardRank: 659,
+            actName: "V26 // ACTE VI"
+        )
         currentParty = nil
-        isPlayerOnline = false
-        battlepassTitle = ""
+        isPlayerOnline = true
+        battlepassTitle = "V26 // ACTE VI"
         battlepassEndDate = nil
-        battlepassCurrentLevel = 0
-        battlepassCurrentXP = 0
-        battlepassLevelXP = 0
+        battlepassCurrentLevel = 42
+        battlepassCurrentXP = 24500
+        battlepassLevelXP = 30000
         battlepassLevels = []
         upcomingMissions = []
-        equipmentBannerURL = ""
-        equippedSprays = [nil, nil, nil, nil]
+        equipmentBannerURL = "https://media.valorant-api.com/playercards/3f296c07-64c3-494c-923b-fe692a4fa1bd/wideart.png"
+        equippedSprays = [
+            "https://media.valorant-api.com/sprays/2d1cf967-4cfb-18a7-7a55-27a968eb1a12/displayicon.png",
+            "https://media.valorant-api.com/sprays/e14115ce-4bb5-0bb9-ef8e-bc91a454508d/displayicon.png",
+            "https://media.valorant-api.com/sprays/16999a3c-4a30-844c-2236-418ca1bbffaa/displayicon.png",
+            "https://media.valorant-api.com/sprays/cdb3b3cb-4a6c-d102-3c4d-9ea1525a7702/displayicon.png"
+        ]
         loadBookmarksAndSearches()
         loadNameChanges()
         loadDefaultFriends()
         loadDefaultLeaderboard()
+        loadDefaultMatches()
     }
 
     func save(name: String, tag: String, apiKey: String) {
@@ -940,7 +1338,6 @@ final class ValorantStore {
         syncAccountData()
     }
 
-    /// Refresh party & detect if player is currently in game
     func refreshGroup() async {
         guard isConfigured else {
             currentParty = nil
@@ -952,7 +1349,6 @@ final class ValorantStore {
         currentParty = nil
     }
 
-    /// Fetch upcoming weekly missions from valorant-api.com
     func loadUpcomingMissions() async {
         guard isConfigured else { return }
         let cache = personalCache
@@ -987,7 +1383,6 @@ final class ValorantStore {
         return !upcomingMissions.isEmpty
     }
 
-    /// Fetch Battlepass information from valorant-api.com
     func loadBattlepass() async {
         guard isConfigured else { return }
         let cache = personalCache
@@ -1112,7 +1507,6 @@ final class ValorantStore {
             return
         }
         do {
-            // Sans clé personnelle dans l'app, on passe par le Worker : il utilise la clé HenrikDev du compte ETHONE.
             if apiKey.isEmpty {
                 let rows: [JSONValue] = try await api.worker("api/stats/valorant-matches", query: [
                     URLQueryItem(name: "name", value: nameStorage), URLQueryItem(name: "tag", value: tag),
@@ -1163,7 +1557,6 @@ final class ValorantStore {
                 as: RemoteMatchCacheRow.self
             )
         } catch {
-            // The local cache remains usable when Supabase is temporarily unavailable.
         }
     }
 
@@ -1253,7 +1646,6 @@ final class ValorantStore {
         return nil
     }
 
-    /// Match already shaped by the Worker (`/api/stats/valorant-matches`).
     private func loadProfile() async {
         guard isConfigured else { return }
         let cache = personalCache

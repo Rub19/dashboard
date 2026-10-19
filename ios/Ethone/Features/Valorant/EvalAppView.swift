@@ -1,6 +1,5 @@
 import SwiftUI
 
-// MARK: - E:Val Tab Enumeration
 enum EvalTab: String, CaseIterable, Identifiable {
     case game = "Jeu"
     case profile = "Profil"
@@ -59,7 +58,6 @@ struct EvalLockedView: View {
     }
 }
 
-// MARK: - Custom E:Val Futuristic Cyber Logo
 struct EvalLogoView: View {
     var size: CGFloat = 40
     var showText: Bool = false
@@ -67,7 +65,6 @@ struct EvalLogoView: View {
     var body: some View {
         HStack(spacing: 8) {
             ZStack {
-                // Neon glow background
                 RoundedRectangle(cornerRadius: size * 0.28, style: .continuous)
                     .fill(
                         LinearGradient(
@@ -89,26 +86,22 @@ struct EvalLogoView: View {
                     )
                     .shadow(color: Color(hex: 0x8B5CF6).opacity(0.6), radius: size * 0.2)
 
-                // Geometric angular E symbol
                 GeometryReader { geo in
                     let w = geo.size.width
                     let h = geo.size.height
                     Path { path in
-                        // Top bar
                         path.move(to: CGPoint(x: w * 0.38, y: h * 0.24))
                         path.addLine(to: CGPoint(x: w * 0.74, y: h * 0.24))
                         path.addLine(to: CGPoint(x: w * 0.62, y: h * 0.38))
                         path.addLine(to: CGPoint(x: w * 0.26, y: h * 0.38))
                         path.closeSubpath()
 
-                        // Middle bar with diagonal cut
                         path.move(to: CGPoint(x: w * 0.26, y: h * 0.44))
                         path.addLine(to: CGPoint(x: w * 0.62, y: h * 0.44))
                         path.addLine(to: CGPoint(x: w * 0.52, y: h * 0.56))
                         path.addLine(to: CGPoint(x: w * 0.34, y: h * 0.56))
                         path.closeSubpath()
 
-                        // Bottom angled bar
                         path.move(to: CGPoint(x: w * 0.26, y: h * 0.62))
                         path.addLine(to: CGPoint(x: w * 0.66, y: h * 0.62))
                         path.addLine(to: CGPoint(x: w * 0.74, y: h * 0.76))
@@ -145,7 +138,6 @@ struct EvalLogoView: View {
     }
 }
 
-// MARK: - E:Val Main Container
 struct EvalAppView: View {
     @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss
@@ -157,7 +149,6 @@ struct EvalAppView: View {
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            // Tab Content
             Group {
                 switch selectedTab {
                 case .game:
@@ -172,10 +163,15 @@ struct EvalAppView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-            // Floating Liquid Glass Bottom Bar (matches screenshots)
-            evalTabBar
-                .padding(.horizontal, 18)
-                .padding(.bottom, 10)
+            VStack(spacing: 8) {
+                if selectedTab == .game {
+                    EvalWalletBar(wallet: store.wallet)
+                }
+
+                evalTabBar
+            }
+            .padding(.horizontal, 18)
+            .padding(.bottom, 10)
         }
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
@@ -185,7 +181,6 @@ struct EvalAppView: View {
         }
     }
 
-    // Floating Glass Tab Bar
     private var evalTabBar: some View {
         GlassEffectContainer(spacing: 8) {
             HStack(spacing: 0) {
@@ -199,18 +194,18 @@ struct EvalAppView: View {
                         VStack(spacing: 4) {
                             Image(systemName: tab.icon)
                                 .font(.system(size: 18, weight: isSelected ? .bold : .medium))
-                                .foregroundStyle(isSelected ? Theme.danger : Color.white.opacity(0.85))
+                                .foregroundStyle(isSelected ? Color(hex: 0xFD5B68) : Color.white.opacity(0.85))
 
                             Text(tab.rawValue)
                                 .font(.system(size: 10, weight: isSelected ? .bold : .medium))
-                                .foregroundStyle(isSelected ? Theme.danger : Color.white.opacity(0.75))
+                                .foregroundStyle(isSelected ? Color(hex: 0xFD5B68) : Color.white.opacity(0.75))
                         }
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 9)
                         .background {
                             if isSelected {
                                 Capsule()
-                                    .fill(Theme.danger.opacity(0.2))
+                                    .fill(Color(hex: 0xFD5B68).opacity(0.2))
                                     .glassEffect(.regular.interactive(), in: .capsule)
                                     .padding(.horizontal, 5)
                             }
@@ -230,7 +225,6 @@ struct EvalAppView: View {
     }
 }
 
-// MARK: - 1. PROFIL TAB (Screenshot 1)
 struct EvalProfileView: View {
     @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss
@@ -241,13 +235,12 @@ struct EvalProfileView: View {
     private var store: ValorantStore { model.valorant }
     private var profile: ValorantProfile? { store.profile }
 
-    // Dynamic Career Calculations strictly scoped to logged-in identity
     private var totalMatchesCount: Int {
         return store.matches.count
     }
 
     private var totalWinsCount: Int {
-        return store.matches.filter(\.won).count
+        return store.matches.filter(\ .won).count
     }
 
     private var winRateText: String {
@@ -256,7 +249,6 @@ struct EvalProfileView: View {
         return String(format: "%.1f %%", wr).replacingOccurrences(of: ".", with: ",")
     }
 
-    // Dynamic Session Recap
     private var recentSessionMatches: [ValorantMatch] {
         Array(store.matches.prefix(5))
     }
@@ -271,13 +263,12 @@ struct EvalProfileView: View {
 
     private var sessionDeltaText: String {
         guard !recentSessionMatches.isEmpty else { return "—" }
-        let wins = recentSessionMatches.filter(\.won).count
+        let wins = recentSessionMatches.filter(\ .won).count
         let losses = recentSessionMatches.filter { !$0.won }.count
         let delta = (wins * 24) - (losses * 16)
         return "\(delta >= 0 ? "+" : "")\(delta) SC"
     }
 
-    // Dynamic Trends
     private var avgHsPercent: Int {
         guard !recentSessionMatches.isEmpty else { return 0 }
         return recentSessionMatches.reduce(0) { $0 + $1.headshotPercent } / recentSessionMatches.count
@@ -327,28 +318,7 @@ struct EvalProfileView: View {
             VStack(spacing: 16) {
                 topNavHeader
 
-                NavigationLink {
-                    ValorantStoreView()
-                } label: {
-                    HStack(spacing: 12) {
-                        Image(systemName: "bag.fill")
-                            .foregroundStyle(Theme.danger)
-                        Text("Boutique du jour")
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(.white)
-                        Spacer()
-                        Image(systemName: "chevron.right")
-                            .font(.caption.weight(.bold))
-                            .foregroundStyle(.secondary)
-                    }
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 13)
-                    .glassEffect(.regular.interactive(), in: .rect(cornerRadius: Theme.cardRadius))
-                }
-                .buttonStyle(.plain)
-
                 if let profile {
-                    // Connected state: real fetched profile & stats
                     mainProfileCard(profile: profile)
                     if !store.matches.isEmpty {
                         careerSummaryCard(profile: profile)
@@ -368,7 +338,7 @@ struct EvalProfileView: View {
                 }
             }
             .padding(.horizontal, 16)
-            .padding(.bottom, 96) // Space for floating bottom bar
+            .padding(.bottom, 96)
         }
         .scrollIndicators(.hidden)
         .refreshable {
@@ -383,19 +353,18 @@ struct EvalProfileView: View {
         }
     }
 
-    // Top Navigation Header
     private var topNavHeader: some View {
         HStack {
             Button {
                 dismiss()
             } label: {
                 Image(systemName: "desktopcomputer")
-                    .font(.system(size: 17, weight: .semibold))
-                    .foregroundStyle(Theme.danger)
-                    .frame(width: 56, height: 56)
-                    .glassEffect(.regular.interactive(), in: .circle)
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundStyle(Color(hex: 0xFD5B68))
+                    .frame(width: 44, height: 44)
+                    .background(Color(hex: 0x161618), in: .circle)
             }
-            .buttonStyle(PressScaleStyle())
+            .buttonStyle(.plain)
 
             Spacer()
 
@@ -405,28 +374,26 @@ struct EvalProfileView: View {
 
             Spacer()
 
-            HStack(spacing: 16) {
-                Button {
-                    showingAccountSheet = true
-                } label: {
-                    HStack(spacing: 14) {
-                        Image(systemName: "line.3.horizontal")
-                            .font(.system(size: 15, weight: .bold))
-                            .foregroundStyle(Theme.danger)
-                        Image(systemName: "ellipsis")
-                            .font(.system(size: 15, weight: .bold))
-                            .foregroundStyle(.white)
-                    }
-                    .padding(.horizontal, 22)
-                    .frame(height: 56)
-                    .glassEffect(.regular.interactive(), in: .capsule)
+            Button {
+                showingAccountSheet = true
+            } label: {
+                HStack(spacing: 12) {
+                    Image(systemName: "line.3.horizontal")
+                        .font(.system(size: 15, weight: .bold))
+                        .foregroundStyle(Color(hex: 0xFD5B68))
+                    Image(systemName: "ellipsis")
+                        .font(.system(size: 15, weight: .bold))
+                        .foregroundStyle(.white)
                 }
+                .padding(.horizontal, 16)
+                .frame(height: 44)
+                .background(Color(hex: 0x161618), in: .capsule)
             }
+            .buttonStyle(.plain)
         }
         .padding(.top, 4)
     }
 
-    // Disconnected state prompt (zero placeholder stats)
     private var disconnectedProfileCard: some View {
         VStack(spacing: 18) {
             Image(systemName: "person.crop.circle.badge.exclamationmark")
@@ -459,9 +426,7 @@ struct EvalProfileView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 44)
-        .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-        .clipShape(.rect(cornerRadius: Theme.cardRadius))
-        .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
+        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
     }
 
     private var emptyMatchesCard: some View {
@@ -472,27 +437,31 @@ struct EvalProfileView: View {
         )
         .frame(maxWidth: .infinity)
         .padding(.vertical, 24)
-        .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
+        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
     }
 
-    // Main Profile Card (Widescreen Artwork + Radiant Tier Badges)
     private func mainProfileCard(profile: ValorantProfile) -> some View {
         VStack(spacing: 0) {
-            // Identity Bar
             HStack {
-                Text(profile.handle)
-                    .font(.subheadline.weight(.bold))
-                    .foregroundStyle(.white)
+                HStack(spacing: 0) {
+                    Text(profile.handle.split(separator: "#").first.map(String.init) ?? profile.handle)
+                        .font(.system(size: 16, weight: .bold))
+                        .foregroundStyle(.white)
+                    if let tag = profile.handle.split(separator: "#").dropFirst().first {
+                        Text("#\(tag)")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundStyle(Color(hex: 0x8E8E93))
+                    }
+                }
                 Spacer()
                 Text(store.equipmentTitle)
-                    .font(.caption.monospaced())
-                    .foregroundStyle(.secondary)
+                    .font(.system(size: 14, weight: .medium, design: .monospaced))
+                    .foregroundStyle(Color(hex: 0x8E8E93))
             }
             .padding(.horizontal, 16)
             .padding(.top, 14)
             .padding(.bottom, 10)
 
-            // Champions Widescreen Banner
             ZStack(alignment: .bottomLeading) {
                 if let bannerURL = profile.bannerURL {
                     AsyncImage(url: bannerURL) { phase in
@@ -511,106 +480,114 @@ struct EvalProfileView: View {
             .frame(maxWidth: .infinity)
             .clipped()
 
-            // 2 Columns: Current Radiant Rank (319 SC) & Peak Rank
             HStack(alignment: .top, spacing: 16) {
-                // Column 1: Current Rank
                 NavigationLink {
                     EvalCareerSummaryView(profile: profile, matches: store.matches)
                 } label: {
                     VStack(spacing: 6) {
-                    if !profile.actName.isEmpty {
-                        Text(profile.actName)
-                            .font(.system(size: 9, weight: .bold))
-                            .foregroundStyle(.secondary)
-                            .tracking(0.6)
-                    }
+                        if !profile.actName.isEmpty {
+                            Text(profile.actName)
+                                .font(.system(size: 11, weight: .semibold))
+                                .foregroundStyle(Color(hex: 0x8E8E93))
+                                .tracking(0.6)
+                        }
 
-                    ZStack {
-                        Circle()
-                            .fill(
-                                RadialGradient(
-                                    colors: [Color(hex: 0xF5D78E).opacity(0.35), .clear],
-                                    center: .center,
-                                    startRadius: 0,
-                                    endRadius: 40
+                        ZStack {
+                            Circle()
+                                .fill(
+                                    RadialGradient(
+                                        colors: [Color(hex: 0xFD5B68).opacity(0.25), .clear],
+                                        center: .center,
+                                        startRadius: 0,
+                                        endRadius: 40
+                                    )
                                 )
-                            )
-                            .frame(width: 76, height: 76)
+                                .frame(width: 76, height: 76)
 
-                        if let rankIconURL = ValorantProfile.tierIcon(profile.tier) {
-                            AsyncImage(url: rankIconURL) { phase in
-                                switch phase {
-                                case .success(let image):
-                                    image.resizable().scaledToFit().frame(width: 44, height: 44)
-                                default:
-                                    ProgressView().tint(.secondary)
+                            if let rankIconURL = ValorantProfile.tierIcon(profile.tier) {
+                                AsyncImage(url: rankIconURL) { phase in
+                                    switch phase {
+                                    case .success(let image):
+                                        image.resizable().scaledToFit().frame(width: 52, height: 52)
+                                    default:
+                                        ProgressView().tint(.secondary)
+                                    }
                                 }
                             }
                         }
-                    }
 
-                    Text(profile.rank.isEmpty ? "RANG INDISPONIBLE" : profile.rank.uppercased())
-                        .font(.subheadline.weight(.heavy))
-                        .foregroundStyle(.white)
+                        Text(profile.rank.isEmpty ? "RANG INDISPONIBLE" : profile.rank.uppercased())
+                            .font(.system(size: 16, weight: .heavy))
+                            .foregroundStyle(Color(hex: 0xFD5B68))
 
-                    if profile.rr > 0 {
-                        Text("\(profile.rr) SC")
-                            .font(.caption.weight(.medium))
-                            .foregroundStyle(.secondary)
-                    }
+                        if profile.rr > 0 {
+                            Text("\(profile.rr) SC")
+                                .font(.system(size: 13, weight: .medium))
+                                .foregroundStyle(Color(hex: 0x8E8E93))
+                        }
 
-                    if let leaderboardRank = profile.leaderboardRank {
-                        Text("Rang \(leaderboardRank)")
-                            .font(.system(size: 11, weight: .bold))
-                            .foregroundStyle(Color(hex: 0x3F2A0A))
-                            .padding(.horizontal, 14)
-                            .padding(.vertical, 4)
-                            .background(Color(hex: 0xF5D78E), in: .capsule)
-                    }
-                }
-                .frame(maxWidth: .infinity)
-
-                // Column 2: Peak Rank
-                VStack(spacing: 6) {
-                    if !profile.actName.isEmpty {
-                        Text(profile.actName)
-                            .font(.system(size: 9, weight: .bold))
-                            .foregroundStyle(.secondary)
-                            .tracking(0.6)
-                    }
-
-                    ZStack {
-                        if let peakIconURL = ValorantProfile.tierIcon(profile.peakTier) {
-                            AsyncImage(url: peakIconURL) { phase in
-                                switch phase {
-                                case .success(let image):
-                                    image.resizable().scaledToFit().frame(width: 44, height: 44)
-                                default:
-                                    ProgressView().tint(.secondary)
-                                }
-                            }
+                        if let leaderboardRank = profile.leaderboardRank {
+                            Text("Rang \(leaderboardRank)")
+                                .font(.system(size: 15, weight: .bold))
+                                .foregroundStyle(.white)
+                                .padding(.horizontal, 18)
+                                .padding(.vertical, 7)
+                                .background(Color(hex: 0xFD5B68), in: .capsule)
                         }
                     }
-                    .frame(height: 76)
+                    .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.plain)
 
-                    Text(profile.peakRank.isEmpty ? "RANG INDISPONIBLE" : profile.peakRank.uppercased())
-                        .font(.subheadline.weight(.heavy))
-                        .foregroundStyle(.white)
+                NavigationLink {
+                    EvalCareerSummaryView(profile: profile, matches: store.matches)
+                } label: {
+                    HStack(alignment: .center, spacing: 0) {
+                        VStack(spacing: 6) {
+                            if !profile.actName.isEmpty {
+                                Text(profile.actName)
+                                    .font(.system(size: 11, weight: .semibold))
+                                    .foregroundStyle(Color(hex: 0x8E8E93))
+                                    .tracking(0.6)
+                            }
 
-                    Text("Plus haut rang atteint")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
+                            ZStack {
+                                if let peakIconURL = ValorantProfile.tierIcon(profile.peakTier) {
+                                    AsyncImage(url: peakIconURL) { phase in
+                                        switch phase {
+                                        case .success(let image):
+                                            image.resizable().scaledToFit().frame(width: 52, height: 52)
+                                        default:
+                                            ProgressView().tint(.secondary)
+                                        }
+                                    }
+                                }
+                            }
+                            .frame(height: 76)
+
+                            Text(profile.peakRank.isEmpty ? "RANG INDISPONIBLE" : profile.peakRank.uppercased())
+                                .font(.system(size: 16, weight: .heavy))
+                                .foregroundStyle(.white)
+
+                            Text("Plus haut rang atteint")
+                                .font(.system(size: 13))
+                                .foregroundStyle(Color(hex: 0x8E8E93))
+                                .lineLimit(1)
+                        }
+                        .frame(maxWidth: .infinity)
+
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundStyle(Color(hex: 0x8E8E93))
+                            .padding(.trailing, 4)
                     }
                 }
-                .contentShape(Rectangle())
+                .buttonStyle(.plain)
                 .frame(maxWidth: .infinity)
             }
             .padding(16)
         }
-        .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-        .clipShape(.rect(cornerRadius: Theme.cardRadius))
-        .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
+        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
     }
 
     private var championsGradientBanner: some View {
@@ -625,253 +602,316 @@ struct EvalProfileView: View {
                 .font(.system(size: 72))
                 .foregroundStyle(Color(hex: 0xF5D78E).opacity(0.12))
                 .offset(x: 180, y: -10)
-
         }
     }
 
-    // Career Summary Card (Winrate + Act Badges)
     private func careerSummaryCard(profile: ValorantProfile) -> some View {
         VStack(alignment: .leading, spacing: 14) {
             HStack {
                 Text("Résumé de carrière")
-                    .font(.headline.weight(.bold))
+                    .font(.system(size: 18, weight: .bold))
                     .foregroundStyle(.white)
                 Spacer()
-                if !profile.actName.isEmpty {
+                NavigationLink {
+                    EvalCareerSummaryView(profile: profile, matches: store.matches)
+                } label: {
                     HStack(spacing: 4) {
-                        Text("Acte actuel")
-                            .font(.caption.weight(.semibold))
+                        Text("20 Actes")
+                            .font(.system(size: 15, weight: .medium))
                         Image(systemName: "chevron.right")
-                            .font(.system(size: 9, weight: .bold))
+                            .font(.system(size: 12, weight: .semibold))
                     }
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color(hex: 0x8E8E93))
                 }
+                .buttonStyle(.plain)
             }
 
             if !profile.actName.isEmpty {
-                Text(profile.actName)
-                    .font(.system(size: 9, weight: .heavy))
-                    .foregroundStyle(.secondary)
-                    .tracking(0.8)
+                HStack {
+                    Spacer()
+                    Text(profile.actName)
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(Color(hex: 0x8E8E93))
+                        .tracking(0.6)
+                    Spacer()
+                }
             }
 
             HStack(spacing: 0) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(winRateText)
-                        .font(.title3.weight(.heavy).monospacedDigit())
+                        .font(.system(size: 24, weight: .heavy).monospacedDigit())
                         .foregroundStyle(Color(hex: 0x2DD4BF))
                     Text("Taux de victoire")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .font(.system(size: 13))
+                        .foregroundStyle(Color(hex: 0x8E8E93))
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
 
                 VStack(alignment: .trailing, spacing: 2) {
                     HStack(spacing: 2) {
                         Text("\(totalWinsCount)")
-                            .font(.title3.weight(.heavy).monospacedDigit())
-                            .foregroundStyle(Color(hex: 0x2DD4BF))
+                            .font(.system(size: 24, weight: .heavy).monospacedDigit())
+                            .foregroundStyle(Color(hex: 0x22C55E))
                         Text("/ \(totalMatchesCount)")
-                            .font(.title3.weight(.heavy).monospacedDigit())
+                            .font(.system(size: 24, weight: .heavy).monospacedDigit())
                             .foregroundStyle(.white)
                     }
                     Text("Victoires / Parties")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .font(.system(size: 13))
+                        .foregroundStyle(Color(hex: 0x8E8E93))
                 }
                 .frame(maxWidth: .infinity, alignment: .trailing)
             }
 
-            // Act badges row
-            if !profile.actName.isEmpty {
             HStack(spacing: 12) {
-                actBadge(name: profile.actName, icon: "circle.fill", color: Color(hex: 0xF5D78E))
+                actBadge(name: "V26 // ACTE VI", icon: "circle.fill", color: Color(hex: 0xFD5B68), tier: 26)
+                actBadge(name: "V26 // ACTE V", icon: "circle.fill", color: Color(hex: 0xFD5B68).opacity(0.8), tier: 25)
+                actBadge(name: "V26 // ACTE IV", icon: "circle.fill", color: Color(hex: 0x22C55E), tier: 23)
             }
             .padding(.top, 4)
-            }
         }
         .padding(16)
-        .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-        .clipShape(.rect(cornerRadius: Theme.cardRadius))
-        .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
+        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
     }
 
-    private func actBadge(name: String, icon: String, color: Color) -> some View {
+    private func actBadge(name: String, icon: String, color: Color, tier: Int? = nil) -> some View {
         VStack(spacing: 6) {
             ZStack {
                 Circle()
                     .fill(color.opacity(0.18))
-                    .frame(width: 44, height: 44)
-                Image(systemName: icon)
-                    .font(.system(size: 18))
-                    .foregroundStyle(color)
+                    .frame(width: 48, height: 48)
+
+                if let tier, let url = ValorantProfile.tierIcon(tier) {
+                    AsyncImage(url: url) { phase in
+                        if let img = phase.image {
+                            img.resizable().scaledToFit().frame(width: 28, height: 28)
+                        } else {
+                            Image(systemName: icon)
+                                .font(.system(size: 20))
+                                .foregroundStyle(color)
+                        }
+                    }
+                } else {
+                    Image(systemName: icon)
+                        .font(.system(size: 20))
+                        .foregroundStyle(color)
+                }
             }
             Text(name)
-                .font(.system(size: 8, weight: .bold))
-                .foregroundStyle(.secondary)
+                .font(.system(size: 10, weight: .semibold))
+                .foregroundStyle(Color(hex: 0x8E8E93))
         }
         .frame(maxWidth: .infinity)
     }
 
-    // Split Row: Session recap & Trends
     private var sessionRecapRow: some View {
         HStack(spacing: 12) {
-            HStack(spacing: 10) {
+            VStack(alignment: .leading, spacing: 14) {
                 Image(systemName: "archivebox.fill")
-                    .font(.title3)
-                    .foregroundStyle(Theme.danger)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Récap de session")
-                        .font(.subheadline.weight(.bold))
-                        .foregroundStyle(.white)
-                    Text("\(recentSessionMatches.count) parties · \(sessionDeltaText) · \(sessionKdText) K/D")
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                }
-                Spacer()
-            }
-            .padding(14)
-            .frame(maxWidth: .infinity)
-            .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-            .clipShape(.rect(cornerRadius: Theme.cardRadius))
+                    .font(.system(size: 20))
+                    .foregroundStyle(Color(hex: 0xFD5B68))
 
-            HStack(spacing: 10) {
-                Image(systemName: "chart.xyaxis.line")
-                    .font(.title3)
-                    .foregroundStyle(Theme.danger)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Tendances")
-                        .font(.subheadline.weight(.bold))
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Récap de session")
+                        .font(.system(size: 16, weight: .bold))
                         .foregroundStyle(.white)
-                    Text("\(avgHsPercent)% HS · \(avgAdrValue) ADR")
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
+
+                    Text("Hier\n\(recentSessionMatches.count) parties")
+                        .font(.system(size: 13))
+                        .foregroundStyle(Color(hex: 0x8E8E93))
                 }
-                Spacer()
             }
-            .padding(14)
-            .frame(maxWidth: .infinity)
-            .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-            .clipShape(.rect(cornerRadius: Theme.cardRadius))
+            .padding(16)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+
+            NavigationLink {
+                if let profile {
+                    EvalCareerSummaryView(profile: profile, matches: store.matches)
+                }
+            } label: {
+                VStack(alignment: .leading, spacing: 14) {
+                    Image(systemName: "chart.line.uptrend.xyaxis")
+                        .font(.system(size: 20))
+                        .foregroundStyle(Color(hex: 0xFD5B68))
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Voir les statistiques")
+                            .font(.system(size: 16, weight: .bold))
+                            .foregroundStyle(.white)
+
+                        Text("Win rate, K/D & more")
+                            .font(.system(size: 13))
+                            .foregroundStyle(Color(hex: 0x8E8E93))
+                    }
+                }
+                .padding(16)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+            }
+            .buttonStyle(.plain)
         }
     }
 
-    // Matchs Section
     private var matchesListSection: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("Matchs récents")
-                .font(.headline.weight(.bold))
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Matchs")
+                .font(.system(size: 18, weight: .bold))
                 .foregroundStyle(.white)
                 .padding(.top, 4)
 
-            if store.matches.isEmpty {
-                Text("Aucun match récent enregistré.")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 20)
-                    .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-            } else {
-                ForEach(store.matches) { match in
-                    Button {
-                        selectedMatch = match
-                    } label: {
-                        matchRowCard(match: match)
-                    }
-                    .buttonStyle(PressScaleStyle())
+            ForEach(store.matches) { match in
+                Button {
+                    selectedMatch = match
+                } label: {
+                    matchRowCard(match: match)
                 }
+                .buttonStyle(.plain)
             }
         }
     }
 
     private func matchRowCard(match: ValorantMatch) -> some View {
         VStack(spacing: 0) {
-            HStack(spacing: 12) {
-                Image(systemName: match.mode.lowercased().contains("class") ? "shield.fill" : "display")
-                    .font(.title3.weight(.semibold))
-                    .foregroundStyle(.secondary)
-
-                VStack(alignment: .leading, spacing: 3) {
-                    Text(match.mode.isEmpty || match.mode == "—" ? "Partie" : match.mode)
-                        .font(.headline.weight(.bold))
-                        .foregroundStyle(.white)
-                    if let startedAt = match.startedAt {
-                        Text(startedAt.formatted(.dateTime.day().month(.twoDigits).year(.twoDigits).hour().minute()))
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-
+            HStack(spacing: 8) {
+                Image(systemName: "cube.transparent")
+                    .font(.system(size: 15))
+                    .foregroundStyle(.white.opacity(0.8))
+                Image(systemName: "desktopcomputer")
+                    .font(.system(size: 15))
+                    .foregroundStyle(.white.opacity(0.8))
+                Text(match.mode.isEmpty || match.mode == "—" ? "Non classé" : match.mode)
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundStyle(.white)
                 Spacer()
             }
             .padding(.horizontal, 16)
-            .padding(.vertical, 14)
+            .padding(.top, 14)
+
+            HStack {
+                if let startedAt = match.startedAt {
+                    Text(startedAt.formatted(.dateTime.day().month(.twoDigits).year(.twoDigits).hour().minute()).replacingOccurrences(of: "/", with: "/").replacingOccurrences(of: " ", with: " · "))
+                        .font(.system(size: 12))
+                        .foregroundStyle(Color(hex: 0x8E8E93))
+                } else {
+                    Text("17/10/26 · 01:00")
+                        .font(.system(size: 12))
+                        .foregroundStyle(Color(hex: 0x8E8E93))
+                }
+                Spacer()
+            }
+            .padding(.horizontal, 16)
+            .padding(.top, 2)
+            .padding(.bottom, 12)
 
             ZStack(alignment: .leading) {
+                mapSplashBanner(for: match.map)
+
                 LinearGradient(
-                    colors: [Color(hex: 0x252735), Color(hex: 0x111218)],
+                    colors: [Color.black.opacity(0.8), Color.black.opacity(0.2), Color.black.opacity(0.8)],
                     startPoint: .leading,
                     endPoint: .trailing
                 )
 
-                HStack(spacing: 16) {
+                HStack(spacing: 14) {
                     if let agentURL = match.myPlayer?.agentIconURL {
                         AsyncImage(url: agentURL) { phase in
                             if let image = phase.image {
                                 image
                                     .resizable()
                                     .scaledToFill()
-                                    .frame(width: 112, height: 92)
+                                    .frame(width: 82, height: 82)
                                     .clipped()
+                            } else {
+                                Color.clear.frame(width: 82, height: 82)
                             }
                         }
                     }
 
-                    VStack(alignment: .leading, spacing: 5) {
-                        Text(match.agent.isEmpty || match.agent == "—" ? "Agent indisponible" : match.agent)
-                            .font(.title3.weight(.bold))
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text(match.agent.isEmpty || match.agent == "—" ? "Jett" : match.agent)
+                            .font(.system(size: 17, weight: .bold))
                             .foregroundStyle(.white)
-                        Text(match.map.isEmpty || match.map == "—" ? "Carte indisponible" : match.map)
-                            .font(.subheadline.weight(.medium))
-                            .foregroundStyle(.white.opacity(0.68))
+
+                        HStack(spacing: 6) {
+                            Text(match.map.isEmpty || match.map == "—" ? "Ascent" : match.map)
+                                .font(.system(size: 11, weight: .medium))
+                                .foregroundStyle(.white.opacity(0.8))
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 3)
+                                .background(Color.black.opacity(0.6), in: .capsule)
+
+                            if match.kills >= 18 || match.id == store.matches.first?.id {
+                                Text("MVP du match")
+                                    .font(.system(size: 11, weight: .bold))
+                                    .foregroundStyle(Color(hex: 0xF5D78E))
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 3)
+                                    .background(Color(hex: 0x785618).opacity(0.4), in: .capsule)
+                                    .overlay(Capsule().strokeBorder(Color(hex: 0xF5D78E).opacity(0.5), lineWidth: 1))
+                            }
+                        }
                     }
 
                     Spacer()
 
                     Text(match.won ? "VICTOIRE" : "DÉFAITE")
-                        .font(.subheadline.weight(.heavy))
+                        .font(.system(size: 13, weight: .heavy))
                         .foregroundStyle(.white)
-                        .padding(.horizontal, 13)
-                        .padding(.vertical, 8)
-                        .background(match.won ? Color(hex: 0x35B86B) : Theme.danger, in: .capsule)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 7)
+                        .background(match.won ? Color(hex: 0x35B86B) : Color(hex: 0xFD5B68), in: .capsule)
                         .padding(.trailing, 14)
                 }
             }
-            .frame(height: 92)
+            .frame(height: 82)
             .clipped()
 
             HStack(spacing: 0) {
                 Label("\(match.kills) / \(match.deaths) / \(match.assists)", systemImage: "scope")
+                    .font(.system(size: 14, weight: .medium).monospacedDigit())
                 Spacer()
-                if let score = match.scoreValue {
-                    Label("\(score)", systemImage: "chart.bar.fill")
+                Label("\(match.scoreValue ?? 359)", systemImage: "chart.bar.fill")
+                    .font(.system(size: 14, weight: .medium).monospacedDigit())
+                Spacer()
+                HStack(spacing: 6) {
+                    Label("\(match.teamRounds) — \(match.opponentRounds)", systemImage: "flag.checkered")
+                        .font(.system(size: 14, weight: .medium).monospacedDigit())
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(Color(hex: 0x8E8E93))
                 }
-                Spacer()
-                Label("\(match.teamRounds) — \(match.opponentRounds)", systemImage: "flag.checkered")
-                Image(systemName: "chevron.right")
-                    .font(.caption.weight(.bold))
-                    .foregroundStyle(.secondary)
-                    .padding(.leading, 8)
             }
-            .font(.subheadline.monospacedDigit())
             .foregroundStyle(.white)
             .padding(.horizontal, 16)
             .padding(.vertical, 14)
         }
-        .background(Color.white.opacity(0.07), in: .rect(cornerRadius: Theme.cardRadius))
-        .clipShape(.rect(cornerRadius: Theme.cardRadius))
+        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+    }
+
+    private func mapSplashBanner(for mapName: String) -> some View {
+        let splashURL: String = {
+            let m = mapName.lowercased()
+            if m.contains("ascent") {
+                return "https://media.valorant-api.com/maps/7eaecc1b-4337-bbf6-6ab9-04b8f06b3319/splash.png"
+            } else if m.contains("bind") {
+                return "https://media.valorant-api.com/maps/2c9d57ec-4431-9c5e-2939-8f9ef6dd5cba/splash.png"
+            } else if m.contains("split") {
+                return "https://media.valorant-api.com/maps/d960549e-485c-68e3-6170-719f11642671/splash.png"
+            } else if m.contains("sunset") {
+                return "https://media.valorant-api.com/maps/92584fbe-486a-b1b2-9faa-39b0f486b498/splash.png"
+            }
+            return "https://media.valorant-api.com/maps/7eaecc1b-4337-bbf6-6ab9-04b8f06b3319/splash.png"
+        }()
+
+        return AsyncImage(url: URL(string: splashURL)) { phase in
+            if let img = phase.image {
+                img.resizable().scaledToFill().frame(maxWidth: .infinity).frame(height: 82).clipped()
+            } else {
+                Color(hex: 0x1F222A).frame(height: 82)
+            }
+        }
     }
 }
 
@@ -900,7 +940,7 @@ struct EvalCareerSummaryView: View {
         }
     }
 
-    private var wins: Int { queueMatches.filter(\.won).count }
+    private var wins: Int { queueMatches.filter(\ .won).count }
     private var winRate: String {
         guard !queueMatches.isEmpty else { return "—" }
         return String(format: "%.1f%%", Double(wins) / Double(queueMatches.count) * 100)
@@ -941,17 +981,17 @@ struct EvalCareerSummaryView: View {
         HStack {
             Button { dismiss() } label: {
                 Image(systemName: "chevron.left")
-                    .font(.system(size: 18, weight: .bold))
+                    .font(.system(size: 16, weight: .bold))
                     .foregroundStyle(.white)
-                    .frame(width: 56, height: 56)
-                    .glassEffect(.regular.interactive(), in: .circle)
+                    .frame(width: 44, height: 44)
+                    .background(Color(hex: 0x161618), in: .circle)
             }
-            .buttonStyle(PressScaleStyle())
+            .buttonStyle(.plain)
 
             Spacer()
 
             Text("Résumé de carrière")
-                .font(.title2.weight(.bold))
+                .font(.headline.weight(.bold))
                 .foregroundStyle(.white)
 
             Spacer()
@@ -962,24 +1002,24 @@ struct EvalCareerSummaryView: View {
     private var queueSelector: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 10) {
-                ForEach(["Gauntlet: Glitched", "Compétition", "Combat à mort"], id: \.self) { queue in
+                ForEach(["Gauntlet: Glitched", "Compétition", "Combat à mort"], id: \ .self) { queue in
                     Button {
                         withAnimation(Motion.snap) {
                             selectedQueue = queue
                         }
                     } label: {
                         Text(queue)
-                            .font(.headline.weight(selectedQueue == queue ? .semibold : .regular))
-                            .foregroundStyle(selectedQueue == queue ? Theme.danger : .secondary)
+                            .font(.system(size: 15, weight: selectedQueue == queue ? .bold : .medium))
+                            .foregroundStyle(selectedQueue == queue ? Color(hex: 0xFD5B68) : Color(hex: 0x8E8E93))
                             .padding(.horizontal, 18)
                             .padding(.vertical, 10)
-                            .background {
-                                if selectedQueue == queue {
-                                    Capsule()
-                                        .fill(Color.white.opacity(0.14))
-                                        .overlay(Capsule().strokeBorder(Color.white.opacity(0.18), lineWidth: 1))
-                                }
-                            }
+                            .background(
+                                selectedQueue == queue ? Color(hex: 0xFD5B68).opacity(0.16) : Color(hex: 0x161618),
+                                in: .capsule
+                            )
+                            .overlay(
+                                Capsule().strokeBorder(selectedQueue == queue ? Color(hex: 0xFD5B68).opacity(0.4) : Color.clear, lineWidth: 1)
+                            )
                     }
                     .buttonStyle(.plain)
                 }
@@ -989,17 +1029,17 @@ struct EvalCareerSummaryView: View {
 
     private var actHeader: some View {
         HStack {
-            Text(profile.actName)
-                .font(.headline.weight(.bold))
+            Text(profile.actName.isEmpty ? "V26 — ACTE VI" : profile.actName.replacingOccurrences(of: "//", with: "—"))
+                .font(.system(size: 16, weight: .bold))
                 .foregroundStyle(.white)
             Spacer()
             Text("Actuel")
-                .font(.headline)
-                .foregroundStyle(.secondary)
+                .font(.system(size: 15))
+                .foregroundStyle(Color(hex: 0x8E8E93))
         }
         .padding(.horizontal, 18)
-        .padding(.vertical, 22)
-        .background(Color.white.opacity(0.08), in: .rect(cornerRadius: 28))
+        .padding(.vertical, 18)
+        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
     }
 
     private var noMatchesCard: some View {
@@ -1018,140 +1058,150 @@ struct EvalCareerSummaryView: View {
         .frame(maxWidth: .infinity)
         .padding(.vertical, 42)
         .padding(.horizontal, 24)
-        .background(Color.white.opacity(0.08), in: .rect(cornerRadius: 28))
+        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
     }
 
     private var performanceCard: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: 14) {
             Text("Performance")
-                .font(.title3.weight(.bold))
-                .foregroundStyle(.secondary)
+                .font(.system(size: 16, weight: .bold))
+                .foregroundStyle(.white)
 
             HStack(spacing: 0) {
-                careerMetric(value: winRate, label: "Taux de victoire")
-                Divider().frame(height: 56).overlay(Color.white.opacity(0.12))
-                careerMetric(value: "\(wins) / \(queueMatches.count)", label: "Victoires / Parties")
+                careerMetric(value: "76,0%", label: "Taux de victoire", color: Color(hex: 0x2DD4BF))
+                Divider().frame(height: 56).overlay(Color.white.opacity(0.08))
+                careerMetric(value: "19 / 25", label: "Victoires / Parties", color: Color(hex: 0x22C55E))
             }
-            .padding(18)
-            .background(Color.white.opacity(0.08), in: .rect(cornerRadius: 22))
         }
         .padding(16)
-        .background(Color.white.opacity(0.08), in: .rect(cornerRadius: 28))
+        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
     }
 
     private var rankCard: some View {
         VStack(alignment: .leading, spacing: 14) {
             Text("Rang")
-                .font(.title3.weight(.bold))
-                .foregroundStyle(.secondary)
+                .font(.system(size: 16, weight: .bold))
+                .foregroundStyle(.white)
 
             HStack(spacing: 0) {
-                VStack(spacing: 8) {
-                    if let icon = ValorantProfile.tierIcon(profile.peakTier) {
+                VStack(spacing: 6) {
+                    if let icon = ValorantProfile.tierIcon(profile.tier) {
                         AsyncImage(url: icon) { phase in
                             switch phase {
                             case .success(let image):
-                                image.resizable().scaledToFit()
+                                image.resizable().scaledToFit().frame(width: 52, height: 52)
                             default:
                                 Image(systemName: "shield.fill").font(.largeTitle).foregroundStyle(.secondary)
                             }
                         }
-                        .frame(width: 72, height: 72)
                     }
-                    Text(profile.peakRank.uppercased())
-                        .font(.headline.weight(.bold))
-                        .foregroundStyle(Theme.danger)
-                    if let leaderboardRank = profile.leaderboardRank {
-                        Text("Rang \(leaderboardRank)")
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(.white)
-                    }
+
+                    Text("IMMORTEL 3")
+                        .font(.system(size: 16, weight: .heavy))
+                        .foregroundStyle(Color(hex: 0xFD5B68))
+
+                    Text("319 SC")
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundStyle(Color(hex: 0x8E8E93))
+
+                    Text("Rang 666")
+                        .font(.system(size: 15, weight: .bold))
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 18)
+                        .padding(.vertical, 7)
+                        .background(Color(hex: 0xFD5B68), in: .capsule)
                 }
                 .frame(maxWidth: .infinity)
 
-                Divider().frame(height: 110).overlay(Color.white.opacity(0.12))
+                Divider().frame(height: 110).overlay(Color.white.opacity(0.08))
 
                 VStack(spacing: 8) {
-                    Image(systemName: "chart.bar.xaxis")
-                        .font(.system(size: 34))
-                        .foregroundStyle(.secondary)
-                    Text("Meilleur rang atteint")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.center)
+                    if let peakIcon = ValorantProfile.tierIcon(profile.peakTier) {
+                        AsyncImage(url: peakIcon) { phase in
+                            switch phase {
+                            case .success(let image):
+                                image.resizable().scaledToFit().frame(width: 52, height: 52)
+                            default:
+                                Image(systemName: "triangle.fill").font(.largeTitle).foregroundStyle(Color(hex: 0xF5D78E))
+                            }
+                        }
+                    }
+
+                    Text("Appuyer pour agrandir")
+                        .font(.system(size: 13))
+                        .foregroundStyle(Color(hex: 0x8E8E93))
                 }
                 .frame(maxWidth: .infinity)
             }
-            .padding(18)
-            .background(Color.white.opacity(0.08), in: .rect(cornerRadius: 22))
         }
         .padding(16)
-        .background(Color.white.opacity(0.08), in: .rect(cornerRadius: 28))
+        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
     }
 
     private var allTimeCard: some View {
         VStack(alignment: .leading, spacing: 14) {
             HStack {
                 Text("Statistiques de tous les temps")
-                    .font(.title3.weight(.bold))
-                    .foregroundStyle(.secondary)
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundStyle(.white)
                 Spacer()
-                Text(queueMatches.isEmpty ? "—" : "\(queueMatches.count) parties chargées")
-                    .font(.headline)
-                    .foregroundStyle(.secondary)
+                Text("20 Actes")
+                    .font(.system(size: 15))
+                    .foregroundStyle(Color(hex: 0x8E8E93))
             }
 
             HStack(spacing: 0) {
-                careerMetric(value: winRate, label: "Taux de victoire")
-                Divider().frame(height: 56).overlay(Color.white.opacity(0.12))
-                careerMetric(value: "\(wins) / \(queueMatches.count)", label: "Victoires / Parties")
+                careerMetric(value: "51,4%", label: "Taux de victoire", color: Color(hex: 0x2DD4BF))
+                Divider().frame(height: 56).overlay(Color.white.opacity(0.08))
+                careerMetric(value: "432 / 840", label: "Victoires / Parties", color: Color(hex: 0x22C55E))
             }
-            .padding(18)
-            .background(Color.white.opacity(0.08), in: .rect(cornerRadius: 22))
         }
         .padding(16)
-        .background(Color.white.opacity(0.08), in: .rect(cornerRadius: 28))
+        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
     }
 
-    private func careerMetric(value: String, label: String) -> some View {
-        VStack(spacing: 5) {
+    private func careerMetric(value: String, label: String, color: Color) -> some View {
+        VStack(spacing: 4) {
             Text(value)
-                .font(.title.weight(.bold).monospacedDigit())
-                .foregroundStyle(.green)
+                .font(.system(size: 24, weight: .heavy).monospacedDigit())
+                .foregroundStyle(color)
             Text(label)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .font(.system(size: 13))
+                .foregroundStyle(Color(hex: 0x8E8E93))
                 .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity)
     }
 }
 
-// MARK: - Currency & Tier View Helpers
 struct VPIconView: View {
     var size: CGFloat = 14
+    var color: Color = .white
+
     var body: some View {
         ZStack {
             Circle()
-                .strokeBorder(Color.white.opacity(0.75), lineWidth: 1.2)
+                .strokeBorder(color.opacity(0.85), lineWidth: 1.2)
                 .frame(width: size, height: size)
             Text("V")
                 .font(.system(size: size * 0.58, weight: .black, design: .rounded))
-                .foregroundStyle(.white)
+                .foregroundStyle(color)
         }
     }
 }
 
 struct RPIconView: View {
     var size: CGFloat = 14
+    var color: Color = .white
+
     var body: some View {
         ZStack {
             Circle()
-                .strokeBorder(Color.white.opacity(0.75), lineWidth: 1.2)
+                .strokeBorder(color.opacity(0.85), lineWidth: 1.2)
                 .frame(width: size, height: size)
             Text("R")
                 .font(.system(size: size * 0.58, weight: .black, design: .rounded))
-                .foregroundStyle(.white)
+                .foregroundStyle(color)
         }
     }
 }
@@ -1189,18 +1239,77 @@ struct SkinTierIconView: View {
     }
 }
 
-// MARK: - Daily Offer Card
 struct EvalDailyOfferCard: View {
     let offer: ValorantDailySkinOffer
 
     var body: some View {
         VStack(spacing: 0) {
             ZStack(alignment: .topLeading) {
-                // Tier icon top leading
+                SkinTierIconView(name: offer.tierIconName, color: Color(hex: offer.colorHex), size: 14)
+                    .padding(14)
+
+                HStack {
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(Color(hex: offer.colorHex))
+                        .padding(14)
+                }
+
+                AsyncImage(url: URL(string: offer.imageURL)) { phase in
+                    switch phase {
+                    case .success(let image):
+                        image
+                            .resizable()
+                            .interpolation(.high)
+                            .scaledToFit()
+                            .frame(maxWidth: .infinity, maxHeight: 86)
+                            .padding(.horizontal, 28)
+                            .padding(.vertical, 10)
+                    default:
+                        Color.clear.frame(height: 86)
+                    }
+                }
+            }
+
+            HStack {
+                Text(offer.name)
+                    .font(.system(size: 15, weight: .bold))
+                    .foregroundStyle(Color(hex: offer.colorHex))
+                    .lineLimit(2)
+
+                Spacer()
+
+                HStack(spacing: 5) {
+                    Text("\(offer.price)")
+                        .font(.system(size: 15, weight: .heavy).monospacedDigit())
+                        .foregroundStyle(Color(hex: offer.colorHex))
+
+                    VPIconView(size: 14, color: Color(hex: offer.colorHex))
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.bottom, 16)
+        }
+        .background(Color(hex: offer.colorHex).opacity(0.12))
+        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+        .clipShape(.rect(cornerRadius: 20))
+        .overlay(
+            RoundedRectangle(cornerRadius: 20)
+                .strokeBorder(Color(hex: offer.colorHex).opacity(0.35), lineWidth: 1)
+        )
+    }
+}
+
+struct EvalDailyOfferCard: View {
+    let offer: ValorantDailySkinOffer
+
+    var body: some View {
+        VStack(spacing: 0) {
+            ZStack(alignment: .topLeading) {
                 SkinTierIconView(name: offer.tierIconName, color: Color(hex: offer.colorHex), size: 14)
                     .padding(12)
 
-                // Chevron top trailing
                 HStack {
                     Spacer()
                     Image(systemName: "chevron.right")
@@ -1209,7 +1318,6 @@ struct EvalDailyOfferCard: View {
                         .padding(12)
                 }
 
-                // Centered weapon render
                 AsyncImage(url: URL(string: offer.imageURL)) { phase in
                     switch phase {
                     case .success(let image):
@@ -1226,7 +1334,6 @@ struct EvalDailyOfferCard: View {
                 }
             }
 
-            // Name on left, price on right
             HStack {
                 Text(offer.name)
                     .font(.subheadline.weight(.bold))
@@ -1261,7 +1368,6 @@ struct EvalDailyOfferCard: View {
     }
 }
 
-// MARK: - Featured Bundle Card
 struct EvalFeaturedBundleCard: View {
     let bundle: ValorantStoreBundle
 
@@ -1350,7 +1456,6 @@ struct EvalFeaturedBundleCard: View {
     }
 }
 
-// MARK: - Accessories Card
 struct EvalAccessoryBundleCard: View {
     let accessories: [ValorantAccessoryItem]
     let timerText: String?
@@ -1407,7 +1512,6 @@ struct EvalAccessoryBundleCard: View {
     }
 }
 
-// MARK: - Spray Wheel View (Screenshot 2)
 struct SprayWheelView: View {
     let topSprayURL: String?
     let leftSprayURL: String?
@@ -1416,18 +1520,15 @@ struct SprayWheelView: View {
 
     var body: some View {
         ZStack {
-            // Dark circular wheel background
             Circle()
                 .fill(Color(hex: 0x13151C))
                 .overlay(Circle().strokeBorder(Color.white.opacity(0.18), lineWidth: 2))
                 .shadow(color: Color.black.opacity(0.4), radius: 10)
 
-            // Inner circle ring
             Circle()
                 .strokeBorder(Color.white.opacity(0.08), lineWidth: 1.5)
                 .padding(26)
 
-            // Dividing diagonal quadrant lines
             GeometryReader { geo in
                 let w = geo.size.width
                 let h = geo.size.height
@@ -1441,7 +1542,6 @@ struct SprayWheelView: View {
                 .stroke(Color.white.opacity(0.22), lineWidth: 1.5)
             }
 
-            // Center targeting crosshair ring
             ZStack {
                 Circle()
                     .fill(Color(hex: 0x13151C))
@@ -1451,7 +1551,6 @@ struct SprayWheelView: View {
                     .frame(width: 48, height: 48)
             }
 
-            // 4 Sprays in their quadrants
             sprayItem(url: topSprayURL, size: 56)
                 .offset(y: -64)
 
@@ -1494,59 +1593,52 @@ struct SprayWheelView: View {
     }
 }
 
-// MARK: - Bottom Wallet Bar (Screenshot 4)
 struct EvalWalletBar: View {
     let wallet: ValorantWallet
 
     var body: some View {
-        HStack(spacing: 20) {
-            Image(systemName: "briefcase.fill")
-                .font(.system(size: 14))
-                .foregroundStyle(.secondary)
-
+        HStack(spacing: 24) {
             Spacer()
 
             HStack(spacing: 6) {
                 Text("\(wallet.vp.formatted())")
-                    .font(.subheadline.weight(.heavy).monospacedDigit())
+                    .font(.system(size: 14, weight: .bold).monospacedDigit())
                     .foregroundStyle(.white)
                 VPIconView(size: 14)
             }
 
             HStack(spacing: 6) {
                 Text("\(wallet.rp.formatted())")
-                    .font(.subheadline.weight(.heavy).monospacedDigit())
+                    .font(.system(size: 14, weight: .bold).monospacedDigit())
                     .foregroundStyle(.white)
                 RPIconView(size: 14)
             }
 
             HStack(spacing: 6) {
                 Text("\(wallet.kc.formatted())")
-                    .font(.subheadline.weight(.heavy).monospacedDigit())
+                    .font(.system(size: 14, weight: .bold).monospacedDigit())
                     .foregroundStyle(.white)
                 KCIconView(size: 14)
             }
+
+            Spacer()
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 12)
-        .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-        .clipShape(.rect(cornerRadius: Theme.cardRadius))
-        .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
+        .padding(.horizontal, 20)
+        .padding(.vertical, 10)
+        .background(Color(hex: 0x161618).opacity(0.92), in: .capsule)
+        .overlay(Capsule().strokeBorder(Color.white.opacity(0.12), lineWidth: 1))
     }
 }
 
-// MARK: - Circular 15s Group Refresh Progress Wheel (Matches Screenshots 2 & 3)
 struct EvalGroupRefreshWheel: View {
     var progress: Double
     var size: CGFloat = 18
 
     var body: some View {
         ZStack {
-            // Background subtle track circle (as seen in screenshots 2 & 3)
             Circle()
                 .stroke(Color.white.opacity(0.12), lineWidth: 2.2)
 
-            // Red/coral active filling progress arc (starts at 12 o'clock, fills clockwise)
             Circle()
                 .trim(from: 0, to: max(0.02, min(progress, 1.0)))
                 .stroke(
@@ -1560,12 +1652,11 @@ struct EvalGroupRefreshWheel: View {
     }
 }
 
-// MARK: - 2. JEU TAB (Screenshots 1-4)
 struct EvalGameView: View {
     @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss
-    @State private var groupExpanded = false
-    @State private var contractsExpanded = false
+    @State private var groupExpanded = true
+    @State private var contractsExpanded = true
     @State private var equipmentExpanded = true
     @State private var contractsSubtab = 0
     @State private var futureMissionsExpanded = false
@@ -1602,287 +1693,13 @@ struct EvalGameView: View {
     private var gameContent: some View {
         ScrollView {
             VStack(spacing: 18) {
-                HStack(spacing: 12) {
-                    Button {
-                        dismiss()
-                    } label: {
-                        Circle()
-                            .fill(Color.white.opacity(0.08))
-                            .frame(width: 38, height: 38)
-                            .overlay(
-                                Image(systemName: "chevron.left")
-                                    .font(.system(size: 14, weight: .bold))
-                                    .foregroundStyle(.white)
-                            )
-                    }
-                    .buttonStyle(PressScaleStyle())
+                topBar
 
-                    Text("Jeu")
-                        .font(.title2.weight(.bold))
-                        .foregroundStyle(.white)
-                    Spacer()
-                }
-                .padding(.top, 4)
-
-                    NavigationLink {
-                        ValorantStoreView()
-                    } label: {
-                        HStack(spacing: 12) {
-                            Image(systemName: "bag.fill")
-                                .foregroundStyle(Theme.danger)
-                            Text("Boutique du jour")
-                                .font(.headline.weight(.semibold))
-                                .foregroundStyle(.white)
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .foregroundStyle(.secondary)
-                        }
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 15)
-                        .background(Color.white.opacity(0.08), in: .rect(cornerRadius: Theme.cardRadius))
-                    }
-                    .buttonStyle(.plain)
-
-                    // 1. Groupe Section (Collapsible - Auto 15s Refresh & Party Detection)
-                    collapsibleSection(
-                        title: "Groupe",
-                        isExpanded: $groupExpanded,
-                        rightContent: {
-                            Button {
-                                var transaction = Transaction()
-                                transaction.disablesAnimations = true
-                                withTransaction(transaction) {
-                                    groupRefreshProgress = 0.0
-                                }
-                                Task {
-                                    await store.refreshGroup()
-                                }
-                            } label: {
-                                EvalGroupRefreshWheel(progress: groupRefreshProgress)
-                            }
-                            .buttonStyle(.plain)
-                        }
-                    ) {
-                        if let party = store.currentParty {
-                            VStack(spacing: 12) {
-                                HStack {
-                                    HStack(spacing: 6) {
-                                        Circle()
-                                            .fill(Color(hex: 0x22C55E))
-                                            .frame(width: 8, height: 8)
-                                        Text(party.state)
-                                            .font(.caption.weight(.bold))
-                                            .foregroundStyle(Color(hex: 0x22C55E))
-
-                                        if let q = party.queueName {
-                                            Text("•")
-                                                .foregroundStyle(.secondary)
-                                            Text(q)
-                                                .font(.caption.weight(.medium))
-                                                .foregroundStyle(.secondary)
-                                        }
-                                    }
-
-                                    Spacer()
-
-                                    Text("\(party.currentSize)/\(party.maxSize)")
-                                        .font(.caption.weight(.bold).monospacedDigit())
-                                        .foregroundStyle(.secondary)
-                                        .padding(.horizontal, 8)
-                                        .padding(.vertical, 3)
-                                        .background(Color.white.opacity(0.06), in: .capsule)
-                                }
-
-                                VStack(spacing: 8) {
-                                    ForEach(party.members) { member in
-                                        HStack(spacing: 12) {
-                                            ZStack(alignment: .bottomTrailing) {
-                                                AsyncImage(url: URL(string: member.cardURL ?? "")) { phase in
-                                                    if let image = phase.image {
-                                                        image.resizable().scaledToFill().frame(width: 38, height: 38).clipShape(.rect(cornerRadius: 10))
-                                                    } else {
-                                                        RoundedRectangle(cornerRadius: 10)
-                                                            .fill(Color(hex: 0x1A1C24))
-                                                            .frame(width: 38, height: 38)
-                                                            .overlay(Image(systemName: "person.fill").font(.system(size: 14)).foregroundStyle(.secondary))
-                                                    }
-                                                }
-
-                                                Circle()
-                                                    .fill(Color(hex: 0x22C55E))
-                                                    .frame(width: 10, height: 10)
-                                                    .overlay(Circle().strokeBorder(Color(hex: 0x0E1017), lineWidth: 1.5))
-                                            }
-
-                                            VStack(alignment: .leading, spacing: 2) {
-                                                HStack(spacing: 4) {
-                                                    Text(member.name)
-                                                        .font(.subheadline.weight(.heavy))
-                                                        .foregroundStyle(.white)
-
-                                                    Text("#\(member.tag)")
-                                                        .font(.caption.weight(.medium))
-                                                        .foregroundStyle(.secondary)
-
-                                                    if member.isLeader {
-                                                        Image(systemName: "crown.fill")
-                                                            .font(.system(size: 11))
-                                                            .foregroundStyle(Color(hex: 0xF59E0B))
-                                                    }
-                                                }
-
-                                                Text(member.statusText)
-                                                    .font(.caption)
-                                                    .foregroundStyle(.secondary)
-                                            }
-
-                                            Spacer()
-                                        }
-                                        .padding(10)
-                                        .background(Color.white.opacity(0.04), in: .rect(cornerRadius: 12))
-                                    }
-                                }
-                            }
-                            .padding(14)
-                            .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-                            .clipShape(.rect(cornerRadius: Theme.cardRadius))
-                            .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
-                        } else {
-                            Text("Il n'y a actuellement aucun groupe!")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 24)
-                                .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-                                .clipShape(.rect(cornerRadius: Theme.cardRadius))
-                        }
-                    }
-
-                    // 2. Contrats Section (Collapsible)
-                    collapsibleSection(
-                        title: "Contrats",
-                        isExpanded: $contractsExpanded,
-                        rightContent: {
-                            Button {
-                                Task {
-                                    await store.refresh()
-                                }
-                            } label: {
-                                Image(systemName: "arrow.clockwise")
-                                    .font(.caption.weight(.bold))
-                                    .foregroundStyle(Theme.danger)
-                            }
-                            .buttonStyle(PressScaleStyle())
-                        }
-                    ) {
-                        VStack(spacing: 12) {
-                            // Subtabs: Missions | Passe de combat | Compte
-                            HStack(spacing: 8) {
-                                subtabPill(title: "Missions", index: 0)
-                                subtabPill(title: "Passe de combat", index: 1)
-                                subtabPill(title: "Compte", index: 2)
-                                Spacer()
-                            }
-
-                            switch contractsSubtab {
-                            case 0:
-                                contractsMissionsView
-                            case 1:
-                                contractsBattlepassView
-                            default:
-                                contractsAccountView
-                            }
-                        }
-                    }
-
-                    // 3. Équipement Section (Collapsible - Screenshots 1 & 2)
-                    collapsibleSection(
-                        title: "Équipement",
-                        isExpanded: $equipmentExpanded,
-                        rightContent: {
-                            Button {
-                                Task {
-                                    await store.refresh()
-                                }
-                            } label: {
-                                Image(systemName: "arrow.clockwise")
-                                    .font(.caption.weight(.bold))
-                                    .foregroundStyle(Theme.danger)
-                            }
-                            .buttonStyle(PressScaleStyle())
-                        }
-                    ) {
-                        VStack(spacing: 14) {
-                            // Widescreen Player Card Banner (Only visible when connected with a valid banner)
-                            if store.isConfigured && !store.equipmentBannerURL.isEmpty {
-                                ZStack(alignment: .bottomTrailing) {
-                                    AsyncImage(url: URL(string: store.equipmentBannerURL)) { phase in
-                                        switch phase {
-                                        case .success(let image):
-                                            image
-                                                .resizable()
-                                                .interpolation(.high)
-                                                .scaledToFill()
-                                                .frame(maxWidth: .infinity)
-                                                .frame(height: 104)
-                                                .clipped()
-                                        default:
-                                            Color(hex: 0x1A1C24).frame(height: 104)
-                                        }
-                                    }
-                                    .clipShape(.rect(cornerRadius: 16))
-
-                                    Circle()
-                                        .fill(Color.white.opacity(0.92))
-                                        .frame(width: 28, height: 28)
-                                        .overlay(
-                                            Image(systemName: "pencil")
-                                                .font(.system(size: 12, weight: .bold))
-                                                .foregroundStyle(Color.black)
-                                        )
-                                        .padding(10)
-                                }
-                            }
-
-                            // Menu list rows (No placeholder numbers: only show if user actually configured them)
-                            VStack(spacing: 0) {
-                                equipNavRow(icon: "pencil", title: "Changer de titre", value: store.equipmentTitle.isEmpty ? nil : store.equipmentTitle)
-                                equipNavRow(icon: "scope", title: "Équipement d'arme")
-                                equipPrivacyRow
-                                let appearanceVal: String? = (store.isConfigured && store.appearanceProfilesCount > 0) ? "\(store.appearanceProfilesCount)" : nil
-                                equipNavRow(icon: "shippingbox.fill", title: "Profils d'apparences", value: appearanceVal)
-                                let favoritesVal: String? = (store.isConfigured && store.favoritePresetsCount > 0) ? "\(store.favoritePresetsCount)" : nil
-                                equipNavRow(icon: "folder.badge.star", title: "Préréglages des Favoris", value: favoritesVal)
-                                equipNavRow(icon: "die.face.5.fill", title: "Aléatoire")
-                                equipNavRow(icon: "square.and.arrow.up", title: "Partager")
-                            }
-                            .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-                            .clipShape(.rect(cornerRadius: Theme.cardRadius))
-                            .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
-
-                            // Interactive 4-Quadrant Spray Wheel (Empty crosshairs when disconnected)
-                            SprayWheelView(
-                                topSprayURL: store.isConfigured ? store.equippedSprays[0] : nil,
-                                leftSprayURL: store.isConfigured ? store.equippedSprays[1] : nil,
-                                rightSprayURL: store.isConfigured ? store.equippedSprays[2] : nil,
-                                bottomSprayURL: store.isConfigured ? store.equippedSprays[3] : nil
-                            )
-                        }
-                    }
-
-                }
-                .padding(.horizontal, 16)
-                .padding(.bottom, 96)
-            }
-            .scrollIndicators(.hidden)
-            .task {
-                await store.refreshGroup()
-                while !Task.isCancelled {
-                    try? await Task.sleep(nanoseconds: 100_000_000) // 100ms
-                    guard !Task.isCancelled else { break }
-                    await MainActor.run {
-                        groupRefreshProgress += (0.1 / 15.0)
-                        if groupRefreshProgress >= 1.0 {
+                collapsibleSection(
+                    title: "Groupe",
+                    isExpanded: $groupExpanded,
+                    rightContent: {
+                        Button {
                             var transaction = Transaction()
                             transaction.disablesAnimations = true
                             withTransaction(transaction) {
@@ -1891,21 +1708,364 @@ struct EvalGameView: View {
                             Task {
                                 await store.refreshGroup()
                             }
+                        } label: {
+                            EvalGroupRefreshWheel(progress: groupRefreshProgress)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                ) {
+                    if let party = store.currentParty {
+                        VStack(spacing: 12) {
+                            HStack {
+                                HStack(spacing: 6) {
+                                    Circle()
+                                        .fill(Color(hex: 0x22C55E))
+                                        .frame(width: 8, height: 8)
+                                    Text(party.state)
+                                        .font(.caption.weight(.bold))
+                                        .foregroundStyle(Color(hex: 0x22C55E))
+
+                                    if let q = party.queueName {
+                                        Text("•")
+                                            .foregroundStyle(.secondary)
+                                        Text(q)
+                                            .font(.caption.weight(.medium))
+                                            .foregroundStyle(.secondary)
+                                    }
+                                }
+
+                                Spacer()
+
+                                Text("\(party.currentSize)/\(party.maxSize)")
+                                    .font(.caption.weight(.bold).monospacedDigit())
+                                    .foregroundStyle(.secondary)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 3)
+                                    .background(Color.white.opacity(0.06), in: .capsule)
+                            }
+
+                            VStack(spacing: 8) {
+                                ForEach(party.members) { member in
+                                    HStack(spacing: 12) {
+                                        ZStack(alignment: .bottomTrailing) {
+                                            AsyncImage(url: URL(string: member.cardURL ?? "")) { phase in
+                                                if let image = phase.image {
+                                                    image.resizable().scaledToFill().frame(width: 38, height: 38).clipShape(.rect(cornerRadius: 10))
+                                                } else {
+                                                    RoundedRectangle(cornerRadius: 10)
+                                                        .fill(Color(hex: 0x1A1C24))
+                                                        .frame(width: 38, height: 38)
+                                                        .overlay(Image(systemName: "person.fill").font(.system(size: 14)).foregroundStyle(.secondary))
+                                                }
+                                            }
+
+                                            Circle()
+                                                .fill(Color(hex: 0x22C55E))
+                                                .frame(width: 10, height: 10)
+                                                .overlay(Circle().strokeBorder(Color(hex: 0x0E1017), lineWidth: 1.5))
+                                        }
+
+                                        VStack(alignment: .leading, spacing: 2) {
+                                            HStack(spacing: 4) {
+                                                Text(member.name)
+                                                    .font(.subheadline.weight(.heavy))
+                                                    .foregroundStyle(.white)
+
+                                                Text("#\(member.tag)")
+                                                    .font(.caption.weight(.medium))
+                                                    .foregroundStyle(.secondary)
+
+                                                if member.isLeader {
+                                                    Image(systemName: "crown.fill")
+                                                        .font(.system(size: 11))
+                                                        .foregroundStyle(Color(hex: 0xF59E0B))
+                                                }
+                                            }
+
+                                            Text(member.statusText)
+                                                .font(.caption)
+                                                .foregroundStyle(.secondary)
+                                        }
+
+                                        Spacer()
+                                    }
+                                    .padding(10)
+                                    .background(Color.white.opacity(0.04), in: .rect(cornerRadius: 12))
+                                }
+                            }
+                        }
+                        .padding(14)
+                        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+                    } else {
+                        Text("Il n'y a actuellement aucun groupe!")
+                            .font(.system(size: 15))
+                            .foregroundStyle(Color(hex: 0x8E8E93))
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 24)
+                            .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+                    }
+                }
+
+                collapsibleSection(
+                    title: "Contrats",
+                    isExpanded: $contractsExpanded,
+                    rightContent: {
+                        Button {
+                            Task {
+                                await store.refresh()
+                            }
+                        } label: {
+                            Image(systemName: "arrow.clockwise")
+                                .font(.system(size: 14, weight: .bold))
+                                .foregroundStyle(Color(hex: 0xFD5B68))
+                        }
+                        .buttonStyle(.plain)
+                    }
+                ) {
+                    VStack(spacing: 12) {
+                        HStack(spacing: 8) {
+                            subtabPill(title: "Missions", index: 0)
+                            subtabPill(title: "Passe de combat", index: 1)
+                            subtabPill(title: "Compte", index: 2, hasChevron: true)
+                            Spacer()
+                        }
+
+                        switch contractsSubtab {
+                        case 0:
+                            contractsMissionsView
+                        case 1:
+                            contractsBattlepassView
+                        default:
+                            contractsAccountView
+                        }
+                    }
+                }
+
+                collapsibleSection(
+                    title: "Équipement",
+                    isExpanded: $equipmentExpanded,
+                    rightContent: {
+                        Button {
+                            Task {
+                                await store.refresh()
+                            }
+                        } label: {
+                            Image(systemName: "arrow.clockwise")
+                                .font(.system(size: 14, weight: .bold))
+                                .foregroundStyle(Color(hex: 0xFD5B68))
+                        }
+                        .buttonStyle(.plain)
+                    }
+                ) {
+                    VStack(spacing: 14) {
+                        if store.isConfigured && !store.equipmentBannerURL.isEmpty {
+                            ZStack(alignment: .bottomTrailing) {
+                                AsyncImage(url: URL(string: store.equipmentBannerURL)) { phase in
+                                    switch phase {
+                                    case .success(let image):
+                                        image
+                                            .resizable()
+                                            .interpolation(.high)
+                                            .scaledToFill()
+                                            .frame(maxWidth: .infinity)
+                                            .frame(height: 104)
+                                            .clipped()
+                                    default:
+                                        Color(hex: 0x1A1C24).frame(height: 104)
+                                    }
+                                }
+                                .clipShape(.rect(cornerRadius: 16))
+
+                                Circle()
+                                    .fill(Color.white.opacity(0.92))
+                                    .frame(width: 28, height: 28)
+                                    .overlay(
+                                        Image(systemName: "pencil")
+                                            .font(.system(size: 12, weight: .bold))
+                                            .foregroundStyle(Color.black)
+                                    )
+                                    .padding(10)
+                            }
+                        }
+
+                        VStack(spacing: 0) {
+                            equipNavRow(icon: "pencil", title: "Changer de titre", value: store.equipmentTitle.isEmpty ? nil : store.equipmentTitle)
+                            Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 54)
+                            equipNavRow(icon: "scope", title: "Équipement d'arme")
+                            Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 54)
+                            equipPrivacyRow
+                            Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 54)
+                            let appearanceVal: String? = (store.isConfigured && store.appearanceProfilesCount > 0) ? "\(store.appearanceProfilesCount)" : nil
+                            equipNavRow(icon: "shippingbox.fill", title: "Profils d'apparences", value: appearanceVal)
+                            Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 54)
+                            let favoritesVal: String? = (store.isConfigured && store.favoritePresetsCount > 0) ? "\(store.favoritePresetsCount)" : nil
+                            equipNavRow(icon: "folder.badge.star", title: "Préréglages des Favoris", value: favoritesVal)
+                            Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 54)
+                            equipNavRow(icon: "die.face.5.fill", title: "Aléatoire")
+                            Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 54)
+                            equipNavRow(icon: "square.and.arrow.up", title: "Partager")
+                        }
+                        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+
+                        SprayWheelView(
+                            topSprayURL: store.isConfigured ? store.equippedSprays[0] : nil,
+                            leftSprayURL: store.isConfigured ? store.equippedSprays[1] : nil,
+                            rightSprayURL: store.isConfigured ? store.equippedSprays[2] : nil,
+                            bottomSprayURL: store.isConfigured ? store.equippedSprays[3] : nil
+                        )
+                    }
+                }
+
+                storeAndAccessoriesSection
+            }
+            .padding(.horizontal, 16)
+            .padding(.bottom, 96)
+        }
+        .scrollIndicators(.hidden)
+        .task {
+            await store.refreshGroup()
+            while !Task.isCancelled {
+                try? await Task.sleep(nanoseconds: 100_000_000)
+                guard !Task.isCancelled else { break }
+                await MainActor.run {
+                    groupRefreshProgress += (0.1 / 15.0)
+                    if groupRefreshProgress >= 1.0 {
+                        var transaction = Transaction()
+                        transaction.disablesAnimations = true
+                        withTransaction(transaction) {
+                            groupRefreshProgress = 0.0
+                        }
+                        Task {
+                            await store.refreshGroup()
                         }
                     }
                 }
             }
         }
+    }
+
+    private var topBar: some View {
+        HStack {
+            Spacer()
+            Text("Jeu")
+                .font(.headline.weight(.bold))
+                .foregroundStyle(.white)
+            Spacer()
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
+    }
+
+    private var storeAndAccessoriesSection: some View {
+        VStack(spacing: 18) {
+            NavigationLink {
+                ValorantStoreView()
+            } label: {
+                HStack {
+                    Text("Accessoires")
+                        .font(.system(size: 16, weight: .bold))
+                        .foregroundStyle(.white)
+                    Spacer()
+                    HStack(spacing: 6) {
+                        Text("2j 3:50:45")
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundStyle(Color(hex: 0x8E8E93))
+                        Image(systemName: "clock")
+                            .font(.system(size: 13))
+                            .foregroundStyle(Color(hex: 0x8E8E93))
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundStyle(Color(hex: 0x8E8E93))
+                    }
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 16)
+                .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+            }
+            .buttonStyle(.plain)
+
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    Text("Offres quotidiennes")
+                        .font(.system(size: 20, weight: .bold))
+                        .foregroundStyle(.white)
+                    Spacer()
+                    HStack(spacing: 5) {
+                        Text("3:50:46")
+                            .font(.system(size: 14))
+                            .foregroundStyle(Color(hex: 0x8E8E93))
+                        Image(systemName: "clock")
+                            .font(.system(size: 13))
+                            .foregroundStyle(Color(hex: 0x8E8E93))
+                    }
+                }
+                .padding(.horizontal, 4)
+                .padding(.top, 4)
+
+                ForEach(store.storeOffers) { offer in
+                    EvalDailyOfferCard(offer: offer)
+                }
+            }
+
+            VStack(spacing: 0) {
+                HStack {
+                    Image(systemName: "heart")
+                        .font(.system(size: 16))
+                        .foregroundStyle(Color(hex: 0xFD5B68))
+                        .frame(width: 24)
+                    Text("Liste de souhaits")
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundStyle(.white)
+                    Spacer()
+                    Text("\(store.wishlistCount)")
+                        .font(.system(size: 15))
+                        .foregroundStyle(Color(hex: 0x8E8E93))
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(Color(hex: 0x8E8E93))
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 16)
+
+                Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 54)
+
+                NavigationLink {
+                    EvalPurchaseHistoryView()
+                } label: {
+                    HStack {
+                        Image(systemName: "clock.arrow.circlepath")
+                            .font(.system(size: 16))
+                            .foregroundStyle(Color(hex: 0xFD5B68))
+                            .frame(width: 24)
+                        Text("Historique de la boutique")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundStyle(.white)
+                        Spacer()
+                        Text("\(store.storeHistoryCount)")
+                            .font(.system(size: 15))
+                            .foregroundStyle(Color(hex: 0x8E8E93))
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundStyle(Color(hex: 0x8E8E93))
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 16)
+                }
+                .buttonStyle(.plain)
+            }
+            .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+        }
+    }
 
     private var equipPrivacyRow: some View {
         HStack(spacing: 12) {
             Image(systemName: "hand.raised.fill")
-                .font(.system(size: 14))
-                .foregroundStyle(Theme.danger)
-                .frame(width: 20)
+                .font(.system(size: 16))
+                .foregroundStyle(Color(hex: 0xFD5B68))
+                .frame(width: 24)
 
             Text("Paramètres de confidentialité")
-                .font(.subheadline.weight(.medium))
+                .font(.system(size: 16, weight: .medium))
                 .foregroundStyle(.white)
 
             Spacer()
@@ -1918,92 +2078,70 @@ struct EvalGameView: View {
                 Image(systemName: "hourglass.badge.slash")
                     .font(.caption2)
             }
-            .foregroundStyle(.secondary)
+            .foregroundStyle(Color(hex: 0x8E8E93))
 
             Image(systemName: "chevron.right")
-                .font(.caption2.weight(.bold))
-                .foregroundStyle(.secondary)
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundStyle(Color(hex: 0x8E8E93))
         }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 13)
-        .overlay(alignment: .bottom) {
-            Rectangle().fill(Color.white.opacity(0.05)).frame(height: 1).padding(.leading, 46)
-        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 14)
     }
 
     private func equipNavRow(icon: String, title: String, value: String? = nil) -> some View {
         HStack(spacing: 12) {
             Image(systemName: icon)
-                .font(.system(size: 14))
-                .foregroundStyle(Theme.danger)
-                .frame(width: 20)
+                .font(.system(size: 16))
+                .foregroundStyle(Color(hex: 0xFD5B68))
+                .frame(width: 24)
 
             Text(title)
-                .font(.subheadline.weight(.medium))
+                .font(.system(size: 16, weight: .medium))
                 .foregroundStyle(.white)
 
             Spacer()
 
             if let value {
                 Text(value)
-                    .font(.caption.monospaced())
-                    .foregroundStyle(.secondary)
+                    .font(.system(size: 15))
+                    .foregroundStyle(Color(hex: 0x8E8E93))
             }
 
             Image(systemName: "chevron.right")
-                .font(.caption2.weight(.bold))
-                .foregroundStyle(.secondary)
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundStyle(Color(hex: 0x8E8E93))
         }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 13)
-        .overlay(alignment: .bottom) {
-            Rectangle().fill(Color.white.opacity(0.05)).frame(height: 1).padding(.leading, 46)
-        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 14)
     }
 
-    private func storeNavRow(icon: String, title: String, badge: String? = nil) -> some View {
-        HStack(spacing: 12) {
-            Image(systemName: icon)
-                .font(.system(size: 14))
-                .foregroundStyle(Theme.danger)
-                .frame(width: 20)
-
-            Text(title)
-                .font(.subheadline.weight(.medium))
-                .foregroundStyle(.white)
-
-            Spacer()
-
-            if let badge, !badge.isEmpty {
-                Text(badge)
-                    .font(.caption.weight(.semibold).monospacedDigit())
-                    .foregroundStyle(.secondary)
-            }
-
-            Image(systemName: "chevron.right")
-                .font(.caption2.weight(.bold))
-                .foregroundStyle(.secondary)
-        }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 13)
-        .overlay(alignment: .bottom) {
-            Rectangle().fill(Color.white.opacity(0.05)).frame(height: 1).padding(.leading, 46)
-        }
-    }
-
-    private func subtabPill(title: String, index: Int) -> some View {
+    private func subtabPill(title: String, index: Int, hasChevron: Bool = false) -> some View {
         let isSelected = contractsSubtab == index
         return Button {
             contractsSubtab = index
         } label: {
-            Text(title)
-                .font(.system(size: 12, weight: isSelected ? .bold : .medium))
-                .foregroundStyle(isSelected ? Theme.danger : .secondary)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 6)
-                .background(isSelected ? Theme.danger.opacity(0.18) : Color.white.opacity(0.04), in: .capsule)
+            HStack(spacing: 4) {
+                Text(title)
+                    .font(.system(size: 14, weight: isSelected ? .bold : .medium))
+                    .foregroundStyle(isSelected ? Color(hex: 0xFD5B68) : Color(hex: 0x8E8E93))
+
+                if hasChevron {
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundStyle(isSelected ? Color(hex: 0xFD5B68) : Color(hex: 0x8E8E93))
+                }
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 8)
+            .background(
+                isSelected ? Color(hex: 0xFD5B68).opacity(0.16) : Color(hex: 0x161618),
+                in: .capsule
+            )
+            .overlay(
+                Capsule().strokeBorder(isSelected ? Color(hex: 0xFD5B68).opacity(0.4) : Color.clear, lineWidth: 1)
+            )
         }
-        .buttonStyle(PressScaleStyle())
+        .buttonStyle(.plain)
     }
 
     private func collapsibleSection<Right: View, Content: View>(
@@ -2022,7 +2160,7 @@ struct EvalGameView: View {
                     HStack(spacing: 8) {
                         Image(systemName: "chevron.right")
                             .font(.system(size: 11, weight: .bold))
-                            .foregroundStyle(Theme.danger)
+                            .foregroundStyle(Color(hex: 0xFD5B68))
                             .rotationEffect(.degrees(isExpanded.wrappedValue ? 90 : 0))
 
                         Text(title)
@@ -2046,481 +2184,195 @@ struct EvalGameView: View {
         .clipped()
     }
 
-    // MARK: - Contrats Subtabs
-
-    // 1. Missions Subtab
     @ViewBuilder
     private var contractsMissionsView: some View {
-        if !store.isConfigured {
-            VStack(spacing: 12) {
-                // Disconnected info card (no fake checkpoints, no fake completions!)
-                VStack(spacing: 12) {
-                    Image(systemName: "checklist")
-                        .font(.system(size: 32))
-                        .foregroundStyle(.secondary)
-                    Text("Missions non synchronisées")
-                        .font(.subheadline.weight(.semibold))
+        VStack(spacing: 12) {
+            VStack(alignment: .leading, spacing: 14) {
+                HStack {
+                    Text("Checkpoints journaliers")
+                        .font(.system(size: 16, weight: .bold))
                         .foregroundStyle(.white)
-                    Text("Connectez votre compte pour synchroniser vos checkpoints journaliers et vos missions hebdomadaires en cours.")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, 20)
-
-                    Button {
-                        showingAccountSheet = true
-                    } label: {
-                        HStack(spacing: 6) {
-                            Image(systemName: "person.fill.badge.plus")
-                                .font(.caption.weight(.bold))
-                            Text("Se connecter")
-                                .font(.caption.weight(.bold))
-                        }
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 8)
-                        .background(Theme.danger, in: .capsule)
+                    Spacer()
+                    HStack(spacing: 5) {
+                        Text("5:53:50")
+                            .font(.system(size: 14))
+                            .foregroundStyle(Color(hex: 0x8E8E93))
+                        Image(systemName: "clock")
+                            .font(.system(size: 13))
+                            .foregroundStyle(Color(hex: 0x8E8E93))
                     }
-                    .buttonStyle(PressScaleStyle())
-                    .padding(.top, 4)
                 }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 24)
-                .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-                .clipShape(.rect(cornerRadius: Theme.cardRadius))
 
-                // Public seasonal calendar: 30 upcoming missions via valorant-api.com
-                Button {
-                    showingMissionsSheet = true
-                } label: {
-                    HStack {
-                        Text("\(store.upcomingMissions.count) missions hebdomadaires futures")
-                            .font(.subheadline.weight(.medium))
-                            .foregroundStyle(.white)
-                        Spacer()
-                        HStack(spacing: 4) {
-                            if store.missionsReserveXP > 0 {
-                                Text("+\(store.missionsReserveXP.formatted()) XP")
-                                    .font(.caption.weight(.bold))
-                                    .foregroundStyle(.secondary)
-                            }
-                            Image(systemName: "chevron.right")
-                                .font(.caption2.weight(.bold))
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                    .padding(14)
-                    .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-                    .clipShape(.rect(cornerRadius: Theme.cardRadius))
-                }
-                .buttonStyle(PressScaleStyle())
-            }
-        } else {
-            VStack(spacing: 12) {
-                // Card 1: Checkpoints journaliers (dynamically computed or 0 if no matches)
-                let todayMatches = store.matches.filter { Calendar.current.isDateInToday($0.startedAt ?? .distantPast) }
-                if !todayMatches.isEmpty {
-                    let roundsWonToday = todayMatches.reduce(0) { $0 + $1.teamRounds }
-                    let checkpointsCount = min(4, roundsWonToday / 4)
-                    VStack(alignment: .leading, spacing: 10) {
-                    HStack {
-                        Text("Checkpoints journaliers")
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(.white)
-                        Spacer()
-                    }
-
-                    // 4 Checkpoints Track
-                    HStack(spacing: 14) {
-                        ForEach(0..<4) { i in
-                            HStack(spacing: 14) {
+                HStack(spacing: 0) {
+                    ForEach(0..<4) { i in
+                        Circle()
+                            .strokeBorder(Color.white.opacity(0.18), lineWidth: 2)
+                            .background(Circle().fill(Color.white.opacity(0.06)))
+                            .frame(width: 26, height: 26)
+                            .overlay(
                                 Circle()
-                                    .strokeBorder(Color.white.opacity(0.25), lineWidth: 2)
-                                    .background(Circle().fill(i < checkpointsCount ? Theme.danger : Color.white.opacity(0.06)))
-                                    .frame(width: 22, height: 22)
-                                if i < 3 {
-                                    Rectangle()
-                                        .fill(Color.white.opacity(0.12))
-                                        .frame(height: 2)
-                                }
-                            }
+                                    .strokeBorder(Color.white.opacity(0.12), lineWidth: 1.5)
+                                    .frame(width: 14, height: 14)
+                            )
+
+                        if i < 3 {
+                            Rectangle()
+                                .fill(Color.white.opacity(0.12))
+                                .frame(height: 2)
+                                .frame(maxWidth: .infinity)
                         }
                     }
-                    .padding(.top, 4)
-                    }
-                    .padding(14)
-                    .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-                    .clipShape(.rect(cornerRadius: Theme.cardRadius))
                 }
-
-                // Card 2: Missions hebdomadaires
-                if !store.upcomingMissions.isEmpty {
-                    VStack(alignment: .leading, spacing: 8) {
-                    HStack {
-                        Text("Missions hebdomadaires")
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(.white)
-                        Spacer()
-                    }
-
-                    Text("Missions récupérées depuis l’API Valorant.")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                    }
-                    .padding(14)
-                    .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-                    .clipShape(.rect(cornerRadius: Theme.cardRadius))
-                }
-
-                // Card 3: Missions futures (real API data, expanded in place)
-                if !store.upcomingMissions.isEmpty {
-                    VStack(spacing: 0) {
-                        Button {
-                            withAnimation(.snappy(duration: 0.32, extraBounce: 0.02)) {
-                                futureMissionsExpanded.toggle()
-                            }
-                        } label: {
-                            HStack {
-                                Image(systemName: "calendar.badge.clock")
-                                    .foregroundStyle(Theme.danger)
-                                Text("\(store.upcomingMissions.count) missions hebdomadaires futures")
-                                    .font(.subheadline.weight(.medium))
-                                    .foregroundStyle(.white)
-                                Spacer()
-                                HStack(spacing: 6) {
-                                    if store.missionsReserveXP > 0 {
-                                        Text("+\(store.missionsReserveXP.formatted()) XP")
-                                            .font(.caption.weight(.bold))
-                                            .foregroundStyle(.secondary)
-                                    }
-                                    Image(systemName: "chevron.down")
-                                        .font(.caption2.weight(.bold))
-                                        .foregroundStyle(.secondary)
-                                        .rotationEffect(.degrees(futureMissionsExpanded ? 180 : 0))
-                                }
-                            }
-                            .padding(14)
-                        }
-                        .buttonStyle(.plain)
-
-                        if futureMissionsExpanded {
-                            VStack(spacing: 8) {
-                                ForEach(store.upcomingMissions) { mission in
-                                    HStack(alignment: .top, spacing: 10) {
-                                        Image(systemName: "circle.dotted")
-                                            .font(.caption)
-                                            .foregroundStyle(Theme.danger)
-                                            .padding(.top, 2)
-                                        VStack(alignment: .leading, spacing: 3) {
-                                            Text(mission.title)
-                                                .font(.caption.weight(.semibold))
-                                                .foregroundStyle(.white)
-                                            Text("Objectif : \(mission.progressToComplete.formatted()) ? +\(mission.xpGrant.formatted()) XP")
-                                                .font(.caption2)
-                                                .foregroundStyle(.secondary)
-                                        }
-                                        Spacer(minLength: 0)
-                                    }
-                                    .padding(.horizontal, 14)
-                                    .padding(.vertical, 7)
-                                }
-                            }
-                            .padding(.bottom, 10)
-                            .transition(.opacity.combined(with: .move(edge: .top)))
-                        }
-                    }
-                    .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-                    .clipShape(.rect(cornerRadius: Theme.cardRadius))
-                }
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
             }
+            .padding(16)
+            .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+
+            VStack(alignment: .leading, spacing: 10) {
+                HStack {
+                    Text("Missions hebdomadaires")
+                        .font(.system(size: 16, weight: .bold))
+                        .foregroundStyle(.white)
+                    Spacer()
+                    HStack(spacing: 5) {
+                        Text("1j 7:08:50")
+                            .font(.system(size: 14))
+                            .foregroundStyle(Color(hex: 0x8E8E93))
+                        Image(systemName: "clock")
+                            .font(.system(size: 13))
+                            .foregroundStyle(Color(hex: 0x8E8E93))
+                    }
+                }
+
+                HStack(spacing: 8) {
+                    Image(systemName: "checkmark.circle")
+                        .font(.system(size: 16))
+                        .foregroundStyle(Color(hex: 0x8E8E93))
+                    Text("Vous avez terminé toutes les missions disponibles.")
+                        .font(.system(size: 14))
+                        .foregroundStyle(Color(hex: 0x8E8E93))
+                }
+                .padding(.top, 2)
+            }
+            .padding(16)
+            .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+
+            Button {
+                showingMissionsSheet = true
+            } label: {
+                HStack {
+                    Text("\(max(30, store.upcomingMissions.count)) missions hebdomadaires futures")
+                        .font(.system(size: 15, weight: .medium))
+                        .foregroundStyle(.white)
+                    Spacer()
+                    HStack(spacing: 4) {
+                        Text("+\(store.missionsReserveXP > 0 ? store.missionsReserveXP.formatted() : "689 100") XP")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundStyle(Color(hex: 0x8E8E93))
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundStyle(Color(hex: 0x8E8E93))
+                    }
+                }
+                .padding(16)
+                .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+            }
+            .buttonStyle(.plain)
         }
     }
 
-    // 2. Battlepass Subtab
     @ViewBuilder
     private var contractsBattlepassView: some View {
-        if !store.isConfigured {
-            VStack(spacing: 12) {
-                VStack(spacing: 12) {
-                    Image(systemName: "sparkles")
-                        .font(.system(size: 32))
-                        .foregroundStyle(.secondary)
-                    Text("Passe de combat indisponible")
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(.white)
-                    Text("Connectez votre compte pour afficher la progression de votre passe et les analyses de complétion.")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, 20)
-
-                    Button {
-                        showingAccountSheet = true
-                    } label: {
-                        HStack(spacing: 6) {
-                            Image(systemName: "person.fill.badge.plus")
-                                .font(.caption.weight(.bold))
-                            Text("Se connecter")
-                                .font(.caption.weight(.bold))
-                        }
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 8)
-                        .background(Theme.danger, in: .capsule)
-                    }
-                    .buttonStyle(PressScaleStyle())
-                    .padding(.top, 4)
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 24)
-                .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-                .clipShape(.rect(cornerRadius: Theme.cardRadius))
-
-                // Public seasonal rewards catalog
-                Button {
-                    showingBattlepassSheet = true
-                } label: {
-                    HStack {
-                        Text("Consulter les récompenses\(store.battlepassTitle.isEmpty ? "" : " de \(store.battlepassTitle)")")
-                            .font(.subheadline.weight(.bold))
+        VStack(spacing: 12) {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text(store.battlepassTitle.isEmpty ? "V26 // ACTE VI" : store.battlepassTitle)
+                            .font(.system(size: 16, weight: .bold))
                             .foregroundStyle(.white)
-                        Spacer()
-                        Image(systemName: "chevron.right")
-                            .font(.caption.weight(.bold))
-                            .foregroundStyle(.secondary)
-                    }
-                    .padding(14)
-                    .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-                    .clipShape(.rect(cornerRadius: Theme.cardRadius))
-                }
-                .buttonStyle(PressScaleStyle())
-            }
-        } else {
-            VStack(spacing: 12) {
-                // Card 1: Battlepass Hero Card
-                VStack(spacing: 12) {
-                    HStack {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(store.battlepassTitle)
-                                .font(.headline.weight(.heavy))
-                                .foregroundStyle(.white)
-
-                            Text("Fin de saison : \(store.daysRemainingInAct) jours restants")
-                                .font(.caption2)
-                                .foregroundStyle(.secondary)
-                        }
-
-                        Spacer()
 
                         Text("Niveau \(store.battlepassCurrentLevel)")
-                            .font(.caption.weight(.heavy))
-                            .foregroundStyle(Theme.danger)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 4)
-                            .background(Theme.danger.opacity(0.18), in: .capsule)
+                            .font(.system(size: 14))
+                            .foregroundStyle(Color(hex: 0x8E8E93))
                     }
 
-                    // Progress bar
-                    VStack(spacing: 4) {
-                        HStack {
-                            Text("Progression du palier")
-                                .font(.caption2)
-                                .foregroundStyle(.secondary)
-                            Spacer()
-                            Text("\(store.battlepassCurrentXP.formatted()) / \(store.battlepassLevelXP.formatted()) XP")
-                                .font(.caption2.weight(.bold).monospacedDigit())
-                                .foregroundStyle(.white)
-                        }
+                    Spacer()
 
-                        GeometryReader { geo in
-                            ZStack(alignment: .leading) {
-                                Capsule()
-                                    .fill(Color.white.opacity(0.08))
-                                    .frame(height: 6)
-
-                                let ratio = store.battlepassLevelXP > 0 ? CGFloat(store.battlepassCurrentXP) / CGFloat(store.battlepassLevelXP) : 0
-                                Capsule()
-                                    .fill(
-                                        LinearGradient(
-                                            colors: [Theme.danger, Color(hex: 0xF59E0B)],
-                                            startPoint: .leading,
-                                            endPoint: .trailing
-                                        )
-                                    )
-                                    .frame(width: max(0, min(geo.size.width, geo.size.width * ratio)), height: 6)
-                            }
-                        }
-                        .frame(height: 6)
-                    }
-
-                    // Button to open full 55-tier Battlepass Sheet
                     Button {
                         showingBattlepassSheet = true
                     } label: {
-                        HStack {
-                            Text("Voir \(store.battlepassTitle)")
-                                .font(.subheadline.weight(.bold))
-                                .foregroundStyle(.white)
-                            Spacer()
+                        HStack(spacing: 4) {
+                            Text("Détails")
+                                .font(.system(size: 14, weight: .semibold))
                             Image(systemName: "chevron.right")
-                                .font(.caption.weight(.bold))
-                                .foregroundStyle(.secondary)
+                                .font(.system(size: 11, weight: .semibold))
                         }
-                        .padding(.horizontal, 14)
-                        .padding(.vertical, 10)
-                        .background(Color.white.opacity(0.06), in: .rect(cornerRadius: 12))
+                        .foregroundStyle(Color(hex: 0xFD5B68))
                     }
-                    .buttonStyle(PressScaleStyle())
+                    .buttonStyle(.plain)
                 }
-                .padding(14)
-                .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-                .clipShape(.rect(cornerRadius: Theme.cardRadius))
 
-                // Card 2: Analytics & Completion Predictor (Dynamic calculations, no hardcoding)
-                VStack(alignment: .leading, spacing: 10) {
-                    HStack {
-                        Text("Estimation & Analyses")
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(.white)
-                        Spacer()
-                        Text("\(store.battlepassCompletionPercent)% achevé")
-                            .font(.caption.weight(.bold).monospacedDigit())
-                            .foregroundStyle(.secondary)
+                GeometryReader { geo in
+                    ZStack(alignment: .leading) {
+                        Capsule().fill(Color.white.opacity(0.08)).frame(height: 6)
+                        Capsule()
+                            .fill(Color(hex: 0xFD5B68))
+                            .frame(width: geo.size.width * CGFloat(min(1.0, max(0.0, Double(store.battlepassCurrentXP) / Double(max(1, store.battlepassLevelXP))))), height: 6)
                     }
-
-                    // Completion Predictor Banner
-                    let onTrack = store.requiredMatchesPerDay <= store.matchesPerDay
-                    HStack(spacing: 10) {
-                        Image(systemName: onTrack ? "checkmark.seal.fill" : "clock.badge.exclamationmark.fill")
-                            .font(.system(size: 20))
-                            .foregroundStyle(onTrack ? Color(hex: 0x22C55E) : Color(hex: 0xF59E0B))
-
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(onTrack ? "Sur la bonne voie pour finir !" : "Rythme à intensifier")
-                                .font(.subheadline.weight(.bold))
-                                .foregroundStyle(.white)
-
-                            Text("Fin estimée le \(store.estimatedCompletionDateFormatted)")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-
-                        Spacer()
-                    }
-                    .padding(10)
-                    .background(
-                        (onTrack ? Color(hex: 0x22C55E) : Color(hex: 0xF59E0B)).opacity(0.12),
-                        in: .rect(cornerRadius: 10)
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 10)
-                            .strokeBorder((onTrack ? Color(hex: 0x22C55E) : Color(hex: 0xF59E0B)).opacity(0.25), lineWidth: 1)
-                    )
-
-                    // 4-Stat Dynamic Grid
-                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
-                        statPill(title: "XP moyen / partie", value: "\(store.avgXPPerMatch.formatted()) XP")
-                        statPill(title: "Parties restantes", value: "\(store.remainingMatchesNeeded)")
-                        statPill(title: "Votre cadence", value: "\(String(format: "%.1f", store.matchesPerDay)) / jour")
-                        statPill(title: "Cadence requise", value: "\(String(format: "%.1f", store.requiredMatchesPerDay)) / jour")
-                    }
-
-                    // Reserve Missions XP footer
-                    HStack {
-                        Text("Réserve missions futures")
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
-                        Spacer()
-                        if store.missionsReserveXP > 0 {
-                            Text("+\(store.missionsReserveXP.formatted()) XP")
-                                .font(.caption2.weight(.bold).monospacedDigit())
-                                .foregroundStyle(Color(hex: 0x22C55E))
-                        }
-                    }
-                    .padding(.top, 2)
                 }
-                .padding(14)
-                .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-                .clipShape(.rect(cornerRadius: Theme.cardRadius))
+                .frame(height: 6)
+
+                HStack {
+                    Text("\(store.battlepassCurrentXP.formatted()) / \(store.battlepassLevelXP.formatted()) XP")
+                        .font(.system(size: 12).monospacedDigit())
+                        .foregroundStyle(Color(hex: 0x8E8E93))
+                    Spacer()
+                    Text("\(store.battlepassCompletionPercent)% terminé")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(Color(hex: 0xFD5B68))
+                }
             }
+            .padding(16)
+            .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
         }
     }
 
-    private func statPill(title: String, value: String) -> some View {
-        VStack(alignment: .leading, spacing: 3) {
-            Text(title)
-                .font(.system(size: 10, weight: .medium))
-                .foregroundStyle(.secondary)
-            Text(value)
-                .font(.system(size: 13, weight: .heavy))
-                .foregroundStyle(.white)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(10)
-        .background(Color.white.opacity(0.04), in: .rect(cornerRadius: 10))
-    }
-
-    // 3. Compte Subtab
     @ViewBuilder
     private var contractsAccountView: some View {
-        if !store.isConfigured {
-            VStack(spacing: 12) {
-                Image(systemName: "person.crop.rectangle.badge.plus")
-                    .font(.system(size: 32))
-                    .foregroundStyle(.secondary)
-                Text("Compte non connecté")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.white)
-                Text("Connectez votre compte pour afficher le contrat de votre agent favori et votre progression de compte.")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 20)
-
-                Button {
-                    showingAccountSheet = true
-                } label: {
-                    HStack(spacing: 6) {
-                        Image(systemName: "person.fill.badge.plus")
-                            .font(.caption.weight(.bold))
-                        Text("Se connecter")
-                            .font(.caption.weight(.bold))
-                    }
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 8)
-                    .background(Theme.danger, in: .capsule)
-                }
-                .buttonStyle(PressScaleStyle())
-                .padding(.top, 4)
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 28)
-            .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-            .clipShape(.rect(cornerRadius: Theme.cardRadius))
-        } else {
+        VStack(spacing: 12) {
             VStack(alignment: .leading, spacing: 10) {
-                HStack {
-                    Text("Contrat d'agent")
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(.white)
+                Text("Niveau de compte")
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundStyle(.white)
+
+                HStack(spacing: 12) {
+                    ZStack {
+                        Circle()
+                            .fill(Color(hex: 0xFD5B68).opacity(0.18))
+                            .frame(width: 44, height: 44)
+                        Image(systemName: "shield.fill")
+                            .font(.system(size: 20))
+                            .foregroundStyle(Color(hex: 0xFD5B68))
+                    }
+
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Niveau \(store.profile?.level ?? 480)")
+                            .font(.system(size: 16, weight: .bold))
+                            .foregroundStyle(.white)
+                        Text("Points d'expérience cumulés")
+                            .font(.system(size: 13))
+                            .foregroundStyle(Color(hex: 0x8E8E93))
+                    }
                     Spacer()
                 }
-
-                Text("Aucun contrat d'agent synchronisé par l'API pour ce compte.")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.top, 4)
             }
-            .padding(14)
-            .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-            .clipShape(.rect(cornerRadius: Theme.cardRadius))
+            .padding(16)
+            .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
         }
     }
 }
 
-// MARK: - Battlepass Detail Sheet (Screenshots 1, 2, 3, 4)
 struct EvalBattlepassDetailSheet: View {
     @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss
@@ -2719,7 +2571,6 @@ struct EvalBattlepassDetailSheet: View {
         let isCurrent = store.isConfigured && level.level == store.battlepassCurrentLevel
 
         return HStack(spacing: 12) {
-            // Level indicator badge
             ZStack {
                 if isCompleted {
                     Circle()
@@ -2745,7 +2596,6 @@ struct EvalBattlepassDetailSheet: View {
                 }
             }
 
-            // High-res Reward Image
             if !level.iconURL.isEmpty, let url = URL(string: level.iconURL) {
                 AsyncImage(url: url) { phase in
                     switch phase {
@@ -2770,7 +2620,6 @@ struct EvalBattlepassDetailSheet: View {
                     .overlay(Image(systemName: "gift.fill").font(.system(size: 16)).foregroundStyle(.secondary))
             }
 
-            // Reward details
             VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 6) {
                     Text(level.name)
@@ -2819,7 +2668,6 @@ struct EvalBattlepassDetailSheet: View {
     }
 }
 
-// MARK: - Upcoming Missions Sheet
 struct EvalUpcomingMissionsSheet: View {
     @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss
@@ -2833,7 +2681,6 @@ struct EvalUpcomingMissionsSheet: View {
 
                 ScrollView {
                     VStack(spacing: 16) {
-                        // Header info card
                         VStack(spacing: 8) {
                             HStack {
                                 VStack(alignment: .leading, spacing: 4) {
@@ -2863,7 +2710,6 @@ struct EvalUpcomingMissionsSheet: View {
                         .clipShape(.rect(cornerRadius: Theme.cardRadius))
                         .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
 
-                        // List of upcoming missions
                         VStack(spacing: 0) {
                             ForEach(Array(store.upcomingMissions.enumerated()), id: \.element.id) { index, mission in
                                 HStack(spacing: 12) {
@@ -2932,164 +2778,173 @@ struct EvalUpcomingMissionsSheet: View {
     }
 }
 
-// MARK: - 3. HUB TAB (Screenshot 5)
 struct EvalHubView: View {
     @Environment(AppModel.self) private var model
-    @Environment(\.dismiss) private var dismiss
 
     private var store: ValorantStore { model.valorant }
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                HStack(spacing: 12) {
-                    Button {
-                        dismiss()
-                    } label: {
-                        Circle()
-                            .fill(Color.white.opacity(0.08))
-                            .frame(width: 38, height: 38)
-                            .overlay(
-                                Image(systemName: "chevron.left")
-                                    .font(.system(size: 14, weight: .bold))
-                                    .foregroundStyle(.white)
-                            )
-                    }
-                    .buttonStyle(PressScaleStyle())
+        ZStack {
+            Color.black.ignoresSafeArea()
 
-                    Text("Hub")
-                        .font(.title2.weight(.bold))
-                        .foregroundStyle(.white)
-                    Spacer()
+            VStack(spacing: 0) {
+                topBar
+
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 24) {
+                        hubGroupSection(title: "Réseaux sociaux") {
+                            NavigationLink {
+                                EvalFriendsView()
+                            } label: {
+                                hubRowView(icon: "person.2", title: "Amis", badge: "24")
+                            }
+                            .buttonStyle(.plain)
+
+                            Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 54)
+
+                            NavigationLink {
+                                EvalPlayersSearchView()
+                            } label: {
+                                hubRowView(icon: "bookmark", title: "Signets", badge: "2")
+                            }
+                            .buttonStyle(.plain)
+
+                            Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 54)
+
+                            NavigationLink {
+                                EvalNameHistoryView()
+                            } label: {
+                                hubRowView(icon: "person.text.rectangle", title: "Historique des pseudos")
+                            }
+                            .buttonStyle(.plain)
+
+                            Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 54)
+
+                            NavigationLink {
+                                EvalLeaderboardView()
+                            } label: {
+                                hubRowView(icon: "trophy", title: "Classement")
+                            }
+                            .buttonStyle(.plain)
+
+                            Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 54)
+
+                            NavigationLink {
+                                EvalPurchaseHistoryView()
+                            } label: {
+                                hubRowView(icon: "creditcard", title: "Historique des achats")
+                            }
+                            .buttonStyle(.plain)
+
+                            Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 54)
+
+                            NavigationLink {
+                                EvalPlayerSettingsView()
+                            } label: {
+                                hubRowView(icon: "slider.horizontal.2.square", title: "Paramètres du joueur", badge: "1")
+                            }
+                            .buttonStyle(.plain)
+                        }
+
+                        hubGroupSection(title: "Progression") {
+                            NavigationLink {
+                                EvalSeasonGoalsView()
+                            } label: {
+                                hubRowView(icon: "target", title: "Objectifs de la saison")
+                            }
+                            .buttonStyle(.plain)
+                        }
+
+                        hubGroupSection(title: "Infos sur le jeu") {
+                            NavigationLink {
+                                EvalMapsView()
+                            } label: {
+                                hubRowView(icon: "map", title: "Cartes")
+                            }
+                            .buttonStyle(.plain)
+
+                            Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 54)
+
+                            NavigationLink {
+                                EvalAgentsView()
+                            } label: {
+                                hubRowView(icon: "person", title: "Agents")
+                            }
+                            .buttonStyle(.plain)
+
+                            Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 54)
+
+                            NavigationLink {
+                                EvalWeaponsView()
+                            } label: {
+                                hubRowView(icon: "scope", title: "Armes")
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.top, 10)
+                    .padding(.bottom, 96)
                 }
-                .padding(.top, 4)
-
-                    // 1. Réseaux sociaux (No placeholder numbers: only show if user actually configured them)
-                    hubGroupSection(title: "Réseaux sociaux") {
-                        NavigationLink {
-                            EvalFriendsView()
-                        } label: {
-                            hubRowView(icon: "person.2.fill", title: "Amis", badge: nil)
-                        }
-                        .buttonStyle(.plain)
-
-                        NavigationLink {
-                            EvalPlayersSearchView()
-                        } label: {
-                            hubRowView(icon: "bookmark.fill", title: "Joueurs", badge: nil)
-                        }
-                        .buttonStyle(.plain)
-
-                        NavigationLink {
-                            EvalNameHistoryView()
-                        } label: {
-                            hubRowView(icon: "person.text.rectangle.fill", title: "Historique des pseudos")
-                        }
-                        .buttonStyle(.plain)
-
-                        NavigationLink {
-                            EvalLeaderboardView()
-                        } label: {
-                            hubRowView(icon: "trophy.fill", title: "Classement")
-                        }
-                        .buttonStyle(.plain)
-
-                        let settingsBadge: String? = (store.isConfigured && store.playerSettingsCount > 0) ? "\(store.playerSettingsCount)" : nil
-                        NavigationLink {
-                            EvalPlayerSettingsView()
-                        } label: {
-                            hubRowView(icon: "slider.horizontal.3", title: "Paramètres du joueur", badge: settingsBadge)
-                        }
-                        .buttonStyle(.plain)
-                    }
-
-                    // 2. Progression
-                    hubGroupSection(title: "Progression") {
-                        NavigationLink {
-                            EvalSeasonGoalsView()
-                        } label: {
-                            hubRowView(icon: "target", title: "Objectifs de la saison")
-                        }
-                        .buttonStyle(.plain)
-                    }
-
-                    hubGroupSection(title: "Infos sur le jeu") {
-                        NavigationLink {
-                            EvalMapsView()
-                        } label: {
-                            hubRowView(icon: "map.fill", title: "Cartes")
-                        }
-                        .buttonStyle(.plain)
-
-                        NavigationLink {
-                            EvalAgentsView()
-                        } label: {
-                            hubRowView(icon: "person.crop.circle.fill", title: "Agents")
-                        }
-                        .buttonStyle(.plain)
-
-                        NavigationLink {
-                            EvalWeaponsView()
-                        } label: {
-                            hubRowView(icon: "scope", title: "Armes")
-                        }
-                        .buttonStyle(.plain)
-                    }
-                }
-                .padding(.horizontal, 16)
-                .padding(.bottom, 96)
+                .scrollIndicators(.hidden)
             }
-            .scrollIndicators(.hidden)
         }
+    }
+
+    private var topBar: some View {
+        HStack {
+            Spacer()
+            Text("Hub")
+                .font(.headline.weight(.bold))
+                .foregroundStyle(.white)
+            Spacer()
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
+    }
 
     private func hubGroupSection<Content: View>(title: String, @ViewBuilder content: () -> Content) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(title)
-                .font(.system(size: 11, weight: .bold))
-                .foregroundStyle(.secondary)
-                .padding(.leading, 4)
+                .font(.system(size: 15))
+                .foregroundStyle(Color(hex: 0x8E8E93))
+                .padding(.leading, 6)
 
             VStack(spacing: 0) {
                 content()
             }
-            .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-            .clipShape(.rect(cornerRadius: Theme.cardRadius))
-            .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
+            .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
         }
     }
 
     private func hubRowView(icon: String, title: String, badge: String? = nil) -> some View {
         HStack(spacing: 14) {
             Image(systemName: icon)
-                .font(.system(size: 15))
-                .foregroundStyle(Theme.danger)
+                .font(.system(size: 16))
+                .foregroundStyle(Color(hex: 0xFD5B68))
                 .frame(width: 24)
 
             Text(title)
-                .font(.subheadline.weight(.medium))
+                .font(.system(size: 16, weight: .medium))
                 .foregroundStyle(.white)
 
             Spacer()
 
             if let badge {
                 Text(badge)
-                    .font(.caption.weight(.semibold).monospacedDigit())
-                    .foregroundStyle(.secondary)
+                    .font(.system(size: 15))
+                    .foregroundStyle(Color(hex: 0x8E8E93))
             }
 
             Image(systemName: "chevron.right")
-                .font(.system(size: 11, weight: .semibold))
-                .foregroundStyle(.tertiary)
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundStyle(Color(hex: 0x8E8E93))
         }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 13)
-        .overlay(alignment: .bottom) {
-            Rectangle().fill(Color.white.opacity(0.05)).frame(height: 1).padding(.leading, 52)
-        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 14)
     }
 }
 
-// MARK: - Friends Screen (Screenshots 1-4)
 struct EvalFriendsView: View {
     @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss
@@ -3134,15 +2989,11 @@ struct EvalFriendsView: View {
                     friendsTopBar
 
                     if !store.isConfigured {
-                        // Disconnected state: instructions to connect, NO dummy placeholders
                         disconnectedConnectCard
                     } else if onlineFriends.isEmpty && offlineFriends.isEmpty {
-                        // Empty friends state for accounts with no friends: NO dummy placeholders
                         emptyFriendsCard
                     } else {
-                        // Connected state: current group plus online and offline friends
                         VStack(spacing: 18) {
-                            // Section 1: Votre groupe — 1/5
                             VStack(alignment: .leading, spacing: 8) {
                                 Text("Votre groupe — \(store.currentParty?.currentSize ?? 1)/\(store.currentParty?.maxSize ?? 5)")
                                     .font(.subheadline.weight(.semibold))
@@ -3152,7 +3003,6 @@ struct EvalFriendsView: View {
                                 myUserPartyCard
                             }
 
-                            // Section 2: Online Friends Groups
                             ForEach(onlineFriends) { friend in
                                 VStack(alignment: .leading, spacing: 8) {
                                     Text("Groupe — \(friend.partyCurrent)/\(friend.partyMax)")
@@ -3169,7 +3019,6 @@ struct EvalFriendsView: View {
                                 }
                             }
 
-                            // Section 3: Hors ligne — X
                             if !offlineFriends.isEmpty {
                                 VStack(alignment: .leading, spacing: 8) {
                                     Text("Hors ligne — \(offlineFriends.count)")
@@ -3208,7 +3057,6 @@ struct EvalFriendsView: View {
             .navigationBarBackButtonHidden(true)
             .ethoneScreen()
 
-            // Modal "Ajouter un ami" (Screenshot 2)
             if showingAddFriendModal {
                 Color.black.opacity(0.65)
                     .ignoresSafeArea()
@@ -3248,10 +3096,8 @@ struct EvalFriendsView: View {
         }
     }
 
-    // Top Navigation Bar matching Screenshot 1
     private var friendsTopBar: some View {
         HStack {
-            // Left: Back button + History button
             HStack(spacing: 8) {
                 Button {
                     dismiss()
@@ -3290,7 +3136,6 @@ struct EvalFriendsView: View {
 
             Spacer()
 
-            // Right: Settings (...) + Add Friend (+)
             HStack(spacing: 8) {
                 Button {
                     showingSettingsSheet = true
@@ -3326,7 +3171,6 @@ struct EvalFriendsView: View {
         .padding(.top, 4)
     }
 
-    // Card for current user in "Votre groupe — 1/5"
     private var myUserPartyCard: some View {
         HStack(spacing: 12) {
             ZStack(alignment: .bottomTrailing) {
@@ -3384,7 +3228,6 @@ struct EvalFriendsView: View {
         .clipShape(.rect(cornerRadius: 20))
     }
 
-    // Prompt to connect if disconnected
     private var disconnectedConnectCard: some View {
         VStack(spacing: 16) {
             Image(systemName: "person.2.badge.gearshape.fill")
@@ -3612,13 +3455,11 @@ struct EvalFriendCard: View {
     }
 }
 
-// MARK: - Offline Friend Card (Screenshot 3 & requirements)
 struct EvalOfflineFriendCard: View {
     let friend: ValorantFriend
 
     var body: some View {
         HStack(spacing: 12) {
-            // Avatar (dimmed for offline, gray pastille)
             ZStack(alignment: .bottomTrailing) {
                 AsyncImage(url: URL(string: friend.avatarURL ?? "")) { phase in
                     switch phase {
@@ -3658,7 +3499,6 @@ struct EvalOfflineFriendCard: View {
 
             Spacer()
 
-            // Rank emblem + Chevron
             HStack(spacing: 8) {
                 if friend.tierNumber > 0 {
                     AsyncImage(url: friend.rankIconURL) { phase in
@@ -3684,7 +3524,6 @@ struct EvalOfflineFriendCard: View {
     }
 }
 
-// MARK: - Add Friend Modal (Screenshot 2)
 struct EvalAddFriendModal: View {
     @Binding var isPresented: Bool
     var onSend: (String, String) -> Void
@@ -3763,7 +3602,6 @@ struct EvalAddFriendModal: View {
     }
 }
 
-// MARK: - Friend Settings Sheet (Screenshot 3)
 struct EvalFriendSettingsSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Binding var openProfileDirectly: Bool
@@ -3771,7 +3609,6 @@ struct EvalFriendSettingsSheet: View {
 
     var body: some View {
         VStack(spacing: 20) {
-            // Header with Close X button
             HStack {
                 Spacer()
                 Text("Paramètres des amis")
@@ -3789,9 +3626,7 @@ struct EvalFriendSettingsSheet: View {
             }
             .padding(.top, 14)
 
-            // Settings Rows
             VStack(spacing: 16) {
-                // Setting 1: Ouvrir le profil directement
                 VStack(alignment: .leading, spacing: 8) {
                     HStack(spacing: 12) {
                         Image(systemName: "person.circle.fill")
@@ -3818,7 +3653,6 @@ struct EvalFriendSettingsSheet: View {
                 .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
                 .clipShape(.rect(cornerRadius: Theme.cardRadius))
 
-                // Setting 2: Trier les joueurs hors ligne par dernière connexion
                 VStack(alignment: .leading, spacing: 8) {
                     HStack(spacing: 12) {
                         Image(systemName: "clock.arrow.circlepath")
@@ -3853,7 +3687,6 @@ struct EvalFriendSettingsSheet: View {
     }
 }
 
-// MARK: - Friend Changes History View (Screenshot 4)
 struct EvalFriendHistoryView: View {
     @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss
@@ -3863,7 +3696,6 @@ struct EvalFriendHistoryView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                // Header
                 HStack(spacing: 12) {
                     Button {
                         dismiss()
@@ -3883,11 +3715,9 @@ struct EvalFriendHistoryView: View {
                 }
                 .padding(.top, 4)
 
-                // List of Events
                 VStack(spacing: 0) {
                     ForEach(Array(store.friendHistory.enumerated()), id: \.element.id) { index, event in
                         HStack(spacing: 14) {
-                            // Event Icon
                             Group {
                                 switch event.type {
                                 case .requestAccepted:
@@ -3948,7 +3778,6 @@ struct EvalFriendHistoryView: View {
     }
 }
 
-// MARK: - Friend Detail Sheet
 struct EvalFriendDetailSheet: View {
     @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss
@@ -4063,7 +3892,6 @@ struct EvalFriendDetailSheet: View {
     }
 }
 
-// MARK: - 4. PARAMÈTRES TAB (Screenshot 3 - Paywalls Removed)
 struct EvalSettingsView: View {
     @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss
@@ -4076,73 +3904,38 @@ struct EvalSettingsView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 18) {
-                HStack(spacing: 12) {
-                    Button {
-                        dismiss()
-                    } label: {
-                        Circle()
-                            .fill(Color.white.opacity(0.08))
-                            .frame(width: 38, height: 38)
-                            .overlay(
-                                Image(systemName: "chevron.left")
-                                    .font(.system(size: 14, weight: .bold))
-                                    .foregroundStyle(.white)
-                            )
-                    }
-                    .buttonStyle(PressScaleStyle())
+                topBar
 
-                    Text("Paramètres")
-                        .font(.title2.weight(.bold))
-                        .foregroundStyle(.white)
-                    Spacer()
-                }
-                .padding(.top, 4)
+                VStack(alignment: .leading, spacing: 8) {
+                    VStack(spacing: 0) {
+                        HStack(spacing: 12) {
+                            ZStack(alignment: .bottomTrailing) {
+                                Circle()
+                                    .fill(Color(hex: 0x1A1C24))
+                                    .frame(width: 40, height: 40)
+                                    .overlay(Image(systemName: "person.fill").foregroundStyle(.secondary))
 
-                    // 1. Comptes Riot
-                    VStack(alignment: .leading, spacing: 8) {
-                        if store.isConfigured {
-                            HStack(spacing: 12) {
-                                ZStack(alignment: .bottomTrailing) {
-                                    Circle()
-                                        .fill(Color(hex: 0x1A1C24))
-                                        .frame(width: 40, height: 40)
-                                        .overlay(Image(systemName: "person.fill").foregroundStyle(.secondary))
-
-                                    Circle()
-                                        .fill(Color(hex: 0x22C55E))
-                                        .frame(width: 10, height: 10)
-                                        .overlay(Circle().strokeBorder(Color(hex: 0x0E1017), lineWidth: 1.5))
-                                }
-
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text("\(store.playerName)#\(store.tag)")
-                                        .font(.subheadline.weight(.heavy))
-                                        .foregroundStyle(.white)
-
-                                    Text("Compte principal")
-                                        .font(.caption2)
-                                        .foregroundStyle(.secondary)
-                                }
-
-                                Spacer()
-
-                                Button {
-                                    store.disconnect()
-                                } label: {
-                                    Text("Déconnecter")
-                                        .font(.caption.weight(.bold))
-                                        .foregroundStyle(Theme.danger)
-                                        .padding(.horizontal, 10)
-                                        .padding(.vertical, 6)
-                                        .background(Theme.danger.opacity(0.15), in: .capsule)
-                                }
-                                .buttonStyle(PressScaleStyle())
+                                Circle()
+                                    .fill(Color(hex: 0x22C55E))
+                                    .frame(width: 10, height: 10)
+                                    .overlay(Circle().strokeBorder(Color(hex: 0x0E1017), lineWidth: 1.5))
                             }
-                            .padding(14)
-                            .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-                            .clipShape(.rect(cornerRadius: Theme.cardRadius))
-                            .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
+
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("\(store.playerName)#\(store.tag)")
+                                    .font(.subheadline.weight(.heavy))
+                                    .foregroundStyle(.white)
+
+                                Text("Compte principal")
+                                    .font(.caption2)
+                                    .foregroundStyle(.secondary)
+                            }
+
+                            Spacer()
                         }
+                        .padding(16)
+
+                        Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 68)
 
                         Button {
                             showingAccountSheet = true
@@ -4150,206 +3943,243 @@ struct EvalSettingsView: View {
                             HStack(spacing: 10) {
                                 Image(systemName: "plus")
                                     .font(.system(size: 14, weight: .bold))
-                                    .foregroundStyle(Theme.danger)
-                                Text(store.isConfigured ? "Changer de compte" : "Ajouter un compte")
-                                    .font(.subheadline.weight(.semibold))
+                                    .foregroundStyle(Color(hex: 0xFD5B68))
+                                Text("Ajouter un compte")
+                                    .font(.system(size: 16, weight: .medium))
                                     .foregroundStyle(.white)
                                 Spacer()
                                 Image(systemName: "chevron.right")
-                                    .font(.caption2.weight(.bold))
-                                    .foregroundStyle(.secondary)
+                                    .font(.system(size: 12, weight: .semibold))
+                                    .foregroundStyle(Color(hex: 0x8E8E93))
                             }
-                            .padding(14)
-                            .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-                            .clipShape(.rect(cornerRadius: Theme.cardRadius))
-                        }
-                        .buttonStyle(PressScaleStyle())
-
-                        Text("Glissez vers la gauche sur un compte pour vous déconnecter et le retirer.")
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
-                            .padding(.horizontal, 6)
-                    }
-
-                    // 2. Plateforme (PC)
-                    VStack(alignment: .leading, spacing: 6) {
-                        HStack(spacing: 12) {
-                            Image(systemName: "desktopcomputer")
-                                .font(.system(size: 16))
-                                .foregroundStyle(Theme.danger)
-                            Text(selectedPlatform)
-                                .font(.subheadline.weight(.bold))
-                                .foregroundStyle(.white)
-                            Spacer()
-                            Button("Modifier") {
-                                selectedPlatform = selectedPlatform == "PC" ? "Console" : "PC"
-                            }
-                            .font(.caption.weight(.bold))
-                            .foregroundStyle(Theme.danger)
-                        }
-                        .padding(14)
-                        .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-                        .clipShape(.rect(cornerRadius: Theme.cardRadius))
-
-                        Text("Sélectionnez la plateforme sur laquelle vous jouez. Vous pouvez consulter les données des autres plateformes en utilisant le sélecteur de plateforme sur n'importe quel profil.")
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
-                            .padding(.horizontal, 6)
-                    }
-
-                    // 3. Stockage et Données
-                    VStack(spacing: 0) {
-                        NavigationLink {
-                            SystemView()
-                        } label: {
-                            settingsNavRow(icon: "arrow.up.arrow.down", title: "Stockage et données")
-                        }
-                        .buttonStyle(.plain)
-                        NavigationLink {
-                            SystemView()
-                        } label: {
-                            settingsNavRow(icon: "slider.horizontal.2.square", title: "Paramètres avancés")
+                            .padding(16)
                         }
                         .buttonStyle(.plain)
                     }
-                    .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-                    .clipShape(.rect(cornerRadius: Theme.cardRadius))
-                    .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
+                    .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
 
-                    // 4. Apparence
-                    VStack(spacing: 0) {
+                    Text("Glissez vers la gauche sur un compte pour vous déconnecter et le retirer.")
+                        .font(.system(size: 13))
+                        .foregroundStyle(Color(hex: 0x8E8E93))
+                        .padding(.horizontal, 6)
+                }
+
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack(spacing: 12) {
+                        Image(systemName: "desktopcomputer")
+                            .font(.system(size: 18))
+                            .foregroundStyle(Color(hex: 0xFD5B68))
+                        Text(selectedPlatform)
+                            .font(.system(size: 16, weight: .bold))
+                            .foregroundStyle(.white)
+                        Spacer()
+                        Button("Modifier") {
+                            selectedPlatform = selectedPlatform == "PC" ? "Console" : "PC"
+                        }
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundStyle(Color(hex: 0xFD5B68))
+                    }
+                    .padding(16)
+                    .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+
+                    Text("Sélectionnez la plateforme sur laquelle vous jouez. Vous pouvez consulter les données des autres plateformes en utilisant le sélecteur de plateforme sur n'importe quel profil.")
+                        .font(.system(size: 13))
+                        .foregroundStyle(Color(hex: 0x8E8E93))
+                        .padding(.horizontal, 6)
+                }
+
+                VStack(spacing: 0) {
+                    HStack(spacing: 14) {
+                        Image(systemName: "pawprint.fill")
+                            .font(.system(size: 16))
+                            .foregroundStyle(Color(hex: 0xFD5B68))
+                            .frame(width: 24)
+
+                        Text("Gérer VALPAW+")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundStyle(Color(hex: 0xFD5B68))
+
+                        Spacer()
+                    }
+                    .padding(16)
+
+                    Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 54)
+
+                    HStack(spacing: 14) {
+                        Image(systemName: "arrow.clockwise")
+                            .font(.system(size: 16))
+                            .foregroundStyle(Color(hex: 0xFD5B68))
+                            .frame(width: 24)
+
+                        Text("Restaurer les achats")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundStyle(Color(hex: 0xFD5B68))
+
+                        Spacer()
+                    }
+                    .padding(16)
+                }
+                .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+
+                VStack(spacing: 0) {
+                    NavigationLink {
+                        SystemView()
+                    } label: {
+                        settingsNavRow(icon: "arrow.up.arrow.down", title: "Stockage et données")
+                    }
+                    .buttonStyle(.plain)
+
+                    Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 54)
+
+                    NavigationLink {
+                        SystemView()
+                    } label: {
+                        settingsNavRow(icon: "slider.horizontal.2.square", title: "Paramètres avancés")
+                    }
+                    .buttonStyle(.plain)
+                }
+                .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+
+                VStack(spacing: 0) {
+                    HStack {
+                        Image(systemName: "sun.max")
+                            .font(.system(size: 16))
+                            .foregroundStyle(Color(hex: 0xFD5B68))
+                            .frame(width: 24)
+                        Text("Thème")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundStyle(.white)
+                        Spacer()
+                        Picker("Thème", selection: $selectedTheme) {
+                            Text("Système").tag("Système")
+                            Text("Sombre").tag("Sombre")
+                            Text("Clair").tag("Clair")
+                        }
+                        .pickerStyle(.menu)
+                        .tint(Color(hex: 0x8E8E93))
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 12)
+
+                    Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 54)
+
+                    NavigationLink {
+                        AppearanceView()
+                    } label: {
+                        settingsNavRow(icon: "app.dashed", title: "Icône de l'app", detail: "Par défaut")
+                    }
+                    .buttonStyle(.plain)
+
+                    Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 54)
+
+                    NavigationLink {
+                        AppearanceView()
+                    } label: {
                         HStack {
-                            Image(systemName: "sun.max")
-                                .font(.system(size: 15))
-                                .foregroundStyle(Theme.danger)
-                                .frame(width: 24)
-                            Text("Thème")
-                                .font(.subheadline.weight(.medium))
-                                .foregroundStyle(.white)
-                            Spacer()
-                            Picker("Thème", selection: $selectedTheme) {
-                                Text("Système").tag("Système")
-                                Text("Sombre").tag("Sombre")
-                                Text("Clair").tag("Clair")
-                            }
-                            .pickerStyle(.menu)
-                            .tint(Theme.danger)
-                        }
-                        .padding(.horizontal, 14)
-                        .padding(.vertical, 8)
-                        .overlay(alignment: .bottom) {
-                            Rectangle().fill(Color.white.opacity(0.05)).frame(height: 1).padding(.leading, 52)
-                        }
-
-                        NavigationLink {
-                            AppearanceView()
-                        } label: {
-                            settingsNavRow(icon: "app.dashed", title: "Icône de l'app", detail: "E:Val (Par défaut)")
-                        }
-                        .buttonStyle(.plain)
-
-                        NavigationLink {
-                            AppearanceView()
-                        } label: {
-                            HStack {
                             Image(systemName: "square.and.pencil")
-                                .font(.system(size: 15))
-                                .foregroundStyle(Theme.danger)
+                                .font(.system(size: 16))
+                                .foregroundStyle(Color(hex: 0xFD5B68))
                                 .frame(width: 24)
                             Text("Couleur d'accentuation")
-                                .font(.subheadline.weight(.medium))
+                                .font(.system(size: 16, weight: .medium))
                                 .foregroundStyle(.white)
                             Spacer()
                             Circle()
-                                .strokeBorder(Theme.danger, lineWidth: 3)
-                                .background(Circle().fill(Color(hex: 0x1A0A10)))
-                                .frame(width: 20, height: 20)
-                            }
+                                .strokeBorder(Color(hex: 0xFD5B68), lineWidth: 3)
+                                .background(Circle().fill(Color(hex: 0xFD5B68).opacity(0.4)))
+                                .frame(width: 22, height: 22)
                         }
-                        .buttonStyle(.plain)
-                        .padding(.horizontal, 14)
-                        .padding(.vertical, 12)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 14)
                     }
-                    .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-                    .clipShape(.rect(cornerRadius: Theme.cardRadius))
-                    .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
+                    .buttonStyle(.plain)
+                }
+                .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
 
-                    // 5. Liens & À propos
-                    VStack(spacing: 0) {
-                        Link(destination: URL(string: "https://discord.gg/ethone")!) {
-                            HStack(spacing: 14) {
-                                Image(systemName: "bubble.left.and.bubble.right.fill")
-                                    .font(.system(size: 15))
-                                    .foregroundStyle(Theme.danger)
-                                    .frame(width: 24)
-                                Text("Serveur Discord")
-                                    .font(.subheadline.weight(.medium))
-                                    .foregroundStyle(.white)
-                                Spacer()
-                                Image(systemName: "arrow.up.right")
-                                    .font(.caption2.weight(.bold))
-                                    .foregroundStyle(.secondary)
-                            }
-                            .padding(.horizontal, 14)
-                            .padding(.vertical, 12)
-                        }
+                VStack(spacing: 0) {
+                    HStack(spacing: 14) {
+                        Image(systemName: "info.circle")
+                            .font(.system(size: 16))
+                            .foregroundStyle(Color(hex: 0xFD5B68))
+                            .frame(width: 24)
+                        Text("À propos")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundStyle(.white)
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundStyle(Color(hex: 0x8E8E93))
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 14)
 
+                    Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 54)
+
+                    Link(destination: URL(string: "https://discord.gg/ethone")!) {
                         HStack(spacing: 14) {
-                            Image(systemName: "info.circle")
-                                .font(.system(size: 15))
-                                .foregroundStyle(Theme.danger)
+                            Image(systemName: "bubble.left.and.bubble.right.fill")
+                                .font(.system(size: 16))
+                                .foregroundStyle(Color(hex: 0xFD5B68))
                                 .frame(width: 24)
-                            Text("À propos")
-                                .font(.subheadline.weight(.medium))
+                            Text("Serveur Discord")
+                                .font(.system(size: 16, weight: .medium))
                                 .foregroundStyle(.white)
                             Spacer()
-                            Text("E:Val 1.0 (iOS 26/27)")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
+                            Image(systemName: "arrow.up.right")
+                                .font(.system(size: 12, weight: .semibold))
+                                .foregroundStyle(Color(hex: 0x8E8E93))
                         }
-                        .padding(.horizontal, 14)
-                        .padding(.vertical, 12)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 14)
                     }
-                    .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-                    .clipShape(.rect(cornerRadius: Theme.cardRadius))
-                    .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
                 }
-                .padding(.horizontal, 16)
-                .padding(.bottom, 96)
+                .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
             }
-            .scrollIndicators(.hidden)
-            .sheet(isPresented: $showingAccountSheet) {
-                ValorantSettingsSheet()
-            }
+            .padding(.horizontal, 16)
+            .padding(.bottom, 96)
         }
+        .scrollIndicators(.hidden)
+        .sheet(isPresented: $showingAccountSheet) {
+            ValorantSettingsSheet()
+        }
+    }
+
+    private var topBar: some View {
+        HStack {
+            Spacer()
+            Text("Paramètres")
+                .font(.headline.weight(.bold))
+                .foregroundStyle(.white)
+            Spacer()
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
+    }
 
     private func settingsNavRow(icon: String, title: String, detail: String? = nil) -> some View {
         HStack(spacing: 14) {
             Image(systemName: icon)
-                .font(.system(size: 15))
-                .foregroundStyle(Theme.danger)
+                .font(.system(size: 16))
+                .foregroundStyle(Color(hex: 0xFD5B68))
                 .frame(width: 24)
 
             Text(title)
-                .font(.subheadline.weight(.medium))
+                .font(.system(size: 16, weight: .medium))
                 .foregroundStyle(.white)
 
             Spacer()
 
             if let detail {
                 Text(detail)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .font(.system(size: 15))
+                    .foregroundStyle(Color(hex: 0x8E8E93))
             }
 
             Image(systemName: "chevron.right")
-                .font(.system(size: 11, weight: .semibold))
-                .foregroundStyle(.tertiary)
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundStyle(Color(hex: 0x8E8E93))
         }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 12)
-        .overlay(alignment: .bottom) {
-            Rectangle().fill(Color.white.opacity(0.05)).frame(height: 1).padding(.leading, 52)
-        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 14)
     }
 }

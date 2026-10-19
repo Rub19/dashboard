@@ -59672,4 +59672,56 @@ CHANGELOG_BY_LANG.en.unshift(v12937_en);
 CHANGELOG_BY_LANG.es.unshift(v12937_es);
 CHANGELOG_BY_LANG.de.unshift(v12937_de);
 
+const v12938_fr: ChangelogEntry = {
+  version: "v1.76.1",
+  date: "2026-10-20",
+  title: "E:VAL devient une app à part sur iPhone",
+  items: [
+    "E:VAL s'ouvre en plein écran avec sa propre barre d'onglets Liquid Glass native, sans la barre d'Ethone en dessous.",
+    "Retour à Ethone depuis les Paramètres d'E:VAL, ou en glissant depuis le bord gauche.",
+    "Le Hub affiche les vrais nombres d'amis, de signets et de paramètres enregistrés (des valeurs fixes y traînaient).",
+    "Lignes du Hub plus grandes : icônes, texte et hauteur alignés sur VALPAW.",
+  ],
+};
+
+const v12938_en: ChangelogEntry = {
+  version: "v1.76.1",
+  date: "2026-10-20",
+  title: "E:VAL becomes a separate app on iPhone",
+  items: [
+    "E:VAL opens full screen with its own native Liquid Glass tab bar, without Ethone's bar underneath.",
+    "Back to Ethone from E:VAL Settings, or by swiping from the left edge.",
+    "The Hub shows the real number of friends, bookmarks and saved settings (fixed values were left there).",
+    "Bigger Hub rows: icons, text and height matched to VALPAW.",
+  ],
+};
+
+const v12938_es: ChangelogEntry = {
+  version: "v1.76.1",
+  date: "2026-10-20",
+  title: "E:VAL se convierte en una app aparte en iPhone",
+  items: [
+    "E:VAL se abre a pantalla completa con su propia barra de pestañas Liquid Glass nativa, sin la barra de Ethone debajo.",
+    "Vuelve a Ethone desde los Ajustes de E:VAL o deslizando desde el borde izquierdo.",
+    "El Hub muestra el número real de amigos, marcadores y ajustes guardados (quedaban valores fijos).",
+    "Filas del Hub más grandes: iconos, texto y altura iguales a VALPAW.",
+  ],
+};
+
+const v12938_de: ChangelogEntry = {
+  version: "v1.76.1",
+  date: "2026-10-20",
+  title: "E:VAL wird auf dem iPhone zur eigenen App",
+  items: [
+    "E:VAL öffnet im Vollbild mit eigener nativer Liquid-Glass-Tableiste, ohne die Ethone-Leiste darunter.",
+    "Zurück zu Ethone über die E:VAL-Einstellungen oder per Wischen vom linken Rand.",
+    "Der Hub zeigt die echte Anzahl von Freunden, Lesezeichen und gespeicherten Einstellungen (dort standen feste Werte).",
+    "Größere Hub-Zeilen: Symbole, Text und Höhe wie bei VALPAW.",
+  ],
+};
+CHANGELOG_BY_LANG.fr.unshift(v12938_fr);
+CHANGELOG_BY_LANG.en.unshift(v12938_en);
+CHANGELOG_BY_LANG.es.unshift(v12938_es);
+CHANGELOG_BY_LANG.de.unshift(v12938_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

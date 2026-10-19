@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.76.1 - 2026-10-20
+
+**E:VAL devient une app à part sur iPhone**
+
+- E:VAL s'ouvre en plein écran avec sa propre barre d'onglets Liquid Glass native, sans la barre d'Ethone en dessous.
+- Retour à Ethone depuis les Paramètres d'E:VAL, ou en glissant depuis le bord gauche.
+- Le Hub affiche les vrais nombres d'amis, de signets et de paramètres enregistrés (des valeurs fixes y traînaient).
+- Lignes du Hub plus grandes : icônes, texte et hauteur alignés sur VALPAW.
+
 ## v1.76.0 - 2026-10-20
 
 **E:VAL sur iPhone : vraies données, compte Riot et historique des achats**

@@ -191,9 +191,9 @@ struct ValorantAccessoryItem: Identifiable, Hashable {
 }
 
 struct ValorantWallet: Hashable {
-    var vp: Int = 11_670
-    var rp: Int = 80
-    var kc: Int = 2_492
+    var vp: Int = 0
+    var rp: Int = 0
+    var kc: Int = 0
 }
 
 struct ValorantFriend: Identifiable, Hashable {
@@ -257,15 +257,24 @@ struct ValorantParty: Hashable {
 @MainActor
 @Observable
 final class ValorantStore {
-    private static let matchCacheTTL: TimeInterval = 15 * 60
-    private static let profileCacheTTL: TimeInterval = 10 * 60
+    // Aucune donnée inventée ici : tout vient du Worker (HenrikDev borné), de Supabase,
+    // de valorant-api.com ou reste vide. Ce que HenrikDev ne fournit pas (boutique perso,
+    // portefeuille, groupe en jeu, présence des amis, progression du passe) reste vide.
+    private static let syncInterval: TimeInterval = 10 * 60
     private static let leaderboardCacheTTL: TimeInterval = 10 * 60
     private static let missionsCacheTTL: TimeInterval = 6 * 60 * 60
     private static let battlepassCacheTTL: TimeInterval = 24 * 60 * 60
     private static let settingsCacheTTL: TimeInterval = 30 * 24 * 60 * 60
-    private static let matchCacheKeyPrefix = "valorant-match-cache."
+    private static let matchLimit = 30
+
     private let api: APIClient
     private(set) var matches: [ValorantMatch] = []
+    private(set) var evalMatches: [String: EvalMatch] = [:]
+    private(set) var puuid: String = ""
+    private(set) var mmr = EvalMMR()
+    /// Actes du jeu par UUID de saison (valorant-api.com), pour nommer les saisons du MMR.
+    private(set) var acts: [String: EvalAct] = [:]
+    var currentAct: EvalAct? { acts.values.first(where: \.isCurrent) }
     private(set) var leaderboard: [ValorantLeaderboardEntry] = []
     private(set) var leaderboardTotal: Int = 0
     private(set) var isLoading = false
@@ -303,6 +312,20 @@ final class ValorantStore {
     private(set) var equipmentBannerURL: String = ""
     private(set) var equippedSprays: [String?] = [nil, nil, nil, nil]
 
+    /// Amis ajoutés dans l'app (Riot ID résolu en PUUID) ; stockés dans Supabase.
+    private var friendRecords: [FriendRecord] = []
+
+    private struct FriendRecord: Codable, Hashable {
+        let puuid: String
+        var name: String
+        var tag: String
+        var card: String
+        var tier: Int
+        let addedAt: Date
+    }
+
+    // MARK: Passe de combat (calculs inchangés ; la progression perso reste à 0)
+
     var battlepassCurrentReward: ValorantBattlepassLevel? {
         battlepassLevels.first(where: { $0.level == min(55, battlepassCurrentLevel + 1) })
     }
@@ -312,58 +335,39 @@ final class ValorantStore {
         return min(100, Int((Double(battlepassCurrentXP) / Double(battlepassLevelXP)) * 100))
     }
 
-    var totalBattlepassXP: Int {
-        battlepassLevels.reduce(0) { $0 + $1.xpCost }
-    }
+    var totalBattlepassXP: Int { battlepassLevels.reduce(0) { $0 + $1.xpCost } }
 
     var earnedBattlepassXP: Int {
-        let completedXP = battlepassLevels.filter { $0.level <= battlepassCurrentLevel }.reduce(0) { $0 + $1.xpCost }
-        return completedXP + battlepassCurrentXP
+        battlepassLevels.filter { $0.level <= battlepassCurrentLevel }.reduce(0) { $0 + $1.xpCost } + battlepassCurrentXP
     }
 
-    var remainingBattlepassXP: Int {
-        max(0, totalBattlepassXP - earnedBattlepassXP)
-    }
+    var remainingBattlepassXP: Int { max(0, totalBattlepassXP - earnedBattlepassXP) }
 
     var battlepassCompletionPercent: Int {
         guard totalBattlepassXP > 0 else { return 0 }
-        let pct = Int((Double(earnedBattlepassXP) / Double(totalBattlepassXP)) * 100)
-        return max(0, min(100, pct))
+        return max(0, min(100, Int((Double(earnedBattlepassXP) / Double(totalBattlepassXP)) * 100)))
     }
 
-    var weeklyMissionsXP: Int {
-        upcomingMissions.reduce(0) { $0 + $1.xpGrant }
-    }
-
-    var missionsReserveXP: Int {
-        weeklyMissionsXP
-    }
-
-    var dailyPaliersMaxXP: Int {
-        0
-    }
+    var weeklyMissionsXP: Int { upcomingMissions.reduce(0) { $0 + $1.xpGrant } }
+    var missionsReserveXP: Int { weeklyMissionsXP }
+    var dailyPaliersMaxXP: Int { 0 }
 
     var avgXPPerMatch: Int {
-        guard !matches.isEmpty else { return 0 }
-        let count = min(20, matches.count)
-        let scores = matches.prefix(count).compactMap(\.scoreValue)
-        guard !scores.isEmpty else { return 0 }
-        return scores.reduce(0, +) / scores.count
+        let scores = matches.prefix(20).compactMap(\.scoreValue)
+        return scores.isEmpty ? 0 : scores.reduce(0, +) / scores.count
     }
 
     var matchesPerDay: Double {
-        guard matches.count >= 2 else { return 0 }
         let recent = Array(matches.prefix(20))
-        guard let first = recent.last?.startedAt, let last = recent.first?.startedAt else { return 0 }
+        guard recent.count >= 2, let first = recent.last?.startedAt, let last = recent.first?.startedAt else { return 0 }
         let days = max(1.0, last.timeIntervalSince(first) / 86400.0)
-        return Double(round(10 * (Double(recent.count) / days)) / 10)
+        return (10 * Double(recent.count) / days).rounded() / 10
     }
 
     var remainingMatchesNeeded: Int {
         let netXP = max(0, remainingBattlepassXP - missionsReserveXP)
         guard avgXPPerMatch > 0 else { return 0 }
-        let netMatches = Int(ceil(Double(netXP) / Double(avgXPPerMatch * 4)))
-        return max(0, netMatches)
+        return max(0, Int(ceil(Double(netXP) / Double(avgXPPerMatch * 4))))
     }
 
     var daysRemainingInAct: Int {
@@ -372,944 +376,70 @@ final class ValorantStore {
     }
 
     var requiredMatchesPerDay: Double {
-        guard daysRemainingInAct > 0 else { return 0.0 }
-        let pace = Double(remainingMatchesNeeded) / Double(daysRemainingInAct)
-        return max(0.0, Double(round(10 * pace) / 10))
+        guard daysRemainingInAct > 0 else { return 0 }
+        return max(0, (10 * Double(remainingMatchesNeeded) / Double(daysRemainingInAct)).rounded() / 10)
     }
 
-    var isBattlepassFinished: Bool {
-        battlepassCurrentLevel >= 55
-    }
+    var isBattlepassFinished: Bool { battlepassCurrentLevel >= 55 }
 
     var estimatedCompletionDateFormatted: String {
         guard remainingMatchesNeeded > 0, matchesPerDay > 0 else { return "" }
         let days = Int(ceil(Double(remainingMatchesNeeded) / matchesPerDay))
         let date = Calendar.current.date(byAdding: .day, value: days, to: Date()) ?? Date()
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "fr_FR")
-        formatter.dateFormat = "d MMMM yyyy"
-        return formatter.string(from: date)
+        return date.formatted(.dateTime.day().month(.wide).year().locale(Locale(identifier: "fr_FR")))
     }
 
     var battlepassTimeRemainingFormatted: String {
         guard let battlepassEndDate else { return "" }
         let diff = max(0, Int(battlepassEndDate.timeIntervalSince(Date())))
-        let days = diff / 86400
-        let hours = (diff % 86400) / 3600
-        let minutes = (diff % 3600) / 60
-        let seconds = diff % 60
-        return "\(days)j \(hours):\(String(format: "%02d", minutes)):\(String(format: "%02d", seconds))"
+        return "\(diff / 86400)j \((diff % 86400) / 3600):\(String(format: "%02d", (diff % 3600) / 60)):\(String(format: "%02d", diff % 60))"
     }
 
-    var userBookmarksCount: Int {
-        bookmarkedPlayers.count
+    // MARK: Compteurs de réglages (par compte Riot)
+
+    var userBookmarksCount: Int { bookmarkedPlayers.count }
+    var playerSettingsCount: Int { setting("playerSettingsCount") }
+    var appearanceProfilesCount: Int { setting("appearanceProfilesCount") }
+    var favoritePresetsCount: Int { setting("favoritePresetsCount") }
+
+    func setBookmarksCount(_ count: Int) { setSetting("bookmarksCount", count) }
+    func setPlayerSettingsCount(_ count: Int) { setSetting("playerSettingsCount", count) }
+    func setAppearanceProfilesCount(_ count: Int) { setSetting("appearanceProfilesCount", count) }
+    func setFavoritePresetsCount(_ count: Int) { setSetting("favoritePresetsCount", count) }
+
+    private func setting(_ name: String) -> Int {
+        isConfigured ? UserDefaults.standard.integer(forKey: accountSettingKey(name)) : 0
     }
 
-    var playerSettingsCount: Int {
-        guard isConfigured else { return 0 }
-        return UserDefaults.standard.integer(forKey: accountSettingKey("playerSettingsCount"))
-    }
-
-    var appearanceProfilesCount: Int {
-        guard isConfigured else { return 0 }
-        return UserDefaults.standard.integer(forKey: accountSettingKey("appearanceProfilesCount"))
-    }
-
-    var favoritePresetsCount: Int {
-        guard isConfigured else { return 0 }
-        return UserDefaults.standard.integer(forKey: accountSettingKey("favoritePresetsCount"))
-    }
-
-    func setBookmarksCount(_ count: Int) {
+    private func setSetting(_ name: String, _ value: Int) {
         guard isConfigured else { return }
-        UserDefaults.standard.set(count, forKey: accountSettingKey("bookmarksCount"))
-        Task { await persistPersonalSettings() }
-    }
-
-    func setPlayerSettingsCount(_ count: Int) {
-        guard isConfigured else { return }
-        UserDefaults.standard.set(count, forKey: accountSettingKey("playerSettingsCount"))
-        Task { await persistPersonalSettings() }
-    }
-
-    func setAppearanceProfilesCount(_ count: Int) {
-        guard isConfigured else { return }
-        UserDefaults.standard.set(count, forKey: accountSettingKey("appearanceProfilesCount"))
-        Task { await persistPersonalSettings() }
-    }
-
-    func setFavoritePresetsCount(_ count: Int) {
-        guard isConfigured else { return }
-        UserDefaults.standard.set(count, forKey: accountSettingKey("favoritePresetsCount"))
+        UserDefaults.standard.set(value, forKey: accountSettingKey(name))
         Task { await persistPersonalSettings() }
     }
 
     private func accountSettingKey(_ name: String) -> String {
-        let userID = api.auth.user?.id ?? "anonymous"
-        return "ethone.valorant.\(userID).\(nameStorage)#\(tag).\(name)"
+        "ethone.valorant.\(api.auth.user?.id ?? "anonymous").\(nameStorage)#\(tag).\(name)"
     }
 
     private func loadPersonalSettings() async {
         guard let cache = personalCache,
               let result = await cache.read("settings", ttl: Self.settingsCacheTTL),
               let values = result.payload.objectValue else { return }
-        for key in ["bookmarksCount", "playerSettingsCount", "appearanceProfilesCount", "favoritePresetsCount"] {
-            if let value = values[key]?.intValue {
-                UserDefaults.standard.set(value, forKey: accountSettingKey(key))
-            }
+        for key in ["playerSettingsCount", "appearanceProfilesCount", "favoritePresetsCount"] {
+            if let value = values[key]?.intValue { UserDefaults.standard.set(value, forKey: accountSettingKey(key)) }
         }
     }
 
     private func persistPersonalSettings() async {
         guard let cache = personalCache else { return }
-        let payload: JSONValue = .object([
-            "bookmarksCount": .number(Double(userBookmarksCount)),
+        await cache.save(.object([
             "playerSettingsCount": .number(Double(playerSettingsCount)),
             "appearanceProfilesCount": .number(Double(appearanceProfilesCount)),
             "favoritePresetsCount": .number(Double(favoritePresetsCount))
-        ])
-        await cache.save(payload, key: "settings")
+        ]), key: "settings")
     }
 
-    func sendFriendRequest(name: String, tag: String) {
-        let cleanName = name.trimmingCharacters(in: .whitespaces)
-        let cleanTag = tag.trimmingCharacters(in: .whitespaces).replacingOccurrences(of: "#", with: "")
-        guard !cleanName.isEmpty, !cleanTag.isEmpty else {
-            socialActionMessage = "Saisissez un Riot ID complet au format Nom#Tag."
-            return
-        }
-        let newFriend = ValorantFriend(
-            id: "\(cleanName)#\(cleanTag)",
-            name: cleanName,
-            tag: cleanTag,
-            avatarURL: "https://media.valorant-api.com/playercards/3f296c07-64c3-494c-923b-fe692a4fa1bd/smallart.png",
-            isOnline: true,
-            isInGame: false,
-            isPartyLeader: false,
-            partyCurrent: 1,
-            partyMax: 5,
-            gameMode: nil,
-            map: nil,
-            scoreRounds: nil,
-            tierNumber: 15,
-            otherPartyMembersCount: 0,
-            lastOnlineText: nil,
-            lastOnlineSecondsAgo: 0
-        )
-        if !friends.contains(where: { $0.id == newFriend.id }) {
-            friends.insert(newFriend, at: 0)
-        }
-        socialActionMessage = "Demande d'ami envoyée à \(cleanName)#\(cleanTag)."
-    }
-
-    func removeFriend(id: String) {
-        friends.removeAll(where: { $0.id == id })
-    }
-
-    func refreshFriends() async {
-        loadDefaultFriends()
-    }
-
-    func loadBookmarksAndSearches() {
-        if let data = UserDefaults.standard.data(forKey: "ethone.eval.bookmarks"),
-           let list = try? JSONDecoder().decode([ValorantSavedPlayer].self, from: data), !list.isEmpty {
-            bookmarkedPlayers = list
-        } else {
-            bookmarkedPlayers = [
-                ValorantSavedPlayer(
-                    id: "CheckMateッ#1738",
-                    name: "CheckMateッ",
-                    tag: "1738",
-                    level: 430,
-                    tier: 20,
-                    cardURL: "https://media.valorant-api.com/playercards/3f296c07-64c3-494c-923b-fe692a4fa1bd/smallart.png",
-                    title: nil
-                ),
-                ValorantSavedPlayer(
-                    id: "Moon#13203",
-                    name: "Moon",
-                    tag: "13203",
-                    level: 67,
-                    tier: 17,
-                    cardURL: "https://media.valorant-api.com/playercards/9fb348bc-41a0-91ad-8a3e-818035c4e561/smallart.png",
-                    title: nil
-                )
-            ]
-            saveBookmarks()
-        }
-
-        if let data = UserDefaults.standard.data(forKey: "ethone.eval.search_history"),
-           let list = try? JSONDecoder().decode([ValorantSavedPlayer].self, from: data), !list.isEmpty {
-            recentSearches = list
-        } else {
-            recentSearches = [
-                ValorantSavedPlayer(
-                    id: "chuu#5998",
-                    name: "chuu",
-                    tag: "5998",
-                    level: 96,
-                    tier: 14,
-                    cardURL: "https://media.valorant-api.com/playercards/d3116d7a-4933-5eef-203e-77983636c7a4/smallart.png",
-                    title: nil
-                ),
-                ValorantSavedPlayer(
-                    id: "WANG LIN#fool",
-                    name: "WANG LIN",
-                    tag: "fool",
-                    level: 162,
-                    tier: 14,
-                    cardURL: "https://media.valorant-api.com/playercards/da42d627-4402-e223-100c-b2b918ab5cb4/smallart.png",
-                    title: nil
-                ),
-                ValorantSavedPlayer(
-                    id: "Kaneki#Acido",
-                    name: "Kaneki",
-                    tag: "Acido",
-                    level: 97,
-                    tier: 14,
-                    cardURL: "https://media.valorant-api.com/playercards/e07f61b0-466a-ffc5-673e-36868848c08d/smallart.png",
-                    title: nil
-                ),
-                ValorantSavedPlayer(
-                    id: "Rocks D Xebec#1175",
-                    name: "Rocks D Xebec",
-                    tag: "1175",
-                    level: 89,
-                    tier: 18,
-                    cardURL: "https://media.valorant-api.com/playercards/1e261f20-4a8f-28c0-c752-649033322d7b/smallart.png",
-                    title: nil
-                )
-            ]
-            saveRecentSearches()
-        }
-    }
-
-    private func saveBookmarks() {
-        if let data = try? JSONEncoder().encode(bookmarkedPlayers) {
-            UserDefaults.standard.set(data, forKey: "ethone.eval.bookmarks")
-        }
-    }
-
-    private func saveRecentSearches() {
-        if let data = try? JSONEncoder().encode(recentSearches) {
-            UserDefaults.standard.set(data, forKey: "ethone.eval.search_history")
-        }
-    }
-
-    func toggleBookmark(player: ValorantSavedPlayer) {
-        if let index = bookmarkedPlayers.firstIndex(where: { $0.id == player.id }) {
-            bookmarkedPlayers.remove(at: index)
-        } else {
-            bookmarkedPlayers.insert(player, at: 0)
-        }
-        saveBookmarks()
-    }
-
-    func removeBookmark(id: String) {
-        bookmarkedPlayers.removeAll(where: { $0.id == id })
-        saveBookmarks()
-    }
-
-    func removeRecentSearch(id: String) {
-        recentSearches.removeAll(where: { $0.id == id })
-        saveRecentSearches()
-    }
-
-    func clearRecentSearches() {
-        recentSearches.removeAll()
-        saveRecentSearches()
-    }
-
-    func searchPlayer(riotId: String) async throws -> ValorantSavedPlayer {
-        let parts = riotId.trimmingCharacters(in: .whitespaces).split(separator: "#")
-        guard parts.count == 2 else {
-            throw APIError.http(status: 400, code: nil, message: "Format invalide. Utilisez Nom#Tag.")
-        }
-        let sName = String(parts[0]).trimmingCharacters(in: .whitespaces)
-        let sTag = String(parts[1]).trimmingCharacters(in: .whitespaces)
-
-        let raw: JSONValue = try await api.worker("api/stats/valorant-profile", query: [
-            URLQueryItem(name: "name", value: sName),
-            URLQueryItem(name: "tag", value: sTag)
-        ])
-        let stats = raw["segments"]?.arrayValue?.first?["stats"]
-        let fetchedTier = Int(stats?["rank"]?["value"]?.doubleValue ?? 0)
-        let fetchedLevel = Int(stats?["level"]?["value"]?.doubleValue ?? 1)
-        let avatarStr = raw["avatarUrl"]?.stringValue
-
-        let saved = ValorantSavedPlayer(
-            id: "\(sName)#\(sTag)",
-            name: sName,
-            tag: sTag,
-            level: fetchedLevel,
-            tier: fetchedTier,
-            cardURL: avatarStr,
-            title: nil
-        )
-
-        recentSearches.removeAll(where: { $0.id == saved.id })
-        recentSearches.insert(saved, at: 0)
-        if recentSearches.count > 30 {
-            recentSearches = Array(recentSearches.prefix(30))
-        }
-        saveRecentSearches()
-        return saved
-    }
-
-    func loadNameChanges() {
-        if let data = UserDefaults.standard.data(forKey: "ethone.eval.name_history"),
-           let list = try? JSONDecoder().decode([ValorantNameChange].self, from: data), !list.isEmpty {
-            nameChanges = list
-        } else {
-            nameChanges = [
-                ValorantNameChange(id: "1", currentName: "nes εïз", currentTag: "Toon", previousName: "nes εïз", previousTag: "nes", dateText: "il y a 4h 44min"),
-                ValorantNameChange(id: "2", currentName: "Neyko 愛", currentTag: "12345", previousName: "NeykoVlr 愛", previousTag: "12345", dateText: "il y a 23h 17min"),
-                ValorantNameChange(id: "3", currentName: "Not KnR", currentTag: "THINK", previousName: "KnR", previousTag: "C MWA", dateText: "16/10/26 · 23:42"),
-                ValorantNameChange(id: "4", currentName: "suki", currentTag: "needy", previousName: "bob", previousTag: "92i", dateText: "16/10/26 · 18:48"),
-                ValorantNameChange(id: "5", currentName: "Wilson Lo Siento", currentTag: "loveu", previousName: "IM PEACE", previousTag: "erk", dateText: "16/10/26 · 02:23"),
-                ValorantNameChange(id: "6", currentName: "veil", currentTag: "dma", previousName: "uav", previousTag: "tbot", dateText: "16/10/26 · 02:19"),
-                ValorantNameChange(id: "7", currentName: "weartly", currentTag: "ezel", previousName: "finalbossweartly", previousTag: "kingg", dateText: "15/10/26 · 13:49"),
-                ValorantNameChange(id: "8", currentName: "Rocks D Xebec", currentTag: "1175", previousName: "Laykitoo", previousTag: "9248", dateText: "14/10/26 · 23:41"),
-                ValorantNameChange(id: "9", currentName: "Servietsky", currentTag: "7768", previousName: "FemboyEnjoy", previousTag: "True", dateText: "14/10/26 · 16:13"),
-                ValorantNameChange(id: "10", currentName: "arracheur2brunes", currentTag: "20077", previousName: "JNR love 66愛", previousTag: "20077", dateText: "14/10/26 · 16:13"),
-                ValorantNameChange(id: "11", currentName: "lolok | iolid", currentTag: "0001", previousName: "penguin", previousTag: "AdN", dateText: "14/10/26 · 16:13")
-            ]
-            saveNameChanges()
-        }
-    }
-
-    private func saveNameChanges() {
-        if let data = try? JSONEncoder().encode(nameChanges) {
-            UserDefaults.standard.set(data, forKey: "ethone.eval.name_history")
-        }
-    }
-
-    func refreshNameChanges() async {
-        loadNameChanges()
-    }
-
-    func loadDefaultFriends() {
-        if friends.isEmpty {
-            friends = [
-                ValorantFriend(
-                    id: "Father#161",
-                    name: "Father",
-                    tag: "161",
-                    avatarURL: "https://media.valorant-api.com/playercards/3f296c07-64c3-494c-923b-fe692a4fa1bd/smallart.png",
-                    isOnline: true,
-                    isInGame: false,
-                    isPartyLeader: true,
-                    partyCurrent: 2,
-                    partyMax: 5,
-                    queueState: "File d’attente.",
-                    gameMode: "Compétition",
-                    map: nil,
-                    scoreRounds: nil,
-                    tierNumber: 17,
-                    otherPartyMembersCount: 1,
-                    lastOnlineText: nil,
-                    lastOnlineSecondsAgo: 0
-                ),
-                ValorantFriend(
-                    id: "PrincesseFouf#FOUF",
-                    name: "PrincesseFouf",
-                    tag: "FOUF",
-                    avatarURL: "https://media.valorant-api.com/playercards/da42d627-4402-e223-100c-b2b918ab5cb4/smallart.png",
-                    isOnline: true,
-                    isInGame: false,
-                    isPartyLeader: false,
-                    partyCurrent: 5,
-                    partyMax: 5,
-                    queueState: "File d’attente.",
-                    gameMode: "Compétition",
-                    map: nil,
-                    scoreRounds: nil,
-                    tierNumber: 14,
-                    otherPartyMembersCount: 4,
-                    lastOnlineText: nil,
-                    lastOnlineSecondsAgo: 0
-                ),
-                ValorantFriend(
-                    id: "Droxzz100Aim#FUNNY",
-                    name: "Droxzz100Aim",
-                    tag: "FUNNY",
-                    avatarURL: "https://media.valorant-api.com/playercards/9fb348bc-41a0-91ad-8a3e-818035c4e561/smallart.png",
-                    isOnline: true,
-                    isInGame: false,
-                    isPartyLeader: false,
-                    partyCurrent: 2,
-                    partyMax: 5,
-                    queueState: "Dans les menus",
-                    gameMode: nil,
-                    map: nil,
-                    scoreRounds: nil,
-                    tierNumber: 19,
-                    otherPartyMembersCount: 1,
-                    lastOnlineText: nil,
-                    lastOnlineSecondsAgo: 0
-                ),
-                ValorantFriend(
-                    id: "PSA-Yann#10100",
-                    name: "PSA Yann",
-                    tag: "10100",
-                    avatarURL: "https://media.valorant-api.com/playercards/e07f61b0-466a-ffc5-673e-36868848c08d/smallart.png",
-                    isOnline: true,
-                    isInGame: false,
-                    isPartyLeader: false,
-                    partyCurrent: 3,
-                    partyMax: 12,
-                    queueState: "Dans les menus",
-                    gameMode: nil,
-                    map: nil,
-                    scoreRounds: nil,
-                    tierNumber: 16,
-                    otherPartyMembersCount: 2,
-                    lastOnlineText: nil,
-                    lastOnlineSecondsAgo: 0
-                )
-            ]
-            isPlayerOnline = true
-        }
-    }
-
-    func loadDefaultLeaderboard() {
-        if leaderboard.isEmpty {
-            leaderboard = [
-                ValorantLeaderboardEntry(
-                    id: "1-xvs-lisa",
-                    name: "xvs",
-                    tag: "lisa",
-                    cardID: "d3116d7a-4933-5eef-203e-77983636c7a4",
-                    leaderboardRank: 1,
-                    tier: 27,
-                    rr: 783,
-                    wins: 35,
-                    isAnonymized: false,
-                    isBanned: false,
-                    title: "=^._.^="
-                ),
-                ValorantLeaderboardEntry(
-                    id: "2-TTV-MercureFPS-GRIND",
-                    name: "TTV MercureFPS",
-                    tag: "GRIND",
-                    cardID: "3f296c07-64c3-494c-923b-fe692a4fa1bd",
-                    leaderboardRank: 2,
-                    tier: 27,
-                    rr: 761,
-                    wins: 32,
-                    isAnonymized: false,
-                    isBanned: false,
-                    title: nil
-                ),
-                ValorantLeaderboardEntry(
-                    id: "3-bled-goat",
-                    name: "bled",
-                    tag: "goat",
-                    cardID: "e07f61b0-466a-ffc5-673e-36868848c08d",
-                    leaderboardRank: 3,
-                    tier: 27,
-                    rr: 729,
-                    wins: 31,
-                    isAnonymized: false,
-                    isBanned: false,
-                    title: "Aura"
-                ),
-                ValorantLeaderboardEntry(
-                    id: "4-TH-koshmaras-006",
-                    name: "TH koshmaras",
-                    tag: "006",
-                    cardID: "da42d627-4402-e223-100c-b2b918ab5cb4",
-                    leaderboardRank: 4,
-                    tier: 27,
-                    rr: 728,
-                    wins: 28,
-                    isAnonymized: false,
-                    isBanned: false,
-                    title: "=^._.^="
-                ),
-                ValorantLeaderboardEntry(
-                    id: "5-Lana-Del-REZ-REZ",
-                    name: "Lana Del REZ",
-                    tag: "REZ",
-                    cardID: "1e261f20-4a8f-28c0-c752-649033322d7b",
-                    leaderboardRank: 5,
-                    tier: 27,
-                    rr: 723,
-                    wins: 28,
-                    isAnonymized: false,
-                    isBanned: false,
-                    title: "Résurrection piégée"
-                ),
-                ValorantLeaderboardEntry(
-                    id: "6-d3nZ-sto",
-                    name: "d3nZ",
-                    tag: "sto",
-                    cardID: "9fb348bc-41a0-91ad-8a3e-818035c4e561",
-                    leaderboardRank: 6,
-                    tier: 27,
-                    rr: 718,
-                    wins: 27,
-                    isAnonymized: false,
-                    isBanned: false,
-                    title: "Partenaire de vol ORO"
-                ),
-                ValorantLeaderboardEntry(
-                    id: "7-FF-hezacoil-1337",
-                    name: "FF hezacoil",
-                    tag: "1337",
-                    cardID: "0e38b510-41a8-5780-5e8f-568b2a4f2d6c",
-                    leaderboardRank: 7,
-                    tier: 27,
-                    rr: 687,
-                    wins: 30,
-                    isAnonymized: false,
-                    isBanned: false,
-                    title: "Chasseur de primes"
-                ),
-                ValorantLeaderboardEntry(
-                    id: "8-INPUTLAG-LEG-pyroL",
-                    name: "INPUTLAG LEG...",
-                    tag: "pyroL",
-                    cardID: "22697a3d-45bf-8dd7-4fec-84a9e28c69d7",
-                    leaderboardRank: 8,
-                    tier: 27,
-                    rr: 677,
-                    wins: 23,
-                    isAnonymized: false,
-                    isBanned: false,
-                    title: nil
-                ),
-                ValorantLeaderboardEntry(
-                    id: "9-Secret-Agent-1",
-                    name: "Secret Agent",
-                    tag: "",
-                    cardID: "8e253930-4c05-31dd-1b6c-968525494517",
-                    leaderboardRank: 9,
-                    tier: 27,
-                    rr: 676,
-                    wins: 41,
-                    isAnonymized: true,
-                    isBanned: false,
-                    title: nil
-                ),
-                ValorantLeaderboardEntry(
-                    id: "10-derr-GOD",
-                    name: "derr",
-                    tag: "GOD",
-                    cardID: "707eab51-4836-f488-046a-cda6bf494859",
-                    leaderboardRank: 10,
-                    tier: 27,
-                    rr: 656,
-                    wins: 34,
-                    isAnonymized: false,
-                    isBanned: false,
-                    title: nil
-                ),
-                ValorantLeaderboardEntry(
-                    id: "11-i-love-G2-amy-dasy",
-                    name: "i love G2 amy",
-                    tag: "dasy",
-                    cardID: "bb2a4828-46eb-8cd1-e765-15848195d751",
-                    leaderboardRank: 11,
-                    tier: 27,
-                    rr: 640,
-                    wins: 28,
-                    isAnonymized: false,
-                    isBanned: false,
-                    title: "Aura"
-                ),
-                ValorantLeaderboardEntry(
-                    id: "12-Secret-Agent-2",
-                    name: "Secret Agent",
-                    tag: "",
-                    cardID: "1e261f20-4a8f-28c0-c752-649033322d7b",
-                    leaderboardRank: 12,
-                    tier: 27,
-                    rr: 638,
-                    wins: 21,
-                    isAnonymized: true,
-                    isBanned: false,
-                    title: "=^._.^="
-                ),
-                ValorantLeaderboardEntry(
-                    id: "13-meow-laura",
-                    name: "meow",
-                    tag: "laura",
-                    cardID: "a3bfb853-43b2-7238-a4f1-ad90e9e46bcc",
-                    leaderboardRank: 13,
-                    tier: 27,
-                    rr: 628,
-                    wins: 29,
-                    isAnonymized: false,
-                    isBanned: false,
-                    title: ":3"
-                ),
-                ValorantLeaderboardEntry(
-                    id: "14-Gros-bras",
-                    name: "Gros bras",
-                    tag: "EUW",
-                    cardID: "f94c3b30-42be-e959-889c-5aa313dba261",
-                    leaderboardRank: 14,
-                    tier: 27,
-                    rr: 612,
-                    wins: 24,
-                    isAnonymized: false,
-                    isBanned: false,
-                    title: nil
-                )
-            ]
-            leaderboardTotal = 15000
-        }
-    }
-
-    func loadDefaultMatches() {
-        if matches.isEmpty {
-            let allyPlayer1 = ValorantMatchPlayer(
-                id: "Rub19#Boss",
-                name: "Rub19",
-                tag: "Boss",
-                team: "Blue",
-                character: "Jett",
-                tierText: "Immortel 3",
-                tierNumber: 26,
-                isMe: true,
-                agentIconURL: URL(string: "https://media.valorant-api.com/agents/add6443a-41bd-e414-f6ad-e58d267f4e95/displayicon.png"),
-                score: 415,
-                kills: 20,
-                deaths: 5,
-                assists: 4,
-                headshotPercent: 28,
-                damageMade: 4320,
-                adr: 225,
-                performanceScore: 360,
-                partyId: "party-ally",
-                kast: 100,
-                firstKills: 4,
-                firstDeaths: 0,
-                afkRounds: 0,
-                plants: 1,
-                tags: ["MVP", "Dueliste"]
-            )
-            let allyPlayer2 = ValorantMatchPlayer(
-                id: "HmmmLePouletLà#chkn",
-                name: "HmmmLePouletLà",
-                tag: "chkn",
-                team: "Blue",
-                character: "Reyna",
-                tierText: "Non classé",
-                tierNumber: 0,
-                isMe: false,
-                agentIconURL: URL(string: "https://media.valorant-api.com/agents/a3bfb85b-4227-22a4-28ca-6384a2eb4842/displayicon.png"),
-                score: 251,
-                kills: 12,
-                deaths: 4,
-                assists: 5,
-                headshotPercent: 19,
-                damageMade: 2600,
-                adr: 173,
-                performanceScore: 250,
-                partyId: "party-ally",
-                kast: 83,
-                firstKills: 2,
-                firstDeaths: 1,
-                afkRounds: 0,
-                plants: 0,
-                tags: ["Dueliste"]
-            )
-            let allyPlayer3 = ValorantMatchPlayer(
-                id: "Master of Twist#EUNE",
-                name: "Master of Twist",
-                tag: "EUNE",
-                team: "Blue",
-                character: "Phoenix",
-                tierText: "",
-                tierNumber: 0,
-                isMe: false,
-                agentIconURL: URL(string: "https://media.valorant-api.com/agents/eb93336a-449b-9c1b-0a54-a891f7921d69/displayicon.png"),
-                score: 220,
-                kills: 10,
-                deaths: 8,
-                assists: 6,
-                headshotPercent: 14,
-                damageMade: 2100,
-                adr: 140,
-                performanceScore: 210,
-                partyId: nil,
-                kast: 75,
-                firstKills: 1,
-                firstDeaths: 2,
-                afkRounds: 0,
-                plants: 1,
-                tags: ["Dueliste"]
-            )
-            let allyPlayer4 = ValorantMatchPlayer(
-                id: "Nidayuku#EUW",
-                name: "Nidayuku",
-                tag: "EUW",
-                team: "Blue",
-                character: "Harbor",
-                tierText: "Non classé",
-                tierNumber: 0,
-                isMe: false,
-                agentIconURL: URL(string: "https://media.valorant-api.com/agents/95b78ed7-4637-86d9-7e41-71ba8c293152/displayicon.png"),
-                score: 156,
-                kills: 8,
-                deaths: 5,
-                assists: 2,
-                headshotPercent: 0,
-                damageMade: 1750,
-                adr: 116,
-                performanceScore: 160,
-                partyId: nil,
-                kast: 67,
-                firstKills: 1,
-                firstDeaths: 0,
-                afkRounds: 0,
-                plants: 0,
-                tags: ["Contrôleur"]
-            )
-            let allyPlayer5 = ValorantMatchPlayer(
-                id: "neyzix 愛#7161",
-                name: "neyzix 愛",
-                tag: "7161",
-                team: "Blue",
-                character: "Skye",
-                tierText: "",
-                tierNumber: 0,
-                isMe: false,
-                agentIconURL: URL(string: "https://media.valorant-api.com/agents/6f2a04ca-43e0-be17-7f36-b3908627744d/displayicon.png"),
-                score: 119,
-                kills: 7,
-                deaths: 6,
-                assists: 4,
-                headshotPercent: 33,
-                damageMade: 1400,
-                adr: 93,
-                performanceScore: 120,
-                partyId: nil,
-                kast: 58,
-                firstKills: 0,
-                firstDeaths: 1,
-                afkRounds: 0,
-                plants: 0,
-                tags: ["Initiateur"]
-            )
-
-            let enemyPlayer1 = ValorantMatchPlayer(
-                id: "PingLove#8964",
-                name: "PingLove",
-                tag: "8964",
-                team: "Red",
-                character: "Sova",
-                tierText: "",
-                tierNumber: 0,
-                isMe: false,
-                agentIconURL: URL(string: "https://media.valorant-api.com/agents/320b2a48-4d9b-a075-30f1-1f93a9b638fa/displayicon.png"),
-                score: 185,
-                kills: 7,
-                deaths: 11,
-                assists: 2,
-                headshotPercent: 27,
-                damageMade: 1900,
-                adr: 126,
-                performanceScore: 180,
-                partyId: "party-enemy-1",
-                kast: 50,
-                firstKills: 1,
-                firstDeaths: 2,
-                afkRounds: 0,
-                plants: 0,
-                tags: ["Initiateur"]
-            )
-            let enemyPlayer2 = ValorantMatchPlayer(
-                id: "Mash#1310",
-                name: "Mash",
-                tag: "1310",
-                team: "Red",
-                character: "Chamber",
-                tierText: "",
-                tierNumber: 0,
-                isMe: false,
-                agentIconURL: URL(string: "https://media.valorant-api.com/agents/22697a3d-45bf-8dd7-4fec-84a9e28c69d7/displayicon.png"),
-                score: 170,
-                kills: 7,
-                deaths: 12,
-                assists: 2,
-                headshotPercent: 24,
-                damageMade: 1800,
-                adr: 120,
-                performanceScore: 170,
-                partyId: "party-enemy-1",
-                kast: 50,
-                firstKills: 1,
-                firstDeaths: 1,
-                afkRounds: 0,
-                plants: 0,
-                tags: ["Sentinelle"]
-            )
-            let enemyPlayer3 = ValorantMatchPlayer(
-                id: "soloking#1113",
-                name: "soloking",
-                tag: "1113",
-                team: "Red",
-                character: "Jett",
-                tierText: "",
-                tierNumber: 0,
-                isMe: false,
-                agentIconURL: URL(string: "https://media.valorant-api.com/agents/add6443a-41bd-e414-f6ad-e58d267f4e95/displayicon.png"),
-                score: 160,
-                kills: 7,
-                deaths: 11,
-                assists: 0,
-                headshotPercent: 38,
-                damageMade: 1650,
-                adr: 110,
-                performanceScore: 160,
-                partyId: "party-enemy-2",
-                kast: 42,
-                firstKills: 1,
-                firstDeaths: 2,
-                afkRounds: 0,
-                plants: 0,
-                tags: ["Dueliste"]
-            )
-            let enemyPlayer4 = ValorantMatchPlayer(
-                id: "八点锁定智慧树#5894",
-                name: "八点锁定智慧树",
-                tag: "5894",
-                team: "Red",
-                character: "Neon",
-                tierText: "",
-                tierNumber: 0,
-                isMe: false,
-                agentIconURL: URL(string: "https://media.valorant-api.com/agents/bb2a4828-46eb-8cd1-e765-15848195d751/displayicon.png"),
-                score: 124,
-                kills: 4,
-                deaths: 12,
-                assists: 3,
-                headshotPercent: 15,
-                damageMade: 1300,
-                adr: 86,
-                performanceScore: 120,
-                partyId: "party-enemy-2",
-                kast: 42,
-                firstKills: 0,
-                firstDeaths: 1,
-                afkRounds: 0,
-                plants: 0,
-                tags: ["Dueliste"]
-            )
-            let enemyPlayer5 = ValorantMatchPlayer(
-                id: "chronix#96727",
-                name: "chronix",
-                tag: "96727",
-                team: "Red",
-                character: "Phoenix",
-                tierText: "",
-                tierNumber: 0,
-                isMe: false,
-                agentIconURL: URL(string: "https://media.valorant-api.com/agents/eb93336a-449b-9c1b-0a54-a891f7921d69/displayicon.png"),
-                score: 65,
-                kills: 3,
-                deaths: 11,
-                assists: 1,
-                headshotPercent: 11,
-                damageMade: 900,
-                adr: 60,
-                performanceScore: 65,
-                partyId: "party-enemy-2",
-                kast: 33,
-                firstKills: 0,
-                firstDeaths: 2,
-                afkRounds: 0,
-                plants: 0,
-                tags: ["Dueliste"]
-            )
-
-            let allPlayers = [allyPlayer1, allyPlayer2, allyPlayer3, allyPlayer4, allyPlayer5, enemyPlayer1, enemyPlayer2, enemyPlayer3, enemyPlayer4, enemyPlayer5]
-
-            let defaultRounds: [ValorantRoundSummary] = [
-                ValorantRoundSummary(id: 1, winningTeam: "Blue", winType: "Eliminated", won: true),
-                ValorantRoundSummary(id: 2, winningTeam: "Blue", winType: "Eliminated", won: true),
-                ValorantRoundSummary(id: 3, winningTeam: "Blue", winType: "Eliminated", won: true),
-                ValorantRoundSummary(id: 4, winningTeam: "Blue", winType: "Eliminated", won: true),
-                ValorantRoundSummary(id: 5, winningTeam: "Red", winType: "Defused", won: false),
-                ValorantRoundSummary(id: 6, winningTeam: "Blue", winType: "Eliminated", won: true),
-                ValorantRoundSummary(id: 7, winningTeam: "Red", winType: "Eliminated", won: false),
-                ValorantRoundSummary(id: 8, winningTeam: "Blue", winType: "Eliminated", won: true),
-                ValorantRoundSummary(id: 9, winningTeam: "Blue", winType: "Eliminated", won: true),
-                ValorantRoundSummary(id: 10, winningTeam: "Blue", winType: "Eliminated", won: true),
-                ValorantRoundSummary(id: 11, winningTeam: "Blue", winType: "Eliminated", won: true),
-                ValorantRoundSummary(id: 12, winningTeam: "Blue", winType: "Eliminated", won: true)
-            ]
-
-            let cal = Calendar.current
-            let now = Date()
-            let matchDate1 = cal.date(byAdding: .hour, value: -2, to: now) ?? now
-            let matchDate2 = cal.date(byAdding: .hour, value: -3, to: now) ?? now
-            let matchDate3 = cal.date(byAdding: .day, value: -1, to: now) ?? now
-
-            matches = [
-                ValorantMatch(
-                    id: "match-ascent-01",
-                    map: "Ascent",
-                    mode: "Non classé",
-                    agent: "Jett",
-                    won: true,
-                    teamRounds: 10,
-                    opponentRounds: 2,
-                    kills: 20,
-                    deaths: 5,
-                    assists: 4,
-                    headshotPercent: 28,
-                    startedAt: matchDate1,
-                    scoring: .acs,
-                    scoreValue: 359,
-                    gameLengthSeconds: 1099,
-                    players: allPlayers,
-                    rounds: defaultRounds
-                ),
-                ValorantMatch(
-                    id: "match-corrode-02",
-                    map: "Corrode",
-                    mode: "Non classé",
-                    agent: "Neon",
-                    won: true,
-                    teamRounds: 13,
-                    opponentRounds: 11,
-                    kills: 22,
-                    deaths: 21,
-                    assists: 2,
-                    headshotPercent: 22,
-                    startedAt: matchDate2,
-                    scoring: .acs,
-                    scoreValue: 281,
-                    gameLengthSeconds: 2140,
-                    players: allPlayers,
-                    rounds: defaultRounds
-                ),
-                ValorantMatch(
-                    id: "match-sunset-03",
-                    map: "Sunset",
-                    mode: "Compétition",
-                    agent: "Jett",
-                    won: true,
-                    teamRounds: 13,
-                    opponentRounds: 5,
-                    kills: 24,
-                    deaths: 8,
-                    assists: 6,
-                    headshotPercent: 31,
-                    startedAt: matchDate3,
-                    scoring: .acs,
-                    scoreValue: 380,
-                    gameLengthSeconds: 1820,
-                    players: allPlayers,
-                    rounds: defaultRounds
-                )
-            ]
-        }
-    }
+    // MARK: Compte
 
     private(set) var tag: String = ""
     private(set) var apiKey: String = ""
@@ -1318,6 +448,9 @@ final class ValorantStore {
     private static let tagKey = "ethone.valorant.tag"
     private static let keychainKey = "henrik-api-key"
 
+    var isConfigured: Bool { !nameStorage.isEmpty && !tag.isEmpty }
+    var playerName: String { nameStorage }
+
     private var personalCache: ValorantPersonalCache? {
         guard isConfigured else { return nil }
         return ValorantPersonalCache(api: api, accountName: nameStorage, accountTag: tag)
@@ -1325,99 +458,40 @@ final class ValorantStore {
 
     init(api: APIClient) {
         self.api = api
-        let savedName = UserDefaults.standard.string(forKey: Self.nameKey) ?? ""
-        let savedTag = UserDefaults.standard.string(forKey: Self.tagKey) ?? ""
-        nameStorage = savedName.isEmpty ? "Rub19" : savedName
-        tag = savedTag.isEmpty ? "Boss" : savedTag
+        nameStorage = UserDefaults.standard.string(forKey: Self.nameKey) ?? ""
+        tag = UserDefaults.standard.string(forKey: Self.tagKey) ?? ""
         if let data = Keychain.get(Self.keychainKey), let saved = String(data: data, encoding: .utf8) { apiKey = saved }
         syncAccountData()
     }
 
+    /// Remet l'état du compte à zéro puis recharge le cache disque du compte actif.
     func syncAccountData() {
-        storeOffers = [
-            ValorantDailySkinOffer(
-                id: "bucky-neuro",
-                name: "Bucky (Neuroblaster d'uranium gravitationnel)",
-                imageURL: "https://media.valorant-api.com/weaponskins/4ef54581-4b13-81b3-4672-00b8e6ca6ba2/displayicon.png",
-                price: 1775,
-                colorHex: 0xE879F9,
-                tierIconName: "triangle.fill",
-                tierLabel: "Premium"
-            ),
-            ValorantDailySkinOffer(
-                id: "op-rgx",
-                name: "Operator (RGX 11z Pro)",
-                imageURL: "https://media.valorant-api.com/weaponskins/3c2a3e0f-48e0-ca9c-8515-4ba27dc1c441/displayicon.png",
-                price: 2175,
-                colorHex: 0xF59E0B,
-                tierIconName: "pentagon.fill",
-                tierLabel: "Exclusive"
-            ),
-            ValorantDailySkinOffer(
-                id: "outlaw-holo",
-                name: "Outlaw (Holomoku)",
-                imageURL: "https://media.valorant-api.com/weaponskins/9c3395b8-466a-fa0e-450f-219195b4e3e3/displayicon.png",
-                price: 1275,
-                colorHex: 0x2DD4BF,
-                tierIconName: "rhombus.fill",
-                tierLabel: "Deluxe"
-            ),
-            ValorantDailySkinOffer(
-                id: "classic-rgx",
-                name: "Classic (RGX 11z Pro)",
-                imageURL: "https://media.valorant-api.com/weaponskins/68dcbe7a-449e-d309-847f-829d2bf94e43/displayicon.png",
-                price: 2175,
-                colorHex: 0xF59E0B,
-                tierIconName: "pentagon.fill",
-                tierLabel: "Exclusive"
-            )
-        ]
-        bundles = []
-        accessories = []
-        wallet = ValorantWallet(vp: 1670, rp: 0, kc: 2422)
-        equipmentTitle = "=^._.^="
-        wishlistCount = 38
-        storeHistoryCount = 89
-        friends = []
-        friendHistory = []
-        socialActionMessage = nil
         matches = []
-        leaderboard = []
-        leaderboardTotal = 0
-        profile = ValorantProfile(
-            handle: "Rub19#Boss",
-            cardURL: URL(string: "https://media.valorant-api.com/playercards/3f296c07-64c3-494c-923b-fe692a4fa1bd/smallart.png"),
-            bannerURL: URL(string: "https://media.valorant-api.com/playercards/3f296c07-64c3-494c-923b-fe692a4fa1bd/wideart.png"),
-            tier: 26,
-            rank: "Immortel 3",
-            rr: 319,
-            level: 480,
-            peakTier: 27,
-            peakRank: "Radiant",
-            leaderboardRank: 659,
-            actName: "V26 // ACTE VI"
-        )
+        evalMatches = [:]
+        puuid = ""
+        mmr = EvalMMR()
+        profile = nil
+        friends = []
+        friendRecords = []
+        friendHistory = []
+        bookmarkedPlayers = []
+        recentSearches = []
+        nameChanges = []
+        socialActionMessage = nil
+        errorMessage = nil
         currentParty = nil
-        isPlayerOnline = true
-        battlepassTitle = "V26 // ACTE VI"
-        battlepassEndDate = nil
-        battlepassCurrentLevel = 42
-        battlepassCurrentXP = 24500
-        battlepassLevelXP = 30000
-        battlepassLevels = []
-        upcomingMissions = []
-        equipmentBannerURL = "https://media.valorant-api.com/playercards/3f296c07-64c3-494c-923b-fe692a4fa1bd/wideart.png"
-        equippedSprays = [
-            "https://media.valorant-api.com/sprays/2d1cf967-4cfb-18a7-7a55-27a968eb1a12/displayicon.png",
-            "https://media.valorant-api.com/sprays/e14115ce-4bb5-0bb9-ef8e-bc91a454508d/displayicon.png",
-            "https://media.valorant-api.com/sprays/16999a3c-4a30-844c-2236-418ca1bbffaa/displayicon.png",
-            "https://media.valorant-api.com/sprays/cdb3b3cb-4a6c-d102-3c4d-9ea1525a7702/displayicon.png"
-        ]
-        loadBookmarksAndSearches()
-        loadNameChanges()
-        loadDefaultFriends()
-        loadDefaultLeaderboard()
-        loadDefaultMatches()
+        isPlayerOnline = false
+        battlepassCurrentLevel = 0
+        battlepassCurrentXP = 0
+        battlepassLevelXP = 0
+        equipmentBannerURL = ""
+        equippedSprays = [nil, nil, nil, nil]
+        guard isConfigured else { return }
+        if let cached = DiskCache.read(AccountCache.self, key: accountCacheKey) {
+            apply(account: cached.account)
+            evalMatches = Dictionary(cached.matches.map { ($0.id, $0) }, uniquingKeysWith: { a, _ in a })
+            rebuildMatchList()
+        }
     }
 
     func save(name: String, tag: String, apiKey: String) {
@@ -1437,26 +511,446 @@ final class ValorantStore {
         UserDefaults.standard.removeObject(forKey: Self.nameKey)
         UserDefaults.standard.removeObject(forKey: Self.tagKey)
         Keychain.remove(Self.keychainKey)
-        currentParty = nil
-        isPlayerOnline = false
-        battlepassCurrentLevel = 0
-        battlepassCurrentXP = 0
-        battlepassLevelXP = 0
-        equipmentBannerURL = ""
-        equippedSprays = [nil, nil, nil, nil]
         syncAccountData()
     }
 
+    func adoptAccountIdentityIfNeeded() async {
+        guard !isConfigured else { return }
+        struct Row: Decodable { let settings: JSONValue? }
+        if let rows: [Row] = try? await api.list("user_settings"),
+           let settings = rows.first?.settings,
+           let accountName = settings["liveTrackerRiotName"]?.stringValue, !accountName.isEmpty,
+           let accountTag = settings["liveTrackerRiotTag"]?.stringValue, !accountTag.isEmpty {
+            save(name: accountName, tag: accountTag, apiKey: apiKey)
+        }
+    }
+
+    // Groupe / présence : seul le client Riot les connaît, HenrikDev non.
     func refreshGroup() async {
-        guard isConfigured else {
-            currentParty = nil
-            isPlayerOnline = false
+        currentParty = nil
+        isPlayerOnline = false
+    }
+
+    func setPlayerOnline(_ online: Bool) {
+        isPlayerOnline = false
+    }
+
+    // MARK: Rafraîchissement
+
+    func refresh() async {
+        guard isConfigured else { return }
+        isLoading = true
+        defer { isLoading = false }
+        await loadPersonalSettings()
+        await loadSocial()
+        await loadActs()
+        await syncAndLoadMatches()
+        await loadLeaderboard()
+        await loadUpcomingMissions()
+        await loadBattlepass()
+        await refreshNameChanges()
+    }
+
+    // MARK: Matchs (Worker -> Supabase -> disque)
+
+    private struct Account: Codable, Hashable {
+        let puuid: String
+        let name: String
+        let tag: String
+        let region: String?
+        let level: Int?
+        let card: String?
+        let title: String?
+        let tier: Int?
+        let mmr: EvalMMR?
+        let matchesSyncedAt: String?
+    }
+
+    private struct AccountCache: Codable {
+        let account: Account
+        let syncedAt: Date
+        let matches: [EvalMatch]
+    }
+
+    private struct MatchRow: Decodable { let payload: EvalMatch }
+
+    private var accountCacheKey: String {
+        let identity = "\(api.auth.user?.id ?? "anonymous")|\(nameStorage)#\(tag)".lowercased()
+        let encoded = Data(identity.utf8).base64EncodedString()
+            .replacingOccurrences(of: "/", with: "_").replacingOccurrences(of: "+", with: "-").replacingOccurrences(of: "=", with: "")
+        return "valorant-eval.\(encoded)"
+    }
+
+    /// Le Worker n'appelle HenrikDev qu'une fois par 10 min et par compte ; ici on ne
+    /// redemande même pas au Worker avant 10 min, et on ne télécharge que les matchs absents du disque.
+    private func syncAndLoadMatches(force: Bool = false) async {
+        let cached = DiskCache.read(AccountCache.self, key: accountCacheKey)
+        if !force, let cached, Date().timeIntervalSince(cached.syncedAt) < Self.syncInterval, !cached.matches.isEmpty { return }
+        do {
+            let account: Account = try await api.worker("api/valorant/eval/sync", query: [
+                URLQueryItem(name: "name", value: nameStorage), URLQueryItem(name: "tag", value: tag)
+            ])
+            apply(account: account)
+            let known = Set(evalMatches.keys)
+            var query = [
+                URLQueryItem(name: "puuids", value: "cs.{\(account.puuid)}"),
+                URLQueryItem(name: "order", value: "started_at.desc"),
+                URLQueryItem(name: "limit", value: String(Self.matchLimit))
+            ]
+            if !known.isEmpty {
+                query.append(URLQueryItem(name: "match_id", value: "not.in.(\(known.sorted().joined(separator: ",")))"))
+            }
+            let rows: [MatchRow] = try await api.list("ethone_valorant_matches", query: query)
+            for row in rows { evalMatches[row.payload.id] = row.payload }
+            rebuildMatchList()
+            let kept = matches.prefix(Self.matchLimit).compactMap { evalMatches[$0.id] }
+            evalMatches = Dictionary(kept.map { ($0.id, $0) }, uniquingKeysWith: { a, _ in a })
+            DiskCache.write(AccountCache(account: account, syncedAt: Date(), matches: kept), key: accountCacheKey)
+            errorMessage = nil
+        } catch {
+            if matches.isEmpty { errorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription }
+        }
+    }
+
+    func forceRefreshMatches() async { await syncAndLoadMatches(force: true) }
+
+    private func rebuildMatchList() {
+        matches = evalMatches.values
+            .compactMap { $0.summary(for: puuid) }
+            .sorted { ($0.startedAt ?? .distantPast) > ($1.startedAt ?? .distantPast) }
+    }
+
+    private func apply(account: Account) {
+        puuid = account.puuid
+        if let accountMMR = account.mmr { mmr = accountMMR }
+        let tier = mmr.tier > 0 ? mmr.tier : (account.tier ?? 0)
+        let card = account.card ?? ""
+        profile = ValorantProfile(
+            handle: "\(account.name)#\(account.tag)",
+            cardURL: card.isEmpty ? nil : URL(string: "https://media.valorant-api.com/playercards/\(card)/smallart.png"),
+            bannerURL: card.isEmpty ? nil : URL(string: "https://media.valorant-api.com/playercards/\(card)/wideart.png"),
+            tier: tier,
+            rank: tier > 0 ? EvalRanks.name(tier) : "",
+            rr: mmr.rr,
+            level: account.level ?? 0,
+            peakTier: mmr.peakTier,
+            peakRank: mmr.peakTier > 0 ? EvalRanks.name(mmr.peakTier) : "",
+            leaderboardRank: mmr.leaderboardRank > 0 ? mmr.leaderboardRank : profile?.leaderboardRank,
+            actName: currentAct?.name ?? ""
+        )
+        equipmentBannerURL = card.isEmpty ? "" : "https://media.valorant-api.com/playercards/\(card)/wideart.png"
+    }
+
+    func actName(_ seasonID: String) -> String { acts[seasonID.lowercased()]?.name ?? "" }
+
+    private struct ActsCache: Codable {
+        struct Act: Codable { let id: String; let name: String; let start: Date; let end: Date }
+        let fetchedAt: Date
+        let acts: [Act]
+    }
+
+    /// Noms et dates des actes : catalogue public, une fois par jour.
+    private func loadActs() async {
+        let key = "valorant-api.acts.fr"
+        var cache = DiskCache.read(ActsCache.self, key: key)
+        if cache == nil || Date().timeIntervalSince(cache!.fetchedAt) > 86400 {
+            struct Season: Decodable { let uuid: String; let displayName: String; let type: String?; let startTime: String?; let endTime: String?; let parentUuid: String? }
+            struct Page: Decodable { let data: [Season] }
+            if let (data, _) = try? await URLSession.shared.data(from: URL(string: "https://valorant-api.com/v1/seasons?language=fr-FR")!),
+               let page = try? JSONDecoder().decode(Page.self, from: data) {
+                let byID = Dictionary(page.data.map { ($0.uuid, $0) }, uniquingKeysWith: { a, _ in a })
+                let list = page.data.compactMap { s -> ActsCache.Act? in
+                    guard s.type?.hasSuffix("Act") == true,
+                          let start = s.startTime.flatMap(ISODate.parse), let end = s.endTime.flatMap(ISODate.parse) else { return nil }
+                    let episode = s.parentUuid.flatMap { byID[$0]?.displayName } ?? ""
+                    return ActsCache.Act(id: s.uuid, name: episode.isEmpty ? s.displayName : "\(episode) — \(s.displayName)", start: start, end: end)
+                }
+                if !list.isEmpty {
+                    cache = ActsCache(fetchedAt: Date(), acts: list)
+                    DiskCache.write(cache!, key: key)
+                }
+            }
+        }
+        guard let cache else { return }
+        acts = Dictionary(cache.acts.map { ($0.id.lowercased(), EvalAct(id: $0.id, name: $0.name, start: $0.start, end: $0.end)) }, uniquingKeysWith: { a, _ in a })
+        battlepassEndDate = currentAct?.end
+        if let current = currentAct { battlepassTitle = current.name }
+        if profile != nil { profile?.actName = currentAct?.name ?? "" }
+    }
+
+    /// Match complet pour l'écran de détail (disque d'abord, sinon Supabase).
+    func evalMatch(id: String) async -> EvalMatch? {
+        if let match = evalMatches[id] { return match }
+        let rows: [MatchRow]? = try? await api.list("ethone_valorant_matches", query: [
+            URLQueryItem(name: "match_id", value: "eq.\(id)"), URLQueryItem(name: "limit", value: "1")
+        ])
+        return rows?.first?.payload
+    }
+
+    /// Matchs d'un autre joueur (recherche / amis) : même chaîne, sans cache disque.
+    func fetchMatches(riotName name: String, tag: String) async throws -> (puuid: String, matches: [EvalMatch]) {
+        let account: Account = try await api.worker("api/valorant/eval/sync", query: [
+            URLQueryItem(name: "name", value: name), URLQueryItem(name: "tag", value: tag)
+        ])
+        let rows: [MatchRow] = try await api.list("ethone_valorant_matches", query: [
+            URLQueryItem(name: "puuids", value: "cs.{\(account.puuid)}"),
+            URLQueryItem(name: "order", value: "started_at.desc"),
+            URLQueryItem(name: "limit", value: "20")
+        ])
+        return (account.puuid, rows.map(\.payload))
+    }
+
+    // MARK: Joueurs (signets + recherches) et amis — stockés dans Supabase
+
+    private struct SocialPayload: Codable {
+        var bookmarks: [ValorantSavedPlayer] = []
+        var recent: [ValorantSavedPlayer] = []
+        var friends: [FriendRecord] = []
+    }
+
+    private func loadSocial() async {
+        guard let cache = personalCache,
+              let result = await cache.read("social", ttl: .infinity),
+              let social = ValorantPersonalCache.decode(SocialPayload.self, from: result.payload) else { return }
+        bookmarkedPlayers = social.bookmarks
+        recentSearches = social.recent
+        friendRecords = social.friends
+        rebuildFriends()
+    }
+
+    private func saveSocial() {
+        guard let cache = personalCache,
+              let payload = ValorantPersonalCache.encode(SocialPayload(bookmarks: bookmarkedPlayers, recent: recentSearches, friends: friendRecords)) else { return }
+        Task { await cache.save(payload, key: "social") }
+    }
+
+    func loadBookmarksAndSearches() {
+        Task { await loadSocial() }
+    }
+
+    func toggleBookmark(player: ValorantSavedPlayer) {
+        if let index = bookmarkedPlayers.firstIndex(where: { $0.id == player.id }) {
+            bookmarkedPlayers.remove(at: index)
+        } else {
+            bookmarkedPlayers.insert(player, at: 0)
+        }
+        saveSocial()
+    }
+
+    func removeBookmark(id: String) {
+        bookmarkedPlayers.removeAll(where: { $0.id == id })
+        saveSocial()
+    }
+
+    func removeRecentSearch(id: String) {
+        recentSearches.removeAll(where: { $0.id == id })
+        saveSocial()
+    }
+
+    func clearRecentSearches() {
+        recentSearches.removeAll()
+        saveSocial()
+    }
+
+    private static func splitRiotID(_ riotId: String) throws -> (String, String) {
+        let parts = riotId.trimmingCharacters(in: .whitespaces).split(separator: "#", maxSplits: 1)
+        guard parts.count == 2 else { throw APIError.http(status: 400, code: nil, message: "Format invalide. Utilisez Nom#Tag.") }
+        return (String(parts[0]).trimmingCharacters(in: .whitespaces), String(parts[1]).trimmingCharacters(in: .whitespaces))
+    }
+
+    private func resolve(name: String, tag: String) async throws -> Account {
+        try await api.worker("api/valorant/eval/sync", query: [
+            URLQueryItem(name: "name", value: name), URLQueryItem(name: "tag", value: tag), URLQueryItem(name: "matches", value: "0")
+        ])
+    }
+
+    func searchPlayer(riotId: String) async throws -> ValorantSavedPlayer {
+        let (name, tag) = try Self.splitRiotID(riotId)
+        let account = try await resolve(name: name, tag: tag)
+        let card = account.card ?? ""
+        let saved = ValorantSavedPlayer(
+            id: account.puuid, name: account.name, tag: account.tag,
+            level: account.level ?? 0, tier: account.tier ?? 0,
+            cardURL: card.isEmpty ? nil : "https://media.valorant-api.com/playercards/\(card)/smallart.png",
+            title: nil
+        )
+        recentSearches.removeAll(where: { $0.id == saved.id })
+        recentSearches.insert(saved, at: 0)
+        recentSearches = Array(recentSearches.prefix(30))
+        saveSocial()
+        return saved
+    }
+
+    func sendFriendRequest(name: String, tag: String) {
+        let cleanName = name.trimmingCharacters(in: .whitespaces)
+        let cleanTag = tag.trimmingCharacters(in: .whitespaces).replacingOccurrences(of: "#", with: "")
+        guard !cleanName.isEmpty, !cleanTag.isEmpty else {
+            socialActionMessage = "Saisissez un Riot ID complet au format Nom#Tag."
             return
         }
-
-        isPlayerOnline = false
-        currentParty = nil
+        Task {
+            do {
+                let account = try await resolve(name: cleanName, tag: cleanTag)
+                guard !friendRecords.contains(where: { $0.puuid == account.puuid }) else {
+                    socialActionMessage = "\(account.name)#\(account.tag) est déjà dans vos amis."
+                    return
+                }
+                friendRecords.insert(FriendRecord(puuid: account.puuid, name: account.name, tag: account.tag,
+                                                  card: account.card ?? "", tier: account.tier ?? 0, addedAt: Date()), at: 0)
+                rebuildFriends()
+                saveSocial()
+                socialActionMessage = "\(account.name)#\(account.tag) a été ajouté à vos amis."
+                await refreshNameChanges()
+            } catch {
+                socialActionMessage = "Riot ID introuvable : \(cleanName)#\(cleanTag)."
+            }
+        }
     }
+
+    func removeFriend(id: String) {
+        friendRecords.removeAll(where: { $0.puuid == id })
+        rebuildFriends()
+        saveSocial()
+        nameChanges.removeAll(where: { $0.id.hasPrefix(id) })
+    }
+
+    /// Met à jour le Riot ID des amis (le Worker ne rappelle HenrikDev qu'une fois par 24 h et par joueur).
+    func refreshFriends() async {
+        guard !friendRecords.isEmpty else { return }
+        for index in friendRecords.indices {
+            let record = friendRecords[index]
+            guard let account: Account = try? await api.worker("api/valorant/eval/sync", query: [
+                URLQueryItem(name: "puuid", value: record.puuid), URLQueryItem(name: "matches", value: "0")
+            ]) else { continue }
+            friendRecords[index].name = account.name
+            friendRecords[index].tag = account.tag
+            friendRecords[index].card = account.card ?? record.card
+            friendRecords[index].tier = account.tier ?? record.tier
+        }
+        rebuildFriends()
+        saveSocial()
+        await refreshNameChanges()
+    }
+
+    private func rebuildFriends() {
+        friends = friendRecords.map { r in
+            ValorantFriend(
+                id: r.puuid, name: r.name, tag: r.tag,
+                avatarURL: r.card.isEmpty ? nil : "https://media.valorant-api.com/playercards/\(r.card)/smallart.png",
+                isOnline: false, isInGame: false, isPartyLeader: false, partyCurrent: 0, partyMax: 5,
+                gameMode: nil, map: nil, scoreRounds: nil, tierNumber: r.tier,
+                otherPartyMembersCount: 0, lastOnlineText: nil, lastOnlineSecondsAgo: Int.max
+            )
+        }
+    }
+
+    // MARK: Historique des pseudos (amis uniquement)
+
+    private struct NameRow: Decodable {
+        let puuid: String
+        let name: String
+        let tag: String
+        let first_seen_at: String
+    }
+
+    func loadNameChanges() {
+        Task { await refreshNameChanges() }
+    }
+
+    func refreshNameChanges() async {
+        let ids = friendRecords.map(\.puuid)
+        guard !ids.isEmpty else { nameChanges = []; return }
+        guard let rows: [NameRow] = try? await api.list("ethone_valorant_name_history", query: [
+            URLQueryItem(name: "puuid", value: "in.(\(ids.joined(separator: ",")))"),
+            URLQueryItem(name: "order", value: "first_seen_at.desc")
+        ]) else { return }
+        var changes: [ValorantNameChange] = []
+        for (puuid, history) in Dictionary(grouping: rows, by: \.puuid) {
+            // history est trié du plus récent au plus ancien : chaque paire = un changement.
+            for (current, previous) in zip(history, history.dropFirst()) {
+                changes.append(ValorantNameChange(
+                    id: "\(puuid)|\(current.name)#\(current.tag)",
+                    currentName: current.name, currentTag: current.tag,
+                    previousName: previous.name, previousTag: previous.tag,
+                    dateText: Self.relativeText(ISODate.parse(current.first_seen_at))
+                ))
+            }
+        }
+        let order = Dictionary(uniqueKeysWithValues: rows.map { ("\($0.puuid)|\($0.name)#\($0.tag)", $0.first_seen_at) })
+        nameChanges = changes.sorted { (order[$0.id] ?? "") > (order[$1.id] ?? "") }
+    }
+
+    static func relativeText(_ date: Date?) -> String {
+        guard let date else { return "" }
+        let seconds = Int(Date().timeIntervalSince(date))
+        if seconds < 3600 { return "il y a \(max(1, seconds / 60))min" }
+        if seconds < 86400 { return "il y a \(seconds / 3600)h \((seconds % 3600) / 60)min" }
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "fr_FR")
+        formatter.dateFormat = "dd/MM/yy · HH:mm"
+        return formatter.string(from: date)
+    }
+
+    // MARK: Classement (HenrikDev via Worker, déjà mis en cache côté Worker)
+
+    func loadLeaderboard(region: String? = nil) async {
+        if let region, !region.isEmpty { leaderboardRegion = region }
+        let activeRegion = leaderboardRegion
+        let cache = personalCache
+        if let cached = await cache?.read("leaderboard_\(activeRegion)", ttl: Self.leaderboardCacheTTL) {
+            applyLeaderboard(cached.payload)
+            if !cached.isStale { return }
+        }
+        do {
+            let payload: JSONValue = try await api.worker("api/stats/valorant-leaderboard", query: [
+                URLQueryItem(name: "region", value: activeRegion),
+                URLQueryItem(name: "platform", value: "pc"),
+                URLQueryItem(name: "startIndex", value: "1"),
+                URLQueryItem(name: "size", value: "50")
+            ])
+            applyLeaderboard(payload)
+            if let cache { await cache.save(payload, key: "leaderboard_\(activeRegion)") }
+            guard isConfigured else { return }
+            let ownPayload: JSONValue = try await api.worker("api/stats/valorant-leaderboard", query: [
+                URLQueryItem(name: "region", value: activeRegion),
+                URLQueryItem(name: "platform", value: "pc"),
+                URLQueryItem(name: "size", value: "1"),
+                URLQueryItem(name: "name", value: nameStorage),
+                URLQueryItem(name: "tag", value: tag)
+            ])
+            if let own = (ownPayload["players"]?.arrayValue ?? []).compactMap(Self.convertLeaderboardEntry).first, own.leaderboardRank > 0 {
+                profile?.leaderboardRank = own.leaderboardRank
+            }
+        } catch {
+            if leaderboard.isEmpty { errorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription }
+        }
+    }
+
+    private func applyLeaderboard(_ payload: JSONValue) {
+        let rows = payload["players"]?.arrayValue ?? []
+        leaderboard = rows.compactMap(Self.convertLeaderboardEntry)
+        leaderboardTotal = payload["total"]?.intValue ?? leaderboard.count
+    }
+
+    private static func convertLeaderboardEntry(_ raw: JSONValue) -> ValorantLeaderboardEntry? {
+        guard let name = raw["name"]?.stringValue, !name.isEmpty else { return nil }
+        let tag = raw["tag"]?.stringValue ?? ""
+        return ValorantLeaderboardEntry(
+            id: "\(raw["leaderboardRank"]?.intValue ?? 0)-\(name)-\(tag)",
+            name: name,
+            tag: tag,
+            cardID: raw["cardId"]?.stringValue ?? "",
+            leaderboardRank: raw["leaderboardRank"]?.intValue ?? 0,
+            tier: raw["tier"]?.intValue ?? 0,
+            rr: raw["rr"]?.intValue ?? 0,
+            wins: raw["wins"]?.intValue ?? 0,
+            isAnonymized: raw["isAnonymized"]?.boolValue ?? false,
+            isBanned: raw["isBanned"]?.boolValue ?? false,
+            title: raw["titleId"]?.stringValue ?? raw["title"]?.stringValue
+        )
+    }
+
+    // MARK: Catalogues valorant-api.com (données publiques du jeu)
 
     func loadUpcomingMissions() async {
         guard isConfigured else { return }
@@ -1471,24 +965,22 @@ final class ValorantStore {
             let root = try JSONDecoder().decode(JSONValue.self, from: data)
             _ = applyMissions(root)
             if let cache, let payload = root["data"] { await cache.save(payload, key: "missions") }
-        } catch {
-            if upcomingMissions.isEmpty { upcomingMissions = [] }
-        }
+        } catch {}
     }
 
     @discardableResult
     private func applyMissions(_ payload: JSONValue) -> Bool {
         let raw = payload.arrayValue ?? payload["data"]?.arrayValue ?? []
-            let parsed = raw.compactMap { m -> ValorantMissionItem? in
-                guard let id = m["uuid"]?.stringValue,
-                      let title = m["title"]?.stringValue, !title.isEmpty,
-                      let xp = m["xpGrant"]?.intValue,
-                      let target = m["progressToComplete"]?.intValue,
-                      let type = m["type"]?.stringValue else { return nil }
-                guard type.contains("Weekly") || xp >= 10000 else { return nil }
-                return ValorantMissionItem(id: id, title: title, type: "Hebdomadaire", xpGrant: xp, progressToComplete: target)
-            }
-            upcomingMissions = Array(parsed.prefix(30))
+        let parsed = raw.compactMap { m -> ValorantMissionItem? in
+            guard let id = m["uuid"]?.stringValue,
+                  let title = m["title"]?.stringValue, !title.isEmpty,
+                  let xp = m["xpGrant"]?.intValue,
+                  let target = m["progressToComplete"]?.intValue,
+                  let type = m["type"]?.stringValue,
+                  type.contains("Weekly") || xp >= 10000 else { return nil }
+            return ValorantMissionItem(id: id, title: title, type: "Hebdomadaire", xpGrant: xp, progressToComplete: target)
+        }
+        upcomingMissions = Array(parsed.prefix(30))
         return !upcomingMissions.isEmpty
     }
 
@@ -1505,246 +997,16 @@ final class ValorantStore {
             let root = try JSONDecoder().decode(JSONValue.self, from: data)
             _ = applyBattlepass(root)
             if let cache, let payload = root["data"] { await cache.save(payload, key: "battlepass") }
-        } catch {
-            if battlepassTitle.isEmpty { battlepassTitle = "" }
-        }
+        } catch {}
     }
 
     @discardableResult
     private func applyBattlepass(_ payload: JSONValue) -> Bool {
-        let value = payload["data"] ?? payload
-        battlepassTitle = value["displayName"]?.stringValue ?? ""
+        battlepassTitle = (payload["data"] ?? payload)["displayName"]?.stringValue ?? ""
         return !battlepassTitle.isEmpty
     }
 
-    func setPlayerOnline(_ online: Bool) {
-        isPlayerOnline = online
-        Task {
-            await refreshGroup()
-        }
-    }
-
-    var isConfigured: Bool { !nameStorage.isEmpty && !tag.isEmpty }
-    var playerName: String { nameStorage }
-
-    func adoptAccountIdentityIfNeeded() async {
-        guard !isConfigured else { return }
-        struct Row: Decodable { let settings: JSONValue? }
-        if let rows: [Row] = try? await api.list("user_settings"),
-           let settings = rows.first?.settings,
-           let accountName = settings["liveTrackerRiotName"]?.stringValue, !accountName.isEmpty,
-           let accountTag = settings["liveTrackerRiotTag"]?.stringValue, !accountTag.isEmpty {
-            save(name: accountName, tag: accountTag, apiKey: apiKey)
-        }
-    }
-
-    func refresh() async {
-        guard isConfigured else { return }
-        isLoading = true
-        defer { isLoading = false }
-        await loadPersonalSettings()
-        await loadCachedMatches()
-        await loadProfile()
-        await loadLeaderboard()
-        await loadUpcomingMissions()
-        await loadBattlepass()
-        await refreshMatchesIfNeeded()
-    }
-
-    private struct MatchCache: Codable {
-        let fetchedAt: Date
-        let matches: [ValorantMatch]
-    }
-
-    private var matchCacheKey: String {
-        let userID = api.auth.user?.id ?? "anonymous"
-        let account = "\(userID)|\(nameStorage)#\(tag)".lowercased()
-        let encoded = Data(account.utf8).base64EncodedString()
-            .replacingOccurrences(of: "/", with: "_")
-            .replacingOccurrences(of: "+", with: "-")
-            .replacingOccurrences(of: "=", with: "")
-        return Self.matchCacheKeyPrefix + encoded
-    }
-
-    private func loadCachedMatches() async {
-        guard let cache = DiskCache.read(MatchCache.self, key: matchCacheKey) else {
-            await loadRemoteMatchCache()
-            return
-        }
-        matches = cache.matches
-        if Date().timeIntervalSince(cache.fetchedAt) <= Self.matchCacheTTL {
-            return
-        }
-        await loadRemoteMatchCache(preferred: cache)
-    }
-
-    private struct RemoteMatchCacheRow: Decodable {
-        let matches: JSONValue?
-        let fetched_at: String?
-    }
-
-    private func loadRemoteMatchCache(preferred local: MatchCache? = nil) async {
-        do {
-            let rows: [RemoteMatchCacheRow] = try await api.list("ethone_valorant_match_cache", query: [
-                URLQueryItem(name: "account_name", value: "eq.\(nameStorage)"),
-                URLQueryItem(name: "account_tag", value: "eq.\(tag)"),
-                URLQueryItem(name: "limit", value: "1")
-            ])
-            guard let row = rows.first,
-                  let json = row.matches,
-                  let remoteMatches = Self.decodeMatches(json),
-                  let fetchedAt = row.fetched_at.flatMap(ISODate.parse) else {
-                if let local { matches = local.matches }
-                return
-            }
-            if let local, fetchedAt <= local.fetchedAt {
-                matches = local.matches
-                return
-            }
-            let cache = MatchCache(fetchedAt: fetchedAt, matches: remoteMatches)
-            matches = remoteMatches
-            Self.saveLocalMatchCache(cache, key: matchCacheKey)
-        } catch {
-            if let local { matches = local.matches }
-        }
-    }
-
-    private func refreshMatchesIfNeeded() async {
-        guard isConfigured else { return }
-        if let cache = DiskCache.read(MatchCache.self, key: matchCacheKey),
-           Date().timeIntervalSince(cache.fetchedAt) <= Self.matchCacheTTL {
-            return
-        }
-        do {
-            if apiKey.isEmpty {
-                let rows: [JSONValue] = try await api.worker("api/stats/valorant-matches", query: [
-                    URLQueryItem(name: "name", value: nameStorage), URLQueryItem(name: "tag", value: tag),
-                ])
-                matches = rows.compactMap(Self.convertWorker)
-                await persistMatchCache()
-                errorMessage = nil
-                return
-            }
-
-            var components = URLComponents(string: "https://api.henrikdev.xyz/valorant/v3/matches/eu/\(nameStorage.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? nameStorage)/\(tag)")!
-            components.queryItems = [URLQueryItem(name: "size", value: "25")]
-            var request = URLRequest(url: components.url!)
-            if !apiKey.isEmpty { request.setValue(apiKey, forHTTPHeaderField: "Authorization") }
-            let (data, http) = try await HTTP.send(request)
-            guard (200..<300).contains(http.statusCode) else {
-                let hint = http.statusCode == 401 || http.statusCode == 403 ? " Ajoutez votre clé API HenrikDev dans les réglages." : ""
-                throw APIError.http(status: http.statusCode, code: nil, message: "API HenrikDev : erreur \(http.statusCode).\(hint)")
-            }
-            let root = try JSONDecoder().decode(JSONValue.self, from: data)
-            let raw = root["data"]?.arrayValue ?? []
-            matches = raw.compactMap { Self.convert($0, name: nameStorage, tag: tag) }
-            await persistMatchCache()
-            errorMessage = nil
-        } catch {
-            if matches.isEmpty {
-                errorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
-            }
-        }
-    }
-
-    private func persistMatchCache() async {
-        guard isConfigured, !matches.isEmpty else { return }
-        let cache = MatchCache(fetchedAt: Date(), matches: matches)
-        Self.saveLocalMatchCache(cache, key: matchCacheKey)
-        guard let json = Self.encodeMatches(matches) else { return }
-        do {
-            _ = try await api.upsert(
-                "ethone_valorant_match_cache",
-                fields: [
-                    "account_name": .string(nameStorage),
-                    "account_tag": .string(tag),
-                    "matches": json,
-                    "fetched_at": .string(ISODate.string(cache.fetchedAt)),
-                    "updated_at": .string(ISODate.string(Date()))
-                ],
-                conflict: "user_id,account_name,account_tag",
-                as: RemoteMatchCacheRow.self
-            )
-        } catch {
-        }
-    }
-
-    private static func saveLocalMatchCache(_ cache: MatchCache, key: String) {
-        DiskCache.write(cache, key: key)
-    }
-
-    private static func encodeMatches(_ matches: [ValorantMatch]) -> JSONValue? {
-        guard let data = try? JSONEncoder.api.encode(matches) else { return nil }
-        return try? JSONDecoder.api.decode(JSONValue.self, from: data)
-    }
-
-    private static func decodeMatches(_ json: JSONValue) -> [ValorantMatch]? {
-        guard let data = try? JSONEncoder.api.encode(json) else { return nil }
-        return try? JSONDecoder.api.decode([ValorantMatch].self, from: data)
-    }
-
-    func loadLeaderboard(region: String? = nil) async {
-        if let region, !region.isEmpty {
-            leaderboardRegion = region
-        }
-        let activeRegion = leaderboardRegion
-        let cache = personalCache
-        let cached = await cache?.read("leaderboard_\(activeRegion)", ttl: Self.leaderboardCacheTTL)
-        if let payload = cached?.payload {
-            applyLeaderboard(payload)
-            if cached?.isStale == false { return }
-        }
-        do {
-            let payload: JSONValue = try await api.worker("api/stats/valorant-leaderboard", query: [
-                URLQueryItem(name: "region", value: activeRegion),
-                URLQueryItem(name: "platform", value: "pc"),
-                URLQueryItem(name: "startIndex", value: "1"),
-                URLQueryItem(name: "size", value: "50")
-            ])
-            applyLeaderboard(payload)
-            if let cache { await cache.save(payload, key: "leaderboard_\(activeRegion)") }
-            let ownPayload: JSONValue = try await api.worker("api/stats/valorant-leaderboard", query: [
-                URLQueryItem(name: "region", value: activeRegion),
-                URLQueryItem(name: "platform", value: "pc"),
-                URLQueryItem(name: "size", value: "1"),
-                URLQueryItem(name: "name", value: nameStorage),
-                URLQueryItem(name: "tag", value: tag)
-            ])
-            if let ownEntry = (ownPayload["players"]?.arrayValue ?? []).compactMap(Self.convertLeaderboardEntry).first,
-               ownEntry.leaderboardRank > 0 {
-                profile?.leaderboardRank = ownEntry.leaderboardRank
-            }
-        } catch {
-            if leaderboard.isEmpty {
-                loadDefaultLeaderboard()
-            }
-        }
-    }
-
-    private func applyLeaderboard(_ payload: JSONValue) {
-        let rows = payload["players"]?.arrayValue ?? []
-        leaderboard = rows.compactMap(Self.convertLeaderboardEntry)
-        leaderboardTotal = payload["total"]?.intValue ?? leaderboard.count
-    }
-
-    private static func convertLeaderboardEntry(_ raw: JSONValue) -> ValorantLeaderboardEntry? {
-        guard let name = raw["name"]?.stringValue, !name.isEmpty else { return nil }
-        let tag = raw["tag"]?.stringValue ?? ""
-        let id = "\(raw["leaderboardRank"]?.intValue ?? 0)-\(name)-\(tag)"
-        return ValorantLeaderboardEntry(
-            id: id,
-            name: name,
-            tag: tag,
-            cardID: raw["cardId"]?.stringValue ?? "",
-            leaderboardRank: raw["leaderboardRank"]?.intValue ?? 0,
-            tier: raw["tier"]?.intValue ?? 0,
-            rr: raw["rr"]?.intValue ?? 0,
-            wins: raw["wins"]?.intValue ?? 0,
-            isAnonymized: raw["isAnonymized"]?.boolValue ?? false,
-            isBanned: raw["isBanned"]?.boolValue ?? false,
-            title: raw["titleId"]?.stringValue ?? raw["title"]?.stringValue
-        )
-    }
+    // MARK: Utilitaires conservés pour les autres écrans
 
     static func performanceScore(_ player: JSONValue) -> Int? {
         let candidates = [player["stats"]?["performance_score"], player["stats"]?["performanceScore"], player["performance_score"], player["performanceScore"]]
@@ -1753,313 +1015,5 @@ final class ValorantStore {
             if let number, number >= 0, number <= Double(ScoringSystem.performanceMax) { return Int(number.rounded()) }
         }
         return nil
-    }
-
-    private func loadProfile() async {
-        guard isConfigured else { return }
-        let cache = personalCache
-        let cached = await cache?.read("profile", ttl: Self.profileCacheTTL)
-        if let payload = cached?.payload {
-            applyProfile(payload)
-            if cached?.isStale == false { return }
-        }
-        guard let raw: JSONValue = try? await api.worker("api/stats/valorant-profile", query: [
-            URLQueryItem(name: "name", value: nameStorage), URLQueryItem(name: "tag", value: tag),
-        ]) else { return }
-        applyProfile(raw)
-        if let cache { await cache.save(raw, key: "profile") }
-    }
-
-    private func applyProfile(_ raw: JSONValue) {
-        let stats = raw["segments"]?.arrayValue?.first?["stats"]
-        func number(_ key: String) -> Int { Int(stats?[key]?["value"]?.doubleValue ?? 0) }
-        func text(_ key: String) -> String { stats?[key]?["displayValue"]?.stringValue ?? "" }
-
-        let fetchedTier = number("rank")
-        let fetchedRank = text("rank")
-        let fetchedPeakTier = number("peakRank")
-        let fetchedPeakRank = text("peakRank")
-        let leaderboardVal = Int(stats?["leaderboardRank"]?["value"]?.doubleValue ?? 0)
-        let actVal = text("actName")
-        profile = ValorantProfile(
-            handle: raw["handle"]?.stringValue ?? "\(nameStorage)#\(tag)",
-            cardURL: raw["avatarUrl"]?.stringValue.flatMap(URL.init(string:)),
-            bannerURL: raw["bannerUrl"]?.stringValue.flatMap(URL.init(string:)),
-            tier: fetchedTier,
-            rank: fetchedRank,
-            rr: number("rr"),
-            level: number("level"),
-            peakTier: fetchedPeakTier,
-            peakRank: fetchedPeakRank,
-            leaderboardRank: leaderboardVal > 0 ? leaderboardVal : nil,
-            actName: actVal
-        )
-    }
-
-    static func resolveTierNumber(from string: String?, tierNumber: Int?) -> Int {
-        if let tierNumber, tierNumber > 0 { return tierNumber }
-        guard let name = string?.lowercased() else { return 0 }
-        if name.contains("radiant") { return 27 }
-        if name.contains("immortal 3") || name.contains("immortel 3") { return 26 }
-        if name.contains("immortal 2") || name.contains("immortel 2") { return 25 }
-        if name.contains("immortal") || name.contains("immortel") { return 24 }
-        if name.contains("ascendant 3") { return 23 }
-        if name.contains("ascendant 2") { return 22 }
-        if name.contains("ascendant") { return 21 }
-        if name.contains("diamond 3") || name.contains("diamant 3") { return 20 }
-        if name.contains("diamond 2") || name.contains("diamant 2") { return 19 }
-        if name.contains("diamond") || name.contains("diamant") { return 18 }
-        if name.contains("platinum 3") || name.contains("platine 3") { return 17 }
-        if name.contains("platinum 2") || name.contains("platine 2") { return 16 }
-        if name.contains("platinum") || name.contains("platine") { return 15 }
-        if name.contains("gold 3") || name.contains("or 3") { return 14 }
-        if name.contains("gold 2") || name.contains("or 2") { return 13 }
-        if name.contains("gold") || name.contains("or") { return 12 }
-        if name.contains("silver 3") || name.contains("argent 3") { return 11 }
-        if name.contains("silver 2") || name.contains("argent 2") { return 10 }
-        if name.contains("silver") || name.contains("argent") { return 9 }
-        if name.contains("bronze 3") { return 8 }
-        if name.contains("bronze 2") { return 7 }
-        if name.contains("bronze") { return 6 }
-        if name.contains("iron 3") || name.contains("fer 3") { return 5 }
-        if name.contains("iron 2") || name.contains("fer 2") { return 4 }
-        if name.contains("iron") || name.contains("fer") { return 3 }
-        return 0
-    }
-
-    static func convertWorker(_ raw: JSONValue) -> ValorantMatch? {
-        guard let meta = raw["metadata"] else { return nil }
-        let stats = raw["segments"]?.arrayValue?.first?["stats"]
-        func value(_ key: String) -> Double? { stats?[key]?["value"]?.doubleValue }
-        let started = meta["timestamp"]?.stringValue.flatMap(ISODate.parse)
-        let scoring = ScoringSystem.detect(gameVersion: meta["gameVersion"]?.stringValue, startedAt: started)
-        let team = Int(meta["score"]?["team"]?.doubleValue ?? 0)
-        let opponent = Int(meta["score"]?["opponent"]?.doubleValue ?? 0)
-        let won = meta["result"]?.stringValue == "Victory"
-        let score: Int?
-        switch scoring {
-        case .performance: score = value("performanceScore").map { Int($0.rounded()) }
-        case .acs: score = value("scorePerRound").map { Int($0.rounded()) }
-        }
-
-        let myKills = Int(value("kills") ?? 0)
-        let myDeaths = Int(value("deaths") ?? 0)
-        let myAssists = Int(value("assists") ?? 0)
-        let myHs = Int((value("headshotsPercentage") ?? 0).rounded())
-        let myAgent = meta["agentName"]?.stringValue ?? "—"
-        let gameLength = meta["gameLengthSeconds"]?.doubleValue.map { Int($0) }
-
-        var parsedPlayers: [ValorantMatchPlayer] = []
-        if let rawPlayers = raw["scoreboard"]?["players"]?.arrayValue, !rawPlayers.isEmpty {
-            parsedPlayers = rawPlayers.compactMap { p in
-                let pName = p["name"]?.stringValue ?? "Joueur"
-                let pTag = p["tag"]?.stringValue ?? ""
-                let pTeam = p["team"]?.stringValue ?? "Blue"
-                let pChar = p["character"]?.stringValue ?? "Jett"
-                let pTierStr = p["currenttier_patched"]?.stringValue ?? "Non classé"
-                let pTierNum = resolveTierNumber(from: pTierStr, tierNumber: Int(p["currenttier"]?.doubleValue ?? 0))
-                let pIsMe = p["isMe"]?.boolValue ?? false
-                let pAgentIcon = p["assets"]?["agent"]?["small"]?.stringValue.flatMap(URL.init(string:))
-                let pStats = p["stats"]
-                let pKills = Int(pStats?["kills"]?.doubleValue ?? 0)
-                let pDeaths = Int(pStats?["deaths"]?.doubleValue ?? 0)
-                let pAssists = Int(pStats?["assists"]?.doubleValue ?? 0)
-                let pScore = Int(pStats?["score"]?.doubleValue ?? 0)
-                let pHeadshots = Int(pStats?["headshots"]?.doubleValue ?? 0)
-                let pBodyshots = Int(pStats?["bodyshots"]?.doubleValue ?? 0)
-                let pLegshots = Int(pStats?["legshots"]?.doubleValue ?? 0)
-                let pTotalShots = pHeadshots + pBodyshots + pLegshots
-                let pHeadshotPercent = pTotalShots > 0 ? Int((Double(pHeadshots) / Double(pTotalShots) * 100).rounded()) : 0
-                let pDamage = Int(pStats?["damageMade"]?.doubleValue ?? 0)
-                let pAdr = Int(pStats?["adr"]?.doubleValue ?? 0)
-                let pPerf = performanceScore(p)
-                let pPartyId = p["party_id"]?.stringValue ?? p["partyId"]?.stringValue
-                let pKast = Int(pStats?["kast"]?.doubleValue ?? pStats?["kastPercentage"]?.doubleValue ?? (pKills > 15 ? 100 : (pKills > 10 ? 83 : 60)))
-                let pFirstKills = Int(pStats?["firstKills"]?.doubleValue ?? pStats?["first_kills"]?.doubleValue ?? (pKills > 15 ? 4 : (pKills > 8 ? 2 : 1)))
-                let pFirstDeaths = Int(pStats?["firstDeaths"]?.doubleValue ?? pStats?["first_deaths"]?.doubleValue ?? (pDeaths > 10 ? 2 : 0))
-                let pAfk = Int(p["behavior"]?["afk_rounds"]?.doubleValue ?? pStats?["afk_rounds"]?.doubleValue ?? 0)
-                let pPlants = Int(pStats?["plants"]?.doubleValue ?? pStats?["spike_plants"]?.doubleValue ?? (pChar == "Reyna" ? 4 : 1))
-                var pTags: [String] = []
-                if pKills >= 20 { pTags.append(contentsOf: ["2K", "3K x3", "4K", "1V1 CLUTCH", "KAST ÉLEVÉ"]) }
-                else if pKills >= 12 { pTags.append(contentsOf: ["2K x2", "3K"]) }
-                else if pKills >= 6 { pTags.append("2K") }
-                if pKast >= 80 && !pTags.contains("KAST ÉLEVÉ") { pTags.append("KAST ÉLEVÉ") }
-
-                return ValorantMatchPlayer(
-                    id: "\(pName)#\(pTag)",
-                    name: pName,
-                    tag: pTag,
-                    team: pTeam,
-                    character: pChar,
-                    tierText: pTierStr,
-                    tierNumber: pTierNum,
-                    isMe: pIsMe,
-                    agentIconURL: pAgentIcon,
-                    score: pScore,
-                    kills: pKills,
-                    deaths: pDeaths,
-                    assists: pAssists,
-                    headshotPercent: pHeadshotPercent,
-                    damageMade: pDamage,
-                    adr: pAdr,
-                    performanceScore: pPerf,
-                    partyId: pPartyId,
-                    kast: pKast,
-                    firstKills: pFirstKills,
-                    firstDeaths: pFirstDeaths,
-                    afkRounds: pAfk,
-                    plants: pPlants,
-                    tags: pTags
-                )
-            }
-        }
-
-        let finalPlayers = parsedPlayers
-        let finalRounds: [ValorantRoundSummary] = []
-
-        return ValorantMatch(
-            id: raw["id"]?.stringValue ?? UUID().uuidString,
-            map: meta["mapName"]?.stringValue ?? "—",
-            mode: meta["modeName"]?.stringValue ?? "—",
-            agent: myAgent,
-            won: won,
-            teamRounds: team,
-            opponentRounds: opponent,
-            kills: myKills,
-            deaths: myDeaths,
-            assists: myAssists,
-            headshotPercent: myHs,
-            startedAt: started,
-            scoring: scoring,
-            scoreValue: score,
-            gameLengthSeconds: gameLength,
-            players: finalPlayers,
-            rounds: finalRounds
-        )
-    }
-
-    static func convert(_ raw: JSONValue, name: String, tag: String) -> ValorantMatch? {
-        guard let meta = raw["metadata"], let players = raw["players"]?["all_players"]?.arrayValue else { return nil }
-        let me = players.first {
-            ($0["name"]?.stringValue ?? "").caseInsensitiveCompare(name) == .orderedSame
-                && ($0["tag"]?.stringValue ?? "").caseInsensitiveCompare(tag) == .orderedSame
-        }
-        guard let me else { return nil }
-
-        let team = (me["team"]?.stringValue ?? "").lowercased() == "red" ? "red" : "blue"
-        let other = team == "red" ? "blue" : "red"
-        let myRounds = Int(raw["teams"]?[team]?["rounds_won"]?.doubleValue ?? 0)
-        let theirRounds = Int(raw["teams"]?[other]?["rounds_won"]?.doubleValue ?? 0)
-        let won = raw["teams"]?[team]?["has_won"]?.boolValue ?? (myRounds > theirRounds)
-        let rounds = max(1, Int(meta["rounds_played"]?.doubleValue ?? Double(myRounds + theirRounds)))
-
-        let stats = me["stats"]
-        let kills = Int(stats?["kills"]?.doubleValue ?? 0)
-        let deaths = Int(stats?["deaths"]?.doubleValue ?? 0)
-        let assists = Int(stats?["assists"]?.doubleValue ?? 0)
-        let heads = stats?["headshots"]?.doubleValue ?? 0
-        let bodies = stats?["bodyshots"]?.doubleValue ?? 0
-        let legs = stats?["legshots"]?.doubleValue ?? 0
-        let shots = heads + bodies + legs
-        let myHs = shots > 0 ? Int((heads / shots * 100).rounded()) : 0
-        let started = meta["game_start"]?.doubleValue.map { Date(timeIntervalSince1970: $0) }
-        let scoring = ScoringSystem.detect(gameVersion: meta["game_version"]?.stringValue, startedAt: started)
-
-        let value: Int?
-        switch scoring {
-        case .performance:
-            value = performanceScore(me)
-        case .acs:
-            let total = stats?["score"]?.doubleValue ?? 0
-            value = total > 0 ? Int((total / Double(rounds)).rounded()) : nil
-        }
-
-        let parsedPlayers: [ValorantMatchPlayer] = players.compactMap { p in
-            let pName = p["name"]?.stringValue ?? "Joueur"
-            let pTag = p["tag"]?.stringValue ?? ""
-            let pTeam = p["team"]?.stringValue ?? "Blue"
-            let pChar = p["character"]?.stringValue ?? "Jett"
-            let pTierStr = p["currenttier_patched"]?.stringValue ?? "Non classé"
-            let pTierNum = resolveTierNumber(from: pTierStr, tierNumber: Int(p["currenttier"]?.doubleValue ?? 0))
-            let pIsMe = (pName.caseInsensitiveCompare(name) == .orderedSame && pTag.caseInsensitiveCompare(tag) == .orderedSame)
-            let pAgentIcon = p["assets"]?["agent"]?["small"]?.stringValue.flatMap(URL.init(string:))
-            let pStats = p["stats"]
-            let pKills = Int(pStats?["kills"]?.doubleValue ?? 0)
-            let pDeaths = Int(pStats?["deaths"]?.doubleValue ?? 0)
-            let pAssists = Int(pStats?["assists"]?.doubleValue ?? 0)
-            let pTotalScore = pStats?["score"]?.doubleValue ?? 0
-            let pAcs = rounds > 0 ? Int((pTotalScore / Double(rounds)).rounded()) : Int(pTotalScore)
-            let pHeads = pStats?["headshots"]?.doubleValue ?? 0
-            let pBodies = pStats?["bodyshots"]?.doubleValue ?? 0
-            let pLegs = pStats?["legshots"]?.doubleValue ?? 0
-            let pShots = pHeads + pBodies + pLegs
-            let pHeadshotPercent = pShots > 0 ? Int((pHeads / pShots * 100).rounded()) : 0
-            let pDamage = Int(p["damage_made"]?.doubleValue ?? 0)
-            let pAdr = rounds > 0 ? Int((Double(pDamage) / Double(rounds)).rounded()) : 0
-            let pPerf = performanceScore(p)
-            let pPartyId = p["party_id"]?.stringValue ?? p["partyId"]?.stringValue
-            let pKast = Int(pStats?["kast"]?.doubleValue ?? (pKills > 15 ? 100 : (pKills > 10 ? 83 : 60)))
-            let pFirstKills = Int(pStats?["first_kills"]?.doubleValue ?? pStats?["firstKills"]?.doubleValue ?? (pKills > 15 ? 4 : (pKills > 8 ? 2 : 1)))
-            let pFirstDeaths = Int(pStats?["first_deaths"]?.doubleValue ?? pStats?["firstDeaths"]?.doubleValue ?? (pDeaths > 10 ? 2 : 0))
-            let pAfk = Int(p["behavior"]?["afk_rounds"]?.doubleValue ?? 0)
-            let pPlants = Int(pStats?["plants"]?.doubleValue ?? (pChar == "Reyna" ? 4 : 1))
-            var pTags: [String] = []
-            if pKills >= 20 { pTags.append(contentsOf: ["2K", "3K x3", "4K", "1V1 CLUTCH", "KAST ÉLEVÉ"]) }
-            else if pKills >= 12 { pTags.append(contentsOf: ["2K x2", "3K"]) }
-            else if pKills >= 6 { pTags.append("2K") }
-            if pKast >= 80 && !pTags.contains("KAST ÉLEVÉ") { pTags.append("KAST ÉLEVÉ") }
-
-            return ValorantMatchPlayer(
-                id: "\(pName)#\(pTag)",
-                name: pName,
-                tag: pTag,
-                team: pTeam,
-                character: pChar,
-                tierText: pTierStr,
-                tierNumber: pTierNum,
-                isMe: pIsMe,
-                agentIconURL: pAgentIcon,
-                score: pAcs,
-                kills: pKills,
-                deaths: pDeaths,
-                assists: pAssists,
-                headshotPercent: pHeadshotPercent,
-                damageMade: pDamage,
-                adr: pAdr,
-                performanceScore: pPerf,
-                partyId: pPartyId,
-                kast: pKast,
-                firstKills: pFirstKills,
-                firstDeaths: pFirstDeaths,
-                afkRounds: pAfk,
-                plants: pPlants,
-                tags: pTags
-            )
-        }
-
-        let myAgent = me["character"]?.stringValue ?? "—"
-        let finalPlayers = parsedPlayers
-
-        let finalRounds: [ValorantRoundSummary] = []
-
-        return ValorantMatch(
-            id: meta["matchid"]?.stringValue ?? UUID().uuidString,
-            map: meta["map"]?.stringValue ?? "—",
-            mode: meta["mode"]?.stringValue ?? "—",
-            agent: myAgent,
-            won: won,
-            teamRounds: myRounds,
-            opponentRounds: theirRounds,
-            kills: kills,
-            deaths: deaths,
-            assists: assists,
-            headshotPercent: myHs,
-            startedAt: started,
-            scoring: scoring,
-            scoreValue: value,
-            gameLengthSeconds: meta["game_length"]?.doubleValue.map { Int($0) },
-            players: finalPlayers,
-            rounds: finalRounds
-        )
     }
 }

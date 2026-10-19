@@ -2051,21 +2051,21 @@ struct EvalLeaderboardView: View {
         if let rank = store.profile?.leaderboardRank, rank > 0 {
             return "n°\(rank)"
         }
-        return "n°659"
+        return "—"
     }
 
     private var myRankWatermark: String {
         if let rank = store.profile?.leaderboardRank, rank > 0 {
             return "\(rank)"
         }
-        return "659"
+        return ""
     }
 
     private var myRRText: String {
         if let rr = store.profile?.rr, rr > 0 {
             return "\(rr) RR"
         }
-        return "319 RR"
+        return "—"
     }
 
     private var myWinsText: String {
@@ -2073,14 +2073,14 @@ struct EvalLeaderboardView: View {
         if wins > 0 {
             return "\(wins) W"
         }
-        return "19 W"
+        return "—"
     }
 
     private var myTier: Int {
         if let tier = store.profile?.tier, tier > 0 {
             return tier
         }
-        return 27
+        return 0
     }
 
     var body: some View {
@@ -2249,15 +2249,15 @@ struct EvalLeaderboardView: View {
 
                 VStack(alignment: .leading, spacing: 3) {
                     HStack(spacing: 3) {
-                        Text(store.playerName.isEmpty ? "Rub19" : store.playerName)
+                        Text(store.playerName.isEmpty ? "Aucun compte" : store.playerName)
                             .font(.subheadline.weight(.heavy))
                             .foregroundStyle(.white)
-                        Text("#\(store.tag.isEmpty ? "Boss" : store.tag)")
+                        Text(store.tag.isEmpty ? "" : "#\(store.tag)")
                             .font(.caption.weight(.medium))
                             .foregroundStyle(.secondary)
                     }
 
-                    Text(store.equipmentTitle.isEmpty ? "=^_^=" : store.equipmentTitle)
+                    Text(store.equipmentTitle)
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -2630,20 +2630,9 @@ struct EvalPurchaseHistoryView: View {
         let category: String
     }
 
-    private let payments: [PaymentRecord] = [
-        PaymentRecord(vp: "2 050 VP", price: "19,99 €", date: "14 oct. 2026 · 18:22", method: "Carte Bancaire"),
-        PaymentRecord(vp: "5 350 VP", price: "49,99 €", date: "28 sept. 2026 · 21:05", method: "PayPal"),
-        PaymentRecord(vp: "1 000 VP", price: "9,99 €", date: "15 août 2026 · 14:10", method: "Carte Bancaire"),
-        PaymentRecord(vp: "11 000 VP", price: "99,99 €", date: "02 juil. 2026 · 19:40", method: "PayPal")
-    ]
-
-    private let transactions: [TransactionRecord] = [
-        TransactionRecord(name: "Bucky (Neuroblaster)", cost: "1 775 VP", date: "15 oct. 2026 · 12:04", category: "Skin d'arme"),
-        TransactionRecord(name: "Vandal (Prime)", cost: "1 775 VP", date: "01 oct. 2026 · 20:30", category: "Skin d'arme"),
-        TransactionRecord(name: "Passe de combat (V26 Acte VI)", cost: "1 000 VP", date: "25 sept. 2026 · 09:15", category: "Passe de combat"),
-        TransactionRecord(name: "Operator (RGX 11z Pro)", cost: "2 175 VP", date: "12 août 2026 · 22:50", category: "Skin d'arme"),
-        TransactionRecord(name: "Classic (RGX 11z Pro)", cost: "2 175 VP", date: "18 juil. 2026 · 16:42", category: "Skin d'arme")
-    ]
+    // Riot ne fournit pas l'historique d'achats hors client : rien à afficher.
+    private let payments: [PaymentRecord] = []
+    private let transactions: [TransactionRecord] = []
 
     var body: some View {
         ZStack {
@@ -2687,16 +2676,7 @@ struct EvalPurchaseHistoryView: View {
         }
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
-        .task {
-            isLoading = true
-            try? await Task.sleep(nanoseconds: 600_000_000)
-            isLoading = false
-        }
-        .refreshable {
-            isLoading = true
-            try? await Task.sleep(nanoseconds: 600_000_000)
-            isLoading = false
-        }
+
     }
 
     private var topBar: some View {
@@ -2778,7 +2758,7 @@ struct EvalPurchaseHistoryView: View {
                         .font(.system(size: 15))
                         .foregroundStyle(Color(hex: 0x8E8E93))
                     Spacer()
-                    Text("179,96 €")
+                    Text("—")
                         .font(.system(size: 16, weight: .bold))
                         .foregroundStyle(.white)
                 }
@@ -2791,7 +2771,7 @@ struct EvalPurchaseHistoryView: View {
                         .font(.system(size: 15))
                         .foregroundStyle(Color(hex: 0x8E8E93))
                     Spacer()
-                    Text("19 400 VP")
+                    Text("—")
                         .font(.system(size: 16, weight: .bold))
                         .foregroundStyle(Color(hex: 0xFD5B68))
                 }
@@ -2872,7 +2852,7 @@ struct EvalPurchaseHistoryView: View {
                         .font(.system(size: 15))
                         .foregroundStyle(Color(hex: 0x8E8E93))
                     Spacer()
-                    Text("8 875 VP")
+                    Text("—")
                         .font(.system(size: 16, weight: .bold))
                         .foregroundStyle(Color(hex: 0xFD5B68))
                 }

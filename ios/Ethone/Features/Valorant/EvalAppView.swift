@@ -664,12 +664,19 @@ struct EvalProfileView: View {
                 .frame(maxWidth: .infinity, alignment: .trailing)
             }
 
-            HStack(spacing: 12) {
-                actBadge(name: "V26 // ACTE VI", icon: "circle.fill", color: Color(hex: 0xFD5B68), tier: 26)
-                actBadge(name: "V26 // ACTE V", icon: "circle.fill", color: Color(hex: 0xFD5B68).opacity(0.8), tier: 25)
-                actBadge(name: "V26 // ACTE IV", icon: "circle.fill", color: Color(hex: 0x22C55E), tier: 23)
+            // Trois derniers actes classés réels (MMR HenrikDev), rien si aucun.
+            let recentActs = Array(store.mmr.seasons.suffix(3).reversed())
+            if !recentActs.isEmpty {
+                HStack(spacing: 12) {
+                    ForEach(recentActs) { season in
+                        actBadge(name: store.actName(season.season).isEmpty ? season.short.uppercased() : store.actName(season.season),
+                                 icon: "circle.fill",
+                                 color: season.winRate >= 0.5 ? Color(hex: 0x22C55E) : Color(hex: 0xFD5B68),
+                                 tier: season.endTier)
+                    }
+                }
+                .padding(.top, 4)
             }
-            .padding(.top, 4)
         }
         .padding(16)
         .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
@@ -916,35 +923,51 @@ struct EvalProfileView: View {
 }
 
 struct EvalCareerSummaryView: View {
+    @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss
 
     let profile: ValorantProfile
     let matches: [ValorantMatch]
 
     @State private var selectedQueue = "Compétition"
+    @State private var showPeak = false
 
-    private var queueMatches: [ValorantMatch] {
-        let normalized = selectedQueue.folding(options: .diacriticInsensitive, locale: .current).lowercased()
-        if normalized.contains("gauntlet") {
-            return matches.filter { $0.mode.folding(options: .diacriticInsensitive, locale: .current).lowercased().contains("gauntlet") }
+    private var store: ValorantStore { model.valorant }
+    private var mmr: EvalMMR { store.mmr }
+    private static let competitive = "Compétition"
+
+    /// Compétition (MMR HenrikDev) + chaque autre mode présent dans les matchs sauvegardés.
+    private var queues: [String] {
+        var seen: [String] = [Self.competitive]
+        for match in matches {
+            let mode = Self.queueName(match.mode)
+            if !mode.isEmpty, !seen.contains(mode) { seen.append(mode) }
         }
-        if normalized.contains("mort") {
-            return matches.filter {
-                let mode = $0.mode.folding(options: .diacriticInsensitive, locale: .current).lowercased()
-                return mode.contains("deathmatch") || mode.contains("combat")
-            }
-        }
-        return matches.filter {
-            let mode = $0.mode.folding(options: .diacriticInsensitive, locale: .current).lowercased()
-            return mode.contains("competitive") || mode.contains("compet") || mode.contains("ranked")
+        return seen
+    }
+
+    private static func queueName(_ mode: String) -> String {
+        switch mode.lowercased() {
+        case "competitive": return competitive
+        case "unrated": return "Non classé"
+        case "deathmatch": return "Combat à mort"
+        case "team deathmatch": return "Combat à mort par équipe"
+        case "swiftplay": return "Vélocité"
+        case "spike rush": return "Spike Rush"
+        case "premier": return "Premier"
+        default: return mode
         }
     }
 
-    private var wins: Int { queueMatches.filter(\ .won).count }
-    private var winRate: String {
-        guard !queueMatches.isEmpty else { return "—" }
-        return String(format: "%.1f%%", Double(wins) / Double(queueMatches.count) * 100)
-            .replacingOccurrences(of: ".", with: ",")
+    private var queueMatches: [ValorantMatch] { matches.filter { Self.queueName($0.mode) == selectedQueue } }
+
+    private var currentSeason: EvalMMR.Season? {
+        guard let act = store.currentAct else { return nil }
+        return mmr.seasons.first { $0.season.lowercased() == act.id.lowercased() }
+    }
+
+    private var previousSeasons: [EvalMMR.Season] {
+        mmr.seasons.filter { $0.season.lowercased() != store.currentAct?.id.lowercased() }.reversed()
     }
 
     var body: some View {
@@ -952,19 +975,20 @@ struct EvalCareerSummaryView: View {
             VStack(alignment: .leading, spacing: 18) {
                 header
                 queueSelector
-
-                if !profile.actName.isEmpty {
+                if selectedQueue == Self.competitive {
                     actHeader
-                }
-
-                if selectedQueue == "Compétition", !profile.peakRank.isEmpty {
-                    rankAndPerformanceCard
+                    if mmr.tier > 0 || currentSeason != nil {
+                        rankAndPerformanceCard
+                    } else {
+                        emptyCard("Ce joueur n’a joué aucune partie classée pendant \(profile.actName.isEmpty ? "cet acte" : profile.actName).")
+                    }
+                    if !mmr.seasons.isEmpty { allTimeCard }
+                    if !previousSeasons.isEmpty { previousActsCard }
+                } else if queueMatches.isEmpty {
+                    emptyCard("Aucune partie de ce mode dans l’historique enregistré.")
                 } else {
-                    noMatchesCard
+                    recentQueueCard
                 }
-
-                allTimeCard
-                previousActsCard
             }
             .padding(.horizontal, 16)
             .padding(.bottom, 96)
@@ -972,6 +996,16 @@ struct EvalCareerSummaryView: View {
         .scrollIndicators(.hidden)
         .navigationBarBackButtonHidden(true)
         .ethoneScreen()
+        .sheet(isPresented: $showPeak) {
+            VStack(spacing: 16) {
+                tierImage(mmr.peakTier, size: 160)
+                Text("Pic : \(EvalRanks.name(mmr.peakTier))").font(.title3.bold())
+                if !store.actName(mmr.peakSeason).isEmpty {
+                    Text(store.actName(mmr.peakSeason)).foregroundStyle(.secondary)
+                }
+            }
+            .presentationDetents([.medium])
+        }
     }
 
     private var header: some View {
@@ -984,14 +1018,10 @@ struct EvalCareerSummaryView: View {
                     .background(Color(hex: 0x161618), in: .circle)
             }
             .buttonStyle(.plain)
-
             Spacer()
-
-            Text("Résumé de carrière")
-                .font(.headline.weight(.bold))
-                .foregroundStyle(.white)
-
+            Text("Résumé de carrière").font(.headline.weight(.bold)).foregroundStyle(.white)
             Spacer()
+            Color.clear.frame(width: 44, height: 44)
         }
         .padding(.top, 4)
     }
@@ -999,24 +1029,17 @@ struct EvalCareerSummaryView: View {
     private var queueSelector: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 10) {
-                ForEach(["Gauntlet: Glitched", "Compétition", "Combat à mort"], id: \ .self) { queue in
+                ForEach(queues, id: \.self) { queue in
+                    let selected = selectedQueue == queue
                     Button {
-                        withAnimation(Motion.snap) {
-                            selectedQueue = queue
-                        }
+                        withAnimation(Motion.snap) { selectedQueue = queue }
                     } label: {
                         Text(queue)
-                            .font(.system(size: 15, weight: selectedQueue == queue ? .bold : .medium))
-                            .foregroundStyle(selectedQueue == queue ? Color(hex: 0xFD5B68) : Color(hex: 0x8E8E93))
+                            .font(.system(size: 15, weight: selected ? .bold : .medium))
+                            .foregroundStyle(selected ? Color(hex: 0xFD5B68) : Color(hex: 0x8E8E93))
                             .padding(.horizontal, 18)
                             .padding(.vertical, 10)
-                            .background(
-                                selectedQueue == queue ? Color(hex: 0xFD5B68).opacity(0.16) : Color(hex: 0x161618),
-                                in: .capsule
-                            )
-                            .overlay(
-                                Capsule().strokeBorder(selectedQueue == queue ? Color(hex: 0xFD5B68).opacity(0.4) : Color.clear, lineWidth: 1)
-                            )
+                            .background(selected ? Color(hex: 0x2C2C2E) : .clear, in: .capsule)
                     }
                     .buttonStyle(.plain)
                 }
@@ -1026,34 +1049,24 @@ struct EvalCareerSummaryView: View {
 
     private var actHeader: some View {
         HStack {
-            Text(profile.actName.isEmpty ? "V26 — ACTE VI" : profile.actName.replacingOccurrences(of: "//", with: "—"))
+            Text(profile.actName.isEmpty ? "Acte en cours" : profile.actName)
                 .font(.system(size: 16, weight: .bold))
                 .foregroundStyle(.white)
             Spacer()
-            Text("Actuel")
-                .font(.system(size: 15))
-                .foregroundStyle(Color(hex: 0x8E8E93))
+            Text("Actuel").font(.system(size: 15)).foregroundStyle(Color(hex: 0x8E8E93))
         }
-        .padding(.horizontal, 18)
-        .padding(.vertical, 18)
+        .padding(18)
         .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
     }
 
-    private var noMatchesCard: some View {
+    private func emptyCard(_ message: String) -> some View {
         VStack(spacing: 14) {
-            Image(systemName: "desktopcomputer")
-                .font(.system(size: 40))
-                .foregroundStyle(Color(hex: 0x8E8E93))
-
-            Text("Aucune partie jouée")
-                .font(.system(size: 17, weight: .bold))
-                .foregroundStyle(.white)
-
-            Text("Ce joueur n’a joué aucune partie sur PC dans cette file d’attente pendant V26 – ACTE VI.")
+            Image(systemName: "desktopcomputer").font(.system(size: 40)).foregroundStyle(Color(hex: 0x8E8E93))
+            Text("Aucune partie jouée").font(.system(size: 17, weight: .bold)).foregroundStyle(.white)
+            Text(message)
                 .font(.system(size: 14))
                 .foregroundStyle(Color(hex: 0x8E8E93))
                 .multilineTextAlignment(.center)
-                .padding(.horizontal, 16)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 32)
@@ -1061,175 +1074,98 @@ struct EvalCareerSummaryView: View {
         .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
     }
 
+    private func tierImage(_ tier: Int, size: CGFloat) -> some View {
+        AsyncImage(url: ValorantProfile.tierIcon(tier)) { phase in
+            if let image = phase.image { image.resizable().scaledToFit() } else { Color.clear }
+        }
+        .frame(width: size, height: size)
+    }
+
     private var rankAndPerformanceCard: some View {
         VStack(alignment: .leading, spacing: 18) {
-            VStack(alignment: .leading, spacing: 14) {
-                Text("Rang")
-                    .font(.system(size: 16, weight: .bold))
-                    .foregroundStyle(.white)
-
-                HStack(spacing: 0) {
-                    VStack(spacing: 6) {
-                        if let icon = ValorantProfile.tierIcon(profile.tier) {
-                            AsyncImage(url: icon) { phase in
-                                switch phase {
-                                case .success(let image):
-                                    image.resizable().scaledToFit().frame(width: 52, height: 52)
-                                default:
-                                    Image(systemName: "shield.fill").font(.largeTitle).foregroundStyle(.secondary)
-                                }
-                            }
-                        }
-
-                        Text("IMMORTEL 3")
-                            .font(.system(size: 16, weight: .heavy))
-                            .foregroundStyle(Color(hex: 0xFD5B68))
-
-                        Text("319 SC")
-                            .font(.system(size: 13, weight: .medium))
-                            .foregroundStyle(Color(hex: 0x8E8E93))
-
-                        Text("Rang 666")
-                            .font(.system(size: 15, weight: .bold))
+            Text("Rang").font(.system(size: 16, weight: .bold)).foregroundStyle(Color(hex: 0x8E8E93))
+            HStack(spacing: 0) {
+                VStack(spacing: 8) {
+                    tierImage(mmr.tier, size: 96)
+                    Text(EvalRanks.name(mmr.tier).uppercased())
+                        .font(.system(size: 17, weight: .heavy))
+                        .foregroundStyle(Color(hex: 0xFD5B68))
+                    Text("\(mmr.rr) SC").font(.system(size: 15, weight: .semibold)).foregroundStyle(.white)
+                    if mmr.leaderboardRank > 0 {
+                        Text("Rang \(mmr.leaderboardRank)")
+                            .font(.system(size: 16, weight: .bold))
                             .foregroundStyle(.white)
                             .padding(.horizontal, 18)
                             .padding(.vertical, 7)
-                            .background(Color(hex: 0xFD5B68), in: .capsule)
+                            .background(Color(hex: 0xC4313F), in: .capsule)
+                            .overlay(Capsule().strokeBorder(Color(hex: 0xFD5B68), lineWidth: 1.5))
                     }
-                    .frame(maxWidth: .infinity)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
 
-                    Divider().frame(height: 110).overlay(Color.white.opacity(0.08))
+                Divider().frame(height: 120).overlay(Color.white.opacity(0.08))
 
-                    VStack(spacing: 8) {
-                        if let peakIcon = ValorantProfile.tierIcon(profile.peakTier) {
-                            AsyncImage(url: peakIcon) { phase in
-                                switch phase {
-                                case .success(let image):
-                                    image.resizable().scaledToFit().frame(width: 52, height: 52)
-                                default:
-                                    Image(systemName: "triangle.fill").font(.largeTitle).foregroundStyle(Color(hex: 0xF5D78E))
-                                }
-                            }
-                        }
-
-                        Text("Appuyer pour agrandir")
-                            .font(.system(size: 13))
-                            .foregroundStyle(Color(hex: 0x8E8E93))
+                Button { showPeak = true } label: {
+                    VStack(spacing: 10) {
+                        tierImage(mmr.peakTier, size: 96)
+                        Text("Appuyer pour agrandir").font(.system(size: 13)).foregroundStyle(Color(hex: 0x8E8E93))
                     }
                     .frame(maxWidth: .infinity)
                 }
+                .buttonStyle(.plain)
+                .disabled(mmr.peakTier == 0)
             }
+            .background(Color(hex: 0x222226), in: .rect(cornerRadius: 18))
 
-            VStack(alignment: .leading, spacing: 14) {
-                Text("Performance")
-                    .font(.system(size: 16, weight: .bold))
-                    .foregroundStyle(.white)
-
-                HStack(spacing: 0) {
-                    careerMetric(value: "76,0%", label: "Taux de victoire", color: Color(hex: 0x2DD4BF))
-                    Divider().frame(height: 56).overlay(Color.white.opacity(0.08))
-                    careerRatioMetric(wins: 19, total: 25, label: "Victoires / Parties")
-                }
+            if let season = currentSeason {
+                Text("Performance").font(.system(size: 16, weight: .bold)).foregroundStyle(Color(hex: 0x8E8E93))
+                ratioCard(wins: season.wins, total: season.games)
             }
         }
         .padding(16)
         .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
     }
 
-    private var currentQueueStats: (acts: String, winRate: String, winRateColor: Color, wins: Int, total: Int, previous: [(name: String, rate: String, color: Color)]) {
-        if selectedQueue.contains("Gauntlet") {
-            return (
-                acts: "1 Acte",
-                winRate: "25,0%",
-                winRateColor: .white,
-                wins: 1,
-                total: 4,
-                previous: [
-                    ("V26 — ACTE V", "25,0%", .white)
-                ]
-            )
-        } else if selectedQueue.contains("mort") {
-            return (
-                acts: "3 Actes",
-                winRate: "52,4%",
-                winRateColor: Color(hex: 0x22C55E),
-                wins: 11,
-                total: 21,
-                previous: [
-                    ("V26 — ACTE V", "69,2%", Color(hex: 0x22C55E)),
-                    ("V26 — ACTE IV", "33,3%", .white),
-                    ("V26 — ACTE III", "0,0%", .white)
-                ]
-            )
-        } else {
-            return (
-                acts: "20 Actes",
-                winRate: "51,4%",
-                winRateColor: Color(hex: 0x22C55E),
-                wins: 432,
-                total: 840,
-                previous: [
-                    ("V26 — ACTE V", "56,8%", Color(hex: 0x22C55E))
-                ]
-            )
-        }
-    }
-
     private var allTimeCard: some View {
-        let stats = currentQueueStats
+        let wins = mmr.seasons.reduce(0) { $0 + $1.wins }
+        let games = mmr.seasons.reduce(0) { $0 + $1.games }
         return VStack(alignment: .leading, spacing: 14) {
             HStack {
-                Text("Statistiques de tous les temps")
-                    .font(.system(size: 16, weight: .bold))
-                    .foregroundStyle(.white)
+                Text("Statistiques de tous les temps").font(.system(size: 16, weight: .bold)).foregroundStyle(Color(hex: 0x8E8E93))
                 Spacer()
-                Text(stats.acts)
-                    .font(.system(size: 15))
-                    .foregroundStyle(Color(hex: 0x8E8E93))
+                Text("\(mmr.seasons.count) \(mmr.seasons.count > 1 ? "Actes" : "Acte")").font(.system(size: 15)).foregroundStyle(Color(hex: 0x8E8E93))
             }
-
-            HStack(spacing: 0) {
-                careerMetric(value: stats.winRate, label: "Taux de victoire", color: stats.winRateColor)
-                Divider().frame(height: 56).overlay(Color.white.opacity(0.08))
-                careerRatioMetric(wins: stats.wins, total: stats.total, label: "Victoires / Parties")
-            }
+            ratioCard(wins: wins, total: games)
         }
         .padding(16)
         .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
     }
 
     private var previousActsCard: some View {
-        let stats = currentQueueStats
-        return VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text("Actes précédents")
-                    .font(.system(size: 16, weight: .bold))
-                    .foregroundStyle(.white)
+                Text("Actes précédents").font(.system(size: 16, weight: .bold)).foregroundStyle(Color(hex: 0x8E8E93))
                 Spacer()
-                Text("\(stats.previous.count)")
-                    .font(.system(size: 15))
-                    .foregroundStyle(Color(hex: 0x8E8E93))
+                Text("\(previousSeasons.count)").font(.system(size: 15)).foregroundStyle(Color(hex: 0x8E8E93))
             }
-
             VStack(spacing: 8) {
-                ForEach(0..<stats.previous.count, id: \.self) { idx in
-                    let act = stats.previous[idx]
-                    HStack {
-                        Text(act.name)
+                ForEach(previousSeasons) { season in
+                    HStack(spacing: 12) {
+                        tierImage(season.endTier, size: 32)
+                        Text(store.actName(season.season).isEmpty ? season.short.uppercased() : store.actName(season.season))
                             .font(.system(size: 15, weight: .bold))
                             .foregroundStyle(.white)
                         Spacer()
-                        HStack(spacing: 6) {
-                            Text(act.rate)
-                                .font(.system(size: 15, weight: .bold))
-                                .foregroundStyle(act.color)
-                            Image(systemName: selectedQueue == "Compétition" ? "chevron.right" : "chevron.down")
-                                .font(.system(size: 11, weight: .semibold))
-                                .foregroundStyle(Color(hex: 0x8E8E93))
-                        }
+                        Text(percent(season.winRate))
+                            .font(.system(size: 15, weight: .bold).monospacedDigit())
+                            .foregroundStyle(season.winRate >= 0.5 ? Color(hex: 0x35C26B) : .white)
+                        Text("\(season.wins)/\(season.games)")
+                            .font(.system(size: 13).monospacedDigit())
+                            .foregroundStyle(Color(hex: 0x8E8E93))
                     }
                     .padding(.horizontal, 16)
-                    .padding(.vertical, 14)
+                    .padding(.vertical, 12)
                     .background(Color(hex: 0x222226), in: .rect(cornerRadius: 14))
                 }
             }
@@ -1238,35 +1174,46 @@ struct EvalCareerSummaryView: View {
         .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
     }
 
-    private func careerMetric(value: String, label: String, color: Color) -> some View {
-        VStack(spacing: 4) {
-            Text(value)
-                .font(.system(size: 24, weight: .heavy).monospacedDigit())
-                .foregroundStyle(color)
-            Text(label)
-                .font(.system(size: 13))
-                .foregroundStyle(Color(hex: 0x8E8E93))
-                .multilineTextAlignment(.center)
+    private var recentQueueCard: some View {
+        let wins = queueMatches.filter(\.won).count
+        return VStack(alignment: .leading, spacing: 14) {
+            HStack {
+                Text("Parties enregistrées").font(.system(size: 16, weight: .bold)).foregroundStyle(Color(hex: 0x8E8E93))
+                Spacer()
+                Text("\(queueMatches.count)").font(.system(size: 15)).foregroundStyle(Color(hex: 0x8E8E93))
+            }
+            ratioCard(wins: wins, total: queueMatches.count)
         }
-        .frame(maxWidth: .infinity)
+        .padding(16)
+        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
     }
 
-    private func careerRatioMetric(wins: Int, total: Int, label: String) -> some View {
-        VStack(spacing: 4) {
-            HStack(spacing: 2) {
-                Text("\(wins)")
-                    .foregroundStyle(Color(hex: 0x22C55E))
-                Text(" / \(total)")
-                    .foregroundStyle(.white)
-            }
-            .font(.system(size: 24, weight: .heavy).monospacedDigit())
+    private func percent(_ value: Double) -> String {
+        value.formatted(.percent.precision(.fractionLength(1)).locale(Locale(identifier: "fr_FR")))
+    }
 
-            Text(label)
-                .font(.system(size: 13))
-                .foregroundStyle(Color(hex: 0x8E8E93))
-                .multilineTextAlignment(.center)
+    private func ratioCard(wins: Int, total: Int) -> some View {
+        let rate = total == 0 ? 0 : Double(wins) / Double(total)
+        let color = rate >= 0.5 ? Color(hex: 0x35C26B) : Color(hex: 0xFD5B68)
+        return HStack(spacing: 0) {
+            VStack(spacing: 4) {
+                Text(percent(rate)).font(.system(size: 26, weight: .heavy).monospacedDigit()).foregroundStyle(color)
+                Text("Taux de victoire").font(.system(size: 14)).foregroundStyle(Color(hex: 0x8E8E93))
+            }
+            .frame(maxWidth: .infinity)
+            Divider().frame(height: 56).overlay(Color.white.opacity(0.08))
+            VStack(spacing: 4) {
+                HStack(spacing: 0) {
+                    Text("\(wins)").foregroundStyle(color)
+                    Text(" / \(total)").foregroundStyle(.white)
+                }
+                .font(.system(size: 26, weight: .heavy).monospacedDigit())
+                Text("Victoires / Parties").font(.system(size: 14)).foregroundStyle(Color(hex: 0x8E8E93))
+            }
+            .frame(maxWidth: .infinity)
         }
-        .frame(maxWidth: .infinity)
+        .padding(.vertical, 18)
+        .background(Color(hex: 0x222226), in: .rect(cornerRadius: 18))
     }
 }
 
@@ -2317,7 +2264,7 @@ struct EvalGameView: View {
             VStack(alignment: .leading, spacing: 12) {
                 HStack {
                     VStack(alignment: .leading, spacing: 3) {
-                        Text(store.battlepassTitle.isEmpty ? "V26 // ACTE VI" : store.battlepassTitle)
+                        Text(store.battlepassTitle)
                             .font(.system(size: 16, weight: .bold))
                             .foregroundStyle(.white)
 
@@ -2386,7 +2333,7 @@ struct EvalGameView: View {
                     }
 
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Niveau \(store.profile?.level ?? 480)")
+                        Text("Niveau \(store.profile?.level ?? 0)")
                             .font(.system(size: 16, weight: .bold))
                             .foregroundStyle(.white)
                         Text("Points d'expérience cumulés")
@@ -3236,11 +3183,11 @@ struct EvalFriendsView: View {
 
             VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 4) {
-                    Text(store.playerName.isEmpty ? "Rub19" : store.playerName)
+                    Text(store.playerName.isEmpty ? "Aucun compte" : store.playerName)
                         .font(.subheadline.weight(.heavy))
                         .foregroundStyle(.white)
 
-                    Text("#\(store.tag.isEmpty ? "Boss" : store.tag)")
+                    Text(store.tag.isEmpty ? "" : "#\(store.tag)")
                         .font(.caption.weight(.medium))
                         .foregroundStyle(.secondary)
                 }

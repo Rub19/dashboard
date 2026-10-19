@@ -342,6 +342,60 @@ final class ValorantStore {
     private(set) var equipmentBannerURL: String = ""
     private(set) var equippedSprays: [String?] = [nil, nil, nil, nil]
 
+    /// Compte Riot connecté (page officielle Riot) : boutique, portefeuille, équipement, passe, groupe.
+    let riot = RiotSession()
+    private(set) var offersEnd: Date?
+    private(set) var accessoriesEnd: Date?
+    private(set) var weeklyMissionsEnd: Date?
+    private(set) var activeMissions: [RiotMission] = []
+    private(set) var dailyMilestones: [Bool] = []
+    private(set) var dailyEnd: Date?
+    private(set) var isLoadingRiot = false
+
+    /// Recharge les données du client Riot (si un compte Riot est connecté).
+    func refreshRiot() async {
+        guard riot.isLinked, !isLoadingRiot else { return }
+        isLoadingRiot = true
+        defer { isLoadingRiot = false }
+        if battlepassLevels.isEmpty { await loadBattlepass() }
+        let snap = await RiotGameService.load(riot)
+        wallet = snap.wallet
+        storeOffers = snap.offers
+        offersEnd = snap.offersEnd
+        bundles = snap.bundles
+        accessories = snap.accessories
+        accessoriesEnd = snap.accessoriesEnd
+        if !snap.title.isEmpty { equipmentTitle = snap.title }
+        if !snap.cardID.isEmpty { equipmentBannerURL = "https://media.valorant-api.com/playercards/\(snap.cardID)/wideart.png" }
+        equippedSprays = snap.sprays
+        battlepassCurrentLevel = snap.battlepassLevel
+        battlepassCurrentXP = snap.battlepassXP
+        battlepassLevelXP = battlepassLevels.first { $0.level == snap.battlepassLevel + 1 }?.xpCost ?? 0
+        weeklyMissionsEnd = snap.weeklyMissionsEnd
+        activeMissions = snap.missions
+        dailyMilestones = snap.dailyMilestones
+        dailyEnd = snap.dailyEnd
+        currentParty = snap.party
+        isPlayerOnline = snap.party != nil
+    }
+
+    /// Après la connexion Riot : le compte connecté devient le compte suivi s'il n'y en a pas.
+    func linkRiot(accessToken: String, idToken: String, expiresIn: Int) async {
+        await riot.complete(accessToken: accessToken, idToken: idToken, expiresIn: expiresIn)
+        if let creds = riot.credentials, !isConfigured, !creds.gameName.isEmpty {
+            save(name: creds.gameName, tag: creds.tagLine, apiKey: apiKey)
+        }
+        await refreshRiot()
+    }
+
+    func unlinkRiot() async {
+        await riot.signOut()
+        storeOffers = []; bundles = []; accessories = []
+        wallet = ValorantWallet(vp: 0, rp: 0, kc: 0)
+        currentParty = nil
+        isPlayerOnline = false
+    }
+
     /// Amis ajoutés dans l'app (Riot ID résolu en PUUID) ; stockés dans Supabase.
     private var friendRecords: [FriendRecord] = []
 
@@ -558,8 +612,8 @@ final class ValorantStore {
 
     // Groupe / présence : seul le client Riot les connaît, HenrikDev non.
     func refreshGroup() async {
-        currentParty = nil
-        isPlayerOnline = false
+        guard riot.isLinked else { currentParty = nil; isPlayerOnline = false; return }
+        await refreshRiot()
     }
 
     func setPlayerOnline(_ online: Bool) {
@@ -581,6 +635,7 @@ final class ValorantStore {
         await loadUpcomingMissions()
         await loadBattlepass()
         await refreshNameChanges()
+        await refreshRiot()
     }
 
     // MARK: Matchs (Worker -> Supabase -> disque)
@@ -1067,7 +1122,22 @@ final class ValorantStore {
 
     @discardableResult
     private func applyBattlepass(_ payload: JSONValue) -> Bool {
-        battlepassTitle = (payload["data"] ?? payload)["displayName"]?.stringValue ?? ""
+        let data = payload["data"] ?? payload
+        battlepassTitle = data["displayName"]?.stringValue ?? ""
+        var levels: [ValorantBattlepassLevel] = []
+        for (c, chapter) in (data["content"]?["chapters"]?.arrayValue ?? []).enumerated() {
+            for level in chapter["levels"]?.arrayValue ?? [] {
+                let reward = level["reward"]
+                let n = levels.count + 1
+                levels.append(ValorantBattlepassLevel(
+                    id: "\(n)", chapter: c + 1, level: n, name: "",
+                    rewardType: reward?["type"]?.stringValue ?? "", rewardUUID: reward?["uuid"]?.stringValue ?? "",
+                    iconURL: "", xpCost: level["xp"]?.intValue ?? 0,
+                    isFree: chapter["isEpilogue"]?.boolValue ?? false
+                ))
+            }
+        }
+        if !levels.isEmpty { battlepassLevels = levels }
         return !battlepassTitle.isEmpty
     }
 

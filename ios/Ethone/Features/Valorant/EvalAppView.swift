@@ -166,7 +166,9 @@ struct EvalAppView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
 
             VStack(spacing: 8) {
-
+                if selectedTab == .game && store.riot.isLinked {
+                    EvalWalletBar(wallet: store.wallet)
+                }
                 evalTabBar
             }
             .padding(.horizontal, 18)
@@ -1677,15 +1679,24 @@ struct EvalGameView: View {
     @State private var showingBattlepassSheet = false
     @State private var showingMissionsSheet = false
     @State private var showingAccountSheet = false
+    @State private var showingRiotLogin = false
 
     private var store: ValorantStore { model.valorant }
 
     var body: some View {
-        EvalLockedView(
-            title: "Non connecté",
-            message: "Vous devez vous connecter pour accéder à cela.",
-            onAddAccount: nil
-        )
+        Group {
+            if store.riot.isLinked {
+                gameContent
+            } else {
+                EvalLockedView(
+                    title: "Non connecté",
+                    message: "Connectez votre compte Riot pour voir votre boutique, votre portefeuille, votre équipement et votre groupe.",
+                    onAddAccount: { showingRiotLogin = true }
+                )
+            }
+        }
+        .sheet(isPresented: $showingRiotLogin) { EvalRiotLoginSheet() }
+        .task { await store.refreshRiot() }
         .sheet(isPresented: $showingBattlepassSheet) {
             EvalBattlepassDetailSheet()
         }
@@ -1974,7 +1985,7 @@ struct EvalGameView: View {
                         .foregroundStyle(.white)
                     Spacer()
                     HStack(spacing: 6) {
-                        Text("2j 3:50:45")
+                        TimelineView(.periodic(from: .now, by: 1)) { ctx in Text(EvalCountdown.text(until: store.accessoriesEnd, now: ctx.date)) }
                             .font(.system(size: 14, weight: .medium))
                             .foregroundStyle(Color(hex: 0x8E8E93))
                         Image(systemName: "clock")
@@ -1998,7 +2009,7 @@ struct EvalGameView: View {
                         .foregroundStyle(.white)
                     Spacer()
                     HStack(spacing: 5) {
-                        Text("3:50:46")
+                        TimelineView(.periodic(from: .now, by: 1)) { ctx in Text(EvalCountdown.text(until: store.offersEnd, now: ctx.date)) }
                             .font(.system(size: 14))
                             .foregroundStyle(Color(hex: 0x8E8E93))
                         Image(systemName: "clock")
@@ -2012,6 +2023,10 @@ struct EvalGameView: View {
                 ForEach(store.storeOffers) { offer in
                     EvalDailyOfferCard(offer: offer)
                 }
+            }
+
+            ForEach(store.bundles) { bundle in
+                EvalFeaturedBundleCard(bundle: bundle)
             }
 
             VStack(spacing: 0) {
@@ -2201,7 +2216,7 @@ struct EvalGameView: View {
                         .foregroundStyle(.white)
                     Spacer()
                     HStack(spacing: 5) {
-                        Text("5:53:50")
+                        TimelineView(.periodic(from: .now, by: 1)) { ctx in Text(EvalCountdown.text(until: store.dailyEnd, now: ctx.date)) }
                             .font(.system(size: 14))
                             .foregroundStyle(Color(hex: 0x8E8E93))
                         Image(systemName: "clock")
@@ -2212,9 +2227,10 @@ struct EvalGameView: View {
 
                 HStack(spacing: 0) {
                     ForEach(0..<4) { i in
+                        let done = store.dailyMilestones.indices.contains(i) && store.dailyMilestones[i]
                         Circle()
-                            .strokeBorder(Color.white.opacity(0.18), lineWidth: 2)
-                            .background(Circle().fill(Color.white.opacity(0.06)))
+                            .strokeBorder(done ? Color(hex: 0x22C55E) : Color.white.opacity(0.18), lineWidth: 2)
+                            .background(Circle().fill(done ? Color(hex: 0x22C55E).opacity(0.35) : Color.white.opacity(0.06)))
                             .frame(width: 26, height: 26)
                             .overlay(
                                 Circle()
@@ -2243,7 +2259,7 @@ struct EvalGameView: View {
                         .foregroundStyle(.white)
                     Spacer()
                     HStack(spacing: 5) {
-                        Text("1j 7:08:50")
+                        TimelineView(.periodic(from: .now, by: 1)) { ctx in Text(EvalCountdown.text(until: store.weeklyMissionsEnd, now: ctx.date)) }
                             .font(.system(size: 14))
                             .foregroundStyle(Color(hex: 0x8E8E93))
                         Image(systemName: "clock")
@@ -2252,15 +2268,31 @@ struct EvalGameView: View {
                     }
                 }
 
-                HStack(spacing: 8) {
-                    Image(systemName: "checkmark.circle")
-                        .font(.system(size: 16))
-                        .foregroundStyle(Color(hex: 0x8E8E93))
-                    Text("Vous avez terminé toutes les missions disponibles.")
-                        .font(.system(size: 14))
-                        .foregroundStyle(Color(hex: 0x8E8E93))
+                let pending = store.activeMissions.filter { !$0.complete }
+                if !store.activeMissions.isEmpty && pending.isEmpty {
+                    HStack(spacing: 8) {
+                        Image(systemName: "checkmark.circle")
+                            .font(.system(size: 16))
+                            .foregroundStyle(Color(hex: 0x8E8E93))
+                        Text("Vous avez terminé toutes les missions disponibles.")
+                            .font(.system(size: 14))
+                            .foregroundStyle(Color(hex: 0x8E8E93))
+                    }
+                    .padding(.top, 2)
                 }
-                .padding(.top, 2)
+                ForEach(pending) { mission in
+                    VStack(alignment: .leading, spacing: 6) {
+                        HStack {
+                            Text(mission.title).font(.system(size: 14, weight: .medium)).foregroundStyle(.white)
+                            Spacer()
+                            Text("+\(mission.xp.formatted()) XP").font(.system(size: 13)).foregroundStyle(Color(hex: 0x8E8E93))
+                        }
+                        ProgressView(value: Double(min(mission.progress, mission.target)), total: Double(max(1, mission.target)))
+                            .tint(Color(hex: 0xFD5B68))
+                        Text("\(mission.progress.formatted()) / \(mission.target.formatted())").font(.system(size: 12)).foregroundStyle(Color(hex: 0x8E8E93))
+                    }
+                    .padding(.top, 4)
+                }
             }
             .padding(16)
             .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
@@ -2269,12 +2301,12 @@ struct EvalGameView: View {
                 showingMissionsSheet = true
             } label: {
                 HStack {
-                    Text("\(max(30, store.upcomingMissions.count)) missions hebdomadaires futures")
+                    Text("\(store.upcomingMissions.count) missions hebdomadaires futures")
                         .font(.system(size: 15, weight: .medium))
                         .foregroundStyle(.white)
                     Spacer()
                     HStack(spacing: 4) {
-                        Text("+\(store.missionsReserveXP > 0 ? store.missionsReserveXP.formatted() : "689 100") XP")
+                        Text("+\(store.missionsReserveXP.formatted()) XP")
                             .font(.system(size: 14, weight: .semibold))
                             .foregroundStyle(Color(hex: 0x8E8E93))
                         Image(systemName: "chevron.right")
@@ -4049,6 +4081,8 @@ struct EvalSettingsView: View {
                 }
                 .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
 
+                EvalRiotAccountRow()
+
                 VStack(spacing: 0) {
                     NavigationLink {
                         EvalStorageView()
@@ -4209,5 +4243,79 @@ struct EvalSettingsView: View {
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 14)
+    }
+}
+
+/// Connexion Riot : page officielle auth.riotgames.com, rien ne transite par Ethone.
+struct EvalRiotLoginSheet: View {
+    @Environment(AppModel.self) private var model
+    @Environment(\.dismiss) private var dismiss
+    @State private var working = false
+
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                RiotLoginView { access, id, expires in
+                    working = true
+                    Task {
+                        await model.valorant.linkRiot(accessToken: access, idToken: id, expiresIn: expires)
+                        working = false
+                        dismiss()
+                    }
+                }
+                if working { ProgressView().tint(.white).padding(24).background(.ultraThinMaterial, in: .rect(cornerRadius: 16)) }
+            }
+            .safeAreaInset(edge: .bottom) {
+                Text("Connexion sur la page officielle de Riot Games. Votre mot de passe n’est jamais lu ni envoyé par Ethone. API non officielle : Riot peut la bloquer à tout moment.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(.ultraThinMaterial)
+            }
+            .navigationTitle("Compte Riot")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Annuler") { dismiss() } } }
+        }
+    }
+}
+
+struct EvalRiotAccountRow: View {
+    @Environment(AppModel.self) private var model
+    @State private var showingLogin = false
+    @State private var confirmSignOut = false
+
+    var body: some View {
+        let riot = model.valorant.riot
+        VStack(alignment: .leading, spacing: 8) {
+            Button {
+                if riot.isLinked { confirmSignOut = true } else { showingLogin = true }
+            } label: {
+                HStack(spacing: 14) {
+                    Image(systemName: "gamecontroller.fill").font(.system(size: 18)).foregroundStyle(Color(hex: 0xFD5B68)).frame(width: 28)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(riot.isLinked ? "Compte Riot connecté" : "Connecter mon compte Riot")
+                            .font(.system(size: 16, weight: .medium)).foregroundStyle(.white)
+                        if let creds = riot.credentials {
+                            Text("\(creds.gameName)#\(creds.tagLine) · \(creds.region.uppercased())").font(.system(size: 13)).foregroundStyle(Color(hex: 0x8E8E93))
+                        }
+                    }
+                    Spacer()
+                    Text(riot.isLinked ? "Déconnecter" : "Connexion").font(.system(size: 15)).foregroundStyle(Color(hex: 0xFD5B68))
+                }
+                .padding(16)
+                .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+            }
+            .buttonStyle(.plain)
+            if let error = riot.lastError {
+                Text(error).font(.footnote).foregroundStyle(Color(hex: 0xFD5B68)).padding(.horizontal, 4)
+            }
+            Text("Boutique, portefeuille, équipement, passe de combat et groupe viennent du compte Riot connecté.")
+                .font(.footnote).foregroundStyle(Color(hex: 0x8E8E93)).padding(.horizontal, 4)
+        }
+        .sheet(isPresented: $showingLogin) { EvalRiotLoginSheet() }
+        .confirmationDialog("Déconnecter le compte Riot ?", isPresented: $confirmSignOut, titleVisibility: .visible) {
+            Button("Déconnecter", role: .destructive) { Task { await model.valorant.unlinkRiot() } }
+        }
     }
 }
